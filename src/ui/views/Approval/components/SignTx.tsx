@@ -11,7 +11,7 @@ import {
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
-import { Drawer, Modal } from 'antd';
+import { Drawer, message, Modal } from 'antd';
 import { maxBy } from 'lodash';
 import {
   Chain,
@@ -52,7 +52,7 @@ import {
   isStringOrNumber,
   useCommonPopupView,
 } from 'ui/utils';
-import { WaitingSignComponent } from './map';
+import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
@@ -87,6 +87,8 @@ import GasSelectorHeader, {
   GasSelectorResponse,
 } from './TxComponents/GasSelectorHeader';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
+import { adjustV } from '@/ui/utils/gnosis';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -456,6 +458,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [gnosisFooterBarVisible, setGnosisFooterBarVisible] = useState(false);
+  const [currentGnosisAdmin, setCurrentGnosisAdmin] = useState<Account | null>(
+    null
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
@@ -862,6 +868,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const handleGnosisConfirm = async (account: Account) => {
     if (!safeInfo) return;
+    setGnosisFooterBarVisible(true);
+    setCurrentGnosisAdmin(account);
+  };
+  const handleGnosisSign = async () => {
+    const account = currentGnosisAdmin;
+    if (!safeInfo || !account) {
+      return;
+    }
+    if (activeApprovalPopup()) {
+      return;
+    }
     wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.GnosisKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
@@ -891,15 +908,64 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       );
     }
     const typedData = await wallet.gnosisGenerateTypedData();
-    resolveApproval({
-      data: [account.address, JSON.stringify(typedData)],
-      session: params.session,
-      isGnosis: true,
-      isSend,
-      account: account,
-      method: 'ethSignTypedDataV4',
-      uiRequestComponent: 'SignTypedData',
-    });
+    if (!typedData) {
+      throw new Error('Failed to generate typed data');
+    }
+
+    if (WaitingSignMessageComponent[account.type]) {
+      waitSignComponentAmounted().then(() => {
+        wallet.signTypedData(account.type, account.address, typedData as any, {
+          brandName: account.brandName,
+          version: 'V4',
+        });
+      });
+      if (isSend) {
+        wallet.clearPageStateCache();
+      }
+      resolveApproval({
+        uiRequestComponent: WaitingSignMessageComponent[account.type],
+        type: account.type,
+        address: account.address,
+        data: [account.address, JSON.stringify(typedData)],
+        isGnosis: true,
+        account: account,
+        extra: {
+          popupProps: {
+            maskStyle: {
+              backgroundColor: 'transparent',
+            },
+          },
+        },
+      });
+    } else {
+      // it should never go to here
+      try {
+        let result = await wallet.signTypedData(
+          account.type,
+          account.address,
+          typedData as any,
+          {
+            version: 'V4',
+          }
+        );
+        result = adjustV('eth_signTypedData', result);
+
+        const sigs = await wallet.getGnosisTransactionSignatures();
+        if (sigs.length > 0) {
+          await wallet.gnosisAddConfirmation(account.address, result);
+        } else {
+          await wallet.gnosisAddSignature(account.address, result);
+          await wallet.postGnosisTransaction();
+        }
+        if (isSend) {
+          wallet.clearPageStateCache();
+        }
+        resolveApproval();
+      } catch (e) {
+        message.error(e.message);
+      }
+    }
+    return;
   };
 
   const handleCoboArugsConfirm = async (account: Account) => {
@@ -1788,6 +1854,47 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             />
           </Drawer>
         )}
+
+        {isGnosisAccount && safeInfo && currentGnosisAdmin && (
+          <Drawer
+            placement="bottom"
+            height="fit-content"
+            className="gnosis-footer-bar is-support-darkmode"
+            visible={gnosisFooterBarVisible}
+            onClose={() => setGnosisFooterBarVisible(false)}
+            maskClosable
+            closable={false}
+            bodyStyle={{
+              padding: 0,
+            }}
+          >
+            <FooterBar
+              origin={params.session.origin}
+              originLogo={params.session.icon}
+              chain={chain}
+              gnosisAccount={currentGnosisAdmin}
+              onCancel={handleCancel}
+              // securityLevel={securityLevel}
+              // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
+              onSubmit={handleGnosisSign}
+              enableTooltip={
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              }
+              tooltipContent={
+                currentGnosisAdmin?.type ===
+                KEYRING_TYPE.WatchAddressKeyring ? (
+                  <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
+                ) : null
+              }
+              disabledProcess={
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              }
+              isTestnet={chain?.isTestnet}
+              onIgnoreAllRules={handleIgnoreAllRules}
+            />
+          </Drawer>
+        )}
+
         {isCoboArugsAccount && coboArgusInfo && (
           <Drawer
             placement="bottom"

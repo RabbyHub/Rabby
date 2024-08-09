@@ -10,8 +10,12 @@ export const waitSignComponentAmounted = async () => {
   );
 };
 
+// only work in UI
 export const emitSignComponentAmounted = () => {
+  // to background
   eventBus.emit(EVENTS.broadcastToBackground, {
     method: EVENTS.SIGN_WAITING_AMOUNTED,
   });
+  // to ui
+  eventBus.emit(EVENTS.SIGN_WAITING_AMOUNTED);
 };

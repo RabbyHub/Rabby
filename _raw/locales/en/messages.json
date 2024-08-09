@@ -70,7 +70,7 @@
         "nftOut": "NFT out"
       },
       "enoughSafeSigCollected": "Enough signature collected",
-      "moreSafeSigNeeded": "{{0}} more confirmation needed",
+      "moreSafeSigNeeded": "Need {{0}} more signatures to confirm",
       "safeAdminSigned": "Signed",
       "customRPCErrorModal": {
         "title": "Custom RPC Error",

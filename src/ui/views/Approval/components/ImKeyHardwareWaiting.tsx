@@ -45,7 +45,12 @@ export const ImKeyHardwareWaiting = ({
 }: {
   params: ApprovalParams;
 }) => {
-  const { setTitle, setVisible, visible, closePopup } = useCommonPopupView();
+  const {
+    setTitle,
+    setVisible,
+    closePopup,
+    setPopupProps,
+  } = useCommonPopupView();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
   >('SENDING');
@@ -230,6 +235,10 @@ export const ImKeyHardwareWaiting = ({
     init();
     mountedRef.current = true;
   }, []);
+
+  React.useEffect(() => {
+    setPopupProps(params?.extra?.popupProps);
+  }, [params?.extra?.popupProps]);
 
   // React.useEffect(() => {
   //   if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {

@@ -74,6 +74,7 @@ export const CommonPopup: React.FC = () => {
     height,
     className,
     componentName,
+    popupProps,
   } = useCommonPopupView();
 
   const config =
@@ -111,6 +112,7 @@ export const CommonPopup: React.FC = () => {
       }}
       isSupportDarkMode
       isNew={config.isNew}
+      {...popupProps}
     >
       {componentName === 'Approval' && <Approval className="h-full" />}
       {componentName === 'WalletConnect' && <ReconnectView />}

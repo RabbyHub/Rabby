@@ -1,34 +1,27 @@
-import React from 'react';
-import { message } from 'antd';
-import { useTranslation } from 'react-i18next';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { Account } from 'background/service/preference';
-import {
-  CHAINS,
-  WALLETCONNECT_STATUS_MAP,
-  EVENTS,
-  KEYRING_CLASS,
-  KEYRING_CATEGORY_MAP,
-} from 'consts';
-import {
-  useApproval,
-  openInTab,
-  openInternalPageInTab,
-  useWallet,
-  useCommonPopupView,
-} from 'ui/utils';
-import { adjustV } from 'ui/utils/gnosis';
 import eventBus from '@/eventBus';
 import stats from '@/stats';
+import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
+import { findChain } from '@/utils/chain';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
+import * as Sentry from '@sentry/browser';
+import { message } from 'antd';
+import { Account } from 'background/service/preference';
+import { EVENTS, KEYRING_CATEGORY_MAP, WALLETCONNECT_STATUS_MAP } from 'consts';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import LedgerSVG from 'ui/assets/walletlogo/ledger.svg';
+import {
+  openInternalPageInTab,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
+import { adjustV } from 'ui/utils/gnosis';
 import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
-import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
-import * as Sentry from '@sentry/browser';
-import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -41,7 +34,13 @@ interface ApprovalParams {
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
-  const { setTitle, setVisible, setHeight, closePopup } = useCommonPopupView();
+  const {
+    setTitle,
+    setVisible,
+    setHeight,
+    closePopup,
+    setPopupProps,
+  } = useCommonPopupView();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
   >('SENDING');
@@ -229,6 +228,10 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     init();
     mountedRef.current = true;
   }, []);
+
+  React.useEffect(() => {
+    setPopupProps(params?.extra?.popupProps);
+  }, [params?.extra?.popupProps]);
 
   // React.useEffect(() => {
   //   if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {
