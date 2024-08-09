@@ -51,7 +51,8 @@ export const AddressItem = ({
         'bg-r-neutral-card2',
         disabled
           ? 'cursor-not-allowed opacity-70'
-          : 'hover:border-rabby-blue-default hover:bg-r-blue-light1 cursor-pointer'
+          : 'hover:border-rabby-blue-default hover:bg-r-blue-light1 cursor-pointer',
+        checked && 'border-rabby-blue-default bg-r-blue-light1'
       )}
       onClick={() => {
         if (disabled) {
