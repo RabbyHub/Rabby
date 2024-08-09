@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { Alert, Tooltip } from 'antd';
 import type { ColumnType, TableProps } from 'antd/lib/table';
@@ -53,6 +55,9 @@ import {
   openScanLinkFromChainItem,
   encodeRevokeItem,
   decodeRevokeItem,
+  isSelectedAllContract,
+  isSelectedAllAssetApprovals,
+  TableSelectResult,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -91,19 +96,23 @@ function getColumnsForContract({
   t,
   toggleSelectAll,
   isSelectedAll,
+  isIndeterminate,
 }: {
   sortedInfo: SorterResult<ContractApprovalItem>;
   selectedRows: ApprovalSpenderItemToBeRevoked[];
   onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
   // t: ReturnType<typeof useTranslation>['t']
   toggleSelectAll: () => void;
-  isSelectedAll: boolean;
   t: any;
-}) {
+} & TableSelectResult) {
   const columnsForContract: ColumnType<ContractApprovalItem>[] = [
     {
       title: () => (
-        <CheckboxRow onClick={toggleSelectAll} isSelected={isSelectedAll} />
+        <CheckboxRow
+          onClick={toggleSelectAll}
+          isIndeterminate={isIndeterminate}
+          isSelected={isSelectedAll}
+        />
       ),
       key: 'selection',
       className: 'J_selection',
@@ -576,14 +585,14 @@ function getColumnsForAsset({
   t,
   toggleSelectAll,
   isSelectedAll,
+  isIndeterminate,
 }: {
   sortedInfo: SorterResult<AssetApprovalSpender>;
   selectedRows: ApprovalSpenderItemToBeRevoked[];
   // t: ReturnType<typeof useTranslation>['t']
   t: any;
   toggleSelectAll: () => void;
-  isSelectedAll: boolean;
-}) {
+} & TableSelectResult) {
   const isSelected = (record: AssetApprovalSpender) => {
     return (
       findIndexRevokeList(selectedRows, {
@@ -598,7 +607,11 @@ function getColumnsForAsset({
     {
       key: 'selection',
       title: () => (
-        <CheckboxRow onClick={toggleSelectAll} isSelected={isSelectedAll} />
+        <CheckboxRow
+          onClick={toggleSelectAll}
+          isIndeterminate={isIndeterminate}
+          isSelected={isSelectedAll}
+        />
       ),
       render: (_, spender) => {
         return <CheckboxRow isSelected={isSelected(spender)} />;
@@ -815,8 +828,7 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   className?: string;
   toggleAllAssetRevoke?: (list: AssetApprovalSpender[]) => void;
   toggleAllContractRevoke?: (list: ContractApprovalItem[]) => void;
-  isSelectedAll: boolean;
-};
+} & TableSelectResult;
 function TableByContracts({
   isDarkTheme,
   isLoading,
@@ -830,6 +842,7 @@ function TableByContracts({
   onChangeSelectedContractSpenders,
   toggleAllContractRevoke,
   isSelectedAll,
+  isIndeterminate,
 }: PageTableProps<ContractApprovalItem> & {
   onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
 }) {
@@ -848,7 +861,7 @@ function TableByContracts({
       }));
       vGridRef.current?.resetAfterRowIndex(0, true);
     },
-    []
+    [vGridRef]
   );
 
   const getContractListTotalHeight = useCallback(
@@ -869,23 +882,25 @@ function TableByContracts({
 
   const { t } = useTranslation();
 
-  const toggleSelectAll = () => toggleAllContractRevoke?.(dataSource);
-
   const columnsForContracts = useMemo(() => {
     return getColumnsForContract({
       selectedRows,
       sortedInfo: sortedInfo,
       onChangeSelectedContractSpenders,
-      toggleSelectAll,
+      toggleSelectAll: () => toggleAllContractRevoke?.(dataSource),
       isSelectedAll,
+      isIndeterminate,
       t,
     });
   }, [
+    dataSource,
+    t,
     selectedRows,
     sortedInfo,
     onChangeSelectedContractSpenders,
-    toggleSelectAll,
+    toggleAllContractRevoke,
     isSelectedAll,
+    isIndeterminate,
   ]);
 
   return (
@@ -924,6 +939,7 @@ function TableByAssetSpenders({
   className,
   toggleAllAssetRevoke,
   isSelectedAll,
+  isIndeterminate,
 }: PageTableProps<AssetApprovalSpender>) {
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<AssetApprovalSpender>
@@ -958,6 +974,7 @@ function TableByAssetSpenders({
         selectedRows,
         toggleSelectAll,
         isSelectedAll,
+        isIndeterminate,
         t,
       })}
       sortedInfo={sortedInfo}
@@ -1007,6 +1024,7 @@ const ApprovalManagePage = () => {
 
   useEffect(() => {
     loadApprovals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab]);
 
   const { yValue } = useTableScrollableHeight({ isShowTestnet });
@@ -1031,14 +1049,20 @@ const ApprovalManagePage = () => {
     handleClickAssetRow,
     contractRevokeMap,
     contractRevokeList,
+    contractSelectResult,
     assetRevokeList,
+    assetSelectResult,
     revokeSummary,
     patchContractRevokeMap,
     clearRevoke,
     onChangeSelectedContractSpenders,
     toggleAllAssetRevoke,
     toggleAllContractRevoke,
-  } = useSelectSpendersToRevoke(filterType);
+  } = useSelectSpendersToRevoke({
+    filterType,
+    displaySortedContractList,
+    displaySortedAssetsList,
+  });
 
   const wallet = useWallet();
   const handleRevoke = React.useCallback(async () => {
@@ -1051,7 +1075,7 @@ const ApprovalManagePage = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, [revokeSummary.currentRevokeList]);
+  }, [wallet, clearRevoke, revokeSummary.currentRevokeList]);
 
   const batchRevokeModal = useBatchRevokeModal({
     revokeList: revokeSummary.currentRevokeList,
@@ -1084,7 +1108,12 @@ const ApprovalManagePage = () => {
     } else {
       handleRevoke();
     }
-  }, [handleRevoke, enableBatchRevoke]);
+  }, [
+    revokeSummary.currentRevokeList.length,
+    confirmRevokeModal,
+    handleRevoke,
+    enableBatchRevoke,
+  ]);
 
   return (
     <div
@@ -1177,11 +1206,8 @@ const ApprovalManagePage = () => {
                   }
                   selectedRows={contractRevokeList}
                   toggleAllContractRevoke={toggleAllContractRevoke}
-                  isSelectedAll={
-                    Object.keys(contractRevokeMap).length ===
-                      displaySortedContractList.length &&
-                    !!displaySortedContractList.length
-                  }
+                  isSelectedAll={contractSelectResult.isSelectedAll}
+                  isIndeterminate={contractSelectResult.isIndeterminate}
                 />
 
                 <TableByAssetSpenders
@@ -1194,10 +1220,8 @@ const ApprovalManagePage = () => {
                   selectedRows={assetRevokeList}
                   onClickRow={handleClickAssetRow}
                   toggleAllAssetRevoke={toggleAllAssetRevoke}
-                  isSelectedAll={
-                    assetRevokeList.length === displaySortedAssetsList.length &&
-                    !!displaySortedAssetsList.length
-                  }
+                  isSelectedAll={assetSelectResult.isSelectedAll}
+                  isIndeterminate={assetSelectResult.isIndeterminate}
                 />
               </div>
               {selectedContract ? (
