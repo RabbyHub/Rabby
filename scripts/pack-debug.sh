@@ -10,7 +10,7 @@ git_committish=$(git log --format="%h" -n 1)
 
 pack_dist() {
   rm -rf ./tmp/ && mkdir -p ./tmp/ && \
-  zip -r ./tmp/Rabby_v${app_ver}_debug.${git_committish}.zip ./dist
+  zip -rX ./tmp/Rabby_v${app_ver}_debug.${git_committish}.zip ./dist
 }
 
 build() {
