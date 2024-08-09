@@ -9,11 +9,15 @@ import { DbkBridgeHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { message } from 'antd';
 import BigNumber from 'bignumber.js';
-import { getContract, parseEther } from 'viem';
+import { getContract, parseEther, WriteContractParameters } from 'viem';
 import { getWithdrawals } from 'viem/op-stack';
 import { DbkBridgeStatus, dbk } from '../../../utils';
 import { useCreateViemClient } from './useCreateViemClient';
-import { l1StandardBridgeABI } from '@eth-optimism/contracts-ts';
+import {
+  l1StandardBridgeABI,
+  optimismPortalABI,
+} from '@eth-optimism/contracts-ts';
+import { writeContract } from 'viem/actions';
 
 export const useDbkChainBridge = ({
   action,
@@ -156,11 +160,23 @@ export const useDbkChainBridge = ({
           const [withdrawal] = getWithdrawals(receipt);
 
           // 2. Finalize the withdrawal.
-          const hash = await clientL1.finalizeWithdrawal({
+          // viem has a bug, it will ignore gas
+          // const hash = await clientL1.finalizeWithdrawal({
+          //   account: (account!.address as unknown) as `0x${string}`,
+          //   targetChain: clientL2.chain as any,
+          //   withdrawal,
+          //   gas: null
+          // });
+
+          await writeContract(clientL1, {
             account: (account!.address as unknown) as `0x${string}`,
-            targetChain: clientL2.chain as any,
-            withdrawal,
-            gas: null,
+            abi: optimismPortalABI,
+            address:
+              clientL2.chain?.contracts?.portal?.[clientL1.chain.id].address,
+            chain: clientL1.chain,
+            functionName: 'finalizeWithdrawalTransaction',
+            args: [withdrawal],
+            gas: BigInt(700_000),
           });
 
           window.close();
