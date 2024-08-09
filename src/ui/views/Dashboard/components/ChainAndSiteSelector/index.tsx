@@ -31,8 +31,7 @@ import IconTransactions, {
 import IconAddresses, {
   ReactComponent as RcIconAddresses,
 } from 'ui/assets/dashboard/addresses.svg';
-import { ReactComponent as RcIconClaimableRabbyPoints } from 'ui/assets/dashboard/claimable-points.svg';
-import { ReactComponent as RcIconUnclaimableRabbyPoints } from 'ui/assets/dashboard/unclaimable-points.svg';
+import { ReactComponent as RcIconDeBankHi } from 'ui/assets/dashboard/debank-hi.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 
 import IconMoreSettings, {
@@ -41,6 +40,7 @@ import IconMoreSettings, {
 import IconDrawer from 'ui/assets/drawer.png';
 import {
   getCurrentConnectSite,
+  openDeBankHi,
   openInternalPageInTab,
   useWallet,
 } from 'ui/utils';
@@ -126,6 +126,14 @@ export default ({
     return false;
   }, [account?.address]);
 
+  const { value: debankHiStatus, loading: dbHiLoading } = useAsync(async () => {
+    if (account?.address) {
+      const data = await wallet.getDeBankHiStatus(account.address);
+      return data;
+    }
+    return;
+  }, [account?.address]);
+
   useEffect(() => {
     if (approvalState) {
       setApprovalRiskAlert(
@@ -182,6 +190,7 @@ export default ({
     onClick: import('react').MouseEventHandler<HTMLElement>;
     badge?: number;
     badgeAlert?: boolean;
+    badgeClassName?: string;
     iconSpin?: boolean;
     hideForGnosis?: boolean;
     showAlert?: boolean;
@@ -249,15 +258,21 @@ export default ({
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
     } as IPanelItem,
-    feedback: {
-      icon: claimable
-        ? RcIconClaimableRabbyPoints
-        : RcIconUnclaimableRabbyPoints,
-      eventKey: 'Rabby Points',
-      content: t('page.dashboard.home.panel.rabbyPoints'),
+    debankHi: {
+      icon: RcIconDeBankHi,
+      eventKey: 'DeBank Hi',
+      content: t('page.dashboard.home.panel.debankHi'),
       onClick: () => {
-        history.push('/rabby-points');
+        account?.address && openDeBankHi(account.address);
       },
+      badge: dbHiLoading ? 0 : debankHiStatus?.unread_message_count,
+      badgeAlert: !debankHiStatus?.is_checked,
+      badgeClassName: clsx(
+        debankHiStatus?.is_checked ? 'hi-checked' : 'hi-unchecked',
+        {
+          round: Number(debankHiStatus?.unread_message_count) < 10,
+        }
+      ),
     } as IPanelItem,
     more: {
       icon: RcIconMoreSettings,
@@ -301,7 +316,7 @@ export default ({
       'nft',
       // 'queue',
       'transactions',
-      'feedback',
+      'debankHi',
       'security',
       'ecology',
       'more',
@@ -313,7 +328,7 @@ export default ({
       'receive',
       'nft',
       'transactions',
-      'feedback',
+      'debankHi',
       'security',
       'ecology',
       'more',
@@ -370,7 +385,12 @@ export default ({
                   <Badge
                     count={item.badge}
                     size="small"
-                    className={item.badgeAlert ? 'alert' : ''}
+                    className={clsx(
+                      {
+                        alert: item.badgeAlert && !item.badgeClassName,
+                      },
+                      item.badgeClassName
+                    )}
                   >
                     <ThemeIcon
                       src={item.icon}

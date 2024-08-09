@@ -20,3 +20,4 @@ export * from './transactionBroadcastWatcher';
 export { default as RabbyPointsService } from './rabbyPoints';
 export { default as HDKeyRingLastAddAddrTimeService } from './HDKeyRingLastAddAddrTime';
 export { default as bridgeService } from './bridge';
+export { default as debankService } from './debankHi';
