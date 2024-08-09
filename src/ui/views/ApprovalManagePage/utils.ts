@@ -10,8 +10,6 @@ import {
   AssetApprovalSpender,
   ContractApprovalItem,
   RiskNumMap,
-  SpenderInNFTApproval,
-  SpenderInTokenApproval,
   compareContractApprovalItemByRiskLevel,
 } from '@/utils/approval';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
