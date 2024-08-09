@@ -44,7 +44,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { useScroll } from 'react-use';
-import { useSize, useDebounceFn } from 'ahooks';
+import { useSize, useDebounceFn, useRequest } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
@@ -968,6 +968,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     return;
   };
 
+  const {
+    loading: isSubmittingGnosis,
+    runAsync: runHandleGnosisSign,
+  } = useRequest(handleGnosisSign, {
+    manual: true,
+  });
+
   const handleCoboArugsConfirm = async (account: Account) => {
     if (!coboArgusInfo) return;
 
@@ -1876,7 +1883,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               onCancel={handleCancel}
               // securityLevel={securityLevel}
               // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
-              onSubmit={handleGnosisSign}
+              onSubmit={runHandleGnosisSign}
               enableTooltip={
                 currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
               }
@@ -1889,6 +1896,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               disabledProcess={
                 currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
               }
+              isSubmitting={isSubmittingGnosis}
               isTestnet={chain?.isTestnet}
               onIgnoreAllRules={handleIgnoreAllRules}
             />
