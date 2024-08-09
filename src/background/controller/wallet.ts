@@ -1476,6 +1476,9 @@ export class WalletController extends BaseController {
   setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
   getSwapPreferMEVGuarded = swapService.getSwapPreferMEVGuarded;
   setSwapPreferMEVGuarded = swapService.setSwapPreferMEVGuarded;
+  setAutoSlippage = swapService.setAutoSlippage;
+  setIsCustomSlippage = swapService.setIsCustomSlippage;
+  setSlippage = swapService.setSlippage;
 
   setRedirect2Points = RabbyPointsService.setRedirect2Points;
   setRabbyPointsSignature = RabbyPointsService.setSignature;

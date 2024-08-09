@@ -64,7 +64,8 @@ const useTokenInfo = ({
 };
 
 export const useSlippage = () => {
-  const [slippageState, setSlippage] = useState('0.1');
+  const slippageState = useRabbySelector((s) => s.swap.slippage || '0.1');
+  const setSlippage = useRabbyDispatch().swap.setSlippage;
   const slippage = useMemo(() => slippageState || '0.1', [slippageState]);
   const [slippageChanged, setSlippageChanged] = useState(false);
 
@@ -74,6 +75,36 @@ export const useSlippage = () => {
     slippageState,
     slippage,
     setSlippage,
+  };
+};
+
+export const useSlippageStore = () => {
+  const { autoSlippage, isCustomSlippage } = useRabbySelector((store) => ({
+    autoSlippage: store.swap.autoSlippage,
+    isCustomSlippage: !!store.swap.isCustomSlippage,
+  }));
+
+  const dispatch = useRabbyDispatch();
+
+  const setAutoSlippage = useCallback(
+    (bool: boolean) => {
+      dispatch.swap.setAutoSlippage(bool);
+    },
+    [dispatch]
+  );
+
+  const setIsCustomSlippage = useCallback(
+    (bool: boolean) => {
+      dispatch.swap.setIsCustomSlippage(bool);
+    },
+    [dispatch]
+  );
+
+  return {
+    autoSlippage,
+    isCustomSlippage,
+    setAutoSlippage,
+    setIsCustomSlippage,
   };
 };
 
@@ -199,6 +230,8 @@ export const useTokenPair = (userAddress: string) => {
     slippage,
     setSlippage,
   } = useSlippage();
+
+  const { autoSlippage } = useSlippageStore();
 
   const [currentProvider, setOriActiveProvider] = useState<
     QuoteProvider | undefined
@@ -353,14 +386,11 @@ export const useTokenPair = (userAddress: string) => {
   useEffect(() => {
     if (isWrapToken) {
       setFeeRate('0');
-    } else {
-      setFeeRate('0.25');
     }
-
-    if (isStableCoin) {
-      setSlippage('0.05');
+    if (autoSlippage) {
+      setSlippage(isStableCoin ? '0.1' : '0.5');
     }
-  }, [isWrapToken, isStableCoin]);
+  }, [autoSlippage, isWrapToken, isStableCoin]);
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
   const visible = useQuoteVisible();

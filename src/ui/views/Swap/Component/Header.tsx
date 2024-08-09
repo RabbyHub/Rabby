@@ -4,8 +4,8 @@ import { PageHeader } from '@/ui/component';
 import React, { useCallback, useState } from 'react';
 import {
   usePollSwapPendingNumber,
-  useRabbyFeeVisible,
-  useSetRabbyFeeVisible,
+  useRabbyFee,
+  useSetRabbyFee,
 } from '../hooks';
 import { SwapTxHistory } from './History';
 import { useTranslation } from 'react-i18next';
@@ -19,8 +19,8 @@ export const Header = () => {
 
   const loadingNumber = usePollSwapPendingNumber(5000);
 
-  const rabbyFeeVisible = useRabbyFeeVisible();
-  const setRabbyFeeVisible = useSetRabbyFeeVisible();
+  const { visible, feeDexDesc, dexName } = useRabbyFee();
+  const setRabbyFeeVisible = useSetRabbyFee();
 
   const openHistory = useCallback(() => {
     setHistoryVisible(true);
@@ -59,8 +59,10 @@ export const Header = () => {
         }, [])}
       />
       <RabbyFeePopup
-        visible={rabbyFeeVisible}
-        onClose={() => setRabbyFeeVisible(false)}
+        visible={visible}
+        dexName={dexName}
+        feeDexDesc={feeDexDesc}
+        onClose={() => setRabbyFeeVisible({ visible: false })}
       />
     </>
   );

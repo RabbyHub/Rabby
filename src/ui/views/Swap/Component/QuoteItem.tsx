@@ -17,12 +17,13 @@ import {
   QuoteProvider,
   isSwapWrapToken,
 } from '../hooks/quote';
-import { useSetQuoteVisible, useSetRabbyFeeVisible, verifySdk } from '../hooks';
+import { useSetQuoteVisible, useSetRabbyFee, verifySdk } from '../hooks';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useTranslation } from 'react-i18next';
 import { TokenWithChain } from '@/ui/component';
 import { Tooltip } from 'antd';
+import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 
 const GAS_USE_AMOUNT_LIMIT = 2_000_000;
 
@@ -158,7 +159,7 @@ export const DexQuoteItem = (
 
   const openSwapQuote = useSetQuoteVisible();
 
-  const setRabbyFeeVisible = useSetRabbyFeeVisible();
+  const setRabbyFeeVisible = useSetRabbyFee();
 
   const isSdkDataPass = !!preExecResult?.isSdkPass;
 
@@ -502,7 +503,11 @@ export const DexQuoteItem = (
                     ? undefined
                     : (e) => {
                         e.stopPropagation();
-                        setRabbyFeeVisible(true);
+                        setRabbyFeeVisible({
+                          visible: true,
+                          dexName: dexId,
+                          feeDexDesc: quote?.dexFeeDesc || undefined,
+                        });
                       }
                 }
               >
