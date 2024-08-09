@@ -37,8 +37,9 @@ const FormInputItem = styled(Form.Item)`
     &::placeholder {
       color: var(--r-neutral-foot, #6a7587) !important;
     }
-    &:focus {
-      border-color: var(--r-blue-default, #7084ff);
+    &:focus,
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff) !important;
     }
   }
 `;

@@ -646,7 +646,7 @@ function getColumnsForAsset({
               hideConer
               iconUrl={asset?.logo_url || IconUnknown}
               chainServerId={asset.chain}
-              noRound={false}
+              noRound={asset.type === 'nft'}
             />
 
             <Tooltip

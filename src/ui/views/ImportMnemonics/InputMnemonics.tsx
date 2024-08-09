@@ -189,8 +189,8 @@ const ImportMnemonics = () => {
   }, [isSlip39, secretShares, slip39GroupNumber]);
 
   return (
-    <main className="w-screen h-screen bg-r-neutral-bg-2">
-      <div className={clsx('mx-auto pt-[58px]', 'w-[600px]')}>
+    <main className="w-screen h-screen bg-r-neutral-bg-2 flex items-center">
+      <div className="mx-auto w-[600px]">
         <img src={LogoSVG} alt="Rabby" className="mb-[12px]" />
         <Form
           form={form}
