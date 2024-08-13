@@ -1204,6 +1204,19 @@ class ProviderController extends BaseController {
     return result;
   };
 
+  /**
+   * https://github.com/MetaMask/metamask-improvement-proposals/blob/main/MIPs/mip-2.md
+   */
+  @Reflect.metadata('SAFE', true)
+  walletRevokePermissions = ({ session: { origin }, data: { params } }) => {
+    if (Wallet.isUnlocked() && Wallet.getConnectedSite(origin)) {
+      if (params?.[0] && 'eth_accounts' in params[0]) {
+        Wallet.removeConnectedSite(origin);
+      }
+    }
+    return null;
+  };
+
   personalEcRecover = ({
     data: {
       params: [data, sig, extra = {}],
