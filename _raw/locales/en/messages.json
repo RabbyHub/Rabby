@@ -793,8 +793,10 @@
         "waitInQueue": "Wait in queue",
         "revokeWithLedger": "Start Revoke with Ledger",
         "connectLedger": "Connect Ledger",
-        "ledgerRequest": "Please sign the request on Ledger ({{current}}/{{total}})",
-        "ledgerSending": "Sending signing request ({{current}}/{{total}})"
+        "ledgerSended": "Please sign the request on Ledger ({{current}}/{{total}})",
+        "ledgerSending": "Sending signing request ({{current}}/{{total}})",
+        "ledgerAlert": "Please open Ethereum App on your Ledger device",
+        "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1454,7 +1456,16 @@
         "ledgerPermissionTip": "Please click \"Allow\" below and authorize access to your Ledger in the following pop-up window.",
         "permissionsAuthorized": "Permissions Authorized",
         "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
-        "allow": "Allow"
+        "allow": "Allow",
+        "error": {
+          "lockedOrNoEthApp": "Please keep Ledger unlocked and Ethereum APP open",
+          "unknown": "Connection failed, please go back and retry",
+          "ethereum_app_not_installed_error": "Please install the Ethereum app on your Ledger device.",
+          "ethereum_app_unconfirmed_error": "You have denied the request to open the Ethereum app.",
+          "ethereum_app_open_error": "Please install/accept Ethereum app on your Ledger device.",
+          "running_app_close_error": "Failed to close the running app on your Ledger device.",
+          "firmwareOrAppUpdateRequired": "Please update the firmware and Ethereum App on your Ledger"
+        }
       },
       "keystone": {
         "title": "Connect Keystone",

@@ -570,6 +570,10 @@ export const useBatchRevokeTask = () => {
     return list.filter((item) => item.$status?.status === 'success').length;
   }, [list]);
 
+  const currentApprovalIndex = React.useMemo(() => {
+    return list.findIndex((item) => item.$status?.status === 'pending');
+  }, [list]);
+
   return {
     list,
     init,
@@ -581,6 +585,7 @@ export const useBatchRevokeTask = () => {
     addRevokeTask,
     totalApprovals,
     revokedApprovals,
+    currentApprovalIndex,
   };
 };
 
