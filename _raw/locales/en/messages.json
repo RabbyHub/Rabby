@@ -792,7 +792,9 @@
         "paused": "Paused",
         "waitInQueue": "Wait in queue",
         "revokeWithLedger": "Start Revoke with Ledger",
-        "connectLedger": "Connect Ledger"
+        "connectLedger": "Connect Ledger",
+        "ledgerRequest": "Please sign the request on Ledger ({{current}}/{{total}})",
+        "ledgerSending": "Sending signing request ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {

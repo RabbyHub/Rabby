@@ -371,6 +371,9 @@ export const useBatchRevokeTask = () => {
   const [status, setStatus] = React.useState<
     'idle' | 'active' | 'paused' | 'completed'
   >('idle');
+  const [txStatus, setTxStatus] = React.useState<'sended' | 'signed' | 'idle'>(
+    'idle'
+  );
 
   const addRevokeTask = React.useCallback(
     async (
@@ -429,6 +432,8 @@ export const useBatchRevokeTask = () => {
 
             // submit tx
             let hash = '';
+            setTxStatus('sended');
+
             try {
               hash = await Promise.race([
                 wallet.ethSendTransaction({
@@ -456,6 +461,8 @@ export const useBatchRevokeTask = () => {
               err.name = 'SubmitTxFailed';
               throw err;
             }
+
+            setTxStatus('signed');
 
             // wait tx completed
             const { gasUsed } = await new Promise<{ gasUsed: number }>(
@@ -502,6 +509,7 @@ export const useBatchRevokeTask = () => {
             };
           } finally {
             setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
+            setTxStatus('idle');
           }
         },
         { priority }
@@ -554,6 +562,14 @@ export const useBatchRevokeTask = () => {
     };
   }, []);
 
+  const totalApprovals = React.useMemo(() => {
+    return revokeList.length;
+  }, [revokeList]);
+
+  const revokedApprovals = React.useMemo(() => {
+    return list.filter((item) => item.$status?.status === 'success').length;
+  }, [list]);
+
   return {
     list,
     init,
@@ -561,7 +577,10 @@ export const useBatchRevokeTask = () => {
     continue: handleContinue,
     pause,
     status,
+    txStatus,
     addRevokeTask,
+    totalApprovals,
+    revokedApprovals,
   };
 };
 
