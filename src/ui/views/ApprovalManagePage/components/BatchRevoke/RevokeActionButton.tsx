@@ -7,8 +7,7 @@ import { BatchRevokeTaskType } from './useBatchRevokeTask';
 const buttonBaseClass = clsx(
   'rounded-[6px] h-[48px] w-[252px]',
   'before:content-none',
-  'text-[16px]',
-  'mt-40'
+  'text-[16px]'
 );
 
 export const RevokeActionButton: React.FC<{
@@ -18,7 +17,7 @@ export const RevokeActionButton: React.FC<{
   const { t } = useTranslation();
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center mt-40">
       {task.status === 'idle' && (
         <Button type="primary" className={buttonBaseClass} onClick={task.start}>
           {t('page.approvals.revokeModal.signAndStartRevoke')}
