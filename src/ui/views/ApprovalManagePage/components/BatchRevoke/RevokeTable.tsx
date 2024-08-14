@@ -14,6 +14,8 @@ import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import { AssetApprovalSpender } from '@/utils/approval';
 import { RevokeActionButton } from './RevokeActionButton';
 import { RevokeModalHeader } from './RevokeModalHeader';
+import { KEYRING_CLASS } from '@/constant';
+import { RevokeActionLedgerButton } from './RevokeActionLedgerButton';
 
 export interface RevokeTableProps {
   onDone: () => void;
@@ -21,6 +23,7 @@ export interface RevokeTableProps {
   dataSource: AssetApprovalSpender[];
   onClose: (needUpdate: boolean) => void;
   onTaskStatus: (status: BatchRevokeTaskType['status']) => void;
+  accountType?: string;
 }
 
 const ROW_HEIGHT = 52;
@@ -33,6 +36,7 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
   onDone,
   onClose,
   onTaskStatus,
+  accountType,
 }) => {
   const task = useBatchRevokeTask();
 
@@ -168,7 +172,11 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
       />
 
       <div className="mt-40 flex justify-center">
-        <RevokeActionButton task={task} onDone={onDone} />
+        {accountType === KEYRING_CLASS.HARDWARE.LEDGER ? (
+          <RevokeActionLedgerButton task={task} onDone={onDone} />
+        ) : (
+          <RevokeActionButton task={task} onDone={onDone} />
+        )}
       </div>
     </div>
   );
