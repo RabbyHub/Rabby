@@ -742,6 +742,67 @@ class LedgerBridgeKeyring {
     const key = await this.getPathBasePublicKey(HDPathType.Legacy);
     return this.usedHDPathTypeList[key];
   }
+
+  openEthApp = (): Promise<Buffer> => {
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    return this.transport.send(
+      0xe0,
+      0xd8,
+      0x00,
+      0x00,
+      Buffer.from('Ethereum', 'ascii')
+    );
+  };
+
+  quitApp = (): Promise<Buffer> => {
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    return this.transport.send(0xb0, 0xa7, 0x00, 0x00);
+  };
+
+  getAppAndVersion = async (): Promise<{
+    appName: string;
+    version: string;
+  }> => {
+    await this.makeApp();
+
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    const response = await this.transport.send(0xb0, 0x01, 0x00, 0x00);
+
+    let i = 0;
+    // eslint-disable-next-line no-plusplus
+    const format = response[i++];
+
+    if (format !== 1) {
+      throw new Error('getAppAndVersion: format not supported');
+    }
+
+    // eslint-disable-next-line no-plusplus
+    const nameLength = response[i++];
+    const appName = response.slice(i, (i += nameLength)).toString('ascii');
+    // eslint-disable-next-line no-plusplus
+    const versionLength = response[i++];
+    const version = response.slice(i, (i += versionLength)).toString('ascii');
+
+    return {
+      appName,
+      version,
+    };
+  };
 }
 
 export default LedgerBridgeKeyring;

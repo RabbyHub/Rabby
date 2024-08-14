@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="101" height="40" viewBox="0 0 101 40" fill="none">
 <defs>
   <style>
-    @keyframes c0 {
+    <!-- @keyframes c0 {
       0% {
         transform:  translate(0px, 0px);
       }
@@ -9,16 +9,16 @@
         transform:  translate(0px, 0px);
       }
       30% {
-        transform:  translate(0.5px, 0.5px);
+        transform:  translate(0.1px, 0.2px);
       }
       100% {
-        transform:  translate(0.5px, 0.5px);
+        transform:  translate(0.1px, 0.2px);
       }
     }
 
     .c0 {
       animation: c0 1500ms linear infinite normal forwards;
-    }
+    } -->
 
     @keyframes c1 {
       0% {

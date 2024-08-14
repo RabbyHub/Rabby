@@ -39,15 +39,7 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
   accountType,
 }) => {
   const task = useBatchRevokeTask();
-
-  const totalApprovals = React.useMemo(() => {
-    return revokeList.length;
-  }, [revokeList]);
-
-  const revokedApprovals = React.useMemo(() => {
-    return task.list.filter((item) => item.$status?.status === 'success')
-      .length;
-  }, [task.list]);
+  const { totalApprovals, revokedApprovals } = task;
 
   React.useEffect(() => {
     task.init(dataSource, revokeList);
@@ -171,13 +163,11 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
         ]}
       />
 
-      <div className="mt-40 flex justify-center">
-        {accountType === KEYRING_CLASS.HARDWARE.LEDGER ? (
-          <RevokeActionLedgerButton task={task} onDone={onDone} />
-        ) : (
-          <RevokeActionButton task={task} onDone={onDone} />
-        )}
-      </div>
+      {accountType === KEYRING_CLASS.HARDWARE.LEDGER ? (
+        <RevokeActionLedgerButton task={task} onDone={onDone} />
+      ) : (
+        <RevokeActionButton task={task} onDone={onDone} />
+      )}
     </div>
   );
 };
