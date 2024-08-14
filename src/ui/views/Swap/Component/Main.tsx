@@ -7,7 +7,12 @@ import { TokenRender } from './TokenRender';
 import { useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal, Switch, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
-import { formatAmount, formatUsdValue, useWallet } from '@/ui/utils';
+import {
+  formatAmount,
+  formatUsdValue,
+  isSupportSilentKeyring,
+  useWallet,
+} from '@/ui/utils';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
@@ -19,7 +24,7 @@ import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
+import { DEX, KEYRING_TYPE, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChainByServerID } from '@/utils/chain';
@@ -29,6 +34,8 @@ import { useTranslation } from 'react-i18next';
 import { BestQuoteLoading } from './loading';
 import { MaxButton } from '../../SendToken/components/MaxButton';
 import { ReserveGasPopup } from './ReserveGasPopup';
+import { useMemoizedFn } from 'ahooks';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
@@ -231,8 +238,13 @@ export const Main = () => {
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
+  const currentAccount = useCurrentAccount();
 
-  const gotoSwap = useCallback(async () => {
+  const gotoSwap = useMemoizedFn(async () => {
+    const isSilent =
+      !activeProvider?.shouldApproveToken &&
+      isSupportSilentKeyring(currentAccount?.type);
+
     if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
       try {
         wallet.dexSwap(
@@ -276,27 +288,17 @@ export const Main = () => {
               source: 'swap',
               trigger: rbiSource,
             },
+            isSilent,
           }
         );
-        window.close();
+        if (!isSilent) {
+          window.close();
+        }
       } catch (error) {
         console.error(error);
       }
     }
-  }, [
-    payTokenIsNativeToken,
-    gasList,
-    gasLevel,
-    preferMEVGuarded,
-    inSufficient,
-    payToken,
-    unlimitedAllowance,
-    activeProvider?.quote,
-    wallet?.dexSwap,
-    activeProvider?.shouldApproveToken,
-    activeProvider?.name,
-    activeProvider?.shouldTwoStepApprove,
-  ]);
+  });
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {

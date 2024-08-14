@@ -245,6 +245,7 @@ const flowContext = flow
           )
             .then((result) => {
               if (isSignApproval(approvalType)) {
+                console.log('emit sign finished');
                 eventBus.emit(EVENTS.broadcastToUI, {
                   method: EVENTS.SIGN_FINISHED,
                   params: {

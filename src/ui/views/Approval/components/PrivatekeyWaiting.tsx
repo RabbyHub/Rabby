@@ -124,7 +124,13 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       if (signingTxId) {
         const signingTx = await wallet.getSigningTx(signingTxId);
 
-        if (!signingTx?.explain && chain && !chain.isTestnet) {
+        // todo check this code
+        if (
+          !signingTx?.explain &&
+          chain &&
+          !chain.isTestnet &&
+          !approval?.data.params.$ctx?.isSilent
+        ) {
           setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
           return;
         }

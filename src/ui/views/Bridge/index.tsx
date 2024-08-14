@@ -6,18 +6,22 @@ import {
   RefreshIdProvider,
   SettingVisibleProvider,
 } from './hooks';
+import { SilentApproval } from '../Approval/components/SilentSignTx';
 
 export const Bridge = () => {
   return (
-    <SettingVisibleProvider>
-      <RefreshIdProvider>
-        <QuoteVisibleProvider>
-          <div className="px-0 overflow-hidden bg-r-neutral-bg-2 h-full relative flex flex-col">
-            <Header />
-            <BridgeContent />
-          </div>
-        </QuoteVisibleProvider>
-      </RefreshIdProvider>
-    </SettingVisibleProvider>
+    <>
+      <SettingVisibleProvider>
+        <RefreshIdProvider>
+          <QuoteVisibleProvider>
+            <div className="px-0 overflow-hidden bg-r-neutral-bg-2 h-full relative flex flex-col">
+              <Header />
+              <BridgeContent />
+            </div>
+          </QuoteVisibleProvider>
+        </RefreshIdProvider>
+      </SettingVisibleProvider>
+      <SilentApproval />
+    </>
   );
 };

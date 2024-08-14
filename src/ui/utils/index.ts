@@ -5,6 +5,9 @@ import {
   KEYRING_CLASS,
   KEYRINGS_LOGOS,
   KEYRING_PURPLE_LOGOS,
+  KEYRING_TYPE,
+  HARDWARE_KEYRING_TYPES,
+  SUPPORT_SILENT_KEYRING_TYPE,
 } from 'consts';
 import { Account } from 'background/service/preference';
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -173,4 +176,8 @@ export const hasConnectedLedgerDevice = async () => {
 
 export const hasConnectedImKeyDevice = async () => {
   return !!(await getImKeyDevices()).length;
+};
+
+export const isSupportSilentKeyring = (type?: string) => {
+  return type && SUPPORT_SILENT_KEYRING_TYPE.includes(type as any);
 };

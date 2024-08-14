@@ -4236,6 +4236,13 @@ export class WalletController extends BaseController {
     ...args: Parameters<typeof providerController.ethSendTransaction>
   ) => providerController.ethSendTransaction(...args);
   getDeBankHiStatus = debankService.getDebankHi;
+
+  clearSilentApproval = async () => {
+    const approval = this.getApproval();
+    if (approval?.data?.params?.$ctx?.isSilent) {
+      this.rejectApproval('User rejected (popup closed)');
+    }
+  };
 }
 
 const wallet = new WalletController();

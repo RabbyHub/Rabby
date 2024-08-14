@@ -13,6 +13,7 @@ import {
   IS_CHROME,
   KEYRING_CATEGORY,
   IS_WINDOWS,
+  EVENTS,
 } from 'consts';
 import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
@@ -20,6 +21,8 @@ import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { findChain } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
+import { omit } from 'lodash';
+import eventBus from '@/eventBus';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -291,6 +294,8 @@ class NotificationService extends Events {
         signingTxId = data?.params?.signingTxId;
       }
 
+      const isSilent = data?.params?.$ctx?.isSilent;
+
       const approval: Approval = {
         taskId: uuid as any,
         id: uuid,
@@ -342,6 +347,14 @@ class NotificationService extends Events {
         }
       }
 
+      if (isSilent) {
+        if (approval.data.approvalComponent === 'SignTx') {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.START_SILENT_SIGN,
+          });
+        }
+        return;
+      }
       if (
         this.notifiWindowId !== null &&
         QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(data.approvalComponent)

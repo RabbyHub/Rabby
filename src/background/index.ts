@@ -269,6 +269,7 @@ browser.runtime.onConnect.addListener((port) => {
 
       port.onDisconnect.addListener(() => {
         preferenceService.setPopupOpen(false);
+        walletController.clearSilentApproval();
       });
     }
 

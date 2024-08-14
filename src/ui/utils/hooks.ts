@@ -13,7 +13,8 @@ import { useTranslation } from 'react-i18next';
 export const useApproval = () => {
   const wallet = useWallet();
   const history = useHistory();
-  const { showPopup, enablePopup } = useApprovalPopup();
+  const { showPopup, enablePopup, closePopup } = useApprovalPopup();
+  const UIType = getUiType();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
 
@@ -35,7 +36,14 @@ export const useApproval = () => {
       if (data && enablePopup(data.type)) {
         return showPopup();
       }
-      history.replace('/');
+      if (!UIType.isNotification) {
+        closePopup();
+        setTimeout(() => {
+          history.replace('/');
+        }, 0);
+      } else {
+        history.replace('/');
+      }
     }, 0);
   };
 
@@ -49,7 +57,11 @@ export const useApproval = () => {
       await wallet.rejectApproval(err, stay, isInternal);
     }
     if (!stay) {
-      history.push('/');
+      if (!UIType.isNotification) {
+        closePopup();
+      } else {
+        history.push('/');
+      }
     }
   };
   return [getApproval, resolveApproval, rejectApproval] as const;

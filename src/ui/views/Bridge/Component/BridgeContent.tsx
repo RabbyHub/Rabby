@@ -13,6 +13,7 @@ import {
   formatAmount,
   formatTokenAmount,
   formatUsdValue,
+  isSupportSilentKeyring,
   useWallet,
 } from '@/ui/utils';
 import styled from 'styled-components';
@@ -36,6 +37,7 @@ import pRetry from 'p-retry';
 import stats from '@/stats';
 import { BestQuoteLoading } from '../../Swap/Component/loading';
 import { MaxButton } from '../../SendToken/components/MaxButton';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
@@ -175,6 +177,10 @@ export const BridgeContent = () => {
 
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
+  const currentAccount = useCurrentAccount();
+  const isSilent =
+    !selectedBridgeQuote?.shouldApproveToken &&
+    isSupportSilentKeyring(currentAccount?.type);
 
   const gotoBridge = useCallback(async () => {
     if (
@@ -244,9 +250,12 @@ export const BridgeContent = () => {
               source: 'bridge',
               trigger: rbiSource,
             },
+            isSilent,
           }
         );
-        window.close();
+        if (!isSilent) {
+          window.close();
+        }
       } catch (error) {
         message.error(error?.message || String(error));
         stats.report('bridgeQuoteResult', {
@@ -276,6 +285,7 @@ export const BridgeContent = () => {
     wallet,
     debouncePayAmount,
     rbiSource,
+    isSilent,
   ]);
 
   const twoStepApproveCn = useCss({
