@@ -1078,6 +1078,7 @@ const ApprovalManagePage = () => {
   }, [wallet, clearRevoke, revokeSummary.currentRevokeList]);
 
   const batchRevokeModal = useBatchRevokeModal({
+    accountType: account?.type,
     revokeList: revokeSummary.currentRevokeList,
     dataSource: displaySortedAssetsList,
     onDone: () => {
@@ -1099,7 +1100,8 @@ const ApprovalManagePage = () => {
   const enableBatchRevoke = React.useMemo(() => {
     return (
       account?.type === KEYRING_CLASS.PRIVATE_KEY ||
-      account?.type === KEYRING_CLASS.MNEMONIC
+      account?.type === KEYRING_CLASS.MNEMONIC ||
+      account?.type === KEYRING_CLASS.HARDWARE.LEDGER
     );
   }, [account]);
   const onRevoke = React.useCallback(() => {

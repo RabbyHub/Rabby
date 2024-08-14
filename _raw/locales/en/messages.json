@@ -790,7 +790,9 @@
         "defaultFailed": "Transaction failed",
         "stillRevoke": "Still Revoke",
         "paused": "Paused",
-        "waitInQueue": "Wait in queue"
+        "waitInQueue": "Wait in queue",
+        "revokeWithLedger": "Start Revoke with Ledger",
+        "connectLedger": "Connect Ledger"
       }
     },
     "gasTopUp": {

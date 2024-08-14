@@ -430,20 +430,27 @@ export const useBatchRevokeTask = () => {
             // submit tx
             let hash = '';
             try {
-              hash = await wallet.ethSendTransaction({
-                data: {
-                  $ctx: {},
-                  params: [transaction],
-                },
-                session: INTERNAL_REQUEST_SESSION,
-                approvalRes: {
-                  ...transaction,
-                  signingTxId,
-                  logId: logId,
-                },
-                pushed: false,
-                result: undefined,
-              });
+              hash = await Promise.race([
+                wallet.ethSendTransaction({
+                  data: {
+                    $ctx: {},
+                    params: [transaction],
+                  },
+                  session: INTERNAL_REQUEST_SESSION,
+                  approvalRes: {
+                    ...transaction,
+                    signingTxId,
+                    logId: logId,
+                  },
+                  pushed: false,
+                  result: undefined,
+                }),
+                new Promise((_, reject) => {
+                  eventBus.once(EVENTS.LEDGER.REJECTED, async (data) => {
+                    reject(new Error(data));
+                  });
+                }),
+              ]);
             } catch (e) {
               const err = new Error(e.message);
               err.name = 'SubmitTxFailed';

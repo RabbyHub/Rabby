@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="101" height="40" viewBox="0 0 101 40" fill="none">
+<defs>
+  <style>
+    @keyframes c0 {
+      0% {
+        transform:  translate(0px, 0px);
+      }
+      20% {
+        transform:  translate(0px, 0px);
+      }
+      30% {
+        transform:  translate(0.5px, 0.5px);
+      }
+      100% {
+        transform:  translate(0.5px, 0.5px);
+      }
+    }
+
+    .c0 {
+      animation: c0 1500ms linear infinite normal forwards;
+    }
+
+    @keyframes c1 {
+      0% {
+        opacity: 0.8;
+      }
+      15% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0;
+      }
+      65% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0.8;
+      }
+    }
+
+    .c1 {
+      animation: c1 1500ms linear infinite normal forwards;
+    }
+
+    @keyframes c2 {
+      0% {
+        opacity: 0.8;
+      }
+      15% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0;
+      }
+      65% {
+        opacity: 0;
+      }
+      85% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0.8;
+      }
+    }
+
+    .c2 {
+      animation: c2 1500ms linear infinite normal forwards;
+    }
+  </style>
+</defs>
+<path d="M18.22 15.5906C18.22 13.7684 19.6971 12.2912 21.5193 12.2912H76.5084C80.7602 12.2912 84.2069 15.738 84.2069 19.9897C84.2069 24.2415 80.7602 27.6882 76.5084 27.6882H21.5193C19.6971 27.6882 18.22 26.211 18.22 24.3889V15.5906Z" fill="#242225" stroke="white" stroke-width="0.439913"/>
+<circle class="c0" cx="25.6464" cy="19.9929" r="4.17917" stroke="#BCBAC2" stroke-width="0.439913"/>
+<circle class="c1" opacity="0.8" cx="25.1478" cy="19.9941" r="11.8992" stroke="white" stroke-width="0.350425"/>
+<circle class="c2" opacity="0.8" cx="25.0288" cy="20.0288" r="17.8536" stroke="white" stroke-width="0.350425"/>
+<circle class="c0" cx="76.2257" cy="19.9929" r="4.17917" stroke="#BCBAC2" stroke-width="0.439913"/>
+<circle class="c1" opacity="0.8" cx="76.1338" cy="19.9941" r="11.8992" stroke="white" stroke-width="0.350425"/>
+<circle class="c2" opacity="0.8" cx="76.0288" cy="20.0288" r="17.8536" stroke="white" stroke-width="0.350425"/>
+<path d="M51.1942 15V18.7788L54.3881 20.206L51.1942 15Z" fill="white" fill-opacity="0.602"/>
+<path d="M51.1943 15L48 20.206L51.1943 18.7788V15Z" fill="white"/>
+<path d="M51.1942 22.6548V25.2224L54.3902 20.8008L51.1942 22.6548Z" fill="white" fill-opacity="0.602"/>
+<path d="M51.1943 25.2224V22.6544L48 20.8008L51.1943 25.2224Z" fill="white"/>
+<path d="M51.1942 22.0608L54.3881 20.2063L51.1942 18.78V22.0608Z" fill="white" fill-opacity="0.2"/>
+<path d="M48 20.2063L51.1943 22.0608V18.78L48 20.2063Z" fill="white" fill-opacity="0.602"/>
+</svg>
