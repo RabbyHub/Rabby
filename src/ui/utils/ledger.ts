@@ -133,3 +133,11 @@ export function useCheckEthApp() {
 
   return checkEthApp;
 }
+
+export const isLedgerLockError = (message = '') => {
+  return (
+    message.includes('0x5515') ||
+    message.includes('0x6b0c') ||
+    message.includes('0x650f')
+  );
+};

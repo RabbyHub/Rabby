@@ -1,4 +1,4 @@
-import { Alert, Button } from 'antd';
+import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,11 +6,13 @@ import { BatchRevokeTaskType } from './useBatchRevokeTask';
 import { openInternalPageInTab } from '@/ui/utils';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { CommonAccount } from '@/ui/views/Approval/components/FooterBar/CommonAccount';
-import { WALLET_BRAND_CONTENT } from '@/constant';
+import { EVENTS, WALLET_BRAND_CONTENT } from '@/constant';
 import { ReactComponent as LedgerPressSVG } from '@/ui/assets/ledger/press.svg';
 import { Dots } from '@/ui/views/Approval/components/Popup/Dots';
-import { useCheckEthApp } from '@/ui/utils/ledger';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import eventBus from '@/eventBus';
+import { isLedgerLockError } from '@/ui/utils/ledger';
+import { Ledger } from '@/ui/views/CommonPopup/Ledger';
+import { Modal } from '@/ui/component';
 
 const buttonBaseClass = clsx(
   'rounded-[6px] h-[48px] w-[252px]',
@@ -41,11 +43,10 @@ export const RevokeActionLedgerButton: React.FC<{
   const { t } = useTranslation();
   const { status } = useLedgerStatus();
   const { totalApprovals, currentApprovalIndex } = task;
-  const checkEthApp = useCheckEthApp();
-  const [openEthAppAlertVisible, setOpenEthAppAlertVisible] = React.useState(
-    false
-  );
-  const loopCountRef = React.useRef(0);
+  const [
+    visibleLedgerConnectModal,
+    setVisibleLedgerConnectModal,
+  ] = React.useState(false);
 
   const handleClickConnectLedger = async () => {
     openInternalPageInTab(
@@ -66,51 +67,40 @@ export const RevokeActionLedgerButton: React.FC<{
     }
   }, [status]);
 
-  const handleCheckEthApp = React.useCallback(async () => {
-    try {
-      return await checkEthApp((result) => {
-        setOpenEthAppAlertVisible(!result);
-      });
-    } catch (err: any) {
-      // maybe session is disconnect, just try to reconnect
-      if (!err.message && loopCountRef.current < 3) {
-        loopCountRef.current++;
-        console.log('checkEthApp isConnected error', err);
-        return await handleCheckEthApp();
+  React.useEffect(() => {
+    const listener = (msg) => {
+      if (isLedgerLockError(msg) || msg === 'DISCONNECTED') {
+        setVisibleLedgerConnectModal(true);
+        task.pause();
+        task.addRevokeTask(task.currentApprovalRef.current!, 1);
       }
+    };
 
-      setOpenEthAppAlertVisible(true);
-      console.error('checkEthApp', err);
-      throw err;
-    }
-  }, []);
+    eventBus.addEventListener(EVENTS.LEDGER.REJECTED, listener);
+
+    return () => {
+      eventBus.removeEventListener(EVENTS.LEDGER.REJECTED, listener);
+    };
+  }, [task.addRevokeTask]);
 
   React.useEffect(() => {
-    if (status === 'CONNECTED') {
-      handleCheckEthApp();
+    if (task.status === 'active' && status === 'DISCONNECTED') {
+      eventBus.emit(EVENTS.LEDGER.REJECTED, 'DISCONNECTED');
     }
-  }, [status]);
+  }, [task.status, status]);
 
   return (
     <>
+      <Modal
+        className="confirm-revoke-modal ledger-modal"
+        width={400}
+        visible={visibleLedgerConnectModal}
+        onCancel={() => setVisibleLedgerConnectModal(false)}
+        title={t('page.dashboard.hd.howToConnectLedger')}
+      >
+        <Ledger isModalContent />
+      </Modal>
       <div className="flex justify-center flex-col items-center mt-40">
-        {openEthAppAlertVisible && (
-          <Alert
-            className={clsx(
-              'rounded-[6px] px-10',
-              'bg-r-orange-light',
-              'mb-20'
-            )}
-            icon={<InfoCircleOutlined className="text-orange" />}
-            banner
-            type="error"
-            message={
-              <span className="text-15 text-orange font-medium">
-                {t('page.approvals.revokeModal.ledgerAlert')}
-              </span>
-            }
-          />
-        )}
         {task.status === 'idle' && (
           <Button
             type="ghost"

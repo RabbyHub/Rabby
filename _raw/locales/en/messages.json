@@ -1310,7 +1310,7 @@
           "doc1": "Plug in a single Ledger",
           "doc2": "Enter pin to unlock",
           "doc3": "Open Ethereum App",
-          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
+          "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>"
         },
         "keystone": {
           "title": "*USB connect only for Keystone 3(Pro)",

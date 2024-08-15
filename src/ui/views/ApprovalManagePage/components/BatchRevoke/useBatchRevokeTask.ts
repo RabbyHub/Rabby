@@ -374,6 +374,7 @@ export const useBatchRevokeTask = () => {
   const [txStatus, setTxStatus] = React.useState<'sended' | 'signed' | 'idle'>(
     'idle'
   );
+  const currentApprovalRef = React.useRef<AssetApprovalSpender>();
 
   const addRevokeTask = React.useCallback(
     async (
@@ -383,6 +384,7 @@ export const useBatchRevokeTask = () => {
     ) => {
       return queueRef.current.add(
         async () => {
+          currentApprovalRef.current = item;
           const cloneItem = cloneAssetApprovalSpender(item);
           const revokeItem =
             revokeList[
@@ -586,6 +588,7 @@ export const useBatchRevokeTask = () => {
     totalApprovals,
     revokedApprovals,
     currentApprovalIndex,
+    currentApprovalRef,
   };
 };
 
