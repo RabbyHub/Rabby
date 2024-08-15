@@ -191,6 +191,14 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   React.useEffect(() => {
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.COMMON_HARDWARE.REJECTED);
+      eventBus.removeAllEventListeners(EVENTS.TX_SUBMITTING);
+      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+    };
+  }, []);
+
+  React.useEffect(() => {
     (async () => {
       const account = params.isGnosis
         ? params.account!

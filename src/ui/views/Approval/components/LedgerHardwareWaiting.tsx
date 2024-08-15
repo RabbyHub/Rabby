@@ -203,6 +203,15 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   React.useEffect(() => {
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.LEDGER.REJECT_APPROVAL);
+      eventBus.removeAllEventListeners(EVENTS.LEDGER.REJECTED);
+      eventBus.removeAllEventListeners(EVENTS.TX_SUBMITTING);
+      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+    };
+  }, []);
+
+  React.useEffect(() => {
     if (firstConnectRef.current) {
       if (sessionStatus === 'DISCONNECTED') {
         setVisible(false);

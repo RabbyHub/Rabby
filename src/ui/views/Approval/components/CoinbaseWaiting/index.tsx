@@ -181,6 +181,12 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
   }, []);
 
   useEffect(() => {
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+    };
+  }, []);
+
+  useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
       resolveApproval(

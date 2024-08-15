@@ -211,6 +211,14 @@ export const ImKeyHardwareWaiting = ({
   };
 
   React.useEffect(() => {
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.COMMON_HARDWARE.REJECTED);
+      eventBus.removeAllEventListeners(EVENTS.TX_SUBMITTING);
+      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+    };
+  }, []);
+
+  React.useEffect(() => {
     if (firstConnectRef.current) {
       if (sessionStatus === 'DISCONNECTED') {
         setVisible(false);

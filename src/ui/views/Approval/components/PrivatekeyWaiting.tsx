@@ -204,6 +204,13 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   React.useEffect(() => {
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.TX_SUBMITTING);
+      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+    };
+  }, []);
+
+  React.useEffect(() => {
     (async () => {
       setTitle(
         <div className="flex justify-center items-center">

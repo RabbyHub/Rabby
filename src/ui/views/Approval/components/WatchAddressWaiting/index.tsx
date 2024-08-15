@@ -284,6 +284,14 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     emitSignComponentAmounted();
   };
 
+  React.useEffect(() => {
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.INITED);
+      eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
+      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+    };
+  }, []);
+
   useEffect(() => {
     init();
     setHeight(360);
