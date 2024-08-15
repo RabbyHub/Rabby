@@ -1,5 +1,9 @@
 import { Account } from '@/background/service/preference';
-import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT } from '@/constant';
+import {
+  KEYRINGS_LOGOS,
+  WALLET_BRAND_CONTENT,
+  WALLET_BRAND_TYPES,
+} from '@/constant';
 import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useDisplayBrandName } from '@/ui/component/WalletConnect/useDisplayBrandName';
 import { useSessionChainId } from '@/ui/component/WalletConnect/useSessionChainId';
@@ -71,10 +75,15 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
 
   const wallet = useWallet();
   React.useEffect(() => {
-    if (chain && sessionChainId && chain.id !== sessionChainId) {
+    if (
+      brandName === WALLET_BRAND_TYPES.METAMASK &&
+      chain &&
+      sessionChainId &&
+      chain.id !== sessionChainId
+    ) {
       wallet.walletConnectSwitchChain(account, chain.id);
     }
-  }, [sessionChainId, chain]);
+  }, [sessionChainId, chain, brandName]);
 
   const TipContent = () => {
     switch (tipStatus) {
