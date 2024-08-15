@@ -28,7 +28,8 @@ const ledgerButtonClass = clsx(
   'h-80',
   'flex items-center justify-center',
   'gap-x-6',
-  'text-[16px] font-medium'
+  'text-[16px] font-medium',
+  'mt-8'
 );
 
 const LegerIcon = WALLET_BRAND_CONTENT.LEDGER.icon;
@@ -47,7 +48,11 @@ export const RevokeActionLedgerButton: React.FC<{
   const loopCountRef = React.useRef(0);
 
   const handleClickConnectLedger = async () => {
-    openInternalPageInTab('request-permission?type=ledger', true, false);
+    openInternalPageInTab(
+      'request-permission?type=ledger&reconnect=1',
+      true,
+      false
+    );
   };
 
   const signal = React.useMemo(() => {
