@@ -315,19 +315,25 @@ export const fetchContractRequireData = async (
     unexpectedAddr: null,
     receiverInWallet: false,
   };
+  let isEOA = false;
   queue.add(async () => {
-    const credit = await apiProvider.getContractCredit(id, chainId);
-    result.rank = credit.rank_at;
-  });
-  queue.add(async () => {
-    const { desc } = await apiProvider.addrDesc(id);
-    if (desc.contract && desc.contract[chainId]) {
-      result.bornAt = desc.contract[chainId].create_at;
+    const contractInfo = await apiProvider.getContractInfo(id, chainId);
+    if (!contractInfo) {
+      result.rank = null;
+      isEOA = true;
     } else {
-      result.bornAt = desc.born_at;
+      result.rank = contractInfo.credit.rank_at;
+      result.bornAt = contractInfo.create_at;
+      result.protocol = contractInfo.protocol;
     }
-    result.protocol = getProtocol(desc.protocol, chainId);
   });
+
+  if (isEOA) {
+    queue.add(async () => {
+      const { desc } = await apiProvider.addrDesc(id);
+      result.bornAt = desc.born_at;
+    });
+  }
   queue.add(async () => {
     const hasInteraction = await apiProvider.hasInteraction(
       sender,
@@ -459,32 +465,29 @@ const fetchTokenApproveRequireData = async ({
     },
   };
   queue.add(async () => {
-    const credit = await apiProvider.getContractCredit(spender, chainId);
-    result.rank = credit.rank_at;
-  });
-  queue.add(async () => {
-    const { usd_value } = await apiProvider.tokenApproveTrustValue(
-      spender,
-      chainId
-    );
-    result.riskExposure = usd_value;
+    const contractInfo = await apiProvider.getContractInfo(spender, chainId);
+    if (!contractInfo) {
+      result.isEOA = true;
+      result.rank = null;
+    } else {
+      result.rank = contractInfo.credit.rank_at;
+      result.riskExposure = contractInfo.spend_usd_value;
+      result.bornAt = contractInfo.create_at;
+      result.isDanger =
+        contractInfo.is_danger.auto || contractInfo.is_danger.edit;
+      result.protocol = contractInfo.protocol;
+    }
   });
   queue.add(async () => {
     const t = await apiProvider.getToken(address, chainId, token.id);
     result.token = t;
   });
-  queue.add(async () => {
-    const { desc } = await apiProvider.addrDesc(spender);
-    if (desc.contract && desc.contract[chainId]) {
-      result.bornAt = desc.contract[chainId].create_at;
-    }
-    if (!desc.contract?.[chainId]) {
-      result.isEOA = true;
+  if (result.isEOA) {
+    queue.add(async () => {
+      const { desc } = await apiProvider.addrDesc(spender);
       result.bornAt = desc.born_at;
-    }
-    result.isDanger = desc.contract?.[chainId]?.is_danger || null;
-    result.protocol = getProtocol(desc.protocol, chainId);
-  });
+    });
+  }
   queue.add(async () => {
     const hasInteraction = await apiProvider.hasInteraction(
       address,
@@ -545,15 +548,18 @@ const fetchBatchTokenApproveRequireData = async ({
     })),
   };
   queue.add(async () => {
-    const credit = await apiProvider.getContractCredit(spender, chainId);
-    result.rank = credit.rank_at;
-  });
-  queue.add(async () => {
-    const { usd_value } = await apiProvider.tokenApproveTrustValue(
-      spender,
-      chainId
-    );
-    result.riskExposure = usd_value;
+    const contractInfo = await apiProvider.getContractInfo(spender, chainId);
+    if (!contractInfo) {
+      result.isEOA = true;
+      result.rank = null;
+    } else {
+      result.rank = contractInfo.credit.rank_at;
+      result.riskExposure = contractInfo.spend_usd_value;
+      result.bornAt = contractInfo.create_at;
+      result.isDanger =
+        contractInfo.is_danger.auto || contractInfo.is_danger.edit;
+      result.protocol = contractInfo.protocol;
+    }
   });
   queue.add(async () => {
     const list = await Promise.all(
@@ -561,18 +567,12 @@ const fetchBatchTokenApproveRequireData = async ({
     );
     result.tokens = list;
   });
-  queue.add(async () => {
-    const { desc } = await apiProvider.addrDesc(spender);
-    if (desc.contract && desc.contract[chainId]) {
-      result.bornAt = desc.contract[chainId].create_at;
-    }
-    if (!desc.contract?.[chainId]) {
-      result.isEOA = true;
+  if (result.isEOA) {
+    queue.add(async () => {
+      const { desc } = await apiProvider.addrDesc(spender);
       result.bornAt = desc.born_at;
-    }
-    result.isDanger = desc.contract?.[chainId]?.is_danger || null;
-    result.protocol = getProtocol(desc.protocol, chainId);
-  });
+    });
+  }
   queue.add(async () => {
     const hasInteraction = await apiProvider.hasInteraction(
       address,
