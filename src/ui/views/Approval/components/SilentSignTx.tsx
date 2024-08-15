@@ -119,14 +119,7 @@ interface SignTxProps<TData extends any[] = any[]> {
   origin?: string;
 }
 
-export const SilentSignTx = ({
-  params,
-  origin,
-  onReject,
-}: SignTxProps & {
-  onReject?: () => void;
-}) => {
-  console.log('params', params);
+export const SilentSignTx = ({ params, origin }: SignTxProps) => {
   const { isGnosis, account } = params;
   const renderStartAt = useRef(0);
   const logId = useRef('');
@@ -840,7 +833,6 @@ export const SilentSignTx = ({
   const handleCancel = () => {
     gaEvent('cancel');
     rejectApproval('User rejected the request.');
-    onReject?.();
   };
 
   const loadGasMarket = async (
@@ -1323,7 +1315,10 @@ export const SilentSignTx = ({
 
 export const SilentApproval = () => {
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const [isShowDrawer, setIsShowDrawer] = useState(false);
+  const {
+    isShowSilentApproval,
+    setIsShowSilentApproval,
+  } = useCommonPopupView();
   const {
     data: approval,
     runAsync: runGetApproval,
@@ -1336,7 +1331,7 @@ export const SilentApproval = () => {
       manual: true,
       onSuccess: (approval) => {
         if (approval) {
-          setIsShowDrawer(true);
+          setIsShowSilentApproval(true);
         }
       },
     }
@@ -1354,9 +1349,9 @@ export const SilentApproval = () => {
       placement="bottom"
       height="fit-content"
       className="gnosis-footer-bar is-support-darkmode"
-      visible={isShowDrawer}
+      visible={isShowSilentApproval}
       onClose={() => {
-        setIsShowDrawer(false);
+        setIsShowSilentApproval(false);
         rejectApproval('User rejected the approval');
       }}
       maskClosable
@@ -1368,9 +1363,6 @@ export const SilentApproval = () => {
       <SilentSignTx
         params={approval.data.params}
         origin={approval.data.origin}
-        onReject={() => {
-          setIsShowDrawer(false);
-        }}
       />
     </Drawer>
   ) : null;

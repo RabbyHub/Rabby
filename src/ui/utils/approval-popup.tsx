@@ -4,7 +4,12 @@ import { useCommonPopupView } from './WalletContext';
  * New popup window for approval
  */
 export const useApprovalPopup = () => {
-  const { activePopup, closePopup } = useCommonPopupView();
+  const {
+    activePopup,
+    closePopup,
+    isShowSilentApproval,
+    setIsShowSilentApproval,
+  } = useCommonPopupView();
 
   const showPopup = () => {
     activePopup('Approval');
@@ -22,5 +27,7 @@ export const useApprovalPopup = () => {
     showPopup,
     enablePopup,
     closePopup,
+    isShowSilentApproval,
+    setIsShowSilentApproval,
   };
 };
