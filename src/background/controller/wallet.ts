@@ -116,6 +116,7 @@ import {
 } from '@/utils-isomorphic/approve';
 import { appIsProd } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3055,6 +3056,24 @@ export class WalletController extends BaseController {
       },
     });
     return res;
+  };
+
+  /**
+   * signTypedData when UI is mounted, and can retry if needed
+   */
+  signTypedDataWithUI = async (
+    type: string,
+    from: string,
+    data: string,
+    options?: any
+  ) => {
+    const fn = () =>
+      waitSignComponentAmounted().then(() => {
+        this.signTypedData(type, from, data as any, options);
+      });
+
+    notificationService.setCurrentRequestDeferFn(fn);
+    return fn();
   };
 
   signTransaction = async (

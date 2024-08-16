@@ -32,17 +32,12 @@ import {
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
-  SAFE_GAS_LIMIT_RATIO,
-  DEFAULT_GAS_LIMIT_RATIO,
-  MINIMUM_GAS_LIMIT,
   GAS_TOP_UP_ADDRESS,
-  CAN_ESTIMATE_L1_FEE_CHAINS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
-import i18n from '@/i18n';
 import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
@@ -88,7 +83,6 @@ import GasSelectorHeader, {
 } from './TxComponents/GasSelectorHeader';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
-import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -913,12 +907,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
 
     if (WaitingSignMessageComponent[account.type]) {
-      waitSignComponentAmounted().then(() => {
-        wallet.signTypedData(account.type, account.address, typedData as any, {
+      wallet.signTypedDataWithUI(
+        account.type,
+        account.address,
+        typedData as any,
+        {
           brandName: account.brandName,
           version: 'V4',
-        });
-      });
+        }
+      );
       if (isSend) {
         wallet.clearPageStateCache();
       }
