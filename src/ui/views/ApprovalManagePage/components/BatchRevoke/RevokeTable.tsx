@@ -102,8 +102,11 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
           {
             title: '#',
             key: 'index',
+            className: 'index-cell',
             render: (text, record, index) => (
-              <span className="text-r-neutral-foot text-14">{index + 1}</span>
+              <span className="text-r-neutral-foot text-12 font-normal">
+                {index + 1}
+              </span>
             ),
             width: 40,
           },

@@ -130,13 +130,13 @@
     background-color: var(--r-neutral-card1);
     border-radius: @radius-value;
     overflow: hidden;
-    border: 0.5px solid var(--r-neutral-line);
+    border: 1px solid var(--r-neutral-line);
     transition: ease-in 0.2s border-color;
 
     .ant-input-affix-wrapper.search-input, .ant-input {
       background-color: transparent;
       color: var(--r-neutral-title1);
-      &::placeholder-shown {
+      &::placeholder {
         color: var(--r-neutral-foot);
       }
     }

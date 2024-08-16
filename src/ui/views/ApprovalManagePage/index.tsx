@@ -55,8 +55,6 @@ import {
   openScanLinkFromChainItem,
   encodeRevokeItem,
   decodeRevokeItem,
-  isSelectedAllContract,
-  isSelectedAllAssetApprovals,
   TableSelectResult,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
@@ -718,7 +716,7 @@ function getColumnsForAsset({
         const spendValues = getSpenderApprovalAmount(spender);
 
         return (
-          <div className="text-14">
+          <div className="text-14 overflow-hidden">
             <div>
               <Tooltip
                 overlayClassName="J-table__tooltip disable-ant-overwrite"
@@ -729,7 +727,7 @@ function getColumnsForAsset({
                 align={{ offset: [0, 3] }}
                 arrowPointAtCenter
               >
-                <span className="text-r-neutral-title-1">
+                <span className="text-r-neutral-title-1 truncate block">
                   {spendValues.displayAmountText}
                 </span>
               </Tooltip>
