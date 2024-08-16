@@ -361,7 +361,8 @@
           "doc1": "插入 imKey",
           "doc2": "输入 PIN 码解锁 imKey"
         },
-        "howToConnectImKey": "如何连接 imKey"
+        "howToConnectImKey": "如何连接 imKey",
+        "ledgerIsDisconnected": "您的 Ledger 已断开连接"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe 地址不支持 {{chain}}"

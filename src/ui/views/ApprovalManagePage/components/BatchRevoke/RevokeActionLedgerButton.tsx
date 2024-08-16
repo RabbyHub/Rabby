@@ -79,7 +79,7 @@ export const RevokeActionLedgerButton: React.FC<{
         width={400}
         visible={visibleLedgerConnectModal}
         onCancel={() => setVisibleLedgerConnectModal(false)}
-        title={t('page.dashboard.hd.howToConnectLedger')}
+        title={t('page.dashboard.hd.ledgerIsDisconnected')}
       >
         <Ledger isModalContent />
       </Modal>

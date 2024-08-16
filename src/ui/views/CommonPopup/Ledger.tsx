@@ -17,7 +17,7 @@ export const Ledger: React.FC<{
 
   React.useEffect(() => {
     if (!isModalContent) {
-      setTitle(t('page.dashboard.hd.howToConnectLedger'));
+      setTitle(t('page.dashboard.hd.ledgerIsDisconnected'));
       setHeight(320);
     }
   }, [!isModalContent]);

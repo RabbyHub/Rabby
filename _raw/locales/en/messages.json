@@ -1325,7 +1325,8 @@
           "doc1": "Plug in a single imKey",
           "doc2": "Enter pin to unlock"
         },
-        "howToConnectImKey": "How to Connect imKey"
+        "howToConnectImKey": "How to Connect imKey",
+        "ledgerIsDisconnected": "Your ledger is Disconnected"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}"
