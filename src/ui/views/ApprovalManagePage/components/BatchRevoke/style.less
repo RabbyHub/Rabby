@@ -8,6 +8,7 @@
     background-color: transparent;
     padding: 0;
     margin-bottom: 0;
+    overflow: visible;
   }
 
   .ant-modal-confirm-btns {
@@ -30,6 +31,18 @@
   .ant-modal-content {
     background: var(--r-neutral-bg1, #FFF);
     border-bottom: none;
+  }
+  
+  &.ledger-modal {
+    .ant-modal-header,
+    .ant-modal-content {
+      background: var(--r-neutral-bg2, #F2F4F7);
+    }
+
+    .ant-modal-title {
+      font-size: 20px;
+      line-height: 24px;
+    }
   }
 
   .am-virtual-table-cell {
@@ -80,9 +93,16 @@
 
   .is-last-cell {
     justify-content: end;
-  .am-virtual-table-cell-inner {
-    padding-right: 0;
+    .am-virtual-table-cell-inner {
+      padding-right: 0;
+    }
   }
+
+
+  .index-cell {
+    .am-virtual-table-cell-inner {
+      padding-right: 6px;
+    }
   }
 
   .status-cell {

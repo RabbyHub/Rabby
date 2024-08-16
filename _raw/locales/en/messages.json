@@ -768,7 +768,8 @@
         "tooltipPermit2": "This approval is approved via Permit2 contract:\n{{ permit2Id }}"
       },
       "revokeModal": {
-        "confirmRevoke": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with 1 click.",
+        "confirmRevokePrivateKey": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with 1 click.",
+        "confirmRevokeLedger": "Using a Ledger address, you can batch revoke {{count}} approvals with 1 click.",
         "batchRevoke": "Batch Revoke",
         "revokeOneByOne": "Revoke One by One",
         "revoked": "Revoked:",
@@ -790,7 +791,13 @@
         "defaultFailed": "Transaction failed",
         "stillRevoke": "Still Revoke",
         "paused": "Paused",
-        "waitInQueue": "Wait in queue"
+        "waitInQueue": "Wait in queue",
+        "revokeWithLedger": "Start Revoke with Ledger",
+        "connectLedger": "Connect Ledger",
+        "ledgerSended": "Please sign the request on Ledger ({{current}}/{{total}})",
+        "ledgerSending": "Sending signing request ({{current}}/{{total}})",
+        "ledgerAlert": "Please open Ethereum App on your Ledger device",
+        "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1304,7 +1311,7 @@
           "doc1": "Plug in a single Ledger",
           "doc2": "Enter pin to unlock",
           "doc3": "Open Ethereum App",
-          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
+          "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>"
         },
         "keystone": {
           "title": "*USB connect only for Keystone 3(Pro)",
@@ -1318,7 +1325,8 @@
           "doc1": "Plug in a single imKey",
           "doc2": "Enter pin to unlock"
         },
-        "howToConnectImKey": "How to Connect imKey"
+        "howToConnectImKey": "How to Connect imKey",
+        "ledgerIsDisconnected": "Your ledger is not connected"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}"
@@ -1450,7 +1458,13 @@
         "ledgerPermissionTip": "Please click \"Allow\" below and authorize access to your Ledger in the following pop-up window.",
         "permissionsAuthorized": "Permissions Authorized",
         "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
-        "allow": "Allow"
+        "allow": "Allow",
+        "error": {
+          "ethereum_app_not_installed_error": "Please install the Ethereum app on your Ledger device.",
+          "ethereum_app_unconfirmed_error": "You have denied the request to open the Ethereum app.",
+          "ethereum_app_open_error": "Please install/accept Ethereum app on your Ledger device.",
+          "running_app_close_error": "Failed to close the running app on your Ledger device."
+        }
       },
       "keystone": {
         "title": "Connect Keystone",

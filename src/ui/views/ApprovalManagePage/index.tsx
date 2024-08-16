@@ -55,8 +55,6 @@ import {
   openScanLinkFromChainItem,
   encodeRevokeItem,
   decodeRevokeItem,
-  isSelectedAllContract,
-  isSelectedAllAssetApprovals,
   TableSelectResult,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
@@ -718,7 +716,7 @@ function getColumnsForAsset({
         const spendValues = getSpenderApprovalAmount(spender);
 
         return (
-          <div className="text-14">
+          <div className="text-14 overflow-hidden">
             <div>
               <Tooltip
                 overlayClassName="J-table__tooltip disable-ant-overwrite"
@@ -729,7 +727,7 @@ function getColumnsForAsset({
                 align={{ offset: [0, 3] }}
                 arrowPointAtCenter
               >
-                <span className="text-r-neutral-title-1">
+                <span className="text-r-neutral-title-1 truncate block">
                   {spendValues.displayAmountText}
                 </span>
               </Tooltip>
@@ -1078,6 +1076,7 @@ const ApprovalManagePage = () => {
   }, [wallet, clearRevoke, revokeSummary.currentRevokeList]);
 
   const batchRevokeModal = useBatchRevokeModal({
+    accountType: account?.type,
     revokeList: revokeSummary.currentRevokeList,
     dataSource: displaySortedAssetsList,
     onDone: () => {
@@ -1095,11 +1094,13 @@ const ApprovalManagePage = () => {
     revokeListCount: revokeSummary.currentRevokeList.length,
     onBatchRevoke: () => batchRevokeModal.show(),
     onRevokeOneByOne: () => handleRevoke(),
+    accountType: account?.type,
   });
   const enableBatchRevoke = React.useMemo(() => {
     return (
       account?.type === KEYRING_CLASS.PRIVATE_KEY ||
-      account?.type === KEYRING_CLASS.MNEMONIC
+      account?.type === KEYRING_CLASS.MNEMONIC ||
+      account?.type === KEYRING_CLASS.HARDWARE.LEDGER
     );
   }, [account]);
   const onRevoke = React.useCallback(() => {

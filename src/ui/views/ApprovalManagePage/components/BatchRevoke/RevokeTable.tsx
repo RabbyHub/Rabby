@@ -14,6 +14,8 @@ import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import { AssetApprovalSpender } from '@/utils/approval';
 import { RevokeActionButton } from './RevokeActionButton';
 import { RevokeModalHeader } from './RevokeModalHeader';
+import { KEYRING_CLASS } from '@/constant';
+import { RevokeActionLedgerButton } from './RevokeActionLedgerButton';
 
 export interface RevokeTableProps {
   onDone: () => void;
@@ -21,6 +23,7 @@ export interface RevokeTableProps {
   dataSource: AssetApprovalSpender[];
   onClose: (needUpdate: boolean) => void;
   onTaskStatus: (status: BatchRevokeTaskType['status']) => void;
+  accountType?: string;
 }
 
 const ROW_HEIGHT = 52;
@@ -33,17 +36,10 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
   onDone,
   onClose,
   onTaskStatus,
+  accountType,
 }) => {
   const task = useBatchRevokeTask();
-
-  const totalApprovals = React.useMemo(() => {
-    return revokeList.length;
-  }, [revokeList]);
-
-  const revokedApprovals = React.useMemo(() => {
-    return task.list.filter((item) => item.$status?.status === 'success')
-      .length;
-  }, [task.list]);
+  const { totalApprovals, revokedApprovals } = task;
 
   React.useEffect(() => {
     task.init(dataSource, revokeList);
@@ -106,8 +102,11 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
           {
             title: '#',
             key: 'index',
+            className: 'index-cell',
             render: (text, record, index) => (
-              <span className="text-r-neutral-foot text-14">{index + 1}</span>
+              <span className="text-r-neutral-foot text-12 font-normal">
+                {index + 1}
+              </span>
             ),
             width: 40,
           },
@@ -167,9 +166,11 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
         ]}
       />
 
-      <div className="mt-40 flex justify-center">
+      {accountType === KEYRING_CLASS.HARDWARE.LEDGER ? (
+        <RevokeActionLedgerButton task={task} onDone={onDone} />
+      ) : (
         <RevokeActionButton task={task} onDone={onDone} />
-      </div>
+      )}
     </div>
   );
 };

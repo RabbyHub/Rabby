@@ -17,7 +17,7 @@ export const RevokeActionButton: React.FC<{
   const { t } = useTranslation();
 
   return (
-    <>
+    <div className="flex justify-center mt-40">
       {task.status === 'idle' && (
         <Button type="primary" className={buttonBaseClass} onClick={task.start}>
           {t('page.approvals.revokeModal.signAndStartRevoke')}
@@ -53,6 +53,6 @@ export const RevokeActionButton: React.FC<{
           {t('page.approvals.revokeModal.pause')}
         </Button>
       )}
-    </>
+    </div>
   );
 };

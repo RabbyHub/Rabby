@@ -401,7 +401,7 @@ export function isSelectedAllContract(
 ) {
   const set = new Set<string>(selectedRows.map((x) => encodeRevokeItem(x)));
   const result: TableSelectResult = {
-    isSelectedAll: true,
+    isSelectedAll: false,
     isIndeterminate: false,
   };
 
@@ -422,7 +422,8 @@ export function isSelectedAllContract(
     if (noSelectAll) {
       result.isIndeterminate = hasSelected;
       result.isSelectedAll = false;
-      break;
+    } else {
+      result.isSelectedAll = true;
     }
   }
 
@@ -435,7 +436,7 @@ export function isSelectedAllAssetApprovals(
 ) {
   const set = new Set<string>(selectedRows.map((x) => encodeRevokeItem(x)));
   const result: TableSelectResult = {
-    isSelectedAll: true,
+    isSelectedAll: false,
     isIndeterminate: false,
   };
 
@@ -453,7 +454,8 @@ export function isSelectedAllAssetApprovals(
     if (!set.has(encodeRevokeItem(revokeItem))) {
       result.isIndeterminate = hasSelected;
       result.isSelectedAll = false;
-      break;
+    } else {
+      result.isSelectedAll = true;
     }
   }
 

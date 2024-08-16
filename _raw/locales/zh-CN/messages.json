@@ -361,7 +361,8 @@
           "doc1": "插入 imKey",
           "doc2": "输入 PIN 码解锁 imKey"
         },
-        "howToConnectImKey": "如何连接 imKey"
+        "howToConnectImKey": "如何连接 imKey",
+        "ledgerIsDisconnected": "您的 Ledger 已断开连接"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe 地址不支持 {{chain}}"
@@ -496,7 +497,13 @@
         "ledgerPermissionTip": "请点击下面的“允许”，并在弹出窗口中授权访问你的 Ledger",
         "permissionsAuthorized": "权限已授权",
         "nowYouCanReInitiateYourTransaction": "现在你可以重新发起你的交易",
-        "allow": "允许"
+        "allow": "允许",
+        "error": {
+          "ethereum_app_not_installed_error": "请在您的 Ledger 设备上安装以太坊应用程序。",
+          "ethereum_app_unconfirmed_error": "您已拒绝打开以太坊应用程序的请求。",
+          "ethereum_app_open_error": "请在您的 Ledger 设备上安装/接受以太坊应用程序。",
+          "running_app_close_error": "无法关闭 Ledger 设备上正在运行的应用程序。"
+        }
       },
       "keystone": {
         "title": "连接Keystone",
@@ -880,7 +887,6 @@
         "cancelBody": "如果关闭此页面，剩余的撤销将不会执行。",
         "cancelTitle": "取消剩余撤销",
         "confirm": "确认",
-        "confirmRevoke": "使用种子短语或私钥地址，您可以通过一个签名批量撤销 {{count}} 个批准。",
         "confirmTitle": "1签名批量撤销",
         "defaultFailed": "交易失败",
         "done": "完毕",
@@ -894,7 +900,15 @@
         "submitTxFailed": "提交失败",
         "gasTooHigh": "煤气费高",
         "totalRevoked": "全部的：",
-        "approvalCount_zero": "{{count}} 批准"
+        "approvalCount_zero": "{{count}} 批准",
+        "ledgerAlert": "请在您的 Ledger 设备上打开以太坊应用程序",
+        "connectLedger": "连接账本",
+        "revokeWithLedger": "使用 Ledger 开始撤销",
+        "ledgerSended": "请在 Ledger 上签署请求（{{current}}/{{total}}）",
+        "ledgerSigned": "签署。创建交易（{{current}}/{{total}}）",
+        "ledgerSending": "正在发送签名请求（{{current}}/{{total}}）",
+        "confirmRevokeLedger": "使用账本地址，您可以一键批量撤销 {{count}} 个批准。",
+        "confirmRevokePrivateKey": "使用助记词或私钥地址，您可以一键批量撤销 {{count}} 个批准。"
       }
     },
     "connect": {

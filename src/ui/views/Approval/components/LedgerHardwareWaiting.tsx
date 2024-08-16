@@ -22,6 +22,7 @@ import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
+import { isLedgerLockError } from '@/ui/utils/ledger';
 
 interface ApprovalParams {
   address: string;
@@ -288,11 +289,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [connectStatus, errorMessage]);
 
   const currentDescription = React.useMemo(() => {
-    if (
-      description.includes('0x5515') ||
-      description.includes('0x6b0c') ||
-      description.includes('0x650f')
-    ) {
+    if (isLedgerLockError(description)) {
       return t('page.signFooterBar.ledger.unlockAlert');
     } else if (
       description.includes('0x6e00') ||
