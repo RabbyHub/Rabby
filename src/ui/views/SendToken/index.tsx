@@ -607,7 +607,7 @@ const SendToken = () => {
         delete params.gas;
       }
       setIsSubmitLoading(false);
-      if (showGasReserved) {
+      if (clickedMax && selectedGasLevel?.price) {
         params.gasPrice = selectedGasLevel?.price;
       }
     }
