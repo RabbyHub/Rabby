@@ -3069,7 +3069,7 @@ export class WalletController extends BaseController {
   ) => {
     const fn = () =>
       waitSignComponentAmounted().then(() => {
-        wallet.signTypedData(type, from, data as any, options);
+        this.signTypedData(type, from, data as any, options);
       });
 
     notificationService.setCurrentRequestDeferFn(fn);
