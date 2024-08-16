@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BatchRevokeTaskType } from './useBatchRevokeTask';
-import { openInternalPageInTab } from '@/ui/utils';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { CommonAccount } from '@/ui/views/Approval/components/FooterBar/CommonAccount';
 import { EVENTS, WALLET_BRAND_CONTENT } from '@/constant';
@@ -48,25 +47,6 @@ export const RevokeActionLedgerButton: React.FC<{
     setVisibleLedgerConnectModal,
   ] = React.useState(false);
 
-  const handleClickConnectLedger = async () => {
-    openInternalPageInTab(
-      'request-permission?type=ledger&reconnect=1',
-      true,
-      false
-    );
-  };
-
-  const signal = React.useMemo(() => {
-    switch (status) {
-      case undefined:
-      case 'DISCONNECTED':
-        return 'DISCONNECTED';
-
-      default:
-        return 'CONNECTED';
-    }
-  }, [status]);
-
   React.useEffect(() => {
     const listener = (msg) => {
       if (isLedgerLockError(msg) || msg === 'DISCONNECTED') {
@@ -108,20 +88,13 @@ export const RevokeActionLedgerButton: React.FC<{
           <Button
             type="ghost"
             className={buttonGhostClass}
-            onClick={
-              status === 'DISCONNECTED' ? handleClickConnectLedger : task.start
-            }
+            onClick={task.start}
           >
             <CommonAccount
-              signal={signal}
               icon={LegerIcon}
               className="items-center justify-center"
             >
-              <span>
-                {status === 'DISCONNECTED'
-                  ? t('page.approvals.revokeModal.connectLedger')
-                  : t('page.approvals.revokeModal.revokeWithLedger')}
-              </span>
+              <span>{t('page.approvals.revokeModal.revokeWithLedger')}</span>
             </CommonAccount>
           </Button>
         )}
