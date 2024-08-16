@@ -4,11 +4,13 @@ import './style.less';
 import clsx from 'clsx';
 import { Modal } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
+import { KEYRING_CLASS } from '@/constant';
 
 export const useConfirmRevokeModal = (props: {
   revokeListCount: number;
   onBatchRevoke: () => void;
   onRevokeOneByOne: () => void;
+  accountType?: string;
 }) => {
   const { t } = useTranslation();
 
@@ -23,9 +25,13 @@ export const useConfirmRevokeModal = (props: {
       content: (
         <div>
           <div className="text-r-neutral-body text-15 leading-[22px]">
-            {t('page.approvals.revokeModal.confirmRevoke', {
-              count: props.revokeListCount,
-            })}
+            {props.accountType === KEYRING_CLASS.HARDWARE.LEDGER
+              ? t('page.approvals.revokeModal.confirmRevokeLedger', {
+                  count: props.revokeListCount,
+                })
+              : t('page.approvals.revokeModal.confirmRevokePrivateKey', {
+                  count: props.revokeListCount,
+                })}
           </div>
           <footer className="flex flex-col gap-16 mx-auto mt-24 items-center">
             <Button

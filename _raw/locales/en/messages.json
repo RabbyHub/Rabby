@@ -768,7 +768,8 @@
         "tooltipPermit2": "This approval is approved via Permit2 contract:\n{{ permit2Id }}"
       },
       "revokeModal": {
-        "confirmRevoke": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with 1 click.",
+        "confirmRevokePrivateKey": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with 1 click.",
+        "confirmRevokeLedger": "Using a Ledger address, you can batch revoke {{count}} approvals with 1 click.",
         "batchRevoke": "Batch Revoke",
         "revokeOneByOne": "Revoke One by One",
         "revoked": "Revoked:",

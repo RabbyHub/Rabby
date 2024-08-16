@@ -1096,6 +1096,7 @@ const ApprovalManagePage = () => {
     revokeListCount: revokeSummary.currentRevokeList.length,
     onBatchRevoke: () => batchRevokeModal.show(),
     onRevokeOneByOne: () => handleRevoke(),
+    accountType: account?.type,
   });
   const enableBatchRevoke = React.useMemo(() => {
     return (

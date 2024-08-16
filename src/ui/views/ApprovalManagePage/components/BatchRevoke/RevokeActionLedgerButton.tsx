@@ -72,7 +72,10 @@ export const RevokeActionLedgerButton: React.FC<{
       if (isLedgerLockError(msg) || msg === 'DISCONNECTED') {
         setVisibleLedgerConnectModal(true);
         task.pause();
-        task.addRevokeTask(task.currentApprovalRef.current!, 1);
+
+        if (msg !== 'DISCONNECTED') {
+          task.addRevokeTask(task.currentApprovalRef.current!, 1);
+        }
       }
     };
 
