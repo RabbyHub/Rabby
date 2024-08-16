@@ -1359,6 +1359,8 @@ export const SilentApproval = () => {
       bodyStyle={{
         padding: 0,
       }}
+      key={approval.id}
+      destroyOnClose
     >
       <SilentSignTx
         params={approval.data.params}

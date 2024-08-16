@@ -36,7 +36,7 @@ import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import { calcGasEstimated } from '@/utils/time';
-import { useHover, useWallet } from '@/ui/utils';
+import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 
 export interface GasSelectorResponse extends GasLevel {
@@ -309,6 +309,8 @@ const GasSelectorHeader = ({
     id: chainId,
   })!;
   const [customGasEstimated, setCustomGasEstimated] = useState<number>(0);
+
+  const uiType = useMemo(() => getUiType(), []);
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
@@ -803,7 +805,7 @@ const GasSelectorHeader = ({
         height={'auto'}
         visible={modalVisible}
         title={t('page.signTx.gasSelectorTitle')}
-        className="gas-modal"
+        className={clsx('gas-modal', uiType.isPop && 'is-popup')}
         onCancel={handleClosePopup}
         destroyOnClose
         closable
