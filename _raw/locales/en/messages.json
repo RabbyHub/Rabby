@@ -1326,7 +1326,7 @@
           "doc2": "Enter pin to unlock"
         },
         "howToConnectImKey": "How to Connect imKey",
-        "ledgerIsDisconnected": "Your ledger is Disconnected"
+        "ledgerIsDisconnected": "Your ledger is not connected"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}"
