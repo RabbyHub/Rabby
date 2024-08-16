@@ -14,7 +14,7 @@ import {
   getNativeTokenBalance,
   getPendingTxs,
 } from '@/utils/transaction';
-import { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import {
   fetchActionRequiredData,
@@ -35,6 +35,14 @@ type ProgressStatus = 'building' | 'builded' | 'signed' | 'submitted';
 
 /**
  * send transaction without rpcFlow
+ * @param tx
+ * @param chainServerId
+ * @param wallet
+ * @param ignoreGasCheck if ignore gas check
+ * @param onProgress callback
+ * @param gasLevel gas level, default is normal
+ * @param lowGasDeadline low gas deadline
+ * @param isGasLess is gas less
  */
 export const sendTransaction = async ({
   tx,
@@ -42,12 +50,18 @@ export const sendTransaction = async ({
   wallet,
   ignoreGasCheck,
   onProgress,
+  gasLevel,
+  lowGasDeadline,
+  isGasLess,
 }: {
   tx: Tx;
   chainServerId: string;
   wallet: WalletControllerType;
   ignoreGasCheck?: boolean;
   onProgress?: (status: ProgressStatus) => void;
+  gasLevel?: GasLevel;
+  lowGasDeadline?: number;
+  isGasLess?: boolean;
 }) => {
   onProgress?.('building');
   const chain = findChain({
@@ -61,8 +75,12 @@ export const sendTransaction = async ({
   });
 
   // get gas
-  const gasMarket = await wallet.openapi.gasMarket(chainServerId);
-  const normalGas = gasMarket.find((item) => item.level === 'normal')!;
+  let normalGas = gasLevel;
+  if (!normalGas) {
+    const gasMarket = await wallet.openapi.gasMarket(chainServerId);
+    normalGas = gasMarket.find((item) => item.level === 'normal')!;
+  }
+
   const signingTxId = await wallet.addSigningTx(tx);
 
   // pre exec tx
@@ -281,6 +299,8 @@ export const sendTransaction = async ({
           ...transaction,
           signingTxId,
           logId: logId,
+          lowGasDeadline,
+          isGasLess,
         },
         pushed: false,
         result: undefined,
