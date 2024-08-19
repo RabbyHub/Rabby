@@ -174,6 +174,11 @@ const AddAddressOptions = () => {
         });
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.ImKeyConnect) {
         openInternalPageInTab('import/hardware/imkey-connect');
+      } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.NarvalConnect) {
+        history.push({
+          pathname: '/import/narval',
+          state: params,
+        });
       } else {
         history.push({
           pathname: '/import/wallet-connect',

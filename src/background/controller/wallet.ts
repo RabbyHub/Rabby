@@ -117,6 +117,10 @@ import {
 import { appIsProd } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
+import NarvalKeyring, {
+  NarvalAccount,
+} from '../service/keyring/eth-narval-keyring';
+import { ArmoryConfig } from '../utils/armory';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -2431,6 +2435,90 @@ export class WalletController extends BaseController {
 
     const keyring = await keyringService.importPrivateKey(privateKey);
     return this._setCurrentAccountFromKeyring(keyring);
+  };
+
+  getNarvalConnections = () => {
+    const keyrings: NarvalKeyring[] = keyringService.getKeyringsByType(
+      KEYRING_CLASS.Narval
+    );
+
+    return Promise.all(
+      keyrings.map(async (keyring) => {
+        const accounts = keyring.getNarvalAccounts();
+        const connectionId = keyring.getNarvalConnectionId();
+        const credentialPublicKey = keyring.getCredentialAddress();
+
+        return {
+          accounts,
+          connectionId,
+          credentialPublicKey,
+        };
+      })
+    );
+  };
+
+  removeNarvalConnection = async (connectionId: string) => {
+    const keyring = await keyringService.getNarvalKeyringByConnectionId(
+      connectionId
+    );
+    await keyringService.removeNarvalConnection(keyring);
+    return this.getNarvalConnections();
+  };
+
+  connectNarvalAccount = async (
+    config: ArmoryConfig
+  ): Promise<{ accounts: NarvalAccount[]; connectionId: string }> => {
+    const buffer = Buffer.from(
+      ethUtil.stripHexPrefix(config.credentialPrivateKey),
+      'hex'
+    );
+
+    const error = new Error(t('background.error.invalidPrivateKey'));
+
+    try {
+      if (!ethUtil.isValidPrivate(buffer)) {
+        throw error;
+      }
+    } catch {
+      throw error;
+    }
+
+    const armoryConfig = {
+      ...config,
+      credentialPrivateKey: ethUtil.addHexPrefix(config.credentialPrivateKey),
+    } as ArmoryConfig;
+
+    try {
+      // We first try to fetch the account to be sure the config is correct
+      const accounts = await NarvalKeyring.fetchNarvalAccounts(armoryConfig);
+      // If the config is correct, we save it as part of the keyrings
+      const keyring = await keyringService.connectNarvalAccount(armoryConfig);
+      const connectionId = keyring.getNarvalConnectionId();
+
+      return { accounts, connectionId };
+    } catch (err) {
+      if (['FORBIDDEN', 'FAILED'].includes(err?.message)) {
+        // If this error is thrown from fetchNarvalAccounts it means that the config
+        // is correct and we can save it as part of the keyrings
+        await keyringService.connectNarvalAccount(armoryConfig);
+      }
+
+      throw err;
+    }
+  };
+
+  fetchNarvalAccounts = async (connectionId: string) => {
+    const keyring = await keyringService.getNarvalKeyringByConnectionId(
+      connectionId
+    );
+    return keyring.fetchNarvalAccounts();
+  };
+
+  selectNarvalAccounts = (
+    connectionId: string,
+    accounts: NarvalAccount[]
+  ): Promise<NarvalAccount[]> => {
+    return keyringService.selectNarvalAccounts(connectionId, accounts);
   };
 
   // json format is from "https://github.com/SilentCicero/ethereumjs-accounts"

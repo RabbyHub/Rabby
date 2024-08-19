@@ -1371,6 +1371,7 @@
       "connectHardwareWallets": "Connect Hardware Wallets",
       "connectMobileWalletApps": "Connect Mobile Wallet Apps",
       "connectInstitutionalWallets": "Connect Institutional Wallets",
+      "connectNarval": "Connect Narval",
       "createNewSeedPhrase": "Create New Seed Phrase",
       "importKeystore": "Import KeyStore",
       "selectImportMethod": "Select Import Method",

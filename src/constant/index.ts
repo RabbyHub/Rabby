@@ -183,6 +183,9 @@ import IconUtila, {
 import IconNgrave, {
   ReactComponent as RCIconNgrave,
 } from 'ui/assets/walletlogo/ngrave.svg';
+import IconNarval, {
+  ReactComponent as RCIconNarval,
+} from 'ui/assets/walletlogo/narval.svg';
 import {
   ensureChainHashValid,
   ensureChainListValid,
@@ -239,6 +242,7 @@ export const KEYRING_TYPE = {
   GnosisKeyring: 'Gnosis',
   CoboArgusKeyring: 'CoboArgus',
   CoinbaseKeyring: 'Coinbase',
+  NarvalKeyring: 'Narval',
 } as const;
 
 export const KEYRING_CLASS = {
@@ -258,6 +262,7 @@ export const KEYRING_CLASS = {
   GNOSIS: 'Gnosis',
   CoboArgus: 'CoboArgus',
   Coinbase: 'Coinbase',
+  Narval: 'Narval',
 } as const;
 
 export const KEYRING_WITH_INDEX = [
@@ -273,6 +278,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.HARDWARE.KEYSTONE,
   KEYRING_CLASS.HARDWARE.TREZOR,
   KEYRING_CLASS.HARDWARE.ONEKEY,
+  KEYRING_CLASS.Narval,
 ];
 
 export const KEYRING_TYPE_TEXT = {
@@ -287,6 +293,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.GNOSIS]: 'Imported by Safe',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by QRCode Base',
   [KEYRING_CLASS.HARDWARE.IMKEY]: 'Imported by imKey',
+  [KEYRING_CLASS.Narval]: 'Imported by Narval',
 };
 
 export const HARDWARE_KEYRING_TYPES = {
@@ -437,6 +444,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   CoboArgusConnect = 'CoboArgusConnect',
   CoinbaseConnect = 'CoinbaseConnect',
   ImKeyConnect = 'ImKeyConnect',
+  NarvalConnect = 'NarvalConnect',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {
@@ -534,6 +542,7 @@ export enum WALLET_BRAND_TYPES {
   IMKEY = 'IMKEY',
   NGRAVEZERO = 'NGRAVE ZERO',
   Utila = 'Utila',
+  NARVAL = 'Narval',
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -936,12 +945,25 @@ export const WALLET_BRAND_CONTENT: {
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
+  [WALLET_BRAND_TYPES.NARVAL]: {
+    id: 32,
+    name: 'Narval',
+    brand: WALLET_BRAND_TYPES.NARVAL,
+    icon: IconNarval,
+    lightIcon: IconNarval,
+    image: IconNarval,
+    rcSvg: RCIconNarval,
+    maybeSvg: IconNarval,
+    connectType: BRAND_WALLET_CONNECT_TYPE.NarvalConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
 };
 
 export const KEYRING_ICONS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
   [KEYRING_CLASS.WATCH]: IconWatchPurple,
+  [KEYRING_CLASS.Narval]: IconNarval,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
@@ -967,6 +989,7 @@ export const KEYRING_ICONS_WHITE: Record<KeyringWithIcon, string> = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicWhite,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyWhite,
   [KEYRING_CLASS.WATCH]: IconWatchWhite,
+  [KEYRING_CLASS.Narval]: IconNarval,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
@@ -986,6 +1009,7 @@ export const KEYRINGS_LOGOS: Record<KeyringWithIcon, string> = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicWhite,
   [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
   [KEYRING_CLASS.WATCH]: IconWatchWhite,
+  [KEYRING_CLASS.Narval]: IconNarval,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02WithBorder,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
@@ -1418,6 +1442,7 @@ export const WALLET_SORT_SCORE = [
   //institutional
   WALLET_BRAND_TYPES.GNOSIS,
   WALLET_BRAND_TYPES.CoboArgus,
+  WALLET_BRAND_TYPES.NARVAL,
   WALLET_BRAND_TYPES.AMBER,
   WALLET_BRAND_TYPES.FIREBLOCKS,
   WALLET_BRAND_TYPES.JADE,
