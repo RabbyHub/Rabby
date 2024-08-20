@@ -149,7 +149,7 @@
         },
         "title": "已連接的 Dapp",
         "pinned": "已置頂",
-        "noPinnedDapps": "沒有置頂的 dapp",
+        "noPinnedDapps": "沒有置頂的 Dapp",
         "dragToSort": "拖動排序",
         "noRecentlyConnectedDapps": "沒有最近連接的 Dapp",
         "recentlyConnected": "最近連接",
@@ -176,7 +176,7 @@
         "viewOnDebank": "在 DeBank 上查看",
         "viewYourClaimCode": "查看你的邀請碼",
         "freeGasTitle": "申請免費 Gas 徽章",
-        "freeGasTip": "請使用免費 Gas 簽署一筆交易。當您的 Gas 不足時，'免費 Gas' 按鈕會自動出現。",
+        "freeGasTip": "請使用免費 Gas 簽署一筆交易。當您的 Gas 不足時，“免費 Gas”按鈕會自動出現。",
         "learnMore": "了解更多",
         "freeGasNoCode": "請先點擊下面的按鈕訪問 DeBank 並使用您的當前地址獲取申請代碼。",
         "rabbyFreeGasUserNo": "Rabby Free Gas User No.{{num}}"
@@ -361,7 +361,8 @@
           "doc1": "插入 imKey",
           "doc2": "輸入 PIN 碼解鎖 imKey"
         },
-        "howToConnectImKey": "如何連接 imKey"
+        "howToConnectImKey": "如何連接 imKey",
+        "ledgerIsDisconnected": "您的 Ledger 已斷開連接"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe 地址不支持 {{chain}}"
@@ -489,14 +490,20 @@
       "importedSuccessfully": "導入成功",
       "ledger": {
         "title": "連接Ledger",
-        "cameraPermissionTitle": "允許Rabby訪問相機",
+        "cameraPermissionTitle": "允許 Rabby 訪問相機",
         "cameraPermission1": "在瀏覽器彈出窗口中允許Rabby訪問攝像頭",
         "allowRabbyPermissionsTitle": "允許 Rabby 獲取以下權限：",
         "ledgerPermission1": "連接到 HID 設備",
         "ledgerPermissionTip": "請點擊下面的“允許”，並在彈出窗口中授權訪問你的 Ledger",
         "permissionsAuthorized": "權限已授權",
         "nowYouCanReInitiateYourTransaction": "現在你可以重新發起你的交易",
-        "allow": "允許"
+        "allow": "允許",
+        "error": {
+          "ethereum_app_not_installed_error": "請在您的 Ledger 設備上安裝以太坊應用程式。",
+          "ethereum_app_unconfirmed_error": "您已拒絕打開以太坊應用程式的請求。",
+          "ethereum_app_open_error": "請在您的 Ledger 設備上安裝/接受以太坊應用程式。",
+          "running_app_close_error": "無法關閉 Ledger 設備上正在運行的應用程式。"
+        }
       },
       "keystone": {
         "title": "連接Keystone",
@@ -872,6 +879,36 @@
             "myApprovalTime": "我的授權時間"
           }
         }
+           },
+      "revokeModal": {
+        "approvalCount_one": "{{count}} 批准",
+        "approvalCount_other": "{{count}} 個批准",
+        "batchRevoke": "批量撤銷",
+        "cancelBody": "如果關閉此頁面，餘下的撤銷將不會執行。",
+        "cancelTitle": "取消餘下撤銷",
+        "confirm": "確認",
+        "confirmTitle": "1簽名批量撤銷",
+        "defaultFailed": "交易失敗",
+        "done": "完成",
+        "stillRevoke": "仍然撤銷",
+        "signAndStartRevoke": "簽署並開始撤銷",
+        "revoked": "撤銷：",
+        "revokeOneByOne": "逐一撤銷",
+        "resume": "繼續",
+        "pause": "暫停",
+        "gasNotEnough": "Gas 不足，無法提交",
+        "submitTxFailed": "提交失敗",
+        "gasTooHigh": "Gas 費過高",
+        "totalRevoked": "全部的：",
+        "approvalCount_zero": "{{count}} 批准",
+        "ledgerAlert": "請在您的 Ledger 設備上打開以太坊應用程式",
+        "connectLedger": "連接 Ledger",
+        "revokeWithLedger": "使用 Ledger 開始撤銷",
+        "ledgerSended": "請在 Ledger 上簽署請求（{{current}}/{{total}}）",
+        "ledgerSigned": "簽署。創建交易（{{current}}/{{total}}）",
+        "ledgerSending": "正在發送簽名請求（{{current}}/{{total}}）",
+        "confirmRevokeLedger": "使用 Ledger 地址，您可以一鍵批量撤銷 {{count}} 個批准。",
+        "confirmRevokePrivateKey": "使用助記詞或私鑰地址，您可以一鍵批量撤銷 {{count}} 個批准。"
       }
     },
     "connect": {
@@ -1406,7 +1443,9 @@
         "flagByRabby": "被 Rabby 標記為風險",
         "myBalance": "我的結餘",
         "title": "代幣授權",
-        "trustValueLessThan": "信任值≤{{value}}"
+        "trustValueLessThan": "≤{{value}}",
+        "amount": "授權金額：",
+        "exceed": "超過您當前的餘額"
       },
       "transacted": "之前交易過",
       "trustValue": "信任值",
@@ -1472,10 +1511,21 @@
         "descTipWarningBoth": "該簽名不涉及資產變動和身份驗證權限",
         "interactContract": "互動合約"
       },
+      "chain": "鏈",
+      "protocol": "協議",
+      "hasInteraction": "之前互動過",
+      "no": "否",
+      "yes": "是",
+      "address": "地址",
+      "advancedSettings": "進階設定",
+      "amount": "數量",
+      "trustValueTitle": "信任值",
+      "addressSource": "地址來源",
+      "maxPriorityFeeDisabledAlert": "請先設置 Gas Price",
       "customRPCErrorModal": {
         "title": "自定義 RPC 錯誤",
-        "content": "您的自定義 RPC 目前不可用。您可以停用它並繼續使用 Rabby 的官方 RPC 簽名。",
-        "button": "停用自定義 RPC"
+        "content": "您的自定義RPC目前不可用。您可以停用它，並繼續使用Rabby的官方RPC簽名。",
+        "button": "停用自定義RPC"
       },
       "revokePermit": {
         "title": "撤銷許可代幣批准"
@@ -1485,9 +1535,8 @@
         "listAsset": "列出資產",
         "receiveAsset": "接收資產"
       },
-      "chain": "鏈",
-      "importedDelegatedAddress": "已導入的委託地址",
-      "noDelegatedAddress": "無已導入的委託地址",
+      "importedDelegatedAddress": "導入的委託地址",
+      "noDelegatedAddress": "未導入的委託地址",
       "coboSafeCreate": {
         "safeWalletTitle": "安全{錢包}",
         "descriptionTitle": "描述",
@@ -1508,19 +1557,9 @@
         "safeWalletTitle": "安全{錢包}",
         "descriptionTitle": "描述"
       },
-      "protocol": "協議",
-      "yes": "是",
-      "no": "否",
-      "hasInteraction": "之前有互動",
-      "address": "地址",
-      "advancedSettings": "高級設置",
-      "amount": "金額",
       "contract": "智能合約",
-      "trustValueTitle": "信任值",
       "typedDataMessage": "簽署類型數據",
-      "label": "標籤",
-      "addressSource": "地址來源",
-      "maxPriorityFeeDisabledAlert": "請先設置 Gas 價格"
+      "label": "標籤"
     },
     "signTypedData": {
       "buyNFT": {
