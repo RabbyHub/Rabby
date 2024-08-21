@@ -13,8 +13,8 @@ jobs:
     steps:
       - uses: actions/stale@v9
         with:
-          days-before-issue-stale: 30
-          days-before-issue-close: 14
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
           stale-issue-label: "stale"
           stale-issue-message: "This PR is stale because it has been open for 60 days with no activity. If there won't be any activity in the next 14 days, this PR will be closed automatically."
           close-issue-message: "This PR was closed because it has been inactive for 14 days since being marked as stale."
