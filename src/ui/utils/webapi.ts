@@ -53,8 +53,3 @@ export const openInternalPageInTab = (
     window.open(`./index.html#/${path}`);
   }
 };
-
-const DEBANK_HI_PAGE = 'https://debank.com/hi-thirdparty';
-export const openDeBankHi = (address: string) => {
-  window.open(`${DEBANK_HI_PAGE}?addr=${address}&thirdparty=rabby`);
-};
