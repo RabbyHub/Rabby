@@ -16,8 +16,8 @@ jobs:
           days-before-issue-stale: -1
           days-before-issue-close: -1
           stale-issue-label: "stale"
-          stale-issue-message: "This PR is stale because it has been open for 60 days with no activity. If there won't be any activity in the next 14 days, this PR will be closed automatically."
+          stale-issue-message: "This PR is stale because it has been open for 30 days with no activity. If there won't be any activity in the next 14 days, this PR will be closed automatically."
           close-issue-message: "This PR was closed because it has been inactive for 14 days since being marked as stale."
-          days-before-pr-stale: 60
+          days-before-pr-stale: 30
           days-before-pr-close: 14
           exempt-issue-labels: "keep"
