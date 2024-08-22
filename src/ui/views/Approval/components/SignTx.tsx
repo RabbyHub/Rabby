@@ -78,10 +78,13 @@ import GasSelectorHeader, {
 } from './TxComponents/GasSelectorHeader';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
-import { fetchActionRequiredData } from './Actions/utils/fetchActionRequiredData';
-import { parseAction } from './Actions/utils/parseAction';
-import { formatSecurityEngineContext } from './Actions/utils/formatSecurityEngineContext';
-import { ParsedActionData, ActionRequireData } from './Actions/utils/types';
+import {
+  fetchActionRequiredData,
+  parseAction,
+  formatSecurityEngineContext,
+  ActionRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -161,7 +164,7 @@ export const TxTypeComponent = ({
   originLogo,
 }: {
   actionRequireData: ActionRequireData;
-  actionData: ParsedActionData;
+  actionData: ParsedTransactionActionData;
   chain: Chain;
   isReady: boolean;
   txDetail: ExplainTxResponse;
@@ -176,8 +179,7 @@ export const TxTypeComponent = ({
   if (actionData && actionRequireData) {
     return (
       <Actions
-        // TODO
-        data={actionData as any}
+        data={actionData}
         requireData={actionRequireData}
         chain={chain}
         engineResults={engineResults}
@@ -385,9 +387,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       contract_protocol_name: '',
     },
   });
-  const [actionData, setActionData] = useState<ParsedActionData<'transaction'>>(
-    {}
-  );
+  const [actionData, setActionData] = useState<ParsedTransactionActionData>({});
   const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
     null
   );

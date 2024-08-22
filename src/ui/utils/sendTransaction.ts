@@ -19,8 +19,10 @@ import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import Browser from 'webextension-polyfill';
 import eventBus from '@/eventBus';
-import { parseAction } from '../views/Approval/components/Actions/utils/parseAction';
-import { fetchActionRequiredData } from '../views/Approval/components/Actions/utils/fetchActionRequiredData';
+import {
+  parseAction,
+  fetchActionRequiredData,
+} from '@rabby-wallet/rabby-action';
 
 // fail code
 export enum FailedCode {

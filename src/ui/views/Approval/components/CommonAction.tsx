@@ -8,8 +8,10 @@ import { isSameAddress } from '@/ui/utils';
 import { ProtocolListItem } from './Actions/components/ProtocolListItem';
 import { SecurityListItem } from './Actions/components/SecurityListItem';
 import ViewMore from './Actions/components/ViewMore';
-import { ContractRequireData } from './TypedDataActions/utils';
-import { ContractCallRequireData } from './Actions/utils';
+import {
+  ContractRequireData,
+  ContractCallRequireData,
+} from '@rabby-wallet/rabby-action';
 import { formatTokenAmount } from 'ui/utils/number';
 import { Col, Row, Table } from './Actions/components/Table';
 import * as Values from './Actions/components/Values';

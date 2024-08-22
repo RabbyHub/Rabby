@@ -43,10 +43,13 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
 import stats from '@/stats';
-import { ActionRequireData, ParsedActionData } from './Actions/utils/types';
-import { fetchActionRequiredData } from './Actions/utils/fetchActionRequiredData';
-import { formatSecurityEngineContext } from './Actions/utils/formatSecurityEngineContext';
-import { parseAction } from './Actions/utils/parseAction';
+import {
+  parseAction,
+  formatSecurityEngineContext,
+  fetchActionRequiredData,
+  ActionRequireData,
+  ParsedTypedDataActionData,
+} from '@rabby-wallet/rabby-action';
 
 interface SignTypedDataProps {
   method: string;
@@ -96,7 +99,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [
     parsedActionData,
     setParsedActionData,
-  ] = useState<ParsedActionData<'typed_data'> | null>(null);
+  ] = useState<ParsedTypedDataActionData | null>(null);
   const [
     cantProcessReason,
     setCantProcessReason,
@@ -409,7 +412,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
   };
 
-  const getRequireData = async (data: ParsedActionData<'typed_data'>) => {
+  const getRequireData = async (data: ParsedTypedDataActionData) => {
     const currentAccount = isGnosis
       ? account
       : await wallet.getCurrentAccount();
@@ -629,8 +632,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         {!isLoading && (
           <Actions
             data={parsedActionData}
-            // TODO: fix this type
-            requireData={actionRequireData as any}
+            requireData={actionRequireData}
             chain={chain}
             engineResults={engineResults}
             raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}

@@ -23,23 +23,23 @@ import CrossToken from './CrossToken';
 import CrossSwapToken from './CrossSwapToken';
 import RevokePermit2 from './RevokePermit2';
 import AssetOrder from './AssetOrder';
+import { getActionTypeText } from './utils';
 import {
-  ActionRequireData,
   ApproveNFTRequireData,
   ApproveTokenRequireData,
   CancelTxRequireData,
   ContractCallRequireData,
-  ParsedActionData,
   PushMultiSigRequireData,
   RevokeNFTRequireData,
   RevokeTokenApproveRequireData,
   SendRequireData,
   SwapRequireData,
   WrapTokenRequireData,
-  getActionTypeText,
   AssetOrderRequireData,
   BatchRevokePermit2RequireData,
-} from './utils';
+  ActionRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
@@ -49,13 +49,13 @@ import clsx from 'clsx';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
-import { ContractRequireData } from '../TypedDataActions/utils';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
 import { Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import { BatchRevokePermit2 } from './BatchRevokePermit2';
+import { ContractRequireData } from '@rabby-wallet/rabby-action';
 
 const Actions = ({
   data,
@@ -69,7 +69,7 @@ const Actions = ({
   origin,
   originLogo,
 }: {
-  data: ParsedActionData;
+  data: ParsedTransactionActionData;
   requireData: ActionRequireData;
   chain: Chain;
   engineResults: Result[];

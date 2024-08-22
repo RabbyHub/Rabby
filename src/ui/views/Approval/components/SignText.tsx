@@ -36,9 +36,11 @@ import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TextActions';
 import { WaitingSignMessageComponent } from './map';
 import stats from '@/stats';
-import { ParsedActionData } from './Actions/utils/types';
-import { formatSecurityEngineContext } from './Actions/utils/formatSecurityEngineContext';
-import { parseAction } from './Actions/utils/parseAction';
+import {
+  parseAction,
+  formatSecurityEngineContext,
+  ParsedTextActionData,
+} from '@rabby-wallet/rabby-action';
 
 interface SignTextProps {
   data: string[];
@@ -79,7 +81,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [
     parsedActionData,
     setParsedActionData,
-  ] = useState<ParsedActionData<'text'> | null>(null);
+  ] = useState<ParsedTextActionData | null>(null);
   const { executeEngine } = useSecurityEngine();
   const dispatch = useRabbyDispatch();
   const { userData, rules, currentTx } = useRabbySelector((s) => ({

@@ -37,7 +37,7 @@ import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
 import { isSameAddress, timeago, useWallet } from 'ui/utils';
 import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
-import { getProtocol } from '../Approval/components/Actions/utils';
+import { getProtocol } from '@rabby-wallet/rabby-action';
 import { ReplacePopup } from './components/ReplacePopup';
 import './style.less';
 

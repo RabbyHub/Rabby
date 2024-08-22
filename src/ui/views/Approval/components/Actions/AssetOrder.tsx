@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ContractRequireData } from '../TypedDataActions/utils';
-import { ParsedActionData } from './utils';
 import { isSameAddress } from 'ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -16,6 +14,10 @@ import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import LogoWithText from '../Actions/components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
+import {
+  ContractRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .header {
@@ -57,7 +59,7 @@ const AssetOrder = ({
   engineResults,
   sender,
 }: {
-  data: ParsedActionData['assetOrder'];
+  data: ParsedTransactionActionData['assetOrder'];
   requireData: ContractRequireData;
   chain: Chain;
   engineResults: Result[];

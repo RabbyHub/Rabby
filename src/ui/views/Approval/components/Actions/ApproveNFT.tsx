@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ApproveNFTRequireData, ParsedActionData } from './utils';
+import {
+  ApproveNFTRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import NFTWithName from './components/NFTWithName';
@@ -52,7 +55,7 @@ const ApproveNFT = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['approveNFT'];
+  data: ParsedTransactionActionData['approveNFT'];
   requireData: ApproveNFTRequireData;
   chain: Chain;
   engineResults: Result[];

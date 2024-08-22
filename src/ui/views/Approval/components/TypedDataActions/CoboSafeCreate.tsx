@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Col, Row, Table } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
 import LogoWithText from '../Actions/components/LogoWithText';
-import { TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import IconSafe from '@/ui/assets/walletlogo/safe.svg';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 
@@ -13,7 +13,7 @@ const Wrapper = styled.div``;
 const CoboSafeCreate = ({
   data,
 }: {
-  data: TypedDataActionData['coboSafeCreate'];
+  data: ParsedTypedDataActionData['coboSafeCreate'];
 }) => {
   const { t } = useTranslation();
   const actionData = data!;

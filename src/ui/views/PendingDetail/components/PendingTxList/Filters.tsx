@@ -16,7 +16,7 @@ import {
   ApproveTokenRequireData,
   SendRequireData,
   SwapRequireData,
-} from '../../../Approval/components/Actions/utils';
+} from '@rabby-wallet/rabby-action';
 import { findChainByServerID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
 
