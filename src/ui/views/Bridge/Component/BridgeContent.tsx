@@ -36,6 +36,10 @@ import pRetry from 'p-retry';
 import stats from '@/stats';
 import { BestQuoteLoading } from '../../Swap/Component/loading';
 import { MaxButton } from '../../SendToken/components/MaxButton';
+import { MiniApproval } from '../../Approval/components/MiniSignTx';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
@@ -103,6 +107,7 @@ export const BridgeContent = () => {
     setReceiveToken,
 
     handleAmountChange,
+    setPayAmount,
     handleBalance,
 
     debouncePayAmount,
@@ -176,6 +181,7 @@ export const BridgeContent = () => {
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
 
+  const [isShowSign, setIsShowSign] = useState(false);
   const gotoBridge = useCallback(async () => {
     if (
       !inSufficient &&
@@ -277,6 +283,118 @@ export const BridgeContent = () => {
     debouncePayAmount,
     rbiSource,
   ]);
+
+  const buildSwapTxs = useMemoizedFn(async () => {
+    if (
+      !inSufficient &&
+      payToken &&
+      receiveToken &&
+      selectedBridgeQuote?.bridge_id
+    ) {
+      try {
+        setFetchingBridgeQuote(true);
+        const { tx } = await pRetry(
+          () =>
+            wallet.openapi.getBridgeQuote({
+              aggregator_id: selectedBridgeQuote.aggregator.id,
+              bridge_id: selectedBridgeQuote.bridge_id,
+              from_token_id: payToken.id,
+              user_addr: userAddress,
+              from_chain_id: payToken.chain,
+              from_token_raw_amount: new BigNumber(debouncePayAmount)
+                .times(10 ** payToken.decimals)
+                .toFixed(0, 1)
+                .toString(),
+              to_chain_id: receiveToken.chain,
+              to_token_id: receiveToken.id,
+            }),
+          { retries: 1 }
+        );
+        stats.report('bridgeQuoteResult', {
+          aggregatorIds: selectedBridgeQuote.aggregator.id,
+          bridgeId: selectedBridgeQuote.bridge_id,
+          fromChainId: payToken.chain,
+          fromTokenId: payToken.id,
+          toTokenId: receiveToken.id,
+          toChainId: receiveToken.chain,
+          status: tx ? 'success' : 'fail',
+        });
+        return wallet.buildBridgeToken(
+          {
+            to: tx.to,
+            value: tx.value,
+            data: tx.data,
+            payTokenRawAmount: new BigNumber(debouncePayAmount)
+              .times(10 ** payToken.decimals)
+              .toFixed(0, 1)
+              .toString(),
+            chainId: tx.chainId,
+            shouldApprove: !!selectedBridgeQuote.shouldApproveToken,
+            shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
+            payTokenId: payToken.id,
+            payTokenChainServerId: payToken.chain,
+            info: {
+              aggregator_id: selectedBridgeQuote.aggregator.id,
+              bridge_id: selectedBridgeQuote.bridge_id,
+              from_chain_id: payToken.chain,
+              from_token_id: payToken.id,
+              from_token_amount: debouncePayAmount,
+              to_chain_id: receiveToken.chain,
+              to_token_id: receiveToken.id,
+              to_token_amount: selectedBridgeQuote.to_token_amount,
+              tx: tx,
+              rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
+            },
+          },
+          {
+            ga: {
+              category: 'Bridge',
+              source: 'bridge',
+              trigger: rbiSource,
+            },
+          }
+        );
+      } catch (error) {
+        message.error(error?.message || String(error));
+        stats.report('bridgeQuoteResult', {
+          aggregatorIds: selectedBridgeQuote.aggregator.id,
+          bridgeId: selectedBridgeQuote.bridge_id,
+          fromChainId: payToken.chain,
+          fromTokenId: payToken.id,
+          toTokenId: receiveToken.id,
+          toChainId: receiveToken.chain,
+          status: 'fail',
+        });
+        console.error(error);
+      } finally {
+        setFetchingBridgeQuote(false);
+      }
+    }
+  });
+
+  const { data: txs, runAsync: runBuildSwapTxs } = useRequest(buildSwapTxs, {
+    manual: true,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
+  const currentAccount = useCurrentAccount();
+
+  const handleBridge = useMemoizedFn(() => {
+    if (
+      [
+        KEYRING_TYPE.SimpleKeyring,
+        KEYRING_TYPE.HdKeyring,
+        KEYRING_CLASS.HARDWARE.LEDGER,
+      ].includes((currentAccount?.type || '') as any)
+    ) {
+      runBuildSwapTxs();
+      setIsShowSign(true);
+    } else {
+      gotoBridge();
+    }
+  });
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -480,11 +598,13 @@ export const BridgeContent = () => {
                 okText: 'Proceed with two step approve',
 
                 onOk() {
-                  gotoBridge();
+                  // gotoBridge();
+                  handleBridge();
                 },
               });
             }
-            gotoBridge();
+            // gotoBridge();
+            handleBridge();
           }}
           disabled={
             !payToken ||
@@ -515,6 +635,22 @@ export const BridgeContent = () => {
           setSelectedBridgeQuote={setSelectedBridgeQuote}
         />
       ) : null}
+      <MiniApproval
+        visible={isShowSign}
+        txs={txs}
+        onClose={() => {
+          setIsShowSign(false);
+        }}
+        onReject={() => {
+          setIsShowSign(false);
+        }}
+        onResolve={() => {
+          setTimeout(() => {
+            setIsShowSign(false);
+            setPayAmount('');
+          }, 1000);
+        }}
+      />
     </div>
   );
 };

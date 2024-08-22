@@ -14,7 +14,7 @@ import {
   getNativeTokenBalance,
   getPendingTxs,
 } from '@/utils/transaction';
-import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { GasLevel, Tx, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import {
   fetchActionRequiredData,
@@ -53,6 +53,8 @@ export const sendTransaction = async ({
   gasLevel,
   lowGasDeadline,
   isGasLess,
+  waitCompleted = true,
+  pushType = 'default',
 }: {
   tx: Tx;
   chainServerId: string;
@@ -62,6 +64,8 @@ export const sendTransaction = async ({
   gasLevel?: GasLevel;
   lowGasDeadline?: number;
   isGasLess?: boolean;
+  waitCompleted?: boolean;
+  pushType?: TxPushType;
 }) => {
   onProgress?.('building');
   const chain = findChain({
@@ -301,6 +305,7 @@ export const sendTransaction = async ({
           logId: logId,
           lowGasDeadline,
           isGasLess,
+          pushType,
         },
         pushed: false,
         result: undefined,
@@ -319,31 +324,40 @@ export const sendTransaction = async ({
 
   onProgress?.('signed');
 
-  // wait tx completed
-  const txCompleted = await new Promise<{ gasUsed: number }>((resolve) => {
-    const handler = (res) => {
-      if (res?.hash === hash) {
-        eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-        resolve(res || {});
-      }
+  if (waitCompleted) {
+    // wait tx completed
+    const txCompleted = await new Promise<{ gasUsed: number }>((resolve) => {
+      const handler = (res) => {
+        if (res?.hash === hash) {
+          eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+          resolve(res || {});
+        }
+      };
+      eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+    });
+
+    // calc gas cost
+    const gasCostAmount = new BigNumber(txCompleted.gasUsed)
+      .times(estimateGasCost.gasPrice)
+      .div(1e18);
+    const gasCostUsd = new BigNumber(gasCostAmount).times(
+      estimateGasCost.nativeTokenPrice
+    );
+
+    return {
+      txHash: hash,
+      gasCost: {
+        ...estimateGasCost,
+        gasCostUsd,
+        gasCostAmount,
+      },
     };
-    eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-  });
-
-  // calc gas cost
-  const gasCostAmount = new BigNumber(txCompleted.gasUsed)
-    .times(estimateGasCost.gasPrice)
-    .div(1e18);
-  const gasCostUsd = new BigNumber(gasCostAmount).times(
-    estimateGasCost.nativeTokenPrice
-  );
-
-  return {
-    txHash: hash,
-    gasCost: {
-      ...estimateGasCost,
-      gasCostUsd,
-      gasCostAmount,
-    },
-  };
+  } else {
+    return {
+      txHash: hash,
+      gasCost: {
+        ...estimateGasCost,
+      },
+    };
+  }
 };

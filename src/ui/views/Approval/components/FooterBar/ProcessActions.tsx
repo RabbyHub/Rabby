@@ -14,6 +14,7 @@ export const ProcessActions: React.FC<Props> = ({
   gasLess,
   gasLessThemeColor,
   isGasNotEnough,
+  children,
 }) => {
   const { t } = useTranslation();
   return (
@@ -51,7 +52,7 @@ export const ProcessActions: React.FC<Props> = ({
             }
             onClick={onSubmit}
           >
-            {t('page.signFooterBar.beginSigning')}
+            {children ? children : t('page.signFooterBar.beginSigning')}
           </Button>
         </GasLessAnimatedWrapper>
       </TooltipWithMagnetArrow>

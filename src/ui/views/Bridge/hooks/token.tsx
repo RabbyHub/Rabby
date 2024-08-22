@@ -429,6 +429,7 @@ export const useTokenPair = (userAddress: string) => {
     handleAmountChange,
     handleBalance,
     debouncePayAmount,
+    setPayAmount,
     inputAmount,
 
     inSufficient,

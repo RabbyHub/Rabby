@@ -1,4 +1,10 @@
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
@@ -19,7 +25,12 @@ import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
+import {
+  DEX,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  SWAP_SUPPORT_CHAINS,
+} from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChainByServerID } from '@/utils/chain';
@@ -29,6 +40,12 @@ import { useTranslation } from 'react-i18next';
 import { BestQuoteLoading } from './loading';
 import { MaxButton } from '../../SendToken/components/MaxButton';
 import { ReserveGasPopup } from './ReserveGasPopup';
+import GasSelectorHeader, {
+  GasSelectorResponse,
+} from '../../Approval/components/TxComponents/GasSelectorHeader';
+import { MiniApproval, MiniSignTx } from '../../Approval/components/MiniSignTx';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
@@ -127,6 +144,7 @@ export const Main = () => {
     exchangeToken,
 
     handleAmountChange,
+    setPayAmount,
     handleBalance,
     inputAmount,
     debouncePayAmount,
@@ -232,6 +250,7 @@ export const Main = () => {
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
+  const [isShowSign, setIsShowSign] = useState(false);
   const gotoSwap = useCallback(async () => {
     if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
       try {
@@ -297,6 +316,83 @@ export const Main = () => {
     activeProvider?.name,
     activeProvider?.shouldTwoStepApprove,
   ]);
+
+  const buildSwapTxs = useMemoizedFn(async () => {
+    if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
+      try {
+        const result = await wallet.buildDexSwap(
+          {
+            swapPreferMEVGuarded: preferMEVGuarded,
+            chain,
+            quote: activeProvider?.quote,
+            needApprove: activeProvider.shouldApproveToken,
+            spender:
+              activeProvider?.name === DEX_ENUM.WRAPTOKEN
+                ? ''
+                : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
+            pay_token_id: payToken.id,
+            unlimited: false,
+            shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+            gasPrice: payTokenIsNativeToken
+              ? gasList?.find((e) => e.level === gasLevel)?.price
+              : undefined,
+            postSwapParams: {
+              quote: {
+                pay_token_id: payToken.id,
+                pay_token_amount: Number(debouncePayAmount),
+                receive_token_id: receiveToken!.id,
+                receive_token_amount: new BigNumber(
+                  activeProvider?.quote.toTokenAmount
+                )
+                  .div(
+                    10 **
+                      (activeProvider?.quote.toTokenDecimals ||
+                        receiveToken.decimals)
+                  )
+                  .toNumber(),
+                slippage: new BigNumber(slippage).div(100).toNumber(),
+              },
+              dex_id: activeProvider?.name.replace('API', '') || 'WrapToken',
+            },
+          },
+          {
+            ga: {
+              category: 'Swap',
+              source: 'swap',
+              trigger: rbiSource,
+            },
+          }
+        );
+        return result;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  });
+
+  const { data: txs, runAsync: runBuildSwapTxs } = useRequest(buildSwapTxs, {
+    manual: true,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
+  const currentAccount = useCurrentAccount();
+
+  const handleSwap = useMemoizedFn(() => {
+    if (
+      [
+        KEYRING_TYPE.SimpleKeyring,
+        KEYRING_TYPE.HdKeyring,
+        KEYRING_CLASS.HARDWARE.LEDGER,
+      ].includes((currentAccount?.type || '') as any)
+    ) {
+      runBuildSwapTxs();
+      setIsShowSign(true);
+    } else {
+      gotoSwap();
+    }
+  });
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -522,7 +618,6 @@ export const Main = () => {
             </div>
           )}
       </div>
-
       {inSufficient ? (
         <Alert
           className={clsx(
@@ -549,7 +644,6 @@ export const Main = () => {
           }
         />
       ) : null}
-
       <div
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
@@ -586,11 +680,14 @@ export const Main = () => {
                 ),
                 okText: t('page.swap.process-with-two-step-approve'),
                 onOk() {
-                  gotoSwap();
+                  // gotoSwap();
+                  handleSwap();
                 },
               });
             }
-            gotoSwap();
+            // gotoSwap();
+            // runBuildSwapTxs();
+            handleSwap();
           }}
           disabled={
             !payToken ||
@@ -634,6 +731,22 @@ export const Main = () => {
           setActiveProvider={setActiveProvider}
         />
       ) : null}
+      <MiniApproval
+        visible={isShowSign}
+        txs={txs}
+        onClose={() => {
+          setIsShowSign(false);
+        }}
+        onReject={() => {
+          setIsShowSign(false);
+        }}
+        onResolve={() => {
+          setTimeout(() => {
+            setIsShowSign(false);
+            setPayAmount('');
+          }, 1000);
+        }}
+      />
     </div>
   );
 };
