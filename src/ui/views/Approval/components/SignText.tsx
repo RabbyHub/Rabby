@@ -23,18 +23,22 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useScroll, useThrottleFn } from 'react-use';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import { hex2Text, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  getTimeSpan,
+  hex2Text,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { FooterBar } from './FooterBar/FooterBar';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TextActions';
-import {
-  TextActionData,
-  formatSecurityEngineCtx,
-  parseAction,
-} from './TextActions/utils';
 import { WaitingSignMessageComponent } from './map';
 import stats from '@/stats';
+import { ParsedActionData } from './Actions/utils/types';
+import { formatSecurityEngineContext } from './Actions/utils/formatSecurityEngineContext';
+import { parseAction } from './Actions/utils/parseAction';
 
 interface SignTextProps {
   data: string[];
@@ -75,7 +79,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [
     parsedActionData,
     setParsedActionData,
-  ] = useState<TextActionData | null>(null);
+  ] = useState<ParsedActionData<'text'> | null>(null);
   const { executeEngine } = useSecurityEngine();
   const dispatch = useRabbyDispatch();
   const { userData, rules, currentTx } = useRabbySelector((s) => ({
@@ -211,7 +215,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   };
 
   const executeSecurityEngine = async () => {
-    const ctx = formatSecurityEngineCtx({
+    const ctx = await formatSecurityEngineContext({
+      type: 'text',
       actionData: parsedActionData!,
       origin: session.origin,
     });
@@ -290,9 +295,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       rejectApproval('This address can not sign text message', false, true);
     }
     actionType.current = textActionData?.action?.type || '';
-    const parsed = parseAction(textActionData, signText, sender);
+    const parsed = parseAction({
+      type: 'text',
+      data: textActionData.action,
+      text: signText,
+      sender,
+    });
     setParsedActionData(parsed);
-    const ctx = formatSecurityEngineCtx({
+    const ctx = await formatSecurityEngineContext({
+      type: 'text',
       actionData: parsed,
       origin: params.session.origin,
     });

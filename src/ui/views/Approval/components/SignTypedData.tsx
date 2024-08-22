@@ -11,13 +11,19 @@ import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import {
+  ALIAS_ADDRESS,
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
   KEYRING_TYPE,
   REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  getTimeSpan,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { adjustV } from '@/ui/utils/gnosis';
@@ -27,14 +33,7 @@ import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTyped
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TypedDataActions';
-import {
-  parseAction,
-  fetchRequireData,
-  TypedDataRequireData,
-  TypedDataActionData,
-  formatSecurityEngineCtx,
-  normalizeTypeData,
-} from './TypedDataActions/utils';
+import { normalizeTypeData } from './TypedDataActions/utils';
 import {
   Level,
   defaultRules,
@@ -44,6 +43,10 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
 import stats from '@/stats';
+import { ActionRequireData, ParsedActionData } from './Actions/utils/types';
+import { fetchActionRequiredData } from './Actions/utils/fetchActionRequiredData';
+import { formatSecurityEngineContext } from './Actions/utils/formatSecurityEngineContext';
+import { parseAction } from './Actions/utils/parseAction';
 
 interface SignTypedDataProps {
   method: string;
@@ -87,14 +90,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     number | string | undefined
   >(undefined);
 
-  const [
-    actionRequireData,
-    setActionRequireData,
-  ] = useState<TypedDataRequireData>(null);
+  const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
+    null
+  );
   const [
     parsedActionData,
     setParsedActionData,
-  ] = useState<TypedDataActionData | null>(null);
+  ] = useState<ParsedActionData<'typed_data'> | null>(null);
   const [
     cantProcessReason,
     setCantProcessReason,
@@ -407,7 +409,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
   };
 
-  const getRequireData = async (data: TypedDataActionData) => {
+  const getRequireData = async (data: ParsedActionData<'typed_data'>) => {
     const currentAccount = isGnosis
       ? account
       : await wallet.getCurrentAccount();
@@ -418,16 +420,42 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       }
     }
     if (currentAccount) {
-      const requireData = await fetchRequireData(
-        data,
-        currentAccount.address,
-        wallet
-      );
+      let chainServerId: string | undefined;
+      if (data.chainId) {
+        chainServerId = findChain({
+          id: Number(data.chainId),
+        })?.serverId;
+      }
+
+      const requireData = await fetchActionRequiredData({
+        type: 'typed_data',
+        actionData: data,
+        sender: currentAccount.address,
+        chainId: chainServerId,
+        walletProvider: {
+          hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+          hasAddress: wallet.hasAddress,
+          getWhitelist: wallet.getWhitelist,
+          isWhitelistEnabled: wallet.isWhitelistEnabled,
+          getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+          findChain,
+          ALIAS_ADDRESS,
+        },
+        apiProvider: isTestnetChainId(data.chainId)
+          ? wallet.testnetOpenapi
+          : wallet.openapi,
+      });
       setActionRequireData(requireData);
-      const ctx = await formatSecurityEngineCtx({
+      const ctx = await formatSecurityEngineContext({
+        type: 'typed_data',
         actionData: data,
         requireData,
-        wallet,
+        chainId: chainServerId,
+        provider: {
+          getTimeSpan,
+          hasAddress: wallet.hasAddress,
+        },
+        origin: params.session.origin,
       });
       securityEngineCtx.current = ctx;
       const result = await executeEngine(ctx);
@@ -437,10 +465,25 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const executeSecurityEngine = async () => {
-    const ctx = await formatSecurityEngineCtx({
-      actionData: parsedActionData!,
+    if (!parsedActionData) {
+      return;
+    }
+    let chainServerId: string | undefined;
+    if (parsedActionData.chainId) {
+      chainServerId = findChain({
+        id: Number(parsedActionData.chainId),
+      })?.serverId;
+    }
+    const ctx = await formatSecurityEngineContext({
+      type: 'typed_data',
+      actionData: parsedActionData,
       requireData: actionRequireData,
-      wallet,
+      chainId: chainServerId,
+      provider: {
+        getTimeSpan,
+        hasAddress: wallet.hasAddress,
+      },
+      origin: params.session.origin,
     });
     const result = await executeEngine(ctx);
     setEngineResults(result);
@@ -498,7 +541,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       if (typedDataActionData) {
         logId.current = typedDataActionData.log_id;
         actionType.current = typedDataActionData?.action?.type || '';
-        const parsed = parseAction(typedDataActionData, signTypedData, sender);
+        const parsed = parseAction({
+          type: 'typed_data',
+          data: typedDataActionData.action,
+          typedData: signTypedData,
+          sender,
+        });
         setParsedActionData(parsed);
         getRequireData(parsed);
       } else {
@@ -581,7 +629,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         {!isLoading && (
           <Actions
             data={parsedActionData}
-            requireData={actionRequireData}
+            // TODO: fix this type
+            requireData={actionRequireData as any}
             chain={chain}
             engineResults={engineResults}
             raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}

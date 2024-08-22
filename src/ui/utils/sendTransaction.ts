@@ -1,11 +1,12 @@
 import {
+  ALIAS_ADDRESS,
   CHAINS_ENUM,
   EVENTS,
   INTERNAL_REQUEST_ORIGIN,
   INTERNAL_REQUEST_SESSION,
 } from '@/constant';
 import { intToHex, WalletControllerType } from '@/ui/utils';
-import { findChain } from '@/utils/chain';
+import { findChain, isTestnet } from '@/utils/chain';
 import {
   calcGasLimit,
   calcMaxPriorityFee,
@@ -16,12 +17,10 @@ import {
 } from '@/utils/transaction';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
-import {
-  fetchActionRequiredData,
-  parseAction,
-} from '@/ui/views/Approval/components/Actions/utils';
 import Browser from 'webextension-polyfill';
 import eventBus from '@/eventBus';
+import { parseAction } from '../views/Approval/components/Actions/utils/parseAction';
+import { fetchActionRequiredData } from '../views/Approval/components/Actions/utils/fetchActionRequiredData';
 
 // fail code
 export enum FailedCode {
@@ -222,31 +221,43 @@ export const sendTransaction = async ({
     origin: origin || '',
     addr: address,
   });
-  const parsed = parseAction(
-    actionData.action,
-    preExecResult.balance_change,
-    {
-      ...tx,
-      gas: '0x0',
-      nonce: recommendNonce || '0x1',
-      value: tx.value || '0x0',
-    },
-    preExecResult.pre_exec_version,
-    preExecResult.gas.gas_used
-  );
-  const requiredData = await fetchActionRequiredData({
-    actionData: parsed,
-    contractCall: actionData.contract_call,
-    chainId: chain.serverId,
-    address,
-    wallet,
+  const parsed = parseAction({
+    type: 'transaction',
+    data: actionData.action,
+    balanceChange: preExecResult.balance_change,
     tx: {
       ...tx,
       gas: '0x0',
       nonce: recommendNonce || '0x1',
       value: tx.value || '0x0',
     },
-    origin,
+    preExecVersion: preExecResult.pre_exec_version,
+    gasUsed: preExecResult.gas.gas_used,
+  });
+  const requiredData = await fetchActionRequiredData({
+    type: 'transaction',
+    actionData: parsed,
+    contractCall: actionData.contract_call,
+    chainId: chain.serverId,
+    sender: address,
+    walletProvider: {
+      hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+      hasAddress: wallet.hasAddress,
+      getWhitelist: wallet.getWhitelist,
+      isWhitelistEnabled: wallet.isWhitelistEnabled,
+      getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+      findChain,
+      ALIAS_ADDRESS,
+    },
+    tx: {
+      ...tx,
+      gas: '0x0',
+      nonce: recommendNonce || '0x1',
+      value: tx.value || '0x0',
+    },
+    apiProvider: isTestnet(chain.serverId)
+      ? wallet.testnetOpenapi
+      : wallet.openapi,
   });
 
   await wallet.updateSigningTx(signingTxId, {
