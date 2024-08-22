@@ -833,6 +833,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             actionData: parsed,
             requireData: requiredData,
             chainId: chain.serverId,
+            isTestnet: isTestnet(chain.serverId),
             provider: {
               getTimeSpan,
               hasAddress: wallet.hasAddress,
@@ -1657,6 +1658,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       actionData: actionData,
       requireData: actionRequireData,
       chainId: chain.serverId,
+      isTestnet: isTestnet(chain.serverId),
       provider: {
         getTimeSpan,
         hasAddress: wallet.hasAddress,

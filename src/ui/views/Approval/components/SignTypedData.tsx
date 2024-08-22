@@ -454,6 +454,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         actionData: data,
         requireData,
         chainId: chainServerId,
+        isTestnet: isTestnetChainId(data.chainId),
         provider: {
           getTimeSpan,
           hasAddress: wallet.hasAddress,
@@ -482,6 +483,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       actionData: parsedActionData,
       requireData: actionRequireData,
       chainId: chainServerId,
+      isTestnet: isTestnetChainId(parsedActionData.chainId),
       provider: {
         getTimeSpan,
         hasAddress: wallet.hasAddress,
