@@ -17,7 +17,9 @@ import IconSendToken, {
 import IconSwap, {
   ReactComponent as RcIconSwap,
 } from 'ui/assets/dashboard/swap.svg';
-
+import IconReceive, {
+  ReactComponent as RcIconReceive,
+} from 'ui/assets/dashboard/receive.svg';
 import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
 import IconGasTopUp, {
   ReactComponent as RcIconGasTopUp,
@@ -31,7 +33,6 @@ import IconTransactions, {
 import IconAddresses, {
   ReactComponent as RcIconAddresses,
 } from 'ui/assets/dashboard/addresses.svg';
-import { ReactComponent as RcIconDeBankHi } from 'ui/assets/dashboard/debank-hi.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 
 import IconMoreSettings, {
@@ -40,11 +41,11 @@ import IconMoreSettings, {
 import IconDrawer from 'ui/assets/drawer.png';
 import {
   getCurrentConnectSite,
-  openDeBankHi,
   openInternalPageInTab,
   useWallet,
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
+import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { Settings } from '../index';
 import './style.less';
 import { CHAINS_ENUM, ThemeIconType, KEYRING_TYPE } from '@/constant';
@@ -96,6 +97,9 @@ export default ({
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false, trigger } = state ?? {};
+  const [isShowReceiveModal, setIsShowReceiveModal] = useState(
+    trigger === 'receive' && showChainsModal
+  );
 
   const [isShowEcology, setIsShowEcologyModal] = useState(false);
 
@@ -124,14 +128,6 @@ export default ({
       return !!data?.claimable_points && data?.claimable_points > 0;
     }
     return false;
-  }, [account?.address]);
-
-  const { value: debankHiStatus, loading: dbHiLoading } = useAsync(async () => {
-    if (account?.address) {
-      const data = await wallet.getDeBankHiStatus(account.address);
-      return data;
-    }
-    return;
   }, [account?.address]);
 
   useEffect(() => {
@@ -215,12 +211,20 @@ export default ({
       content: t('page.dashboard.home.panel.send'),
       onClick: () => history.push('/send-token?rbisource=dashboard'),
     } as IPanelItem,
-    receive: {
+    bridge: {
       icon: RcIconBridge,
       eventKey: 'Bridge',
       content: t('page.dashboard.home.panel.bridge'),
       onClick: () => {
         history.push('/bridge');
+      },
+    } as IPanelItem,
+    receive: {
+      icon: RcIconReceive,
+      eventKey: 'Receive',
+      content: t('page.dashboard.home.panel.receive'),
+      onClick: () => {
+        setIsShowReceiveModal(true);
       },
     } as IPanelItem,
     gasTopUp: {
@@ -257,22 +261,6 @@ export default ({
       },
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
-    } as IPanelItem,
-    debankHi: {
-      icon: RcIconDeBankHi,
-      eventKey: 'DeBank Hi',
-      content: t('page.dashboard.home.panel.debankHi'),
-      onClick: () => {
-        account?.address && openDeBankHi(account.address);
-      },
-      badge: dbHiLoading ? 0 : debankHiStatus?.unread_message_count,
-      badgeAlert: !debankHiStatus?.is_checked,
-      badgeClassName: clsx(
-        debankHiStatus?.is_checked ? 'hi-checked' : 'hi-unchecked',
-        {
-          round: Number(debankHiStatus?.unread_message_count) < 10,
-        }
-      ),
     } as IPanelItem,
     more: {
       icon: RcIconMoreSettings,
@@ -313,10 +301,9 @@ export default ({
       'swap',
       'send',
       'receive',
-      'nft',
-      // 'queue',
+      'bridge',
       'transactions',
-      'debankHi',
+      'nft',
       'security',
       'ecology',
       'more',
@@ -326,9 +313,9 @@ export default ({
       'swap',
       'send',
       'receive',
-      'nft',
+      'bridge',
       'transactions',
-      'debankHi',
+      'nft',
       'security',
       'ecology',
       'more',
@@ -424,6 +411,18 @@ export default ({
               chain,
             });
           }
+        }}
+      />
+      <ChainSelectorModal
+        className="receive-chain-select-modal"
+        value={CHAINS_ENUM.ETH}
+        visible={isShowReceiveModal}
+        onChange={(chain) => {
+          history.push(`/receive?rbisource=dashboard&chain=${chain}`);
+          setIsShowReceiveModal(false);
+        }}
+        onCancel={() => {
+          setIsShowReceiveModal(false);
         }}
       />
 
