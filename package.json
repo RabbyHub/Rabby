@@ -47,6 +47,7 @@
     "@metamask/eth-sig-util": "5.1.0",
     "@metamask/obs-store": "6.0.2",
     "@metamask/post-message-stream": "8.1.0",
+    "@narval-xyz/armory-sdk": "0.7.0",
     "@ngraveio/bc-ur": "1.1.6",
     "@onekeyfe/hd-core": "0.3.48",
     "@onekeyfe/hd-web-sdk": "0.3.27",

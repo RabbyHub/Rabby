@@ -62,6 +62,11 @@ import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
+import ConnectNarval from './ConnectNarval';
+import NarvalConnectionsList from './ConnectNarval/NarvalConnectionsList';
+import NarvalConnectionForm from './ConnectNarval/NarvalConnectionForm';
+import NarvalAccountsList from './ConnectNarval/NarvalAccountsList';
+import NarvalPendingPermissions from './ConnectNarval/NarvalPendingPermissions';
 
 declare global {
   interface Window {
@@ -122,6 +127,21 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/key">
           <ImportPrivateKey />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/narval">
+          <ConnectNarval />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/narval/pending-permissions">
+          <NarvalPendingPermissions />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/narval/connections-list">
+          <NarvalConnectionsList />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/narval/connection-form">
+          <NarvalConnectionForm />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/narval/accounts">
+          <NarvalAccountsList />
         </PrivateRoute>
         <PrivateRoute exact path="/import/json">
           <ImportJson />

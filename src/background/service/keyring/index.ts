@@ -27,6 +27,8 @@ import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
 } from './eth-gnosis-keyring';
+import NarvalKeyring, { NarvalAccount } from './eth-narval-keyring';
+import { ArmoryConfig } from '@/background/utils/armory';
 import preference from '../preference';
 import i18n from '../i18n';
 import { KEYRING_TYPE, EVENTS, KEYRING_CLASS } from 'consts';
@@ -61,6 +63,7 @@ export const KEYRING_SDK_TYPES = {
   CoboArgusKeyring,
   CoinbaseKeyring,
   EthImKeyKeyring,
+  NarvalKeyring,
 };
 
 interface MemStoreState {
@@ -177,6 +180,116 @@ export class KeyringService extends EventEmitter {
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this))
       .then(() => keyring);
+  }
+
+  getNarvalKeyringByConnectionId = async (connectionId: string) => {
+    const narvalKeyrings: NarvalKeyring[] = await this.getKeyringsByType(
+      KEYRING_CLASS.Narval
+    );
+
+    const keyring = narvalKeyrings.find((keyring) => {
+      const narvalConnectionId = keyring.getNarvalConnectionId();
+      return narvalConnectionId === connectionId;
+    });
+
+    if (!keyring) {
+      throw new Error('Narval keyring not found');
+    }
+
+    return keyring;
+  };
+
+  async connectNarvalAccount(
+    armoryConfig: ArmoryConfig
+  ): Promise<NarvalKeyring> {
+    try {
+      const connectionId = NarvalKeyring.getNarvalConnectionId(armoryConfig);
+      const existingKeyring = await this.getNarvalKeyringByConnectionId(
+        connectionId
+      );
+
+      return existingKeyring;
+    } catch (error) {
+      let keyring: NarvalKeyring;
+
+      return this.persistAllKeyrings()
+        .then(
+          this.addNewKeyring.bind(this, KEYRING_TYPE.NarvalKeyring, {
+            armoryConfig,
+          })
+        )
+        .then(async (_keyring) => {
+          keyring = _keyring;
+          return this.persistAllKeyrings.bind(this);
+        })
+        .then(this.persistAllKeyrings.bind(this))
+        .then(this.setUnlocked.bind(this))
+        .then(this.fullUpdate.bind(this))
+        .then(() => keyring);
+    }
+  }
+
+  async selectNarvalAccounts(connectionId: string, accounts: NarvalAccount[]) {
+    const narvalKeyrings: NarvalKeyring[] = this.getKeyringsByType(
+      KEYRING_CLASS.Narval
+    );
+    const _accounts = await Promise.all(
+      narvalKeyrings
+        .filter((k) => k.getNarvalConnectionId() !== connectionId)
+        .map((k) => k.getAccounts())
+    );
+    const allAccounts: string[] = _accounts
+      .reduce((m, n) => m.concat(n), [] as string[])
+      .map((address) => normalizeAddress(address).toLowerCase());
+    const isIncluded = accounts
+      .map(({ address }) => address)
+      .find((address) => {
+        return allAccounts.find(
+          (key) =>
+            key === address.toLowerCase() ||
+            key === ethUtil.stripHexPrefix(address)
+        );
+      });
+    if (isIncluded) {
+      const error = new Error(
+        JSON.stringify({
+          address: isIncluded,
+          anchor: 'DuplicateAccountError',
+        })
+      );
+      return Promise.reject(error);
+    }
+
+    const keyring = await this.getNarvalKeyringByConnectionId(connectionId);
+    keyring.setNarvalAccounts(accounts);
+    const [address] = await keyring.getAccounts();
+    const allKeyrings = await this.getAllTypedAccounts();
+    if (!contactBook.getContactByAddress(address)) {
+      const alias = generateAliasName({
+        keyringType: KEYRING_TYPE.NarvalKeyring,
+        keyringCount:
+          allKeyrings.filter(
+            (keyring) => keyring.type === KEYRING_TYPE.NarvalKeyring
+          ).length - 1,
+      });
+      contactBook.addAlias({
+        address,
+        name: alias,
+      });
+    }
+
+    return this.persistAllKeyrings()
+      .then(() => this._updateMemStoreKeyrings())
+      .then(() => this.fullUpdate())
+      .then(() => keyring.getNarvalAccounts());
+  }
+
+  removeNarvalConnection(keyring: NarvalKeyring) {
+    this.keyrings = this.keyrings.filter((k) => k !== keyring);
+
+    return this.persistAllKeyrings()
+      .then(() => this._updateMemStoreKeyrings())
+      .then(() => this.fullUpdate());
   }
 
   generateMnemonic(): string {
