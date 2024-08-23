@@ -16,6 +16,7 @@ import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import { ProcessActions } from '../FooterBar/ProcessActions';
 import { Dots } from '../Popup/Dots';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
+import { useTranslation } from 'react-i18next';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -64,6 +65,7 @@ export const MiniCommonAction: React.FC<Props> = ({
   ...props
 }) => {
   const { isDarkTheme } = useThemeMode();
+  const { t } = useTranslation();
   return (
     <>
       {task.status === 'idle' ? (
@@ -114,12 +116,13 @@ export const MiniCommonAction: React.FC<Props> = ({
               viewBox="0 0 20 20"
               className="text-r-green-default w-[16px] h-[16px]"
             />
-            Transaction created
+            {t('page.miniSignFooterBar.status.txCreated')}
           </div>
         </>
       ) : (
         <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
-          Signed. Creating transaction <Dots />
+          {t('page.miniSignFooterBar.status.txSigned')}
+          <Dots />
         </div>
       )}
     </>

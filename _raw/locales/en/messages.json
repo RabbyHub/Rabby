@@ -2163,6 +2163,15 @@
           "mintBtn": "Mint"
         }
       }
+    },
+    "miniSignFooterBar": {
+      "signWithLedger": "Sign with Ledger",
+      "status": {
+        "txCreated": "Transaction created",
+        "txSigned": "Signed. Creating transaction",
+        "txSending": "Sending signing request",
+        "txSendings": "Sending signing request({current}/{total})"
+      }
     }
   },
   "component": {

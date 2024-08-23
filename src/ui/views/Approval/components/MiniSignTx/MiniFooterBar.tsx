@@ -300,12 +300,7 @@ export const MiniFooterBar: React.FC<Props> = ({
                   : gasLessConfig?.theme_color
               }
               footer={footer}
-            >
-              <div className="flex items-center gap-[8px] justify-center">
-                <LedgerSVG />
-                Sign with Ledger
-              </div>
-            </MiniLedgerAction>
+            ></MiniLedgerAction>
           ) : (
             <MiniCommonAction
               task={task}

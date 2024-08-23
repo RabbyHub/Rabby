@@ -146,7 +146,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
           >
             <div className="flex items-center gap-[8px] justify-center">
               <LedgerSVG width={22} height={22} viewBox="0 0 28 28" />
-              Sign with Ledger
+              {t('page.miniSignFooterBar.signWithLedger')}
             </div>
           </ProcessActions>
 
@@ -164,22 +164,27 @@ export const MiniLedgerAction: React.FC<Props> = ({
               viewBox="0 0 20 20"
               className="text-r-green-default w-[16px] h-[16px]"
             />
-            Transaction created
+
+            {t('page.miniSignFooterBar.status.txCreated')}
           </div>
         </>
       ) : current + 1 === total && txStatus === 'signed' ? (
         <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
-          Signed. Creating transaction <Dots />
+          {t('page.miniSignFooterBar.status.txSigned')} <Dots />
         </div>
       ) : (
         <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
           {total > 1 ? (
             <>
-              Sending signing request({current + 1}/{total}) <Dots />
+              {t('page.miniSignFooterBar.status.txSendings', {
+                current: current + 1,
+                total: total,
+              })}
+              <Dots />
             </>
           ) : (
             <>
-              Sending signing request <Dots />
+              {t('page.miniSignFooterBar.status.txSending')} <Dots />
             </>
           )}
         </div>
