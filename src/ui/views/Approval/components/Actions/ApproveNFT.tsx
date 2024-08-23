@@ -124,6 +124,14 @@ const ApproveNFT = ({
           />
 
           <SecurityListItem
+            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
+            id="1147"
+            engineResult={engineResultMap['1147']}
+            warningText={'$0'}
+            title={t('page.signTx.trustValueTitle')}
+          />
+
+          <SecurityListItem
             id="1048"
             engineResult={engineResultMap['1048']}
             warningText={<Values.Interacted value={false} />}

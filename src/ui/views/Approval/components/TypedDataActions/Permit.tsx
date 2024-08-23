@@ -139,6 +139,14 @@ const Permit = ({
           />
 
           <SecurityListItem
+            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
+            id="1148"
+            engineResult={engineResultMap['1148']}
+            warningText={'$0'}
+            title={t('page.signTx.trustValueTitle')}
+          />
+
+          <SecurityListItem
             id="1080"
             engineResult={engineResultMap['1080']}
             warningText={<Values.Interacted value={false} />}
@@ -146,19 +154,6 @@ const Permit = ({
               <Values.Interacted value={requireData.hasInteraction} />
             }
             title={t('page.signTx.interacted')}
-          />
-
-          <SecurityListItem
-            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
-            id="1078"
-            engineResult={engineResultMap['1078']}
-            dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {
-              value: '$10,000',
-            })}
-            warningText={t('page.signTx.tokenApprove.trustValueLessThan', {
-              value: '$100,000',
-            })}
-            title={t('page.signTx.trustValueTitle')}
           />
 
           <SecurityListItem
