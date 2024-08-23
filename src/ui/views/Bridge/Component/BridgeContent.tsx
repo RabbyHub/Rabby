@@ -647,7 +647,7 @@ export const BridgeContent = () => {
         onResolve={() => {
           setTimeout(() => {
             setIsShowSign(false);
-            setPayAmount('');
+            // setPayAmount('');
             setTimeout(() => {
               history.replace('/');
             }, 500);

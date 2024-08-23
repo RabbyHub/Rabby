@@ -45,7 +45,6 @@ export const useBatchSignTxTask = () => {
   );
 
   const init = useMemoizedFn((list: ListItemType[]) => {
-    console.log('batch init', list);
     setList(list);
     setStatus('idle');
   });
@@ -86,16 +85,17 @@ export const useBatchSignTxTask = () => {
           });
         } catch (e) {
           console.error(e);
+          const msg = e.message || e.name;
           _updateList({
             index,
             payload: {
               status: 'failed',
-              message: e.message,
+              message: msg,
             },
           });
 
-          if (!isLedgerLockError(e.message) || e.message === 'DISCONNECTED') {
-            setError(e.message);
+          if (!isLedgerLockError(msg) || msg === 'DISCONNECTED') {
+            setError(msg);
           }
           throw e;
         }

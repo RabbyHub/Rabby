@@ -743,7 +743,7 @@ export const Main = () => {
         onResolve={() => {
           setTimeout(() => {
             setIsShowSign(false);
-            setPayAmount('');
+            // setPayAmount('');
             setTimeout(() => {
               history.replace('/');
             }, 500);

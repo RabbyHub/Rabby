@@ -169,7 +169,7 @@ export const sendTransaction = async ({
     recommendGasLimitRatio,
   });
 
-  const isGasNotEnough = checkErrors.some((e) => e.code === 3001);
+  const isGasNotEnough = !isGasLess && checkErrors.some((e) => e.code === 3001);
   const ETH_GAS_USD_LIMIT = process.env.DEBUG
     ? (await Browser.storage.local.get('DEBUG_ETH_GAS_USD_LIMIT'))
         .DEBUG_ETH_GAS_USD_LIMIT || 20

@@ -54,6 +54,7 @@ import { Dots } from '../Popup/Dots';
 import { useBatchSignTxTask } from './useBatchSignTxTask';
 import { MiniFooterBar } from './MiniFooterBar';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export const MiniSignTx = ({
   txs,
@@ -334,6 +335,7 @@ export const MiniSignTx = ({
             isGasLess: useGasLess,
             waitCompleted: false,
             pushType: pushInfo.type,
+            ignoreGasCheck: true,
           },
           status: 'idle',
         };
@@ -910,6 +912,7 @@ export const MiniApproval = ({
   onResolve?: () => void;
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isDarkTheme } = useThemeMode();
   useEffect(() => {
     if (visible) {
       setIsSubmitting(false);
@@ -932,7 +935,7 @@ export const MiniApproval = ({
       push={false}
       destroyOnClose
       maskStyle={{
-        backgroundColor: 'rgba(0,0,0,0.2)',
+        backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
       }}
     >
       {txs?.length ? (
