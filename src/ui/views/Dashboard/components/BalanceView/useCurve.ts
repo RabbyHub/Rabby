@@ -23,6 +23,12 @@ export const formChartData = (
   const startData = data[0] || { value: 0, timestamp: 0 };
   const startUsdValue = coerceFloat(startData.usd_value, 0);
 
+  // hotfix: data may be not a array, need to check
+  if (!Array.isArray(data)) {
+    data = [];
+    console.error('CurveList is not a array: ', typeof data);
+  }
+
   const list =
     data?.map((x) => {
       const change = coerceFloat(x.usd_value) - startUsdValue;
