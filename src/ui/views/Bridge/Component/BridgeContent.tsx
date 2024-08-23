@@ -379,7 +379,7 @@ export const BridgeContent = () => {
 
   const currentAccount = useCurrentAccount();
 
-  const handleBridge = useMemoizedFn(() => {
+  const handleBridge = useMemoizedFn(async () => {
     if (
       [
         KEYRING_TYPE.SimpleKeyring,
@@ -387,7 +387,7 @@ export const BridgeContent = () => {
         KEYRING_CLASS.HARDWARE.LEDGER,
       ].includes((currentAccount?.type || '') as any)
     ) {
-      runBuildSwapTxs();
+      await runBuildSwapTxs();
       setIsShowSign(true);
     } else {
       gotoBridge();
