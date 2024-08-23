@@ -4496,9 +4496,21 @@ export class WalletController extends BaseController {
 
   getRecommendGas = getRecommendGas;
   getRecommendNonce = getRecommendNonce;
-  ethSendTransaction = (
+  ethSendTransaction = async (
     ...args: Parameters<typeof providerController.ethSendTransaction>
-  ) => providerController.ethSendTransaction(...args);
+  ) => {
+    try {
+      const res = await providerController.ethSendTransaction(...args);
+      return res;
+    } catch (e) {
+      const signingTxId = args?.[0]?.approvalRes?.signingTxId;
+      if (signingTxId != null) {
+        this.removeSigningTx(signingTxId);
+      }
+
+      throw e;
+    }
+  };
   getDeBankHiStatus = debankService.getDebankHi;
 }
 
