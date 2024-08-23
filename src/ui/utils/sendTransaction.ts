@@ -55,11 +55,13 @@ export const sendTransaction = async ({
   isGasLess,
   waitCompleted = true,
   pushType = 'default',
+  ignoreGasNotEnoughCheck,
 }: {
   tx: Tx;
   chainServerId: string;
   wallet: WalletControllerType;
   ignoreGasCheck?: boolean;
+  ignoreGasNotEnoughCheck?: boolean;
   onProgress?: (status: ProgressStatus) => void;
   gasLevel?: GasLevel;
   lowGasDeadline?: number;
@@ -155,19 +157,21 @@ export const sendTransaction = async ({
   });
 
   // check gas errors
-  const checkErrors = checkGasAndNonce({
-    recommendGasLimit: `0x${gas.toString(16)}`,
-    recommendNonce,
-    gasLimit: Number(gasLimit),
-    nonce: Number(recommendNonce || tx.nonce),
-    gasExplainResponse: gasCost,
-    isSpeedUp: false,
-    isCancel: false,
-    tx,
-    isGnosisAccount: false,
-    nativeTokenBalance: balance,
-    recommendGasLimitRatio,
-  });
+  const checkErrors = ignoreGasNotEnoughCheck
+    ? []
+    : checkGasAndNonce({
+        recommendGasLimit: `0x${gas.toString(16)}`,
+        recommendNonce,
+        gasLimit: Number(gasLimit),
+        nonce: Number(recommendNonce || tx.nonce),
+        gasExplainResponse: gasCost,
+        isSpeedUp: false,
+        isCancel: false,
+        tx,
+        isGnosisAccount: false,
+        nativeTokenBalance: balance,
+        recommendGasLimitRatio,
+      });
 
   const isGasNotEnough = !isGasLess && checkErrors.some((e) => e.code === 3001);
   const ETH_GAS_USD_LIMIT = process.env.DEBUG

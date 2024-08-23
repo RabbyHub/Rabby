@@ -336,6 +336,7 @@ export const MiniSignTx = ({
             waitCompleted: false,
             pushType: pushInfo.type,
             ignoreGasCheck: true,
+            ignoreGasNotEnoughCheck: true,
           },
           status: 'idle',
         };
@@ -372,36 +373,39 @@ export const MiniSignTx = ({
         })
       );
     }
+    Promise.all(
+      txsResult.map(async (item) => {
+        const tx = {
+          ...item.tx,
+          ...(support1559
+            ? {
+                maxFeePerGas: intToHex(Math.round(gas.price)),
+                maxPriorityFeePerGas:
+                  gas.maxPriorityFee <= 0
+                    ? item.tx.maxFeePerGas
+                    : intToHex(Math.round(gas.maxPriorityFee)),
+              }
+            : { gasPrice: intToHex(Math.round(gas.price)) }),
+        };
+        return {
+          ...item,
+          tx,
+          gasCost: await explainGas({
+            gasUsed: item.gasUsed,
+            gasPrice: gas.price,
+            chainId: chain.id,
+            nativeTokenPrice: item.preExecResult.native_token.price,
+            wallet,
+            tx,
+            gasLimit: item.gasLimit,
+          }),
+        };
+      })
+    ).then((res) => {
+      setTxsResult(res);
+    });
     if (support1559) {
-      setTxsResult((pre) => {
-        return pre.map((item) => {
-          return {
-            ...item,
-            tx: {
-              ...item.tx,
-              maxFeePerGas: intToHex(Math.round(gas.price)),
-              maxPriorityFeePerGas:
-                gas.maxPriorityFee <= 0
-                  ? item.tx.maxFeePerGas
-                  : intToHex(Math.round(gas.maxPriorityFee)),
-            },
-          };
-        });
-      });
       setMaxPriorityFee(Math.round(gas.maxPriorityFee));
-    } else {
-      setTxsResult((pre) => {
-        return pre.map((item) => {
-          return {
-            ...item,
-            tx: {
-              ...item.tx,
-              gasPrice: intToHex(Math.round(gas.price)),
-              // gas: intToHex(gas.gasLimit),
-            },
-          };
-        });
-      });
     }
   };
 
