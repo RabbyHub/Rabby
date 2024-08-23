@@ -622,6 +622,9 @@ export class WalletController extends BaseController {
         unTriggerTxCounter.decrease();
       }
 
+      if (postSwapParams) {
+        swapService.addTx(chain, quote.tx.data, postSwapParams);
+      }
       const res = await this.sendRequest(
         {
           $ctx:
