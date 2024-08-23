@@ -94,7 +94,7 @@ export const useBatchSignTxTask = () => {
             },
           });
 
-          if (!isLedgerLockError(msg) || msg === 'DISCONNECTED') {
+          if (!(isLedgerLockError(msg) || msg === 'DISCONNECTED')) {
             setError(msg);
           }
           throw e;
