@@ -648,10 +648,10 @@ export const BridgeContent = () => {
           setTimeout(() => {
             setIsShowSign(false);
             // setPayAmount('');
-            setTimeout(() => {
-              history.replace('/');
-            }, 500);
-          }, 1000);
+            // setTimeout(() => {
+            history.replace('/');
+            // }, 500);
+          }, 500);
         }}
       />
     </div>
