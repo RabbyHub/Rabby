@@ -371,33 +371,33 @@ export const MiniSignTx = ({
         })
       );
     }
-    // if (support1559) {
-    //   setTxsResult((pre) => {
-    //     return pre.map((item) => {
-    //       return {
-    //         ...item,
-    //         tx: {
-    //           ...item.tx,
-    //           maxFeePerGas: intToHex(Math.round(gas.price)),
-    //           gas: intToHex(gas.gasLimit),
-    //         },
-    //       };
-    //     });
-    //   });
-    // } else {
-    //   setTxsResult((pre) => {
-    //     return pre.map((item) => {
-    //       return {
-    //         ...item,
-    //         tx: {
-    //           ...item.tx,
-    //           gasPrice: intToHex(Math.round(gas.price)),
-    //           gas: intToHex(gas.gasLimit),
-    //         },
-    //       };
-    //     });
-    //   });
-    // }
+    if (support1559) {
+      setTxsResult((pre) => {
+        return pre.map((item) => {
+          return {
+            ...item,
+            tx: {
+              ...item.tx,
+              maxFeePerGas: intToHex(Math.round(gas.price)),
+              // gas: intToHex(gas.gasLimit),
+            },
+          };
+        });
+      });
+    } else {
+      setTxsResult((pre) => {
+        return pre.map((item) => {
+          return {
+            ...item,
+            tx: {
+              ...item.tx,
+              gasPrice: intToHex(Math.round(gas.price)),
+              // gas: intToHex(gas.gasLimit),
+            },
+          };
+        });
+      });
+    }
   };
 
   const handleCancel = useMemoizedFn(() => {
