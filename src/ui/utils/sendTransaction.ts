@@ -122,16 +122,26 @@ export const sendTransaction = async ({
     chainId: chain.id,
   });
   const gas = new BigNumber(gasRaw);
-  const { gasLimit, recommendGasLimitRatio } = await calcGasLimit({
-    chain,
-    tx,
-    gas,
-    selectedGas: normalGas,
-    nativeTokenBalance: balance,
-    explainTx: preExecResult,
-    needRatio,
-    wallet,
-  });
+  let gasLimit = tx.gas || tx.gasLimit;
+  let recommendGasLimitRatio = 1;
+
+  if (!gasLimit) {
+    const {
+      gasLimit: _gasLimit,
+      recommendGasLimitRatio: _recommendGasLimitRatio,
+    } = await calcGasLimit({
+      chain,
+      tx,
+      gas,
+      selectedGas: normalGas,
+      nativeTokenBalance: balance,
+      explainTx: preExecResult,
+      needRatio,
+      wallet,
+    });
+    gasLimit = _gasLimit;
+    recommendGasLimitRatio = _recommendGasLimitRatio;
+  }
 
   // calc gasCost
   const gasCost = await explainGas({
