@@ -66,7 +66,6 @@ export const MiniSignTx = ({
   onResolve?: () => void;
   onSubmit?: () => void;
 }) => {
-  console.log(txs);
   const chainId = txs[0].chainId;
   const chain = findChain({
     id: chainId,
@@ -379,11 +378,15 @@ export const MiniSignTx = ({
             tx: {
               ...item.tx,
               maxFeePerGas: intToHex(Math.round(gas.price)),
-              // gas: intToHex(gas.gasLimit),
+              maxPriorityFeePerGas:
+                gas.maxPriorityFee <= 0
+                  ? item.tx.maxFeePerGas
+                  : intToHex(Math.round(gas.maxPriorityFee)),
             },
           };
         });
       });
+      setMaxPriorityFee(Math.round(gas.maxPriorityFee));
     } else {
       setTxsResult((pre) => {
         return pre.map((item) => {
@@ -653,6 +656,19 @@ export const MiniSignTx = ({
 
         tx.gas = gasLimit;
 
+        const actionData = await wallet.openapi.parseTx({
+          chainId: chain.serverId,
+          tx: {
+            ...tx,
+            gas: '0x0',
+            nonce: tx.nonce || '0x1',
+            value: tx.value || '0x0',
+            to: tx.to || '',
+          },
+          origin: origin || '',
+          addr: currentAccount.address,
+        });
+
         return {
           rawTx,
           tx,
@@ -661,6 +677,7 @@ export const MiniSignTx = ({
           gasLimit,
           recommendGasLimitRatio,
           gasCost,
+          actionData,
         };
       })
     );
@@ -770,62 +787,66 @@ export const MiniSignTx = ({
       <MiniFooterBar
         task={task}
         Header={
-          <GasSelectorHeader
-            pushType={pushInfo.type}
-            disabled={false}
-            isReady={isReady}
-            gasLimit={gasLimit}
-            noUpdate={false}
-            gasList={gasList}
-            selectedGas={selectedGas}
-            version={txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0'}
-            recommendGasLimit={recommendGasLimit}
-            recommendNonce={recommendNonce}
-            chainId={chainId}
-            onChange={handleGasChange}
-            nonce={realNonce}
-            disableNonce={true}
-            isSpeedUp={false}
-            isCancel={false}
-            is1559={support1559}
-            isHardware={isHardware}
-            manuallyChangeGasLimit={manuallyChangeGasLimit}
-            errors={checkErrors}
-            engineResults={engineResults}
-            nativeTokenBalance={nativeTokenBalance}
-            gasPriceMedian={gasPriceMedian}
-            gas={totalGasCost}
-            gasCalcMethod={async (price) => {
-              const res = await Promise.all(
-                txsResult.map((item) =>
-                  explainGas({
-                    gasUsed: item.gasUsed,
-                    gasPrice: price,
-                    chainId,
-                    nativeTokenPrice:
-                      item.preExecResult.native_token.price || 0,
-                    tx: item.tx,
-                    wallet,
-                    gasLimit: item.gasLimit,
-                  })
-                )
-              );
-              const totalCost = res.reduce(
-                (sum, item) => {
-                  sum.gasCostAmount = sum.gasCostAmount.plus(
-                    item.gasCostAmount
-                  );
-                  sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
-                  return sum;
-                },
-                {
-                  gasCostUsd: new BigNumber(0),
-                  gasCostAmount: new BigNumber(0),
-                }
-              );
-              return totalCost;
-            }}
-          />
+          <div
+            className={clsx(task.status !== 'idle' && 'pointer-events-none')}
+          >
+            <GasSelectorHeader
+              pushType={pushInfo.type}
+              disabled={false}
+              isReady={isReady}
+              gasLimit={gasLimit}
+              noUpdate={false}
+              gasList={gasList}
+              selectedGas={selectedGas}
+              version={txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0'}
+              recommendGasLimit={recommendGasLimit}
+              recommendNonce={recommendNonce}
+              chainId={chainId}
+              onChange={handleGasChange}
+              nonce={realNonce}
+              disableNonce={true}
+              isSpeedUp={false}
+              isCancel={false}
+              is1559={support1559}
+              isHardware={isHardware}
+              manuallyChangeGasLimit={manuallyChangeGasLimit}
+              errors={checkErrors}
+              engineResults={engineResults}
+              nativeTokenBalance={nativeTokenBalance}
+              gasPriceMedian={gasPriceMedian}
+              gas={totalGasCost}
+              gasCalcMethod={async (price) => {
+                const res = await Promise.all(
+                  txsResult.map((item) =>
+                    explainGas({
+                      gasUsed: item.gasUsed,
+                      gasPrice: price,
+                      chainId,
+                      nativeTokenPrice:
+                        item.preExecResult.native_token.price || 0,
+                      tx: item.tx,
+                      wallet,
+                      gasLimit: item.gasLimit,
+                    })
+                  )
+                );
+                const totalCost = res.reduce(
+                  (sum, item) => {
+                    sum.gasCostAmount = sum.gasCostAmount.plus(
+                      item.gasCostAmount
+                    );
+                    sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
+                    return sum;
+                  },
+                  {
+                    gasCostUsd: new BigNumber(0),
+                    gasCostAmount: new BigNumber(0),
+                  }
+                );
+                return totalCost;
+              }}
+            />
+          </div>
         }
         isWatchAddr={currentAccountType === KEYRING_TYPE.WatchAddressKeyring}
         gasLessConfig={gasLessConfig}
@@ -910,6 +931,9 @@ export const MiniApproval = ({
       }}
       push={false}
       destroyOnClose
+      maskStyle={{
+        backgroundColor: 'rgba(0,0,0,0.2)',
+      }}
     >
       {txs?.length ? (
         <MiniSignTx

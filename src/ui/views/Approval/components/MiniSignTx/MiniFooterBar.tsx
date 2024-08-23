@@ -285,7 +285,7 @@ export const MiniFooterBar: React.FC<Props> = ({
         })}
       >
         {Header}
-        <>
+        <div className="pt-[10px]">
           {account.type === KEYRING_CLASS.HARDWARE.LEDGER ? (
             <MiniLedgerAction
               task={task}
@@ -299,6 +299,7 @@ export const MiniFooterBar: React.FC<Props> = ({
                   ? gasLessConfig?.dark_color
                   : gasLessConfig?.theme_color
               }
+              footer={footer}
             >
               <div className="flex items-center gap-[8px] justify-center">
                 <LedgerSVG />
@@ -321,7 +322,7 @@ export const MiniFooterBar: React.FC<Props> = ({
               footer={footer}
             />
           )}
-        </>
+        </div>
       </Wrapper>
     </div>
   );

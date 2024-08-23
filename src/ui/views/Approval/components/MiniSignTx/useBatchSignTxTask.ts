@@ -50,10 +50,10 @@ export const useBatchSignTxTask = () => {
     setStatus('idle');
   });
 
-  const start = useMemoizedFn(async (current = 0) => {
+  const start = useMemoizedFn(async () => {
     try {
       setStatus('active');
-      for (let index = current; index < list.length; index++) {
+      for (let index = 0; index < list.length; index++) {
         const item = list[index];
         const tx = item.tx;
         const options = item.options;
@@ -107,10 +107,11 @@ export const useBatchSignTxTask = () => {
     }
   });
 
-  const handleRetry = useMemoizedFn(() => {
+  const handleRetry = useMemoizedFn(async () => {
     setError('');
-    setStatus('idle');
-    start(currentActiveIndex);
+    // setStatus('idle');
+    // setStatus('')
+    await start();
   });
 
   const stop = useMemoizedFn(() => {

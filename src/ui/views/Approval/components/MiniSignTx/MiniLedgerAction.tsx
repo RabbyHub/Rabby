@@ -145,7 +145,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
             }
           >
             <div className="flex items-center gap-[8px] justify-center">
-              <LedgerSVG />
+              <LedgerSVG width={22} height={22} viewBox="0 0 28 28" />
               Sign with Ledger
             </div>
           </ProcessActions>
@@ -167,13 +167,21 @@ export const MiniLedgerAction: React.FC<Props> = ({
             Transaction created
           </div>
         </>
-      ) : txStatus === 'sended' || txStatus === 'idle' ? (
+      ) : current + 1 === total && txStatus === 'signed' ? (
         <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
-          Sending signing request({current + 1}/{total}) <Dots />
+          Signed. Creating transaction <Dots />
         </div>
       ) : (
         <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
-          Signed. Creating transaction <Dots />
+          {total > 1 ? (
+            <>
+              Sending signing request({current + 1}/{total}) <Dots />
+            </>
+          ) : (
+            <>
+              Sending signing request <Dots />
+            </>
+          )}
         </div>
       )}
     </>

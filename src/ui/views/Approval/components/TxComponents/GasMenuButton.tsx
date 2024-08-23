@@ -77,6 +77,7 @@ const MenuStyled = styled(Menu)`
   border: 0.5px solid var(--r-neutral-line, #d3d8e0);
   background: var(--r-neutral-bg1, #fff);
   padding: 4px;
+  margin-right: 10px;
 
   .ant-dropdown-menu-item-group-title {
     padding: 0;
