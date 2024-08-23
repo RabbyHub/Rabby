@@ -45,6 +45,7 @@ export const useBatchSignTxTask = () => {
   );
 
   const init = useMemoizedFn((list: ListItemType[]) => {
+    console.log('batch init', list);
     setList(list);
     setStatus('idle');
   });

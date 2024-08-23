@@ -566,6 +566,7 @@ export const MiniSignTx = ({
     });
     setRecommendNonce(recommendNonce);
 
+    const tempTxs: Tx[] = [];
     const res = await Promise.all(
       txs.map(async (rawTx, index) => {
         const normalizedTx = normalizeTxParams(rawTx);
@@ -581,6 +582,7 @@ export const MiniSignTx = ({
           value: normalizedTx.value,
           gasPrice: intToHex(selectedGas.price),
         };
+        tempTxs.push(tx);
 
         if (support1559) {
           tx = convertLegacyTo1559(tx);
@@ -591,11 +593,14 @@ export const MiniSignTx = ({
           origin: INTERNAL_REQUEST_ORIGIN,
           address: currentAccount?.address,
           updateNonce: true,
-          pending_tx_list: await getPendingTxs({
-            recommendNonce,
-            wallet,
-            address: currentAccount?.address,
-          }),
+          pending_tx_list: [
+            ...(await getPendingTxs({
+              recommendNonce,
+              wallet,
+              address: currentAccount?.address,
+            })),
+            ...tempTxs.slice(0, index),
+          ],
         });
         let estimateGas = 0;
         if (preExecResult.gas.success) {
