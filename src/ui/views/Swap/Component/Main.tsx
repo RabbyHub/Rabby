@@ -46,6 +46,7 @@ import GasSelectorHeader, {
 import { MiniApproval, MiniSignTx } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useHistory } from 'react-router-dom';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
@@ -372,9 +373,6 @@ export const Main = () => {
 
   const { data: txs, runAsync: runBuildSwapTxs } = useRequest(buildSwapTxs, {
     manual: true,
-    onSuccess: (data) => {
-      console.log(data);
-    },
   });
 
   const currentAccount = useCurrentAccount();
@@ -393,6 +391,8 @@ export const Main = () => {
       gotoSwap();
     }
   });
+
+  const history = useHistory();
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -744,6 +744,9 @@ export const Main = () => {
           setTimeout(() => {
             setIsShowSign(false);
             setPayAmount('');
+            setTimeout(() => {
+              history.replace('/');
+            }, 500);
           }, 1000);
         }}
       />

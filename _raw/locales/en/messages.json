@@ -333,7 +333,7 @@
       "keystoneNotConnected": "Keystone is not connected",
       "keystoneConnected": "Keystone is connected",
       "ledgerConnected": "Ledger is connected",
-      "signAndSubmitButton": "Sign and Create",
+      "signAndSubmitButton": "Sign",
       "gasless": {
         "unavailable": "Your Gas Balance is not enough",
         "notEnough": "Gas balance is not enough",
