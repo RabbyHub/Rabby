@@ -659,7 +659,7 @@ const createClientByChain = (chain: TestnetChainBase) => {
         },
       },
     }),
-    transport: http(chain.rpcUrl),
+    transport: http(chain.rpcUrl, { timeout: 300000 }),
   });
 };
 
