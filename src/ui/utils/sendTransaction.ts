@@ -235,6 +235,7 @@ export const sendTransaction = async ({
     },
     preExecVersion: preExecResult.pre_exec_version,
     gasUsed: preExecResult.gas.gas_used,
+    sender: tx.from,
   });
   const requiredData = await fetchActionRequiredData({
     type: 'transaction',

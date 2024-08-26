@@ -14,6 +14,7 @@ import { useSize, useDebounceFn } from 'ahooks';
 import { Skeleton } from 'antd';
 import { Account } from 'background/service/preference';
 import {
+  CHAINS,
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
   KEYRING_TYPE,
@@ -221,6 +222,13 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       type: 'text',
       actionData: parsedActionData!,
       origin: session.origin,
+      isTestnet: false,
+      chainId: findChain({ id: chainId })?.serverId || CHAINS.ETH.serverId,
+      requireData: null,
+      provider: {
+        getTimeSpan,
+        hasAddress: wallet.hasAddress,
+      },
     });
     securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
@@ -308,6 +316,13 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       type: 'text',
       actionData: parsed,
       origin: params.session.origin,
+      chainId: findChain({ id: chainId })?.serverId || CHAINS.ETH.serverId,
+      isTestnet: false,
+      requireData: null,
+      provider: {
+        getTimeSpan,
+        hasAddress: wallet.hasAddress,
+      },
     });
     const result = await executeEngine(ctx);
     setEngineResults(result);

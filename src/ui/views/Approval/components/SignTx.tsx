@@ -802,6 +802,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             },
             preExecVersion: res.pre_exec_version,
             gasUsed: res.gas.gas_used,
+            sender: tx.from,
           });
           const requiredData = await fetchActionRequiredData({
             type: 'transaction',

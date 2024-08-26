@@ -12,6 +12,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import {
   ALIAS_ADDRESS,
+  CHAINS,
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
   KEYRING_TYPE,
@@ -434,7 +435,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         type: 'typed_data',
         actionData: data,
         sender: currentAccount.address,
-        chainId: chainServerId,
+        chainId: chainServerId || CHAINS.ETH.serverId,
         walletProvider: {
           hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
           hasAddress: wallet.hasAddress,
@@ -453,7 +454,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         type: 'typed_data',
         actionData: data,
         requireData,
-        chainId: chainServerId,
+        chainId: chainServerId || CHAINS.ETH.serverId,
         isTestnet: isTestnetChainId(data.chainId),
         provider: {
           getTimeSpan,
@@ -482,7 +483,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       type: 'typed_data',
       actionData: parsedActionData,
       requireData: actionRequireData,
-      chainId: chainServerId,
+      chainId: chainServerId || CHAINS.ETH.serverId,
       isTestnet: isTestnetChainId(parsedActionData.chainId),
       provider: {
         getTimeSpan,

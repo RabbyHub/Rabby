@@ -5,7 +5,7 @@ import i18n from '@/i18n';
 import { parseNumber } from '@metamask/eth-sig-util';
 import { padStart } from 'lodash';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
-
+import { getActionTypeText as getTransactionActionTypeText } from '../Actions/utils';
 export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
   const { t } = i18n;
 
@@ -60,6 +60,10 @@ export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
   if (data?.common) {
     return data.common.title;
   }
+  if (data && getTransactionActionTypeText(data)) {
+    return getTransactionActionTypeText(data);
+  }
+
   return t('page.signTx.unknownAction');
 };
 

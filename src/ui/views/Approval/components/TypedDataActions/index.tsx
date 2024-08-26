@@ -8,9 +8,6 @@ import {
   MultiSigRequireData,
   SwapTokenOrderRequireData,
   BatchApproveTokenRequireData,
-  ApproveNFTRequireData,
-  RevokeTokenApproveRequireData,
-  SendRequireData,
   ActionRequireData,
   ParsedTypedDataActionData,
 } from '@rabby-wallet/rabby-action';
@@ -27,7 +24,6 @@ import CreateKey from '../TextActions/CreateKey';
 import VerifyAddress from '../TextActions/VerifyAddress';
 import BatchSellNFT from './BatchSellNFT';
 import BatchPermit2 from './BatchPermit2';
-import Send from '../Actions/Send';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
 import clsx from 'clsx';
@@ -37,9 +33,6 @@ import CoboSafeCreate from './CoboSafeCreate';
 import CoboSafeModificationRule from './CoboSafeModificationRole';
 import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegatedAddress';
 import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
-import RevokePermit2 from '../Actions/RevokePermit2';
-import AssetOrder from '../Actions/AssetOrder';
-import ApproveNFT from '../Actions/ApproveNFT';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
 import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
@@ -49,6 +42,8 @@ import { MessageWrapper } from '../TextActions';
 import { Divide } from '../Divide';
 import { Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
+import { TransactionActionList } from '../Actions/components/TransactionActionList';
+import { noop } from '@/ui/utils';
 
 const Actions = ({
   data,
@@ -167,26 +162,10 @@ const Actions = ({
                       engineResults={engineResults}
                     />
                   )}
-                  {data.revokePermit && chain && (
-                    <RevokePermit2
-                      data={data.revokePermit}
-                      requireData={requireData as RevokeTokenApproveRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
                   {data.permit2 && chain && (
                     <Permit2
                       data={data.permit2}
                       requireData={requireData as ApproveTokenRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.approveNFT && chain && (
-                    <ApproveNFT
-                      data={data.approveNFT}
-                      requireData={requireData as ApproveNFTRequireData}
                       chain={chain}
                       engineResults={engineResults}
                     />
@@ -234,27 +213,10 @@ const Actions = ({
                       sender={data.sender}
                     />
                   )}
-                  {data.assetOrder && chain && (
-                    <AssetOrder
-                      data={data.assetOrder}
-                      requireData={requireData as ContractRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                      sender={data.sender}
-                    />
-                  )}
                   {data.signMultiSig && (
                     <SignMultisig
                       data={data.signMultiSig}
                       requireData={requireData as MultiSigRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.send && chain && (
-                    <Send
-                      data={data.send}
-                      requireData={requireData as SendRequireData}
                       chain={chain}
                       engineResults={engineResults}
                     />
@@ -304,6 +266,17 @@ const Actions = ({
                       requireData={requireData as ContractRequireData}
                       chain={chain}
                       engineResults={engineResults}
+                    />
+                  )}
+                  {chain && (
+                    <TransactionActionList
+                      data={data}
+                      requireData={requireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                      raw={raw}
+                      isTypedData
+                      onChange={noop}
                     />
                   )}
                 </div>
