@@ -1,28 +1,32 @@
 import { Account } from '@/background/service/preference';
-import { FallbackSiteLogo } from '@/ui/component';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { findChain } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import { CHAINS, INTERNAL_REQUEST_ORIGIN, SecurityEngineLevel } from 'consts';
-import React, { useEffect, useMemo, useState } from 'react';
+import {
+  CHAINS,
+  INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CLASS,
+  SecurityEngineLevel,
+} from 'consts';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { AccountInfo } from './AccountInfo';
-import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
-import { useThemeMode } from '@/ui/hooks/usePreference';
-import { findChain } from '@/utils/chain';
+import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
+import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
 import {
-  GasLessToSign,
-  GasLessNotEnough,
   GasLessActivityToSign,
   GasLessConfig,
-} from './GasLessComponents';
+  GasLessNotEnough,
+} from '../FooterBar/GasLessComponents';
+import { MiniCommonAction } from './MiniCommonAction';
+import { MiniLedgerAction } from './MiniLedgerAction';
+import { BatchSignTxTaskType } from './useBatchSignTxTask';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -40,10 +44,12 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   enableGasLess?: () => void;
   canUseGasLess?: boolean;
   Header?: React.ReactNode;
+  Main?: React.ReactNode;
   gasLessFailedReason?: string;
   isWatchAddr?: boolean;
   gasLessConfig?: GasLessConfig;
   isGasNotEnough?: boolean;
+  task: BatchSignTxTaskType;
 }
 
 const Wrapper = styled.section`
@@ -131,7 +137,7 @@ const SecurityLevelTipColor = {
   },
 };
 
-export const FooterBar: React.FC<Props> = ({
+export const MiniFooterBar: React.FC<Props> = ({
   origin,
   originLogo,
   gnosisAccount,
@@ -145,9 +151,11 @@ export const FooterBar: React.FC<Props> = ({
   onIgnoreAllRules,
   enableGasLess,
   Header,
+  Main,
   gasLessFailedReason,
   isWatchAddr,
   gasLessConfig,
+  task,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -219,75 +227,97 @@ export const FooterBar: React.FC<Props> = ({
     return null;
   }
 
+  const footer = (
+    <>
+      {securityLevel && hasUnProcessSecurityResult && (
+        <div
+          className="security-level-tip"
+          style={{
+            color: SecurityLevelTipColor[securityLevel].bg,
+            backgroundColor: SecurityLevelTipColor[securityLevel].bg,
+          }}
+        >
+          <img
+            src={SecurityLevelTipColor[securityLevel].icon}
+            className="icon icon-level"
+          />
+          <span
+            className="flex-1"
+            style={{
+              color: SecurityLevelTipColor[securityLevel].text,
+            }}
+          >
+            {t('page.signFooterBar.processRiskAlert')}
+          </span>
+          <span
+            className="underline text-13 font-medium cursor-pointer"
+            style={{
+              color: SecurityLevelTipColor[securityLevel].text,
+            }}
+            onClick={onIgnoreAllRules}
+          >
+            {t('page.signFooterBar.ignoreAll')}
+          </span>
+        </div>
+      )}
+      {showGasLess &&
+        (!securityLevel || !hasUnProcessSecurityResult) &&
+        (canUseGasLess ? (
+          <GasLessActivityToSign
+            gasLessEnable={useGasLess}
+            handleFreeGas={() => {
+              enableGasLess?.();
+            }}
+            gasLessConfig={gasLessConfig}
+          />
+        ) : isWatchAddr ? null : (
+          <GasLessNotEnough gasLessFailedReason={gasLessFailedReason} />
+        ))}
+    </>
+  );
+
   return (
     <div className="relative">
       {!isDarkTheme && <Shadow isShow={hasShadow} />}
       <Wrapper
         className={clsx({
           'is-darkmode': hasShadow,
-          'pt-[20px]': !Header,
         })}
       >
         {Header}
-        <AccountInfo
-          chain={props.chain}
-          account={account}
-          isTestnet={props.isTestnet}
-        />
-        <ActionGroup
-          account={account}
-          gasLess={useGasLess}
-          {...props}
-          disabledProcess={useGasLess ? false : props.disabledProcess}
-          enableTooltip={useGasLess ? false : props.enableTooltip}
-          gasLessThemeColor={
-            isDarkTheme ? gasLessConfig?.dark_color : gasLessConfig?.theme_color
-          }
-        />
-        {securityLevel && hasUnProcessSecurityResult && (
-          <div
-            className="security-level-tip"
-            style={{
-              color: SecurityLevelTipColor[securityLevel].bg,
-              backgroundColor: SecurityLevelTipColor[securityLevel].bg,
-            }}
-          >
-            <img
-              src={SecurityLevelTipColor[securityLevel].icon}
-              className="icon icon-level"
+        <div className="pt-[10px]">
+          {account.type === KEYRING_CLASS.HARDWARE.LEDGER ? (
+            <MiniLedgerAction
+              task={task}
+              account={account}
+              gasLess={useGasLess}
+              {...props}
+              disabledProcess={useGasLess ? false : props.disabledProcess}
+              enableTooltip={useGasLess ? false : props.enableTooltip}
+              gasLessThemeColor={
+                isDarkTheme
+                  ? gasLessConfig?.dark_color
+                  : gasLessConfig?.theme_color
+              }
+              footer={footer}
+            ></MiniLedgerAction>
+          ) : (
+            <MiniCommonAction
+              task={task}
+              account={account}
+              gasLess={useGasLess}
+              {...props}
+              disabledProcess={useGasLess ? false : props.disabledProcess}
+              enableTooltip={useGasLess ? false : props.enableTooltip}
+              gasLessThemeColor={
+                isDarkTheme
+                  ? gasLessConfig?.dark_color
+                  : gasLessConfig?.theme_color
+              }
+              footer={footer}
             />
-            <span
-              className="flex-1"
-              style={{
-                color: SecurityLevelTipColor[securityLevel].text,
-              }}
-            >
-              {t('page.signFooterBar.processRiskAlert')}
-            </span>
-            <span
-              className="underline text-13 font-medium cursor-pointer"
-              style={{
-                color: SecurityLevelTipColor[securityLevel].text,
-              }}
-              onClick={onIgnoreAllRules}
-            >
-              {t('page.signFooterBar.ignoreAll')}
-            </span>
-          </div>
-        )}
-        {showGasLess &&
-          (!securityLevel || !hasUnProcessSecurityResult) &&
-          (canUseGasLess ? (
-            <GasLessActivityToSign
-              gasLessEnable={useGasLess}
-              handleFreeGas={() => {
-                enableGasLess?.();
-              }}
-              gasLessConfig={gasLessConfig}
-            />
-          ) : isWatchAddr ? null : (
-            <GasLessNotEnough gasLessFailedReason={gasLessFailedReason} />
-          ))}
+          )}
+        </div>
       </Wrapper>
     </div>
   );
