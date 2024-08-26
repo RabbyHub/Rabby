@@ -24,7 +24,6 @@ import {
   RabbyPointsService,
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
-  debankService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -4511,7 +4510,6 @@ export class WalletController extends BaseController {
       throw e;
     }
   };
-  getDeBankHiStatus = debankService.getDebankHi;
 }
 
 const wallet = new WalletController();
