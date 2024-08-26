@@ -285,7 +285,7 @@ export const BridgeContent = () => {
     rbiSource,
   ]);
 
-  const buildSwapTxs = useMemoizedFn(async () => {
+  const buildTxs = useMemoizedFn(async () => {
     if (
       !inSufficient &&
       payToken &&
@@ -373,7 +373,11 @@ export const BridgeContent = () => {
     }
   });
 
-  const { data: txs, runAsync: runBuildSwapTxs } = useRequest(buildSwapTxs, {
+  const {
+    data: txs,
+    runAsync: runBuildSwapTxs,
+    mutate: mutateTxs,
+  } = useRequest(buildTxs, {
     manual: true,
   });
 
@@ -640,13 +644,16 @@ export const BridgeContent = () => {
         txs={txs}
         onClose={() => {
           setIsShowSign(false);
+          mutateTxs([]);
         }}
         onReject={() => {
           setIsShowSign(false);
+          mutateTxs([]);
         }}
         onResolve={() => {
           setTimeout(() => {
             setIsShowSign(false);
+            mutateTxs([]);
             // setPayAmount('');
             // setTimeout(() => {
             history.replace('/');

@@ -371,7 +371,11 @@ export const Main = () => {
     }
   });
 
-  const { data: txs, runAsync: runBuildSwapTxs } = useRequest(buildSwapTxs, {
+  const {
+    data: txs,
+    runAsync: runBuildSwapTxs,
+    mutate: mutateTxs,
+  } = useRequest(buildSwapTxs, {
     manual: true,
   });
 
@@ -736,13 +740,16 @@ export const Main = () => {
         txs={txs}
         onClose={() => {
           setIsShowSign(false);
+          mutateTxs([]);
         }}
         onReject={() => {
           setIsShowSign(false);
+          mutateTxs([]);
         }}
         onResolve={() => {
           setTimeout(() => {
             setIsShowSign(false);
+            mutateTxs([]);
             // setPayAmount('');
             // setTimeout(() => {
             history.replace('/');
