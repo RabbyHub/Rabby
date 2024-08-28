@@ -7,16 +7,11 @@ import {
   ParsedTransactionActionData,
   TransferOwnerRequireData,
 } from '@rabby-wallet/rabby-action';
-import { formatTokenAmount } from 'ui/utils/number';
-import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
-import LogoWithText from './components/LogoWithText';
 import ViewMore from './components/ViewMore';
 import { SecurityListItem } from './components/SecurityListItem';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
-import { ALIAS_ADDRESS } from '@/constant';
-import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 
 const Wrapper = styled.div`
   .header {

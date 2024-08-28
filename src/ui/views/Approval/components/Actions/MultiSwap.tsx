@@ -94,18 +94,6 @@ const MultiSwap = ({
     return !isSameAddress(actionData.receiver || '', sender);
   }, [actionData, sender]);
 
-  const handleClickRule = (id: string) => {
-    const rule = rules.find((item) => item.id === id);
-    if (!rule) return;
-    const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
-      ruleConfig: rule,
-      value: result?.value,
-      level: result?.level,
-      ignored: processedRules.includes(id),
-    });
-  };
-
   return (
     <Wrapper>
       <Table>
