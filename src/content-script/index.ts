@@ -42,6 +42,7 @@ const bcm = new BroadcastChannelMessage({
   name: 'rabby-content-script',
   target: 'rabby-page-provider',
 }).listen((data) => {
+  chrome.runtime.sendMessage({ type: 'ping' });
   if (pm) {
     return pm?.request(data);
   }
