@@ -48,7 +48,7 @@ const createOffscreen = async () => {
 
 // keep the service worker alive when tabs are activated
 const keepAlive = () => {
-  chrome.tabs.onActivated.addListener(() => {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     importAllScripts();
     return false;
   });
