@@ -67,6 +67,15 @@ export const getActionTypeText = (data: ParsedTransactionActionData) => {
   if (data.permit2BatchRevokeToken) {
     return t('page.signTx.batchRevokePermit2.title');
   }
+  if (data.transferOwner) {
+    return t('page.signTx.transferOwner.title');
+  }
+  if (data.swapLimitPay) {
+    return t('page.signTx.swapLimitPay.title');
+  }
+  if (data.multiSwap) {
+    return t('page.signTx.swap.title');
+  }
   return t('page.signTx.unknownAction');
 };
 
@@ -94,6 +103,9 @@ export const getActionTypeTextByType = (type: string) => {
     contract_call: t('page.signTx.contractCall.title'),
     swap_order: t('page.signTx.assetOrder.title'),
     permit2_batch_revoke_token: t('page.signTx.batchRevokePermit2.title'),
+    transfer_owner: t('page.signTx.transferOwner.title'),
+    multiSwap: t('page.signTx.swap.title'),
+    swapLimitPay: t('page.signTx.swapLimitPay.title'),
   };
 
   return dict[type] || t('page.signTx.unknownAction');

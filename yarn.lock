@@ -4738,17 +4738,17 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-action@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.0.tgz#486c7a33c033e7392ea8d9533266cd6feec7071e"
-  integrity sha512-+aSWTTnHq7xti419GV/6X0lALLTicAdYjpk+dB/26TLjLu4lKTZjDUbDvoUqudutgKgMs4YRTirr8orzs9LqOA==
+"@rabby-wallet/rabby-action@0.1.1-beta":
+  version "0.1.1-beta"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.1-beta.tgz#7258c35d38b3e279f65c1c75847709bac31df698"
+  integrity sha512-6OFqo80VQiC4qsG77kzkNG6hWS81nuP1Nzis6oAGAvheBqU8/qtcJnWtHd48p3Z+Xi5jfC/wApfW/qEafbTknw==
   dependencies:
     p-queue "^8.0.1"
 
-"@rabby-wallet/rabby-api@0.7.26":
-  version "0.7.26"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.26.tgz#73273ec1e447a1afbce7523a4f1e31527fbb8372"
-  integrity sha512-p/0aHoQDY9T0x4Uyr1HsEkbpII3TCe6Fw8vSDlBaI9W+6fahg5J7HKvWbZcjlf7K0zEl3rl4PYqRQ6jBL0oR+w==
+"@rabby-wallet/rabby-api@0.7.28":
+  version "0.7.28"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.28.tgz#8e8f981980ea2eeb80346d1a38282f699d437bdc"
+  integrity sha512-6phKLUiirIl/2j0Pp620jggINgKO6D3+gHrMMvyV4Msvl7Wh34PBzMsLT/KXDme76CSTvKV33exmS4My5pWUmg==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -4757,10 +4757,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-security-engine@^2.0.6-beta.1":
-  version "2.0.6-beta.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-2.0.6-beta.1.tgz#9d52440c873d13798b4f5697a7144445de473d69"
-  integrity sha512-CtWQrl5QjRRq6ylnhv1xfXknBRGL/wfDIU5rSzfs3zkAvEmZ4USmxdaKWktLEvrTm1hZDucJVeC5iLSUbYFnwQ==
+"@rabby-wallet/rabby-security-engine@2.0.7-beta":
+  version "2.0.7-beta"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-2.0.7-beta.tgz#bcdb303001b18ad04c9553270ceb0f1cf816a8bd"
+  integrity sha512-orojIPjBDCvvaB8sCAICfVLStLiEIRrJCe22jH8za849cwWeoAz8QeiRGC85GzpEnvcTp1icjHk/uLv2fGc97g==
 
 "@rabby-wallet/rabby-sign@^0.3.3":
   version "0.3.3"
