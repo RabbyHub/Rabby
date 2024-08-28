@@ -46,9 +46,14 @@ const createOffscreen = async () => {
   console.debug('Offscreen iframe loaded');
 };
 
-// keep the service worker alive when tabs are activated
 const keepAlive = () => {
+  // keep the service worker alive when messages are received
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    importAllScripts();
+    return false;
+  });
+  // keep the service worker alive when tabs are activated
+  chrome.tabs.onActivated.addListener(() => {
     importAllScripts();
     return false;
   });
