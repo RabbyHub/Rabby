@@ -58,7 +58,7 @@ export const EditCustomTestnetModal = ({
   onConfirm(values: TestnetChain): void;
   onChange?: (values: Partial<TestnetChainBase>) => void;
   zIndex?: number;
-  height?: number;
+  height?: string | number;
   maskStyle?: React.CSSProperties;
   ctx?: {
     ga?: {
@@ -127,7 +127,7 @@ export const EditCustomTestnetModal = ({
 
   return (
     <Popup
-      height={height || 520}
+      height={height}
       visible={visible}
       onCancel={onCancel}
       bodyStyle={{

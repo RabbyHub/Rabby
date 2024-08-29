@@ -93,3 +93,7 @@ if (navigator?.usb) {
     console.log('USB device disconnected', device);
   });
 }
+
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch((err) => console.error(err));

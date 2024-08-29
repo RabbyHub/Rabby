@@ -285,7 +285,7 @@ export const SwapTxHistory = ({
     <Popup
       visible={visible}
       title={t('page.swap.swap-history')}
-      height={494}
+      height="70%"
       onClose={onClose}
       closable
       bodyStyle={{

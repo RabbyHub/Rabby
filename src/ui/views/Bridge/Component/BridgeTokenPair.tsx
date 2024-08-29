@@ -38,7 +38,7 @@ const TokenPairDrawer = (
   return (
     <Drawer
       className="token-selector custom-popup is-support-darkmode"
-      height={440}
+      height="60%"
       placement="bottom"
       {...props}
     >

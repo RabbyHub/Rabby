@@ -102,7 +102,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
     }
   }, [status]);
 
-  const lastNormalHeight = React.useRef(0);
+  const lastNormalHeight = React.useRef<string | number>(0);
 
   React.useEffect(() => {
     if (

@@ -23,8 +23,10 @@
       "48": "images/icon-48.png",
       "128": "images/icon-128.png"
     },
-    "default_title": "Rabby",
-    "default_popup": "popup.html"
+    "default_title": "Rabby"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
   },
   "author": "https://rabby.io/",
   "background": {
@@ -65,7 +67,8 @@
     "activeTab",
     "notifications",
     "offscreen",
-    "contextMenus"
+    "contextMenus",
+    "sidePanel"
   ],
   "host_permissions": [
     "<all_urls>"

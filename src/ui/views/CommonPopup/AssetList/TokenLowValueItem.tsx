@@ -62,7 +62,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
             })}
           </div>
         }
-        height={494}
+        height="70%"
         visible={visible}
         closable
         push={false}
