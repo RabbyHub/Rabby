@@ -4738,10 +4738,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-action@^0.1.1-beta.2":
-  version "0.1.1-beta.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.1-beta.2.tgz#5a01fd4a1e01d4844d7f0f2236e772f5b89c900d"
-  integrity sha512-Ans5a39Dvir/AqRixNfz/niohaDt9Y+JNmDYrqF2qzqnaZkFhBgq11UHs8YkbL+J2P77cW/333kr5vswhExfPQ==
+"@rabby-wallet/rabby-action@^0.1.1-beta.3":
+  version "0.1.1-beta.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.1-beta.3.tgz#1c05175e977a00e4961934dcc7982cf2e470936b"
+  integrity sha512-E/RoD1KthA4a1XXi3gqH5VEyT8lA8+dOlk6UaeajNfgs52f2sjSfTWmUT+mKAQxTgbLy9IQJHoFW0tXh37dc9Q==
   dependencies:
     p-queue "^8.0.1"
 
