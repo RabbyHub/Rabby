@@ -59,7 +59,7 @@ export const TransactionActionList: React.FC<{
   chain,
   onChange,
   raw,
-  isTypedData = true,
+  isTypedData = false,
 }) => {
   return (
     <>
