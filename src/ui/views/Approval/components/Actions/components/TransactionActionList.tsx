@@ -14,8 +14,8 @@ import {
   SendRequireData,
   SwapRequireData,
   WrapTokenRequireData,
+  TransferOwnerRequireData,
 } from '@rabby-wallet/rabby-action';
-import { chain } from 'lodash';
 import React from 'react';
 import { CommonAction } from '../../CommonAction';
 import ApproveNFT from '../ApproveNFT';
@@ -38,6 +38,9 @@ import Swap from '../Swap';
 import TokenApprove from '../TokenApprove';
 import UnWrapToken from '../UnWrapToken';
 import WrapToken from '../WrapToken';
+import TransferOwner from '../TransferOwner';
+import MultiSwap from '../MultiSwap';
+import SwapLimitPay from '../SwapLimitPay';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Chain } from '@debank/common';
 
@@ -56,7 +59,7 @@ export const TransactionActionList: React.FC<{
   chain,
   onChange,
   raw,
-  isTypedData = true,
+  isTypedData = false,
 }) => {
   return (
     <>
@@ -203,6 +206,32 @@ export const TransactionActionList: React.FC<{
           chain={chain}
           engineResults={engineResults}
           sender={(requireData as AssetOrderRequireData).sender}
+        />
+      )}
+      {data?.transferOwner && (
+        <TransferOwner
+          data={data.transferOwner}
+          requireData={requireData as TransferOwnerRequireData}
+          chain={chain}
+          engineResults={engineResults}
+        />
+      )}
+      {data?.multiSwap && (
+        <MultiSwap
+          data={data.multiSwap}
+          requireData={requireData as SwapRequireData}
+          chain={chain}
+          engineResults={engineResults}
+          sender={(requireData as SwapRequireData).sender}
+        />
+      )}
+      {data?.swapLimitPay && (
+        <SwapLimitPay
+          data={data.swapLimitPay}
+          requireData={requireData as SwapRequireData}
+          chain={chain}
+          engineResults={engineResults}
+          sender={(requireData as SwapRequireData).sender}
         />
       )}
       {!isTypedData && data.contractCall && (

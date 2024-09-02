@@ -220,7 +220,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const executeSecurityEngine = async () => {
     const ctx = await formatSecurityEngineContext({
       type: 'text',
-      actionData: parsedActionData!,
+      actionData: parsedActionData || ({} as any),
       origin: session.origin,
       isTestnet: false,
       chainId: findChain({ id: chainId })?.serverId || CHAINS.ETH.serverId,

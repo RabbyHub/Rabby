@@ -72,7 +72,7 @@ export const CommonAction = ({
   return (
     <div className="relative">
       <Table>
-        {requireData && chain ? (
+        {requireData && Object.keys(requireData).length && chain ? (
           <>
             <Col>
               <Row className="w-[100px]" isTitle itemsCenter>
