@@ -45,49 +45,11 @@ export const useGasAccountInfo = () => {
       });
   }, [sig, refreshId]);
 
-  if (error) {
+  if (error?.message?.includes('failed') && sig && accountId) {
     dispatch.gasAccount.setGasAccountSig({});
   }
 
   return { loading, value };
-};
-
-export const useGasAccountLogin = () => {
-  const wallet = useWallet();
-  const { sig, accountId } = useGasAccountSign();
-  const { loading, value } = useGasAccountInfo();
-
-  const dispatch = useRabbyDispatch();
-
-  const isLogin = useMemo(() => (!loading ? !!value?.account?.id : !!sig), [
-    sig,
-    loading,
-    value,
-  ]);
-
-  const login = useCallback(async () => {
-    wallet.signGasAccount();
-    window.close();
-  }, []);
-
-  const logout = useCallback(async () => {
-    if (sig && accountId) {
-      try {
-        const result = await wallet.openapi.logoutGasAccount({
-          sig,
-          account_id: accountId,
-        });
-        if (result.success) {
-          dispatch.gasAccount.setGasAccountSig({});
-        } else {
-          message.error('please retry');
-        }
-      } catch (error) {
-        message.error(error.message || String(error));
-      }
-    }
-  }, []);
-  return { login, logout, isLogin };
 };
 
 export const useGasAccountMethods = () => {
@@ -116,6 +78,20 @@ export const useGasAccountMethods = () => {
   }, []);
 
   return { login, logout };
+};
+
+export const useGasAccountLogin = () => {
+  const { sig, accountId } = useGasAccountSign();
+  const { loading, value } = useGasAccountInfo();
+
+  const { login, logout } = useGasAccountMethods();
+
+  const isLogin = useMemo(
+    () => (!loading ? !!value?.account?.id : !!sig && !!accountId),
+    [sig, accountId, loading, value]
+  );
+
+  return { login, logout, isLogin };
 };
 
 export const useGasAccountHistory = () => {
