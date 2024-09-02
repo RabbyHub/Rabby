@@ -120,7 +120,7 @@ const ChainIcon = ({
   showCustomRPCToolTip = false,
   nonce,
   innerClassName,
-  tooltipTriggerElement = 'chain',
+  tooltipTriggerElement = 'dot',
   tooltipProps,
 }: Props) => {
   const wallet = useWallet();
@@ -197,7 +197,7 @@ const ChainIcon = ({
     );
   } else {
     return (
-      <div className="chain-icon-comp">
+      <div className="chain-icon-comp relative">
         <Tooltip
           placement="top"
           overlayClassName={clsx('rectangle')}
@@ -213,7 +213,7 @@ const ChainIcon = ({
             />
           </ChainIconWrapper>
         </Tooltip>
-        <Tooltip
+        <TooltipWithMagnetArrow
           placement="top"
           overlayClassName={clsx('rectangle')}
           {...tooltipProps}
@@ -233,7 +233,7 @@ const ChainIcon = ({
             ) : (
               <UnavaliableIcon className={clsx(size)} />
             ))}
-        </Tooltip>
+        </TooltipWithMagnetArrow>
       </div>
     );
   }
