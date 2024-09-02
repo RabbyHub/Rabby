@@ -13,7 +13,6 @@ import { ReactComponent as RcIconOpenExternalCC } from '@/ui/assets/open-externa
 import { ReactComponent as RcIconConfirm } from '@/ui/assets/gas-account/confirm.svg';
 import { formatUsdValue, openInTab, useWallet } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
-import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
 
 const WithdrawContent = ({
@@ -30,8 +29,13 @@ const WithdrawContent = ({
   const { sig, accountId } = useGasAccountSign();
   const wallet = useWallet();
 
+  const [loading, setLoading] = useState(false);
+
+  const gasAccount = useRabbySelector((s) => s.gasAccount.account);
+
   const withdraw = async () => {
     try {
+      setLoading(true);
       await wallet.openapi.withdrawGasAccount({
         sig: sig!,
         account_id: accountId!,
@@ -41,6 +45,8 @@ const WithdrawContent = ({
       onAfterConfirm?.();
     } catch (error) {
       message.error(error?.message || String(error));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,7 +70,7 @@ const WithdrawContent = ({
           {t('page.gasAccount.withdrawPopup.to')}
         </div>
 
-        <GasACcountCurrentAddress />
+        <GasACcountCurrentAddress account={gasAccount} />
       </div>
 
       <div
@@ -78,6 +84,7 @@ const WithdrawContent = ({
           className="h-[48px] text-15 font-medium text-r-neutral-title-2"
           onClick={withdraw}
           block
+          loading={loading}
         >
           {t('global.confirm')}
         </Button>

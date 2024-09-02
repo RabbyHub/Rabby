@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Popup } from '@/ui/component';
 import { message } from 'antd';
@@ -20,12 +20,17 @@ const GasAccountLogoutContent = ({ onClose }: { onClose: () => void }) => {
 
   const gasAccount = useRabbySelector((s) => s.gasAccount.account);
 
+  const [loading, setLoading] = useState(false);
+
   const handleLogout = async () => {
     try {
+      setLoading(true);
       await logout();
       onClose();
     } catch (error) {
       message.error(error?.message || String(error));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,7 +53,11 @@ const GasAccountLogoutContent = ({ onClose }: { onClose: () => void }) => {
           {t('global.Cancel')}
         </GasAccountBlueBorderedButton>
 
-        <GasAccountRedBorderedButton onClick={handleLogout} block>
+        <GasAccountRedBorderedButton
+          onClick={handleLogout}
+          block
+          loading={loading}
+        >
           {t('page.gasAccount.logoutConfirmModal.logout')}
         </GasAccountRedBorderedButton>
       </div>
