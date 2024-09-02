@@ -32,6 +32,7 @@ import {
   transactionBroadcastWatchService,
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
+  gasAccountService,
 } from './service';
 import { providerController, walletController } from './controller';
 import { getOriginFromUrl } from '@/utils';
@@ -99,6 +100,7 @@ async function restoreAppState() {
   await RabbyPointsService.init();
   await HDKeyRingLastAddAddrTimeService.init();
   await bridgeService.init();
+  await gasAccountService.init();
 
   await walletController.tryUnlock();
 

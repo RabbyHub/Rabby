@@ -31,7 +31,7 @@ import {
 } from 'consts';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useScroll } from 'react-use';
+import { useAsync, useScroll } from 'react-use';
 import { useApproval } from 'ui/utils';
 import { intToHex } from 'ui/utils/number';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
@@ -55,6 +55,8 @@ import { useBatchSignTxTask } from './useBatchSignTxTask';
 import { MiniFooterBar } from './MiniFooterBar';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import { useGasAccountTxsCheck } from '@/ui/views/GasAccount/hooks/checkTxs';
 
 export const MiniSignTx = ({
   txs,
@@ -307,6 +309,34 @@ export const MiniSignTx = ({
 
   const [noCustomRPC, setNoCustomRPC] = useState(true);
 
+  const gasAccountTxs = useMemo(() => {
+    if (!selectedGas?.price) {
+      return [] as Tx[];
+    }
+    return (
+      txsResult.map((item, index) => {
+        return {
+          ...item.tx,
+          gas: item.gasLimit,
+          gasPrice: intToHex(selectedGas.price),
+        };
+      }) || ([] as Tx[])
+    );
+  }, [txsResult, realNonce, selectedGas?.price]);
+
+  const {
+    gasAccountCost,
+    gasMethod,
+    setGasMethod,
+    isGasAccountLogin,
+    gasAccountCanPay,
+  } = useGasAccountTxsCheck({
+    isReady,
+    txs: gasAccountTxs,
+    noCustomRPC,
+    isSupportedAddr,
+  });
+
   useEffect(() => {
     const hasCustomRPC = async () => {
       if (chain?.enum) {
@@ -332,7 +362,8 @@ export const MiniSignTx = ({
           options: {
             chainServerId: chain.serverId,
             gasLevel: selectedGas || undefined,
-            isGasLess: useGasLess,
+            isGasLess: gasMethod === 'native' ? useGasLess : false,
+            isGasAccount: gasAccountCanPay,
             waitCompleted: false,
             pushType: pushInfo.type,
             ignoreGasCheck: true,
@@ -346,7 +377,14 @@ export const MiniSignTx = ({
 
   useEffect(() => {
     handleInitTask();
-  }, [txsResult, chain?.serverId, selectedGas, useGasLess, pushInfo?.type]);
+  }, [
+    txsResult,
+    chain?.serverId,
+    selectedGas,
+    useGasLess,
+    pushInfo?.type,
+    gasAccountCanPay,
+  ]);
 
   const handleAllow = useMemoizedFn(async () => {
     if (!txsResult?.length || !selectedGas) {
@@ -797,6 +835,9 @@ export const MiniSignTx = ({
             className={clsx(task.status !== 'idle' && 'pointer-events-none')}
           >
             <GasSelectorHeader
+              gasAccountCost={gasAccountCost}
+              gasMethod={gasMethod}
+              onChangeGasMethod={setGasMethod}
               pushType={pushInfo.type}
               disabled={false}
               isReady={isReady}
@@ -854,6 +895,14 @@ export const MiniSignTx = ({
             />
           </div>
         }
+        gasMethod={gasMethod}
+        gasAccountCost={gasAccountCost}
+        gasAccountCanPay={gasAccountCanPay}
+        isGasAccountLogin={isGasAccountLogin}
+        isWalletConnect={
+          currentAccountType === KEYRING_TYPE.WalletConnectKeyring
+        }
+        onChangeGasAccount={() => setGasMethod('gasAccount')}
         isWatchAddr={currentAccountType === KEYRING_TYPE.WatchAddressKeyring}
         gasLessConfig={gasLessConfig}
         gasLessFailedReason={gasLessFailedReason}

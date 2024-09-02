@@ -39,7 +39,7 @@ import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
-import { useScroll } from 'react-use';
+import { useAsync, useAsyncFn, useDebounce, useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
@@ -78,6 +78,7 @@ import GasSelectorHeader, {
 } from './TxComponents/GasSelectorHeader';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
+import { useGasAccountTxsCheck } from '../../GasAccount/hooks/checkTxs';
 import {
   fetchActionRequiredData,
   parseAction,
@@ -681,6 +682,30 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const [noCustomRPC, setNoCustomRPC] = useState(true);
 
+  const txs = useMemo(() => {
+    return [
+      {
+        ...tx,
+        nonce: realNonce,
+        gasPrice: tx.gasPrice || tx.maxFeePerGas,
+        gas: gasLimit,
+      },
+    ] as Tx[];
+  }, [tx, realNonce, gasLimit]);
+
+  const {
+    gasAccountCost,
+    gasMethod,
+    setGasMethod,
+    isGasAccountLogin,
+    gasAccountCanPay,
+  } = useGasAccountTxsCheck({
+    isReady,
+    txs,
+    noCustomRPC,
+    isSupportedAddr,
+  });
+
   useEffect(() => {
     const hasCustomRPC = async () => {
       if (chain?.enum) {
@@ -1159,6 +1184,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         lowGasDeadline: pushInfo.lowGasDeadline,
         reqId,
         isGasLess: useGasLess,
+        isGasAccount: gasAccountCanPay,
         logId: logId.current,
       });
 
@@ -1958,6 +1984,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <FooterBar
             Header={
               <GasSelectorHeader
+                gasAccountCost={gasAccountCost}
+                gasMethod={gasMethod}
+                onChangeGasMethod={setGasMethod}
                 pushType={pushInfo.type}
                 disabled={isGnosisAccount || isCoboArugsAccount}
                 isReady={isReady}
@@ -2003,6 +2032,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             isWatchAddr={
               currentAccountType === KEYRING_TYPE.WatchAddressKeyring
             }
+            gasMethod={gasMethod}
+            gasAccountCost={gasAccountCost}
+            gasAccountCanPay={gasAccountCanPay}
+            isGasAccountLogin={isGasAccountLogin}
+            isWalletConnect={
+              currentAccountType === KEYRING_TYPE.WalletConnectKeyring
+            }
+            onChangeGasAccount={() => setGasMethod('gasAccount')}
             gasLessConfig={gasLessConfig}
             gasLessFailedReason={gasLessFailedReason}
             canUseGasLess={canUseGasLess}
