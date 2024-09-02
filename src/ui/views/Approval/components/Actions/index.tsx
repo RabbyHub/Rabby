@@ -1,6 +1,6 @@
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import BalanceChange from '../TxComponents/BalanceChange';
 import ViewRawModal from '../TxComponents/ViewRawModal';
@@ -56,6 +56,8 @@ import { Divide } from '../Divide';
 import { Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import { BatchRevokePermit2 } from './BatchRevokePermit2';
+import ChainIcon from '@/ui/component/ChainIcon';
+import { useWallet } from '@/ui/utils';
 
 const Actions = ({
   data,
@@ -123,6 +125,16 @@ const Actions = ({
   };
 
   const isUnknown = data?.contractCall;
+
+  const wallet = useWallet();
+  const [customRPC, setCustomRPC] = useState('');
+  const getCustomRPC = async () => {
+    const rpc = await wallet.getCustomRpcByChain(chain.enum);
+    setCustomRPC(rpc?.enable ? rpc.url : '');
+  };
+  useEffect(() => {
+    getCustomRPC();
+  }, [chain]);
 
   return (
     <>
@@ -207,11 +219,18 @@ const Actions = ({
             <Col>
               <Row isTitle>{t('page.signTx.chain')}</Row>
               <Row>
-                <LogoWithText
-                  logo={chain.logo}
-                  text={chain.name}
-                  logoRadius="100%"
-                />
+                <div className="flex items-center gap-[6px]">
+                  <ChainIcon
+                    chain={chain.enum}
+                    size={'small'}
+                    innerClassName="w-[16px] h-[16px]"
+                    customRPC={customRPC}
+                    showCustomRPCToolTip
+                  ></ChainIcon>
+                  <div className="truncate text-rabby-neutral-title1">
+                    {chain.name}
+                  </div>
+                </div>
               </Row>
             </Col>
             {data.swap && (
