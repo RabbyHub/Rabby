@@ -100,6 +100,14 @@ const TransferOwner = ({
               <Values.AddressMemo address={actionData.to} />
             </SubRow>
           </SubCol>
+          {requireData.receiver && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.transacted')}</SubRow>
+              <SubRow>
+                <Values.Transacted value={requireData.receiver.hasTransfer} />
+              </SubRow>
+            </SubCol>
+          )}
           <SecurityListItem
             title={t('page.signTx.send.whitelistTitle')}
             engineResult={engineResultMap['1151']}
