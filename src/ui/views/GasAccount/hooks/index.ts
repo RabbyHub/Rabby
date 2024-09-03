@@ -43,7 +43,7 @@ export const useGasAccountInfo = () => {
         dispatch.gasAccount.setGasAccountSig({});
         return undefined;
       });
-  }, [sig, refreshId]);
+  }, [sig, accountId, refreshId]);
 
   if (error?.message?.includes('failed') && sig && accountId) {
     dispatch.gasAccount.setGasAccountSig({});
@@ -80,15 +80,17 @@ export const useGasAccountMethods = () => {
   return { login, logout };
 };
 
-export const useGasAccountLogin = () => {
+export const useGasAccountLogin = ({
+  loading,
+  value,
+}: ReturnType<typeof useGasAccountInfo>) => {
   const { sig, accountId } = useGasAccountSign();
-  const { loading, value } = useGasAccountInfo();
 
   const { login, logout } = useGasAccountMethods();
 
   const isLogin = useMemo(
     () => (!loading ? !!value?.account?.id : !!sig && !!accountId),
-    [sig, accountId, loading, value]
+    [sig, accountId, loading, value?.account?.id]
   );
 
   return { login, logout, isLogin };
@@ -104,7 +106,7 @@ export const useGasAccountHistory = () => {
     setRefreshListTx((e) => e + 1);
   }, []);
 
-  const { refresh } = useGasAccountRefresh();
+  const { refresh: refreshGasAccountBalance } = useGasAccountRefresh();
 
   type History = Awaited<
     ReturnType<typeof wallet.openapi.getGasAccountHistory>
@@ -144,16 +146,16 @@ export const useGasAccountHistory = () => {
       reloadDeps: [sig],
       isNoMore(data) {
         if (data) {
-          return data?.list.length >= data?.totalCount;
+          return !(!!data?.rechargeList && data?.rechargeList?.length > 0);
         }
         return true;
       },
-      manual: !sig,
+      manual: !sig || !accountId,
     }
   );
 
   const { value } = useAsync(async () => {
-    if (sig && accountId) {
+    if (sig && accountId && refreshTxListCount) {
       return wallet.openapi.getGasAccountHistory({
         sig,
         account_id: accountId,
@@ -170,8 +172,8 @@ export const useGasAccountHistory = () => {
           return;
         }
 
-        if (d.rechargeList.length !== value?.recharge_list?.length) {
-          refresh();
+        if (value?.recharge_list?.length !== d.rechargeList.length) {
+          refreshGasAccountBalance();
         }
         return {
           rechargeList: value?.recharge_list,
@@ -182,10 +184,6 @@ export const useGasAccountHistory = () => {
           ),
         };
       });
-
-      if (!value?.recharge_list?.length) {
-        refresh();
-      }
     }
   }, [mutate, value]);
 
@@ -209,7 +207,7 @@ export const useGasAccountHistory = () => {
         clearTimeout(timer);
       }
     };
-  }, [loading, loadingMore, refreshListTx, txList?.list]);
+  }, [loading, loadingMore, refreshListTx, txList]);
 
   return {
     loading,

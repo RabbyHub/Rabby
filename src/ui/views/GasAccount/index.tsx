@@ -40,7 +40,7 @@ const GasAccountInner = () => {
     setDepositVisible(true);
   };
   const { value, loading } = useGasAccountInfo();
-  const { isLogin } = useGasAccountLogin();
+  const { isLogin } = useGasAccountLogin({ value, loading });
 
   const wallet = useWallet();
 
