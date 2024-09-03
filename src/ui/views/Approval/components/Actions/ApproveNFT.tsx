@@ -73,7 +73,7 @@ const ApproveNFT = ({
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.nftApprove.approveNFT')}</Row>
-          <Row>
+          <Row className="max-w-[240px]">
             <ViewMore
               type="nft"
               data={{
