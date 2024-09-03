@@ -347,6 +347,7 @@ const GnosisTransactionItem = ({
       safeTxGas: data.safeTxGas,
       gasPrice: Number(data.gasPrice),
       baseGas: data.baseGas,
+      operation: data.operation,
     };
     const tmpBuildAccount: Account = {
       address: safeInfo.owners[0],
