@@ -135,11 +135,13 @@ const WithdrawConfirmContent = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <RcIconConfirm className="w-36 h-36 mt-[34px]" viewBox="0 0 36 36" />
-      <div className="text-20 font-medium text-r-green-default mt-12 mb-[24px]">
+      <div className="text-20 font-medium text-r-green-default mt-12 mb-[16px]">
         {t('page.gasAccount.withdrawConfirmModal.title')}
       </div>
 
-      <GasACcountCurrentAddress account={gasAccount} />
+      <div className="mb-8">
+        <GasACcountCurrentAddress account={gasAccount} />
+      </div>
 
       <div
         className={clsx(

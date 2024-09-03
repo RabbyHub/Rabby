@@ -58,14 +58,14 @@ const GasAccountLoginTipContent = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <GasAccountBlueLogo className="w-[60px] h-[60px] my-24" />
-      <div className="relative mb-[20px] text-16 font-medium text-r-blue-default">
+      <div className="relative mb-[16px] text-18 font-medium text-r-blue-default">
         <RcIconQuoteStart
           viewBox="0 0 11 9"
           className="absolute top-0 left-[-20px]"
         />
         {t('page.gasAccount.loginInTip.title')}
       </div>
-      <div className="relative text-15 font-medium text-r-blue-default">
+      <div className="relative text-18 font-medium text-r-blue-default">
         {t('page.gasAccount.loginInTip.desc')}
         <RcIconQuoteEnd
           viewBox="0 0 11 9"

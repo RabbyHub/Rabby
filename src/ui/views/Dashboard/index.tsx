@@ -369,13 +369,13 @@ const Dashboard = () => {
                       />
                     )}
                   </div>
-                  <IconArrowRight className="ml-8" />
+                  <IconArrowRight className="ml-6" />
                 </Popover>
               </div>
 
               <RcIconCopy
                 viewBox="0 0 18 18"
-                className="copyAddr actionIcon w-16 h-16 mx-8"
+                className="copyAddr actionIcon w-16 h-16 ml-8 mr-16"
                 onClick={() => {
                   copyAddress(currentAccount.address);
                   matomoRequestEvent({

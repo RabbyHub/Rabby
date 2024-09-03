@@ -2211,8 +2211,8 @@
       },
       "loginInTip": {
         "title": "Deposit USDC/USDT",
-        "desc": "Pay Gas Fees on all chains",
-        "login": "Log in",
+        "desc": "Pay Gas Fees on All Chains",
+        "login": "Log in GasAccount",
         "gotIt": "Got it"
       },
       "loginConfirmModal": {

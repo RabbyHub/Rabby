@@ -515,7 +515,7 @@ const AddressManagement = () => {
         {enableSwitch
           ? t('page.manageAddress.current-address')
           : t('page.manageAddress.address-management')}
-        <div className="bg-r-neutral-title-2 rounded absolute top-20 o right-0 w-[32px] h-[28px] flex items-center justify-center">
+        <div className="bg-r-neutral-card2 rounded absolute top-20 right-0 w-[32px] h-[28px] flex items-center justify-center">
           <RcIconAddAddress
             viewBox="0 0 20 20"
             className={clsx(

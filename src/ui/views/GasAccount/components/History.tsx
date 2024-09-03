@@ -113,7 +113,7 @@ export const GasAccountHistory = () => {
     );
   }
   return (
-    <div className="bg-r-neutral-card-1 flex flex-col rounded-[8px]">
+    <div className="bg-r-neutral-card-1 flex flex-col rounded-[8px] mb-20">
       {!loading &&
         txList?.rechargeList?.map((item, index) => (
           <HistoryItem

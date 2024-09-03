@@ -2,11 +2,12 @@ import React, { useMemo } from 'react';
 import { ReactComponent as IconRcGasAccount } from '@/ui/assets/gas-account/gas-account-cc.svg';
 import clsx from 'clsx';
 import { useGasAccountInfo } from '../hooks';
+import { formatTokenAmount } from '@/ui/utils';
 
 const formatUsdValue = (usd: string | number) => {
   const v = Number(usd);
   if (v >= 1000) {
-    return `$${Number(v).toFixed(0)}`;
+    return `$${formatTokenAmount(Number(v).toFixed(0), 0)}`;
   }
   if (v >= 100) {
     return `$${Number(v).toFixed(1)}`;

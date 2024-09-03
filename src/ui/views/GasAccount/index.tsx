@@ -71,7 +71,7 @@ const GasAccountInner = () => {
         }}
       >
         <Menu.Item
-          className="px-12 py-16 flex items-center gap-[6px] bg-transparent hover:bg-transparent"
+          className="px-12 h-40 flex items-center gap-[6px] bg-transparent hover:bg-transparent"
           onClick={() => {
             setLogoutVisible(true);
           }}
