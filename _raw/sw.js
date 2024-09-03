@@ -97,3 +97,31 @@ if (navigator?.usb) {
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((err) => console.error(err));
+
+/**
+ * Function to send active tab info to the React app
+ * @param tabId {number}
+ */
+const sendActiveTabInfo = (tabId) => {
+  chrome.tabs.get(tabId, (tab) => {
+    if (tab) {
+      chrome.windows.get(tab.windowId, (window) => {
+        if (window.type === 'normal') {
+          chrome.runtime.sendMessage({ type: 'TAB_UPDATED', tab });
+        }
+      })
+    }
+  });
+};
+
+// Listen for tab activation
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  sendActiveTabInfo(activeInfo.tabId);
+});
+
+// Listen for tab URL updates
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.status === 'complete') {
+    sendActiveTabInfo(tabId);
+  }
+});

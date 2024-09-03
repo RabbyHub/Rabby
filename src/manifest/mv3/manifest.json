@@ -64,6 +64,7 @@
     "storage",
     "unlimitedStorage",
     "alarms",
+    "tabs",
     "activeTab",
     "notifications",
     "offscreen",
