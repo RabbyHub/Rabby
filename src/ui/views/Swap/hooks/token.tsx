@@ -633,6 +633,7 @@ export const useTokenPair = (userAddress: string) => {
 
     handleAmountChange,
     handleBalance,
+    setPayAmount,
     inputAmount,
     debouncePayAmount,
 

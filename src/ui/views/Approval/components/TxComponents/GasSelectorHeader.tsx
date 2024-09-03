@@ -36,7 +36,7 @@ import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import { calcGasEstimated } from '@/utils/time';
-import { useHover, useWallet } from '@/ui/utils';
+import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 
 export interface GasSelectorResponse extends GasLevel {
@@ -700,6 +700,8 @@ const GasSelectorHeader = ({
     setModalVisible(false);
   };
 
+  const uiType = useMemo(() => getUiType(), []);
+
   if (!isReady && isFirstTimeLoad) {
     return (
       <HeaderStyled>
@@ -803,7 +805,7 @@ const GasSelectorHeader = ({
         height={'auto'}
         visible={modalVisible}
         title={t('page.signTx.gasSelectorTitle')}
-        className="gas-modal"
+        className={clsx('gas-modal', uiType.isPop && 'is-popup')}
         onCancel={handleClosePopup}
         destroyOnClose
         closable
@@ -985,7 +987,7 @@ const GasSelectorHeader = ({
                       onChange={(e) =>
                         handleMaxPriorityFeeChange(e.target.value)
                       }
-                      prefixCls="priority-slider-input"
+                      prefixCls="priority-slider-input h-[52px]"
                       type="number"
                       min={0}
                       max={priorityFeeMax}

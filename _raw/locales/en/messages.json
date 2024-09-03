@@ -342,9 +342,9 @@
       "keystoneNotConnected": "Keystone is not connected",
       "keystoneConnected": "Keystone is connected",
       "ledgerConnected": "Ledger is connected",
-      "signAndSubmitButton": "Sign and Create",
+      "signAndSubmitButton": "Sign",
       "gasless": {
-        "unavailable": "Gas is not enough and not qualify for Free Gas",
+        "unavailable": "Your Gas Balance is not enough",
         "notEnough": "Gas balance is not enough",
         "GetFreeGasToSign": "Get Free Gas to sign",
         "rabbyPayGas": "Rabby'll pay for the gas needed – just sign on",
@@ -2170,6 +2170,15 @@
           "myBalance": " My Balance",
           "mintBtn": "Mint"
         }
+      }
+    },
+    "miniSignFooterBar": {
+      "signWithLedger": "Sign with Ledger",
+      "status": {
+        "txCreated": "Transaction created",
+        "txSigned": "Signed. Creating transaction",
+        "txSending": "Sending signing request",
+        "txSendings": "Sending signing request({{current}}/{{total}})"
       }
     }
   },
