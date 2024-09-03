@@ -30,7 +30,7 @@ export const useGasAccountTxsCheck = ({
       setIsGasAccountLogin(false);
     }
     return wallet.openapi.checkGasAccountTxs({
-      sig: sig!,
+      sig: sig || '',
       account_id: accountId!,
       tx_list: txs,
     });

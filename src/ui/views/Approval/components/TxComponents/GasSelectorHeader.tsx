@@ -713,7 +713,8 @@ const GasSelectorHeader = ({
   const gasCostAmountStr = useMemo(() => {
     return `${formatTokenAmount(
       new BigNumber(modalExplainGas.gasCostAmount).toString(10),
-      6
+      6,
+      true
     )} ${chain.nativeTokenSymbol}`;
   }, [modalExplainGas?.gasCostAmount]);
 
@@ -791,8 +792,8 @@ const GasSelectorHeader = ({
               </>
             ) : gasMethod === 'gasAccount' ? (
               <div className="gas-selector-card-content-item relative">
-                <TooltipWithMagnetArrow
-                  className="rectangle w-[max-content]"
+                <Tooltip
+                  overlayClassName="rectangle"
                   title={
                     <>
                       <div>
@@ -817,13 +818,13 @@ const GasSelectorHeader = ({
                     </>
                   }
                 >
-                  <div className="text-[16px] font-medium text-r-blue-default border-b border-dashed border-rabby-blue-disable">
+                  <div className="text-[16px] font-medium text-r-blue-default">
                     {gasAccountCost?.gas_account_cost.total_cost} USD
                   </div>
-                </TooltipWithMagnetArrow>
+                </Tooltip>
               </div>
             ) : (
-              <div className="gas-selector-card-content-item">
+              <div className="gas-selector-card-content-item relative">
                 <div
                   className={clsx(
                     'gas-selector-card-amount translate-y-1 flex items-center',
@@ -838,14 +839,14 @@ const GasSelectorHeader = ({
                   )}
                 >
                   {gasMethod ? (
-                    <div className="truncate max-w-[180px] group">
-                      <span className="hidden  group-hover:inline">
-                        {gasCostUsdStr}
-                      </span>
-                      <span className="group-hover:hidden">
-                        {gasCostAmountStr}
-                      </span>
-                    </div>
+                    <Tooltip
+                      overlayClassName="rectangle"
+                      title={`≈${gasCostUsdStr}`}
+                    >
+                      <div className="truncate max-w-[180px] group">
+                        <span>{gasCostAmountStr}</span>
+                      </div>
+                    </Tooltip>
                   ) : (
                     <span
                       className="truncate max-w-[110px]"
@@ -1137,10 +1138,14 @@ const GasMethod = (props: {
 }) => {
   const { active, onChange, ActiveComponent, BlurComponent, tips } = props;
   return (
-    <TooltipWithMagnetArrow
-      className="rectangle w-[max-content]"
+    <Tooltip
+      overlayClassName="rectangle"
       title={tips}
       visible={tips ? undefined : false}
+      placement="topLeft"
+      align={{
+        offset: [-4, 0],
+      }}
     >
       <div
         className={clsx(
@@ -1160,7 +1165,7 @@ const GasMethod = (props: {
           )}
         />
       </div>
-    </TooltipWithMagnetArrow>
+    </Tooltip>
   );
 };
 

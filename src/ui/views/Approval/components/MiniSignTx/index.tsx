@@ -895,6 +895,7 @@ export const MiniSignTx = ({
             />
           </div>
         }
+        noCustomRPC={noCustomRPC}
         gasMethod={gasMethod}
         gasAccountCost={gasAccountCost}
         gasAccountCanPay={gasAccountCanPay}

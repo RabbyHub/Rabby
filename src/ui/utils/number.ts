@@ -32,6 +32,9 @@ export const formatTokenAmount = (
   if (moreDecimalsWhenNotEnough && bn.lt(0.0001) && decimals < 8) {
     realDecimals = 8;
   }
+  if (moreDecimalsWhenNotEnough && bn.lt(0.00000001)) {
+    return '<0.00000001';
+  }
   if (!split[1] || split[1].length < realDecimals) {
     return splitNumberByStep(bn.toFixed());
   }

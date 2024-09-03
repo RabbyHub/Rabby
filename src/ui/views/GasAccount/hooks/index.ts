@@ -146,7 +146,10 @@ export const useGasAccountHistory = () => {
       reloadDeps: [sig],
       isNoMore(data) {
         if (data) {
-          return !(!!data?.rechargeList && data?.rechargeList?.length > 0);
+          return (
+            data.totalCount <=
+            (data.list.length || 0) + (data?.rechargeList?.length || 0)
+          );
         }
         return true;
       },
@@ -191,9 +194,12 @@ export const useGasAccountHistory = () => {
 
   const [inViewport] = useInViewport(ref);
 
+  console.log('inViewport', inViewport, noMore, loadingMore);
+
   useEffect(() => {
     if (!noMore && inViewport && !loadingMore && loadMore) {
       loadMore();
+      console.log('loadMore');
     }
   }, [inViewport, loadMore, loading, loadingMore, noMore]);
 

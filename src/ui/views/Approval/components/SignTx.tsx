@@ -2032,6 +2032,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             isWatchAddr={
               currentAccountType === KEYRING_TYPE.WatchAddressKeyring
             }
+            noCustomRPC={noCustomRPC}
             gasMethod={gasMethod}
             gasAccountCost={gasAccountCost}
             gasAccountCanPay={gasAccountCanPay}

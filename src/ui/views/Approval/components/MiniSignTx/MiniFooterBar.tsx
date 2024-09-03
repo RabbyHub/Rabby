@@ -58,6 +58,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
   gasAccountCanPay?: boolean;
+  noCustomRPC?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -169,6 +170,7 @@ export const MiniFooterBar: React.FC<Props> = ({
   isGasAccountLogin,
   isWalletConnect,
   gasAccountCanPay,
+  noCustomRPC,
   task,
   ...props
 }) => {
@@ -290,7 +292,7 @@ export const MiniFooterBar: React.FC<Props> = ({
         ) : isWatchAddr ? null : (
           <GasLessNotEnough
             gasLessFailedReason={gasLessFailedReason}
-            gasAccountCost={gasAccountCost}
+            gasAccountCanPay={gasAccountCanPay}
             onChangeGasAccount={onChangeGasAccount}
           />
         )
@@ -301,6 +303,7 @@ export const MiniFooterBar: React.FC<Props> = ({
           gasAccountCost={gasAccountCost}
           isGasAccountLogin={isGasAccountLogin}
           isWalletConnect={isWalletConnect}
+          noCustomRPC={noCustomRPC}
         />
       ) : null}
     </>

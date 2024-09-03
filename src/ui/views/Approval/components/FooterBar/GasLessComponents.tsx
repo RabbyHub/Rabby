@@ -29,24 +29,19 @@ export type GasLessConfig = {
 
 export function GasLessNotEnough({
   gasLessFailedReason,
-  gasAccountCost,
   onChangeGasAccount,
+  gasAccountCanPay,
 }: {
   url?: string;
   gasLessFailedReason?: string;
-  gasAccountCost?: GasAccountCheckResult;
   onChangeGasAccount?: () => void;
+  gasAccountCanPay?: boolean;
 }) {
   const { t } = useTranslation();
   const [
     hoverGasLessFailedReason,
     setHoverGasLessFailedReason,
   ] = React.useState(false);
-
-  const canUseGasAccount =
-    !!gasAccountCost?.is_gas_account &&
-    !!gasAccountCost?.balance_is_enough &&
-    !gasAccountCost?.chain_not_support;
 
   return (
     <div
@@ -62,7 +57,7 @@ export function GasLessNotEnough({
         {t('page.signFooterBar.gasAccount.notEnough')}
       </span>
 
-      {canUseGasAccount ? (
+      {gasAccountCanPay ? (
         <div
           style={{
             cursor: 'pointer',
@@ -360,15 +355,20 @@ export function GasAccountTips({
   gasAccountCost,
   isGasAccountLogin,
   isWalletConnect,
+  noCustomRPC,
 }: {
   gasAccountCost?: GasAccountCheckResult;
   isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
+  noCustomRPC?: boolean;
 }) {
   const { t } = useTranslation();
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
 
   const [tip, btnText] = useMemo(() => {
+    if (!noCustomRPC) {
+      return [t('page.signFooterBar.gasAccount.customRPC'), null];
+    }
     if (isWalletConnect) {
       return [t('page.signFooterBar.gasAccount.WalletConnectTips'), null];
     }
@@ -400,7 +400,8 @@ export function GasAccountTips({
     !isWalletConnect &&
     isGasAccountLogin &&
     gasAccountCost?.balance_is_enough &&
-    !gasAccountCost.chain_not_support
+    !gasAccountCost.chain_not_support &&
+    noCustomRPC
   ) {
     return null;
   }

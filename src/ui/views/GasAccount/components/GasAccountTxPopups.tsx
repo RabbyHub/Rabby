@@ -9,12 +9,13 @@ import PNGDepositTip from '@/ui/assets/gas-account/gas-account-deposit-tip.png';
 import { GasAccountBlueLogo } from './GasAccountBlueLogo';
 import { ReactComponent as RcIconQuoteStart } from '@/ui/assets/gas-account/quote-start.svg';
 import { ReactComponent as RcIconQuoteEnd } from '@/ui/assets/gas-account/quote-end.svg';
+import { GasAccountWrapperBg } from './WrapperBg';
 
 const GasAccountDepositTipContent = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
+    <GasAccountWrapperBg className="w-full h-full flex flex-col justify-center items-center">
       <div className="text-20 font-medium text-r-neutral-title1 my-24">
         {t('page.gasAccount.GasAccountDepositTipPopup.title')}
       </div>
@@ -29,7 +30,7 @@ const GasAccountDepositTipContent = ({ onClose }: { onClose: () => void }) => {
           {t('page.gasAccount.GasAccountDepositTipPopup.gotIt')}
         </Button>
       </div>
-    </div>
+    </GasAccountWrapperBg>
   );
 };
 
@@ -56,7 +57,7 @@ const GasAccountLoginTipContent = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
+    <GasAccountWrapperBg className="w-full h-full flex flex-col justify-center items-center">
       <GasAccountBlueLogo className="w-[60px] h-[60px] my-24" />
       <div className="relative mb-[16px] text-18 font-medium text-r-blue-default">
         <RcIconQuoteStart
@@ -84,7 +85,7 @@ const GasAccountLoginTipContent = ({ onClose }: { onClose: () => void }) => {
           {t('page.gasAccount.GasAccountDepositTipPopup.gotIt')}
         </Button>
       </div>
-    </div>
+    </GasAccountWrapperBg>
   );
 };
 

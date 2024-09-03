@@ -153,7 +153,10 @@ const GasAccountInner = () => {
       />
       <GasAccountLogoutPopup
         visible={logoutVisible}
-        onCancel={() => setLogoutVisible(false)}
+        onCancel={() => {
+          gotoDashboard();
+          setLogoutVisible(false);
+        }}
       />
       <GasAccountDepositPopup
         visible={depositVisible}
