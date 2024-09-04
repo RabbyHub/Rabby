@@ -132,7 +132,7 @@ const GasAccountInner = () => {
                 block
                 size="large"
                 type="primary"
-                className="h-[44px] text-r-neutral-title2 text-15 font-medium"
+                className="h-[48px] text-r-neutral-title2 text-15 font-medium"
                 onClick={openDepositPopup}
               >
                 {t('page.gasAccount.deposit')}
