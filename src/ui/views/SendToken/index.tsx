@@ -772,9 +772,13 @@ const SendToken = () => {
       tokenItem?: TokenItem;
       currentAddress?: string;
     }) => {
-      const result = {
-        gasNumber: 0,
-        gasNumHex: intToHex(0),
+      const result = { gasNumber: 0 };
+
+      const doReturn = (nextGas = DEFAULT_GAS_USED) => {
+        result.gasNumber = nextGas;
+
+        setEstimatedGas(result.gasNumber);
+        return result;
       };
 
       const {
@@ -783,9 +787,9 @@ const SendToken = () => {
         currentAddress = currentAccount?.address,
       } = input || {};
 
-      if (!lastestChainItem?.needEstimateGas) return result;
+      if (!lastestChainItem?.needEstimateGas) return doReturn(DEFAULT_GAS_USED);
 
-      if (!currentAddress) return result;
+      if (!currentAddress) return doReturn();
 
       if (lastestChainItem.serverId !== tokenItem.chain) {
         console.warn(
@@ -793,7 +797,7 @@ const SendToken = () => {
           lastestChainItem,
           tokenItem
         );
-        return result;
+        return doReturn();
       }
 
       const to = form.getFieldValue('to');
@@ -823,13 +827,7 @@ const SendToken = () => {
         .integerValue()
         .toNumber();
 
-      result.gasNumber = Number(gasUsed);
-      result.gasNumHex =
-        typeof gasUsed === 'string' ? gasUsed : intToHex(gasUsed);
-
-      setEstimatedGas(result.gasNumber || 0);
-
-      return result;
+      return doReturn(Number(gasUsed));
     },
     [wallet, currentAccount, chainItem, form, currentToken]
   );
@@ -982,7 +980,7 @@ const SendToken = () => {
           let gasTokenAmount = handleGasChange({
             gasLevel: gasLevel,
             updateTokenAmount: false,
-            gasLimit: gasNumber || DEFAULT_GAS_USED,
+            gasLimit: gasNumber,
           });
           if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain)) {
             const l1GasFee = await wallet.fetchEstimatedL1Fee(
