@@ -816,9 +816,10 @@ const SendToken = () => {
       } catch (err) {
         console.error(err);
       }
-      const gasUsed = lastestChainItem.isTestnet
-        ? new BigNumber(_gasUsed).multipliedBy(1.5).integerValue().toNumber()
-        : _gasUsed;
+      const gasUsed = new BigNumber(_gasUsed)
+        .multipliedBy(1.5)
+        .integerValue()
+        .toNumber();
 
       result.gasNumber = Number(gasUsed);
       result.gasNumHex =
