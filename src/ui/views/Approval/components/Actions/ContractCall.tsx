@@ -4,7 +4,10 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ContractCallRequireData, ParsedActionData } from './utils';
+import {
+  ContractCallRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatTokenAmount } from 'ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
@@ -58,7 +61,7 @@ const ContractCall = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['contractCall'];
+  data: ParsedTransactionActionData['contractCall'];
   requireData: ContractCallRequireData;
   chain: Chain;
   raw: Record<string, string | number>;

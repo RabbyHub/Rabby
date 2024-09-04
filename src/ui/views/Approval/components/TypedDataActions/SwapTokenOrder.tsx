@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { SwapTokenOrderRequireData, TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -16,6 +16,7 @@ import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
+import { SwapTokenOrderRequireData } from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .header {
@@ -42,7 +43,7 @@ const Permit = ({
   chain,
   engineResults,
 }: {
-  data: TypedDataActionData['swapTokenOrder'];
+  data: ParsedTypedDataActionData['swapTokenOrder'];
   requireData: SwapTokenOrderRequireData;
   chain: Chain;
   engineResults: Result[];

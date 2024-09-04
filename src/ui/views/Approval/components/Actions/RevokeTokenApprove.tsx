@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ApproveTokenRequireData, ParsedActionData } from './utils';
+import {
+  ApproveTokenRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
@@ -36,7 +39,7 @@ const TokenApprove = ({
   requireData,
   chain,
 }: {
-  data: ParsedActionData['approveToken'];
+  data: ParsedTransactionActionData['approveToken'];
   requireData: ApproveTokenRequireData;
   chain: Chain;
   raw: Record<string, string | number>;

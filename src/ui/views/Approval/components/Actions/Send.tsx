@@ -4,7 +4,10 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ParsedActionData, SendRequireData } from './utils';
+import {
+  SendRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { useRabbyDispatch } from '@/ui/store';
@@ -37,7 +40,7 @@ const Send = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['send'];
+  data: ParsedTransactionActionData['send'];
   requireData: SendRequireData;
   chain: Chain;
   engineResults: Result[];

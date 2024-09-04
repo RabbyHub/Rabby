@@ -1,25 +1,20 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { isSameAddress } from 'ui/utils';
-import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
-import NFTWithName from '../Actions/components/NFTWithName';
 import * as Values from '../Actions/components/Values';
 import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import ViewMore from '../Actions/components/ViewMore';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import LogoWithText from '../Actions/components/LogoWithText';
-import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
-import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
+import { SubCol, SubRow, SubTable } from './components/SubTable';
 import {
-  ContractRequireData,
-  ParsedTypedDataActionData,
+  ParsedTransactionActionData,
+  SwapRequireData,
 } from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
@@ -55,15 +50,15 @@ const Wrapper = styled.div`
   }
 `;
 
-const BuyNFT = ({
+const MultiSwap = ({
   data,
   requireData,
   chain,
   engineResults,
   sender,
 }: {
-  data: ParsedTypedDataActionData['buyNFT'];
-  requireData: ContractRequireData;
+  data: ParsedTransactionActionData['multiSwap'];
+  requireData: SwapRequireData;
   chain: Chain;
   engineResults: Result[];
   sender: string;
@@ -96,104 +91,72 @@ const BuyNFT = ({
   }, [engineResults]);
 
   const hasReceiver = useMemo(() => {
-    return !isSameAddress(actionData.receiver, sender);
+    return !isSameAddress(actionData.receiver || '', sender);
   }, [actionData, sender]);
-
-  const handleClickRule = (id: string) => {
-    const rule = rules.find((item) => item.id === id);
-    if (!rule) return;
-    const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
-      ruleConfig: rule,
-      value: result?.value,
-      level: result?.level,
-      ignored: processedRules.includes(id),
-    });
-  };
 
   return (
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.payToken')}</Row>
-          <Row>
-            <LogoWithText
-              logo={actionData.pay_token.logo_url}
-              text={`${formatAmount(
-                actionData.pay_token.amount
-              )} ${ellipsisTokenSymbol(getTokenSymbol(actionData.pay_token))}`}
-              logoRadius="100%"
-            />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.receiveNFT')}</Row>
-          <Row>
-            <div className="relative">
-              <ViewMore
-                type="nft"
-                data={{
-                  nft: actionData.receive_nft,
-                  chain,
-                }}
-              >
-                <NFTWithName
-                  hasHover
-                  nft={actionData.receive_nft}
-                  showTokenLabel
-                ></NFTWithName>
-              </ViewMore>
-              {engineResultMap['1086'] && (
-                <SecurityLevelTagNoText
-                  enable={engineResultMap['1086'].enable}
-                  level={
-                    processedRules.includes('1086')
-                      ? 'proceed'
-                      : engineResultMap['1086'].level
-                  }
-                  onClick={() => handleClickRule('1086')}
-                />
-              )}
-            </div>
-            {engineResultMap['1087'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1087'].enable}
-                level={
-                  processedRules.includes('1087')
-                    ? 'proceed'
-                    : engineResultMap['1087'].level
+          <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
+          <Row className="gap-y-6 flex flex-col overflow-hidden items-end">
+            {actionData.payTokenList.map((token) => (
+              <LogoWithText
+                className="overflow-hidden w-full"
+                key={token.id}
+                logo={token.logo_url}
+                text={
+                  <div className="overflow-hidden overflow-ellipsis flex">
+                    <Values.TokenAmount value={token.amount} />
+                    <span className="ml-2">
+                      <Values.TokenSymbol token={token} />
+                    </span>
+                  </div>
                 }
-                onClick={() => handleClickRule('1087')}
+                logoRadius="100%"
               />
-            )}
+            ))}
           </Row>
         </Col>
         <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.expireTime')}</Row>
-          <Row>
-            {actionData.expire_at ? (
-              <Values.TimeSpanFuture to={Number(actionData.expire_at)} />
-            ) : (
-              '-'
-            )}
+          <Row isTitle>{t('page.signTx.swap.minReceive')}</Row>
+          <Row className="w-0">
+            <div className="gap-y-6 flex flex-col items-end overflow-hidden">
+              {actionData.receiveTokenList.map((token) => (
+                <LogoWithText
+                  className="overflow-hidden w-full"
+                  key={token.id}
+                  logo={token.logo_url}
+                  text={
+                    <div className="overflow-hidden overflow-ellipsis flex">
+                      <Values.TokenAmount value={token.min_amount} />
+                      <span className="ml-2">
+                        <Values.TokenSymbol token={token} />
+                      </span>
+                    </div>
+                  }
+                  logoRadius="100%"
+                />
+              ))}
+            </div>
           </Row>
         </Col>
-        {hasReceiver && (
+        {hasReceiver && actionData.receiver && (
           <>
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
                 <Values.AddressWithCopy
-                  id="buy-nft-receiver"
+                  id="asset-order-receiver"
                   address={actionData.receiver}
                   chain={chain}
                 />
               </Row>
             </Col>
-            <SubTable target="buy-nft-receiver">
+            <SubTable target="asset-order-receiver">
               <SecurityListItem
-                id="1085"
-                engineResult={engineResultMap['1085']}
+                id="1115"
+                engineResult={engineResultMap['1115']}
                 dangerText={t('page.signTx.swap.notPaymentAddress')}
               />
             </SubTable>
@@ -201,7 +164,7 @@ const BuyNFT = ({
         )}
         <Col>
           <Row isTitle itemsCenter>
-            {t('page.signTypedData.buyNFT.listOn')}
+            {t('page.signTx.interactContract')}
           </Row>
           <Row>
             <ViewMore
@@ -214,7 +177,7 @@ const BuyNFT = ({
               }}
             >
               <Values.Address
-                id="buy-nft-address"
+                id="multi-swap-address"
                 hasHover
                 address={requireData.id}
                 chain={chain}
@@ -222,12 +185,18 @@ const BuyNFT = ({
             </ViewMore>
           </Row>
         </Col>
-
-        <SubTable target="buy-nft-address">
+        <SubTable target="multi-swap-address">
           <SubCol>
             <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
             <SubRow>
               <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow>
+              <Values.Interacted value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
 
@@ -244,17 +213,10 @@ const BuyNFT = ({
             forbiddenText={t('page.signTx.markAsBlock')}
             title={t('page.signTx.myMark')}
           />
-
-          <SecurityListItem
-            id="1137"
-            engineResult={engineResultMap['1137']}
-            warningText={t('page.signTx.markAsBlock')}
-            title={t('page.signTx.myMark')}
-          />
         </SubTable>
       </Table>
     </Wrapper>
   );
 };
 
-export default BuyNFT;
+export default MultiSwap;

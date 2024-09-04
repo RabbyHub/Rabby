@@ -4,13 +4,13 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { maxBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import {
-  ParsedActionData,
-  CancelTxRequireData,
-  getActionTypeText,
-} from './utils';
+import { getActionTypeText } from './utils';
 import { useRabbyDispatch } from '@/ui/store';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
+import {
+  CancelTxRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .container {
@@ -82,7 +82,7 @@ const CancelTx = ({
   requireData,
   raw,
 }: {
-  data: ParsedActionData['cancelTx'];
+  data: ParsedTransactionActionData['cancelTx'];
   requireData: CancelTxRequireData;
   chain: Chain;
   raw: Record<string, string | number>;
@@ -98,7 +98,7 @@ const CancelTx = ({
       let type = t('page.signTx.unknownAction');
       if (group.action) {
         const data = group.action.actionData;
-        type = getActionTypeText(data);
+        type = getActionTypeText(data as ParsedTransactionActionData);
       }
       const target = maxBy(group.txs, (item) =>
         Number(item.rawTx.gasPrice || item.rawTx.maxFeePerGas || 0)

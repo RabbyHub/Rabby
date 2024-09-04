@@ -1,21 +1,18 @@
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import ViewRawModal from '../TxComponents/ViewRawModal';
 import {
   ApproveTokenRequireData,
   ContractRequireData,
   MultiSigRequireData,
   SwapTokenOrderRequireData,
-  TypedDataActionData,
-  TypedDataRequireData,
-  getActionTypeText,
   BatchApproveTokenRequireData,
-} from './utils';
-import IconArrowRight, {
-  ReactComponent as RcIconArrowRight,
-} from 'ui/assets/approval/edit-arrow-right.svg';
+  ActionRequireData,
+  ParsedTypedDataActionData,
+} from '@rabby-wallet/rabby-action';
+import { getActionTypeText } from './utils';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import BuyNFT from './BuyNFT';
 import SellNFT from './SellNFT';
 import Permit from './Permit';
@@ -27,13 +24,8 @@ import CreateKey from '../TextActions/CreateKey';
 import VerifyAddress from '../TextActions/VerifyAddress';
 import BatchSellNFT from './BatchSellNFT';
 import BatchPermit2 from './BatchPermit2';
-import Send from '../Actions/Send';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
-import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
-import IconCheck, {
-  ReactComponent as RcIconCheck,
-} from 'src/ui/assets/approval/icon-check.svg';
 import clsx from 'clsx';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -41,16 +33,8 @@ import CoboSafeCreate from './CoboSafeCreate';
 import CoboSafeModificationRule from './CoboSafeModificationRole';
 import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegatedAddress';
 import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
-import RevokePermit2 from '../Actions/RevokePermit2';
-import AssetOrder from '../Actions/AssetOrder';
-import ApproveNFT from '../Actions/ApproveNFT';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
-import {
-  ApproveNFTRequireData,
-  RevokeTokenApproveRequireData,
-  SendRequireData,
-} from '../Actions/utils';
 import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
@@ -58,6 +42,8 @@ import { MessageWrapper } from '../TextActions';
 import { Divide } from '../Divide';
 import { Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
+import { TransactionActionList } from '../Actions/components/TransactionActionList';
+import { noop } from '@/ui/utils';
 
 const Actions = ({
   data,
@@ -69,8 +55,8 @@ const Actions = ({
   origin,
   originLogo,
 }: {
-  data: TypedDataActionData | null;
-  requireData: TypedDataRequireData;
+  data: ParsedTypedDataActionData | null;
+  requireData: ActionRequireData;
   chain?: Chain;
   engineResults: Result[];
   raw: Record<string, any>;
@@ -176,26 +162,10 @@ const Actions = ({
                       engineResults={engineResults}
                     />
                   )}
-                  {data.revokePermit && chain && (
-                    <RevokePermit2
-                      data={data.revokePermit}
-                      requireData={requireData as RevokeTokenApproveRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
                   {data.permit2 && chain && (
                     <Permit2
                       data={data.permit2}
                       requireData={requireData as ApproveTokenRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.approveNFT && chain && (
-                    <ApproveNFT
-                      data={data.approveNFT}
-                      requireData={requireData as ApproveNFTRequireData}
                       chain={chain}
                       engineResults={engineResults}
                     />
@@ -243,27 +213,10 @@ const Actions = ({
                       sender={data.sender}
                     />
                   )}
-                  {data.assetOrder && chain && (
-                    <AssetOrder
-                      data={data.assetOrder}
-                      requireData={requireData as ContractRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                      sender={data.sender}
-                    />
-                  )}
                   {data.signMultiSig && (
                     <SignMultisig
                       data={data.signMultiSig}
                       requireData={requireData as MultiSigRequireData}
-                      chain={chain}
-                      engineResults={engineResults}
-                    />
-                  )}
-                  {data.send && chain && (
-                    <Send
-                      data={data.send}
-                      requireData={requireData as SendRequireData}
                       chain={chain}
                       engineResults={engineResults}
                     />
@@ -313,6 +266,17 @@ const Actions = ({
                       requireData={requireData as ContractRequireData}
                       chain={chain}
                       engineResults={engineResults}
+                    />
+                  )}
+                  {chain && (
+                    <TransactionActionList
+                      data={data}
+                      requireData={requireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                      raw={raw}
+                      isTypedData
+                      onChange={noop}
                     />
                   )}
                 </div>

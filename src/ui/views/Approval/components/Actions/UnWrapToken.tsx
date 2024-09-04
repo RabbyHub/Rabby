@@ -5,7 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
-import { ParsedActionData, WrapTokenRequireData } from './utils';
+import {
+  WrapTokenRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatAmount } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
@@ -41,7 +44,7 @@ const UnWrapToken = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['wrapToken'];
+  data: ParsedTransactionActionData['wrapToken'];
   requireData: WrapTokenRequireData;
   chain: Chain;
   engineResults: Result[];

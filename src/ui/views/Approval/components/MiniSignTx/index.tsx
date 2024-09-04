@@ -38,7 +38,7 @@ import { useSecurityEngine } from 'ui/utils/securityEngine';
 import {
   ActionRequireData,
   ParsedActionData,
-} from '../../components/Actions/utils';
+} from '@rabby-wallet/rabby-action';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import GasSelectorHeader, {
   GasSelectorResponse,
