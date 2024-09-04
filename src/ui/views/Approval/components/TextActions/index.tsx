@@ -3,18 +3,12 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Tabs } from 'antd';
-import { TextActionData, getActionTypeText } from './utils';
-import IconArrowRight, {
-  ReactComponent as RcIconArrowRight,
-} from 'ui/assets/approval/edit-arrow-right.svg';
+import { getActionTypeText } from './utils';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import CreateKey from './CreateKey';
 import VerifyAddress from './VerifyAddress';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
-import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
-import IconCheck, {
-  ReactComponent as RcIconCheck,
-} from 'src/ui/assets/approval/icon-check.svg';
 import clsx from 'clsx';
 import { Popup } from 'ui/component';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
@@ -24,6 +18,7 @@ import { ActionWrapper } from '../ActionWrapper';
 import { Card } from '../Card';
 import { OriginInfo } from '../OriginInfo';
 import { Divide } from '../Divide';
+import { ParsedTextActionData } from '@rabby-wallet/rabby-action';
 
 const { TabPane } = Tabs;
 
@@ -90,7 +85,7 @@ const Actions = ({
   origin,
   originLogo,
 }: {
-  data: TextActionData | null;
+  data: ParsedTextActionData | null;
   engineResults: Result[];
   raw: string;
   message: string;

@@ -1,6 +1,6 @@
+import { getActionTypeTextByType } from '@/ui/views/Approval/components/Actions/utils';
 import { PendingTxItem } from '@rabby-wallet/rabby-api/dist/types';
 import React from 'react';
-import { getActionTypeTextByType } from '../../../Approval/components/Actions/utils';
 
 export const TransactionActionType = ({ data }: { data: PendingTxItem }) => {
   return (

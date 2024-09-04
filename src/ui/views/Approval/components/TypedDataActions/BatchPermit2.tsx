@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { BatchApproveTokenRequireData, TypedDataActionData } from './utils';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -14,6 +13,10 @@ import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 import { TokenAmountItem } from '../Actions/components/TokenAmountItem';
+import {
+  BatchApproveTokenRequireData,
+  ParsedTypedDataActionData,
+} from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .header {
@@ -40,7 +43,7 @@ const Permit2 = ({
   chain,
   engineResults,
 }: {
-  data: TypedDataActionData['batchPermit2'];
+  data: ParsedTypedDataActionData['batchPermit2'];
   requireData: BatchApproveTokenRequireData;
   chain: Chain;
   engineResults: Result[];

@@ -1,63 +1,29 @@
-import { Result } from '@rabby-wallet/rabby-security-engine';
-import { Chain, ExplainTxResponse } from 'background/service/openapi';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import BalanceChange from '../TxComponents/BalanceChange';
-import ViewRawModal from '../TxComponents/ViewRawModal';
-import ApproveNFT from './ApproveNFT';
-import ApproveNFTCollection from './ApproveNFTCollection';
-import CancelTx from './CancelTx';
-import ContractCall from './ContractCall';
-import DeployContract from './DeployContract';
-import RevokeNFT from './RevokeNFT';
-import RevokeNFTCollection from './RevokeNFTCollection';
-import Send from './Send';
-import SendNFT from './SendNFT';
-import Swap from './Swap';
-import TokenApprove from './TokenApprove';
-import RevokeTokenApprove from './RevokeTokenApprove';
-import WrapToken from './WrapToken';
-import UnWrapToken from './UnWrapToken';
-import PushMultiSig from './PushMultiSig';
-import CrossToken from './CrossToken';
-import CrossSwapToken from './CrossSwapToken';
-import RevokePermit2 from './RevokePermit2';
-import AssetOrder from './AssetOrder';
+import ChainIcon from '@/ui/component/ChainIcon';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useWallet } from '@/ui/utils';
 import {
   ActionRequireData,
-  ApproveNFTRequireData,
-  ApproveTokenRequireData,
-  CancelTxRequireData,
-  ContractCallRequireData,
-  ParsedActionData,
-  PushMultiSigRequireData,
-  RevokeNFTRequireData,
-  RevokeTokenApproveRequireData,
-  SendRequireData,
-  SwapRequireData,
-  WrapTokenRequireData,
-  getActionTypeText,
-  AssetOrderRequireData,
-  BatchRevokePermit2RequireData,
-} from './utils';
-import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
-import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
+import { Result } from '@rabby-wallet/rabby-security-engine';
+import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import clsx from 'clsx';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { CommonAction } from '../CommonAction';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
+import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import { ActionWrapper } from '../ActionWrapper';
-import { ContractRequireData } from '../TypedDataActions/utils';
-import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
+import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
+import { OriginInfo } from '../OriginInfo';
+import BalanceChange from '../TxComponents/BalanceChange';
+import ViewRawModal from '../TxComponents/ViewRawModal';
 import { Col, Row } from './components/Table';
-import LogoWithText from './components/LogoWithText';
-import { BatchRevokePermit2 } from './BatchRevokePermit2';
-import ChainIcon from '@/ui/component/ChainIcon';
-import { useWallet } from '@/ui/utils';
+import { TransactionActionList } from './components/TransactionActionList';
+import { getActionTypeText } from './utils';
 
 const Actions = ({
   data,
@@ -71,7 +37,7 @@ const Actions = ({
   origin,
   originLogo,
 }: {
-  data: ParsedActionData;
+  data: ParsedTransactionActionData;
   requireData: ActionRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -233,177 +199,14 @@ const Actions = ({
                 </div>
               </Row>
             </Col>
-            {data.swap && (
-              <Swap
-                data={data.swap}
-                requireData={requireData as SwapRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.crossToken && (
-              <CrossToken
-                data={data.crossToken}
-                requireData={requireData as SwapRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.crossSwapToken && (
-              <CrossSwapToken
-                data={data.crossSwapToken}
-                requireData={requireData as SwapRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.wrapToken && (
-              <WrapToken
-                data={data.wrapToken}
-                requireData={requireData as WrapTokenRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.unWrapToken && (
-              <UnWrapToken
-                data={data.unWrapToken}
-                requireData={requireData as WrapTokenRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.send && (
-              <Send
-                data={data.send}
-                requireData={requireData as SendRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.approveToken && (
-              <TokenApprove
-                data={data.approveToken}
-                requireData={requireData as ApproveTokenRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                onChange={onChange}
-                raw={raw}
-              />
-            )}
-            {data.revokeToken && (
-              <RevokeTokenApprove
-                data={data.revokeToken}
-                requireData={requireData as RevokeTokenApproveRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                onChange={onChange}
-                raw={raw}
-              />
-            )}
-            {data.revokePermit2 && (
-              <RevokePermit2
-                data={data.revokePermit2}
-                requireData={requireData as RevokeTokenApproveRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                onChange={onChange}
-                raw={raw}
-              />
-            )}
-            {data.cancelTx && (
-              <CancelTx
-                data={data.cancelTx}
-                requireData={requireData as CancelTxRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                onChange={onChange}
-                raw={raw}
-              ></CancelTx>
-            )}
-            {data?.sendNFT && (
-              <SendNFT
-                data={data.sendNFT}
-                requireData={requireData as SendRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data?.approveNFT && (
-              <ApproveNFT
-                data={data.approveNFT}
-                requireData={requireData as ApproveNFTRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data?.revokeNFT && (
-              <RevokeNFT
-                data={data.revokeNFT}
-                requireData={requireData as RevokeNFTRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data?.revokeNFTCollection && (
-              <RevokeNFTCollection
-                data={data.revokeNFTCollection}
-                requireData={requireData as RevokeNFTRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data?.approveNFTCollection && (
-              <ApproveNFTCollection
-                data={data.approveNFTCollection}
-                requireData={requireData as RevokeNFTRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data?.deployContract && <DeployContract />}
-            {data?.pushMultiSig && (
-              <PushMultiSig
-                data={data.pushMultiSig}
-                requireData={requireData as PushMultiSigRequireData}
-                chain={chain}
-              />
-            )}
-            {data?.assetOrder && (
-              <AssetOrder
-                data={data.assetOrder}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                sender={(requireData as AssetOrderRequireData).sender}
-              />
-            )}
-            {data.contractCall && (
-              <ContractCall
-                data={data.contractCall}
-                requireData={requireData as ContractCallRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                onChange={onChange}
-                raw={raw}
-              />
-            )}
-            {data.common && (
-              <CommonAction
-                data={data.common}
-                requireData={requireData as ContractCallRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.permit2BatchRevokeToken && (
-              <BatchRevokePermit2
-                data={data.permit2BatchRevokeToken}
-                requireData={requireData as BatchRevokePermit2RequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
+            <TransactionActionList
+              data={data}
+              requireData={requireData}
+              chain={chain}
+              engineResults={engineResults}
+              raw={raw}
+              onChange={onChange}
+            />
           </div>
         </Card>
       </ActionWrapper>

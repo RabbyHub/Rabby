@@ -1,10 +1,8 @@
-import { Copy, NameAndAddress } from '@/ui/component';
 import { PendingTxItem } from '@rabby-wallet/rabby-api/dist/types';
 import clsx from 'clsx';
 import React from 'react';
 import IconUser from 'ui/assets/address-management.svg';
 import IconContract from 'ui/assets/pending/icon-contract.svg';
-import { getActionTypeTextByType } from '../../../Approval/components/Actions/utils';
 import { Popover } from 'antd';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { ReactComponent as RcIconCopy } from '@/ui/assets/pending/icon-copy-1.svg';

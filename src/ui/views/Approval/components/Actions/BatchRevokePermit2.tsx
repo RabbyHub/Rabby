@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain, RevokeTokenApproveAction } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ParsedActionData, BatchRevokePermit2RequireData } from './utils';
+import {
+  BatchRevokePermit2RequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
@@ -35,7 +38,7 @@ export const BatchRevokePermit2 = ({
   requireData,
   chain,
 }: {
-  data: ParsedActionData['permit2BatchRevokeToken'];
+  data: ParsedTransactionActionData['permit2BatchRevokeToken'];
   requireData: BatchRevokePermit2RequireData;
   chain: Chain;
   raw?: Record<string, string | number>;

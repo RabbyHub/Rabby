@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ParsedActionData, RevokeNFTRequireData } from './utils';
+import {
+  RevokeNFTRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import NFTWithName from './components/NFTWithName';
@@ -50,7 +53,7 @@ const RevokeNFT = ({
   requireData,
   chain,
 }: {
-  data: ParsedActionData['revokeNFT'];
+  data: ParsedTransactionActionData['revokeNFT'];
   requireData: RevokeNFTRequireData;
   chain: Chain;
   engineResults: Result[];
