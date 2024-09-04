@@ -4388,7 +4388,6 @@ export class WalletController extends BaseController {
     const { text } = await wallet.openapi.getGasAccountSignText(
       account.address
     );
-    console.log('text', text);
     const signature = await this.sendRequest<string>({
       method: 'personal_sign',
       params: [text, account.address],
