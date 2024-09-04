@@ -45,7 +45,11 @@ export const useGasAccountInfo = () => {
       });
   }, [sig, accountId, refreshId]);
 
-  if (error?.message?.includes('failed') && sig && accountId) {
+  if (
+    error?.message?.includes('gas account verified failed') &&
+    sig &&
+    accountId
+  ) {
     dispatch.gasAccount.setGasAccountSig({});
   }
 
