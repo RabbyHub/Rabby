@@ -52,6 +52,13 @@ export const useGasAccountTxsCheck = ({
     !gasAccountCost.chain_not_support &&
     !!gasAccountCost.is_gas_account;
 
+  const canGotoUseGasAccount =
+    isSupportedAddr &&
+    noCustomRPC &&
+    !!gasAccountCost?.balance_is_enough &&
+    !gasAccountCost.chain_not_support &&
+    !!gasAccountCost.is_gas_account;
+
   return {
     gasAccountCost,
     gasMethod,
@@ -59,5 +66,6 @@ export const useGasAccountTxsCheck = ({
     isGasAccountLogin,
     setIsGasAccountLogin,
     gasAccountCanPay,
+    canGotoUseGasAccount,
   };
 };

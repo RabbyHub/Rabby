@@ -4746,10 +4746,10 @@
     p-queue "^8.0.1"
 
 
-"@rabby-wallet/rabby-api@0.7.30":
-  version "0.7.30"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.30.tgz#375899967a211e80213699fcb1ac5e4511723d18"
-  integrity sha512-LN0ZrYju4lw3EDW3k5lfGA1eQxuVVXFa0r0dI9XZaj3lIfLaHLo69G6pkq28ROpP/dYclKYgDHij3P8ZKGKc0Q==
+"@rabby-wallet/rabby-api@0.7.31":
+  version "0.7.31"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.31.tgz#68374fc698a91351dd8f53d6ec8d2c9f36b70b0c"
+  integrity sha512-RduYhkc15U/8pA/pRInU6+RAzA0Ibi4c1wz44HzlCIPu3+9pdS21CsVOXZAKKHLBvLdMzpKo/mdFB3tkSvqtHw==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"

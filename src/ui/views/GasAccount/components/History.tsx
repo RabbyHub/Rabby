@@ -46,7 +46,7 @@ const HistoryItem = ({
       className={clsx(
         'flex items-center justify-between',
         borderT && 'border-t-[0.5px] border-solid border-rabby-neutral-card2',
-        isPending ? 'px-16 py-12' : 'px-16 py-18',
+        isPending ? 'px-16 py-12' : 'px-16 h-[48px]',
         className
       )}
     >
@@ -69,9 +69,9 @@ const HistoryItem = ({
           <RcIconOpenExternalCC viewBox="0 0 12 12" className="w-12 h-12" />
         </div>
       ) : (
-        <div className="text-13 text-r-neutral-foot">{sinceTime(time)}</div>
+        <div className="text-14 text-r-neutral-foot">{sinceTime(time)}</div>
       )}
-      <div className="text-13 font-medium text-r-neutral-title-1">
+      <div className="text-14 font-medium text-r-neutral-title-1">
         {sign}
         {formatUsdValue(value)}{' '}
       </div>
@@ -85,7 +85,7 @@ const LoadingItem = ({ borderT }: { borderT: boolean }) => {
       className={clsx(
         'flex items-center justify-between',
         borderT && 'border-t-[0.5px] border-solid border-rabby-neutral-card2',
-        'px-16 py-18'
+        'px-16 h-[48px]'
       )}
     >
       <Skeleton.Input className="rounded w-[68px] h-[16px]" active />
@@ -133,7 +133,7 @@ export const GasAccountHistory = () => {
             key={item.create_at}
             time={item.create_at}
             value={item.usd_value}
-            sign={'-'}
+            sign={item.history_type === 'recharge' ? '+' : '-'}
             borderT={!txList?.rechargeList.length ? index !== 0 : true}
           />
         ))}

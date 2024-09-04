@@ -63,8 +63,8 @@
       "gasAccountForGas": "Use USD from my GasAccount to pay for gas",
       "gasAccount": {
         "totalCost": "Total cost: ",
-        "currentTxCost": "Gas cost for current transaction: ",
-        "gasCost": "Gas cost for transferring gas to your address: "
+        "currentTxCost": "Gas amount sent to your address: ",
+        "gasCost": "Gas cost for sending Gas to your address: "
       },
       "balanceChange": {
         "successTitle": "Simulation Results",
@@ -2211,7 +2211,7 @@
         "noHistory": "No history"
       },
       "loginInTip": {
-        "title": "Deposit USDC/USDT",
+        "title": "Deposit USDC / USDT",
         "desc": "Pay Gas Fees on All Chains",
         "login": "Log in GasAccount",
         "gotIt": "Got it"
@@ -2239,8 +2239,8 @@
         "to": "To"
       },
       "withdrawConfirmModal": {
-        "title": "Transferred to DeBank L2",
-        "button": "View on DeBank L2"
+        "title": "Transferred to your DeBank L2 Wallet",
+        "button": "View on DeBank"
       },
       "GasAccountDepositTipPopup": {
         "title": "Open GasAccount and Deposit",

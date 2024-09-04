@@ -330,6 +330,7 @@ export const MiniSignTx = ({
     setGasMethod,
     isGasAccountLogin,
     gasAccountCanPay,
+    canGotoUseGasAccount,
   } = useGasAccountTxsCheck({
     isReady,
     txs: gasAccountTxs,
@@ -899,6 +900,7 @@ export const MiniSignTx = ({
         gasMethod={gasMethod}
         gasAccountCost={gasAccountCost}
         gasAccountCanPay={gasAccountCanPay}
+        canGotoUseGasAccount={canGotoUseGasAccount}
         isGasAccountLogin={isGasAccountLogin}
         isWalletConnect={
           currentAccountType === KEYRING_TYPE.WalletConnectKeyring

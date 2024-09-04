@@ -52,6 +52,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   isWalletConnect?: boolean;
   gasAccountCanPay?: boolean;
   noCustomRPC?: boolean;
+  canGotoUseGasAccount?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -163,6 +164,7 @@ export const FooterBar: React.FC<Props> = ({
   isWalletConnect,
   gasAccountCanPay,
   noCustomRPC,
+  canGotoUseGasAccount,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -318,7 +320,7 @@ export const FooterBar: React.FC<Props> = ({
           ) : isWatchAddr ? null : (
             <GasLessNotEnough
               gasLessFailedReason={gasLessFailedReason}
-              gasAccountCanPay={gasAccountCanPay}
+              canGotoUseGasAccount={canGotoUseGasAccount}
               onChangeGasAccount={onChangeGasAccount}
             />
           )

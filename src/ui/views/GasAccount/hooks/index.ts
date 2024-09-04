@@ -194,12 +194,9 @@ export const useGasAccountHistory = () => {
 
   const [inViewport] = useInViewport(ref);
 
-  console.log('inViewport', inViewport, noMore, loadingMore);
-
   useEffect(() => {
     if (!noMore && inViewport && !loadingMore && loadMore) {
       loadMore();
-      console.log('loadMore');
     }
   }, [inViewport, loadMore, loading, loadingMore, noMore]);
 

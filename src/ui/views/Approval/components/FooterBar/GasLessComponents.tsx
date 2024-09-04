@@ -30,12 +30,12 @@ export type GasLessConfig = {
 export function GasLessNotEnough({
   gasLessFailedReason,
   onChangeGasAccount,
-  gasAccountCanPay,
+  canGotoUseGasAccount,
 }: {
   url?: string;
   gasLessFailedReason?: string;
   onChangeGasAccount?: () => void;
-  gasAccountCanPay?: boolean;
+  canGotoUseGasAccount?: boolean;
 }) {
   const { t } = useTranslation();
   const [
@@ -57,7 +57,7 @@ export function GasLessNotEnough({
         {t('page.signFooterBar.gasAccount.notEnough')}
       </span>
 
-      {gasAccountCanPay ? (
+      {canGotoUseGasAccount ? (
         <div
           style={{
             cursor: 'pointer',

@@ -843,7 +843,7 @@ const GasSelectorHeader = ({
                       overlayClassName="rectangle"
                       title={`≈${gasCostUsdStr}`}
                     >
-                      <div className="truncate max-w-[180px] group">
+                      <div className="truncate max-w-[180px] group font-medium">
                         <span>{gasCostAmountStr}</span>
                       </div>
                     </Tooltip>

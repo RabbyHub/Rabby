@@ -4445,7 +4445,6 @@ export class WalletController extends BaseController {
 
     const nonce = await this.getNonceByChain(account.address, chain!.id);
 
-
     if (tx) {
       this.openapi.rechargeGasAccount({
         sig: sig!,
