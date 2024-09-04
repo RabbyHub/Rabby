@@ -273,6 +273,8 @@ function findInstanceLevel(gasList: GasLevel[]) {
   );
 }
 
+const DEFAULT_GAS_USED = 21000;
+
 type FormSendToken = {
   to: string;
   amount: string;
@@ -593,11 +595,11 @@ const SendToken = () => {
         if (gasLimit > 0) {
           params.gas = intToHex(gasLimit);
         } else if (notContract && couldSpecifyIntrinsicGas) {
-          params.gas = intToHex(21000);
+          params.gas = intToHex(DEFAULT_GAS_USED);
         }
       } catch (e) {
         if (couldSpecifyIntrinsicGas) {
-          params.gas = intToHex(21000);
+          params.gas = intToHex(DEFAULT_GAS_USED);
         }
       }
 
@@ -775,16 +777,15 @@ const SendToken = () => {
         gasNumHex: intToHex(0),
       };
 
-      if (!input?.chainItem?.needEstimateGas) return result;
-
       const {
         chainItem: lastestChainItem = chainItem,
         tokenItem = currentToken,
         currentAddress = currentAccount?.address,
       } = input || {};
 
+      if (!lastestChainItem?.needEstimateGas) return result;
+
       if (!currentAddress) return result;
-      if (!lastestChainItem) return result;
 
       if (lastestChainItem.serverId !== tokenItem.chain) {
         console.warn(
@@ -797,7 +798,7 @@ const SendToken = () => {
 
       const to = form.getFieldValue('to');
 
-      let _gasUsed: string = intToHex(21000);
+      let _gasUsed: string = intToHex(DEFAULT_GAS_USED);
       try {
         _gasUsed = await wallet.requestETHRpc<string>(
           {
@@ -816,10 +817,10 @@ const SendToken = () => {
       } catch (err) {
         console.error(err);
       }
-      const gasUsed = new BigNumber(_gasUsed)
-        .multipliedBy(1.5)
-        .integerValue()
-        .toNumber();
+
+      const gasUsed = lastestChainItem.isTestnet
+        ? new BigNumber(_gasUsed).multipliedBy(1.5).integerValue().toNumber()
+        : _gasUsed;
 
       result.gasNumber = Number(gasUsed);
       result.gasNumHex =
@@ -980,7 +981,7 @@ const SendToken = () => {
           let gasTokenAmount = handleGasChange({
             gasLevel: gasLevel,
             updateTokenAmount: false,
-            gasLimit: gasNumber,
+            gasLimit: gasNumber || DEFAULT_GAS_USED,
           });
           if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain)) {
             const l1GasFee = await wallet.fetchEstimatedL1Fee(
@@ -990,7 +991,7 @@ const SendToken = () => {
                   from: currentAccount.address,
                   to: to && isValidAddress(to) ? to : zeroAddress(),
                   value: currentToken.raw_amount_hex_str,
-                  gas: intToHex(21000),
+                  gas: intToHex(DEFAULT_GAS_USED),
                   gasPrice: `0x${new BigNumber(gasLevel.price).toString(16)}`,
                   data: '0x',
                 },
