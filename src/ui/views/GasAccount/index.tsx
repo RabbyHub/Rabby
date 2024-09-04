@@ -94,7 +94,7 @@ const GasAccountInner = () => {
         onBack={gotoDashboard}
         rightSlot={
           <div className="flex items-center gap-20 absolute bottom-0 right-0">
-            <Dropdown overlay={rightItems}>
+            <Dropdown overlay={rightItems} mouseLeaveDelay={0.3}>
               <RcIconMore
                 viewBox="0 0 20 20"
                 className="w-20 h-20 cursor-pointer"

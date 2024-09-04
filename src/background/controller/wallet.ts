@@ -4451,7 +4451,7 @@ export class WalletController extends BaseController {
         account_id: accountId!,
         tx_id: tx,
         chain_id: chainServerId,
-        amount: 1,
+        amount,
         user_addr: account?.address,
         nonce: nonce! - 1,
       });
