@@ -1,28 +1,29 @@
-import { Result } from '@rabby-wallet/rabby-security-engine';
-import { Chain, ExplainTxResponse } from 'background/service/openapi';
-import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import BalanceChange from '../TxComponents/BalanceChange';
-import ViewRawModal from '../TxComponents/ViewRawModal';
-import { getActionTypeText } from './utils';
+import ChainIcon from '@/ui/component/ChainIcon';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useWallet } from '@/ui/utils';
 import {
   ActionRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
-import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
-import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
+import { Result } from '@rabby-wallet/rabby-security-engine';
+import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import clsx from 'clsx';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
+import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import { ActionWrapper } from '../ActionWrapper';
-import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
+import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
+import { OriginInfo } from '../OriginInfo';
+import BalanceChange from '../TxComponents/BalanceChange';
+import ViewRawModal from '../TxComponents/ViewRawModal';
 import { Col, Row } from './components/Table';
-import LogoWithText from './components/LogoWithText';
 import { TransactionActionList } from './components/TransactionActionList';
+import { getActionTypeText } from './utils';
 
 const Actions = ({
   data,
@@ -90,6 +91,16 @@ const Actions = ({
   };
 
   const isUnknown = data?.contractCall;
+
+  const wallet = useWallet();
+  const [customRPC, setCustomRPC] = useState('');
+  const getCustomRPC = async () => {
+    const rpc = await wallet.getCustomRpcByChain(chain.enum);
+    setCustomRPC(rpc?.enable ? rpc.url : '');
+  };
+  useEffect(() => {
+    getCustomRPC();
+  }, [chain]);
 
   return (
     <>
@@ -174,11 +185,18 @@ const Actions = ({
             <Col>
               <Row isTitle>{t('page.signTx.chain')}</Row>
               <Row>
-                <LogoWithText
-                  logo={chain.logo}
-                  text={chain.name}
-                  logoRadius="100%"
-                />
+                <div className="flex items-center gap-[6px]">
+                  <ChainIcon
+                    chain={chain.enum}
+                    size={'small'}
+                    innerClassName="w-[16px] h-[16px]"
+                    customRPC={customRPC}
+                    showCustomRPCToolTip
+                  ></ChainIcon>
+                  <div className="truncate text-rabby-neutral-title1">
+                    {chain.name}
+                  </div>
+                </div>
               </Row>
             </Col>
             <TransactionActionList

@@ -417,6 +417,7 @@ export default ({
         className="receive-chain-select-modal"
         value={CHAINS_ENUM.ETH}
         visible={isShowReceiveModal}
+        showRPCStatus
         onChange={(chain) => {
           history.push(`/receive?rbisource=dashboard&chain=${chain}`);
           setIsShowReceiveModal(false);

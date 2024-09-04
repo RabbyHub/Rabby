@@ -109,6 +109,7 @@ export const SelectChainItem = forwardRef(
                         ? customRPC[data.enum].url
                         : ''
                     }
+                    showCustomRPCToolTip
                   />
                 ) : (
                   <img

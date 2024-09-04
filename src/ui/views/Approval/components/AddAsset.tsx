@@ -564,6 +564,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
             onChange={handleChainChanged}
             onCancel={() => rejectApproval('User rejected the request.')}
             disabledTips={t('page.addToken.noTokenFoundOnThisChain')}
+            showRPCStatus
           />
         </div>
       </AddAssetWrapper>
