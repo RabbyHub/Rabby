@@ -54,7 +54,7 @@ export function GasLessNotEnough({
         className="w-16 h-16 mr-4 text-r-neutral-title-1"
       />
       <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
-        {t('page.signFooterBar.gasAccount.notEnough')}
+        {t('page.signFooterBar.gasless.notEnough')}
       </span>
 
       {canGotoUseGasAccount ? (
