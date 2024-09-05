@@ -15,7 +15,7 @@ const GasAccountDepositTipContent = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
 
   return (
-    <GasAccountWrapperBg className="w-full h-full flex flex-col justify-center items-center">
+    <div className="w-full h-full flex flex-col justify-center items-center">
       <div className="text-20 font-medium text-r-neutral-title1 my-24">
         {t('page.gasAccount.GasAccountDepositTipPopup.title')}
       </div>
@@ -30,7 +30,7 @@ const GasAccountDepositTipContent = ({ onClose }: { onClose: () => void }) => {
           {t('page.gasAccount.GasAccountDepositTipPopup.gotIt')}
         </Button>
       </div>
-    </GasAccountWrapperBg>
+    </div>
   );
 };
 
