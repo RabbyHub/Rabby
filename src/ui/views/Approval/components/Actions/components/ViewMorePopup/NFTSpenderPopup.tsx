@@ -13,7 +13,6 @@ interface NFTSpenderData {
     name: string;
     logo_url: string;
   } | null;
-  hasInteraction: boolean;
   bornAt: number | null;
   rank: number | null;
   riskExposure: number;
@@ -105,12 +104,6 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
                   data.chain.name,
                 ])
               : '-'}
-          </Row>
-        </Col>
-        <Col>
-          <Row>{t('page.signTx.interacted')}</Row>
-          <Row>
-            <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>

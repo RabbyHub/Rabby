@@ -101,7 +101,6 @@ const ContractCall = ({
             <ViewMore
               type="contract"
               data={{
-                hasInteraction: requireData.hasInteraction,
                 bornAt: requireData.bornAt,
                 protocol: requireData.protocol,
                 rank: requireData.rank,
@@ -125,18 +124,20 @@ const ContractCall = ({
               <ProtocolListItem protocol={requireData.protocol} />
             </SubRow>
           </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-            <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
-            </SubRow>
-          </SubCol>
           {isInWhitelist && (
             <SubCol>
               <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
               <SubRow>{t('page.signTx.trusted')}</SubRow>
             </SubCol>
           )}
+
+          <SecurityListItem
+            id="1152"
+            engineResult={engineResultMap['1152']}
+            title={t('page.signTx.tokenApprove.flagByRabby')}
+            dangerText={t('page.signTx.yes')}
+          />
+
           <SecurityListItem
             id="1135"
             engineResult={engineResultMap['1135']}

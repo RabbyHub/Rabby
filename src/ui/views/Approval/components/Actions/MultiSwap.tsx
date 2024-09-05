@@ -193,13 +193,6 @@ const MultiSwap = ({
             </SubRow>
           </SubCol>
 
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-            <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
-            </SubRow>
-          </SubCol>
-
           {isInWhitelist && (
             <SubCol>
               <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>

@@ -139,16 +139,6 @@ const ApproveNFTCollection = ({
           />
 
           <SecurityListItem
-            id="1056"
-            engineResult={engineResultMap['1056']}
-            warningText={<Values.Interacted value={false} />}
-            defaultText={
-              <Values.Interacted value={requireData.hasInteraction} />
-            }
-            title={t('page.signTx.interacted')}
-          />
-
-          <SecurityListItem
             id="1055"
             engineResult={engineResultMap['1055']}
             warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {

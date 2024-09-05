@@ -183,7 +183,6 @@ const WrapToken = ({
             <ViewMore
               type="contract"
               data={{
-                hasInteraction: requireData.hasInteraction,
                 bornAt: requireData.bornAt,
                 protocol: requireData.protocol,
                 rank: requireData.rank,
@@ -205,12 +204,6 @@ const WrapToken = ({
             <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
             <SubRow>
               <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-            <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
 
