@@ -135,16 +135,6 @@ const ApproveNFT = ({
           />
 
           <SecurityListItem
-            id="1048"
-            engineResult={engineResultMap['1048']}
-            warningText={<Values.Interacted value={false} />}
-            defaultText={
-              <Values.Interacted value={requireData.hasInteraction} />
-            }
-            title={t('page.signTx.interacted')}
-          />
-
-          <SecurityListItem
             id="1045"
             engineResult={engineResultMap['1045']}
             warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {

@@ -173,16 +173,6 @@ const Permit2 = ({
           />
 
           <SecurityListItem
-            id="1112"
-            engineResult={engineResultMap['1112']}
-            warningText={<Values.Interacted value={false} />}
-            defaultText={
-              <Values.Interacted value={requireData.hasInteraction} />
-            }
-            title={t('page.signTx.interacted')}
-          />
-
-          <SecurityListItem
             id="1111"
             engineResult={engineResultMap['1111']}
             warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {
