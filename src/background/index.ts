@@ -11,6 +11,7 @@ import {
   EVENTS,
   EVENTS_IN_BG,
   KEYRING_CATEGORY_MAP,
+  KEYRING_TYPE,
 } from 'consts';
 import { storage } from './webapi';
 import {
@@ -32,6 +33,7 @@ import {
   transactionBroadcastWatchService,
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
+  gasAccountService,
 } from './service';
 import { providerController, walletController } from './controller';
 import { getOriginFromUrl } from '@/utils';
@@ -42,7 +44,7 @@ import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { setPopupIcon } from './utils';
+import { isSameAddress, setPopupIcon } from './utils';
 import { appIsDev, getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
@@ -51,6 +53,7 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { customTestnetService } from './service/customTestnet';
 import { findChain } from '@/utils/chain';
 import { syncChainService } from './service/syncChain';
+import { GasAccountServiceStore } from './service/gasAccount';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -99,6 +102,7 @@ async function restoreAppState() {
   await RabbyPointsService.init();
   await HDKeyRingLastAddAddrTimeService.init();
   await bridgeService.init();
+  await gasAccountService.init();
 
   await walletController.tryUnlock();
 
@@ -193,18 +197,6 @@ restoreAppState();
     };
     sendEvent();
     interval = setInterval(sendEvent, 5 * 60 * 1000);
-    // TODO: remove me after 2022.12.31
-    const arrangeOldContactAndAlias = async () => {
-      const addresses = await keyringService.getAllAdresses();
-      const contactMap = contactBookService.getContactsByMap();
-      addresses.forEach(({ address }) => {
-        const item = contactMap[address];
-        if (item && item.isContact && !item.isAlias) {
-          contactBookService.addAlias({ name: item.name, address });
-        }
-      });
-    };
-    arrangeOldContactAndAlias();
   });
 
   keyringService.on('lock', () => {
@@ -213,6 +205,34 @@ restoreAppState();
       interval = null;
     }
   });
+
+  keyringService.on(
+    'removedAccount',
+    async (address: string, type: string, brand?: string) => {
+      if (type !== KEYRING_TYPE.WatchAddressKeyring) {
+        const restAddresses = await keyringService.getAllAdresses();
+        const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
+        if (!gasAccount?.account?.address) return;
+        // check if there is another type address in wallet
+        const stillHasAddr = restAddresses.some((item) => {
+          return (
+            isSameAddress(item.address, gasAccount.account!.address) &&
+            item.type !== KEYRING_TYPE.WatchAddressKeyring
+          );
+        });
+        if (
+          !stillHasAddr &&
+          isSameAddress(address, gasAccount.account.address)
+        ) {
+          // if there is no another type address then reset signature
+          gasAccountService.setGasAccountSig();
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+          });
+        }
+      }
+    }
+  );
 }
 
 // for page provider

@@ -19,6 +19,7 @@ import { customRPC } from './customRPC';
 import { securityEngine } from './securityEngine';
 import { sign } from './sign';
 import { bridge } from './bridge';
+import { gasAccount } from './gasAccount';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -40,6 +41,7 @@ export interface RootModel extends Models<RootModel> {
   securityEngine: typeof securityEngine;
   sign: typeof sign;
   bridge: typeof bridge;
+  gasAccount: typeof gasAccount;
 }
 
 export const models: RootModel = {
@@ -62,6 +64,7 @@ export const models: RootModel = {
   securityEngine,
   sign,
   bridge,
+  gasAccount,
 };
 
 export type RabbyDispatch = RematchDispatch<RootModel>;
