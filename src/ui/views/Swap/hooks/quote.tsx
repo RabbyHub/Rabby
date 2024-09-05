@@ -450,8 +450,6 @@ export const useQuoteMethods = () => {
     [walletOpenapi, pRetry, getPreExecResult]
   );
 
-  const swapViewList = useRabbySelector((s) => s.swap.viewList);
-
   const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
 
   const getAllQuotes = React.useCallback(
@@ -474,9 +472,9 @@ export const useQuoteMethods = () => {
       }
 
       return Promise.all([
-        ...(supportedDEXList.filter(
-          (e) => DEX[e] && swapViewList?.[e] !== false
-        ) as DEX_ENUM[]).map((dexId) => getDexQuote({ ...params, dexId })),
+        ...(supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[]).map((dexId) =>
+          getDexQuote({ ...params, dexId })
+        ),
       ]);
     },
     [getDexQuote]
@@ -491,7 +489,6 @@ export const useQuoteMethods = () => {
     getPreExecResult,
     getDexQuote,
     getAllQuotes,
-    swapViewList,
     supportedDEXList,
   };
 };

@@ -62,6 +62,7 @@ import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
+import { GasAccount } from './GasAccount';
 
 declare global {
   interface Window {
@@ -289,6 +290,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute path="/ecology/:chainId">
           <Ecology />
+        </PrivateRoute>
+        <PrivateRoute path="/gas-account">
+          <GasAccount />
         </PrivateRoute>
       </Switch>
 

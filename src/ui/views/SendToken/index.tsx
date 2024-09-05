@@ -1,4 +1,5 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -272,6 +273,8 @@ function findInstanceLevel(gasList: GasLevel[]) {
   );
 }
 
+const DEFAULT_GAS_USED = 21000;
+
 type FormSendToken = {
   to: string;
   amount: string;
@@ -385,7 +388,7 @@ const SendToken = () => {
     null
   );
 
-  const [estimateGas, setEstimateGas] = useState(0);
+  const [estimatedGas, setEstimatedGas] = useState(0);
   const [temporaryGrant, setTemporaryGrant] = useState(false);
   const [gasPriceMap, setGasPriceMap] = useState<
     Record<string, { list: GasLevel[]; expireAt: number }>
@@ -581,22 +584,22 @@ const SendToken = () => {
 
         let gasLimit = 0;
 
-        if (estimateGas) {
-          gasLimit = estimateGas;
+        if (estimatedGas) {
+          gasLimit = estimatedGas;
         }
 
         /**
-         * we don't need always fetch estimateGas, if no `params.gas` set below,
+         * we don't need always fetch estimatedGas, if no `params.gas` set below,
          * `params.gas` would be filled on Tx Page.
          */
         if (gasLimit > 0) {
           params.gas = intToHex(gasLimit);
         } else if (notContract && couldSpecifyIntrinsicGas) {
-          params.gas = intToHex(21000);
+          params.gas = intToHex(DEFAULT_GAS_USED);
         }
       } catch (e) {
         if (couldSpecifyIntrinsicGas) {
-          params.gas = intToHex(21000);
+          params.gas = intToHex(DEFAULT_GAS_USED);
         }
       }
 
@@ -763,15 +766,81 @@ const SendToken = () => {
     ]
   );
 
+  const estimateGasOnChain = useCallback(
+    async (input?: {
+      chainItem?: Chain | null;
+      tokenItem?: TokenItem;
+      currentAddress?: string;
+    }) => {
+      const result = { gasNumber: 0 };
+
+      const doReturn = (nextGas = DEFAULT_GAS_USED) => {
+        result.gasNumber = nextGas;
+
+        setEstimatedGas(result.gasNumber);
+        return result;
+      };
+
+      const {
+        chainItem: lastestChainItem = chainItem,
+        tokenItem = currentToken,
+        currentAddress = currentAccount?.address,
+      } = input || {};
+
+      if (!lastestChainItem?.needEstimateGas) return doReturn(DEFAULT_GAS_USED);
+
+      if (!currentAddress) return doReturn();
+
+      if (lastestChainItem.serverId !== tokenItem.chain) {
+        console.warn(
+          'estimateGasOnChain:: chain not matched!',
+          lastestChainItem,
+          tokenItem
+        );
+        return doReturn();
+      }
+
+      const to = form.getFieldValue('to');
+
+      let _gasUsed: string = intToHex(DEFAULT_GAS_USED);
+      try {
+        _gasUsed = await wallet.requestETHRpc<string>(
+          {
+            method: 'eth_estimateGas',
+            params: [
+              {
+                from: currentAddress,
+                to: to && isValidAddress(to) ? to : zeroAddress(),
+                gasPrice: intToHex(0),
+                value: tokenItem.raw_amount_hex_str,
+              },
+            ],
+          },
+          lastestChainItem.serverId
+        );
+      } catch (err) {
+        console.error(err);
+      }
+
+      const gasUsed = new BigNumber(_gasUsed)
+        .multipliedBy(1.5)
+        .integerValue()
+        .toNumber();
+
+      return doReturn(Number(gasUsed));
+    },
+    [wallet, currentAccount, chainItem, form, currentToken]
+  );
+
   const loadCurrentToken = useCallback(
-    async (id: string, chainId: string, address: string) => {
+    async (id: string, chainId: string, currentAddress: string) => {
       const chain = findChain({
         serverId: chainId,
       });
       let result: TokenItem | null = null;
       if (chain?.isTestnet) {
         const res = await wallet.getCustomTestnetToken({
-          address,
+          address: currentAddress,
           chainId: chain.id,
           tokenId: id,
         });
@@ -779,16 +848,21 @@ const SendToken = () => {
           result = customTestnetTokenToTokenItem(res);
         }
       } else {
-        result = await wallet.openapi.getToken(address, chainId, id);
+        result = await wallet.openapi.getToken(currentAddress, chainId, id);
       }
       if (result) {
+        estimateGasOnChain({
+          chainItem: chain,
+          tokenItem: result,
+          currentAddress,
+        });
         setCurrentToken(result);
       }
       setIsLoading(false);
 
       return result;
     },
-    [wallet]
+    [wallet, estimateGasOnChain]
   );
 
   const handleAmountChange = useCallback(() => {
@@ -812,7 +886,7 @@ const SendToken = () => {
       const chainItem = findChain({ serverId: token.chain });
       setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
       setCurrentToken(token);
-      setEstimateGas(0);
+      setEstimatedGas(0);
       await persistPageStateCache({ currentToken: token });
       setBalanceError(null);
       setBalanceWarn(null);
@@ -831,53 +905,6 @@ const SendToken = () => {
       cancelClickedMax,
     ]
   );
-
-  const ethEstimateGas = useCallback(async () => {
-    const result = {
-      gasNumber: 0,
-      gasNumHex: intToHex(0),
-    };
-
-    if (!currentAccount?.address) return result;
-    if (!chainItem) return result;
-
-    const to = form.getFieldValue('to');
-
-    let _gasUsed: string = intToHex(21000);
-    try {
-      _gasUsed = await wallet.requestETHRpc<string>(
-        {
-          method: 'eth_estimateGas',
-          params: [
-            {
-              from: currentAccount.address,
-              to: to && isValidAddress(to) ? to : zeroAddress(),
-              gasPrice: intToHex(0),
-              value: currentToken.raw_amount_hex_str,
-            },
-          ],
-        },
-        chainItem.serverId
-      );
-    } catch (err) {
-      console.error(err);
-    }
-    const gasUsed = chainItem.isTestnet
-      ? new BigNumber(_gasUsed).multipliedBy(1.5).integerValue().toNumber()
-      : _gasUsed;
-
-    result.gasNumber = Number(gasUsed);
-    result.gasNumHex =
-      typeof gasUsed === 'string' ? gasUsed : intToHex(gasUsed);
-
-    return result;
-  }, [
-    wallet,
-    currentAccount,
-    chainItem,
-    form,
-    currentToken.raw_amount_hex_str,
-  ]);
 
   const handleGasChange = useCallback(
     (input: {
@@ -945,8 +972,10 @@ const SendToken = () => {
         setShowGasReserved(true);
         setSendMaxInfo((prev) => ({ ...prev, isEstimatingGas: true }));
         try {
-          const { gasNumber } = await ethEstimateGas();
-          setEstimateGas(gasNumber);
+          const { gasNumber } = await estimateGasOnChain({
+            chainItem,
+            tokenItem: currentToken,
+          });
 
           let gasTokenAmount = handleGasChange({
             gasLevel: gasLevel,
@@ -961,7 +990,7 @@ const SendToken = () => {
                   from: currentAccount.address,
                   to: to && isValidAddress(to) ? to : zeroAddress(),
                   value: currentToken.raw_amount_hex_str,
-                  gas: intToHex(21000),
+                  gas: intToHex(DEFAULT_GAS_USED),
                   gasPrice: `0x${new BigNumber(gasLevel.price).toString(16)}`,
                   data: '0x',
                 },
@@ -998,11 +1027,10 @@ const SendToken = () => {
     },
     [
       chain,
-      chainItem?.id,
+      chainItem,
       currentAccount,
-      currentToken.decimals,
-      currentToken.raw_amount_hex_str,
-      ethEstimateGas,
+      currentToken,
+      estimateGasOnChain,
       selectedGasLevel,
       loadGasList,
       form,
@@ -1077,7 +1105,6 @@ const SendToken = () => {
         chain: chain.serverId,
         time_at: 0,
       });
-      setEstimateGas(0);
 
       let nextToken: TokenItem | null = null;
       try {
@@ -1634,7 +1661,7 @@ const SendToken = () => {
       <SendReserveGasPopup
         selectedItem={selectedGasLevel?.level as GasLevelType}
         chain={chain}
-        limit={Math.max(estimateGas, MINIMUM_GAS_LIMIT)}
+        limit={Math.max(estimatedGas, MINIMUM_GAS_LIMIT)}
         onGasChange={(gasLevel) => {
           handleGasLevelChanged(gasLevel);
         }}

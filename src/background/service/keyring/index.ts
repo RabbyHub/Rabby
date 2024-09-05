@@ -590,7 +590,7 @@ export class KeyringService extends EventEmitter {
         // Not all the keyrings support this, so we have to check
         if (typeof keyring.removeAccount === 'function') {
           keyring.removeAccount(address, brand);
-          this.emit('removedAccount', address);
+          this.emit('removedAccount', address, type, brand);
           const currentKeyring = keyring;
           return [await keyring.getAccounts(), currentKeyring];
         }
@@ -621,11 +621,22 @@ export class KeyringService extends EventEmitter {
   }
 
   removeKeyringByPublicKey(publicKey: string) {
+    const deletedKeyring: any[] = [];
     this.keyrings = this.keyrings.filter((item) => {
       if (item.publicKey) {
+        if (item.publicKey === publicKey) {
+          deletedKeyring.push(item);
+        }
         return item.publicKey !== publicKey;
       }
       return true;
+    });
+    deletedKeyring.forEach((keyring) => {
+      const addresses = keyring.getAddresses();
+      const type = keyring.type;
+      addresses.forEach((address) => {
+        this.emit('removedAccount', address, type);
+      });
     });
     return this.persistAllKeyrings()
       .then(this._updateMemStoreKeyrings.bind(this))
