@@ -39,3 +39,8 @@ if (
     }
   });
 }
+
+setInterval(() => {
+  chrome.runtime.sendMessage({ type: 'ping' });
+  console.log('ping');
+}, 2000);
