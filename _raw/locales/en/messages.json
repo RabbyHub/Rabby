@@ -361,7 +361,7 @@
       },
       "gasAccount": {
         "customRPC": "Not supported when using custom RPC",
-        "notEnough": "Gas balance is not enough",
+        "notEnough": "GasAccount is not enough",
         "useGasAccount": "Use GasAccount",
         "WalletConnectTips": "WalletConnect is not supported by GasAccount",
         "chainNotSupported": "This chain is not supported by GasAccount",
