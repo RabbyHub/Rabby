@@ -7,3 +7,7 @@ initImKey();
 initOneKey();
 initBitBox02();
 initLattice();
+
+setInterval(() => {
+  chrome.runtime.sendMessage({ type: 'ping' });
+}, 10000);
