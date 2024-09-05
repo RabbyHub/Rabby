@@ -10,7 +10,7 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
 import { ReactComponent as IconSwapArrow } from '@/ui/assets/swap/swap-arrow.svg';
 import { TokenRender } from './TokenRender';
-import { useTokenPair } from '../hooks/token';
+import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal, Switch, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import { formatAmount, formatUsdValue, useWallet } from '@/ui/utils';
@@ -156,6 +156,8 @@ export const Main = () => {
     slippageChanged,
     setSlippageChanged,
     slippageState,
+    isSlippageHigh,
+    isSlippageLow,
     slippage,
     setSlippage,
 
@@ -381,13 +383,23 @@ export const Main = () => {
 
   const currentAccount = useCurrentAccount();
 
+  const showLoss = useDetectLoss({
+    payToken: payToken,
+    payAmount: debouncePayAmount,
+    receiveRawAmount: activeProvider?.actualReceiveAmount || 0,
+    receiveToken: receiveToken,
+  });
+
   const handleSwap = useMemoizedFn(() => {
     if (
       [
         KEYRING_TYPE.SimpleKeyring,
         KEYRING_TYPE.HdKeyring,
         KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any)
+      ].includes((currentAccount?.type || '') as any) &&
+      !isSlippageHigh &&
+      !isSlippageLow &&
+      !showLoss
     ) {
       runBuildSwapTxs();
       setIsShowSign(true);
