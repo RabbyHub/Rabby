@@ -2,6 +2,8 @@ import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 
 import { GasAccountServiceStore } from '@/background/service/gasAccount';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 export const gasAccount = createModel<RootModel>()({
   name: 'gasAccount',
@@ -26,6 +28,10 @@ export const gasAccount = createModel<RootModel>()({
 
   effects: (dispatch) => ({
     init() {
+      const logout = () => {
+        this.setGasAccountSig({});
+      };
+      eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_OUT, logout);
       return this.syncState();
     },
     async syncState(key: keyof GasAccountServiceStore | undefined, store) {

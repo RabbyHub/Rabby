@@ -226,8 +226,10 @@ restoreAppState();
         ) {
           // if there is no another type address then reset signature
           gasAccountService.setGasAccountSig();
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+          });
         }
-        // TODO: sync to UI
       }
     }
   );
