@@ -80,7 +80,10 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     const isPending = data.status === 'Pending';
     const isCompleted = data?.status === 'Completed';
     const time = data?.finished_at || data?.create_at;
-    const targetDex = data?.dex_id;
+    const targetDex =
+      data?.dex_id
+        ?.replace('ODOS', 'Odos')
+        ?.replace('ParaSwapV6', 'ParaSwap') || '';
     const txId = data?.tx_id;
     const chainItem = useMemo(
       () =>
