@@ -118,6 +118,14 @@ const Send = ({
               <Values.AddressMemo address={actionData.to} />
             </SubRow>
           </SubCol>
+          {requireData.protocol && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+              <SubRow>
+                <Values.Protocol value={requireData.protocol} />
+              </SubRow>
+            </SubCol>
+          )}
           {!!requireData.contract && (
             <SubCol>
               <SubRow isTitle>{t('page.signTx.addressTypeTitle')}</SubRow>
