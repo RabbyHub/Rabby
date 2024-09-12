@@ -23,7 +23,7 @@ export const QuoteLoading = ({
   return (
     <div
       className={clsx(
-        'h-[80px] flex items-center px-16 rounded-[6px]',
+        'h-[88px] flex items-center px-16 rounded-[6px]',
         'border-solid border border-rabby-neutral-line'
       )}
     >
