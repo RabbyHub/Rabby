@@ -91,7 +91,7 @@ function ApprovalAmountInfo({
             align={{ offset: [0, 3] }}
             arrowPointAtCenter
           >
-            <span className="text-12 font-medium text-r-neutral-body">
+            <span className="text-12 font-medium text-r-neutral-body block max-w-[100px] truncate">
               {amountText}
             </span>
           </Tooltip>
