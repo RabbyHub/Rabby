@@ -64,8 +64,6 @@ function ApprovalAmountInfo({
   const { t } = useTranslation();
 
   const amountText = useMemo(() => {
-    if (typeof amountValue !== 'number') return amountValue;
-
     return formatNumber(amountValue);
   }, [amountValue]);
 
@@ -91,7 +89,7 @@ function ApprovalAmountInfo({
             align={{ offset: [0, 3] }}
             arrowPointAtCenter
           >
-            <span className="text-12 font-medium text-r-neutral-body block max-w-[100px] truncate">
+            <span className="text-12 font-medium text-r-neutral-body block max-w-[200px] truncate">
               {amountText}
             </span>
           </Tooltip>
@@ -497,7 +495,7 @@ export const RevokeApprovalModal = (props: {
   return (
     <ModalStyled
       centered
-      width={400}
+      width={480}
       visible={visible}
       onCancel={onClose}
       className={clsx(

@@ -81,6 +81,9 @@ export const formatNumber = (
     suffix: '',
     ...opt,
   };
+  if (n.isNaN()) {
+    return num.toString();
+  }
   // hide the after-point part if number is more than 1000000
   if (n.isGreaterThan(1000000)) {
     if (n.gte(1e9)) {
