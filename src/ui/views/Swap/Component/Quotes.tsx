@@ -145,7 +145,7 @@ export const Quotes = ({
     );
   }
   return (
-    <div className="flex flex-col flex-1 w-full overflow-auto">
+    <div className="flex flex-col flex-1 w-full overflow-auto pb-12">
       <div className="flex flex-col gap-12">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
