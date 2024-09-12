@@ -950,7 +950,7 @@
     "bridge": {
       "title": "Bridge",
       "history": "Bridge history",
-      "the-following-bridge-route-are-found": "Found following bridge route",
+      "the-following-bridge-route-are-found": "Found following route",
       "no-transaction-records": "No transaction records",
       "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
       "Pending": "Pending",
