@@ -1184,7 +1184,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         pushType: pushInfo.type,
         lowGasDeadline: pushInfo.lowGasDeadline,
         reqId,
-        isGasLess: useGasLess,
+        isGasLess: gasMethod === 'native' ? useGasLess : false,
         isGasAccount: gasAccountCanPay,
         logId: logId.current,
       });
