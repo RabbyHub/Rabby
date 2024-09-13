@@ -1,7 +1,7 @@
 import { MetaMaskKeyring } from '@keystonehq/metamask-airgapped-keyring';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { StoredKeyring } from '@keystonehq/base-eth-keyring';
-import { Eth } from '@keystonehq/hw-app-eth';
+import { Eth, default as EthLegacy } from '@keystonehq/hw-app-eth';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import {
   CryptoAccount,
@@ -63,6 +63,8 @@ export type RequestSignPayload = {
 
 type PagedAccount = { address: string; balance: any; index: number };
 
+type GetDeviceReturnType<T extends boolean> = T extends true ? EthLegacy : Eth;
+
 interface IStoredKeyring extends StoredKeyring {
   brandsMap: Record<string, string>;
 }
@@ -120,8 +122,6 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   brandsMap: Record<string, string> = {};
   currentBrand: string = DEFAULT_BRAND;
 
-  private eth: Eth | null = null;
-
   constructor() {
     super();
 
@@ -146,15 +146,16 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
    * @returns {Promise<Eth|null>} A promise that resolves to an instance of `KeystoneEth` or `null` if unable to create an instance.
    * @throws Will throw an error if the current environment does not support `WebUSB` or a Keystone device supporting USB signing could not be found.
    */
-  getKeystoneDevice = async () => {
-    if (!this.eth) {
-      const transport = await TransportWebUSB.connect({
-        timeout: 100000,
-      });
-      await transport.close();
-      this.eth = new Eth(transport!);
-    }
-    return this.eth;
+  getKeystoneDevice = async <T extends boolean = false>(
+    isLegacy: T = false as T
+  ): Promise<GetDeviceReturnType<T>> => {
+    const transport: any = await TransportWebUSB.connect({
+      timeout: 100000,
+    });
+    await transport.close();
+    return (isLegacy
+      ? new EthLegacy(transport!)
+      : new Eth(transport!)) as GetDeviceReturnType<T>;
   };
 
   async getAddressesViaUSB(type: HDPathType = HDPathType.BIP44) {
@@ -186,18 +187,9 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     return this.getMemStore().getState().sign?.request?.requestId ?? null;
   }
 
-  async signTransactionViaUSB(
-    path: string,
-    tx: any,
-    isLegacy: boolean = false
-  ) {
-    const keystoneEth = await this.getKeystoneDevice();
-    return await keystoneEth.signTransaction(path, tx, isLegacy);
-  }
-
   async signTransactionUrViaUSB(ur: string) {
-    // const keystoneEth = await this.getKeystoneDevice();
-    // return await keystoneEth.signTransactionFromUr(ur);
+    const keystoneEth = await this.getKeystoneDevice(true);
+    return await keystoneEth.signTransactionFromUr(ur);
   }
 
   async getAccountInfo(address: string) {

@@ -34,9 +34,7 @@ export const KeystoneConnect = () => {
   const [form] = Form.useForm();
   const decoder = useRef(new URDecoder());
   const [errorMessage, setErrorMessage] = useState('');
-  const [connectType, setConnectType] = useState<ConnectType>(
-    ConnectType.QRCode
-  );
+  const [connectType, setConnectType] = useState<ConnectType>(ConnectType.USB);
   const [scan, setScan] = useState(false);
   const stashKeyringIdRef = useRef<number | null>(null);
   const { search } = useLocation();

@@ -3908,12 +3908,20 @@
   resolved "https://registry.yarnpkg.com/@keystonehq/hw-transport-error/-/hw-transport-error-0.0.2.tgz#10a3f69b8a80e4d3fec514b4abcdae6f595770ae"
   integrity sha512-j6rOJU277Cmq9oBiFjtVHJhUZ/gELGYGZMUXBlAom1WyK8pNrD3+I8kCVGp5Ss5oB+Zqo7Az5xCx/z+0i+Y40A==
 
-"@keystonehq/hw-transport-webusb@0.3.2", "@keystonehq/hw-transport-webusb@^0.3.2":
+"@keystonehq/hw-transport-webusb@0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@keystonehq/hw-transport-webusb/-/hw-transport-webusb-0.3.2.tgz#cdbd8c5799d374c0b40c26122bcc4f20280e70db"
   integrity sha512-Ui7z0kdF7OVZbzDOZp0PDHQfYA0r9WIyBFr7XRnC23YydqhVNZ1tafi5/q66JhNker12c7O1ijtvXOpkC00GoA==
   dependencies:
     "@keystonehq/hw-transport-error" "0.0.2"
+    buffer "^6.0.3"
+
+"@keystonehq/hw-transport-webusb@^0.3.2":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@keystonehq/hw-transport-webusb/-/hw-transport-webusb-0.3.3.tgz#127c4f4e3bce651c3ca134b67b83942020595b79"
+  integrity sha512-uInSbJZMcNLwsHF+khC7PqdK/BhdooCN/sd9H+5V+flBbG1KuCP/mLyCyPW7K5f0v9+StuCnaR56RPpMdS5s8Q==
+  dependencies:
+    "@keystonehq/hw-transport-error" "^0.0.2"
     buffer "^6.0.3"
 
 "@keystonehq/metamask-airgapped-keyring@0.14.1":

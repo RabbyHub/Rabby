@@ -350,7 +350,7 @@
           "reconnect": "如果无法连接，请尝试<1>从头开始重新连接</1>"
         },
         "keystone": {
-          "title": "*仅Keystone 3(Pro)支持USB连接",
+          "title": "确保您的Keystone 3 Pro位于首页",
           "doc1": "插入一个Keystone",
           "doc2": "输入密码以解锁",
           "doc3": "批准与电脑的连接",
@@ -509,7 +509,7 @@
         "title": "连接Keystone",
         "allowRabbyPermissionsTitle": "允许Rabby访问以下权限：",
         "keystonePermission1": "连接至USB设备",
-        "keystonePermissionTip": "请点击下方的“允许”，并在弹出窗口中授权访问您的 Keystone",
+        "keystonePermissionTip": "请在下方点击“允许”，以在弹出窗口中授权访问您的Keystone，并确保您的Keystone 3 Pro位于首页。",
         "noDeviceFoundError": "请插入一个Keystone",
         "deviceIsLockedError": "输入密码以解锁",
         "deviceRejectedExportAddress": "请批准与 Rabby 的连接",
@@ -1240,7 +1240,7 @@
         "hardwareRejectError": "硬件拒绝了签名请求",
         "mismatchedWalletError": "钱包不匹配",
         "verifyPasswordError": "签名失败，请解锁后重试",
-        "shouldOpenKeystoneHomePageError": "请打开 Keystone 主页"
+        "shouldOpenKeystoneHomePageError": "确保您的Keystone 3 Pro位于首页"
       },
       "resend": "重试",
       "submitTx": "提交",

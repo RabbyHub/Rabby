@@ -391,7 +391,7 @@
         "hardwareRejectError": "Аппаратное устройство отклонило подпись",
         "mismatchedWalletError": "Несоответствие кошелька",
         "verifyPasswordError": "Ошибка подписи, попробуйте снова после разблокировки",
-        "shouldOpenKeystoneHomePageError": "Пожалуйста, откройте домашнюю страницу Keystone"
+        "shouldOpenKeystoneHomePageError": "Убедитесь, что ваш Keystone 3 Pro находится на домашней странице."
       },
       "ledger": {
         "resent": "Повторно отправлено",
@@ -1183,7 +1183,7 @@
           "reconnect": "Если не работает, <1>начните подключение с начала.</1>"
         },
         "keystone": {
-          "title": "*USB соединение Keystone 3(Pro)",
+          "title": "Убедитесь, что ваш Keystone 3 Pro находится на домашней странице",
           "doc1": "Подключите один Keystone",
           "doc2": "Введите пароль",
           "doc3": "Разрешите соединение к ПК",
@@ -1326,7 +1326,7 @@
         "title": "Подключить Keystone",
         "allowRabbyPermissionsTitle": "Дать Rabby разрешение на:",
         "keystonePermission1": "Подключение к USB устройству",
-        "keystonePermissionTip": "Нажмите \"Разрешить\" ниже чтобы дать разрешение на Keystone в поп-ап окне.",
+        "keystonePermissionTip": "Пожалуйста, нажмите «Разрешить» ниже, чтобы авторизовать доступ к вашему Keystone в следующем всплывающем окне, и убедитесь, что ваш Keystone 3 Pro находится на домашней странице.",
         "noDeviceFoundError": "Подключите один Keystone",
         "deviceIsLockedError": "Введите пароль",
         "deviceRejectedExportAddress": "Разрешите подключение к Rabby",
