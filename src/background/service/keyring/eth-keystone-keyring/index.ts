@@ -4,54 +4,18 @@ import { StoredKeyring } from '@keystonehq/base-eth-keyring';
 import { Eth, default as EthLegacy } from '@keystonehq/hw-app-eth';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import {
-  CryptoAccount,
-  CryptoOutput,
-  CryptoHDKey,
-  CryptoKeypath,
-  PathComponent,
-} from '@keystonehq/bc-ur-registry-eth';
-import { LedgerHDPathType as HDPathType } from './helper';
-
-const pathBase = 'm';
-const HDPATH_PLACEHOLDER = 'x';
-
-const LEDGER_LIVE_LIMIT = 10;
+  KeystoneHDPathType,
+  HDPATH_PLACEHOLDER,
+  LEDGER_LIVE_LIMIT,
+  keystoneAccountTypeModel,
+  pathBase,
+  createCryptoHDKeyFromResult,
+  createCryptoAccountFromResults,
+} from './utils';
 
 export const AcquireMemeStoreData = 'AcquireMemeStoreData';
 export const MemStoreDataReady = 'MemStoreDataReady';
 export const DEFAULT_BRAND = 'Keystone';
-
-const keystoneAccountTypeModel = [
-  {
-    keyringType: 'account.standard',
-    rabbyType: HDPathType.BIP44,
-    hdpath: "m/44'/60'/0'",
-    childrenPath: new CryptoKeypath([
-      new PathComponent({
-        index: 0,
-        hardened: false,
-      }),
-      new PathComponent({
-        hardened: false,
-      }),
-    ]),
-  },
-  {
-    keyringType: 'account.ledger_live',
-    rabbyType: HDPathType.LedgerLive,
-    hdpath: `m/44'/60'/${HDPATH_PLACEHOLDER}'/0/0`,
-  },
-  {
-    keyringType: 'account.ledger_legacy',
-    rabbyType: HDPathType.Legacy,
-    hdpath: "m/44'/60'/0'",
-    childrenPath: new CryptoKeypath([
-      new PathComponent({
-        hardened: false,
-      }),
-    ]),
-  },
-];
 
 export type RequestSignPayload = {
   requestId: string;
@@ -74,46 +38,6 @@ type GetAddressResultType = {
   publicKey: string;
   mfp: string;
   chainCode?: string;
-};
-
-const createCryptoHDKeyFromResult = (
-  result: GetAddressResultType,
-  type: HDPathType = HDPathType.BIP44
-): CryptoHDKey => {
-  const currentType = keystoneAccountTypeModel.find(
-    (model) => model.rabbyType === type
-  )!;
-  return new CryptoHDKey({
-    chainCode: Buffer.from(result.chainCode!, 'hex'),
-    isMaster: false,
-    children: currentType.childrenPath,
-    key: Buffer.from(result.publicKey, 'hex'),
-    parentFingerprint: Buffer.from(result.mfp, 'hex'),
-    origin: new CryptoKeypath(
-      currentType.hdpath.split('/').map((component) => {
-        return new PathComponent({
-          index: parseInt(component),
-          hardened: component.endsWith("'"),
-        });
-      }),
-      Buffer.from(result.mfp, 'hex')
-    ),
-    note: keystoneAccountTypeModel.find((model) => model.rabbyType === type)
-      ?.keyringType,
-  });
-};
-
-const createCryptoAccountFromResults = (
-  results: GetAddressResultType[],
-  type: HDPathType = HDPathType.BIP44,
-  mfp: Buffer
-): CryptoAccount => {
-  return new CryptoAccount(
-    mfp,
-    results.map((result) => {
-      return new CryptoOutput([], createCryptoHDKeyFromResult(result, type));
-    })
-  );
 };
 
 export default class KeystoneKeyring extends MetaMaskKeyring {
@@ -158,12 +82,13 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
       : new Eth(transport!)) as GetDeviceReturnType<T>;
   };
 
-  async getAddressesViaUSB(type: HDPathType = HDPathType.BIP44) {
+  async getAddressesViaUSB(
+    type: KeystoneHDPathType = KeystoneHDPathType.BIP44
+  ) {
     const keystoneEth = await this.getKeystoneDevice();
-    const path = keystoneAccountTypeModel.find(
-      (model) => model.rabbyType === type
-    )!.hdpath;
-    if (type === HDPathType.LedgerLive) {
+    const path = keystoneAccountTypeModel.find((model) => model.type === type)!
+      .hdpath;
+    if (type === KeystoneHDPathType.LedgerLive) {
       const results: GetAddressResultType[] = [];
       let mfp = Buffer.from('', 'hex');
       for (let i = 0; i < LEDGER_LIVE_LIMIT; i++) {
@@ -208,7 +133,7 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   async getCurrentUsedHDPathType() {
     return keystoneAccountTypeModel.find(
       (model) => model.keyringType === this.keyringAccount
-    )?.rabbyType;
+    )?.type;
   }
 
   async serialize(): Promise<IStoredKeyring> {

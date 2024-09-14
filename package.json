@@ -39,7 +39,7 @@
     "@imkey/web3-provider": "^1.3.10",
     "@keystonehq/hw-app-eth": "0.4.4",
     "@keystonehq/hw-transport-webusb": "0.3.2",
-    "@keystonehq/metamask-airgapped-keyring": "0.14.1",
+    "@keystonehq/metamask-airgapped-keyring": "0.2.5-alpha.2.1",
     "@ledgerhq/devices": "8.0.7",
     "@ledgerhq/hw-app-eth": "6.34.9",
     "@ledgerhq/hw-transport-webhid": "6.27.20",
