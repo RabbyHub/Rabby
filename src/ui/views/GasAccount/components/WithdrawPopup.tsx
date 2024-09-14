@@ -5,7 +5,7 @@ import { Button, message } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
 import { noop } from 'lodash';
 import clsx from 'clsx';
-import { useGasAccountSign } from '../hooks';
+import { useGasAccountRefresh, useGasAccountSign } from '../hooks';
 import { GasACcountCurrentAddress } from './LoginPopup';
 
 import { ReactComponent as RcIconOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
@@ -31,9 +31,16 @@ const WithdrawContent = ({
 
   const [loading, setLoading] = useState(false);
 
+  const { refresh } = useGasAccountRefresh();
+
   const gasAccount = useRabbySelector((s) => s.gasAccount.account);
 
   const withdraw = async () => {
+    if (balance <= 0) {
+      onClose();
+      onAfterConfirm?.();
+      return;
+    }
     try {
       setLoading(true);
       await wallet.openapi.withdrawGasAccount({
@@ -41,6 +48,7 @@ const WithdrawContent = ({
         account_id: accountId!,
         amount: balance,
       });
+      refresh();
       onClose();
       onAfterConfirm?.();
     } catch (error) {

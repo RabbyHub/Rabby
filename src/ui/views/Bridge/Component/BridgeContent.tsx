@@ -644,7 +644,9 @@ export const BridgeContent = () => {
         txs={txs}
         onClose={() => {
           setIsShowSign(false);
-          mutateTxs([]);
+          setTimeout(() => {
+            mutateTxs([]);
+          }, 500);
         }}
         onReject={() => {
           setIsShowSign(false);

@@ -51,7 +51,7 @@ import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import _ from 'lodash';
 import { normalizeTxParams } from '../SignTx';
 import { Dots } from '../Popup/Dots';
-import { useBatchSignTxTask } from './useBatchSignTxTask';
+import { BatchSignTxTaskType, useBatchSignTxTask } from './useBatchSignTxTask';
 import { MiniFooterBar } from './MiniFooterBar';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -62,12 +62,12 @@ export const MiniSignTx = ({
   txs,
   onReject,
   onResolve,
-  onSubmit,
+  onStatusChange,
 }: {
   txs: Tx[];
   onReject?: () => void;
   onResolve?: () => void;
-  onSubmit?: () => void;
+  onStatusChange?: (status: BatchSignTxTaskType['status']) => void;
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -354,6 +354,9 @@ export const MiniSignTx = ({
   }, [chain?.enum]);
 
   const task = useBatchSignTxTask();
+  useEffect(() => {
+    onStatusChange?.(task.status);
+  }, [task.status]);
 
   const handleInitTask = useMemoizedFn(() => {
     task.init(
@@ -967,11 +970,11 @@ export const MiniApproval = ({
   onReject?: () => void;
   onResolve?: () => void;
 }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
   useEffect(() => {
     if (visible) {
-      setIsSubmitting(false);
+      setStatus('idle');
     }
   }, [visible]);
 
@@ -982,7 +985,7 @@ export const MiniApproval = ({
       className="is-support-darkmode"
       visible={visible}
       onClose={onClose}
-      maskClosable={false}
+      maskClosable={status === 'idle'}
       closable={false}
       bodyStyle={{
         padding: 0,
@@ -997,12 +1000,11 @@ export const MiniApproval = ({
       {txs?.length ? (
         <MiniSignTx
           txs={txs}
-          onSubmit={() => {
-            setIsSubmitting(true);
+          onStatusChange={(status) => {
+            setStatus(status);
           }}
           onReject={onReject}
           onResolve={() => {
-            setIsSubmitting(false);
             onResolve?.();
           }}
         />

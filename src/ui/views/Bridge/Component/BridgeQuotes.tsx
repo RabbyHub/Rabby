@@ -64,8 +64,8 @@ export const Quotes = ({
   }, [sortedList, other.receiveToken, sortIncludeGasFee]);
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex flex-col gap-12 flex-1 pb-12">
+    <div className="flex flex-col h-full w-full ">
+      <div className="flex flex-col gap-12 flex-1 pb-12 px-20">
         {sortedList?.map((item, idx) => {
           return (
             <BridgeQuoteItem
@@ -100,8 +100,7 @@ export const Quotes = ({
 };
 
 const bodyStyle = {
-  paddingTop: 0,
-  paddingBottom: 0,
+  padding: 0,
 };
 
 export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {

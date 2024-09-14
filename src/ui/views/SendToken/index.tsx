@@ -597,6 +597,10 @@ const SendToken = () => {
         } else if (notContract && couldSpecifyIntrinsicGas) {
           params.gas = intToHex(DEFAULT_GAS_USED);
         }
+        if (!notContract) {
+          // not pre-set gasLimit if to address is contract address
+          delete params.gas;
+        }
       } catch (e) {
         if (couldSpecifyIntrinsicGas) {
           params.gas = intToHex(DEFAULT_GAS_USED);
