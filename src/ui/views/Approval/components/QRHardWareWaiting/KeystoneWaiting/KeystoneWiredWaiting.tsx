@@ -32,7 +32,6 @@ const SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS = [
 ];
 
 const buildKeystoneSignPayload = (payload: any) => {
-  console.log('payload cbor => ', payload.cbor.toString('hex'));
   return new UREncoder(
     new UR(
       Buffer.from(
