@@ -1237,7 +1237,7 @@
         "siging": "正在发送签名请求",
         "txRejected": "交易被拒绝",
         "shouldRetry": "发生了某些错误。请重试。",
-        "hardwareRejectError": "硬件拒绝了签名请求",
+        "hardwareRejectError": "Keystone 请求已取消。要继续，请重新授权。",
         "mismatchedWalletError": "钱包不匹配",
         "verifyPasswordError": "签名失败，请解锁后重试",
         "shouldOpenKeystoneHomePageError": "确保您的Keystone 3 Pro位于首页"

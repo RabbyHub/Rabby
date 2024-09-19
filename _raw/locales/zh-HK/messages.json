@@ -1200,7 +1200,7 @@
         "siging": "正在發送簽名請求",
         "txRejected": "交易被拒絕",
         "shouldRetry": "發生了某些錯誤。請重試。",
-        "hardwareRejectError": "硬件拒絕了簽名請求",
+        "hardwareRejectError": "Keystone 請求已取消。要繼續，請重新授權。",
         "mismatchedWalletError": "錢包不匹配",
         "verifyPasswordError": "簽名失敗，請解鎖後重試",
         "shouldOpenKeystoneHomePageError": "確保您的Keystone 3 Pro位於首頁"

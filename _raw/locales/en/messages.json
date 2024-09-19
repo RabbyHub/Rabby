@@ -420,7 +420,7 @@
         "siging": "Sending signing request",
         "txRejected": "Transaction rejected",
         "shouldRetry": "Some error occurred. Please retry.",
-        "hardwareRejectError": "Hardware rejects signature",
+        "hardwareRejectError": "Keystone request was cancelled. To proceed, please reauthorize.",
         "mismatchedWalletError": "Mismatched wallet",
         "verifyPasswordError": "Signature failure, please try again after unlocking",
         "shouldOpenKeystoneHomePageError": "Ensure your Keystone 3 Pro is on the homepage"
