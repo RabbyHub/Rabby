@@ -11,6 +11,7 @@ interface QRCodeReaderProps {
   height?: number;
   isUR?: boolean;
   className?: string;
+  needAccessRedirect?: boolean;
 }
 
 const QRCodeReader = ({
@@ -19,6 +20,7 @@ const QRCodeReader = ({
   width = 100,
   height = 100,
   className,
+  needAccessRedirect = true,
 }: QRCodeReaderProps) => {
   const [canplay, setCanplay] = useState(false);
   const codeReader = useMemo(() => {
@@ -34,8 +36,8 @@ const QRCodeReader = ({
     const hasWebcamPermissions = webcams.some(
       (webcam) => webcam.label && webcam.label.length > 0
     );
-    if (!hasWebcamPermissions) {
-      openInternalPageInTab('request-permission?type=camera');
+    if (!hasWebcamPermissions && needAccessRedirect) {
+      openInternalPageInTab('request-permission?type=camera', true, false);
     }
   };
   useEffect(() => {

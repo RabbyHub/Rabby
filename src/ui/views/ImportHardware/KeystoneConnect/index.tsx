@@ -201,6 +201,7 @@ export const KeystoneConnect = () => {
                 <QRCodeReader
                   width={288}
                   height={288}
+                  needAccessRedirect={false}
                   onSuccess={handleScanQRCodeSuccess}
                   className="bg-r-neutral-line"
                 />
