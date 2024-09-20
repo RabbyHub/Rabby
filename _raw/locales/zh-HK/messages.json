@@ -1195,6 +1195,7 @@
       },
       "keystone": {
         "signWith": "切換到{{method}}進行簽名",
+        "qrcodeDesc": "掃描以簽名。簽名後，點擊下面獲取簽名。對於USB，重新連接並授權以重新開始簽名過程",
         "misMatchSignId": "交易數據不一致。請檢查交易詳情。",
         "unsupportedType": "錯誤：交易類型不支持或未知。",
         "siging": "正在發送簽名請求",

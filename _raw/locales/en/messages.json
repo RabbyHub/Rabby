@@ -415,6 +415,7 @@
       },
       "keystone": {
         "signWith": "Switch to {{method}} for signing",
+        "qrcodeDesc": "Scan to sign. After signing, click below to get the signature. For USB, reconnect and authorize to begin the signing process again.",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
         "unsupportedType": "Error: The transaction type is unsupported or unknown.",
         "siging": "Sending signing request",

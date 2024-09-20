@@ -1422,6 +1422,7 @@
       "cancelTransaction": "Annuler la transaction",
       "detectedMultipleRequestsFromThisDapp": "Détection de plusieurs requêtes de cette DApp",
       "keystone": {
+        "qrcodeDesc": "Scannez pour signer. Après avoir signé, cliquez ci-dessous pour obtenir la signature. Pour USB, reconnectez et autorisez pour recommencer le processus de signature.",
         "hardwareRejectError": "La demande Keystone a été annulée. Pour continuer, veuillez vous réauthentifier.",
         "misMatchSignId": "Données de transaction incongrues. Veuillez vérifier les détails de la transaction.",
         "mismatchedWalletError": "Portefeuille invalide",
