@@ -83,6 +83,10 @@
           width: 160px;
           display: flex;
           align-items: center;
+          .token-with-chain + div {
+            max-width: calc(100% - 24px);
+          }
+
           .symbol {
             flex: 1;
             overflow: hidden;
@@ -92,6 +96,7 @@
             line-height: 15px;
             color: var(--r-neutral-body, #3E495E);
             margin-left: 12px;
+            max-width: 100%;
           }
         }
         &:nth-child(2) {
