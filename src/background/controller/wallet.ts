@@ -123,6 +123,7 @@ import { appIsProd } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
+import Browser from 'webextension-polyfill';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1487,6 +1488,7 @@ export class WalletController extends BaseController {
 
   lockWallet = async () => {
     await keyringService.setLocked();
+    await Browser.storage.session.clear();
     sessionService.broadcastEvent('accountsChanged', []);
     sessionService.broadcastEvent('lock');
     setPopupIcon('locked');
@@ -4619,5 +4621,7 @@ autoLockService.onAutoLock = async () => {
     method: EVENTS.LOCK_WALLET,
   });
 };
+// check if wallet needs to lock after sw re-active
+autoLockService.syncAutoLockAt();
 
 export default wallet;

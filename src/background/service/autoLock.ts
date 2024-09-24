@@ -1,10 +1,11 @@
-import { isManifestV3 } from '@/utils/env';
 import preference from './preference';
 import browser from 'webextension-polyfill';
-import { ALARMS_AUTO_LOCK } from '../utils/alarms';
+
+const AUTO_LOCK_AT_KEY = 'autoLockAt';
 
 class AutoLockService {
   timer: ReturnType<typeof setTimeout> | null = null;
+  autoLockAt: number | null = null;
 
   onAutoLock?: () => void;
 
@@ -12,33 +13,32 @@ class AutoLockService {
     this.onAutoLock = onAutoLock;
   }
 
-  resetTimer() {
+  async syncAutoLockAt() {
+    const value = await browser.storage.session.get(AUTO_LOCK_AT_KEY);
+    const autoLockAt = value[AUTO_LOCK_AT_KEY];
+    if (autoLockAt) {
+      if (Date.now() >= autoLockAt) {
+        this.onAutoLock?.();
+      } else {
+        this.autoLockAt = autoLockAt;
+      }
+    }
+  }
+
+  async resetTimer() {
     const autoLockTime = preference.getPreference('autoLockTime');
-    if (this.timer) {
+    if (this.timer !== null) {
       clearTimeout(this.timer);
-    } else if (isManifestV3) {
-      browser.alarms.clear(ALARMS_AUTO_LOCK);
     }
     if (!autoLockTime) {
       return;
     }
-    if (isManifestV3) {
-      browser.alarms.create(ALARMS_AUTO_LOCK, {
-        delayInMinutes: autoLockTime,
-        periodInMinutes: autoLockTime,
-      });
-      browser.alarms.onAlarm.addListener((alarm) => {
-        if (alarm.name === ALARMS_AUTO_LOCK) {
-          this.onAutoLock?.();
-          browser.alarms.clear(ALARMS_AUTO_LOCK);
-        }
-      });
-    } else {
-      this.timer = setTimeout(
-        () => this.onAutoLock?.(),
-        autoLockTime * 60 * 1000
-      );
-    }
+    const duration = autoLockTime * 60 * 1000;
+    this.autoLockAt = Date.now() + duration;
+    await browser.storage.session.set({
+      [AUTO_LOCK_AT_KEY]: this.autoLockAt,
+    });
+    this.timer = setTimeout(() => this.onAutoLock?.(), duration);
   }
 
   setLastActiveTime() {
