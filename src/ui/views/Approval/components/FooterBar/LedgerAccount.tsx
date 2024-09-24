@@ -26,7 +26,7 @@ export const LedgerAccount: React.FC = () => {
     switch (status) {
       case 'DISCONNECTED':
         return (
-          <div className="flex justify-between w-full">
+          <div className="flex justify-between w-full text-red-light">
             <div>{t('page.signFooterBar.ledgerNotConnected')}</div>
             <div
               onClick={onClickConnect}
