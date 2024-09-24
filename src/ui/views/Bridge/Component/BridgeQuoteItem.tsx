@@ -131,12 +131,14 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
         onClick={handleClick}
       >
         <div className="flex items-center justify-between relative">
-          <div className="flex gap-6  items-center  overflow-hidden">
+          <div className="mr-6">
             <QuoteLogo
               logo={props.aggregator.logo_url}
               bridgeLogo={props.bridge.logo_url}
               isLoading={props.onlyShow ? false : props.loading}
             />
+          </div>
+          <div className="flex gap-6  items-center  overflow-hidden">
             <span className="text-[16px] font-medium text-r-neutral-title1">
               {props.aggregator.name}
             </span>

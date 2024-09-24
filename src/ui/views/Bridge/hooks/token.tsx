@@ -235,33 +235,51 @@ export const useTokenPair = (userAddress: string) => {
       });
 
       setSelectedBridgeQuote(undefined);
+      const originData: Omit<BridgeQuote, 'tx'>[] = [];
 
-      const originData = await wallet.openapi
-        .getBridgeQuoteList({
-          aggregator_ids: aggregatorsList.map((e) => e.id).join(','),
-          from_token_id: payToken.id,
-          user_addr: userAddress,
-          from_chain_id: payToken.chain,
-          from_token_raw_amount: new BigNumber(debouncePayAmount)
-            .times(10 ** payToken.decimals)
-            .toFixed(0, 1)
-            .toString(),
-          to_chain_id: receiveToken.chain,
-          to_token_id: receiveToken.id,
-        })
-        .catch((e) => {
+      await Promise.allSettled(
+        aggregatorsList.map(async (bridgeAggregator) => {
+          const data = await wallet.openapi
+            .getBridgeQuoteListV2({
+              aggregator_id: bridgeAggregator.id,
+              from_token_id: payToken.id,
+              user_addr: userAddress,
+              from_chain_id: payToken.chain,
+              from_token_raw_amount: new BigNumber(debouncePayAmount)
+                .times(10 ** payToken.decimals)
+                .toFixed(0, 1)
+                .toString(),
+              to_chain_id: receiveToken.chain,
+              to_token_id: receiveToken.id,
+            })
+            .catch((e) => {
+              if (currentFetchId === fetchIdRef.current) {
+                stats.report('bridgeQuoteResult', {
+                  aggregatorIds: bridgeAggregator.id,
+                  fromChainId: payToken.chain,
+                  fromTokenId: payToken.id,
+                  toTokenId: receiveToken.id,
+                  toChainId: receiveToken.chain,
+                  status: 'fail',
+                });
+              }
+            });
+          if (data && currentFetchId === fetchIdRef.current) {
+            originData.push(...data);
+          }
           if (currentFetchId === fetchIdRef.current) {
             stats.report('bridgeQuoteResult', {
-              aggregatorIds: aggregatorsList.map((e) => e.id).join(','),
+              aggregatorIds: bridgeAggregator.id,
               fromChainId: payToken.chain,
               fromTokenId: payToken.id,
               toTokenId: receiveToken.id,
               toChainId: receiveToken.chain,
-              status: 'fail',
+              status: data?.length ? 'success' : 'none',
             });
           }
+          return data;
         })
-        .finally(() => {});
+      );
 
       const data = originData?.filter(
         (quote) =>
@@ -270,17 +288,6 @@ export const useTokenPair = (userAddress: string) => {
           !!quote?.bridge?.logo_url &&
           !!quote.bridge.name
       );
-
-      if (currentFetchId === fetchIdRef.current) {
-        stats.report('bridgeQuoteResult', {
-          aggregatorIds: aggregatorsList.map((e) => e.id).join(','),
-          fromChainId: payToken.chain,
-          fromTokenId: payToken.id,
-          toTokenId: receiveToken.id,
-          toChainId: receiveToken.chain,
-          status: data ? (data?.length === 0 ? 'none' : 'success') : 'fail',
-        });
-      }
 
       if (data && currentFetchId === fetchIdRef.current) {
         if (!isEmpty) {
