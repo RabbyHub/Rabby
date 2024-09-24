@@ -415,15 +415,16 @@
       },
       "keystone": {
         "signWith": "Switch to {{method}} for signing",
+        "qrcodeDesc": "Scan to sign. After signing, click below to get the signature. For USB, reconnect and authorize to begin the signing process again.",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
         "unsupportedType": "Error: The transaction type is unsupported or unknown.",
         "siging": "Sending signing request",
         "txRejected": "Transaction rejected",
         "shouldRetry": "Some error occurred. Please retry.",
-        "hardwareRejectError": "Hardware rejects signature",
+        "hardwareRejectError": "Keystone request was cancelled. To proceed, please reauthorize.",
         "mismatchedWalletError": "Mismatched wallet",
         "verifyPasswordError": "Signature failure, please try again after unlocking",
-        "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
+        "shouldOpenKeystoneHomePageError": "Ensure your Keystone 3 Pro is on the homepage"
       },
       "ledger": {
         "resent": "Resent",
@@ -1341,7 +1342,7 @@
           "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>"
         },
         "keystone": {
-          "title": "*USB connect only for Keystone 3(Pro)",
+          "title": "Ensure your Keystone 3 Pro is on the homepage",
           "doc1": "Plug in a single Keystone",
           "doc2": "Enter password to unlock",
           "doc3": "Approve connection to computer",
@@ -1497,7 +1498,7 @@
         "title": "Connect Keystone",
         "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
         "keystonePermission1": "Connect to an USB device",
-        "keystonePermissionTip": "Please click \"Allow\" below and authorize access to your Keystone in the following pop-up window.",
+        "keystonePermissionTip": "Please click \"Allow\" below to authorize access to your Keystone in the following pop-up window, and ensure your Keystone 3 Pro is on the homepage.",
         "noDeviceFoundError": "Plug in a single Keystone",
         "deviceIsLockedError": "Enter password to unlock",
         "deviceRejectedExportAddress": "Approve connection to Rabby",
