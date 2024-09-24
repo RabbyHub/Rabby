@@ -223,9 +223,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       if (isTestnetChainId(chainId)) {
         return null;
       }
-      return wallet.openapi.parseTypedData({
-        typedData: signTypedData,
-        address: currentAccount!.address,
+      return wallet.openapi.parseCommon({
+        typed_data: signTypedData,
+        user_addr: currentAccount!.address,
         origin: session.origin,
       });
     }
@@ -549,7 +549,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         actionType.current = typedDataActionData?.action?.type || '';
         const parsed = parseAction({
           type: 'typed_data',
-          data: typedDataActionData.action,
+          data: typedDataActionData.action as any,
           typedData: signTypedData,
           sender,
         });
