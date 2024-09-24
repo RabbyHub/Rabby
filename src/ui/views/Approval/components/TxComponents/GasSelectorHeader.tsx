@@ -246,8 +246,13 @@ const GasStyled = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-  max-width: 220px;
   flex: 1;
+
+  .gas-amount {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 `;
 
 const GasPriceDesc = styled.div`
@@ -779,7 +784,7 @@ const GasSelectorHeader = ({
           ) : (
             <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot" />
           )}
-          <div className="gas-selector-card-content ml-8">
+          <div className="ml-8 gas-selector-card-content">
             {disabled ? (
               <div className="font-semibold">
                 {t('page.signTx.noGasRequired')}
@@ -791,7 +796,7 @@ const GasSelectorHeader = ({
                 </div>
               </>
             ) : gasMethod === 'gasAccount' ? (
-              <div className="gas-selector-card-content-item relative">
+              <div className="relative gas-selector-card-content-item">
                 <Tooltip
                   overlayClassName="rectangle"
                   title={
@@ -824,7 +829,7 @@ const GasSelectorHeader = ({
                 </Tooltip>
               </div>
             ) : (
-              <div className="gas-selector-card-content-item relative">
+              <div className="relative gas-selector-card-content-item">
                 <div
                   className={clsx(
                     'gas-selector-card-amount translate-y-1 flex items-center',
@@ -875,7 +880,7 @@ const GasSelectorHeader = ({
             )}
           </div>
           {!gasMethod && gas.success ? (
-            <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
+            <div className="mt-2 flex-shrink-1 text-r-neutral-body text-14 gas-amount">
               {isGasHovering
                 ? calcGasEstimated(selectedGas?.estimated_seconds)
                 : `~${gasCostAmountStr}`}
@@ -926,7 +931,7 @@ const GasSelectorHeader = ({
               </div>
               {version === 'v2' && gas.error ? (
                 <div className="gas-selector-modal-error-desc mt-[8px] flex items-center justify-center">
-                  <RcIconAlert className="text-r-neutral-body mr-6 w-16" />
+                  <RcIconAlert className="w-16 mr-6 text-r-neutral-body" />
                   {gas.error.msg}{' '}
                   <span className="number">#{gas.error.code}</span>
                 </div>
@@ -1054,7 +1059,7 @@ const GasSelectorHeader = ({
         <div>
           {is1559 && (
             <>
-              <Divide className="bg-r-neutral-line my-20" />
+              <Divide className="my-20 bg-r-neutral-line" />
 
               <div
                 className={clsx('priority-slider', {
@@ -1072,7 +1077,7 @@ const GasSelectorHeader = ({
                     }
                     overlayClassName="rectangle"
                   >
-                    <IconInfoSVG className="text-r-neutral-foot ml-2 mt-2" />
+                    <IconInfoSVG className="mt-2 ml-2 text-r-neutral-foot" />
                   </Tooltip>
                 </p>
                 <Tooltip

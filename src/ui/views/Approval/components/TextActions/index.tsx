@@ -66,7 +66,7 @@ export const MessageWrapper = styled.div`
     line-height: 16px;
     font-weight: 400;
     color: var(--r-neutral-body, #3e495e);
-    height: 320px;
+    height: 250px;
     overflow-y: auto;
     padding: 0 16px 16px;
     /* font-family: 'Roboto Mono'; */
@@ -151,13 +151,13 @@ const Actions = ({
                     />
                   }
                 >
-                  <IconQuestionMark className="w-14 text-r-neutral-foot ml-2 mt-2" />
+                  <IconQuestionMark className="mt-2 ml-2 w-14 text-r-neutral-foot" />
                 </TooltipWithMagnetArrow>
               )}
             </div>
             <div className="right">
               <div
-                className="float-right text-13 cursor-pointer flex items-center view-raw"
+                className="flex items-center float-right cursor-pointer text-13 view-raw"
                 onClick={handleViewRawClick}
               >
                 {t('page.signTx.viewRaw')}
