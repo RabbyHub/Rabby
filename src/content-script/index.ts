@@ -72,6 +72,7 @@ const setupExtensionStreams = () => {
   pm?.on('message', handlePmMessage);
   defer.resolve?.(pm);
   pm?.port?.onDisconnect.addListener(onDisconnectDestroyStreams);
+  bcm.send('message', { event: 'contentScriptConnected' });
 };
 
 setupExtensionStreams();
