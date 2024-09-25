@@ -23,6 +23,10 @@ class AutoLockService {
         this.onAutoLock?.();
       } else {
         this.autoLockAt = autoLockAt;
+        this.timer = setTimeout(
+          () => this.onAutoLock?.(),
+          autoLockAt - Date.now()
+        );
       }
     }
   }
