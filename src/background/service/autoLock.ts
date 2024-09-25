@@ -1,3 +1,4 @@
+import { isManifestV3 } from '@/utils/env';
 import preference from './preference';
 import browser from 'webextension-polyfill';
 
@@ -14,6 +15,7 @@ class AutoLockService {
   }
 
   async syncAutoLockAt() {
+    if (!isManifestV3) return;
     const value = await browser.storage.session.get(AUTO_LOCK_AT_KEY);
     const autoLockAt = value[AUTO_LOCK_AT_KEY];
     if (autoLockAt) {
@@ -35,9 +37,11 @@ class AutoLockService {
     }
     const duration = autoLockTime * 60 * 1000;
     this.autoLockAt = Date.now() + duration;
-    await browser.storage.session.set({
-      [AUTO_LOCK_AT_KEY]: this.autoLockAt,
-    });
+    if (isManifestV3) {
+      await browser.storage.session.set({
+        [AUTO_LOCK_AT_KEY]: this.autoLockAt,
+      });
+    }
     this.timer = setTimeout(() => this.onAutoLock?.(), duration);
   }
 
