@@ -138,7 +138,9 @@ const ImportGnosisAddress = () => {
                 return value;
               }}
             >
-              <Input
+              <Input.TextArea
+                className="leading-normal"
+                autoSize
                 size="large"
                 autoFocus
                 placeholder={t('page.importSafe.placeholder')}
