@@ -21,9 +21,7 @@ import IconReceive, {
   ReactComponent as RcIconReceive,
 } from 'ui/assets/dashboard/receive.svg';
 import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
-import IconGasTopUp, {
-  ReactComponent as RcIconGasTopUp,
-} from 'ui/assets/dashboard/gas-top-up.svg';
+
 import IconNFT, {
   ReactComponent as RcIconNFT,
 } from 'ui/assets/dashboard/nft.svg';
@@ -225,14 +223,6 @@ export default ({
       content: t('page.dashboard.home.panel.receive'),
       onClick: () => {
         setIsShowReceiveModal(true);
-      },
-    } as IPanelItem,
-    gasTopUp: {
-      icon: RcIconGasTopUp,
-      eventKey: 'Gas Top Up',
-      content: t('page.dashboard.home.panel.gasTopUp'),
-      onClick: () => {
-        history.push('/gas-top-up');
       },
     } as IPanelItem,
     queue: {
