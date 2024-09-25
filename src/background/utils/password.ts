@@ -69,6 +69,7 @@ export const passwordDecrypt = async ({
   encryptedData: string;
   password?: string | null;
 }) => {
+  console.log('password', password);
   if (!isNil(password)) {
     const { vault, exportedKeyString, salt } = await decryptWithDetail(
       password,

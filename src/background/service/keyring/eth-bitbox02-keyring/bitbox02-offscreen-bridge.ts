@@ -27,7 +27,9 @@ export default class BitBox02OffscreenBridge
   }
 
   init: BitBox02BridgeInterface['init'] = async (hdPath) => {
-    chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+    // 部分未使用browser api，需要兼容
+    // browser.runtime.onMessage.addListener
+    browser.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       if (
         msg.target === OffscreenCommunicationTarget.extension &&
         msg.event === OffscreenCommunicationEvents.bitbox02DeviceConnect
