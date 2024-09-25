@@ -142,7 +142,7 @@ const Process = ({
         <>
           {content}
           {mergedStatus === WALLETCONNECT_STATUS_MAP.CONNECTED && (
-            <span>({sendingCounter}s)</span>
+            <span> ({sendingCounter}s)</span>
           )}
         </>
       }
