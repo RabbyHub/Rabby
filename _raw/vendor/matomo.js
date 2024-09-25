@@ -18,6 +18,7 @@ _paq.push(['enableLinkTracking']);
     s.parentNode.insertBefore(g, s);
   };
 
+  // firefox 兼容
   setTimeout(() => {
     // is MV3
     if (chrome.runtime.getManifest().manifest_version === 3) {

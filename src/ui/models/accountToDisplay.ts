@@ -45,6 +45,11 @@ export const accountToDisplay = createModel<RootModel>()({
         store.app.wallet.getAllVisibleAccounts(),
         store.app.wallet.getAllAlianNameByMap(),
       ]);
+      console.log(
+        'displayedKeyrings, allAlianNames',
+        displayedKeyrings,
+        allAlianNames
+      );
       const result = await Promise.all<IDisplayedAccountWithBalance>(
         displayedKeyrings
           .map((item) => {
@@ -100,10 +105,12 @@ export const accountToDisplay = createModel<RootModel>()({
             };
           })
       );
+      console.log('getAllAccountsToDisplay', result);
       dispatch.accountToDisplay.setField({ loadingAccounts: false });
 
       if (result) {
         const withBalanceList = sortAccountsByBalance(result);
+        console.log('withBalanceList', withBalanceList);
         dispatch.accountToDisplay.setField({ accountsList: withBalanceList });
       }
     },
@@ -129,6 +136,8 @@ export const accountToDisplay = createModel<RootModel>()({
           };
         })
       );
+
+      console.log(';result', result);
 
       dispatch.accountToDisplay.setField({
         accountsList: result,

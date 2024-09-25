@@ -134,7 +134,7 @@ class NotificationService extends Events {
       if (IS_VIVALDI) return;
       if (
         IS_CHROME &&
-        winId === chrome.windows.WINDOW_ID_NONE &&
+        winId === browser.windows.WINDOW_ID_NONE &&
         (IS_LINUX || IS_WINDOWS)
       ) {
         // When sign on Linux or Windows, will focus on -1 first then focus on sign window

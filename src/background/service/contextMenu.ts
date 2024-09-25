@@ -4,6 +4,7 @@ import {
   preferenceService,
   sessionService,
 } from 'background/service';
+import Browser, { Menus, Tabs } from 'webextension-polyfill';
 
 const getTabsOriginList = () => {
   const res: string[] = [];
@@ -27,7 +28,7 @@ export class ContextMenu {
   store = new Set<string>();
 
   constructor() {
-    chrome.contextMenus.onClicked.addListener(this.listener);
+    Browser.contextMenus.onClicked.addListener(this.listener);
   }
 
   create(origin: string) {
@@ -35,7 +36,7 @@ export class ContextMenu {
       return;
     }
 
-    chrome.contextMenus.create(
+    Browser.contextMenus.create(
       {
         id: origin,
         title: getContextMenuTitle(origin),
@@ -58,7 +59,7 @@ export class ContextMenu {
       return;
     }
 
-    chrome.contextMenus.update(origin, {
+    Browser.contextMenus.update(origin, {
       title: getContextMenuTitle(origin),
     });
   }
@@ -66,13 +67,13 @@ export class ContextMenu {
     if (!this.store.has(origin)) {
       return;
     }
-    chrome.contextMenus.remove(origin, () => {
+    Browser.contextMenus.remove(origin).then(() => {
       this.store.delete(origin);
     });
   }
   removeAll() {
     this.store.clear();
-    chrome.contextMenus.removeAll();
+    Browser.contextMenus.removeAll();
   }
 
   async sync() {
@@ -97,10 +98,7 @@ export class ContextMenu {
     });
   }
 
-  private listener = (
-    info: chrome.contextMenus.OnClickData,
-    tab?: chrome.tabs.Tab
-  ) => {
+  private listener = (info: Menus.OnClickData, tab: Tabs.Tab | undefined) => {
     if (!info.menuItemId) {
       return;
     }

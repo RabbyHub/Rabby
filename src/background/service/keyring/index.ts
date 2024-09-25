@@ -483,6 +483,7 @@ export class KeyringService extends EventEmitter {
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
   addNewAccount(selectedKeyring: any): Promise<string[]> {
+    console.log('keyring', this.keyrings);
     let _accounts;
     return selectedKeyring
       .addAccounts(1)
@@ -1053,6 +1054,7 @@ export class KeyringService extends EventEmitter {
         return res.concat(arr);
       }, []);
     });
+    console.log('addrs', addrs);
     return addrs.map(normalizeAddress);
   }
 

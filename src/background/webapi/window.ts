@@ -30,8 +30,8 @@ const WINDOW_SIZE = {
 
 const createFullScreenWindow = ({ url, ...rest }) => {
   return new Promise((resolve) => {
-    chrome.windows.create(
-      {
+    browser.windows
+      .create({
         focused: true,
         url,
         type: 'popup',
@@ -41,11 +41,8 @@ const createFullScreenWindow = ({ url, ...rest }) => {
         left: undefined,
         top: undefined,
         state: 'fullscreen',
-      },
-      (win) => {
-        resolve(win);
-      }
-    );
+      })
+      .then(resolve);
   });
 };
 
