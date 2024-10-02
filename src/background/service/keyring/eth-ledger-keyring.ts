@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import Transport from '@ledgerhq/hw-transport';
-import LedgerEth, { ledgerService } from '@ledgerhq/hw-app-eth';
+import LedgerEth from '@ledgerhq/hw-app-eth';
 import { is1559Tx } from '@/utils/transaction';
 import {
   TransactionFactory,
@@ -315,12 +315,7 @@ class LedgerBridgeKeyring {
     const hdPath = await this.unlockAccountByAddress(address);
     await this.makeApp(true);
     try {
-      const resolution = await ledgerService.resolveTransaction(
-        rawTxHex,
-        {},
-        {}
-      );
-      const res = await this.app!.signTransaction(hdPath, rawTxHex, resolution);
+      const res = await this.app!.signTransaction(hdPath, rawTxHex);
       const newOrMutatedTx = handleSigning(res);
       const valid = newOrMutatedTx.verifySignature();
       if (valid) {
