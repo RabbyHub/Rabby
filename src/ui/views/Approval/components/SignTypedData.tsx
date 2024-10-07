@@ -558,7 +558,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         });
         setParsedActionData(parsed);
         // TODO: move to action
-        parsed.contractId = typedDataActionData.contract_call_data?.contract.id;
+        if (!parsed.contractId) {
+          parsed.contractId =
+            typedDataActionData.contract_call_data?.contract.id;
+        }
         getRequireData(parsed);
       } else {
         setIsLoading(false);
