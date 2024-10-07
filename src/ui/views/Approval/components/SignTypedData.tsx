@@ -552,8 +552,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           data: typedDataActionData.action as any,
           typedData: signTypedData,
           sender,
+          balanceChange: typedDataActionData.pre_exec_result?.balance_change,
+          preExecVersion: typedDataActionData.pre_exec_result?.pre_exec_version,
+          gasUsed: typedDataActionData.pre_exec_result?.gas.gas_used,
         });
         setParsedActionData(parsed);
+        // TODO: move to action
+        parsed.contractId = typedDataActionData.contract_call_data?.contract.id;
         getRequireData(parsed);
       } else {
         setIsLoading(false);
