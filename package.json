@@ -41,7 +41,7 @@
     "@keystonehq/hw-transport-webusb": "0.3.2",
     "@keystonehq/metamask-airgapped-keyring": "0.2.5-alpha.2.1",
     "@ledgerhq/devices": "8.4.4",
-    "@ledgerhq/hw-app-eth": "6.38.2",
+    "@ledgerhq/hw-app-eth": "6.39.0",
     "@ledgerhq/hw-transport-webhid": "6.29.4",
     "@metamask/browser-passworder": "4.1.0",
     "@metamask/eth-sig-util": "5.1.0",

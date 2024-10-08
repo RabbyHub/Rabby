@@ -3924,15 +3924,13 @@
     rlp "^2.2.6"
     uuid "^8.3.2"
 
-"@ledgerhq/cryptoassets@^13.5.0":
+"@ledgerhq/cryptoassets-evm-signatures@^13.5.0":
   version "13.5.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/cryptoassets/-/cryptoassets-13.5.0.tgz#ddd09bec1df2ca7325002b94595f1553aca27821"
-  integrity sha512-kdy40ZgcmGTo6sY/aKBJU6dydfV0luvOB5fi9MbJ1iRdy4qoHzfHUTk/z8B5yJRC4WgR1dbhFhKQcfA3lOE0rw==
+  resolved "https://registry.yarnpkg.com/@ledgerhq/cryptoassets-evm-signatures/-/cryptoassets-evm-signatures-13.5.0.tgz#19ad9c567fe40efa822b9f5a8d3968210024e704"
+  integrity sha512-lEz+orFtMVGysZ303n7C/aDrkYpKSHpuifJTt4/Bj4S9OwUv8ExnfazYL/fYMXMUmb1vwzfQ6nKBW01hiY5pBQ==
   dependencies:
     "@ledgerhq/live-env" "^2.3.0"
     axios "1.7.7"
-    bs58check "^2.1.2"
-    invariant "2"
 
 "@ledgerhq/devices@8.4.4", "@ledgerhq/devices@^8.4.4":
   version "8.4.4"
@@ -3954,14 +3952,14 @@
     rxjs "6"
     semver "^7.3.5"
 
-"@ledgerhq/domain-service@^1.2.5":
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/domain-service/-/domain-service-1.2.5.tgz#fbbf4e12c591496da3bba6f3f84de88b37991bdf"
-  integrity sha512-bBSCRMZ4tHzO0yRlzaGMNNOpNfR6JorvgDPxOXhKlvVAP6C0iSUB4zdFlN6aMYpjTe6tpSG0X1+IKA1BjhLxDw==
+"@ledgerhq/domain-service@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/domain-service/-/domain-service-1.2.6.tgz#d8a38db38f44914ccb4fe9a12784730829fcbadb"
+  integrity sha512-tT1PFm71w2VFHJfCEoQ8znA8f1WRWGJJGEt8xql2YP0JFJygDe7PPbHTHHywLlZqo8GBqAGZzjTOmdyDcPPP1w==
   dependencies:
     "@ledgerhq/errors" "^6.19.1"
     "@ledgerhq/logs" "^6.12.0"
-    "@ledgerhq/types-live" "^6.51.1"
+    "@ledgerhq/types-live" "^6.52.0"
     axios "1.7.7"
     eip55 "^2.1.1"
     react "^18.2.0"
@@ -3977,32 +3975,32 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.19.1.tgz#d9ac45ad4ff839e468b8f63766e665537aaede58"
   integrity sha512-75yK7Nnit/Gp7gdrJAz0ipp31CCgncRp+evWt6QawQEtQKYEDfGo10QywgrrBBixeRxwnMy1DP6g2oCWRf1bjw==
 
-"@ledgerhq/evm-tools@^1.2.2":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/evm-tools/-/evm-tools-1.2.2.tgz#a83c540d55bc80b91f2b299157df2d4cc0dae56d"
-  integrity sha512-k/CPk10d5SI2y2rDvmDFCyWq6Ydn4pRnc0vlDCgCw2HwrPtLZRa0xPPeWq/m66EAOfLf+PxkLva7R97X/8NIbw==
+"@ledgerhq/evm-tools@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/evm-tools/-/evm-tools-1.2.3.tgz#f5c9dec99cc36f73f6a6a6408ef78d8d6659633f"
+  integrity sha512-uQGygvpR1QAJ8hadpx/86GHrhyAz7xJN22GRUDQeYF8b1/i9TSzGXs1crjfFU2aF1+vUhIxv+s3wvbDR5v3/QA==
   dependencies:
-    "@ledgerhq/cryptoassets" "^13.5.0"
+    "@ledgerhq/cryptoassets-evm-signatures" "^13.5.0"
     "@ledgerhq/live-env" "^2.3.0"
     axios "1.7.7"
     crypto-js "4.2.0"
     ethers "5.7.2"
 
-"@ledgerhq/hw-app-eth@6.38.2":
-  version "6.38.2"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-6.38.2.tgz#01efc4ae7b2719321db6dcdab28d0c7b83caf64c"
-  integrity sha512-R+zWPMf/+O6fuiDpl+VJ2Tv4cln3NXUrGhIaqGQ9cXTxLVf6nnxHaX0c3eJhDOgSJ2WcWZfjkhLt+oLniNJvvA==
+"@ledgerhq/hw-app-eth@6.39.0":
+  version "6.39.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-6.39.0.tgz#b4b1588d4adeddc1b4488f3d7d23e80170cb764c"
+  integrity sha512-T/lLwrY1cpXmAyjfSlSUt9lVdCmO1h2pigONtiTWysiwpCu2s4L1Bfk0qZoc5K68ohTahNVxviRJl1xqFg+fXA==
   dependencies:
     "@ethersproject/abi" "^5.5.0"
     "@ethersproject/rlp" "^5.5.0"
-    "@ledgerhq/cryptoassets" "^13.5.0"
-    "@ledgerhq/domain-service" "^1.2.5"
+    "@ledgerhq/cryptoassets-evm-signatures" "^13.5.0"
+    "@ledgerhq/domain-service" "^1.2.6"
     "@ledgerhq/errors" "^6.19.1"
-    "@ledgerhq/evm-tools" "^1.2.2"
+    "@ledgerhq/evm-tools" "^1.2.3"
     "@ledgerhq/hw-transport" "^6.31.4"
     "@ledgerhq/hw-transport-mocker" "^6.29.4"
     "@ledgerhq/logs" "^6.12.0"
-    "@ledgerhq/types-live" "^6.51.1"
+    "@ledgerhq/types-live" "^6.52.0"
     axios "1.7.7"
     bignumber.js "^9.1.2"
     semver "^7.3.5"
@@ -4054,10 +4052,10 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.12.0.tgz#ad903528bf3687a44da435d7b2479d724d374f5d"
   integrity sha512-ExDoj1QV5eC6TEbMdLUMMk9cfvNKhhv5gXol4SmULRVCx/3iyCPhJ74nsb3S0Vb+/f+XujBEj3vQn5+cwS0fNA==
 
-"@ledgerhq/types-live@^6.51.1":
-  version "6.51.1"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/types-live/-/types-live-6.51.1.tgz#abb1c29d2f1173b4b98996ddb202daa3d805301e"
-  integrity sha512-+8V5RAZ+CDPDs2GPWEh9HlRR5PVVaS/QvAr+VEiHfP3973sAiaHTVUgbTzE7oRKwjA7upgk69tqs132B5SoSdw==
+"@ledgerhq/types-live@^6.52.0":
+  version "6.52.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/types-live/-/types-live-6.52.0.tgz#71a6631ed5498104211f0b1c3dbaf2e2cc2407fd"
+  integrity sha512-3ZMUGGkeb0kLWr16SCS8cZRudVLafoYWBDyeBn0cqVtX8T5iUNmC+ICICsJZrn5KJcM0JsOs6DBuuFmSVJ1Q5Q==
   dependencies:
     bignumber.js "^9.1.2"
     rxjs "^7.8.1"
@@ -11938,13 +11936,6 @@ interval-promise@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/interval-promise/-/interval-promise-1.4.0.tgz#eef1a3633c6c6560488d8ca4b2f52cf901e16f8d"
   integrity sha512-PUwEmGqUglJhb6M01JNvMDvxr4DA8FCeYoYCLHPEcBBZiq/8yOpCchfs1VJui7fXj69l170gAxzF1FeSA0nSlg==
-
-invariant@2:
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
-  integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
-  dependencies:
-    loose-envify "^1.0.0"
 
 ip@^1.1.0:
   version "1.1.5"
