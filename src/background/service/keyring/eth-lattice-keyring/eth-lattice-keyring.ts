@@ -35,9 +35,9 @@ class LatticeKeyring extends OldLatticeKeyring {
   });
 
   async _getCreds() {
-    // if (!isManifestV3) {
-    //   return super._getCreds();
-    // }
+    if (!isManifestV3) {
+      return super._getCreds();
+    }
 
     if (this._hasCreds()) return;
 
