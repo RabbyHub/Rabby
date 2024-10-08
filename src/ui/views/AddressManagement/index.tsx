@@ -84,7 +84,6 @@ const AddressManagement = () => {
     ...s.accountToDisplay,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
-  console.log('accountsList-logger: ', accountsList, highlightedAddresses);
 
   const [sortedAccountsList, watchSortedAccountsList] = React.useMemo(() => {
     const restAccounts = [...accountsList];
@@ -256,7 +255,6 @@ const AddressManagement = () => {
 
   useEffect(() => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
-      console.log('getAllAccountsToDisplay init');
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
   }, []);
