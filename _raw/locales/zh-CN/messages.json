@@ -149,7 +149,7 @@
         },
         "title": "已连接的 Dapp",
         "pinned": "已置顶",
-        "noPinnedDapps": "没有置顶的 dapp",
+        "noPinnedDapps": "没有置顶的 Dapp",
         "dragToSort": "拖动排序",
         "noRecentlyConnectedDapps": "没有最近连接的 Dapp",
         "recentlyConnected": "最近连接",
@@ -369,7 +369,7 @@
       }
     },
     "chainList": {
-      "title": "",
+      "title": "已集成 {{count}} 条链",
       "mainnet": "主网",
       "testnet": "测试网"
     },
@@ -490,7 +490,7 @@
       "importedSuccessfully": "导入成功",
       "ledger": {
         "title": "连接Ledger",
-        "cameraPermissionTitle": "允许Rabby访问相机",
+        "cameraPermissionTitle": "允许 Rabby 访问相机",
         "cameraPermission1": "在浏览器弹出窗口中允许Rabby访问摄像头",
         "allowRabbyPermissionsTitle": "允许 Rabby 获取以下权限：",
         "ledgerPermission1": "连接到 HID 设备",
@@ -898,7 +898,7 @@
         "pause": "暂停",
         "gasNotEnough": "Gas 不足，无法提交",
         "submitTxFailed": "提交失败",
-        "gasTooHigh": "煤气费高",
+        "gasTooHigh": "Gas 费过高",
         "totalRevoked": "全部的：",
         "approvalCount_zero": "{{count}} 批准",
         "ledgerAlert": "请在您的 Ledger 设备上打开以太坊应用程序",
