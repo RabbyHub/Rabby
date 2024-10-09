@@ -31,7 +31,7 @@ const {
   componentIdPrefix: 'rabby-',
 });
 // 'chrome-mv2', 'chrome-mv3', 'firefox-mv2', 'firefox-mv3'
-const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'mv2';
+const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'chrome-mv2';
 const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
 const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
 
