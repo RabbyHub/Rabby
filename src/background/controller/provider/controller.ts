@@ -759,7 +759,7 @@ class ProviderController extends BaseController {
       notificationService.setStatsData(statsData);
       let errMsg = typeof e === 'object' ? e.message : e;
       if (RPCService.hasCustomRPC(chain)) {
-        errMsg = '[From Custom RPC]' + errMsg;
+        errMsg = `[From Custom RPC] ${errMsg}`;
       }
 
       throw typeof e === 'object'
