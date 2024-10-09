@@ -33,6 +33,7 @@ const {
 // 'chrome-mv2', 'chrome-mv3', 'firefox-mv2', 'firefox-mv3'
 const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'mv2';
 const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
+const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
 
 const config = {
   entry: {
@@ -45,7 +46,7 @@ const config = {
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },
   output: {
-    path: paths.dist,
+    path: FINAL_DIST,
     filename: '[name].js',
     publicPath: '/',
   },
@@ -241,26 +242,26 @@ const config = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: paths.rootResolve('_raw'), to: paths.rootResolve('dist') },
+        { from: paths.rootResolve('_raw'), to: FINAL_DIST },
         {
           from: paths.rootResolve(`src/manifest/${MANIFEST_TYPE}/manifest.json`),
-          to: paths.dist,
+          to: FINAL_DIST,
         },
         IS_MANIFEST_MV3
           ? {
               from: require.resolve(
                 '@trezor/connect-webextension/build/content-script.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-content-script.js'
+              to: path.resolve(
+                FINAL_DIST, './vendor/trezor/trezor-content-script.js'
               ),
             }
           : {
               from: require.resolve(
                 '@trezor/connect-web/lib/webextension/trezor-content-script.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-content-script.js'
+              to: path.resolve(
+                FINAL_DIST, './vendor/trezor/trezor-content-script.js'
               ),
             },
           IS_MANIFEST_MV3
@@ -268,16 +269,16 @@ const config = {
               from: require.resolve(
                 '@trezor/connect-webextension/build/trezor-connect-webextension.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-connect-webextension.js'
+              to: path.resolve(
+                FINAL_DIST, './vendor/trezor/trezor-connect-webextension.js'
               ),
             }
           : {
               from: require.resolve(
                 '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-usb-permissions.js'
+              to: path.resolve(
+                FINAL_DIST, './vendor/trezor/trezor-usb-permissions.js'
               ),
             },
       ],

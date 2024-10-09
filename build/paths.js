@@ -14,6 +14,7 @@ module.exports = {
   backgroundHtml: rootResolve('src/background/background.html'),
   offscreenHtml: rootResolve('src/offscreen/offscreen.html'),
   dist: rootResolve('dist'),
+  distMv2: rootResolve('dist-mv2'),
 
   rootResolve,
 };
