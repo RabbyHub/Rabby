@@ -757,7 +757,17 @@ class ProviderController extends BaseController {
         statsData.signMethod = notificationService.statsData?.signMethod;
       }
       notificationService.setStatsData(statsData);
-      throw typeof e === 'object' ? e : new Error(e);
+      let errMsg = typeof e === 'object' ? e.message : e;
+      if (RPCService.hasCustomRPC(chain)) {
+        errMsg = '[From Custom RPC]' + errMsg;
+      }
+
+      throw typeof e === 'object'
+        ? {
+            ...e,
+            message: errMsg,
+          }
+        : new Error(errMsg);
     }
   };
   @Reflect.metadata('SAFE', true)
