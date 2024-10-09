@@ -60,8 +60,6 @@ import {
   CustomTestnetTokenBase,
   customTestnetService,
 } from '@/background/service/customTestnet';
-import { sendTransaction } from 'viem/actions';
-// import { customTestnetService } from '@/background/service/customTestnet';
 
 const reportSignText = (params: {
   method: string;
@@ -519,15 +517,22 @@ class ProviderController extends BaseController {
         if (isSend) {
           pageStateCacheService.clear();
         }
+        const _rawTx = {
+          ...rawTx,
+          ...approvalRes,
+          r: bufferToHex(signedTx.r),
+          s: bufferToHex(signedTx.s),
+          v: bufferToHex(signedTx.v),
+        };
+        if (is1559) {
+          delete _rawTx.gasPrice;
+        } else {
+          delete _rawTx.maxPriorityFeePerGas;
+          delete _rawTx.maxFeePerGas;
+        }
         transactionHistoryService.addTx({
           tx: {
-            rawTx: {
-              ...rawTx,
-              ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-            },
+            rawTx: _rawTx,
             createdAt: Date.now(),
             isCompleted: false,
             hash,
