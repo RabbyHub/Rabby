@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { getUiType, useApproval, useWallet } from 'ui/utils';
 import { Spin } from 'ui/component';
 import { Approval } from 'background/service/notification';
+import Browser from 'webextension-polyfill';
 
 const SortHat = () => {
   const wallet = useWallet();
@@ -17,6 +18,7 @@ const SortHat = () => {
     const isInTab = UIType.isTab;
     const approval: Approval | undefined = await getApproval();
     if (isInNotification && !approval) {
+      Browser.runtime.sendMessage({ type: 'closeNotification' });
       window.close();
       return;
     }

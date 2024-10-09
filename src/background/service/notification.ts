@@ -114,12 +114,21 @@ class NotificationService extends Events {
   constructor() {
     super();
 
-    winMgr.event.on('windowRemoved', (winId: number) => {
-      if (winId === this.notifiWindowId) {
-        this.notifiWindowId = null;
-        this.rejectAllApprovals();
-      }
+    winMgr.event.on('closeNotification', () => {
+      this.notifiWindowId = null;
     });
+
+    winMgr.event.on(
+      'windowRemoved',
+      (winId: number, isManuallyClosed: boolean) => {
+        if (winId === this.notifiWindowId) {
+          this.notifiWindowId = null;
+          if (isManuallyClosed) {
+            this.rejectAllApprovals();
+          }
+        }
+      }
+    );
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
       if (IS_VIVALDI) return;
