@@ -106,7 +106,9 @@ export const Slippage = memo((props: SlippageProps) => {
 
   const setRecommendValue = useCallback(() => {
     onChange(new BigNumber(recommendValue || 0).times(100).toString());
-  }, [onChange, recommendValue]);
+    setAutoSlippage(false);
+    setIsCustomSlippage(false);
+  }, [onChange, recommendValue, setAutoSlippage, setIsCustomSlippage]);
 
   const tips = useMemo(() => {
     if (isLow) {
@@ -152,12 +154,14 @@ export const Slippage = memo((props: SlippageProps) => {
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
+      setAutoSlippage(false);
+      setIsCustomSlippage(true);
       const v = e.target.value;
       if (/^\d*(\.\d*)?$/.test(v)) {
         onChange(Number(v) > 50 ? '50' : v);
       }
     },
-    [onChange]
+    [onChange, setAutoSlippage, setIsCustomSlippage]
   );
 
   useEffect(() => {
@@ -238,6 +242,10 @@ export const Slippage = memo((props: SlippageProps) => {
               bordered={false}
               value={value}
               onChange={onInputChange}
+              onFocus={() => {
+                setAutoSlippage(false);
+                setIsCustomSlippage(true);
+              }}
               placeholder="0.1"
               suffix={<div>%</div>}
             />

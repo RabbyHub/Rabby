@@ -80,10 +80,19 @@ export const useSlippage = () => {
     [setSlippageOnStore]
   );
 
+  const [isSlippageLow, isSlippageHigh] = useMemo(() => {
+    return [
+      slippageState?.trim() !== '' && Number(slippageState || 0) < 0.1,
+      slippageState?.trim() !== '' && Number(slippageState || 0) > 10,
+    ];
+  }, [slippageState]);
+
   return {
     slippageChanged,
     setSlippageChanged,
     slippageState,
+    isSlippageLow,
+    isSlippageHigh,
     slippage,
     setSlippage,
   };
@@ -240,6 +249,8 @@ export const useTokenPair = (userAddress: string) => {
     slippageState,
     slippage,
     setSlippage,
+    isSlippageHigh,
+    isSlippageLow,
   } = useSlippage();
 
   const { autoSlippage } = useSlippageStore();
@@ -327,6 +338,11 @@ export const useTokenPair = (userAddress: string) => {
 
   const closeReserveGasOpen = useCallback(() => {
     setReserveGasOpen(false);
+  }, []);
+
+  const closeReserveGasOpenAndUpdatePayAmount = useCallback(() => {
+    setReserveGasOpen(false);
+
     if (payToken && gasPriceRef.current !== undefined) {
       const val = tokenAmountBn(payToken).minus(
         new BigNumber(gasLimit)
@@ -341,9 +357,9 @@ export const useTokenPair = (userAddress: string) => {
     (gasLevel: GasLevel) => {
       gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
       setGasLevel(gasLevel.level as GasLevelType);
-      closeReserveGasOpen();
+      closeReserveGasOpenAndUpdatePayAmount();
     },
-    [closeReserveGasOpen]
+    [closeReserveGasOpenAndUpdatePayAmount]
   );
 
   const handleBalance = useCallback(() => {
@@ -645,6 +661,8 @@ export const useTokenPair = (userAddress: string) => {
     slippageState,
     slippage,
     setSlippage,
+    isSlippageHigh,
+    isSlippageLow,
     feeRate,
 
     //quote
@@ -686,3 +704,27 @@ function tokenAmountBn(token: TokenItem) {
     10 ** (token?.decimals || 1)
   );
 }
+
+export const useDetectLoss = ({
+  receiveRawAmount: receiveAmount,
+  payAmount,
+  payToken,
+  receiveToken,
+}: {
+  payAmount: string;
+  receiveRawAmount: string | number;
+  payToken?: TokenItem;
+  receiveToken?: TokenItem;
+}) => {
+  return useMemo(() => {
+    if (!payToken || !receiveToken) {
+      return false;
+    }
+    const pay = new BigNumber(payAmount).times(payToken.price || 0);
+    const receiveAll = new BigNumber(receiveAmount);
+    const receive = receiveAll.times(receiveToken.price || 0);
+    const cut = receive.minus(pay).div(pay).times(100);
+
+    return cut.lte(-5);
+  }, [payAmount, payToken?.price, receiveAmount, receiveToken?.price]);
+};

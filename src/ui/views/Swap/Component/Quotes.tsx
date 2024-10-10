@@ -107,7 +107,7 @@ export const Quotes = ({
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
 
     return (
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 px-20">
         {dex ? (
           <DexQuoteItem
             inSufficient={inSufficient}
@@ -145,7 +145,7 @@ export const Quotes = ({
     );
   }
   return (
-    <div className="flex flex-col flex-1 w-full overflow-auto">
+    <div className="flex flex-col flex-1 w-full overflow-auto pb-12 px-20">
       <div className="flex flex-col gap-12">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
@@ -233,8 +233,7 @@ export const Quotes = ({
 };
 
 const bodyStyle = {
-  paddingTop: 0,
-  paddingBottom: 0,
+  padding: 0,
 };
 
 export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
@@ -253,7 +252,7 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
 
   const height = useMemo(() => {
     const min = 333;
-    const max = 540;
+    const max = 548;
 
     const h = 45 + 24 + dexList.length * 100;
 

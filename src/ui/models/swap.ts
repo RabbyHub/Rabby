@@ -191,7 +191,9 @@ export const swap = createModel<RootModel>()({
       const data = await store.app.wallet.openapi.getSupportedDEXList();
       if (data.dex_list) {
         this.setField({
-          supportedDEXList: data.dex_list,
+          supportedDEXList: data.dex_list?.filter((item) =>
+            Object.keys(DEX).includes(item)
+          ),
         });
       }
     },

@@ -6,6 +6,7 @@ import { Account } from 'background/service/preference';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { AddressItem, ownerPriority } from './DrawerAddressItem';
+import clsx from 'clsx';
 
 interface GnosisDrawerProps {
   // safeInfo: SafeInfo;
@@ -122,7 +123,18 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
         ))}
       </div>
       <div className="footer mx-[-20px] mb-[-24px] py-[16px] px-[20px] border-t-[1px] border-t-r-neutral-card2 bg-r-neutral-card1">
-        <Button type="primary" onClick={onCancel} className="h-[48px]">
+        <Button
+          type="primary"
+          ghost
+          onClick={onCancel}
+          className={clsx(
+            'h-[48px]',
+            'border-blue-light text-blue-light',
+            'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+            'rounded-[8px]',
+            'before:content-none'
+          )}
+        >
           {t('global.backButton')}
         </Button>
         <Button

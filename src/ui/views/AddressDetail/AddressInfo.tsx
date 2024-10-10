@@ -26,6 +26,7 @@ import { CoboArgusInfo } from './CoboArugsInfo';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
+import clsx from 'clsx';
 
 type Props = {
   address: string;
@@ -56,6 +57,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       title: t('page.addressDetail.edit-memo-title'),
       isSupportDarkMode: true,
       height: 215,
+      isNew: true,
       content: (
         <div className="pt-[4px]">
           <Form
@@ -86,7 +88,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             >
               <Input
                 ref={inputRef}
-                className="popup-input h-[48px]"
+                className="popup-input h-[48px] bg-r-neutral-card-1"
                 size="large"
                 placeholder={t('page.addressDetail.please-input-address-note')}
                 autoFocus
@@ -96,14 +98,28 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
                 maxLength={50}
               ></Input>
             </Form.Item>
-            <div className="text-center">
+            <div className="text-center flex gap-x-16">
+              <Button
+                size="large"
+                type="ghost"
+                onClick={() => destroy()}
+                className={clsx(
+                  'w-[200px]',
+                  'text-blue-light',
+                  'border-blue-light',
+                  'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                  'before:content-none'
+                )}
+              >
+                {t('global.Cancel')}
+              </Button>
               <Button
                 type="primary"
                 size="large"
                 className="w-[200px]"
                 htmlType="submit"
               >
-                {t('global.Confirm')}
+                {t('global.confirm')}
               </Button>
             </div>
           </Form>

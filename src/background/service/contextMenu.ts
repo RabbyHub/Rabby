@@ -41,10 +41,9 @@ export class ContextMenu {
         title: getContextMenuTitle(origin),
         documentUrlPatterns: [`${origin}/*`],
       },
-      () => {
-        this.store.add(origin);
-      }
+      () => {}
     );
+    this.store.add(origin);
   }
   createOrUpdate(origin: string) {
     if (this.store.has(origin)) {

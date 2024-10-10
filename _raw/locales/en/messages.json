@@ -59,6 +59,13 @@
       "myNativeTokenBalance": "My Gas balance: ",
       "gasLimitEmptyAlert": "Please input gas limit",
       "gasLimitMinValueAlert": "Gas limit should be more than 21000",
+      "nativeTokenForGas": "Use {{tokenName}} token on {{chainName}} to pay for gas",
+      "gasAccountForGas": "Use USD from my GasAccount to pay for gas",
+      "gasAccount": {
+        "totalCost": "Total cost: ",
+        "currentTxCost": "Gas amount sent to your address: ",
+        "gasCost": "Gas cost for sending Gas to your address: "
+      },
       "balanceChange": {
         "successTitle": "Simulation Results",
         "failedTitle": "Simulation Failed",
@@ -100,6 +107,15 @@
       },
       "wrapToken": "Wrap Token",
       "unwrap": "Unwrap Token",
+      "transferOwner": {
+        "title": "Transfer Assets Ownership",
+        "description": "Description",
+        "transferTo": "Transfer to"
+      },
+      "swapLimitPay": {
+        "title": "Swap Token Limit Pay",
+        "maxPay": "Maximum pay"
+      },
       "send": {
         "title": "Send Token",
         "sendToken": "Send token",
@@ -337,11 +353,22 @@
       "gasless": {
         "unavailable": "Your Gas Balance is not enough",
         "notEnough": "Gas balance is not enough",
-        "GetFreeGasToSign": "Get Free Gas to sign",
+        "GetFreeGasToSign": "Get Free Gas",
         "rabbyPayGas": "Rabby'll pay for the gas needed – just sign on",
         "customRpcUnavailableTip": "Custom RPCs are not supported for Free Gas",
         "walletConnectUnavailableTip": "Mobile wallet connected via WalletConnect is not supported for Free Gas",
         "watchUnavailableTip": "Watch-only address is not supported for Free Gas"
+      },
+      "gasAccount": {
+        "customRPC": "Not supported when using custom RPC",
+        "notEnough": "GasAccount is not enough",
+        "useGasAccount": "Use GasAccount",
+        "WalletConnectTips": "WalletConnect is not supported by GasAccount",
+        "chainNotSupported": "This chain is not supported by GasAccount",
+        "loginFirst": "Please log in to GasAccount first",
+        "login": "Log in",
+        "gotIt": "Got it",
+        "deposit": "Deposit"
       },
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
@@ -388,15 +415,16 @@
       },
       "keystone": {
         "signWith": "Switch to {{method}} for signing",
+        "qrcodeDesc": "Scan to sign. After signing, click below to get the signature. For USB, reconnect and authorize to begin the signing process again.",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
         "unsupportedType": "Error: The transaction type is unsupported or unknown.",
         "siging": "Sending signing request",
         "txRejected": "Transaction rejected",
         "shouldRetry": "Some error occurred. Please retry.",
-        "hardwareRejectError": "Hardware rejects signature",
+        "hardwareRejectError": "Keystone request was cancelled. To proceed, please reauthorize.",
         "mismatchedWalletError": "Mismatched wallet",
         "verifyPasswordError": "Signature failure, please try again after unlocking",
-        "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
+        "shouldOpenKeystoneHomePageError": "Ensure your Keystone 3 Pro is on the homepage"
       },
       "ledger": {
         "resent": "Resent",
@@ -923,7 +951,7 @@
     "bridge": {
       "title": "Bridge",
       "history": "Bridge history",
-      "the-following-bridge-route-are-found": "Found following bridge route",
+      "the-following-bridge-route-are-found": "Found following route",
       "no-transaction-records": "No transaction records",
       "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
       "Pending": "Pending",
@@ -1015,7 +1043,8 @@
       "sort-address": "Sort Address",
       "enterThePassphrase": "Enter the Passphrase",
       "enterPassphraseTitle": "Enter Passphrase to Sign",
-      "passphraseError": "Passphrase invalid"
+      "passphraseError": "Passphrase invalid",
+      "addNewAddress": "Add New Address"
     },
     "dashboard": {
       "home": {
@@ -1313,7 +1342,7 @@
           "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>"
         },
         "keystone": {
-          "title": "*USB connect only for Keystone 3(Pro)",
+          "title": "Ensure your Keystone 3 Pro is on the homepage",
           "doc1": "Plug in a single Keystone",
           "doc2": "Enter password to unlock",
           "doc3": "Approve connection to computer",
@@ -1469,7 +1498,7 @@
         "title": "Connect Keystone",
         "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
         "keystonePermission1": "Connect to an USB device",
-        "keystonePermissionTip": "Please click \"Allow\" below and authorize access to your Keystone in the following pop-up window.",
+        "keystonePermissionTip": "Please click \"Allow\" below to authorize access to your Keystone in the following pop-up window, and ensure your Keystone 3 Pro is on the homepage.",
         "noDeviceFoundError": "Plug in a single Keystone",
         "deviceIsLockedError": "Enter password to unlock",
         "deviceRejectedExportAddress": "Approve connection to Rabby",
@@ -2170,6 +2199,53 @@
         "txSigned": "Signed. Creating transaction",
         "txSending": "Sending signing request",
         "txSendings": "Sending signing request({{current}}/{{total}})"
+      }
+    },
+
+    "gasAccount": {
+      "title": "GasAccount",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "gasExceed": "GasAccount balance cannot exceed $1000",
+      "logout": "Log out current GasAccount",
+      "history": {
+        "noHistory": "No history"
+      },
+      "loginInTip": {
+        "title": "Deposit USDC / USDT",
+        "desc": "Pay Gas Fees on All Chains",
+        "login": "Log in GasAccount",
+        "gotIt": "Got it"
+      },
+      "loginConfirmModal": {
+        "title": "Log in with Current Address",
+        "desc": "Once confirmed you can only log in with this address"
+      },
+      "logoutConfirmModal": {
+        "title": "Log out current GasAccount",
+        "desc": "Once logged out, you will no longer be able to use GasAccount to pay for gas fees.",
+        "logout": "Log out"
+      },
+      "depositPopup": {
+        "title": "Deposit",
+        "desc": "Make a deposit to Rabby's DeBank L2 Account with no extra fees—withdraw anytime.",
+        "amount": "Amount",
+        "token": "Token",
+        "selectToken": "Select Token to Deposit"
+      },
+      "withdrawPopup": {
+        "title": "Withdraw",
+        "desc": "You can withdraw your GasAccount balance to your DeBank L2 Wallet. Log in to your DeBank L2 Wallet to transfer the funds to a supported blockchain as needed.",
+        "amount": "Amount",
+        "to": "To"
+      },
+      "withdrawConfirmModal": {
+        "title": "Transferred to your DeBank L2 Wallet",
+        "button": "View on DeBank"
+      },
+      "GasAccountDepositTipPopup": {
+        "title": "Open GasAccount and Deposit",
+        "gotIt": "Got it"
       }
     }
   },

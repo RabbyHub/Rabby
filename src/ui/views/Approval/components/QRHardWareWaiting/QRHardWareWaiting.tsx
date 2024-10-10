@@ -49,10 +49,11 @@ const QRHardWareWaiting = ({ params }) => {
     QRHARDWARE_STATUS.SYNC
   );
   const [brand, setBrand] = useState<string>('');
+  const canSwitchSignature = useCanSwitchSignature(brand);
   const [signMethod, setSignMethod] = useState<SIGNATURE_METHOD>(
     SIGNATURE_METHOD.QRCODE
   );
-  const canSwitchSignature = useCanSwitchSignature(brand);
+  const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const [errorMessage, setErrorMessage] = useState('');
@@ -70,6 +71,15 @@ const QRHardWareWaiting = ({ params }) => {
     stay: boolean;
     approvalId: string;
   }>();
+
+  React.useEffect(() => {
+    if (!defalutSignMethodSetted.current && canSwitchSignature) {
+      setSignMethod(
+        canSwitchSignature ? SIGNATURE_METHOD.USB : SIGNATURE_METHOD.QRCODE
+      );
+      defalutSignMethodSetted.current = true;
+    }
+  }, [canSwitchSignature]);
 
   const chain =
     findChain({

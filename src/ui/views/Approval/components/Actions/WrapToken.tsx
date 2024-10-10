@@ -5,7 +5,10 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
-import { ParsedActionData, WrapTokenRequireData } from './utils';
+import {
+  WrapTokenRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatAmount } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -41,7 +44,7 @@ const WrapToken = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['wrapToken'];
+  data: ParsedTransactionActionData['wrapToken'];
   requireData: WrapTokenRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -180,7 +183,6 @@ const WrapToken = ({
             <ViewMore
               type="contract"
               data={{
-                hasInteraction: requireData.hasInteraction,
                 bornAt: requireData.bornAt,
                 protocol: requireData.protocol,
                 rank: requireData.rank,
@@ -202,12 +204,6 @@ const WrapToken = ({
             <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
             <SubRow>
               <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-            <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
 

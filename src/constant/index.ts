@@ -195,6 +195,7 @@ import browser from 'webextension-polyfill';
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import Logo0X from 'ui/assets/swap/0xswap.png';
 import Logo1inch from 'ui/assets/swap/1inch.png';
+import LogoOdos from 'ui/assets/swap/odos.png';
 
 import LogoOpenOcean from 'ui/assets/swap/openocean.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
@@ -497,6 +498,9 @@ export const EVENTS = {
   SIGN_BEGIN: 'SIGN_BEGIN',
   SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
   // FORCE_EXPIRE_ADDRESS_BALANCE: 'FORCE_EXPIRE_ADDRESS_BALANCE',
+  GAS_ACCOUNT: {
+    LOG_OUT: 'LOG_OUT',
+  },
 };
 
 export const EVENTS_IN_BG = {
@@ -1463,6 +1467,18 @@ export const DEX = {
     logo: LogoKyberSwap,
     name: 'KyberSwap',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
+  },
+  [DEX_ENUM.PARASWAPV6]: {
+    id: DEX_ENUM.PARASWAPV6,
+    logo: LogoParaswap,
+    name: 'ParaSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAPV6],
+  },
+  [DEX_ENUM.ODOS]: {
+    id: DEX_ENUM.ODOS,
+    logo: LogoOdos,
+    name: 'Odos',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ODOS],
   },
 };
 

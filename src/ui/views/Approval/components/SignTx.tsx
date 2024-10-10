@@ -33,12 +33,13 @@ import {
   SUPPORT_1559_KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
   GAS_TOP_UP_ADDRESS,
+  ALIAS_ADDRESS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
-import { useScroll } from 'react-use';
+import { useAsync, useAsyncFn, useDebounce, useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
@@ -46,7 +47,8 @@ import {
   useWallet,
   isStringOrNumber,
   useCommonPopupView,
-} from 'ui/utils';
+  getTimeSpan,
+} from '@/ui/utils';
 import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
@@ -54,13 +56,6 @@ import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
-import {
-  ParsedActionData,
-  parseAction,
-  fetchActionRequiredData,
-  ActionRequireData,
-  formatSecurityEngineCtx,
-} from '../components/Actions/utils';
 import Actions from './Actions';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -75,7 +70,7 @@ import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
-import { findChain } from '@/utils/chain';
+import { findChain, isTestnet } from '@/utils/chain';
 import { SignTestnetTx } from './SignTestnetTx';
 import { SignAdvancedSettings } from './SignAdvancedSettings';
 import GasSelectorHeader, {
@@ -83,6 +78,14 @@ import GasSelectorHeader, {
 } from './TxComponents/GasSelectorHeader';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
+import { useGasAccountTxsCheck } from '../../GasAccount/hooks/checkTxs';
+import {
+  fetchActionRequiredData,
+  parseAction,
+  formatSecurityEngineContext,
+  ActionRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -162,7 +165,7 @@ export const TxTypeComponent = ({
   originLogo,
 }: {
   actionRequireData: ActionRequireData;
-  actionData: ParsedActionData;
+  actionData: ParsedTransactionActionData;
   chain: Chain;
   isReady: boolean;
   txDetail: ExplainTxResponse;
@@ -385,7 +388,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       contract_protocol_name: '',
     },
   });
-  const [actionData, setActionData] = useState<ParsedActionData>({});
+  const [actionData, setActionData] = useState<ParsedTransactionActionData>({});
   const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
     null
   );
@@ -679,6 +682,31 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const [noCustomRPC, setNoCustomRPC] = useState(true);
 
+  const txs = useMemo(() => {
+    return [
+      {
+        ...tx,
+        nonce: realNonce,
+        gasPrice: tx.gasPrice || tx.maxFeePerGas,
+        gas: gasLimit,
+      },
+    ] as Tx[];
+  }, [tx, realNonce, gasLimit]);
+
+  const {
+    gasAccountCost,
+    gasMethod,
+    setGasMethod,
+    isGasAccountLogin,
+    gasAccountCanPay,
+    canGotoUseGasAccount,
+  } = useGasAccountTxsCheck({
+    isReady,
+    txs,
+    noCustomRPC,
+    isSupportedAddr,
+  });
+
   useEffect(() => {
     const hasCustomRPC = async () => {
       if (chain?.enum) {
@@ -788,36 +816,55 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         logId.current = actionData.log_id;
         actionType.current = actionData?.action?.type || '';
         return preExecPromise.then(async (res) => {
-          const parsed = parseAction(
-            actionData.action,
-            res.balance_change,
-            {
-              ...tx,
-              gas: '0x0',
-              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-              value: tx.value || '0x0',
-            },
-            res.pre_exec_version,
-            res.gas.gas_used
-          );
-          const requiredData = await fetchActionRequiredData({
-            actionData: parsed,
-            contractCall: actionData.contract_call,
-            chainId: chain.serverId,
-            address,
-            wallet,
+          const parsed = parseAction({
+            type: 'transaction',
+            data: actionData.action,
+            balanceChange: res.balance_change,
             tx: {
               ...tx,
               gas: '0x0',
               nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
               value: tx.value || '0x0',
             },
-            origin,
+            preExecVersion: res.pre_exec_version,
+            gasUsed: res.gas.gas_used,
+            sender: tx.from,
           });
-          const ctx = formatSecurityEngineCtx({
+          const requiredData = await fetchActionRequiredData({
+            type: 'transaction',
+            actionData: parsed,
+            contractCall: actionData.contract_call,
+            chainId: chain.serverId,
+            sender: address,
+            walletProvider: {
+              findChain,
+              ALIAS_ADDRESS,
+              hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+              hasAddress: wallet.hasAddress,
+              getWhitelist: wallet.getWhitelist,
+              isWhitelistEnabled: wallet.isWhitelistEnabled,
+              getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+            },
+            tx: {
+              ...tx,
+              gas: '0x0',
+              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+              value: tx.value || '0x0',
+            },
+            apiProvider: isTestnet(chain.serverId)
+              ? wallet.testnetOpenapi
+              : wallet.openapi,
+          });
+          const ctx = await formatSecurityEngineContext({
+            type: 'transaction',
             actionData: parsed,
             requireData: requiredData,
             chainId: chain.serverId,
+            isTestnet: isTestnet(chain.serverId),
+            provider: {
+              getTimeSpan,
+              hasAddress: wallet.hasAddress,
+            },
           });
           securityEngineCtx.current = ctx;
           const result = await executeEngine(ctx);
@@ -1137,7 +1184,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         pushType: pushInfo.type,
         lowGasDeadline: pushInfo.lowGasDeadline,
         reqId,
-        isGasLess: useGasLess,
+        isGasLess: gasMethod === 'native' ? useGasLess : false,
+        isGasAccount: gasAccountCanPay,
         logId: logId.current,
       });
 
@@ -1633,10 +1681,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const executeSecurityEngine = async () => {
-    const ctx = formatSecurityEngineCtx({
+    const ctx = await formatSecurityEngineContext({
+      type: 'transaction',
       actionData: actionData,
       requireData: actionRequireData,
       chainId: chain.serverId,
+      isTestnet: isTestnet(chain.serverId),
+      provider: {
+        getTimeSpan,
+        hasAddress: wallet.hasAddress,
+      },
     });
     const result = await executeEngine(ctx);
     setEngineResults(result);
@@ -1931,6 +1985,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <FooterBar
             Header={
               <GasSelectorHeader
+                gasAccountCost={gasAccountCost}
+                gasMethod={gasMethod}
+                onChangeGasMethod={setGasMethod}
                 pushType={pushInfo.type}
                 disabled={isGnosisAccount || isCoboArugsAccount}
                 isReady={isReady}
@@ -1976,6 +2033,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             isWatchAddr={
               currentAccountType === KEYRING_TYPE.WatchAddressKeyring
             }
+            noCustomRPC={noCustomRPC}
+            gasMethod={gasMethod}
+            gasAccountCost={gasAccountCost}
+            gasAccountCanPay={gasAccountCanPay}
+            canGotoUseGasAccount={canGotoUseGasAccount}
+            isGasAccountLogin={isGasAccountLogin}
+            isWalletConnect={
+              currentAccountType === KEYRING_TYPE.WalletConnectKeyring
+            }
+            onChangeGasAccount={() => setGasMethod('gasAccount')}
             gasLessConfig={gasLessConfig}
             gasLessFailedReason={gasLessFailedReason}
             canUseGasLess={canUseGasLess}

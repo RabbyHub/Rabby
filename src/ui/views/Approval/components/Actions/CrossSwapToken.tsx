@@ -7,7 +7,10 @@ import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
-import { ParsedActionData, SwapRequireData } from './utils';
+import {
+  SwapRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
@@ -41,7 +44,7 @@ const CrossSwapToken = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['crossSwapToken'];
+  data: ParsedTransactionActionData['crossSwapToken'];
   requireData: SwapRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -240,7 +243,6 @@ const CrossSwapToken = ({
             <ViewMore
               type="contract"
               data={{
-                hasInteraction: requireData.hasInteraction,
                 bornAt: requireData.bornAt,
                 protocol: requireData.protocol,
                 rank: requireData.rank,
@@ -262,12 +264,6 @@ const CrossSwapToken = ({
             <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
             <SubRow>
               <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-            <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
           {isInWhitelist && (

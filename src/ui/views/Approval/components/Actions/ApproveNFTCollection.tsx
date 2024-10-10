@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ApproveNFTRequireData, ParsedActionData } from './utils';
+import {
+  ApproveNFTRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
@@ -51,7 +54,7 @@ const ApproveNFTCollection = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['approveNFTCollection'];
+  data: ParsedTransactionActionData['approveNFTCollection'];
   requireData: ApproveNFTRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -133,16 +136,6 @@ const ApproveNFTCollection = ({
             engineResult={engineResultMap['1146']}
             warningText={'$0'}
             title={t('page.signTx.trustValueTitle')}
-          />
-
-          <SecurityListItem
-            id="1056"
-            engineResult={engineResultMap['1056']}
-            warningText={<Values.Interacted value={false} />}
-            defaultText={
-              <Values.Interacted value={requireData.hasInteraction} />
-            }
-            title={t('page.signTx.interacted')}
           />
 
           <SecurityListItem

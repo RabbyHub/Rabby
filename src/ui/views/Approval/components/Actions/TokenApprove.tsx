@@ -6,7 +6,10 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Chain, TokenItem } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ApproveTokenRequireData, ParsedActionData } from './utils';
+import {
+  ApproveTokenRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { ellipsisOverflowedText, useHover } from '@/ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
@@ -183,7 +186,7 @@ const TokenApprove = ({
   raw,
   onChange,
 }: {
-  data: ParsedActionData['approveToken'];
+  data: ParsedTransactionActionData['approveToken'];
   requireData: ApproveTokenRequireData;
   chain: Chain;
   raw: Record<string, string | number>;
@@ -314,16 +317,6 @@ const TokenApprove = ({
             engineResult={engineResultMap['1150']}
             warningText={'$0'}
             title={t('page.signTx.trustValueTitle')}
-          />
-
-          <SecurityListItem
-            id="1025"
-            title={t('page.signTx.interacted')}
-            engineResult={engineResultMap['1025']}
-            warningText={<Values.Interacted value={false} />}
-            defaultText={
-              <Values.Interacted value={requireData.hasInteraction} />
-            }
           />
 
           <SecurityListItem

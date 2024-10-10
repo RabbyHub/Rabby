@@ -42,6 +42,7 @@ const bcm = new BroadcastChannelMessage({
   name: 'rabby-content-script',
   target: 'rabby-page-provider',
 }).listen((data) => {
+  chrome.runtime.sendMessage({ type: 'ping' });
   if (pm) {
     return pm?.request(data);
   }
@@ -71,6 +72,7 @@ const setupExtensionStreams = () => {
   pm?.on('message', handlePmMessage);
   defer.resolve?.(pm);
   pm?.port?.onDisconnect.addListener(onDisconnectDestroyStreams);
+  bcm.send('message', { event: 'contentScriptConnected' });
 };
 
 setupExtensionStreams();

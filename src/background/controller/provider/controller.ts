@@ -60,8 +60,6 @@ import {
   CustomTestnetTokenBase,
   customTestnetService,
 } from '@/background/service/customTestnet';
-import { sendTransaction } from 'viem/actions';
-// import { customTestnetService } from '@/background/service/customTestnet';
 
 const reportSignText = (params: {
   method: string;
@@ -104,6 +102,7 @@ interface ApprovalRes extends Tx {
   lowGasDeadline?: number;
   reqId?: string;
   isGasLess?: boolean;
+  isGasAccount?: boolean;
   logId?: string;
 }
 
@@ -367,6 +366,7 @@ class ProviderController extends BaseController {
     const preReqId = approvalRes.reqId;
     const isGasLess = approvalRes.isGasLess || false;
     const logId = approvalRes.logId || '';
+    const isGasAccount = approvalRes.isGasAccount || false;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -387,6 +387,7 @@ class ProviderController extends BaseController {
     delete txParams.isCoboSafe;
     delete approvalRes.isGasLess;
     delete approvalRes.logId;
+    delete approvalRes.isGasAccount;
 
     let is1559 = is1559Tx(approvalRes);
     if (
@@ -516,15 +517,22 @@ class ProviderController extends BaseController {
         if (isSend) {
           pageStateCacheService.clear();
         }
+        const _rawTx = {
+          ...rawTx,
+          ...approvalRes,
+          r: bufferToHex(signedTx.r),
+          s: bufferToHex(signedTx.s),
+          v: bufferToHex(signedTx.v),
+        };
+        if (is1559) {
+          delete _rawTx.gasPrice;
+        } else {
+          delete _rawTx.maxPriorityFeePerGas;
+          delete _rawTx.maxFeePerGas;
+        }
         transactionHistoryService.addTx({
           tx: {
-            rawTx: {
-              ...rawTx,
-              ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-            },
+            rawTx: _rawTx,
             createdAt: Date.now(),
             isCompleted: false,
             hash,
@@ -698,6 +706,7 @@ class ProviderController extends BaseController {
               req_id: preReqId || '',
               origin,
               is_gasless: isGasLess,
+              is_gas_account: isGasAccount,
               log_id: logId,
             });
             hash = res.req.tx_id || undefined;

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ApproveTokenRequireData, TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -14,6 +14,7 @@ import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 import { TokenAmountItem } from '../Actions/components/TokenAmountItem';
+import { ApproveTokenRequireData } from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .header {
@@ -40,7 +41,7 @@ const Permit = ({
   chain,
   engineResults,
 }: {
-  data: TypedDataActionData['permit'];
+  data: ParsedTypedDataActionData['permit'];
   requireData: ApproveTokenRequireData;
   chain?: Chain;
   engineResults: Result[];
@@ -144,16 +145,6 @@ const Permit = ({
             engineResult={engineResultMap['1148']}
             warningText={'$0'}
             title={t('page.signTx.trustValueTitle')}
-          />
-
-          <SecurityListItem
-            id="1080"
-            engineResult={engineResultMap['1080']}
-            warningText={<Values.Interacted value={false} />}
-            defaultText={
-              <Values.Interacted value={requireData.hasInteraction} />
-            }
-            title={t('page.signTx.interacted')}
           />
 
           <SecurityListItem

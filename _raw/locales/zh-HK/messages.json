@@ -350,7 +350,7 @@
           "reconnect": "如果無法連接，請嘗試<1>從頭開始重新連接</1>"
         },
         "keystone": {
-          "title": "*僅Keystone 3(Pro)支持USB連接",
+          "title": "確保您的Keystone 3 Pro位於首頁",
           "doc1": "插入一個Keystone",
           "doc2": "輸入密碼以解鎖",
           "doc3": "批準與電腦的連接",
@@ -502,7 +502,7 @@
         "title": "連接Keystone",
         "allowRabbyPermissionsTitle": "允許Rabby訪問以下權限：",
         "keystonePermission1": "連接至USB設備",
-        "keystonePermissionTip": "請點擊下方的“允許”，並在彈出窗口中授權訪問您的 Keystone",
+        "keystonePermissionTip": "請在下方點擊「允許」，以在彈出視窗中授權訪問您的Keystone，並確保您的Keystone 3 Pro位於首頁。",
         "noDeviceFoundError": "請插入一個Keystone",
         "deviceIsLockedError": "輸入密碼以解鎖",
         "deviceRejectedExportAddress": "請批準與 Rabby 的連接",
@@ -1195,15 +1195,16 @@
       },
       "keystone": {
         "signWith": "切換到{{method}}進行簽名",
+        "qrcodeDesc": "掃描以簽名。簽名後，點擊下面獲取簽名。對於USB，重新連接並授權以重新開始簽名過程",
         "misMatchSignId": "交易數據不一致。請檢查交易詳情。",
         "unsupportedType": "錯誤：交易類型不支持或未知。",
         "siging": "正在發送簽名請求",
         "txRejected": "交易被拒絕",
         "shouldRetry": "發生了某些錯誤。請重試。",
-        "hardwareRejectError": "硬件拒絕了簽名請求",
+        "hardwareRejectError": "Keystone 請求已取消。要繼續，請重新授權。",
         "mismatchedWalletError": "錢包不匹配",
         "verifyPasswordError": "簽名失敗，請解鎖後重試",
-        "shouldOpenKeystoneHomePageError": "請打開 Keystone 主頁"
+        "shouldOpenKeystoneHomePageError": "確保您的Keystone 3 Pro位於首頁"
       },
       "resend": "重試",
       "submitTx": "提交",

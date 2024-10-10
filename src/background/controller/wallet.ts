@@ -24,6 +24,7 @@ import {
   RabbyPointsService,
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
+  gasAccountService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -86,7 +87,12 @@ import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
 import { isAddress } from 'web3-utils';
-import { findChain, findChainByEnum, getChainList } from '@/utils/chain';
+import {
+  findChain,
+  findChainByEnum,
+  findChainByServerID,
+  getChainList,
+} from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
@@ -113,9 +119,11 @@ import {
   ApprovalSpenderItemToBeRevoked,
   decodePermit2GroupKey,
 } from '@/utils-isomorphic/approve';
-import { appIsProd } from '@/utils/env';
+import { appIsProd, isManifestV3 } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
+import pRetry from 'p-retry';
+import Browser from 'webextension-polyfill';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1480,6 +1488,9 @@ export class WalletController extends BaseController {
 
   lockWallet = async () => {
     await keyringService.setLocked();
+    if (isManifestV3) {
+      await Browser.storage.session.clear();
+    }
     sessionService.broadcastEvent('accountsChanged', []);
     sessionService.broadcastEvent('lock');
     setPopupIcon('locked');
@@ -1743,6 +1754,10 @@ export class WalletController extends BaseController {
   getBridgeSortIncludeGasFee = bridgeService.getBridgeSortIncludeGasFee;
   setBridgeSortIncludeGasFee = bridgeService.setBridgeSortIncludeGasFee;
   setBridgeSettingFirstOpen = bridgeService.setBridgeSettingFirstOpen;
+
+  getGasAccountData = gasAccountService.getGasAccountData;
+  getGasAccountSig = gasAccountService.getGasAccountSig;
+  setGasAccountSig = gasAccountService.setGasAccountSig;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;
@@ -4370,6 +4385,95 @@ export class WalletController extends BaseController {
     return signature;
   };
 
+  signGasAccount = async () => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+
+    const { text } = await wallet.openapi.getGasAccountSignText(
+      account.address
+    );
+    const signature = await this.sendRequest<string>({
+      method: 'personal_sign',
+      params: [text, account.address],
+    });
+
+    if (signature) {
+      const result = await pRetry(
+        async () =>
+          wallet.openapi.loginGasAccount({
+            sig: signature,
+            account_id: account.address,
+          }),
+        {
+          retries: 2,
+        }
+      );
+
+      if (result?.success) {
+        await gasAccountService.setGasAccountSig(signature, account);
+        await pageStateCacheService.clear();
+        await pageStateCacheService.set({
+          path: '/gas-account',
+          states: {},
+        });
+      }
+    }
+  };
+
+  topUpGasAccount = async ({
+    to,
+    chainServerId,
+    tokenId,
+    rawAmount,
+    amount,
+  }: {
+    to: string;
+    chainServerId: string;
+    tokenId: string;
+    rawAmount: string;
+    amount: number;
+  }) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+
+    const { sig, accountId } = this.getGasAccountSig();
+
+    const tx = await this.sendToken({
+      to,
+      chainServerId,
+      tokenId,
+      rawAmount,
+    });
+
+    const chain = findChainByServerID(chainServerId);
+
+    const nonce = await this.getNonceByChain(account.address, chain!.id);
+
+    if (tx) {
+      this.openapi.rechargeGasAccount({
+        sig: sig!,
+        account_id: accountId!,
+        tx_id: tx,
+        chain_id: chainServerId,
+        amount,
+        user_addr: account?.address,
+        nonce: nonce! - 1,
+      });
+    } else {
+      Sentry.captureException(
+        new Error(
+          'topUp GasAccount tx failed, params: ' +
+            JSON.stringify({
+              userAddr: account.address,
+              gasAccount: accountId,
+              chain: chainServerId,
+              amount: amount,
+            })
+        )
+      );
+    }
+  };
+
   addCustomTestnet = async (
     chain: Parameters<typeof customTestnetService.add>[0],
     ctx?: {
@@ -4519,5 +4623,7 @@ autoLockService.onAutoLock = async () => {
     method: EVENTS.LOCK_WALLET,
   });
 };
+// check if wallet needs to lock after sw re-active
+autoLockService.syncAutoLockAt();
 
 export default wallet;
