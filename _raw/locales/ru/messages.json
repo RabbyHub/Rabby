@@ -295,26 +295,26 @@
         "descriptionTitle": "Описание"
       },
       "common": {
-          "description": "Описание",
-          "interactContract": "Вызов контракта",
-          "descTipSafe": "Подпись не вызывает изменение активов и не подтверждает владение адресом",
-          "descTipWarningPrivacy": "Подпись может подтвердить владение адресом",
-          "descTipWarningAssets": "Подпись может вызвать изменение активов",
-          "descTipWarningBoth": "Подпись может вызвать изменение активов и подтвердить владение адресом"
-        },
-        "protocol": "Протокол",
-        "yes": "Да",
-        "no": "Нет",
-        "hasInteraction": "Взаимодействовал ранее",
-        "address": "Адрес",
-        "advancedSettings": "Расширенные настройки",
-        "amount": "Сумма",
-        "contract": "Смарт-контракт",
-        "trustValueTitle": "Уровень риска",
-        "typedDataMessage": "Сообщение с типизированными данными",
-        "label": "Метка",
-        "addressSource": "Источник адреса",
-        "maxPriorityFeeDisabledAlert": "Сначала установите Цену газа"
+        "description": "Описание",
+        "interactContract": "Вызов контракта",
+        "descTipSafe": "Подпись не вызывает изменение активов и не подтверждает владение адресом",
+        "descTipWarningPrivacy": "Подпись может подтвердить владение адресом",
+        "descTipWarningAssets": "Подпись может вызвать изменение активов",
+        "descTipWarningBoth": "Подпись может вызвать изменение активов и подтвердить владение адресом"
+      },
+      "protocol": "Протокол",
+      "yes": "Да",
+      "no": "Нет",
+      "hasInteraction": "Взаимодействовал ранее",
+      "address": "Адрес",
+      "advancedSettings": "Расширенные настройки",
+      "amount": "Сумма",
+      "contract": "Смарт-контракт",
+      "trustValueTitle": "Уровень риска",
+      "typedDataMessage": "Сообщение с типизированными данными",
+      "label": "Метка",
+      "addressSource": "Источник адреса",
+      "maxPriorityFeeDisabledAlert": "Сначала установите Цену газа"
     },
     "signFooterBar": {
       "requestFrom": "Запрос от",
@@ -851,7 +851,8 @@
       "tradingSettingTip2": "2. Rabby не несет ответственности за любые риски, возникающие из контракта обменников",
       "gas-fee": "Комиссия за газ: {{gasUsed}}",
       "actual": "Факт:",
-      "estimate": "Примерно:"
+      "estimate": "Примерно:",
+      "no-slippage-for-wrap": "Без проскальзывания для обертки"
     },
     "manageAddress": {
       "no-address": "Нет адресов",
@@ -1171,7 +1172,8 @@
           "addTestnet": "Сеть"
         },
         "noTestnetAssets": "Нет активов пользовательской сети",
-        "addTokenEntryText": "Токен"
+        "addTokenEntryText": "Токен",
+        "customButtonText": "Добавить собственный токен"
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
@@ -1300,7 +1302,10 @@
           "question": "Что такое приватный ключ?",
           "answer": "Это последовательность букв и цифр, используемая для управления вашими активами."
         },
-        "repeatImportTips": "Адрес уже импортирован, хотите переключиться?",
+        "repeatImportTips": {
+          "desc": "Этот адрес уже импортирован.",
+          "question": "Вы хотите переключиться на этот адрес?"
+        },
         "isItSafeToImportItInRabby": {
           "question": "Безопасно ли импортировать его в Rabby?",
           "answer": "Да, он будет храниться локально в вашем браузере и доступен только вам."
@@ -1518,7 +1523,7 @@
         "addCoboArgusAddress": "Добавить адрес Cobo Argus",
         "findTheAssociatedSafeAddress": "Найти связанный адрес Safe",
         "import": "Импорт"
-    },
+      },
       "imkey": {
         "title": "Подкючить imKey"
       },
@@ -1707,7 +1712,8 @@
           "reject": "Отмена транзы"
         },
         "viewBtn": "Просмотр",
-        "desc": " Подписанная транзакция не может быть отменена, но может быть заменена           новой с тем же значением nonce."
+        "desc": " Подписанная транзакция не может быть отменена, но может быть заменена           новой с тем же значением nonce.",
+        "title": "Выберите, как заменить эту транзакцию"
       }
     },
     "importSuccess": {
@@ -1911,7 +1917,8 @@
       },
       "code-set-successfully": "Реферальный код успешно установлен",
       "initialPointsClaimEnded": "Заявка на начальные очки завершена",
-      "firstRoundEnded": "🎉 Первый раунд очков Rabby завершён"
+      "firstRoundEnded": "🎉 Первый раунд очков Rabby завершён",
+      "secondRoundEnded": "🎉 Второй раунд Rabby Points завершен"
     },
     "customTestnet": {
       "title": "Пользовательская сеть",
