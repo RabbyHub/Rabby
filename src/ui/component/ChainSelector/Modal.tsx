@@ -41,7 +41,7 @@ interface ChainSelectorModalProps {
   hideTestnetTab?: boolean;
   hideMainnetTab?: boolean;
   showRPCStatus?: boolean;
-  height?: number;
+  height?: string | number;
   zIndex?: number;
 }
 
@@ -138,7 +138,7 @@ const ChainSelectorModal = ({
   hideTestnetTab = false,
   hideMainnetTab = false,
   showRPCStatus = false,
-  height = 494,
+  height = '70%',
   zIndex,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
