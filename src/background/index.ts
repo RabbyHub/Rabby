@@ -284,14 +284,12 @@ browser.runtime.onConnect.addListener((port) => {
               );
               if (typeof res?.then === 'function') {
                 return res.then((x) => {
-                  console.log('background-controller-res-then', data.method, x);
                   if (typeof x !== 'object' || isNull(x)) {
                     return x;
                   }
                   return transformFunctionsToZero(x);
                 });
               }
-              console.log('background-controller-res', data.method, res);
               if (typeof res !== 'object' || isNull(res)) {
                 return res;
               }
