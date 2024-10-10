@@ -1579,10 +1579,14 @@
         },
         "trezor": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
           },
           "message": {
             "disconnected": "{{0}}Connect has stopped. Please refresh the page to connect again."

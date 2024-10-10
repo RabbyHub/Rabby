@@ -12,6 +12,7 @@ interface Props extends AccountListProps {
   setting: SettingData;
 }
 const MAX_STEP_COUNT = 5;
+const MAX_STEP_COUNT_TREZOR = 50;
 
 export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
   const [accountList, setAccountList] = React.useState<Account[]>([]);
@@ -26,6 +27,10 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
   );
   const dispatch = useRabbyDispatch();
   const maxCountRef = React.useRef(MAX_ACCOUNT_COUNT);
+  const maxStepCount =
+    keyring === KEYRING_CLASS.HARDWARE.TREZOR
+      ? MAX_STEP_COUNT_TREZOR
+      : MAX_STEP_COUNT;
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -62,7 +67,7 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
           if (keyring === KEYRING_CLASS.MNEMONIC) {
             return dispatch.importMnemonics.getAccounts({
               start: i,
-              end: i + MAX_STEP_COUNT,
+              end: i + maxStepCount,
             });
           }
           return wallet.requestKeyring(
@@ -70,7 +75,7 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
             'getAddresses',
             keyringId,
             i,
-            i + (oneByOne ? 1 : MAX_STEP_COUNT)
+            i + (oneByOne ? 1 : maxStepCount)
           );
         })) as Account[];
 
@@ -89,7 +94,7 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
         if (oneByOne) {
           i++;
         } else {
-          i += MAX_STEP_COUNT;
+          i += maxStepCount;
         }
       }
     } catch (e) {

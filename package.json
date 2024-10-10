@@ -55,7 +55,7 @@
     "@rabby-wallet/eth-hd-keyring": "4.3.2",
     "@rabby-wallet/eth-lattice-keyring": "1.1.1",
     "@rabby-wallet/eth-simple-keyring": "5.0.1",
-    "@rabby-wallet/eth-trezor-keyring": "2.5.1",
+    "@rabby-wallet/eth-trezor-keyring": "2.6.0-beta.0",
     "@rabby-wallet/eth-walletconnect-keyring": "2.1.3",
     "@rabby-wallet/eth-watch-keyring": "1.0.0",
     "@rabby-wallet/gnosis-sdk": "1.3.8",
