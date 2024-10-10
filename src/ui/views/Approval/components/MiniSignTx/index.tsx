@@ -504,7 +504,15 @@ export const MiniSignTx = ({
       setGasLessFailedReason(res.desc);
       setGasLessLoading(false);
       if (res.is_gasless && res?.promotion?.config) {
-        setGasLessConfig(res?.promotion?.config);
+        setGasLessConfig(
+          res.promotion.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
+            ? {
+                ...res.promotion.config,
+                dark_color: '',
+                theme_color: '',
+              }
+            : res?.promotion?.config
+        );
       }
     } catch (error) {
       console.error('gasLessTxCheck error', error);

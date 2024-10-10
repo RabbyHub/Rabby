@@ -136,13 +136,6 @@ export const MiniLedgerAction: React.FC<Props> = ({
             gasLess={useGasLess}
             {...props}
             onSubmit={handleSubmit}
-            disabledProcess={useGasLess ? false : props.disabledProcess}
-            enableTooltip={useGasLess ? false : props.enableTooltip}
-            gasLessThemeColor={
-              isDarkTheme
-                ? gasLessConfig?.dark_color
-                : gasLessConfig?.theme_color
-            }
           >
             <div className="flex items-center gap-[8px] justify-center">
               <LedgerSVG width={22} height={22} viewBox="0 0 28 28" />

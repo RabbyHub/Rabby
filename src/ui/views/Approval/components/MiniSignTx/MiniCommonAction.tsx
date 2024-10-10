@@ -71,36 +71,14 @@ export const MiniCommonAction: React.FC<Props> = ({
       {task.status === 'idle' ? (
         <>
           {account.type === KEYRING_CLASS.HARDWARE.LEDGER ? (
-            <ProcessActions
-              account={account}
-              gasLess={useGasLess}
-              {...props}
-              disabledProcess={useGasLess ? false : props.disabledProcess}
-              enableTooltip={useGasLess ? false : props.enableTooltip}
-              gasLessThemeColor={
-                isDarkTheme
-                  ? gasLessConfig?.dark_color
-                  : gasLessConfig?.theme_color
-              }
-            >
+            <ProcessActions account={account} gasLess={useGasLess} {...props}>
               <div className="flex items-center gap-[8px] justify-center">
                 <LedgerSVG />
                 Sign with Ledger
               </div>
             </ProcessActions>
           ) : (
-            <ActionGroup
-              account={account}
-              gasLess={useGasLess}
-              {...props}
-              disabledProcess={useGasLess ? false : props.disabledProcess}
-              enableTooltip={useGasLess ? false : props.enableTooltip}
-              gasLessThemeColor={
-                isDarkTheme
-                  ? gasLessConfig?.dark_color
-                  : gasLessConfig?.theme_color
-              }
-            />
+            <ActionGroup account={account} gasLess={useGasLess} {...props} />
           )}
           {footer}
         </>
