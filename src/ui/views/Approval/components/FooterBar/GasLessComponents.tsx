@@ -66,6 +66,7 @@ export function GasLessNotEnough({
             background: 'var(--r-blue-default, #7084FF)',
             boxShadow: '0px 1px 4px 0px rgba(65, 89, 188, 0.33)',
           }}
+          className="text-r-neutral-title2"
           onClick={onChangeGasAccount}
         >
           {t('page.signFooterBar.gasAccount.useGasAccount')}

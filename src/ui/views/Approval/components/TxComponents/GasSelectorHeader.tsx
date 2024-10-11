@@ -830,12 +830,20 @@ const GasSelectorHeader = ({
                       }
                     >
                       <span className="text-[16px] font-medium text-r-blue-default">
-                        ${gasAccountCost?.gas_account_cost.total_cost}
+                        {formatUsdValue(
+                          gasAccountCost?.gas_account_cost.total_cost || '0'
+                        )}
                       </span>
                     </Tooltip>
 
                     <span className="text-14 text-r-neutral-body font-normal pl-4">
-                      ~{gasAccountCost?.gas_account_cost.total_cost} USD
+                      ~
+                      {formatUsdValue(
+                        gasAccountCost?.gas_account_cost.total_cost || '0'
+                      )
+                        ?.replace('$', '')
+                        .replace('<', '')}
+                      USD
                     </span>
                   </div>
                 </div>
@@ -860,12 +868,8 @@ const GasSelectorHeader = ({
                       <span className="text-[16px] font-medium text-r-blue-default">
                         {gasCostUsdStr}
                       </span>
-                      <Tooltip
-                        overlayClassName="rectangle"
-                        title={`≈${gasCostAmountStr}`}
-                      >
-                        <span className="text-14 text-r-neutral-body font-normal pl-4">{`~${gasCostAmountStr}`}</span>
-                      </Tooltip>
+
+                      <span className="text-14 text-r-neutral-body font-normal pl-4">{`~${gasCostAmountStr}`}</span>
                     </div>
                   ) : (
                     <span
