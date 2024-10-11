@@ -230,11 +230,11 @@ export const GasMenuButton: React.FC<Props> = ({
       {selectedGas ? (
         <MenuButtonStyled>
           <span>{t(getGasLevelI18nKey(selectedGas.level ?? 'slow'))}</span>
-          {(selectedGas.level !== 'custom' || showCustomGasPrice) && (
+          {/* {(selectedGas.level !== 'custom' || showCustomGasPrice) && (
             <GweiStyled>
               {new BigNumber(selectedGas.price / 1e9).toFixed().slice(0, 8)}
             </GweiStyled>
-          )}
+          )} */}
           <ArrowSVG className="text-r-neutral-foot ml-2" />
         </MenuButtonStyled>
       ) : (
