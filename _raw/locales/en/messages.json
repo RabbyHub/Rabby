@@ -1913,7 +1913,7 @@
       "confirmRequired": "Please Confirm Password",
       "confirmError": "Passwords do not match",
       "confirmPlaceholder": "Confirm password",
-      "agree": "I have read and agree to the<1/> <2>Terms of Use</2>"
+      "agree": "I have read and agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>"
     },
     "welcome": {
       "step1": {
