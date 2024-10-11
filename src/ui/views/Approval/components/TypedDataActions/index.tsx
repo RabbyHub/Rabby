@@ -44,6 +44,8 @@ import { Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import { TransactionActionList } from '../Actions/components/TransactionActionList';
 import { noop } from '@/ui/utils';
+import { BalanceChangeWrapper } from '../TxComponents/BalanceChangeWrapper';
+import { ParseCommonResponse } from '@rabby-wallet/rabby-api/dist/types';
 
 const Actions = ({
   data,
@@ -54,6 +56,7 @@ const Actions = ({
   message,
   origin,
   originLogo,
+  typedDataActionData,
 }: {
   data: ParsedTypedDataActionData | null;
   requireData: ActionRequireData;
@@ -63,6 +66,7 @@ const Actions = ({
   message: string;
   origin: string;
   originLogo?: string;
+  typedDataActionData?: ParseCommonResponse | null;
 }) => {
   const { t } = useTranslation();
 
@@ -86,6 +90,14 @@ const Actions = ({
             origin={origin}
             originLogo={originLogo}
             engineResults={engineResults}
+          />
+          <BalanceChangeWrapper
+            data={data}
+            balanceChange={typedDataActionData?.pre_exec_result?.balance_change}
+            preExecSuccess={typedDataActionData?.pre_exec?.success}
+            preExecVersion={
+              typedDataActionData?.pre_exec_result?.pre_exec_version
+            }
           />
         </Card>
 

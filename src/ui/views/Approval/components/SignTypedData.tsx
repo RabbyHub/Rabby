@@ -650,6 +650,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             message={parsedMessage}
             origin={params.session.origin}
             originLogo={params.session.icon}
+            typedDataActionData={typedDataActionData}
           />
         )}
         {!isLoading && chain?.isTestnet ? (
