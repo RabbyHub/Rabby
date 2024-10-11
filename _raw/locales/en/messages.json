@@ -1265,7 +1265,7 @@
           "fractionTips": "Calculate based on the price of the linked ERC20 token."
         },
         "tokenButton": {
-          "subTitle": "The token in this list will not be added to total balance"
+          "subTitle": "Tokens on this list will not be added to the total balance"
         },
         "table": {
           "assetAmount": "Asset / Amount",
