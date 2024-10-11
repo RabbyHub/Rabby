@@ -49,7 +49,6 @@ import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
 import ApprovalManagePage from './ApprovalManagePage';
 import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
-import { PendingDetail } from './PendingDetail';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
 import RabbyPoints from './RabbyPoints';
@@ -249,9 +248,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/dapp-search">
           <DappSearchPage />
-        </PrivateRoute>
-        <PrivateRoute exact path="/pending-detail">
-          <PendingDetail />
         </PrivateRoute>
 
         <PrivateRoute exact path="/import/metamask">
