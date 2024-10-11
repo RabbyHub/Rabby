@@ -723,6 +723,14 @@ const GasSelectorHeader = ({
     )} ${chain.nativeTokenSymbol}`;
   }, [modalExplainGas?.gasCostAmount]);
 
+  const calcGasAccountUsd = useCallback((n: number | string) => {
+    const v = Number(n);
+    if (!Number.isNaN(v) && v < 0.01) {
+      return `$${n}`;
+    }
+    return formatUsdValue(n || '0');
+  }, []);
+
   const [isGasHovering, gasHoverProps] = useHover();
 
   const handleClosePopup = () => {
@@ -809,20 +817,20 @@ const GasSelectorHeader = ({
                         <>
                           <div>
                             {t('page.signTx.gasAccount.totalCost')}
-                            {formatUsdValue(
+                            {calcGasAccountUsd(
                               gasAccountCost?.gas_account_cost.total_cost || '0'
                             )}
                           </div>
                           <div>
                             {t('page.signTx.gasAccount.currentTxCost')}
 
-                            {formatUsdValue(
+                            {calcGasAccountUsd(
                               gasAccountCost?.gas_account_cost.tx_cost || '0'
                             )}
                           </div>
                           <div>
                             {t('page.signTx.gasAccount.gasCost')}
-                            {formatUsdValue(
+                            {calcGasAccountUsd(
                               gasAccountCost?.gas_account_cost.gas_cost || '0'
                             )}
                           </div>
@@ -836,9 +844,9 @@ const GasSelectorHeader = ({
                       </span>
                       <span className="text-14 text-r-neutral-body font-normal pl-4">
                         ~
-                        {formatUsdValue(
+                        {calcGasAccountUsd(
                           gasAccountCost?.gas_account_cost.total_cost || '0'
-                        )}{' '}
+                        )?.replace('$', '')}{' '}
                         USD
                       </span>
                     </Tooltip>
