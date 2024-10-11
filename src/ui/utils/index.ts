@@ -165,7 +165,6 @@ export const isStringOrNumber = (data) => {
 };
 
 export const hasConnectedLedgerDevice = async () => {
-  // TODO: firefox unSupport
   const devices = await navigator.hid?.getDevices();
   return (
     devices?.filter((device) => device.vendorId === ledgerUSBVendorId).length >

@@ -41,7 +41,6 @@ export const useLedgerDeviceConnected = () => {
 
   useEffect(() => {
     detectDevice();
-    // TODO: firefox unSupport
     navigator.hid?.addEventListener('connect', onConnect);
     navigator.hid?.addEventListener('disconnect', onDisconnect);
     browser.windows.onFocusChanged.addListener(detectDevice);
