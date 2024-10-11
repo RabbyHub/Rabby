@@ -110,6 +110,27 @@ export const setPopupIcon = (
   });
 };
 
+export const withTimeout = <T>(
+  promise: Promise<T>,
+  timeout: number
+): Promise<T> => {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error('Request timed out')),
+      timeout
+    );
+    promise
+      .then((result: T) => {
+        clearTimeout(timer);
+        resolve(result);
+      })
+      .catch((err: any) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+};
+
 global.__rb_is = () => true;
 
 declare global {
