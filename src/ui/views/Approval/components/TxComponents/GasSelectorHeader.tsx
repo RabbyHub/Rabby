@@ -835,7 +835,10 @@ const GasSelectorHeader = ({
                         )}
                       </span>
                       <span className="text-14 text-r-neutral-body font-normal pl-4">
-                        ~{gasAccountCost?.gas_account_cost.total_cost || '0'}
+                        ~
+                        {formatUsdValue(
+                          gasAccountCost?.gas_account_cost.total_cost || '0'
+                        )}{' '}
                         USD
                       </span>
                     </Tooltip>
