@@ -223,9 +223,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       if (isTestnetChainId(chainId)) {
         return null;
       }
-      return wallet.openapi.parseTypedData({
-        typedData: signTypedData,
-        address: currentAccount!.address,
+      return wallet.openapi.parseCommon({
+        typed_data: signTypedData,
+        user_addr: currentAccount!.address,
         origin: session.origin,
       });
     }
@@ -549,11 +549,19 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         actionType.current = typedDataActionData?.action?.type || '';
         const parsed = parseAction({
           type: 'typed_data',
-          data: typedDataActionData.action,
+          data: typedDataActionData.action as any,
           typedData: signTypedData,
           sender,
+          balanceChange: typedDataActionData.pre_exec_result?.balance_change,
+          preExecVersion: typedDataActionData.pre_exec_result?.pre_exec_version,
+          gasUsed: typedDataActionData.pre_exec_result?.gas.gas_used,
         });
         setParsedActionData(parsed);
+        // TODO: move to action
+        if (!parsed.contractId) {
+          parsed.contractId =
+            typedDataActionData.contract_call_data?.contract.id;
+        }
         getRequireData(parsed);
       } else {
         setIsLoading(false);
@@ -642,6 +650,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             message={parsedMessage}
             origin={params.session.origin}
             originLogo={params.session.icon}
+            typedDataActionData={typedDataActionData}
           />
         )}
         {!isLoading && chain?.isTestnet ? (

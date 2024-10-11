@@ -19,11 +19,11 @@ import { Card } from '../Card';
 import { Divide } from '../Divide';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import { OriginInfo } from '../OriginInfo';
-import BalanceChange from '../TxComponents/BalanceChange';
 import ViewRawModal from '../TxComponents/ViewRawModal';
 import { Col, Row } from './components/Table';
 import { TransactionActionList } from './components/TransactionActionList';
 import { getActionTypeText } from './utils';
+import { BalanceChangeWrapper } from '../TxComponents/BalanceChangeWrapper';
 
 const Actions = ({
   data,
@@ -51,35 +51,6 @@ const Actions = ({
   const actionName = useMemo(() => {
     return getActionTypeText(data);
   }, [data]);
-
-  const notShowBalanceChange = useMemo(() => {
-    if (
-      data.approveNFT ||
-      data.approveNFTCollection ||
-      data.approveToken ||
-      data.cancelTx ||
-      data.deployContract ||
-      data.pushMultiSig ||
-      data.revokeNFT ||
-      data.revokeNFTCollection ||
-      data.revokeToken ||
-      data.permit2BatchRevokeToken ||
-      data.revokePermit2
-    ) {
-      const balanceChange = txDetail.balance_change;
-      if (!txDetail.pre_exec.success) return false;
-      if (
-        balanceChange.receive_nft_list.length +
-          balanceChange.receive_token_list.length +
-          balanceChange.send_nft_list.length +
-          balanceChange.send_nft_list.length <=
-        0
-      ) {
-        return true;
-      }
-    }
-    return false;
-  }, [data, txDetail]);
 
   const { t } = useTranslation();
 
@@ -112,15 +83,12 @@ const Actions = ({
             originLogo={originLogo}
             engineResults={engineResults}
           />
-          {!notShowBalanceChange && (
-            <>
-              <Divide />
-              <BalanceChange
-                version={txDetail.pre_exec_version}
-                data={txDetail.balance_change}
-              />
-            </>
-          )}
+          <BalanceChangeWrapper
+            data={data}
+            balanceChange={txDetail.balance_change}
+            preExecSuccess={txDetail.pre_exec.success}
+            preExecVersion={txDetail.pre_exec_version}
+          />
         </Card>
 
         <Card>

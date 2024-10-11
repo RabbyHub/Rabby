@@ -4715,12 +4715,12 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.3.tgz#729f495903afe212612b3e6616ca3684c10698e3"
   integrity sha512-Y6S+c300rjdeSJf4+gz+9VVmDh91LWh9hIRTmWFLUEJO7dZakQJNiiGQ31DwiMzwTvHOMY4EL++Hs+IAQmXOyQ==
 
-"@rabby-wallet/rabby-api@0.7.33":
-  version "0.7.33"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.33.tgz#0603288ad72defa62edbcde25ea1a95d4d6d3f1a"
-  integrity sha512-hCPsuyL3c6x1IO+4H72v5kugEqvJjpatn7rwuo0l2JnvKEP2E87tu6MNFFpG46IUwSsrZS+GJPzF9pSN/Mttrw==
+"@rabby-wallet/rabby-api@0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.8.1.tgz#075a37a0327deb25907608cd1b37d7695f22149d"
+  integrity sha512-aNr1IXx1s6BVmu9QF26f2NxOxJcyzpzbX7azsu1A3ICTHknHeTMl2X/ljwSMVmz9VJn/8O7wPwqNyz/i/kpeQg==
   dependencies:
-    "@rabby-wallet/rabby-sign" "^0.3.3"
+    "@rabby-wallet/rabby-sign" "0.4.0"
     axios "^0.27.2"
     axios-rate-limit "^1.3.0"
     eth-rpc-errors "^4.0.3"
@@ -4732,10 +4732,10 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-2.0.7.tgz#0d90e7ebdec46bd03a498d27b04f02a30e33cb39"
   integrity sha512-cv400257wR43+6EiDaqQNS8fzamRNnuNvFfTw3UvgC2TnD9JPhdplqDcN4e8imqs6UW5NDoy3VAbvyajzbzvIw==
 
-"@rabby-wallet/rabby-sign@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-sign/-/rabby-sign-0.3.3.tgz#cb3d8f9472363e07a0b429f47344dd352a118033"
-  integrity sha512-enFRKBJyNA9owudWYGq1FB0+SWM7ExgaPkYOwvL342oIUcZxfzJ8N8tVn2dfwGkK4cel36vrRX6VizKJmOGUAg==
+"@rabby-wallet/rabby-sign@0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-sign/-/rabby-sign-0.4.0.tgz#10053200b6b807f6c9d2147492e35e8e43bf0c11"
+  integrity sha512-ZlJmdVpRxr9Ls2S3rAWrh3/ShlnbfCQ0tWGJaxhD22S00/BCqOiNjrl5Exkh9DhVUamSDEjCLTygYxbNU/QrLw==
   dependencies:
     fast-deep-equal "^3.1.3"
     lodash.clonedeep "^4.5.0"
