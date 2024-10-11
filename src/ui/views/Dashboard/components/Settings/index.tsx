@@ -2,8 +2,6 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
 import {
-  CHAINS,
-  DARK_MODE_TYPE,
   INITIAL_OPENAPI_URL,
   INITIAL_TESTNET_OPENAPI_URL,
   LANGS,
@@ -16,10 +14,6 @@ import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
 import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-import { ReactComponent as RcIconArrowOrangeRight } from 'ui/assets/dashboard/settings/icon-right-arrow-orange.svg';
-import { ReactComponent as RcIconArrowCCRight } from 'ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
-
-import IconSettingsDeBank from 'ui/assets/dashboard/settings/debank.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
@@ -37,10 +31,8 @@ import { ReactComponent as RcIconTwitter } from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
 import { ReactComponent as RcIconClearCC } from 'ui/assets/icon-clear-cc.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
-// import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
 import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
-// import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
@@ -53,7 +45,6 @@ import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
-import IconSettingsRabbyBadge from 'ui/assets/badge/free-gas-badge-s.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 
@@ -64,7 +55,7 @@ import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
-import { getChainList, getMainnetChainList } from '@/utils/chain';
+import { getChainList } from '@/utils/chain';
 import { SvgIconCross } from '@/ui/assets';
 
 const useAutoLockOptions = () => {
@@ -467,58 +458,30 @@ const SwitchLangModal = ({
   );
 };
 
-const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="setting-block">
-      <div className="setting-items">
-        <Field
-          leftIcon={
-            <ThemeIcon src={IconSettingsRabbyBadge} className="w-28 h-28" />
-          }
-          rightIcon={
-            <ThemeIcon
-              src={RcIconArrowCCRight}
-              className="icon icon-arrow-right w-20 h-20 text-[#109D63]"
-            />
-          }
-          onClick={onClick}
-          className="bg-[rgba(16,157,99,0.20)] text-[#109D63] hover:border-[#109D63] font-medium"
-        >
-          {t('page.dashboard.settings.claimFreeGasBadge')}
-        </Field>
-      </div>
-    </div>
-  );
-};
-
-const RequestDeBankTestnetGasToken = () => {
-  const { t } = useTranslation();
-  const history = useHistory();
-  return (
-    <div className="setting-block mt-8">
-      <div className="setting-items">
-        <Field
-          leftIcon={
-            <ThemeIcon src={IconSettingsDeBank} className="w-28 h-28" />
-          }
-          rightIcon={
-            <ThemeIcon
-              src={RcIconArrowOrangeRight}
-              className="icon icon-arrow-right w-20 h-20"
-            />
-          }
-          onClick={() => {
-            history.push('/request-debank-testnet-gas-token');
-          }}
-          className="text-[#FF6238] bg-[#FFF4F1] dark:bg-[#43332F] font-medium hover:border-[#FF6238]"
-        >
-          {t('page.dashboard.settings.requestDeBankTestnetGasToken')}
-        </Field>
-      </div>
-    </div>
-  );
-};
+// const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
+//   const { t } = useTranslation();
+//   return (
+//     <div className="setting-block">
+//       <div className="setting-items">
+//         <Field
+//           leftIcon={
+//             <ThemeIcon src={IconSettingsRabbyBadge} className="w-28 h-28" />
+//           }
+//           rightIcon={
+//             <ThemeIcon
+//               src={RcIconArrowCCRight}
+//               className="icon icon-arrow-right w-20 h-20 text-[#109D63]"
+//             />
+//           }
+//           onClick={onClick}
+//           className="bg-[rgba(16,157,99,0.20)] text-[#109D63] hover:border-[#109D63] font-medium"
+//         >
+//           {t('page.dashboard.settings.claimFreeGasBadge')}
+//         </Field>
+//       </div>
+//     </div>
+//   );
+// };
 
 type SettingItem = {
   leftIcon: ThemeIconType;
@@ -621,10 +584,6 @@ const SettingsInner = ({
 
     return semver(process.env.release || '0.0.0', data.version_tag) === -1;
   });
-
-  const handleSwitchIsShowTestnet = (value: boolean) => {
-    dispatch.preference.setIsShowTestnet(value);
-  };
 
   const updateVersionClassName = useCss({
     '& .ant-modal-body': {
@@ -1151,18 +1110,7 @@ const SettingsInner = ({
   return (
     <div className="popup-settings">
       <div className="content">
-        {/* <Button
-              block
-              size="large"
-              type="primary"
-              className="flex justify-center items-center lock-wallet"
-              onClick={lockWallet}
-            >
-              <img src={IconLock} className="icon icon-lock" />{' '}
-              {'Lock Wallet'}
-            </Button> */}
-        <ClaimRabbyBadge onClick={onOpenBadgeModal} />
-        {/* <RequestDeBankTestnetGasToken /> */}
+        {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">
