@@ -1195,7 +1195,6 @@
         "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
         "autoLockTime": "Auto lock time",
         "claimRabbyBadge": "Claim Rabby Badge!",
-        "claimFreeGasBadge": "Claim Rabby Free Gas Badge!",
         "cancel": "Cancel",
         "enableWhitelist": "Enable Whitelist",
         "disableWhitelist": "Disable Whitelist",
