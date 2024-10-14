@@ -45,7 +45,9 @@ export const WalletConnectProcessActions: React.FC<Props> = (props) => {
       {...props}
       tooltipContent={content}
       disabledProcess={
-        (status !== 'CONNECTED' && status !== 'CHAIN_CHANGED') ||
+        (status !== 'CONNECTED' &&
+          status !== 'DISCONNECTED' &&
+          status !== 'CHAIN_CHANGED') ||
         // chainError ||
         disabledProcess
       }

@@ -7,10 +7,5 @@ export const LedgerProcessActions: React.FC<Props> = (props) => {
   const { disabledProcess } = props;
   const { status } = useLedgerStatus();
 
-  return (
-    <ProcessActions
-      {...props}
-      disabledProcess={status !== 'CONNECTED' || disabledProcess}
-    />
-  );
+  return <ProcessActions {...props} disabledProcess={disabledProcess} />;
 };

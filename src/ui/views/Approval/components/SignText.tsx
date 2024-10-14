@@ -67,7 +67,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLedger, setIsLedger] = useState(false);
-  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [
     cantProcessReason,
     setCantProcessReason,
@@ -450,11 +449,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           tooltipContent={cantProcessReason}
           onCancel={handleCancel}
           onSubmit={() => handleAllow()}
-          disabledProcess={
-            (isLedger && !hasConnectedLedgerHID) ||
-            isWatch ||
-            hasUnProcessSecurityResult
-          }
+          disabledProcess={isWatch || hasUnProcessSecurityResult}
           engineResults={engineResults}
           onIgnoreAllRules={handleIgnoreAllRules}
         />

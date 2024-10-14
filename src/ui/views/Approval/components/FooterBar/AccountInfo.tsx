@@ -60,12 +60,14 @@ export const AccountInfo: React.FC<Props> = ({
     <div
       className={clsx(
         'bg-r-neutral-card-3 rounded-[8px]',
-        'py-[12px] px-[16px] mb-[12px]',
+        'py-[12px] px-[12px] mb-[12px]',
         'space-y-6'
       )}
     >
-      <div className={clsx('flex items-center justify-between', 'h-18')}>
-        <div className="space-x-6 flex items-center">
+      <div
+        className={clsx('flex items-center justify-between', 'h-18 gap-x-16')}
+      >
+        <div className="space-x-6 flex items-center overflow-hidden">
           <img src={brandIcon} className="w-18 h-18" />
 
           <Tooltip
@@ -75,7 +77,7 @@ export const AccountInfo: React.FC<Props> = ({
             <div
               className={clsx(
                 'text-r-neutral-body text-[15px]',
-                'max-w-[170px] overflow-ellipsis whitespace-nowrap overflow-hidden',
+                'overflow-ellipsis whitespace-nowrap overflow-hidden',
                 'leading-[20px]'
               )}
             >
