@@ -16,7 +16,7 @@ export const useApproval = () => {
   const { showPopup, enablePopup } = useApprovalPopup();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
-  const connectDevice = useDeviceConnect();
+  const deviceConnect = useDeviceConnect();
 
   const resolveApproval = async (
     data?: any,
@@ -25,7 +25,7 @@ export const useApproval = () => {
     approvalId?: string
   ) => {
     // handle connect
-    if (!connectDevice(data.type)) {
+    if (!deviceConnect(data.type)) {
       return;
     }
 

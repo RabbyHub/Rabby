@@ -273,7 +273,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
       setCantProcessReason(
-        <div>You can only use imported addresses to sign</div>
+        <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
     }
     if (accountType === KEYRING_TYPE.GnosisKeyring && !params.account) {

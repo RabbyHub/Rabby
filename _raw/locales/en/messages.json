@@ -37,7 +37,7 @@
       "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
       "nativeTokenNotEngouthForGas": "Gas balance is not enough for transaction",
       "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
-      "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
+      "canOnlyUseImportedAddress": "You cannot sign transactions with a watch-only address.",
       "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
       "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
       "noGasRequired": "No gas required",
