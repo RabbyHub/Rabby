@@ -64,7 +64,10 @@
       "gasAccount": {
         "totalCost": "Total cost: ",
         "currentTxCost": "Gas amount sent to your address: ",
-        "gasCost": "Gas cost for sending Gas to your address: "
+        "gasCost": "Gas cost for transferring gas to your address: ",
+        "estimatedGas": "Estimated Gas: ",
+        "maxGas": "Max Gas: ",
+        "sendGas": "The Gas transfer to you for current transaction: "
       },
       "balanceChange": {
         "successTitle": "Simulation Results",
