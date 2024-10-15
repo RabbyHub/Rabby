@@ -56,6 +56,17 @@ export const AccountInfo: React.FC<Props> = ({
     type: account?.type,
   });
 
+  const nicknameRef = React.useRef<HTMLDivElement>(null);
+  const [enableTooltip, setEnableTooltip] = React.useState(false);
+
+  React.useEffect(() => {
+    if (nicknameRef.current) {
+      setEnableTooltip(
+        nicknameRef.current.offsetWidth < nicknameRef.current.scrollWidth
+      );
+    }
+  }, [nickname]);
+
   return (
     <div
       className={clsx(
@@ -73,8 +84,10 @@ export const AccountInfo: React.FC<Props> = ({
           <Tooltip
             overlayClassName="rectangle w-[max-content]"
             title={nickname}
+            trigger={enableTooltip ? 'hover' : ''}
           >
             <div
+              ref={nicknameRef}
               className={clsx(
                 'text-r-neutral-body text-[15px]',
                 'overflow-ellipsis whitespace-nowrap overflow-hidden',
