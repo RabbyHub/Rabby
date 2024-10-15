@@ -40,6 +40,7 @@ if (
   });
 }
 
-setInterval(() => {
-  chrome.runtime.sendMessage({ type: 'ping' });
-}, 2000);
+chrome.runtime.sendMessage({ type: 'popupOpened' });
+window.addEventListener('beforeunload', () => {
+  chrome.runtime.sendMessage({ type: 'popupClosed' });
+});
