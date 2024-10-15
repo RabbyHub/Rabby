@@ -830,9 +830,8 @@ const GasSelectorHeader = ({
                       USD
                     </span>
                   </div>
-                  <TooltipWithMagnetArrow
-                    inApproval
-                    className="rectangle w-[max-content]"
+                  <Tooltip
+                    overlayClassName="rectangle"
                     visible={isGasAccountHovering}
                     title={
                       <>
@@ -865,7 +864,7 @@ const GasSelectorHeader = ({
                     }
                   >
                     <IconInfoSVG className="ml-4 text-r-neutral-foot" />
-                  </TooltipWithMagnetArrow>
+                  </Tooltip>
                 </div>
               </div>
             ) : (
