@@ -39,8 +39,3 @@ if (
     }
   });
 }
-
-chrome.runtime.sendMessage({ type: 'popupOpened' });
-window.addEventListener('beforeunload', () => {
-  chrome.runtime.sendMessage({ type: 'popupClosed' });
-});

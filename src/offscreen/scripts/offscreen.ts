@@ -9,23 +9,20 @@ initBitBox02();
 initLattice();
 
 // keep alive when ui page is open
-let popupPageCount = 0;
+let pageCount = 0;
 const keepAlive = () => {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.type === 'popupClosed') {
-      popupPageCount--;
-      console.log(
-        '[keepAlive] close popup, remain page count:',
-        popupPageCount
-      );
-    } else if (request.type === 'popupOpened') {
-      popupPageCount++;
-      console.log('[keepAlive] open popup, remain page count:', popupPageCount);
+    if (request.type === 'pageClosed') {
+      pageCount = Math.max(0, pageCount - 1);
+      console.log('[keepAlive] close page, remain page count:', pageCount);
+    } else if (request.type === 'pageOpened') {
+      pageCount++;
+      console.log('[keepAlive] open page, remain page count:', pageCount);
     }
   });
 
   setInterval(() => {
-    if (popupPageCount <= 0) {
+    if (pageCount === 0) {
       return;
     }
     console.log('[keepAlive]', new Date());

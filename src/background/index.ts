@@ -288,15 +288,18 @@ browser.runtime.onConnect.addListener((port) => {
       preferenceService.setPopupOpen(true);
 
       port.onDisconnect.addListener(() => {
-        browser.runtime.sendMessage({
-          type: 'popupClosed',
-        });
         preferenceService.setPopupOpen(false);
       });
     }
 
+    browser.runtime.sendMessage({
+      type: 'pageOpened',
+    });
     eventBus.addEventListener(EVENTS.broadcastToUI, boardcastCallback);
     port.onDisconnect.addListener(() => {
+      browser.runtime.sendMessage({
+        type: 'pageClosed',
+      });
       eventBus.removeEventListener(EVENTS.broadcastToUI, boardcastCallback);
     });
 
