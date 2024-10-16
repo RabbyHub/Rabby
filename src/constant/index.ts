@@ -744,6 +744,7 @@ export const WALLET_BRAND_CONTENT: {
     maybeSvg: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
+    hidden: IS_FIREFOX,
   },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
     id: 5,
