@@ -60,7 +60,6 @@ const ApproveNFTCollection = ({
   engineResults: Result[];
 }) => {
   const actionData = data!;
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
   const engineResultMap = useMemo(() => {
@@ -120,6 +119,12 @@ const ApproveNFTCollection = ({
             <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
             <SubRow>
               <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
+            <SubRow>
+              <Values.Boolean value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
 

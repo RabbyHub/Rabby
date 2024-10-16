@@ -86,6 +86,7 @@ export const CommonAction = ({
                     protocol: requireData.protocol,
                     rank: requireData.rank,
                     address: requireData.id,
+                    hasInteraction: requireData.hasInteraction,
                     chain,
                   }}
                 >
