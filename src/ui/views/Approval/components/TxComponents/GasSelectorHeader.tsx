@@ -24,7 +24,7 @@ import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetAr
 import {
   formatGasCostUsd,
   formatTokenAmount,
-  formatUsdValue,
+  formatGasHeaderUsdValue,
 } from '@/ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
@@ -713,7 +713,7 @@ const GasSelectorHeader = ({
   const gasCostUsdStr = useMemo(() => {
     const bn = new BigNumber(modalExplainGas?.gasCostUsd);
 
-    return formatUsdValue(bn.toString(10));
+    return formatGasHeaderUsdValue(bn.toString(10));
   }, [modalExplainGas?.gasCostUsd]);
 
   const gasCostAmountStr = useMemo(() => {
@@ -726,10 +726,10 @@ const GasSelectorHeader = ({
 
   const calcGasAccountUsd = useCallback((n: number | string) => {
     const v = Number(n);
-    if (!Number.isNaN(v) && v < 0.01) {
+    if (!Number.isNaN(v) && v < 0.0001) {
       return `$${n}`;
     }
-    return formatUsdValue(n || '0');
+    return formatGasHeaderUsdValue(n || '0');
   }, []);
 
   const [isGasHovering, gasHoverProps] = useHover();
@@ -816,7 +816,7 @@ const GasSelectorHeader = ({
                 >
                   <div className="truncate max-w-[170px] group text-r-neutral-body">
                     <span className="text-[16px] font-medium text-r-blue-default">
-                      {formatUsdValue(
+                      {formatGasHeaderUsdValue(
                         (gasAccountCost?.gas_account_cost.estimate_tx_cost ||
                           0) + (gasAccountCost?.gas_account_cost.gas_cost || 0)
                       )}
