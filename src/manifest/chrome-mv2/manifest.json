@@ -55,17 +55,13 @@
       ]
     }
   ],
+  "content_security_policy": "script-src 'self' 'wasm-eval' https://www.google-analytics.com; object-src 'self'",
   "permissions": [
     "storage",
     "unlimitedStorage",
     "activeTab",
-    "contextMenus",
-    "http://*/*",
-    "https://*/*",
-    "webRequest",
-    "webRequestBlocking",
-    "*://*.eth/",
-    "notifications"
+    "notifications",
+    "contextMenus"
   ],
   "web_accessible_resources": [
     "pageProvider.js"
