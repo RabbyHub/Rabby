@@ -149,6 +149,7 @@
   "devDependencies": {
     "@sentry/webpack-plugin": "2.16.1",
     "@svgr/webpack": "5.5.0",
+    "@types/archiver": "6.0.2",
     "@types/chrome": "^0.0.263",
     "@types/events": "3.0.0",
     "@types/jest": "27.4.0",
@@ -167,6 +168,7 @@
     "@typescript-eslint/typescript-estree": "7.1.1",
     "@welldone-software/why-did-you-render": "6.2.1",
     "antd-dayjs-webpack-plugin": "1.0.6",
+    "archiver": "7.0.1",
     "autoprefixer": "latest",
     "copy-webpack-plugin": "11.0.0",
     "craco-antd": "1.19.0",
@@ -183,6 +185,7 @@
     "eslint-webpack-plugin": "2.5.4",
     "file-loader": "6.2.0",
     "fs-extra": "10.0.0",
+    "fs-readdir-recursive": "1.1.0",
     "html-webpack-plugin": "5.3.1",
     "i18next": "23.4.1",
     "jest": "29.7.0",
