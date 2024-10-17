@@ -24,7 +24,7 @@ import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetAr
 import {
   formatGasCostUsd,
   formatTokenAmount,
-  formatUsdValue,
+  formatGasHeaderUsdValue,
 } from '@/ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
@@ -106,6 +106,7 @@ interface GasSelectorProps {
       total_cost: number;
       tx_cost: number;
       gas_cost: number;
+      estimate_tx_cost: number;
     };
     is_gas_account: boolean;
     balance_is_enough: boolean;
@@ -712,7 +713,7 @@ const GasSelectorHeader = ({
   const gasCostUsdStr = useMemo(() => {
     const bn = new BigNumber(modalExplainGas?.gasCostUsd);
 
-    return formatUsdValue(bn.toString(10));
+    return formatGasHeaderUsdValue(bn.toString(10));
   }, [modalExplainGas?.gasCostUsd]);
 
   const gasCostAmountStr = useMemo(() => {
@@ -725,13 +726,15 @@ const GasSelectorHeader = ({
 
   const calcGasAccountUsd = useCallback((n: number | string) => {
     const v = Number(n);
-    if (!Number.isNaN(v) && v < 0.01) {
+    if (!Number.isNaN(v) && v < 0.0001) {
       return `$${n}`;
     }
-    return formatUsdValue(n || '0');
+    return formatGasHeaderUsdValue(n || '0');
   }, []);
 
   const [isGasHovering, gasHoverProps] = useHover();
+
+  const [isGasAccountHovering, gasAccountHoverProps] = useHover();
 
   const handleClosePopup = () => {
     setCustomGas(undefined);
@@ -809,48 +812,59 @@ const GasSelectorHeader = ({
                   className={clsx(
                     'gas-selector-card-amount translate-y-1 flex items-center'
                   )}
+                  {...gasAccountHoverProps}
                 >
-                  <div className="truncate max-w-[210px] group text-r-neutral-body">
-                    <Tooltip
-                      overlayClassName="rectangle"
-                      title={
-                        <>
-                          <div>
-                            {t('page.signTx.gasAccount.totalCost')}
-                            {calcGasAccountUsd(
-                              gasAccountCost?.gas_account_cost.total_cost || '0'
-                            )}
-                          </div>
-                          <div>
-                            {t('page.signTx.gasAccount.currentTxCost')}
-
-                            {calcGasAccountUsd(
-                              gasAccountCost?.gas_account_cost.tx_cost || '0'
-                            )}
-                          </div>
-                          <div>
-                            {t('page.signTx.gasAccount.gasCost')}
-                            {calcGasAccountUsd(
-                              gasAccountCost?.gas_account_cost.gas_cost || '0'
-                            )}
-                          </div>
-                        </>
-                      }
-                    >
-                      <span className="text-[16px] font-medium text-r-blue-default">
-                        {formatUsdValue(
-                          gasAccountCost?.gas_account_cost.total_cost || '0'
-                        )}
-                      </span>
-                      <span className="text-14 text-r-neutral-body font-normal pl-4">
-                        ~
-                        {calcGasAccountUsd(
-                          gasAccountCost?.gas_account_cost.total_cost || '0'
-                        )?.replace('$', '')}{' '}
-                        USD
-                      </span>
-                    </Tooltip>
+                  <div className="truncate max-w-[170px] group text-r-neutral-body">
+                    <span className="text-[16px] font-medium text-r-blue-default">
+                      {formatGasHeaderUsdValue(
+                        (gasAccountCost?.gas_account_cost.estimate_tx_cost ||
+                          0) + (gasAccountCost?.gas_account_cost.gas_cost || 0)
+                      )}
+                    </span>
+                    <span className="text-14 text-r-neutral-body font-normal pl-4">
+                      ~
+                      {calcGasAccountUsd(
+                        (gasAccountCost?.gas_account_cost.estimate_tx_cost ||
+                          0) + (gasAccountCost?.gas_account_cost.gas_cost || 0)
+                      )?.replace('$', '')}{' '}
+                      USD
+                    </span>
                   </div>
+                  <Tooltip
+                    overlayClassName="rectangle"
+                    visible={isGasAccountHovering}
+                    title={
+                      <>
+                        <div>
+                          {t('page.signTx.gasAccount.estimatedGas')}
+                          {calcGasAccountUsd(
+                            gasAccountCost?.gas_account_cost.estimate_tx_cost ||
+                              0
+                          )}
+                        </div>
+                        <div>
+                          {t('page.signTx.gasAccount.maxGas')}
+                          {calcGasAccountUsd(
+                            gasAccountCost?.gas_account_cost.total_cost || '0'
+                          )}
+                        </div>
+                        <div>
+                          {t('page.signTx.gasAccount.sendGas')}
+                          {calcGasAccountUsd(
+                            gasAccountCost?.gas_account_cost.total_cost || '0'
+                          )}
+                        </div>
+                        <div>
+                          {t('page.signTx.gasAccount.gasCost')}
+                          {calcGasAccountUsd(
+                            gasAccountCost?.gas_account_cost.gas_cost || '0'
+                          )}
+                        </div>
+                      </>
+                    }
+                  >
+                    <IconInfoSVG className="ml-4 text-r-neutral-foot" />
+                  </Tooltip>
                 </div>
               </div>
             ) : (
