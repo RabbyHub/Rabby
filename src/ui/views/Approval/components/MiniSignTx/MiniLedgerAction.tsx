@@ -8,10 +8,7 @@ import clsx from 'clsx';
 import { EVENTS, KEYRING_CLASS } from 'consts';
 import React, { ReactNode } from 'react';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
-import {
-  ActionGroup,
-  Props as ActionGroupProps,
-} from '../FooterBar/ActionGroup';
+import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import { ProcessActions } from '../FooterBar/ProcessActions';
 import { Dots } from '../Popup/Dots';
