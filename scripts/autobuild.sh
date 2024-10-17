@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 
 script_dir="$( cd "$( dirname "$0"  )" && pwd  )"
@@ -27,6 +27,9 @@ pack_dist_to_zip $TARGET_FILE;
 
 cd $project_dir;
 
+md5_value=$(md5 -q $TARGET_FILE);
+echo "[pack] (md5: $TARGET_FILE) $md5_value";
+
 # upload to storage
 if [ -z $NO_UPLOAD ]; then
     DOWNLOAD_URL="https://download.rabby.io/autobuild/RabbyDebug-$CURRENT_TIME/RabbyDebug-v${VERSION}-${RABBY_GIT_HASH}.zip"
@@ -36,15 +39,14 @@ if [ -z $NO_UPLOAD ]; then
     else
         QUIET_PARASM=""
     fi
+
     echo "[pack] start upload...";
     # aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/RabbyDebug-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
     echo "[pack] uploaded. DOWNLOAD_URL is $DOWNLOAD_URL";
 
     if [ ! -z $notify_lark ]; then
         echo "[pack] update latest link...";
-        md5_value=$(md5 -q $TARGET_FILE);
 
-        echo "[pack] (md5: $TARGET_FILE) $md5_value";
         node ./scripts/notify-lark.js "$DOWNLOAD_URL" "$md5_value"
     else
         echo "[pack] skip notify.";
