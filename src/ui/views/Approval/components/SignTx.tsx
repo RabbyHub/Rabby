@@ -902,6 +902,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       Modal.error({
         title: 'Error',
         content: e.message || JSON.stringify(e),
+        className: 'modal-support-darkmode',
       });
     }
   };
@@ -1005,7 +1006,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         }
         resolveApproval();
       } catch (e) {
-        message.error(e.message);
+        message.error({
+          content: e.message,
+          className: 'modal-support-darkmode',
+        });
       }
     }
     return;

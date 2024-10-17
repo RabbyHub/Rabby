@@ -131,6 +131,12 @@ const Permit = ({
               <ProtocolListItem protocol={requireData.protocol} />
             </SubRow>
           </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow>
+              <Values.Interacted value={requireData.hasInteraction} />
+            </SubRow>
+          </SubCol>
 
           <SecurityListItem
             id="1077"
