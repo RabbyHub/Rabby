@@ -7,3 +7,4 @@ yarn-error
 
 tmp/*.zip
 tmp/inv-batch.json
+tmp/styled-components-id-mappings.*
