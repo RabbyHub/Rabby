@@ -468,7 +468,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
-  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
@@ -2096,7 +2095,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (selectedGas ? selectedGas.price < 0 : true) ||
               (isGnosisAccount ? !safeInfo : false) ||
               (isCoboArugsAccount ? !coboArgusInfo : false) ||
-              (isLedger && !hasConnectedLedgerHID) ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
               hasUnProcessSecurityResult ||

@@ -39,7 +39,3 @@ if (
     }
   });
 }
-
-setInterval(() => {
-  chrome.runtime.sendMessage({ type: 'ping' });
-}, 2000);

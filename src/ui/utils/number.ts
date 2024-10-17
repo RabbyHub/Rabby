@@ -200,3 +200,16 @@ export const formatGasCostUsd = (gasCostUsd: BigNumber) => {
 
   return formatTokenAmount(value);
 };
+
+export const formatGasHeaderUsdValue = (value: string | number) => {
+  const bnValue = new BigNumber(value);
+  if (bnValue.lt(0)) {
+    return `-$${formatNumber(Math.abs(Number(value)))}`;
+  }
+  if (bnValue.gte(0.01)) {
+    return `$${formatNumber(value)}`;
+  }
+  if (bnValue.lt(0.0001)) return '<$0.0001';
+
+  return `$${formatNumber(value, 4)}`;
+};

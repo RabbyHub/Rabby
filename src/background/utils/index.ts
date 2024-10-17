@@ -57,15 +57,6 @@ export function normalizeAddress(input: number | string): string {
   return ethUtil.addHexPrefix(input);
 }
 
-export const wait = (fn: () => void, ms = 1000) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      fn();
-      resolve(true);
-    }, ms);
-  });
-};
-
 export const setPageStateCacheWhenPopupClose = (data) => {
   const cache = pageStateCache.get();
   if (cache && cache.path === '/import/wallet-connect') {
