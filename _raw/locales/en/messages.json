@@ -1341,7 +1341,8 @@
           "doc1": "Plug in a single Ledger",
           "doc2": "Enter pin to unlock",
           "doc3": "Open Ethereum App",
-          "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>"
+          "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>",
+          "connected": "Ledger connected"
         },
         "keystone": {
           "title": "Ensure your Keystone 3 Pro is on the homepage",
@@ -2207,7 +2208,6 @@
         "txSendings": "Sending signing request({{current}}/{{total}})"
       }
     },
-
     "gasAccount": {
       "title": "GasAccount",
       "deposit": "Deposit",

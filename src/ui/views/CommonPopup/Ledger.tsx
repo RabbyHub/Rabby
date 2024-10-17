@@ -4,6 +4,7 @@ import {
   useCommonPopupView,
 } from '@/ui/utils';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
+import { message } from 'antd';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -24,6 +25,7 @@ export const Ledger: React.FC<{
 
   React.useEffect(() => {
     if (!isModalContent && hasConnectedLedgerHID) {
+      message.success(t('page.dashboard.hd.ledger.connected'));
       closePopup();
     }
   }, [hasConnectedLedgerHID, !isModalContent]);
