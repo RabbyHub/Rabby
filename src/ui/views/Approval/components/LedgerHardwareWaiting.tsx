@@ -205,10 +205,10 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
 
   React.useEffect(() => {
     if (firstConnectRef.current) {
-      if (sessionStatus === 'DISCONNECTED') {
-        setVisible(false);
-        message.error(t('page.signFooterBar.ledger.notConnected'));
-      }
+      // if (sessionStatus === 'DISCONNECTED') {
+      //   setVisible(false);
+      //   message.error(t('page.signFooterBar.ledger.notConnected'));
+      // }
     }
 
     if (sessionStatus === 'CONNECTED') {
