@@ -1,4 +1,4 @@
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
@@ -7,6 +7,7 @@ import { ReactComponent as IconClose } from 'ui/assets/close-16-cc.svg';
 import { GasLessAnimatedWrapper } from './GasLessComponents';
 import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const ButtonStyled = styled(Button)`
   &:hover {
@@ -86,9 +87,11 @@ export const SubmitActions: React.FC<Props> = ({
           </button>
         </div>
       ) : (
-        <Tooltip
+        <TooltipWithMagnetArrow
           overlayClassName="rectangle sign-tx-forbidden-tooltip"
           title={enableTooltip ? tooltipContent : null}
+          inApproval
+          viewportOffset={[20, -20, -20, 20]}
         >
           <GasLessAnimatedWrapper>
             <ButtonStyled
@@ -116,7 +119,7 @@ export const SubmitActions: React.FC<Props> = ({
               {t('page.signFooterBar.signAndSubmitButton')}
             </ButtonStyled>
           </GasLessAnimatedWrapper>
-        </Tooltip>
+        </TooltipWithMagnetArrow>
       )}
     </ActionsContainer>
   );

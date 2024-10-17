@@ -1,13 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddressViewer, Popup } from '@/ui/component';
 import { Button } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
-import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useThemeMode } from '@/ui/hooks/usePreference';
-import { pickKeyringThemeIcon } from '@/utils/account';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
 import { noop } from 'lodash';
 import clsx from 'clsx';
 import { CopyChecked } from '@/ui/component/CopyChecked';
@@ -18,6 +14,7 @@ import { ReactComponent as RcIconQuoteStart } from '@/ui/assets/gas-account/quot
 import { ReactComponent as RcIconQuoteEnd } from '@/ui/assets/gas-account/quote-end.svg';
 import { GasAccountBlueLogo } from './GasAccountBlueLogo';
 import { GasAccountWrapperBg } from './WrapperBg';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export const GasACcountCurrentAddress = ({
   account,
@@ -30,30 +27,13 @@ export const GasACcountCurrentAddress = ({
 }) => {
   const currentAccount = useCurrentAccount();
 
-  const { isDarkTheme } = useThemeMode();
+  const [alias] = useAlias(account?.address || currentAccount?.address || '');
 
-  const brandIcon = useWalletConnectIcon({
+  const addressTypeIcon = useBrandIcon({
     address: currentAccount!.address,
     brandName: currentAccount!.brandName,
     type: currentAccount!.type,
   });
-
-  const [alias] = useAlias(account?.address || currentAccount?.address || '');
-
-  const addressTypeIcon = useMemo(
-    () =>
-      brandIcon ||
-      pickKeyringThemeIcon(
-        account?.brandName || (currentAccount!.brandName as any),
-        {
-          needLightVersion: isDarkTheme,
-        }
-      ) ||
-      WALLET_BRAND_CONTENT?.[account?.brandName || currentAccount!.brandName]
-        ?.image ||
-      KEYRING_ICONS[account?.type || currentAccount!.type],
-    [currentAccount, brandIcon, isDarkTheme]
-  );
   return (
     <div className="mb-[20px] py-12 px-16 rounded-[6px] flex items-center bg-r-neutral-card-2">
       <img src={addressTypeIcon} className="w-24 h-24" />

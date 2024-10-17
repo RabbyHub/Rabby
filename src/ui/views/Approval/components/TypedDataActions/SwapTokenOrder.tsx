@@ -241,6 +241,7 @@ const Permit = ({
                 rank: requireData.rank,
                 address: requireData.id,
                 chain,
+                hasInteraction: requireData.hasInteraction,
                 title: t('page.signTypedData.buyNFT.listOn'),
               }}
             >
@@ -258,6 +259,12 @@ const Permit = ({
             <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
             <SubRow>
               <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow>
+              <Values.Interacted value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
 

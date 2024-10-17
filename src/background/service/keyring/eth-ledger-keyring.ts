@@ -9,7 +9,7 @@ import {
   FeeMarketEIP1559Transaction,
 } from '@ethereumjs/tx';
 import { EVENTS } from 'consts';
-import { isSameAddress, wait } from '@/background/utils';
+import { isSameAddress } from '@/background/utils';
 import { SignHelper, LedgerHDPathType } from './helper';
 
 const type = 'Ledger Hardware';
@@ -303,11 +303,10 @@ class LedgerBridgeKeyring {
     // wait connect the WebHID
     while (!this.app) {
       await this.makeApp();
-      await wait(() => {
-        if (count++ > 50) {
-          throw new Error('Ledger: Failed to connect to Ledger');
-        }
-      }, 100);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      if (count++ > 50) {
+        throw new Error('Ledger: Failed to connect to Ledger');
+      }
     }
   }
 

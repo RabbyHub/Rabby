@@ -37,7 +37,7 @@
       "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
       "nativeTokenNotEngouthForGas": "Gas balance is not enough for transaction",
       "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
-      "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
+      "canOnlyUseImportedAddress": "You cannot sign transactions with a watch-only address.",
       "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
       "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
       "noGasRequired": "No gas required",
@@ -64,7 +64,10 @@
       "gasAccount": {
         "totalCost": "Total cost: ",
         "currentTxCost": "Gas amount sent to your address: ",
-        "gasCost": "Gas cost for sending Gas to your address: "
+        "gasCost": "Gas cost for transferring gas to your address: ",
+        "estimatedGas": "Estimated Gas: ",
+        "maxGas": "Max Gas: ",
+        "sendGas": "The Gas transfer to you for current transaction: "
       },
       "balanceChange": {
         "successTitle": "Simulation Results",
@@ -933,7 +936,7 @@
       "two-step-approve-details": "Token USDT requires 2 transactions to change allowance.First you would need to reset allowance to zero, and only then set new allowance value.",
       "process-with-two-step-approve": "Proceed with two step approve",
       "fetch-best-quote": "Fetching the Best quote",
-      "usd-after-fees": "≈ {{usd}} after fees",
+      "usd-after-fees": "≈ {{usd}} ",
       "no-fees-for-wrap": "No Rabby fees for Wrap",
       "No-available-quote": "No available quote",
       "price-impact": "Price Impact",
@@ -976,7 +979,7 @@
       "need-to-approve-token-before-bridge": "Need to approve token before bridge",
       "via-bridge": "via {{bridge}}",
       "duration": "{{duration}} min",
-      "estimated-value": "≈ {{value}} after fees",
+      "estimated-value": "≈ {{value}} ",
       "best": "Best",
       "bridge-cost": "Bridge cost",
       "rabby-fee": "Rabby fee",
