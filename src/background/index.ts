@@ -10,6 +10,7 @@ import {
   CHAINS_ENUM,
   EVENTS,
   EVENTS_IN_BG,
+  IS_FIREFOX,
   KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
 } from 'consts';
@@ -282,6 +283,9 @@ browser.runtime.onConnect.addListener((port) => {
                 null,
                 data.params
               );
+              if (!IS_FIREFOX) {
+                return res;
+              }
               if (typeof res?.then === 'function') {
                 return res.then((x) => {
                   if (typeof x !== 'object' || isNull(x)) {
