@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 import './style/index.less';
 import './app';
 
@@ -14,7 +16,7 @@ if (
   window.screenLeft > window.screen.width ||
   window.screenTop > window.screen.height
 ) {
-  chrome.runtime.getPlatformInfo(function (info) {
+  browser.runtime.getPlatformInfo().then((info) => {
     if (info.os === 'mac') {
       const fontFaceSheet = new CSSStyleSheet();
       fontFaceSheet.insertRule(`
@@ -41,5 +43,5 @@ if (
 }
 
 setInterval(() => {
-  chrome.runtime.sendMessage({ type: 'ping' });
+  browser.runtime.sendMessage({ type: 'ping' });
 }, 2000);

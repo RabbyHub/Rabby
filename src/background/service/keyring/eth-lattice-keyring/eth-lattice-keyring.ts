@@ -11,6 +11,7 @@ import {
   KnownOrigins,
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
+import Browser from 'webextension-polyfill';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0/x",
@@ -47,27 +48,12 @@ class LatticeKeyring extends OldLatticeKeyring {
 
       // send a msg to the render process to open lattice connector
       // and collect the credentials
-      const creds = await new Promise<{
-        deviceID: string;
-        password: string;
-        endpoint: string;
-      }>((resolve, reject) => {
-        chrome.runtime.sendMessage(
-          {
-            target: OffscreenCommunicationTarget.latticeOffscreen,
-            params: {
-              url,
-            },
-          },
-          (response) => {
-            if (response.error) {
-              reject(response.error);
-            }
-
-            resolve(response.result);
-          }
-        );
-      });
+      const creds = await Browser.runtime.sendMessage({
+        target: OffscreenCommunicationTarget.latticeOffscreen,
+        params: {
+          url,
+        },
+      })
 
       return creds;
     } catch (err: any) {

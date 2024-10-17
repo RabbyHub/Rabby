@@ -461,7 +461,7 @@ export const INTERNAL_REQUEST_SESSION = {
 
 export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
 
-export const INITIAL_TESTNET_OPENAPI_URL = 'https://api.testnet.rabby.io';
+export const INITIAL_TESTNET_OPENAPI_URL = 'https://alpha.rabby.io';
 
 export const EVENTS = {
   broadcastToUI: 'broadcastToUI',
@@ -741,6 +741,7 @@ export const WALLET_BRAND_CONTENT: {
     maybeSvg: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
+    hidden: IS_FIREFOX,
   },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
     id: 5,
