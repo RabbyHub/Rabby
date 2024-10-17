@@ -22,12 +22,11 @@ export const Ledger: React.FC<{
     }
   }, [!isModalContent]);
 
-  // React.useEffect(() => {
-  //   if (!isModalContent && hasConnectedLedgerHID && mounted.current) {
-  //     closePopup();
-  //   }
-  //   mounted.current = true;
-  // }, [hasConnectedLedgerHID, !isModalContent]);
+  React.useEffect(() => {
+    if (!isModalContent && hasConnectedLedgerHID) {
+      closePopup();
+    }
+  }, [hasConnectedLedgerHID, !isModalContent]);
 
   const handleClick = async () => {
     if (!isModalContent) {
