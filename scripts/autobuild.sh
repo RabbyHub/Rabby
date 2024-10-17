@@ -4,6 +4,8 @@ set -e
 script_dir="$( cd "$( dirname "$0"  )" && pwd  )"
 project_dir=$(dirname "$script_dir")
 
+. $script_dir/fns.sh --source-only
+
 export VERSION=$(node --eval="process.stdout.write(require('./package.json').version)");
 export RABBY_GIT_HASH=$(git rev-parse --short HEAD);
 export CURRENT_TIME=$(date +%Y%m%d%H%M%S);
@@ -19,18 +21,11 @@ if [ -z $NO_BUILD ]; then
 fi
 echo "[pack] built finished";
 
-DIST_DIR=$project_dir/dist;
-
-rm -rf $project_dir/tmp/ && mkdir -p $project_dir/tmp/;
-if [ -d $DIST_DIR ]; then
-    cd $DIST_DIR;
-    zip -r $TARGET_FILE ./*
-else
-    echo "[pack] dist dir not found: $DIST_DIR";
-fi
+cd $project_dir;
+rm -f $TARGET_FILE;
+pack_dist_to_zip $TARGET_FILE;
 
 cd $project_dir;
-# cp $TARGET_FILE $project_dir/tmp/RabbyDebug-latest.zip
 
 # upload to storage
 if [ -z $NO_UPLOAD ]; then
@@ -42,12 +37,15 @@ if [ -z $NO_UPLOAD ]; then
         QUIET_PARASM=""
     fi
     echo "[pack] start upload...";
-    aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/RabbyDebug-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
+    # aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/RabbyDebug-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
     echo "[pack] uploaded. DOWNLOAD_URL is $DOWNLOAD_URL";
 
     if [ ! -z $notify_lark ]; then
         echo "[pack] update latest link...";
-        node ./scripts/notify-lark.js "$DOWNLOAD_URL"
+        md5_value=$(md5 -q $TARGET_FILE);
+
+        echo "[pack] (md5: $TARGET_FILE) $md5_value";
+        node ./scripts/notify-lark.js "$DOWNLOAD_URL" "$md5_value"
     else
         echo "[pack] skip notify.";
     fi
