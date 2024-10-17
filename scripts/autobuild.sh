@@ -3,6 +3,7 @@ set -e
 
 script_dir="$( cd "$( dirname "$0"  )" && pwd  )"
 project_dir=$(dirname "$script_dir")
+systype=$(uname -s)
 
 . $script_dir/fns.sh --source-only
 
@@ -27,7 +28,12 @@ pack_dist_to_zip $TARGET_FILE;
 
 cd $project_dir;
 
-md5_value=$(md5 -q $TARGET_FILE);
+systype=$(uname -s)
+if [ $systype = "Darwin" ]; then
+    md5_value=$(md5 -q $TARGET_FILE);
+elif [ $systype = "Linux" ]; then
+    md5_value=$(md5sum $TARGET_FILE | awk '{ print $1 }');
+fi
 echo "[pack] (md5: $TARGET_FILE) $md5_value";
 
 # upload to storage
@@ -41,7 +47,7 @@ if [ -z $NO_UPLOAD ]; then
     fi
 
     echo "[pack] start upload...";
-    # aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/RabbyDebug-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
+    aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/RabbyDebug-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
     echo "[pack] uploaded. DOWNLOAD_URL is $DOWNLOAD_URL";
 
     if [ ! -z $notify_lark ]; then
