@@ -56,7 +56,7 @@ export const CustomTestnetTokenDetailPopup = ({
     <Popup
       visible={visible}
       closable={true}
-      height={494}
+      height="70%"
       onClose={onClose}
       className="custom-testnet-token-detail-popup"
       push={false}
