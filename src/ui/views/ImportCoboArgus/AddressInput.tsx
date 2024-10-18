@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 export interface Props {
   onChange: (value: string) => void;
   value: string;
-  chainEnum: CHAINS_ENUM;
+  chainEnum: CHAINS_ENUM | string;
   error: string;
 }
 
@@ -45,7 +45,7 @@ export const AddressInput: React.FC<Props> = ({
           onChange={(v) => onChange(v.target.value)}
           value={value}
           placeholder={t('page.newAddress.coboSafe.inputSafeModuleAddress')}
-          className="p-0 min-h-[22px] text-r-neutral-title-1"
+          className="p-0 min-h-[22px] text-r-neutral-title-1 leading-normal"
           autoSize={{
             minRows: 1,
             maxRows: 3,

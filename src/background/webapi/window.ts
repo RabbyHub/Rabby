@@ -10,8 +10,16 @@ browser.windows.onFocusChanged.addListener((winId) => {
   event.emit('windowFocusChange', winId);
 });
 
+let isManuallyClosed = true;
+browser.runtime.onMessage.addListener(({ type }) => {
+  if (type === 'closeNotification') {
+    isManuallyClosed = false;
+    event.emit('closeNotification');
+  }
+});
 browser.windows.onRemoved.addListener((winId) => {
-  event.emit('windowRemoved', winId);
+  event.emit('windowRemoved', winId, isManuallyClosed);
+  isManuallyClosed = true;
 });
 
 const BROWSER_HEADER = 80;
@@ -83,7 +91,11 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   }
   // shim firefox
   if (win.left !== left && currentWindow.state !== 'fullscreen') {
-    await browser.windows.update(win.id!, { left, top });
+    try {
+      await browser.windows.update(win.id!, { left, top });
+    } catch (e) {
+      // nothing to do, just avoid error prevent id response
+    }
   }
 
   return win.id;

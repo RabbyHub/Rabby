@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ContractRequireData, TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { isSameAddress } from 'ui/utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -18,6 +18,7 @@ import LogoWithText from '../Actions/components/LogoWithText';
 import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
+import { ContractRequireData } from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .header {
@@ -59,7 +60,7 @@ const ApproveNFT = ({
   engineResults,
   sender,
 }: {
-  data: TypedDataActionData['sellNFT'];
+  data: ParsedTypedDataActionData['sellNFT'];
   requireData: ContractRequireData;
   chain: Chain;
   engineResults: Result[];

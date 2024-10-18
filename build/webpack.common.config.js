@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
-const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
+// const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
@@ -20,6 +20,16 @@ const BUILD_GIT_HASH = child_process
   .execSync('git log --format="%h" -n 1')
   .toString()
   .trim();
+
+const {
+  transformer: tsStyledComponentTransformer,
+  webpackPlugin: tsStyledComponentPlugin,
+} = createStyledComponentsTransformer({
+  ssr: true, // always enable it to make all styled generated component has id.
+  displayName: isEnvDevelopment,
+  minify: false, // it's still an experimental feature
+  componentIdPrefix: 'rabby-',
+});
 
 const config = {
   entry: {
@@ -96,12 +106,7 @@ const config = {
               getCustomTransformers: () => ({
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
-                  createStyledComponentsTransformer({
-                    ssr: true, // always enable it to make all styled generated component has id.
-                    displayName: isEnvDevelopment,
-                    minify: false, // it's still an experimental feature
-                    componentIdPrefix: 'rabby-',
-                  }),
+                  tsStyledComponentTransformer,
                 ],
               }),
             },
@@ -229,6 +234,7 @@ const config = {
       'process.env.version': JSON.stringify(`version: ${process.env.VERSION}`),
       'process.env.release': JSON.stringify(process.env.VERSION),
       'process.env.RABBY_BUILD_GIT_HASH': JSON.stringify(BUILD_GIT_HASH),
+      'process.env.ETHERSCAN_KEY': JSON.stringify(process.env.ETHERSCAN_KEY),
     }),
     new CopyPlugin({
       patterns: [
@@ -275,6 +281,7 @@ const config = {
             },
       ],
     }),
+    tsStyledComponentPlugin,
   ],
   resolve: {
     alias: {

@@ -18,7 +18,7 @@ import {
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
-import { useQuoteVisible, useSetQuoteVisible } from '../hooks';
+import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { BridgeReceiveDetails } from './BridgeReceiveDetail';
 import { useRbiSource } from '@/ui/utils/ga-event';
@@ -32,12 +32,17 @@ import { useTranslation } from 'react-i18next';
 import { BridgeTokenPair } from './BridgeTokenPair';
 import { ReactComponent as RcArrowDown } from '@/ui/assets/bridge/down.svg';
 
-import { ReactComponent as RcIconQuestion } from '@/ui/assets/bridge/question-cc.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import pRetry from 'p-retry';
 import stats from '@/stats';
+import { BestQuoteLoading } from '../../Swap/Component/loading';
+import { MaxButton } from '../../SendToken/components/MaxButton';
+import { MiniApproval } from '../../Approval/components/MiniSignTx';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { useHistory } from 'react-router-dom';
 
-const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-16');
+const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
 const StyledInput = styled(Input)`
   height: 46px;
@@ -45,7 +50,7 @@ const StyledInput = styled(Input)`
   font-size: 18px;
   box-shadow: none;
   border-radius: 4px;
-  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  border: 1px solid var(--r-neutral-line, #d3d8e0);
   background: transparent !important;
   & > .ant-input {
     font-weight: 500;
@@ -54,18 +59,18 @@ const StyledInput = styled(Input)`
     border-color: transparent;
   }
   &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
   }
   &:active {
-    border: 0.5px solid transparent;
+    border: 1px solid transparent;
   }
   &:focus,
   &:focus-within {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
   }
   &:hover {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
@@ -103,18 +108,35 @@ export const BridgeContent = () => {
     setReceiveToken,
 
     handleAmountChange,
+    setPayAmount,
     handleBalance,
-    payAmount,
+
+    debouncePayAmount,
+    inputAmount,
+
     inSufficient,
 
+    openQuotesList,
     quoteLoading,
     quoteList,
 
+    bestQuoteId,
     selectedBridgeQuote,
 
     setSelectedBridgeQuote,
     expired,
   } = useTokenPair(userAddress);
+
+  const payAmountLoading = useMemo(() => inputAmount !== debouncePayAmount, [
+    inputAmount,
+    debouncePayAmount,
+  ]);
+
+  const quoteOrAmountLoading = quoteLoading || payAmountLoading;
+
+  const amountAvailable = useMemo(() => Number(debouncePayAmount) > 0, [
+    debouncePayAmount,
+  ]);
 
   const aggregatorIds = useRabbySelector(
     (s) => s.bridge.aggregatorsList.map((e) => e.id) || []
@@ -129,7 +151,11 @@ export const BridgeContent = () => {
   }, [payToken?.id, receiveToken?.id]);
 
   const visible = useQuoteVisible();
+
   const setVisible = useSetQuoteVisible();
+
+  const refresh = useSetRefreshId();
+
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
@@ -147,7 +173,7 @@ export const BridgeContent = () => {
       });
     }
 
-    return t('page.bridge.getRoutes');
+    return t('page.bridge.title');
   }, [selectedBridgeQuote, expired, t]);
 
   const wallet = useWallet();
@@ -156,6 +182,7 @@ export const BridgeContent = () => {
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
 
+  const [isShowSign, setIsShowSign] = useState(false);
   const gotoBridge = useCallback(async () => {
     if (
       !inSufficient &&
@@ -173,7 +200,7 @@ export const BridgeContent = () => {
               from_token_id: payToken.id,
               user_addr: userAddress,
               from_chain_id: payToken.chain,
-              from_token_raw_amount: new BigNumber(payAmount)
+              from_token_raw_amount: new BigNumber(debouncePayAmount)
                 .times(10 ** payToken.decimals)
                 .toFixed(0, 1)
                 .toString(),
@@ -196,7 +223,7 @@ export const BridgeContent = () => {
             to: tx.to,
             value: tx.value,
             data: tx.data,
-            payTokenRawAmount: new BigNumber(payAmount)
+            payTokenRawAmount: new BigNumber(debouncePayAmount)
               .times(10 ** payToken.decimals)
               .toFixed(0, 1)
               .toString(),
@@ -210,7 +237,7 @@ export const BridgeContent = () => {
               bridge_id: selectedBridgeQuote.bridge_id,
               from_chain_id: payToken.chain,
               from_token_id: payToken.id,
-              from_token_amount: payAmount,
+              from_token_amount: debouncePayAmount,
               to_chain_id: receiveToken.chain,
               to_token_id: receiveToken.id,
               to_token_amount: selectedBridgeQuote.to_token_amount,
@@ -254,9 +281,124 @@ export const BridgeContent = () => {
     selectedBridgeQuote?.bridge_id,
     selectedBridgeQuote?.to_token_amount,
     wallet,
-    payAmount,
+    debouncePayAmount,
     rbiSource,
   ]);
+
+  const buildTxs = useMemoizedFn(async () => {
+    if (
+      !inSufficient &&
+      payToken &&
+      receiveToken &&
+      selectedBridgeQuote?.bridge_id
+    ) {
+      try {
+        setFetchingBridgeQuote(true);
+        const { tx } = await pRetry(
+          () =>
+            wallet.openapi.getBridgeQuote({
+              aggregator_id: selectedBridgeQuote.aggregator.id,
+              bridge_id: selectedBridgeQuote.bridge_id,
+              from_token_id: payToken.id,
+              user_addr: userAddress,
+              from_chain_id: payToken.chain,
+              from_token_raw_amount: new BigNumber(debouncePayAmount)
+                .times(10 ** payToken.decimals)
+                .toFixed(0, 1)
+                .toString(),
+              to_chain_id: receiveToken.chain,
+              to_token_id: receiveToken.id,
+            }),
+          { retries: 1 }
+        );
+        stats.report('bridgeQuoteResult', {
+          aggregatorIds: selectedBridgeQuote.aggregator.id,
+          bridgeId: selectedBridgeQuote.bridge_id,
+          fromChainId: payToken.chain,
+          fromTokenId: payToken.id,
+          toTokenId: receiveToken.id,
+          toChainId: receiveToken.chain,
+          status: tx ? 'success' : 'fail',
+        });
+        return wallet.buildBridgeToken(
+          {
+            to: tx.to,
+            value: tx.value,
+            data: tx.data,
+            payTokenRawAmount: new BigNumber(debouncePayAmount)
+              .times(10 ** payToken.decimals)
+              .toFixed(0, 1)
+              .toString(),
+            chainId: tx.chainId,
+            shouldApprove: !!selectedBridgeQuote.shouldApproveToken,
+            shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
+            payTokenId: payToken.id,
+            payTokenChainServerId: payToken.chain,
+            info: {
+              aggregator_id: selectedBridgeQuote.aggregator.id,
+              bridge_id: selectedBridgeQuote.bridge_id,
+              from_chain_id: payToken.chain,
+              from_token_id: payToken.id,
+              from_token_amount: debouncePayAmount,
+              to_chain_id: receiveToken.chain,
+              to_token_id: receiveToken.id,
+              to_token_amount: selectedBridgeQuote.to_token_amount,
+              tx: tx,
+              rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
+            },
+          },
+          {
+            ga: {
+              category: 'Bridge',
+              source: 'bridge',
+              trigger: rbiSource,
+            },
+          }
+        );
+      } catch (error) {
+        message.error(error?.message || String(error));
+        stats.report('bridgeQuoteResult', {
+          aggregatorIds: selectedBridgeQuote.aggregator.id,
+          bridgeId: selectedBridgeQuote.bridge_id,
+          fromChainId: payToken.chain,
+          fromTokenId: payToken.id,
+          toTokenId: receiveToken.id,
+          toChainId: receiveToken.chain,
+          status: 'fail',
+        });
+        console.error(error);
+      } finally {
+        setFetchingBridgeQuote(false);
+      }
+    }
+  });
+
+  const {
+    data: txs,
+    runAsync: runBuildSwapTxs,
+    mutate: mutateTxs,
+  } = useRequest(buildTxs, {
+    manual: true,
+  });
+
+  const currentAccount = useCurrentAccount();
+
+  const handleBridge = useMemoizedFn(async () => {
+    if (
+      [
+        KEYRING_TYPE.SimpleKeyring,
+        KEYRING_TYPE.HdKeyring,
+        KEYRING_CLASS.HARDWARE.LEDGER,
+      ].includes((currentAccount?.type || '') as any)
+    ) {
+      await runBuildSwapTxs();
+      setIsShowSign(true);
+    } else {
+      gotoBridge();
+    }
+  });
+
+  const history = useHistory();
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -335,29 +477,32 @@ export const BridgeContent = () => {
           </div>
           <div
             className={clsx(
-              'text-r-neutral-title-1',
-              'underline cursor-pointer',
+              'text-r-neutral-body flex items-center',
               !payToken && 'hidden'
             )}
-            onClick={() => {
-              handleBalance();
-            }}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
+            <MaxButton
+              onClick={() => {
+                handleBalance();
+              }}
+            >
+              {t('page.swap.max')}
+            </MaxButton>
           </div>
         </div>
         <StyledInput
           spellCheck={false}
           placeholder="0"
-          value={payAmount}
+          value={inputAmount}
           onChange={handleAmountChange}
           ref={inputRef as any}
           className="bg-transparent"
           suffix={
             <span className="text-r-neutral-foot text-12">
-              {payAmount
+              {inputAmount
                 ? `≈ ${formatUsdValue(
-                    new BigNumber(payAmount)
+                    new BigNumber(inputAmount)
                       .times(payToken?.price || 0)
                       .toString(10)
                   )}`
@@ -366,93 +511,25 @@ export const BridgeContent = () => {
           }
         />
 
-        {payAmount &&
-          selectedBridgeQuote &&
-          selectedBridgeQuote?.to_token_amount &&
-          payToken &&
-          receiveToken && (
-            <>
-              <BridgeReceiveDetails
-                activeProvider={selectedBridgeQuote}
-                className="section"
-                payAmount={payAmount}
-                payToken={payToken}
-                receiveToken={receiveToken}
-              />
+        {quoteOrAmountLoading &&
+          amountAvailable &&
+          !inSufficient &&
+          !selectedBridgeQuote?.manualClick && <BestQuoteLoading />}
 
-              <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12 ">
-                <div className="subText flex flex-col gap-12 relative">
-                  <div className="flex justify-between">
-                    <div className="inline-flex gap-4 items-center">
-                      <span>{t('page.bridge.bridge-cost')}</span>
-
-                      <TooltipWithMagnetArrow
-                        arrowPointAtCenter
-                        overlayClassName="rectangle w-[max-content] "
-                        title={
-                          <div>
-                            <p className="pt-12">
-                              {selectedBridgeQuote?.aggregator?.name} Fee:{' '}
-                              {formatTokenAmount(
-                                new BigNumber(
-                                  selectedBridgeQuote.protocol_fee.raw_amount_hex_str
-                                )
-                                  .div(10 ** (receiveToken?.decimals || 18))
-                                  .toString(),
-                                4,
-                                true
-                              )}{' '}
-                              {getTokenSymbol(receiveToken)}
-                            </p>
-
-                            <p>
-                              Rabby Fee:{' '}
-                              {formatTokenAmount(
-                                new BigNumber(
-                                  selectedBridgeQuote.rabby_fee.raw_amount_hex_str
-                                )
-                                  .div(10 ** (receiveToken?.decimals || 18))
-                                  .toString(),
-                                4,
-                                true
-                              )}{' '}
-                              {getTokenSymbol(receiveToken)}
-                            </p>
-                          </div>
-                        }
-                      >
-                        <span className="w-14 h-14">
-                          <RcIconQuestion
-                            viewBox="0 0 14 14"
-                            className="w-14 h-14"
-                          />
-                        </span>
-                      </TooltipWithMagnetArrow>
-                    </div>
-                    <span className="font-medium text-r-neutral-title-1">
-                      {formatTokenAmount(
-                        new BigNumber(
-                          selectedBridgeQuote.rabby_fee.raw_amount_hex_str
-                        )
-                          .plus(
-                            selectedBridgeQuote.protocol_fee.raw_amount_hex_str
-                          )
-                          .div(10 ** (receiveToken?.decimals || 18))
-                          .toString()
-                      )}{' '}
-                      {receiveToken ? getTokenSymbol(receiveToken) : ''}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>{t('page.bridge.rabby-fee')}</span>
-                    <span className="font-medium text-r-neutral-title-1">
-                      0.25%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </>
+        {payToken &&
+          !inSufficient &&
+          receiveToken &&
+          amountAvailable &&
+          (!quoteOrAmountLoading || selectedBridgeQuote?.manualClick) && (
+            <BridgeReceiveDetails
+              openQuotesList={openQuotesList}
+              activeProvider={selectedBridgeQuote}
+              className="section"
+              payAmount={debouncePayAmount}
+              payToken={payToken}
+              receiveToken={receiveToken}
+              bestQuoteId={bestQuoteId}
+            />
           )}
       </div>
 
@@ -499,7 +576,8 @@ export const BridgeContent = () => {
           onClick={() => {
             if (fetchingBridgeQuote) return;
             if (!selectedBridgeQuote || expired) {
-              setVisible(true);
+              refresh((e) => e + 1);
+
               return;
             }
             if (selectedBridgeQuote?.shouldTwoStepApprove) {
@@ -524,14 +602,21 @@ export const BridgeContent = () => {
                 okText: 'Proceed with two step approve',
 
                 onOk() {
-                  gotoBridge();
+                  // gotoBridge();
+                  handleBridge();
                 },
               });
             }
-            gotoBridge();
+            // gotoBridge();
+            handleBridge();
           }}
           disabled={
-            !payToken || !receiveToken || !payAmount || Number(payAmount) === 0
+            !payToken ||
+            !receiveToken ||
+            !amountAvailable ||
+            inSufficient ||
+            payAmountLoading ||
+            !selectedBridgeQuote
           }
         >
           {btnText}
@@ -548,12 +633,36 @@ export const BridgeContent = () => {
           userAddress={userAddress}
           chain={chain}
           payToken={payToken}
-          payAmount={payAmount}
+          payAmount={debouncePayAmount}
           receiveToken={receiveToken}
           inSufficient={inSufficient}
           setSelectedBridgeQuote={setSelectedBridgeQuote}
         />
       ) : null}
+      <MiniApproval
+        visible={isShowSign}
+        txs={txs}
+        onClose={() => {
+          setIsShowSign(false);
+          setTimeout(() => {
+            mutateTxs([]);
+          }, 500);
+        }}
+        onReject={() => {
+          setIsShowSign(false);
+          mutateTxs([]);
+        }}
+        onResolve={() => {
+          setTimeout(() => {
+            setIsShowSign(false);
+            mutateTxs([]);
+            // setPayAmount('');
+            // setTimeout(() => {
+            history.replace('/');
+            // }, 500);
+          }, 500);
+        }}
+      />
     </div>
   );
 };

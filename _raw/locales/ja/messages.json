@@ -1194,6 +1194,7 @@
         "manageAirgap": "AirGapを管理",
         "manageCoolwallet": "CoolWalletを管理",
         "manageBitbox02": "BitBox02を管理",
+        "manageNgraveZero": "NGRAVE ZEROを管理",
         "done": "完了",
         "addressesIn": "{{0}}のアドレス",
         "addressesInRabby": "Rabbyのアドレス{{0}}",

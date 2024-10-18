@@ -367,6 +367,7 @@ export const AddCustomTestnetTokenPopup = ({
             visible: false,
           });
         }}
+        showRPCStatus
         onChange={(value) => {
           setChainSelectorState({
             visible: false,

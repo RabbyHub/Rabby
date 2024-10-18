@@ -72,7 +72,7 @@ const NFTWithName = ({
           style={textStyle}
           className={clsx('name', {
             'flex-1': !showTokenLabel,
-            'cursor-pointer group-hover:underline hover:text-r-blue-default': hasHover,
+            'cursor-pointer hover:underline hover:text-r-blue-default': hasHover,
           })}
           title={nft?.name || '-'}
         >

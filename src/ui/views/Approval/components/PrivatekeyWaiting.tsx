@@ -38,7 +38,13 @@ interface ApprovalParams {
 
 export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
   const wallet = useWallet();
-  const { setTitle, setVisible, closePopup, setHeight } = useCommonPopupView();
+  const {
+    setTitle,
+    setVisible,
+    closePopup,
+    setHeight,
+    setPopupProps,
+  } = useCommonPopupView();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const { type } = params;
@@ -170,6 +176,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         } catch (e) {
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           setErrorMessage(e.message);
+          console.error(e);
           return;
         }
         matomoRequestEvent({
@@ -211,6 +218,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       init();
     })();
   }, []);
+
+  React.useEffect(() => {
+    setPopupProps(params?.extra?.popupProps);
+  }, [params?.extra?.popupProps]);
 
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {

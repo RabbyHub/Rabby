@@ -383,15 +383,16 @@
       },
       "keystone": {
         "signWith": "Переключиться на {{method}} для подписи",
+        "qrcodeDesc": "Сканируйте для подписи. После подписания нажмите ниже, чтобы получить подпись. Для USB подключите устройство снова и разрешите доступ, чтобы начать процесс подписания заново.",
         "misMatchSignId": "Несоответствие данных транзакции. Пожалуйста, проверьте детали транзакции.",
         "unsupportedType": "Ошибка: тип транзакции не поддерживается или неизвестен.",
         "siging": "Отправка запроса на подпись",
         "txRejected": "Транзакция отклонена",
         "shouldRetry": "Произошла ошибка. Пожалуйста, попробуйте снова.",
-        "hardwareRejectError": "Аппаратное устройство отклонило подпись",
+        "hardwareRejectError": "Запрос Keystone был отменен. Чтобы продолжить, пожалуйста, повторно авторизуйтесь.",
         "mismatchedWalletError": "Несоответствие кошелька",
         "verifyPasswordError": "Ошибка подписи, попробуйте снова после разблокировки",
-        "shouldOpenKeystoneHomePageError": "Пожалуйста, откройте домашнюю страницу Keystone"
+        "shouldOpenKeystoneHomePageError": "Убедитесь, что ваш Keystone 3 Pro находится на домашней странице."
       },
       "ledger": {
         "resent": "Повторно отправлено",
@@ -1183,7 +1184,7 @@
           "reconnect": "Если не работает, <1>начните подключение с начала.</1>"
         },
         "keystone": {
-          "title": "*USB соединение Keystone 3(Pro)",
+          "title": "Убедитесь, что ваш Keystone 3 Pro находится на домашней странице",
           "doc1": "Подключите один Keystone",
           "doc2": "Введите пароль",
           "doc3": "Разрешите соединение к ПК",
@@ -1326,7 +1327,7 @@
         "title": "Подключить Keystone",
         "allowRabbyPermissionsTitle": "Дать Rabby разрешение на:",
         "keystonePermission1": "Подключение к USB устройству",
-        "keystonePermissionTip": "Нажмите \"Разрешить\" ниже чтобы дать разрешение на Keystone в поп-ап окне.",
+        "keystonePermissionTip": "Пожалуйста, нажмите «Разрешить» ниже, чтобы авторизовать доступ к вашему Keystone в следующем всплывающем окне, и убедитесь, что ваш Keystone 3 Pro находится на домашней странице.",
         "noDeviceFoundError": "Подключите один Keystone",
         "deviceIsLockedError": "Введите пароль",
         "deviceRejectedExportAddress": "Разрешите подключение к Rabby",
@@ -1488,6 +1489,7 @@
         "manageImtokenOffline": "Управление imToken",
         "manageCoolwallet": "Управление CoolWallet",
         "manageBitbox02": "Управление BitBox02",
+        "manageNgraveZero": "Управление NGRAVE ZERO",
         "done": "Готово",
         "addressesIn": "Адреса в {{0}}",
         "addressesInRabby": "Адреса в Rabby{{0}}",

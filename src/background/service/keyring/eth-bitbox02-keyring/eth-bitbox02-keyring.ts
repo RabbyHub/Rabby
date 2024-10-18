@@ -211,6 +211,7 @@ class BitBox02Keyring extends EventEmitter {
         );
         txData.gasPrice = `0x${tx.gasPrice.toString('hex')}`;
       }
+      txData.chainId = `0x${tx.common.chainIdBN().toString('hex')}`;
       txData.r = result.r;
       txData.s = result.s;
       txData.v = result.v;

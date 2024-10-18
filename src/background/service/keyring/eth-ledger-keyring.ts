@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import Transport from '@ledgerhq/hw-transport';
-import LedgerEth, { ledgerService } from '@ledgerhq/hw-app-eth';
+import LedgerEth from '@ledgerhq/hw-app-eth';
 import { is1559Tx } from '@/utils/transaction';
 import {
   TransactionFactory,
@@ -315,12 +315,7 @@ class LedgerBridgeKeyring {
     const hdPath = await this.unlockAccountByAddress(address);
     await this.makeApp(true);
     try {
-      const resolution = await ledgerService.resolveTransaction(
-        rawTxHex,
-        {},
-        {}
-      );
-      const res = await this.app!.signTransaction(hdPath, rawTxHex, resolution);
+      const res = await this.app!.signTransaction(hdPath, rawTxHex);
       const newOrMutatedTx = handleSigning(res);
       const valid = newOrMutatedTx.verifySignature();
       if (valid) {
@@ -411,25 +406,6 @@ class LedgerBridgeKeyring {
         );
       }
 
-      const {
-        domain,
-        types,
-        primaryType,
-        message,
-      } = sigUtil.TypedDataUtils.sanitizeData(data);
-      const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
-        'EIP712Domain',
-        domain,
-        types,
-        isV4
-      ).toString('hex');
-      const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
-        primaryType as string,
-        message,
-        types,
-        isV4
-      ).toString('hex');
-
       const hdPath = await this.unlockAccountByAddress(withAccount);
       try {
         await this.makeApp(true);
@@ -441,30 +417,38 @@ class LedgerBridgeKeyring {
         };
 
         // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
-        // try {
-        //   res = await this.app!.signEIP712Message(hdPath, data);
-        // } catch (e) {
-        //   if (
-        //     e instanceof Error &&
-        //     'statusText' in e &&
-        //     (e as any).statusText === 'INS_NOT_SUPPORTED'
-        //   ) {
-        //     res = await this.app!.signEIP712HashedMessage(
-        //       hdPath,
-        //       domainSeparatorHex,
-        //       hashStructMessageHex
-        //     );
-        //   } else {
-        //     throw e;
-        //   }
-        // }
+        try {
+          res = await this.app!.signEIP712Message(hdPath, data);
+        } catch (e) {
+          const shouldFallbackOnHashedMethod =
+            'statusText' in e && e.statusText === 'INS_NOT_SUPPORTED';
+          if (!shouldFallbackOnHashedMethod) throw e;
 
-        // eslint-disable-next-line prefer-const
-        res = await this.app!.signEIP712HashedMessage(
-          hdPath,
-          domainSeparatorHex,
-          hashStructMessageHex
-        );
+          const {
+            domain,
+            types,
+            primaryType,
+            message,
+          } = sigUtil.TypedDataUtils.sanitizeData(data);
+          const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+            'EIP712Domain',
+            domain,
+            types,
+            isV4
+          ).toString('hex');
+          const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+            primaryType as string,
+            message,
+            types,
+            isV4
+          ).toString('hex');
+
+          res = await this.app!.signEIP712HashedMessage(
+            hdPath,
+            domainSeparatorHex,
+            hashStructMessageHex
+          );
+        }
 
         let v = res.v.toString(16);
         if (v.length < 2) {
@@ -742,6 +726,67 @@ class LedgerBridgeKeyring {
     const key = await this.getPathBasePublicKey(HDPathType.Legacy);
     return this.usedHDPathTypeList[key];
   }
+
+  openEthApp = (): Promise<Buffer> => {
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    return this.transport.send(
+      0xe0,
+      0xd8,
+      0x00,
+      0x00,
+      Buffer.from('Ethereum', 'ascii')
+    );
+  };
+
+  quitApp = (): Promise<Buffer> => {
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    return this.transport.send(0xb0, 0xa7, 0x00, 0x00);
+  };
+
+  getAppAndVersion = async (): Promise<{
+    appName: string;
+    version: string;
+  }> => {
+    await this.makeApp();
+
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    const response = await this.transport.send(0xb0, 0x01, 0x00, 0x00);
+
+    let i = 0;
+    // eslint-disable-next-line no-plusplus
+    const format = response[i++];
+
+    if (format !== 1) {
+      throw new Error('getAppAndVersion: format not supported');
+    }
+
+    // eslint-disable-next-line no-plusplus
+    const nameLength = response[i++];
+    const appName = response.slice(i, (i += nameLength)).toString('ascii');
+    // eslint-disable-next-line no-plusplus
+    const versionLength = response[i++];
+    const version = response.slice(i, (i += versionLength)).toString('ascii');
+
+    return {
+      appName,
+      version,
+    };
+  };
 }
 
 export default LedgerBridgeKeyring;

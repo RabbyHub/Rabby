@@ -21,7 +21,11 @@ import { useDebounce } from 'react-use';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
 import { Popup } from 'ui/component';
 import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
-import { formatTokenAmount } from '@/ui/utils/number';
+import {
+  formatGasCostUsd,
+  formatTokenAmount,
+  formatUsdValue,
+} from '@/ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -32,12 +36,19 @@ import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { findChain } from '@/utils/chain';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { ReactComponent as GasLogoSVG } from 'ui/assets/sign/tx/gas-logo-cc.svg';
+import { ReactComponent as RcIconGasActive } from 'ui/assets/sign/tx/gas-active.svg';
+import { ReactComponent as RcIconGasBlurCC } from 'ui/assets/sign/tx/gas-blur-cc.svg';
+
+import { ReactComponent as RcIconGasAccountBlurCC } from 'ui/assets/sign/tx/gas-account-blur-cc.svg';
+import { ReactComponent as RcIconGasAccountActive } from 'ui/assets/sign/tx/gas-account-active.svg';
+
 import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import { calcGasEstimated } from '@/utils/time';
-import { useHover, useWallet } from '@/ui/utils';
+import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
+import { noop } from 'lodash';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -88,6 +99,18 @@ interface GasSelectorProps {
   nativeTokenBalance: string;
   gasPriceMedian: number | null;
   pushType?: TxPushType;
+  gasMethod?: 'native' | 'gasAccount';
+  onChangeGasMethod?(value: 'native' | 'gasAccount'): void;
+  gasAccountCost?: {
+    gas_account_cost: {
+      total_cost: number;
+      tx_cost: number;
+      gas_cost: number;
+    };
+    is_gas_account: boolean;
+    balance_is_enough: boolean;
+    chain_not_support: boolean;
+  };
 }
 
 const useExplainGas = ({
@@ -223,8 +246,13 @@ const GasStyled = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-  max-width: 220px;
   flex: 1;
+
+  .gas-amount {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 `;
 
 const GasPriceDesc = styled.div`
@@ -265,6 +293,9 @@ const GasSelectorHeader = ({
   nativeTokenBalance,
   gasPriceMedian,
   pushType,
+  gasMethod,
+  gasAccountCost,
+  onChangeGasMethod,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -445,11 +476,6 @@ const GasSelectorHeader = ({
     }, 50);
   };
 
-  const [
-    prevSelectedNotCustomGas,
-    setPrevSelectedNotCustomGas,
-  ] = useState<GasLevel | null>(null);
-
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
     const target = gas;
@@ -469,6 +495,7 @@ const GasSelectorHeader = ({
       setSelectedGas({
         ...target,
         level: 'custom',
+        price: Number(customGas) * 1e9,
       });
     } else {
       setSelectedGas({
@@ -574,6 +601,7 @@ const GasSelectorHeader = ({
   useDebounce(
     () => {
       if (isReady || !isFirstTimeLoad) {
+        if (customGas === undefined) return;
         loadCustomGasData(Number(customGas) * 1e9).then((data) => {
           if (data) setCustomGasEstimated(data.estimated_seconds);
           setSelectedGas((gas) => ({
@@ -582,7 +610,7 @@ const GasSelectorHeader = ({
             price: Number(customGas) * 1e9,
             front_tx_count: 0,
             estimated_seconds: data?.estimated_seconds ?? 0,
-            priority_price: null,
+            priority_price: gas?.priority_price ?? null,
             base_fee: data?.base_fee ?? 0,
           }));
           setLoadingGasEstimated(false);
@@ -627,9 +655,6 @@ const GasSelectorHeader = ({
   }, []);
 
   useEffect(() => {
-    if (selectedGas) {
-      setPrevSelectedNotCustomGas(selectedGas);
-    }
     if (!is1559) return;
     if (selectedGas?.level === 'custom') {
       if (Number(customGas) !== maxPriorityFee) {
@@ -651,26 +676,30 @@ const GasSelectorHeader = ({
   const isLoadingGas = loadingGasEstimated || isNilCustomGas;
 
   useEffect(() => {
-    if (hasCustomPriorityFee.current) return; // use custom priorityFee if user changed custom field
-    if (isReady && selectedGas && chainId === 1) {
-      if (isSelectCustom && isNilCustomGas) {
-        setMaxPriorityFee(undefined);
-        return;
-      }
-      if (selectedGas.priority_price && selectedGas.priority_price !== null) {
-        setMaxPriorityFee(selectedGas.priority_price / 1e9);
-      } else {
-        const priorityFee = calcMaxPriorityFee(
-          gasList,
-          selectedGas,
-          chainId,
-          isSpeedUp || isCancel
-        );
-        setMaxPriorityFee(priorityFee / 1e9);
-      }
-    } else if (selectedGas) {
-      setMaxPriorityFee(selectedGas.price / 1e9);
+    if (!isReady || !selectedGas) {
+      return;
     }
+
+    // reset maxPriorityFee when user select custom gas and not input
+    if (isSelectCustom && isNilCustomGas && !hasCustomPriorityFee.current) {
+      setMaxPriorityFee(undefined);
+      return;
+    }
+
+    let priorityPrice = calcMaxPriorityFee(
+      gasList,
+      selectedGas,
+      chainId,
+      isSpeedUp || isCancel
+    );
+
+    setMaxPriorityFee((prevFee = priorityPrice / 1e9) => {
+      // Compare with selectedGas.price to avoid customMaxPriorityFee is more than maxGasFee
+      if (hasCustomPriorityFee.current) {
+        priorityPrice = Math.min(selectedGas.price, prevFee * 1e9);
+      }
+      return priorityPrice / 1e9;
+    });
   }, [gasList, selectedGas, isReady, chainId, isSelectCustom, isNilCustomGas]);
 
   useEffect(() => {
@@ -682,34 +711,36 @@ const GasSelectorHeader = ({
 
   const gasCostUsdStr = useMemo(() => {
     const bn = new BigNumber(modalExplainGas?.gasCostUsd);
-    let value;
 
-    if (bn.gt(1)) {
-      value = bn.toFixed(2);
-    } else if (bn.gt(0.0001)) {
-      value = bn.toFixed(4);
-    } else {
-      value = '0.0001';
-    }
-
-    return `$${formatTokenAmount(value)}`;
+    return formatUsdValue(bn.toString(10));
   }, [modalExplainGas?.gasCostUsd]);
 
   const gasCostAmountStr = useMemo(() => {
     return `${formatTokenAmount(
       new BigNumber(modalExplainGas.gasCostAmount).toString(10),
-      6
+      6,
+      true
     )} ${chain.nativeTokenSymbol}`;
   }, [modalExplainGas?.gasCostAmount]);
+
+  const calcGasAccountUsd = useCallback((n: number | string) => {
+    const v = Number(n);
+    if (!Number.isNaN(v) && v < 0.01) {
+      return `$${n}`;
+    }
+    return formatUsdValue(n || '0');
+  }, []);
 
   const [isGasHovering, gasHoverProps] = useHover();
 
   const handleClosePopup = () => {
-    if (maxPriorityFee === undefined) {
-      setSelectedGas(prevSelectedNotCustomGas);
-    }
+    setCustomGas(undefined);
+    setChangedCustomGas(false);
+    setSelectedGas(rawSelectedGas);
     setModalVisible(false);
   };
+
+  const uiType = useMemo(() => getUiType(), []);
 
   if (!isReady && isFirstTimeLoad) {
     return (
@@ -728,8 +759,40 @@ const GasSelectorHeader = ({
     <>
       <HeaderStyled>
         <GasStyled {...gasHoverProps}>
-          <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot" />
-          <div className="gas-selector-card-content overflow-hidden">
+          {gasMethod ? (
+            <div
+              className={clsx(
+                'p-2 rounded-md flex items-center relative',
+                'border-[0.5px] border-solid border-rabby-neutral-line'
+              )}
+            >
+              <GasMethod
+                active={gasMethod === 'native'}
+                onChange={() => {
+                  onChangeGasMethod?.('native');
+                }}
+                ActiveComponent={RcIconGasActive}
+                BlurComponent={RcIconGasBlurCC}
+                tips={t('page.signTx.nativeTokenForGas', {
+                  tokenName: chain.nativeTokenSymbol,
+                  chainName: chain.name,
+                })}
+              />
+
+              <GasMethod
+                active={gasMethod === 'gasAccount'}
+                onChange={() => {
+                  onChangeGasMethod?.('gasAccount');
+                }}
+                ActiveComponent={RcIconGasAccountActive}
+                BlurComponent={RcIconGasAccountBlurCC}
+                tips={t('page.signTx.gasAccountForGas')}
+              />
+            </div>
+          ) : (
+            <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot" />
+          )}
+          <div className="ml-8 gas-selector-card-content">
             {disabled ? (
               <div className="font-semibold">
                 {t('page.signTx.noGasRequired')}
@@ -740,11 +803,61 @@ const GasSelectorHeader = ({
                   {t('page.signTx.failToFetchGasCost')}
                 </div>
               </>
-            ) : (
-              <div className="gas-selector-card-content-item">
+            ) : gasMethod === 'gasAccount' ? (
+              <div className="relative gas-selector-card-content-item">
                 <div
                   className={clsx(
-                    'gas-selector-card-amount translate-y-1 flex items-center overflow-hidden',
+                    'gas-selector-card-amount translate-y-1 flex items-center'
+                  )}
+                >
+                  <div className="truncate max-w-[210px] group text-r-neutral-body">
+                    <Tooltip
+                      overlayClassName="rectangle"
+                      title={
+                        <>
+                          <div>
+                            {t('page.signTx.gasAccount.totalCost')}
+                            {calcGasAccountUsd(
+                              gasAccountCost?.gas_account_cost.total_cost || '0'
+                            )}
+                          </div>
+                          <div>
+                            {t('page.signTx.gasAccount.currentTxCost')}
+
+                            {calcGasAccountUsd(
+                              gasAccountCost?.gas_account_cost.tx_cost || '0'
+                            )}
+                          </div>
+                          <div>
+                            {t('page.signTx.gasAccount.gasCost')}
+                            {calcGasAccountUsd(
+                              gasAccountCost?.gas_account_cost.gas_cost || '0'
+                            )}
+                          </div>
+                        </>
+                      }
+                    >
+                      <span className="text-[16px] font-medium text-r-blue-default">
+                        {formatUsdValue(
+                          gasAccountCost?.gas_account_cost.total_cost || '0'
+                        )}
+                      </span>
+                      <span className="text-14 text-r-neutral-body font-normal pl-4">
+                        ~
+                        {calcGasAccountUsd(
+                          gasAccountCost?.gas_account_cost.total_cost || '0'
+                        )?.replace('$', '')}{' '}
+                        USD
+                      </span>
+                    </Tooltip>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="relative gas-selector-card-content-item">
+                <div
+                  className={clsx(
+                    'gas-selector-card-amount translate-y-1 flex items-center',
                     {
                       'text-r-red-default':
                         !processedRules.includes('1118') &&
@@ -755,9 +868,22 @@ const GasSelectorHeader = ({
                     }
                   )}
                 >
-                  <span className="truncate" title={gasCostUsdStr}>
-                    {gasCostUsdStr}
-                  </span>
+                  {gasMethod ? (
+                    <div className="truncate max-w-[210px] group text-r-neutral-body">
+                      <span className="text-[16px] font-medium text-r-blue-default">
+                        {gasCostUsdStr}
+                      </span>
+
+                      <span className="text-14 text-r-neutral-body font-normal pl-4">{`~${gasCostAmountStr}`}</span>
+                    </div>
+                  ) : (
+                    <span
+                      className="truncate max-w-[110px]"
+                      title={gasCostUsdStr}
+                    >
+                      {gasCostUsdStr}
+                    </span>
+                  )}
                   {L2_ENUMS.includes(chain.enum) &&
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                       <span className="relative ml-6">
@@ -777,13 +903,13 @@ const GasSelectorHeader = ({
               </div>
             )}
           </div>
-          {gas.success && (
-            <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
+          {!gasMethod && gas.success ? (
+            <div className="mt-2 flex-shrink-1 text-r-neutral-body text-14 gas-amount">
               {isGasHovering
                 ? calcGasEstimated(selectedGas?.estimated_seconds)
                 : `~${gasCostAmountStr}`}
             </div>
-          )}
+          ) : null}
           {engineResultMap['1118'] && (
             <SecurityLevelTagNoText
               enable={engineResultMap['1118'].enable}
@@ -811,7 +937,7 @@ const GasSelectorHeader = ({
         height={'auto'}
         visible={modalVisible}
         title={t('page.signTx.gasSelectorTitle')}
-        className="gas-modal"
+        className={clsx('gas-modal', uiType.isPop && 'is-popup')}
         onCancel={handleClosePopup}
         destroyOnClose
         closable
@@ -829,7 +955,7 @@ const GasSelectorHeader = ({
               </div>
               {version === 'v2' && gas.error ? (
                 <div className="gas-selector-modal-error-desc mt-[8px] flex items-center justify-center">
-                  <RcIconAlert className="text-r-neutral-body mr-6 w-16" />
+                  <RcIconAlert className="w-16 mr-6 text-r-neutral-body" />
                   {gas.error.msg}{' '}
                   <span className="number">#{gas.error.code}</span>
                 </div>
@@ -891,7 +1017,7 @@ const GasSelectorHeader = ({
                           defaultValue={hiddenCustomGas ? '' : customGas}
                           onChange={handleCustomGasChange}
                           onClick={(e) => handlePanelSelection(e, item)}
-                          onPressEnter={customGasConfirm}
+                          // onPressEnter={customGasConfirm}
                           ref={customerInputRef}
                           autoFocus={selectedGas?.level === item.level}
                           min={0}
@@ -957,7 +1083,7 @@ const GasSelectorHeader = ({
         <div>
           {is1559 && (
             <>
-              <Divide className="bg-r-neutral-line my-20" />
+              <Divide className="my-20 bg-r-neutral-line" />
 
               <div
                 className={clsx('priority-slider', {
@@ -975,7 +1101,7 @@ const GasSelectorHeader = ({
                     }
                     overlayClassName="rectangle"
                   >
-                    <IconInfoSVG className="text-r-neutral-foot ml-2 mt-2" />
+                    <IconInfoSVG className="mt-2 ml-2 text-r-neutral-foot" />
                   </Tooltip>
                 </p>
                 <Tooltip
@@ -993,7 +1119,7 @@ const GasSelectorHeader = ({
                       onChange={(e) =>
                         handleMaxPriorityFeeChange(e.target.value)
                       }
-                      prefixCls="priority-slider-input"
+                      prefixCls="priority-slider-input h-[52px]"
                       type="number"
                       min={0}
                       max={priorityFeeMax}
@@ -1029,6 +1155,46 @@ const GasSelectorHeader = ({
         </div>
       </Popup>
     </>
+  );
+};
+
+const GasMethod = (props: {
+  active: boolean;
+  onChange: () => void;
+  ActiveComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+  BlurComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+  tips?: React.ReactNode;
+}) => {
+  const { active, onChange, ActiveComponent, BlurComponent, tips } = props;
+  return (
+    <Tooltip
+      overlayClassName="rectangle"
+      title={tips}
+      visible={tips ? undefined : false}
+      placement="topLeft"
+      align={{
+        offset: [-4, 0],
+      }}
+    >
+      <div
+        className={clsx(
+          'w-32 h-24 relative rounded',
+          'flex items-center justify-center',
+          'group cursor-pointer',
+          active ? 'bg-r-blue-light1' : 'bg-transparent'
+        )}
+        onClick={onChange}
+      >
+        <ActiveComponent className={clsx(active ? '' : 'hidden')} />
+        <BlurComponent
+          className={clsx(
+            active
+              ? 'hidden'
+              : 'text-r-neutral-foot group-hover:text-r-neutral-body'
+          )}
+        />
+      </div>
+    </Tooltip>
   );
 };
 

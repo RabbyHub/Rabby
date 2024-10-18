@@ -69,10 +69,6 @@ const Loading = () => {
       <Card className="pt-12 pb-16 px-16">
         <Skeleton.Input active className="w-[100px] h-[16px] rounded" />
       </Card>
-
-      <Card className="pt-12 pb-16 px-16">
-        <Skeleton.Input active className="w-[100px] h-[16px] rounded" />
-      </Card>
     </ActionWrapper>
   );
 };

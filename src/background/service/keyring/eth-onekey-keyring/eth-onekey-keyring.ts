@@ -8,12 +8,23 @@ import { SignHelper } from '../helper';
 import { EVENTS } from '@/constant';
 import type { EVMTransaction, EVMTransactionEIP1559 } from '@onekeyfe/hd-core';
 import { OneKeyBridgeInterface } from './onekey-bridge-interface';
+import { isManifestV3 } from '@/utils/env';
+import browser from 'webextension-polyfill';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
 const pathBase = 'm';
 const MAX_INDEX = 1000;
 const DELAY_BETWEEN_POPUPS = 1000;
+const ONEKEY_SESSION_STATE_KEY = 'onekeySessionState';
+
+interface OneKeySessionState {
+  passphraseState: string;
+  deviceId: string;
+  connectId: string;
+  publicKey: string;
+  chainCode: string;
+}
 
 export enum LedgerHDPathType {
   LedgerLive = 'LedgerLive',
@@ -88,8 +99,20 @@ class OneKeyKeyring extends EventEmitter {
     this.init();
   }
 
-  init() {
+  async init() {
     this.bridge.init();
+    if (isManifestV3) {
+      // resume passphrase state from session after sw inactive
+      const value = await browser.storage.session.get(ONEKEY_SESSION_STATE_KEY);
+      const state: OneKeySessionState = value[ONEKEY_SESSION_STATE_KEY];
+      if (state) {
+        this.passphraseState = state.passphraseState;
+        this.deviceId = state.deviceId;
+        this.connectId = state.connectId;
+        this.hdk.publicKey = Buffer.from(state.publicKey, 'hex');
+        this.hdk.chainCode = Buffer.from(state.chainCode, 'hex');
+      }
+    }
   }
 
   serialize(): Promise<any> {
@@ -178,7 +201,7 @@ class OneKeyKeyring extends EventEmitter {
                 path: hdPathString,
                 passphraseState: passphraseState.payload,
               })
-              .then((res) => {
+              .then(async (res) => {
                 if (res.success) {
                   this.hdk.publicKey = Buffer.from(
                     res.payload.publicKey,
@@ -188,6 +211,18 @@ class OneKeyKeyring extends EventEmitter {
                     res.payload.node.chain_code,
                     'hex'
                   );
+                  if (isManifestV3) {
+                    const sessionState: OneKeySessionState = {
+                      passphraseState: passphraseState.payload,
+                      publicKey: res.payload.publicKey,
+                      chainCode: res.payload.node.chain_code,
+                      deviceId,
+                      connectId,
+                    };
+                    await browser.storage.session.set({
+                      [ONEKEY_SESSION_STATE_KEY]: sessionState,
+                    });
+                  }
                   resolve('just unlocked');
                 } else {
                   reject('getPublicKey failed');

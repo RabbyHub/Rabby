@@ -9,7 +9,7 @@ const closeIcon = (
   <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
 );
 
-interface PopupProps extends DrawerProps {
+export interface PopupProps extends DrawerProps {
   onCancel?(): void;
   children?: ReactNode;
   isSupportDarkMode?: boolean;

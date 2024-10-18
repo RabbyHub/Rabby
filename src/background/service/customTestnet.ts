@@ -2,7 +2,7 @@ import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { findChain, isSameTesnetToken, updateChainStore } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel, Tx } from 'background/service/openapi';
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, withTimeout } from 'background/utils';
 import { BigNumber } from 'bignumber.js';
 import { intToHex } from 'ethereumjs-util';
 import { omit, sortBy } from 'lodash';
@@ -24,6 +24,8 @@ import {
 } from 'viem/actions';
 import { http as axios } from '../utils/http';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+
+const MAX_READ_CONTRACT_TIME = 8000;
 
 export interface TestnetChainBase {
   id: number;
@@ -613,7 +615,7 @@ class CustomTestnetService {
 
     const res = await Promise.all(
       queryList.map((item) =>
-        this.getToken(item).catch((e) => {
+        withTimeout(this.getToken(item), MAX_READ_CONTRACT_TIME).catch((e) => {
           console.error(e);
           return null;
         })
@@ -659,7 +661,7 @@ const createClientByChain = (chain: TestnetChainBase) => {
         },
       },
     }),
-    transport: http(chain.rpcUrl),
+    transport: http(chain.rpcUrl, { timeout: 300000 }),
   });
 };
 

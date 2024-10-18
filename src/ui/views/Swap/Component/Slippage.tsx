@@ -5,8 +5,8 @@ import {
   useCallback,
   ChangeEventHandler,
   useState,
+  useEffect,
 } from 'react';
-import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import React from 'react';
@@ -14,17 +14,14 @@ import { Input } from 'antd';
 import ImgArrowUp from 'ui/assets/swap/arrow-up.svg';
 import i18n from '@/i18n';
 import { Trans, useTranslation } from 'react-i18next';
+import { useSlippageStore } from '../hooks';
 
-export const SlippageItem = styled.div<{
-  active?: boolean;
-  error?: boolean;
-  hasAmount?: boolean;
-}>`
+export const SlippageItem = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid transparent;
+  border: 0.5px solid transparent;
   cursor: pointer;
   border-radius: 6px;
   width: 52px;
@@ -33,13 +30,16 @@ export const SlippageItem = styled.div<{
   font-size: 12px;
   background: var(--r-neutral-card-2, #f2f4f7);
   border-radius: 4px;
-  &:hover {
-    /* background: rgba(134, 151, 255, 0.2); */
-    background: var(--r-neutral-card-3, #f7fafc);
+  overflow: hidden;
+
+  &:hover,
+  &.active {
+    background: var(--r-blue-light1, #eef1ff);
+    border-color: var(--r-blue-default, #7084ff);
   }
 `;
 
-const SLIPPAGE = ['0.1', '0.3', '0.5'];
+const SLIPPAGE = ['0.1', '0.5'];
 
 const Wrapper = styled.section`
   .slippage {
@@ -51,27 +51,29 @@ const Wrapper = styled.section`
   .input {
     font-weight: 500;
     font-size: 12px;
-    /* background: #f5f6fa;
-    border: 1px solid #e5e9ef; */
+    border: none;
     border-radius: 4px;
+    background: transparent;
 
     &:placeholder-shown {
       color: #707280;
     }
     .ant-input {
       border-radius: 0;
+      font-weight: 500;
+      font-size: 12px;
     }
   }
 
   .warning {
     padding: 10px;
-    color: #ffb020;
+    color: var(--r-red-default);
     font-weight: 400;
     font-size: 12px;
     line-height: 14px;
     position: relative;
     border-radius: 4px;
-    background: rgba(255, 176, 32, 0.1);
+    background: var(--r-red-light);
     margin-top: 8px;
   }
 `;
@@ -85,7 +87,13 @@ export const Slippage = memo((props: SlippageProps) => {
   const { t } = useTranslation();
 
   const { value, displaySlippage, onChange, recommendValue } = props;
-  const [isCustom, setIsCustom] = useToggle(false);
+
+  const {
+    autoSlippage,
+    isCustomSlippage,
+    setAutoSlippage,
+    setIsCustomSlippage,
+  } = useSlippageStore();
 
   const [slippageOpen, setSlippageOpen] = useState(false);
 
@@ -98,7 +106,9 @@ export const Slippage = memo((props: SlippageProps) => {
 
   const setRecommendValue = useCallback(() => {
     onChange(new BigNumber(recommendValue || 0).times(100).toString());
-  }, [onChange, recommendValue]);
+    setAutoSlippage(false);
+    setIsCustomSlippage(false);
+  }, [onChange, recommendValue, setAutoSlippage, setIsCustomSlippage]);
 
   const tips = useMemo(() => {
     if (isLow) {
@@ -142,22 +152,23 @@ export const Slippage = memo((props: SlippageProps) => {
     return null;
   }, [isHigh, isLow, recommendValue, setRecommendValue]);
 
-  const onInputFocus: ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      e.target?.select?.();
-    },
-    []
-  );
-
   const onInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
+      setAutoSlippage(false);
+      setIsCustomSlippage(true);
       const v = e.target.value;
       if (/^\d*(\.\d*)?$/.test(v)) {
         onChange(Number(v) > 50 ? '50' : v);
       }
     },
-    [onChange]
+    [onChange, setAutoSlippage, setIsCustomSlippage]
   );
+
+  useEffect(() => {
+    if (tips) {
+      setSlippageOpen(true);
+    }
+  }, [tips]);
 
   return (
     <div>
@@ -169,7 +180,7 @@ export const Slippage = memo((props: SlippageProps) => {
       >
         <span>{t('page.swap.slippage-tolerance')}</span>
         <span className="font-medium text-r-neutral-title-1 inline-flex items-center">
-          <span className={clsx(!!tips && 'text-orange')}>
+          <span className={clsx(!!tips && 'text-r-red-default')}>
             {displaySlippage}%{' '}
           </span>
           <img
@@ -188,36 +199,57 @@ export const Slippage = memo((props: SlippageProps) => {
             slippageOpen ? 'mt-8' : 'h-0 overflow-hidden'
           )}
         >
+          <SlippageItem
+            onClick={(event) => {
+              if (autoSlippage) {
+                return;
+              }
+              event.stopPropagation();
+              onChange(value);
+              setAutoSlippage(true);
+              setIsCustomSlippage(false);
+            }}
+            className={clsx(autoSlippage && 'active')}
+          >
+            {t('page.swap.Auto')}
+          </SlippageItem>
           {SLIPPAGE.map((e) => (
             <SlippageItem
               key={e}
               onClick={(event) => {
                 event.stopPropagation();
-                setIsCustom(false);
+                setIsCustomSlippage(false);
+                setAutoSlippage(false);
                 onChange(e);
               }}
-              active={!isCustom && e === value}
+              className={clsx(
+                !autoSlippage && !isCustomSlippage && e === value && 'active'
+              )}
             >
               {e}%
             </SlippageItem>
           ))}
-          <div
+          <SlippageItem
             onClick={(event) => {
               event.stopPropagation();
-              setIsCustom(true);
+              setAutoSlippage(false);
+              setIsCustomSlippage(true);
             }}
-            className="flex-1"
+            className={clsx('flex-1', isCustomSlippage && 'active')}
           >
             <Input
               className={clsx('input')}
               bordered={false}
               value={value}
-              onFocus={onInputFocus}
               onChange={onInputChange}
+              onFocus={() => {
+                setAutoSlippage(false);
+                setIsCustomSlippage(true);
+              }}
               placeholder="0.1"
               suffix={<div>%</div>}
             />
-          </div>
+          </SlippageItem>
         </div>
 
         {!!tips && <div className={clsx('warning')}>{tips}</div>}

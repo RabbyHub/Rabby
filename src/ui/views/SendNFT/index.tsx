@@ -202,7 +202,7 @@ const SendNFT = () => {
   }) => {
     if (!nftItem) return;
     await wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: '/send-nft',
       search: history.location.search,
       params: {},
       states: {

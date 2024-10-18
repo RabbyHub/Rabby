@@ -1,17 +1,23 @@
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
 import { ReactComponent as IconSwapArrow } from '@/ui/assets/swap/swap-arrow.svg';
 import { TokenRender } from './TokenRender';
-import { useTokenPair } from '../hooks/token';
+import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal, Switch, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import { formatAmount, formatUsdValue, useWallet } from '@/ui/utils';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
-import { useQuoteVisible, useSetQuoteVisible } from '../hooks';
+import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { ReceiveDetails } from './ReceiveDetail';
 import { Slippage } from './Slippage';
@@ -19,15 +25,30 @@ import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
+import {
+  DEX,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  SWAP_SUPPORT_CHAINS,
+} from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import { BestQuoteLoading } from './loading';
+import { MaxButton } from '../../SendToken/components/MaxButton';
+import { ReserveGasPopup } from './ReserveGasPopup';
+import GasSelectorHeader, {
+  GasSelectorResponse,
+} from '../../Approval/components/TxComponents/GasSelectorHeader';
+import { MiniApproval, MiniSignTx } from '../../Approval/components/MiniSignTx';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useHistory } from 'react-router-dom';
 
-const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
+const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
 const StyledInput = styled(Input)`
   height: 46px;
@@ -35,7 +56,7 @@ const StyledInput = styled(Input)`
   font-size: 18px;
   box-shadow: none;
   border-radius: 4px;
-  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  border: 1px solid var(--r-neutral-line, #d3d8e0);
   background: transparent !important;
   & > .ant-input {
     font-weight: 500;
@@ -44,19 +65,19 @@ const StyledInput = styled(Input)`
     border-color: transparent;
   }
   &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
   }
 
   &:active {
-    border: 0.5px solid transparent;
+    border: 1px solid transparent;
   }
   &:focus,
   &:focus-within {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
   }
   &:hover {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
@@ -90,17 +111,6 @@ const PreferMEVGuardSwitch = styled(Switch)`
   }
 `;
 
-const MaxButton = styled.div`
-  font-size: 12px;
-  line-height: 1;
-  padding: 4px 5px;
-  cursor: pointer;
-  user-select: nonce;
-  margin-left: 6px;
-  background-color: rgba(134, 151, 255, 0.1);
-  color: #8697ff;
-`;
-
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
 
@@ -118,8 +128,15 @@ export const Main = () => {
   const dispatch = useDispatch();
 
   const {
+    bestQuoteDex,
     chain,
     switchChain,
+    reserveGasOpen,
+    closeReserveGasOpen,
+    gasLevel,
+    changeGasPrice,
+    gasLimit,
+    gasList,
 
     payToken,
     setPayToken,
@@ -128,19 +145,25 @@ export const Main = () => {
     exchangeToken,
 
     handleAmountChange,
+    setPayAmount,
     handleBalance,
-    payAmount,
+    inputAmount,
+    debouncePayAmount,
+
     payTokenIsNativeToken,
     isWrapToken,
     inSufficient,
     slippageChanged,
     setSlippageChanged,
     slippageState,
+    isSlippageHigh,
+    isSlippageLow,
     slippage,
     setSlippage,
 
     feeRate,
 
+    openQuotesList,
     quoteLoading,
     quoteList,
 
@@ -149,6 +172,8 @@ export const Main = () => {
     slippageValidInfo,
     expired,
   } = useTokenPair(userAddress);
+
+  const refresh = useSetRefreshId();
 
   const originPreferMEVGuarded = useRabbySelector(
     (s) => !!s.swap.preferMEVGuarded
@@ -175,30 +200,6 @@ export const Main = () => {
     }
   }, [payToken?.id, receiveToken?.id]);
 
-  const miniReceivedAmount = useMemo(() => {
-    if (activeProvider?.quote?.toTokenAmount) {
-      const receivedTokeAmountBn = new BigNumber(
-        activeProvider?.quote?.toTokenAmount
-      ).div(
-        10 **
-          (activeProvider?.quote?.toTokenDecimals ||
-            receiveToken?.decimals ||
-            1)
-      );
-      return formatAmount(
-        receivedTokeAmountBn
-          .minus(receivedTokeAmountBn.times(slippage).div(100))
-          .toString(10)
-      );
-    }
-    return '';
-  }, [
-    activeProvider?.quote?.toTokenAmount,
-    activeProvider?.quote?.toTokenDecimals,
-    receiveToken?.decimals,
-    slippage,
-  ]);
-
   const DexDisplayName = useMemo(
     () => DEX?.[activeProvider?.name as keyof typeof DEX]?.name || '',
     [activeProvider?.name]
@@ -207,6 +208,17 @@ export const Main = () => {
   const visible = useQuoteVisible();
   const setVisible = useSetQuoteVisible();
   const { t } = useTranslation();
+
+  const payAmountLoading = useMemo(() => inputAmount !== debouncePayAmount, [
+    inputAmount,
+    debouncePayAmount,
+  ]);
+
+  const quoteOrAmountLoading = quoteLoading || payAmountLoading;
+
+  const amountAvailable = useMemo(() => Number(debouncePayAmount) > 0, [
+    debouncePayAmount,
+  ]);
 
   const btnText = useMemo(() => {
     if (slippageChanged) {
@@ -223,8 +235,11 @@ export const Main = () => {
         name: isWrapToken ? 'Wrap Contract' : DexDisplayName,
       });
     }
+    if (quoteOrAmountLoading) {
+      return t('page.swap.title');
+    }
 
-    return t('page.swap.get-quotes');
+    return t('page.swap.title');
   }, [
     slippageChanged,
     activeProvider,
@@ -232,11 +247,13 @@ export const Main = () => {
     payToken,
     isWrapToken,
     DexDisplayName,
+    quoteOrAmountLoading,
   ]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
+  const [isShowSign, setIsShowSign] = useState(false);
   const gotoSwap = useCallback(async () => {
     if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
       try {
@@ -253,10 +270,13 @@ export const Main = () => {
             pay_token_id: payToken.id,
             unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+            gasPrice: payTokenIsNativeToken
+              ? gasList?.find((e) => e.level === gasLevel)?.price
+              : undefined,
             postSwapParams: {
               quote: {
                 pay_token_id: payToken.id,
-                pay_token_amount: Number(payAmount),
+                pay_token_amount: Number(debouncePayAmount),
                 receive_token_id: receiveToken!.id,
                 receive_token_amount: new BigNumber(
                   activeProvider?.quote.toTokenAmount
@@ -269,7 +289,7 @@ export const Main = () => {
                   .toNumber(),
                 slippage: new BigNumber(slippage).div(100).toNumber(),
               },
-              dex_id: activeProvider?.name.replace('API', ''),
+              dex_id: activeProvider?.name.replace('API', '') || 'WrapToken',
             },
           },
           {
@@ -286,6 +306,9 @@ export const Main = () => {
       }
     }
   }, [
+    payTokenIsNativeToken,
+    gasList,
+    gasLevel,
     preferMEVGuarded,
     inSufficient,
     payToken,
@@ -296,6 +319,96 @@ export const Main = () => {
     activeProvider?.name,
     activeProvider?.shouldTwoStepApprove,
   ]);
+
+  const buildSwapTxs = useMemoizedFn(async () => {
+    if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
+      try {
+        const result = await wallet.buildDexSwap(
+          {
+            swapPreferMEVGuarded: preferMEVGuarded,
+            chain,
+            quote: activeProvider?.quote,
+            needApprove: activeProvider.shouldApproveToken,
+            spender:
+              activeProvider?.name === DEX_ENUM.WRAPTOKEN
+                ? ''
+                : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
+            pay_token_id: payToken.id,
+            unlimited: false,
+            shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+            gasPrice: payTokenIsNativeToken
+              ? gasList?.find((e) => e.level === gasLevel)?.price
+              : undefined,
+            postSwapParams: {
+              quote: {
+                pay_token_id: payToken.id,
+                pay_token_amount: Number(debouncePayAmount),
+                receive_token_id: receiveToken!.id,
+                receive_token_amount: new BigNumber(
+                  activeProvider?.quote.toTokenAmount
+                )
+                  .div(
+                    10 **
+                      (activeProvider?.quote.toTokenDecimals ||
+                        receiveToken.decimals)
+                  )
+                  .toNumber(),
+                slippage: new BigNumber(slippage).div(100).toNumber(),
+              },
+              dex_id: activeProvider?.name.replace('API', '') || 'WrapToken',
+            },
+          },
+          {
+            ga: {
+              category: 'Swap',
+              source: 'swap',
+              trigger: rbiSource,
+            },
+          }
+        );
+        return result;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  });
+
+  const {
+    data: txs,
+    runAsync: runBuildSwapTxs,
+    mutate: mutateTxs,
+  } = useRequest(buildSwapTxs, {
+    manual: true,
+  });
+
+  const currentAccount = useCurrentAccount();
+
+  const showLoss = useDetectLoss({
+    payToken: payToken,
+    payAmount: debouncePayAmount,
+    receiveRawAmount: activeProvider?.actualReceiveAmount || 0,
+    receiveToken: receiveToken,
+  });
+
+  const handleSwap = useMemoizedFn(() => {
+    if (
+      [
+        KEYRING_TYPE.SimpleKeyring,
+        KEYRING_TYPE.HdKeyring,
+        KEYRING_CLASS.HARDWARE.LEDGER,
+      ].includes((currentAccount?.type || '') as any) &&
+      !isSlippageHigh &&
+      !isSlippageLow &&
+      !showLoss
+    ) {
+      runBuildSwapTxs();
+      setIsShowSign(true);
+    } else {
+      gotoSwap();
+    }
+  });
+
+  const history = useHistory();
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -322,10 +435,6 @@ export const Main = () => {
   const FeeAndMEVGuarded = useMemo(
     () => (
       <>
-        <div className="flex justify-between items-center">
-          <span>{t('page.swap.rabby-fee')}</span>
-          <span className="font-medium text-r-neutral-title-1">{feeRate}%</span>
-        </div>
         {showMEVGuardedSwitch && (
           <div className="flex justify-between items-center">
             <Tooltip
@@ -354,18 +463,11 @@ export const Main = () => {
 
   return (
     <div
-      className={clsx(
-        'flex-1 overflow-auto page-has-ant-input',
-        isWrapToken
-          ? ''
-          : activeProvider?.shouldApproveToken
-          ? 'pb-[130px]'
-          : 'pb-[110px]'
-      )}
+      className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
     >
       <div
         className={clsx(
-          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-16 mx-20'
+          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-14 mx-20'
         )}
       >
         <div className={clsx(tipsClassName)}>{t('page.swap.chain')}</div>
@@ -374,9 +476,10 @@ export const Main = () => {
           onChange={switchChain}
           disabledTips={getDisabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
+          chainRenderClassName={clsx('text-[16px] font-medium rounded-[4px]')}
         />
 
-        <div className={clsx(tipsClassName, 'flex items-center mb-12')}>
+        <div className={clsx(tipsClassName, 'flex items-center')}>
           <span className="block w-[150px]">{t('page.swap.swap-from')}</span>
           <span className="block w-[150px] ml-auto">{t('page.swap.to')}</span>
         </div>
@@ -431,13 +534,12 @@ export const Main = () => {
           </div>
           <div
             className={clsx(
-              'text-r-neutral-title-1 flex items-center',
-              // !payTokenIsNativeToken && 'underline cursor-pointer',
+              'text-r-neutral-body flex items-center',
               !payToken && 'hidden'
             )}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
-            {!payTokenIsNativeToken && (
+            {new BigNumber(payToken?.raw_amount_hex_str || 0, 16).gt(0) && (
               <MaxButton onClick={handleBalance}>
                 {t('page.swap.max')}
               </MaxButton>
@@ -447,14 +549,14 @@ export const Main = () => {
         <StyledInput
           spellCheck={false}
           placeholder="0"
-          value={payAmount}
+          value={inputAmount}
           onChange={handleAmountChange}
           ref={inputRef as any}
           suffix={
             <span className="text-r-neutral-foot text-12">
-              {payAmount
+              {inputAmount
                 ? `≈ ${formatUsdValue(
-                    new BigNumber(payAmount)
+                    new BigNumber(inputAmount)
                       .times(payToken?.price || 0)
                       .toString(10)
                   )}`
@@ -463,66 +565,75 @@ export const Main = () => {
           }
         />
 
-        {payAmount &&
-          activeProvider &&
-          activeProvider?.quote?.toTokenAmount &&
+        {quoteOrAmountLoading &&
+          amountAvailable &&
+          !inSufficient &&
+          !activeProvider?.manualClick && <BestQuoteLoading />}
+
+        {Number(debouncePayAmount) > 0 &&
+          !inSufficient &&
+          amountAvailable &&
+          (!quoteOrAmountLoading ||
+            (activeProvider && !!activeProvider.manualClick)) &&
           payToken &&
           receiveToken && (
             <>
               <ReceiveDetails
+                bestQuoteDex={bestQuoteDex}
                 activeProvider={activeProvider}
                 isWrapToken={isWrapToken}
                 className="section"
-                payAmount={payAmount}
-                receiveRawAmount={activeProvider?.actualReceiveAmount}
+                payAmount={debouncePayAmount}
+                receiveRawAmount={activeProvider?.actualReceiveAmount || 0}
                 payToken={payToken}
                 receiveToken={receiveToken}
                 quoteWarning={activeProvider?.quoteWarning}
-                // loading={receiveSlippageLoading}
+                chain={chain}
+                openQuotesList={openQuotesList}
               />
-              <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12">
-                <div className="subText flex flex-col gap-12">
-                  {isWrapToken ? (
-                    <>
-                      <div className="flex justify-between items-center">
-                        <span>{t('page.swap.slippage-tolerance')}</span>
-                        <span className="font-medium text-r-neutral-title-1">
-                          {t('page.swap.no-slippage-for-wrap')}
-                        </span>
-                      </div>
-                      {FeeAndMEVGuarded}
-                    </>
-                  ) : (
-                    <>
-                      <Slippage
-                        displaySlippage={slippage}
-                        value={slippageState}
-                        onChange={(e) => {
-                          setSlippageChanged(true);
-                          setSlippage(e);
-                        }}
-                        recommendValue={
-                          slippageValidInfo?.is_valid
-                            ? undefined
-                            : slippageValidInfo?.suggest_slippage
-                        }
-                      />
-                      <div className="flex justify-between items-center">
-                        <span>{t('page.swap.minimum-received')}</span>
-                        <span className="font-medium text-r-neutral-title-1">
-                          {miniReceivedAmount}{' '}
-                          {receiveToken ? getTokenSymbol(receiveToken) : ''}
-                        </span>
-                      </div>
-                      {FeeAndMEVGuarded}
-                    </>
-                  )}
-                </div>
-              </div>
             </>
           )}
-      </div>
 
+        {Number(debouncePayAmount) > 0 &&
+          (!quoteOrAmountLoading || !!activeProvider?.manualClick) &&
+          !!activeProvider &&
+          !!activeProvider?.quote?.toTokenAmount &&
+          payToken &&
+          receiveToken && (
+            <div className="section text-13 leading-4 text-r-neutral-body mt-14 px-12">
+              <div className="subText flex flex-col gap-14">
+                {isWrapToken ? (
+                  <>
+                    <div className="flex justify-between items-center">
+                      <span>{t('page.swap.slippage-tolerance')}</span>
+                      <span className="font-medium text-r-neutral-title-1">
+                        {t('page.swap.no-slippage-for-wrap')}
+                      </span>
+                    </div>
+                    {FeeAndMEVGuarded}
+                  </>
+                ) : (
+                  <>
+                    <Slippage
+                      displaySlippage={slippage}
+                      value={slippageState}
+                      onChange={(e) => {
+                        setSlippageChanged(true);
+                        setSlippage(e);
+                      }}
+                      recommendValue={
+                        slippageValidInfo?.is_valid
+                          ? undefined
+                          : slippageValidInfo?.suggest_slippage
+                      }
+                    />
+                    {FeeAndMEVGuarded}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+      </div>
       {inSufficient ? (
         <Alert
           className={clsx(
@@ -549,7 +660,6 @@ export const Main = () => {
           }
         />
       ) : null}
-
       <div
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
@@ -564,7 +674,7 @@ export const Main = () => {
           className="h-[48px] text-white text-[16px] font-medium"
           onClick={() => {
             if (!activeProvider || expired || slippageChanged) {
-              setVisible(true);
+              refresh((e) => e + 1);
               return;
             }
             if (activeProvider?.shouldTwoStepApprove) {
@@ -577,30 +687,47 @@ export const Main = () => {
                 content: (
                   <>
                     <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                      Sign 2 transactions to change allowance
+                      {t('page.swap.two-step-approve')}
                     </div>
                     <div className="text-13 leading-[17px]  text-r-neutral-body">
-                      Token USDT requires 2 transactions to change allowance.
-                      First you would need to reset allowance to zero, and only
-                      then set new allowance value.
+                      {t('page.swap.two-step-approve-details')}
                     </div>
                   </>
                 ),
-                okText: 'Proceed with two step approve',
+                okText: t('page.swap.process-with-two-step-approve'),
                 onOk() {
-                  gotoSwap();
+                  // gotoSwap();
+                  handleSwap();
                 },
               });
             }
-            gotoSwap();
+            // gotoSwap();
+            // runBuildSwapTxs();
+            handleSwap();
           }}
           disabled={
-            !payToken || !receiveToken || !payAmount || Number(payAmount) === 0
+            !payToken ||
+            !receiveToken ||
+            !amountAvailable ||
+            inSufficient ||
+            payAmountLoading ||
+            !activeProvider
           }
         >
           {btnText}
         </Button>
       </div>
+      <ReserveGasPopup
+        selectedItem={gasLevel}
+        chain={chain}
+        limit={gasLimit}
+        onGasChange={changeGasPrice}
+        gasList={gasList}
+        visible={reserveGasOpen}
+        onCancel={closeReserveGasOpen}
+        onClose={closeReserveGasOpen}
+        rawHexBalance={payToken?.raw_amount_hex_str}
+      />
       {payToken && receiveToken && chain ? (
         <QuoteList
           list={quoteList}
@@ -613,13 +740,37 @@ export const Main = () => {
           chain={chain}
           slippage={slippage}
           payToken={payToken}
-          payAmount={payAmount}
+          payAmount={debouncePayAmount}
           receiveToken={receiveToken}
           fee={feeRate}
           inSufficient={inSufficient}
           setActiveProvider={setActiveProvider}
         />
       ) : null}
+      <MiniApproval
+        visible={isShowSign}
+        txs={txs}
+        onClose={() => {
+          setIsShowSign(false);
+          setTimeout(() => {
+            mutateTxs([]);
+          }, 500);
+        }}
+        onReject={() => {
+          setIsShowSign(false);
+          mutateTxs([]);
+        }}
+        onResolve={() => {
+          setTimeout(() => {
+            setIsShowSign(false);
+            mutateTxs([]);
+            // setPayAmount('');
+            // setTimeout(() => {
+            history.replace('/');
+            // }, 500);
+          }, 500);
+        }}
+      />
     </div>
   );
 };

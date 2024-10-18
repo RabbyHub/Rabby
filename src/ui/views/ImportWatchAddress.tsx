@@ -147,7 +147,7 @@ const ImportWatchAddress = () => {
   };
   const handleScanQRCodeError = async () => {
     await wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: '/import/watch-address',
       params: {},
       states: form.getFieldsValue(),
     });
@@ -222,21 +222,23 @@ const ImportWatchAddress = () => {
       nextDisabled={!isValidAddr}
     >
       {contextHolder}
-      <header className="create-new-header create-password-header h-[264px] res dark:bg-r-blue-disable">
+      <header className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
         <div className="rabby-container">
           <img
-            className="icon-back z-10 relative"
+            className="icon-back mb-0 z-10 relative"
             src={IconBack}
             alt="back"
             onClick={handleClickBack}
           />
-          <img className="w-[80px] h-[75px] mb-28 mx-auto" src={WatchLogo} />
-          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-            {t('page.newAddress.addContacts.content')}
-          </p>
-          <p className="text-14 mb-0 mt-4 text-white  text-center">
-            {t('page.newAddress.addContacts.description')}
-          </p>
+          <div className="relative -top-10">
+            <img className="w-[60px] h-[60px] mb-10 mx-auto" src={WatchLogo} />
+            <p className="text-20 mb-4 mt-0 text-white text-center font-bold">
+              {t('page.newAddress.addContacts.content')}
+            </p>
+            <p className="text-14 mb-0 mt-0 text-white text-center">
+              {t('page.newAddress.addContacts.description')}
+            </p>
+          </div>
         </div>
       </header>
       <div className="rabby-container widget-has-ant-input">
@@ -251,12 +253,13 @@ const ImportWatchAddress = () => {
               },
             ]}
           >
-            <Input
+            <Input.TextArea
               placeholder={t('page.newAddress.addContacts.addressEns')}
-              size="large"
               maxLength={44}
-              className="border-bright-on-active"
+              size="large"
+              className="border-bright-on-active leading-normal"
               autoFocus
+              autoSize
               spellCheck={false}
             />
           </Form.Item>

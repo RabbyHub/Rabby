@@ -21,6 +21,7 @@ import { ReactComponent as ImKeySVG } from 'ui/assets/walletlogo/imkey.svg';
 import { ReactComponent as RcMnemonicSVG } from '@/ui/assets/walletlogo/mnemonic-ink-cc.svg';
 import { ReactComponent as GridPlusSVG } from '@/ui/assets/walletlogo/gridplus.svg';
 import KeyStoneSVG from '@/ui/assets/walletlogo/keystone.svg';
+import NgraveSVG from '@/ui/assets/walletlogo/ngrave.svg';
 import { ReactComponent as AirGapSVG } from '@/ui/assets/walletlogo/airgap.svg';
 import { ReactComponent as CoolWalletSVG } from '@/ui/assets/walletlogo/coolwallet.svg';
 import { ReactComponent as BitBox02SVG } from '@/ui/assets/walletlogo/bitbox02.svg';
@@ -41,6 +42,7 @@ const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: BitBox02SVG,
   [WALLET_BRAND_TYPES.IMTOKENOFFLINE]: imtokenOfflineSVG,
   [HARDWARE_KEYRING_TYPES.ImKey.type]: ImKeySVG,
+  [WALLET_BRAND_TYPES.NGRAVEZERO]: NgraveSVG,
 };
 
 const MANAGER_MAP = {
@@ -90,6 +92,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
       'page.newAddress.hd.manageBitbox02'
     ),
     [HARDWARE_KEYRING_TYPES.ImKey.type]: t('page.newAddress.hd.manageImKey'),
+    [WALLET_BRAND_TYPES.NGRAVEZERO]: t('page.newAddress.hd.manageNgraveZero'),
   };
 
   React.useEffect(() => {

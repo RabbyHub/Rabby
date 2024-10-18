@@ -42,9 +42,13 @@ export const getCurrentWindow = async (): Promise<number | undefined> => {
   return id;
 };
 
-export const openInternalPageInTab = (path: string, useWebapi = true) => {
+export const openInternalPageInTab = (
+  path: string,
+  useWebapi = true,
+  needClose = true
+) => {
   if (useWebapi) {
-    openInTab(`./index.html#/${path}`);
+    openInTab(`./index.html#/${path}`, needClose);
   } else {
     window.open(`./index.html#/${path}`);
   }

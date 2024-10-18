@@ -327,9 +327,8 @@ export const useAccountInfo = (
   const dispatch = useRabbyDispatch();
   const isLedger = type === KEYRING_CLASS.HARDWARE.LEDGER;
   const isGridPlus = type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
-  const isTrezorLike =
-    type === KEYRING_CLASS.HARDWARE.TREZOR ||
-    type === KEYRING_CLASS.HARDWARE.ONEKEY;
+  const isTrezor = type === KEYRING_CLASS.HARDWARE.TREZOR;
+  const isOneKey = type === KEYRING_CLASS.HARDWARE.ONEKEY;
   const isMnemonics = type === KEYRING_CLASS.MNEMONIC;
   const isKeystone = brand === 'Keystone';
   const mnemonicAccounts = useRabbySelector((state) => state.account);
@@ -368,9 +367,9 @@ export const useAccountInfo = (
   }, []);
 
   useEffect(() => {
-    if (isLedger || isGridPlus || isKeystone) {
+    if (isLedger || isGridPlus || isKeystone || isTrezor) {
       fetAccountInfo();
-    } else if (isTrezorLike) {
+    } else if (isOneKey) {
       fetchTrezorLikeAccount();
     } else if (isMnemonics) {
       fetchMnemonicsAccount();

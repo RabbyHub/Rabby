@@ -34,9 +34,7 @@ export const KeystoneConnect = () => {
   const [form] = Form.useForm();
   const decoder = useRef(new URDecoder());
   const [errorMessage, setErrorMessage] = useState('');
-  const [connectType, setConnectType] = useState<ConnectType>(
-    ConnectType.QRCode
-  );
+  const [connectType, setConnectType] = useState<ConnectType>(ConnectType.USB);
   const [scan, setScan] = useState(false);
   const stashKeyringIdRef = useRef<number | null>(null);
   const { search } = useLocation();
@@ -106,15 +104,6 @@ export const KeystoneConnect = () => {
       },
       search,
     });
-  };
-
-  const handleScanQRCodeError = async () => {
-    await wallet.setPageStateCache({
-      path: history.location.pathname,
-      params: {},
-      states: form.getFieldsValue(),
-    });
-    openInternalPageInTab('request-permission?type=camera');
   };
 
   const handleClickBack = () => {
@@ -212,8 +201,8 @@ export const KeystoneConnect = () => {
                 <QRCodeReader
                   width={288}
                   height={288}
+                  needAccessRedirect={false}
                   onSuccess={handleScanQRCodeSuccess}
-                  onError={handleScanQRCodeError}
                   className="bg-r-neutral-line"
                 />
               )}

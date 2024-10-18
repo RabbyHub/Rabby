@@ -104,9 +104,9 @@ class TransactionWatcher {
 
     const url = getTxScanLink(chainItem.scanLink, hash);
     const [address] = id.split('_');
-
+    let gasUsed: number | undefined;
     if (txReceipt) {
-      await transactionHistoryService.reloadTx({
+      gasUsed = await transactionHistoryService.reloadTx({
         address,
         nonce: Number(nonce),
         chainId: chainItem.id,
@@ -133,7 +133,7 @@ class TransactionWatcher {
 
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.TX_COMPLETED,
-      params: { address, hash },
+      params: { address, hash, gasUsed },
     });
 
     eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED, {

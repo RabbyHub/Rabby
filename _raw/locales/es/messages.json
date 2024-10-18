@@ -1167,6 +1167,7 @@
         "manageAirgap": "Administrar AirGap",
         "manageCoolwallet": "Administrar CoolWallet",
         "manageBitbox02": "Administrar BitBox02",
+        "manageNgraveZero": "Administrar NGRAVE ZERO",
         "done": "Hecho",
         "addressesIn": "Direcciones en {{0}}",
         "addressesInRabby": "Direcciones en Rabby {{0}}",

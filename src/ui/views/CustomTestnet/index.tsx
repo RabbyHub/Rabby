@@ -58,7 +58,7 @@ export const CustomTestnet = () => {
     };
     setState(next);
     wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: '/custom-testnet',
       states: {
         ...next,
       },
@@ -117,7 +117,7 @@ export const CustomTestnet = () => {
     };
     setState(next);
     wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: '/custom-testnet',
       states: {
         ...next,
       },
@@ -192,7 +192,7 @@ export const CustomTestnet = () => {
         }}
         onChange={(values) => {
           wallet.setPageStateCache({
-            path: history.location.pathname,
+            path: '/custom-testnet',
             states: {
               ...state,
               current: values,

@@ -1,10 +1,12 @@
-import { CHAINS } from '@debank/common';
 import { ethers } from 'ethers';
 import { preferenceService } from '../service';
 import buildinProvider from '../utils/buildinProvider';
 import { Account } from '../service/preference';
 import { t } from 'i18next';
 import { findChain } from '@/utils/chain';
+import _abiCoder, { AbiCoder } from 'web3-eth-abi';
+
+export const web3AbiCoder = (_abiCoder as unknown) as AbiCoder;
 
 export const getWeb3Provider = async ({
   chainServerId,

@@ -422,6 +422,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
         hideTestnetTab
         hideMainnetTab={false}
         visible={chainSelectorState.visible}
+        showRPCStatus
         onCancel={() => {
           setChainSelectorState({
             visible: false,

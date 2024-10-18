@@ -13,13 +13,11 @@ import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportGnosis from './ImportGnosisAddress';
 import ConnectLedger from './ImportHardware/LedgerConnect';
-import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import TokenApproval from './TokenApproval';
 import NFTApproval from './NFTApproval';
 import AddAddress from './AddAddress';
-import ChainManagement, { StartChainManagement } from './ChainManagement';
 import ChainList from './ChainList';
 import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
@@ -37,7 +35,6 @@ import AddressBackupMnemonics from './AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
-import GasTopUp from './GasTopUp';
 import CustomRPC from './CustomRPC';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -48,9 +45,7 @@ import { NFTView } from './NFTView';
 import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
 import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
 import ApprovalManagePage from './ApprovalManagePage';
-import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
-import { PendingDetail } from './PendingDetail';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
 import RabbyPoints from './RabbyPoints';
@@ -62,6 +57,7 @@ import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
+import { GasAccount } from './GasAccount';
 
 declare global {
   interface Window {
@@ -111,9 +107,6 @@ const Main = () => {
         <Route exact path="/no-address">
           <NoAddress />
         </Route>
-        <PrivateRoute exact path="/start-chain-management">
-          <StartChainManagement />
-        </PrivateRoute>
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
@@ -197,9 +190,6 @@ const Main = () => {
         <PrivateRoute exact path="/nft-approval">
           <NFTApproval />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings">
-          <Settings />
-        </PrivateRoute>
         <PrivateRoute exact path="/settings/address">
           <ManageAddress />
         </PrivateRoute>
@@ -214,9 +204,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/sites">
           <ConnectedSites />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/chain">
-          <ChainManagement />
         </PrivateRoute>
         <PrivateRoute exact path="/settings/chain-list">
           <ChainList />
@@ -244,18 +231,11 @@ const Main = () => {
           <Bridge />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/gas-top-up">
-          <GasTopUp />
-        </PrivateRoute>
-
         <PrivateRoute exact path="/approval-manage">
           <ApprovalManagePage />
         </PrivateRoute>
         <PrivateRoute exact path="/dapp-search">
           <DappSearchPage />
-        </PrivateRoute>
-        <PrivateRoute exact path="/pending-detail">
-          <PendingDetail />
         </PrivateRoute>
 
         <PrivateRoute exact path="/import/metamask">
@@ -281,14 +261,14 @@ const Main = () => {
         <PrivateRoute exact path="/nft">
           <NFTView />
         </PrivateRoute>
-        <PrivateRoute exact path="/request-debank-testnet-gas-token">
-          <RequestDeBankTestnetGasToken />
-        </PrivateRoute>
         <PrivateRoute exact path="/rabby-points">
           <RabbyPoints />
         </PrivateRoute>
         <PrivateRoute path="/ecology/:chainId">
           <Ecology />
+        </PrivateRoute>
+        <PrivateRoute path="/gas-account">
+          <GasAccount />
         </PrivateRoute>
       </Switch>
 

@@ -26,7 +26,6 @@ import { CancelTxPopup } from './CancelTxPopup';
 import { TransactionPendingTag } from './TransactionPendingTag';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { useGetTx, useLoadTxData } from '../hooks';
-import { PredictTime } from './PredictTime';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
@@ -419,7 +418,6 @@ export const TransactionItem = ({
           </div>
         </ChildrenWrapper>
       )}
-      <PredictTime item={item} txRequests={txRequests} />
       <CancelTxPopup
         visible={isShowCancelPopup}
         onClose={() => {

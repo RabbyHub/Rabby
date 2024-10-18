@@ -269,10 +269,11 @@ const RabbyPoints = () => {
   return (
     <Wrapper className="leading-normal flex flex-col">
       <PageHeader
-        closeable={false}
+        canBack={false}
+        closeable={true}
         className="mx-[20px]"
-        forceShowBack
-        onBack={() => {
+        closeCn="text-r-neutral-title-2"
+        onClose={() => {
           history.push('/dashboard');
         }}
       >

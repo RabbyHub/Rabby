@@ -6,7 +6,7 @@ on:
       - tmp/202*
   workflow_dispatch:
     inputs:
-      build_pro:
+      notify_lark:
         required: true
         type: boolean
         default: false
@@ -52,32 +52,39 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      # - name: Get yarn cache directory path
+      #   id: yarn-cache-dir-path
+      #   run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      # - uses: actions/cache@v3
+      #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      #   with:
+      #     path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v3
-        id: yarn-node_modules # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/*.patch') }}
+      # - uses: actions/cache@v3
+      #   id: yarn-node_modules # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      #   with:
+      #     path: node_modules
+      #     key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/*.patch') }}
 
       - name: build
         run: |
+          # for branch tmp/202*, force notify_lark=true
+          echo "GIT_REF is $GIT_REF"
+          if [[ $GIT_REF == refs/heads/tmp/202* ]]; then
+            export notify_lark=true;
+          fi
           sh ./scripts/autobuild.sh;
         env:
           RABBY_BUILD_BUCKET: ${{ secrets.RABBY_BUILD_BUCKET }}
           RABBY_LARK_CHAT_URL: ${{ secrets.RABBY_LARK_CHAT_URL }}
           RABBY_LARK_CHAT_SECRET: ${{ secrets.RABBY_LARK_CHAT_SECRET }}
+          notify_lark: ${{ inputs.notify_lark }}
           # see more details on https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
           ACTIONS_JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GIT_COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+          GIT_REF: ${{ github.ref }}
           GIT_REF_NAME: ${{ github.ref_name }}
           GIT_REF_URL: ${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}
           GITHUB_ACTOR: ${{ github.actor }}

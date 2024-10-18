@@ -1,126 +1,75 @@
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { InsHTMLAttributes } from 'react';
-import styled from 'styled-components';
+import { InsHTMLAttributes, useMemo } from 'react';
 
-import ImgSwitch from '@/ui/assets/swap/switch.svg';
+import { ReactComponent as IconQuoteSwitchCC } from '@/ui/assets/swap/switch-cc.svg';
 
 import React from 'react';
-import { useSetQuoteVisible } from '../hooks';
 import { useTranslation } from 'react-i18next';
 import { SelectedBridgeQuote } from '../hooks';
 import { BridgeQuoteItem } from './BridgeQuoteItem';
-
-const ReceiveWrapper = styled.div`
-  position: relative;
-  margin-top: 24px;
-  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-  border-radius: 4px;
-  padding: 12px;
-  padding-top: 16px;
-
-  color: var(--r-neutral-title-1, #192945);
-  font-size: 13px;
-  .receive-token {
-    font-size: 15px;
-    color: #13141a;
-  }
-
-  .diffPercent {
-    &.negative {
-      color: var(--r-red-default, #e34935);
-    }
-    &.positive {
-      color: var(--r-green-default, #2abb7f);
-    }
-  }
-  .column {
-    display: flex;
-    justify-content: space-between;
-
-    .right {
-      font-weight: medium;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      .ellipsis {
-        max-width: 170px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      img {
-        width: 14px;
-        height: 14px;
-      }
-    }
-  }
-
-  .warning {
-    margin-bottom: 8px;
-    padding: 8px;
-    font-weight: 400;
-    font-size: 13px;
-    color: #ffb020;
-    position: relative;
-    background: rgba(255, 176, 32, 0.1);
-    border-radius: 4px;
-  }
-
-  .footer {
-    position: relative;
-    border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
-    padding-top: 8px;
-
-    .rate {
-      color: var(--r-neutral-body, #d3d8e0) !important;
-    }
-  }
-  .quote-provider {
-    position: absolute;
-    top: -12px;
-    left: 12px;
-    height: 20px;
-    padding: 4px 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    cursor: pointer;
-
-    color: var(--r-neutral-body, #d3d8e0);
-    background: var(--r-blue-light-2);
-    border-radius: 4px;
-    border: 1px solid transparent;
-    &:hover {
-      /* background: var(--r-neutral-bg-1, #fff); */
-      border: 1px solid var(--r-neutral-line, #d3d8e0);
-    }
-  }
-`;
+import clsx from 'clsx';
+import { ReactComponent as IconEmptyCC } from '@/ui/assets/empty-cc.svg';
+import { QuoteReceiveWrapper } from '../../Swap/Component/ReceiveWrapper';
 
 interface ReceiveDetailsProps {
   payAmount: string;
-  // receiveRawAmount: string | number;
   payToken: TokenItem;
   receiveToken: TokenItem;
-  // receiveTokenDecimals?: number;
-  // quoteWarning?: [string, string];
   loading?: boolean;
-  activeProvider: SelectedBridgeQuote;
-  // isWrapToken?: boolean;
+  activeProvider?: SelectedBridgeQuote;
+  bestQuoteId?: {
+    bridgeId: string;
+    aggregatorId: string;
+  };
+  openQuotesList: () => void;
 }
 export const BridgeReceiveDetails = (
   props: ReceiveDetailsProps & InsHTMLAttributes<HTMLDivElement>
 ) => {
   const { t } = useTranslation();
-  const { activeProvider, ...other } = props;
+  const { activeProvider, bestQuoteId, openQuotesList, ...other } = props;
 
-  const openQuote = useSetQuoteVisible();
-  // const payTokenSymbol = getTokenSymbol(props.payToken);
-  // const receiveTokenSymbol = getTokenSymbol(props.receiveToken);
+  const isBestQuote = useMemo(
+    () =>
+      !!bestQuoteId?.bridgeId &&
+      activeProvider?.bridge_id === bestQuoteId?.bridgeId &&
+      activeProvider?.aggregator.id === bestQuoteId?.aggregatorId,
+    [activeProvider, bestQuoteId]
+  );
+
+  if (!activeProvider) {
+    return (
+      <QuoteReceiveWrapper
+        {...other}
+        className={clsx(other.className, 'empty-quote')}
+        onClick={openQuotesList}
+      >
+        <div className="flex items-center justify-center gap-[8px]">
+          <IconEmptyCC
+            viewBox="0 0 40 40"
+            className="w-[16px] h-[16px] text-r-neutral-foot"
+          />
+          <div className="text-13 font-normal text-r-neutral-foot">
+            {t('page.swap.No-available-quote')}
+          </div>
+        </div>
+
+        <div className={clsx('quote-select')} onClick={openQuotesList}>
+          <IconQuoteSwitchCC
+            viewBox="0 0 14 14"
+            className={clsx('w-14 h-14')}
+          />
+        </div>
+      </QuoteReceiveWrapper>
+    );
+  }
 
   return (
-    <ReceiveWrapper {...other}>
+    <QuoteReceiveWrapper
+      {...other}
+      className={clsx(other.className, isBestQuote && 'bestQuote')}
+      onClick={openQuotesList}
+    >
       <BridgeQuoteItem
         {...other}
         {...activeProvider}
@@ -129,13 +78,12 @@ export const BridgeReceiveDetails = (
         onlyShow
       />
       <div
-        className="quote-provider"
-        onClick={() => {
-          openQuote(true);
-        }}
+        className={clsx('quote-select', isBestQuote && 'best')}
+        onClick={openQuotesList}
       >
-        <img src={ImgSwitch} className="w-12 h-12" />
+        {isBestQuote ? <span>{t('page.swap.best')}</span> : null}
+        <IconQuoteSwitchCC viewBox="0 0 14 14" className={clsx('w-14 h-14')} />
       </div>
-    </ReceiveWrapper>
+    </QuoteReceiveWrapper>
   );
 };

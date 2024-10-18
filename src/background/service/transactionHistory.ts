@@ -9,23 +9,20 @@ import openapiService, {
   testnetOpenapiService,
   TxRequest,
 } from './openapi';
-import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
+import { INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
 import { findChain, findChainByID } from '@/utils/chain';
 import { makeTransactionId } from '@/utils/transaction';
-import {
-  ActionRequireData,
-  ParsedActionData,
-} from '@/ui/views/Approval/components/Actions/utils';
-import { sortBy, max, groupBy } from 'lodash';
+import { sortBy, groupBy } from 'lodash';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import eventBus from '@/eventBus';
 import { customTestnetService } from './customTestnet';
-import { isManifestV3 } from '@/utils/env';
-import browser from 'webextension-polyfill';
-import { ALARMS_RELOAD_TX } from '../utils/alarms';
+import {
+  ActionRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -51,7 +48,7 @@ export interface TransactionSigningItem {
     { approvalId: string; calcSuccess: boolean }
   >;
   action?: {
-    actionData: ParsedActionData;
+    actionData: ParsedTransactionActionData;
     requiredData: ActionRequireData;
   };
   id: string;
@@ -69,7 +66,7 @@ export interface TransactionGroup {
     { approvalId: string; calcSuccess: boolean }
   >;
   action?: {
-    actionData: ParsedActionData;
+    actionData: ParsedTransactionActionData;
     requiredData: ActionRequireData;
   };
   isFailed: boolean;
@@ -122,7 +119,7 @@ class TxHistory {
       explain?: Partial<TransactionSigningItem['explain']>;
       rawTx?: Partial<TransactionSigningItem['rawTx']>;
       action?: {
-        actionData: ParsedActionData;
+        actionData: ParsedTransactionActionData;
         requiredData: ActionRequireData;
       };
       isSubmitted?: boolean;
@@ -584,6 +581,8 @@ class TxHistory {
           addressList: [address],
         },
       });
+
+      return completed.gas_used;
     } catch (e) {
       if (duration !== false && +duration < 1000 * 15) {
         const timeout = Number(duration) + 1000;

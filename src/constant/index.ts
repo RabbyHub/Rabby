@@ -180,6 +180,9 @@ import IconImKey, {
 import IconUtila, {
   ReactComponent as RCIconUtila,
 } from 'ui/assets/walletlogo/utila.svg';
+import IconNgrave, {
+  ReactComponent as RCIconNgrave,
+} from 'ui/assets/walletlogo/ngrave.svg';
 import {
   ensureChainHashValid,
   ensureChainListValid,
@@ -192,6 +195,7 @@ import browser from 'webextension-polyfill';
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import Logo0X from 'ui/assets/swap/0xswap.png';
 import Logo1inch from 'ui/assets/swap/1inch.png';
+import LogoOdos from 'ui/assets/swap/odos.png';
 
 import LogoOpenOcean from 'ui/assets/swap/openocean.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
@@ -270,7 +274,6 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.HARDWARE.KEYSTONE,
   KEYRING_CLASS.HARDWARE.TREZOR,
   KEYRING_CLASS.HARDWARE.ONEKEY,
-  KEYRING_CLASS.HARDWARE.IMKEY,
   KEYRING_CLASS.HARDWARE.BITBOX02,
 ];
 
@@ -413,6 +416,7 @@ export const SAFE_RPC_METHODS = [
   'eth_syncing',
   'eth_uninstallFilter',
   'wallet_requestPermissions',
+  'wallet_revokePermissions',
   'wallet_getPermissions',
   'net_version',
 ];
@@ -494,6 +498,9 @@ export const EVENTS = {
   SIGN_BEGIN: 'SIGN_BEGIN',
   SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
   // FORCE_EXPIRE_ADDRESS_BALANCE: 'FORCE_EXPIRE_ADDRESS_BALANCE',
+  GAS_ACCOUNT: {
+    LOG_OUT: 'LOG_OUT',
+  },
 };
 
 export const EVENTS_IN_BG = {
@@ -530,6 +537,7 @@ export enum WALLET_BRAND_TYPES {
   MPCVault = 'MPCVault',
   Coinbase = 'Coinbase',
   IMKEY = 'IMKEY',
+  NGRAVEZERO = 'NGRAVE ZERO',
   Utila = 'Utila',
 }
 
@@ -920,6 +928,18 @@ export const WALLET_BRAND_CONTENT: {
     rcSvg: RCIconUtila,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
+  [WALLET_BRAND_TYPES.NGRAVEZERO]: {
+    id: 31,
+    name: 'NGRAVE ZERO',
+    brand: WALLET_BRAND_TYPES.NGRAVEZERO,
+    icon: IconNgrave,
+    lightIcon: IconNgrave,
+    image: IconNgrave,
+    rcSvg: RCIconNgrave,
+    maybeSvg: IconNgrave,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
 };
 
@@ -1357,6 +1377,9 @@ export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.CELO,
   CHAINS_ENUM.PZE,
   CHAINS_ENUM.ERA,
+  CHAINS_ENUM.SCRL,
+  CHAINS_ENUM.LINEA,
+  'XLAYER',
 ]);
 
 export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
@@ -1369,6 +1392,9 @@ export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.MANTLE,
   CHAINS_ENUM.GNOSIS,
+  CHAINS_ENUM.SCRL,
+  CHAINS_ENUM.MANTA,
+  CHAINS_ENUM.MODE,
 ]);
 
 export const WALLET_SORT_SCORE = [
@@ -1441,6 +1467,18 @@ export const DEX = {
     logo: LogoKyberSwap,
     name: 'KyberSwap',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
+  },
+  [DEX_ENUM.PARASWAPV6]: {
+    id: DEX_ENUM.PARASWAPV6,
+    logo: LogoParaswap,
+    name: 'ParaSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAPV6],
+  },
+  [DEX_ENUM.ODOS]: {
+    id: DEX_ENUM.ODOS,
+    logo: LogoOdos,
+    name: 'Odos',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ODOS],
   },
 };
 

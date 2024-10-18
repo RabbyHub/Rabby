@@ -8,22 +8,29 @@ import { HDManagerStateContext } from './utils';
 import { useRabbyDispatch } from '@/ui/store';
 import { KEYRING_CLASS } from '@/constant';
 
-interface Props extends AccountListProps, SettingData {}
+interface Props extends AccountListProps {
+  setting: SettingData;
+}
 const MAX_STEP_COUNT = 5;
+const MAX_STEP_COUNT_TREZOR = 50;
 
-export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
+export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
   const [accountList, setAccountList] = React.useState<Account[]>([]);
   const wallet = useWallet();
   const [loading, setLoading] = React.useState(true);
   const stoppedRef = React.useRef(true);
-  const startNoRef = React.useRef(startNo);
-  const typeRef = React.useRef(type);
+  const startNoRef = React.useRef(setting.startNo);
+  const typeRef = React.useRef(setting.type);
   const exitRef = React.useRef(false);
   const { createTask, keyringId, keyring } = React.useContext(
     HDManagerStateContext
   );
   const dispatch = useRabbyDispatch();
   const maxCountRef = React.useRef(MAX_ACCOUNT_COUNT);
+  const maxStepCount =
+    keyring === KEYRING_CLASS.HARDWARE.TREZOR
+      ? MAX_STEP_COUNT_TREZOR
+      : MAX_STEP_COUNT;
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -60,7 +67,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
           if (keyring === KEYRING_CLASS.MNEMONIC) {
             return dispatch.importMnemonics.getAccounts({
               start: i,
-              end: i + MAX_STEP_COUNT,
+              end: i + maxStepCount,
             });
           }
           return wallet.requestKeyring(
@@ -68,7 +75,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
             'getAddresses',
             keyringId,
             i,
-            i + (oneByOne ? 1 : MAX_STEP_COUNT)
+            i + (oneByOne ? 1 : maxStepCount)
           );
         })) as Account[];
 
@@ -87,7 +94,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
         if (oneByOne) {
           i++;
         } else {
-          i += MAX_STEP_COUNT;
+          i += maxStepCount;
         }
       }
     } catch (e) {
@@ -105,6 +112,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
   }, []);
 
   React.useEffect(() => {
+    const { type, startNo } = setting;
     typeRef.current = type;
     startNoRef.current = startNo;
 
@@ -116,7 +124,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
         setLoading(true);
       }
     }
-  }, [type, startNo]);
+  }, [setting]);
 
   React.useEffect(() => {
     return () => {

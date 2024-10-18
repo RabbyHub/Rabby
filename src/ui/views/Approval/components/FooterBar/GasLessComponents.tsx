@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ReactComponent as RcIconGas } from '@/ui/assets/sign/tx/gas-cc.svg';
+import { ReactComponent as RcIconGasAccountCC } from '@/ui/assets/sign/tx/gas-account-blur-cc.svg';
+
 import GasLessBg from '@/ui/assets/sign/tx/bg.svg';
 import { ReactComponent as RcIconLogo } from '@/ui/assets/dashboard/rabby.svg';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +10,13 @@ import clsx from 'clsx';
 import LogoImage from 'ui/assets/sign/tx/rabby.svg';
 import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg';
 
-import { ReactComponent as RcIconReason } from '@/ui/assets/sign/tx/question-cc.svg';
-
-import { openInTab } from '@/ui/utils';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { GasAccountCheckResult } from '@/background/service/openapi';
+import { Button } from 'antd';
+import {
+  GasAccountDepositTipPopup,
+  GasAccountLogInTipPopup,
+} from '@/ui/views/GasAccount/components/GasAccountTxPopups';
 
 export type GasLessConfig = {
   button_text: string;
@@ -24,23 +28,24 @@ export type GasLessConfig = {
 };
 
 export function GasLessNotEnough({
-  url,
   gasLessFailedReason,
+  onChangeGasAccount,
+  canGotoUseGasAccount,
 }: {
   url?: string;
   gasLessFailedReason?: string;
+  onChangeGasAccount?: () => void;
+  canGotoUseGasAccount?: boolean;
 }) {
   const { t } = useTranslation();
   const [
     hoverGasLessFailedReason,
     setHoverGasLessFailedReason,
   ] = React.useState(false);
+
   return (
     <div
-      onClick={() => {
-        url && openInTab(url);
-      }}
-      className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px]"
+      className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center"
       onMouseEnter={() => setHoverGasLessFailedReason(true)}
       onMouseLeave={() => setHoverGasLessFailedReason(false)}
     >
@@ -49,22 +54,24 @@ export function GasLessNotEnough({
         className="w-16 h-16 mr-4 text-r-neutral-title-1"
       />
       <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
-        {t('page.signFooterBar.gasless.unavailable')}
-        {/* <RcIconLink /> */}
-
-        {gasLessFailedReason ? (
-          <TooltipWithMagnetArrow
-            inApproval
-            visible={hoverGasLessFailedReason}
-            title={gasLessFailedReason}
-            className="rectangle w-[max-content]"
-            placement="top"
-            arrowPointAtCenter
-          >
-            <RcIconReason viewBox="0 0 12 12" className="w-14 h-14" />
-          </TooltipWithMagnetArrow>
-        ) : null}
+        {t('page.signFooterBar.gasless.notEnough')}
       </span>
+
+      {canGotoUseGasAccount ? (
+        <div
+          style={{
+            cursor: 'pointer',
+            padding: '7px 8px',
+            borderRadius: 6,
+            background: 'var(--r-blue-default, #7084FF)',
+            boxShadow: '0px 1px 4px 0px rgba(65, 89, 188, 0.33)',
+          }}
+          className="text-r-neutral-title2"
+          onClick={onChangeGasAccount}
+        >
+          {t('page.signFooterBar.gasAccount.useGasAccount')}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -176,39 +183,6 @@ function FreeGasReady({
   );
 }
 
-export function GasLessToSign({
-  handleFreeGas,
-  gasLessEnable,
-}: {
-  handleFreeGas: () => void;
-  gasLessEnable: boolean;
-}) {
-  const { t } = useTranslation();
-  return (
-    <>
-      <GasLessReady className={clsx(gasLessEnable && 'gasLess')}>
-        <FreeGasReady />
-        <span className="gas-to-sign security-level-tip bg-r-neutral-card2 text-r-neutral-card2 items-center pr-6">
-          <RcIconGas
-            viewBox="0 0 16 16"
-            className="w-16 h-16 mr-4 text-r-neutral-title-1"
-          />
-          <span className="flex-1 text-r-neutral-title-1">
-            {t('page.signFooterBar.gasless.notEnough')}
-          </span>
-
-          <LinearGradientAnimatedSpan
-            className="mr-auto px-10 py-[7px] text-r-neutral-title-2 cursor-pointer"
-            onClick={handleFreeGas}
-          >
-            {t('page.signFooterBar.gasless.GetFreeGasToSign')}
-          </LinearGradientAnimatedSpan>
-        </span>
-      </GasLessReady>
-    </>
-  );
-}
-
 export function GasLessActivityToSign({
   handleFreeGas,
   gasLessEnable,
@@ -222,9 +196,10 @@ export function GasLessActivityToSign({
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
 
-  const themeColor = isDarkTheme
-    ? gasLessConfig?.dark_color
-    : gasLessConfig?.theme_color;
+  const themeColor = gasLessConfig
+    ? (isDarkTheme ? gasLessConfig?.dark_color : gasLessConfig?.theme_color) ||
+      'var(--r-blue-default, #7084FF)'
+    : undefined;
 
   return (
     <>
@@ -234,7 +209,7 @@ export function GasLessActivityToSign({
           color={themeColor}
           logo={gasLessConfig?.logo}
         />
-        {!!themeColor && (
+        {themeColor && (
           <RcIconCCFreeGasBg
             style={{
               color: themeColor,
@@ -344,3 +319,94 @@ export const GasLessAnimatedWrapper = styled.div`
     }
   }
 `;
+
+export function GasAccountTips({
+  gasAccountCost,
+  isGasAccountLogin,
+  isWalletConnect,
+  noCustomRPC,
+}: {
+  gasAccountCost?: GasAccountCheckResult;
+  isGasAccountLogin?: boolean;
+  isWalletConnect?: boolean;
+  noCustomRPC?: boolean;
+}) {
+  const { t } = useTranslation();
+  const [tipPopupVisible, setTipPopupVisible] = useState(false);
+
+  const [tip, btnText] = useMemo(() => {
+    if (!noCustomRPC) {
+      return [t('page.signFooterBar.gasAccount.customRPC'), null];
+    }
+    if (isWalletConnect) {
+      return [t('page.signFooterBar.gasAccount.WalletConnectTips'), null];
+    }
+    if (!isGasAccountLogin) {
+      return [
+        t('page.signFooterBar.gasAccount.loginFirst'),
+        t('page.signFooterBar.gasAccount.login'),
+      ];
+    }
+    if (gasAccountCost?.chain_not_support) {
+      return [t('page.signFooterBar.gasAccount.chainNotSupported'), null];
+    }
+    if (!gasAccountCost?.balance_is_enough) {
+      return [
+        t('page.signFooterBar.gasAccount.notEnough'),
+        t('page.signFooterBar.gasAccount.deposit'),
+      ];
+    }
+    return [null, null];
+  }, [isGasAccountLogin, isWalletConnect, gasAccountCost]);
+
+  useEffect(() => {
+    return () => {
+      setTipPopupVisible(false);
+    };
+  }, []);
+
+  if (
+    !isWalletConnect &&
+    isGasAccountLogin &&
+    gasAccountCost?.balance_is_enough &&
+    !gasAccountCost.chain_not_support &&
+    noCustomRPC
+  ) {
+    return null;
+  }
+
+  return (
+    <div className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center">
+      <RcIconGasAccountCC
+        viewBox="0 0 20 20"
+        className="w-16 h-16 mr-4 text-r-neutral-foot"
+      />
+      <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
+        {tip}
+      </span>
+
+      {btnText ? (
+        <Button
+          type="primary"
+          className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
+          onClick={() => setTipPopupVisible(true)}
+        >
+          {btnText}
+        </Button>
+      ) : null}
+
+      <GasAccountDepositTipPopup
+        visible={
+          !isWalletConnect && isGasAccountLogin ? tipPopupVisible : false
+        }
+        onClose={() => setTipPopupVisible(false)}
+      />
+      <GasAccountLogInTipPopup
+        visible={
+          !isWalletConnect && !isGasAccountLogin ? tipPopupVisible : false
+        }
+        onClose={() => setTipPopupVisible(false)}
+      />
+    </div>
+  );
+}

@@ -37,6 +37,7 @@ import { MessageWrapper } from '../TextActions';
 import { Card } from '../Card';
 import { SignAdvancedSettings } from '../SignAdvancedSettings';
 import clsx from 'clsx';
+import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,

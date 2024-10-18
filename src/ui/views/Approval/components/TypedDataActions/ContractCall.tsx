@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ContractRequireData, TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
@@ -14,6 +14,7 @@ import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { isSameAddress } from '@/ui/utils';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
+import { ContractRequireData } from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .contract-call-header {
@@ -57,7 +58,7 @@ const ContractCall = ({
   raw,
   engineResults,
 }: {
-  data: TypedDataActionData['contractCall'];
+  data: ParsedTypedDataActionData['contractCall'];
   requireData: ContractRequireData;
   chain: Chain;
   raw: Record<string, string | number>;
@@ -103,7 +104,6 @@ const ContractCall = ({
             <ViewMore
               type="contract"
               data={{
-                hasInteraction: requireData.hasInteraction,
                 bornAt: requireData.bornAt,
                 protocol: requireData.protocol,
                 rank: requireData.rank,
@@ -125,12 +125,6 @@ const ContractCall = ({
             <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
             <SubRow>
               <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-            <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
           {isInWhitelist && (

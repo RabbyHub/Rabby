@@ -23,9 +23,19 @@ export type BridgeServiceStore = {
   selectedFromToken?: TokenItem;
   selectedToToken?: TokenItem;
   selectedAggregators?: string[];
-  unlimitedAllowance: boolean;
-  sortIncludeGasFee?: boolean;
   txQuotes?: Record<string, BridgeRecord>;
+
+  /**
+   * @deprecated
+   */
+  unlimitedAllowance: boolean;
+  /**
+   * @deprecated
+   */
+  sortIncludeGasFee?: boolean;
+  /**
+   * @deprecated
+   */
   firstOpen: boolean;
 };
 
@@ -117,7 +127,6 @@ class BridgeService {
 
   postBridge = (chain: CHAINS_ENUM, hash: string, tx: Tx) => {
     const { postBridgeHistory } = openapiService;
-    // const { txQuotes } = this;
     const key = `${chain}-${tx.data}`;
     const data = { ...this.txQuotes };
     const quoteInfo = data[key];

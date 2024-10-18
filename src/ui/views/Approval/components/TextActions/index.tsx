@@ -3,18 +3,12 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Tabs } from 'antd';
-import { TextActionData, getActionTypeText } from './utils';
-import IconArrowRight, {
-  ReactComponent as RcIconArrowRight,
-} from 'ui/assets/approval/edit-arrow-right.svg';
+import { getActionTypeText } from './utils';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import CreateKey from './CreateKey';
 import VerifyAddress from './VerifyAddress';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
-import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
-import IconCheck, {
-  ReactComponent as RcIconCheck,
-} from 'src/ui/assets/approval/icon-check.svg';
 import clsx from 'clsx';
 import { Popup } from 'ui/component';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
@@ -24,6 +18,7 @@ import { ActionWrapper } from '../ActionWrapper';
 import { Card } from '../Card';
 import { OriginInfo } from '../OriginInfo';
 import { Divide } from '../Divide';
+import { ParsedTextActionData } from '@rabby-wallet/rabby-action';
 
 const { TabPane } = Tabs;
 
@@ -71,7 +66,7 @@ export const MessageWrapper = styled.div`
     line-height: 16px;
     font-weight: 400;
     color: var(--r-neutral-body, #3e495e);
-    height: 320px;
+    height: 250px;
     overflow-y: auto;
     padding: 0 16px 16px;
     /* font-family: 'Roboto Mono'; */
@@ -90,7 +85,7 @@ const Actions = ({
   origin,
   originLogo,
 }: {
-  data: TextActionData | null;
+  data: ParsedTextActionData | null;
   engineResults: Result[];
   raw: string;
   message: string;
@@ -156,13 +151,13 @@ const Actions = ({
                     />
                   }
                 >
-                  <IconQuestionMark className="w-14 text-r-neutral-foot ml-2 mt-2" />
+                  <IconQuestionMark className="mt-2 ml-2 w-14 text-r-neutral-foot" />
                 </TooltipWithMagnetArrow>
               )}
             </div>
             <div className="right">
               <div
-                className="float-right text-13 cursor-pointer flex items-center view-raw"
+                className="flex items-center float-right cursor-pointer text-13 view-raw"
                 onClick={handleViewRawClick}
               >
                 {t('page.signTx.viewRaw')}

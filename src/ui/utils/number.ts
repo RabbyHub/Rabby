@@ -32,6 +32,9 @@ export const formatTokenAmount = (
   if (moreDecimalsWhenNotEnough && bn.lt(0.0001) && decimals < 8) {
     realDecimals = 8;
   }
+  if (moreDecimalsWhenNotEnough && bn.lt(0.00000001)) {
+    return '<0.00000001';
+  }
   if (!split[1] || split[1].length < realDecimals) {
     return splitNumberByStep(bn.toFixed());
   }
@@ -78,6 +81,9 @@ export const formatNumber = (
     suffix: '',
     ...opt,
   };
+  if (n.isNaN()) {
+    return num.toString();
+  }
   // hide the after-point part if number is more than 1000000
   if (n.isGreaterThan(1000000)) {
     if (n.gte(1e9)) {
@@ -179,3 +185,18 @@ export function coerceFloat(input: any, fallbackNum = 0) {
 export function isMeaningfulNumber(input: any): input is number {
   return typeof input === 'number' && !Number.isNaN(input);
 }
+
+export const formatGasCostUsd = (gasCostUsd: BigNumber) => {
+  const bn = gasCostUsd!;
+  let value;
+
+  if (bn.gt(1)) {
+    value = bn.toFixed(2);
+  } else if (bn.gt(0.0001)) {
+    value = bn.toFixed(4);
+  } else {
+    value = '0.0001';
+  }
+
+  return formatTokenAmount(value);
+};

@@ -214,7 +214,7 @@ export const account = createModel<RootModel>()({
     async init(_?, store?) {
       const account: Account = await dispatch.account.getCurrentAccountAsync();
 
-      dispatch.account.onAccountChanged(account.address);
+      dispatch.account.onAccountChanged(account?.address);
 
       return account;
     },

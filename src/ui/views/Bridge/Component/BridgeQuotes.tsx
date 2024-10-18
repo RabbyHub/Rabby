@@ -1,5 +1,5 @@
 import { Checkbox, Popup } from '@/ui/component';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { QuoteLoading } from './loading';
 import { IconRefresh } from './IconRefresh';
 import { SelectedBridgeQuote, useSetRefreshId } from '../hooks';
@@ -9,7 +9,6 @@ import { SvgIconCross } from 'ui/assets';
 import { useTranslation } from 'react-i18next';
 import { TokenItem } from '@/background/service/openapi';
 import { BridgeQuoteItem } from './BridgeQuoteItem';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 
 interface QuotesProps {
@@ -27,16 +26,17 @@ interface QuotesProps {
   setSelectedBridgeQuote: React.Dispatch<
     React.SetStateAction<SelectedBridgeQuote | undefined>
   >;
+  sortIncludeGasFee: boolean;
 }
 
 export const Quotes = ({
   list,
   activeName,
   inSufficient,
+  sortIncludeGasFee,
   ...other
 }: QuotesProps) => {
   const { t } = useTranslation();
-  const sortIncludeGasFee = useRabbySelector((s) => s.bridge.sortIncludeGasFee);
 
   const sortedList = useMemo(() => {
     return list?.sort((b, a) => {
@@ -64,8 +64,8 @@ export const Quotes = ({
   }, [sortedList, other.receiveToken, sortIncludeGasFee]);
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex flex-col gap-12 flex-1 pb-12">
+    <div className="flex flex-col h-full w-full ">
+      <div className="flex flex-col gap-12 flex-1 pb-12 px-20">
         {sortedList?.map((item, idx) => {
           return (
             <BridgeQuoteItem
@@ -100,11 +100,10 @@ export const Quotes = ({
 };
 
 const bodyStyle = {
-  paddingTop: 0,
-  paddingBottom: 0,
+  padding: 0,
 };
 
-export const QuoteList = (props: QuotesProps) => {
+export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
   const { visible, onClose } = props;
   const refresh = useSetRefreshId();
 
@@ -114,9 +113,13 @@ export const QuoteList = (props: QuotesProps) => {
 
   const { t } = useTranslation();
 
-  const sortIncludeGasFee = useRabbySelector((s) => s.bridge.sortIncludeGasFee);
+  const [sortIncludeGasFee, setSortIncludeGasFee] = useState(true);
 
-  const dispatch = useRabbyDispatch();
+  useEffect(() => {
+    if (!visible) {
+      setSortIncludeGasFee(true);
+    }
+  }, [visible]);
 
   return (
     <Popup
@@ -140,7 +143,7 @@ export const QuoteList = (props: QuotesProps) => {
 
           <Checkbox
             checked={!!sortIncludeGasFee}
-            onChange={dispatch.bridge.setSwapSortIncludeGasFee}
+            onChange={setSortIncludeGasFee}
             className="text-12 text-rabby-neutral-body"
             width="14px"
             height="14px"
@@ -186,7 +189,7 @@ export const QuoteList = (props: QuotesProps) => {
           </Checkbox>
         </div>
       }
-      height={440}
+      height={462}
       onClose={onClose}
       closable={false}
       destroyOnClose
@@ -194,7 +197,7 @@ export const QuoteList = (props: QuotesProps) => {
       bodyStyle={bodyStyle}
       isSupportDarkMode
     >
-      <Quotes {...props} />
+      <Quotes {...props} sortIncludeGasFee={sortIncludeGasFee} />
     </Popup>
   );
 };

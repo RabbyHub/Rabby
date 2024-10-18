@@ -8,8 +8,10 @@ import { isSameAddress } from '@/ui/utils';
 import { ProtocolListItem } from './Actions/components/ProtocolListItem';
 import { SecurityListItem } from './Actions/components/SecurityListItem';
 import ViewMore from './Actions/components/ViewMore';
-import { ContractRequireData } from './TypedDataActions/utils';
-import { ContractCallRequireData } from './Actions/utils';
+import {
+  ContractRequireData,
+  ContractCallRequireData,
+} from '@rabby-wallet/rabby-action';
 import { formatTokenAmount } from 'ui/utils/number';
 import { Col, Row, Table } from './Actions/components/Table';
 import * as Values from './Actions/components/Values';
@@ -70,7 +72,7 @@ export const CommonAction = ({
   return (
     <div className="relative">
       <Table>
-        {requireData && chain ? (
+        {requireData && Object.keys(requireData).length && chain ? (
           <>
             <Col>
               <Row className="w-[100px]" isTitle itemsCenter>
@@ -80,7 +82,6 @@ export const CommonAction = ({
                 <ViewMore
                   type="contract"
                   data={{
-                    hasInteraction: requireData.hasInteraction,
                     bornAt: requireData.bornAt,
                     protocol: requireData.protocol,
                     rank: requireData.rank,
@@ -102,13 +103,6 @@ export const CommonAction = ({
                 <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
                 <SubRow>
                   <ProtocolListItem protocol={requireData.protocol} />
-                </SubRow>
-              </SubCol>
-
-              <SubCol>
-                <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-                <SubRow>
-                  <Values.Interacted value={requireData.hasInteraction} />
                 </SubRow>
               </SubCol>
 

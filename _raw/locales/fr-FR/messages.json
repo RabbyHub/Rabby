@@ -572,7 +572,7 @@
           "doc2": "Entrer le mot de passe pour déverrouiller",
           "doc3": "Approuver la connexion à l'ordinateur",
           "reconnect": "Si cela ne fonctionne pas, essayez de <1>vous reconnecter depuis le début.</1>",
-          "title": "*Connexion USB uniquement pour Keystone 3(Pro)"
+          "title": "Assurez-vous que votre Keystone 3 Pro est sur la page d'accueil"
         }
       },
       "home": {
@@ -937,6 +937,7 @@
         "manageAddressFrom": "Gérer l'adresse de {{0}} à {{1}}",
         "manageAirgap": "Gérer AirGap",
         "manageBitbox02": "Gérer BitBox02",
+        "manageNgraveZero": "Gérer NGRAVE ZERO",
         "manageCoolwallet": "Gérer CoolWallet",
         "manageGridplus": "Gérer GridPlus",
         "manageKeystone": "Gérer Keystone",
@@ -1132,7 +1133,7 @@
         "deviceRejectedExportAddress": "Approuver la connexion à Rabby",
         "exportAddressJustAllowedOnHomePage": "Adresse d'exportation uniquement autorisée sur la page d'accueil",
         "keystonePermission1": "Se connecter à un périphérique USB",
-        "keystonePermissionTip": "Veuillez cliquer sur « Autoriser » ci-dessous et autoriser l'accès à votre Keystone dans la fenêtre contextuelle suivante.",
+        "keystonePermissionTip": "Veuillez cliquer sur « Autoriser » ci-dessous pour autoriser l'accès à votre Keystone dans la fenêtre pop-up suivante, et assurez-vous que votre Keystone 3 Pro est sur la page d'accueil.",
         "noDeviceFoundError": "Brancher un seul Keystone",
         "title": "Connecter Keystone",
         "unknowError": "Erreur inconnue, veuillez réessayer"
@@ -1421,10 +1422,11 @@
       "cancelTransaction": "Annuler la transaction",
       "detectedMultipleRequestsFromThisDapp": "Détection de plusieurs requêtes de cette DApp",
       "keystone": {
-        "hardwareRejectError": "Le matériel rejette la signature",
+        "qrcodeDesc": "Scannez pour signer. Après avoir signé, cliquez ci-dessous pour obtenir la signature. Pour USB, reconnectez et autorisez pour recommencer le processus de signature.",
+        "hardwareRejectError": "La demande Keystone a été annulée. Pour continuer, veuillez vous réauthentifier.",
         "misMatchSignId": "Données de transaction incongrues. Veuillez vérifier les détails de la transaction.",
         "mismatchedWalletError": "Portefeuille invalide",
-        "shouldOpenKeystoneHomePageError": "Veuillez ouvrir la page d'accueil de Keystone",
+        "shouldOpenKeystoneHomePageError": "Assurez-vous que votre Keystone 3 Pro est sur la page d'accueil.",
         "shouldRetry": "Une erreur s'est produite. Veuillez réessayer.",
         "siging": "Envoi d'une demande de signature",
         "signWith": "Passer à {{method}} pour la signature",

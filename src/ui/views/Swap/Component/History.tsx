@@ -18,6 +18,7 @@ import { ellipsis } from '@/ui/utils/address';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
+import { DEX } from '@/constant';
 
 const TokenCost = ({
   payToken,
@@ -80,7 +81,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     const isPending = data.status === 'Pending';
     const isCompleted = data?.status === 'Completed';
     const time = data?.finished_at || data?.create_at;
-    const targetDex = data?.dex_id;
+    const targetDex = DEX?.[data?.dex_id]?.name || data?.dex_id || '';
     const txId = data?.tx_id;
     const chainItem = useMemo(
       () =>
@@ -124,7 +125,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     return (
       <div
         className={clsx(
-          'bg-r-neutral-card-2 rounded-[6px] p-12 relative text-12 text-r-neutral-body'
+          'bg-r-neutral-card-1 rounded-[6px] p-12 relative text-12 text-r-neutral-body'
         )}
         ref={ref}
       >
@@ -294,6 +295,7 @@ export const SwapTxHistory = ({
       }}
       destroyOnClose
       isSupportDarkMode
+      isNew
     >
       <HistoryList />
     </Popup>

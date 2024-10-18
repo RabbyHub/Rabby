@@ -10,6 +10,8 @@ export const swap = createModel<RootModel>()({
   name: 'swap',
 
   state: {
+    slippage: '0.1',
+    autoSlippage: true,
     supportedDEXList: Object.keys(DEX),
     selectedDex: null,
     selectedChain: null,
@@ -189,9 +191,26 @@ export const swap = createModel<RootModel>()({
       const data = await store.app.wallet.openapi.getSupportedDEXList();
       if (data.dex_list) {
         this.setField({
-          supportedDEXList: data.dex_list,
+          supportedDEXList: data.dex_list?.filter((item) =>
+            Object.keys(DEX).includes(item)
+          ),
         });
       }
+    },
+
+    async setAutoSlippage(autoSlippage: boolean, store) {
+      await store.app.wallet.setAutoSlippage(autoSlippage);
+      this.setField({ autoSlippage });
+    },
+
+    async setIsCustomSlippage(isCustomSlippage: boolean, store) {
+      await store.app.wallet.setIsCustomSlippage(isCustomSlippage);
+      this.setField({ isCustomSlippage });
+    },
+
+    async setSlippage(slippage: string, store) {
+      await store.app.wallet.setSlippage(slippage);
+      this.setField({ slippage });
     },
   }),
 });

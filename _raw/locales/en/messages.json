@@ -59,6 +59,13 @@
       "myNativeTokenBalance": "My Gas balance: ",
       "gasLimitEmptyAlert": "Please input gas limit",
       "gasLimitMinValueAlert": "Gas limit should be more than 21000",
+      "nativeTokenForGas": "Use {{tokenName}} token on {{chainName}} to pay for gas",
+      "gasAccountForGas": "Use USD from my GasAccount to pay for gas",
+      "gasAccount": {
+        "totalCost": "Total cost: ",
+        "currentTxCost": "Gas amount sent to your address: ",
+        "gasCost": "Gas cost for sending Gas to your address: "
+      },
       "balanceChange": {
         "successTitle": "Simulation Results",
         "failedTitle": "Simulation Failed",
@@ -70,7 +77,7 @@
         "nftOut": "NFT out"
       },
       "enoughSafeSigCollected": "Enough signature collected",
-      "moreSafeSigNeeded": "{{0}} more confirmation needed",
+      "moreSafeSigNeeded": "Need {{0}} more signatures to confirm",
       "safeAdminSigned": "Signed",
       "customRPCErrorModal": {
         "title": "Custom RPC Error",
@@ -100,6 +107,15 @@
       },
       "wrapToken": "Wrap Token",
       "unwrap": "Unwrap Token",
+      "transferOwner": {
+        "title": "Transfer Assets Ownership",
+        "description": "Description",
+        "transferTo": "Transfer to"
+      },
+      "swapLimitPay": {
+        "title": "Swap Token Limit Pay",
+        "maxPay": "Maximum pay"
+      },
       "send": {
         "title": "Send Token",
         "sendToken": "Send token",
@@ -128,7 +144,9 @@
         "deployTimeLessThan": "< {{value}} days",
         "amountPopupTitle": "Approve amount",
         "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "contractTrustValueTip": "Trust value refers to the total asset value spent by this contract. A low trust value indicates either risk or inactivity for 180 days.",
+        "amount": "Approve Amount:",
+        "exceed": "Exceeds your current balance"
       },
       "revokeTokenApprove": {
         "title": "Revoke Token Approval",
@@ -142,7 +160,7 @@
       "nftApprove": {
         "title": "NFT Approval",
         "approveNFT": "Approve NFT",
-        "nftContractTrustValueTip": "Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "nftContractTrustValueTip": "Trust value refers to the top NFT value spent by this contract. A low trust value indicates either risk or inactivity for 180 days."
       },
       "revokeNFTApprove": {
         "title": "Revoke NFT Approval",
@@ -180,7 +198,10 @@
         "receiver": "Receiver Address"
       },
       "revokePermit2": {
-        "title": "Revoke Permit2 Token Approval"
+        "title": "Revoke Permit2 Approval"
+      },
+      "batchRevokePermit2": {
+        "title": "Batch Revoke Permit2 Approval"
       },
       "revokePermit": {
         "title": "Revoke Permit Token Approval"
@@ -328,15 +349,26 @@
       "keystoneNotConnected": "Keystone is not connected",
       "keystoneConnected": "Keystone is connected",
       "ledgerConnected": "Ledger is connected",
-      "signAndSubmitButton": "Sign and Create",
+      "signAndSubmitButton": "Sign",
       "gasless": {
-        "unavailable": "Gas is not enough and not qualify for Free Gas",
+        "unavailable": "Your Gas Balance is not enough",
         "notEnough": "Gas balance is not enough",
-        "GetFreeGasToSign": "Get Free Gas to sign",
+        "GetFreeGasToSign": "Get Free Gas",
         "rabbyPayGas": "Rabby'll pay for the gas needed – just sign on",
         "customRpcUnavailableTip": "Custom RPCs are not supported for Free Gas",
         "walletConnectUnavailableTip": "Mobile wallet connected via WalletConnect is not supported for Free Gas",
         "watchUnavailableTip": "Watch-only address is not supported for Free Gas"
+      },
+      "gasAccount": {
+        "customRPC": "Not supported when using custom RPC",
+        "notEnough": "GasAccount is not enough",
+        "useGasAccount": "Use GasAccount",
+        "WalletConnectTips": "WalletConnect is not supported by GasAccount",
+        "chainNotSupported": "This chain is not supported by GasAccount",
+        "loginFirst": "Please log in to GasAccount first",
+        "login": "Log in",
+        "gotIt": "Got it",
+        "deposit": "Deposit"
       },
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
@@ -383,15 +415,16 @@
       },
       "keystone": {
         "signWith": "Switch to {{method}} for signing",
+        "qrcodeDesc": "Scan to sign. After signing, click below to get the signature. For USB, reconnect and authorize to begin the signing process again.",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
         "unsupportedType": "Error: The transaction type is unsupported or unknown.",
         "siging": "Sending signing request",
         "txRejected": "Transaction rejected",
         "shouldRetry": "Some error occurred. Please retry.",
-        "hardwareRejectError": "Hardware rejects signature",
+        "hardwareRejectError": "Keystone request was cancelled. To proceed, please reauthorize.",
         "mismatchedWalletError": "Mismatched wallet",
         "verifyPasswordError": "Signature failure, please try again after unlocking",
-        "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
+        "shouldOpenKeystoneHomePageError": "Ensure your Keystone 3 Pro is on the homepage"
       },
       "ledger": {
         "resent": "Resent",
@@ -708,7 +741,12 @@
         "RevokeButton": {
           "btnText_zero": "Revoke",
           "btnText_one": "Revoke ({{count}})",
-          "btnText_other": "Revoke ({{count}})"
+          "btnText_other": "Revoke ({{count}})",
+          "permit2Batch": {
+            "modalContent": "Approvals from the same Permit2 contract would be packaged together under the same signature.",
+            "modalTitle_one": "A total of <2>{{count}}</2> signature is required",
+            "modalTitle_other": "A total of <2>{{count}}</2> signatures is required"
+          }
         },
         "ViewMore": {
           "text": "View more"
@@ -727,7 +765,7 @@
             "myApprovalTime": "My Approval Time"
           },
           "columnTip": {
-            "contractTrustValue": "Trust value refers to the total asset value approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
+            "contractTrustValue": "Trust value refers to the total asset value spent by this contract. A low trust value indicates either risk or inactivity for 180 days.",
             "contractTrustValueWarning": "The contract trust value < $100,000",
             "contractTrustValueDanger": "The contract trust value < $10,000"
           }
@@ -752,8 +790,42 @@
         "subTitleTokenAndNFT": "Approved Token and NFT",
         "subTitleContract": "Approved to the following Contracts",
         "selectAll": "Select All",
+        "unSelectAll": "Unselect All",
         "confirm": "Confirm {{ selectedCount }}",
-        "title": "Approvals"
+        "title": "Approvals",
+        "tooltipPermit2": "This approval is approved via Permit2 contract:\n{{ permit2Id }}"
+      },
+      "revokeModal": {
+        "confirmRevokePrivateKey": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with 1 click.",
+        "confirmRevokeLedger": "Using a Ledger address, you can batch revoke {{count}} approvals with 1 click.",
+        "batchRevoke": "Batch Revoke",
+        "revokeOneByOne": "Revoke One by One",
+        "revoked": "Revoked:",
+        "totalRevoked": "Total:",
+        "approvalCount_zero": "{{count}} approval",
+        "approvalCount_one": "{{count}} approval",
+        "approvalCount_other": "{{count}} approvals",
+        "signAndStartRevoke": "Sign and Start Revoke",
+        "pause": "Pause",
+        "resume": "Continue",
+        "done": "Done",
+        "confirmTitle": "Batch Revoke with One Click",
+        "cancelTitle": "Cancel Remaining Revokes",
+        "confirm": "Confirm",
+        "cancelBody": "If you close this page, the remaining revokes will not be executed.",
+        "gasNotEnough": "Insufficient Gas to submit",
+        "gasTooHigh": "Gas fee is high",
+        "submitTxFailed": "Fail to Submit",
+        "defaultFailed": "Transaction failed",
+        "stillRevoke": "Still Revoke",
+        "paused": "Paused",
+        "waitInQueue": "Wait in queue",
+        "revokeWithLedger": "Start Revoke with Ledger",
+        "connectLedger": "Connect Ledger",
+        "ledgerSended": "Please sign the request on Ledger ({{current}}/{{total}})",
+        "ledgerSending": "Sending signing request ({{current}}/{{total}})",
+        "ledgerAlert": "Please open Ethereum App on your Ledger device",
+        "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -807,7 +879,6 @@
       "insufficient-balance": "Insufficient balance",
       "hidden-no-quote-rates_one": "{{count}} rate unavailable",
       "hidden-no-quote-rates_other": "{{count}} rates unavailable",
-
       "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
       "preferMEV": "Prefer MEV Guarded",
@@ -831,7 +902,7 @@
       "rates-from-cex": "Rates from CEX",
       "edit": "Edit",
       "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
-      "the-following-swap-rates-are-found": "Found following swap rates",
+      "the-following-swap-rates-are-found": "Found following rates",
       "sort-with-gas": "Sort with gas",
       "est-payment": "Est. Payment:",
       "est-receiving": "Est. Receiving:",
@@ -857,12 +928,30 @@
       "gas-fee": "GasFee: {{gasUsed}}",
       "estimate": "Estimate:",
       "actual": "Actual:",
-      "max": "MAX"
+      "max": "MAX",
+      "two-step-approve": "Sign 2 transactions to change allowance",
+      "two-step-approve-details": "Token USDT requires 2 transactions to change allowance.First you would need to reset allowance to zero, and only then set new allowance value.",
+      "process-with-two-step-approve": "Proceed with two step approve",
+      "fetch-best-quote": "Fetching the Best quote",
+      "usd-after-fees": "≈ {{usd}} after fees",
+      "no-fees-for-wrap": "No Rabby fees for Wrap",
+      "No-available-quote": "No available quote",
+      "price-impact": "Price Impact",
+      "loss-tips": "You're losing {{usd}}. Try a smaller amount in a small market.",
+      "Auto": "Auto",
+      "rabbyFee": {
+        "title": "Rabby fee",
+        "swapDesc": "Rabby Wallet will always find the best possible rate from top aggregators and verify the reliability of their offers. Rabby charges a 0.25% fee (0% for wrapping), which is automatically included in the quote.",
+        "bridgeDesc": "Rabby Wallet will always find the best possible rate from top aggregators and verify the reliability of their offers. Rabby charges a 0.25% fee, which is automatically included in the quote.",
+        "wallet": "Wallet",
+        "rate": "Fee rate",
+        "button": "Got it"
+      }
     },
     "bridge": {
       "title": "Bridge",
       "history": "Bridge history",
-      "the-following-bridge-route-are-found": "Found following bridge route",
+      "the-following-bridge-route-are-found": "Found following route",
       "no-transaction-records": "No transaction records",
       "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
       "Pending": "Pending",
@@ -887,7 +976,7 @@
       "need-to-approve-token-before-bridge": "Need to approve token before bridge",
       "via-bridge": "via {{bridge}}",
       "duration": "{{duration}} min",
-      "estimated-value": "≈ {{value}}",
+      "estimated-value": "≈ {{value}} after fees",
       "best": "Best",
       "bridge-cost": "Bridge cost",
       "rabby-fee": "Rabby fee",
@@ -895,7 +984,6 @@
       "no-route-found": "No route found",
       "aggregator-not-enabled": "This aggregator is not enabled to trade by you.",
       "enable-it": "Enable it",
-
       "settingModal": {
         "title": "Enable Bridge Aggregators to trade",
         "confirm": "Confirm",
@@ -914,7 +1002,6 @@
         "noData": "No Supported Token Pair"
       }
     },
-
     "manageAddress": {
       "no-address": "No address",
       "no-match": "No match",
@@ -956,7 +1043,8 @@
       "sort-address": "Sort Address",
       "enterThePassphrase": "Enter the Passphrase",
       "enterPassphraseTitle": "Enter Passphrase to Sign",
-      "passphraseError": "Passphrase invalid"
+      "passphraseError": "Passphrase invalid",
+      "addNewAddress": "Add New Address"
     },
     "dashboard": {
       "home": {
@@ -1107,7 +1195,6 @@
         "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
         "autoLockTime": "Auto lock time",
         "claimRabbyBadge": "Claim Rabby Badge!",
-        "claimFreeGasBadge": "Claim Rabby Free Gas Badge!",
         "cancel": "Cancel",
         "enableWhitelist": "Enable Whitelist",
         "disableWhitelist": "Disable Whitelist",
@@ -1128,7 +1215,8 @@
           "manageAddress": "Manage Address",
           "connectedDapp": "Connected Dapps",
           "searchDapps": "Search Dapps",
-          "gasTopUp": "Gas Top Up"
+          "gasTopUp": "Gas Top Up",
+          "rabbyPoints": "Rabby Points"
         },
         "settings": {
           "label": "Settings",
@@ -1176,7 +1264,7 @@
           "fractionTips": "Calculate based on the price of the linked ERC20 token."
         },
         "tokenButton": {
-          "subTitle": "The token in this list will not be added to total balance"
+          "subTitle": "Tokens on this list will not be added to the total balance"
         },
         "table": {
           "assetAmount": "Asset / Amount",
@@ -1250,10 +1338,10 @@
           "doc1": "Plug in a single Ledger",
           "doc2": "Enter pin to unlock",
           "doc3": "Open Ethereum App",
-          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
+          "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>"
         },
         "keystone": {
-          "title": "*USB connect only for Keystone 3(Pro)",
+          "title": "Ensure your Keystone 3 Pro is on the homepage",
           "doc1": "Plug in a single Keystone",
           "doc2": "Enter password to unlock",
           "doc3": "Approve connection to computer",
@@ -1264,7 +1352,8 @@
           "doc1": "Plug in a single imKey",
           "doc2": "Enter pin to unlock"
         },
-        "howToConnectImKey": "How to Connect imKey"
+        "howToConnectImKey": "How to Connect imKey",
+        "ledgerIsDisconnected": "Your ledger is not connected"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}"
@@ -1396,13 +1485,19 @@
         "ledgerPermissionTip": "Please click \"Allow\" below and authorize access to your Ledger in the following pop-up window.",
         "permissionsAuthorized": "Permissions Authorized",
         "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
-        "allow": "Allow"
+        "allow": "Allow",
+        "error": {
+          "ethereum_app_not_installed_error": "Please install the Ethereum app on your Ledger device.",
+          "ethereum_app_unconfirmed_error": "You have denied the request to open the Ethereum app.",
+          "ethereum_app_open_error": "Please install/accept Ethereum app on your Ledger device.",
+          "running_app_close_error": "Failed to close the running app on your Ledger device."
+        }
       },
       "keystone": {
         "title": "Connect Keystone",
         "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
         "keystonePermission1": "Connect to an USB device",
-        "keystonePermissionTip": "Please click \"Allow\" below and authorize access to your Keystone in the following pop-up window.",
+        "keystonePermissionTip": "Please click \"Allow\" below to authorize access to your Keystone in the following pop-up window, and ensure your Keystone 3 Pro is on the homepage.",
         "noDeviceFoundError": "Plug in a single Keystone",
         "deviceIsLockedError": "Enter password to unlock",
         "deviceRejectedExportAddress": "Approve connection to Rabby",
@@ -1483,10 +1578,14 @@
         },
         "trezor": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "message": {
             "disconnected": "{{0}}Connect has stopped. Please refresh the page to connect again."
@@ -1564,6 +1663,7 @@
         "manageImtokenOffline": "Manage imToken",
         "manageCoolwallet": "Manage CoolWallet",
         "manageBitbox02": "Manage BitBox02",
+        "manageNgraveZero": "Manage NGRAVE ZERO",
         "done": "Done",
         "addressesIn": "Addresses in {{0}}",
         "addressesInRabby": "Addresses in Rabby{{0}}",
@@ -1816,7 +1916,7 @@
       "confirmRequired": "Please Confirm Password",
       "confirmError": "Passwords do not match",
       "confirmPlaceholder": "Confirm password",
-      "agree": "I have read and agree to the<1/> <2>Terms of Use</2>"
+      "agree": "I have read and agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>"
     },
     "welcome": {
       "step1": {
@@ -2094,6 +2194,62 @@
           "mintBtn": "Mint"
         }
       }
+    },
+    "miniSignFooterBar": {
+      "signWithLedger": "Sign with Ledger",
+      "status": {
+        "txCreated": "Transaction created",
+        "txSigned": "Signed. Creating transaction",
+        "txSending": "Sending signing request",
+        "txSendings": "Sending signing request({{current}}/{{total}})"
+      }
+    },
+
+    "gasAccount": {
+      "title": "GasAccount",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "gasExceed": "GasAccount balance cannot exceed $1000",
+      "logout": "Log out current GasAccount",
+      "history": {
+        "noHistory": "No history"
+      },
+      "loginInTip": {
+        "title": "Deposit USDC / USDT",
+        "desc": "Pay Gas Fees on All Chains",
+        "login": "Log in GasAccount",
+        "gotIt": "Got it"
+      },
+      "loginConfirmModal": {
+        "title": "Log in with Current Address",
+        "desc": "Once confirmed you can only log in with this address"
+      },
+      "logoutConfirmModal": {
+        "title": "Log out current GasAccount",
+        "desc": "Once logged out, you will no longer be able to use GasAccount to pay for gas fees.",
+        "logout": "Log out"
+      },
+      "depositPopup": {
+        "title": "Deposit",
+        "desc": "Make a deposit to Rabby's DeBank L2 Account with no extra fees—withdraw anytime.",
+        "amount": "Amount",
+        "token": "Token",
+        "selectToken": "Select Token to Deposit"
+      },
+      "withdrawPopup": {
+        "title": "Withdraw",
+        "desc": "You can withdraw your GasAccount balance to your DeBank L2 Wallet. Log in to your DeBank L2 Wallet to transfer the funds to a supported blockchain as needed.",
+        "amount": "Amount",
+        "to": "To"
+      },
+      "withdrawConfirmModal": {
+        "title": "Transferred to your DeBank L2 Wallet",
+        "button": "View on DeBank"
+      },
+      "GasAccountDepositTipPopup": {
+        "title": "Open GasAccount and Deposit",
+        "gotIt": "Got it"
+      }
     }
   },
   "component": {
@@ -2234,6 +2390,13 @@
       "title": "Notice",
       "desc": "The following services will be provided directly by third party Ecosystem Partner. Rabby Wallet does not assume responsibility for the security of these services.",
       "notRemind": "Don't remind me again"
+    },
+    "ReserveGasPopup": {
+      "title": "Reserve Gas",
+      "instant": "Instant",
+      "fast": "Fast",
+      "normal": "Normal",
+      "doNotReserve": "Don't reserve Gas"
     }
   },
   "global": {
