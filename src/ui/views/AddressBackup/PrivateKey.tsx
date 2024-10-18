@@ -10,6 +10,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconMaskIcon from '@/ui/assets/create-mnemonics/mask-lock.svg';
 import { ReactComponent as IconRcMask } from '@/ui/assets/create-mnemonics/mask-lock.svg';
+import {
+  LavaDome as LavaDomeReact,
+  toLavaDomeToken,
+} from '@lavamoat/lavadome-react';
 import clsx from 'clsx';
 
 const AddressBackup = () => {
@@ -69,7 +73,7 @@ const AddressBackup = () => {
           </div>
         ) : (
           <>
-            {data}
+            <LavaDomeReact text={toLavaDomeToken(data)} />
             <Copy icon={IconCopy} data={data} className="icon-copy"></Copy>
           </>
         )}
