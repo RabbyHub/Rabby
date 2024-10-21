@@ -63,11 +63,13 @@ export const MiniSignTx = ({
   onReject,
   onResolve,
   onStatusChange,
+  ga,
 }: {
   txs: Tx[];
   onReject?: () => void;
   onResolve?: () => void;
   onStatusChange?: (status: BatchSignTxTaskType['status']) => void;
+  ga?: Record<string, any>;
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -352,7 +354,9 @@ export const MiniSignTx = ({
     hasCustomRPC();
   }, [chain?.enum]);
 
-  const task = useBatchSignTxTask();
+  const task = useBatchSignTxTask({
+    ga,
+  });
   useEffect(() => {
     onStatusChange?.(task.status);
   }, [task.status]);
@@ -970,12 +974,14 @@ export const MiniApproval = ({
   onClose,
   onResolve,
   onReject,
+  ga,
 }: {
   txs?: Tx[];
   visible?: boolean;
   onClose?: () => void;
   onReject?: () => void;
   onResolve?: () => void;
+  ga?: Record<string, any>;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1006,6 +1012,7 @@ export const MiniApproval = ({
     >
       {txs?.length ? (
         <MiniSignTx
+          ga={ga}
           txs={txs}
           onStatusChange={(status) => {
             setStatus(status);

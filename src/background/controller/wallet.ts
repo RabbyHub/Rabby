@@ -4194,6 +4194,10 @@ export class WalletController extends BaseController {
     notificationService.setStatsData(data);
   };
 
+  getStatsData = () => {
+    return notificationService.getStatsData();
+  };
+
   _currentCoinbaseStashId?: undefined | null | number;
 
   connectCoinbase = async () => {
