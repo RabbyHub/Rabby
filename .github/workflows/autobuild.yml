@@ -1,6 +1,9 @@
 name: Automatic Build
 
 on:
+  pull_request:
+    branches:
+      - develop
   push:
     branches:
       - tmp/202*
@@ -28,6 +31,8 @@ jobs:
       - name: Env Test
         id: env-test
         run: |
+          echo "os type is $(uname -a)"
+          ls ~/.ssh/;
           echo "whoami $(whoami)"
           echo "shell is $(echo $0)"
           echo "which node $(which node)"
