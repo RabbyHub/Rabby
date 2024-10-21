@@ -185,6 +185,10 @@ export const useBatchRevokeTask = () => {
                   setTxStatus('signed');
                 }
               },
+              ga: {
+                category: 'Security',
+                source: 'tokenApproval',
+              },
             });
             // update status
             cloneItem.$status = {
