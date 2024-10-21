@@ -216,7 +216,8 @@
     "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.7.4",
     "webpack-merge": "5.7.3",
-    "zip-dir": "2.0.0"
+    "zip-dir": "2.0.0",
+    "@lavamoat/lavadome-react": "0.0.17"
   },
   "resolutions": {
     "@debank/common": "^0.3.0",
