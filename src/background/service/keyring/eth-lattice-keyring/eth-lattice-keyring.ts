@@ -26,7 +26,9 @@ const HD_PATH_TYPE = {
 
 class LatticeKeyring extends OldLatticeKeyring {
   [x: string]: any;
+  appName = 'Rabby';
   static type = keyringType;
+  type = keyringType;
   signHelper = new SignHelper({
     errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
   });
@@ -97,8 +99,6 @@ class LatticeKeyring extends OldLatticeKeyring {
 
   async signTypedData(address, msg, opts) {
     return this.signHelper.invoke(async () => {
-      // waiting ui render
-      await new Promise((r) => setTimeout(r, 500));
       return super.signTypedData(address, msg, opts);
     });
   }
