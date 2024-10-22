@@ -49,7 +49,7 @@ import _ from 'lodash';
 import { connectStore } from '@/ui/store';
 import { Item } from '../Item';
 import { useWallet } from '@/ui/utils';
-import { Modal } from 'antd';
+import { Modal, Tooltip } from 'antd';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { useHadSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 
@@ -203,8 +203,14 @@ const AddAddressOptions = () => {
             brand: item.brand,
             connectType: item.connectType,
             image: item.image,
-            onClick: () => connectRouter(item),
+            onClick: () => {
+              if (item.preventClick) {
+                return;
+              }
+              connectRouter(item);
+            },
             category: item.category,
+            tipI18nKey: item.tipI18nKey,
           };
         })
         .filter(Boolean) as any).sort(
@@ -425,8 +431,24 @@ const AddAddressOptions = () => {
                         px={0}
                         key={v.brand}
                         left={
-                          <div className="relative w-[28px] h-[28px]">
-                            <img src={v.image} className="w-[28px] h-[28px]" />
+                          <div className="relative w-[29px] h-[28px]">
+                            {v.tipI18nKey ? (
+                              <Tooltip
+                                title={t(v.tipI18nKey)}
+                                placement="topLeft"
+                                overlayClassName="rectangle w-[max-content] max-w-[355px]"
+                              >
+                                <img
+                                  src={v.image}
+                                  className="w-[28px] h-[28px]"
+                                />
+                              </Tooltip>
+                            ) : (
+                              <img
+                                src={v.image}
+                                className="w-[28px] h-[28px]"
+                              />
+                            )}
                             {v.connectType === 'WalletConnect' &&
                               v.brand !== WALLET_BRAND_TYPES.WALLETCONNECT && (
                                 <img
