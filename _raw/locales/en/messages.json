@@ -1422,6 +1422,7 @@
         "description": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {{0}} before importing another device."
       },
       "connectHardwareWallets": "Connect Hardware Wallets",
+      "firefoxLedgerDisableTips": "Ledger is not compatible with Firefox",
       "connectMobileWalletApps": "Connect Mobile Wallet Apps",
       "connectInstitutionalWallets": "Connect Institutional Wallets",
       "createNewSeedPhrase": "Create New Seed Phrase",

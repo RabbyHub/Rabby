@@ -107,8 +107,10 @@ import {
   default as LogoLedgerDark,
   default as LogoLedgerWhite,
   ReactComponent as RcLogoLedgerDark,
-  ReactComponent as RcLogoLedgerWhite,
 } from 'ui/assets/walletlogo/ledger.svg';
+import LogoLedgerDisable, {
+  ReactComponent as RcLogoLedgerDisable,
+} from 'ui/assets/walletlogo/ledgerDisable.svg';
 import {
   default as IconMath,
   default as LogoMath,
@@ -570,6 +572,8 @@ export type IWalletBrandContent = {
   connectType: BRAND_WALLET_CONNECT_TYPE;
   category: WALLET_BRAND_CATEGORY;
   hidden?: boolean;
+  preventClick?: boolean;
+  tipI18nKey?: string;
 };
 
 export const WALLET_BRAND_CONTENT: {
@@ -739,12 +743,13 @@ export const WALLET_BRAND_CONTENT: {
     brand: WALLET_BRAND_TYPES.LEDGER,
     icon: LogoLedgerWhite,
     lightIcon: LogoLedgerWhite,
-    image: LogoLedgerDark,
-    rcSvg: RcLogoLedgerDark,
+    image: IS_FIREFOX ? LogoLedgerDisable : LogoLedgerDark,
+    rcSvg: IS_FIREFOX ? RcLogoLedgerDisable : RcLogoLedgerDark,
     maybeSvg: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
-    hidden: IS_FIREFOX,
+    preventClick: IS_FIREFOX,
+    tipI18nKey: IS_FIREFOX ? 'page.newAddress.firefoxLedgerDisableTips' : '',
   },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
     id: 5,
