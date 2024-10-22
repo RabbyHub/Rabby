@@ -39,7 +39,7 @@ export function SpecialTokenListPopup({
 
   return (
     <Popup
-      height={494}
+      height="70%"
       visible={visible}
       closable
       push={false}
