@@ -25,7 +25,7 @@ export const useApproval = () => {
     approvalId?: string
   ) => {
     // handle connect
-    if (!(await deviceConnect(data.type))) {
+    if (!(await deviceConnect(data?.type))) {
       return;
     }
 
