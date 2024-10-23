@@ -67,7 +67,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLedger, setIsLedger] = useState(false);
-  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [
     cantProcessReason,
     setCantProcessReason,
@@ -274,7 +273,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
       setCantProcessReason(
-        <div>You can only use imported addresses to sign</div>
+        <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
     }
     if (accountType === KEYRING_TYPE.GnosisKeyring && !params.account) {
@@ -450,11 +449,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           tooltipContent={cantProcessReason}
           onCancel={handleCancel}
           onSubmit={() => handleAllow()}
-          disabledProcess={
-            (isLedger && !hasConnectedLedgerHID) ||
-            isWatch ||
-            hasUnProcessSecurityResult
-          }
+          disabledProcess={isWatch || hasUnProcessSecurityResult}
           engineResults={engineResults}
           onIgnoreAllRules={handleIgnoreAllRules}
         />

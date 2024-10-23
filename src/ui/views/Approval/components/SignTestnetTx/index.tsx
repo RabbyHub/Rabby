@@ -226,7 +226,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
-  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [isHardware, setIsHardware] = useState(false);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
   const [canProcess, setCanProcess] = useState(true);
@@ -771,7 +770,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           (selectedGas ? selectedGas.price < 0 : true) ||
           isGnosisAccount ||
           isCoboArugsAccount ||
-          (isLedger && !hasConnectedLedgerHID) ||
           !canProcess ||
           !!checkErrors.find((item) => item.level === 'forbidden')
         }

@@ -307,6 +307,7 @@ const Swap = ({
                 protocol: requireData.protocol,
                 rank: requireData.rank,
                 address: requireData.id,
+                hasInteraction: requireData.hasInteraction,
                 chain,
               }}
             >
@@ -324,6 +325,12 @@ const Swap = ({
             <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
             <SubRow>
               <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow>
+              <Values.Interacted value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
           {isInWhitelist && (
