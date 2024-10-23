@@ -33,6 +33,7 @@ if (!secret) {
 // sendMessage with axios
 async function sendMessage({
     downloadURL = '',
+    md5Value = '',
     actionsJobUrl = '',
     gitCommitURL = '',
     gitRefURL = '',
@@ -64,6 +65,9 @@ async function sendMessage({
                         [
                             { "tag": "text", "text": `Download URL: ` },
                             { "tag": "a", "href": downloadURL, "text": downloadURL }
+                        ],
+                        [
+                            { "tag": "text", "text": `MD5: ${md5Value}` },
                         ],
                         [
                             { "tag": "text", "text": `---------` },
@@ -99,8 +103,9 @@ const args = process.argv.slice(2);
 if (args[0]) {
     sendMessage({
         downloadURL: args[0],
-        actionsJobUrl: args[1] || process.env.ACTIONS_JOB_URL,
-        gitCommitURL: args[2] || process.env.GIT_COMMIT_URL,
+        md5Value: args[1],
+        actionsJobUrl: args[2] || process.env.ACTIONS_JOB_URL,
+        gitCommitURL: args[3] || process.env.GIT_COMMIT_URL,
         gitRefURL: process.env.GIT_REF_URL,
         triggers: [
             process.env.GITHUB_TRIGGERING_ACTOR,

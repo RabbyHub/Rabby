@@ -1,0 +1,142 @@
+diff --git a/node_modules/typescript-plugin-styled-components/dist/createTransformer.d.ts b/node_modules/typescript-plugin-styled-components/dist/createTransformer.d.ts
+index aad4e48..43a3a2c 100644
+--- a/node_modules/typescript-plugin-styled-components/dist/createTransformer.d.ts
++++ b/node_modules/typescript-plugin-styled-components/dist/createTransformer.d.ts
+@@ -1,4 +1,7 @@
+ import * as ts from 'typescript';
+ import { Options } from './models/Options';
+-export declare function createTransformer(options?: Partial<Options>): ts.TransformerFactory<ts.SourceFile>;
++export declare function createTransformer(options?: Partial<Options>): {
++    transformer: ts.TransformerFactory<ts.SourceFile>;
++    webpackPlugin: any;
++};
+ export default createTransformer;
+diff --git a/node_modules/typescript-plugin-styled-components/dist/createTransformer.js b/node_modules/typescript-plugin-styled-components/dist/createTransformer.js
+index 4bad492..23e5a0e 100644
+--- a/node_modules/typescript-plugin-styled-components/dist/createTransformer.js
++++ b/node_modules/typescript-plugin-styled-components/dist/createTransformer.js
+@@ -1,6 +1,7 @@
+ "use strict";
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.createTransformer = void 0;
++const fs = require("fs");
+ const path = require("path");
+ const ts = require("typescript");
+ const ts_is_kind_1 = require("./ts-is-kind");
+@@ -84,7 +85,39 @@ function isMinifyableStyledFunction(node, identifiers) {
+ function defaultGetDisplayName(filename, bindingName) {
+     return bindingName;
+ }
++const logger = (() => {
++    const funcs = {
++        log: console.log,
++        warn: console.warn,
++        error: console.error,
++        debug: console.debug,
++    };
++
++    if (!process.env.DEBUG_STYLED_COMPONENTS_TS_PLUGIN) {
++        return Object.keys(funcs).reduce((acc, key) => {
++            acc[key] = () => { };
++            return acc;
++        }, {});
++    }
++
++    return funcs;
++})();
+ function createTransformer({ getDisplayName = defaultGetDisplayName, identifiers = {}, ssr = true, displayName = true, minify = false, componentIdPrefix = '' } = {}) {
++    const reportCtx = {
++        outputfile: '',
++        /** 
++         * @type {{
++         *  displayName: string,
++         *  relpath: string,
++         *  pos: number,
++         *  resultId: string
++         * }[]}
++         */
++        result: [],
++        recoredStyledMapping: (displayName, relpath, pos, resultId) => {
++            reportCtx.result.push({ displayName, relpath, pos, resultId });
++        }
++    }
+     /**
+      * Infers display name of a styled component.
+      * Recognizes the following patterns:
+@@ -101,18 +134,35 @@ function createTransformer({ getDisplayName = defaultGetDisplayName, identifiers
+         }
+         return undefined;
+     }
+-    function getIdFromNode(node, sourceRoot, position, sourceFile) {
++    function getIdFromNode(node, baseUrl, position, sourceFile) {
+         if ((ts_is_kind_1.isVariableDeclaration(node) && ts_is_kind_1.isIdentifier(node.name)) || ts_is_kind_1.isExportAssignment(node)) {
+             const fileName = sourceFile.fileName;
+-            const filePath = sourceRoot
+-                ? path.relative(sourceRoot, fileName).replace(path.sep, path.posix.sep)
++            const filePath = baseUrl
++                ? path.relative(baseUrl, fileName).replace(path.sep, path.posix.sep)
+                 : fileName;
+-            return (componentIdPrefix !== null && componentIdPrefix !== void 0 ? componentIdPrefix : 'sc') + '-' + hash_1.hash(`${getDisplayNameFromNode(node, sourceFile)}${filePath}${position}`);
++            logger.debug('[typescript-plugin-styled-components] getIdFromNode:: baseUrl', baseUrl);
++            const elements = {
++                displayName: getDisplayNameFromNode(node, sourceFile),
++                relpath: filePath,
++                pos: position
++            }
++            const cid = hash_1.hash(Object.values(elements).join(''));
++            logger.debug('[typescript-plugin-styled-components] defaultGetDisplayName:: displayName: %s, filePath: %s, position: %s ===> cid: %s;',
++                elements.displayName, elements.filePath, elements.pos, cid);
++
++            reportCtx.recoredStyledMapping(elements.displayName, elements.relpath, elements.pos, cid);
++
++            return (componentIdPrefix !== null && componentIdPrefix !== void 0 ? componentIdPrefix : 'sc') + '-' + cid;
+         }
+         return undefined;
+     }
+     const transformer = (context) => {
+-        const { sourceRoot } = context.getCompilerOptions();
++        const { baseUrl } = context.getCompilerOptions();
++        if (!reportCtx.outputfile) {
++            logger.log('[typescript-plugin-styled-components] transformer:: baseUrl is', baseUrl);
++            reportCtx.outputfile = path.resolve(baseUrl, 'tmp/styled-components-id-mappings.json');
++        }
++
+         return (sourceFile) => {
+             let lastComponentPosition = 0;
+             const withConfig = (node, properties) => properties.length > 0
+@@ -131,7 +181,7 @@ function createTransformer({ getDisplayName = defaultGetDisplayName, identifiers
+             const transformStyledFunction = (binding, node) => withConfig(node, [
+                 ...(displayName ? createDisplayNameConfig(getDisplayNameFromNode(binding, sourceFile)) : []),
+                 ...(ssr
+-                    ? createIdConfig(getIdFromNode(binding, sourceRoot, ++lastComponentPosition, sourceFile))
++                    ? createIdConfig(getIdFromNode(binding, baseUrl, ++lastComponentPosition, sourceFile))
+                     : []),
+             ]);
+             const transformTemplateLiteral = (templateLiteral) => minify ? minify_1.minifyTemplate(templateLiteral, context.factory) : templateLiteral;
+@@ -160,7 +210,25 @@ function createTransformer({ getDisplayName = defaultGetDisplayName, identifiers
+             return ts.visitNode(sourceFile, visitNode);
+         };
+     };
+-    return transformer;
++
++    // a webpack plugin to output the mapping of styled-components id to file
++    const webpackPlugin = {
++        apply(compiler) {
++            compiler.hooks.afterEmit.tap('StyledComponentsIdMappingPlugin', async () => {
++                fs.mkdirSync(path.dirname(reportCtx.outputfile), { recursive: true });
++                // clean the file
++                fs.writeFileSync(reportCtx.outputfile, '');
++
++                reportCtx.result.sort((a, b) => a.relpath.localeCompare(b.relpath));
++                fs.writeFileSync(reportCtx.outputfile, JSON.stringify(reportCtx.result, null, 2));
++            });
++        }
++    };
++
++    return {
++        transformer,
++        webpackPlugin,
++    };
+ }
+ exports.createTransformer = createTransformer;
+ exports.default = createTransformer;
