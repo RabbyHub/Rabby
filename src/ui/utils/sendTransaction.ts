@@ -24,7 +24,6 @@ import {
   parseAction,
   fetchActionRequiredData,
 } from '@rabby-wallet/rabby-action';
-import { useGasAccountTxsCheck } from '../views/GasAccount/hooks/checkTxs';
 
 // fail code
 export enum FailedCode {
