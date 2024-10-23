@@ -10,7 +10,7 @@ import browser from 'webextension-polyfill';
 const navigator = window.navigator as any;
 
 export const hasConnectedKeystoneDevice = async () => {
-  const devices = await navigator?.usb.getDevices();
+  const devices = await navigator.usb?.getDevices();
   return (
     devices.filter((device) => device.vendorId === keystoneUSBVendorId).length >
     0
@@ -40,13 +40,13 @@ export const useKeystoneDeviceConnected = () => {
 
   useEffect(() => {
     detectDevice();
-    navigator?.usb.addEventListener('connect', onConnect);
-    navigator?.usb.addEventListener('disconnect', onDisconnect);
+    navigator.usb?.addEventListener('connect', onConnect);
+    navigator.usb?.addEventListener('disconnect', onDisconnect);
     browser.windows.onFocusChanged.addListener(detectDevice);
 
     return () => {
-      navigator?.usb.removeEventListener('connect', onConnect);
-      navigator?.usb.removeEventListener('disconnect', onDisconnect);
+      navigator.usb?.removeEventListener('connect', onConnect);
+      navigator.usb?.removeEventListener('disconnect', onDisconnect);
       browser.windows.onFocusChanged.removeListener(detectDevice);
     };
   });
