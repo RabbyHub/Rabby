@@ -35,6 +35,45 @@ export enum FailedCode {
 
 type ProgressStatus = 'building' | 'builded' | 'signed' | 'submitted';
 
+const checkEnoughUseGasAccount = async ({
+  gasAccount,
+  wallet,
+  transaction,
+  currentAccountType,
+}: {
+  transaction: Tx;
+  currentAccountType: string;
+  wallet: WalletControllerType;
+  gasAccount?: {
+    sig: string | undefined;
+    accountId: string | undefined;
+  };
+}) => {
+  let gasAccountCanPay: boolean = false;
+
+  // native gas not enough check gasAccount
+  let gasAccountVerfiyPass = true;
+  let gasAccountCost;
+  try {
+    gasAccountCost = await wallet.openapi.checkGasAccountTxs({
+      sig: gasAccount?.sig || '',
+      account_id: gasAccount?.accountId || '',
+      tx_list: [transaction],
+    });
+  } catch (e) {
+    gasAccountVerfiyPass = false;
+  }
+  gasAccountCanPay =
+    gasAccountVerfiyPass &&
+    currentAccountType !== KEYRING_TYPE.WalletConnectKeyring &&
+    currentAccountType !== KEYRING_TYPE.WatchAddressKeyring &&
+    !!gasAccountCost?.balance_is_enough &&
+    !gasAccountCost.chain_not_support &&
+    !!gasAccountCost.is_gas_account;
+
+  return gasAccountCanPay;
+};
+
 /**
  * send transaction without rpcFlow
  * @param tx
@@ -46,6 +85,9 @@ type ProgressStatus = 'building' | 'builded' | 'signed' | 'submitted';
  * @param lowGasDeadline low gas deadline
  * @param isGasLess is gas less
  * @param isGasAccount is gas account
+ * @param gasAccount gas account { sig, account }
+ * @param autoUseGasAccount when gas balance is low , auto use gas account for gasfee
+ * @param onUseGasAccount use gas account callback
  */
 export const sendTransaction = async ({
   tx,
@@ -214,33 +256,18 @@ export const sendTransaction = async ({
   let failedCode;
   let canUseGasAccount: boolean = false;
   if (isGasNotEnough) {
+    //  native gas not enough check gasAccount
     if (autoUseGasAccount && gasAccount?.sig && gasAccount?.accountId) {
-      // native gas not enough check gasAccount
-      let gasAccountVerfiyPass = true;
-      let gasAccountCost;
-      try {
-        gasAccountCost = await wallet.openapi.checkGasAccountTxs({
-          sig: gasAccount?.sig || '',
-          account_id: gasAccount?.accountId || '',
-          tx_list: [
-            {
-              ...transaction,
-              gas: gasLimit,
-              gasPrice: intToHex(normalGas.price),
-            },
-          ],
-        });
-      } catch (e) {
-        gasAccountVerfiyPass = false;
-      }
-      const gasAccountCanPay =
-        gasAccountVerfiyPass &&
-        currentAccountType !== KEYRING_TYPE.WalletConnectKeyring &&
-        currentAccountType !== KEYRING_TYPE.WatchAddressKeyring &&
-        !!gasAccountCost?.balance_is_enough &&
-        !gasAccountCost.chain_not_support &&
-        !!gasAccountCost.is_gas_account;
-
+      const gasAccountCanPay = await checkEnoughUseGasAccount({
+        gasAccount,
+        currentAccountType,
+        wallet,
+        transaction: {
+          ...transaction,
+          gas: gasLimit,
+          gasPrice: intToHex(normalGas.price),
+        },
+      });
       if (gasAccountCanPay) {
         onUseGasAccount?.();
         canUseGasAccount = true;
