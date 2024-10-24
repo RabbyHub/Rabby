@@ -198,7 +198,7 @@ const AddAddressOptions = () => {
         .map((item) => {
           if (item.hidden) return;
           return {
-            leftIcon: item.image,
+            leftIcon: item.leftIcon || item.image,
             content: item.name,
             brand: item.brand,
             connectType: item.connectType,
@@ -210,6 +210,7 @@ const AddAddressOptions = () => {
               connectRouter(item);
             },
             category: item.category,
+            preventClick: item.preventClick,
             tipI18nKey: item.tipI18nKey,
           };
         })
@@ -427,6 +428,7 @@ const AddAddressOptions = () => {
                       <Item
                         bgColor="transparent"
                         className="flex-col justify-center hover:border-transparent"
+                        hoverBgColor={v.preventClick ? '' : undefined}
                         py={10}
                         px={0}
                         key={v.brand}
@@ -436,11 +438,14 @@ const AddAddressOptions = () => {
                               <Tooltip
                                 title={t(v.tipI18nKey)}
                                 placement="topLeft"
+                                arrowPointAtCenter
                                 overlayClassName="rectangle w-[max-content] max-w-[355px]"
                               >
                                 <img
                                   src={v.image}
-                                  className="w-[28px] h-[28px]"
+                                  className={clsx('w-[28px] h-[28px]', {
+                                    'cursor-not-allowed': v.preventClick,
+                                  })}
                                 />
                               </Tooltip>
                             ) : (
