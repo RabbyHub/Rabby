@@ -558,6 +558,8 @@ export type IWalletBrandContent = {
   brand: WALLET_BRAND_TYPES;
   icon: string;
   lightIcon: string;
+  // Icon showed out of collapse
+  leftIcon?: string;
   image: string;
   rcSvg: Exclude<ThemeIconType, string>;
   /**
@@ -741,6 +743,7 @@ export const WALLET_BRAND_CONTENT: {
     brand: WALLET_BRAND_TYPES.LEDGER,
     icon: LogoLedgerWhite,
     lightIcon: LogoLedgerWhite,
+    leftIcon: LogoLedgerDark,
     image: IS_FIREFOX ? LogoLedgerDisable : LogoLedgerDark,
     rcSvg: IS_FIREFOX ? RcLogoLedgerDisable : RcLogoLedgerDark,
     maybeSvg: LogoLedgerDark,
