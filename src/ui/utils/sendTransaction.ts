@@ -4,6 +4,7 @@ import {
   EVENTS,
   INTERNAL_REQUEST_ORIGIN,
   INTERNAL_REQUEST_SESSION,
+  KEYRING_TYPE,
 } from '@/constant';
 import { intToHex, WalletControllerType } from '@/ui/utils';
 import { findChain, isTestnet } from '@/utils/chain';
@@ -34,6 +35,45 @@ export enum FailedCode {
 
 type ProgressStatus = 'building' | 'builded' | 'signed' | 'submitted';
 
+const checkEnoughUseGasAccount = async ({
+  gasAccount,
+  wallet,
+  transaction,
+  currentAccountType,
+}: {
+  transaction: Tx;
+  currentAccountType: string;
+  wallet: WalletControllerType;
+  gasAccount?: {
+    sig: string | undefined;
+    accountId: string | undefined;
+  };
+}) => {
+  let gasAccountCanPay: boolean = false;
+
+  // native gas not enough check gasAccount
+  let gasAccountVerfiyPass = true;
+  let gasAccountCost;
+  try {
+    gasAccountCost = await wallet.openapi.checkGasAccountTxs({
+      sig: gasAccount?.sig || '',
+      account_id: gasAccount?.accountId || '',
+      tx_list: [transaction],
+    });
+  } catch (e) {
+    gasAccountVerfiyPass = false;
+  }
+  gasAccountCanPay =
+    gasAccountVerfiyPass &&
+    currentAccountType !== KEYRING_TYPE.WalletConnectKeyring &&
+    currentAccountType !== KEYRING_TYPE.WatchAddressKeyring &&
+    !!gasAccountCost?.balance_is_enough &&
+    !gasAccountCost.chain_not_support &&
+    !!gasAccountCost.is_gas_account;
+
+  return gasAccountCanPay;
+};
+
 /**
  * send transaction without rpcFlow
  * @param tx
@@ -45,6 +85,9 @@ type ProgressStatus = 'building' | 'builded' | 'signed' | 'submitted';
  * @param lowGasDeadline low gas deadline
  * @param isGasLess is gas less
  * @param isGasAccount is gas account
+ * @param gasAccount gas account { sig, account }
+ * @param autoUseGasAccount when gas balance is low , auto use gas account for gasfee
+ * @param onUseGasAccount use gas account callback
  */
 export const sendTransaction = async ({
   tx,
@@ -56,9 +99,12 @@ export const sendTransaction = async ({
   lowGasDeadline,
   isGasLess,
   isGasAccount,
+  gasAccount,
+  autoUseGasAccount,
   waitCompleted = true,
   pushType = 'default',
   ignoreGasNotEnoughCheck,
+  onUseGasAccount,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -66,10 +112,16 @@ export const sendTransaction = async ({
   ignoreGasCheck?: boolean;
   ignoreGasNotEnoughCheck?: boolean;
   onProgress?: (status: ProgressStatus) => void;
+  onUseGasAccount?: () => void;
   gasLevel?: GasLevel;
   lowGasDeadline?: number;
   isGasLess?: boolean;
   isGasAccount?: boolean;
+  gasAccount?: {
+    sig: string | undefined;
+    accountId: string | undefined;
+  };
+  autoUseGasAccount?: boolean;
   waitCompleted?: boolean;
   pushType?: TxPushType;
 }) => {
@@ -78,7 +130,10 @@ export const sendTransaction = async ({
     serverId: chainServerId,
   })!;
   const support1559 = chain.eip['1559'];
-  const { address } = (await wallet.getCurrentAccount())!;
+  const {
+    address,
+    type: currentAccountType,
+  } = (await wallet.getCurrentAccount())!;
   const recommendNonce = await wallet.getRecommendNonce({
     from: tx.from,
     chainId: chain.id,
@@ -186,9 +241,42 @@ export const sendTransaction = async ({
     ? (await Browser.storage.local.get('DEBUG_OTHER_CHAIN_GAS_USD_LIMIT'))
         .DEBUG_OTHER_CHAIN_GAS_USD_LIMIT || 5
     : 5;
+
+  // generate tx with gas
+  const transaction: Tx = {
+    from: tx.from,
+    to: tx.to,
+    data: tx.data,
+    nonce: recommendNonce,
+    value: tx.value,
+    chainId: tx.chainId,
+    gas: gasLimit,
+  };
+
   let failedCode;
+  let canUseGasAccount: boolean = false;
   if (isGasNotEnough) {
-    failedCode = FailedCode.GasNotEnough;
+    //  native gas not enough check gasAccount
+    if (autoUseGasAccount && gasAccount?.sig && gasAccount?.accountId) {
+      const gasAccountCanPay = await checkEnoughUseGasAccount({
+        gasAccount,
+        currentAccountType,
+        wallet,
+        transaction: {
+          ...transaction,
+          gas: gasLimit,
+          gasPrice: intToHex(normalGas.price),
+        },
+      });
+      if (gasAccountCanPay) {
+        onUseGasAccount?.();
+        canUseGasAccount = true;
+      } else {
+        failedCode = FailedCode.GasNotEnough;
+      }
+    } else {
+      failedCode = FailedCode.GasNotEnough;
+    }
   } else if (
     !ignoreGasCheck &&
     // eth gas > $20
@@ -208,16 +296,6 @@ export const sendTransaction = async ({
     };
   }
 
-  // generate tx with gas
-  const transaction: Tx = {
-    from: tx.from,
-    to: tx.to,
-    data: tx.data,
-    nonce: recommendNonce,
-    value: tx.value,
-    chainId: tx.chainId,
-    gas: gasLimit,
-  };
   const maxPriorityFee = calcMaxPriorityFee([], normalGas, chain.id, true);
   const maxFeePerGas = intToHex(Math.round(normalGas.price));
 
@@ -336,7 +414,7 @@ export const sendTransaction = async ({
           logId: logId,
           lowGasDeadline,
           isGasLess,
-          isGasAccount,
+          isGasAccount: autoUseGasAccount ? canUseGasAccount : isGasAccount,
           pushType,
         },
         pushed: false,
