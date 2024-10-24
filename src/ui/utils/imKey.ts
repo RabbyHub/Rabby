@@ -28,13 +28,13 @@ export const useImKeyDeviceConnected = () => {
 
   useEffect(() => {
     detectDevice();
-    navigator.usb.addEventListener('connect', onConnect);
-    navigator.usb.addEventListener('disconnect', onDisconnect);
+    navigator.usb?.addEventListener('connect', onConnect);
+    navigator.usb?.addEventListener('disconnect', onDisconnect);
     browser.windows.onFocusChanged.addListener(detectDevice);
 
     return () => {
-      navigator.usb.removeEventListener('connect', onConnect);
-      navigator.usb.removeEventListener('disconnect', onDisconnect);
+      navigator.usb?.removeEventListener('connect', onConnect);
+      navigator.usb?.removeEventListener('disconnect', onDisconnect);
       browser.windows.onFocusChanged.removeListener(detectDevice);
     };
   }, []);
@@ -49,13 +49,13 @@ const imKeyDevices = [
 ];
 
 async function requestImKeyDevice(): Promise<any> {
-  const device = await navigator.usb.requestDevice({
+  const device = await navigator.usb?.requestDevice({
     filters: imKeyDevices,
   });
   return device;
 }
 export async function getImKeyDevices(): Promise<any> {
-  const devices = await navigator.usb.getDevices();
+  const devices = await navigator.usb?.getDevices();
   return devices.filter((d) => d.vendorId === imKeyUSBVendorId);
 }
 

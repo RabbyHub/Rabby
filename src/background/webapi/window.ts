@@ -29,23 +29,16 @@ const WINDOW_SIZE = {
 };
 
 const createFullScreenWindow = ({ url, ...rest }) => {
-  return new Promise((resolve) => {
-    chrome.windows.create(
-      {
-        focused: true,
-        url,
-        type: 'popup',
-        ...rest,
-        width: undefined,
-        height: undefined,
-        left: undefined,
-        top: undefined,
-        state: 'fullscreen',
-      },
-      (win) => {
-        resolve(win);
-      }
-    );
+  return browser.windows.create({
+    focused: true,
+    url,
+    type: 'popup',
+    ...rest,
+    width: undefined,
+    height: undefined,
+    left: undefined,
+    top: undefined,
+    state: 'fullscreen',
   });
 };
 

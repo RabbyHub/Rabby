@@ -407,6 +407,7 @@
         "description": "不支持导入多个基于二维码的硬件钱包。\n请先删除 {{0}} 中的所有地址，然后再导入新的设备"
       },
       "connectHardwareWallets": "连接硬件钱包",
+      "firefoxLedgerDisableTips": "Ledger和Firefox不兼容",
       "connectMobileWalletApps": "连接手机钱包",
       "connectInstitutionalWallets": "连接机构钱包",
       "createNewSeedPhrase": "创建新的助记词",

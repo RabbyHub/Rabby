@@ -45,6 +45,7 @@ export const accountToDisplay = createModel<RootModel>()({
         store.app.wallet.getAllVisibleAccounts(),
         store.app.wallet.getAllAlianNameByMap(),
       ]);
+
       const result = await Promise.all<IDisplayedAccountWithBalance>(
         displayedKeyrings
           .map((item) => {

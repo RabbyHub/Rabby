@@ -21,6 +21,12 @@ const BUILD_GIT_HASH = child_process
   .toString()
   .trim();
 
+// 'chrome-mv2', 'chrome-mv3', 'firefox-mv2', 'firefox-mv3'
+const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'chrome-mv2';
+const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
+const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
+const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
+
 const config = {
   entry: {
     background: paths.rootResolve('src/background/index.ts'),
@@ -32,7 +38,7 @@ const config = {
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },
   output: {
-    path: paths.dist,
+    path: FINAL_DIST,
     filename: '[name].js',
     publicPath: '/',
   },
@@ -193,25 +199,27 @@ const config = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.popupHtml,
-      chunks: ['ui'],
+      chunks: ['ui', 'ui-vender'],
       filename: 'popup.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.notificationHtml,
-      chunks: ['ui'],
+      chunks: ['ui', 'ui-vender'],
       filename: 'notification.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.indexHtml,
-      chunks: ['ui'],
+      chunks: ['ui', 'ui-vender'],
       filename: 'index.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.backgroundHtml,
-      chunks: ['background'],
+      chunks: ['background'].concat(
+        IS_FIREFOX ? ['bg-chunk1', 'bg-chunk2', 'bg-chunk3'] : []
+      ),
       filename: 'background.html',
     }),
     new HtmlWebpackPlugin({
@@ -233,45 +241,49 @@ const config = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: paths.rootResolve('_raw'), to: paths.rootResolve('dist') },
+        { from: paths.rootResolve('_raw'), to: FINAL_DIST },
         {
-          from: process.env.ENABLE_MV3
-            ? paths.rootResolve('src/manifest/mv3/manifest.json')
-            : paths.rootResolve('src/manifest/mv2/manifest.json'),
-          to: paths.dist,
+          from: paths.rootResolve(
+            `src/manifest/${MANIFEST_TYPE}/manifest.json`
+          ),
+          to: FINAL_DIST,
         },
-        process.env.ENABLE_MV3
+        IS_MANIFEST_MV3
           ? {
               from: require.resolve(
                 '@trezor/connect-webextension/build/content-script.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-content-script.js'
+              to: path.resolve(
+                FINAL_DIST,
+                './vendor/trezor/trezor-content-script.js'
               ),
             }
           : {
               from: require.resolve(
                 '@trezor/connect-web/lib/webextension/trezor-content-script.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-content-script.js'
+              to: path.resolve(
+                FINAL_DIST,
+                './vendor/trezor/trezor-content-script.js'
               ),
             },
-        process.env.ENABLE_MV3
+        IS_MANIFEST_MV3
           ? {
               from: require.resolve(
                 '@trezor/connect-webextension/build/trezor-connect-webextension.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-connect-webextension.js'
+              to: path.resolve(
+                FINAL_DIST,
+                './vendor/trezor/trezor-connect-webextension.js'
               ),
             }
           : {
               from: require.resolve(
                 '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-usb-permissions.js'
+              to: path.resolve(
+                FINAL_DIST,
+                './vendor/trezor/trezor-usb-permissions.js'
               ),
             },
       ],
@@ -302,6 +314,32 @@ const config = {
           test: /[\\/]node_modules[\\/]webextension-polyfill/,
           name: 'webextension-polyfill',
           chunks: 'all',
+        },
+        ...(IS_FIREFOX && {
+          bgChunk1: {
+            test: /[\\/]node_modules[\\/](@rabby-wallet|ethers|@ethersproject|@chainsafe|@trezor|@safe-global|@walletconnect)[\\/]/,
+            name: 'bg-chunk1',
+            chunks: (chunk) => chunk.name === 'background',
+            minSize: 0,
+          },
+          bgChunk2: {
+            test: /[\\/]node_modules[\\/](@keystonehq|@eth-optimism|@coinbase|gridplus-sdk)[\\/]/,
+            name: 'bg-chunk2',
+            chunks: (chunk) => chunk.name === 'background',
+            minSize: 0,
+          },
+          bgChunk3: {
+            test: /[\\/]node_modules[\\/](@imkey|@onekeyfe|@ethereumjs|viem|@metamask)[\\/]/,
+            name: 'bg-chunk3',
+            chunks: (chunk) => chunk.name === 'background',
+            minSize: 0,
+          },
+        }),
+        uiVender: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'ui-vender',
+          chunks: (chunk) => chunk.name === 'ui',
+          minSize: 0,
         },
       },
     },
