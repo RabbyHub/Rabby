@@ -183,12 +183,12 @@
         "title": "Отменить подтверждение токена Permit2"
       },
       "revokePermit": {
-        "title": "Revoke Permit Token Approval"
+        "title": "Отозвать одобрение токена"
       },
       "assetOrder": {
-        "title": "Asset Order",
-        "listAsset": "List asset",
-        "receiveAsset": "Receive asset"
+        "title": "Порядок активов",
+        "listAsset": "Список активов",
+        "receiveAsset": "Получить актив"
       },
       "unknownAction": "Неизвестный тип подписи",
       "interactContract": "Вызов контракта",
@@ -285,12 +285,12 @@
         "descriptionTitle": "Описание"
       },
       "coboSafeModificationDelegatedAddress": {
-        "title": "Submit Delegated Address Modification",
+        "title": "Отправить изменение делегированного адреса",
         "safeWalletTitle": "Safe{Wallet}",
         "descriptionTitle": "DescriОписание"
       },
       "coboSafeModificationTokenApproval": {
-        "title": "Submit Token Approval Modification",
+        "title": "Отправить изменение одобрения токена",
         "safeWalletTitle": "Safe{Wallet}",
         "descriptionTitle": "Описание"
       },
