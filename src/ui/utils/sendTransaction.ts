@@ -471,6 +471,9 @@ export const sendTransaction = async ({
       }),
       new Promise((_, reject) => {
         eventBus.once(EVENTS.LEDGER.REJECTED, async (data) => {
+          if (signingTxId != null) {
+            wallet.removeSigningTx(signingTxId);
+          }
           reject(new Error(data));
         });
       }),
