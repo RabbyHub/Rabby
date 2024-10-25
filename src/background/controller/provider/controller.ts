@@ -471,13 +471,25 @@ class ProviderController extends BaseController {
       reported: false,
     };
 
+    let signedTx;
     try {
-      const signedTx = await keyringService.signTransaction(
+      signedTx = await keyringService.signTransaction(
         keyring,
         tx,
         txParams.from,
         opts
       );
+    } catch (e) {
+      const errObj =
+        typeof e === 'object'
+          ? { message: e.message }
+          : ({ message: e } as any);
+      errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
+
+      throw errObj;
+    }
+
+    try {
       if (
         currentAccount.type === KEYRING_TYPE.GnosisKeyring ||
         currentAccount.type === KEYRING_TYPE.CoboArgusKeyring

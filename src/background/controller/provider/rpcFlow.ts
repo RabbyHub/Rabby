@@ -257,15 +257,21 @@ const flowContext = flow
             })
             .then(resolve)
             .catch((e: any) => {
+              const payload = {
+                method: EVENTS.SIGN_FINISHED,
+                params: {
+                  success: false,
+                  errorMsg: e?.message || JSON.stringify(e),
+                },
+              };
+              if (e.method) {
+                payload.method = e.method;
+                payload.params = e.message;
+              }
+
               Sentry.captureException(e);
               if (isSignApproval(approvalType)) {
-                eventBus.emit(EVENTS.broadcastToUI, {
-                  method: EVENTS.SIGN_FINISHED,
-                  params: {
-                    success: false,
-                    errorMsg: e?.message || JSON.stringify(e),
-                  },
-                });
+                eventBus.emit(EVENTS.broadcastToUI, payload);
               }
             })
         );

@@ -7,9 +7,11 @@ export const throwError = (error, method = EVENTS.COMMON_HARDWARE.REJECTED) => {
     method,
     params: error,
   });
-  throw new Error(error);
 };
 
+/**
+ * @deprecated
+ */
 export class SignHelper {
   signFn: any;
   errorEventName: string;
@@ -26,19 +28,11 @@ export class SignHelper {
     this.signFn = undefined;
   }
 
+  /**
+   * @deprecated
+   */
   async invoke(fn: () => Promise<any>) {
-    return new Promise((resolve) => {
-      this.signFn = async () => {
-        try {
-          const result = await fn();
-          resolve(result);
-        } catch (e) {
-          Sentry.captureException(e);
-          throwError(e?.message ?? e, this.errorEventName);
-        }
-      };
-      this.signFn();
-    });
+    return fn();
   }
 }
 
