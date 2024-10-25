@@ -10,9 +10,11 @@ const formatUsdValue = (usd: string | number) => {
     return `$${formatTokenAmount(Number(v).toFixed(0), 0)}`;
   }
   if (v >= 100) {
-    return `$${Number(v).toFixed(1)}`;
+    const fixDown = Math.floor(v * 10) / 10;
+    return `$${Number(fixDown).toFixed(1)}`;
   }
-  return `$${Number(v).toFixed(2)}`;
+  const fixDown = Math.floor(v * 100) / 100;
+  return `$${Number(fixDown).toFixed(2)}`;
 };
 
 export const GasAccountDashBoardHeader = () => {
