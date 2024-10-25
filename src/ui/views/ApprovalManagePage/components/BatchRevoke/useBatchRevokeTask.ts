@@ -197,6 +197,10 @@ export const useBatchRevokeTask = () => {
                 };
                 setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
               },
+              ga: {
+                category: 'Security',
+                source: 'tokenApproval',
+              },
             });
             // update status
             cloneItem.$status = {
