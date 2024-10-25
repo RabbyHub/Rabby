@@ -117,18 +117,21 @@ export const intToHex = (n: number) => {
   return `0x${n.toString(16)}`;
 };
 
-export const formatUsdValue = (value: string | number) => {
+export const formatUsdValue = (
+  value: string | number,
+  roundingMode = BigNumber.ROUND_UP as BigNumber.RoundingMode
+) => {
   const bnValue = new BigNumber(value);
   if (bnValue.lt(0)) {
     return `-$${formatNumber(
       Math.abs(Number(value)),
       2,
       undefined,
-      BigNumber.ROUND_DOWN
+      roundingMode
     )}`;
   }
   if (bnValue.gte(0.01) || bnValue.eq(0)) {
-    return `$${formatNumber(value, 2, undefined, BigNumber.ROUND_DOWN)}`;
+    return `$${formatNumber(value, 2, undefined, roundingMode)}`;
   }
   return '<$0.01';
 };
