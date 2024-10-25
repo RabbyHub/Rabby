@@ -1,14 +1,9 @@
 import { Account } from '@/background/service/preference';
-import {
-  KEYRINGS_LOGOS,
-  WALLET_BRAND_CONTENT,
-  WALLET_BRAND_TYPES,
-} from '@/constant';
+import { WALLET_BRAND_TYPES } from '@/constant';
 import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useDisplayBrandName } from '@/ui/component/WalletConnect/useDisplayBrandName';
 import { useSessionChainId } from '@/ui/component/WalletConnect/useSessionChainId';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
-import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import { Button } from 'antd';
@@ -16,6 +11,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CommonAccount } from './CommonAccount';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export interface Props {
   account: Account;
@@ -26,18 +22,12 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
   const { activePopup, setAccount, setVisible } = useCommonPopupView();
   const { t } = useTranslation();
   const { address, brandName, type } = account;
-  const brandIcon = useWalletConnectIcon({
+
+  const addressTypeIcon = useBrandIcon({
     address,
     brandName,
     type,
   });
-  const addressTypeIcon = React.useMemo(
-    () =>
-      brandIcon ||
-      WALLET_BRAND_CONTENT?.[brandName]?.image ||
-      KEYRINGS_LOGOS[type],
-    [type, brandName, brandIcon]
-  );
   const [displayBrandName, realBrandName] = useDisplayBrandName(
     brandName,
     address

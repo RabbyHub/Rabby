@@ -82,7 +82,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
-  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const dispatch = useRabbyDispatch();
   const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
@@ -681,12 +680,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           onSubmit={() => handleAllow()}
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}
-          disabledProcess={
-            isLoading ||
-            (isLedger && !hasConnectedLedgerHID) ||
-            isWatch ||
-            hasUnProcessSecurityResult
-          }
+          disabledProcess={isLoading || isWatch || hasUnProcessSecurityResult}
           isTestnet={chain?.isTestnet}
           onIgnoreAllRules={handleIgnoreAllRules}
         />

@@ -118,6 +118,12 @@ const ApproveNFT = ({
               <ProtocolListItem protocol={requireData.protocol} />
             </SubRow>
           </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
+            <SubRow>
+              <Values.Boolean value={requireData.hasInteraction} />
+            </SubRow>
+          </SubCol>
 
           <SecurityListItem
             id="1043"

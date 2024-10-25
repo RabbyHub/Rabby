@@ -3,12 +3,12 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
-import { getUiType } from './index';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useApprovalPopup } from './approval-popup';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
+import { useDeviceConnect } from './useDeviceConnect';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -16,6 +16,7 @@ export const useApproval = () => {
   const { showPopup, enablePopup } = useApprovalPopup();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
+  const deviceConnect = useDeviceConnect();
 
   const resolveApproval = async (
     data?: any,
@@ -23,6 +24,11 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
+    // handle connect
+    if (!(await deviceConnect(data.type))) {
+      return;
+    }
+
     const approval = await getApproval();
 
     if (approval) {
