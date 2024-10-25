@@ -33,9 +33,9 @@ export const GasACcountCurrentAddress = ({
   const { isDarkTheme } = useThemeMode();
 
   const brandIcon = useWalletConnectIcon({
-    address: currentAccount!.address,
-    brandName: currentAccount!.brandName,
-    type: currentAccount!.type,
+    address: account?.address || currentAccount!.address,
+    brandName: account?.brandName || currentAccount!.brandName,
+    type: account?.type || currentAccount!.type,
   });
 
   const [alias] = useAlias(account?.address || currentAccount?.address || '');
