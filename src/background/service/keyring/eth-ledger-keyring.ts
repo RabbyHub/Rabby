@@ -639,6 +639,18 @@ class LedgerBridgeKeyring {
     };
   }
 
+  async displayAddressOnDevice(address: string) {
+    await this.makeApp();
+
+    const { hdPath } = this.accountDetails[ethUtil.toChecksumAddress(address)];
+    if (!hdPath) {
+      throw new Error(`No HD path found for address: ${address}`);
+    }
+
+    const result = await this.app!.getAddress(hdPath, true, true);
+    console.log('Address displayed on device:', result.address);
+  }
+
   async getCurrentAccounts() {
     await this.unlock();
     const addresses = await this.getAccounts();

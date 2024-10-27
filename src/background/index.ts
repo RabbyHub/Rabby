@@ -11,6 +11,7 @@ import {
   EVENTS,
   EVENTS_IN_BG,
   KEYRING_CATEGORY_MAP,
+  KEYRING_CLASS,
   KEYRING_TYPE,
 } from 'consts';
 import { storage } from './webapi';
@@ -137,6 +138,28 @@ async function restoreAppState() {
           ready: true,
         },
       });
+    }
+    if (message.type === 'displayAddressOnDevice') {
+      const ledgerKeyring = keyringService.getKeyringByType(
+        KEYRING_CLASS.HARDWARE.LEDGER
+      );
+      if (
+        ledgerKeyring &&
+        typeof ledgerKeyring.displayAddressOnDevice === 'function'
+      ) {
+        ledgerKeyring
+          .displayAddressOnDevice(message.address)
+          .then(() => {
+            console.log('Address displayed successfully.');
+          })
+          .catch((error) => {
+            console.error('Error displaying address:', error);
+          });
+      } else {
+        console.error(
+          'LedgerBridgeKeyring instance not found or method unavailable.'
+        );
+      }
     }
   });
 }
