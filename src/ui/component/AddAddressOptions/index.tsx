@@ -55,6 +55,55 @@ import { useHadSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
+const AddressItem = ({ data }) => {
+  const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+
+  const leftNode = (
+    <div className="relative w-[29px] h-[28px]">
+      <img src={data.image} className="w-[28px] h-[28px]" />
+      {data.connectType === 'WalletConnect' &&
+        data.brand !== WALLET_BRAND_TYPES.WALLETCONNECT && (
+          <img
+            src={IconWalletConnect}
+            className="absolute -bottom-6 -right-6 w-[14px] h-[14px] rounded-full"
+          />
+        )}
+    </div>
+  );
+  return (
+    <Item
+      bgColor="transparent"
+      className={clsx('flex-col justify-center hover:border-transparent', {
+        'cursor-not-allowed': data.preventClick,
+      })}
+      hoverBgColor={data.preventClick ? '' : undefined}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+      py={10}
+      px={0}
+      key={data.brand}
+      left={
+        <Tooltip
+          title={t(data.tipI18nKey)}
+          placement="topLeft"
+          visible={data.tipI18nKey && visible}
+          arrowPointAtCenter
+          overlayClassName="rectangle w-[max-content] max-w-[355px]"
+        >
+          {leftNode}
+        </Tooltip>
+      }
+      rightIcon={null}
+      onClick={data.onClick}
+    >
+      <span className="text-12 font-medium text-r-neutral-title-1 mt-[8px]">
+        {data.content}
+      </span>
+    </Item>
+  );
+};
+
 const AddAddressOptions = () => {
   const history = useHistory();
   const { t } = useTranslation();
@@ -423,55 +472,9 @@ const AddAddressOptions = () => {
                 )}
               >
                 <div className="py-[8px] grid grid-cols-3 gap-x-0">
-                  {item.values.map((v) => {
-                    return (
-                      <Item
-                        bgColor="transparent"
-                        className="flex-col justify-center hover:border-transparent"
-                        hoverBgColor={v.preventClick ? '' : undefined}
-                        py={10}
-                        px={0}
-                        key={v.brand}
-                        left={
-                          <div className="relative w-[29px] h-[28px]">
-                            {v.tipI18nKey ? (
-                              <Tooltip
-                                title={t(v.tipI18nKey)}
-                                placement="topLeft"
-                                arrowPointAtCenter
-                                overlayClassName="rectangle w-[max-content] max-w-[355px]"
-                              >
-                                <img
-                                  src={v.image}
-                                  className={clsx('w-[28px] h-[28px]', {
-                                    'cursor-not-allowed': v.preventClick,
-                                  })}
-                                />
-                              </Tooltip>
-                            ) : (
-                              <img
-                                src={v.image}
-                                className="w-[28px] h-[28px]"
-                              />
-                            )}
-                            {v.connectType === 'WalletConnect' &&
-                              v.brand !== WALLET_BRAND_TYPES.WALLETCONNECT && (
-                                <img
-                                  src={IconWalletConnect}
-                                  className="absolute -bottom-6 -right-6 w-[14px] h-[14px] rounded-full"
-                                />
-                              )}
-                          </div>
-                        }
-                        rightIcon={null}
-                        onClick={v.onClick}
-                      >
-                        <span className="text-12 font-medium text-r-neutral-title-1 mt-[8px]">
-                          {v.content}
-                        </span>
-                      </Item>
-                    );
-                  })}
+                  {item.values.map((v) => (
+                    <AddressItem key={v.brand} data={v} />
+                  ))}
                 </div>
               </div>
             </div>
