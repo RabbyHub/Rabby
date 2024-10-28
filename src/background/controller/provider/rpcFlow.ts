@@ -234,7 +234,12 @@ const flowContext = flow
           waitSignComponentPromise = waitSignComponentAmounted();
         }
 
-        if (approvalRes?.isGnosis) return resolve(undefined);
+        // if (approvalRes?.isGnosis && !approvalRes.safeMessage) {
+        //   return resolve(undefined);
+        // }
+        if (approvalRes?.isGnosis) {
+          return resolve(undefined);
+        }
 
         return waitSignComponentPromise.then(() =>
           Promise.resolve(
@@ -294,6 +299,7 @@ const flowContext = flow
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
       reportStatsData();
+      console.log('loop res', result);
       return result;
     }
 

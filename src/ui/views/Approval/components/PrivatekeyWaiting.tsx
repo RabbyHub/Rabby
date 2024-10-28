@@ -24,6 +24,7 @@ import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 
 interface ApprovalParams {
   address: string;
@@ -34,6 +35,11 @@ interface ApprovalParams {
   $ctx?: any;
   extra?: Record<string, any>;
   type: string;
+  safeMessage?: {
+    messageHash?: string;
+    message: string;
+    chainId: number;
+  };
 }
 
 export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
@@ -158,6 +164,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+      console.log('event', data);
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -165,12 +172,49 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, data.data);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              // const res = await wallet.getGnosisMessage({
+              //   chainId: safeMessage.chainId,
+              //   messageHash: safeMessage.messageHash
+              // })
+              const messageResponse = await wallet.getGnosisSafeMessageInfo();
+              console.log('messageResponse', messageResponse);
+              if (messageResponse) {
+                if (
+                  messageResponse.status ===
+                  SafeClientTxStatus.MESSAGE_CONFIRMED
+                ) {
+                  // wallet.addGnosisMessage({
+                  //   message: safeMessage.message,
+                  //   signature: data.data,
+                  //   signerAddress: params.account!.address!,
+                  // });
+                  sig = messageResponse.message.preparedSignature;
+                } else if (messageResponse.message.confirmations.length > 0) {
+                  // todo
+                }
+              } else {
+                console.log('else');
+                await wallet.addGnosisMessage({
+                  signature: data.data,
+                  signerAddress: params.account!.address!,
+                });
+                // todo
+                const safeMessageResponse = await wallet.getGnosisSafeMessageInfo();
+                console.log('???', safeMessageResponse);
+                if (safeMessageResponse?.message) {
+                  sig = safeMessageResponse.message.preparedSignature;
+                }
+              }
             } else {
-              await wallet.gnosisAddSignature(account.address, data.data);
-              await wallet.postGnosisTransaction();
+              const sigs = await wallet.getGnosisTransactionSignatures();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, data.data);
+              } else {
+                await wallet.gnosisAddSignature(account.address, data.data);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {

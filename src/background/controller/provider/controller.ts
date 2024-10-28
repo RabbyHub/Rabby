@@ -60,6 +60,9 @@ import {
   CustomTestnetTokenBase,
   customTestnetService,
 } from '@/background/service/customTestnet';
+import { createSafeService } from '@/background/utils/safe';
+import { hashSafeMessage } from '@safe-global/protocol-kit';
+import { hexToString } from 'viem';
 
 const reportSignText = (params: {
   method: string;
@@ -813,6 +816,12 @@ class ProviderController extends BaseController {
     },
   ])
   personalSign = async ({ data, approvalRes, session }) => {
+    console.log('personal sign', {
+      data,
+      approvalRes,
+      session,
+    });
+
     if (!data.params) return;
 
     const currentAccount = preferenceService.getCurrentAccount()!;
@@ -820,11 +829,51 @@ class ProviderController extends BaseController {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
       const keyring = await this._checkAddress(from);
-      const result = await keyringService.signPersonalMessage(
-        keyring,
-        { data: hex, from },
-        approvalRes?.extra
-      );
+      // todo
+      let result: any;
+      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        // check chainId
+        let chain = findChain({
+          id: approvalRes.chainId,
+        });
+        if (!chain) {
+          const site = permissionService.getConnectedSite(session.origin)!;
+          chain = findChain({
+            enum: site.chain,
+          });
+        }
+        if (!chain) {
+          throw new Error('Invalid chain');
+        }
+
+        const safe = await createSafeService({
+          address: currentAccount.address,
+          networkId: chain.network,
+          // networkId: approvalRes?.extra?.chainId
+        });
+
+        const safeMessageHash = safe.getSafeMessageHash(
+          hashSafeMessage(hexToString(hex as `0x${string}`))
+        );
+        try {
+          const res = await safe.apiKit.getMessage(safeMessageHash);
+          const threshold = await safe.getThreshold();
+          if (res.confirmations.length >= threshold) {
+            result = res.preparedSignature;
+          } else {
+            throw new Error('need more owners to sign');
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        // todo poll
+      } else {
+        result = await keyringService.signPersonalMessage(
+          keyring,
+          { data: hex, from },
+          approvalRes?.extra
+        );
+      }
       signTextHistoryService.createHistory({
         address: from,
         text: string,

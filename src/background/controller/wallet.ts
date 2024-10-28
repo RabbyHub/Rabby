@@ -124,6 +124,7 @@ import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser from 'webextension-polyfill';
+import SafeApiKit from '@safe-global/api-kit';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -2321,6 +2322,93 @@ export class WalletController extends BaseController {
     await keyring.addSignature(address, signature);
   };
 
+  buildGnosisMessage = async ({
+    account,
+    safeAddress,
+    networkId,
+    version,
+    message,
+  }: {
+    safeAddress: string;
+    account: Account;
+    version: string;
+    networkId: string;
+    // todo ts
+    message: string;
+  }) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring) {
+      const currentProvider = new EthereumProvider();
+      currentProvider.currentAccount = account.address;
+      currentProvider.currentAccountType = account.type;
+      currentProvider.currentAccountBrand = account.brandName;
+      currentProvider.chainId = networkId;
+      await keyring.buildMessage({
+        address: safeAddress,
+        provider: new ethers.providers.Web3Provider(currentProvider),
+        version,
+        networkId,
+        message,
+      });
+    } else {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+  };
+
+  getGnosisSafeMessageInfo = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+    return keyring.getMessageInfo();
+  };
+
+  addGnosisMessage = async ({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
+    return keyring.addMessage({
+      signerAddress,
+      signature,
+    });
+  };
+
+  addGnosisMessageSignature = async ({
+    messageHash,
+    signerAddress,
+    signature,
+  }: {
+    messageHash: string;
+    signerAddress: string;
+    signature: string;
+  }) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
+    return keyring.addMessageSignature({
+      messageHash,
+      signerAddress,
+      signature,
+    });
+  };
+
+  getGnosisMessage = async ({
+    chainId,
+    messageHash,
+  }: {
+    chainId: number;
+    messageHash: string;
+  }) => {
+    const apiKit = new SafeApiKit({
+      chainId: BigInt(chainId),
+    });
+    return apiKit.getMessage(messageHash);
+  };
+
   /**
    * @description add address as watch only account, and DON'T set it as current account
    */
@@ -3292,6 +3380,21 @@ export class WalletController extends BaseController {
       },
     });
     return res;
+  };
+
+  signPersonalMessageWithUI = async (
+    type: string,
+    from: string,
+    data: string,
+    options?: any
+  ) => {
+    const fn = () =>
+      waitSignComponentAmounted().then(() => {
+        this.signPersonalMessage(type, from, data as any, options);
+      });
+
+    notificationService.setCurrentRequestDeferFn(fn);
+    return fn();
   };
 
   signTypedData = async (

@@ -8,6 +8,20 @@ import {
 } from '@gnosis.pm/safe-core-sdk-types';
 import semverSatisfies from 'semver/functions/satisfies';
 import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
+import SafeMessage from '@safe-global/protocol-kit/dist/src/utils/messages/SafeMessage';
+import { EIP712TypedData } from '@safe-global/types-kit';
+import SafeApiKit, {
+  EIP712TypedData as EIP712TypedDataNew,
+} from '@safe-global/api-kit';
+import {
+  adjustVInSignature,
+  EthSafeSignature,
+  hashSafeMessage,
+} from '@safe-global/protocol-kit/dist/src/utils';
+import { SigningMethod } from '@safe-global/protocol-kit';
+import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
+// import { createSafeService } from '@/background/utils/safe';
+import { hexToString } from 'viem';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
@@ -180,6 +194,8 @@ class GnosisKeyring extends EventEmitter {
   networkIdsMap: Record<string, string[]> = {};
   currentTransaction: SafeTransaction | null = null;
   currentTransactionHash: string | null = null;
+  currentSafeMessage: SafeMessage | null = null;
+  currentSafeMessageHash: string | null = null;
   onExecedTransaction: ((hash: string) => void) | null = null;
   safeInstance: Safe | null = null;
 
@@ -576,12 +592,170 @@ class GnosisKeyring extends EventEmitter {
     });
   }
 
+  async buildMessage({
+    address,
+    provider,
+    version,
+    networkId,
+    message,
+  }: {
+    address: string;
+    provider: any;
+    version: string;
+    networkId: string;
+    message: string | EIP712TypedData;
+  }) {
+    if (
+      !this.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    const checksumAddress = toChecksumAddress(address);
+    const safe = new Safe(checksumAddress, version, provider, networkId);
+    const safeMessage = new SafeMessage(message);
+    this.safeInstance = safe;
+    this.currentSafeMessage = safeMessage;
+    this.currentSafeMessageHash = safe.getSafeMessageHash(
+      hashSafeMessage(safeMessage.data)
+    );
+    // try {
+    //   const res = await safe.apiKit.getMessage(this.currentSafeMessageHash)
+    //   if (res) {
+    //     this.currentSafeMessage = res
+    //   }
+    // }
+    return this.currentSafeMessage;
+  }
+
+  async getMessageInfo() {
+    if (
+      !this.currentSafeMessage ||
+      !this.safeInstance ||
+      !this.currentSafeMessageHash
+    ) {
+      throw new Error('No message in Gnosis keyring');
+    }
+    try {
+      const message = await this.safeInstance.apiKit.getMessage(
+        this.currentSafeMessageHash
+      );
+
+      return {
+        safeAddress: this.safeInstance.safeAddress,
+        status:
+          message.confirmations.length ===
+          (await this.safeInstance.getThreshold())
+            ? SafeClientTxStatus.MESSAGE_CONFIRMED
+            : SafeClientTxStatus.MESSAGE_PENDING_SIGNATURES,
+        safeMessageHash: this.currentSafeMessageHash,
+        message,
+      };
+    } catch (e) {
+      console.log('catch', e);
+      console.error(e);
+      return null;
+    }
+  }
+
+  async signSafeMessage({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) {
+    if (
+      !this.currentSafeMessage ||
+      !this.safeInstance ||
+      !this.currentSafeMessageHash
+    ) {
+      throw new Error('No message in Gnosis keyring');
+    }
+    this.safeInstance.apiKit.getMessage(this.currentSafeMessageHash);
+  }
+
+  async addMessage({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) {
+    if (!this.currentSafeMessage || !this.safeInstance) {
+      throw new Error('No message in Gnosis keyring');
+    }
+    signature = await adjustVInSignature(
+      SigningMethod.ETH_SIGN_TYPED_DATA,
+      signature
+    );
+    const safeSignature = new EthSafeSignature(signerAddress, signature);
+    this.currentSafeMessage.addSignature(safeSignature);
+    return this.safeInstance.addMessage({
+      safeMessage: this.currentSafeMessage,
+    });
+    // const apiKit = new SafeApiKit({
+    //   chainId: BigInt(this.safeInstance.network),
+    // });
+    // return apiKit.addMessage(this.safeInstance.safeAddress, {
+    //   message,
+    //   signature: this.currentSafeMessage.encodedSignatures(),
+    // });
+  }
+
+  async addMessageSignature({
+    messageHash,
+    signerAddress,
+    signature,
+  }: {
+    messageHash: string;
+    signerAddress: string;
+    signature: string;
+  }) {
+    if (!this.currentSafeMessage || !this.safeInstance) {
+      throw new Error('No message in Gnosis keyring');
+    }
+    const apiKit = new SafeApiKit({
+      chainId: BigInt(this.safeInstance.network),
+    });
+    signature = await adjustVInSignature(
+      SigningMethod.ETH_SIGN_TYPED_DATA,
+      signature
+    );
+    const safeSignature = new EthSafeSignature(signerAddress, signature);
+    this.currentSafeMessage.addSignature(safeSignature);
+
+    return apiKit.addMessageSignature(
+      messageHash,
+      this.currentSafeMessage.encodedSignatures()
+    );
+  }
+
   signTypedData() {
     throw new Error('Gnosis address not support signTypedData');
   }
 
-  signPersonalMessage() {
+  async signPersonalMessage(
+    address: string,
+    msgHex: string,
+    options: { chainId: number }
+  ) {
     throw new Error('Gnosis address not support signPersonalMessage');
+    // const checksumAddress = toChecksumAddress(address);
+    // const safe = await createSafeService({
+    //   address,
+    //   networkId: String(options.chainId),
+    // });
+    // const safeMessageHash = safe.getSafeMessageHash(
+    //   hashSafeMessage(hexToString(msgHex as `0x${string}`))
+    // );
+    // const res = await safe.apiKit.getMessage(safeMessageHash);
+    // const threshold = await safe.getThreshold();
+    // if (res.confirmations.length >= threshold) {
+    //   return res.preparedSignature;
+    // }
+    // todo poll
   }
 
   _normalize(buf) {
