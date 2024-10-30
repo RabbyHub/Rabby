@@ -47,6 +47,7 @@ import { MiniApproval, MiniSignTx } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useHistory } from 'react-router-dom';
+import { LowCreditModal, useLowCreditState } from './LowCreditModal';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
@@ -410,6 +411,13 @@ export const Main = () => {
 
   const history = useHistory();
 
+  const {
+    lowCreditToken,
+    lowCreditVisible,
+    setLowCreditToken,
+    setLowCreditVisible,
+  } = useLowCreditState(receiveToken);
+
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
       background: '#fff',
@@ -514,6 +522,10 @@ export const Main = () => {
                 setPayToken(undefined);
               }
               setReceiveToken(token);
+              if (token?.low_credit_score) {
+                setLowCreditToken(token);
+                setLowCreditVisible(true);
+              }
             }}
             chainId={CHAINS[chain].serverId}
             type={'swapTo'}
@@ -775,6 +787,11 @@ export const Main = () => {
             // }, 500);
           }, 500);
         }}
+      />
+      <LowCreditModal
+        token={lowCreditToken}
+        visible={lowCreditVisible}
+        onCancel={() => setLowCreditVisible(false)}
       />
     </div>
   );
