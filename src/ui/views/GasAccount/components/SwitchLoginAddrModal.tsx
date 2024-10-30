@@ -34,6 +34,7 @@ export const SwitchLoginAddrBeforeDepositModal = ({
         paddingLeft: 20,
         paddingRight: 20,
       }}
+      focusTriggerAfterClose={false}
     >
       <div className="flex flex-col items-center">
         <div className="text-18 font-medium text-r-neutral-title1">

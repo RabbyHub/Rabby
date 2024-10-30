@@ -87,6 +87,7 @@ export const LowCreditModal = ({
         paddingLeft: 20,
         paddingRight: 20,
       }}
+      focusTriggerAfterClose={false}
     >
       <div className="flex flex-col">
         <div className="flex items-center justify-center">
@@ -103,7 +104,7 @@ export const LowCreditModal = ({
           {ellipsisAddress(token.id)}
           <RcIconExternalCC className="w-14 h-14 text-r-neutral-body" />
         </div>
-        <div className="mt-16 mb-12 text-16 font-medium text-r-neutral-title1 text-center">
+        <div className="mt-16 mb-12 text-[16px] font-medium text-r-neutral-title1 text-center">
           {t('page.swap.lowCreditModal.title')}
         </div>
         <div className="mb-32 rounded-md p-10 pr-[9px] bg-r-neutral-card2 text-12 text-r-neutral-foot">
