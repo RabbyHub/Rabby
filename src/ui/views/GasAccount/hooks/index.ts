@@ -223,3 +223,19 @@ export const useGasAccountHistory = () => {
     ref,
   };
 };
+
+export const useAml = () => {
+  const { accountId } = useGasAccountSign();
+  const wallet = useWallet();
+
+  const { value } = useAsync(async () => {
+    if (accountId) {
+      return wallet.openapi.getGasAccountAml(accountId);
+    }
+    return {
+      is_risk: false,
+    };
+  }, [accountId]);
+
+  return value?.is_risk;
+};
