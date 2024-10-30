@@ -5,7 +5,6 @@ import { syncStateToUI } from './broadcastToUI';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 
 const persistStorage = debounce((name: string, obj: object) => {
-  console.log('name', obj);
   storage.set(name, obj);
 }, 500);
 
