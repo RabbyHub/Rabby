@@ -79,7 +79,7 @@ const GasAccountLoginContent = ({ onClose }: { onClose: () => void }) => {
           {t('page.gasAccount.loginConfirmModal.title')}
         </div>
         <GasACcountCurrentAddress />
-        <div className=" text-14 text-r-neutral-body px-20">
+        <div className=" text-14 text-r-neutral-body px-20 text-center">
           {t('page.gasAccount.loginConfirmModal.desc')}
         </div>
         <div
