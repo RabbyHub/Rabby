@@ -135,7 +135,7 @@ const GasAccountInner = () => {
             {formatUsdValue(balance, BigNumber.ROUND_DOWN)}
           </div>
 
-          <div className="w-full mt-auto flex gap-12 items-center justify-center">
+          <div className="w-full mt-auto flex gap-12 items-center justify-center relative">
             <GasAccountBlueBorderedButton
               block
               onClick={() => setWithdrawVisible(true)}
