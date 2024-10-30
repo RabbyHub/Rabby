@@ -47,14 +47,16 @@ class LatticeKeyring extends OldLatticeKeyring {
 
       // send a msg to the render process to open lattice connector
       // and collect the credentials
-      const creds = await Browser.runtime.sendMessage({
+      const credsResult = await Browser.runtime.sendMessage({
         target: OffscreenCommunicationTarget.latticeOffscreen,
         params: {
           url,
         },
-      })
-
-      return creds;
+      });
+      if (credsResult.error) {
+        throw new Error(credsResult.error);
+      }
+      return credsResult.result;
     } catch (err: any) {
       throw new Error(err);
     }
