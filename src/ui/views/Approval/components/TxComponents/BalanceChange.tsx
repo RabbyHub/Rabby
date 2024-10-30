@@ -337,7 +337,7 @@ const BalanceChange = ({
                       <span
                         onClick={() => handleClickToken(token)}
                         title={getTokenSymbol(token)}
-                        className="group-hover:underline cursor-pointer text-green font-medium overflow-hidden overflow-ellipsis max-w-[100px] ml-2"
+                        className="group-hover:underline cursor-pointer text-green font-medium overflow-hidden overflow-ellipsis max-w-[80px] ml-2"
                       >
                         {getTokenSymbol(token)}
                       </span>
