@@ -15,6 +15,8 @@ import SafeApiKit, {
 } from '@safe-global/api-kit';
 import {
   adjustVInSignature,
+  buildSignatureBytes,
+  calculateSafeMessageHash,
   EthSafeSignature,
   hashSafeMessage,
 } from '@safe-global/protocol-kit/dist/src/utils';
@@ -205,6 +207,7 @@ class GnosisKeyring extends EventEmitter {
   }
 
   deserialize(opts: DeserializeOption) {
+    console.log('de', opts);
     if (opts.accounts) {
       this.accounts = opts.accounts;
     }
@@ -229,6 +232,7 @@ class GnosisKeyring extends EventEmitter {
   }
 
   serialize() {
+    console.log('ser', this.networkIdsMap);
     return Promise.resolve({
       accounts: this.accounts,
       networkIdMap: this.networkIdMap,
@@ -617,16 +621,13 @@ class GnosisKeyring extends EventEmitter {
     const safeMessage = new SafeMessage(message);
     this.safeInstance = safe;
     this.currentSafeMessage = safeMessage;
-    this.currentSafeMessageHash = safe.getSafeMessageHash(
+    this.currentSafeMessageHash = await safe.getSafeMessageHash(
       hashSafeMessage(safeMessage.data)
     );
-    // try {
-    //   const res = await safe.apiKit.getMessage(this.currentSafeMessageHash)
-    //   if (res) {
-    //     this.currentSafeMessage = res
-    //   }
-    // }
-    return this.currentSafeMessage;
+
+    return {
+      safeMessageHash: this.currentSafeMessageHash,
+    };
   }
 
   async getMessageInfo() {
@@ -653,27 +654,9 @@ class GnosisKeyring extends EventEmitter {
         message,
       };
     } catch (e) {
-      console.log('catch', e);
       console.error(e);
       return null;
     }
-  }
-
-  async signSafeMessage({
-    signerAddress,
-    signature,
-  }: {
-    signerAddress: string;
-    signature: string;
-  }) {
-    if (
-      !this.currentSafeMessage ||
-      !this.safeInstance ||
-      !this.currentSafeMessageHash
-    ) {
-      throw new Error('No message in Gnosis keyring');
-    }
-    this.safeInstance.apiKit.getMessage(this.currentSafeMessageHash);
   }
 
   async addMessage({
@@ -695,25 +678,20 @@ class GnosisKeyring extends EventEmitter {
     return this.safeInstance.addMessage({
       safeMessage: this.currentSafeMessage,
     });
-    // const apiKit = new SafeApiKit({
-    //   chainId: BigInt(this.safeInstance.network),
-    // });
-    // return apiKit.addMessage(this.safeInstance.safeAddress, {
-    //   message,
-    //   signature: this.currentSafeMessage.encodedSignatures(),
-    // });
   }
 
   async addMessageSignature({
-    messageHash,
     signerAddress,
     signature,
   }: {
-    messageHash: string;
     signerAddress: string;
     signature: string;
   }) {
-    if (!this.currentSafeMessage || !this.safeInstance) {
+    if (
+      !this.currentSafeMessage ||
+      !this.safeInstance ||
+      !this.currentSafeMessageHash
+    ) {
       throw new Error('No message in Gnosis keyring');
     }
     const apiKit = new SafeApiKit({
@@ -727,35 +705,40 @@ class GnosisKeyring extends EventEmitter {
     this.currentSafeMessage.addSignature(safeSignature);
 
     return apiKit.addMessageSignature(
-      messageHash,
-      this.currentSafeMessage.encodedSignatures()
+      this.currentSafeMessageHash,
+      buildSignatureBytes([safeSignature])
     );
+  }
+
+  async addPureMessageSignature({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) {
+    if (
+      !this.currentSafeMessage ||
+      !this.safeInstance ||
+      !this.currentSafeMessageHash
+    ) {
+      throw new Error('No message in Gnosis keyring');
+    }
+
+    signature = await adjustVInSignature(
+      SigningMethod.ETH_SIGN_TYPED_DATA,
+      signature
+    );
+    const safeSignature = new EthSafeSignature(signerAddress, signature);
+    this.currentSafeMessage.addSignature(safeSignature);
   }
 
   signTypedData() {
     throw new Error('Gnosis address not support signTypedData');
   }
 
-  async signPersonalMessage(
-    address: string,
-    msgHex: string,
-    options: { chainId: number }
-  ) {
+  async signPersonalMessage() {
     throw new Error('Gnosis address not support signPersonalMessage');
-    // const checksumAddress = toChecksumAddress(address);
-    // const safe = await createSafeService({
-    //   address,
-    //   networkId: String(options.chainId),
-    // });
-    // const safeMessageHash = safe.getSafeMessageHash(
-    //   hashSafeMessage(hexToString(msgHex as `0x${string}`))
-    // );
-    // const res = await safe.apiKit.getMessage(safeMessageHash);
-    // const threshold = await safe.getThreshold();
-    // if (res.confirmations.length >= threshold) {
-    //   return res.preparedSignature;
-    // }
-    // todo poll
   }
 
   _normalize(buf) {

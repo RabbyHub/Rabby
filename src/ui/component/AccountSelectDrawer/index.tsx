@@ -182,6 +182,7 @@ const AccountSelectDrawer = ({
         {accounts.map((account) => (
           <AccountItem
             account={account}
+            key={`${account.type}-${account.address}`}
             onSelect={handleSelectAccount}
             networkId={networkId}
             checked={

@@ -1743,7 +1743,8 @@
       "createKey": {
         "interactDapp": "Interact Dapp",
         "description": "Description"
-      }
+      },
+      "sameSafeMessageAlert": "The same message is confirmed; no additional signature is required."
     },
     "securityEngine": {
       "yes": "Yes",
@@ -1861,7 +1862,7 @@
       "requestBtn": "Request"
     },
     "safeQueue": {
-      "title": "Queue",
+      "title": "Queue ({{total}})",
       "sameNonceWarning": "These transactions conflict as they use the same nonce.                   Executing one will automatically replace the other(s).",
       "loading": "Loading pending transactions",
       "noData": "No pending transactions",
@@ -2253,6 +2254,10 @@
         "title": "Open GasAccount and Deposit",
         "gotIt": "Got it"
       }
+    },
+    "safeMessageQueue": {
+      "loading": "Loading messages",
+      "noData": "No messages"
     }
   },
   "component": {

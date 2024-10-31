@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { Skeleton, message } from 'antd';
+import { Button, Drawer, Modal, Skeleton, message } from 'antd';
 import { useScroll } from 'react-use';
-import { useSize, useDebounceFn } from 'ahooks';
+import { useSize, useDebounceFn, useRequest } from 'ahooks';
 import { underline2Camelcase } from '@/background/utils';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -51,6 +51,11 @@ import {
   ActionRequireData,
   ParsedTypedDataActionData,
 } from '@rabby-wallet/rabby-action';
+import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
+import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
+import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
+import GnosisDrawer from './TxComponents/GnosisDrawer';
+import { generateTypedData } from '@safe-global/protocol-kit';
 
 interface SignTypedDataProps {
   method: string;
@@ -63,6 +68,7 @@ interface SignTypedDataProps {
   isGnosis?: boolean;
   isSend?: boolean;
   account?: Account;
+  $ctx?: any;
 }
 
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
@@ -89,9 +95,16 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     currentTx: s.securityEngine.currentTx,
     tokenDetail: s.sign.tokenDetail,
   }));
-  const [currentChainId, setCurrentChainId] = useState<
-    number | string | undefined
-  >(undefined);
+  const [currentChainId, setCurrentChainId] = useState<number | undefined>(
+    undefined
+  );
+
+  const [isGnosisAccount, setIsGnosisAccount] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [gnosisFooterBarVisible, setGnosisFooterBarVisible] = useState(false);
+  const [currentGnosisAdmin, setCurrentGnosisAdmin] = useState<Account | null>(
+    null
+  );
 
   const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
     null
@@ -203,6 +216,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           enum: site.chain,
         })?.id;
       }
+    } else if (params.$ctx.chainId) {
+      return params.$ctx.chainId;
     } else {
       return chain?.id;
     }
@@ -218,6 +233,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       const currentAccount = isGnosis
         ? account
         : await wallet.getCurrentAccount();
+
+      const _isGnosisAccount =
+        currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
+      setIsGnosisAccount(_isGnosisAccount);
+      if (!_isGnosisAccount) {
+        wallet.clearGnosisMessage();
+      }
       const chainId = signTypedData?.domain?.chainId;
       if (isTestnetChainId(chainId)) {
         return null;
@@ -248,16 +270,55 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
     }
-    if (currentAccount && currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      setIsWatch(true);
-      setCantProcessReason(
-        <div className="flex items-center gap-6">
-          <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
-          {t('page.signTypedData.safeCantSignText')}
-        </div>
-      );
-    }
   };
+
+  const isViewGnosisSafe = params?.$ctx?.isViewGnosisSafe;
+  const { data: safeInfo } = useGetCurrentSafeInfo({ chainId: currentChainId });
+  const { data: safeMessageHash } = useGetMessageHash({
+    chainId: currentChainId,
+    message: signTypedData,
+  });
+
+  useCheckCurrentSafeMessage(
+    {
+      chainId: currentChainId,
+      safeMessageHash,
+      threshold: safeInfo?.threshold,
+    },
+    {
+      onSuccess(safeMessage) {
+        if (safeMessage) {
+          const modal = Modal.info({
+            maskClosable: false,
+            closable: false,
+            width: 320,
+            centered: true,
+            className: 'same-safe-message-modal modal-support-darkmode',
+            content: (
+              <div>
+                <div className="text-[16px] leading-[140%] text-r-neutral-title1 font-medium text-center">
+                  {t('page.signText.sameSafeMessageAlert')}
+                </div>
+                <div className="mt-[32px]">
+                  <Button
+                    type="primary"
+                    block
+                    onClick={() => {
+                      modal.destroy();
+                      resolveApproval(safeMessage.preparedSignature);
+                    }}
+                    className="text-[15px] h-[40px] rounded-[6px]"
+                  >
+                    {t('global.ok')}
+                  </Button>
+                </div>
+              </div>
+            ),
+          });
+        }
+      },
+    }
+  );
 
   const report = async (
     action:
@@ -305,71 +366,15 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       ? account
       : await wallet.getCurrentAccount();
 
+    if (isGnosisAccount) {
+      setDrawerVisible(true);
+      return;
+    }
+
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
     }
 
-    if (isGnosis && params.account) {
-      if (
-        WaitingSignMessageComponent[params.account.type] &&
-        ![KEYRING_CLASS.PRIVATE_KEY, KEYRING_CLASS.MNEMONIC].includes(
-          params.account.type as any
-        )
-      ) {
-        wallet.signTypedData(
-          params.account.type,
-          params.account.address,
-          JSON.parse(params.data[1]),
-          {
-            brandName: params.account.brandName,
-            version: 'V4',
-          }
-        );
-        if (isSend) {
-          wallet.clearPageStateCache();
-        }
-        resolveApproval({
-          uiRequestComponent: WaitingSignMessageComponent[params.account.type],
-          type: params.account.type,
-          address: params.account.address,
-          data: params.data,
-          isGnosis: true,
-          account: params.account,
-        });
-      } else {
-        try {
-          let result = await wallet.signTypedData(
-            params.account.type,
-            params.account.address,
-            JSON.parse(params.data[1]),
-            {
-              version: 'V4',
-            }
-          );
-          result = adjustV('eth_signTypedData', result);
-          report('completeSignText', {
-            success: true,
-          });
-          const sigs = await wallet.getGnosisTransactionSignatures();
-          if (sigs.length > 0) {
-            await wallet.gnosisAddConfirmation(params.account.address, result);
-          } else {
-            await wallet.gnosisAddSignature(params.account.address, result);
-            await wallet.postGnosisTransaction();
-          }
-          if (isSend) {
-            wallet.clearPageStateCache();
-          }
-          resolveApproval(result, false, true);
-        } catch (e) {
-          message.error(e.message);
-          report('completeSignText', {
-            success: false,
-          });
-        }
-      }
-      return;
-    }
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const transport = await TransportWebHID.create();
@@ -536,6 +541,77 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     { wait: 1000 }
   );
 
+  const handleDrawerCancel = () => {
+    setDrawerVisible(false);
+  };
+
+  const handleGnosisConfirm = async (account: Account) => {
+    if (!safeInfo) return;
+    setGnosisFooterBarVisible(true);
+    setCurrentGnosisAdmin(account);
+  };
+
+  const handleGnosisSign = async () => {
+    const account = currentGnosisAdmin;
+    if (!safeInfo || !account || !signTypedData) {
+      return;
+    }
+    if (activeApprovalPopup()) {
+      return;
+    }
+
+    if (!isViewGnosisSafe) {
+      await wallet.buildGnosisMessage({
+        safeAddress: safeInfo.address,
+        account,
+        version: safeInfo.version,
+        networkId: currentChainId + '',
+        message: signTypedData,
+      });
+    }
+
+    const typedData = generateTypedData({
+      safeAddress: safeInfo.address,
+      safeVersion: safeInfo.version,
+      chainId: BigInt(currentChainId!),
+      data: signTypedData as any,
+    });
+    if (WaitingSignMessageComponent[account.type]) {
+      wallet.signTypedDataWithUI(
+        account.type,
+        account.address,
+        typedData as any,
+        {
+          brandName: account.brandName,
+          version: 'V4',
+        }
+      );
+
+      resolveApproval({
+        uiRequestComponent: WaitingSignMessageComponent[account.type],
+        type: account.type,
+        address: account.address,
+        data: [account.address, JSON.stringify(typedData)],
+        isGnosis: true,
+        account: account,
+        safeMessage: {
+          message: signTypedData,
+          safeAddress: safeInfo.address,
+          chainId: currentChainId,
+          safeMessageHash: safeMessageHash,
+        },
+        extra: {
+          popupProps: {
+            maskStyle: {
+              backgroundColor: 'transparent',
+            },
+          },
+        },
+      });
+    }
+    return;
+  };
+
   useEffect(() => {
     executeSecurityEngine();
   }, [rules]);
@@ -651,6 +727,63 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             originLogo={params.session.icon}
             typedDataActionData={typedDataActionData}
           />
+        )}
+        {isGnosisAccount && safeInfo && (
+          <Drawer
+            placement="bottom"
+            height="400px"
+            className="gnosis-drawer is-support-darkmode"
+            visible={drawerVisible}
+            onClose={() => setDrawerVisible(false)}
+            maskClosable
+          >
+            <GnosisDrawer
+              type="message"
+              safeInfo={safeInfo}
+              onCancel={handleDrawerCancel}
+              onConfirm={handleGnosisConfirm}
+            />
+          </Drawer>
+        )}
+
+        {isGnosisAccount && safeInfo && currentGnosisAdmin && (
+          <Drawer
+            placement="bottom"
+            height="fit-content"
+            className="gnosis-footer-bar is-support-darkmode"
+            visible={gnosisFooterBarVisible}
+            onClose={() => setGnosisFooterBarVisible(false)}
+            maskClosable
+            closable={false}
+            bodyStyle={{
+              padding: 0,
+            }}
+          >
+            <FooterBar
+              origin={params.session.origin}
+              originLogo={params.session.icon}
+              // chain={chain}
+              gnosisAccount={currentGnosisAdmin}
+              onCancel={handleCancel}
+              // securityLevel={securityLevel}
+              // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
+              onSubmit={handleGnosisSign}
+              enableTooltip={
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              }
+              tooltipContent={
+                currentGnosisAdmin?.type ===
+                KEYRING_TYPE.WatchAddressKeyring ? (
+                  <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
+                ) : null
+              }
+              disabledProcess={
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              }
+              // isSubmitting={isSubmittingGnosis}
+              onIgnoreAllRules={handleIgnoreAllRules}
+            />
+          </Drawer>
         )}
         {!isLoading && chain?.isTestnet ? (
           <div

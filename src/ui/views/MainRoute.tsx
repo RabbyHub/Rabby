@@ -23,7 +23,6 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
-import GnosisTransactionQueue from './GnosisTransactionQueue';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -58,6 +57,7 @@ import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
+import { GnosisQueue } from './GnosisQueue';
 
 declare global {
   interface Window {
@@ -167,7 +167,7 @@ const Main = () => {
           <Activities />
         </PrivateRoute>
         <PrivateRoute exact path="/gnosis-queue">
-          <GnosisTransactionQueue />
+          <GnosisQueue />
         </PrivateRoute>
         <PrivateRoute exact path="/import/gnosis">
           <ImportGnosis />

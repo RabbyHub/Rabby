@@ -1,6 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  isSameAddress,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import {
   CHAINS,
   EVENTS,
@@ -36,7 +41,8 @@ interface ApprovalParams {
   extra?: Record<string, any>;
   type: string;
   safeMessage?: {
-    messageHash?: string;
+    safeMessageHash: string;
+    safeAddress: string;
     message: string;
     chainId: number;
   };
@@ -174,39 +180,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
             sig = adjustV('eth_signTypedData', sig);
             const safeMessage = params.safeMessage;
             if (safeMessage) {
-              // const res = await wallet.getGnosisMessage({
-              //   chainId: safeMessage.chainId,
-              //   messageHash: safeMessage.messageHash
-              // })
-              const messageResponse = await wallet.getGnosisSafeMessageInfo();
-              console.log('messageResponse', messageResponse);
-              if (messageResponse) {
-                if (
-                  messageResponse.status ===
-                  SafeClientTxStatus.MESSAGE_CONFIRMED
-                ) {
-                  // wallet.addGnosisMessage({
-                  //   message: safeMessage.message,
-                  //   signature: data.data,
-                  //   signerAddress: params.account!.address!,
-                  // });
-                  sig = messageResponse.message.preparedSignature;
-                } else if (messageResponse.message.confirmations.length > 0) {
-                  // todo
-                }
-              } else {
-                console.log('else');
-                await wallet.addGnosisMessage({
-                  signature: data.data,
-                  signerAddress: params.account!.address!,
-                });
-                // todo
-                const safeMessageResponse = await wallet.getGnosisSafeMessageInfo();
-                console.log('???', safeMessageResponse);
-                if (safeMessageResponse?.message) {
-                  sig = safeMessageResponse.message.preparedSignature;
-                }
-              }
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
               const sigs = await wallet.getGnosisTransactionSignatures();
               if (sigs.length > 0) {

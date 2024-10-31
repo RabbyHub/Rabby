@@ -15,6 +15,7 @@ import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
+import { gnosisController } from './gnosisController';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -295,12 +296,32 @@ const flowContext = flow
         return res;
       }
     }
+    console.log({ approvalRes, mapMethod, approvalType, request });
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
       reportStatsData();
-      console.log('loop res', result);
-      return result;
+      if (rest.safeMessage) {
+        const safeMessage: {
+          safeAddress: string;
+          message: string | Record<string, any>;
+          chainId: number;
+          safeMessageHash: string;
+        } = rest.safeMessage;
+        if (ctx.request.requestedApproval) {
+          flow.requestedApproval = false;
+          // only unlock notification if current flow is an approval flow
+          notificationService.unLock();
+          keyringService.resetResend();
+        }
+        return gnosisController.watchMessage({
+          address: safeMessage.safeAddress,
+          chainId: safeMessage.chainId,
+          safeMessageHash: safeMessage.safeMessageHash,
+        });
+      } else {
+        return result;
+      }
     }
 
     return requestDefer;

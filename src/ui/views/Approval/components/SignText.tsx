@@ -10,8 +10,8 @@ import {
   Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { useSize, useDebounceFn } from 'ahooks';
-import { Drawer, Skeleton } from 'antd';
+import { useSize, useDebounceFn, useRequest } from 'ahooks';
+import { Button, Drawer, message, Modal, Skeleton } from 'antd';
 import { Account } from 'background/service/preference';
 import {
   CHAINS,
@@ -46,6 +46,9 @@ import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { toBytes } from 'viem';
 import { generateTypedData } from '@safe-global/protocol-kit';
+import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
+import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
+import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 
 interface SignTextProps {
   data: string[];
@@ -57,9 +60,11 @@ interface SignTextProps {
   isGnosis?: boolean;
   account?: Account;
   method?: string;
+  $ctx?: any;
 }
 
 const SignText = ({ params }: { params: SignTextProps }) => {
+  console.log(params);
   const renderStartAt = useRef(0);
   const actionType = useRef('');
   const [, resolveApproval, rejectApproval] = useApproval();
@@ -94,7 +99,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     currentTx: s.securityEngine.currentTx,
   }));
   const [chainId, setChainId] = useState<number | undefined>(undefined);
-  const [safeInfo, setSafeInfo] = useState<BasicSafeInfo | null>(null);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [gnosisFooterBarVisible, setGnosisFooterBarVisible] = useState(false);
@@ -142,6 +146,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     const _isGnosisAccount =
       currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
     setIsGnosisAccount(_isGnosisAccount);
+    if (!_isGnosisAccount) {
+      wallet.clearGnosisMessage();
+    }
 
     let chainId = 1; // ETH as default
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
@@ -152,11 +159,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             enum: site.chain,
           })?.id || chainId;
       }
+    } else if (params?.$ctx?.chainId) {
+      chainId = params?.$ctx?.chainId;
     }
     setChainId(chainId);
-    if (_isGnosisAccount) {
-      getSafeInfo(chainId);
-    }
 
     return await wallet.openapi.parseText({
       text: signText,
@@ -164,6 +170,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       origin: session.origin,
     });
   }, [signText, session]);
+
+  const isViewGnosisSafe = params?.$ctx?.isViewGnosisSafe;
 
   const report = async (
     action:
@@ -299,46 +307,53 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
     }
-    // if (accountType === KEYRING_TYPE.GnosisKeyring && !params.account) {
-    //   setIsWatch(true);
-    //   setCantProcessReason(
-    //     <div className="flex items-center gap-6">
-    //       <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
-    //       {t(
-    //         'This is a Gnosis Safe address, and it cannot be used to sign text.'
-    //       )}
-    //     </div>
-    //   );
-    // }
   };
 
-  const getSafeInfo = async (chainId: number) => {
-    const currentAccount = (await wallet.getCurrentAccount())!;
-    const networkId = '' + chainId;
-    let safeInfo: BasicSafeInfo | null = null;
-    const chain = findChain({ id: chainId });
-    try {
-      safeInfo = await wallet.getBasicSafeInfo({
-        address: currentAccount.address,
-        networkId,
-      });
-    } catch (e) {
-      let networkIds: string[] = [];
-      try {
-        networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
-      } catch (e) {
-        console.error(e);
-      }
-      if (!networkIds.includes(networkId)) {
-        throw new Error(
-          t('page.signTx.safeAddressNotSupportChain', [chain?.name])
-        );
-      } else {
-        throw e;
-      }
+  const { data: safeInfo } = useGetCurrentSafeInfo({ chainId: chainId });
+  const { data: safeMessageHash } = useGetMessageHash({
+    chainId,
+    message: signText,
+  });
+  useCheckCurrentSafeMessage(
+    {
+      chainId,
+      safeMessageHash,
+      threshold: safeInfo?.threshold,
+    },
+    {
+      onSuccess(safeMessage) {
+        if (safeMessage) {
+          const modal = Modal.info({
+            maskClosable: false,
+            closable: false,
+            width: 320,
+            centered: true,
+            className: 'same-safe-message-modal modal-support-darkmode',
+            content: (
+              <div>
+                <div className="text-[16px] leading-[140%] text-r-neutral-title1 font-medium text-center">
+                  {t('page.signText.sameSafeMessageAlert')}
+                </div>
+                <div className="mt-[32px]">
+                  <Button
+                    type="primary"
+                    block
+                    onClick={() => {
+                      modal.destroy();
+                      resolveApproval(safeMessage.preparedSignature);
+                    }}
+                    className="text-[15px] h-[40px] rounded-[6px]"
+                  >
+                    {t('global.ok')}
+                  </Button>
+                </div>
+              </div>
+            ),
+          });
+        }
+      },
     }
-    setSafeInfo(safeInfo);
-  };
+  );
 
   const init = async (
     textActionData: ParseTextResponse,
@@ -471,30 +486,16 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       return;
     }
 
-    // if (!isViewGnosisSafe) {
-    //   const params: any = {
-    //     from: tx.from,
-    //     to: tx.to,
-    //     data: tx.data,
-    //     value: tx.value,
-    //     safeTxGas: safeTxGas,
-    //   };
-    //   params.nonce = realNonce;
-    //   await wallet.buildGnosisTransaction(
-    //     tx.from,
-    //     account,
-    //     params,
-    //     safeInfo.version,
-    //     chain.network
-    //   );
-    // }
-    await wallet.buildGnosisMessage({
-      safeAddress: safeInfo.address,
-      account,
-      version: safeInfo.version,
-      networkId: chainId + '',
-      message: signText,
-    });
+    if (!isViewGnosisSafe) {
+      await wallet.buildGnosisMessage({
+        safeAddress: safeInfo.address,
+        account,
+        version: safeInfo.version,
+        networkId: chainId + '',
+        message: signText,
+      });
+    }
+
     const typedData = generateTypedData({
       safeAddress: safeInfo.address,
       safeVersion: safeInfo.version,
@@ -521,6 +522,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         account: account,
         safeMessage: {
           message: signText,
+          safeAddress: safeInfo.address,
+          chainId: chainId,
+          safeMessageHash: safeMessageHash,
         },
         extra: {
           popupProps: {
@@ -530,35 +534,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           },
         },
       });
-    } else {
-      // it should never go to here
-      // try {
-      //   let result = await wallet.signTypedData(
-      //     account.type,
-      //     account.address,
-      //     typedData as any,
-      //     {
-      //       version: 'V4',
-      //     }
-      //   );
-      //   result = adjustV('eth_signTypedData', result);
-      //   const sigs = await wallet.getGnosisTransactionSignatures();
-      //   if (sigs.length > 0) {
-      //     await wallet.gnosisAddConfirmation(account.address, result);
-      //   } else {
-      //     await wallet.gnosisAddSignature(account.address, result);
-      //     await wallet.postGnosisTransaction();
-      //   }
-      //   if (isSend) {
-      //     wallet.clearPageStateCache();
-      //   }
-      //   resolveApproval();
-      // } catch (e) {
-      //   message.error({
-      //     content: e.message,
-      //     className: 'modal-support-darkmode',
-      //   });
-      // }
     }
     return;
   };
@@ -589,6 +564,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         )}
         {!isLoading && (
           <Actions
+            chainId={chainId}
             data={parsedActionData}
             engineResults={engineResults}
             raw={hexData}
@@ -609,6 +585,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           maskClosable
         >
           <GnosisDrawer
+            type="message"
             safeInfo={safeInfo}
             onCancel={handleDrawerCancel}
             onConfirm={handleGnosisConfirm}
