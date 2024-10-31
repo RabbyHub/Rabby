@@ -15,7 +15,7 @@ class AutoLockService {
   }
 
   async syncAutoLockAt() {
-    if (!isManifestV3) return;
+    if (!isManifestV3 || process.env.NODE_ENV === 'test') return;
     const value = await browser.storage.session.get(AUTO_LOCK_AT_KEY);
     const autoLockAt = value[AUTO_LOCK_AT_KEY];
     if (autoLockAt) {

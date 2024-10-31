@@ -1,11 +1,5 @@
 import { isManifestV3 } from '@/utils/env';
-import {
-  encryptWithDetail,
-  decryptWithDetail,
-  importKey,
-  decryptWithKey,
-  encryptWithKey,
-} from '@metamask/browser-passworder';
+import * as defaultEncryptor from '@metamask/browser-passworder';
 import { isNil } from 'lodash';
 import Browser from 'webextension-polyfill';
 
@@ -19,20 +13,22 @@ import Browser from 'webextension-polyfill';
 export const passwordEncrypt = async ({
   data,
   password,
+  encryptor,
 }: {
   data: any;
   password?: string | null;
+  encryptor: typeof defaultEncryptor;
 }) => {
   if (!isNil(password)) {
-    const { vault, exportedKeyString } = await encryptWithDetail(
+    const { vault, exportedKeyString } = await encryptor.encryptWithDetail(
       password,
       data
     );
     const { salt } = JSON.parse(vault) as Awaited<
-      ReturnType<typeof decryptWithDetail>
+      ReturnType<typeof encryptor.decryptWithDetail>
     >;
 
-    if (isManifestV3) {
+    if (isManifestV3 && process.env.NODE_ENV !== 'test') {
       Browser.storage.session.set({ exportedKey: exportedKeyString, salt });
     }
 
@@ -48,8 +44,8 @@ export const passwordEncrypt = async ({
     throw new Error('No exportedKey found in session');
   }
 
-  const key = await importKey(exportedKey);
-  const encryptedData = await encryptWithKey(key, data);
+  const key = await encryptor.importKey(exportedKey);
+  const encryptedData = await encryptor.encryptWithKey(key, data);
   const vault = JSON.stringify({ ...encryptedData, salt });
 
   return vault;
@@ -65,24 +61,27 @@ export const passwordEncrypt = async ({
 export const passwordDecrypt = async ({
   encryptedData,
   password,
+  encryptor,
 }: {
   encryptedData: string;
   password?: string | null;
+  encryptor: typeof defaultEncryptor;
 }) => {
   if (!isNil(password)) {
-    const { vault, exportedKeyString, salt } = await decryptWithDetail(
-      password,
-      encryptedData
-    );
+    const {
+      vault,
+      exportedKeyString,
+      salt,
+    } = await encryptor.decryptWithDetail(password, encryptedData);
 
-    if (isManifestV3) {
+    if (isManifestV3 && process.env.NODE_ENV !== 'test') {
       Browser.storage.session.set({ exportedKey: exportedKeyString, salt });
     }
 
     return vault;
   }
 
-  if (!isManifestV3) {
+  if (!isManifestV3 || process.env.NODE_ENV === 'test') {
     return;
   }
 
@@ -95,14 +94,17 @@ export const passwordDecrypt = async ({
     throw new Error('No exportedKey found in session');
   }
 
-  const key = await importKey(exportedKey);
-  const decryptedData = await decryptWithKey(key, JSON.parse(encryptedData));
+  const key = await encryptor.importKey(exportedKey);
+  const decryptedData = await encryptor.decryptWithKey(
+    key,
+    JSON.parse(encryptedData)
+  );
 
   return decryptedData;
 };
 
 export const passwordClearKey = async () => {
-  if (isManifestV3) {
+  if (isManifestV3 && process.env.NODE_ENV !== 'test') {
     await Browser.storage.session.remove(['exportedKey', 'salt']);
   }
 };
