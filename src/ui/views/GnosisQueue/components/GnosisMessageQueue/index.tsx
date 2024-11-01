@@ -1,22 +1,20 @@
-import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
+import { useGnosisPendingMessages } from '@/ui/hooks/useGnosisPendingMessages';
+import { useAccount } from '@/ui/store-hooks';
+import { findChain, findChainByEnum } from '@/utils/chain';
+import { SafeMessage } from '@safe-global/api-kit';
 import clsx from 'clsx';
+import { CHAINS_ENUM } from 'consts';
+import { sortBy } from 'lodash';
+import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CHAINS, CHAINS_ENUM } from 'consts';
-import { PageHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { GnosisTransactionQueueList } from './GnosisTransactionQueueList';
-import './style.less';
-import { sortBy } from 'lodash';
-import { useAccount } from '@/ui/store-hooks';
-import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
-import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
-import moment from 'moment';
-import { findChain, findChainByEnum } from '@/utils/chain';
+import { GnosisMessageQueueList } from './GnosisMessageQueueList';
 
 const getTabs = (
   networks: string[],
-  pendingMap: Record<string, SafeTransactionItem[]>
+  pendingMap: Record<string, SafeMessage[]>
 ) => {
   const res = networks
     ?.map((networkId) => {
@@ -32,7 +30,7 @@ const getTabs = (
         key: chain.enum,
         chain,
         count: pendingTxs.length || 0,
-        txs: pendingTxs,
+        messages: pendingTxs,
       };
     })
     .filter((item) => !!item);
@@ -40,30 +38,30 @@ const getTabs = (
     res,
     (item) => -(item?.count || 0),
     (item) => {
-      return -moment(item?.txs?.[0]?.submissionDate || 0).valueOf();
+      return -moment(item?.messages?.[0]?.created || 0).valueOf();
     }
   );
 };
 
-const GnosisTransactionQueue = () => {
+export const GnosisMessageQueue = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
 
   const [account] = useAccount();
   const { data: networks } = useGnosisNetworks({ address: account?.address });
-  const { data: pendingTxs, loading } = useGnosisPendingTxs({
+  const { data: pendingMessages, loading } = useGnosisPendingMessages({
     address: account?.address,
   });
 
   const tabs = useMemo(() => {
     return getTabs(
       networks || [],
-      (pendingTxs?.results || []).reduce((res, item) => {
-        res[item.networkId] = item.txs;
+      (pendingMessages?.results || []).reduce((res, item) => {
+        res[item.networkId] = item.messages;
         return res;
-      }, {} as Record<string, SafeTransactionItem[]>)
+      }, {} as Record<string, SafeMessage[]>)
     );
-  }, [networks, pendingTxs]);
+  }, [networks, pendingMessages]);
 
   const [activeKey, setActiveKey] = useState<CHAINS_ENUM | null>(
     tabs[0]?.key || null
@@ -77,16 +75,9 @@ const GnosisTransactionQueue = () => {
     setActiveKey(tabs[0]?.key || null);
   }, [tabs[0]?.key]);
 
-  useEffect(() => {
-    if (account?.address) {
-      wallet.syncGnosisNetworks(account?.address);
-    }
-  }, [account?.address]);
-
   return (
-    <div className="queue">
-      <PageHeader fixed>{t('page.safeQueue.title')}</PageHeader>
-      <div className="tabs-container">
+    <div className="flex flex-col h-full">
+      <div className="tabs-container top-0">
         <div className="tabs">
           {tabs?.map((tab) => {
             return (
@@ -107,8 +98,8 @@ const GnosisTransactionQueue = () => {
         </div>
       </div>
       {activeKey && findChainByEnum(activeKey) && (
-        <GnosisTransactionQueueList
-          pendingTxs={activeData?.txs}
+        <GnosisMessageQueueList
+          pendingTxs={activeData?.messages}
           usefulChain={activeKey}
           key={activeKey}
           loading={loading}
@@ -117,5 +108,3 @@ const GnosisTransactionQueue = () => {
     </div>
   );
 };
-
-export default GnosisTransactionQueue;

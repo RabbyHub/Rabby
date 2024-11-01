@@ -13,6 +13,7 @@ interface GnosisDrawerProps {
   safeInfo: BasicSafeInfo;
   onCancel(): void;
   onConfirm(account: Account, isNew?: boolean): Promise<void> | void;
+  type?: 'transaction' | 'message';
 }
 
 interface Signature {
@@ -20,7 +21,12 @@ interface Signature {
   signer: string;
 }
 
-const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
+const GnosisDrawer = ({
+  safeInfo,
+  onCancel,
+  onConfirm,
+  type = 'transaction',
+}: GnosisDrawerProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [signatures, setSignatures] = useState<Signature[]>([]);
@@ -85,7 +91,12 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   };
 
   const init = async () => {
-    const sigs = await wallet.getGnosisTransactionSignatures();
+    const sigs =
+      type === 'transaction'
+        ? await wallet.getGnosisTransactionSignatures()
+        : await wallet.getGnosisMessageSignatures();
+
+    console.log('sigs', sigs, type);
     setSignatures(sigs);
     sortOwners();
   };

@@ -12,6 +12,18 @@
     z-index: 1;
   }
 
+  .ant-tabs {
+    .ant-tabs-content {
+      height: 100%;
+    }
+    .ant-tabs-tabpane {
+      height: 100%;
+    }
+  }
+  .ant-tabs-nav {
+    display: none;
+  }
+
   .tabs {
     display: flex;
     gap: 20px 10px;
@@ -231,12 +243,13 @@
     animation: spining 1.5s infinite linear;
   }
   .tx-history__empty {
-    z-index: 0;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    height: calc(100vh - 60px);
+    // z-index: 0;
+    // position: absolute;
+    // top: 60px;
+    // left: 0;
+    // height: calc(100vh - 60px);
     display: flex;
+    height: 100%;
     align-items: center;
     justify-content: center;
     padding-top: 0;
@@ -265,7 +278,4 @@
       margin-bottom: 0;
     }
   }
-}
-.max-129 {
-  max-width: 129px;
 }
