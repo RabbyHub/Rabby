@@ -30,9 +30,9 @@ export const GasACcountCurrentAddress = ({
   const [alias] = useAlias(account?.address || currentAccount?.address || '');
 
   const addressTypeIcon = useBrandIcon({
-    address: currentAccount!.address,
-    brandName: currentAccount!.brandName,
-    type: currentAccount!.type,
+    address: account?.address || currentAccount!.address,
+    brandName: account?.brandName || currentAccount!.brandName,
+    type: account?.type || currentAccount!.type,
   });
   return (
     <div className="mb-[20px] py-12 px-16 rounded-[6px] flex items-center bg-r-neutral-card-2">

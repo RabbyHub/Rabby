@@ -896,6 +896,7 @@
         "revokeOneByOne": "一一撤销",
         "resume": "继续",
         "pause": "暂停",
+        "useGasAccount": "Gas余额不足，你的GasAccount账户将支付这笔Gas费",
         "gasNotEnough": "Gas 不足，无法提交",
         "submitTxFailed": "提交失败",
         "gasTooHigh": "煤气费高",

@@ -18,6 +18,7 @@ import { useHistory } from 'react-router-dom';
 import { GasAccountRefreshIdProvider } from './hooks/context';
 import { GasAccountWrapperBg } from './components/WrapperBg';
 import { GasAccountBlueLogo } from './components/GasAccountBlueLogo';
+import BigNumber from 'bignumber.js';
 
 const DEPOSIT_LIMIT = 1000;
 
@@ -112,7 +113,7 @@ const GasAccountInner = () => {
         <GasAccountWrapperBg className="mb-[20px] flex flex-col items-center h-[260px] bg-r-neutral-card1 rounded-[8px] py-20 px-16 pt-24">
           <GasAccountBlueLogo />
           <div className="text-r-neutral-title-1 text-[32px] leading-normal font-bold mt-24">
-            {formatUsdValue(balance)}
+            {formatUsdValue(balance, BigNumber.ROUND_DOWN)}
           </div>
 
           <div className="w-full mt-auto flex gap-12 items-center justify-center">

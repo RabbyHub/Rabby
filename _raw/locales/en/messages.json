@@ -823,6 +823,7 @@
         "stillRevoke": "Still Revoke",
         "paused": "Paused",
         "waitInQueue": "Wait in queue",
+        "useGasAccount": "Your gas balance is low. Your GasAccount will cover the gas fees.",
         "revokeWithLedger": "Start Revoke with Ledger",
         "connectLedger": "Connect Ledger",
         "ledgerSended": "Please sign the request on Ledger ({{current}}/{{total}})",
