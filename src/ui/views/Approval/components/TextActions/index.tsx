@@ -107,8 +107,6 @@ const Actions = ({
     );
   }, [chainId]);
 
-  console.log('chain', chain);
-
   const { t } = useTranslation();
 
   const handleViewRawClick = () => {

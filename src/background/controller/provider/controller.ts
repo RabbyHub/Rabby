@@ -815,12 +815,6 @@ class ProviderController extends BaseController {
     },
   ])
   personalSign = async ({ data, approvalRes, session }) => {
-    console.log('personal sign', {
-      data,
-      approvalRes,
-      session,
-    });
-
     if (!data.params) return;
 
     const currentAccount = preferenceService.getCurrentAccount()!;

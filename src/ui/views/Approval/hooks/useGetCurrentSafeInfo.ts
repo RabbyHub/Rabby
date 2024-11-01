@@ -24,7 +24,6 @@ export const useGetCurrentSafeInfo = ({ chainId }: { chainId?: number }) => {
         return safeInfo;
       } catch (e) {
         let networkIds: string[] = [];
-        console.log(e);
         try {
           networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
         } catch (e) {

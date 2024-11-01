@@ -10,7 +10,6 @@ export const useSyncGnosisNetworks = (
   const wallet = useWallet();
   return useRequest(
     async () => {
-      console.log('address', address);
       if (address) {
         return wallet.syncGnosisNetworks(address);
       }

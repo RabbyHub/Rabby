@@ -296,7 +296,7 @@ const flowContext = flow
         return res;
       }
     }
-    console.log({ approvalRes, mapMethod, approvalType, request });
+
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });

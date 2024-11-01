@@ -207,7 +207,6 @@ class GnosisKeyring extends EventEmitter {
   }
 
   deserialize(opts: DeserializeOption) {
-    console.log('de', opts);
     if (opts.accounts) {
       this.accounts = opts.accounts;
     }
@@ -232,7 +231,6 @@ class GnosisKeyring extends EventEmitter {
   }
 
   serialize() {
-    console.log('ser', this.networkIdsMap);
     return Promise.resolve({
       accounts: this.accounts,
       networkIdMap: this.networkIdMap,

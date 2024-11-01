@@ -64,7 +64,6 @@ interface SignTextProps {
 }
 
 const SignText = ({ params }: { params: SignTextProps }) => {
-  console.log(params);
   const renderStartAt = useRef(0);
   const actionType = useRef('');
   const [, resolveApproval, rejectApproval] = useApproval();

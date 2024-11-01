@@ -96,7 +96,6 @@ const GnosisDrawer = ({
         ? await wallet.getGnosisTransactionSignatures()
         : await wallet.getGnosisMessageSignatures();
 
-    console.log('sigs', sigs, type);
     setSignatures(sigs);
     sortOwners();
   };
