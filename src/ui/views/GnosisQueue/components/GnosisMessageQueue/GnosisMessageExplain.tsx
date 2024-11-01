@@ -9,6 +9,7 @@ import { Button, Skeleton } from 'antd';
 import { isString } from 'lodash';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import IconUnknown from 'ui/assets/icon-unknown.svg';
 
 export const GnosisMessageExplain = ({
   onView,
@@ -69,6 +70,8 @@ export const GnosisMessageExplain = ({
 
   return (
     <div className="tx-explain">
+      {/* todo icon */}
+      <img className="icon icon-explain" src={IconUnknown} />
       <span>{content}</span>
       <Button
         type="primary"
