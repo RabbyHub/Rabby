@@ -8,10 +8,6 @@ export const throwError = (error, method = EVENTS.COMMON_HARDWARE.REJECTED) => {
     params: error,
   });
 };
-
-/**
- * @deprecated
- */
 export class SignHelper {
   signFn: any;
   errorEventName: string;
@@ -28,9 +24,6 @@ export class SignHelper {
     this.signFn = undefined;
   }
 
-  /**
-   * @deprecated
-   */
   async invoke(fn: () => Promise<any>) {
     return fn();
   }
