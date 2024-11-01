@@ -4690,10 +4690,10 @@
     events "^3.3.0"
     web3-utils "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@1.3.8":
-  version "1.3.8"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.8.tgz#44767a08244f3ddef579b307d04abc7b1ab020fb"
-  integrity sha512-kcSvMrckWi40lOvWXQ0K+fy3TIbPpST8+MeGZno53JllHmtSkwtL33yx7Lt6JY0l/W76AfUDOzE+nZpOY8F8aA==
+"@rabby-wallet/gnosis-sdk@1.3.9-alpha.0":
+  version "1.3.9-alpha.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.9-alpha.0.tgz#c4a26832dfaa640acfa205dd842f2fa61bc70f1d"
+  integrity sha512-tdIQnGl+xsiGAmk6JNuEgUvRNOEPRqGxRlatb5lIZ8E156lVXGuxoTeJ9zwoh+FhVTO2V/MYOVUTwM3v8+RDdg==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/bytes" "^5.5.0"
@@ -4702,13 +4702,17 @@
     "@ethersproject/solidity" "^5.5.0"
     "@gnosis.pm/safe-core-sdk" "^1.0.0"
     "@gnosis.pm/safe-core-sdk-types" "^0.1.1"
+    "@safe-global/api-kit" "^2.5.2"
+    "@safe-global/protocol-kit" "^5.0.2"
     "@safe-global/safe-deployments" "^1.37.2"
+    "@safe-global/sdk-starter-kit" "^1.0.2"
+    "@safe-global/types-kit" "^1.0.0"
     axios "^0.24.0"
     bignumber.js "^9.0.2"
     ethereumjs-util "^7.1.3"
     ethers "^5.5.1"
     semver "^7.5.4"
-    typescript "^4.5.0"
+    typescript "5.6.2"
     web3-core "^1.6.0"
 
 "@rabby-wallet/gnosis-sdk@^1.0.2":
@@ -18094,15 +18098,15 @@ typescript@5.3.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.3.tgz#b3ce6ba258e72e6305ba66f5c9b452aaee3ffe37"
   integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
 
+typescript@5.6.2:
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.6.2.tgz#d1de67b6bef77c41823f822df8f0b3bcff60a5a0"
+  integrity sha512-NW8ByodCSNCwZeghjN3o+JX5OFH0Ojg6sadjEKY4huZ52TqbJTJnDo5+Tw98lSy63NZvi4n+ez5m2u5d4PkZyw==
+
 typescript@^4.4.4:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.2.tgz#8ac1fba9f52256fdb06fb89e4122fa6a346c2998"
   integrity sha512-5BlMof9H1yGt0P8/WF+wPNw6GfctgGjXp5hkblpyT+8rkASSmkUKMXrxR0Xg8ThVCi/JnHQiKXeBaEwCeQwMFw==
-
-typescript@^4.5.0:
-  version "4.9.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
-  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
 ua-parser-js@^1.0.37:
   version "1.0.37"
