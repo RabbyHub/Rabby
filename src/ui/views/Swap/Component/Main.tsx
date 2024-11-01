@@ -129,6 +129,7 @@ export const Main = () => {
   const dispatch = useDispatch();
 
   const {
+    passGasPrice,
     bestQuoteDex,
     chain,
     switchChain,
@@ -271,9 +272,10 @@ export const Main = () => {
             pay_token_id: payToken.id,
             unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
-            gasPrice: payTokenIsNativeToken
-              ? gasList?.find((e) => e.level === gasLevel)?.price
-              : undefined,
+            gasPrice:
+              payTokenIsNativeToken && passGasPrice
+                ? gasList?.find((e) => e.level === gasLevel)?.price
+                : undefined,
             postSwapParams: {
               quote: {
                 pay_token_id: payToken.id,
@@ -337,9 +339,10 @@ export const Main = () => {
             pay_token_id: payToken.id,
             unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
-            gasPrice: payTokenIsNativeToken
-              ? gasList?.find((e) => e.level === gasLevel)?.price
-              : undefined,
+            gasPrice:
+              payTokenIsNativeToken && passGasPrice
+                ? gasList?.find((e) => e.level === gasLevel)?.price
+                : undefined,
             postSwapParams: {
               quote: {
                 pay_token_id: payToken.id,
