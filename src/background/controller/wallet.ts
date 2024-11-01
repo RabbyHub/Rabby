@@ -2462,7 +2462,7 @@ export class WalletController extends BaseController {
     signerAddress: string;
     signature: string;
   }) => {
-    const sigs = await this.getGnosisTransactionSignatures();
+    const sigs = await this.getGnosisMessageSignatures();
     if (sigs.length > 0) {
       await wallet.addGnosisMessageSignature({
         signature: signature,

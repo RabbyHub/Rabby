@@ -15,7 +15,11 @@ export const useCheckCurrentSafeMessage = (
     safeMessageHash?: string;
     threshold?: number;
   },
-  options?: Options<SafeMessage | undefined, any>
+  options?: Options<
+    | { safeMessage: SafeMessage; threshold: number; isFinished: boolean }
+    | undefined,
+    any
+  >
 ) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -35,8 +39,17 @@ export const useCheckCurrentSafeMessage = (
         messageHash: safeMessageHash,
       });
       if (res.confirmations.length >= threshold) {
-        return res;
+        return {
+          safeMessage: res,
+          threshold,
+          isFinished: true,
+        };
       }
+      return {
+        safeMessage: res,
+        threshold,
+        isFinished: false,
+      };
     },
     {
       refreshDeps: [chainId, threshold, safeMessageHash],
