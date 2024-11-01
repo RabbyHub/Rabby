@@ -4920,7 +4920,7 @@
     node-fetch "^2.7.0"
     viem "^2.21.8"
 
-"@safe-global/protocol-kit@^5.0.2", "@safe-global/protocol-kit@^5.0.3":
+"@safe-global/protocol-kit@5.0.3", "@safe-global/protocol-kit@^5.0.2", "@safe-global/protocol-kit@^5.0.3":
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/@safe-global/protocol-kit/-/protocol-kit-5.0.3.tgz#187cfdeaf892c832265cb356d0ef5e230cb8fc4f"
   integrity sha512-xVpuj1Ge/XYdLucPe36MXl09yK83f3drPqFK0UPhrONg//SP/K/sgyXnKy5o4zJrjidNV9V0PV7Xw84HOqOxtg==
