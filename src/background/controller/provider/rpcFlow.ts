@@ -15,6 +15,7 @@ import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
+import { gnosisController } from './gnosisController';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -234,7 +235,12 @@ const flowContext = flow
           waitSignComponentPromise = waitSignComponentAmounted();
         }
 
-        if (approvalRes?.isGnosis) return resolve(undefined);
+        // if (approvalRes?.isGnosis && !approvalRes.safeMessage) {
+        //   return resolve(undefined);
+        // }
+        if (approvalRes?.isGnosis) {
+          return resolve(undefined);
+        }
 
         return waitSignComponentPromise.then(() =>
           Promise.resolve(
@@ -290,11 +296,32 @@ const flowContext = flow
         return res;
       }
     }
+
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
       reportStatsData();
-      return result;
+      if (rest?.safeMessage) {
+        const safeMessage: {
+          safeAddress: string;
+          message: string | Record<string, any>;
+          chainId: number;
+          safeMessageHash: string;
+        } = rest.safeMessage;
+        if (ctx.request.requestedApproval) {
+          flow.requestedApproval = false;
+          // only unlock notification if current flow is an approval flow
+          notificationService.unLock();
+          keyringService.resetResend();
+        }
+        return gnosisController.watchMessage({
+          address: safeMessage.safeAddress,
+          chainId: safeMessage.chainId,
+          safeMessageHash: safeMessage.safeMessageHash,
+        });
+      } else {
+        return result;
+      }
     }
 
     return requestDefer;

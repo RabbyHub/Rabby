@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { groupBy } from 'lodash';
+import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
+import { SafeMessage } from '@safe-global/api-kit';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
-import { useWallet, isSameAddress } from 'ui/utils';
-import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import { AddressItem, ownerPriority } from './DrawerAddressItem';
 import clsx from 'clsx';
+import { groupBy } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { isSameAddress, useWallet } from 'ui/utils';
+import { AddressItem, ownerPriority } from './DrawerAddressItem';
 
 interface GnosisDrawerProps {
   // safeInfo: SafeInfo;
   safeInfo: BasicSafeInfo;
   onCancel(): void;
   onConfirm(account: Account, isNew?: boolean): Promise<void> | void;
+  confirmations?: SafeMessage['confirmations'];
 }
 
 interface Signature {
@@ -20,7 +22,12 @@ interface Signature {
   signer: string;
 }
 
-const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
+const GnosisDrawer = ({
+  safeInfo,
+  onCancel,
+  onConfirm,
+  confirmations,
+}: GnosisDrawerProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [signatures, setSignatures] = useState<Signature[]>([]);
@@ -85,14 +92,27 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   };
 
   const init = async () => {
-    const sigs = await wallet.getGnosisTransactionSignatures();
-    setSignatures(sigs);
     sortOwners();
   };
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (confirmations) {
+      setSignatures(
+        confirmations.map((item) => {
+          return {
+            signer: item.owner,
+            data: item.signature,
+          };
+        })
+      );
+    } else {
+      wallet.getGnosisTransactionSignatures().then(setSignatures);
+    }
+  }, [confirmations]);
 
   return (
     <div className="gnosis-drawer-container">

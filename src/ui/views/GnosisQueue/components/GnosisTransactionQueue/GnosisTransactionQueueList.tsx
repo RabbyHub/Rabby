@@ -38,8 +38,7 @@ import { isSameAddress, timeago, useWallet } from 'ui/utils';
 import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getProtocol } from '@rabby-wallet/rabby-action';
-import { ReplacePopup } from './components/ReplacePopup';
-import './style.less';
+import { ReplacePopup } from './ReplacePopup';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];

@@ -1,7 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { groupBy, uniq } from 'lodash';
+import { groupBy, isEqual, sortBy, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -79,7 +79,11 @@ import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
-import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
+import {
+  addHexPrefix,
+  unpadHexString,
+  toChecksumAddress,
+} from 'ethereumjs-util';
 import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
@@ -124,6 +128,8 @@ import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser from 'webextension-polyfill';
+import SafeApiKit from '@safe-global/api-kit';
+import { hashSafeMessage } from '@safe-global/protocol-kit';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -2038,16 +2044,29 @@ export class WalletController extends BaseController {
     }
     const networks = keyring.networkIdsMap[address];
     const chainList = await this.fetchGnosisChainList(address);
-    keyring.setNetworkIds(
-      address,
-      uniq((networks || []).concat(chainList.map((chain) => chain.network)))
+    const nextNetworks = uniq(
+      (networks || []).concat(chainList.map((chain) => chain.network))
     );
+    const isSame = isEqual(sortBy(networks), sortBy(nextNetworks));
+    if (isSame) {
+      return;
+    }
+    keyring.setNetworkIds(address, nextNetworks);
+    await keyringService.persistAllKeyrings();
   };
 
   clearGnosisTransaction = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction || keyring.safeInstance) {
       keyring.currentTransaction = null;
+      keyring.safeInstance = null;
+    }
+  };
+
+  clearGnosisMessage = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring.currentSafeMessage || keyring.safeInstance) {
+      keyring.currentSafeMessage = null;
       keyring.safeInstance = null;
     }
   };
@@ -2207,6 +2226,51 @@ export class WalletController extends BaseController {
     };
   };
 
+  getGnosisAllPendingMessages = async (address: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+    const networks = keyring.networkIdsMap[address.toLowerCase()];
+    if (!networks || !networks.length) {
+      return null;
+    }
+    const safeAddress = toChecksumAddress(address);
+    const results = await Promise.all(
+      networks.map(async (networkId) => {
+        try {
+          const safe = await createSafeService({
+            networkId: networkId,
+            address: safeAddress,
+          });
+          const threshold = await safe.getThreshold();
+          const { results } = await safe.apiKit.getMessages(safeAddress);
+          return {
+            networkId,
+            messages: results.filter(
+              (item) => item.confirmations.length < threshold
+            ),
+          };
+        } catch (e) {
+          console.error(e);
+          return {
+            networkId,
+            messages: [],
+          };
+        }
+      })
+    );
+
+    const total = results.reduce((t, item) => {
+      return t + item.messages.length;
+    }, 0);
+
+    return {
+      total,
+      results,
+    };
+  };
+
   getGnosisPendingTxs = async (address: string, networkId: string) => {
     if (!networkId) {
       return [];
@@ -2319,6 +2383,186 @@ export class WalletController extends BaseController {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     await keyring.addSignature(address, signature);
+  };
+
+  buildGnosisMessage = async ({
+    account,
+    safeAddress,
+    networkId,
+    version,
+    message,
+  }: {
+    safeAddress: string;
+    account: Account;
+    version: string;
+    networkId: string;
+    message: string | Record<string, any>;
+  }) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring) {
+      const currentProvider = new EthereumProvider();
+      currentProvider.currentAccount = account.address;
+      currentProvider.currentAccountType = account.type;
+      currentProvider.currentAccountBrand = account.brandName;
+      currentProvider.chainId = networkId;
+      return keyring.buildMessage({
+        address: safeAddress,
+        provider: new ethers.providers.Web3Provider(currentProvider),
+        version,
+        networkId,
+        message: message as any,
+      });
+    } else {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+  };
+
+  getGnosisSafeMessageInfo = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+    return keyring.getMessageInfo();
+  };
+
+  addGnosisMessage = async ({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
+    return keyring.addMessage({
+      signerAddress,
+      signature,
+    });
+  };
+
+  addGnosisMessageSignature = async ({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
+    return keyring.addMessageSignature({
+      signerAddress,
+      signature,
+    });
+  };
+
+  handleGnosisMessage = async ({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) => {
+    const sigs = await this.getGnosisMessageSignatures();
+    if (sigs.length > 0) {
+      await wallet.addGnosisMessageSignature({
+        signature: signature,
+        signerAddress: signerAddress,
+      });
+    } else {
+      await wallet.addGnosisMessage({
+        signature: signature,
+        signerAddress: signerAddress,
+      });
+    }
+  };
+
+  addPureGnosisMessageSignature = async ({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
+    return keyring.addPureMessageSignature({
+      signerAddress,
+      signature,
+    });
+  };
+
+  getGnosisMessage = async ({
+    chainId,
+    messageHash,
+  }: {
+    chainId: number;
+    messageHash: string;
+  }) => {
+    const apiKit = new SafeApiKit({
+      chainId: BigInt(chainId),
+    });
+    return apiKit.getMessage(messageHash);
+  };
+
+  getGnosisMessageHash = async ({
+    safeAddress,
+    chainId,
+    message,
+  }: {
+    safeAddress: string;
+    chainId: number;
+    message: string | Record<string, any>;
+  }) => {
+    const safe = await createSafeService({
+      address: safeAddress,
+      networkId: String(chainId),
+    });
+    return safe.getSafeMessageHash(hashSafeMessage(message as any));
+  };
+
+  getGnosisMessageSignatures = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring.currentSafeMessage) {
+      const sigs = Array.from(keyring.currentSafeMessage.signatures.values());
+      return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
+    }
+    return [];
+  };
+
+  validateGnosisMessage = async (
+    {
+      address,
+      chainId,
+      message,
+    }: {
+      address: string;
+      chainId: number;
+      message: string | Record<string, any>;
+    },
+    hash: string
+  ) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+
+    if (
+      !keyring.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    const checksumAddress = toChecksumAddress(address);
+
+    const safe = await createSafeService({
+      address: checksumAddress,
+      networkId: String(chainId),
+    });
+    const currentSafeMessageHash = await safe.getSafeMessageHash(
+      hashSafeMessage(message as any)
+    );
+    return currentSafeMessageHash === hash;
   };
 
   /**
@@ -3292,6 +3536,21 @@ export class WalletController extends BaseController {
       },
     });
     return res;
+  };
+
+  signPersonalMessageWithUI = async (
+    type: string,
+    from: string,
+    data: string,
+    options?: any
+  ) => {
+    const fn = () =>
+      waitSignComponentAmounted().then(() => {
+        this.signPersonalMessage(type, from, data as any, options);
+      });
+
+    notificationService.setCurrentRequestDeferFn(fn);
+    return fn();
   };
 
   signTypedData = async (

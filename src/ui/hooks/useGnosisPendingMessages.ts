@@ -1,16 +1,16 @@
-import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { SafeMessage } from '@safe-global/api-kit';
 import { useRequest } from 'ahooks';
 import type { Options } from 'ahooks/lib/useRequest/src/types';
 import { useWallet } from '../utils';
 
-export const useGnosisPendingTxs = (
+export const useGnosisPendingMessages = (
   params: { address?: string },
   options?: Options<
     | {
         total: number;
         results: {
           networkId: string;
-          txs: SafeTransactionItem[];
+          messages: SafeMessage[];
         }[];
       }
     | undefined
@@ -23,13 +23,13 @@ export const useGnosisPendingTxs = (
   return useRequest(
     async () => {
       if (address) {
-        return wallet.getGnosisAllPendingTxs(address);
+        return wallet.getGnosisAllPendingMessages(address);
       }
     },
     {
       refreshDeps: [address],
-      cacheKey: `useGnosisPendingTxs-${address}`,
-      cacheTime: 500,
+      cacheKey: `useGnosisPendingMessages-${address}`,
+      staleTime: 500,
       ...options,
     }
   );

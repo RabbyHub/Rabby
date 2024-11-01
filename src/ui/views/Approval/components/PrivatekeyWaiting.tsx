@@ -1,6 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  isSameAddress,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import {
   CHAINS,
   EVENTS,
@@ -24,6 +29,7 @@ import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 
 interface ApprovalParams {
   address: string;
@@ -34,6 +40,12 @@ interface ApprovalParams {
   $ctx?: any;
   extra?: Record<string, any>;
   type: string;
+  safeMessage?: {
+    safeMessageHash: string;
+    safeAddress: string;
+    message: string;
+    chainId: number;
+  };
 }
 
 export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
@@ -165,12 +177,20 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, data.data);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
-              await wallet.gnosisAddSignature(account.address, data.data);
-              await wallet.postGnosisTransaction();
+              const sigs = await wallet.getGnosisTransactionSignatures();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, data.data);
+              } else {
+                await wallet.gnosisAddSignature(account.address, data.data);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {
