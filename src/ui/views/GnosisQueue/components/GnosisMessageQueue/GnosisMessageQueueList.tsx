@@ -17,6 +17,9 @@ import { Virtuoso } from 'react-virtuoso';
 import { isSameAddress, useWallet } from 'ui/utils';
 import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { GnosisMessageQueueItem } from './GnosisMessageQueueItem';
+import { generateTypedData } from '@safe-global/protocol-kit';
+import { verifyTypedData } from 'viem';
+import { useRequest } from 'ahooks';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeMessage['confirmations'];
@@ -31,40 +34,51 @@ export type ConfirmationProps = {
   signature: string | null;
 };
 
-const validateConfirmation = (
-  txHash: string,
-  signature: string,
-  ownerAddress: string,
-  type: string,
-  version: string,
-  safeAddress: string,
-  tx: SafeTransactionDataPartial,
-  networkId: number,
-  owners: string[]
-) => {
-  if (!owners.find((owner) => isSameAddress(owner, ownerAddress))) return false;
+// todo validate
+const verifyConfirmation = ({
+  owners,
+  ownerAddress,
+  type,
+  message,
+  chainId,
+  safeAddress,
+  safeVersion,
+  signature,
+}: {
+  txHash: string;
+  signature: string;
+  ownerAddress: string;
+  type: string;
+  safeVersion: string;
+  safeAddress: string;
+  tx: SafeTransactionDataPartial;
+  chainId: number;
+  owners: string[];
+  message: string | Record<string, any>;
+}) => {
+  if (!owners.find((owner) => isSameAddress(owner, ownerAddress))) {
+    return false;
+  }
+  const typedData = generateTypedData({
+    safeAddress: safeAddress,
+    safeVersion: safeVersion,
+    chainId: BigInt(chainId),
+    data: message as any,
+  });
   switch (type) {
     case 'EOA':
       try {
-        return validateEOASign(
-          signature,
-          ownerAddress,
-          tx,
-          version,
-          safeAddress,
-          networkId
-        );
+        return verifyTypedData({
+          address: ownerAddress as `0x${string}`,
+          ...(typedData as any),
+          signature: signature as `0x${string}`,
+        });
       } catch (e) {
         return false;
       }
-    case 'ETH_SIGN':
-      try {
-        return validateETHSign(signature, txHash, ownerAddress);
-      } catch (e) {
-        return false;
-      }
+
     default:
-      return false;
+      return true;
   }
 };
 
@@ -86,8 +100,6 @@ export const GnosisMessageQueueList = (props: {
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadFaild, setIsLoadFaild] = useState(false);
   const [account] = useAccount();
 
   const { data: safeInfo, loading: isSafeInfoLoading } = useGnosisSafeInfo({
@@ -95,85 +107,43 @@ export const GnosisMessageQueueList = (props: {
     networkId,
   });
 
-  const init = async (txs: SafeTransactionItem[], info: BasicSafeInfo) => {
-    try {
+  const { data: list, loading: isLoading, error: isLoadFaild } = useRequest(
+    async () => {
       const account = (await wallet.syncGetCurrentAccount())!;
 
-      const txHashValidation = await Promise.all(
-        txs.map(async (safeTx) => {
-          const tx: SafeTransactionDataPartial = {
-            data: safeTx.data || '0x',
-            gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
-            gasToken: safeTx.gasToken,
-            refundReceiver: safeTx.refundReceiver,
-            to: safeTx.to,
-            value: numberToHex(safeTx.value),
-            safeTxGas: safeTx.safeTxGas,
-            nonce: safeTx.nonce,
-            operation: safeTx.operation,
-            baseGas: safeTx.baseGas,
-          };
-          return wallet.validateGnosisTransaction(
+      const messageHashValidation = await Promise.all(
+        (pendingTxs || []).map(async (item) => {
+          return wallet.validateGnosisMessage(
             {
-              account: account,
-              tx,
-              version: info.version,
-              networkId,
+              address: account.address,
+              chainId: Number(networkId),
+              message: item.message,
             },
-            safeTx.safeTxHash
+            item.messageHash
           );
         })
       );
 
-      setIsLoading(false);
+      const result = (pendingTxs || []).filter((item, index) => {
+        if (!messageHashValidation[index]) {
+          return false;
+        }
 
-      const transactions = txs
-        .filter((safeTx, index) => {
-          if (!txHashValidation[index]) return false;
-          const tx: SafeTransactionDataPartial = {
-            data: safeTx.data || '0x',
-            gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
-            gasToken: safeTx.gasToken,
-            refundReceiver: safeTx.refundReceiver,
-            to: safeTx.to,
-            value: numberToHex(safeTx.value),
-            safeTxGas: safeTx.safeTxGas,
-            nonce: safeTx.nonce,
-            operation: safeTx.operation,
-            baseGas: safeTx.baseGas,
-          };
+        // todo
+        // return item.confirmations.every((confirm) => {});
 
-          return safeTx.confirmations.every((confirm) =>
-            validateConfirmation(
-              safeTx.safeTxHash,
-              confirm.signature,
-              confirm.owner,
-              confirm.signatureType,
-              info.version,
-              info.address,
-              tx,
-              Number(networkId),
-              info.owners
-            )
-          );
-        })
-        .sort((a, b) => {
-          return dayjs(a.submissionDate).isAfter(dayjs(b.submissionDate))
-            ? -1
-            : 1;
-        });
-      // setTransactionsGroup(groupBy(transactions, 'nonce'));
-    } catch (e) {
-      console.error(e);
-      setIsLoading(false);
-      setIsLoadFaild(true);
+        return true;
+      });
+      return result;
+    },
+    {
+      refreshDeps: [pendingTxs],
     }
-  };
-  const list = pendingTxs || [];
+  );
 
   return (
     <div className="queue-list h-full">
-      {safeInfo && list.length ? (
+      {safeInfo && list?.length ? (
         <Virtuoso
           style={{
             height: '100%',

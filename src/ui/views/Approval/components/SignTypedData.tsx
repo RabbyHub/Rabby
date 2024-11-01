@@ -237,7 +237,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       const _isGnosisAccount =
         currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
       setIsGnosisAccount(_isGnosisAccount);
-      if (!_isGnosisAccount) {
+      if (!isViewGnosisSafe) {
         wallet.clearGnosisMessage();
       }
       const chainId = signTypedData?.domain?.chainId;

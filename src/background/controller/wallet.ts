@@ -2464,12 +2464,12 @@ export class WalletController extends BaseController {
   }) => {
     const sigs = await this.getGnosisTransactionSignatures();
     if (sigs.length > 0) {
-      await wallet.addGnosisMessage({
+      await wallet.addGnosisMessageSignature({
         signature: signature,
         signerAddress: signerAddress,
       });
     } else {
-      await wallet.addGnosisMessageSignature({
+      await wallet.addGnosisMessage({
         signature: signature,
         signerAddress: signerAddress,
       });
@@ -2527,6 +2527,42 @@ export class WalletController extends BaseController {
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
     }
     return [];
+  };
+
+  validateGnosisMessage = async (
+    {
+      address,
+      chainId,
+      message,
+    }: {
+      address: string;
+      chainId: number;
+      message: string | Record<string, any>;
+    },
+    hash: string
+  ) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+
+    if (
+      !keyring.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    const checksumAddress = toChecksumAddress(address);
+
+    const safe = await createSafeService({
+      address: checksumAddress,
+      networkId: String(chainId),
+    });
+    const currentSafeMessageHash = await safe.getSafeMessageHash(
+      hashSafeMessage(message as any)
+    );
+    return currentSafeMessageHash === hash;
   };
 
   /**

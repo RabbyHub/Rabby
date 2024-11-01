@@ -2,17 +2,16 @@ import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { isString } from 'lodash';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { findChain } from '@/utils/chain';
 import { SafeMessage } from '@safe-global/api-kit';
-import { useHistory } from 'react-router-dom';
+import { useRequest } from 'ahooks';
 import { timeago, useWallet } from 'ui/utils';
 import { stringToHex } from 'viem';
 import { GnosisMessageExplain } from './GnosisMessageExplain';
 import { GnosisMessageQueueConfirmations } from './GnosisMessageQueueConfirmations';
-import { useRequest } from 'ahooks';
 
 export const GnosisMessageQueueItem = ({
   data,

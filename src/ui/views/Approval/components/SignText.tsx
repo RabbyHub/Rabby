@@ -64,7 +64,6 @@ interface SignTextProps {
 }
 
 const SignText = ({ params }: { params: SignTextProps }) => {
-  console.log(params);
   const renderStartAt = useRef(0);
   const actionType = useRef('');
   const [, resolveApproval, rejectApproval] = useApproval();
@@ -146,7 +145,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     const _isGnosisAccount =
       currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
     setIsGnosisAccount(_isGnosisAccount);
-    if (!_isGnosisAccount) {
+    if (!isViewGnosisSafe) {
       wallet.clearGnosisMessage();
     }
 

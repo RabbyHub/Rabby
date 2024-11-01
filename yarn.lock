@@ -4910,7 +4910,7 @@
   dependencies:
     reselect "^4.0.0"
 
-"@safe-global/api-kit@^2.5.2", "@safe-global/api-kit@^2.5.3":
+"@safe-global/api-kit@2.5.3", "@safe-global/api-kit@^2.5.2", "@safe-global/api-kit@^2.5.3":
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/@safe-global/api-kit/-/api-kit-2.5.3.tgz#8b0e996836a55e1c4cac6609b97a46c48bcb58fc"
   integrity sha512-BHKKKohtM6cqtWmu2BIBl5YVMFeIzE1kBe2kfDi0JG9UbzTKYUYU8d/RnteFe5Nj/KiO7F7bJ708Z7ZxQ9Ap0g==
@@ -4963,7 +4963,7 @@
   resolved "https://registry.yarnpkg.com/@safe-global/safe-modules-deployments/-/safe-modules-deployments-2.2.4.tgz#6e3b22af3a4eeba8e0a8f0952e575d25c5be216e"
   integrity sha512-m396ZrBPhZVYkapTTIuizyOOtoZsCKbicl0ztgDFfDbi7KbS6AtDP6cV89AYosQxUQS+v0q4ksQd30/j3L1BtQ==
 
-"@safe-global/sdk-starter-kit@^1.0.2", "@safe-global/sdk-starter-kit@^1.0.3":
+"@safe-global/sdk-starter-kit@^1.0.2":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@safe-global/sdk-starter-kit/-/sdk-starter-kit-1.0.3.tgz#4bf29558d75ab02a558f2fff686a8a4dd51b6d3a"
   integrity sha512-KjZ2PohiCmGGqtZaUlf4VN8rFrIMNvAofgfa/VfJuBactFneN+yqCtl4a5hq9q5TYDCvPiA/N6nkaZmjBCZe1g==
@@ -4974,7 +4974,7 @@
     "@safe-global/types-kit" "^1.0.0"
     viem "^2.21.8"
 
-"@safe-global/types-kit@^1.0.0":
+"@safe-global/types-kit@1.0.0", "@safe-global/types-kit@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@safe-global/types-kit/-/types-kit-1.0.0.tgz#d1f29d65a8ac22f03b0cd3ab54fb518dcf7a85c3"
   integrity sha512-jZNUeHbWobeVrURbcEvfas4Q1IDasQni5UYm2umUtAR6SBDazp1kGni8IjZPRKq3+8q+fYwu9FmKpX50rUYn3w==
