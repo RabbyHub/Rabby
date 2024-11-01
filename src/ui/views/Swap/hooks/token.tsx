@@ -274,6 +274,8 @@ export const useTokenPair = (userAddress: string) => {
     return false;
   }, [chain, payToken]);
 
+  const [passGasPrice, setUseGasPrice] = useState(false);
+
   const handleAmountChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
       const v = e.target.value;
@@ -281,6 +283,7 @@ export const useTokenPair = (userAddress: string) => {
         return;
       }
       setPayAmount(v);
+      setUseGasPrice(false);
     },
     []
   );
@@ -358,6 +361,7 @@ export const useTokenPair = (userAddress: string) => {
       gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
       setGasLevel(gasLevel.level as GasLevelType);
       closeReserveGasOpenAndUpdatePayAmount();
+      setUseGasPrice(true);
     },
     [closeReserveGasOpenAndUpdatePayAmount]
   );
@@ -636,6 +640,7 @@ export const useTokenPair = (userAddress: string) => {
     changeGasPrice,
     gasLimit,
     gasList,
+    passGasPrice,
 
     chain,
     switchChain,
