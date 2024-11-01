@@ -301,7 +301,7 @@ const flowContext = flow
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
       reportStatsData();
-      if (rest.safeMessage) {
+      if (rest?.safeMessage) {
         const safeMessage: {
           safeAddress: string;
           message: string | Record<string, any>;
