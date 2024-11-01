@@ -748,7 +748,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               safeInfo={safeInfo}
               onCancel={handleDrawerCancel}
               onConfirm={handleGnosisConfirm}
-              confirmations={currentSafeMessage?.safeMessage?.confirmations}
+              confirmations={
+                isGnosisAccount
+                  ? currentSafeMessage?.safeMessage?.confirmations || []
+                  : undefined
+              }
             />
           </Drawer>
         )}
