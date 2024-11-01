@@ -89,10 +89,10 @@ export const MiniLedgerAction: React.FC<Props> = ({
       }
     };
 
-    eventBus.addEventListener(EVENTS.LEDGER.REJECTED, listener);
+    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
 
     return () => {
-      eventBus.removeEventListener(EVENTS.LEDGER.REJECTED, listener);
+      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
     };
   }, []);
 
@@ -106,7 +106,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
 
   React.useEffect(() => {
     if (task.status === 'active' && status === 'DISCONNECTED') {
-      eventBus.emit(EVENTS.LEDGER.REJECTED, 'DISCONNECTED');
+      eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
     }
   }, [task.status, status]);
   const { t } = useTranslation();
