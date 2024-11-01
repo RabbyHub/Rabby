@@ -4736,10 +4736,10 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.4.tgz#c82e7c8b538b7dfd94506c4f89f78aca7ca880ef"
   integrity sha512-6ttnlpGHcO2v/qyYo8epBbSutfS9OZXfXr9mfapuveoBvzqUwvE6ej3bsmdtc+qFhFeH7HeiwASpY6xaTM4E1w==
 
-"@rabby-wallet/rabby-api@0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.8.2.tgz#ab9e64b2e0775340f3a52a8159d93c9193888a15"
-  integrity sha512-i6zV0B/ctHJVpIdfzu+5t1giE4dm3TSCjxqqfD+Ysq7Dz6OhqtKLXl/2uJ+z97FK1WuVB9HikAYi8Vqya5thHQ==
+"@rabby-wallet/rabby-api@0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.8.3.tgz#1454f0d6df905c0e98a6bc0a0c55ae7aee3df74d"
+  integrity sha512-lcZ3zo+VgnHmsk95d+WoplpCnBeW/5WoAxG1oj6r6iWKiQbndpy9UvKX6lvJb7SWrR7xDc3eXXuCepgVFPQoqg==
   dependencies:
     "@rabby-wallet/rabby-sign" "0.4.0"
     axios "^0.27.2"

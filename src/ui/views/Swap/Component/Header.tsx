@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
 import { PendingTx } from '../../Bridge/Component/PendingTx';
 import { RabbyFeePopup } from './RabbyFeePopup';
+import { useHistory } from 'react-router-dom';
 
 export const Header = () => {
   const [historyVisible, setHistoryVisible] = useState(false);
@@ -25,6 +26,11 @@ export const Header = () => {
   const openHistory = useCallback(() => {
     setHistoryVisible(true);
   }, []);
+  const history = useHistory();
+
+  const gotoDashboard = () => {
+    history.push('/dashboard');
+  };
 
   const dispath = useRabbyDispatch();
 
@@ -37,6 +43,7 @@ export const Header = () => {
       <PageHeader
         className="mx-[20px] pt-[20px] mb-[14px]"
         forceShowBack
+        onBack={gotoDashboard}
         rightSlot={
           <div className="flex items-center gap-20 absolute bottom-0 right-0">
             {loadingNumber ? (

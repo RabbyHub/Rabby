@@ -950,6 +950,10 @@
         "wallet": "Wallet",
         "rate": "Fee rate",
         "button": "Got it"
+      },
+      "lowCreditModal": {
+        "title": "This token has a low credit value",
+        "desc": "A low credit value often signals high risk, such as a honeypot token or very low liquidity."
       }
     },
     "bridge": {
@@ -2214,6 +2218,7 @@
       "deposit": "Deposit",
       "withdraw": "Withdraw",
       "gasExceed": "GasAccount balance cannot exceed $1000",
+      "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
       "history": {
         "noHistory": "No history"
@@ -2226,7 +2231,7 @@
       },
       "loginConfirmModal": {
         "title": "Log in with Current Address",
-        "desc": "Once confirmed you can only log in with this address"
+        "desc": "Once confirmed, you can only deposit it at this address"
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",
@@ -2253,6 +2258,10 @@
       "GasAccountDepositTipPopup": {
         "title": "Open GasAccount and Deposit",
         "gotIt": "Got it"
+      },
+      "switchLoginAddressBeforeDeposit": {
+        "title": "Switch address before deposit",
+        "desc": "Please switch to your login address."
       }
     }
   },
