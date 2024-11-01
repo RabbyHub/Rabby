@@ -22,9 +22,6 @@ import {
 } from '@safe-global/protocol-kit/dist/src/utils';
 import { SigningMethod } from '@safe-global/protocol-kit';
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
-// import { createSafeService } from '@/background/utils/safe';
-import { hexToString } from 'viem';
-
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
 export const TransactionConfirmedEvent = 'TransactionConfirmed';

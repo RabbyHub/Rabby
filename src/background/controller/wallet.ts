@@ -2529,6 +2529,42 @@ export class WalletController extends BaseController {
     return [];
   };
 
+  validateGnosisMessage = async (
+    {
+      address,
+      chainId,
+      message,
+    }: {
+      address: string;
+      chainId: number;
+      message: string | Record<string, any>;
+    },
+    hash: string
+  ) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+
+    if (
+      !keyring.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    const checksumAddress = toChecksumAddress(address);
+
+    const safe = await createSafeService({
+      address: checksumAddress,
+      networkId: String(chainId),
+    });
+    const currentSafeMessageHash = await safe.getSafeMessageHash(
+      hashSafeMessage(message as any)
+    );
+    return currentSafeMessageHash === hash;
+  };
+
   /**
    * @description add address as watch only account, and DON'T set it as current account
    */
