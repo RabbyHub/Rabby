@@ -24,6 +24,10 @@ const tabCheckin = ({
 }) => {
   session.setProp({ origin, name, icon });
   contextMenuService.createOrUpdate(origin);
+  const site = permissionService.getSite(origin);
+  if (site) {
+    permissionService.updateConnectSite(origin, { ...site, icon, name }, true);
+  }
 };
 
 const getProviderState = async (req) => {
