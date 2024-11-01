@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Modal } from '@/ui/component';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import clsx from 'clsx';
@@ -43,8 +42,8 @@ export const SwitchLoginAddrBeforeDepositModal = ({
         <div className="mt-12 mb-20 text-14 text-r-neutral-body">
           {t('page.gasAccount.switchLoginAddressBeforeDeposit.desc')}
         </div>
-        <div className="mb-12">
-          <GasACcountCurrentAddress account={gasAccount} />
+        <div className="mb-12 w-full">
+          <GasACcountCurrentAddress account={gasAccount} twoColumn />
         </div>
 
         <Button
