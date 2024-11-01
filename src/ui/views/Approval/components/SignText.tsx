@@ -313,15 +313,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     chainId,
     message: signText,
   });
-  useCheckCurrentSafeMessage(
+  const { data: currentSafeMessage } = useCheckCurrentSafeMessage(
     {
       chainId,
       safeMessageHash,
       threshold: safeInfo?.threshold,
     },
     {
-      onSuccess(safeMessage) {
-        if (safeMessage) {
+      onSuccess(res) {
+        if (res?.isFinished) {
           const modal = Modal.info({
             maskClosable: false,
             closable: false,
@@ -339,7 +339,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
                     block
                     onClick={() => {
                       modal.destroy();
-                      resolveApproval(safeMessage.preparedSignature);
+                      resolveApproval(res.safeMessage.preparedSignature);
                     }}
                     className="text-[15px] h-[40px] rounded-[6px]"
                   >
@@ -493,6 +493,14 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         networkId: chainId + '',
         message: signText,
       });
+      await Promise.all(
+        (currentSafeMessage?.safeMessage?.confirmations || []).map((item) => {
+          return wallet.addPureGnosisMessageSignature({
+            signerAddress: item.owner,
+            signature: item.signature,
+          });
+        })
+      );
     }
 
     const typedData = generateTypedData({
@@ -584,10 +592,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           maskClosable
         >
           <GnosisDrawer
-            type="message"
             safeInfo={safeInfo}
             onCancel={handleDrawerCancel}
             onConfirm={handleGnosisConfirm}
+            confirmations={currentSafeMessage?.safeMessage?.confirmations}
           />
         </Drawer>
       )}

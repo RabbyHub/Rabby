@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { groupBy } from 'lodash';
+import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
+import { SafeMessage } from '@safe-global/api-kit';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
-import { useWallet, isSameAddress } from 'ui/utils';
-import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import { AddressItem, ownerPriority } from './DrawerAddressItem';
 import clsx from 'clsx';
+import { groupBy } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { isSameAddress, useWallet } from 'ui/utils';
+import { AddressItem, ownerPriority } from './DrawerAddressItem';
 
 interface GnosisDrawerProps {
   // safeInfo: SafeInfo;
   safeInfo: BasicSafeInfo;
   onCancel(): void;
   onConfirm(account: Account, isNew?: boolean): Promise<void> | void;
-  type?: 'transaction' | 'message';
+  confirmations?: SafeMessage['confirmations'];
 }
 
 interface Signature {
@@ -25,7 +26,7 @@ const GnosisDrawer = ({
   safeInfo,
   onCancel,
   onConfirm,
-  type = 'transaction',
+  confirmations,
 }: GnosisDrawerProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -91,18 +92,27 @@ const GnosisDrawer = ({
   };
 
   const init = async () => {
-    const sigs =
-      type === 'transaction'
-        ? await wallet.getGnosisTransactionSignatures()
-        : await wallet.getGnosisMessageSignatures();
-
-    setSignatures(sigs);
     sortOwners();
   };
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (confirmations) {
+      setSignatures(
+        confirmations.map((item) => {
+          return {
+            signer: item.owner,
+            data: item.signature,
+          };
+        })
+      );
+    } else {
+      wallet.getGnosisTransactionSignatures().then(setSignatures);
+    }
+  }, [confirmations]);
 
   return (
     <div className="gnosis-drawer-container">
