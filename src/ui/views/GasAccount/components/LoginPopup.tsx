@@ -18,7 +18,9 @@ import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export const GasACcountCurrentAddress = ({
   account,
+  twoColumn,
 }: {
+  twoColumn?: boolean;
   account?: {
     address: string;
     type: string;
@@ -34,10 +36,37 @@ export const GasACcountCurrentAddress = ({
     brandName: account?.brandName || currentAccount!.brandName,
     type: account?.type || currentAccount!.type,
   });
+
+  if (twoColumn) {
+    return (
+      <div className="mb-[20px] h-[56px] px-16 rounded-[6px] flex gap-10 items-center bg-r-neutral-card-2">
+        <img src={addressTypeIcon} className="w-24 h-24" />
+        <div className="flex flex-col overflow-hidden">
+          <span className="text-13 font-medium text-r-neutral-title-1 truncate">
+            {alias}
+          </span>
+          <div className="flex items-center">
+            <AddressViewer
+              address={account?.address || currentAccount!.address}
+              showArrow={false}
+              className="text-[12px] text-r-neutral-body relative top-1"
+            />
+            <CopyChecked
+              addr={account?.address || currentAccount!.address}
+              className={clsx(
+                'w-[14px] h-[14px] ml-4 text-14  cursor-pointer relative top-1'
+              )}
+              checkedClassName={clsx('text-[#00C087]')}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="mb-[20px] py-12 px-16 rounded-[6px] flex items-center bg-r-neutral-card-2">
+    <div className="max-w-[calc(100%-40px)] mb-[20px] py-12 px-16 rounded-[6px] flex items-center bg-r-neutral-card-2 overflow-hidden">
       <img src={addressTypeIcon} className="w-24 h-24" />
-      <span className="ml-[8px] mr-4 text-15 font-medium text-r-neutral-title-1">
+      <span className="ml-[8px] mr-4 text-15 font-medium text-r-neutral-title-1 truncate">
         {alias}
       </span>
       <AddressViewer

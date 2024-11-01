@@ -2231,7 +2231,7 @@
       },
       "loginConfirmModal": {
         "title": "Log in with Current Address",
-        "desc": "You can only use this address to deposit and view your GasAccount balance."
+        "desc": "Once confirmed, you can only deposit it at this address"
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",
