@@ -145,7 +145,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     const _isGnosisAccount =
       currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
     setIsGnosisAccount(_isGnosisAccount);
-    if (!_isGnosisAccount) {
+    if (!isViewGnosisSafe) {
       wallet.clearGnosisMessage();
     }
 
