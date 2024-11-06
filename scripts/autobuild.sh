@@ -69,8 +69,8 @@ if [ -z $NO_UPLOAD ]; then
     if [ ! -z $notify_lark ]; then
         echo "[pack] update latest link...";
 
-        node ./scripts/notify-lark.js "$DOWNLOAD_URL" "$target_md5_value"
-        node ./scripts/notify-lark.js "$DOWNLOAD_URL_MV2" "$target_md5_value_mv2"
+        # node ./scripts/notify-lark.js "$DOWNLOAD_URL" "$target_md5_value"
+        # node ./scripts/notify-lark.js "$DOWNLOAD_URL_MV2" "$target_md5_value_mv2"
     else
         echo "[pack] skip notify.";
     fi
