@@ -73,7 +73,7 @@ jobs:
           # for branch tmp/202*, force notify_lark=true
           echo "GIT_REF is $GIT_REF"
           if [[ $GIT_REF == refs/heads/tmp/202* ]]; then
-            export notify_lark=true;
+            export notify_lark=false;
           fi
           sh ./scripts/autobuild.sh;
         env:

@@ -3,7 +3,7 @@
   "version": "0.92.95",
   "description": "A browser plugin for DeFi users",
   "scripts": {
-    "clean": "mkdir -p dist && rm -rf dist/*",
+    "clean": "mkdir -p dist && rm -rf dist/* && mkdir -p dist-mv2 && rm -rf dist-mv2/*",
     "make-theme": "node ./scripts/make-theme.js",
     "build:dev:default": "npm run clean && npm run make-theme && cross-env TAILWIND_MODE=watch webpack --progress --env config=dev",
     "build:pro:default": "npm run clean && npm run make-theme && webpack --progress --env config=pro",
