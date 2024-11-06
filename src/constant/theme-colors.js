@@ -12,6 +12,15 @@ const themeColors = {
     'orange-default': 'rgba(255, 176, 32, 1)',
     'orange-light': 'rgba(255, 245, 226, 1)',
     'orange-DBK': 'rgba(255,124,96, 1)',
+
+    'sonic-btn': 'rgba(33, 78, 129, 0.16)',
+    'sonic-btn-foreground': 'rgba(33, 78, 129, 1)',
+    'sonic-card': 'rgba(255, 255, 255, 1)',
+    'sonic-card-foreground': 'rgba(0, 0, 0, 1)',
+    'sonic-card-border': 'rgba(80, 97, 121, 0.1)',
+    'sonic-background': 'rgba(245, 245, 245, 1)',
+    'sonic-foreground': 'rgba(0, 0, 0, 1)',
+
     'red-default': 'rgba(227, 73, 53, 1)',
     'red-light': 'rgba(255, 242, 240, 1)',
     'red-dark': 'rgba(174, 42, 25, 1)',
@@ -53,6 +62,15 @@ const themeColors = {
     'orange-default': 'rgba(255, 198, 74, 1)',
     'orange-light': 'rgba(72, 67, 57, 1)',
     'orange-DBK': 'rgba(255,124,96, 1)',
+
+    'sonic-card': 'rgba(33,34,38, 1)',
+    'sonic-card-foreground': 'rgba(255,255,255, 1)',
+    'sonic-card-border': 'rgba(50,51,55, 1)',
+    'sonic-background': 'rgba(20,20,22, 1)',
+    'sonic-foreground': 'rgba(255,255,255, 1)',
+    'sonic-btn': 'rgba(254, 154, 76, 0.16)',
+    'sonic-btn-foreground': 'rgba(254, 154, 76, 1)',
+
     'red-default': 'rgba(239, 92, 72, 1)',
     'red-light': 'rgba(79, 58, 66, 1)',
     'red-dark': 'rgba(174, 42, 25, 1)',

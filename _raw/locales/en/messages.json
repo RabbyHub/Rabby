@@ -2159,6 +2159,32 @@
       "transactionSpeed": "Transaction Speed"
     },
     "ecology": {
+      "sonic": {
+        "home": {
+          "airdrop": "Airdrop",
+          "airdropDesc": "~200 million S to users on Opera and Sonic.",
+          "airdropBtn": "Start earning points",
+          "arcadeDesc": "Free to play on chain games. Earn points for upcoming airdrop!",
+          "arcadeBtn": "Start playing",
+          "migrateTitle": "Migrate",
+          "migrateDesc": "→",
+          "migrateBtn": "Coming Soon",
+          "earnTitle": "Earn",
+          "earnDesc": "Stake your $S",
+          "earnBtn": "Coming Soon",
+          "socialsTitle": "Get Involved"
+        },
+        "points": {
+          "sonicPoints": "Sonic Points",
+          "referralCode": "Referral code",
+          "today": "Today",
+          "shareOn": "Share on",
+          "sonicArcade": "Sonic Arcade",
+          "sonicArcadeBtn": "Start playing",
+          "pointsDashboard": "Points Dashboard",
+          "pointsDashboardBtn": "Start earning points"
+        }
+      },
       "dbk": {
         "home": {
           "bridge": "Bridge To DBK Chain",

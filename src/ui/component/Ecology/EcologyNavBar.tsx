@@ -24,9 +24,9 @@ export const EcologyNavBar = ({ className, style, chainId }: Props) => {
   return (
     <div
       className={clsx(
-        'flex items-center px-[20px] py-[10px] min-h-[48px]',
+        'flex items-center px-[20px] py-[10px] min-h-[48px] z-[100]',
         'border-b-[0.5px] border-rabby-neutral-line',
-        'bg-r-neutral-bg1',
+        'bg-rabby-neutral-bg1',
         className
       )}
       style={style}
