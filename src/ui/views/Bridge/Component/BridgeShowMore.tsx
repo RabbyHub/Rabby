@@ -108,7 +108,7 @@ export const BridgeShowMore = ({
             </div>
             <div className="mt-[8px] rounded-[4px] border-[0.5px] border-rabby-red-default bg-r-red-light p-8 text-13 font-normal text-r-red-default">
               {t('page.bridge.loss-tips', {
-                usd: '$374',
+                usd: data?.diff,
               })}
             </div>
           </div>
