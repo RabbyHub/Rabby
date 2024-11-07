@@ -142,6 +142,12 @@ export const useBridge = () => {
   );
 
   const getRecommendToChain = async (chain: CHAINS_ENUM) => {
+    const useRemoteRecommendChain = async () => {
+      const data = await wallet.openapi.getRecommendBridgeToChain({
+        from_chain_id: findChainByEnum(chain)!.serverId,
+      });
+      switchToChain(findChainByServerID(data.to_chain_id)?.enum);
+    };
     if (userAddress) {
       const latestTx = await wallet.openapi.getBridgeHistoryList({
         user_addr: userAddress,
@@ -150,16 +156,15 @@ export const useBridge = () => {
       });
       const latestToToken = latestTx?.history_list?.[0]?.to_token;
       if (latestToToken) {
-        const chainEnum = findChainByServerID(latestToToken.chain);
-        if (chainEnum) {
-          switchToChain(chainEnum.enum);
+        const lastBridgeChain = findChainByServerID(latestToToken.chain);
+        if (lastBridgeChain && lastBridgeChain.enum !== chain) {
+          switchToChain(lastBridgeChain.enum);
           setToToken(latestToToken);
+        } else {
+          await useRemoteRecommendChain();
         }
       } else {
-        const data = await wallet.openapi.getRecommendBridgeToChain({
-          from_chain_id: findChainByEnum(chain)!.serverId,
-        });
-        switchToChain(findChainByServerID(data.to_chain_id)?.enum);
+        await useRemoteRecommendChain();
       }
     }
   };
