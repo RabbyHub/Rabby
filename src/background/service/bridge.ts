@@ -19,6 +19,10 @@ export type BridgeRecord = {
 };
 
 export type BridgeServiceStore = {
+  autoSlippage: boolean;
+  isCustomSlippage?: boolean;
+  slippage: string;
+
   selectedChain: CHAINS_ENUM | null;
   selectedFromToken?: TokenItem;
   selectedToToken?: TokenItem;
@@ -48,6 +52,8 @@ class BridgeService {
     unlimitedAllowance: false,
     sortIncludeGasFee: true,
     firstOpen: true,
+    autoSlippage: true,
+    slippage: '1',
   };
 
   init = async () => {
@@ -59,6 +65,8 @@ class BridgeService {
         sortIncludeGasFee: true,
         txQuotes: {},
         firstOpen: true,
+        autoSlippage: true,
+        slippage: '1',
       },
     });
 
@@ -139,6 +147,18 @@ class BridgeService {
         tx_id: hash,
       });
     }
+  };
+
+  setAutoSlippage = (auto: boolean) => {
+    this.store.autoSlippage = auto;
+  };
+
+  setIsCustomSlippage = (isCustomSlippage: boolean) => {
+    this.store.isCustomSlippage = isCustomSlippage;
+  };
+
+  setSlippage = (slippage: string) => {
+    this.store.slippage = slippage;
   };
 }
 

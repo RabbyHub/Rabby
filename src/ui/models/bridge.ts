@@ -13,6 +13,8 @@ export const bridge = createModel<RootModel>()({
   name: 'bridge',
 
   state: {
+    slippage: '1',
+    autoSlippage: true,
     supportedChains: DEFAULT_BRIDGE_SUPPORTED_CHAIN,
     aggregatorsListInit: false,
     aggregatorsList: DEFAULT_BRIDGE_AGGREGATOR,
@@ -115,7 +117,7 @@ export const bridge = createModel<RootModel>()({
     },
 
     async fetchSupportedChains(_: void, store) {
-      const chains = await store.app.wallet.openapi.getBridgeSupportChain();
+      const chains = await store.app.wallet.openapi.getBridgeSupportChainV2();
       if (chains.length) {
         const mappings = Object.values(CHAINS).reduce((acc, chain) => {
           acc[chain.serverId] = chain.enum;
@@ -125,6 +127,22 @@ export const bridge = createModel<RootModel>()({
           supportedChains: chains.map((item) => mappings[item]),
         });
       }
+    },
+
+    async setAutoSlippage(autoSlippage: boolean, store) {
+      await store.app.wallet.setBridgeAutoSlippage(autoSlippage);
+      console.log('autoSlippage set', autoSlippage);
+      this.setField({ autoSlippage });
+    },
+
+    async setIsCustomSlippage(isCustomSlippage: boolean, store) {
+      await store.app.wallet.setBridgeIsCustomSlippage(isCustomSlippage);
+      this.setField({ isCustomSlippage });
+    },
+
+    async setSlippage(slippage: string, store) {
+      await store.app.wallet.setBridgeSlippage(slippage);
+      this.setField({ slippage });
     },
   }),
 });

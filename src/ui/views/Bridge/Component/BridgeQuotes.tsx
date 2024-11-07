@@ -12,7 +12,6 @@ import { BridgeQuoteItem } from './BridgeQuoteItem';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 
 interface QuotesProps {
-  chain: CHAINS_ENUM;
   userAddress: string;
   loading: boolean;
   inSufficient: boolean;

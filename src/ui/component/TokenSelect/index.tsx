@@ -56,7 +56,7 @@ export interface TokenSelectProps {
   token?: TokenItem;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  chainId: string;
+  chainId?: string;
   useSwapTokenList?: boolean;
   excludeTokens?: TokenItem['id'][];
   type?: ComponentProps<typeof TokenSelector>['type'];
@@ -225,19 +225,21 @@ const TokenSelect = ({
         {typeof tokenRender === 'function'
           ? tokenRender?.({ token, openTokenModal: handleSelectToken })
           : tokenRender}
-        <TokenSelector
-          visible={tokenSelectorVisible}
-          list={displayTokenList}
-          onConfirm={handleCurrentTokenChange}
-          onCancel={handleTokenSelectorClose}
-          onSearch={handleSearchTokens}
-          isLoading={isListLoading}
-          type={type}
-          placeholder={placeholder}
-          chainId={queryConds.chainServerId}
-          disabledTips={'Not supported'}
-          supportChains={SWAP_SUPPORT_CHAINS}
-        />
+        {queryConds.chainServerId && (
+          <TokenSelector
+            visible={tokenSelectorVisible}
+            list={displayTokenList}
+            onConfirm={handleCurrentTokenChange}
+            onCancel={handleTokenSelectorClose}
+            onSearch={handleSearchTokens}
+            isLoading={isListLoading}
+            type={type}
+            placeholder={placeholder}
+            chainId={queryConds.chainServerId}
+            disabledTips={'Not supported'}
+            supportChains={SWAP_SUPPORT_CHAINS}
+          />
+        )}
       </>
     );
   }
@@ -286,19 +288,21 @@ const TokenSelect = ({
           />
         )}
       </Wrapper>
-      <TokenSelector
-        visible={tokenSelectorVisible}
-        list={displayTokenList}
-        onConfirm={handleCurrentTokenChange}
-        onCancel={handleTokenSelectorClose}
-        onSearch={handleSearchTokens}
-        isLoading={isListLoading}
-        type={type}
-        placeholder={placeholder}
-        chainId={queryConds.chainServerId}
-        disabledTips={'Not supported'}
-        supportChains={SWAP_SUPPORT_CHAINS}
-      />
+      {queryConds.chainServerId && (
+        <TokenSelector
+          visible={tokenSelectorVisible}
+          list={displayTokenList}
+          onConfirm={handleCurrentTokenChange}
+          onCancel={handleTokenSelectorClose}
+          onSearch={handleSearchTokens}
+          isLoading={isListLoading}
+          type={type}
+          placeholder={placeholder}
+          chainId={queryConds.chainServerId}
+          disabledTips={'Not supported'}
+          supportChains={SWAP_SUPPORT_CHAINS}
+        />
+      )}
     </>
   );
 };
