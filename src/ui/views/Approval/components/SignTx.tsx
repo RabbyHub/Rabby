@@ -468,7 +468,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
-  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
@@ -903,6 +902,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       Modal.error({
         title: 'Error',
         content: e.message || JSON.stringify(e),
+        className: 'modal-support-darkmode',
       });
     }
   };
@@ -1006,7 +1006,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         }
         resolveApproval();
       } catch (e) {
-        message.error(e.message);
+        message.error({
+          content: e.message,
+          className: 'modal-support-darkmode',
+        });
       }
     }
     return;
@@ -1413,7 +1416,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setGasLessFailedReason(res.desc);
       setGasLessLoading(false);
       if (res.is_gasless && res?.promotion?.config) {
-        setGasLessConfig(res?.promotion?.config);
+        setGasLessConfig(
+          res.promotion.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
+            ? {
+                ...res.promotion.config,
+                dark_color: '',
+                theme_color: '',
+              }
+            : res?.promotion?.config
+        );
       }
     } catch (error) {
       console.error('gasLessTxCheck error', error);
@@ -2084,7 +2095,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (selectedGas ? selectedGas.price < 0 : true) ||
               (isGnosisAccount ? !safeInfo : false) ||
               (isCoboArugsAccount ? !coboArgusInfo : false) ||
-              (isLedger && !hasConnectedLedgerHID) ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
               hasUnProcessSecurityResult ||

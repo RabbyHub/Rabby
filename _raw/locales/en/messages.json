@@ -37,7 +37,7 @@
       "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
       "nativeTokenNotEngouthForGas": "Gas balance is not enough for transaction",
       "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
-      "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
+      "canOnlyUseImportedAddress": "You cannot sign transactions with a watch-only address.",
       "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
       "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
       "noGasRequired": "No gas required",
@@ -64,7 +64,10 @@
       "gasAccount": {
         "totalCost": "Total cost: ",
         "currentTxCost": "Gas amount sent to your address: ",
-        "gasCost": "Gas cost for sending Gas to your address: "
+        "gasCost": "Gas cost for transferring gas to your address: ",
+        "estimatedGas": "Estimated Gas: ",
+        "maxGas": "Max Gas: ",
+        "sendGas": "The Gas transfer to you for current transaction: "
       },
       "balanceChange": {
         "successTitle": "Simulation Results",
@@ -820,6 +823,7 @@
         "stillRevoke": "Still Revoke",
         "paused": "Paused",
         "waitInQueue": "Wait in queue",
+        "useGasAccount": "Your gas balance is low. Your GasAccount will cover the gas fees.",
         "revokeWithLedger": "Start Revoke with Ledger",
         "connectLedger": "Connect Ledger",
         "ledgerSended": "Please sign the request on Ledger ({{current}}/{{total}})",
@@ -933,7 +937,7 @@
       "two-step-approve-details": "Token USDT requires 2 transactions to change allowance.First you would need to reset allowance to zero, and only then set new allowance value.",
       "process-with-two-step-approve": "Proceed with two step approve",
       "fetch-best-quote": "Fetching the Best quote",
-      "usd-after-fees": "≈ {{usd}} after fees",
+      "usd-after-fees": "≈ {{usd}} ",
       "no-fees-for-wrap": "No Rabby fees for Wrap",
       "No-available-quote": "No available quote",
       "price-impact": "Price Impact",
@@ -946,6 +950,10 @@
         "wallet": "Wallet",
         "rate": "Fee rate",
         "button": "Got it"
+      },
+      "lowCreditModal": {
+        "title": "This token has a low credit value",
+        "desc": "A low credit value often signals high risk, such as a honeypot token or very low liquidity."
       }
     },
     "bridge": {
@@ -976,7 +984,7 @@
       "need-to-approve-token-before-bridge": "Need to approve token before bridge",
       "via-bridge": "via {{bridge}}",
       "duration": "{{duration}} min",
-      "estimated-value": "≈ {{value}} after fees",
+      "estimated-value": "≈ {{value}} ",
       "best": "Best",
       "bridge-cost": "Bridge cost",
       "rabby-fee": "Rabby fee",
@@ -1195,7 +1203,6 @@
         "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
         "autoLockTime": "Auto lock time",
         "claimRabbyBadge": "Claim Rabby Badge!",
-        "claimFreeGasBadge": "Claim Rabby Free Gas Badge!",
         "cancel": "Cancel",
         "enableWhitelist": "Enable Whitelist",
         "disableWhitelist": "Disable Whitelist",
@@ -1265,7 +1272,7 @@
           "fractionTips": "Calculate based on the price of the linked ERC20 token."
         },
         "tokenButton": {
-          "subTitle": "The token in this list will not be added to total balance"
+          "subTitle": "Tokens on this list will not be added to the total balance"
         },
         "table": {
           "assetAmount": "Asset / Amount",
@@ -1339,7 +1346,8 @@
           "doc1": "Plug in a single Ledger",
           "doc2": "Enter pin to unlock",
           "doc3": "Open Ethereum App",
-          "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>"
+          "reconnect": "If it doesn't work, try <1>reconnecting from the beginning.</1>",
+          "connected": "Ledger connected"
         },
         "keystone": {
           "title": "Ensure your Keystone 3 Pro is on the homepage",
@@ -1579,10 +1587,14 @@
         },
         "trezor": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "message": {
             "disconnected": "{{0}}Connect has stopped. Please refresh the page to connect again."
@@ -1736,7 +1748,8 @@
       "createKey": {
         "interactDapp": "Interact Dapp",
         "description": "Description"
-      }
+      },
+      "sameSafeMessageAlert": "The same message is confirmed; no additional signature is required."
     },
     "securityEngine": {
       "yes": "Yes",
@@ -1854,7 +1867,7 @@
       "requestBtn": "Request"
     },
     "safeQueue": {
-      "title": "Queue",
+      "title": "Queue ({{total}})",
       "sameNonceWarning": "These transactions conflict as they use the same nonce.                   Executing one will automatically replace the other(s).",
       "loading": "Loading pending transactions",
       "noData": "No pending transactions",
@@ -1913,7 +1926,7 @@
       "confirmRequired": "Please Confirm Password",
       "confirmError": "Passwords do not match",
       "confirmPlaceholder": "Confirm password",
-      "agree": "I have read and agree to the<1/> <2>Terms of Use</2>"
+      "agree": "I have read and agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>"
     },
     "welcome": {
       "step1": {
@@ -2201,12 +2214,12 @@
         "txSendings": "Sending signing request({{current}}/{{total}})"
       }
     },
-
     "gasAccount": {
       "title": "GasAccount",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
       "gasExceed": "GasAccount balance cannot exceed $1000",
+      "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
       "history": {
         "noHistory": "No history"
@@ -2219,7 +2232,7 @@
       },
       "loginConfirmModal": {
         "title": "Log in with Current Address",
-        "desc": "Once confirmed you can only log in with this address"
+        "desc": "Once confirmed, you can only deposit it at this address"
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",
@@ -2246,7 +2259,15 @@
       "GasAccountDepositTipPopup": {
         "title": "Open GasAccount and Deposit",
         "gotIt": "Got it"
+      },
+      "switchLoginAddressBeforeDeposit": {
+        "title": "Switch address before deposit",
+        "desc": "Please switch to your login address."
       }
+    },
+    "safeMessageQueue": {
+      "loading": "Loading messages",
+      "noData": "No messages"
     }
   },
   "component": {

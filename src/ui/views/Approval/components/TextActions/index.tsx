@@ -19,6 +19,7 @@ import { Card } from '../Card';
 import { OriginInfo } from '../OriginInfo';
 import { Divide } from '../Divide';
 import { ParsedTextActionData } from '@rabby-wallet/rabby-action';
+import { findChain } from '@/utils/chain';
 
 const { TabPane } = Tabs;
 
@@ -84,6 +85,7 @@ const Actions = ({
   message,
   origin,
   originLogo,
+  chainId,
 }: {
   data: ParsedTextActionData | null;
   engineResults: Result[];
@@ -91,10 +93,19 @@ const Actions = ({
   message: string;
   origin: string;
   originLogo?: string;
+  chainId?: number;
 }) => {
   const actionName = useMemo(() => {
     return getActionTypeText(data);
   }, [data]);
+
+  const chain = useMemo(() => {
+    return (
+      findChain({
+        id: chainId,
+      }) || undefined
+    );
+  }, [chainId]);
 
   const { t } = useTranslation();
 
@@ -123,6 +134,7 @@ const Actions = ({
       <ActionWrapper isEmptyBody={isUnknown}>
         <Card>
           <OriginInfo
+            chain={chain}
             origin={origin}
             originLogo={originLogo}
             engineResults={engineResults}

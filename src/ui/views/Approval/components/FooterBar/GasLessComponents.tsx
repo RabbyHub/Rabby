@@ -66,6 +66,7 @@ export function GasLessNotEnough({
             background: 'var(--r-blue-default, #7084FF)',
             boxShadow: '0px 1px 4px 0px rgba(65, 89, 188, 0.33)',
           }}
+          className="text-r-neutral-title2"
           onClick={onChangeGasAccount}
         >
           {t('page.signFooterBar.gasAccount.useGasAccount')}
@@ -182,39 +183,6 @@ function FreeGasReady({
   );
 }
 
-export function GasLessToSign({
-  handleFreeGas,
-  gasLessEnable,
-}: {
-  handleFreeGas: () => void;
-  gasLessEnable: boolean;
-}) {
-  const { t } = useTranslation();
-  return (
-    <>
-      <GasLessReady className={clsx(gasLessEnable && 'gasLess')}>
-        <FreeGasReady />
-        <span className="gas-to-sign security-level-tip bg-r-neutral-card2 text-r-neutral-card2 items-center pr-6">
-          <RcIconGas
-            viewBox="0 0 16 16"
-            className="w-16 h-16 mr-4 text-r-neutral-title-1"
-          />
-          <span className="flex-1 text-r-neutral-title-1">
-            {t('page.signFooterBar.gasless.notEnough')}
-          </span>
-
-          <LinearGradientAnimatedSpan
-            className="mr-auto px-10 py-[7px] text-r-neutral-title-2 cursor-pointer"
-            onClick={handleFreeGas}
-          >
-            {t('page.signFooterBar.gasless.GetFreeGasToSign')}
-          </LinearGradientAnimatedSpan>
-        </span>
-      </GasLessReady>
-    </>
-  );
-}
-
 export function GasLessActivityToSign({
   handleFreeGas,
   gasLessEnable,
@@ -228,9 +196,10 @@ export function GasLessActivityToSign({
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
 
-  const themeColor = isDarkTheme
-    ? gasLessConfig?.dark_color
-    : gasLessConfig?.theme_color;
+  const themeColor = gasLessConfig
+    ? (isDarkTheme ? gasLessConfig?.dark_color : gasLessConfig?.theme_color) ||
+      'var(--r-blue-default, #7084FF)'
+    : undefined;
 
   return (
     <>
@@ -240,7 +209,7 @@ export function GasLessActivityToSign({
           color={themeColor}
           logo={gasLessConfig?.logo}
         />
-        {!!themeColor && (
+        {themeColor && (
           <RcIconCCFreeGasBg
             style={{
               color: themeColor,

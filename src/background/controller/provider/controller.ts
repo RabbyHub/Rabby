@@ -60,6 +60,7 @@ import {
   CustomTestnetTokenBase,
   customTestnetService,
 } from '@/background/service/customTestnet';
+import { isString } from 'lodash';
 
 const reportSignText = (params: {
   method: string;
@@ -138,8 +139,9 @@ const signTypedDataVlidation = ({
   } catch (e) {
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
-  const currentChain = permissionService.getConnectedSite(session.origin)
-    ?.chain;
+  const currentChain = permissionService.isInternalOrigin(session.origin)
+    ? findChain({ id: jsonData.domain.chainId })?.enum
+    : permissionService.getConnectedSite(session.origin)?.chain;
   if (jsonData.domain.chainId) {
     const chainItem = findChainByEnum(currentChain);
     if (
@@ -684,11 +686,22 @@ class ProviderController extends BaseController {
             }
             const tx = TransactionFactory.fromTxData(txData);
             const rawTx = bufferToHex(tx.serialize());
-            hash = await RPCService.requestCustomRPC(
-              chain,
-              'eth_sendRawTransaction',
-              [rawTx]
-            );
+            try {
+              hash = await RPCService.requestCustomRPC(
+                chain,
+                'eth_sendRawTransaction',
+                [rawTx]
+              );
+            } catch (e) {
+              let errMsg = typeof e === 'object' ? e.message : e;
+              if (RPCService.hasCustomRPC(chain)) {
+                errMsg = `[From Custom RPC] ${errMsg}`;
+              }
+              onTransactionSubmitFailed({
+                ...e,
+                message: errMsg,
+              });
+            }
 
             onTransactionCreated({ hash, reqId, pushType });
             notificationService.setStatsData(statsData);
@@ -805,15 +818,23 @@ class ProviderController extends BaseController {
     if (!data.params) return;
 
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
       const keyring = await this._checkAddress(from);
+      // todo
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
         approvalRes?.extra
       );
+
       signTextHistoryService.createHistory({
         address: from,
         text: string,
@@ -862,6 +883,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -900,6 +927,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -938,6 +971,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -976,6 +1015,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,

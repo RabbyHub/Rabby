@@ -2,11 +2,8 @@ import { message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
-  KEYRINGS_LOGOS,
   KEYRING_CLASS,
-  KEYRING_ICONS,
   KEYRING_TYPE_TEXT,
-  KeyringWithIcon,
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import React, {
@@ -31,11 +28,9 @@ import IconCheck from 'ui/assets/check.svg';
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import SkeletonInput from 'antd/lib/skeleton/Input';
-import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
-import { pickKeyringThemeIcon } from '@/utils/account';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export interface AddressItemProps {
   balance: number;
@@ -149,31 +144,12 @@ const AddressItem = memo(
       };
     }, []);
 
-    const brandIcon = useWalletConnectIcon({
+    const addressTypeIcon = useBrandIcon({
       address,
       brandName,
       type,
+      forceLight: isCurrentAccount,
     });
-
-    const { isDarkTheme } = useThemeMode();
-
-    const addressTypeIcon = useMemo(
-      () =>
-        isCurrentAccount
-          ? brandIcon ||
-            pickKeyringThemeIcon(type as any, {
-              needLightVersion: true,
-            }) ||
-            WALLET_BRAND_CONTENT?.[brandName]?.image ||
-            KEYRINGS_LOGOS[type]
-          : brandIcon ||
-            pickKeyringThemeIcon(brandName as any, {
-              needLightVersion: isDarkTheme,
-            }) ||
-            WALLET_BRAND_CONTENT?.[brandName]?.image ||
-            KEYRING_ICONS[type],
-      [type, brandName, brandIcon, isDarkTheme]
-    );
 
     return (
       <div className={clsx(className, 'rabby-address-item-container relative')}>

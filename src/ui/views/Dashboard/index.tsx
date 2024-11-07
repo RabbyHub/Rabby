@@ -55,6 +55,7 @@ import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHomeBalanceView';
 import { EcologyPopup } from './components/EcologyPopup';
 import { GasAccountDashBoardHeader } from '../GasAccount/components/DashBoardHeader';
+import { useGnosisPendingCount } from '@/ui/hooks/useGnosisPendingCount';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -136,7 +137,7 @@ const Dashboard = () => {
     }
   );
 
-  useGnosisPendingTxs(
+  useGnosisPendingCount(
     {
       address:
         currentAccount?.address &&
@@ -150,9 +151,9 @@ const Dashboard = () => {
           gnosisPendingCount: 0,
         });
       },
-      onSuccess(res) {
+      onSuccess(total) {
         dispatch.chains.setField({
-          gnosisPendingCount: res?.total || 0,
+          gnosisPendingCount: total || 0,
         });
       },
     }

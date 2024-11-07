@@ -47,6 +47,7 @@ import { MiniApproval, MiniSignTx } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useHistory } from 'react-router-dom';
+import { LowCreditModal, useLowCreditState } from './LowCreditModal';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
@@ -128,6 +129,7 @@ export const Main = () => {
   const dispatch = useDispatch();
 
   const {
+    passGasPrice,
     bestQuoteDex,
     chain,
     switchChain,
@@ -270,9 +272,10 @@ export const Main = () => {
             pay_token_id: payToken.id,
             unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
-            gasPrice: payTokenIsNativeToken
-              ? gasList?.find((e) => e.level === gasLevel)?.price
-              : undefined,
+            gasPrice:
+              payTokenIsNativeToken && passGasPrice
+                ? gasList?.find((e) => e.level === gasLevel)?.price
+                : undefined,
             postSwapParams: {
               quote: {
                 pay_token_id: payToken.id,
@@ -336,9 +339,10 @@ export const Main = () => {
             pay_token_id: payToken.id,
             unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
-            gasPrice: payTokenIsNativeToken
-              ? gasList?.find((e) => e.level === gasLevel)?.price
-              : undefined,
+            gasPrice:
+              payTokenIsNativeToken && passGasPrice
+                ? gasList?.find((e) => e.level === gasLevel)?.price
+                : undefined,
             postSwapParams: {
               quote: {
                 pay_token_id: payToken.id,
@@ -409,6 +413,13 @@ export const Main = () => {
   });
 
   const history = useHistory();
+
+  const {
+    lowCreditToken,
+    lowCreditVisible,
+    setLowCreditToken,
+    setLowCreditVisible,
+  } = useLowCreditState(receiveToken);
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -514,6 +525,10 @@ export const Main = () => {
                 setPayToken(undefined);
               }
               setReceiveToken(token);
+              if (token?.low_credit_score) {
+                setLowCreditToken(token);
+                setLowCreditVisible(true);
+              }
             }}
             chainId={CHAINS[chain].serverId}
             type={'swapTo'}
@@ -750,6 +765,11 @@ export const Main = () => {
       <MiniApproval
         visible={isShowSign}
         txs={txs}
+        ga={{
+          category: 'Swap',
+          source: 'swap',
+          trigger: rbiSource,
+        }}
         onClose={() => {
           setIsShowSign(false);
           setTimeout(() => {
@@ -770,6 +790,11 @@ export const Main = () => {
             // }, 500);
           }, 500);
         }}
+      />
+      <LowCreditModal
+        token={lowCreditToken}
+        visible={lowCreditVisible}
+        onCancel={() => setLowCreditVisible(false)}
       />
     </div>
   );

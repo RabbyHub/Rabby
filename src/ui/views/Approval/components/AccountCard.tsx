@@ -100,8 +100,8 @@ const AccountCard = ({
               showArrow={false}
               address={currentAccount.address}
               className={clsx(
-                'text-12 opacity-60',
-                alianName ? 'opacity-80 send-viewer' : 'text-white'
+                'text-12',
+                alianName ? 'opacity-80 send-viewer' : 'opacity-60 text-white'
               )}
             />
           </div>

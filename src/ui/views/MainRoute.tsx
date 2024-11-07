@@ -13,19 +13,16 @@ import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportGnosis from './ImportGnosisAddress';
 import ConnectLedger from './ImportHardware/LedgerConnect';
-import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import TokenApproval from './TokenApproval';
 import NFTApproval from './NFTApproval';
 import AddAddress from './AddAddress';
-import ChainManagement, { StartChainManagement } from './ChainManagement';
 import ChainList from './ChainList';
 import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
-import GnosisTransactionQueue from './GnosisTransactionQueue';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -47,9 +44,7 @@ import { NFTView } from './NFTView';
 import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
 import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
 import ApprovalManagePage from './ApprovalManagePage';
-import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
-import { PendingDetail } from './PendingDetail';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
 import RabbyPoints from './RabbyPoints';
@@ -62,6 +57,7 @@ import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
+import { GnosisQueue } from './GnosisQueue';
 
 declare global {
   interface Window {
@@ -111,9 +107,6 @@ const Main = () => {
         <Route exact path="/no-address">
           <NoAddress />
         </Route>
-        <PrivateRoute exact path="/start-chain-management">
-          <StartChainManagement />
-        </PrivateRoute>
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
@@ -174,7 +167,7 @@ const Main = () => {
           <Activities />
         </PrivateRoute>
         <PrivateRoute exact path="/gnosis-queue">
-          <GnosisTransactionQueue />
+          <GnosisQueue />
         </PrivateRoute>
         <PrivateRoute exact path="/import/gnosis">
           <ImportGnosis />
@@ -197,9 +190,6 @@ const Main = () => {
         <PrivateRoute exact path="/nft-approval">
           <NFTApproval />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings">
-          <Settings />
-        </PrivateRoute>
         <PrivateRoute exact path="/settings/address">
           <ManageAddress />
         </PrivateRoute>
@@ -214,9 +204,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/sites">
           <ConnectedSites />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/chain">
-          <ChainManagement />
         </PrivateRoute>
         <PrivateRoute exact path="/settings/chain-list">
           <ChainList />
@@ -250,9 +237,6 @@ const Main = () => {
         <PrivateRoute exact path="/dapp-search">
           <DappSearchPage />
         </PrivateRoute>
-        <PrivateRoute exact path="/pending-detail">
-          <PendingDetail />
-        </PrivateRoute>
 
         <PrivateRoute exact path="/import/metamask">
           <ImportMyMetaMaskAccount />
@@ -276,9 +260,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/nft">
           <NFTView />
-        </PrivateRoute>
-        <PrivateRoute exact path="/request-debank-testnet-gas-token">
-          <RequestDeBankTestnetGasToken />
         </PrivateRoute>
         <PrivateRoute exact path="/rabby-points">
           <RabbyPoints />

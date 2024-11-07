@@ -63,11 +63,13 @@ export const MiniSignTx = ({
   onReject,
   onResolve,
   onStatusChange,
+  ga,
 }: {
   txs: Tx[];
   onReject?: () => void;
   onResolve?: () => void;
   onStatusChange?: (status: BatchSignTxTaskType['status']) => void;
+  ga?: Record<string, any>;
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -218,7 +220,6 @@ export const MiniSignTx = ({
   const wallet = useWallet();
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
-  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
@@ -353,7 +354,9 @@ export const MiniSignTx = ({
     hasCustomRPC();
   }, [chain?.enum]);
 
-  const task = useBatchSignTxTask();
+  const task = useBatchSignTxTask({
+    ga,
+  });
   useEffect(() => {
     onStatusChange?.(task.status);
   }, [task.status]);
@@ -504,7 +507,15 @@ export const MiniSignTx = ({
       setGasLessFailedReason(res.desc);
       setGasLessLoading(false);
       if (res.is_gasless && res?.promotion?.config) {
-        setGasLessConfig(res?.promotion?.config);
+        setGasLessConfig(
+          res.promotion.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
+            ? {
+                ...res.promotion.config,
+                dark_color: '',
+                theme_color: '',
+              }
+            : res?.promotion?.config
+        );
       }
     } catch (error) {
       console.error('gasLessTxCheck error', error);
@@ -963,12 +974,14 @@ export const MiniApproval = ({
   onClose,
   onResolve,
   onReject,
+  ga,
 }: {
   txs?: Tx[];
   visible?: boolean;
   onClose?: () => void;
   onReject?: () => void;
   onResolve?: () => void;
+  ga?: Record<string, any>;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -999,6 +1012,7 @@ export const MiniApproval = ({
     >
       {txs?.length ? (
         <MiniSignTx
+          ga={ga}
           txs={txs}
           onStatusChange={(status) => {
             setStatus(status);

@@ -67,7 +67,8 @@ export const numberWithCommasIsLtOne = (
 export const formatNumber = (
   num: string | number,
   decimal = 2,
-  opt = {} as BigNumber.Format
+  opt = {} as BigNumber.Format,
+  roundingMode = BigNumber.ROUND_UP as BigNumber.RoundingMode
 ) => {
   const n = new BigNumber(num);
   const format = {
@@ -87,11 +88,11 @@ export const formatNumber = (
   // hide the after-point part if number is more than 1000000
   if (n.isGreaterThan(1000000)) {
     if (n.gte(1e9)) {
-      return `${n.div(1e9).toFormat(decimal, format)}B`;
+      return `${n.div(1e9).toFormat(decimal, roundingMode, format)}B`;
     }
     return n.decimalPlaces(0).toFormat(format);
   }
-  return n.toFormat(decimal, format);
+  return n.toFormat(decimal, roundingMode, format);
 };
 
 export const formatPrice = (price: string | number) => {
@@ -116,13 +117,21 @@ export const intToHex = (n: number) => {
   return `0x${n.toString(16)}`;
 };
 
-export const formatUsdValue = (value: string | number) => {
+export const formatUsdValue = (
+  value: string | number,
+  roundingMode = BigNumber.ROUND_UP as BigNumber.RoundingMode
+) => {
   const bnValue = new BigNumber(value);
   if (bnValue.lt(0)) {
-    return `-$${formatNumber(Math.abs(Number(value)))}`;
+    return `-$${formatNumber(
+      Math.abs(Number(value)),
+      2,
+      undefined,
+      roundingMode
+    )}`;
   }
   if (bnValue.gte(0.01) || bnValue.eq(0)) {
-    return `$${formatNumber(value)}`;
+    return `$${formatNumber(value, 2, undefined, roundingMode)}`;
   }
   return '<$0.01';
 };
@@ -199,4 +208,20 @@ export const formatGasCostUsd = (gasCostUsd: BigNumber) => {
   }
 
   return formatTokenAmount(value);
+};
+
+export const formatGasHeaderUsdValue = (
+  value: string | number,
+  roundingMode = BigNumber.ROUND_UP as BigNumber.RoundingMode
+) => {
+  const bnValue = new BigNumber(value);
+  if (bnValue.lt(0)) {
+    return `-$${formatNumber(Math.abs(Number(value)))}`;
+  }
+  if (bnValue.gte(0.01)) {
+    return `$${formatNumber(value, 2, undefined, roundingMode)}`;
+  }
+  if (bnValue.lt(0.0001)) return '<$0.0001';
+
+  return `$${formatNumber(value, 4, undefined, roundingMode)}`;
 };

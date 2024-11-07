@@ -8,10 +8,7 @@ import clsx from 'clsx';
 import { EVENTS, KEYRING_CLASS } from 'consts';
 import React, { ReactNode } from 'react';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
-import {
-  ActionGroup,
-  Props as ActionGroupProps,
-} from '../FooterBar/ActionGroup';
+import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import { ProcessActions } from '../FooterBar/ProcessActions';
 import { Dots } from '../Popup/Dots';
@@ -136,13 +133,6 @@ export const MiniLedgerAction: React.FC<Props> = ({
             gasLess={useGasLess}
             {...props}
             onSubmit={handleSubmit}
-            disabledProcess={useGasLess ? false : props.disabledProcess}
-            enableTooltip={useGasLess ? false : props.enableTooltip}
-            gasLessThemeColor={
-              isDarkTheme
-                ? gasLessConfig?.dark_color
-                : gasLessConfig?.theme_color
-            }
           >
             <div className="flex items-center gap-[8px] justify-center">
               <LedgerSVG width={22} height={22} viewBox="0 0 28 28" />

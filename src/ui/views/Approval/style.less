@@ -12,6 +12,98 @@
   display: flex;
   flex-direction: column;
 
+  .token-balance-change {
+    padding: 0 16px;
+    margin-top: 16px;
+
+    .token-balance-change-content {
+      &-header {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 19px;
+        color: #131419;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .token-change-list {
+        margin: 0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .token-change-item {
+          display: flex;
+          align-items: center;
+          overflow: hidden;
+
+          .token-change-logo {
+            width: 28px;
+            height: 28px;
+            margin-right: 12px;
+          }
+
+          .token-change-amount {
+            font-weight: 500;
+            font-size: 15px;
+            line-height: 18px;
+            color: @color-title;
+            .ellipsis();
+            margin-right: 12px;
+            flex: 1;
+          }
+
+          .token-change-price {
+            font-size: 12px;
+            line-height: 14px;
+            color: @color-comment-1;
+            margin-left: auto;
+            flex-shrink: 0;
+            .ellipsis();
+            max-width: 50%;
+          }
+        }
+      }
+    }
+
+    .balance-change-error {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+
+      &-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+
+        path:first-child {
+          fill: #b4bdcc;
+          stroke: #b4bdcc;
+        }
+      }
+
+      &-content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      &-title {
+        font-size: 15px;
+        line-height: 18px;
+        color: #13141a;
+      }
+
+      &-desc {
+        font-size: 14px;
+        line-height: 20px;
+        color: #4b4d59;
+      }
+    }
+  }
+
   header {
     background: @primary-linear;
     height: 56px;
@@ -964,91 +1056,6 @@
       }
       .loading-balance-change {
         border-top: 1px solid @color-border;
-      }
-    }
-
-    .token-balance-change {
-      padding: 0 16px;
-      margin-top: 16px;
-
-      .token-balance-change-content {
-        &-header {
-          font-weight: 500;
-          font-size: 16px;
-          line-height: 19px;
-          color: #131419;
-          display: flex;
-          align-items: center;
-          margin-bottom: 15px;
-        }
-        .token-change-list {
-          margin: 0;
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          .token-change-item {
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-
-            .token-change-logo {
-              width: 28px;
-              height: 28px;
-              margin-right: 12px;
-            }
-            .token-change-amount {
-              font-weight: 500;
-              font-size: 15px;
-              line-height: 18px;
-              color: @color-title;
-              .ellipsis();
-              margin-right: 12px;
-              flex: 1;
-            }
-            .token-change-price {
-              font-size: 12px;
-              line-height: 14px;
-              color: @color-comment-1;
-              margin-left: auto;
-              flex-shrink: 0;
-              .ellipsis();
-              max-width: 50%;
-            }
-          }
-        }
-      }
-      .balance-change-error {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-
-        &-icon {
-          width: 20px;
-          height: 20px;
-          flex-shrink: 0;
-          path:first-child {
-            fill: #b4bdcc;
-            stroke: #b4bdcc;
-          }
-        }
-
-        &-content {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        &-title {
-          font-size: 15px;
-          line-height: 18px;
-          color: #13141a;
-        }
-        &-desc {
-          font-size: 14px;
-          line-height: 20px;
-          color: #4b4d59;
-        }
       }
     }
 
@@ -2443,6 +2450,27 @@
   .ant-modal-confirm-content {
     margin-top: 0;
     padding: 0;
+  }
+  .ant-modal-confirm-btns {
+    display: none;
+  }
+}
+
+.same-safe-message-modal {
+  .ant-modal-content {
+    border-radius: 16px;
+  }
+
+  .ant-modal-body {
+    padding: 0;
+  }
+  .ant-modal-confirm-content {
+    margin: 0;
+    padding: 20px;
+
+    .anticon {
+      display: none;
+    }
   }
   .ant-modal-confirm-btns {
     display: none;

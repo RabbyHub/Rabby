@@ -1,13 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddressViewer, Popup } from '@/ui/component';
 import { Button } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
-import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useThemeMode } from '@/ui/hooks/usePreference';
-import { pickKeyringThemeIcon } from '@/utils/account';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
 import { noop } from 'lodash';
 import clsx from 'clsx';
 import { CopyChecked } from '@/ui/component/CopyChecked';
@@ -18,10 +14,13 @@ import { ReactComponent as RcIconQuoteStart } from '@/ui/assets/gas-account/quot
 import { ReactComponent as RcIconQuoteEnd } from '@/ui/assets/gas-account/quote-end.svg';
 import { GasAccountBlueLogo } from './GasAccountBlueLogo';
 import { GasAccountWrapperBg } from './WrapperBg';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export const GasACcountCurrentAddress = ({
   account,
+  twoColumn,
 }: {
+  twoColumn?: boolean;
   account?: {
     address: string;
     type: string;
@@ -30,34 +29,44 @@ export const GasACcountCurrentAddress = ({
 }) => {
   const currentAccount = useCurrentAccount();
 
-  const { isDarkTheme } = useThemeMode();
-
-  const brandIcon = useWalletConnectIcon({
-    address: currentAccount!.address,
-    brandName: currentAccount!.brandName,
-    type: currentAccount!.type,
-  });
-
   const [alias] = useAlias(account?.address || currentAccount?.address || '');
 
-  const addressTypeIcon = useMemo(
-    () =>
-      brandIcon ||
-      pickKeyringThemeIcon(
-        account?.brandName || (currentAccount!.brandName as any),
-        {
-          needLightVersion: isDarkTheme,
-        }
-      ) ||
-      WALLET_BRAND_CONTENT?.[account?.brandName || currentAccount!.brandName]
-        ?.image ||
-      KEYRING_ICONS[account?.type || currentAccount!.type],
-    [currentAccount, brandIcon, isDarkTheme]
-  );
+  const addressTypeIcon = useBrandIcon({
+    address: account?.address || currentAccount!.address,
+    brandName: account?.brandName || currentAccount!.brandName,
+    type: account?.type || currentAccount!.type,
+  });
+
+  if (twoColumn) {
+    return (
+      <div className="mb-[20px] h-[56px] px-16 rounded-[6px] flex gap-10 items-center bg-r-neutral-card-2">
+        <img src={addressTypeIcon} className="w-24 h-24" />
+        <div className="flex flex-col overflow-hidden">
+          <span className="text-13 font-medium text-r-neutral-title-1 truncate">
+            {alias}
+          </span>
+          <div className="flex items-center">
+            <AddressViewer
+              address={account?.address || currentAccount!.address}
+              showArrow={false}
+              className="text-[12px] text-r-neutral-body relative top-1"
+            />
+            <CopyChecked
+              addr={account?.address || currentAccount!.address}
+              className={clsx(
+                'w-[14px] h-[14px] ml-4 text-14  cursor-pointer relative top-1'
+              )}
+              checkedClassName={clsx('text-[#00C087]')}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="mb-[20px] py-12 px-16 rounded-[6px] flex items-center bg-r-neutral-card-2">
+    <div className="max-w-[calc(100%-40px)] mb-[20px] py-12 px-16 rounded-[6px] flex items-center bg-r-neutral-card-2 overflow-hidden">
       <img src={addressTypeIcon} className="w-24 h-24" />
-      <span className="ml-[8px] mr-4 text-15 font-medium text-r-neutral-title-1">
+      <span className="ml-[8px] mr-4 text-15 font-medium text-r-neutral-title-1 truncate">
         {alias}
       </span>
       <AddressViewer
@@ -99,7 +108,7 @@ const GasAccountLoginContent = ({ onClose }: { onClose: () => void }) => {
           {t('page.gasAccount.loginConfirmModal.title')}
         </div>
         <GasACcountCurrentAddress />
-        <div className=" text-14 text-r-neutral-body">
+        <div className=" text-14 text-r-neutral-body px-20 text-center">
           {t('page.gasAccount.loginConfirmModal.desc')}
         </div>
         <div

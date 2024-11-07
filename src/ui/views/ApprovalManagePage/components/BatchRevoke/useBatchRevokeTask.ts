@@ -8,6 +8,7 @@ import React from 'react';
 import { findIndexRevokeList } from '../../utils';
 import i18n from '@/i18n';
 import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
+import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 async function buildTx(
@@ -71,6 +72,7 @@ export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
   $status?:
     | {
         status: 'pending';
+        isGasAccount?: boolean;
       }
     | {
         status: 'fail';
@@ -134,6 +136,7 @@ const cloneAssetApprovalSpender = (item: AssetApprovalSpender) => {
 
 export const useBatchRevokeTask = () => {
   const wallet = useWallet();
+  const gasAccount = useGasAccountSign();
   const queueRef = React.useRef(
     new PQueue({ concurrency: 1, autoStart: true })
   );
@@ -170,7 +173,6 @@ export const useBatchRevokeTask = () => {
 
           cloneItem.$status!.status = 'pending';
           setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
-
           try {
             const tx = await buildTx(wallet, revokeItem);
             const result = await sendTransaction({
@@ -178,12 +180,26 @@ export const useBatchRevokeTask = () => {
               ignoreGasCheck,
               wallet,
               chainServerId: revokeItem.chainServerId,
+              gasAccount: gasAccount,
+              autoUseGasAccount: true,
               onProgress: (status) => {
                 if (status === 'builded') {
                   setTxStatus('sended');
                 } else if (status === 'signed') {
                   setTxStatus('signed');
                 }
+              },
+              onUseGasAccount: () => {
+                // update status
+                cloneItem.$status = {
+                  status: 'pending',
+                  isGasAccount: true,
+                };
+                setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
+              },
+              ga: {
+                category: 'Security',
+                source: 'tokenApproval',
               },
             });
             // update status

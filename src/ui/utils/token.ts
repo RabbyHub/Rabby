@@ -175,6 +175,7 @@ export const abstractTokenToTokenItem = (
     symbol: token.symbol,
     time_at: token.time_at,
     price_24h_change: token.price_24h_change,
+    low_credit_score: token?.low_credit_score,
   };
 };
 

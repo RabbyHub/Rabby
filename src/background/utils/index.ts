@@ -57,15 +57,6 @@ export function normalizeAddress(input: number | string): string {
   return ethUtil.addHexPrefix(input);
 }
 
-export const wait = (fn: () => void, ms = 1000) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      fn();
-      resolve(true);
-    }, ms);
-  });
-};
-
 export const setPageStateCacheWhenPopupClose = (data) => {
   const cache = pageStateCache.get();
   if (cache && cache.path === '/import/wallet-connect') {
@@ -107,6 +98,27 @@ export const setPopupIcon = (
   const action = isManifestV3 ? browser.action : browser.browserAction;
   return action.setIcon({
     path: icons,
+  });
+};
+
+export const withTimeout = <T>(
+  promise: Promise<T>,
+  timeout: number
+): Promise<T> => {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error('Request timed out')),
+      timeout
+    );
+    promise
+      .then((result: T) => {
+        clearTimeout(timer);
+        resolve(result);
+      })
+      .catch((err: any) => {
+        clearTimeout(timer);
+        reject(err);
+      });
   });
 };
 
