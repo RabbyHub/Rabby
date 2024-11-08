@@ -5,9 +5,10 @@ import arcadeLightImg from '@/ui/assets/ecology/sonic/arcade-light.svg';
 import arcadeMinesImg from '@/ui/assets/ecology/sonic/arcade-mines.png';
 import arcadePlinkoImg from '@/ui/assets/ecology/sonic/arcade-plinko.png';
 import arcadeWheelImg from '@/ui/assets/ecology/sonic/arcade-wheel.png';
-import { ReactComponent as RcDiscord } from '@/ui/assets/ecology/sonic/socials/discord.svg';
-import { ReactComponent as RcTelegram } from '@/ui/assets/ecology/sonic/socials/telegram.svg';
-import { ReactComponent as RcX } from '@/ui/assets/ecology/sonic/socials/x.svg';
+import { ReactComponent as RcDiscord } from '@/ui/assets/ecology/sonic/discord.svg';
+import { ReactComponent as RcGlobe } from '@/ui/assets/ecology/sonic/globe.svg';
+import { ReactComponent as RcTelegram } from '@/ui/assets/ecology/sonic/telegram.svg';
+import { ReactComponent as RcX } from '@/ui/assets/ecology/sonic/x.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import React from 'react';
@@ -42,11 +43,9 @@ export const SonicHome = () => {
     <div className="p-[12px] flex flex-col gap-[10px] bg-rabby-sonic-background text-rabby-sonic-foreground min-h-full">
       <MigrationBanner />
       <SonicCard className="relative flex flex-col items-start justify-between h-[160px]">
-        <div className="flex flex-col items-start gap-y-[4px]">
+        <div className="flex flex-col items-start gap-y-[4px] w-[141px]">
           <CardTitle>{t('page.ecology.sonic.home.airdrop')}</CardTitle>
-          <CardDesc className="max-w-[40%]">
-            {t('page.ecology.sonic.home.airdropDesc')}
-          </CardDesc>
+          <CardDesc>{t('page.ecology.sonic.home.airdropDesc')}</CardDesc>
         </div>
         <SonicButton
           rounded
@@ -84,9 +83,9 @@ export const SonicHome = () => {
         >
           {t('page.ecology.sonic.home.arcadeBtn')}
         </SonicButton>
-        <div className="absolute bottom-[8px] right-0 flex items-center gap-x-[8px]">
+        <div className="absolute bottom-[16px] right-[16px] flex items-center gap-x-[8px]">
           <img
-            className="shadow-md rounded-md"
+            className="shadow-md rounded-md transform rotate-[-8deg] translate-y-[4px]"
             width={48}
             height={48}
             src={arcadePlinkoImg}
@@ -100,7 +99,7 @@ export const SonicHome = () => {
             alt=""
           />
           <img
-            className="shadow-md rounded-md"
+            className="shadow-md rounded-md transform rotate-[8deg] translate-y-[4px]"
             width={48}
             height={48}
             src={arcadeWheelImg}
@@ -137,6 +136,14 @@ export const SonicHome = () => {
           {t('page.ecology.sonic.home.socialsTitle')}
         </div>
         <div className="flex items-center gap-x-[10px] text-rabby-sonic-foreground">
+          <SonicCard
+            onClick={() => {
+              window.open('https://soniclabs.com', '_blank');
+            }}
+            className="p-[24px] justify-center items-center transition hover:scale-105 cursor-pointer"
+          >
+            <RcGlobe className="w-[32px] h-[32px]" />
+          </SonicCard>
           <SonicCard
             onClick={() => {
               window.open('https://t.me/sonic_labs', '_blank');

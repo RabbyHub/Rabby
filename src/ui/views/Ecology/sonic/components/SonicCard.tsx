@@ -11,7 +11,7 @@ export const SonicCard = ({
 }) => {
   return (
     <div
-      className={`rounded-[8px] bg-rabby-sonic-card border border-rabby-sonic-card-border text-rabby-sonic-card-foreground p-[12px] relative overflow-hidden shadow-lg ${className}`}
+      className={`rounded-[8px] bg-rabby-sonic-card border border-rabby-sonic-card-border text-rabby-sonic-card-foreground p-[12px] relative overflow-hidden shadow-md ${className}`}
       onClick={onClick}
     >
       {children}

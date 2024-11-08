@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 
 import { SonicHome } from './pages/Home';
-import { DbkChainMintNFT } from './pages/MintNFT';
 import { SonicPoints } from './pages/Points';
 
 export const SonicEntry = () => {
@@ -16,9 +15,6 @@ export const SonicEntry = () => {
       </Route>
       <Route path={`${path}/points`}>
         <SonicPoints />
-      </Route>
-      <Route path={`${path}/mintNft`}>
-        <DbkChainMintNFT />
       </Route>
     </Switch>
   );

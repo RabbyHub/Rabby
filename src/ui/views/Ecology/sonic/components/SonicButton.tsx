@@ -30,6 +30,9 @@ export const SonicButton = ({
         'disabled:opacity-40 disabled:shadow-none disabled:cursor-not-allowed',
         'text-[12px] leading-[16px] font-bold',
         'px-[16px] py-[5px]',
+        'transition-all duration-200 ease-in-out',
+        'hover:brightness-110 hover:scale-[1.02]',
+        'active:brightness-95 active:scale-100',
         rounded ? 'rounded-full' : 'rounded-md',
         className
       )}

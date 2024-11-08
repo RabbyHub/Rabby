@@ -2163,9 +2163,9 @@
         "home": {
           "airdrop": "Airdrop",
           "airdropDesc": "~200 million S to users on Opera and Sonic.",
-          "airdropBtn": "Start earning points",
-          "arcadeDesc": "Free to play on chain games. Earn points for upcoming airdrop!",
-          "arcadeBtn": "Start playing",
+          "airdropBtn": "Earn points",
+          "arcadeDesc": "Play free games to earn points for the S airdrop.",
+          "arcadeBtn": "Play now",
           "migrateTitle": "Migrate",
           "migrateDesc": "→",
           "migrateBtn": "Coming Soon",
