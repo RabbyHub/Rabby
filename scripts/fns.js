@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const readdir = require('fs-readdir-recursive');
 const archiver = require('archiver');
-const chalk = require('chalk');
 
 const loggerSlient = {
   log: () => {},
@@ -120,7 +119,7 @@ async function get_md5_file(filepath) {
     stream.on('error', reject);
   });
 }
+
 exports.get_md5_file = get_md5_file;
-
-
 exports.createConsistentZip = createConsistentZip;
+

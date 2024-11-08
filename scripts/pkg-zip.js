@@ -1,4 +1,5 @@
-import { createConsistentZip } from "./fns";
+const chalk = require('chalk');
+const { get_md5_file, createConsistentZip } = require("./fns");
 
 if (process.argv.length > 2) {
     const [, , srcDir, destZip, gitUTC0Time] = process.argv;
