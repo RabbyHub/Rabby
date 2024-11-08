@@ -93,9 +93,11 @@ export const BridgeToken = ({
 
   useLayoutEffect(() => {
     if (type === 'from') {
-      inputRef.current?.focus();
+      if (document?.activeElement !== inputRef.current?.input) {
+        inputRef.current?.focus();
+      }
     }
-  }, []);
+  }, [value]);
 
   const showNoQuote = useMemo(() => type === 'to' && !!noQuote, [
     type,

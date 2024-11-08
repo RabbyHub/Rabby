@@ -1,9 +1,15 @@
 import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, Tooltip } from 'antd';
+import { Button, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
-import React, { PropsWithChildren, ReactNode, useMemo, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowDownCC } from 'ui/assets/bridge/tiny-down-arrow-cc.svg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
@@ -24,6 +30,7 @@ export const BridgeShowMore = ({
   toToken,
   amount,
   toAmount,
+  quoteLoading,
 }: {
   openQuotesList: () => void;
   sourceName: string;
@@ -36,6 +43,7 @@ export const BridgeShowMore = ({
   toToken?: TokenItem;
   amount?: string | number;
   toAmount?: string | number;
+  quoteLoading?: boolean;
 }) => {
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
@@ -44,6 +52,12 @@ export const BridgeShowMore = ({
     () => tokenPriceImpact(fromToken, toToken, amount, toAmount),
     [fromToken, toToken, amount, toAmount]
   );
+
+  useEffect(() => {
+    if (!quoteLoading && data?.showLoss) {
+      setShow(true);
+    }
+  }, [quoteLoading, data?.showLoss]);
 
   return (
     <div>
@@ -69,7 +83,7 @@ export const BridgeShowMore = ({
       </div>
 
       <div className={clsx('px-16', 'overflow-hidden', !show && 'h-0')}>
-        {data?.showLoss && (
+        {data?.showLoss && !quoteLoading && (
           <div className="leading-4 mb-12 text-12 text-r-neutral-foot">
             <div className="flex justify-between">
               <span>{t('page.bridge.price-impact')}</span>
@@ -108,26 +122,37 @@ export const BridgeShowMore = ({
             </div>
             <div className="mt-[8px] rounded-[4px] border-[0.5px] border-rabby-red-default bg-r-red-light p-8 text-13 font-normal text-r-red-default">
               {t('page.bridge.loss-tips', {
-                usd: data?.diff,
+                usd: data?.lossUsd,
               })}
             </div>
           </div>
         )}
 
         <ListItem name={t('page.bridge.showMore.source')} className="mb-8">
-          <div
-            className="flex items-center gap-4 cursor-pointer"
-            onClick={openQuotesList}
-          >
-            {sourceLogo && (
-              <img
-                className="w-12 h-12 rounded-full"
-                src={sourceLogo}
-                alt={sourceName}
-              />
-            )}
-            <span className="text-rabby-blue-default">{sourceName}</span>
-          </div>
+          {quoteLoading ? (
+            <Skeleton.Input
+              active
+              className="rounded"
+              style={{
+                width: 52,
+                height: 12,
+              }}
+            />
+          ) : (
+            <div
+              className="flex items-center gap-4 cursor-pointer"
+              onClick={openQuotesList}
+            >
+              {sourceLogo && (
+                <img
+                  className="w-12 h-12 rounded-full"
+                  src={sourceLogo}
+                  alt={sourceName}
+                />
+              )}
+              <span className="text-rabby-blue-default">{sourceName}</span>
+            </div>
+          )}
         </ListItem>
 
         <BridgeSlippage
@@ -162,9 +187,11 @@ function ListItem({
 export const RecommendFromToken = ({
   token,
   className,
+  onOk,
 }: {
   token: TokenItem;
   className?: string;
+  onOk: () => void;
 }) => {
   const { t } = useTranslation();
   return (
@@ -196,7 +223,11 @@ export const RecommendFromToken = ({
           for an available quote
         </Trans>
       </div>
-      <Button type="primary" className="h-24 text-13 font-medium px-10 py-0">
+      <Button
+        type="primary"
+        className="h-24 text-13 font-medium px-10 py-0"
+        onClick={onOk}
+      >
         {t('global.ok')}
       </Button>
     </div>
