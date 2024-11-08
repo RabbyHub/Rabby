@@ -1,48 +1,28 @@
-import React, {
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useBridge } from '../hooks/token';
 import { Alert, Button, Input, message, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import {
-  formatAmount,
-  formatTokenAmount,
-  formatUsdValue,
-  useWallet,
-} from '@/ui/utils';
+import { useWallet } from '@/ui/utils';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
-import { InfoCircleFilled } from '@ant-design/icons';
-import { BridgeReceiveDetails } from './BridgeReceiveDetail';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { getTokenSymbol } from '@/ui/utils/token';
-import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
-import { BridgeTokenPair } from './BridgeTokenPair';
-import { ReactComponent as RcArrowDown } from '@/ui/assets/bridge/down.svg';
 
 import pRetry from 'p-retry';
 import stats from '@/stats';
-import { BestQuoteLoading } from '../../Swap/Component/loading';
-import { MaxButton } from '../../SendToken/components/MaxButton';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useHistory } from 'react-router-dom';
 import { BridgeToken } from './BridgeToken';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { BridgeShowMore, RecommendFromToken } from './BridgeShowMore';
 import { BridgeSwitchBtn } from './BridgeSwitchButton';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
@@ -128,7 +108,6 @@ export const BridgeContent = () => {
     selectedBridgeQuote,
 
     setSelectedBridgeQuote,
-    expired,
 
     slippage,
     slippageState,
@@ -147,22 +126,8 @@ export const BridgeContent = () => {
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
-    // if (selectedBridgeQuote && expired) {
-    //   return t('page.bridge.price-expired-refresh-route');
-    // }
-    if (selectedBridgeQuote?.shouldApproveToken) {
-      return t('page.bridge.approve-and-bridge', {
-        name: selectedBridgeQuote?.aggregator.name || '',
-      });
-    }
-    if (selectedBridgeQuote?.aggregator.name) {
-      return t('page.bridge.bridge-via-x', {
-        name: selectedBridgeQuote?.aggregator.name,
-      });
-    }
-
     return t('page.bridge.title');
-  }, [selectedBridgeQuote, expired, t]);
+  }, []);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -410,6 +375,23 @@ export const BridgeContent = () => {
     },
   });
 
+  const noQuote =
+    !inSufficient &&
+    !!fromToken &&
+    !!toToken &&
+    Number(amount) > 0 &&
+    !quoteLoading &&
+    !quoteList?.length;
+
+  const btnDisabled =
+    inSufficient ||
+    !fromToken ||
+    !toToken ||
+    !amountAvailable ||
+    !selectedBridgeQuote ||
+    quoteLoading ||
+    !quoteList?.length;
+
   return (
     <div
       className={clsx(
@@ -439,6 +421,7 @@ export const BridgeContent = () => {
           valueLoading={quoteLoading}
           value={selectedBridgeQuote?.to_token_amount}
           excludeChains={fromChain ? [fromChain] : undefined}
+          noQuote={noQuote}
         />
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <BridgeSwitchBtn onClick={switchToken} />
@@ -463,23 +446,12 @@ export const BridgeContent = () => {
             openQuotesList={openQuotesList}
           />
         )}
-        {fromToken &&
-          toToken &&
-          Number(amount) > 0 &&
-          !quoteLoading &&
-          !quoteList?.length &&
-          recommendFromToken && (
-            <RecommendFromToken token={recommendFromToken} className="mt-16" />
-          )}
+        {noQuote && recommendFromToken && (
+          <RecommendFromToken token={recommendFromToken} className="mt-16" />
+        )}
       </div>
 
-      {inSufficient ||
-      (fromToken &&
-        toToken &&
-        Number(amount) > 0 &&
-        !quoteLoading &&
-        !quoteList?.length &&
-        !recommendFromToken) ? (
+      {inSufficient || (noQuote && !recommendFromToken) ? (
         <Alert
           className={clsx(
             'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
@@ -488,7 +460,7 @@ export const BridgeContent = () => {
             <RcIconWarningCC
               viewBox="0 0 16 16"
               className={clsx(
-                'pb-[4px] self-start transform rotate-180 origin-center',
+                'relative top-[3px] self-start origin-center w-16 h-15',
                 'text-red-forbidden'
               )}
             />
@@ -521,7 +493,7 @@ export const BridgeContent = () => {
           className="h-[48px] text-white text-[16px] font-medium"
           onClick={() => {
             if (fetchingBridgeQuote) return;
-            if (!selectedBridgeQuote || expired) {
+            if (!selectedBridgeQuote) {
               refresh((e) => e + 1);
 
               return;
@@ -556,13 +528,7 @@ export const BridgeContent = () => {
             // gotoBridge();
             handleBridge();
           }}
-          disabled={
-            !fromToken ||
-            !toToken ||
-            !amountAvailable ||
-            inSufficient ||
-            !selectedBridgeQuote
-          }
+          disabled={btnDisabled}
         >
           {btnText}
         </Button>

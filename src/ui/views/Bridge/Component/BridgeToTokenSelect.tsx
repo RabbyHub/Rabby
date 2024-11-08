@@ -7,15 +7,15 @@ import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 import { useRabbySelector } from '@/ui/store';
 import { uniqBy } from 'lodash';
-import { CHAINS_ENUM, SWAP_SUPPORT_CHAINS } from '@/constant';
+import { CHAINS_ENUM } from '@/constant';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync, useDebounce } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { TokenWithChain } from '@/ui/component';
 
-import MatchImage from 'ui/assets/match.svg';
+import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 import IconSearch from 'ui/assets/search.svg';
-import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { ReactComponent as RcIconCloseCC } from '@/ui/assets/component/close-cc.svg';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { findChain, findChainByServerID } from '@/utils/chain';
@@ -80,6 +80,7 @@ export interface TokenSelectProps {
         openTokenModal: () => void;
       }) => React.ReactNode)
     | React.ReactNode;
+  drawerHeight?: string | number;
 }
 
 const defaultExcludeTokens = [];
@@ -98,6 +99,7 @@ const BridgeToTokenSelect = ({
   value,
   loading = false,
   tokenRender,
+  drawerHeight,
 }: TokenSelectProps) => {
   const [queryConds, setQueryConds] = useState({
     keyword: '',
@@ -107,6 +109,8 @@ const BridgeToTokenSelect = ({
     (state) => state.account.currentAccount
   );
   const wallet = useWallet();
+
+  const supportChains = useRabbySelector((s) => s.bridge.supportedChains);
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
@@ -128,26 +132,23 @@ const BridgeToTokenSelect = ({
     setTokenSelectorVisible(true);
   };
 
-  const {
-    value: swapTokenList,
-    loading: swapTokenListLoading,
-  } = useAsync(async () => {
-    if (fromChainId) {
+  const { value: tokenList, loading: tokenListLoading } = useAsync(async () => {
+    if (fromChainId && chainId) {
       const list = await wallet.openapi.getBridgeToTokenList({
         from_chain_id: fromChainId,
         from_token_id: fromTokenId,
-        // @ts-expect-error 123
+        // @ts-expect-error to_chain_id
         to_chain_id: chainId,
         q: queryConds.keyword,
       });
       return list?.token_list;
     }
     return [];
-  }, [currentAccount, tokenSelectorVisible]);
+  }, [currentAccount, chainId, tokenSelectorVisible, queryConds.keyword]);
 
   const allDisplayTokens = useMemo(() => {
-    return swapTokenList;
-  }, [swapTokenList]);
+    return tokenList;
+  }, [tokenList]);
 
   const availableToken = useMemo(() => {
     const allTokens = allDisplayTokens;
@@ -158,11 +159,11 @@ const BridgeToTokenSelect = ({
 
   const displayTokenList = useSortToken(availableToken);
 
-  const isListLoading = swapTokenListLoading;
+  const isListLoading = tokenListLoading;
 
-  const handleSearchTokens = React.useCallback(async (ctx) => {
+  const handleSearchTokens = React.useCallback(async (keyword) => {
     setQueryConds({
-      keyword: ctx.keyword,
+      keyword,
     });
   }, []);
 
@@ -192,6 +193,7 @@ const BridgeToTokenSelect = ({
           : tokenRender}
         {chainId && (
           <TokenSelector
+            height={drawerHeight}
             visible={tokenSelectorVisible}
             list={displayTokenList}
             onConfirm={handleCurrentTokenChange}
@@ -201,7 +203,7 @@ const BridgeToTokenSelect = ({
             placeholder={placeholder}
             chainId={chainId}
             disabledTips={'Not supported'}
-            supportChains={SWAP_SUPPORT_CHAINS}
+            supportChains={supportChains}
           />
         )}
       </>
@@ -253,6 +255,7 @@ const BridgeToTokenSelect = ({
         )}
       </Wrapper>
       <TokenSelector
+        height={drawerHeight}
         visible={tokenSelectorVisible}
         list={displayTokenList}
         onConfirm={handleCurrentTokenChange}
@@ -263,7 +266,7 @@ const BridgeToTokenSelect = ({
         placeholder={placeholder}
         chainId={chainId}
         disabledTips={'Not supported'}
-        supportChains={SWAP_SUPPORT_CHAINS}
+        supportChains={supportChains}
       />
     </>
   );
@@ -316,6 +319,7 @@ export interface TokenSelectorProps {
     supportChains?: CHAINS_ENUM[]
   ) => React.ReactNode;
   onSearch: (q: string) => void;
+  height?: number | string;
 }
 
 const TokenSelector = ({
@@ -330,6 +334,7 @@ const TokenSelector = ({
   disabledTips,
   supportChains,
   itemRender,
+  height = '580px',
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -383,37 +388,15 @@ const TokenSelector = ({
             ))}
         </div>
       ) : (
-        <div className="no-token w-full">
-          <img
-            className={
-              !query || isSearchAddr
-                ? 'w-[100px] h-[100px]'
-                : 'w-[52px] h-[52px]'
-            }
-            src={!query || isSearchAddr ? '/images/nodata-tx.png' : MatchImage}
-            alt="no site"
+        <div className="no-token w-full top-[120px]">
+          <RcIconMatchCC
+            className="w-[32px] h-[32px] text-r-neutral-foot"
+            viewBox="0 0 33 32"
           />
 
-          {!query || isSearchAddr ? (
-            <p className="text-r-neutral-foot text-14 mt-12 text-center mb-0">
-              {t('component.TokenSelector.noTokens')}
-            </p>
-          ) : (
-            <>
-              <p className="text-r-neutral-foot text-14 mt-12 text-center mb-0">
-                {t('component.TokenSelector.noMatch')}
-              </p>
-              <p className="text-r-neutral-foot text-14 mt-0 text-center">
-                {/* Try to search contract address on {{ chainName }} */}
-                {t('component.TokenSelector.noMatchSuggestion', {
-                  chainName:
-                    findChain({
-                      serverId: chainServerId,
-                    })?.name || 'chain',
-                })}
-              </p>
-            </>
-          )}
+          <p className="text-r-neutral-foot text-14 mt-8 text-center mb-0">
+            {t('component.TokenSelector.noTokens')}
+          </p>
         </div>
       ),
     [isLoading, t, isSearchAddr, chainServerId]
@@ -422,7 +405,7 @@ const TokenSelector = ({
   return (
     <Drawer
       className="token-selector custom-popup is-support-darkmode"
-      height="580px"
+      height={height}
       placement="bottom"
       visible={visible}
       onClose={onCancel}
@@ -450,106 +433,112 @@ const TokenSelector = ({
         />
       </div>
 
-      {
-        <ul className={clsx('token-list ', { empty: isEmpty })}>
-          <li className="token-list__header text-12 text-rabby-neutral-foot">
-            <div>{t('component.TokenSelector.bridge.token')}</div>
-            <div className="flex items-center justify-end relative">
-              {t('component.TokenSelector.bridge.liquidity')}
-              <TooltipWithMagnetArrow
-                className="rectangle w-[max-content]"
-                title={t('component.TokenSelector.bridge.liquidityTips')}
-              >
-                <RcIconInfoCC className="w-12 h-12 ml-2" viewBox="0 0 14 14" />
-              </TooltipWithMagnetArrow>
-            </div>
-          </li>
-          {isEmpty
-            ? NoDataUI
-            : displayList.map((_token) => {
-                const token = (_token as any) as TokenItem & {
-                  trade_volume_level: 'low' | 'high';
-                };
-                if (itemRender) {
-                  return itemRender(token, supportChains);
-                }
-                const chainItem = findChain({ serverId: token.chain });
-                const disabled =
-                  !!supportChains?.length &&
-                  chainItem &&
-                  !supportChains.includes(chainItem.enum);
+      <div
+        className={clsx(
+          'flex items-center justify-between',
+          'pb-8 px-20',
+          'text-12 text-rabby-neutral-foot'
+        )}
+      >
+        <div>{t('component.TokenSelector.bridge.token')}</div>
+        <div className="flex items-center justify-end relative">
+          <span>{t('component.TokenSelector.bridge.liquidity')}</span>
+          <TooltipWithMagnetArrow
+            placement="top"
+            className="rectangle w-[max-content]"
+            title={t('component.TokenSelector.bridge.liquidityTips')}
+          >
+            <RcIconInfoCC className="w-12 h-12 ml-2" viewBox="0 0 14 14" />
+          </TooltipWithMagnetArrow>
+        </div>
+      </div>
 
-                return (
-                  <Tooltip
-                    key={`${token.chain}-${token.id}`}
-                    trigger={['click', 'hover']}
-                    mouseEnterDelay={3}
-                    overlayClassName={clsx('rectangle left-[20px]')}
-                    placement="top"
-                    title={disabledTips}
-                    visible={disabled ? undefined : false}
+      <ul className={clsx('token-list ', { empty: isEmpty })}>
+        {isEmpty
+          ? NoDataUI
+          : displayList.map((_token) => {
+              const token = (_token as any) as TokenItem & {
+                trade_volume_level: 'low' | 'high';
+              };
+              if (itemRender) {
+                return itemRender(token, supportChains);
+              }
+              const chainItem = findChain({ serverId: token.chain });
+              const disabled =
+                !!supportChains?.length &&
+                chainItem &&
+                !supportChains.includes(chainItem.enum);
+
+              return (
+                <Tooltip
+                  key={`${token.chain}-${token.id}`}
+                  trigger={['click', 'hover']}
+                  mouseEnterDelay={3}
+                  overlayClassName={clsx('rectangle left-[20px]')}
+                  placement="top"
+                  title={disabledTips}
+                  visible={disabled ? undefined : false}
+                >
+                  <li
+                    className={clsx(
+                      'token-list__item h-[56px]',
+                      disabled && 'opacity-50'
+                    )}
+                    onClick={() => !disabled && onConfirm(token)}
                   >
-                    <li
-                      className={clsx(
-                        'token-list__item h-[56px]',
-                        disabled && 'opacity-50'
-                      )}
-                      onClick={() => !disabled && onConfirm(token)}
-                    >
-                      <div>
-                        <TokenWithChain
-                          token={token}
-                          width="28px"
-                          height="28px"
-                          hideConer
-                        />
-                        <div className="flex flex-col gap-1">
-                          <span className="symbol text-14 text-r-neutral-title-1 font-medium">
-                            {getTokenSymbol(token)}
-                          </span>
-                          <span className="symbol text-13 font-normal text-r-neutral-foot">
-                            {findChainByServerID(token.chain)?.name || ''}
-                          </span>
-                        </div>
+                    <div>
+                      <TokenWithChain
+                        token={token}
+                        width="28px"
+                        height="28px"
+                        hideConer
+                      />
+                      <div className="flex flex-col gap-1">
+                        <span className="symbol text-14 text-r-neutral-title-1 font-medium">
+                          {getTokenSymbol(token)}
+                        </span>
+                        <span className="symbol text-13 font-normal text-r-neutral-foot">
+                          {findChainByServerID(token.chain)?.name || ''}
+                        </span>
                       </div>
+                    </div>
 
-                      <div className="flex flex-col "></div>
+                    <div className="flex flex-col "></div>
 
-                      <div className="flex flex-col text-right items-end">
+                    <div className="flex flex-col text-right items-end">
+                      <div
+                        className={clsx(
+                          'flex items-center justify-center gap-4',
+                          'py-2 px-8 rounded-full',
+                          'text-13 font-normal',
+                          token.trade_volume_level === 'high'
+                            ? 'bg-r-green-light'
+                            : 'bg-r-orange-light',
+                          token.trade_volume_level === 'high'
+                            ? 'text-r-green-default'
+                            : 'text-r-orange-default'
+                        )}
+                      >
                         <div
                           className={clsx(
-                            'flex items-center justify-center gap-4',
-                            'py-2 px-8 rounded-full',
-                            'text-13 font-normal',
+                            'w-[3px] h-[3px] rounded-full',
                             token.trade_volume_level === 'high'
-                              ? 'bg-r-green-light'
-                              : 'bg-r-orange-light',
-                            token.trade_volume_level === 'high'
-                              ? 'text-r-green-default'
-                              : 'text-r-orange-default'
+                              ? 'bg-r-green-default'
+                              : 'bg-r-orange-default'
                           )}
-                        >
-                          <div
-                            className={clsx(
-                              'w-[3px] h-[3px] rounded-full',
-                              token.trade_volume_level === 'high'
-                                ? 'bg-r-green-default'
-                                : 'bg-r-orange-default'
-                            )}
-                          />
-                          <span>
-                            {token?.trade_volume_level === 'high'
-                              ? t('component.TokenSelector.bridge.high')
-                              : t('component.TokenSelector.bridge.low')}
-                          </span>
-                        </div>
+                        />
+                        <span>
+                          {token?.trade_volume_level === 'high'
+                            ? t('component.TokenSelector.bridge.high')
+                            : t('component.TokenSelector.bridge.low')}
+                        </span>
                       </div>
-                    </li>
-                  </Tooltip>
-                );
-              })}
-        </ul>
-      }
+                    </div>
+                  </li>
+                </Tooltip>
+              );
+            })}
+      </ul>
     </Drawer>
   );
 };

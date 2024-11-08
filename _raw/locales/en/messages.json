@@ -963,6 +963,7 @@
       "Select": "Select",
       "select-chain": "Select Chain",
       "no-quote-found": "No quote found. Please try other token pairs.",
+      "no-quote": "No Quote",
       "title": "Bridge",
       "history": "Bridge history",
       "the-following-bridge-route-are-found": "Found following route",
@@ -2397,7 +2398,7 @@
         "token": "Token",
         "value": "Value",
         "liquidity": "Liquidity",
-        "liquidityTips": "The higher the historical trade volume, the more likely bridge will be successful.",
+        "liquidityTips": "The higher the historical trade volume, the more likely the bridge will succeed.",
         "low": "Low",
         "high": "High"
       },

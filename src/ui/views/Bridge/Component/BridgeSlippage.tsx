@@ -32,13 +32,14 @@ const SlippageItem = styled.div`
   border-radius: 6px;
   overflow: hidden;
 
-  &.input {
+  &.input-wrapper {
     border: 1px solid var(--r-neutral-line, #e0e5ec);
     background: var(--r-neutral-card-1, #fff);
   }
 
   &:hover,
   &.active {
+    color: var(--r-blue-default, #7084ff);
     background: var(--r-blue-light1, #eef1ff);
     border: 1px solid var(--r-blue-default, #7084ff);
   }
@@ -198,7 +199,11 @@ export const BridgeSlippage = memo((props: SlippageProps) => {
           {t('page.swap.slippage-tolerance')}
         </span>
         <span className="font-medium text-r-neutral-title-1 inline-flex items-center">
-          <span className={clsx(!!tips && 'text-r-red-default')}>
+          <span
+            className={clsx(
+              tips ? 'text-r-red-default' : 'text-r-blue-default'
+            )}
+          >
             {displaySlippage}%
           </span>
           {/* <img
@@ -254,14 +259,17 @@ export const BridgeSlippage = memo((props: SlippageProps) => {
               setIsCustomSlippage(true);
             }}
             className={clsx(
-              'input',
+              'input-wrapper',
               'flex-1',
               isCustomSlippage && 'active',
               tips && 'error'
             )}
           >
             <Input
-              className={clsx('input', tips && 'text-r-red-default')}
+              className={clsx(
+                'input bg-transparent',
+                tips && 'text-r-red-default'
+              )}
               bordered={false}
               value={value}
               onChange={onInputChange}
