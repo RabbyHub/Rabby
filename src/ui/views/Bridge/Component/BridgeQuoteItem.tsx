@@ -32,9 +32,7 @@ interface QuoteItemProps extends SelectedBridgeQuote {
   isBestQuote?: boolean;
   bestQuoteUsd: string;
   sortIncludeGasFee: boolean;
-  setSelectedBridgeQuote?: React.Dispatch<
-    React.SetStateAction<SelectedBridgeQuote | undefined>
-  >;
+  setSelectedBridgeQuote?: (quote: SelectedBridgeQuote) => void;
   onlyShow?: boolean;
   loading?: boolean;
   inSufficient?: boolean;

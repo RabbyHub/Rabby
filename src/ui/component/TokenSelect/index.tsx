@@ -73,6 +73,8 @@ export interface TokenSelectProps {
         openTokenModal: () => void;
       }) => React.ReactNode)
     | React.ReactNode;
+  disabledTips?: React.ReactNode;
+  drawerHeight?: string | number;
 }
 
 const defaultExcludeTokens = [];
@@ -90,6 +92,8 @@ const TokenSelect = ({
   loading = false,
   tokenRender,
   useSwapTokenList = false,
+  disabledTips = 'Not supported',
+  drawerHeight,
 }: TokenSelectProps) => {
   const [queryConds, setQueryConds] = useState({
     keyword: '',
@@ -167,7 +171,7 @@ const TokenSelect = ({
     currentAccount?.address,
     queryConds.keyword,
     queryConds.chainServerId,
-    isSwapType ? false : true
+    isSwapType || type === 'bridgeFrom' ? false : true
   );
 
   const availableToken = useMemo(() => {
@@ -227,6 +231,7 @@ const TokenSelect = ({
           : tokenRender}
         {queryConds.chainServerId && (
           <TokenSelector
+            drawerHeight={drawerHeight}
             visible={tokenSelectorVisible}
             list={displayTokenList}
             onConfirm={handleCurrentTokenChange}
@@ -236,7 +241,7 @@ const TokenSelect = ({
             type={type}
             placeholder={placeholder}
             chainId={queryConds.chainServerId}
-            disabledTips={'Not supported'}
+            disabledTips={disabledTips}
             supportChains={SWAP_SUPPORT_CHAINS}
           />
         )}
@@ -299,8 +304,9 @@ const TokenSelect = ({
           type={type}
           placeholder={placeholder}
           chainId={queryConds.chainServerId}
-          disabledTips={'Not supported'}
+          disabledTips={disabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
+          drawerHeight={drawerHeight}
         />
       )}
     </>

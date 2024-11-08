@@ -137,6 +137,7 @@ interface ChainSelectorProps {
   mini?: boolean;
   hideTestnetTab?: boolean;
   excludeChains?: CHAINS_ENUM[];
+  drawerHeight?: number;
 }
 export default function ChainSelectorInForm({
   value,
@@ -151,6 +152,7 @@ export default function ChainSelectorInForm({
   mini,
   hideTestnetTab = false,
   excludeChains,
+  drawerHeight,
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -182,6 +184,7 @@ export default function ChainSelectorInForm({
       />
       {!readonly && (
         <ChainSelectorModal
+          height={drawerHeight}
           excludeChains={excludeChains}
           hideTestnetTab={hideTestnetTab}
           value={value}

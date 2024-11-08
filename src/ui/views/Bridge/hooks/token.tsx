@@ -129,8 +129,6 @@ export const useBridge = () => {
     SelectedBridgeQuote | undefined
   >();
 
-  const [expired, setExpired] = useState(false);
-
   const expiredTimer = useRef<NodeJS.Timeout>();
 
   const inSufficient = useMemo(
@@ -232,32 +230,23 @@ export const useBridge = () => {
 
   const [quoteList, setQuotesList] = useState<SelectedBridgeQuote[]>([]);
 
-  const setSelectedBridgeQuote: React.Dispatch<
-    React.SetStateAction<SelectedBridgeQuote | undefined>
-  > = useCallback((p) => {
-    if (expiredTimer.current) {
+  const setSelectedBridgeQuote = useCallback((quote?: SelectedBridgeQuote) => {
+    if (!quote?.manualClick && expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    setExpired(false);
-    expiredTimer.current = setTimeout(() => {
-      setExpired(true);
-      setRefreshId((e) => e + 1);
-    }, 1000 * 30);
-    setOriSelectedBridgeQuote(p);
+    if (!quote?.manualClick) {
+      expiredTimer.current = setTimeout(() => {
+        setRefreshId((e) => e + 1);
+      }, 1000 * 30);
+    }
+    setOriSelectedBridgeQuote(quote);
   }, []);
 
   useEffect(() => {
     setQuotesList([]);
     setSelectedBridgeQuote(undefined);
+    setRecommendFromToken(undefined);
   }, [fromToken?.id, toToken?.id, fromChain, toChain, amount, inSufficient]);
-
-  const visible = useQuoteVisible();
-
-  // useEffect(() => {
-  //   if (!visible) {
-  //     setQuotesList([]);
-  //   }
-  // }, [visible]);
 
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
@@ -291,8 +280,6 @@ export const useBridge = () => {
         }
         return e?.map((e) => ({ ...e, loading: true }));
       });
-
-      setSelectedBridgeQuote(undefined);
 
       const originData: Omit<BridgeQuote, 'tx'>[] = [];
 
@@ -397,6 +384,8 @@ export const useBridge = () => {
           } catch (error) {
             setRecommendFromToken(undefined);
           }
+
+          setSelectedBridgeQuote(undefined);
         }
 
         stats.report('bridgeQuoteResult', {
@@ -541,8 +530,6 @@ export const useBridge = () => {
   const openQuote = useSetQuoteVisible();
 
   const openQuotesList = useCallback(() => {
-    // setQuotesList([]);
-    // setRefreshId((e) => e + 1);
     openQuote(true);
   }, []);
 
@@ -569,9 +556,14 @@ export const useBridge = () => {
           aggregatorId: sortedList[0]?.aggregator?.id,
         });
 
-        setSelectedBridgeQuote((preItem) =>
-          preItem?.manualClick ? preItem : sortedList[0]
-        );
+        let useQuote = sortedList[0];
+
+        setOriSelectedBridgeQuote((preItem) => {
+          useQuote = preItem?.manualClick ? preItem : sortedList[0];
+          return preItem;
+        });
+
+        setSelectedBridgeQuote(useQuote);
       }
     }
   }, [quoteList, quoteLoading, toToken]);
@@ -579,12 +571,6 @@ export const useBridge = () => {
   if (quotesError) {
     console.error('quotesError', quotesError);
   }
-
-  useEffect(() => {
-    setExpired(false);
-    setSelectedBridgeQuote(undefined);
-    setRecommendFromToken(undefined);
-  }, [fromToken?.id, toToken?.id, fromChain, toChain, amount, inSufficient]);
 
   const showLoss = useMemo(() => {
     if (selectedBridgeQuote) {
@@ -610,8 +596,6 @@ export const useBridge = () => {
     switchToken,
 
     recommendFromToken,
-
-    expired,
 
     inSufficient,
     amount,

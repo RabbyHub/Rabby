@@ -11,7 +11,7 @@ import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 
 const dottedClassName =
-  'h-0 flex-1 border-b-[0.5px] border-dotted border-rabby-neutral-line';
+  'h-0 flex-1 border-b-[1px] border-solid border-rabby-neutral-line';
 
 export const BridgeShowMore = ({
   openQuotesList,
@@ -47,11 +47,11 @@ export const BridgeShowMore = ({
 
   return (
     <div>
-      <div className="flex items-center gap-8 mt-28 mb-8">
+      <div className="flex items-center gap-8 mt-28 mb-8 op">
         <div className={clsx(dottedClassName)} />
         <div
           className={clsx(
-            'flex items-center',
+            'flex items-center opacity-30',
             'cursor-pointer',
             'text-r-neutral-foot text-12'
           )}
@@ -126,7 +126,7 @@ export const BridgeShowMore = ({
                 alt={sourceName}
               />
             )}
-            <span>{sourceName}</span>
+            <span className="text-rabby-blue-default">{sourceName}</span>
           </div>
         </ListItem>
 

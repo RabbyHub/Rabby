@@ -5,7 +5,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Input } from 'antd';
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TokenRender } from '../../Swap/Component/TokenRender';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils';
@@ -17,16 +17,16 @@ import styled from 'styled-components';
 import BridgeToTokenSelect from './BridgeToTokenSelect';
 import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
 import { useSetSettingVisible } from '../hooks';
+import { useRabbySelector } from '@/ui/store';
 
 const StyledInput = styled(Input)`
-  /* height: 46px; */
   color: var(--r-neutral-title1, #192945);
   font-size: 24px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  /* border: 1px solid var(--r-neutral-line, #d3d8e0); */
   background: transparent !important;
+  padding-left: 0;
   & > .ant-input {
     color: var(--r-neutral-title1, #192945);
     font-size: 24px;
@@ -36,27 +36,11 @@ const StyledInput = styled(Input)`
     border-width: 0px !important;
     border-color: transparent;
   }
-  /* &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-    border-width: 1px !important;
-  } */
 
-  /* &:active {
-    border: 1px solid transparent;
-  } */
-  /* &:focus,
-  &:focus-within {
-    border-width: 1px !important;
-    border-color: var(--r-blue-default, #7084ff) !important;
-  }
-  &:hover {
-    border-width: 1px !important;
-    border-color: var(--r-blue-default, #7084ff) !important;
-    box-shadow: none;
-  } */
-
-  &:placeholder-shown {
+  &::placeholder {
     color: var(--r-neutral-foot, #6a7587);
   }
+
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -77,6 +61,7 @@ export const BridgeToken = ({
   valueLoading,
   fromChainId,
   fromTokenId,
+  noQuote,
 }: {
   type?: 'from' | 'to';
   token?: TokenItem;
@@ -87,11 +72,15 @@ export const BridgeToken = ({
   onChangeChain: (chain: CHAINS_ENUM) => void;
   value?: string | number;
   onInputChange?: (v: string) => void;
+
   valueLoading?: boolean;
   fromChainId?: string;
   fromTokenId?: string;
+  noQuote?: boolean;
 }) => {
   const { t } = useTranslation();
+
+  const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
 
   const isFromToken = type === 'from';
 
@@ -99,6 +88,19 @@ export const BridgeToken = ({
   const chainObj = findChainByEnum(chain);
 
   const openFeePopup = useSetSettingVisible();
+
+  const inputRef = useRef<Input>();
+
+  useLayoutEffect(() => {
+    if (type === 'from') {
+      inputRef.current?.focus();
+    }
+  }, []);
+
+  const showNoQuote = useMemo(() => type === 'to' && !!noQuote, [
+    type,
+    noQuote,
+  ]);
 
   const useValue = useMemo(() => {
     if (token && value) {
@@ -144,6 +146,8 @@ export const BridgeToken = ({
           onChange={onChangeChain}
           title={t('page.bridge.select-chain')}
           excludeChains={excludeChains}
+          supportChains={supportedChains}
+          drawerHeight={540}
         />
       </div>
 
@@ -160,14 +164,16 @@ export const BridgeToken = ({
             />
           ) : (
             <StyledInput
-              placeholder="0"
+              placeholder={showNoQuote ? t('page.bridge.no-quote') : '0'}
               value={value}
               onChange={inputChange}
               readOnly={!isFromToken}
+              ref={inputRef as any}
             />
           )}
           {type === 'to' ? (
             <BridgeToTokenSelect
+              drawerHeight={540}
               fromChainId={fromChainId!}
               fromTokenId={fromTokenId!}
               token={token}
@@ -175,17 +181,17 @@ export const BridgeToken = ({
               chainId={chainObj?.serverId}
               type={'to'}
               placeholder={t('page.swap.search-by-name-address')}
-              // excludeTokens={excludeTokens}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
             />
           ) : (
             <TokenSelect
+              drawerHeight={540}
               token={token}
               onTokenChange={onChangeToken}
               chainId={chainObj?.serverId}
               type={'bridgeFrom'}
               placeholder={t('page.swap.search-by-name-address')}
-              // excludeTokens={excludeTokens}
+              disabledTips={t('page.bridge.insufficient-balance')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
             />
           )}

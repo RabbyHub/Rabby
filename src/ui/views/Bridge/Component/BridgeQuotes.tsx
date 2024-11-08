@@ -22,9 +22,7 @@ interface QuotesProps {
   visible: boolean;
   onClose: () => void;
   payAmount: string;
-  setSelectedBridgeQuote: React.Dispatch<
-    React.SetStateAction<SelectedBridgeQuote | undefined>
-  >;
+  setSelectedBridgeQuote: (quote?: SelectedBridgeQuote) => void;
   sortIncludeGasFee: boolean;
 }
 

@@ -19,6 +19,7 @@ import { ReactComponent as RcIconChainFilterClose } from 'ui/assets/chain-select
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { isNil } from 'lodash';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
+import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -42,8 +43,9 @@ export interface TokenSelectorProps {
   type?: 'default' | 'swapFrom' | 'swapTo' | 'bridgeFrom';
   placeholder?: string;
   chainId: string;
-  disabledTips?: string;
+  disabledTips?: React.ReactNode;
   supportChains?: CHAINS_ENUM[] | undefined;
+  drawerHeight?: number | string;
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
@@ -63,6 +65,7 @@ const TokenSelector = ({
   chainId: chainServerId,
   disabledTips,
   supportChains,
+  drawerHeight = '580px',
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -153,6 +156,24 @@ const TokenSelector = ({
     return v.length === 42 && v.toLowerCase().startsWith('0x');
   }, [query]);
 
+  const bridgeFromNoDataTip = useMemo(() => {
+    if (type === 'bridgeFrom') {
+      return (
+        <div className="no-token w-full top-[120px]">
+          <RcIconMatchCC
+            className="w-[32px] h-[32px] text-r-neutral-foot"
+            viewBox="0 0 33 32"
+          />
+
+          <p className="text-r-neutral-foot text-14 mt-8 text-center mb-0">
+            {t('component.TokenSelector.noTokens')}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  }, [type]);
+
   const NoDataUI = useMemo(
     () =>
       isLoading ? (
@@ -163,6 +184,8 @@ const TokenSelector = ({
               <DefaultLoading key={i} type={type} />
             ))}
         </div>
+      ) : type === 'bridgeFrom' ? (
+        <>{bridgeFromNoDataTip}</>
       ) : (
         <div className="no-token w-full">
           <img
@@ -197,7 +220,15 @@ const TokenSelector = ({
           )}
         </div>
       ),
-    [isLoading, isSwapType, t, isSearchAddr, chainServerId]
+    [
+      isLoading,
+      isSwapType,
+      t,
+      isSearchAddr,
+      chainServerId,
+      bridgeFromNoDataTip,
+      type,
+    ]
   );
 
   useEffect(() => {
@@ -241,19 +272,21 @@ const TokenSelector = ({
   const bridgeFromItemRender = (token: TokenItem) => {
     const chainItem = findChain({ serverId: token.chain });
     const disabled =
-      !!supportChains?.length &&
-      chainItem &&
-      !supportChains.includes(chainItem.enum);
+      (!!supportChains?.length &&
+        !!chainItem &&
+        !supportChains.includes(chainItem.enum)) ||
+      new BigNumber(token?.raw_amount_hex_str || token.amount || 0).lte(0);
 
     return (
       <Tooltip
         key={`${token.chain}-${token.id}`}
         trigger={['click', 'hover']}
         mouseEnterDelay={3}
-        overlayClassName={clsx('rectangle left-[20px]')}
+        overlayClassName={clsx('rectangle')}
         placement="top"
         title={disabledTips}
         visible={disabled ? undefined : false}
+        align={{ targetOffset: [0, -30] }}
       >
         <li
           className={clsx(
@@ -299,7 +332,7 @@ const TokenSelector = ({
   return (
     <Drawer
       className="token-selector custom-popup is-support-darkmode"
-      height="580px"
+      height={drawerHeight}
       placement="bottom"
       visible={visible}
       onClose={onCancel}
