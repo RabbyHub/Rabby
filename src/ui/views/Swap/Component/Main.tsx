@@ -292,7 +292,7 @@ export const Main = () => {
                   .toNumber(),
                 slippage: new BigNumber(slippage).div(100).toNumber(),
               },
-              dex_id: activeProvider?.name.replace('API', '') || 'WrapToken',
+              dex_id: activeProvider?.name || 'WrapToken',
             },
           },
           {
@@ -359,7 +359,7 @@ export const Main = () => {
                   .toNumber(),
                 slippage: new BigNumber(slippage).div(100).toNumber(),
               },
-              dex_id: activeProvider?.name.replace('API', '') || 'WrapToken',
+              dex_id: activeProvider?.name || 'WrapToken',
             },
           },
           {
