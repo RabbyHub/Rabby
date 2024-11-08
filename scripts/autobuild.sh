@@ -30,7 +30,7 @@ echo "[pack] built finished";
 cd $project_dir;
 rm -rf $project_dir/tmp/*.zip && mkdir -p $project_dir/tmp/;
 git_utc0_time_linux=$(TZ=UTC0 git show --quiet --date='format-local:%Y-%m-%dT%H:%M:%S+00:00' --format="%cd")
-node $script_dir/fns.js $project_dir/dist $TARGET_FILE $git_utc0_time_linux;
+node $script_dir/pkg-zip.js $project_dir/dist $TARGET_FILE $git_utc0_time_linux;
 
 cd $project_dir;
 
