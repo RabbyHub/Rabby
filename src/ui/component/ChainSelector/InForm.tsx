@@ -138,6 +138,7 @@ interface ChainSelectorProps {
   hideTestnetTab?: boolean;
   excludeChains?: CHAINS_ENUM[];
   drawerHeight?: number;
+  showClosableIcon?: boolean;
 }
 export default function ChainSelectorInForm({
   value,
@@ -153,6 +154,7 @@ export default function ChainSelectorInForm({
   hideTestnetTab = false,
   excludeChains,
   drawerHeight,
+  showClosableIcon,
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -194,6 +196,7 @@ export default function ChainSelectorInForm({
           supportChains={supportChains}
           disabledTips={disabledTips}
           title={title}
+          showClosableIcon={showClosableIcon}
           showRPCStatus
         />
       )}

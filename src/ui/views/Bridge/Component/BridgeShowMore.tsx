@@ -17,7 +17,7 @@ import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 
 const dottedClassName =
-  'h-0 flex-1 border-b-[1px] border-solid border-rabby-neutral-line';
+  'h-0 flex-1 border-b-[1px] border-solid border-rabby-neutral-line opacity-50';
 
 export const BridgeShowMore = ({
   openQuotesList,
@@ -31,6 +31,7 @@ export const BridgeShowMore = ({
   amount,
   toAmount,
   quoteLoading,
+  slippageError,
 }: {
   openQuotesList: () => void;
   sourceName: string;
@@ -44,6 +45,7 @@ export const BridgeShowMore = ({
   amount?: string | number;
   toAmount?: string | number;
   quoteLoading?: boolean;
+  slippageError?: boolean;
 }) => {
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
@@ -54,14 +56,14 @@ export const BridgeShowMore = ({
   );
 
   useEffect(() => {
-    if (!quoteLoading && data?.showLoss) {
+    if ((!quoteLoading && data?.showLoss) || slippageError) {
       setShow(true);
     }
   }, [quoteLoading, data?.showLoss]);
 
   return (
-    <div>
-      <div className="flex items-center gap-8 mt-28 mb-8 op">
+    <div className="mx-16">
+      <div className="flex items-center gap-8 mt-28 mb-8">
         <div className={clsx(dottedClassName)} />
         <div
           className={clsx(
@@ -82,7 +84,7 @@ export const BridgeShowMore = ({
         <div className={clsx(dottedClassName)} />
       </div>
 
-      <div className={clsx('px-16', 'overflow-hidden', !show && 'h-0')}>
+      <div className={clsx('overflow-hidden', !show && 'h-0')}>
         {data?.showLoss && !quoteLoading && (
           <div className="leading-4 mb-12 text-12 text-r-neutral-foot">
             <div className="flex justify-between">
@@ -150,7 +152,9 @@ export const BridgeShowMore = ({
                   alt={sourceName}
                 />
               )}
-              <span className="text-rabby-blue-default">{sourceName}</span>
+              <span className="text-rabby-blue-default font-medium">
+                {sourceName}
+              </span>
             </div>
           )}
         </ListItem>

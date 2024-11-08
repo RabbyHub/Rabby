@@ -71,7 +71,7 @@ export const RabbyFeePopup = ({
       }
       return 493;
     }
-    return 428;
+    return 446;
   }, [type, dexName, feeDexDesc]);
   return (
     <Popup
