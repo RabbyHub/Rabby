@@ -67,7 +67,10 @@ const useToken = (type: 'from' | 'to') => {
 
   const [token, setToken] = useState<TokenItem>();
 
-  const switchChain = useCallback(
+  const switchChain: (
+    changeChain?: CHAINS_ENUM,
+    resetToken?: boolean
+  ) => void = useCallback(
     (changeChain?: CHAINS_ENUM, resetToken = true) => {
       setChain(changeChain);
       if (resetToken) {
@@ -124,6 +127,17 @@ export const useBridge = () => {
   const slippageObj = useBridgeSlippage();
 
   const [recommendFromToken, setRecommendFromToken] = useState<TokenItem>();
+
+  const fillRecommendFromToken = useCallback(() => {
+    if (recommendFromToken) {
+      const targetChain = findChainByServerID(recommendFromToken?.chain);
+      if (targetChain) {
+        switchFromChain(targetChain.enum, false);
+        setFromToken(recommendFromToken);
+        setAmount('');
+      }
+    }
+  }, [recommendFromToken, switchFromChain, setFromToken]);
 
   const [selectedBridgeQuote, setOriSelectedBridgeQuote] = useState<
     SelectedBridgeQuote | undefined
@@ -596,6 +610,7 @@ export const useBridge = () => {
     switchToken,
 
     recommendFromToken,
+    fillRecommendFromToken,
 
     inSufficient,
     amount,

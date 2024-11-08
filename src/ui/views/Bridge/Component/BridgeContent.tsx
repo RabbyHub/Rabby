@@ -70,14 +70,6 @@ const StyledInput = styled(Input)`
   }
 `;
 
-const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
-  const chainItem = findChainByServerID(ctx.chain.serverId);
-
-  if (chainItem?.isTestnet) return i18n.t('page.swap.testnet-is-not-supported');
-
-  return i18n.t('page.swap.not-supported');
-};
-
 export const BridgeContent = () => {
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
@@ -97,6 +89,7 @@ export const BridgeContent = () => {
     handleAmountChange,
 
     recommendFromToken,
+    fillRecommendFromToken,
 
     inSufficient,
 
@@ -444,10 +437,15 @@ export const BridgeContent = () => {
             amount={amount || 0}
             toAmount={selectedBridgeQuote?.to_token_amount}
             openQuotesList={openQuotesList}
+            quoteLoading={quoteLoading}
           />
         )}
         {noQuote && recommendFromToken && (
-          <RecommendFromToken token={recommendFromToken} className="mt-16" />
+          <RecommendFromToken
+            token={recommendFromToken}
+            className="mt-16"
+            onOk={fillRecommendFromToken}
+          />
         )}
       </div>
 
