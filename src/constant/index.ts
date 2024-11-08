@@ -1483,7 +1483,7 @@ export const DEX = {
   [DEX_ENUM.ZEROXAPIV2]: {
     id: DEX_ENUM.ZEROXAPIV2,
     logo: Logo0X,
-    name: '0x_v2',
+    name: '0x',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ZEROXAPIV2],
   },
 };
