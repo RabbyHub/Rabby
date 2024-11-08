@@ -106,6 +106,8 @@ export const BridgeContent = () => {
     slippageState,
     setSlippage,
     setSlippageChanged,
+    isSlippageHigh,
+    isSlippageLow,
   } = useBridge();
 
   const amountAvailable = useMemo(() => Number(amount) > 0, [amount]);
@@ -119,8 +121,11 @@ export const BridgeContent = () => {
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
+    if (selectedBridgeQuote?.shouldApproveToken) {
+      return t('page.bridge.approve-and-bridge');
+    }
     return t('page.bridge.title');
-  }, []);
+  }, [selectedBridgeQuote?.shouldApproveToken]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -438,6 +443,7 @@ export const BridgeContent = () => {
             toAmount={selectedBridgeQuote?.to_token_amount}
             openQuotesList={openQuotesList}
             quoteLoading={quoteLoading}
+            slippageError={isSlippageHigh || isSlippageLow}
           />
         )}
         {noQuote && recommendFromToken && (
@@ -458,7 +464,7 @@ export const BridgeContent = () => {
             <RcIconWarningCC
               viewBox="0 0 16 16"
               className={clsx(
-                'relative top-[3px] self-start origin-center w-16 h-15',
+                'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
                 'text-red-forbidden'
               )}
             />
@@ -466,7 +472,7 @@ export const BridgeContent = () => {
           banner
           message={
             <span
-              className={clsx('text-13 leading-normal', 'text-red-forbidden')}
+              className={clsx('text-13 font-medium', 'text-rabby-red-default')}
             >
               {inSufficient
                 ? t('page.bridge.insufficient-balance')

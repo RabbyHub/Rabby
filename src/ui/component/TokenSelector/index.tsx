@@ -159,7 +159,7 @@ const TokenSelector = ({
   const bridgeFromNoDataTip = useMemo(() => {
     if (type === 'bridgeFrom') {
       return (
-        <div className="no-token w-full top-[120px]">
+        <div className="no-token w-full">
           <RcIconMatchCC
             className="w-[32px] h-[32px] text-r-neutral-foot"
             viewBox="0 0 33 32"
@@ -244,7 +244,7 @@ const TokenSelector = ({
   const Header = React.useMemo(() => {
     if (type === 'bridgeFrom') {
       return (
-        <li className="token-list__header">
+        <li className="token-list__header h-auto mb-8">
           <div>{t('component.TokenSelector.bridge.token')}</div>
           <div />
           <div>{t('component.TokenSelector.bridge.value')}</div>
