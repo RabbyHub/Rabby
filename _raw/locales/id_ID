@@ -111,312 +111,312 @@
         "notOnWhitelist": "Tidak ada di daftar putih"
       },
       "tokenApprove": {
-        "title": "Token Approval",
-        "approveToken": "Approve token",
-        "myBalance": "My balance",
-        "approveTo": "Approve to",
-        "eoaAddress": "EOA address",
-        "trustValueLessThan": "Trust value ≤ {{value}}",
-        "deployTimeLessThan": "Deployed time < {{value}} days",
-        "amountPopupTitle": "Amount",
-        "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
-      },
-      "revokeTokenApprove": {
-        "title": "Revoke Token Approval",
-        "revokeFrom": "Revoke from",
-        "revokeToken": "Revoke token"
-      },
-      "sendNFT": {
-        "title": "Send NFT",
-        "nftNotSupport": "NFT not supported"
-      },
-      "nftApprove": {
-        "title": "NFT Approval",
-        "approveNFT": "Approve NFT",
-        "nftContractTrustValueTip": "Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
-      },
-      "revokeNFTApprove": {
-        "title": "Revoke NFT Approval",
-        "revokeNFT": "Revoke NFT"
-      },
-      "nftCollectionApprove": {
-        "title": "NFT Collection Approval",
-        "approveCollection": "Approve collection"
-      },
-      "revokeNFTCollectionApprove": {
-        "title": "Revoke NFT Collection Approval",
-        "revokeCollection": "Revoke collection"
-      },
-      "deployContract": {
-        "title": "Deploy a Contract",
-        "descriptionTitle": "Description",
-        "description": "You are deploying a smart contract"
-      },
-      "cancelTx": {
-        "title": "Cancel Pending Transaction",
-        "txToBeCanceled": "Transaction to be canceled",
-        "gasPriceAlert": "Set current gas price more than {{value}} Gwei to cancel the pending transaction"
-      },
-      "submitMultisig": {
-        "title": "Submit Multisig Transaction",
-        "multisigAddress": "Multisig address"
-      },
-      "contractCall": {
-        "title": "Contract Call",
-        "operation": "Operation",
-        "operationABIDesc": "Operation is decoded from ABI",
-        "operationCantDecode": "Operation is not decoded",
-        "payNativeToken": "Pay {{symbol}}"
-      },
-      "revokePermit2": {
-        "title": "Revoke Permit2 Token Approval"
-      },
-      "unknownAction": "Unknown Signature Type",
-      "interactContract": "Interact contract",
-      "markAsTrust": "Marked as trusted",
-      "markAsBlock": "Marked as blocked",
-      "interacted": "Interacted before",
-      "neverInteracted": "Never interacted before",
-      "transacted": "Transacted before",
-      "neverTransacted": "Never transacted before",
-      "importedAddress": "Imported address",
-      "fakeTokenAlert": "This is a scam token marked by Rabby",
-      "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
-      "trusted": "Trusted",
-      "blocked": "Blocked",
-      "noMark": "No mark",
-      "markRemoved": "Mark removed",
-      "speedUpTooltip": "This accelerated transaction and the original transaction, only one of which will eventually be completed",
-      "decodedTooltip": "This signature is decoded by Rabby Wallet",
-      "signTransactionOnChain": "Sign {{chain}} Transaction",
-      "viewRaw": "View Raw",
-      "unknownActionType": "Unknown action type",
-      "sigCantDecode": "This signature can't be decoded by Rabby Wallet",
-      "nftCollection": "NFT Collection",
-      "floorPrice": "Floor price",
-      "contractAddress": "Contract address",
-      "protocolTitle": "Protocol",
-      "deployTimeTitle": "Deployed time",
-      "popularity": "Popularity",
-      "contractPopularity": "No.{{0}} on {{1}}",
-      "addressNote": "Address note",
-      "myMarkWithContract": "My mark on {{chainName}} contract",
-      "myMark": "My mark",
-      "collectionTitle": "Collection",
-      "addressTypeTitle": "Address type",
-      "firstOnChain": "First on-chain",
-      "trustValue": "Trust value",
-      "importedDelegatedAddress": "Imported delegated address",
-      "noDelegatedAddress": "No imported delegated address",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
-      "l2GasEstimateTooltip": "The gas estimate for L2 chain does not include the L1 gas fee. The actual fee will be higher than current estimate.",
-      "BroadcastMode": {
-        "instant": {
-          "title": "Instant",
-          "desc": "Transactions will be immediately broadcast to the network"
-        },
-        "lowGas": {
-          "title": "Gas-saving",
-          "desc": "Transactions will be broadcast when network gas is low"
-        },
-        "mev": {
-          "title": "MEV Guarded",
-          "desc": "Transactions will be broadcast to the designated MEV node"
-        },
-        "title": "Broadcast Mode",
-        "tips": {
-          "walletConnect": "Not supported by WalletConnect",
-          "notSupportChain": "Not supported on this chain",
-          "customRPC": "Not supported when using custom RPC",
-          "notSupported": "Not supported"
-        },
-        "lowGasDeadline": {
-          "label": "Timeout",
-          "1h": "1h",
-          "4h": "4h",
-          "24h": "24h"
-        }
-      },
-      "SafeNonceSelector": {
-        "explain": {
-          "contractCall": "Contract Call",
-          "send": "Send Token",
-          "unknown": "Unknown Transaction"
-        },
-        "optionGroup": {
-          "recommendTitle": "Recommended nonce",
-          "replaceTitle": "Replace the transaction in Queue "
-        },
-        "option": {
-          "new": "New Transaction"
-        },
-        "error": {
-          "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
-        }
-      },
-      "coboSafeCreate": {
-        "safeWalletTitle": "Safe{Wallet}",
-        "descriptionTitle": "Description",
-        "title": "Create Cobo Safe"
-      },
-      "coboSafeModificationRole": {
-        "title": "Submit Safe Role Modification",
-        "safeWalletTitle": "Safe{Wallet}",
-        "descriptionTitle": "Description"
-      },
-      "coboSafeModificationDelegatedAddress": {
-        "title": "Submit Delegated Address Modification",
-        "safeWalletTitle": "Safe{Wallet}",
-        "descriptionTitle": "Description"
-      },
-      "coboSafeModificationTokenApproval": {
-        "title": "Submit Token Approval Modification",
-        "safeWalletTitle": "Safe{Wallet}",
-        "descriptionTitle": "Description"
-      },
-      "common": {
-        "description": "Description",
-        "interactContract": "Interact contract",
-        "descTipSafe": "Signature does not cause asset change or verify address ownership",
-        "descTipWarningPrivacy": "Signature may verify address ownership",
-        "descTipWarningAssets": "Signature may cause asset change",
-        "descTipWarningBoth": "Signature may cause asset change and verify address ownership"
-      }
+    "title": "Penyetujuan Token",
+    "approveToken": "Setujui token",
+    "myBalance": "Saldo saya",
+    "approveTo": "Setujui ke",
+    "eoaAddress": "Alamat EOA",
+    "trustValueLessThan": "Nilai kepercayaan ≤ {{value}}",
+    "deployTimeLessThan": "Waktu penyebaran < {{value}} hari",
+    "amountPopupTitle": "Jumlah",
+    "flagByRabby": "Ditandai oleh Rabby",
+    "contractTrustValueTip": "Nilai kepercayaan mengacu pada total token yang disetujui dan terkena dampak kontrak ini. Nilai kepercayaan yang rendah mengindikasikan risiko atau tidak aktif selama 180 hari."
+},
+"revokeTokenApprove": {
+    "title": "Cabut Penyetujuan Token",
+    "revokeFrom": "Cabut dari",
+    "revokeToken": "Cabut token"
+},
+"sendNFT": {
+    "title": "Kirim NFT",
+    "nftNotSupport": "NFT tidak didukung"
+},
+"nftApprove": {
+    "title": "Penyetujuan NFT",
+    "approveNFT": "Setujui NFT",
+    "nftContractTrustValueTip": "Nilai kepercayaan mengacu pada NFT teratas yang disetujui dan terkena dampak kontrak ini. Nilai kepercayaan yang rendah mengindikasikan risiko atau tidak aktif selama 180 hari."
+},
+"revokeNFTApprove": {
+    "title": "Cabut Penyetujuan NFT",
+    "revokeNFT": "Cabut NFT"
+},
+"nftCollectionApprove": {
+    "title": "Penyetujuan Kumpulan NFT",
+    "approveCollection": "Setujui kumpulan"
+},
+"revokeNFTCollectionApprove": {
+    "title": "Cabut Penyetujuan Kumpulan NFT",
+    "revokeCollection": "Cabut kumpulan"
+},
+"deployContract": {
+    "title": "Deploy Kontrak",
+    "descriptionTitle": "Deskripsi",
+    "description": "Anda sedang menyebarkan kontrak pintar"
+},
+"cancelTx": {
+    "title": "Batalkan Transaksi Tertunda",
+    "txToBeCanceled": "Transaksi yang akan dibatalkan",
+    "gasPriceAlert": "Atur harga gas saat ini lebih dari {{value}} Gwei untuk membatalkan transaksi tertunda"
+},
+"submitMultisig": {
+    "title": "Kirim Transaksi Multisig",
+    "multisigAddress": "Alamat multisig"
+},
+"contractCall": {
+    "title": "Panggilan Kontrak",
+    "operation": "Operasi",
+    "operationABIDesc": "Operasi didekode dari ABI",
+    "operationCantDecode": "Operasi tidak dapat didekode",
+    "payNativeToken": "Bayar {{symbol}}"
+},
+"revokePermit2": {
+    "title": "Cabut Penyetujuan Token Permit2"
+},
+"unknownAction": "Tipe Tanda Tangan Tidak Diketahui",
+"interactContract": "Berinteraksi dengan kontrak",
+"markAsTrust": "Ditandai sebagai terpercaya",
+"markAsBlock": "Ditandai sebagai diblokir",
+"interacted": "Pernah berinteraksi",
+"neverInteracted": "Belum pernah berinteraksi",
+"transacted": "Pernah bertransaksi",
+"neverTransacted": "Belum pernah bertransaksi",
+"importedAddress": "Alamat impor",
+"fakeTokenAlert": "Ini adalah token scam yang ditandai oleh Rabby",
+"scamTokenAlert": "Ini berpotensi menjadi token berkualitas rendah dan scam berdasarkan deteksi Rabby",
+"trusted": "Terpercaya",
+"blocked": "Diblokir",
+"noMark": "Tidak ada tanda",
+"markRemoved": "Tanda dihapus",
+"speedUpTooltip": "Transaksi ini dipercepat dan transaksi asli, hanya salah satunya yang akan selesai",
+"decodedTooltip": "Tanda tangan ini didekode oleh Rabby Wallet",
+"signTransactionOnChain": "Tandatangani Transaksi {{chain}}",
+"viewRaw": "Lihat Raw",
+"unknownActionType": "Tipe tindakan tidak diketahui",
+"sigCantDecode": "Tanda tangan ini tidak dapat didekode oleh Rabby Wallet",
+"nftCollection": "Kumpulan NFT",
+"floorPrice": "Harga dasar",
+"contractAddress": "Alamat kontrak",
+"protocolTitle": "Protokol",
+"deployTimeTitle": "Waktu penyebaran",
+"popularity": "Popularitas",
+"contractPopularity": "No.{{0}} di {{1}}",
+"addressNote": "Catatan alamat",
+"myMarkWithContract": "Tanda saya di kontrak {{chainName}}",
+"myMark": "Tanda saya",
+"collectionTitle": "Kumpulan",
+"addressTypeTitle": "Tipe alamat",
+"firstOnChain": "Pertama di rantai",
+"trustValue": "Nilai kepercayaan",
+"importedDelegatedAddress": "Alamat delegasi impor",
+"noDelegatedAddress": "Tidak ada alamat delegasi impor",
+"coboSafeNotPermission": "Alamat delegasi ini tidak memiliki izin untuk memulai transaksi ini",
+"l2GasEstimateTooltip": "Estimasi gas untuk rantai L2 tidak termasuk biaya gas L1. Biaya sebenarnya akan lebih tinggi dari perkiraan saat ini.",
+"BroadcastMode": {
+    "instant": {
+        "title": "Instan",
+        "desc": "Transaksi akan segera disiarkan ke jaringan"
     },
-    "signFooterBar": {
-      "requestFrom": "Permintaan dari",
-      "processRiskAlert": "Please process the alert before signing",
-      "ignoreAll": "Ignore all",
-      "gridPlusConnected": "GridPlus is connected",
-      "gridPlusNotConnected": "GridPlus is not connected",
-      "connectButton": "Connect",
-      "connecting": "Connecting...",
-      "ledgerNotConnected": "Ledger is not connected",
-      "keystoneNotConnected": "Keystone is not connected",
-      "keystoneConnected": "Keystone is connected",
-      "ledgerConnected": "Ledger is connected",
-      "signAndSubmitButton": "Sign and Create",
-      "walletConnect": {
-        "connectedButCantSign": "Connected but unable to sign.",
-        "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",
-        "switchChainAlert": "Please switch to {{chain}} in mobile wallet",
-        "notConnectToMobile": "Not connected to {{brand}}",
-        "connected": "Connected and ready to sign",
-        "howToSwitch": "How to switch",
-        "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
-        "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
-        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet",
+    "lowGas": {
+        "title": "Hemat gas",
+        "desc": "Transaksi akan disiarkan ketika gas jaringan rendah"
+    },
+    "mev": {
+        "title": "MEV Terlindungi",
+        "desc": "Transaksi akan disiarkan ke node MEV yang ditentukan"
+    },
+    "title": "Mode Siaran",
+    "tips": {
+        "walletConnect": "Tidak didukung oleh WalletConnect",
+        "notSupportChain": "Tidak didukung pada rantai ini",
+        "customRPC": "Tidak didukung saat menggunakan RPC kustom",
+        "notSupported": "Tidak didukung"
+    },
+    "lowGasDeadline": {
+        "label": "Timeout",
+        "1h": "1h",
+        "4h": "4h",
+        "24h": "24h"
+    }
+}
+    "SafeNonceSelector": {
+    "explain": {
+        "contractCall": "Panggilan Kontrak",
+        "send": "Kirim Token",
+        "unknown": "Transaksi Tidak Diketahui"
+    },
+    "optionGroup": {
+        "recommendTitle": "Nonce yang Disarankan",
+        "replaceTitle": "Ganti transaksi dalam Antrian"
+    },
+    "option": {
+        "new": "Transaksi Baru"
+    },
+    "error": {
+        "pendingList": "Gagal memuat transaksi tertunda, <1/>Coba Lagi"
+    }
+},
+"coboSafeCreate": {
+    "safeWalletTitle": "Safe{Wallet}",
+    "descriptionTitle": "Deskripsi",
+    "title": "Buat Cobo Safe"
+},
+"coboSafeModificationRole": {
+    "title": "Kirim Modifikasi Peran Safe",
+    "safeWalletTitle": "Safe{Wallet}",
+    "descriptionTitle": "Deskripsi"
+},
+"coboSafeModificationDelegatedAddress": {
+    "title": "Kirim Modifikasi Alamat Delegasi",
+    "safeWalletTitle": "Safe{Wallet}",
+    "descriptionTitle": "Deskripsi"
+},
+"coboSafeModificationTokenApproval": {
+    "title": "Kirim Modifikasi Penyetujuan Token",
+    "safeWalletTitle": "Safe{Wallet}",
+    "descriptionTitle": "Deskripsi"
+},
+"common": {
+    "description": "Deskripsi",
+    "interactContract": "Berinteraksi dengan kontrak",
+    "descTipSafe": "Tanda tangan tidak menyebabkan perubahan aset atau memverifikasi kepemilikan alamat",
+    "descTipWarningPrivacy": "Tanda tangan dapat memverifikasi kepemilikan alamat",
+    "descTipWarningAssets": "Tanda tangan dapat menyebabkan perubahan aset",
+    "descTipWarningBoth": "Tanda tangan dapat menyebabkan perubahan aset dan memverifikasi kepemilikan alamat"
+},
+"signFooterBar": {
+    "requestFrom": "Permintaan dari",
+    "processRiskAlert": "Silakan proses peringatan sebelum menandatangani",
+    "ignoreAll": "abaikan semua",
+    "gridPlusConnected": "GridPlus terhubung",
+    "gridPlusNotConnected": "GridPlus tidak terhubung",
+    "connectButton": "Hubungkan",
+    "connecting": "Menghubungkan...",
+    "ledgerNotConnected": "Ledger tidak terhubung",
+    "keystoneNotConnected": "Keystone tidak terhubung",
+    "keystoneConnected": "Keystone terhubung",
+    "ledgerConnected": "Ledger terhubung",
+    "signAndSubmitButton": "Tandatangani dan Buat",
+    "walletConnect": {
+        "connectedButCantSign": "Terhubung tetapi tidak dapat menandatangani.",
+        "switchToCorrectAddress": "Silakan beralih ke alamat yang benar di dompet seluler",
+        "switchChainAlert": "Silakan beralih ke {{chain}} di dompet seluler",
+        "notConnectToMobile": "Tidak terhubung ke {{brand}}",
+        "connected": "Terhubung dan siap untuk menandatangani",
+        "howToSwitch": "Cara beralih",
+        "wrongAddressAlert": "Anda telah beralih ke alamat yang berbeda di dompet seluler. Silakan beralih ke alamat yang benar di dompet seluler",
+        "connectBeforeSign": "{{0}} tidak terhubung ke Rabby, silakan hubungkan sebelum menandatangani",
+        "chainSwitched": "Anda telah beralih ke rantai yang berbeda di dompet seluler. Silakan beralih ke {{0}} di dompet seluler",
         "latency": "Latency",
-        "requestSuccessToast": "Request successfully sent",
-        "sendingRequest": "Sending signing request",
-        "signOnYourMobileWallet": "Please sign on your mobile wallet.",
-        "requestFailedToSend": "Signing request failed to send"
-      },
-      "beginSigning": "Begin signing process",
-      "addressTip": {
-        "onekey": "OneKey address",
-        "trezor": "Trezor address",
-        "bitbox": "BitBox02 address",
-        "keystone": "Keystone address",
-        "airgap": "AirGap address",
-        "coolwallet": "CoolWallet address",
-        "privateKey": "Private Key address",
-        "seedPhrase": "Seed Phrase address",
-        "watchAddress": "Unable to sign with watch-only address",
-        "safe": "Safe address",
-        "coboSafe": "Cobo Argus Address",
-        "seedPhraseWithPassphrase": "Seed Phrase address (Passphrase)"
-      },
-      "qrcode": {
-        "signWith": "Sign with {{brand}}",
-        "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Fail to create",
-        "sigReceived": "Signature received",
-        "sigCompleted": "Transaction created",
-        "getSig": "Get signature",
-        "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
-        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
-        "unknownQRCode": "Error: We couldn't identify that QR code",
-        "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera"
-      },
-      "keystone": {
-        "signWith": "Switch to {{method}} for signing",
-        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
-        "unsupportedType": "Error: The transaction type is unsupported or unknown.",
-        "siging": "Sending signing request",
-        "txRejected": "Transaction rejected",
-        "shouldRetry": "Some error occurred. Please retry.",
-        "hardwareRejectError": "Hardware rejects signature",
-        "mismatchedWalletError": "Mismatched wallet",
-        "verifyPasswordError": "Signature failure, please try again after unlocking",
-        "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
-      },
-      "ledger": {
-        "resent": "Resent",
-        "signError": "Ledger sign error:",
-        "notConnected": "Your wallet is not connected. Please re-connect.",
-        "siging": "Sending signing request",
-        "txRejected": "Transaction rejected",
-        "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
-        "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
-        "txRejectedByLedger": "Transaction is rejected on your Ledger",
-        "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "submitting": "Signed. Creating transaction",
-        "resubmited": "Resubmited"
-      },
-      "common": {
-        "notSupport": "{{0}} is not supported"
-      },
-      "resend": "Retry",
-      "submitTx": "Submit Transaction",
-      "testnet": "Testnet",
-      "mainnet": "Mainnet",
-      "cancelTransaction": "Cancel Transaction",
-      "detectedMultipleRequestsFromThisDapp": "Detected multiple requests from this Dapp",
-      "cancelCurrentTransaction": "Cancel current transaction",
-      "cancelAll": "Cancel all {{count}} requests from Dapp",
-      "blockDappFromSendingRequests": "Block Dapp from sending requests for 1 min",
-      "cancelConnection": "Cancel connection",
-      "cancelCurrentConnection": "Cancel current connection",
-      "imKeyNotConnected": "imKey is not connected",
-      "imKeyConnected": "imKey is connected"
+        "requestSuccessToast": "Permintaan berhasil dikirim",
+        "sendingRequest": "Mengirim permintaan penandatanganan",
+        "signOnYourMobileWallet": "Silakan tandatangani di dompet seluler Anda.",
+        "requestFailedToSend": "Permintaan penandatanganan gagal dikirim"
     },
-    "signTypedData": {
-      "signTypeDataOnChain": "Sign {{chain}} Typed Data",
-      "safeCantSignText": "This is a Safe address, and it cannot be used to sign text.",
-      "permit": {
-        "title": "Permit Token Approval"
-      },
-      "permit2": {
-        "title": "Permit2 Token Approval",
-        "sigExpireTimeTip": "The duration for this signature to be valid on-chain",
-        "sigExpireTime": "Signature expire time",
-        "approvalExpiretime": "Approval expire time"
-      },
-      "swapTokenOrder": {
-        "title": "Token Order"
-      },
-      "sellNFT": {
-        "title": "NFT Order",
-        "receiveToken": "Receive token",
-        "listNFT": "List NFT",
-        "specificBuyer": "Specific buyer"
-      },
-      "signMultiSig": {
-        "title": "Confirm Transaction"
-      },
-      "createKey": {
-        "title": "Create Key"
-      },
-      "verifyAddress": {
-        "title": "Verify Address"
-      },
-      "buyNFT": {
-        "payToken": "Pay token",
-        "receiveNFT": "Receive NFT",
-        "expireTime": "Expire time",
-        "listOn": "List on"
+    "beginSigning": "Mulai proses penandatanganan",
+    "addressTip": {
+        "onekey": "Alamat OneKey",
+        "trezor": "Alamat Trezor",
+        "bitbox": "Alamat BitBox02",
+        "keystone": "Alamat Keystone",
+        "airgap": "Alamat AirGap",
+        "coolwallet": "Alamat CoolWallet",
+        "privateKey": "Alamat Kunci Pribadi",
+        "seedPhrase": "Alamat Seed Phrase",
+        "watchAddress": "Tidak dapat menandatangani dengan alamat hanya-baca",
+        "safe": "Alamat Safe",
+        "coboSafe": "Alamat Cobo Argus",
+        "seedPhraseWithPassphrase": "Alamat Seed Phrase (Kata Sandi)"
+    },
+    "qrcode": {
+        "signWith": "Tandatangani dengan {{brand}}",
+        "failedToGetExplain": "Gagal mendapatkan penjelasan",
+        "txFailed": "Gagal membuat",
+        "sigReceived": "Tanda tangan diterima",
+        "sigCompleted": "Transaksi dibuat",
+        "getSig": "Dapatkan tanda tangan",
+        "qrcodeDesc": "Pindai dengan {{brand}} Anda untuk menandatangani<br></br>Setelah menandatangani, klik tombol di bawah untuk menerima tanda tangan",
+        "misMatchSignId": "Data transaksi tidak konsisten. Silakan periksa detail transaksi.",
+        "unknownQRCode": "Kesalahan: Kami tidak dapat mengidentifikasi kode QR tersebut",
+        "afterSignDesc": "Setelah menandatangani, letakkan kode QR pada {{brand}} di depan kamera PC Anda"
+    },
+    "keystone": {
+        "signWith": "Beralih ke {{method}} untuk menandatangani",
+        "misMatchSignId": "Data transaksi tidak konsisten. Silakan periksa detail transaksi.",
+        "unsupportedType": "Kesalahan: Tipe transaksi tidak didukung atau tidak dikenal.",
+        "siging": "Mengirim permintaan penandatanganan",
+        "txRejected": "Transaksi ditolak",
+        "shouldRetry": "Terjadi beberapa kesalahan. Silakan coba lagi.",
+        "hardwareRejectError": "Perangkat keras menolak tanda tangan",
+        "mismatchedWalletError": "Dompet tidak cocok",
+        "verifyPasswordError": "Kegagalan tanda tangan, silakan coba lagi setelah membuka kunci",
+        "shouldOpenKeystoneHomePageError": "Silakan buka halaman beranda Keystone"
+    },
+    "ledger": {
+        "resent": "Kirim ulang",
+        "signError": "Kesalahan tanda tangan Ledger:",
+        "notConnected": "Dompet Anda tidak terhubung. Silakan hubungkan kembali.",
+        "siging": "Mengirim permintaan penandatanganan",
+        "txRejected": "Transaksi ditolak",
+        "unlockAlert": "Silakan colokkan dan buka kunci Ledger Anda, buka Ethereum di dalamnya",
+        "updateFirmwareAlert": "Silakan perbarui firmware dan Aplikasi Ethereum di Ledger Anda",
+        "txRejectedByLedger": "Transaksi ditolak di Ledger Anda",
+        "blindSigTutorial": "Tutorial Tanda Tangan Buta dari Ledger",
+        "submitting": "Ditandatangani. Membuat transaksi",
+        "resubmited": "Dikirim ulang"
+"common": {
+    "notSupport": "{{0}} tidak didukung"
+},
+	"resend": "Coba Lagi",
+	"submitTx": "Kirim Transaksi",
+	"testnet": "Testnet",
+	"mainnet": "Mainnet",
+	"cancelTransaction": "Batalkan Transaksi",
+	"detectedMultipleRequestsFromThisDapp": "Terdeteksi beberapa permintaan dari Dapp ini",
+	"cancelCurrentTransaction": "Batalkan transaksi saat ini",
+	"cancelAll": "Batalkan semua {{count}} permintaan dari Dapp",
+	"blockDappFromSendingRequests": "Blokir Dapp dari mengirim permintaan selama 1 menit",
+	"cancelConnection": "Batalkan koneksi",
+	"cancelCurrentConnection": "Batalkan koneksi saat ini",
+	"imKeyNotConnected": "imKey tidak terhubung",
+	"imKeyConnected": "imKey terhubung"
+    },
+   "signTypedData": {
+    "signTypeDataOnChain": "Tandatangani {{chain}} Typed Data",
+    "safeCantSignText": "Ini adalah alamat Safe, dan tidak dapat digunakan untuk menandatangani teks.",
+    "permit": {
+        "title": "Izin Penyetujuan Token"
+    },
+    "permit2": {
+        "title": "Izin Penyetujuan Token Permit2",
+        "sigExpireTimeTip": "Durasi tanda tangan ini berlaku di rantai",
+        "sigExpireTime": "Waktu kedaluwarsa tanda tangan",
+        "approvalExpiretime": "Waktu kedaluwarsa persetujuan"
+    },
+    "swapTokenOrder": {
+        "title": "Urutan Token"
+    },
+    "sellNFT": {
+        "title": "Pesanan NFT",
+        "receiveToken": "Terima token",
+        "listNFT": "Daftar NFT",
+        "specificBuyer": "Pembeli khusus"
+    },
+    "signMultiSig": {
+        "title": "Konfirmasi Transaksi"
+    },
+    "createKey": {
+        "title": "Buat Kunci"
+    },
+    "verifyAddress": {
+        "title": "Verifikasi Alamat"
+    },
+    "buyNFT": {
+        "payToken": "Bayar token",
+        "receiveNFT": "Terima NFT",
+        "expireTime": "Waktu kedaluwarsa",
+        "listOn": "Daftar di"
+    }
+}
       },
       "contractCall": {
         "operationDecoded": "Operation is decoded from message"
