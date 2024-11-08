@@ -72,7 +72,7 @@ async function createConsistentZip(
   
   for (const item of allItems) {
     const itemPath = path.join(srcDir, item);
-    const itemZipPath = path.join('dist/', item);
+    const itemZipPath = path.join('./', item);
 
     const stat = fs.statSync(itemPath);
 
