@@ -22,6 +22,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   const { onChainChange } = props;
   const wallet = useWallet();
   const { t } = useTranslation();
+  const [windowId, setWindowId] = useState<number>();
   const [site, setSite] = useState<ConnectedSite | null>(null);
   const { state } = useLocation<{
     trigger?: string;
@@ -37,12 +38,21 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     trigger === 'current-connection' && showChainsModal
   );
 
+  const setSiteFromTab = useCallback(
+    async (tab: { url?: string; id?: number; windowId?: number }) => {
+      setWindowId(tab.windowId);
+
+      if (!tab.id || !tab.url) return;
+      const domain = getOriginFromUrl(tab.url);
+      const current = await wallet.getCurrentSite(tab.id, domain);
+      setSite(current);
+    },
+    []
+  );
+
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
-    if (!tab.id || !tab.url) return;
-    const domain = getOriginFromUrl(tab.url);
-    const current = await wallet.getCurrentSite(tab.id, domain);
-    setSite(current);
+    setSiteFromTab(tab);
   }, []);
 
   const handleRemove = async (origin: string) => {
@@ -79,6 +89,32 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   useEffect(() => {
     getCurrentSite();
   }, []);
+
+  useEffect(() => {
+    if (!windowId) return;
+
+    const handleTabUpdate = (message: {
+      type: string;
+      tab: chrome.tabs.Tab;
+    }) => {
+      if (message.type === 'TAB_UPDATED' && message.tab.windowId === windowId) {
+        setSiteFromTab(message.tab);
+      }
+    };
+
+    // Listen for messages from the background script
+    chrome.runtime.onMessage.addListener(handleTabUpdate);
+
+    // TODO: implement event handler to detect when the dApp has connected to update UI
+    setInterval(() => {
+      getCurrentSite();
+    }, 5000);
+
+    // Clean up the listener on component unmount
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleTabUpdate);
+    };
+  }, [windowId]);
 
   const Content = site && (
     <div className="site mr-[18px]">

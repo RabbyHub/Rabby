@@ -213,7 +213,7 @@ const TokenSelector = ({
   return (
     <Drawer
       className="token-selector custom-popup is-support-darkmode"
-      height="580px"
+      height="75%"
       placement="bottom"
       visible={visible}
       onClose={onCancel}

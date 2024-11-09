@@ -170,7 +170,7 @@ const AccountSelectDrawer = ({
 
   return (
     <Drawer
-      height={440}
+      height="60%"
       className="account-select is-support-darkmode"
       visible={visible}
       placement="bottom"
