@@ -104,19 +104,25 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       try {
         setLoading(true);
 
-        if (type !== setting.type) {
+        if (setting.type && type !== setting.type) {
           /**
            * This code is written to be consistent with the behavior of importing wallets via QR Code.
            */
           await removeAddressAndForgetDevice(false);
         }
 
-        await wallet.requestKeyring(
-          KEYSTONE_TYPE,
-          'getAddressesViaUSB',
-          keyringId,
-          type
-        );
+        try {
+          await wallet.requestKeyring(
+            KEYSTONE_TYPE,
+            'getAddressesViaUSB',
+            keyringId,
+            type
+          );
+        } catch (e) {
+          // ignore
+          console.error(e);
+        }
+
         await getCurrentAccounts();
         setLoading(false);
       } catch (error) {

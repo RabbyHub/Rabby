@@ -59,16 +59,16 @@ export const RevokeActionLedgerButton: React.FC<{
       }
     };
 
-    eventBus.addEventListener(EVENTS.LEDGER.REJECTED, listener);
+    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
 
     return () => {
-      eventBus.removeEventListener(EVENTS.LEDGER.REJECTED, listener);
+      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
     };
   }, [task.addRevokeTask]);
 
   React.useEffect(() => {
     if (task.status === 'active' && status === 'DISCONNECTED') {
-      eventBus.emit(EVENTS.LEDGER.REJECTED, 'DISCONNECTED');
+      eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
     }
   }, [task.status, status]);
 

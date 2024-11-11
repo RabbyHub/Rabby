@@ -1480,6 +1480,12 @@ export const DEX = {
     name: 'Odos',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ODOS],
   },
+  [DEX_ENUM.ZEROXAPIV2]: {
+    id: DEX_ENUM.ZEROXAPIV2,
+    logo: Logo0X,
+    name: '0x',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ZEROXAPIV2],
+  },
 };
 
 export const DEX_WITH_WRAP = {
