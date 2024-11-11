@@ -601,7 +601,15 @@ export const useBridge = () => {
     return false;
   }, [fromToken, toToken, amount, selectedBridgeQuote]);
 
+  const clearExpiredTimer = useCallback(() => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+    }
+  }, []);
+
   return {
+    clearExpiredTimer,
+
     fromChain,
     fromToken,
     setFromToken,
