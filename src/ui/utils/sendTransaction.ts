@@ -458,41 +458,32 @@ export const sendTransaction = async ({
   // submit tx
   let hash = '';
   try {
-    hash = await Promise.race([
-      wallet.ethSendTransaction({
-        data: {
-          $ctx: {
-            ga,
-          },
-          params: [transaction],
+    hash = await wallet.ethSendTransaction({
+      data: {
+        $ctx: {
+          ga,
         },
-        session: INTERNAL_REQUEST_SESSION,
-        approvalRes: {
-          ...transaction,
-          signingTxId,
-          logId: logId,
-          lowGasDeadline,
-          isGasLess,
-          isGasAccount: autoUseGasAccount ? canUseGasAccount : isGasAccount,
-          pushType,
-        },
-        pushed: false,
-        result: undefined,
-      }),
-      new Promise((_, reject) => {
-        eventBus.once(EVENTS.LEDGER.REJECTED, async (data) => {
-          if (signingTxId != null) {
-            wallet.removeSigningTx(signingTxId);
-          }
-          reject(new Error(data));
-        });
-      }),
-    ]);
+        params: [transaction],
+      },
+      session: INTERNAL_REQUEST_SESSION,
+      approvalRes: {
+        ...transaction,
+        signingTxId,
+        logId: logId,
+        lowGasDeadline,
+        isGasLess,
+        isGasAccount: autoUseGasAccount ? canUseGasAccount : isGasAccount,
+        pushType,
+      },
+      pushed: false,
+      result: undefined,
+    });
     await handleSendAfter();
   } catch (e) {
     await handleSendAfter();
     const err = new Error(e.message);
     err.name = FailedCode.SubmitTxFailed;
+    eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, e.message);
     throw err;
   }
 

@@ -137,7 +137,6 @@ const BridgeToTokenSelect = ({
       const list = await wallet.openapi.getBridgeToTokenList({
         from_chain_id: fromChainId,
         from_token_id: fromTokenId,
-        // @ts-expect-error to_chain_id
         to_chain_id: chainId,
         q: queryConds.keyword,
       });

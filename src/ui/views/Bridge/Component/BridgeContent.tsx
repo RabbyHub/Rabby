@@ -67,6 +67,8 @@ export const BridgeContent = () => {
     isCustomSlippage,
     setAutoSlippage,
     setIsCustomSlippage,
+
+    clearExpiredTimer,
   } = useBridge();
 
   const amountAvailable = useMemo(() => Number(amount) > 0, [amount]);
@@ -305,6 +307,7 @@ export const BridgeContent = () => {
     ) {
       await runBuildSwapTxs();
       setIsShowSign(true);
+      clearExpiredTimer();
     } else {
       gotoBridge();
     }
@@ -528,12 +531,14 @@ export const BridgeContent = () => {
         txs={txs}
         onClose={() => {
           setIsShowSign(false);
+          refresh((e) => e + 1);
           setTimeout(() => {
             mutateTxs([]);
           }, 500);
         }}
         onReject={() => {
           setIsShowSign(false);
+          refresh((e) => e + 1);
           mutateTxs([]);
         }}
         onResolve={() => {

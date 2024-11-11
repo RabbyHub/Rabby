@@ -90,13 +90,19 @@ export const BridgeToken = ({
 
   const openFeePopup = useSetSettingVisible();
 
+  const isMaxRef = useRef(false);
+
   const inputRef = useRef<Input>();
 
   useLayoutEffect(() => {
     if (isFromToken) {
-      if (document?.activeElement !== inputRef.current?.input) {
+      if (
+        document?.activeElement !== inputRef.current?.input &&
+        !isMaxRef.current
+      ) {
         inputRef.current?.focus();
       }
+      isMaxRef.current = false;
     }
   }, [value]);
 
@@ -120,6 +126,7 @@ export const BridgeToken = ({
 
   const handleMax = React.useCallback(() => {
     if (token) {
+      isMaxRef.current = true;
       onInputChange?.(tokenAmountBn(token)?.toString(10));
     }
   }, [token?.raw_amount_hex_str, onInputChange]);

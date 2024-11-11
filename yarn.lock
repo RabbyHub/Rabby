@@ -4781,10 +4781,10 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.4.tgz#c82e7c8b538b7dfd94506c4f89f78aca7ca880ef"
   integrity sha512-6ttnlpGHcO2v/qyYo8epBbSutfS9OZXfXr9mfapuveoBvzqUwvE6ej3bsmdtc+qFhFeH7HeiwASpY6xaTM4E1w==
 
-"@rabby-wallet/rabby-api@0.8.4-beta.0":
-  version "0.8.4-beta.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.8.4-beta.0.tgz#1ae4418a79a6e9d3b50305f50d8951ae0a82e0cb"
-  integrity sha512-XsLXk2rtacIG4fh5NUa3CYT3oYvu9V9+56P+YdgsxBZGMpKQL+NJJ2Bq8oN7gLoz1g13FtRAWDHjHuR9DOiuSw==
+"@rabby-wallet/rabby-api@0.8.4":
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.8.4.tgz#ef1979eea94eb5fe4e07fe123444a7213178ce15"
+  integrity sha512-pN6fL6YHhmW7MTmtJEftfvkljYdgcEtJKk2hX2uBfHJQVRXU+jiGOPhSHPE1yfKV4LNwptdV1jtBv3KaYyKa8Q==
   dependencies:
     "@rabby-wallet/rabby-sign" "0.4.0"
     axios "^0.27.2"
@@ -4808,10 +4808,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@0.0.42-beta.1":
-  version "0.0.42-beta.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.42-beta.1.tgz#1a03c5087b8599d0b28b8d2d1fefd649e0c04ac8"
-  integrity sha512-hJc/eJe0+/8uYCRTTjXmaPG/KsHHM60PE8ynNM0tZuPxjWKcv/JZ/XC78YcYA3ZSAxqL8ZTnNi8NKoObA3r1rg==
+"@rabby-wallet/rabby-swap@0.0.42":
+  version "0.0.42"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.42.tgz#b0fc3c156874e0566df94c892752d01f0e1df1fb"
+  integrity sha512-k1yhqs+UROMCBseQBrirZ/qwa0iEC7wozDmeOTSJQEKdEXSifhL0W4HLoL1Zh2mZQytv3b86TN8TvoI7Yboh0Q==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
