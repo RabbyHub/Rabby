@@ -375,8 +375,6 @@ export const useAccountInfo = (
   useEffect(() => {
     if (isLedger || isGridPlus || isKeystone || isTrezor) {
       fetAccountInfo();
-    } else if (isOneKey) {
-      fetchTrezorLikeAccount();
     } else if (isMnemonics) {
       fetchMnemonicsAccount();
     }

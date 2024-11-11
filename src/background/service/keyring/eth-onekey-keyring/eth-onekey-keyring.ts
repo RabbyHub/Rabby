@@ -22,8 +22,12 @@ interface OneKeySessionState {
   passphraseState: string;
   deviceId: string;
   connectId: string;
-  publicKey: string;
-  chainCode: string;
+  hdkMap: {
+    [key: string]: {
+      publicKey: string;
+      chainCode: string;
+    };
+  };
 }
 
 export enum LedgerHDPathType {
@@ -63,11 +67,28 @@ function isOldStyleEthereumjsTx(tx) {
   return typeof tx.getChainId === 'function';
 }
 
+const HD_PATH_BASE = {
+  [LedgerHDPathType.BIP44]: "m/44'/60'/0'/0",
+  [LedgerHDPathType.Legacy]: "m/44'/60'/0'",
+  [LedgerHDPathType.LedgerLive]: "m/44'/60'/0'/0/0",
+};
+
+const ALLOWED_HD_PATHS = {
+  [HD_PATH_BASE.BIP44]: true,
+  [HD_PATH_BASE.Legacy]: true,
+  [HD_PATH_BASE.LedgerLive]: true,
+};
+
+const HD_PATH_TYPE = {
+  [HD_PATH_BASE['Legacy']]: LedgerHDPathType.Legacy,
+  [HD_PATH_BASE['BIP44']]: LedgerHDPathType.BIP44,
+  [HD_PATH_BASE['LedgerLive']]: LedgerHDPathType.LedgerLive,
+};
+
 class OneKeyKeyring extends EventEmitter {
   static type = keyringType;
   type = keyringType;
   accounts: string[] = [];
-  hdk = new HDKey();
   page = 0;
   perPage = 5;
   unlockedAccount = 0;
@@ -77,6 +98,7 @@ class OneKeyKeyring extends EventEmitter {
   connectId: string | null = null;
   passphraseState: string | undefined = undefined;
   accountDetails: Record<string, AccountDetail>;
+  hdkMap: Map<string, HDKey> = new Map();
 
   bridge!: OneKeyBridgeInterface;
 
@@ -109,8 +131,12 @@ class OneKeyKeyring extends EventEmitter {
         this.passphraseState = state.passphraseState;
         this.deviceId = state.deviceId;
         this.connectId = state.connectId;
-        this.hdk.publicKey = Buffer.from(state.publicKey, 'hex');
-        this.hdk.chainCode = Buffer.from(state.chainCode, 'hex');
+        for (const key in state.hdkMap) {
+          const hdk = new HDKey();
+          hdk.publicKey = Buffer.from(state.hdkMap[key].publicKey, 'hex');
+          hdk.chainCode = Buffer.from(state.hdkMap[key].chainCode, 'hex');
+          this.hdkMap.set(key, hdk);
+        }
       }
     }
   }
@@ -128,7 +154,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   deserialize(opts: any = {}): Promise<void> {
-    this.hdPath = opts.hdPath || hdPathString;
+    this.hdPath = opts.hdPath || HD_PATH_BASE.BIP44;
     this.accounts = opts.accounts || [];
     this.page = opts.page || 0;
     this.perPage = 5;
@@ -137,12 +163,51 @@ class OneKeyKeyring extends EventEmitter {
     return Promise.resolve();
   }
 
-  isUnlocked(): boolean {
-    return Boolean(this.hdk && this.hdk.publicKey);
+  setHdPath(hdPath) {
+    if (!ALLOWED_HD_PATHS[hdPath]) {
+      throw new Error(
+        `The setHdPath method does not support setting HD Path to ${hdPath}`
+      );
+    }
+
+    // Reset HDKey if the path changes
+    if (this.hdPath !== hdPath) {
+      this.hdkMap = new Map();
+      this.page = 0;
+      this.perPage = 5;
+      this.unlockedAccount = 0;
+    }
+    this.hdPath = hdPath;
+  }
+
+  isUnlocked(start?: number, len = 1): boolean {
+    if (!this.hdkMap) {
+      return false;
+    }
+
+    if (this.hdPath !== HD_PATH_BASE.LedgerLive) {
+      return !!this.hdkMap.get(this.hdPath);
+    }
+
+    if (start === null || start === undefined) {
+      return !!this.hdkMap.size;
+    }
+
+    for (let i = start; i < start + len; i++) {
+      const path = this._getPathForIndex(i);
+      if (!this.hdkMap.get(path)?.publicKey) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   cleanUp() {
-    this.hdk = new HDKey();
+    if (!this.hdkMap.size) {
+      return;
+    }
+    this.hdkMap = new Map();
   }
 
   resend() {
@@ -153,11 +218,22 @@ class OneKeyKeyring extends EventEmitter {
     this.signHelper.resetResend();
   }
 
-  unlock(): Promise<string> {
+  unlock(start?: number, len?: number): Promise<string> {
     // if (this.isUnlocked()) {
     //   return Promise.resolve('already unlocked');
     // }
     return new Promise((resolve, reject) => {
+      const hdPaths: string[] = [];
+      hdPaths.push(this.hdPath);
+      if (
+        typeof start === 'number' &&
+        typeof len === 'number' &&
+        this.hdPath === HD_PATH_BASE.LedgerLive
+      ) {
+        for (let i = start; i < start + len; i++) {
+          hdPaths.push(this._getPathForIndex(i));
+        }
+      }
       this.bridge
         .searchDevices()
         .then(async (result) => {
@@ -193,29 +269,37 @@ class OneKeyKeyring extends EventEmitter {
               reject('getPassphraseState failed');
               return;
             }
+            const bundle = hdPaths.map((path) => ({
+              path,
+              chainId: 1,
+              showOnOneKey: false,
+            }));
             this.passphraseState = passphraseState.payload;
             this.bridge
               .evmGetPublicKey(connectId, deviceId, {
-                showOnOneKey: false,
-                chainId: 1,
-                path: hdPathString,
                 passphraseState: passphraseState.payload,
+                bundle,
               })
               .then(async (res) => {
                 if (res.success) {
-                  this.hdk.publicKey = Buffer.from(
-                    res.payload.publicKey,
-                    'hex'
-                  );
-                  this.hdk.chainCode = Buffer.from(
-                    res.payload.node.chain_code,
-                    'hex'
-                  );
+                  res.payload.forEach((item) => {
+                    console.log('item', item);
+                    const hdk = new HDKey();
+                    hdk.publicKey = Buffer.from(item.publicKey, 'hex');
+                    hdk.chainCode = Buffer.from(item.node.chain_code, 'hex');
+                    this.hdkMap.set(item.path, hdk);
+                  });
                   if (isManifestV3) {
+                    const hdkObject = {};
+                    for (const [key, value] of this.hdkMap.entries()) {
+                      hdkObject[key] = {
+                        publicKey: ethUtil.bufferToHex(value.publicKey),
+                        chainCode: ethUtil.bufferToHex(value.chainCode),
+                      };
+                    }
                     const sessionState: OneKeySessionState = {
                       passphraseState: passphraseState.payload,
-                      publicKey: res.payload.publicKey,
-                      chainCode: res.payload.node.chain_code,
+                      hdkMap: hdkObject,
                       deviceId,
                       connectId,
                     };
@@ -242,7 +326,7 @@ class OneKeyKeyring extends EventEmitter {
 
   addAccounts(n = 1): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.unlock()
+      this.unlock(this.unlockedAccount, n)
         .then((_) => {
           const from = this.unlockedAccount;
           const to = from + n;
@@ -252,8 +336,8 @@ class OneKeyKeyring extends EventEmitter {
             if (!this.accounts.includes(address)) {
               this.accounts.push(address);
               this.accountDetails[ethUtil.toChecksumAddress(address)] = {
-                hdPath: this._pathFromAddress(address),
-                hdPathType: LedgerHDPathType.BIP44,
+                hdPath: this._getPathForIndex(i),
+                hdPathType: this.getCurrentUsedHDPathType(),
                 hdPathBasePublicKey: this.getPathBasePublicKey(),
                 index: i,
               };
@@ -282,7 +366,7 @@ class OneKeyKeyring extends EventEmitter {
   }
   getAddresses(start: number, end: number): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.unlock()
+      this.unlock(start, end - start + 1)
         .then((_) => {
           const from = start;
           const to = end;
@@ -447,7 +531,7 @@ class OneKeyKeyring extends EventEmitter {
     }
     return this.bridge
       .evmSignTransaction(this.connectId!, this.deviceId!, {
-        path: this._pathFromAddress(address),
+        path: await this.getHdPath(address),
         passphraseState: this.passphraseState,
         transaction,
       })
@@ -484,10 +568,10 @@ class OneKeyKeyring extends EventEmitter {
         this.unlock()
           .then((status) => {
             setTimeout(
-              (_) => {
+              async (_) => {
                 this.bridge
                   .evmSignMessage(this.connectId!, this.deviceId!, {
-                    path: this._pathFromAddress(withAccount),
+                    path: await this.getHdPath(withAccount),
                     messageHex: ethUtil.stripHexPrefix(message),
                     passphraseState: this.passphraseState,
                   })
@@ -580,11 +664,11 @@ class OneKeyKeyring extends EventEmitter {
         this.unlock()
           .then((status) => {
             setTimeout(
-              (_) => {
+              async (_) => {
                 try {
                   this.bridge
                     .evmSignTypedData(this.connectId!, this.deviceId!, {
-                      path: this._pathFromAddress(address),
+                      path: await this.getHdPath(address),
                       data: typedData,
                       passphraseState: this.passphraseState,
                       metamaskV4Compat: isV4,
@@ -666,7 +750,7 @@ class OneKeyKeyring extends EventEmitter {
 
   forgetDevice(): void {
     this.accounts = [];
-    this.hdk = new HDKey();
+    this.hdkMap = new Map();
     this.page = 0;
     this.unlockedAccount = 0;
     this.paths = {};
@@ -680,7 +764,15 @@ class OneKeyKeyring extends EventEmitter {
 
   // eslint-disable-next-line no-shadow
   _addressFromIndex(pathBase: string, i: number): string {
-    const dkey = this.hdk.derive(`${pathBase}/${i}`);
+    let dkey: HDKey;
+    if (this.hdPath === HD_PATH_BASE.LedgerLive) {
+      const path = this._getPathForIndex(i);
+      dkey = this.hdkMap.get(path);
+      console.log('dkey', dkey);
+    } else {
+      const hdk = this.hdkMap.get(this.hdPath);
+      dkey = hdk.derive(`${pathBase}/${i}`);
+    }
     const address = ethUtil
       .publicToAddress(dkey.publicKey, true)
       .toString('hex');
@@ -713,9 +805,10 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   async getCurrentAccounts() {
-    await this.unlock();
+    await this.unlock(0, 51);
     const addresses = await this.getAccounts();
     const currentPublicKey = this.getPathBasePublicKey();
+
     const accounts: Account[] = [];
 
     for (let i = 0; i < addresses.length; i++) {
@@ -724,18 +817,35 @@ class OneKeyKeyring extends EventEmitter {
 
       const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
 
-      if (detail?.hdPathBasePublicKey !== currentPublicKey) {
+      if (detail?.hdPathBasePublicKey === currentPublicKey) {
+        try {
+          const account = {
+            address,
+            index: this.indexFromAddress(address) + 1,
+          };
+          accounts.push(account);
+        } catch (e) {
+          console.log('address not found', address);
+        }
         continue;
       }
 
-      try {
-        const account = {
-          address,
-          index: this.indexFromAddress(address) + 1,
-        };
-        accounts.push(account);
-      } catch (e) {
-        console.log('address not found', address);
+      // Live and BIP44 first account is the same
+      // we need to check the first account when the path type is LedgerLive or BIP44
+      const hdPathType = this.getCurrentUsedHDPathType();
+      if (
+        hdPathType !== LedgerHDPathType.Legacy &&
+        (detail.hdPathType === LedgerHDPathType.LedgerLive ||
+          detail.hdPathType === LedgerHDPathType.BIP44)
+      ) {
+        const info = this.getAccountInfo(address);
+        if (info?.index === 1) {
+          const firstAddress = this._addressFromIndex(pathBase, 0);
+
+          if (isSameAddress(firstAddress, address)) {
+            accounts.push(info);
+          }
+        }
       }
     }
 
@@ -743,7 +853,14 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   private getPathBasePublicKey() {
-    return this.hdk.publicKey.toString('hex');
+    let hdk: HDKey;
+    if (this.hdPath === HD_PATH_BASE.LedgerLive) {
+      const path = this._getPathForIndex(0);
+      hdk = this.hdkMap.get(path);
+    } else {
+      hdk = this.hdkMap.get(this.hdPath);
+    }
+    return hdk.publicKey.toString('hex');
   }
 
   private async _fixAccountDetail(address: string) {
@@ -776,6 +893,65 @@ class OneKeyKeyring extends EventEmitter {
       hdPathType: LedgerHDPathType.BIP44,
       hdPathBasePublicKey: this.getPathBasePublicKey(),
     };
+  }
+
+  private getHDPathBase(hdPathType: HDPathType) {
+    return HD_PATH_BASE[hdPathType];
+  }
+
+  async setHDPathType(hdPathType: HDPathType) {
+    const hdPath = this.getHDPathBase(hdPathType);
+    this.setHdPath(hdPath);
+  }
+
+  getCurrentUsedHDPathType() {
+    return HD_PATH_TYPE[this.hdPath];
+  }
+
+  getAccountInfo(address: string) {
+    const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+    if (detail) {
+      const { hdPath, hdPathType, hdPathBasePublicKey } = detail;
+      return {
+        address,
+        index: this.indexFromAddress(address) + 1,
+        balance: null,
+        hdPathType,
+        hdPathBasePublicKey,
+      };
+    }
+  }
+
+  async getHdPath(address: string) {
+    const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+    if (detail) {
+      return detail.hdPath;
+    }
+
+    const path = this._getPathForIndex(this.paths[address]);
+
+    if (path) {
+      return path;
+    }
+
+    // old accounts not stored in paths and only support bip44
+    this.setHdPath(HD_PATH_BASE.BIP44);
+    await this.unlock();
+    return `${this.hdPath}/${this.indexFromAddress(address)}`;
+  }
+
+  _isLedgerLiveHdPath() {
+    return this.hdPath === "m/44'/60'/0'/0/0";
+  }
+
+  _getPathForIndex(index: number) {
+    if (index === undefined || index === null) {
+      return '';
+    }
+    // Check if the path is BIP 44 (Ledger Live)
+    return this._isLedgerLiveHdPath()
+      ? `m/44'/60'/${index}'/0/0`
+      : `${this.hdPath}/${index}`;
   }
 }
 

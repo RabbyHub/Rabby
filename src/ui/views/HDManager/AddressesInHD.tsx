@@ -1,6 +1,6 @@
 import { useWallet } from '@/ui/utils';
 import { message } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
@@ -28,9 +28,7 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
   const dispatch = useRabbyDispatch();
   const maxCountRef = React.useRef(MAX_ACCOUNT_COUNT);
   const maxStepCount =
-    keyring === KEYRING_CLASS.HARDWARE.TREZOR
-      ? MAX_STEP_COUNT_TREZOR
-      : MAX_STEP_COUNT;
+    keyring === KEYRING_CLASS.HARDWARE.TREZOR ? MAX_STEP_COUNT_TREZOR : 1;
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);

@@ -3644,6 +3644,7 @@ export class WalletController extends BaseController {
     keyringId: number | null,
     ...params: any[]
   ) => {
+    console.log(type, methodName, params);
     let keyring: any;
     if (keyringId !== null && keyringId !== undefined) {
       keyring = stashKeyrings[keyringId];
