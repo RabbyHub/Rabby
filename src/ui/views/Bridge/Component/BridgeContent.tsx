@@ -1,18 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useBridge } from '../hooks/token';
-import { Alert, Button, Input, message, Modal } from 'antd';
+import { Alert, Button, message, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useWallet } from '@/ui/utils';
-import styled from 'styled-components';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { findChainByEnum, findChainByServerID } from '@/utils/chain';
-import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
-import i18n from '@/i18n';
+import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 
 import pRetry from 'p-retry';
@@ -26,49 +23,6 @@ import { BridgeToken } from './BridgeToken';
 import { BridgeShowMore, RecommendFromToken } from './BridgeShowMore';
 import { BridgeSwitchBtn } from './BridgeSwitchButton';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-
-const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
-
-const StyledInput = styled(Input)`
-  height: 46px;
-  font-weight: 500;
-  font-size: 18px;
-  box-shadow: none;
-  border-radius: 4px;
-  border: 1px solid var(--r-neutral-line, #d3d8e0);
-  background: transparent !important;
-  & > .ant-input {
-    font-weight: 500;
-    font-size: 18px;
-    border-width: 0px !important;
-    border-color: transparent;
-  }
-  &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-    border-width: 1px !important;
-  }
-  &:active {
-    border: 1px solid transparent;
-  }
-  &:focus,
-  &:focus-within {
-    border-width: 1px !important;
-    border-color: var(--r-blue-default, #7084ff) !important;
-  }
-  &:hover {
-    border-width: 1px !important;
-    border-color: var(--r-blue-default, #7084ff) !important;
-    box-shadow: none;
-  }
-
-  &:placeholder-shown {
-    color: #707280;
-  }
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-`;
 
 export const BridgeContent = () => {
   const { userAddress } = useRabbySelector((state) => ({
@@ -108,6 +62,11 @@ export const BridgeContent = () => {
     setSlippageChanged,
     isSlippageHigh,
     isSlippageLow,
+
+    autoSlippage,
+    isCustomSlippage,
+    setAutoSlippage,
+    setIsCustomSlippage,
   } = useBridge();
 
   const amountAvailable = useMemo(() => Number(amount) > 0, [amount]);
@@ -446,6 +405,10 @@ export const BridgeContent = () => {
             openQuotesList={openQuotesList}
             quoteLoading={quoteLoading}
             slippageError={isSlippageHigh || isSlippageLow}
+            autoSlippage={autoSlippage}
+            isCustomSlippage={isCustomSlippage}
+            setAutoSlippage={setAutoSlippage}
+            setIsCustomSlippage={setIsCustomSlippage}
           />
         )}
         {noQuote && recommendFromToken && (

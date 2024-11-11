@@ -4,8 +4,9 @@ import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Button, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
+  Dispatch,
   PropsWithChildren,
-  ReactNode,
+  SetStateAction,
   useEffect,
   useMemo,
   useState,
@@ -32,6 +33,10 @@ export const BridgeShowMore = ({
   toAmount,
   quoteLoading,
   slippageError,
+  autoSlippage,
+  isCustomSlippage,
+  setAutoSlippage,
+  setIsCustomSlippage,
 }: {
   openQuotesList: () => void;
   sourceName: string;
@@ -46,6 +51,10 @@ export const BridgeShowMore = ({
   toAmount?: string | number;
   quoteLoading?: boolean;
   slippageError?: boolean;
+  autoSlippage: boolean;
+  isCustomSlippage: boolean;
+  setAutoSlippage: Dispatch<SetStateAction<boolean>>;
+  setIsCustomSlippage: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
@@ -163,6 +172,10 @@ export const BridgeShowMore = ({
           value={slippage}
           displaySlippage={displaySlippage}
           onChange={onSlippageChange}
+          autoSlippage={autoSlippage}
+          isCustomSlippage={isCustomSlippage}
+          setAutoSlippage={setAutoSlippage}
+          setIsCustomSlippage={setIsCustomSlippage}
         />
       </div>
     </div>

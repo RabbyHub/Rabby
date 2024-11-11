@@ -16,7 +16,7 @@ import {
 import { getChainDefaultToken, tokenAmountBn } from '@/ui/utils/token';
 import BigNumber from 'bignumber.js';
 import stats from '@/stats';
-import { useBridgeSlippage, useBridgeSlippageStore } from './slippage';
+import { useBridgeSlippage } from './slippage';
 import { isNaN } from 'lodash';
 
 export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
@@ -201,13 +201,16 @@ export const useBridge = () => {
     return false;
   }, [fromChain, fromToken?.id, toChain, toToken?.id]);
 
-  const { autoSlippage } = useBridgeSlippageStore();
-
   useEffect(() => {
-    if (!isSameTokenLoading && autoSlippage) {
+    if (!isSameTokenLoading && slippageObj.autoSlippage) {
       slippageObj.setSlippage(isSameToken ? '1' : '3');
     }
-  }, [autoSlippage, isSameToken, isSameTokenLoading]);
+  }, [
+    slippageObj?.autoSlippage,
+    slippageObj?.setSlippage,
+    isSameToken,
+    isSameTokenLoading,
+  ]);
 
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
   // the most worth chain is the first

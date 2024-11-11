@@ -1,22 +1,17 @@
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useCallback, useMemo, useState } from 'react';
 
 export const useBridgeSlippage = () => {
-  const previousSlippage = useRabbySelector((s) => s.bridge.slippage || '1');
-  const [slippageState, setSlippageState] = useState(previousSlippage);
+  const [slippageState, setSlippageState] = useState('3');
 
-  const setSlippageOnStore = useRabbyDispatch().bridge.setSlippage;
-
-  const slippage = useMemo(() => slippageState || '0.03', [slippageState]);
+  const slippage = useMemo(() => slippageState || '3', [slippageState]);
   const [slippageChanged, setSlippageChanged] = useState(false);
 
-  const setSlippage = useCallback(
-    (slippage: string) => {
-      setSlippageOnStore(slippage);
-      setSlippageState(slippage);
-    },
-    [setSlippageOnStore]
-  );
+  const [autoSlippage, setAutoSlippage] = useState(true);
+  const [isCustomSlippage, setIsCustomSlippage] = useState(false);
+
+  const setSlippage = useCallback((slippage: string) => {
+    setSlippageState(slippage);
+  }, []);
 
   const [isSlippageLow, isSlippageHigh] = useMemo(() => {
     return [
@@ -33,32 +28,6 @@ export const useBridgeSlippage = () => {
     isSlippageHigh,
     slippage,
     setSlippage,
-  };
-};
-
-export const useBridgeSlippageStore = () => {
-  const { autoSlippage, isCustomSlippage } = useRabbySelector((store) => ({
-    autoSlippage: store.bridge.autoSlippage,
-    isCustomSlippage: !!store.bridge.isCustomSlippage,
-  }));
-
-  const dispatch = useRabbyDispatch();
-
-  const setAutoSlippage = useCallback(
-    (bool: boolean) => {
-      dispatch.bridge.setAutoSlippage(bool);
-    },
-    [dispatch]
-  );
-
-  const setIsCustomSlippage = useCallback(
-    (bool: boolean) => {
-      dispatch.bridge.setIsCustomSlippage(bool);
-    },
-    [dispatch]
-  );
-
-  return {
     autoSlippage,
     isCustomSlippage,
     setAutoSlippage,

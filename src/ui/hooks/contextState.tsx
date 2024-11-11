@@ -1,6 +1,6 @@
 import React from 'react';
 import { noop } from 'lodash';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, cloneElement, memo } from 'react';
 
 export function createContextState<T>(initialState: T) {
   const StateContext = createContext<T>(initialState);
