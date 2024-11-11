@@ -31,6 +31,7 @@ const SlippageItem = styled.div`
   background: var(--r-neutral-card-1, #fff);
   border-radius: 6px;
   overflow: hidden;
+  color: var(--r-neutral-title1, #192945);
 
   &.input-wrapper {
     border: 1px solid var(--r-neutral-line, #e0e5ec);

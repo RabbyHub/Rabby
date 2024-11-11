@@ -83,8 +83,9 @@ export const BridgeToken = ({
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
 
   const isFromToken = type === 'from';
+  const isToken = type === 'to';
 
-  const name = type === 'from' ? t('page.bridge.From') : t('page.bridge.To');
+  const name = isFromToken ? t('page.bridge.From') : t('page.bridge.To');
   const chainObj = findChainByEnum(chain);
 
   const openFeePopup = useSetSettingVisible();
@@ -92,17 +93,14 @@ export const BridgeToken = ({
   const inputRef = useRef<Input>();
 
   useLayoutEffect(() => {
-    if (type === 'from') {
+    if (isFromToken) {
       if (document?.activeElement !== inputRef.current?.input) {
         inputRef.current?.focus();
       }
     }
   }, [value]);
 
-  const showNoQuote = useMemo(() => type === 'to' && !!noQuote, [
-    type,
-    noQuote,
-  ]);
+  const showNoQuote = useMemo(() => isToken && !!noQuote, [type, noQuote]);
 
   const useValue = useMemo(() => {
     if (token && value) {
@@ -174,7 +172,7 @@ export const BridgeToken = ({
               ref={inputRef as any}
             />
           )}
-          {type === 'to' ? (
+          {isToken ? (
             <BridgeToTokenSelect
               drawerHeight={540}
               fromChainId={fromChainId!}
@@ -207,8 +205,19 @@ export const BridgeToken = ({
           )}
         >
           <div className="flex items-center gap-2">
-            <span>{useValue}</span>
-            {type === 'to' && !!value && (
+            {valueLoading ? (
+              <SkeletonInput
+                active
+                className="rounded-[4px]"
+                style={{
+                  width: 36,
+                  height: 16,
+                }}
+              />
+            ) : (
+              <span>{useValue}</span>
+            )}
+            {isToken && !!value && (
               <RcIconInfoCC
                 onClick={() => openFeePopup(true)}
                 viewBox="0 0 14 14"
