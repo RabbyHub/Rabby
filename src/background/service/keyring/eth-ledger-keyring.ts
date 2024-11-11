@@ -159,10 +159,19 @@ class LedgerBridgeKeyring {
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
 
     await this.makeApp();
-    const res = await this.app!.getAddress(path, false, true);
-    const { address } = res;
+    let res: { address: string };
+    try {
+      res = await this.app!.getAddress(path, false, true);
+    } catch (e) {
+      if (e.name === 'DisconnectedDeviceDuringOperation') {
+        await this.cleanUp();
+        return this.unlock(hdPath, force);
+      } else {
+        throw e;
+      }
+    }
 
-    return address;
+    return res?.address;
   }
 
   addAccounts(n = 1) {
