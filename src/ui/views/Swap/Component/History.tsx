@@ -2,7 +2,6 @@ import { Popup, TokenWithChain } from '@/ui/component';
 import React, { forwardRef, useMemo } from 'react';
 import { useSwapHistory } from '../hooks';
 import { SwapItem, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { CHAINS_LIST } from '@debank/common';
 import { formatAmount, formatUsdValue, openInTab, sinceTime } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -81,7 +80,10 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     const isPending = data.status === 'Pending';
     const isCompleted = data?.status === 'Completed';
     const time = data?.finished_at || data?.create_at;
-    const targetDex = DEX?.[data?.dex_id]?.name || data?.dex_id || '';
+    const targetDex =
+      data?.dex_id === '0xV2'
+        ? '0x'
+        : DEX?.[data?.dex_id]?.name || data?.dex_id || '';
     const txId = data?.tx_id;
     const chainItem = useMemo(
       () =>
