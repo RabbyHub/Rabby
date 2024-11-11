@@ -6,15 +6,15 @@ import {
   ChangeEventHandler,
   useState,
   useEffect,
+  SetStateAction,
+  Dispatch,
 } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import React from 'react';
 import { Input } from 'antd';
-import ImgArrowUp from 'ui/assets/swap/arrow-up.svg';
 import i18n from '@/i18n';
 import { Trans, useTranslation } from 'react-i18next';
-import { useBridgeSlippageStore } from '../hooks/slippage';
 
 const SlippageItem = styled.div`
   position: relative;
@@ -95,23 +95,29 @@ const Wrapper = styled.section`
     margin-top: 8px;
   }
 `;
-interface SlippageProps {
+interface BridgeSlippageProps {
   value: string;
   displaySlippage: string;
   onChange: (n: string) => void;
   recommendValue?: number;
+  autoSlippage: boolean;
+  isCustomSlippage: boolean;
+  setAutoSlippage: Dispatch<SetStateAction<boolean>>;
+  setIsCustomSlippage: Dispatch<SetStateAction<boolean>>;
 }
-export const BridgeSlippage = memo((props: SlippageProps) => {
+export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
   const { t } = useTranslation();
 
-  const { value, displaySlippage, onChange, recommendValue } = props;
-
   const {
+    value,
+    displaySlippage,
+    onChange,
+    recommendValue,
     autoSlippage,
     isCustomSlippage,
     setAutoSlippage,
     setIsCustomSlippage,
-  } = useBridgeSlippageStore();
+  } = props;
 
   const [slippageOpen, setSlippageOpen] = useState(false);
 

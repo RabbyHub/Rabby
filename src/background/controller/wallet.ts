@@ -1760,9 +1760,6 @@ export class WalletController extends BaseController {
   getBridgeSortIncludeGasFee = bridgeService.getBridgeSortIncludeGasFee;
   setBridgeSortIncludeGasFee = bridgeService.setBridgeSortIncludeGasFee;
   setBridgeSettingFirstOpen = bridgeService.setBridgeSettingFirstOpen;
-  setBridgeAutoSlippage = bridgeService.setAutoSlippage;
-  setBridgeIsCustomSlippage = bridgeService.setIsCustomSlippage;
-  setBridgeSlippage = bridgeService.setSlippage;
 
   getGasAccountData = gasAccountService.getGasAccountData;
   getGasAccountSig = gasAccountService.getGasAccountSig;
