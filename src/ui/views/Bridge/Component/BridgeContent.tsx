@@ -144,7 +144,7 @@ export const BridgeContent = () => {
         setFetchingBridgeQuote(true);
         const { tx } = await pRetry(
           () =>
-            wallet.openapi.getBridgeQuote({
+            wallet.openapi.getBridgeQuoteTxV2({
               aggregator_id: selectedBridgeQuote.aggregator.id,
               bridge_id: selectedBridgeQuote.bridge_id,
               from_token_id: fromToken.id,
@@ -156,6 +156,7 @@ export const BridgeContent = () => {
                 .toString(),
               to_chain_id: toToken.chain,
               to_token_id: toToken.id,
+              slippage: new BigNumber(slippageState).div(100).toString(10),
             }),
           { retries: 1 }
         );
@@ -233,6 +234,7 @@ export const BridgeContent = () => {
     wallet,
     amount,
     rbiSource,
+    slippageState,
   ]);
 
   const buildTxs = useMemoizedFn(async () => {
