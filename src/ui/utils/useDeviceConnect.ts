@@ -1,8 +1,7 @@
 import { KEYRING_CLASS } from '@/constant';
 import React from 'react';
 import { useLedgerStatus } from '../component/ConnectStatus/useLedgerStatus';
-import { useCommonPopupView } from './WalletContext';
-import { useSessionStatus } from '../component/WalletConnect/useSessionStatus';
+import { useCommonPopupView, useWallet } from './WalletContext';
 import { useCurrentAccount } from '../hooks/backgroundState/useAccount';
 import { useImKeyStatus } from '../component/ConnectStatus/useImKeyStatus';
 
@@ -12,29 +11,35 @@ import { useImKeyStatus } from '../component/ConnectStatus/useImKeyStatus';
  */
 export const useDeviceConnect = () => {
   const ledgerStatus = useLedgerStatus();
-  const account = useCurrentAccount();
-  const walletConnectStatus = useSessionStatus(account!);
   const imKeyStatus = useImKeyStatus();
   const { activePopup, setAccount } = useCommonPopupView();
+  const wallet = useWallet();
+  const currentAccount = useCurrentAccount();
 
   /**
    * @returns {boolean} true if connected, false if not connected and popup is shown
    */
   const connect = React.useCallback(
-    async (type: string) => {
+    async (data: any) => {
+      if (!data) return;
+      const { type, account, isGnosis } = data;
+
       if (type === KEYRING_CLASS.HARDWARE.LEDGER) {
         if (ledgerStatus.status === 'DISCONNECTED') {
           activePopup('Ledger');
           return false;
         }
       } else if (type === KEYRING_CLASS.WALLETCONNECT) {
-        if (
-          !walletConnectStatus.status ||
-          walletConnectStatus.status === 'DISCONNECTED'
-        ) {
-          if (account) {
+        const acc = isGnosis ? account : currentAccount;
+        const status = await wallet.getWalletConnectSessionStatus(
+          acc.address,
+          acc.brandName
+        );
+
+        if (!status || status === 'DISCONNECTED') {
+          if (acc) {
             setAccount({
-              ...account,
+              ...acc,
               type,
             });
           }
@@ -50,7 +55,7 @@ export const useDeviceConnect = () => {
 
       return true;
     },
-    [ledgerStatus, walletConnectStatus, imKeyStatus, account]
+    [ledgerStatus, imKeyStatus]
   );
 
   return connect;
