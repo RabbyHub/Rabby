@@ -84,8 +84,6 @@ export default ({
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
 
-  const [rabbyPointsVisible, setRabbyPointVisible] = useState(false);
-
   const [settingVisible, setSettingVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined

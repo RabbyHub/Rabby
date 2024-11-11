@@ -6,7 +6,6 @@ import * as Sentry from '@sentry/browser';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 import {
-  CHAINS,
   KEYRING_CATEGORY_MAP,
   IS_LINUX,
   IS_VIVALDI,
@@ -17,7 +16,6 @@ import {
 import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
-import BigNumber from 'bignumber.js';
 import { findChain } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
 
@@ -134,7 +132,7 @@ class NotificationService extends Events {
       if (IS_VIVALDI) return;
       if (
         IS_CHROME &&
-        winId === chrome.windows.WINDOW_ID_NONE &&
+        winId === browser.windows.WINDOW_ID_NONE &&
         (IS_LINUX || IS_WINDOWS)
       ) {
         // When sign on Linux or Windows, will focus on -1 first then focus on sign window
