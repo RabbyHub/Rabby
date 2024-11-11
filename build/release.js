@@ -78,6 +78,11 @@ async function bundle() {
 
   updateManifestVersion(version, 'mv3');
   updateManifestVersion(version, 'mv2');
+
+  if (isRelease) {
+    await release({ version, isDebug, isRelease });
+  }
+
   // shell.env['sourcemap'] = true;
   if (NO_BUILD !== 'true') {
     if (isMV3) {
@@ -101,10 +106,6 @@ async function bundle() {
     shell.exec(`cp ${hashed_zip} ${package_for_release}`);
 
     console.log(`${cmd_prefix} md5 of ${package_for_release}: ${await get_md5_file(package_for_release)}`);
-  }
-
-  if (isRelease) {
-    await release({ version, isDebug, isRelease });
   }
 }
 
