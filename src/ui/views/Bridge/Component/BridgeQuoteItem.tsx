@@ -32,9 +32,7 @@ interface QuoteItemProps extends SelectedBridgeQuote {
   isBestQuote?: boolean;
   bestQuoteUsd: string;
   sortIncludeGasFee: boolean;
-  setSelectedBridgeQuote?: React.Dispatch<
-    React.SetStateAction<SelectedBridgeQuote | undefined>
-  >;
+  setSelectedBridgeQuote?: (quote: SelectedBridgeQuote) => void;
   onlyShow?: boolean;
   loading?: boolean;
   inSufficient?: boolean;
@@ -63,12 +61,6 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
   const selectedAggregators = useRabbySelector(
     (s) => s.bridge.selectedAggregators || []
   );
-
-  const availableSelectedAggregators = useMemo(() => {
-    return selectedAggregators?.filter((e) =>
-      aggregatorsList.some((item) => item.id === e)
-    );
-  }, [selectedAggregators, aggregatorsList]);
 
   const diffPercent = React.useMemo(() => {
     if (props.onlyShow || props.isBestQuote) {
@@ -131,7 +123,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
         onClick={handleClick}
       >
         <div className="flex items-center justify-between relative">
-          <div className="flex gap-6  items-center  overflow-hidden">
+          <div className="flex gap-6  items-center  overflow-hidden pr-16">
             <QuoteLogo
               logo={props.aggregator.logo_url}
               bridgeLogo={props.bridge.logo_url}
@@ -174,7 +166,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
 
           <div className="flex items-center gap-8 flex-1 justify-end">
             <TokenWithChain
-              token={props.payToken}
+              token={props.receiveToken}
               width="20px"
               height="20px"
               hideChainIcon
@@ -206,7 +198,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               })}
             </span>
           </div>
-          <div className="flex items-center gap-6 text-13 text-r-neutral-foot">
+          <div className="flex items-center gap-2 text-13 text-r-neutral-foot">
             <span>
               {t('page.bridge.estimated-value', {
                 value: formatUsdValue(

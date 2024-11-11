@@ -1,19 +1,16 @@
 import React, { InsHTMLAttributes, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { CHAINS_ENUM } from '@debank/common';
 
 import { useState } from 'react';
 import { SelectChainListProps } from '@/ui/component/ChainSelector/components/SelectChainList';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
-import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
 import styled from 'styled-components';
 import ChainIcon from '@/ui/component/ChainIcon';
-import ImgArrowDown, {
-  ReactComponent as RcImgArrowDown,
-} from '@/ui/assets/swap/arrow-down.svg';
+import { ReactComponent as RcImgArrowDown } from '@/ui/assets/swap/arrow-down.svg';
 import { useWallet } from '@/ui/utils';
-import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain } from '@/utils/chain';
+import { useTranslation } from 'react-i18next';
 
 const ChainWrapper = styled.div`
   /* height: 40px; */
@@ -28,6 +25,24 @@ const ChainWrapper = styled.div`
   cursor: pointer;
   font-size: 16px;
   font-weight: 500;
+  &.mini {
+    width: auto;
+    height: 28px;
+    font-size: 13px;
+    padding: 0 6px;
+
+    & > {
+      .down {
+        margin-left: auto;
+        width: 14px;
+        height: 14px;
+      }
+      .name {
+        color: var(--r-neutral-title-1, #192945);
+        line-height: normal;
+      }
+    }
+  }
   &:hover {
     background: rgba(134, 151, 255, 0.2);
   }
@@ -49,19 +64,25 @@ export const ChainRender = ({
   readonly,
   className,
   arrowDownComponent,
+  mini,
   ...other
 }: {
-  chain: CHAINS_ENUM;
+  chain?: CHAINS_ENUM;
   readonly: boolean;
   arrowDownComponent?: React.ReactNode;
+  mini?: boolean;
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
-
+  const { t } = useTranslation();
   const chainInfo = useMemo(() => {
     return findChain({ enum: chain });
   }, [chain]);
   const [customRPC, setCustomRPC] = useState('');
   const getCustomRPC = async () => {
+    if (!chain) {
+      setCustomRPC('');
+      return;
+    }
     const rpc = await wallet.getCustomRpcByChain(chain);
     setCustomRPC(rpc?.enable ? rpc.url : '');
   };
@@ -73,32 +94,37 @@ export const ChainRender = ({
       className={clsx(
         {
           'cursor-default hover:bg-r-neutral-bg-2': readonly,
+          mini: mini,
         },
         className
       )}
       {...other}
     >
       {/* <img className="logo" src={CHAINS[chain].logo} alt={CHAINS[chain].name} /> */}
-      <ChainIcon
-        chain={chain}
-        customRPC={customRPC}
-        size="small"
-        showCustomRPCToolTip
-      />
-      <span className="name">{chainInfo?.name}</span>
+      {chain && (
+        <ChainIcon
+          chain={chain}
+          customRPC={customRPC}
+          size="small"
+          showCustomRPCToolTip
+        />
+      )}
+      <span className={clsx('name')}>
+        {chainInfo?.name || t('page.bridge.Select')}
+      </span>
       {/* {!readonly && <img className="down" src={ImgArrowDown} alt="" />} */}
       {!readonly &&
         (arrowDownComponent ? (
           arrowDownComponent
         ) : (
-          <RcImgArrowDown className="down" />
+          <RcImgArrowDown className="down" viewBox="0 0 20 20" />
         ))}
     </ChainWrapper>
   );
 };
 
 interface ChainSelectorProps {
-  value: CHAINS_ENUM;
+  value?: CHAINS_ENUM;
   onChange?(value: CHAINS_ENUM): void;
   readonly?: boolean;
   showModal?: boolean;
@@ -108,6 +134,11 @@ interface ChainSelectorProps {
   title?: React.ReactNode;
   chainRenderClassName?: string;
   arrowDownComponent?: React.ReactNode;
+  mini?: boolean;
+  hideTestnetTab?: boolean;
+  excludeChains?: CHAINS_ENUM[];
+  drawerHeight?: number;
+  showClosableIcon?: boolean;
 }
 export default function ChainSelectorInForm({
   value,
@@ -119,6 +150,11 @@ export default function ChainSelectorInForm({
   supportChains,
   chainRenderClassName,
   arrowDownComponent,
+  mini,
+  hideTestnetTab = false,
+  excludeChains,
+  drawerHeight,
+  showClosableIcon,
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -146,9 +182,13 @@ export default function ChainSelectorInForm({
         readonly={readonly}
         className={chainRenderClassName}
         arrowDownComponent={arrowDownComponent}
+        mini={mini}
       />
       {!readonly && (
         <ChainSelectorModal
+          height={drawerHeight}
+          excludeChains={excludeChains}
+          hideTestnetTab={hideTestnetTab}
           value={value}
           visible={showSelectorModal}
           onChange={handleChange}
@@ -156,6 +196,7 @@ export default function ChainSelectorInForm({
           supportChains={supportChains}
           disabledTips={disabledTips}
           title={title}
+          showClosableIcon={showClosableIcon}
           showRPCStatus
         />
       )}

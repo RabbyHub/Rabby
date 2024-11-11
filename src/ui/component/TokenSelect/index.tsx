@@ -56,7 +56,7 @@ export interface TokenSelectProps {
   token?: TokenItem;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  chainId: string;
+  chainId?: string;
   useSwapTokenList?: boolean;
   excludeTokens?: TokenItem['id'][];
   type?: ComponentProps<typeof TokenSelector>['type'];
@@ -73,6 +73,8 @@ export interface TokenSelectProps {
         openTokenModal: () => void;
       }) => React.ReactNode)
     | React.ReactNode;
+  disabledTips?: React.ReactNode;
+  drawerHeight?: string | number;
 }
 
 const defaultExcludeTokens = [];
@@ -90,6 +92,8 @@ const TokenSelect = ({
   loading = false,
   tokenRender,
   useSwapTokenList = false,
+  disabledTips = 'Not supported',
+  drawerHeight,
 }: TokenSelectProps) => {
   const [queryConds, setQueryConds] = useState({
     keyword: '',
@@ -167,7 +171,7 @@ const TokenSelect = ({
     currentAccount?.address,
     queryConds.keyword,
     queryConds.chainServerId,
-    isSwapType ? false : true
+    isSwapType || type === 'bridgeFrom' ? false : true
   );
 
   const availableToken = useMemo(() => {
@@ -225,19 +229,22 @@ const TokenSelect = ({
         {typeof tokenRender === 'function'
           ? tokenRender?.({ token, openTokenModal: handleSelectToken })
           : tokenRender}
-        <TokenSelector
-          visible={tokenSelectorVisible}
-          list={displayTokenList}
-          onConfirm={handleCurrentTokenChange}
-          onCancel={handleTokenSelectorClose}
-          onSearch={handleSearchTokens}
-          isLoading={isListLoading}
-          type={type}
-          placeholder={placeholder}
-          chainId={queryConds.chainServerId}
-          disabledTips={'Not supported'}
-          supportChains={SWAP_SUPPORT_CHAINS}
-        />
+        {queryConds.chainServerId && (
+          <TokenSelector
+            drawerHeight={drawerHeight}
+            visible={tokenSelectorVisible}
+            list={displayTokenList}
+            onConfirm={handleCurrentTokenChange}
+            onCancel={handleTokenSelectorClose}
+            onSearch={handleSearchTokens}
+            isLoading={isListLoading}
+            type={type}
+            placeholder={placeholder}
+            chainId={queryConds.chainServerId}
+            disabledTips={disabledTips}
+            supportChains={SWAP_SUPPORT_CHAINS}
+          />
+        )}
       </>
     );
   }
@@ -286,19 +293,22 @@ const TokenSelect = ({
           />
         )}
       </Wrapper>
-      <TokenSelector
-        visible={tokenSelectorVisible}
-        list={displayTokenList}
-        onConfirm={handleCurrentTokenChange}
-        onCancel={handleTokenSelectorClose}
-        onSearch={handleSearchTokens}
-        isLoading={isListLoading}
-        type={type}
-        placeholder={placeholder}
-        chainId={queryConds.chainServerId}
-        disabledTips={'Not supported'}
-        supportChains={SWAP_SUPPORT_CHAINS}
-      />
+      {queryConds.chainServerId && (
+        <TokenSelector
+          visible={tokenSelectorVisible}
+          list={displayTokenList}
+          onConfirm={handleCurrentTokenChange}
+          onCancel={handleTokenSelectorClose}
+          onSearch={handleSearchTokens}
+          isLoading={isListLoading}
+          type={type}
+          placeholder={placeholder}
+          chainId={queryConds.chainServerId}
+          disabledTips={disabledTips}
+          supportChains={SWAP_SUPPORT_CHAINS}
+          drawerHeight={drawerHeight}
+        />
+      )}
     </>
   );
 };

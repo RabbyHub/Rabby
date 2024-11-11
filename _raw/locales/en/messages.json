@@ -957,6 +957,13 @@
       }
     },
     "bridge": {
+      "From": "From",
+      "To": "To",
+      "Balance": "Balance: ",
+      "Select": "Select",
+      "select-chain": "Select Chain",
+      "no-quote-found": "No quote found. Please try other token pairs.",
+      "no-quote": "No Quote",
       "title": "Bridge",
       "history": "Bridge history",
       "the-following-bridge-route-are-found": "Found following route",
@@ -980,7 +987,7 @@
       "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh route.",
       "price-expired-refresh-route": "Price expired. Refresh route.",
       "approve-x-symbol": "Approve {{symbol}}",
-      "approve-and-bridge": "Approve and Bridge on {{name}}",
+      "approve-and-bridge": "Approve and Bridge",
       "need-to-approve-token-before-bridge": "Need to approve token before bridge",
       "via-bridge": "via {{bridge}}",
       "duration": "{{duration}} min",
@@ -992,6 +999,17 @@
       "no-route-found": "No route found",
       "aggregator-not-enabled": "This aggregator is not enabled to trade by you.",
       "enable-it": "Enable it",
+      "recommendFromToken": "Bridge from <1></1> for an available quote",
+      "est-payment": "Est. Payment:",
+      "est-receiving": "Est. Receiving:",
+      "est-difference": "Est. Difference:",
+      "loss-tips": "You're losing {{usd}}. Try a different amount.",
+      "price-impact": "Price Impact",
+
+      "showMore": {
+        "title": "Show More",
+        "source": "Bridge Source"
+      },
       "settingModal": {
         "title": "Enable Bridge Aggregators to trade",
         "confirm": "Confirm",
@@ -2376,11 +2394,19 @@
           "title": "USD VALUE"
         }
       },
+      "bridge": {
+        "token": "Token",
+        "value": "Value",
+        "liquidity": "Liquidity",
+        "liquidityTips": "The higher the historical trade volume, the more likely the bridge will succeed.",
+        "low": "Low",
+        "high": "High"
+      },
       "searchInput": {
         "placeholder": "Search by Name / Address"
       },
       "header": {
-        "title": "Select a token"
+        "title": "Select Token"
       },
       "noTokens": "No Tokens",
       "noMatch": "No Match",

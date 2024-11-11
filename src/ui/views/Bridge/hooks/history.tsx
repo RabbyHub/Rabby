@@ -134,7 +134,6 @@ export const useBridgeHistory = () => {
 
   useEffect(() => {
     if (!noMore && inViewport && !loadingMore && loadMore && isInBridge) {
-      console.log('loadMore');
       loadMore();
     }
   }, [inViewport, loadMore, loading, loadingMore, noMore, isInBridge]);

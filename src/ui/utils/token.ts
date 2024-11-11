@@ -4,8 +4,8 @@ import { Contract, providers } from 'ethers';
 import { hexToString } from 'web3-utils';
 import { AbstractPortfolioToken } from './portfolio/types';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
-import { findChain } from '@/utils/chain';
-import { MINIMUM_GAS_LIMIT } from '@/constant';
+import { findChain, findChainByEnum } from '@/utils/chain';
+import { CHAINS_ENUM, MINIMUM_GAS_LIMIT } from '@/constant';
 
 export const geTokenDecimals = async (
   id: string,
@@ -257,4 +257,30 @@ export function checkIfTokenBalanceEnough(
     slowLevel,
     customLevel,
   };
+}
+
+export function tokenAmountBn(token: TokenItem) {
+  return new BigNumber(token?.raw_amount_hex_str || 0, 16).div(
+    10 ** (token?.decimals || 1)
+  );
+}
+
+export function getChainDefaultToken(chain: CHAINS_ENUM) {
+  const chainInfo = findChainByEnum(chain)!;
+  return {
+    id: chainInfo.nativeTokenAddress,
+    decimals: chainInfo.nativeTokenDecimals,
+    logo_url: chainInfo.nativeTokenLogo,
+    symbol: chainInfo.nativeTokenSymbol,
+    display_symbol: chainInfo.nativeTokenSymbol,
+    optimized_symbol: chainInfo.nativeTokenSymbol,
+    is_core: true,
+    is_verified: true,
+    is_wallet: true,
+    amount: 0,
+    price: 0,
+    name: chainInfo.nativeTokenSymbol,
+    chain: chainInfo.serverId,
+    time_at: 0,
+  } as TokenItem;
 }
