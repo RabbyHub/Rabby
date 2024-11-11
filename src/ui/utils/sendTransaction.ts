@@ -445,6 +445,16 @@ export const sendTransaction = async ({
     }
   };
 
+  wallet.reportStats('signTransaction', {
+    type: currentAccount.brandName,
+    category: KEYRING_CATEGORY_MAP[currentAccount.type],
+    chainId: chain.serverId,
+    createdBy: ga ? 'rabby' : 'dapp',
+    source: ga?.source || '',
+    trigger: ga?.trigger || '',
+    networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+  });
+
   // submit tx
   let hash = '';
   try {

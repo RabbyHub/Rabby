@@ -44,7 +44,7 @@ export const BalanceChangeWrapper: React.FC<Props> = ({
         balanceChange.receive_nft_list.length +
           balanceChange.receive_token_list.length +
           balanceChange.send_nft_list.length +
-          balanceChange.send_nft_list.length <=
+          balanceChange.send_token_list.length <=
         0
       ) {
         return true;
