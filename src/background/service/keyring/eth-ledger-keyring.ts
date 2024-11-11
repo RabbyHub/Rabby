@@ -235,7 +235,6 @@ class LedgerBridgeKeyring {
   signTransaction(address, tx) {
     return this.signHelper.invoke(async () => {
       // make sure the previous transaction is cleaned up
-      await this._reconnect();
 
       // transactions built with older versions of ethereumjs-tx have a
       // getChainId method that newer versions do not. Older versions are mutable
@@ -296,20 +295,6 @@ class LedgerBridgeKeyring {
     });
   }
 
-  async _reconnect() {
-    await this.cleanUp();
-
-    let count = 0;
-    // wait connect the WebHID
-    while (!this.app) {
-      await this.makeApp();
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      if (count++ > 50) {
-        throw new Error('Ledger: Failed to connect to Ledger');
-      }
-    }
-  }
-
   async _signTransaction(address, rawTxHex, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
     await this.makeApp(true);
@@ -326,8 +311,6 @@ class LedgerBridgeKeyring {
       throw new Error(
         err.toString() || 'Ledger: Unknown error while signing transaction'
       );
-    } finally {
-      this.cleanUp();
     }
   }
 
@@ -338,7 +321,6 @@ class LedgerBridgeKeyring {
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(withAccount, message) {
     return this.signHelper.invoke(async () => {
-      await this._reconnect();
       try {
         await this.makeApp(true);
         const hdPath = await this.unlockAccountByAddress(withAccount);
@@ -369,8 +351,6 @@ class LedgerBridgeKeyring {
         throw new Error(
           e.toString() || 'Ledger: Unknown error while signing message'
         );
-      } finally {
-        this.cleanUp();
       }
     });
   }
@@ -397,7 +377,6 @@ class LedgerBridgeKeyring {
 
   async signTypedData(withAccount, data, options: any = {}) {
     return this.signHelper.invoke(async () => {
-      await this._reconnect();
       const isV4 = options.version === 'V4';
       if (!isV4) {
         throw new Error(
@@ -471,8 +450,6 @@ class LedgerBridgeKeyring {
         throw new Error(
           e.toString() || 'Ledger: Unknown error while signing message'
         );
-      } finally {
-        this.cleanUp();
       }
     });
   }
