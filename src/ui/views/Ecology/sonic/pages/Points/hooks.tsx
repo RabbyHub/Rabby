@@ -79,11 +79,10 @@ export const useSonicPoints = () => {
       }
 
       try {
-        throw new Error('test');
-        // const address = getAddress(account.address);
-        // const points = await fetchPoints(address);
-        // setPoints(points);
-        // setError(null);
+        const address = getAddress(account.address);
+        const points = await fetchPoints(address);
+        setPoints(points);
+        setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {

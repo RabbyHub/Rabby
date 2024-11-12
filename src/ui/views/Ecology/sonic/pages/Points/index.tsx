@@ -237,7 +237,9 @@ const SonicPoints = () => {
                 onClick={() => {
                   window.open(
                     `https://x.com/intent/tweet?text=${encodeURIComponent(
-                      'Hollo!'
+                      t('page.ecology.sonic.points.referralCodeShare', {
+                        referralCode,
+                      })
                     )}&url=https://sonic.rabby.io`,
                     '_blank'
                   );
