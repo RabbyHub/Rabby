@@ -2,11 +2,13 @@ import pointsLightImg from '@/ui/assets/ecology/sonic/points-bg-light.png';
 import pointsDarkImg from '@/ui/assets/ecology/sonic/points-bg.png';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useCopy } from '@/ui/utils/useCopy';
+import { formatAddress } from '@/utils';
+import { error } from 'console';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SonicButton } from '../../components/SonicButton';
 import { SonicCard } from '../../components/SonicCard';
-import { useSonicPoints } from './hooks';
+import { useSonicPoints, useSonicReferralCode } from './hooks';
 
 const links = [
   {
@@ -109,19 +111,51 @@ const CheckedIcon = () => (
   </svg>
 );
 
+const ErrorOverlay = ({ onRetry }: { onRetry: () => void }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="fixed inset-0 z-50 backdrop-blur-sm bg-rabby-sonic-background flex flex-col items-center justify-center space-y-4 p-6">
+      <div className="text-r-sonic-foreground text-center">
+        <div className="text-[16px] font-bold mb-2">
+          {t('page.ecology.sonic.points.errorTitle')}
+        </div>
+        <div className="text-[14px] opacity-80 max-w-[80ch] text-center">
+          {t('page.ecology.sonic.points.errorDesc')}
+        </div>
+      </div>
+      <SonicButton onClick={onRetry} rounded>
+        {t('page.ecology.sonic.points.retry')}
+      </SonicButton>
+    </div>
+  );
+};
+
 const SonicPoints = () => {
   const {
-    totalPoints,
-    referralPoints,
+    points,
     pointsLoading,
-    referralCode,
+    error: pointsError,
+    refetch: refetchPoints,
+    address,
   } = useSonicPoints();
+  const {
+    referralCode,
+    referralLoading,
+    error: referralError,
+    refetch: refetchReferral,
+  } = useSonicReferralCode();
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
   const { copyToClipboard, hasCopied } = useCopy();
 
   return (
-    <div className="h-[100vh] min-h-[100vh] flex flex-col bg-r-sonic-background text-r-sonic-foreground">
+    <div className="h-[100vh] min-h-[100vh] flex flex-col bg-r-sonic-background text-r-sonic-foreground relative">
+      {pointsError && !pointsLoading ? (
+        <ErrorOverlay onRetry={refetchPoints} />
+      ) : (
+        referralError &&
+        !referralLoading && <ErrorOverlay onRetry={refetchReferral} />
+      )}
       <div
         style={{
           backgroundImage: `url(${
@@ -139,23 +173,17 @@ const SonicPoints = () => {
           {pointsLoading ? (
             <div className="h-[58px] w-[200px] bg-white/30 animate-pulse rounded-lg" />
           ) : (
-            totalPoints.toLocaleString(undefined, {
+            (points?.totalPoints ?? 0).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })
           )}
         </div>
-        <div className="text-[14px] text-r-sonic-foreground h-[20px] flex items-center">
+        <div className="text-[14px] text-r-sonic-foreground/80">
           {pointsLoading ? (
-            <div className="h-[20px] w-[100px] bg-white/30 animate-pulse rounded-lg ml-2" />
+            <div className="h-[20px] w-[120px] bg-white/30 animate-pulse rounded-lg" />
           ) : (
-            <>
-              {t('page.ecology.sonic.points.today')}:{' '}
-              {referralPoints.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </>
+            formatAddress(address)
           )}
         </div>
       </div>
@@ -166,56 +194,69 @@ const SonicPoints = () => {
           </div>
           <div className="flex items-center justify-evenly w-full gap-[8px]">
             <button
-              disabled={pointsLoading}
-              onClick={() => copyToClipboard(referralCode)}
+              disabled={referralLoading}
+              onClick={() => {
+                if (referralCode) {
+                  copyToClipboard(referralCode);
+                } else {
+                  window.open(
+                    'https://airdrop.soniclabs.com/referral',
+                    '_blank'
+                  );
+                }
+              }}
               className={`bg-rabby-sonic-card text-rabby-sonic-card-foreground rounded-[8px] px-[12px] py-[8px] flex w-full items-center justify-center gap-[10px] font-bold border border-rabby-sonic-card-border transition-all duration-200 ${
                 hasCopied
                   ? 'scale-[1.02] shadow'
                   : 'hover:scale-[1.02] hover:shadow'
               } ${
-                pointsLoading
+                referralLoading
                   ? 'opacity-50 cursor-not-allowed pointer-events-none'
                   : ''
               }`}
             >
-              {pointsLoading ? (
+              {referralLoading ? (
                 <Spinner />
-              ) : (
+              ) : referralCode ? (
                 <>
                   <div>{referralCode}</div>
                   {hasCopied ? <CheckedIcon /> : <CopyIcon />}
                 </>
+              ) : (
+                <div>{t('page.ecology.sonic.points.getReferralCode')}</div>
               )}
             </button>
-            <button
-              disabled={pointsLoading}
-              className={`bg-rabby-sonic-card text-rabby-sonic-card-foreground rounded-[8px] px-[12px] py-[8px] flex w-full items-center justify-center gap-[10px] font-bold border border-rabby-sonic-card-border transition-all duration-200 hover:scale-[1.02] hover:shadow ${
-                pointsLoading
-                  ? 'opacity-50 cursor-not-allowed pointer-events-none'
-                  : ''
-              }`}
-              onClick={() => {
-                window.open(
-                  `https://x.com/intent/tweet?text=${encodeURIComponent(
-                    `Join Sonic and get ${referralPoints} points! Use my code: ${referralCode}`
-                  )}&url=https://sonic.rabby.io`,
-                  '_blank'
-                );
-              }}
-            >
-              {t('page.ecology.sonic.points.shareOn')}
-              <svg
-                className="w-[16px] h-[16px]"
-                viewBox="0 0 300 300.251"
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
+            {(referralCode || referralLoading) && (
+              <button
+                disabled={referralLoading}
+                className={`bg-rabby-sonic-card text-rabby-sonic-card-foreground rounded-[8px] px-[12px] py-[8px] flex w-full items-center justify-center gap-[10px] font-bold border border-rabby-sonic-card-border transition-all duration-200 hover:scale-[1.02] hover:shadow ${
+                  referralLoading
+                    ? 'opacity-50 cursor-not-allowed pointer-events-none'
+                    : ''
+                }`}
+                onClick={() => {
+                  window.open(
+                    `https://x.com/intent/tweet?text=${encodeURIComponent(
+                      'Hollo!'
+                    )}&url=https://sonic.rabby.io`,
+                    '_blank'
+                  );
+                }}
               >
-                <path
-                  fill="currentColor"
-                  d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59h89.34M36.01 19.54H76.66l187.13 262.13h-40.66"
-                />
-              </svg>
-            </button>
+                {t('page.ecology.sonic.points.shareOn')}
+                <svg
+                  className="w-[16px] h-[16px]"
+                  viewBox="0 0 300 300.251"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59h89.34M36.01 19.54H76.66l187.13 262.13h-40.66"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
         <div className="flex flex-col gap-[8px]">

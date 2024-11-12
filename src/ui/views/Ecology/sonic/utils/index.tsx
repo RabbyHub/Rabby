@@ -1,9 +1,7 @@
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { createWalletClient, custom, defineChain, publicActions } from 'viem';
-import {
-  chainConfig,
-} from 'viem/op-stack';
+import { chainConfig } from 'viem/op-stack';
 
 export const sonicTestnet = defineChain({
   ...chainConfig,

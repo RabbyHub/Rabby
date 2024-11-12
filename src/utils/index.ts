@@ -13,7 +13,7 @@ const format = (str, ...args) => {
   return args.reduce((m, n) => m.replace('_s_', n), str);
 };
 
-export { t, format };
+export { format, t };
 
 export const getChain = (chainId?: string) => {
   if (!chainId) {
@@ -78,4 +78,15 @@ export const safeJSONParse = (str: string) => {
   } catch (err) {
     return null;
   }
+};
+
+export const formatAddress = (address?: string, n = 4) => {
+  if (!address) {
+    return '';
+  }
+
+  if (address.length <= 2 * n + 5) {
+    return address;
+  }
+  return `${address.slice(0, n + 2)}...${address.slice(-n)}`;
 };

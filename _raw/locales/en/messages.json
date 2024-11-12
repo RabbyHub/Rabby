@@ -2168,10 +2168,10 @@
           "arcadeBtn": "Play now",
           "migrateTitle": "Migrate",
           "migrateDesc": "→",
-          "migrateBtn": "Coming Soon",
+          "migrateBtn": "Coming soon",
           "earnTitle": "Earn",
           "earnDesc": "Stake your $S",
-          "earnBtn": "Coming Soon",
+          "earnBtn": "Coming soon",
           "socialsTitle": "Get Involved"
         },
         "points": {
@@ -2182,7 +2182,11 @@
           "sonicArcade": "Sonic Arcade",
           "sonicArcadeBtn": "Start playing",
           "pointsDashboard": "Points Dashboard",
-          "pointsDashboardBtn": "Start earning points"
+          "pointsDashboardBtn": "Start earning points",
+          "errorTitle": "Unable to load points",
+          "errorDesc": "There was an error loading your points. Please try again.",
+          "retry": "Retry",
+          "getReferralCode": "Get referral code"
         }
       },
       "dbk": {
