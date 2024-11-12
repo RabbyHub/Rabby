@@ -132,7 +132,7 @@ export const SonicHome = () => {
         </SonicCard>
       </div>
       <div className="flex flex-col items-center gap-y-[8px] pt-[16px] pb-[64px] text-rabby-sonic-foreground">
-        <div className="text-[16px] leading-[20px] font-semibold">
+        <div className="text-[16px] leading-[20px] font-semibold mb-[8px]">
           {t('page.ecology.sonic.home.socialsTitle')}
         </div>
         <div className="flex items-center gap-x-[10px] text-rabby-sonic-foreground">
@@ -140,7 +140,7 @@ export const SonicHome = () => {
             onClick={() => {
               window.open('https://soniclabs.com', '_blank');
             }}
-            className="p-[24px] justify-center items-center transition hover:scale-105 cursor-pointer"
+            className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
           >
             <RcGlobe className="w-[32px] h-[32px]" />
           </SonicCard>
@@ -148,7 +148,7 @@ export const SonicHome = () => {
             onClick={() => {
               window.open('https://t.me/sonic_labs', '_blank');
             }}
-            className="p-[24px] justify-center items-center transition hover:scale-105 cursor-pointer"
+            className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
           >
             <RcTelegram className="w-[32px] h-[32px]" />
           </SonicCard>
@@ -156,7 +156,7 @@ export const SonicHome = () => {
             onClick={() => {
               window.open('https://x.com/sonic_labs', '_blank');
             }}
-            className="p-[24px] justify-center items-center transition hover:scale-105 cursor-pointer"
+            className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
           >
             <RcX className="w-[32px] h-[32px]" />
           </SonicCard>
@@ -164,7 +164,7 @@ export const SonicHome = () => {
             onClick={() => {
               window.open('https://discord.gg/soniclabs', '_blank');
             }}
-            className="p-[24px] justify-center items-center transition hover:scale-105 cursor-pointer"
+            className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
           >
             <RcDiscord className="w-[32px] h-[32px]" />
           </SonicCard>

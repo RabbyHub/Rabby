@@ -27,7 +27,7 @@ export const SonicButton = ({
       className={clsx(
         'relative bg-r-sonic-btn text-r-sonic-btn-foreground font-semibold',
         'inline-flex items-center gap-[8px] justify-center',
-        'disabled:opacity-40 disabled:shadow-none disabled:cursor-not-allowed',
+        'disabled:opacity-40 disabled:shadow-none disabled:cursor-not-allowed disabled:pointer-events-none',
         'text-[12px] leading-[16px] font-bold',
         'px-[16px] py-[5px]',
         'transition-all duration-200 ease-in-out',
