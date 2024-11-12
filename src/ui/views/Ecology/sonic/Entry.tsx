@@ -6,7 +6,6 @@ import { SonicPoints } from './pages/Points';
 
 export const SonicEntry = () => {
   const { path } = useRouteMatch();
-  const { chainId } = useParams<{ chainId: string }>();
 
   return (
     <Switch>

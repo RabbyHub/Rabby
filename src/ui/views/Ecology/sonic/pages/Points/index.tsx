@@ -3,7 +3,6 @@ import pointsDarkImg from '@/ui/assets/ecology/sonic/points-bg.png';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useCopy } from '@/ui/utils/useCopy';
 import { formatAddress } from '@/utils';
-import { error } from 'console';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SonicButton } from '../../components/SonicButton';

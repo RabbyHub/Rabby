@@ -9,7 +9,6 @@ import { ReactComponent as RcDiscord } from '@/ui/assets/ecology/sonic/discord.s
 import { ReactComponent as RcGlobe } from '@/ui/assets/ecology/sonic/globe.svg';
 import { ReactComponent as RcTelegram } from '@/ui/assets/ecology/sonic/telegram.svg';
 import { ReactComponent as RcX } from '@/ui/assets/ecology/sonic/x.svg';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
