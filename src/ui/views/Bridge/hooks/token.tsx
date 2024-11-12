@@ -203,7 +203,7 @@ export const useBridge = () => {
 
   useEffect(() => {
     if (!isSameTokenLoading && slippageObj.autoSlippage) {
-      slippageObj.setSlippage(isSameToken ? '1' : '3');
+      slippageObj.setSlippage(isSameToken ? '0.5' : '1');
     }
   }, [
     slippageObj?.autoSlippage,
