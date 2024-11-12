@@ -253,7 +253,7 @@ export const useBridge = () => {
     }
     if (!quote?.manualClick) {
       expiredTimer.current = setTimeout(() => {
-        setRefreshId((e) => e + 1);
+        // setRefreshId((e) => e + 1);
       }, 1000 * 30);
     }
     setOriSelectedBridgeQuote(quote);
