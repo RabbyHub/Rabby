@@ -37,7 +37,11 @@ export const BridgeShowMore = ({
   isCustomSlippage,
   setAutoSlippage,
   setIsCustomSlippage,
+  open,
+  setOpen,
 }: {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
   openQuotesList: () => void;
   sourceName: string;
   sourceLogo: string;
@@ -57,7 +61,6 @@ export const BridgeShowMore = ({
   setIsCustomSlippage: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { t } = useTranslation();
-  const [show, setShow] = useState(false);
 
   const data = useMemo(
     () => tokenPriceImpact(fromToken, toToken, amount, toAmount),
@@ -66,7 +69,7 @@ export const BridgeShowMore = ({
 
   useEffect(() => {
     if ((!quoteLoading && data?.showLoss) || slippageError) {
-      setShow(true);
+      setOpen(true);
     }
   }, [quoteLoading, data?.showLoss]);
 
@@ -80,20 +83,20 @@ export const BridgeShowMore = ({
             'cursor-pointer',
             'text-r-neutral-foot text-12'
           )}
-          onClick={() => setShow((e) => !e)}
+          onClick={() => setOpen((e) => !e)}
         >
           <span>{t('page.bridge.showMore.title')}</span>
           <IconArrowDownCC
             viewBox="0 0 14 14"
             width={14}
             height={14}
-            className={clsx('transition-transform', show && 'rotate-180')}
+            className={clsx('transition-transform', open && 'rotate-180')}
           />
         </div>
         <div className={clsx(dottedClassName)} />
       </div>
 
-      <div className={clsx('overflow-hidden', !show && 'h-0')}>
+      <div className={clsx('overflow-hidden', !open && 'h-0')}>
         {data?.showLoss && !quoteLoading && (
           <div className="leading-4 mb-12 text-12 text-r-neutral-foot">
             <div className="flex justify-between">

@@ -354,6 +354,8 @@ export const BridgeContent = () => {
     quoteLoading ||
     !quoteList?.length;
 
+  const [showMoreOpen, setShowMoreOpen] = useState(false);
+
   return (
     <div
       className={clsx(
@@ -393,6 +395,8 @@ export const BridgeContent = () => {
       <div className="mx-20">
         {selectedBridgeQuote && (
           <BridgeShowMore
+            open={showMoreOpen}
+            setOpen={setShowMoreOpen}
             sourceName={selectedBridgeQuote?.aggregator.name || ''}
             sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
             slippage={slippageState}
