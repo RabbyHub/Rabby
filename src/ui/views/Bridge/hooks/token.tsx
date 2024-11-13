@@ -203,7 +203,7 @@ export const useBridge = () => {
 
   useEffect(() => {
     if (!isSameTokenLoading && slippageObj.autoSlippage) {
-      slippageObj.setSlippage(isSameToken ? '1' : '3');
+      slippageObj.setSlippage(isSameToken ? '0.5' : '1');
     }
   }, [
     slippageObj?.autoSlippage,
@@ -253,7 +253,7 @@ export const useBridge = () => {
     }
     if (!quote?.manualClick) {
       expiredTimer.current = setTimeout(() => {
-        setRefreshId((e) => e + 1);
+        // setRefreshId((e) => e + 1);
       }, 1000 * 30);
     }
     setOriSelectedBridgeQuote(quote);

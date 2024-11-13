@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 
 export const useBridgeSlippage = () => {
-  const [slippageState, setSlippageState] = useState('3');
+  const [slippageState, setSlippageState] = useState('1');
 
-  const slippage = useMemo(() => slippageState || '3', [slippageState]);
+  const slippage = useMemo(() => slippageState || '1', [slippageState]);
   const [slippageChanged, setSlippageChanged] = useState(false);
 
   const [autoSlippage, setAutoSlippage] = useState(true);

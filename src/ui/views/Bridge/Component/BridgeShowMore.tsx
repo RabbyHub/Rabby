@@ -215,7 +215,7 @@ export const RecommendFromToken = ({
     <div
       className={clsx(
         'flex items-center',
-        'h-[40px] px-8 rounded-[8px]',
+        'h-[44px] pl-12 pr-10 rounded-[8px]',
         'bg-r-neutral-card-1',
         className
       )}
@@ -223,12 +223,19 @@ export const RecommendFromToken = ({
       <div
         className={clsx(
           'flex-1 flex items-center',
-          'text-13 text-rabby-neutral-title-1'
+          'text-12 text-rabby-neutral-title-1'
         )}
       >
         <Trans t={t} i18nKey={'page.bridge.recommendFromToken'}>
           Bridge from
-          <div className="flex items-center gap-6 mx-2">
+          <div
+            className={clsx(
+              'flex items-center gap-6',
+              'px-8 py-6 mx-6',
+              'text-r-blue-default',
+              'bg-rabby-blue-light1 rounded-[6px]'
+            )}
+          >
             <TokenWithChain
               token={token}
               width="16px"
