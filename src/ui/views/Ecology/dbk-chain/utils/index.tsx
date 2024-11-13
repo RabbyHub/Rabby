@@ -152,6 +152,7 @@ export const checkBridgeStatus = async ({
       });
       return 'finalized' as const;
     } catch (e) {
+      console.error(e);
       return 'deposit-pending' as const;
     }
   } else {
@@ -166,6 +167,7 @@ export const checkBridgeStatus = async ({
       });
     } catch (e) {
       console.error(e);
+      return 'withdraw-pending' as const;
     }
   }
 };
