@@ -253,7 +253,7 @@ export const useBridge = () => {
     }
     if (!quote?.manualClick) {
       expiredTimer.current = setTimeout(() => {
-        // setRefreshId((e) => e + 1);
+        setRefreshId((e) => e + 1);
       }, 1000 * 30);
     }
     setOriSelectedBridgeQuote(quote);
@@ -261,7 +261,6 @@ export const useBridge = () => {
 
   useEffect(() => {
     setQuotesList([]);
-    setSelectedBridgeQuote(undefined);
     setRecommendFromToken(undefined);
   }, [fromToken?.id, toToken?.id, fromChain, toChain, amount, inSufficient]);
 
@@ -484,6 +483,7 @@ export const useBridge = () => {
         }
       }
     }
+    setSelectedBridgeQuote(undefined);
   }, [
     inSufficient,
     aggregatorsList,
