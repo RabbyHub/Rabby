@@ -47,6 +47,7 @@ import {
   KEYRING_CLASS,
   DBK_CHAIN_ID,
   DBK_NFT_CONTRACT_ADDRESS,
+  CORE_KEYRING_TYPES,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -1562,7 +1563,17 @@ export class WalletController extends BaseController {
   private getTotalBalanceCached = cached(
     'getTotalBalanceCached',
     async (address: string) => {
-      const data = await openapiService.getTotalBalance(address);
+      const addresses = await keyringService.getAllAdresses();
+      const filtered = addresses.filter((item) =>
+        isSameAddress(item.address, address)
+      );
+      let core = false;
+      if (
+        filtered.some((item) => CORE_KEYRING_TYPES.includes(item.type as any))
+      ) {
+        core = true;
+      }
+      const data = await openapiService.getTotalBalance(address, core);
       preferenceService.updateBalanceAboutCache(address, {
         totalBalance: data,
       });
