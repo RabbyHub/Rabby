@@ -21,7 +21,9 @@ export const useDeviceConnect = () => {
    */
   const connect = React.useCallback(
     async (data: any) => {
-      if (!data) return;
+      if (!data) {
+        return true;
+      }
       const { type, account, isGnosis } = data;
 
       if (type === KEYRING_CLASS.HARDWARE.LEDGER) {
