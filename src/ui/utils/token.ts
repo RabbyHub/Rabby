@@ -161,6 +161,7 @@ export const abstractTokenToTokenItem = (
     chain: token.chain,
     amount: token.amount,
     raw_amount: token.raw_amount,
+    raw_amount_hex_str: token.raw_amount_hex_str,
     decimals: token.decimals,
     display_symbol: token.display_symbol,
     is_core: token.is_core,
