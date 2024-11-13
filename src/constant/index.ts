@@ -261,6 +261,12 @@ export const KEYRING_CLASS = {
   Coinbase: 'Coinbase',
 } as const;
 
+export const CORE_KEYRING_TYPES = [
+  KEYRING_CLASS.MNEMONIC,
+  KEYRING_CLASS.PRIVATE_KEY,
+  ...Object.values(KEYRING_CLASS.HARDWARE),
+];
+
 export const KEYRING_WITH_INDEX = [
   KEYRING_CLASS.HARDWARE.LEDGER,
   KEYRING_CLASS.HARDWARE.GRIDPLUS,
