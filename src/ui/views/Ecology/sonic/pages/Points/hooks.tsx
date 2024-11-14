@@ -3,28 +3,15 @@ import { useEffect, useState } from 'react';
 import { getAddress } from 'viem';
 
 async function fetchReferralCode(address: string) {
-  const baseUrl = 'https://airdrop.soniclabs.com/api/trpc';
-  const endpoint = 'user.findOrCreate';
-
-  const input = {
-    '0': { json: { address } },
-  };
-
-  const url = `${baseUrl}/${endpoint}?batch=1&input=${encodeURIComponent(
-    JSON.stringify(input)
-  )}`;
+  const url = `https://airdrop.soniclabs.com/api/user/${address}`;
 
   try {
     const response = await fetch(url);
-    const data = await response.json();
+    const { referralCode } = await response.json();
 
-    const result = data[0]?.result?.data?.json;
-
-    if (!result) {
+    if (!referralCode) {
       return null;
     }
-
-    const { referralCode } = result;
 
     return referralCode;
   } catch (error) {
