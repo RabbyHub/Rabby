@@ -203,27 +203,25 @@ const config = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.popupHtml,
-      chunks: ['ui', 'ui-vender'],
+      chunks: ['ui'],
       filename: 'popup.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.notificationHtml,
-      chunks: ['ui', 'ui-vender'],
+      chunks: ['ui'],
       filename: 'notification.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.indexHtml,
-      chunks: ['ui', 'ui-vender'],
+      chunks: ['ui'],
       filename: 'index.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.backgroundHtml,
-      chunks: ['background'].concat(
-        IS_FIREFOX ? ['bg-chunk1', 'bg-chunk2', 'bg-chunk3'] : []
-      ),
+      chunks: ['background'],
       filename: 'background.html',
     }),
     new HtmlWebpackPlugin({
@@ -313,39 +311,35 @@ const config = {
   stats: 'minimal',
   optimization: {
     splitChunks: {
+      ...(IS_FIREFOX && {
+        chunks: 'all',
+        minSize: 10000,
+        maxSize: 4000000,
+        minChunks: 1,
+        maxAsyncRequests: 30,
+        maxInitialRequests: 30,
+      }),
       cacheGroups: {
         'webextension-polyfill': {
           minSize: 0,
           test: /[\\/]node_modules[\\/]webextension-polyfill/,
           name: 'webextension-polyfill',
           chunks: 'all',
+          priority: 100,
         },
         ...(IS_FIREFOX && {
-          bgChunk1: {
-            test: /[\\/]node_modules[\\/](@rabby-wallet|ethers|@ethersproject|@chainsafe|@trezor|@safe-global|@walletconnect)[\\/]/,
-            name: 'bg-chunk1',
-            chunks: (chunk) => chunk.name === 'background',
-            minSize: 0,
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
+            reuseExistingChunk: true,
           },
-          bgChunk2: {
-            test: /[\\/]node_modules[\\/](@keystonehq|@eth-optimism|@coinbase|gridplus-sdk)[\\/]/,
-            name: 'bg-chunk2',
-            chunks: (chunk) => chunk.name === 'background',
-            minSize: 0,
-          },
-          bgChunk3: {
-            test: /[\\/]node_modules[\\/](@imkey|@onekeyfe|@ethereumjs|viem|@metamask)[\\/]/,
-            name: 'bg-chunk3',
-            chunks: (chunk) => chunk.name === 'background',
-            minSize: 0,
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
           },
         }),
-        uiVender: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'ui-vender',
-          chunks: (chunk) => chunk.name === 'ui',
-          minSize: 0,
-        },
       },
     },
   },
