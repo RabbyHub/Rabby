@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { SonicHome } from './pages/Home';
 import { SonicPoints } from './pages/Points';

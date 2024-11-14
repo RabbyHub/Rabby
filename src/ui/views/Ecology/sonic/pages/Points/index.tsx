@@ -66,7 +66,6 @@ const ErrorOverlay = ({ onRetry }: { onRetry: () => void }) => {
 
 const SonicPoints = () => {
   const {
-    points,
     loading,
     error,
     refetch,
@@ -103,16 +102,12 @@ const SonicPoints = () => {
             })
           )}
         </div>
-        <div
+        <button
           onClick={() => copyAddress(address ?? '')}
           className="text-[14px] text-r-sonic-foreground/80"
         >
-          {loading ? (
-            <div className="h-[20px] w-[120px] bg-white/30 animate-pulse rounded-lg" />
-          ) : (
-            ellipsis(address ?? '')
-          )}
-        </div>
+          {ellipsis(address ?? '')}
+        </button>
       </div>
       <div className="rounded-t-[20px] bg-rabby-sonic-background p-[20px] mt-[-20px] flex flex-col gap-[16px]">
         <div className="flex flex-col items-start gap-[8px]">
