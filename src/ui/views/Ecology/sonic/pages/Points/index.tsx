@@ -7,7 +7,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SonicButton } from '../../components/SonicButton';
 import { SonicCard } from '../../components/SonicCard';
-import { useSonicPoints, useSonicReferralCode } from './hooks';
+import { useSonicData } from './hooks';
 
 const links = [
   {
@@ -132,29 +132,20 @@ const ErrorOverlay = ({ onRetry }: { onRetry: () => void }) => {
 const SonicPoints = () => {
   const {
     points,
-    pointsLoading,
-    error: pointsError,
-    refetch: refetchPoints,
-    address,
-  } = useSonicPoints();
-  const {
+    loading,
+    error,
+    refetch,
     referralCode,
-    referralLoading,
-    error: referralError,
-    refetch: refetchReferral,
-  } = useSonicReferralCode();
+    totalPoints,
+    address,
+  } = useSonicData();
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
   const { copyToClipboard, hasCopied } = useCopy();
 
   return (
     <div className="h-[100vh] min-h-[100vh] flex flex-col bg-r-sonic-background text-r-sonic-foreground relative">
-      {pointsError && !pointsLoading ? (
-        <ErrorOverlay onRetry={refetchPoints} />
-      ) : (
-        referralError &&
-        !referralLoading && <ErrorOverlay onRetry={refetchReferral} />
-      )}
+      {error && !loading && <ErrorOverlay onRetry={refetch} />}
       <div
         style={{
           backgroundImage: `url(${
@@ -163,23 +154,23 @@ const SonicPoints = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
-        className="flex flex-col items-center space-y-[8px] pt-[20px] pb-[40px]"
+        className="flex flex-col items-center space-y-[4px] pt-[20px] pb-[40px]"
       >
         <div className="text-[20px] font-bold text-r-sonic-foreground">
           {t('page.ecology.sonic.points.sonicPoints')}
         </div>
         <div className="text-[48px] font-bold text-r-sonic-foreground h-[58px] flex items-center">
-          {pointsLoading ? (
+          {loading ? (
             <div className="h-[58px] w-[200px] bg-white/30 animate-pulse rounded-lg" />
           ) : (
-            (points?.totalPoints ?? 0).toLocaleString(undefined, {
+            totalPoints.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })
           )}
         </div>
         <div className="text-[14px] text-r-sonic-foreground/80">
-          {pointsLoading ? (
+          {loading ? (
             <div className="h-[20px] w-[120px] bg-white/30 animate-pulse rounded-lg" />
           ) : (
             formatAddress(address)
@@ -193,7 +184,7 @@ const SonicPoints = () => {
           </div>
           <div className="flex items-center justify-evenly w-full gap-[8px]">
             <button
-              disabled={referralLoading}
+              disabled={loading}
               onClick={() => {
                 if (referralCode) {
                   copyToClipboard(referralCode);
@@ -209,12 +200,12 @@ const SonicPoints = () => {
                   ? 'scale-[1.02] shadow'
                   : 'hover:scale-[1.02] hover:shadow'
               } ${
-                referralLoading
+                loading
                   ? 'opacity-50 cursor-not-allowed pointer-events-none'
                   : ''
               }`}
             >
-              {referralLoading ? (
+              {loading ? (
                 <Spinner />
               ) : referralCode ? (
                 <>
@@ -225,11 +216,11 @@ const SonicPoints = () => {
                 <div>{t('page.ecology.sonic.points.getReferralCode')}</div>
               )}
             </button>
-            {(referralCode || referralLoading) && (
+            {(referralCode || loading) && (
               <button
-                disabled={referralLoading}
+                disabled={loading}
                 className={`bg-rabby-sonic-card text-rabby-sonic-card-foreground rounded-[8px] px-[12px] py-[8px] flex w-full items-center justify-center gap-[10px] font-bold border border-rabby-sonic-card-border transition-all duration-200 hover:scale-[1.02] hover:shadow ${
-                  referralLoading
+                  loading
                     ? 'opacity-50 cursor-not-allowed pointer-events-none'
                     : ''
                 }`}
