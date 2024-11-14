@@ -685,7 +685,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     return [
       {
         ...tx,
-        nonce: realNonce,
+        nonce: realNonce || tx.nonce,
         gasPrice: tx.gasPrice || tx.maxFeePerGas,
         gas: gasLimit,
       },
