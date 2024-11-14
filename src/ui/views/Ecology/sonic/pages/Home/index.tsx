@@ -33,6 +33,46 @@ const CardDesc = styled.div`
   color: var(--r-sonic-foreground);
 `;
 
+type HomeLink = {
+  icon: React.ElementType;
+  url: string;
+};
+
+const links: HomeLink[] = [
+  {
+    icon: RcGlobe,
+    url: 'https://soniclabs.com',
+  },
+  {
+    icon: RcX,
+    url: 'https://x.com/0xSonicLabs',
+  },
+  {
+    icon: RcTelegram,
+    url: 'https://t.me/SonicAnnouncements',
+  },
+  {
+    icon: RcDiscord,
+    url: 'https://discord.gg/3Ynr2QDSnB',
+  },
+];
+
+const HomeLink = ({ link, ...props }: { link: HomeLink }) => {
+  const icon = React.createElement(link.icon, {
+    className: 'w-[32px] h-[32px]',
+  });
+
+  return (
+    <SonicCard
+      onClick={() => openInTab(link.url)}
+      className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
+      {...props}
+    >
+      {icon}
+    </SonicCard>
+  );
+};
+
 export const SonicHome = () => {
   const history = useHistory();
   const { url } = useRouteMatch();
@@ -134,30 +174,9 @@ export const SonicHome = () => {
           {t('page.ecology.sonic.home.socialsTitle')}
         </div>
         <div className="flex items-center gap-x-[10px] text-rabby-sonic-foreground">
-          <SonicCard
-            onClick={() => openInTab('https://soniclabs.com')}
-            className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
-          >
-            <RcGlobe className="w-[32px] h-[32px]" />
-          </SonicCard>
-          <SonicCard
-            onClick={() => openInTab('https://t.me/sonic_labs')}
-            className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
-          >
-            <RcTelegram className="w-[32px] h-[32px]" />
-          </SonicCard>
-          <SonicCard
-            onClick={() => openInTab('https://x.com/sonic_labs')}
-            className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
-          >
-            <RcX className="w-[32px] h-[32px]" />
-          </SonicCard>
-          <SonicCard
-            onClick={() => openInTab('https://discord.gg/soniclabs')}
-            className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
-          >
-            <RcDiscord className="w-[32px] h-[32px]" />
-          </SonicCard>
+          {links.map((link) => (
+            <HomeLink key={link.url} link={link} />
+          ))}
         </div>
       </div>
     </div>
