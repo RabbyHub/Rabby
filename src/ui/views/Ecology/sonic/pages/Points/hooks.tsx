@@ -64,11 +64,18 @@ export const useSonicData = () => {
     return referralData?.referralCode;
   }, [referralData]);
 
+  const address = useMemo(() => {
+    if (!account?.address) {
+      return null;
+    }
+    return getAddress(account.address);
+  }, [account]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
 
-      if (!account?.address) {
+      if (!address) {
         setPointsData(undefined);
         setReferralData(undefined);
         setLoading(false);
@@ -77,7 +84,6 @@ export const useSonicData = () => {
       }
 
       try {
-        const address = getAddress(account.address);
         const [pointsData, referralData] = await Promise.all([
           fetchPoints(address),
           fetchReferralData(address),
@@ -94,7 +100,7 @@ export const useSonicData = () => {
     };
 
     fetchData();
-  }, [account?.address, refetchCount]);
+  }, [address, refetchCount]);
 
   const refetch = () => {
     setRefetchCount((prev) => prev + 1);
@@ -107,6 +113,6 @@ export const useSonicData = () => {
     loading,
     error,
     refetch,
-    address: account?.address,
+    address,
   };
 };

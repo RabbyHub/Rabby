@@ -79,14 +79,3 @@ export const safeJSONParse = (str: string) => {
     return null;
   }
 };
-
-export const formatAddress = (address?: string, n = 4) => {
-  if (!address) {
-    return '';
-  }
-
-  if (address.length <= 2 * n + 5) {
-    return address;
-  }
-  return `${address.slice(0, n + 2)}...${address.slice(-n)}`;
-};

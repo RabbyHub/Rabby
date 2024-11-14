@@ -2177,7 +2177,7 @@
         "points": {
           "sonicPoints": "Sonic Points",
           "referralCode": "Referral code",
-          "referralCodeShare": "Earn points for the ~200m $S airdrop with free play-to-earn games on #SonicArcade: {{referralCode}}",
+          "referralCodeCopied": "Referral code copied",
           "today": "Today",
           "shareOn": "Share on",
           "sonicArcade": "Sonic Arcade",

@@ -10,6 +10,7 @@ import { ReactComponent as RcGlobe } from '@/ui/assets/ecology/sonic/globe.svg';
 import { ReactComponent as RcTelegram } from '@/ui/assets/ecology/sonic/telegram.svg';
 import { ReactComponent as RcX } from '@/ui/assets/ecology/sonic/x.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { openInTab } from '@/ui/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -76,9 +77,7 @@ export const SonicHome = () => {
         <SonicButton
           rounded
           className="rounded-full"
-          onClick={() => {
-            window.open('https://arcade.soniclabs.com', '_blank');
-          }}
+          onClick={() => openInTab('https://arcade.soniclabs.com')}
         >
           {t('page.ecology.sonic.home.arcadeBtn')}
         </SonicButton>
@@ -88,21 +87,21 @@ export const SonicHome = () => {
             width={48}
             height={48}
             src={arcadePlinkoImg}
-            alt=""
+            alt="Sonic Arcade Plinko Icon"
           />
           <img
             className="shadow-md rounded-md"
             width={48}
             height={48}
             src={arcadeMinesImg}
-            alt=""
+            alt="Sonic Arcade Mines Icon"
           />
           <img
             className="shadow-md rounded-md transform rotate-[8deg] translate-y-[4px]"
             width={48}
             height={48}
             src={arcadeWheelImg}
-            alt=""
+            alt="Sonic Arcade Wheel Icon"
           />
         </div>
       </SonicCard>
@@ -136,33 +135,25 @@ export const SonicHome = () => {
         </div>
         <div className="flex items-center gap-x-[10px] text-rabby-sonic-foreground">
           <SonicCard
-            onClick={() => {
-              window.open('https://soniclabs.com', '_blank');
-            }}
+            onClick={() => openInTab('https://soniclabs.com')}
             className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
           >
             <RcGlobe className="w-[32px] h-[32px]" />
           </SonicCard>
           <SonicCard
-            onClick={() => {
-              window.open('https://t.me/sonic_labs', '_blank');
-            }}
+            onClick={() => openInTab('https://t.me/sonic_labs')}
             className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
           >
             <RcTelegram className="w-[32px] h-[32px]" />
           </SonicCard>
           <SonicCard
-            onClick={() => {
-              window.open('https://x.com/sonic_labs', '_blank');
-            }}
+            onClick={() => openInTab('https://x.com/sonic_labs')}
             className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
           >
             <RcX className="w-[32px] h-[32px]" />
           </SonicCard>
           <SonicCard
-            onClick={() => {
-              window.open('https://discord.gg/soniclabs', '_blank');
-            }}
+            onClick={() => openInTab('https://discord.gg/soniclabs')}
             className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
           >
             <RcDiscord className="w-[32px] h-[32px]" />
