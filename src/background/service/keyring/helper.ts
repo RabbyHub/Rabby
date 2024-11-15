@@ -9,22 +9,6 @@ export const throwError = (error, method = EVENTS.COMMON_HARDWARE.REJECTED) => {
   });
 };
 
-/**
- * @deprecated
- */
-export class SignHelper {
-  signFn: any;
-  errorEventName: string;
-
-  constructor(options: { errorEventName: string }) {
-    this.errorEventName = options.errorEventName;
-  }
-
-  async invoke(fn: () => Promise<any>) {
-    return fn();
-  }
-}
-
 export enum LedgerHDPathType {
   LedgerLive = 'LedgerLive',
   Legacy = 'Legacy',
