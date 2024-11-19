@@ -58,6 +58,9 @@ import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
 import { GnosisQueue } from './GnosisQueue';
+import { Guide } from './NewUserImport/Guide';
+import { ImportWalletList } from './NewUserImport/ImportList';
+import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
 
 declare global {
   interface Window {
@@ -100,6 +103,18 @@ const Main = () => {
         <Route exact path="/welcome">
           <Welcome />
         </Route>
+        <Route exact path="/new-user/guide">
+          <Guide />
+        </Route>
+
+        <Route exact path="/new-user/import-list">
+          <ImportWalletList />
+        </Route>
+
+        <Route exact path="/new-user/create-seed-phrase">
+          <CreateSeedPhrase />
+        </Route>
+
         <Route exact path="/password">
           <CreatePassword />
         </Route>
