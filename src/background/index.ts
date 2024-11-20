@@ -54,6 +54,7 @@ import { customTestnetService } from './service/customTestnet';
 import { findChain } from '@/utils/chain';
 import { syncChainService } from './service/syncChain';
 import { GasAccountServiceStore } from './service/gasAccount';
+import { openInTab } from './utils/extension';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -77,6 +78,7 @@ Sentry.init({
 });
 
 async function restoreAppState() {
+  await onInstall();
   const keyringState = await storage.get('keyringState');
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
@@ -386,4 +388,17 @@ function startEnableUser() {
     action: 'enable',
   });
   preferenceService.updateSendEnableTime(Date.now());
+}
+
+// On first install, open a new tab with Rabby
+async function onInstall() {
+  // todo
+  const storeAlreadyExisted = Object.keys(
+    await browser.storage.local.get('keyringState')
+  ).length;
+  // If the store doesn't exist, then this is the first time running this script,
+  // and is therefore an install
+  if (!storeAlreadyExisted) {
+    openInTab('./index.html#/new-user/guide');
+  }
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Card } from '@/ui/component/NewUserImport';
 import { ReactComponent as RcIconArrowDownCC } from '@/ui/assets/new-user-import/arrow-down-cc.svg';
 import {
@@ -17,6 +17,8 @@ import { useTranslation } from 'react-i18next';
 export const ImportWalletList = () => {
   const { t } = useTranslation();
   const history = useHistory();
+  const location = useLocation();
+  console.log('import list', location);
 
   const [showMore, setShowMore] = useState(false);
 
@@ -61,6 +63,9 @@ export const ImportWalletList = () => {
 
   const gotoImport = (type: typeof tipList[number]['type']) => {
     // TODO: import different wallet type
+    if (type === KEYRING_TYPE.SimpleKeyring) {
+      history.push('/new-user/import/private-key');
+    }
   };
 
   return (

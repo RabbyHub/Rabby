@@ -1005,7 +1005,6 @@
       "est-difference": "Est. Difference:",
       "loss-tips": "You're losing {{usd}}. Try a different amount.",
       "price-impact": "Price Impact",
-
       "showMore": {
         "title": "Show More",
         "source": "Bridge Source"
@@ -2304,6 +2303,25 @@
       },
       "importList": {
         "title": "Select import method "
+      },
+      "importPrivateKey": {
+        "title": "Import Private Key"
+      },
+      "PasswordCard": {
+        "title": "Set Password",
+        "form": {
+          "password": {
+            "label": "Password",
+            "placeholder": "8 characters min",
+            "required": "Please input Password",
+            "min": "8 characters min"
+          },
+          "confirmPassword": {
+            "label": "Confirm Password",
+            "placeholder": "Password"
+          }
+        },
+        "agree": "I agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>"
       }
     }
   },

@@ -61,6 +61,8 @@ import { GnosisQueue } from './GnosisQueue';
 import { Guide } from './NewUserImport/Guide';
 import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
+import { NewUserImportPrivateKey } from './NewUserImport/ImportPrivateKey';
+import { NewUserSetPassword } from './NewUserImport/SetPassword';
 
 declare global {
   interface Window {
@@ -109,6 +111,14 @@ const Main = () => {
 
         <Route exact path="/new-user/import-list">
           <ImportWalletList />
+        </Route>
+
+        <Route exact path="/new-user/import/private-key">
+          <NewUserImportPrivateKey />
+        </Route>
+
+        <Route exact path="/new-user/import/:type/set-password">
+          <NewUserSetPassword />
         </Route>
 
         <Route exact path="/new-user/create-seed-phrase">
