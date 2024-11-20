@@ -1,13 +1,11 @@
 diff --git a/node_modules/@metamask/eth-sig-util/dist/ethereumjs-abi-utils.d.ts b/node_modules/@metamask/eth-sig-util/dist/ethereumjs-abi-utils.d.ts
-index 45a660e..f66f2c1 100644
+index 45a660e..9b3f105 100644
 --- a/node_modules/@metamask/eth-sig-util/dist/ethereumjs-abi-utils.d.ts
 +++ b/node_modules/@metamask/eth-sig-util/dist/ethereumjs-abi-utils.d.ts
-@@ -20,3 +20,7 @@ export declare function parseNumber(arg: string | number | BN): BN;
+@@ -20,3 +20,5 @@ export declare function parseNumber(arg: string | number | BN): BN;
   * @param values
   */
  export declare function rawEncode(types: string[], values: (BN | Buffer | string | number | string[] | number[])[]): Buffer;
-+
-+export declare function encodeSingle(type: string, arg: BN | Buffer | string | number | string[] | number[]): Buffer;
 +
 +export declare function encodeSingle(type: string, arg: BN | Buffer | string | number | string[] | number[]): Buffer;
 diff --git a/node_modules/@metamask/eth-sig-util/dist/ethereumjs-abi-utils.js b/node_modules/@metamask/eth-sig-util/dist/ethereumjs-abi-utils.js
