@@ -63,6 +63,9 @@ import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
 import { NewUserImportPrivateKey } from './NewUserImport/ImportPrivateKey';
 import { NewUserSetPassword } from './NewUserImport/SetPassword';
+import { NewUserImportGnosisAddress } from './NewUserImport/ImportGnosisAddress';
+import { NewUserImportLedger } from './NewUserImport/ImportLedger';
+import { NewUserImportKeystone } from './NewUserImport/ImportKeystone';
 
 declare global {
   interface Window {
@@ -115,6 +118,18 @@ const Main = () => {
 
         <Route exact path="/new-user/import/private-key">
           <NewUserImportPrivateKey />
+        </Route>
+
+        <Route exact path="/new-user/import/gnosis-address">
+          <NewUserImportGnosisAddress />
+        </Route>
+
+        <Route exact path="/new-user/import/ledger">
+          <NewUserImportLedger />
+        </Route>
+
+        <Route exact path="/new-user/import/keystone">
+          <NewUserImportKeystone />
         </Route>
 
         <Route exact path="/new-user/import/:type/set-password">

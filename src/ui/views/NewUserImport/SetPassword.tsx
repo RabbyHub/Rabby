@@ -17,28 +17,82 @@ export const NewUserSetPassword = () => {
   const history = useHistory();
   const wallet = useWallet();
 
-  const handlePrivateKey = useMemoizedFn(async (password: string) => {
-    try {
-      if (!store.privateKey) {
-        throw new Error('empty private key');
-      }
-      await wallet.boot(password);
-      await wallet.importPrivateKey(store.privateKey);
-      // todo
-      history.push('/new-user/import-success');
-    } catch (e) {
-      console.error(e);
-      message.error(e.message);
-      throw e;
-    }
-  });
+  const config = {
+    'private-key': {
+      onSubmit: useMemoizedFn(async (password: string) => {
+        try {
+          if (!store.privateKey) {
+            throw new Error('empty private key');
+          }
+          await wallet.boot(password);
+          await wallet.importPrivateKey(store.privateKey);
+          // todo
+          history.push('/new-user/import-success');
+        } catch (e) {
+          console.error(e);
+          message.error(e.message);
+          throw e;
+        }
+      }),
+      step: 2,
+      onBack: useMemoizedFn(() => {
+        history.goBack();
+      }),
+    },
+    'gnosis-address': {
+      onSubmit: useMemoizedFn(async (password: string) => {
+        try {
+          if (!store.gnosis?.address) {
+            throw new Error('empty safe address');
+          }
+          await wallet.boot(password);
+          await wallet.importGnosisAddress(
+            store.gnosis.address,
+            store.gnosis.chainList.map((item) => item.network)
+          );
+          // todo
+          history.push('/new-user/import-success');
+        } catch (e) {
+          console.error(e);
+          message.error(e.message);
+          throw e;
+        }
+      }),
+      step: 1,
+      onBack: useMemoizedFn(() => {
+        history.goBack();
+      }),
+    },
+    ledger: {
+      onSubmit: useMemoizedFn((password: string) => {
+        setStore({
+          password,
+        });
+        history.push('/new-user/import/ledger');
+      }),
+      step: 1,
+      onBack: useMemoizedFn(() => {
+        history.goBack();
+      }),
+    },
+    keystone: {
+      onSubmit: useMemoizedFn((password: string) => {
+        setStore({
+          password,
+        });
+        history.push('/new-user/import/keystone');
+      }),
+      step: 1,
+      onBack: useMemoizedFn(() => {
+        history.goBack();
+      }),
+    },
+  };
 
-  const handleSubmit = useMemoizedFn(async (password: string) => {
-    // todo different type
-    if (type === 'private-key') {
-      handlePrivateKey(password);
-    }
-  });
+  const props = config[type];
+  if (!props) {
+    return null;
+  }
 
-  return <PasswordCard onSubmit={handleSubmit} />;
+  return <PasswordCard {...props} />;
 };

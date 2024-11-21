@@ -65,6 +65,12 @@ export const ImportWalletList = () => {
     // TODO: import different wallet type
     if (type === KEYRING_TYPE.SimpleKeyring) {
       history.push('/new-user/import/private-key');
+    } else if (type === KEYRING_CLASS.GNOSIS) {
+      history.push('/new-user/import/gnosis-address');
+    } else if (type === KEYRING_CLASS.HARDWARE.LEDGER) {
+      history.push('/new-user/import/ledger/set-password');
+    } else if (type === KEYRING_CLASS.HARDWARE.KEYSTONE) {
+      history.push('/new-user/import/keystone/set-password');
     }
   };
 

@@ -1,10 +1,15 @@
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
+import { Chain } from '@/types/chain';
 
 interface State {
   password?: string;
   seedPhrase?: string;
   privateKey?: string;
+  gnosis?: {
+    address: string;
+    chainList: Chain[];
+  };
 }
 
 export const newUserGuide = createModel<RootModel>()({
@@ -14,6 +19,7 @@ export const newUserGuide = createModel<RootModel>()({
     password: '',
     seedPhrase: '',
     privateKey: '',
+    gnosis: undefined,
   },
 
   reducers: {

@@ -41,9 +41,11 @@ const Container = styled.div`
 
 interface Props {
   onSubmit?(password: string): void;
+  onBack?(): void;
+  step: 1 | 2;
 }
 
-export const PasswordCard: React.FC<Props> = ({ onSubmit }) => {
+export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
   const { t } = useTranslation();
   const [agreeTerm, setAgreeTerm] = useState(true);
 
@@ -70,14 +72,8 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit }) => {
 
   return (
     <Container>
-      <Card
-        onBack={() => {
-          history.goBack();
-        }}
-        step={1}
-        className="flex flex-col"
-      >
-        <div className="flex-1">
+      <Card onBack={onBack} step={step} className="flex flex-col">
+        <div className="flex-1 mt-[18px]">
           <hgroup>
             <h1 className="text-r-neutral-title1 text-center font-semibold text-[24px] leading-[29px] mb-[8px]">
               {t('page.newUserImport.PasswordCard.title')}

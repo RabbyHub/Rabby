@@ -46,8 +46,8 @@ export const NewUserImportPrivateKey = () => {
       step={1}
       className="flex flex-col"
     >
-      <div className="flex-1">
-        <div className="text-r-neutral-title1 text-center text-[16px] font-semibold leading-[24px]">
+      <div className="flex-1 mt-[18px]">
+        <div className="text-r-neutral-title1 text-center text-[20px] font-semibold leading-[24px]">
           {t('page.newUserImport.importPrivateKey.title')}
         </div>
         <Form
