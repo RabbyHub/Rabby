@@ -1,4 +1,4 @@
-import { openInTab } from '@/ui/utils';
+import { openExternalWebsiteInTab } from '@/ui/utils';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import { message } from 'antd';
 import { t } from 'i18next';
@@ -37,7 +37,7 @@ export const shareSonicPointsX = ({
   
 https://airdrop.soniclabs.com/?ref=${referralCode}`);
 
-  openInTab(`https://x.com/intent/post?text=${text}`);
+  openExternalWebsiteInTab(`https://x.com/intent/post?text=${text}`);
 };
 
 export const CodeAndShare = ({
@@ -69,7 +69,7 @@ export const CodeAndShare = ({
           if (referralCode) {
             handleCopyReferralCode();
           } else {
-            openInTab('https://airdrop.soniclabs.com/referral');
+            openExternalWebsiteInTab('https://airdrop.soniclabs.com/referral');
           }
         }}
         className={`bg-rabby-sonic-card text-rabby-sonic-card-foreground rounded-[8px] px-[12px] py-[8px] flex w-full items-center justify-center gap-[10px] font-bold border border-rabby-sonic-card-border transition-all duration-200 ${

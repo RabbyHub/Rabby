@@ -10,7 +10,7 @@ import { ReactComponent as RcGlobe } from '@/ui/assets/ecology/sonic/globe.svg';
 import { ReactComponent as RcTelegram } from '@/ui/assets/ecology/sonic/telegram.svg';
 import { ReactComponent as RcX } from '@/ui/assets/ecology/sonic/x.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { openInTab } from '@/ui/utils';
+import { openExternalWebsiteInTab } from '@/ui/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -64,7 +64,7 @@ const HomeLink = ({ link, ...props }: { link: HomeLink }) => {
 
   return (
     <SonicCard
-      onClick={() => openInTab(link.url)}
+      onClick={() => openExternalWebsiteInTab(link.url)}
       className="p-[24px] justify-center items-center transition hover:scale-[1.02] cursor-pointer"
       {...props}
     >
@@ -117,7 +117,9 @@ export const SonicHome = () => {
         <SonicButton
           rounded
           className="rounded-full"
-          onClick={() => openInTab('https://arcade.soniclabs.com')}
+          onClick={() =>
+            openExternalWebsiteInTab('https://arcade.soniclabs.com')
+          }
         >
           {t('page.ecology.sonic.home.arcadeBtn')}
         </SonicButton>

@@ -1,7 +1,7 @@
 import pointsLightImg from '@/ui/assets/ecology/sonic/points-bg-light.png';
 import pointsDarkImg from '@/ui/assets/ecology/sonic/points-bg.png';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { openInTab } from '@/ui/utils';
+import { openExternalWebsiteInTab } from '@/ui/utils';
 import { ellipsis } from '@/ui/utils/address';
 import { copyAddress } from '@/ui/utils/clipboard';
 import React from 'react';
@@ -16,14 +16,14 @@ const links = [
     title: 'page.ecology.sonic.points.sonicArcade',
     cta: {
       text: 'page.ecology.sonic.points.sonicArcadeBtn',
-      onClick: () => openInTab('https://arcade.soniclabs.com'),
+      onClick: () => openExternalWebsiteInTab('https://arcade.soniclabs.com'),
     },
   },
   {
     title: 'page.ecology.sonic.points.pointsDashboard',
     cta: {
       text: 'page.ecology.sonic.points.pointsDashboardBtn',
-      onClick: () => openInTab('https://airdrop.soniclabs.com'),
+      onClick: () => openExternalWebsiteInTab('https://airdrop.soniclabs.com'),
     },
   },
 ];
