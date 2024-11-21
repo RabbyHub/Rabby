@@ -71,6 +71,7 @@ import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
 import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
+import { KEYRING_CLASS } from '@/constant';
 
 declare global {
   interface Window {
@@ -129,16 +130,22 @@ const Main = () => {
           <NewUserImportGnosisAddress />
         </Route>
 
-        <Route exact path="/new-user/import/ledger">
+        <Route exact path="/new-user/import/seed-phrase">
+          <ImportSeedPhrase />
+        </Route>
+
+        <Route
+          exact
+          path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.LEDGER}`}
+        >
           <NewUserImportLedger />
         </Route>
 
-        <Route exact path="/new-user/import/keystone">
+        <Route
+          exact
+          path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.KEYSTONE}`}
+        >
           <NewUserImportKeystone />
-        </Route>
-
-        <Route exact path="/new-user/import/seed-phrase">
-          <ImportSeedPhrase />
         </Route>
 
         <Route exact path="/new-user/import/hardware/:type">

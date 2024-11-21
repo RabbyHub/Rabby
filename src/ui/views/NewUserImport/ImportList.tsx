@@ -68,11 +68,7 @@ export const ImportWalletList = () => {
         history.push('/new-user/import/seed-phrase');
         break;
       case KEYRING_CLASS.HARDWARE.LEDGER:
-        history.push('/new-user/import/ledger/set-password');
-        break;
       case KEYRING_CLASS.HARDWARE.KEYSTONE:
-        history.push('/new-user/import/keystone/set-password');
-        break;
       case KEYRING_CLASS.HARDWARE.ONEKEY:
       case KEYRING_CLASS.HARDWARE.TREZOR:
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:

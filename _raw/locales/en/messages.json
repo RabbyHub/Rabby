@@ -2314,7 +2314,7 @@
             "label": "Password",
             "placeholder": "8 characters min",
             "required": "Please input Password",
-            "min": "8 characters min"
+            "min": "Password must be at least 8 characters long"
           },
           "confirmPassword": {
             "label": "Confirm Password",

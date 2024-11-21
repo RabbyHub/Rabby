@@ -1,16 +1,14 @@
-import { Card } from '@/ui/component/NewUserImport';
+import { KEYRING_CLASS } from '@/constant';
+import { useRabbyDispatch } from '@/ui/store';
+import { useWallet } from '@/ui/utils';
+import { query2obj } from '@/ui/utils/url';
 import { useMemoizedFn } from 'ahooks';
-import { Button, Form, Input, message } from 'antd';
-import clsx from 'clsx';
-import React from 'react';
+import { message } from 'antd';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { PasswordCard } from './PasswordCard';
-import { useWallet } from '@/ui/utils';
-import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import { useRabbyDispatch } from '@/ui/store';
-import { obj2query, query2obj } from '@/ui/utils/url';
 
 export const NewUserSetPassword = () => {
   const { t } = useTranslation();
@@ -26,87 +24,6 @@ export const NewUserSetPassword = () => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
 
-  const config = {
-    'seed-phrase': {
-      onSubmit: (password: string) => {
-        return handleSeedPhrase(password);
-      },
-    },
-    'private-key': {
-      onSubmit: useMemoizedFn(async (password: string) => {
-        try {
-          if (!store.privateKey) {
-            throw new Error('empty private key');
-          }
-          await wallet.boot(password);
-          await wallet.importPrivateKey(store.privateKey);
-          // todo
-          history.push('/new-user/import-success');
-        } catch (e) {
-          console.error(e);
-          message.error(e.message);
-          throw e;
-        }
-      }),
-      step: 2,
-      onBack: useMemoizedFn(() => {
-        history.goBack();
-      }),
-    },
-    'gnosis-address': {
-      onSubmit: useMemoizedFn(async (password: string) => {
-        try {
-          if (!store.gnosis?.address) {
-            throw new Error('empty safe address');
-          }
-          await wallet.boot(password);
-          await wallet.importGnosisAddress(
-            store.gnosis.address,
-            store.gnosis.chainList.map((item) => item.network)
-          );
-          // todo
-          history.push('/new-user/import-success');
-        } catch (e) {
-          console.error(e);
-          message.error(e.message);
-          throw e;
-        }
-      }),
-      step: 1,
-      onBack: useMemoizedFn(() => {
-        history.goBack();
-      }),
-    },
-    ledger: {
-      onSubmit: useMemoizedFn((password: string) => {
-        setStore({
-          password,
-        });
-        history.push('/new-user/import/ledger');
-      }),
-      step: 1,
-      onBack: useMemoizedFn(() => {
-        history.goBack();
-      }),
-    },
-    keystone: {
-      onSubmit: useMemoizedFn((password: string) => {
-        setStore({
-          password,
-        });
-        history.push('/new-user/import/keystone');
-      }),
-      step: 1,
-      onBack: useMemoizedFn(() => {
-        history.goBack();
-      }),
-    },
-  };
-
-  const props = config[type];
-  if (!props) {
-    return null;
-  }
   const handlePrivateKey = useMemoizedFn(async (password: string) => {
     try {
       if (!store.privateKey) {
@@ -180,6 +97,25 @@ export const NewUserSetPassword = () => {
     }
   });
 
+  const handleGnosis = useMemoizedFn(async (password: string) => {
+    try {
+      if (!store.gnosis?.address) {
+        throw new Error('empty safe address');
+      }
+      await wallet.boot(password);
+      await wallet.importGnosisAddress(
+        store.gnosis.address,
+        store.gnosis.chainList.map((item) => item.network)
+      );
+      // todo
+      history.push('/new-user/success');
+    } catch (e) {
+      console.error(e);
+      message.error(e.message);
+      throw e;
+    }
+  });
+
   const handleSubmit = useMemoizedFn(async (password: string) => {
     // todo different type
     if (type === 'private-key') {
@@ -189,11 +125,17 @@ export const NewUserSetPassword = () => {
       handleSeedPhrase(password);
     }
 
+    if (type === 'gnosis-address') {
+      handleGnosis(password);
+    }
+
     if (
       ([
         KEYRING_CLASS.HARDWARE.TREZOR,
         KEYRING_CLASS.HARDWARE.ONEKEY,
         KEYRING_CLASS.HARDWARE.GRIDPLUS,
+        KEYRING_CLASS.HARDWARE.LEDGER,
+        KEYRING_CLASS.HARDWARE.KEYSTONE,
       ] as string[]).includes(type)
     )
       setStore({
@@ -203,5 +145,27 @@ export const NewUserSetPassword = () => {
     return;
   });
 
-  return <PasswordCard {...props} />;
+  const handleBack = useMemoizedFn(() => {
+    if (history.length > 1) {
+      history.goBack();
+    } else {
+      window.close();
+    }
+  });
+
+  const step = useMemo(() => {
+    return ([
+      KEYRING_CLASS.HARDWARE.TREZOR,
+      KEYRING_CLASS.HARDWARE.ONEKEY,
+      KEYRING_CLASS.HARDWARE.GRIDPLUS,
+      KEYRING_CLASS.HARDWARE.LEDGER,
+      KEYRING_CLASS.HARDWARE.KEYSTONE,
+    ] as string[]).includes(type)
+      ? 1
+      : 2;
+  }, [type]);
+
+  return (
+    <PasswordCard step={step} onBack={handleBack} onSubmit={handleSubmit} />
+  );
 };
