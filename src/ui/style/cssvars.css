@@ -16,13 +16,6 @@
   --rabby-light-orange-default: rgba(255, 176, 32, 1);
   --rabby-light-orange-light: rgba(255, 245, 226, 1);
   --rabby-light-orange-DBK: rgba(255,124,96, 1);
-  --rabby-light-sonic-btn: rgba(33, 78, 129, 0.16);
-  --rabby-light-sonic-btn-foreground: rgba(33, 78, 129, 1);
-  --rabby-light-sonic-card: rgba(255, 255, 255, 1);
-  --rabby-light-sonic-card-foreground: rgba(0, 0, 0, 1);
-  --rabby-light-sonic-card-border: rgba(80, 97, 121, 0.1);
-  --rabby-light-sonic-background: rgba(245, 245, 245, 1);
-  --rabby-light-sonic-foreground: rgba(0, 0, 0, 1);
   --rabby-light-red-default: rgba(227, 73, 53, 1);
   --rabby-light-red-light: rgba(255, 242, 240, 1);
   --rabby-light-red-dark: rgba(174, 42, 25, 1);
@@ -49,6 +42,13 @@
   --rabby-light-neutral-title2: rgba(255, 255, 255, 1);
   --rabby-light-neutral-title-2: rgba(255, 255, 255, 1);
   --rabby-light-neutral-black: rgba(0, 0, 0, 1);
+  --rabby-light-sonic-btn: rgba(33, 78, 129, 0.16);
+  --rabby-light-sonic-btn-foreground: rgba(33, 78, 129, 1);
+  --rabby-light-sonic-card: rgba(255, 255, 255, 1);
+  --rabby-light-sonic-card-foreground: rgba(0, 0, 0, 1);
+  --rabby-light-sonic-card-border: rgba(80, 97, 121, 0.1);
+  --rabby-light-sonic-background: rgba(245, 245, 245, 1);
+  --rabby-light-sonic-foreground: rgba(0, 0, 0, 1);
 
   --rabby-dark-blue-default: rgba(112, 132, 255, 1);
   --rabby-dark-blue-light1: rgba(66, 73, 98, 1);
@@ -61,13 +61,6 @@
   --rabby-dark-orange-default: rgba(255, 198, 74, 1);
   --rabby-dark-orange-light: rgba(72, 67, 57, 1);
   --rabby-dark-orange-DBK: rgba(255,124,96, 1);
-  --rabby-dark-sonic-card: rgba(33,34,38, 1);
-  --rabby-dark-sonic-card-foreground: rgba(255,255,255, 1);
-  --rabby-dark-sonic-card-border: rgba(50,51,55, 1);
-  --rabby-dark-sonic-background: rgba(20,20,22, 1);
-  --rabby-dark-sonic-foreground: rgba(255,255,255, 1);
-  --rabby-dark-sonic-btn: rgba(254, 154, 76, 0.16);
-  --rabby-dark-sonic-btn-foreground: rgba(254, 154, 76, 1);
   --rabby-dark-red-default: rgba(239, 92, 72, 1);
   --rabby-dark-red-light: rgba(79, 58, 66, 1);
   --rabby-dark-red-dark: rgba(174, 42, 25, 1);
@@ -94,6 +87,13 @@
   --rabby-dark-neutral-title2: rgba(255, 255, 255, 1);
   --rabby-dark-neutral-title-2: rgba(255, 255, 255, 1);
   --rabby-dark-neutral-black: rgba(0, 0, 0, 1);
+  --rabby-dark-sonic-card: rgba(33,34,38, 1);
+  --rabby-dark-sonic-card-foreground: rgba(255,255,255, 1);
+  --rabby-dark-sonic-card-border: rgba(50,51,55, 1);
+  --rabby-dark-sonic-background: rgba(20,20,22, 1);
+  --rabby-dark-sonic-foreground: rgba(255,255,255, 1);
+  --rabby-dark-sonic-btn: rgba(254, 154, 76, 0.16);
+  --rabby-dark-sonic-btn-foreground: rgba(254, 154, 76, 1);
 }
 
 :root {
@@ -120,20 +120,6 @@
   --r-orange-light: var(--rabby-light-orange-light);
   --r-orange-DBK-rgb: 255, 124, 96;
   --r-orange-DBK: var(--rabby-light-orange-DBK);
-  --r-sonic-btn-rgb: 33, 78, 129;
-  --r-sonic-btn: var(--rabby-light-sonic-btn);
-  --r-sonic-btn-foreground-rgb: 33, 78, 129;
-  --r-sonic-btn-foreground: var(--rabby-light-sonic-btn-foreground);
-  --r-sonic-card-rgb: 255, 255, 255;
-  --r-sonic-card: var(--rabby-light-sonic-card);
-  --r-sonic-card-foreground-rgb: 0, 0, 0;
-  --r-sonic-card-foreground: var(--rabby-light-sonic-card-foreground);
-  --r-sonic-card-border-rgb: 80, 97, 121;
-  --r-sonic-card-border: var(--rabby-light-sonic-card-border);
-  --r-sonic-background-rgb: 245, 245, 245;
-  --r-sonic-background: var(--rabby-light-sonic-background);
-  --r-sonic-foreground-rgb: 0, 0, 0;
-  --r-sonic-foreground: var(--rabby-light-sonic-foreground);
   --r-red-default-rgb: 227, 73, 53;
   --r-red-default: var(--rabby-light-red-default);
   --r-red-light-rgb: 255, 242, 240;
@@ -186,6 +172,20 @@
   --r-neutral-title-2: var(--rabby-light-neutral-title-2);
   --r-neutral-black-rgb: 0, 0, 0;
   --r-neutral-black: var(--rabby-light-neutral-black);
+  --r-sonic-btn-rgb: 33, 78, 129;
+  --r-sonic-btn: var(--rabby-light-sonic-btn);
+  --r-sonic-btn-foreground-rgb: 33, 78, 129;
+  --r-sonic-btn-foreground: var(--rabby-light-sonic-btn-foreground);
+  --r-sonic-card-rgb: 255, 255, 255;
+  --r-sonic-card: var(--rabby-light-sonic-card);
+  --r-sonic-card-foreground-rgb: 0, 0, 0;
+  --r-sonic-card-foreground: var(--rabby-light-sonic-card-foreground);
+  --r-sonic-card-border-rgb: 80, 97, 121;
+  --r-sonic-card-border: var(--rabby-light-sonic-card-border);
+  --r-sonic-background-rgb: 245, 245, 245;
+  --r-sonic-background: var(--rabby-light-sonic-background);
+  --r-sonic-foreground-rgb: 0, 0, 0;
+  --r-sonic-foreground: var(--rabby-light-sonic-foreground);
 }
 
 html.dark, body.dark {
@@ -212,20 +212,6 @@ html.dark, body.dark {
   --r-orange-light: var(--rabby-dark-orange-light);
   --r-orange-DBK-rgb: 255, 124, 96;
   --r-orange-DBK: var(--rabby-dark-orange-DBK);
-  --r-sonic-card-rgb: 33, 34, 38;
-  --r-sonic-card: var(--rabby-dark-sonic-card);
-  --r-sonic-card-foreground-rgb: 255, 255, 255;
-  --r-sonic-card-foreground: var(--rabby-dark-sonic-card-foreground);
-  --r-sonic-card-border-rgb: 50, 51, 55;
-  --r-sonic-card-border: var(--rabby-dark-sonic-card-border);
-  --r-sonic-background-rgb: 20, 20, 22;
-  --r-sonic-background: var(--rabby-dark-sonic-background);
-  --r-sonic-foreground-rgb: 255, 255, 255;
-  --r-sonic-foreground: var(--rabby-dark-sonic-foreground);
-  --r-sonic-btn-rgb: 254, 154, 76;
-  --r-sonic-btn: var(--rabby-dark-sonic-btn);
-  --r-sonic-btn-foreground-rgb: 254, 154, 76;
-  --r-sonic-btn-foreground: var(--rabby-dark-sonic-btn-foreground);
   --r-red-default-rgb: 239, 92, 72;
   --r-red-default: var(--rabby-dark-red-default);
   --r-red-light-rgb: 79, 58, 66;
@@ -278,5 +264,19 @@ html.dark, body.dark {
   --r-neutral-title-2: var(--rabby-dark-neutral-title-2);
   --r-neutral-black-rgb: 0, 0, 0;
   --r-neutral-black: var(--rabby-dark-neutral-black);
+  --r-sonic-card-rgb: 33, 34, 38;
+  --r-sonic-card: var(--rabby-dark-sonic-card);
+  --r-sonic-card-foreground-rgb: 255, 255, 255;
+  --r-sonic-card-foreground: var(--rabby-dark-sonic-card-foreground);
+  --r-sonic-card-border-rgb: 50, 51, 55;
+  --r-sonic-card-border: var(--rabby-dark-sonic-card-border);
+  --r-sonic-background-rgb: 20, 20, 22;
+  --r-sonic-background: var(--rabby-dark-sonic-background);
+  --r-sonic-foreground-rgb: 255, 255, 255;
+  --r-sonic-foreground: var(--rabby-dark-sonic-foreground);
+  --r-sonic-btn-rgb: 254, 154, 76;
+  --r-sonic-btn: var(--rabby-dark-sonic-btn);
+  --r-sonic-btn-foreground-rgb: 254, 154, 76;
+  --r-sonic-btn-foreground: var(--rabby-dark-sonic-btn-foreground);
 }
 
