@@ -1,12 +1,14 @@
 import { initBitBox02 } from './bitbox02';
 import { initImKey } from './imkey';
 import initLattice from './lattice';
+import { initLedger } from './ledger';
 import { initOneKey } from './onekey';
 
 initImKey();
 initOneKey();
 initBitBox02();
 initLattice();
+initLedger();
 
 // keep alive when ui page is open
 let pageCount = 0;
