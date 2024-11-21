@@ -1566,8 +1566,6 @@ export const ThemeModes = [
 
 export const imKeyUSBVendorId = 0x096e;
 
-export const SONIC_TESTNET_CHAIN_ID = 64165;
-
 export const DBK_CHAIN_ID = 20240603;
 
 export const DBK_CHAIN_BRIDGE_CONTRACT =

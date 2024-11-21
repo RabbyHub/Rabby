@@ -1,27 +1,12 @@
-import React, { useMemo } from 'react';
-
-import { DBK_CHAIN_ID, SONIC_TESTNET_CHAIN_ID } from '@/constant';
 import { EcologyNavBar } from '@/ui/component/Ecology/EcologyNavBar';
+import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { DbkChainEntry } from './dbk-chain/Entry';
-import { SonicEntry } from './sonic/Entry';
-
-const entries = {
-  [DBK_CHAIN_ID]: DbkChainEntry,
-  [SONIC_TESTNET_CHAIN_ID]: SonicEntry,
-};
-
-const navBarClasses = {
-  [DBK_CHAIN_ID]: 'bg-rabby-neutral-bg1',
-  [SONIC_TESTNET_CHAIN_ID]: 'bg-r-sonic-background',
-};
+import { EcoChainMap } from './constants';
 
 export const Ecology = () => {
   const { chainId } = useParams<{ chainId: string }>();
 
-  const Component = useMemo(() => {
-    return entries[chainId];
-  }, [chainId]);
+  const chain = useMemo(() => EcoChainMap[chainId], [chainId]);
 
   return (
     <div
@@ -31,10 +16,10 @@ export const Ecology = () => {
       }}
     >
       <EcologyNavBar
-        className={`fixed top-0 w-full ${navBarClasses[chainId]}`}
+        className={`fixed top-0 w-full ${chain.navBarClassName}`}
         chainId={+chainId}
       />
-      <div className="pt-[48px] h-full"> {Component && <Component />} </div>
+      <div className="pt-[48px] h-full"> {chain.entry && <chain.entry />} </div>
     </div>
   );
 };
