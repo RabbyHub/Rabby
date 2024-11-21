@@ -51,6 +51,9 @@ import LogoAirGap, {
 import LogoLedgerDark, {
   ReactComponent as RcLogoLedgerDark,
 } from 'ui/assets/walletlogo/ledger.svg';
+import LogoLedgerDisable, {
+  ReactComponent as RcLogoLedgerDisable,
+} from 'ui/assets/walletlogo/ledgerDisable.svg';
 import LogoLedgerWhite, {
   ReactComponent as RcLogoLedgerWhite,
 } from 'ui/assets/walletlogo/ledger.svg';
@@ -467,7 +470,7 @@ export const INTERNAL_REQUEST_SESSION = {
 
 export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
 
-export const INITIAL_TESTNET_OPENAPI_URL = 'https://api.testnet.rabby.io';
+export const INITIAL_TESTNET_OPENAPI_URL = 'https://alpha.rabby.io';
 
 export const EVENTS = {
   broadcastToUI: 'broadcastToUI',
@@ -561,6 +564,8 @@ export type IWalletBrandContent = {
   brand: WALLET_BRAND_TYPES;
   icon: string;
   lightIcon: string;
+  // Icon showed out of collapse
+  leftIcon?: string;
   image: string;
   rcSvg: Exclude<ThemeIconType, string>;
   /**
@@ -573,6 +578,8 @@ export type IWalletBrandContent = {
   connectType: BRAND_WALLET_CONNECT_TYPE;
   category: WALLET_BRAND_CATEGORY;
   hidden?: boolean;
+  preventClick?: boolean;
+  tipI18nKey?: string;
 };
 
 export const WALLET_BRAND_CONTENT: {
@@ -742,11 +749,14 @@ export const WALLET_BRAND_CONTENT: {
     brand: WALLET_BRAND_TYPES.LEDGER,
     icon: LogoLedgerWhite,
     lightIcon: LogoLedgerWhite,
-    image: LogoLedgerDark,
-    rcSvg: RcLogoLedgerDark,
+    leftIcon: LogoLedgerDark,
+    image: IS_FIREFOX ? LogoLedgerDisable : LogoLedgerDark,
+    rcSvg: IS_FIREFOX ? RcLogoLedgerDisable : RcLogoLedgerDark,
     maybeSvg: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
+    preventClick: IS_FIREFOX,
+    tipI18nKey: IS_FIREFOX ? 'page.newAddress.firefoxLedgerDisableTips' : '',
   },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
     id: 5,

@@ -13,7 +13,8 @@ const chalk = require('chalk');
 async function createConsistentZip(
   srcDir,
   destZip,
-  gitUTC0Time = new Date(1980, 0, 1)
+  gitUTC0Time = new Date(1980, 0, 1),
+  isMV3 = true
 ) {
   fs.mkdirSync(path.dirname(destZip), { recursive: true });
   const output = fs.createWriteStream(destZip, { flags: 'w+' });
@@ -59,7 +60,7 @@ async function createConsistentZip(
   
   for (const item of allItems) {
     const itemPath = path.join(srcDir, item);
-    const itemZipPath = path.join('dist/', item);
+    const itemZipPath = path.join(isMV3 ? 'dist/' : 'dist-mv2/', item);
 
     const stat = fs.statSync(itemPath);
 
@@ -86,7 +87,7 @@ async function createConsistentZip(
   return pReturn;
 }
 
-const [, , srcDir, destZip, gitUTC0Time] = process.argv;
+const [, , srcDir, destZip, gitUTC0Time, isMV3] = process.argv;
 
 console.log(
   `[fns] will pack ${srcDir} to ${destZip} with gitUTC0Time ${gitUTC0Time}`
@@ -111,7 +112,7 @@ async function get_md5_file(filepath) {
   });
 }
 
-createConsistentZip(srcDir, destZip, gitUTC0Time)
+createConsistentZip(srcDir, destZip, gitUTC0Time, isMV3)
   .then(async (result) => {
     const md5Value = await get_md5_file(destZip);
     console.log(`[fns] ZIP file created at ${destZip} (md5: ${chalk.yellow(md5Value)}, size: ${chalk.yellow(result.totalBytes)} bytes)`);
