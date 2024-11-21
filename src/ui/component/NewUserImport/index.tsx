@@ -92,7 +92,8 @@ export const Card = ({
             'header',
             headerClassName,
             step && 'mt-18',
-            title && 'mt-16'
+            title && 'mt-16',
+            !step && !title && onBack && 'mt-18'
           )}
         >
           {!!onBack && (

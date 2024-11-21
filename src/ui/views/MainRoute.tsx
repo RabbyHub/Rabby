@@ -63,6 +63,11 @@ import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
 import { NewUserImportPrivateKey } from './NewUserImport/ImportPrivateKey';
 import { NewUserSetPassword } from './NewUserImport/SetPassword';
+import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
+import { ImportOrCreatedSuccess } from './NewUserImport/Success';
+import { ReadyToUse } from './NewUserImport/ReadyToUse';
+import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
+import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 
 declare global {
   interface Window {
@@ -117,12 +122,32 @@ const Main = () => {
           <NewUserImportPrivateKey />
         </Route>
 
+        <Route exact path="/new-user/import/seed-phrase">
+          <ImportSeedPhrase />
+        </Route>
+
+        <Route exact path="/new-user/import/hardware/:type">
+          <NewUserImportHardware />
+        </Route>
+
         <Route exact path="/new-user/import/:type/set-password">
           <NewUserSetPassword />
         </Route>
 
         <Route exact path="/new-user/create-seed-phrase">
           <CreateSeedPhrase />
+        </Route>
+
+        <Route exact path="/new-user/backup-seed-phrase">
+          <BackupSeedPhrase />
+        </Route>
+
+        <Route exact path="/new-user/success">
+          <ImportOrCreatedSuccess />
+        </Route>
+
+        <Route exact path="/new-user/ready">
+          <ReadyToUse />
         </Route>
 
         <Route exact path="/password">

@@ -2969,7 +2969,7 @@ export class WalletController extends BaseController {
     );
     return this._setCurrentAccountFromKeyring(keyring);
   };
-
+  generateMnemonic = () => keyringService.generateMnemonic();
   getPreMnemonics = () => keyringService.getPreMnemonics();
   generatePreMnemonic = () => keyringService.generatePreMnemonic();
   removePreMnemonics = () => keyringService.removePreMnemonics();
@@ -3192,6 +3192,10 @@ export class WalletController extends BaseController {
       throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
     return await keyring.getInfoByAddress(address);
+  };
+
+  validateMnemonic = (mnemonic: string) => {
+    return HdKeyring.validateMnemonic(mnemonic);
   };
 
   generateKeyringWithMnemonic = async (

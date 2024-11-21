@@ -21,6 +21,8 @@ import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 import { ReactComponent as RcIconMnemonicsShow } from '@/ui/assets/import/mnemonics-show.svg';
 import { ReactComponent as RcIconMnemonicsHide } from '@/ui/assets/import/mnemonics-hide.svg';
+import { ReactComponent as RcIconArrowCC } from '@/ui/assets/import/arrow-cc.svg';
+import { ReactComponent as RcIconSwipeCC } from '@/ui/assets/import/swipe-cc.svg';
 
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
@@ -60,6 +62,22 @@ const MatrixWrapper = styled.div.withConfig<{
   background-color: var(--r-neutral-card-3, #f7fafc);
   display: flex;
   flex-wrap: wrap;
+
+  &.new-user-import {
+    background-color: transparent;
+    gap: 9px;
+    .matrix-word-item {
+      border-radius: 8px;
+      width: calc(calc(100% - 18px) / 3);
+      border: 0.5px solid var(--r-neutral-line, #e0e5ec) !important;
+      .mnemonics-input {
+        &:focus,
+        &.ant-input-focused {
+          box-shadow: none;
+        }
+      }
+    }
+  }
 
   .matrix-word-item {
     box-sizing: border-box;
@@ -218,6 +236,7 @@ const SLIP39_MNEMONICS_COUNTS: { passphrase: boolean }[] = [
 ];
 
 function MnemonicsInputs({
+  newUserImport,
   className,
   rowCount = ROW_COUNT,
   value = '',
@@ -232,6 +251,7 @@ function MnemonicsInputs({
   setSlip39GroupNumber,
   ...props
 }: React.PropsWithChildren<{
+  newUserImport?: boolean;
   className?: string;
   rowCount?: number;
   value?: string;
@@ -502,26 +522,46 @@ function MnemonicsInputs({
               )}
             </span>
 
-            <img className="ml-[2px]" src={IconCaretDown} />
+            {newUserImport ? (
+              <RcIconArrowCC
+                className="ml-[2px] text-r-neutral-body w-16 h-16"
+                viewBox="0 0 16 16"
+              />
+            ) : (
+              <img className="ml-[2px]" src={IconCaretDown} />
+            )}
           </div>
         </Dropdown>
         <div
-          className="right flex items-center cursor-pointer"
+          className={clsx(
+            'right flex items-center cursor-pointer',
+            newUserImport && 'min-w-max p-4 hover:bg-r-neutral-card2 rounded'
+          )}
           onClick={() => {
             clearAll();
           }}
         >
-          <ThemeIcon src={RcIconClearAll} />
-          <span className="ml-[6px]">
-            {t('page.newAddress.seedPhrase.clearAll')}
-          </span>
+          {newUserImport ? (
+            <RcIconSwipeCC
+              viewBox="0 0 16 16"
+              className="w-16 h-16 text-r-neutral-foot"
+            />
+          ) : (
+            <ThemeIcon src={RcIconClearAll} svgSize={16} />
+          )}
+          {!newUserImport && (
+            <span className="ml-[6px]">
+              {t('page.newAddress.seedPhrase.clearAll')}
+            </span>
+          )}
         </div>
       </HeadToolbar>
       <MatrixWrapper
         className={clsx(
           'rounded-[6px] text-center',
-          'border border-rabby-neutral-line border-solid',
+          !newUserImport && 'border border-rabby-neutral-line border-solid',
           isSlip39 && 'hidden',
+          newUserImport && 'new-user-import',
           className
         )}
         rowCount={rowCount}
@@ -563,7 +603,8 @@ function MnemonicsInputs({
                   debounce={150}
                   key={`word-input-${ver}-${word}-${idx}`}
                   className={clsx(
-                    'mnemonics-input pl-[46px] pr-10',
+                    'mnemonics-input  pr-10',
+                    newUserImport ? 'pl-[30px]' : 'pl-[46px]',
                     isCurrentFocusing && 'ant-input-focused',
                     {
                       'opacity-50':

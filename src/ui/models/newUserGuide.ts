@@ -5,6 +5,8 @@ interface State {
   password?: string;
   seedPhrase?: string;
   privateKey?: string;
+  passphrase?: string;
+  clearKeyringId?: number;
 }
 
 export const newUserGuide = createModel<RootModel>()({
@@ -14,6 +16,7 @@ export const newUserGuide = createModel<RootModel>()({
     password: '',
     seedPhrase: '',
     privateKey: '',
+    passphrase: '',
   },
 
   reducers: {
