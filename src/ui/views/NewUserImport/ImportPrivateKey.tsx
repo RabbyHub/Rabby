@@ -9,7 +9,7 @@ import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 
 export const NewUserImportPrivateKey = () => {
   const { t } = useTranslation();
-  const { store, setStore } = useNewUserGuideStore();
+  const { store, setStore, clearStore } = useNewUserGuideStore();
 
   const history = useHistory();
 
@@ -39,9 +39,7 @@ export const NewUserImportPrivateKey = () => {
     <Card
       onBack={() => {
         history.goBack();
-        setStore({
-          privateKey: undefined,
-        });
+        clearStore();
       }}
       step={1}
       className="flex flex-col"
@@ -57,9 +55,16 @@ export const NewUserImportPrivateKey = () => {
             privateKey: store.privateKey,
           }}
         >
-          <Form.Item name="privateKey">
+          <Form.Item
+            name="privateKey"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
             <Input
-              className="h-[100px] border-[1px] border-rabby-blue-default border-solid"
+              className="h-[52px] border-[1px] border-rabby-blue-default border-solid"
               type="password"
             />
           </Form.Item>

@@ -38,7 +38,9 @@ export const NewUserImportKeystone = () => {
   const wallet = useWallet();
   const decoder = useRef(new URDecoder());
   const [errorMessage, setErrorMessage] = useState('');
-  const [connectType, setConnectType] = useState<ConnectType>(ConnectType.USB);
+  const [connectType, setConnectType] = useState<ConnectType>(
+    ConnectType.QRCode
+  );
   const [scan, setScan] = useState(false);
   const stashKeyringIdRef = useRef<number | null>(null);
   const { search } = useLocation();

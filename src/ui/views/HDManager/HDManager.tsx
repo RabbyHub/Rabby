@@ -29,6 +29,7 @@ import { ReactComponent as imtokenOfflineSVG } from '@/ui/assets/walletlogo/imTo
 import { BitBox02Manager } from './BitBox02Manager';
 import { useTranslation } from 'react-i18next';
 import { ImKeyManager } from './ImKeyManager';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -61,6 +62,13 @@ export const HDManager: React.FC<StateProviderProps> = ({
   keyringId,
   brand,
 }) => {
+  const { search } = useLocation();
+  const isNewUserImport = React.useMemo(
+    () => new URLSearchParams(search).get('isNewUserImport'),
+    [search]
+  );
+  const history = useHistory();
+
   const wallet = useWallet();
   const [initialed, setInitialed] = React.useState(false);
   const idRef = React.useRef<number | null>(null);
@@ -122,17 +130,26 @@ export const HDManager: React.FC<StateProviderProps> = ({
           });
         });
     }
-
-    window.addEventListener('beforeunload', () => {
-      closeConnect();
-    });
+    if (!isNewUserImport) {
+      window.addEventListener('beforeunload', () => {
+        closeConnect();
+      });
+    }
 
     return () => {
-      closeConnect();
+      if (!isNewUserImport) {
+        closeConnect();
+      }
     };
   }, []);
 
   const handleCloseWin = React.useCallback(() => {
+    if (isNewUserImport) {
+      history.push(
+        `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${brand}`
+      );
+      return;
+    }
     window.close();
   }, []);
 

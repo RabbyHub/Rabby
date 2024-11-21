@@ -20,7 +20,7 @@ export const CreateSeedPhrase = () => {
     []
   );
   const showSeedPhrase = () => {
-    // TODO: show seed phrase
+    history.push('/new-user/backup-seed-phrase');
   };
 
   return (

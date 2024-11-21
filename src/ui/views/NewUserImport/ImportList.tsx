@@ -17,8 +17,6 @@ import { useTranslation } from 'react-i18next';
 export const ImportWalletList = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const location = useLocation();
-  console.log('import list', location);
 
   const [showMore, setShowMore] = useState(false);
 
@@ -38,16 +36,16 @@ export const ImportWalletList = () => {
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.LEDGER].icon,
         },
         {
-          type: KEYRING_CLASS.HARDWARE.KEYSTONE,
-          logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].icon,
+          type: KEYRING_CLASS.HARDWARE.TREZOR,
+          logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.TREZOR].icon,
         },
         {
           type: KEYRING_CLASS.HARDWARE.ONEKEY,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.ONEKEY].icon,
         },
         {
-          type: KEYRING_CLASS.HARDWARE.TREZOR,
-          logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.TREZOR].icon,
+          type: KEYRING_CLASS.HARDWARE.KEYSTONE,
+          logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].icon,
         },
         {
           type: KEYRING_CLASS.HARDWARE.GRIDPLUS,
@@ -62,15 +60,30 @@ export const ImportWalletList = () => {
   );
 
   const gotoImport = (type: typeof tipList[number]['type']) => {
-    // TODO: import different wallet type
-    if (type === KEYRING_TYPE.SimpleKeyring) {
-      history.push('/new-user/import/private-key');
-    } else if (type === KEYRING_CLASS.GNOSIS) {
-      history.push('/new-user/import/gnosis-address');
-    } else if (type === KEYRING_CLASS.HARDWARE.LEDGER) {
-      history.push('/new-user/import/ledger/set-password');
-    } else if (type === KEYRING_CLASS.HARDWARE.KEYSTONE) {
-      history.push('/new-user/import/keystone/set-password');
+    switch (type) {
+      case KEYRING_TYPE.SimpleKeyring:
+        history.push('/new-user/import/private-key');
+        break;
+      case KEYRING_TYPE.HdKeyring:
+        history.push('/new-user/import/seed-phrase');
+        break;
+      case KEYRING_CLASS.HARDWARE.LEDGER:
+        history.push('/new-user/import/ledger/set-password');
+        break;
+      case KEYRING_CLASS.HARDWARE.KEYSTONE:
+        history.push('/new-user/import/keystone/set-password');
+        break;
+      case KEYRING_CLASS.HARDWARE.ONEKEY:
+      case KEYRING_CLASS.HARDWARE.TREZOR:
+      case KEYRING_CLASS.HARDWARE.GRIDPLUS:
+        history.push(`/new-user/import/${type}/set-password`);
+        break;
+      case KEYRING_CLASS.GNOSIS:
+        history.push('/new-user/import/gnosis-address');
+        break;
+      default:
+        history.push('/new-user/import/seed-phrase');
+        break;
     }
   };
 

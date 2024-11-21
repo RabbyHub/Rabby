@@ -10,6 +10,8 @@ interface State {
     address: string;
     chainList: Chain[];
   };
+  passphrase?: string;
+  clearKeyringId?: number;
 }
 
 export const newUserGuide = createModel<RootModel>()({
@@ -20,6 +22,7 @@ export const newUserGuide = createModel<RootModel>()({
     seedPhrase: '',
     privateKey: '',
     gnosis: undefined,
+    passphrase: '',
   },
 
   reducers: {

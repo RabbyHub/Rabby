@@ -2322,6 +2322,41 @@
           }
         },
         "agree": "I agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>"
+      },
+      "successful": {
+        "create": "Created Successfully",
+        "import": "Imported Successfully",
+        "start": "Get Started",
+        "addMoreAddr": "Add more addresses from this Seed Phrase",
+        "addMoreFrom": "Add more addresses from {{name}}"
+      },
+      "readyToUse": {
+        "title": "Rabby Wallet is Ready to Use",
+        "desc": "Pin Rabby Wallet to your toolbar for easy access.",
+        "pin": "Pin Rabby Wallet",
+        "extensionTip": "Click <1/> and then <3/>"
+      },
+      "importSeedPhrase": {
+        "title": "Import Seed Phrase"
+      },
+      "importOneKey": {
+        "title": "OneKey",
+        "tip1": "1. Install <1>OneKey Bridge<1/>",
+        "tip2": "2. Plug in your OneKey device",
+        "tip3": "3. Unlock your device",
+        "connect": "Connect OneKey"
+      },
+      "importTrezor": {
+        "title": "Terzor",
+        "tip1": "1. Plug in your Trezor device",
+        "tip2": "2. Unlock your device",
+        "connect": "Connect Terzor"
+      },
+      "ImportGridPlus": {
+        "title": "GridPlus",
+        "tip1": "1. Open your GridPlus device",
+        "tip2": "2. Connect through Lattice Connector",
+        "connect": "Connect GridPlus"
       }
     }
   },
