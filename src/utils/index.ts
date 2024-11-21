@@ -13,7 +13,7 @@ const format = (str, ...args) => {
   return args.reduce((m, n) => m.replace('_s_', n), str);
 };
 
-export { format, t };
+export { t, format };
 
 export const getChain = (chainId?: string) => {
   if (!chainId) {
