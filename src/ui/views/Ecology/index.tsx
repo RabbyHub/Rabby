@@ -16,10 +16,10 @@ export const Ecology = () => {
       }}
     >
       <EcologyNavBar
-        className={`fixed top-0 w-full ${chain.navBarClassName}`}
+        className={`sticky top-0 w-full ${chain.navBarClassName}`}
         chainId={+chainId}
       />
-      <div className="pt-[48px] h-full"> {chain.entry && <chain.entry />} </div>
+      {chain.entry && <chain.entry />}
     </div>
   );
 };
