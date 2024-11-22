@@ -120,7 +120,9 @@ export const ImportOrCreatedSuccess = () => {
     history.push({
       pathname: '/import/select-address',
 
-      search: `?hd=${hd}&brand=${brand}&keyringId=${keyringId}&isNewUserImport=true`,
+      search: `?hd=${hd}&keyringId=${keyringId}&isNewUserImport=true${
+        brand ? '&brand=' + brand : ''
+      }`,
     });
   };
 
