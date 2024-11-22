@@ -858,7 +858,7 @@
       "no-match": "Нет совпадений",
       "current-address": "Текущий адрес",
       "address-management": "Управление адресами",
-      "update-balance-data": "Обновить данные о балансе",
+      "update-balance-data": "Обновить баланс",
       "search": "Поиск",
       "manage-address": "Управление адресами",
       "deleted": "Удалено",
@@ -893,7 +893,7 @@
       "sort-by-address-note": "Сортировать по примечанию к адресу",
       "sort-address": "Сортировать адреса",
       "enterThePassphrase": "Введите пароль",
-      "enterPassphraseTitle": "Введите пароль для Подписи",
+      "enterPassphraseTitle": "Введите пароль для подписи",
       "passphraseError": "Неверный пароль"
     },
     "dashboard": {
@@ -998,7 +998,7 @@
         "enterClaimCode": "Введите код получения",
         "swapTip": "Сначала вам нужно выполнить обмен с помощью поддерживаемого dex в кошельке Rabby.",
         "freeGasTip": "Сделайте транзакцию с запросом Free Gas. Кнопка 'Free Gas' появится автоматически, когда газа в поддерживаемой сети не хватает.",
-        "learnMore": "Learn More",
+        "learnMore": "Узнать больше",
         "goToSwap": "Перейти к обмену",
         "claim": "Получить",
         "viewYourClaimCode": "Посмотреть ваш код для получения",
@@ -1202,7 +1202,7 @@
       }
     },
     "nft": {
-      "floorPrice": "/ Floor Price:",
+      "floorPrice": "/ Цена флора:",
       "title": "NFT",
       "all": "Все",
       "starred": "Отмечено ({{count}})",
