@@ -27,7 +27,6 @@ export const NewUserImportLedger = () => {
         throw new Error('empty password');
       }
 
-      await wallet.boot(store.password);
       const parent = window.opener;
       const transport = await TransportWebHID.create();
       await transport.close();
@@ -53,6 +52,7 @@ export const NewUserImportLedger = () => {
           keyringId,
           LedgerHDPathType.LedgerLive
         );
+        await wallet.boot(store.password);
         await wallet.unlockHardwareAccount(
           HARDWARE_KEYRING_TYPES.Ledger.type,
           [0],

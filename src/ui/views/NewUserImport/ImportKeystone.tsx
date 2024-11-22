@@ -148,8 +148,6 @@ export const NewUserImportKeystone = () => {
 
       await TransportWebUSB.requestPermission();
 
-      await wallet.boot(store.password);
-
       await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', null);
 
       const stashKeyringId = await wallet.initQRHardware(
@@ -170,6 +168,7 @@ export const NewUserImportKeystone = () => {
         HDPathType.BIP44
       );
 
+      await wallet.boot(store.password);
       await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], stashKeyringId);
 
       history.push({
