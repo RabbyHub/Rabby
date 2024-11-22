@@ -274,6 +274,34 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
         </div>
       )}
 
+      {accountInfo && type === KEYRING_CLASS.HARDWARE.LEDGER && (
+        <div className="rabby-list-item">
+          <div
+            className="rabby-list-item-content cursor-pointer"
+            onClick={() => {
+              chrome.runtime.sendMessage(
+                {
+                  type: 'displayAddressOnDevice',
+                  address: address,
+                },
+                (response) => {
+                  if (chrome.runtime.lastError) {
+                    console.error(chrome.runtime.lastError);
+                  } else {
+                    console.log('Response:', response);
+                  }
+                }
+              );
+            }}
+          >
+            <div className="rabby-list-item-label">
+              {t('page.addressDetail.display-address-on-device')}
+            </div>
+            <div className="rabby-list-item-extra"></div>
+          </div>
+        </div>
+      )}
+
       {isGnosis ? (
         <GnonisSafeInfo address={address} type={type} brandName={brandName} />
       ) : null}
