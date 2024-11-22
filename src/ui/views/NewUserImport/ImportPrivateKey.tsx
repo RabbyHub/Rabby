@@ -15,6 +15,11 @@ const Container = styled.div`
   .ant-input {
     border-radius: 8px;
     border: 1px solid var(--r-neutral-line, #e0e5ec);
+
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587);
+      font-weight: 400;
+    }
   }
 
   .ant-input:focus,
@@ -97,7 +102,9 @@ export const NewUserImportPrivateKey = () => {
                     icon: (
                       <img src={IconSuccess} className="icon icon-success" />
                     ),
-                    content: t('page.newAddress.seedPhrase.pastedAndClear'),
+                    content: t(
+                      'page.newUserImport.importPrivateKey.pasteCleared'
+                    ),
                     duration: 2,
                   });
                 }}

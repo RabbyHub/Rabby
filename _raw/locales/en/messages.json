@@ -2306,7 +2306,8 @@
         "title": "Select import method "
       },
       "importPrivateKey": {
-        "title": "Import Private Key"
+        "title": "Import Private Key",
+        "pasteCleared": "Pasted and clipboard cleared"
       },
       "PasswordCard": {
         "title": "Set Password",
@@ -2319,10 +2320,13 @@
           },
           "confirmPassword": {
             "label": "Confirm Password",
-            "placeholder": "Password"
+            "placeholder": "Password",
+            "required": "Please Confirm Password",
+            "notMatch": "Passwords do not match"
           }
         },
-        "agree": "I agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>"
+        "agree": "I agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>",
+        "desc": "It will be used to unlock wallet and encrypt data"
       },
       "successful": {
         "create": "Created Successfully",
@@ -2358,6 +2362,34 @@
         "tip1": "1. Open your GridPlus device",
         "tip2": "2. Connect through Lattice Connector",
         "connect": "Connect GridPlus"
+      },
+      "importLedger": {
+        "title": "Ledger",
+        "tip1": "Plug in your Ledger device.",
+        "tip2": "Enter your PIN to unlock.",
+        "tip3": "Open the Ethereum app.",
+        "connect": "Connect Ledger"
+      },
+      "importKeystone": {
+        "qrcode": {
+          "desc": "Scan the QR code on the Keystone hardware wallet"
+        },
+        "usb": {
+          "desc": "Ensure your Keystone 3 Pro is on the homepage",
+          "tip1": "Plug in your Keystone device",
+          "tip2": "Enter your password to unlock",
+          "tip3": "Approve the connection to your computer",
+          "connect": "Connect Keystone"
+        }
+      },
+      "importSafe": {
+        "title": "Add Safe Address",
+        "error": {
+          "required": "Please input address",
+          "invalid": "Not a valid address"
+        },
+        "placeholder": "Input safe address",
+        "loading": "Searching the deployed chain of this address"
       }
     }
   },

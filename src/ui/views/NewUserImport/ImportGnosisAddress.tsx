@@ -126,7 +126,7 @@ export const NewUserImportGnosisAddress = () => {
       >
         <div className="flex-1 mt-[18px]">
           <div className="text-r-neutral-title1 text-center text-[20px] font-semibold leading-[24px]">
-            Add Safe Address
+            {t('page.newUserImport.importSafe.title')}
           </div>
           <div className="relative mt-[20px]">
             <Form
@@ -137,11 +137,15 @@ export const NewUserImportGnosisAddress = () => {
               onValuesChange={(changedValues) => {
                 const value = changedValues.address;
                 if (!value) {
-                  setErrorMessage(t('page.importSafe.error.required'));
+                  setErrorMessage(
+                    t('page.newUserImport.importSafe.error.required')
+                  );
                   return;
                 }
                 if (!isValidAddress(value)) {
-                  setErrorMessage(t('page.importSafe.error.invalid'));
+                  setErrorMessage(
+                    t('page.newUserImport.importSafe.error.invalid')
+                  );
                   return;
                 }
                 runAsync(value);
@@ -167,14 +171,14 @@ export const NewUserImportGnosisAddress = () => {
                   autoSize
                   size="large"
                   autoFocus
-                  placeholder={'Input safe address'}
+                  placeholder={t('page.newUserImport.importSafe.placeholder')}
                   autoComplete="off"
                 />
               </Form.Item>
             </Form>
             {loading ? (
               <div className="loading">
-                <LoadingOutlined /> {t('page.importSafe.loading')}
+                <LoadingOutlined /> {t('page.newUserImport.importSafe.loading')}
               </div>
             ) : (
               <>

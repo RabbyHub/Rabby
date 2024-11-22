@@ -28,8 +28,6 @@ enum ConnectType {
   USB = 'usb',
 }
 
-const RcLogo = NEXT_KEYRING_ICONS[HARDWARE_KEYRING_TYPES.Ledger.type].rcLight;
-
 export const NewUserImportKeystone = () => {
   const { store, setStore } = useNewUserGuideStore();
   const keystoneErrorCatcher = useKeystoneUSBErrorCatcher();
@@ -236,7 +234,7 @@ export const NewUserImportKeystone = () => {
           {connectType === ConnectType.QRCode ? (
             <div className="mt-[16px] pb-[30px]">
               <p className="text-r-neutral-foot text-[14px] leading-[17px] text-center mb-[20px]">
-                Scan the QR code on the Keystone hardware wallet
+                {t('page.newUserImport.importKeystone.qrcode.desc')}
               </p>
               <div>
                 <div
@@ -278,7 +276,7 @@ export const NewUserImportKeystone = () => {
           ) : (
             <div className="mt-[16px]">
               <p className="text-r-neutral-foot text-[14px] leading-[17px] text-center mb-[20px]">
-                Ensure your Keystone 3 Pro is on the homepage
+                {t('page.newUserImport.importKeystone.usb.desc')}
               </p>
 
               <div className="flex justify-center mb-[30px]">
@@ -288,9 +286,9 @@ export const NewUserImportKeystone = () => {
                     'text-r-neutral-title1 text-[16px] font-medium leading-[22px] mb-0'
                   )}
                 >
-                  <li>Plug in your Keystone device</li>
-                  <li>Enter your password to unlock</li>
-                  <li>Approve the connection to your computer</li>
+                  <li>{t('page.newUserImport.importKeystone.usb.tip1')}</li>
+                  <li>{t('page.newUserImport.importKeystone.usb.tip2')}</li>
+                  <li>{t('page.newUserImport.importKeystone.usb.tip3')}</li>
                 </ul>
               </div>
               <img
@@ -307,7 +305,7 @@ export const NewUserImportKeystone = () => {
                   'text-[17px] font-medium'
                 )}
               >
-                Connect Keystone
+                {t('page.newUserImport.importKeystone.usb.connect')}
               </Button>
             </div>
           )}

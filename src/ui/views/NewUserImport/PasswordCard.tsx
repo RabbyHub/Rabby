@@ -3,14 +3,13 @@ import { openInTab } from '@/ui/utils';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Form, Input } from 'antd';
 import clsx from 'clsx';
+import { sum } from 'lodash';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as RcIconCheckCC } from 'ui/assets/icon-checked-cc.svg';
-import { ReactComponent as RcIconUnCheckCC } from 'ui/assets/icon-unchecked-cc.svg';
 import { ReactComponent as RcIconSuccessCC } from 'ui/assets/icon-checked-success-cc.svg';
-import { sum } from 'lodash';
+import { ReactComponent as RcIconUnCheckCC } from 'ui/assets/icon-unchecked-cc.svg';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -25,6 +24,13 @@ const Container = styled.div`
   }
   .ant-form-item {
     margin-bottom: 24px;
+  }
+
+  .ant-input {
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587);
+      font-weight: 400;
+    }
   }
 
   /* .ant-input {
@@ -100,10 +106,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
     confirmPassword: string;
   }>();
 
-  const history = useHistory();
-
   const handleSubmit = useMemoizedFn(async () => {
-    // todo
     await form.validateFields();
     onSubmit?.(form.getFieldsValue().password);
   });
@@ -131,7 +134,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                 {t('page.newUserImport.PasswordCard.title')}
               </h1>
               <p className="text-center text-r-neutral-foot text-[14px] leading-[17px]">
-                It will be used to unlock wallet and encrypt data
+                {t('page.newUserImport.PasswordCard.desc')}
               </p>
             </hgroup>
 
@@ -180,7 +183,9 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
               rules={[
                 {
                   required: true,
-                  message: t('page.createPassword.confirmRequired'),
+                  message: t(
+                    'page.newUserImport.PasswordCard.form.confirmPassword.required'
+                  ),
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value: string) {
@@ -188,7 +193,11 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                       return Promise.resolve();
                     }
                     return Promise.reject(
-                      new Error(t('page.createPassword.confirmError'))
+                      new Error(
+                        t(
+                          'page.newUserImport.PasswordCard.form.confirmPassword.notMatch'
+                        )
+                      )
                     );
                   },
                 }),

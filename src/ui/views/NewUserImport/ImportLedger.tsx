@@ -4,7 +4,7 @@ import { useWallet } from '@/ui/utils';
 import { LedgerHDPathType } from '@/ui/utils/ledger';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { Button, Form, message } from 'antd';
+import { Button, message } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -92,7 +92,7 @@ export const NewUserImportLedger = () => {
             viewBox="0 0 28 28"
           />
           <h1 className="text-r-neutral-title1 text-center text-[24px] font-semibold leading-[29px]">
-            {'Ledger'}
+            {t('page.newUserImport.importLedger.title')}
           </h1>
         </header>
         <main>
@@ -102,9 +102,9 @@ export const NewUserImportLedger = () => {
               'text-r-neutral-title1 text-[16px] font-medium leading-[140%] mb-[36px]'
             )}
           >
-            <li>Plug in your Ledger device</li>
-            <li>Enter your PIN to unlock.</li>
-            <li>Open the Ethereum app.</li>
+            <li>{t('page.newUserImport.importLedger.tip1')}</li>
+            <li>{t('page.newUserImport.importLedger.tip2')}</li>
+            <li>{t('page.newUserImport.importLedger.tip3')}</li>
           </ul>
           <img src="/images/ledger-plug-1.png" className="w-[240px] mx-auto" />
         </main>
@@ -120,7 +120,7 @@ export const NewUserImportLedger = () => {
           'text-[17px] font-medium'
         )}
       >
-        Connect Ledger
+        {t('page.newUserImport.importLedger.connect')}
       </Button>
     </Card>
   );
