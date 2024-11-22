@@ -15,6 +15,12 @@ import { SignHelper, LedgerHDPathType } from './helper';
 const type = 'Ledger Hardware';
 
 import HDPathType = LedgerHDPathType;
+import Browser from 'webextension-polyfill';
+import {
+  LedgerAction,
+  OffscreenCommunicationTarget,
+} from '@/constant/offscreen-communication';
+import { isManifestV3 } from '@/utils/env';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0",
@@ -70,6 +76,17 @@ class LedgerBridgeKeyring {
     this.app = null;
     this.usedHDPathTypeList = {};
     this.deserialize(opts);
+
+    if (isManifestV3) {
+      Browser.runtime.onMessage.addListener((request) => {
+        if (
+          request.target === OffscreenCommunicationTarget.extension &&
+          request.event === LedgerAction.ledgerDeviceDisconnect
+        ) {
+          this.cleanUp();
+        }
+      });
+    }
   }
 
   serialize() {
@@ -145,7 +162,9 @@ class LedgerBridgeKeyring {
 
   async cleanUp() {
     this.app = null;
-    if (this.transport) this.transport.close();
+    if (this.transport) {
+      await this.transport.close();
+    }
     this.transport = null;
   }
 
