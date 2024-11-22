@@ -1,7 +1,11 @@
 import './index.less';
 import { useWallet } from '@/ui/utils';
 import React from 'react';
-import { HDManagerStateProvider, StateProviderProps } from './utils';
+import {
+  HDManagerStateContext,
+  HDManagerStateProvider,
+  StateProviderProps,
+} from './utils';
 import { Button, Spin, message } from 'antd';
 import {
   HARDWARE_KEYRING_TYPES,
@@ -179,15 +183,35 @@ export const HDManager: React.FC<StateProviderProps> = ({
           </div>
           <Manager brand={brand} />
         </main>
-        <div
+        <DoneButton onClick={handleCloseWin} />
+        {/* <div
           onClick={handleCloseWin}
           className="absolute bottom-[40px] left-0 right-0 text-center"
         >
           <Button type="primary" className="w-[280px] h-[60px] text-20">
             {t('page.newAddress.hd.done')}
           </Button>
-        </div>
+        </div> */}
       </div>
     </HDManagerStateProvider>
+  );
+};
+
+const DoneButton = ({ onClick }: { onClick?(): void }) => {
+  const { t } = useTranslation();
+
+  const { currentAccounts } = React.useContext(HDManagerStateContext);
+
+  return (
+    <div className="absolute bottom-[40px] left-0 right-0 text-center">
+      <Button
+        type="primary"
+        className="w-[280px] h-[60px] text-20"
+        onClick={onClick}
+        disabled={!currentAccounts.length}
+      >
+        {t('page.newAddress.hd.done')}
+      </Button>
+    </div>
   );
 };

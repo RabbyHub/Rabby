@@ -105,7 +105,7 @@ export const NewUserImportKeystone = () => {
       keyringId,
       HDPathType.BIP44
     );
-
+    await wallet.boot(store.password);
     await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], keyringId);
     history.push({
       pathname: '/new-user/success',
@@ -146,8 +146,9 @@ export const NewUserImportKeystone = () => {
         throw new Error('empty password');
       }
 
-      await wallet.boot(store.password);
       await TransportWebUSB.requestPermission();
+
+      await wallet.boot(store.password);
 
       await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', null);
 
