@@ -1,14 +1,15 @@
-import { KEYRING_CLASS } from '@/constant';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { query2obj } from '@/ui/utils/url';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { message } from 'antd';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { PasswordCard } from './PasswordCard';
+import qs from 'qs';
 
 export const NewUserSetPassword = () => {
   const { t } = useTranslation();
@@ -107,8 +108,12 @@ export const NewUserSetPassword = () => {
         store.gnosis.address,
         store.gnosis.chainList.map((item) => item.network)
       );
-      // todo
-      history.push('/new-user/success');
+      history.push({
+        pathname: '/new-user/success',
+        search: qs.stringify({
+          brand: KEYRING_TYPE.GnosisKeyring,
+        }),
+      });
     } catch (e) {
       console.error(e);
       message.error(e.message);
@@ -137,11 +142,12 @@ export const NewUserSetPassword = () => {
         KEYRING_CLASS.HARDWARE.LEDGER,
         KEYRING_CLASS.HARDWARE.KEYSTONE,
       ] as string[]).includes(type)
-    )
+    ) {
       setStore({
         password,
       });
-    history.push(`/new-user/import/hardware/${type}`);
+      history.push(`/new-user/import/hardware/${type}`);
+    }
     return;
   });
 
@@ -164,6 +170,16 @@ export const NewUserSetPassword = () => {
       ? 1
       : 2;
   }, [type]);
+
+  useMount(async () => {
+    const isBooted = await wallet.isBooted();
+    if (isBooted) {
+      message.error('already set password');
+      setTimeout(() => {
+        window.close();
+      }, 1000);
+    }
+  });
 
   return (
     <PasswordCard step={step} onBack={handleBack} onSubmit={handleSubmit} />

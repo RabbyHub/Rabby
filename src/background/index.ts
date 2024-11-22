@@ -392,10 +392,11 @@ function startEnableUser() {
 
 // On first install, open a new tab with Rabby
 async function onInstall() {
-  // todo
-  const storeAlreadyExisted = Object.keys(
-    await browser.storage.local.get('keyringState')
-  ).length;
+  const storeAlreadyExisted = Boolean(
+    Object.keys(await browser.storage.local.get(null)).filter((key) => {
+      return !['extensionId', 'openapi'].includes(key);
+    }).length
+  );
   // If the store doesn't exist, then this is the first time running this script,
   // and is therefore an install
   if (!storeAlreadyExisted) {

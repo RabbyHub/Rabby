@@ -19,6 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
+import { useRequest } from 'ahooks';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
@@ -95,21 +96,21 @@ export const NewUserImportKeystone = () => {
   };
 
   const goToSelectAddress = async (keyringId?: number | null) => {
-    let search = `?hd=${KEYSTONE_TYPE}&brand=${WALLET_BRAND_TYPES.KEYSTONE}`;
-    if (keyringId) {
-      search += `&keyringId=${keyringId}`;
+    if (!keyringId) {
+      return;
     }
-    // todo
+    await wallet.requestKeyring(
+      KEYSTONE_TYPE,
+      'setHDPathType',
+      keyringId,
+      HDPathType.BIP44
+    );
 
-    // history.push({
-    //   pathname: '/import/select-address',
-    //   state: {
-    //     keyring: KEYSTONE_TYPE,
-    //     keyringId,
-    //     brand: WALLET_BRAND_TYPES.KEYSTONE,
-    //   },
-    //   search,
-    // });
+    await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], keyringId);
+    history.push({
+      pathname: '/new-user/success',
+      search: `?hd=${KEYSTONE_TYPE}&brand=${WALLET_BRAND_TYPES.KEYSTONE}&keyringId=${keyringId}`,
+    });
   };
 
   const handleClickBack = () => {
@@ -147,7 +148,6 @@ export const NewUserImportKeystone = () => {
 
       await wallet.boot(store.password);
       await TransportWebUSB.requestPermission();
-      console.log('permission');
 
       await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', null);
 
@@ -162,27 +162,28 @@ export const NewUserImportKeystone = () => {
         HDPathType.BIP44
       );
 
-      const accounts = await wallet.unlockHardwareAccount(
+      await wallet.requestKeyring(
         KEYSTONE_TYPE,
-        [0],
-        stashKeyringId
+        'setHDPathType',
+        stashKeyringId,
+        HDPathType.BIP44
       );
 
-      history.replace({
-        pathname: '/import/success',
-        state: {
-          accounts,
-          title: t('page.newAddress.importedSuccessfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: accounts.length,
-        },
+      await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], stashKeyringId);
+
+      history.push({
+        pathname: '/new-user/success',
+        search: `?hd=${KEYSTONE_TYPE}&brand=${WALLET_BRAND_TYPES.KEYSTONE}&keyringId=${stashKeyringId}`,
       });
     } catch (error) {
       console.error(error);
       keystoneErrorCatcher(error);
     }
   };
+
+  const { runAsync: runHandleConnect, loading } = useRequest(onConnectViaUSB, {
+    manual: true,
+  });
 
   const handleScan = () => {
     setErrorMessage('');
@@ -195,9 +196,6 @@ export const NewUserImportKeystone = () => {
     <Card
       onBack={() => {
         history.goBack();
-        setStore({
-          privateKey: undefined,
-        });
       }}
       step={2}
       className="flex flex-col"
@@ -300,7 +298,8 @@ export const NewUserImportKeystone = () => {
                 className="w-[240px] mx-auto"
               />
               <Button
-                onClick={onConnectViaUSB}
+                onClick={runHandleConnect}
+                loading={loading}
                 block
                 type="primary"
                 className={clsx(

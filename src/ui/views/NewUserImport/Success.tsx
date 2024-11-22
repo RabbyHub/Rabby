@@ -16,7 +16,11 @@ import { Account } from '@/background/service/preference';
 import { useRabbyDispatch } from '@/ui/store';
 import { useAsync } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
-import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS } from '@/constant';
+import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { useRequest } from 'ahooks';
+import { GnosisChainList } from './GnosisChainList';
+import { findChain } from '@/utils/chain';
+import { Chain } from '@/types/chain';
 
 const AccountItem = ({ account }: { account: Account }) => {
   const [edit, setEdit] = useState(false);
@@ -97,7 +101,7 @@ export const ImportOrCreatedSuccess = () => {
 
   const { t } = useTranslation();
   const { search } = useLocation();
-  const { isCreated = false, hd, keyringId } = React.useMemo(
+  const { isCreated = false, hd, keyringId, brand } = React.useMemo(
     () => query2obj(search),
     [search]
   );
@@ -116,7 +120,7 @@ export const ImportOrCreatedSuccess = () => {
     history.push({
       pathname: '/import/select-address',
 
-      search: `?hd=${hd}&keyringId=${keyringId}&isNewUserImport=true`,
+      search: `?hd=${hd}&brand=${brand}&keyringId=${keyringId}&isNewUserImport=true`,
     });
   };
 
@@ -135,6 +139,28 @@ export const ImportOrCreatedSuccess = () => {
       closeConnect();
     };
   }, []);
+
+  const { data: chainList } = useRequest(
+    async () => {
+      const account = accounts?.[0];
+      if (!account) {
+        return;
+      }
+      if (account?.type === KEYRING_TYPE.GnosisKeyring) {
+        const networks = await wallet.getGnosisNetworkIds(account.address);
+        return networks
+          .map((networkId) => {
+            return findChain({
+              networkId,
+            }) as Chain;
+          })
+          .filter((item) => !!item);
+      }
+    },
+    {
+      refreshDeps: [accounts?.[0]],
+    }
+  );
 
   return (
     <Card className="flex flex-col">
@@ -158,6 +184,7 @@ export const ImportOrCreatedSuccess = () => {
           }
           return <AccountItem key={account.address} account={account} />;
         })}
+        <GnosisChainList chainList={chainList} className="mt-[-4px]" />
       </div>
 
       <Button

@@ -1,15 +1,15 @@
+import { HARDWARE_KEYRING_TYPES, NEXT_KEYRING_ICONS } from '@/constant';
 import { Card } from '@/ui/component/NewUserImport';
-import { useMemoizedFn } from 'ahooks';
-import { Button, Form, Input, message } from 'antd';
+import { useWallet } from '@/ui/utils';
+import { LedgerHDPathType } from '@/ui/utils/ledger';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { Button, Form, message } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
-import { HARDWARE_KEYRING_TYPES, NEXT_KEYRING_ICONS } from '@/constant';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { useWallet } from '@/ui/utils';
-import { InitAccounts } from '../HDManager/LedgerManager';
 
 const RcLogo = NEXT_KEYRING_ICONS[HARDWARE_KEYRING_TYPES.Ledger.type].rcLight;
 
@@ -18,10 +18,6 @@ export const NewUserImportLedger = () => {
   const { store, setStore } = useNewUserGuideStore();
 
   const history = useHistory();
-
-  const [form] = Form.useForm<{
-    privateKey: string;
-  }>();
 
   const wallet = useWallet();
 
@@ -46,29 +42,27 @@ export const NewUserImportLedger = () => {
           needUnlock: false,
         });
 
-        const res = await wallet.requestKeyring(
+        await wallet.requestKeyring(
           HARDWARE_KEYRING_TYPES.Ledger.type,
           'getInitialAccounts',
           keyringId
         );
-        const accounts = await wallet.unlockHardwareAccount(
+        await wallet.requestKeyring(
+          HARDWARE_KEYRING_TYPES.Ledger.type,
+          'setHDPathType',
+          keyringId,
+          LedgerHDPathType.LedgerLive
+        );
+        await wallet.unlockHardwareAccount(
           HARDWARE_KEYRING_TYPES.Ledger.type,
           [0],
           keyringId
         );
 
-        history.replace({
-          pathname: '/import/success',
-          state: {
-            accounts,
-            title: t('page.newAddress.importedSuccessfully'),
-            editing: true,
-            importedAccount: true,
-            importedLength: accounts.length,
-          },
+        history.push({
+          pathname: '/new-user/success',
+          search: `?hd=${HARDWARE_KEYRING_TYPES.Ledger.type}&keyringId=${keyringId}`,
         });
-
-        // history.push('/new-user/import/private-key/set-password');
       }
     } catch (e) {
       console.error(e);
@@ -79,13 +73,14 @@ export const NewUserImportLedger = () => {
     }
   });
 
+  const { runAsync: runHandleSubmit, loading } = useRequest(handleSubmit, {
+    manual: true,
+  });
+
   return (
     <Card
       onBack={() => {
         history.goBack();
-        setStore({
-          privateKey: undefined,
-        });
       }}
       step={2}
       className="flex flex-col"
@@ -116,8 +111,9 @@ export const NewUserImportLedger = () => {
       </div>
 
       <Button
-        onClick={handleSubmit}
+        onClick={runHandleSubmit}
         block
+        loading={loading}
         type="primary"
         className={clsx(
           'mt-[24px] h-[56px] shadow-none rounded-[8px]',
