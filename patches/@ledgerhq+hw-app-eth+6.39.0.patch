@@ -1,0 +1,26 @@
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js
+index 806a539..b488b25 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js
+@@ -19,7 +19,7 @@ export const loadInfosForContractMethod = (contractAddress, selector, chainId, u
+     if (pluginBaseURL) {
+         const url = `${pluginBaseURL}/plugins/ethereum.json`;
+         data = yield axios
+-            .get(`${pluginBaseURL}/plugins/ethereum.json`)
++            .get(`${pluginBaseURL}/plugins/ethereum.json`, { timeout: 5000 })
+             .then(r => r.data)
+             .catch(e => {
+             log("error", "could not fetch from " + url + ": " + String(e));
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/erc20.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/erc20.js
+index 16a933e..a2a0f1a 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/erc20.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/erc20.js
+@@ -21,7 +21,7 @@ export const findERC20SignaturesInfo = (userLoadConfig, chainId) => __awaiter(vo
+         return null;
+     const url = `${cryptoassetsBaseURL}/evm/${chainId}/erc20-signatures.json`;
+     const blob = yield axios
+-        .get(url)
++        .get(url, { timeout: 5000 })
+         .then(({ data }) => {
+         if (!data || typeof data !== "string") {
+             throw new Error(`ERC20 signatures for chainId ${chainId} file is malformed ${url}`);
