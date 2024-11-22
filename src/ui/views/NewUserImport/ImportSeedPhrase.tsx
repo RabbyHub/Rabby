@@ -9,6 +9,8 @@ import { getUiType, useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
+import * as bip39 from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
 
 const FormItemWrapper = styled.div`
   .mnemonics-with-error,
@@ -115,13 +117,27 @@ export const ImportSeedPhrase = () => {
   );
 
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
-  const [checkPass, setCheckPass] = React.useState(false);
 
   const disabledButton = React.useMemo(() => {
-    if (!checkPass) return true;
-    if (!isSlip39) return false;
+    if (!isSlip39) return;
     return secretShares.length < slip39GroupNumber;
-  }, [isSlip39, secretShares, slip39GroupNumber, checkPass]);
+  }, [isSlip39, secretShares, slip39GroupNumber]);
+
+  const validateMnemonic = React.useCallback(
+    async (mnemonics: string, skipSlip39?: boolean) => {
+      try {
+        if (skipSlip39 && isSlip39) return true;
+        if (!isSlip39) {
+          return bip39.validateMnemonic(mnemonics, wordlist);
+        }
+        const result = await wallet.validateMnemonic(mnemonics);
+        return result;
+      } catch (err) {
+        return false;
+      }
+    },
+    [isSlip39]
+  );
 
   const run = React.useCallback(
     async ({
@@ -133,6 +149,13 @@ export const ImportSeedPhrase = () => {
     }) => {
       try {
         await checkSubmitSlip39Mnemonics(mnemonics);
+
+        if (!(await validateMnemonic(mnemonics))) {
+          throw new Error(
+            t('page.newAddress.theSeedPhraseIsInvalidPleaseCheck')
+          );
+        }
+
         setStore({ seedPhrase: mnemonics, passphrase });
         history.push('/new-user/import/seed-phrase/set-password');
       } catch (err) {
@@ -148,7 +171,7 @@ export const ImportSeedPhrase = () => {
         ]);
       }
     },
-    [checkSubmitSlip39Mnemonics, setStore, form, t]
+    [validateMnemonic, checkSubmitSlip39Mnemonics, setStore, form, t]
   );
 
   return (
@@ -169,15 +192,9 @@ export const ImportSeedPhrase = () => {
         onValuesChange={async (states) => {
           setErrMsgs([]);
           setSlip39ErrorIndex(-1);
-          try {
-            const pass = await wallet.validateMnemonic(states.mnemonics);
-            setCheckPass(pass);
-          } catch (error) {
-            setCheckPass(false);
-          }
         }}
       >
-        <FormItemWrapper className="relative">
+        <FormItemWrapper className="relative mb-16">
           <Form.Item
             name="mnemonics"
             className={clsx(

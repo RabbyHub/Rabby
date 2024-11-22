@@ -71,10 +71,25 @@ const MatrixWrapper = styled.div.withConfig<{
       width: calc(calc(100% - 18px) / 3);
       border: 0.5px solid var(--r-neutral-line, #e0e5ec) !important;
       .mnemonics-input {
+        text-align: center;
         &:focus,
         &.ant-input-focused {
           box-shadow: none;
         }
+      }
+
+      ${styid(NumberFlag)} {
+        top: 8px;
+        left: 8px;
+        color: var(--r-neutral-body, #3e495e);
+        font-size: 11px;
+        font-style: normal;
+        font-weight: 400;
+      }
+    }
+    .matrix-word-item.invalid {
+      ${styid(NumberFlag)} {
+        color: var(--r-red-default, #e34935);
       }
     }
   }
@@ -604,7 +619,7 @@ function MnemonicsInputs({
                   key={`word-input-${ver}-${word}-${idx}`}
                   className={clsx(
                     'mnemonics-input  pr-10',
-                    newUserImport ? 'pl-[30px]' : 'pl-[46px]',
+                    newUserImport ? 'pl-[10px]' : 'pl-[46px]',
                     isCurrentFocusing && 'ant-input-focused',
                     {
                       'opacity-50':
@@ -664,7 +679,7 @@ function MnemonicsInputs({
       {errMsgs?.[0] || invalidWords.length > 0 ? (
         <div
           className={
-            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px]'
+            'ant-form-item-explain ant-form-item-explain-error text-r-red-default mt-[12px] pt-[0] min-h-0 text-[13px]'
           }
         >
           {invalidWords.length > 0 && (
@@ -692,27 +707,19 @@ const SLIP39MnemonicsInput = ({
   onTextChange: (text: string) => void;
   idx: number;
   error?: boolean;
-  onPaste?: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
+  onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
 }) => {
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
 
   return (
     <div className="relative ">
-      <Input.TextArea
+      <Input
+        type={show ? 'text' : 'password'}
         key={`slip39-seed-phrase-${idx}`}
         autoComplete="off"
         autoCorrect="off"
         autoCapitalize="off"
-        // type="password"
-        autoSize
-        style={
-          !show
-            ? {
-                WebkitTextSecurity: 'disc',
-              }
-            : undefined
-        }
         onPaste={onPaste}
         className={clsx(
           'min-h-[100px] p-12 border-rabby-neutral-line bg-rabby-neutral-card-1 ',
