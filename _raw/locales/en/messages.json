@@ -2546,6 +2546,11 @@
       "fast": "Fast",
       "normal": "Normal",
       "doNotReserve": "Don't reserve Gas"
+    },
+    "OpenExternalWebsiteModal": {
+      "title": "You're Leaving Rabby Wallet",
+      "content": "You're about to visit an external website. Rabby Wallet is not responsible for the content or security of this site.",
+      "button": "Continue"
     }
   },
   "global": {

@@ -1610,15 +1610,10 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@0.3.60":
+"@debank/common@0.3.60", "@debank/common@^0.3.0":
   version "0.3.60"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.60.tgz#17ca72e4cde1fb6487ca1ed0691d89cd6b6692f9"
   integrity sha512-SaFTXvnn2aYQTPB3B8YD/AhHYwdMRiqu7jCkYV6c/Sd3MmxzJR3v+Kd4jlQniKfEdB21+1vMb0NlzHw/gyemlw==
-
-"@debank/common@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
-  integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
 "@debank/festats@1.0.1":
   version "1.0.1"
@@ -4776,10 +4771,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-action@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.4.tgz#c82e7c8b538b7dfd94506c4f89f78aca7ca880ef"
-  integrity sha512-6ttnlpGHcO2v/qyYo8epBbSutfS9OZXfXr9mfapuveoBvzqUwvE6ej3bsmdtc+qFhFeH7HeiwASpY6xaTM4E1w==
+"@rabby-wallet/rabby-action@0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.8.tgz#05b258b628a224d51dc471e93117d4106024a916"
+  integrity sha512-K0euVX55tW2mbnudm3bHPAbbLYlnDQD5PgAvM1mwPPFHhF/Ve/U5MYdg1XERJPxkoXKqiVti46idFFB+s8sv7A==
 
 "@rabby-wallet/rabby-api@0.8.5":
   version "0.8.5"
