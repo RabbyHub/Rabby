@@ -47,6 +47,10 @@ const StyledCard = styled.div`
       background: var(--r-neutral-card2, #f2f4f7);
     }
   }
+
+  input.ant-input::placeholder {
+    color: var(--r-neutral-foot, #6a7587);
+  }
 `;
 
 const Step = ({ step }: { step: 1 | 2 }) => {

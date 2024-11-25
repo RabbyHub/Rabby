@@ -70,11 +70,21 @@ const MatrixWrapper = styled.div.withConfig<{
       border-radius: 8px;
       width: calc(calc(100% - 18px) / 3);
       border: 0.5px solid var(--r-neutral-line, #e0e5ec) !important;
+
       .mnemonics-input {
         text-align: center;
+        &:hover {
+          border-color: var(--r-blue-default, #7084ff);
+        }
         &:focus,
         &.ant-input-focused {
           box-shadow: none;
+        }
+      }
+
+      &:not(.invalid) {
+        .mnemonics-input:hover {
+          border-color: var(--r-blue-default, #7084ff);
         }
       }
 

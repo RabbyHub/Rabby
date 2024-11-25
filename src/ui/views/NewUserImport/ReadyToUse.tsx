@@ -28,7 +28,7 @@ export const ReadyToUse = () => {
 
       <div
         className={clsx(
-          'fixed top-[23px] right-[65px]',
+          'fixed top-[23px] right-[80px]',
           'w-[205px] h-[60px]',
           'py-12 px-16',
           'bg-r-neutral-card-1 rounded-[12px]'

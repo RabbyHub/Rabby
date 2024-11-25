@@ -17,16 +17,9 @@ export const BackupSeedPhrase = () => {
 
   const history = useHistory();
 
-  const wallet = useWallet();
-
-  const { value } = useAsync(async () => wallet.generateMnemonic(), []);
-
   const { store, setStore } = useNewUserGuideStore();
 
-  const mnemonics = React.useMemo(() => store.seedPhrase || value, [
-    value,
-    store.seedPhrase,
-  ]);
+  const mnemonics = React.useMemo(() => store.seedPhrase, [store.seedPhrase]);
 
   const onCopyMnemonics = React.useCallback(() => {
     mnemonics &&
@@ -51,6 +44,10 @@ export const BackupSeedPhrase = () => {
   return (
     <Card
       onBack={() => {
+        setStore({
+          seedPhrase: '',
+          passphrase: '',
+        });
         history.replace('/new-user/create-seed-phrase');
       }}
       step={1}
