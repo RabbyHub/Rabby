@@ -2334,7 +2334,7 @@
         "showSeedPhrase": "Show Seed Phrase"
       },
       "importList": {
-        "title": "Select import method "
+        "title": "Select Import Method "
       },
       "importPrivateKey": {
         "title": "Import Private Key",

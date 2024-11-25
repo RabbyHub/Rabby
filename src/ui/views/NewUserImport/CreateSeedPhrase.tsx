@@ -5,11 +5,16 @@ import { Card } from '@/ui/component/NewUserImport';
 import { ReactComponent as RcIconChecked } from '@/ui/assets/new-user-import/check.svg';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useWallet } from '@/ui/utils';
+import { useAsync } from 'react-use';
+import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 
 export const CreateSeedPhrase = () => {
   const { t } = useTranslation();
 
   const history = useHistory();
+
+  const { setStore } = useNewUserGuideStore();
 
   const tipList = React.useMemo(
     () => [
@@ -19,8 +24,19 @@ export const CreateSeedPhrase = () => {
     ],
     []
   );
+
+  const wallet = useWallet();
+
+  const { value } = useAsync(async () => wallet.generateMnemonic(), []);
+
   const showSeedPhrase = () => {
-    history.push('/new-user/backup-seed-phrase');
+    if (value) {
+      setStore({
+        seedPhrase: value,
+        passphrase: '',
+      });
+      history.push('/new-user/backup-seed-phrase');
+    }
   };
 
   return (
@@ -41,7 +57,7 @@ export const CreateSeedPhrase = () => {
               'flex justify-start gap-8',
               'px-12 py-16 h-[68px] rounded-[8px]',
               'border-[0.5px] border-solid border-rabby-neutral-line',
-              'text-13 font-medium text-r-neutral-body'
+              'text-13 font-medium text-r-neutral-title1'
             )}
           >
             <RcIconChecked

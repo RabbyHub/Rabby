@@ -148,12 +148,6 @@ export const HDManager: React.FC<StateProviderProps> = ({
   }, []);
 
   const handleCloseWin = React.useCallback(() => {
-    if (isNewUserImport) {
-      history.push(
-        `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${brand}`
-      );
-      return;
-    }
     window.close();
   }, []);
 

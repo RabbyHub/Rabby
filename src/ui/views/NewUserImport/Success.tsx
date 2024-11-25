@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Card } from '@/ui/component/NewUserImport';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -14,13 +14,14 @@ import { useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
 import { useRabbyDispatch } from '@/ui/store';
-import { useAsync } from 'react-use';
+import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import { useRequest } from 'ahooks';
+import { useDocumentVisibility, useRequest } from 'ahooks';
 import { GnosisChainList } from './GnosisChainList';
 import { findChain } from '@/utils/chain';
 import { Chain } from '@/types/chain';
+import styled from 'styled-components';
 
 const AccountItem = ({ account }: { account: Account }) => {
   const [edit, setEdit] = useState(false);
@@ -29,10 +30,29 @@ const AccountItem = ({ account }: { account: Account }) => {
 
   const [localName, setLocalName] = useState(name || '');
 
+  const ref = useRef<Input>(null);
+
+  const [defaultName, setDefaultName] = useState(name || '');
+
+  const updateRef = useRef(null);
+
   const update = React.useCallback(() => {
-    updateAlias(localName);
+    updateAlias(localName.trim() ? localName : defaultName);
     setEdit(false);
-  }, [updateAlias, localName]);
+  }, [updateAlias, localName, defaultName]);
+
+  useClickAway(updateRef, () => {
+    console.log('edit', edit);
+    if (edit) {
+      update();
+    }
+  });
+
+  useLayoutEffect(() => {
+    if (edit) {
+      ref.current?.focus();
+    }
+  }, [edit]);
 
   if (!account) {
     return null;
@@ -46,9 +66,13 @@ const AccountItem = ({ account }: { account: Account }) => {
         'rounded-[8px] p-16 pt-8'
       )}
     >
-      <div className="flex items-center text-[20px] font-medium">
+      <div
+        ref={updateRef}
+        className="flex items-center text-[20px] font-medium"
+      >
         {edit ? (
           <Input
+            ref={ref}
             autoComplete="false"
             autoCorrect="false"
             className={clsx(
@@ -70,18 +94,33 @@ const AccountItem = ({ account }: { account: Account }) => {
         )}
 
         {edit ? (
-          <RcIconConfirm
-            className="w-20 h20 -ml-8px"
-            viewBox="0 0 20 20"
-            onClick={() => {
-              update();
-            }}
-          />
+          <>
+            <RcIconConfirm
+              className="w-20 h20 -ml-8px cursor-pointer"
+              viewBox="0 0 20 20"
+              onClick={() => {
+                update();
+              }}
+            />
+            <div
+              className="flex-1 self-stretch"
+              onClick={() => {
+                update();
+              }}
+            />
+          </>
         ) : (
           <RcIconPen
             className="w-16 h-16 cursor-pointer ml-6"
             viewBox="0 0 16 16"
-            onClick={() => setEdit(true)}
+            onClick={() => {
+              setEdit(true);
+              setLocalName(name || '');
+              if (!defaultName) {
+                setDefaultName(name || '');
+              }
+              ref.current?.focus();
+            }}
           />
         )}
       </div>
@@ -92,6 +131,18 @@ const AccountItem = ({ account }: { account: Account }) => {
   );
 };
 
+const ScrollBarDiv = styled.div`
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    background-color: transparent;
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 90px;
+    background: var(--r-neutral-foot, #6a7587);
+  }
+`;
+
 export const ImportOrCreatedSuccess = () => {
   const history = useHistory();
   const dispatch = useRabbyDispatch();
@@ -101,14 +152,20 @@ export const ImportOrCreatedSuccess = () => {
 
   const { t } = useTranslation();
   const { search } = useLocation();
-  const { isCreated = false, hd, keyringId, brand } = React.useMemo(
+  const { isCreated: created, hd, keyringId, brand } = React.useMemo(
     () => query2obj(search),
     [search]
   );
 
+  const isCreated = React.useMemo(() => created === 'true', [created]);
+
   const isSeedPhrase = React.useMemo(() => hd === KEYRING_CLASS.MNEMONIC, [hd]);
 
-  const { value: accounts } = useAsync(wallet.getAllVisibleAccountsArray, []);
+  const documentVisibility = useDocumentVisibility();
+
+  const { value: accounts } = useAsync(wallet.getAllVisibleAccountsArray, [
+    documentVisibility,
+  ]);
 
   const getStarted = React.useCallback(() => {
     history.push({
@@ -117,13 +174,15 @@ export const ImportOrCreatedSuccess = () => {
   }, []);
 
   const addMoreAddr = () => {
-    history.push({
-      pathname: '/import/select-address',
+    const oBrand = brand !== 'null' ? brand : undefined;
 
-      search: `?hd=${hd}&keyringId=${keyringId}&isNewUserImport=true${
-        brand ? '&brand=' + brand : ''
-      }`,
-    });
+    window.open(
+      './index.html#/import/select-address' +
+        `?hd=${hd}&keyringId=${keyringId}&isNewUserImport=true${
+          oBrand ? '&brand=' + oBrand : ''
+        }`,
+      '_blank'
+    );
   };
 
   const closeConnect = React.useCallback(() => {
@@ -135,7 +194,6 @@ export const ImportOrCreatedSuccess = () => {
   useEffect(() => {
     window.addEventListener('beforeunload', () => {
       closeConnect();
-      alert('close closeConnect');
     });
     return () => {
       closeConnect();
@@ -179,7 +237,7 @@ export const ImportOrCreatedSuccess = () => {
         )}
       </div>
 
-      <div className="flex flex-col gap-16 pt-24 overflow-y-auto max-h-[324px] mb-20">
+      <ScrollBarDiv className="flex flex-col gap-16 pt-24 overflow-y-scroll max-h-[324px] mb-20">
         {accounts?.map((account) => {
           if (!account?.address) {
             return null;
@@ -187,7 +245,7 @@ export const ImportOrCreatedSuccess = () => {
           return <AccountItem key={account.address} account={account} />;
         })}
         <GnosisChainList chainList={chainList} className="mt-[-4px]" />
-      </div>
+      </ScrollBarDiv>
 
       <Button
         onClick={getStarted}
