@@ -222,6 +222,14 @@ export const HDManagerStateProvider: React.FC<StateProviderProps> = ({
   keyringId,
   keyring,
 }) => {
+  console.log('keyring', {
+    ...useGetCurrentAccounts({ keyringId, keyring }),
+    ...useManagerTab(),
+    ...useHiddenInfo(),
+    ...useTaskQueue({ keyring }),
+    keyringId,
+    keyring,
+  });
   return (
     <HDManagerStateContext.Provider
       value={{

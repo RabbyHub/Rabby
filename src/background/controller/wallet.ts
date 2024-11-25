@@ -2929,6 +2929,20 @@ export class WalletController extends BaseController {
     return;
   };
 
+  validatePrivateKey = async (data: string) => {
+    const privateKey = ethUtil.stripHexPrefix(data);
+    const buffer = Buffer.from(privateKey, 'hex');
+
+    const error = new Error(t('background.error.invalidPrivateKey'));
+    try {
+      if (!ethUtil.isValidPrivate(buffer)) {
+        throw error;
+      }
+    } catch {
+      throw error;
+    }
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
@@ -2969,7 +2983,7 @@ export class WalletController extends BaseController {
     );
     return this._setCurrentAccountFromKeyring(keyring);
   };
-
+  generateMnemonic = () => keyringService.generateMnemonic();
   getPreMnemonics = () => keyringService.getPreMnemonics();
   generatePreMnemonic = () => keyringService.generatePreMnemonic();
   removePreMnemonics = () => keyringService.removePreMnemonics();
@@ -3192,6 +3206,10 @@ export class WalletController extends BaseController {
       throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
     return await keyring.getInfoByAddress(address);
+  };
+
+  validateMnemonic = (mnemonic: string) => {
+    return HdKeyring.validateMnemonic(mnemonic);
   };
 
   generateKeyringWithMnemonic = async (

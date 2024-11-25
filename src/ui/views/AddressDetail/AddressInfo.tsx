@@ -14,7 +14,12 @@ import IconPen from 'ui/assets/editpen.svg';
 import './style.less';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { useForm } from 'antd/lib/form/Form';
-import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
+import {
+  HARDWARE_KEYRING_TYPES,
+  KEYRING_CLASS,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+} from '@/constant';
 import { connectStore } from '@/ui/store';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
@@ -27,6 +32,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import clsx from 'clsx';
+import { HardwareBar } from './HardwareBar';
 
 type Props = {
   address: string;
@@ -232,19 +238,11 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             />
           </div>
         )}
-        {type === KEYRING_CLASS.HARDWARE.LEDGER && (
+        {Object.values(HARDWARE_KEYRING_TYPES).find(
+          (item) => item.type === type
+        ) && (
           <div className="pb-[20px]">
-            <LedgerStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
-          </div>
-        )}
-        {brandName === 'Keystone' && (
-          <div className="pb-[20px]">
-            <KeystoneStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
-          </div>
-        )}
-        {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
-          <div className="pb-[20px]">
-            <GridPlusStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
+            <HardwareBar address={address} type={type} brand={brandName} />
           </div>
         )}
         {type === KEYRING_CLASS.MNEMONIC && (
