@@ -2630,15 +2630,6 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  resendWalletConnect = (account: Account) => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
-    if (keyring) {
-      return keyring.resend(account);
-    }
-    return null;
-  };
-
   getWalletConnectSessionStatus = (address: string, brandName: string) => {
     const keyringType =
       brandName === KEYRING_CLASS.Coinbase

@@ -318,7 +318,6 @@ const flowContext = flow
           flow.requestedApproval = false;
           // only unlock notification if current flow is an approval flow
           notificationService.unLock();
-          keyringService.resetResend();
         }
         return gnosisController.watchMessage({
           address: safeMessage.safeAddress,
@@ -385,7 +384,6 @@ export default (request: ProviderRequest) => {
       flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow
       notificationService.unLock();
-      keyringService.resetResend();
     }
   });
 };
