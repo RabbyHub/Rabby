@@ -67,10 +67,10 @@ export const HDManager: React.FC<StateProviderProps> = ({
   brand,
 }) => {
   const { search } = useLocation();
-  const isNewUserImport = React.useMemo(
-    () => new URLSearchParams(search).get('isNewUserImport'),
-    [search]
-  );
+  const [isNewUserImport, noRedirect] = React.useMemo(() => {
+    const query = new URLSearchParams(search);
+    return [query.get('isNewUserImport'), query.get('noRedirect')];
+  }, [search]);
   const history = useHistory();
 
   const wallet = useWallet();
@@ -148,6 +148,12 @@ export const HDManager: React.FC<StateProviderProps> = ({
   }, []);
 
   const handleCloseWin = React.useCallback(() => {
+    if (isNewUserImport && !noRedirect) {
+      history.push(
+        `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${brand}`
+      );
+      return;
+    }
     window.close();
   }, []);
 
