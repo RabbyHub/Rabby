@@ -54,7 +54,7 @@ import { customTestnetService } from './service/customTestnet';
 import { findChain } from '@/utils/chain';
 import { syncChainService } from './service/syncChain';
 import { GasAccountServiceStore } from './service/gasAccount';
-import { openInTab } from './utils/extension';
+import { userGuideService } from './service/userGuide';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -117,6 +117,10 @@ async function restoreAppState() {
   transactionBroadcastWatchService.roll();
   startEnableUser();
   walletController.syncMainnetChainList();
+
+  if (!keyringService.isBooted()) {
+    userGuideService.init();
+  }
 
   eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, ({ address }) => {
     if (!address) return;
@@ -392,14 +396,10 @@ function startEnableUser() {
 
 // On first install, open a new tab with Rabby
 async function onInstall() {
-  const storeAlreadyExisted = Boolean(
-    Object.keys(await browser.storage.local.get(null)).filter((key) => {
-      return !['extensionId', 'openapi'].includes(key);
-    }).length
-  );
+  const storeAlreadyExisted = await userGuideService.isStorageExisted();
   // If the store doesn't exist, then this is the first time running this script,
   // and is therefore an install
   if (!storeAlreadyExisted) {
-    openInTab('./index.html#/new-user/guide');
+    await userGuideService.openUserGuide();
   }
 }

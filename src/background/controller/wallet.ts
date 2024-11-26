@@ -131,6 +131,7 @@ import pRetry from 'p-retry';
 import Browser from 'webextension-polyfill';
 import SafeApiKit from '@safe-global/api-kit';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
+import { userGuideService } from '../service/userGuide';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -143,6 +144,7 @@ export class WalletController extends BaseController {
   /* wallet */
   boot = async (password) => {
     await keyringService.boot(password);
+    userGuideService.destroy();
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     const isDefaultWallet = preferenceService.getIsDefaultWallet();
     if (!hasOtherProvider) {
@@ -4905,6 +4907,13 @@ export class WalletController extends BaseController {
 
       throw e;
     }
+  };
+  tryOpenOrActiveUserGuide = async () => {
+    if (this.isBooted()) {
+      return false;
+    }
+    await userGuideService.activeUserGuide();
+    return true;
   };
 }
 
