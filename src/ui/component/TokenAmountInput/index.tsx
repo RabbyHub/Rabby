@@ -13,7 +13,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
 import { splitNumberByStep } from 'ui/utils';
@@ -22,6 +21,7 @@ import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
 import './style.less';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
+import { ReactComponent as RcIconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -180,7 +180,10 @@ const TokenAmountInput = ({
         <span className="token-input__symbol" title={getTokenSymbol(token)}>
           {getTokenSymbol(token)}
         </span>
-        <img src={IconArrowDown} className="icon icon-arrow-down" />
+        <RcIconRcArrowDownTriangle
+          viewBox="0 0 24 24"
+          className="w-18 h-18 text-r-neutral-foot"
+        />
       </div>
       <div
         className={clsx(

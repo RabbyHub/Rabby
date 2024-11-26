@@ -99,10 +99,7 @@ const AccountCard = ({
             <AddressViewer
               showArrow={false}
               address={currentAccount.address}
-              className={clsx(
-                'text-12',
-                alianName ? 'opacity-80 send-viewer' : 'opacity-60 text-white'
-              )}
+              className={clsx('text-12')}
             />
           </div>
         )}

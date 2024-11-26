@@ -38,7 +38,7 @@ import ContactListModal from 'ui/component/Contact/ListModal';
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
 import { ReactComponent as RcIconContact } from 'ui/assets/send-token/contact.svg';
 import { ReactComponent as RcIconEdit } from 'ui/assets/edit-purple.svg';
-import IconCopy from 'ui/assets/copy-no-border.svg';
+import { ReactComponent as RcIconCopyCC } from 'ui/assets/icon-copy-cc.svg';
 import { ReactComponent as RcIconCheck } from 'ui/assets/send-token/check.svg';
 import { ReactComponent as RcIconTemporaryGrantCheckbox } from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 
@@ -1567,9 +1567,9 @@ const SendToken = () => {
                       address={currentToken.id}
                       showArrow={false}
                     />
-                    <img
-                      src={IconCopy}
-                      className="icon icon-copy"
+                    <RcIconCopyCC
+                      viewBox="0 0 14 14"
+                      className="icon icon-copy text-r-neutral-foot"
                       onClick={handleCopyContactAddress}
                     />
                   </span>
