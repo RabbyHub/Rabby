@@ -132,10 +132,9 @@ const main = () => {
   store.dispatch.chains.init();
 
   if (getUiType().isPop) {
-    wallet.isBooted().then((isBooted) => {
-      // todo check tabs
-      if (!isBooted) {
-        openInTab('./index.html#/new-user/guide');
+    wallet.tryOpenOrActiveUserGuide().then((opened) => {
+      if (opened) {
+        window.close();
       }
     });
   }
