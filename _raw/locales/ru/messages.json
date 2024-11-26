@@ -59,6 +59,16 @@
       "myNativeTokenBalance": "Мой баланс Газ: ",
       "gasLimitEmptyAlert": "Пожалуйста, введите лимит газа",
       "gasLimitMinValueAlert": "Лимит газа должен быть больше 21000",
+      "nativeTokenForGas": "Использовать токен {{tokenName}} на {{chainName}} для оплаты газа",
+      "gasAccountForGas": "Использовать USD из моего GasAccount для оплаты газа",
+      "gasAccount": {
+        "totalCost": "Общая стоимость: ",
+        "currentTxCost": "Сумма газа, отправленная на ваш адрес: ",
+        "gasCost": "Стоимость газа для перевода на ваш адрес: ",
+        "estimatedGas": "Оценочное количество газа: ",
+        "maxGas": "Максимальное количество газа: ",
+        "sendGas": "Перевод газа вам для текущей транзакции: "
+      },
       "balanceChange": {
         "successTitle": "Результаты моделирования транзакции",
         "failedTitle": "Моделирование транзакции не удалось",
