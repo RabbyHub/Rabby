@@ -92,7 +92,7 @@ const MatrixWrapper = styled.div.withConfig<{
         top: 8px;
         left: 8px;
         color: var(--r-neutral-body, #3e495e);
-        font-size: 11px;
+        font-size: 13px;
         font-style: normal;
         font-weight: 400;
       }
@@ -720,22 +720,21 @@ const SLIP39MnemonicsInput = ({
   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
 }) => {
   const { t } = useTranslation();
-  const [show, setShow] = useState(false);
 
   return (
     <div className="relative ">
       <Input
-        type={show ? 'text' : 'password'}
+        type={'password'}
         key={`slip39-seed-phrase-${idx}`}
         autoComplete="off"
         autoCorrect="off"
         autoCapitalize="off"
         onPaste={onPaste}
         className={clsx(
-          'min-h-[100px] p-12 border-rabby-neutral-line bg-rabby-neutral-card-1 ',
-          'text-13 text-r-neutral-title-1 font-medium leading-[18px]',
+          'h-[56px] border-rabby-neutral-line bg-rabby-neutral-card-1 ',
+          'text-15 text-r-neutral-title-1 font-normal leading-[18px]',
           error ? 'border-rabby-red-default' : '',
-          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-13 focus:border-blue'
+          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-14 focus:border-blue'
         )}
         spellCheck={false}
         placeholder={t(
@@ -747,18 +746,6 @@ const SLIP39MnemonicsInput = ({
           onTextChange(e.target.value);
         }}
       />
-      {value ? (
-        <div
-          className="absolute right-8 bottom-8 cursor-pointer"
-          onClick={() => setShow(!show)}
-        >
-          {show ? (
-            <RcIconMnemonicsHide viewBox="0 0 14 14" className="w-14 h-14" />
-          ) : (
-            <RcIconMnemonicsShow viewBox="0 0 14 14" className="w-14 h-14" />
-          )}
-        </div>
-      ) : null}
     </div>
   );
 };
@@ -787,7 +774,7 @@ export const SLIP39MnemonicsInputs = ({
   }, [number]);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       {sli39values.map((_, idx) => (
         <SLIP39MnemonicsInput
           key={`slip39-seed-phrase-${idx}`}

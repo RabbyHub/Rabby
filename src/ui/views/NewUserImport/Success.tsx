@@ -178,7 +178,7 @@ export const ImportOrCreatedSuccess = () => {
 
     window.open(
       './index.html#/import/select-address' +
-        `?hd=${hd}&keyringId=${keyringId}&isNewUserImport=true${
+        `?hd=${hd}&keyringId=${keyringId}&isNewUserImport=true&noRedirect=true${
           oBrand ? '&brand=' + oBrand : ''
         }`,
       '_blank'

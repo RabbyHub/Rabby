@@ -1040,7 +1040,7 @@
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
       "delete-checklist-1": "I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.",
-      "delete-checklist-2": "I confirm that I have backuped the private key or Seed Phrase and I'm ready to delete it now.",
+      "delete-checklist-2": "I confirm that I have backed up the private key or Seed Phrase and I'm ready to delete it now.",
       "confirm": "Confirm",
       "cancel": "Cancel",
       "delete-private-key-modal-title_one": "Delete {{count}} private key address",

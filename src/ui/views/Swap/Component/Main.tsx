@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -422,6 +423,19 @@ export const Main = () => {
     setLowCreditVisible,
   } = useLowCreditState(receiveToken);
 
+  const lowCreditInit = useRef(false);
+
+  useEffect(() => {
+    if (
+      receiveToken &&
+      receiveToken?.low_credit_score &&
+      !lowCreditInit.current
+    ) {
+      setLowCreditToken(receiveToken);
+      setLowCreditVisible(true);
+    }
+  }, [receiveToken]);
+
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
       background: '#fff',
@@ -795,7 +809,10 @@ export const Main = () => {
       <LowCreditModal
         token={lowCreditToken}
         visible={lowCreditVisible}
-        onCancel={() => setLowCreditVisible(false)}
+        onCancel={() => {
+          setLowCreditVisible(false);
+          lowCreditInit.current = true;
+        }}
       />
     </div>
   );

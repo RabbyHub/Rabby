@@ -275,7 +275,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                   <Button
                     onClick={handleSubmit}
                     block
-                    disabled={isDisabled}
+                    disabled={!agreeTerm || isDisabled}
                     type="primary"
                     className={clsx(
                       'mt-[24px] h-[56px] shadow-none rounded-[8px]',
