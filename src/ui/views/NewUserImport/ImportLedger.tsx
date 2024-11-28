@@ -1,7 +1,7 @@
 import { HARDWARE_KEYRING_TYPES, NEXT_KEYRING_ICONS } from '@/constant';
 import { Card } from '@/ui/component/NewUserImport';
 import { useWallet } from '@/ui/utils';
-import { LedgerHDPathType } from '@/ui/utils/ledger';
+import { isLedgerLockError, LedgerHDPathType } from '@/ui/utils/ledger';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { useMemoizedFn, useMount, useRequest } from 'ahooks';
 import { Button, message } from 'antd';
@@ -38,7 +38,7 @@ export const NewUserImportLedger = () => {
         const keyringId = await wallet.connectHardware({
           type: HARDWARE_KEYRING_TYPES.Ledger.type,
           isWebHID: true,
-          needUnlock: false,
+          needUnlock: true,
         });
 
         await wallet.requestKeyring(
@@ -64,7 +64,14 @@ export const NewUserImportLedger = () => {
       if (parent) {
         window.postMessage({ success: false }, '*');
       }
-      message.error(e.message);
+      if (isLedgerLockError(e.message)) {
+        message.error({
+          content: t('page.newAddress.hd.tooltip.disconnected'),
+          key: 'ledger-error',
+        });
+      } else {
+        message.error(e.message);
+      }
     }
   });
 

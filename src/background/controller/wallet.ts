@@ -3446,7 +3446,7 @@ export class WalletController extends BaseController {
     }
 
     if (needUnlock) {
-      await keyring.unlock();
+      await keyring?.unlock?.();
     }
 
     return stashKeyringId;

@@ -21,7 +21,8 @@ export const useHDWalletUnlockAndRedirect = (
       .connectHardware({
         type: type,
         isWebHID: true,
-        needUnlock: type === KEYRING_CLASS.HARDWARE.GRIDPLUS,
+        // needUnlock: type === KEYRING_CLASS.HARDWARE.GRIDPLUS,
+        needUnlock: true,
       })
       .then((id) => {
         idRef.current = id;
