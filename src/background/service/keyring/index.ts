@@ -45,7 +45,6 @@ import {
   passwordDecrypt,
   passwordClearKey,
 } from 'background/utils/password';
-import { nanoid } from 'nanoid';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -117,7 +116,7 @@ export class KeyringService extends EventEmitter {
       throw new Error('is booted');
     }
     this.password = password;
-    const encryptBooted = await passwordEncrypt({ data: nanoid(), password });
+    const encryptBooted = await passwordEncrypt({ data: 'true', password });
     this.store.updateState({ booted: encryptBooted });
     this.memStore.updateState({ isUnlocked: true });
   }
