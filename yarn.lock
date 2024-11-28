@@ -4647,10 +4647,10 @@
     ethereum-cryptography "^2.1.2"
     slip39 "^0.1.9"
 
-"@rabby-wallet/eth-lattice-keyring@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.2.0.tgz#a55bde6e3c8d1f2379e9840652d7d57465862293"
-  integrity sha512-t8/e8JW3gep2874sQZnTZ+5W2wxSVRRoMGg40rVYDX+9gl+JnSGwJTfGs4BaQb124zIK2yBpRU8XT5+Cn6ar7g==
+"@rabby-wallet/eth-lattice-keyring@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.2.1.tgz#6ae4eef765717b11d38e6b28386ba81b33a01d0a"
+  integrity sha512-6hAJxOEHa67oidqi/ipextvNaE6lv7gi1/t0mZoLYsEjqU20fdt28RQ08F+n3tIEBi8noM9I20ZIc8Mnziem8w==
   dependencies:
     "@ethereumjs/common" "2.4.0"
     "@ethereumjs/tx" "3.3.2"
