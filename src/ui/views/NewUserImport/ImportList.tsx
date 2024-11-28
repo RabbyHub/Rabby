@@ -86,7 +86,13 @@ export const ImportWalletList = () => {
   return (
     <Card
       className="relative"
-      onBack={history.goBack}
+      onBack={() => {
+        if (history.length) {
+          history.goBack();
+        } else {
+          history.replace('/new-user/guide');
+        }
+      }}
       title={t('page.newUserImport.importList.title')}
     >
       <div className="mt-24 flex flex-col items-center justify-center gap-16">

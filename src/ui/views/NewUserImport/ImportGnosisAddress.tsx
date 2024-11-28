@@ -118,7 +118,11 @@ export const NewUserImportGnosisAddress = () => {
     <Container>
       <Card
         onBack={() => {
-          history.goBack();
+          if (history.length) {
+            history.goBack();
+          } else {
+            history.replace('/new-user/import-list');
+          }
           clearStore();
         }}
         step={1}
