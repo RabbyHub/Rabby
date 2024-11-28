@@ -1,7 +1,6 @@
 import { Popup } from '@/ui/component';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import clsx from 'clsx';
-import console from 'console';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
