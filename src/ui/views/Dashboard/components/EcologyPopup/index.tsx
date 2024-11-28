@@ -18,11 +18,12 @@ export const EcologyPopup = ({ visible, onClose }: Props) => {
   return (
     <Popup
       visible={visible}
+      height={'fit-content'}
       onClose={onClose}
       push={false}
       title={t('page.dashboard.echologyPopup.title')}
     >
-      <div className="flex flex-col gap-[8px]">
+      <div className="flex flex-col gap-[12px] pb-[8px]">
         {EcoChains.map((item) => {
           return (
             <div
@@ -45,6 +46,7 @@ export const EcologyPopup = ({ visible, onClose }: Props) => {
               <div className="text-r-neutral-title-1 text-[15px] font-medium flex-1">
                 {item?.name}
               </div>
+              <ThemeIcon src={RcIconArrowRight} className="ml-auto" />
             </div>
           );
         })}
