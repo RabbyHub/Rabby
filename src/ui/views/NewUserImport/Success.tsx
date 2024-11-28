@@ -265,7 +265,7 @@ export const ImportOrCreatedSuccess = () => {
           className="flex items-center justify-center gap-2 text-[14px] text-r-neutral-foot mt-[23px] cursor-pointer"
         >
           <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
-          <RcIconExternalCC className="w-16 h-16" viewBox="0 0 16 17" />
+          <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
         </div>
       )}
       {!!hd && !isSeedPhrase && (
@@ -286,10 +286,7 @@ export const ImportOrCreatedSuccess = () => {
                 name: BRAND_ALIAN_TYPE_TEXT[hd] || hd,
               })}
             </span>
-            <RcIconExternalCC
-              className="w-[18px] h-[18px]"
-              viewBox="0 0 16 17"
-            />
+            <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
           </div>
         </Button>
       )}
