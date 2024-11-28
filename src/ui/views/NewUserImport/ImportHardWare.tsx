@@ -11,6 +11,8 @@ import { Button } from 'antd';
 import clsx from 'clsx';
 import { useAsyncFn } from 'react-use';
 import { useHDWalletUnlockAndRedirect } from './hooks/useHardWareUnlockAddress';
+import { useMount } from 'ahooks';
+import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 
 export const NewUserImportHardware = () => {
   const { type } = useParams<{
@@ -108,6 +110,14 @@ export const NewUserImportHardware = () => {
   const handle = useHDWalletUnlockAndRedirect(type);
 
   const [{ loading }, unlock] = useAsyncFn(handle, [handle]);
+
+  const { store } = useNewUserGuideStore();
+
+  useMount(async () => {
+    if (!store.password) {
+      history.replace('/new-user/guide');
+    }
+  });
 
   return (
     <Card

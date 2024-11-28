@@ -3,7 +3,7 @@ import { Card } from '@/ui/component/NewUserImport';
 import { useWallet } from '@/ui/utils';
 import { LedgerHDPathType } from '@/ui/utils/ledger';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { useMemoizedFn, useRequest } from 'ahooks';
+import { useMemoizedFn, useMount, useRequest } from 'ahooks';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
@@ -70,6 +70,12 @@ export const NewUserImportLedger = () => {
 
   const { runAsync: runHandleSubmit, loading } = useRequest(handleSubmit, {
     manual: true,
+  });
+
+  useMount(async () => {
+    if (!store.password) {
+      history.replace('/new-user/guide');
+    }
   });
 
   return (

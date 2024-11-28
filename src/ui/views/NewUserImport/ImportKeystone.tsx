@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
-import { useRequest } from 'ahooks';
+import { useMount, useRequest } from 'ahooks';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
@@ -189,6 +189,12 @@ export const NewUserImportKeystone = () => {
     setProgress(0);
     decoder.current = new URDecoder();
   };
+
+  useMount(async () => {
+    if (!store.password) {
+      history.replace('/new-user/guide');
+    }
+  });
 
   return (
     <Card
