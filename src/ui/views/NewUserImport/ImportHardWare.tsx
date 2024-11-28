@@ -113,7 +113,11 @@ export const NewUserImportHardware = () => {
     <Card
       step={2}
       onBack={() => {
-        history.replace(`/new-user/import/${type}/set-password`);
+        if (history.length) {
+          history.goBack();
+        } else {
+          history.replace(`/new-user/import/${type}/set-password`);
+        }
       }}
       className="flex flex-col justify-center"
     >

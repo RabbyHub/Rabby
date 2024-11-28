@@ -177,7 +177,11 @@ export const ImportSeedPhrase = () => {
   return (
     <Card
       onBack={() => {
-        history.replace('/new-user/import-list');
+        if (history.length) {
+          history.goBack();
+        } else {
+          history.replace('/new-user/import-list');
+        }
       }}
       step={1}
       className="flex flex-col"

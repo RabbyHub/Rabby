@@ -92,7 +92,7 @@ export const NewUserImportPrivateKey = () => {
                 type="password"
                 autoFocus
                 spellCheck={false}
-                placeholder="input private key"
+                placeholder="Input private key"
                 onChange={(e) => {
                   setValue(e.target.value);
                 }}

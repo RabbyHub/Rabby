@@ -48,7 +48,11 @@ export const BackupSeedPhrase = () => {
           seedPhrase: '',
           passphrase: '',
         });
-        history.replace('/new-user/create-seed-phrase');
+        if (history.length) {
+          history.goBack();
+        } else {
+          history.replace('/new-user/create-seed-phrase');
+        }
       }}
       step={1}
     >

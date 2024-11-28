@@ -42,7 +42,11 @@ export const CreateSeedPhrase = () => {
   return (
     <Card
       onBack={() => {
-        history.replace('/new-user/guide');
+        if (history.length) {
+          history.goBack();
+        } else {
+          history.replace('/new-user/guide');
+        }
       }}
       title={t('page.newUserImport.createNewAddress.title')}
     >
