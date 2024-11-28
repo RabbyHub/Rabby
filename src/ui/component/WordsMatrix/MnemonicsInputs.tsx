@@ -69,7 +69,7 @@ const MatrixWrapper = styled.div.withConfig<{
     .matrix-word-item {
       border-radius: 8px;
       width: calc(calc(100% - 18px) / 3);
-      border: 0.5px solid var(--r-neutral-line, #e0e5ec) !important;
+      border: 1px solid var(--r-neutral-line, #e0e5ec) !important;
 
       .mnemonics-input {
         text-align: center;

@@ -43,11 +43,6 @@ export const NewUserImportLedger = () => {
 
         await wallet.requestKeyring(
           HARDWARE_KEYRING_TYPES.Ledger.type,
-          'getInitialAccounts',
-          keyringId
-        );
-        await wallet.requestKeyring(
-          HARDWARE_KEYRING_TYPES.Ledger.type,
           'setHDPathType',
           keyringId,
           LedgerHDPathType.LedgerLive

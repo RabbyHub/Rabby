@@ -114,7 +114,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         )}
         ref={ref}
       >
-        <div className="flex justify-between items-center pb-8 border-b-[0.5px] border-solid border-rabby-neutral-line">
+        <div className="flex justify-between items-center pb-8 border-b-[0.5px] border-solid border-rabby-neutral-line gap-12">
           <div className="flex items-center text-12 font-medium text-r-neutral-title-1">
             {isPending && (
               <TooltipWithMagnetArrow title={t('page.bridge.pendingTip')}>
@@ -131,7 +131,9 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
               </TooltipWithMagnetArrow>
             )}
 
-            <span>{!isPending && sinceTime(time)}</span>
+            <span className="whitespace-nowrap">
+              {!isPending && sinceTime(time)}
+            </span>
           </div>
           <div className="flex items-center gap-4">
             <img
