@@ -286,7 +286,7 @@ export const ImportOrCreatedSuccess = () => {
                 name: BRAND_ALIAN_TYPE_TEXT[hd] || hd,
               })}
             </span>
-            <RcIconExternalCC className="w-16 h-16" viewBox="0 0 16 17" />
+            <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
           </div>
         </Button>
       )}
