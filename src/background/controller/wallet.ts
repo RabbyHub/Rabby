@@ -131,6 +131,7 @@ import pRetry from 'p-retry';
 import Browser from 'webextension-polyfill';
 import SafeApiKit from '@safe-global/api-kit';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
+import { userGuideService } from '../service/userGuide';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -143,6 +144,7 @@ export class WalletController extends BaseController {
   /* wallet */
   boot = async (password) => {
     await keyringService.boot(password);
+    userGuideService.destroy();
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     const isDefaultWallet = preferenceService.getIsDefaultWallet();
     if (!hasOtherProvider) {
@@ -2920,6 +2922,20 @@ export class WalletController extends BaseController {
     return;
   };
 
+  validatePrivateKey = async (data: string) => {
+    const privateKey = ethUtil.stripHexPrefix(data);
+    const buffer = Buffer.from(privateKey, 'hex');
+
+    const error = new Error(t('background.error.invalidPrivateKey'));
+    try {
+      if (!ethUtil.isValidPrivate(buffer)) {
+        throw error;
+      }
+    } catch {
+      throw error;
+    }
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
@@ -2960,7 +2976,7 @@ export class WalletController extends BaseController {
     );
     return this._setCurrentAccountFromKeyring(keyring);
   };
-
+  generateMnemonic = () => keyringService.generateMnemonic();
   getPreMnemonics = () => keyringService.getPreMnemonics();
   generatePreMnemonic = () => keyringService.generatePreMnemonic();
   removePreMnemonics = () => keyringService.removePreMnemonics();
@@ -3183,6 +3199,10 @@ export class WalletController extends BaseController {
       throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
     return await keyring.getInfoByAddress(address);
+  };
+
+  validateMnemonic = (mnemonic: string) => {
+    return HdKeyring.validateMnemonic(mnemonic);
   };
 
   generateKeyringWithMnemonic = async (
@@ -3426,7 +3446,7 @@ export class WalletController extends BaseController {
     }
 
     if (needUnlock) {
-      await keyring.unlock();
+      await keyring?.unlock?.();
     }
 
     return stashKeyringId;
@@ -4878,6 +4898,13 @@ export class WalletController extends BaseController {
 
       throw e;
     }
+  };
+  tryOpenOrActiveUserGuide = async () => {
+    if (this.isBooted()) {
+      return false;
+    }
+    await userGuideService.activeUserGuide();
+    return true;
   };
 }
 

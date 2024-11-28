@@ -112,6 +112,9 @@ export class KeyringService extends EventEmitter {
   }
 
   async boot(password: string) {
+    if (this.isBooted()) {
+      throw new Error('is booted');
+    }
     this.password = password;
     const encryptBooted = await passwordEncrypt({ data: 'true', password });
     this.store.updateState({ booted: encryptBooted });

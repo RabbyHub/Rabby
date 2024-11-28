@@ -1,7 +1,11 @@
 import './index.less';
 import { useWallet } from '@/ui/utils';
 import React from 'react';
-import { HDManagerStateProvider, StateProviderProps } from './utils';
+import {
+  HDManagerStateContext,
+  HDManagerStateProvider,
+  StateProviderProps,
+} from './utils';
 import { Button, Spin, message } from 'antd';
 import {
   HARDWARE_KEYRING_TYPES,
@@ -29,6 +33,7 @@ import { ReactComponent as imtokenOfflineSVG } from '@/ui/assets/walletlogo/imTo
 import { BitBox02Manager } from './BitBox02Manager';
 import { useTranslation } from 'react-i18next';
 import { ImKeyManager } from './ImKeyManager';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -61,6 +66,13 @@ export const HDManager: React.FC<StateProviderProps> = ({
   keyringId,
   brand,
 }) => {
+  const { search } = useLocation();
+  const [isNewUserImport, noRedirect] = React.useMemo(() => {
+    const query = new URLSearchParams(search);
+    return [query.get('isNewUserImport'), query.get('noRedirect')];
+  }, [search]);
+  const history = useHistory();
+
   const wallet = useWallet();
   const [initialed, setInitialed] = React.useState(false);
   const idRef = React.useRef<number | null>(null);
@@ -122,17 +134,26 @@ export const HDManager: React.FC<StateProviderProps> = ({
           });
         });
     }
-
-    window.addEventListener('beforeunload', () => {
-      closeConnect();
-    });
+    if (!isNewUserImport) {
+      window.addEventListener('beforeunload', () => {
+        closeConnect();
+      });
+    }
 
     return () => {
-      closeConnect();
+      if (!isNewUserImport) {
+        closeConnect();
+      }
     };
   }, []);
 
   const handleCloseWin = React.useCallback(() => {
+    if (isNewUserImport && !noRedirect) {
+      history.push(
+        `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${brand}`
+      );
+      return;
+    }
     window.close();
   }, []);
 
@@ -162,15 +183,35 @@ export const HDManager: React.FC<StateProviderProps> = ({
           </div>
           <Manager brand={brand} />
         </main>
-        <div
+        <DoneButton onClick={handleCloseWin} />
+        {/* <div
           onClick={handleCloseWin}
           className="absolute bottom-[40px] left-0 right-0 text-center"
         >
           <Button type="primary" className="w-[280px] h-[60px] text-20">
             {t('page.newAddress.hd.done')}
           </Button>
-        </div>
+        </div> */}
       </div>
     </HDManagerStateProvider>
+  );
+};
+
+const DoneButton = ({ onClick }: { onClick?(): void }) => {
+  const { t } = useTranslation();
+
+  const { currentAccounts } = React.useContext(HDManagerStateContext);
+
+  return (
+    <div className="absolute bottom-[40px] left-0 right-0 text-center">
+      <Button
+        type="primary"
+        className="w-[280px] h-[60px] text-20"
+        onClick={onClick}
+        disabled={!currentAccounts.length}
+      >
+        {t('page.newAddress.hd.done')}
+      </Button>
+    </div>
   );
 };
