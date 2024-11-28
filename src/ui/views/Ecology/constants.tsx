@@ -12,7 +12,7 @@ export const EcoChainMap = {
   [64165]: {
     name: 'Sonic Testnet',
     logo: 'https://soniclabs.com/images/chains/sonic-testnet.svg',
-    navBarClassName: 'bg-r-sonic-background',
+    // navBarClassName: 'bg-r-sonic-background',
     entry: SonicEntry,
   },
 };
