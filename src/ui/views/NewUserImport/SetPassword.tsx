@@ -174,10 +174,26 @@ export const NewUserSetPassword = () => {
   useMount(async () => {
     const isBooted = await wallet.isBooted();
     if (isBooted) {
-      message.error('already set password');
+      message.error('already set password, please click rabby popup');
       setTimeout(() => {
         window.close();
       }, 1000);
+    }
+  });
+
+  useMount(async () => {
+    if (type === 'private-key' && !store.privateKey) {
+      history.replace('/new-user/guide');
+      return;
+    }
+    if (type === 'seed-phrase' && !store.seedPhrase) {
+      history.replace('/new-user/guide');
+      return;
+    }
+
+    if (type === 'gnosis-address' && !store.gnosis?.address) {
+      history.replace('/new-user/guide');
+      return;
     }
   });
 
