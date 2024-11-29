@@ -45,6 +45,7 @@ import {
   passwordDecrypt,
   passwordClearKey,
 } from 'background/utils/password';
+import uninstalledMetricService from '../uninstalled';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -175,6 +176,9 @@ export class KeyringService extends EventEmitter {
             name: alias,
           });
         }
+        uninstalledMetricService.setWalletByKeyringType(
+          KEYRING_TYPE.SimpleKeyring
+        );
         return this.persistAllKeyrings.bind(this);
       })
       .then(this.setUnlocked.bind(this))
@@ -483,6 +487,7 @@ export class KeyringService extends EventEmitter {
     return selectedKeyring
       .addAccounts(1)
       .then(() => {
+        uninstalledMetricService.setWalletByKeyringType(selectedKeyring.type);
         if (selectedKeyring.getAccountsWithBrand) {
           return selectedKeyring.getAccountsWithBrand();
         } else {

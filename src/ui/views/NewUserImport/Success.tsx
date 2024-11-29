@@ -34,6 +34,8 @@ const AccountItem = ({ account }: { account: Account }) => {
 
   const [defaultName, setDefaultName] = useState(name || '');
 
+  const wallet = useWallet();
+
   const updateRef = useRef(null);
 
   const update = React.useCallback(() => {
@@ -42,7 +44,6 @@ const AccountItem = ({ account }: { account: Account }) => {
   }, [updateAlias, localName, defaultName]);
 
   useClickAway(updateRef, () => {
-    console.log('edit', edit);
     if (edit) {
       update();
     }
@@ -53,6 +54,10 @@ const AccountItem = ({ account }: { account: Account }) => {
       ref.current?.focus();
     }
   }, [edit]);
+
+  useEffect(() => {
+    wallet.uninstalledSyncStatus();
+  }, []);
 
   if (!account) {
     return null;
