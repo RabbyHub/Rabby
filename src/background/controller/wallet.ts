@@ -25,6 +25,7 @@ import {
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
   gasAccountService,
+  uninstalledService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1492,6 +1493,8 @@ export class WalletController extends BaseController {
     } else {
       setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
     }
+
+    uninstalledService.syncStatus();
   };
   isUnlocked = () => keyringService.isUnlocked();
 
@@ -4906,6 +4909,8 @@ export class WalletController extends BaseController {
     await userGuideService.activeUserGuide();
     return true;
   };
+
+  uninstalledSyncStatus = uninstalledService.syncStatus;
 }
 
 const wallet = new WalletController();
