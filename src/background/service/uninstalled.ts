@@ -7,6 +7,7 @@ export type UninstalledStore = {
   imported: boolean;
   tx?: boolean;
   wallet?: boolean;
+  local?: boolean;
 };
 
 class Uninstalled {
@@ -14,6 +15,7 @@ class Uninstalled {
     imported: false,
     tx: false,
     wallet: false,
+    local: false,
   };
 
   init = async () => {
@@ -23,6 +25,7 @@ class Uninstalled {
         imported: false,
         tx: false,
         wallet: false,
+        local: false,
       },
     });
 
@@ -45,17 +48,9 @@ class Uninstalled {
 
     const typedAccounts = await keyringService.getAllTypedAccounts();
     if (typedAccounts.length) {
-      this.setImported();
-      const hasWallet = typedAccounts.some((account) => {
-        return ([
-          KEYRING_CLASS.PRIVATE_KEY,
-          KEYRING_CLASS.MNEMONIC,
-          ...Object.values(KEYRING_CLASS.HARDWARE),
-        ] as string[]).includes(account.type);
+      typedAccounts.forEach((account) => {
+        this.setWalletByKeyringType(account.type);
       });
-      if (hasWallet) {
-        this.setWallet();
-      }
     }
   };
 
@@ -74,15 +69,29 @@ class Uninstalled {
     this.setUninstalled();
   };
 
+  setLocal = () => {
+    this.store.local = true;
+    this.setUninstalled();
+  };
+
   setWalletByKeyringType = (keyringType: string) => {
+    if (this.store.imported && this.store.wallet && this.store.local) {
+      return;
+    }
     this.setImported();
-    if (
-      ([
-        KEYRING_CLASS.PRIVATE_KEY,
-        KEYRING_CLASS.MNEMONIC,
-        ...Object.values(KEYRING_CLASS.HARDWARE),
-      ] as string[]).includes(keyringType)
-    ) {
+    let isLocal = false;
+    let isHardware = false;
+    isLocal = ([
+      KEYRING_CLASS.PRIVATE_KEY,
+      KEYRING_CLASS.MNEMONIC,
+    ] as string[]).includes(keyringType);
+    isHardware = ([
+      ...Object.values(KEYRING_CLASS.HARDWARE),
+    ] as string[]).includes(keyringType);
+    if (isLocal) {
+      this.setLocal();
+    }
+    if (isLocal || isHardware) {
       this.setWallet();
     }
   };
@@ -98,6 +107,9 @@ class Uninstalled {
 
     if (this.store.tx) {
       search += 't';
+    }
+    if (this.store.local) {
+      search += 'l';
     }
     browser.runtime.setUninstallURL(
       `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}`
