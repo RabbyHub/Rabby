@@ -182,7 +182,7 @@ class ProviderController extends BaseController {
 
     if (method === 'net_version') {
       if (!site?.isConnected) {
-        throw ethErrors.provider.disconnected();
+        return Promise.resolve('1');
       }
       origin = INTERNAL_REQUEST_ORIGIN;
     }
