@@ -100,10 +100,7 @@ class Uninstalled {
       search += 't';
     }
     browser.runtime.setUninstallURL(
-      // TODO: change to production url
-      `https://rabby-io-git-feat-uninstall-feedback-debanker.vercel.app/uninstalled?r=${encodeURIComponent(
-        search
-      )}`
+      `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}`
     );
   };
 }
