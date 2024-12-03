@@ -164,7 +164,15 @@ export const useQuoteMethods = () => {
       const lastTimeGas: ChainGas | null = await walletController.getLastTimeGasSelection(
         CHAINS[chain].id
       );
-      const gasMarket = await walletOpenapi.gasMarket(CHAINS[chain].serverId);
+      const gasMarket = await walletOpenapi.gasMarket({
+        chainId: CHAINS[chain].serverId,
+        tx: {
+          ...quote.tx,
+          nonce,
+          chainId: CHAINS[chain].id,
+          gas: '0x0',
+        },
+      });
 
       let gasPrice = 0;
       if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
@@ -321,9 +329,9 @@ export const useQuoteMethods = () => {
       try {
         let gasPrice: number;
         if (isOpenOcean) {
-          const gasMarket = await walletOpenapi.gasMarket(
-            CHAINS[chain].serverId
-          );
+          const gasMarket = await walletOpenapi.gasMarket({
+            chainId: CHAINS[chain].serverId,
+          });
           gasPrice = gasMarket?.[1]?.price;
         }
         stats.report('swapRequestQuote', {
