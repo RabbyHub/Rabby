@@ -2323,7 +2323,7 @@
         "title": "Welcome to Rabby Wallet",
         "desc": "The game-changing wallet for Ethereum and all EVM chains",
         "createNewAddress": "Create a new address",
-        "importAddress": "I already have a address"
+        "importAddress": "I already have an address"
       },
       "createNewAddress": {
         "title": "Create New Seed Phrase",
