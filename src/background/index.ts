@@ -34,6 +34,7 @@ import {
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
   gasAccountService,
+  uninstalledService,
 } from './service';
 import { providerController, walletController } from './controller';
 import { getOriginFromUrl } from '@/utils';
@@ -105,6 +106,7 @@ async function restoreAppState() {
   await HDKeyRingLastAddAddrTimeService.init();
   await bridgeService.init();
   await gasAccountService.init();
+  await uninstalledService.init();
 
   await walletController.tryUnlock();
 
@@ -145,6 +147,8 @@ async function restoreAppState() {
       });
     }
   });
+
+  uninstalledService.setUninstalled();
 }
 
 restoreAppState();
