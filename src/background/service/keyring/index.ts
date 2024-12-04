@@ -18,7 +18,7 @@ import BitBox02Keyring from './eth-bitbox02-keyring/eth-bitbox02-keyring';
 import LedgerBridgeKeyring from './eth-ledger-keyring';
 import { WalletConnectKeyring } from '@rabby-wallet/eth-walletconnect-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring';
-import TrezorKeyring from './eth-trezor-keyring/eth-trezor-keyring';
+import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring/eth-onekey-keyring';
 import LatticeKeyring from './eth-lattice-keyring/eth-lattice-keyring';
 import KeystoneKeyring from './eth-keystone-keyring';
@@ -45,6 +45,7 @@ import {
   passwordDecrypt,
   passwordClearKey,
 } from 'background/utils/password';
+import uninstalledMetricService from '../uninstalled';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -112,6 +113,9 @@ export class KeyringService extends EventEmitter {
   }
 
   async boot(password: string) {
+    if (this.isBooted()) {
+      throw new Error('is booted');
+    }
     this.password = password;
     const encryptBooted = await passwordEncrypt({ data: 'true', password });
     this.store.updateState({ booted: encryptBooted });
@@ -172,6 +176,9 @@ export class KeyringService extends EventEmitter {
             name: alias,
           });
         }
+        uninstalledMetricService.setWalletByKeyringType(
+          KEYRING_TYPE.SimpleKeyring
+        );
         return this.persistAllKeyrings.bind(this);
       })
       .then(this.setUnlocked.bind(this))
@@ -480,6 +487,7 @@ export class KeyringService extends EventEmitter {
     return selectedKeyring
       .addAccounts(1)
       .then(() => {
+        uninstalledMetricService.setWalletByKeyringType(selectedKeyring.type);
         if (selectedKeyring.getAccountsWithBrand) {
           return selectedKeyring.getAccountsWithBrand();
         } else {
@@ -1046,12 +1054,6 @@ export class KeyringService extends EventEmitter {
       }, []);
     });
     return addrs.map(normalizeAddress);
-  }
-
-  resetResend() {
-    this.keyrings.forEach((keyring) => {
-      keyring?.resetResend?.();
-    });
   }
 
   /**

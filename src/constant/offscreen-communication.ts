@@ -49,3 +49,7 @@ export enum LatticeAction {
 export enum KnownOrigins {
   lattice = 'https://lattice.gridplus.io',
 }
+
+export enum LedgerAction {
+  ledgerDeviceDisconnect = 'ledger-device-disconnect',
+}

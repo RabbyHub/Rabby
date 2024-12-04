@@ -417,9 +417,32 @@ button:focus {
   }
 }
 .text-gradient {
-  background: linear-gradient(132.94deg, #2ABB7F 5.01%, #FE6949 95.5%);
+  background: linear-gradient(132.94deg, #2abb7f 5.01%, #fe6949 95.5%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
+}
+
+.external-link-alert-modal {
+  background: var(--r-neutral-bg-1);
+  border-radius: 16px;
+  overflow: hidden;
+  padding-bottom: 0;
+  .ant-modal-confirm-content {
+    padding: 0;
+  }
+  .ant-modal-confirm-content,
+  .ant-modal-content {
+    background: var(--r-neutral-bg-1);
+  }
+  .ant-modal-content {
+    box-shadow: none;
+  }
+  .ant-modal-body {
+    padding: 20px;
+  }
+  .ant-modal-confirm-content {
+    margin-bottom: 0 !important;
+  }
 }

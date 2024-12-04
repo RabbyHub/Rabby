@@ -27,6 +27,7 @@ import {
   SelectChainListProps,
 } from './components/SelectChainList';
 import { LoadingBalances } from './LoadingBalances';
+import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -43,6 +44,8 @@ interface ChainSelectorModalProps {
   showRPCStatus?: boolean;
   height?: number;
   zIndex?: number;
+  excludeChains?: CHAINS_ENUM[];
+  showClosableIcon?: boolean;
 }
 
 const useChainSeletorList = ({
@@ -140,6 +143,8 @@ const ChainSelectorModal = ({
   showRPCStatus = false,
   height = 494,
   zIndex,
+  excludeChains,
+  showClosableIcon = false,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -158,8 +163,8 @@ const ChainSelectorModal = ({
   const history = useHistory();
 
   const {
-    matteredList,
-    unmatteredList,
+    matteredList: _matteredList,
+    unmatteredList: _unmatteredList,
     handleStarChange,
     handleSort,
     search,
@@ -169,6 +174,15 @@ const ChainSelectorModal = ({
     supportChains,
     netTabKey: !hideMainnetTab ? selectedTab : 'testnet',
   });
+
+  const [matteredList, unmatteredList] = useMemo(() => {
+    if (excludeChains?.length) {
+      return [_matteredList, _unmatteredList].map((chains) =>
+        chains.filter((e) => !excludeChains.includes(e.enum))
+      );
+    }
+    return [_matteredList, _unmatteredList];
+  }, [excludeChains, _matteredList, _unmatteredList]);
 
   useEffect(() => {
     if (!value || !visible) return;
@@ -196,7 +210,7 @@ const ChainSelectorModal = ({
         title={title}
         width="400px"
         height={height}
-        closable={false}
+        closable={showClosableIcon}
         placement={'bottom'}
         visible={visible}
         onClose={handleCancel}
@@ -209,6 +223,9 @@ const ChainSelectorModal = ({
         )}
         zIndex={zIndex}
         destroyOnClose
+        closeIcon={
+          <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
+        }
       >
         <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
           {isShowTestnet && !hideMainnetTab && (

@@ -25,6 +25,7 @@ import {
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
   gasAccountService,
+  uninstalledService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -47,6 +48,7 @@ import {
   KEYRING_CLASS,
   DBK_CHAIN_ID,
   DBK_NFT_CONTRACT_ADDRESS,
+  CORE_KEYRING_TYPES,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -130,6 +132,7 @@ import pRetry from 'p-retry';
 import Browser from 'webextension-polyfill';
 import SafeApiKit from '@safe-global/api-kit';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
+import { userGuideService } from '../service/userGuide';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -142,6 +145,7 @@ export class WalletController extends BaseController {
   /* wallet */
   boot = async (password) => {
     await keyringService.boot(password);
+    userGuideService.destroy();
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     const isDefaultWallet = preferenceService.getIsDefaultWallet();
     if (!hasOtherProvider) {
@@ -1489,6 +1493,8 @@ export class WalletController extends BaseController {
     } else {
       setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
     }
+
+    uninstalledService.syncStatus();
   };
   isUnlocked = () => keyringService.isUnlocked();
 
@@ -1562,7 +1568,17 @@ export class WalletController extends BaseController {
   private getTotalBalanceCached = cached(
     'getTotalBalanceCached',
     async (address: string) => {
-      const data = await openapiService.getTotalBalance(address);
+      const addresses = await keyringService.getAllAdresses();
+      const filtered = addresses.filter((item) =>
+        isSameAddress(item.address, address)
+      );
+      let core = false;
+      if (
+        filtered.some((item) => CORE_KEYRING_TYPES.includes(item.type as any))
+      ) {
+        core = true;
+      }
+      const data = await openapiService.getTotalBalance(address, core);
       preferenceService.updateBalanceAboutCache(address, {
         totalBalance: data,
       });
@@ -2619,15 +2635,6 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  resendWalletConnect = (account: Account) => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
-    if (keyring) {
-      return keyring.resend(account);
-    }
-    return null;
-  };
-
   getWalletConnectSessionStatus = (address: string, brandName: string) => {
     const keyringType =
       brandName === KEYRING_CLASS.Coinbase
@@ -2918,6 +2925,20 @@ export class WalletController extends BaseController {
     return;
   };
 
+  validatePrivateKey = async (data: string) => {
+    const privateKey = ethUtil.stripHexPrefix(data);
+    const buffer = Buffer.from(privateKey, 'hex');
+
+    const error = new Error(t('background.error.invalidPrivateKey'));
+    try {
+      if (!ethUtil.isValidPrivate(buffer)) {
+        throw error;
+      }
+    } catch {
+      throw error;
+    }
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
@@ -2958,7 +2979,7 @@ export class WalletController extends BaseController {
     );
     return this._setCurrentAccountFromKeyring(keyring);
   };
-
+  generateMnemonic = () => keyringService.generateMnemonic();
   getPreMnemonics = () => keyringService.getPreMnemonics();
   generatePreMnemonic = () => keyringService.generatePreMnemonic();
   removePreMnemonics = () => keyringService.removePreMnemonics();
@@ -3181,6 +3202,10 @@ export class WalletController extends BaseController {
       throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
     return await keyring.getInfoByAddress(address);
+  };
+
+  validateMnemonic = (mnemonic: string) => {
+    return HdKeyring.validateMnemonic(mnemonic);
   };
 
   generateKeyringWithMnemonic = async (
@@ -3424,7 +3449,7 @@ export class WalletController extends BaseController {
     }
 
     if (needUnlock) {
-      await keyring.unlock();
+      await keyring?.unlock?.();
     }
 
     return stashKeyringId;
@@ -4877,6 +4902,15 @@ export class WalletController extends BaseController {
       throw e;
     }
   };
+  tryOpenOrActiveUserGuide = async () => {
+    if (this.isBooted()) {
+      return false;
+    }
+    await userGuideService.activeUserGuide();
+    return true;
+  };
+
+  uninstalledSyncStatus = uninstalledService.syncStatus;
 }
 
 const wallet = new WalletController();

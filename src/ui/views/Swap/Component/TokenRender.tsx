@@ -5,6 +5,8 @@ import { ReactComponent as RcIconRcArrowDownTriangle } from '@/ui/assets/swap/ar
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useTranslation } from 'react-i18next';
+import { ReactComponent as RcImgArrowDown } from '@/ui/assets/swap/arrow-down.svg';
+
 const TokenRenderWrapper = styled.div`
   width: 150px;
   height: 46px;
@@ -18,6 +20,17 @@ const TokenRenderWrapper = styled.div`
   color: #13141a;
   border: 1px solid transparent;
   cursor: pointer;
+  &.bridge {
+    height: 40px;
+    width: auto;
+    border-radius: 8px;
+    background: var(--r-neutral-card2, #f2f4f7);
+    padding: 8px 12px;
+
+    .token {
+      gap: 6px;
+    }
+  }
   &:hover {
     background: rgba(134, 151, 255, 0.2);
   }
@@ -55,13 +68,17 @@ const TokenRenderWrapper = styled.div`
 export const TokenRender = ({
   openTokenModal,
   token,
+  type = 'swap',
 }: {
   token?: TokenItem | undefined;
   openTokenModal: () => void;
+  type?: 'swap' | 'bridge';
 }) => {
   const { t } = useTranslation();
+  const isBridge = type === 'bridge';
+
   return (
-    <TokenRenderWrapper onClick={openTokenModal}>
+    <TokenRenderWrapper className={type} onClick={openTokenModal}>
       {token ? (
         <div className="token">
           <TokenWithChain
@@ -74,18 +91,32 @@ export const TokenRender = ({
           <span className="text" title={getTokenSymbol(token)}>
             {getTokenSymbol(token)}
           </span>
-          <RcIconRcArrowDownTriangle
-            viewBox="0 0 24 24"
-            className="arrow text-r-neutral-foot"
-          />
+          {isBridge ? (
+            <RcImgArrowDown
+              viewBox="0 0 20 20"
+              className="arrow text-r-neutral-foot w-16 h-16"
+            />
+          ) : (
+            <RcIconRcArrowDownTriangle
+              viewBox="0 0 24 24"
+              className="arrow text-r-neutral-foot"
+            />
+          )}
         </div>
       ) : (
         <div className="select">
           <span>{t('page.swap.select-token')}</span>
-          <RcIconRcArrowDownTriangle
-            viewBox="0 0 24 24"
-            className="arrow text-r-neutral-foot"
-          />
+          {isBridge ? (
+            <RcImgArrowDown
+              viewBox="0 0 20 20"
+              className="arrow text-r-neutral-foot w-16 h-16"
+            />
+          ) : (
+            <RcIconRcArrowDownTriangle
+              viewBox="0 0 24 24"
+              className="arrow text-r-neutral-foot"
+            />
+          )}
         </div>
       )}
     </TokenRenderWrapper>

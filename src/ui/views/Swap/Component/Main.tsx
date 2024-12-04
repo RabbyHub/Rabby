@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -292,7 +293,7 @@ export const Main = () => {
                   .toNumber(),
                 slippage: new BigNumber(slippage).div(100).toNumber(),
               },
-              dex_id: activeProvider?.name.replace('API', '') || 'WrapToken',
+              dex_id: activeProvider?.name || 'WrapToken',
             },
           },
           {
@@ -359,7 +360,7 @@ export const Main = () => {
                   .toNumber(),
                 slippage: new BigNumber(slippage).div(100).toNumber(),
               },
-              dex_id: activeProvider?.name.replace('API', '') || 'WrapToken',
+              dex_id: activeProvider?.name || 'WrapToken',
             },
           },
           {
@@ -401,6 +402,7 @@ export const Main = () => {
         KEYRING_TYPE.HdKeyring,
         KEYRING_CLASS.HARDWARE.LEDGER,
       ].includes((currentAccount?.type || '') as any) &&
+      !receiveToken?.low_credit_score &&
       !isSlippageHigh &&
       !isSlippageLow &&
       !showLoss
@@ -420,6 +422,19 @@ export const Main = () => {
     setLowCreditToken,
     setLowCreditVisible,
   } = useLowCreditState(receiveToken);
+
+  const lowCreditInit = useRef(false);
+
+  useEffect(() => {
+    if (
+      receiveToken &&
+      receiveToken?.low_credit_score &&
+      !lowCreditInit.current
+    ) {
+      setLowCreditToken(receiveToken);
+      setLowCreditVisible(true);
+    }
+  }, [receiveToken]);
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -794,7 +809,10 @@ export const Main = () => {
       <LowCreditModal
         token={lowCreditToken}
         visible={lowCreditVisible}
-        onCancel={() => setLowCreditVisible(false)}
+        onCancel={() => {
+          setLowCreditVisible(false);
+          lowCreditInit.current = true;
+        }}
       />
     </div>
   );

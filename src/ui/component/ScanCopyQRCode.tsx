@@ -92,7 +92,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
           {!qrcodeURL ? (
             <div
               className={clsx(
-                'bg-white bg-opacity-70 absolute inset-0',
+                'bg-rabby-neutral-card1 bg-opacity-70 absolute inset-0',
                 'flex items-center justify-center'
               )}
             >
@@ -119,7 +119,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
           {!qrcodeURL ? (
             <div
               className={clsx(
-                'bg-white bg-opacity-70 absolute inset-0',
+                'bg-r-neutral-card1 absolute inset-0',
                 'flex items-center justify-center'
               )}
             >
@@ -127,7 +127,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
             </div>
           ) : (
             <Input.TextArea
-              className="h-[200px] w-[336px] p-16 block bg-r-neutral-bg-1 rounded-[8px]"
+              className="h-[200px] w-[336px] p-16 block bg-r-neutral-card1 rounded-[8px] text-r-neutral-body"
               spellCheck={false}
               value={qrcodeURL}
               disabled={true}

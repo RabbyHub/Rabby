@@ -115,7 +115,7 @@ export const bridge = createModel<RootModel>()({
     },
 
     async fetchSupportedChains(_: void, store) {
-      const chains = await store.app.wallet.openapi.getBridgeSupportChain();
+      const chains = await store.app.wallet.openapi.getBridgeSupportChainV2();
       if (chains.length) {
         const mappings = Object.values(CHAINS).reduce((acc, chain) => {
           acc[chain.serverId] = chain.enum;

@@ -44,6 +44,7 @@ import {
   KEYRING_CATEGORY_MAP,
   EVENTS,
   INTERNAL_REQUEST_SESSION,
+  INTERNAL_REQUEST_ORIGIN,
 } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
@@ -165,8 +166,10 @@ class ProviderController extends BaseController {
   ethRpc = (req, forceChainServerId?: string) => {
     const {
       data: { method, params },
-      session: { origin },
+      session: { origin: _origin },
     } = req;
+
+    let origin = _origin;
 
     if (
       !permissionService.hasPermission(origin) &&
@@ -176,6 +179,14 @@ class ProviderController extends BaseController {
     }
 
     const site = permissionService.getSite(origin);
+
+    if (method === 'net_version') {
+      if (!site?.isConnected) {
+        return Promise.resolve('1');
+      }
+      origin = INTERNAL_REQUEST_ORIGIN;
+    }
+
     let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
     if (site) {
       chainServerId =
@@ -473,13 +484,25 @@ class ProviderController extends BaseController {
       reported: false,
     };
 
+    let signedTx;
     try {
-      const signedTx = await keyringService.signTransaction(
+      signedTx = await keyringService.signTransaction(
         keyring,
         tx,
         txParams.from,
         opts
       );
+    } catch (e) {
+      const errObj =
+        typeof e === 'object'
+          ? { message: e.message }
+          : ({ message: e } as any);
+      errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
+
+      throw errObj;
+    }
+
+    try {
       if (
         currentAccount.type === KEYRING_TYPE.GnosisKeyring ||
         currentAccount.type === KEYRING_TYPE.CoboArgusKeyring

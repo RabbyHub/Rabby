@@ -957,6 +957,13 @@
       }
     },
     "bridge": {
+      "From": "From",
+      "To": "To",
+      "Balance": "Balance: ",
+      "Select": "Select",
+      "select-chain": "Select Chain",
+      "no-quote-found": "No quote found. Please try other token pairs.",
+      "no-quote": "No Quote",
       "title": "Bridge",
       "history": "Bridge history",
       "the-following-bridge-route-are-found": "Found following route",
@@ -980,7 +987,7 @@
       "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh route.",
       "price-expired-refresh-route": "Price expired. Refresh route.",
       "approve-x-symbol": "Approve {{symbol}}",
-      "approve-and-bridge": "Approve and Bridge on {{name}}",
+      "approve-and-bridge": "Approve and Bridge",
       "need-to-approve-token-before-bridge": "Need to approve token before bridge",
       "via-bridge": "via {{bridge}}",
       "duration": "{{duration}} min",
@@ -992,6 +999,16 @@
       "no-route-found": "No route found",
       "aggregator-not-enabled": "This aggregator is not enabled to trade by you.",
       "enable-it": "Enable it",
+      "recommendFromToken": "Bridge from <1></1> for an available quote",
+      "est-payment": "Est. Payment:",
+      "est-receiving": "Est. Receiving:",
+      "est-difference": "Est. Difference:",
+      "loss-tips": "You're losing {{usd}}. Try a different amount.",
+      "price-impact": "Price Impact",
+      "showMore": {
+        "title": "Show More",
+        "source": "Bridge Source"
+      },
       "settingModal": {
         "title": "Enable Bridge Aggregators to trade",
         "confirm": "Confirm",
@@ -1023,7 +1040,7 @@
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
       "delete-checklist-1": "I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.",
-      "delete-checklist-2": "I confirm that I have backuped the private key or Seed Phrase and I'm ready to delete it now.",
+      "delete-checklist-2": "I confirm that I have backed up the private key or Seed Phrase and I'm ready to delete it now.",
       "confirm": "Confirm",
       "cancel": "Cancel",
       "delete-private-key-modal-title_one": "Delete {{count}} private key address",
@@ -1828,7 +1845,8 @@
       "manage-addresses-under-this-seed-phrase": "Manage addresses under this Seed Phrase",
       "safeModuleAddress": "Safe Module Address",
       "coboSafeErrorModule": "Address has expired, please delete and import the address again.",
-      "importedDelegatedAddress": "Imported Delegated address"
+      "importedDelegatedAddress": "Imported Delegated address",
+      "manage-addresses-under": "Manage addresses under this {{brand}}"
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Preferred Dapps",
@@ -2141,6 +2159,37 @@
       "transactionSpeed": "Transaction Speed"
     },
     "ecology": {
+      "sonic": {
+        "home": {
+          "airdrop": "Airdrop",
+          "airdropDesc": "~200 million S to users on Opera and Sonic.",
+          "airdropBtn": "Earn points",
+          "arcadeDesc": "Play free games to earn points for the S airdrop.",
+          "arcadeBtn": "Play now",
+          "migrateTitle": "Migrate",
+          "migrateDesc": "→",
+          "migrateBtn": "Coming soon",
+          "earnTitle": "Earn",
+          "earnDesc": "Stake your $S",
+          "earnBtn": "Coming soon",
+          "socialsTitle": "Get Involved"
+        },
+        "points": {
+          "sonicPoints": "Sonic Points",
+          "referralCode": "Referral code",
+          "referralCodeCopied": "Referral code copied",
+          "today": "Today",
+          "shareOn": "Share on",
+          "sonicArcade": "Sonic Arcade",
+          "sonicArcadeBtn": "Start playing",
+          "pointsDashboard": "Points Dashboard",
+          "pointsDashboardBtn": "Start earning points",
+          "errorTitle": "Unable to load points",
+          "errorDesc": "There was an error loading your points. Please try again.",
+          "retry": "Retry",
+          "getReferralCode": "Get referral code"
+        }
+      },
       "dbk": {
         "home": {
           "bridge": "Bridge To DBK Chain",
@@ -2268,6 +2317,111 @@
     "safeMessageQueue": {
       "loading": "Loading messages",
       "noData": "No messages"
+    },
+    "newUserImport": {
+      "guide": {
+        "title": "Welcome to Rabby Wallet",
+        "desc": "The game-changing wallet for Ethereum and all EVM chains",
+        "createNewAddress": "Create a new address",
+        "importAddress": "I already have an address"
+      },
+      "createNewAddress": {
+        "title": "Create New Seed Phrase",
+        "desc": "Before you start, please read and keep the following security tips in mind.",
+        "tip1": "If I lose or share my seed phrase, my assets will be lost forever.",
+        "tip2": "The seed phrase is only stored on my computer, and Rabby has no access to it. ",
+        "tip3": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me. ",
+        "showSeedPhrase": "Show Seed Phrase"
+      },
+      "importList": {
+        "title": "Select Import Method "
+      },
+      "importPrivateKey": {
+        "title": "Import Private Key",
+        "pasteCleared": "Pasted and clipboard cleared"
+      },
+      "PasswordCard": {
+        "title": "Set Password",
+        "form": {
+          "password": {
+            "label": "Password",
+            "placeholder": "8 characters min",
+            "required": "Please input Password",
+            "min": "Password must be at least 8 characters long"
+          },
+          "confirmPassword": {
+            "label": "Confirm Password",
+            "placeholder": "Password",
+            "required": "Please Confirm Password",
+            "notMatch": "Passwords do not match"
+          }
+        },
+        "agree": "I agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>",
+        "desc": "It will be used to unlock wallet and encrypt data"
+      },
+      "successful": {
+        "create": "Created Successfully",
+        "import": "Imported Successfully",
+        "start": "Get Started",
+        "addMoreAddr": "Add more addresses from this Seed Phrase",
+        "addMoreFrom": "Add more addresses from {{name}}"
+      },
+      "readyToUse": {
+        "title": "Rabby Wallet is Ready to Use",
+        "desc": "Pin Rabby Wallet to your toolbar for easy access.",
+        "pin": "Pin Rabby Wallet",
+        "extensionTip": "Click <1/> and then <3/>"
+      },
+      "importSeedPhrase": {
+        "title": "Import Seed Phrase"
+      },
+      "importOneKey": {
+        "title": "OneKey",
+        "tip1": "1. Install <1>OneKey Bridge<1/>",
+        "tip2": "2. Plug in your OneKey device",
+        "tip3": "3. Unlock your device",
+        "connect": "Connect OneKey"
+      },
+      "importTrezor": {
+        "title": "Terzor",
+        "tip1": "1. Plug in your Trezor device",
+        "tip2": "2. Unlock your device",
+        "connect": "Connect Terzor"
+      },
+      "ImportGridPlus": {
+        "title": "GridPlus",
+        "tip1": "1. Open your GridPlus device",
+        "tip2": "2. Connect through Lattice Connector",
+        "connect": "Connect GridPlus"
+      },
+      "importLedger": {
+        "title": "Ledger",
+        "tip1": "Plug in your Ledger device.",
+        "tip2": "Enter your PIN to unlock.",
+        "tip3": "Open the Ethereum app.",
+        "connect": "Connect Ledger"
+      },
+      "importKeystone": {
+        "qrcode": {
+          "desc": "Scan the QR code on the Keystone hardware wallet"
+        },
+        "usb": {
+          "desc": "Ensure your Keystone 3 Pro is on the homepage",
+          "tip1": "Plug in your Keystone device",
+          "tip2": "Enter your password to unlock",
+          "tip3": "Approve the connection to your computer",
+          "connect": "Connect Keystone"
+        }
+      },
+      "importSafe": {
+        "title": "Add Safe Address",
+        "error": {
+          "required": "Please input address",
+          "invalid": "Not a valid address"
+        },
+        "placeholder": "Input safe address",
+        "loading": "Searching the deployed chain of this address"
+      }
     }
   },
   "component": {
@@ -2376,11 +2530,19 @@
           "title": "USD VALUE"
         }
       },
+      "bridge": {
+        "token": "Token",
+        "value": "Value",
+        "liquidity": "Liquidity",
+        "liquidityTips": "The higher the historical trade volume, the more likely the bridge will succeed.",
+        "low": "Low",
+        "high": "High"
+      },
       "searchInput": {
         "placeholder": "Search by Name / Address"
       },
       "header": {
-        "title": "Select a token"
+        "title": "Select Token"
       },
       "noTokens": "No Tokens",
       "noMatch": "No Match",
@@ -2415,6 +2577,11 @@
       "fast": "Fast",
       "normal": "Normal",
       "doNotReserve": "Don't reserve Gas"
+    },
+    "OpenExternalWebsiteModal": {
+      "title": "You're Leaving Rabby Wallet",
+      "content": "You're about to visit an external website. Rabby Wallet is not responsible for the content or security of this site.",
+      "button": "Continue"
     }
   },
   "global": {

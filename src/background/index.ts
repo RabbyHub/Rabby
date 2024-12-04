@@ -34,6 +34,7 @@ import {
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
   gasAccountService,
+  uninstalledService,
 } from './service';
 import { providerController, walletController } from './controller';
 import { getOriginFromUrl } from '@/utils';
@@ -54,6 +55,7 @@ import { customTestnetService } from './service/customTestnet';
 import { findChain } from '@/utils/chain';
 import { syncChainService } from './service/syncChain';
 import { GasAccountServiceStore } from './service/gasAccount';
+import { userGuideService } from './service/userGuide';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -77,6 +79,7 @@ Sentry.init({
 });
 
 async function restoreAppState() {
+  await onInstall();
   const keyringState = await storage.get('keyringState');
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
@@ -103,6 +106,7 @@ async function restoreAppState() {
   await HDKeyRingLastAddAddrTimeService.init();
   await bridgeService.init();
   await gasAccountService.init();
+  await uninstalledService.init();
 
   await walletController.tryUnlock();
 
@@ -115,6 +119,10 @@ async function restoreAppState() {
   transactionBroadcastWatchService.roll();
   startEnableUser();
   walletController.syncMainnetChainList();
+
+  if (!keyringService.isBooted()) {
+    userGuideService.init();
+  }
 
   eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, ({ address }) => {
     if (!address) return;
@@ -139,6 +147,8 @@ async function restoreAppState() {
       });
     }
   });
+
+  uninstalledService.setUninstalled();
 }
 
 restoreAppState();
@@ -386,4 +396,14 @@ function startEnableUser() {
     action: 'enable',
   });
   preferenceService.updateSendEnableTime(Date.now());
+}
+
+// On first install, open a new tab with Rabby
+async function onInstall() {
+  const storeAlreadyExisted = await userGuideService.isStorageExisted();
+  // If the store doesn't exist, then this is the first time running this script,
+  // and is therefore an install
+  if (!storeAlreadyExisted) {
+    await userGuideService.openUserGuide();
+  }
 }

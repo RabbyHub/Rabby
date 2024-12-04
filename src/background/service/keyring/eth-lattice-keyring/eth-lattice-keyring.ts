@@ -1,6 +1,6 @@
 /* eslint-disable */
 import OldLatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
-import { SignHelper, LedgerHDPathType } from '../helper';
+import { LedgerHDPathType } from '../helper';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '@/background/utils';
 
@@ -29,9 +29,6 @@ class LatticeKeyring extends OldLatticeKeyring {
   appName = 'Rabby';
   static type = keyringType;
   type = keyringType;
-  signHelper = new SignHelper({
-    errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
-  });
 
   async _getCreds() {
     if (!isManifestV3) {
@@ -75,32 +72,6 @@ class LatticeKeyring extends OldLatticeKeyring {
     } catch (err: any) {
       throw new Error(err);
     }
-  }
-
-  resend() {
-    this.signHelper.resend();
-  }
-
-  resetResend() {
-    this.signHelper.resetResend();
-  }
-
-  async signTransaction(address, tx) {
-    return this.signHelper.invoke(async () => {
-      return super.signTransaction(address, tx);
-    });
-  }
-
-  async signMessage(address, msg) {
-    return this.signHelper.invoke(async () => {
-      return super.signMessage(address, msg);
-    });
-  }
-
-  async signTypedData(address, msg, opts) {
-    return this.signHelper.invoke(async () => {
-      return super.signTypedData(address, msg, opts);
-    });
   }
 
   async getCurrentAccounts() {
