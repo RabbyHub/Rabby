@@ -14,6 +14,7 @@ import { Button } from 'antd';
 import { SpecialTokenListPopup } from './components/TokenButton';
 import { useRabbySelector } from '@/ui/store';
 import useSortToken from '@/ui/hooks/useSortTokens';
+import { TestnetChainList } from './TestnetChainList';
 
 export const AssetList = ({
   visible,
@@ -121,7 +122,12 @@ export const AssetList = ({
         </div>
       </div>
       <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
-        <CustomTestnetAssetList visible={visible} onClose={onClose} />
+        <TestnetChainList onChange={handleTestnetSelectChainChange} />
+        <CustomTestnetAssetList
+          selectChainId={selectTestnetChainId}
+          visible={visible}
+          onClose={onClose}
+        />
       </div>
     </>
   );

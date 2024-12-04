@@ -199,7 +199,7 @@ export const customTestnetTokenToTokenItem = (
     is_wallet: false,
     is_scam: false,
     is_suspicious: false,
-    logo_url: '',
+    logo_url: token.logo || '',
     name: token.symbol,
     optimized_symbol: token.symbol,
     price: 0,
