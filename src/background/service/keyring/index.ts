@@ -93,7 +93,7 @@ export class KeyringService extends EventEmitter {
   store!: ObservableStore<any>;
   memStore: ObservableStore<MemStoreState>;
   keyrings: any[];
-  password: string | null = null;
+  private password: string | null = null;
 
   constructor() {
     super();
