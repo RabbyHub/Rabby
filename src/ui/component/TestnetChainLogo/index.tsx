@@ -17,7 +17,7 @@ export const TestnetChainLogo = ({
         className
       )}
     >
-      {name.substring(0, 3)}
+      {name.trim().substring(0, 1)}
     </div>
   );
 };

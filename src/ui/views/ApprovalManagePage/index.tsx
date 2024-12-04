@@ -997,7 +997,8 @@ const ApprovalManagePage = () => {
 
   const { t } = useTranslation();
 
-  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
+  const { selectedTab, onTabChange } = useSwitchNetTab();
+  const isShowTestnet = false;
 
   const { isDarkTheme } = useThemeMode();
   const [chain, setChain] = React.useState<CHAINS_ENUM>();

@@ -132,6 +132,7 @@ import Browser from 'webextension-polyfill';
 import SafeApiKit from '@safe-global/api-kit';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
+import { sleep } from '@/ui/views/HDManager/utils';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -4812,6 +4813,7 @@ export class WalletController extends BaseController {
   isAddedCustomTestnetToken = customTestnetService.hasToken;
   getCustomTestnetTx = customTestnetService.getTx;
   getCustomTestnetTxReceipt = customTestnetService.getTransactionReceipt;
+  getCustomTestnetLogos = () => customTestnetService.fetchLogos;
   // getCustomTestnetTokenListWithBalance = customTestnetService.getTokenListWithBalance;
 
   getUsedCustomTestnetChainList = async () => {

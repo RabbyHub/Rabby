@@ -95,10 +95,18 @@ export const SelectChainItem = forwardRef(
         >
           <div className="flex items-center flex-1">
             {data.isTestnet ? (
-              <TestnetChainLogo
-                name={data.name}
-                className="select-chain-item-icon"
-              />
+              data.logo ? (
+                <img
+                  src={data.logo}
+                  alt=""
+                  className="select-chain-item-icon"
+                />
+              ) : (
+                <TestnetChainLogo
+                  name={data.name}
+                  className="select-chain-item-icon"
+                />
+              )
             ) : (
               <>
                 {showRPCStatus ? (

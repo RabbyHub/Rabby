@@ -73,12 +73,15 @@ export const chains = createModel<RootModel>()({
   },
   effects: (dispatch) => ({
     init(_: void, store) {
-      store.app.wallet.getCustomTestnetList().then((testnetList) => {
-        updateChainStore({
-          testnetList: testnetList,
+      store.app.wallet
+        .getCustomTestnetLogos()
+        .then(() => store.app.wallet.getCustomTestnetList())
+        .then((testnetList) => {
+          updateChainStore({
+            testnetList: testnetList,
+          });
+          this.setField({ testnetList });
         });
-        this.setField({ testnetList });
-      });
       getMainnetListFromLocal().then((mainnetList) => {
         if (mainnetList.length) {
           updateChainStore({

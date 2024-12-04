@@ -86,8 +86,20 @@ export const AddFromChainList = ({
   const ref = useRef<HTMLDivElement>(null);
   const search = useDebounce(_search, { wait: 500 });
 
+  const { data: logos, runAsync: runFetchLogos } = useRequest(
+    () => {
+      return wallet.getCustomTestnetLogos();
+    },
+    {
+      cacheKey: 'custom-testnet-logos',
+      cacheTime: 30000,
+      staleTime: 30000,
+    }
+  );
+
   const { loading, data, loadingMore } = useInfiniteScroll(
     async (data) => {
+      // const logos = await runFetchLogos().catch(() => ({}));
       const res = await wallet.openapi.searchChainList({
         start: data?.start || 0,
         limit: 50,
@@ -96,13 +108,17 @@ export const AddFromChainList = ({
 
       return {
         list: res.chain_list.map((item) => {
-          return createTestnetChain({
+          const res = createTestnetChain({
             name: item.name,
             id: item.chain_id,
             nativeTokenSymbol: item.native_currency.symbol,
             rpcUrl: item.rpc || '',
             scanLink: item.explorer || '',
           });
+          if (logos?.[res.id]) {
+            res.logo = logos?.[res.id].chain_logo_url;
+          }
+          return res;
         }),
         start: res.page.start + res.page.limit,
         total: res.page.total,
@@ -118,17 +134,22 @@ export const AddFromChainList = ({
     }
   );
 
-  const { data: usedList, loading: isLoadingUsed } = useRequest(() => {
+  const { data: usedList, loading: isLoadingUsed } = useRequest(async () => {
+    // const logos = await runFetchLogos().catch(() => ({}));
     return wallet.getUsedCustomTestnetChainList().then((list) => {
       return sortBy(
         list.map((item) => {
-          return createTestnetChain({
+          const res = createTestnetChain({
             name: item.name,
             id: item.chain_id,
             nativeTokenSymbol: item.native_currency.symbol,
             rpcUrl: item.rpc || '',
             scanLink: item.explorer || '',
           });
+          if (logos?.[res.id]) {
+            res.logo = logos?.[res.id].chain_logo_url;
+          }
+          return res;
         }),
         'name'
       );
