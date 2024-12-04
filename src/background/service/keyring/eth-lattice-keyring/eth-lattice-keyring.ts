@@ -24,6 +24,8 @@ const HD_PATH_TYPE = {
   [HD_PATH_BASE[HDPathType.LedgerLive]]: HDPathType.LedgerLive,
 };
 
+let callStackCounter = 0;
+
 class LatticeKeyring extends OldLatticeKeyring {
   [x: string]: any;
   appName = 'Rabby';
@@ -104,6 +106,7 @@ class LatticeKeyring extends OldLatticeKeyring {
           index: start + i + 1,
         };
       });
+      callStackCounter = 0;
       return accounts;
     } catch (err) {
       // This will get hit for a few reasons. Here are two possibilities:
@@ -113,6 +116,8 @@ class LatticeKeyring extends OldLatticeKeyring {
       // In either event we should try to resync the wallet and if that
       // fails throw an error
       try {
+        if (callStackCounter > 20) throw new Error('Max call stacks');
+        callStackCounter++;
         await this._connect();
         return this.getAddresses(start, end);
       } catch (err) {
