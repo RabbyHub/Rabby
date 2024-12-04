@@ -56,10 +56,8 @@ interface CommonProps {
   token?: TokenItem;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  // chainId?: string;
   useSwapTokenList?: boolean;
   excludeTokens?: TokenItem['id'][];
-  // type?: ComponentProps<typeof TokenSelector>['type'];
   placeholder?: string;
   hideChainIcon?: boolean;
   value?: string;
