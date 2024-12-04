@@ -23,6 +23,7 @@ import {
   ActionRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
+import { uninstalledService } from '.';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -91,6 +92,8 @@ class TxHistory {
   private _txHistoryLimit = 100;
 
   addSigningTx(tx: Tx) {
+    uninstalledService.setTx();
+
     const id = nanoid();
 
     this._signingTxList.push({
