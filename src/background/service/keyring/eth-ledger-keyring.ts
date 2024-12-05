@@ -403,45 +403,30 @@ class LedgerBridgeKeyring {
     try {
       await this.makeApp(true);
 
-      let res: {
-        v: number;
-        s: string;
-        r: string;
-      };
+      const {
+        domain,
+        types,
+        primaryType,
+        message,
+      } = sigUtil.TypedDataUtils.sanitizeData(data);
+      const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+        'EIP712Domain',
+        domain,
+        types,
+        isV4
+      ).toString('hex');
+      const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+        primaryType as string,
+        message,
+        types,
+        isV4
+      ).toString('hex');
 
-      // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
-      try {
-        res = await this.app!.signEIP712Message(hdPath, data);
-      } catch (e) {
-        const shouldFallbackOnHashedMethod =
-          'statusText' in e && e.statusText === 'INS_NOT_SUPPORTED';
-        if (!shouldFallbackOnHashedMethod) throw e;
-
-        const {
-          domain,
-          types,
-          primaryType,
-          message,
-        } = sigUtil.TypedDataUtils.sanitizeData(data);
-        const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
-          'EIP712Domain',
-          domain,
-          types,
-          isV4
-        ).toString('hex');
-        const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
-          primaryType as string,
-          message,
-          types,
-          isV4
-        ).toString('hex');
-
-        res = await this.app!.signEIP712HashedMessage(
-          hdPath,
-          domainSeparatorHex,
-          hashStructMessageHex
-        );
-      }
+      const res = await this.app!.signEIP712HashedMessage(
+        hdPath,
+        domainSeparatorHex,
+        hashStructMessageHex
+      );
 
       let v = res.v.toString(16);
       if (v.length < 2) {
