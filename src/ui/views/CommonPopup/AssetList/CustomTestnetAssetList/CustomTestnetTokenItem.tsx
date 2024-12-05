@@ -19,7 +19,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
     id: item.chainId,
   });
   return (
-    <TCell className="py-[13px] flex gap-12 w-[160px] items-center">
+    <TCell className="py-[13px] flex gap-12 flex-1 items-center">
       <div className="relative h-[24px]">
         <Image
           className="w-24 h-24 rounded-full"
@@ -43,7 +43,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
         <div className="text-r-neutral-title-1 text-13 font-medium leading-[16px] mb-[1px]">
           {item.symbol}
         </div>
-        <div className="text-r-neutral-foot text-12 font-normal leading-[14px]">
+        <div className="text-r-neutral-foot text-12 font-normal leading-[14px] truncate">
           {chain?.name}
         </div>
       </div>

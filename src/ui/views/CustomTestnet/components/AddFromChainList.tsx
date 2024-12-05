@@ -99,7 +99,6 @@ export const AddFromChainList = ({
 
   const { loading, data, loadingMore } = useInfiniteScroll(
     async (data) => {
-      // const logos = await runFetchLogos().catch(() => ({}));
       const res = await wallet.openapi.searchChainList({
         start: data?.start || 0,
         limit: 50,
@@ -115,9 +114,6 @@ export const AddFromChainList = ({
             rpcUrl: item.rpc || '',
             scanLink: item.explorer || '',
           });
-          if (logos?.[res.id]) {
-            res.logo = logos?.[res.id].chain_logo_url;
-          }
           return res;
         }),
         start: res.page.start + res.page.limit,
@@ -135,7 +131,6 @@ export const AddFromChainList = ({
   );
 
   const { data: usedList, loading: isLoadingUsed } = useRequest(async () => {
-    // const logos = await runFetchLogos().catch(() => ({}));
     return wallet.getUsedCustomTestnetChainList().then((list) => {
       return sortBy(
         list.map((item) => {
@@ -146,9 +141,6 @@ export const AddFromChainList = ({
             rpcUrl: item.rpc || '',
             scanLink: item.explorer || '',
           });
-          if (logos?.[res.id]) {
-            res.logo = logos?.[res.id].chain_logo_url;
-          }
           return res;
         }),
         'name'
@@ -157,7 +149,8 @@ export const AddFromChainList = ({
   });
 
   const isLoading = loading || isLoadingUsed;
-  const list = useMemo(() => {
+
+  const _list = useMemo(() => {
     if (search) {
       return data?.list || [];
     }
@@ -165,6 +158,24 @@ export const AddFromChainList = ({
       return !usedList?.find((used) => used.id === item.id);
     });
   }, [data?.list, usedList, search]);
+
+  const list = useMemo(() => {
+    return _list.map((item) => {
+      if (logos?.[item.id]) {
+        item.logo = logos?.[item.id].chain_logo_url;
+      }
+      return item;
+    });
+  }, [_list, logos]);
+
+  const realUsedList = useMemo(() => {
+    return usedList?.map((item) => {
+      if (logos?.[item.id]) {
+        item.logo = logos?.[item.id].chain_logo_url;
+      }
+      return item;
+    });
+  }, [usedList, logos]);
 
   const isEmpty = useMemo(() => {
     if (isLoading) {
@@ -207,9 +218,12 @@ export const AddFromChainList = ({
         </div>
       ) : (
         <div ref={ref} className="flex-1 overflow-auto px-[20px]">
-          {usedList?.length && !search ? (
+          {realUsedList?.length && !search ? (
             <div className="mb-[20px]">
-              <CustomTestnetList list={usedList || []} onSelect={onSelect} />
+              <CustomTestnetList
+                list={realUsedList || []}
+                onSelect={onSelect}
+              />
             </div>
           ) : null}
           <CustomTestnetList
