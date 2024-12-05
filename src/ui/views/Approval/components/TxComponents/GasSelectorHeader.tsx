@@ -1,7 +1,7 @@
 import { Button, Input, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel, TxPushType } from 'background/service/openapi';
+import { GasLevel, Tx, TxPushType } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
@@ -57,6 +57,7 @@ export interface GasSelectorResponse extends GasLevel {
 }
 
 interface GasSelectorProps {
+  tx: Tx;
   gasLimit: string | undefined;
   gas: {
     gasCostUsd: number | string | BigNumber;
@@ -297,6 +298,7 @@ const GasSelectorHeader = ({
   gasMethod,
   gasAccountCost,
   onChangeGasMethod,
+  tx,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -349,10 +351,11 @@ const GasSelectorHeader = ({
 
   const loadCustomGasData = useCallback(
     async (custom?: number): Promise<GasLevel> => {
-      const list = await wallet.openapi.gasMarket(
-        chain.serverId,
-        custom && custom > 0 ? custom : undefined
-      );
+      const list = await wallet.openapi.gasMarket({
+        chainId: chain.serverId,
+        customGas: custom && custom > 0 ? custom : undefined,
+        tx,
+      });
       return list.find((item) => item.level === 'custom')!;
     },
     []

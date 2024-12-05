@@ -215,7 +215,7 @@ export const useDbkChainBridge = ({
   );
 
   const fetchGasPrice = useMemoizedFn(async (serverId: string) => {
-    const marketGas = await wallet.openapi.gasMarket(serverId);
+    const marketGas = await wallet.openapi.gasMarket({ chainId: serverId });
     const selectedGasPice = marketGas.find((item) => item.level === 'normal');
     return selectedGasPice;
   });
