@@ -17,6 +17,7 @@ import {
 import type { AccountState } from './account';
 import { Chain } from '@debank/common';
 import { TestnetChain } from '@/background/service/customTestnet';
+import { sleep } from '../utils';
 
 type IState = {
   currentConnection: ConnectedSite | null | undefined;
@@ -73,8 +74,7 @@ export const chains = createModel<RootModel>()({
   },
   effects: (dispatch) => ({
     init(_: void, store) {
-      store.app.wallet
-        .getCustomTestnetLogos()
+      Promise.race([store.app.wallet.getCustomTestnetLogos(), sleep(3000)])
         .then(() => store.app.wallet.getCustomTestnetList())
         .then((testnetList) => {
           updateChainStore({

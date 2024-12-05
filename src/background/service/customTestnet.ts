@@ -713,7 +713,7 @@ export const createTestnetChain = (chain: TestnetChainBase): TestnetChain => {
     nativeTokenLogo: '',
     scanLink: chain.scanLink || '',
     logo: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'><circle cx='14' cy='14' r='14' fill='%236A7587'></circle><text x='14' y='15' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='16' font-weight='500'>${encodeURIComponent(
-      chain.name.trim().substring(0, 1)
+      chain.name.trim().substring(0, 1).toUpperCase()
     )}</text></svg>`,
     eip: {
       1559: false,
