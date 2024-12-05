@@ -224,7 +224,7 @@ export const BridgeToken = ({
             ) : (
               <span>{useValue}</span>
             )}
-            {isToken && !!value && (
+            {!valueLoading && isToken && !!value && (
               <RcIconInfoCC
                 onClick={() => openFeePopup(true)}
                 viewBox="0 0 14 14"
