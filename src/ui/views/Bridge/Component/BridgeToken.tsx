@@ -201,6 +201,7 @@ export const BridgeToken = ({
               placeholder={t('page.swap.search-by-name-address')}
               disabledTips={t('page.bridge.insufficient-balance')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
+              supportChains={supportedChains}
             />
           )}
         </div>

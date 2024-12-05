@@ -10,7 +10,7 @@ import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arr
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { useRabbySelector } from '@/ui/store';
 import { uniqBy } from 'lodash';
-import { SWAP_SUPPORT_CHAINS } from '@/constant';
+import { CHAINS_ENUM } from '@/constant';
 import useSearchToken from '@/ui/hooks/useSearchToken';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync } from 'react-use';
@@ -52,14 +52,12 @@ const Text = styled.span`
   ${ellipsis()}
 `;
 
-export interface TokenSelectProps {
+interface CommonProps {
   token?: TokenItem;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  chainId?: string;
   useSwapTokenList?: boolean;
   excludeTokens?: TokenItem['id'][];
-  type?: ComponentProps<typeof TokenSelector>['type'];
   placeholder?: string;
   hideChainIcon?: boolean;
   value?: string;
@@ -75,7 +73,20 @@ export interface TokenSelectProps {
     | React.ReactNode;
   disabledTips?: React.ReactNode;
   drawerHeight?: string | number;
+  supportChains?: CHAINS_ENUM[];
 }
+
+interface BridgeFromProps extends CommonProps {
+  type: 'bridgeFrom';
+  chainId?: string;
+}
+
+interface OtherProps extends CommonProps {
+  type: Exclude<ComponentProps<typeof TokenSelector>['type'], 'bridgeFrom'>;
+  chainId: string;
+}
+
+type TokenSelectProps = BridgeFromProps | OtherProps;
 
 const defaultExcludeTokens = [];
 
@@ -94,6 +105,7 @@ const TokenSelect = ({
   useSwapTokenList = false,
   disabledTips = 'Not supported',
   drawerHeight,
+  supportChains,
 }: TokenSelectProps) => {
   const [queryConds, setQueryConds] = useState({
     keyword: '',
@@ -229,7 +241,7 @@ const TokenSelect = ({
         {typeof tokenRender === 'function'
           ? tokenRender?.({ token, openTokenModal: handleSelectToken })
           : tokenRender}
-        {queryConds.chainServerId && (
+        {type === 'bridgeFrom' && !queryConds.chainServerId ? null : (
           <TokenSelector
             drawerHeight={drawerHeight}
             visible={tokenSelectorVisible}
@@ -240,9 +252,9 @@ const TokenSelect = ({
             isLoading={isListLoading}
             type={type}
             placeholder={placeholder}
-            chainId={queryConds.chainServerId}
+            chainId={queryConds.chainServerId!}
             disabledTips={disabledTips}
-            supportChains={SWAP_SUPPORT_CHAINS}
+            supportChains={supportChains}
           />
         )}
       </>
@@ -293,7 +305,7 @@ const TokenSelect = ({
           />
         )}
       </Wrapper>
-      {queryConds.chainServerId && (
+      {type === 'bridgeFrom' && !queryConds.chainServerId ? null : (
         <TokenSelector
           visible={tokenSelectorVisible}
           list={displayTokenList}
@@ -303,9 +315,9 @@ const TokenSelect = ({
           isLoading={isListLoading}
           type={type}
           placeholder={placeholder}
-          chainId={queryConds.chainServerId}
+          chainId={queryConds.chainServerId!}
           disabledTips={disabledTips}
-          supportChains={SWAP_SUPPORT_CHAINS}
+          supportChains={supportChains}
           drawerHeight={drawerHeight}
         />
       )}

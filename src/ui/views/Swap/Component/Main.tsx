@@ -527,6 +527,7 @@ export const Main = () => {
             placeholder={t('page.swap.search-by-name-address')}
             excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
             tokenRender={(p) => <TokenRender {...p} />}
+            supportChains={SWAP_SUPPORT_CHAINS}
           />
           <IconSwapArrow
             className="text-r-neutral-foot opacity-60 hover:opacity-100 cursor-pointer"
@@ -551,6 +552,7 @@ export const Main = () => {
             placeholder={t('page.swap.search-by-name-address')}
             excludeTokens={payToken?.id ? [payToken?.id] : undefined}
             tokenRender={(p) => <TokenRender {...p} />}
+            supportChains={SWAP_SUPPORT_CHAINS}
             useSwapTokenList
           />
         </div>
