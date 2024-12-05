@@ -299,6 +299,7 @@ export const BridgeContent = () => {
 
   const handleBridge = useMemoizedFn(async () => {
     if (
+      !toToken?.low_credit_score &&
       [
         KEYRING_TYPE.SimpleKeyring,
         KEYRING_TYPE.HdKeyring,
