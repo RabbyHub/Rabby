@@ -24,7 +24,7 @@ function updateManifestVersion(version, p) {
 
 async function release({ version, isRelease = false }) {
   if (isRelease) {
-    shell.exec(`npm version ${version} --force --no-git-tag-version`);
+    shell.exec(`npm version ${version} --force`);
     shell.exec('git add -A');
     shell.exec(`git commit -m "[release] ${version}"`);
     shell.exec(`git push origin refs/tags/v${version}`);
