@@ -4816,7 +4816,7 @@ export class WalletController extends BaseController {
   isAddedCustomTestnetToken = customTestnetService.hasToken;
   getCustomTestnetTx = customTestnetService.getTx;
   getCustomTestnetTxReceipt = customTestnetService.getTransactionReceipt;
-  getCustomTestnetLogos = () => customTestnetService.fetchLogos;
+  getCustomTestnetLogos = customTestnetService.fetchLogos;
   // getCustomTestnetTokenListWithBalance = customTestnetService.getTokenListWithBalance;
 
   getUsedCustomTestnetChainList = async () => {

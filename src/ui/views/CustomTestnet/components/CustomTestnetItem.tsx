@@ -50,7 +50,7 @@ export const CustomTestnetItem = ({
         <img
           src={item.logo}
           alt=""
-          className="flex-shrink-0 w-[28px] h-[28px]"
+          className="flex-shrink-0 w-[28px] h-[28px] rounded-full"
         />
       ) : (
         <TestnetChainLogo name={item.name} className="flex-shrink-0" />

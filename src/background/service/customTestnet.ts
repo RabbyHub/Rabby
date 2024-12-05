@@ -481,7 +481,7 @@ class CustomTestnetService {
       amount: new BigNumber(balance.toString()).div(10 ** decimals).toNumber(),
       rawAmount: balance.toString(),
       logo:
-        tokenId?.replace('custom_', '') === String(chainId)
+        !tokenId || tokenId?.replace('custom_', '') === String(chainId)
           ? this.logos?.[chainId]?.token_logo_url
           : undefined,
     };
@@ -594,6 +594,7 @@ class CustomTestnetService {
           id: null,
           chainId: item.id,
           symbol: item.nativeTokenSymbol,
+          logo: this.logos?.[item.id]?.token_logo_url,
         };
       }
     );
@@ -711,7 +712,7 @@ export const createTestnetChain = (chain: TestnetChainBase): TestnetChain => {
     nativeTokenDecimals: 18,
     nativeTokenLogo: '',
     scanLink: chain.scanLink || '',
-    logo: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%236A7587'></circle><text x='16' y='17' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='11' font-weight='500'>${encodeURIComponent(
+    logo: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'><circle cx='14' cy='14' r='14' fill='%236A7587'></circle><text x='14' y='15' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='16' font-weight='500'>${encodeURIComponent(
       chain.name.trim().substring(0, 1)
     )}</text></svg>`,
     eip: {
