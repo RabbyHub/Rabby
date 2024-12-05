@@ -10,6 +10,14 @@ on:
         required: true
         type: boolean
         default: false
+      build_type:
+        required: true
+        description: Build Type
+        default: debug
+        options: 
+          - pro
+          - debug
+        
 
 defaults:
   run:
@@ -81,6 +89,7 @@ jobs:
           RABBY_LARK_CHAT_URL: ${{ secrets.RABBY_LARK_CHAT_URL }}
           RABBY_LARK_CHAT_SECRET: ${{ secrets.RABBY_LARK_CHAT_SECRET }}
           notify_lark: ${{ inputs.notify_lark }}
+          build_type: ${{ inputs.build_type }}
           # see more details on https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
           ACTIONS_JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GIT_COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
