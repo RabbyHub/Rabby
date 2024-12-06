@@ -2,32 +2,19 @@ const fs = require('fs');
 const path = require('path');
 const readdir = require('fs-readdir-recursive');
 const archiver = require('archiver');
-
-const loggerSlient = {
-  log: () => {},
-  error: () => {},
-  warn: () => {},
-  info: () => {},
-  table: () => {},
-};
+const chalk = require('chalk');
 
 /**
  * 
- * @returns {Promise<{
+ * @returns {{
  *  totalBytes: number;
- * }>}
+ * }}
  */
 async function createConsistentZip(
   srcDir,
   destZip,
-  gitUTC0Time = new Date(1980, 0, 1),
-  {
-    printFileTable = true,
-    silent = false,
-  } = {}
+  gitUTC0Time = new Date(1980, 0, 1)
 ) {
-  const logger = silent ? loggerSlient : console;
-  
   fs.mkdirSync(path.dirname(destZip), { recursive: true });
   const output = fs.createWriteStream(destZip, { flags: 'w+' });
   const archive = archiver('zip', {
@@ -36,11 +23,11 @@ async function createConsistentZip(
 
   const pReturn = new Promise((resolve, reject) => {
     output.on('close', () => {
-      logger.log('[fns::close] archiver has been finalized and the output file descriptor has closed.');
+      console.log('[fns::close] archiver has been finalized and the output file descriptor has closed.');
     });
 
     output.on('end', () => {
-      logger.log('[fns::end] Data has been drained');
+      console.log('[fns::end] Data has been drained');
     });
 
     output.on('error', (err) => {
@@ -72,7 +59,7 @@ async function createConsistentZip(
   
   for (const item of allItems) {
     const itemPath = path.join(srcDir, item);
-    const itemZipPath = path.join('./', item);
+    const itemZipPath = path.join('dist/', item);
 
     const stat = fs.statSync(itemPath);
 
@@ -85,14 +72,12 @@ async function createConsistentZip(
         zipPath: itemZipPath,
         // filePath: itemPath,
       });
-      // logger.log(`\twill add ${chalk.green(itemZipPath)} \t\t ${chalk.yellow`(atime|mtime: ${gitUTC0Time})`}`);
+      // console.log(`\twill add ${chalk.green(itemZipPath)} \t\t ${chalk.yellow`(atime|mtime: ${gitUTC0Time})`}`);
       archive.append(fileStream, { name: itemZipPath, date: gitUTC0Time });
     }
   }
 
-  if (printFileTable) {
-    logger.table(asciiTable);
-  }
+  console.table(asciiTable);
 
   archive.pipe(output);
 
@@ -100,6 +85,12 @@ async function createConsistentZip(
 
   return pReturn;
 }
+
+const [, , srcDir, destZip, gitUTC0Time] = process.argv;
+
+console.log(
+  `[fns] will pack ${srcDir} to ${destZip} with gitUTC0Time ${gitUTC0Time}`
+);
 
 function get_md5(buf) {
   return require('crypto').createHash('md5').update(buf, 'utf8').digest('hex');
@@ -120,6 +111,8 @@ async function get_md5_file(filepath) {
   });
 }
 
-exports.get_md5_file = get_md5_file;
-exports.createConsistentZip = createConsistentZip;
-
+createConsistentZip(srcDir, destZip, gitUTC0Time)
+  .then(async (result) => {
+    const md5Value = await get_md5_file(destZip);
+    console.log(`[fns] ZIP file created at ${destZip} (md5: ${chalk.yellow(md5Value)}, size: ${chalk.yellow(result.totalBytes)} bytes)`);
+  });
