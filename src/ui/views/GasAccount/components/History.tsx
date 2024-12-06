@@ -1,14 +1,13 @@
 import React from 'react';
 import { ReactComponent as RcIconEmptyCC } from '@/ui/assets/empty-cc.svg';
 import { useTranslation } from 'react-i18next';
-import { formatGasHeaderUsdValue, sinceTime } from '@/ui/utils';
+import { formatGasAccountUSDValue, sinceTime } from '@/ui/utils';
 import clsx from 'clsx';
 import { useGasAccountHistory } from '../hooks';
 import { Skeleton } from 'antd';
 import { ReactComponent as RcIconPendingCC } from '@/ui/assets/pending-cc.svg';
 import { ReactComponent as RcIconOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { findChainByServerID } from '@/utils/chain';
-import BigNumber from 'bignumber.js';
 
 const HistoryItem = ({
   time,
@@ -74,7 +73,7 @@ const HistoryItem = ({
       )}
       <div className="text-14 font-medium text-r-neutral-title-1">
         {sign}
-        {formatGasHeaderUsdValue(value, BigNumber.ROUND_DOWN)}{' '}
+        {formatGasAccountUSDValue(value)}{' '}
       </div>
     </div>
   );

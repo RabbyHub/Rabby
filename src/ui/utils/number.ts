@@ -225,3 +225,9 @@ export const formatGasHeaderUsdValue = (
 
   return `$${formatNumber(value, 4, undefined, roundingMode)}`;
 };
+
+export const formatGasAccountUSDValue = (value: string | number) => {
+  const bnValue = new BigNumber(value);
+  if (bnValue.lt(0.0001)) return '<$0.0001';
+  return `$${formatNumber(value, 4)}`;
+};
