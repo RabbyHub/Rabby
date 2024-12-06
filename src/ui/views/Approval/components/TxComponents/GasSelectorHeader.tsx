@@ -25,6 +25,7 @@ import {
   formatGasCostUsd,
   formatTokenAmount,
   formatGasHeaderUsdValue,
+  formatGasAccountUSDValue,
 } from '@/ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
@@ -732,7 +733,7 @@ const GasSelectorHeader = ({
     if (!Number.isNaN(v) && v < 0.0001) {
       return `$${n}`;
     }
-    return formatGasHeaderUsdValue(n || '0');
+    return formatGasAccountUSDValue(n || '0');
   }, []);
 
   const [isGasHovering, gasHoverProps] = useHover();
@@ -819,7 +820,7 @@ const GasSelectorHeader = ({
                 >
                   <div className="truncate max-w-[170px] group text-r-neutral-body">
                     <span className="text-[16px] font-medium text-r-blue-default">
-                      {formatGasHeaderUsdValue(
+                      {formatGasAccountUSDValue(
                         (gasAccountCost?.gas_account_cost.estimate_tx_cost ||
                           0) + (gasAccountCost?.gas_account_cost.gas_cost || 0)
                       )}
@@ -834,7 +835,7 @@ const GasSelectorHeader = ({
                     </span>
                   </div>
                   <Tooltip
-                    overlayClassName="rectangle"
+                    overlayClassName="rectangle max-w-max"
                     visible={isGasAccountHovering}
                     title={
                       <>
