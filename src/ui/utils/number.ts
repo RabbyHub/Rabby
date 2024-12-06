@@ -68,7 +68,7 @@ export const formatNumber = (
   num: string | number,
   decimal = 2,
   opt = {} as BigNumber.Format,
-  roundingMode = BigNumber.ROUND_UP as BigNumber.RoundingMode
+  roundingMode = BigNumber.ROUND_HALF_UP as BigNumber.RoundingMode
 ) => {
   const n = new BigNumber(num);
   const format = {
@@ -119,7 +119,7 @@ export const intToHex = (n: number) => {
 
 export const formatUsdValue = (
   value: string | number,
-  roundingMode = BigNumber.ROUND_UP as BigNumber.RoundingMode
+  roundingMode = BigNumber.ROUND_HALF_UP as BigNumber.RoundingMode
 ) => {
   const bnValue = new BigNumber(value);
   if (bnValue.lt(0)) {
@@ -212,7 +212,7 @@ export const formatGasCostUsd = (gasCostUsd: BigNumber) => {
 
 export const formatGasHeaderUsdValue = (
   value: string | number,
-  roundingMode = BigNumber.ROUND_UP as BigNumber.RoundingMode
+  roundingMode = BigNumber.ROUND_HALF_UP as BigNumber.RoundingMode
 ) => {
   const bnValue = new BigNumber(value);
   if (bnValue.lt(0)) {
@@ -224,4 +224,10 @@ export const formatGasHeaderUsdValue = (
   if (bnValue.lt(0.0001)) return '<$0.0001';
 
   return `$${formatNumber(value, 4, undefined, roundingMode)}`;
+};
+
+export const formatGasAccountUSDValue = (value: string | number) => {
+  const bnValue = new BigNumber(value);
+  if (bnValue.lt(0.0001)) return '<$0.0001';
+  return `$${formatNumber(value, 4)}`;
 };
