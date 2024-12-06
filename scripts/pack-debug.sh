@@ -17,7 +17,7 @@ pack_dist() {
   local target_file=$project_dir/tmp/Rabby_v${app_ver}_debug.${git_committish}.zip
   local git_utc0_time_linux=$(TZ=UTC0 git show --quiet --date='format-local:%Y-%m-%dT%H:%M:%S+00:00' --format="%cd")
 
-  node $script_dir/pkg-zip.js $project_dir/dist $target_file $git_utc0_time_linux;
+  node $script_dir/fns.js $project_dir/dist $target_file $git_utc0_time_linux;
 
   get_md5 $target_file;
   echo ""
