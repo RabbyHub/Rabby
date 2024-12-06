@@ -462,10 +462,11 @@ export const MiniSignTx = ({
     chain: Chain,
     custom?: number
   ): Promise<GasLevel[]> => {
-    const list = await wallet.openapi.gasMarket(
-      chain.serverId,
-      custom && custom > 0 ? custom : undefined
-    );
+    const list = await wallet.openapi.gasMarket({
+      chainId: chain.serverId,
+      customGas: custom && custom > 0 ? custom : undefined,
+      tx: txs[0],
+    });
     setGasList(list);
     return list;
   };
@@ -850,6 +851,7 @@ export const MiniSignTx = ({
             className={clsx(task.status !== 'idle' && 'pointer-events-none')}
           >
             <GasSelectorHeader
+              tx={txs[0]}
               gasAccountCost={gasAccountCost}
               gasMethod={gasMethod}
               onChangeGasMethod={setGasMethod}
