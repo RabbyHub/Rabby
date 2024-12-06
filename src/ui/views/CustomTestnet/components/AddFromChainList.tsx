@@ -86,6 +86,17 @@ export const AddFromChainList = ({
   const ref = useRef<HTMLDivElement>(null);
   const search = useDebounce(_search, { wait: 500 });
 
+  const { data: logos, runAsync: runFetchLogos } = useRequest(
+    () => {
+      return wallet.getCustomTestnetLogos();
+    },
+    {
+      cacheKey: 'custom-testnet-logos',
+      cacheTime: 30000,
+      staleTime: 30000,
+    }
+  );
+
   const { loading, data, loadingMore } = useInfiniteScroll(
     async (data) => {
       const res = await wallet.openapi.searchChainList({
@@ -96,13 +107,14 @@ export const AddFromChainList = ({
 
       return {
         list: res.chain_list.map((item) => {
-          return createTestnetChain({
+          const res = createTestnetChain({
             name: item.name,
             id: item.chain_id,
             nativeTokenSymbol: item.native_currency.symbol,
             rpcUrl: item.rpc || '',
             scanLink: item.explorer || '',
           });
+          return res;
         }),
         start: res.page.start + res.page.limit,
         total: res.page.total,
@@ -118,17 +130,18 @@ export const AddFromChainList = ({
     }
   );
 
-  const { data: usedList, loading: isLoadingUsed } = useRequest(() => {
+  const { data: usedList, loading: isLoadingUsed } = useRequest(async () => {
     return wallet.getUsedCustomTestnetChainList().then((list) => {
       return sortBy(
         list.map((item) => {
-          return createTestnetChain({
+          const res = createTestnetChain({
             name: item.name,
             id: item.chain_id,
             nativeTokenSymbol: item.native_currency.symbol,
             rpcUrl: item.rpc || '',
             scanLink: item.explorer || '',
           });
+          return res;
         }),
         'name'
       );
@@ -136,7 +149,8 @@ export const AddFromChainList = ({
   });
 
   const isLoading = loading || isLoadingUsed;
-  const list = useMemo(() => {
+
+  const _list = useMemo(() => {
     if (search) {
       return data?.list || [];
     }
@@ -144,6 +158,24 @@ export const AddFromChainList = ({
       return !usedList?.find((used) => used.id === item.id);
     });
   }, [data?.list, usedList, search]);
+
+  const list = useMemo(() => {
+    return _list.map((item) => {
+      if (logos?.[item.id]) {
+        item.logo = logos?.[item.id].chain_logo_url;
+      }
+      return item;
+    });
+  }, [_list, logos]);
+
+  const realUsedList = useMemo(() => {
+    return usedList?.map((item) => {
+      if (logos?.[item.id]) {
+        item.logo = logos?.[item.id].chain_logo_url;
+      }
+      return item;
+    });
+  }, [usedList, logos]);
 
   const isEmpty = useMemo(() => {
     if (isLoading) {
@@ -186,9 +218,12 @@ export const AddFromChainList = ({
         </div>
       ) : (
         <div ref={ref} className="flex-1 overflow-auto px-[20px]">
-          {usedList?.length && !search ? (
+          {realUsedList?.length && !search ? (
             <div className="mb-[20px]">
-              <CustomTestnetList list={usedList || []} onSelect={onSelect} />
+              <CustomTestnetList
+                list={realUsedList || []}
+                onSelect={onSelect}
+              />
             </div>
           ) : null}
           <CustomTestnetList

@@ -2,7 +2,7 @@ import { useRabbySelector } from '@/ui/store';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRequest } from 'ahooks';
 import { Input } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   TokenListSkeleton,
   TokenListViewSkeleton,
@@ -22,16 +22,14 @@ interface Props {
   className?: string;
   visible: boolean;
   onEmptyAssets: (isEmpty: boolean) => void;
-  isTestnet?: boolean;
-  onRefresh?: () => void;
+  selectChainId?: string | null;
 }
 
 export const CustomTestnetAssetListContainer: React.FC<Props> = ({
   className,
   visible,
   onEmptyAssets,
-  isTestnet = false,
-  onRefresh,
+  selectChainId,
 }) => {
   const { t } = useTranslation();
   const [search, setSearch] = React.useState<string>('');
@@ -67,7 +65,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
 
   const wallet = useWallet();
 
-  const { data: list, loading, mutate, refreshAsync } = useRequest(
+  const { data: _list, loading, mutate, refreshAsync } = useRequest(
     async () => {
       return wallet.getCustomTestnetTokenList({
         address: currentAccount!.address,
@@ -85,6 +83,15 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
       },
     }
   );
+
+  const list = useMemo(() => {
+    if (!selectChainId) {
+      return _list;
+    }
+    return _list?.filter((item) => {
+      return String(item.chainId) === selectChainId;
+    });
+  }, [_list, selectChainId]);
 
   if (!isFetched && !search) {
     return <TokenListViewSkeleton isTestnet />;

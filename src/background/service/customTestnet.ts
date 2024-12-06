@@ -66,6 +66,7 @@ export interface CustomTestnetTokenBase {
 export interface CustomTestnetToken extends CustomTestnetTokenBase {
   amount: number;
   rawAmount: string;
+  logo?: string;
 }
 
 export type CutsomTestnetServiceStore = {
@@ -89,6 +90,14 @@ class CustomTestnetService {
 
   chains: Record<string, Client> = {};
 
+  logos: Record<
+    string,
+    {
+      chain_logo_url: string;
+      token_logo_url?: string;
+    }
+  > = {};
+
   init = async () => {
     const storage = await createPersistStore<CutsomTestnetServiceStore>({
       name: 'customTestnet',
@@ -102,10 +111,9 @@ class CustomTestnetService {
       const client = createClientByChain(chain);
       this.chains[chain.id] = client;
     });
-    updateChainStore({
-      testnetList: Object.values(this.store.customTestnet).map((item) => {
-        return createTestnetChain(item);
-      }),
+    this.syncChainList();
+    this.fetchLogos().then(() => {
+      this.syncChainList();
     });
   };
   add = async (chain: TestnetChainBase) => {
@@ -207,7 +215,14 @@ class CustomTestnetService {
 
   getList = () => {
     const list = Object.values(this.store.customTestnet).map((item) => {
-      return createTestnetChain(item);
+      const res = createTestnetChain(item);
+
+      if (this.logos?.[res.id]) {
+        res.logo = this.logos[res.id].chain_logo_url;
+        res.nativeTokenLogo = this.logos[res.id].token_logo_url || '';
+      }
+
+      return res;
     });
 
     return list;
@@ -257,6 +272,7 @@ class CustomTestnetService {
             id: chain.nativeTokenAddress,
             chainId: chain.id,
             rawAmount: '0',
+            logo: this.logos?.[chain.id]?.token_logo_url,
           }),
         };
       })
@@ -273,6 +289,7 @@ class CustomTestnetService {
             id: chain.nativeTokenAddress,
             chainId: chain.id,
             rawAmount: '0',
+            logo: this.logos?.[chain.id]?.token_logo_url,
           }),
         };
       });
@@ -444,7 +461,7 @@ class CustomTestnetService {
     chainId: number;
     address: string;
     tokenId?: string | null;
-  }) => {
+  }): Promise<CustomTestnetToken> => {
     const [balance, tokenInfo] = await Promise.all([
       this.getBalance({
         chainId,
@@ -463,6 +480,10 @@ class CustomTestnetService {
       ...tokenInfo,
       amount: new BigNumber(balance.toString()).div(10 ** decimals).toNumber(),
       rawAmount: balance.toString(),
+      logo:
+        !tokenId || tokenId?.replace('custom_', '') === String(chainId)
+          ? this.logos?.[chainId]?.token_logo_url
+          : undefined,
     };
   };
 
@@ -573,6 +594,7 @@ class CustomTestnetService {
           id: null,
           chainId: item.id,
           symbol: item.nativeTokenSymbol,
+          logo: this.logos?.[item.id]?.token_logo_url,
         };
       }
     );
@@ -641,6 +663,19 @@ class CustomTestnetService {
       testnetList: testnetList,
     });
   };
+
+  fetchLogos = async () => {
+    try {
+      const { data } = await axios.get<typeof this.logos>(
+        'https://static.debank.com/supported_testnet_chains.json'
+      );
+      this.logos = data;
+      return data;
+    } catch (e) {
+      console.error(e);
+      return {};
+    }
+  };
 }
 
 export const customTestnetService = new CustomTestnetService();
@@ -677,8 +712,8 @@ export const createTestnetChain = (chain: TestnetChainBase): TestnetChain => {
     nativeTokenDecimals: 18,
     nativeTokenLogo: '',
     scanLink: chain.scanLink || '',
-    logo: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%236A7587'></circle><text x='16' y='17' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='12' font-weight='400'>${encodeURIComponent(
-      chain.name.substring(0, 3)
+    logo: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'><circle cx='14' cy='14' r='14' fill='%236A7587'></circle><text x='14' y='15' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='16' font-weight='500'>${encodeURIComponent(
+      chain.name.trim().substring(0, 1).toUpperCase()
     )}</text></svg>`,
     eip: {
       1559: false,

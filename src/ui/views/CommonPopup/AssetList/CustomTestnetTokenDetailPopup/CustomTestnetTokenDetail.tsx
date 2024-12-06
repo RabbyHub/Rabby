@@ -90,7 +90,7 @@ export const CustomTestnetTokenDetail = ({
         <div className={clsx('flex items-center', 'mb-20')}>
           <div className="flex items-center mr-8">
             <img
-              src={IconUnknown}
+              src={token.logo || IconUnknown}
               alt=""
               className="rounded-full w-[24px] h-[24px]"
             />
@@ -101,7 +101,7 @@ export const CustomTestnetTokenDetail = ({
           <div className="address">
             <img
               src={chain?.logo || IconUnknown}
-              className="w-[14px] h-[14px]"
+              className="w-[14px] h-[14px] rounded-full"
               alt=""
             />
             {!isNativeToken ? (

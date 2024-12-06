@@ -502,6 +502,7 @@ export const Main = () => {
           onChange={switchChain}
           disabledTips={getDisabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
+          hideTestnetTab={true}
           chainRenderClassName={clsx('text-[16px] font-medium rounded-[4px]')}
         />
 
