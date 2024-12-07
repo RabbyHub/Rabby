@@ -4913,6 +4913,47 @@ export class WalletController extends BaseController {
   };
 
   uninstalledSyncStatus = uninstalledService.syncStatus;
+
+  gasMarketV2 = async (
+    params:
+      | {
+          chain: Chain;
+          tx: Tx;
+          customGas?: number;
+        }
+      | {
+          chainId: string;
+          customGas?: number;
+        }
+  ) => {
+    let chainId: string;
+    let tx: Tx | undefined;
+
+    if ('chain' in params) {
+      if (params.tx) {
+        if (params.tx.nonce === undefined) {
+          params.tx.nonce = await this.getRecommendNonce({
+            from: params.tx.from,
+            chainId: params.chain.id,
+          });
+        }
+
+        if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
+          params.tx.gasPrice = '0x0';
+        }
+      }
+      chainId = params.chain.serverId;
+      tx = params.tx;
+    } else {
+      chainId = params.chainId;
+    }
+
+    return openapiService.gasMarketV2({
+      customGas: params.customGas,
+      chainId,
+      tx,
+    });
+  };
 }
 
 const wallet = new WalletController();

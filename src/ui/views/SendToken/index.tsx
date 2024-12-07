@@ -592,8 +592,8 @@ const SendToken = () => {
 
     const list: GasLevel[] = chainItem?.isTestnet
       ? await wallet.getCustomTestnetGasMarket({ chainId: chainItem.id })
-      : await wallet.openapi.gasMarketV2({
-          chainId: chainItem?.serverId || '',
+      : await wallet.gasMarketV2({
+          chain: chainItem!,
           tx: params,
         });
     return list;
