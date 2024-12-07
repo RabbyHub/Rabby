@@ -1339,11 +1339,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     chain: Chain,
     custom?: number
   ): Promise<GasLevel[]> => {
-    const list = await wallet.openapi.gasMarket({
-      chainId: chain.serverId,
-      customGas: custom && custom > 0 ? custom : undefined,
-      tx,
-    });
+    const list = await wallet.openapi.gasMarket(
+      chain.serverId,
+      custom && custom > 0 ? custom : undefined
+    );
     setGasList(list);
     return list;
   };
@@ -1997,7 +1996,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <FooterBar
             Header={
               <GasSelectorHeader
-                tx={tx}
                 gasAccountCost={gasAccountCost}
                 gasMethod={gasMethod}
                 onChangeGasMethod={setGasMethod}

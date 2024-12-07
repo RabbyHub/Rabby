@@ -31,7 +31,7 @@ import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
-import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
+import { GasLevel, TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
@@ -461,6 +461,45 @@ const SendToken = () => {
   const isNativeToken =
     !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
 
+  const fetchGasList = useCallback(async () => {
+    const list: GasLevel[] = chainItem?.isTestnet
+      ? await wallet.getCustomTestnetGasMarket({ chainId: chainItem.id })
+      : await wallet.openapi.gasMarket(chainItem?.serverId || '');
+    return list;
+  }, [wallet, chainItem]);
+
+  const [{ value: gasList }, loadGasList] = useAsyncFn(() => {
+    return fetchGasList();
+  }, [fetchGasList]);
+
+  useEffect(() => {
+    loadGasList();
+  }, [loadGasList]);
+
+  useDebounce(
+    async () => {
+      const targetChain = findChainByEnum(chain)!;
+      let gasList: GasLevel[];
+      if (
+        gasPriceMap[targetChain.enum] &&
+        gasPriceMap[targetChain.enum].expireAt > Date.now()
+      ) {
+        gasList = gasPriceMap[targetChain.enum].list;
+      } else {
+        gasList = await fetchGasList();
+        setGasPriceMap({
+          ...gasPriceMap,
+          [targetChain.enum]: {
+            list: gasList,
+            expireAt: Date.now() + 300000, // cache gasList for 5 mins
+          },
+        });
+      }
+    },
+    500,
+    [chain]
+  );
+
   const { addressType } = useCheckAddressType(formSnapshot.to, chainItem);
 
   const {
@@ -473,118 +512,6 @@ const SendToken = () => {
     };
   }, [isNativeToken, addressType]);
 
-  const getParams = React.useCallback(
-    ({
-      to,
-      amount,
-      messageDataForSendToEoa,
-      messageDataForContractCall,
-    }: FormSendToken) => {
-      const chain = findChain({
-        serverId: currentToken.chain,
-      })!;
-      const sendValue = new BigNumber(amount || 0)
-        .multipliedBy(10 ** currentToken.decimals)
-        .decimalPlaces(0, BigNumber.ROUND_DOWN);
-      const dataInput = [
-        {
-          name: 'transfer',
-          type: 'function',
-          inputs: [
-            {
-              type: 'address',
-              name: 'to',
-            },
-            {
-              type: 'uint256',
-              name: 'value',
-            },
-          ] as any[],
-        } as const,
-        [
-          to || '0x0000000000000000000000000000000000000000',
-          sendValue.toFixed(0),
-        ] as any[],
-      ] as const;
-      const params: Record<string, any> = {
-        chainId: chain.id,
-        from: currentAccount!.address,
-        to: currentToken.id,
-        value: '0x0',
-        data: abiCoder.encodeFunctionCall(dataInput[0], dataInput[1]),
-        isSend: true,
-      };
-      if (safeInfo?.nonce != null) {
-        params.nonce = safeInfo.nonce;
-      }
-      if (isNativeToken) {
-        params.to = to;
-        delete params.data;
-
-        if (isShowMessageDataForToken && messageDataForSendToEoa) {
-          const encodedValue = formatTxInputDataOnERC20(messageDataForSendToEoa)
-            .hexData;
-
-          params.data = encodedValue;
-        } else if (isShowMessageDataForContract && messageDataForContractCall) {
-          params.data = messageDataForContractCall;
-        }
-
-        params.value = `0x${sendValue.toString(16)}`;
-      }
-
-      return params;
-    },
-    [
-      currentAccount,
-      currentToken.chain,
-      currentToken.decimals,
-      currentToken.id,
-      isNativeToken,
-      isShowMessageDataForContract,
-      isShowMessageDataForToken,
-      safeInfo,
-    ]
-  );
-
-  const fetchGasList = useCallback(async () => {
-    const values = form.getFieldsValue();
-    const params = getParams(values) as Tx;
-
-    const list: GasLevel[] = chainItem?.isTestnet
-      ? await wallet.getCustomTestnetGasMarket({ chainId: chainItem.id })
-      : await wallet.openapi.gasMarket({
-          chainId: chainItem?.serverId || '',
-          tx: params,
-        });
-    return list;
-  }, [chainItem, form, getParams, wallet]);
-
-  const [{ value: gasList }, loadGasList] = useAsyncFn(() => {
-    return fetchGasList();
-  }, [fetchGasList]);
-
-  useDebounce(
-    async () => {
-      const targetChain = findChainByEnum(chain)!;
-      let gasList: GasLevel[];
-      if (
-        gasPriceMap[targetChain.enum] &&
-        gasPriceMap[targetChain.enum].expireAt > Date.now()
-      ) {
-        gasList = gasPriceMap[targetChain.enum].list;
-      }
-    },
-    500,
-    [chain]
-  );
-
-  useEffect(() => {
-    if (clickedMax) {
-      loadGasList();
-    }
-  }, [clickedMax, loadGasList]);
-
   const handleSubmit = async ({
     to,
     amount,
@@ -595,13 +522,51 @@ const SendToken = () => {
     const chain = findChain({
       serverId: currentToken.chain,
     })!;
-    const params = getParams({
-      to,
-      amount,
-      messageDataForSendToEoa,
-      messageDataForContractCall,
-    });
+    const sendValue = new BigNumber(amount)
+      .multipliedBy(10 ** currentToken.decimals)
+      .decimalPlaces(0, BigNumber.ROUND_DOWN);
+    const dataInput = [
+      {
+        name: 'transfer',
+        type: 'function',
+        inputs: [
+          {
+            type: 'address',
+            name: 'to',
+          },
+          {
+            type: 'uint256',
+            name: 'value',
+          },
+        ] as any[],
+      } as const,
+      [to, sendValue.toFixed(0)] as any[],
+    ] as const;
+    const params: Record<string, any> = {
+      chainId: chain.id,
+      from: currentAccount!.address,
+      to: currentToken.id,
+      value: '0x0',
+      data: abiCoder.encodeFunctionCall(dataInput[0], dataInput[1]),
+      isSend: true,
+    };
+    if (safeInfo?.nonce != null) {
+      params.nonce = safeInfo.nonce;
+    }
     if (isNativeToken) {
+      params.to = to;
+      delete params.data;
+
+      if (isShowMessageDataForToken && messageDataForSendToEoa) {
+        const encodedValue = formatTxInputDataOnERC20(messageDataForSendToEoa)
+          .hexData;
+
+        params.data = encodedValue;
+      } else if (isShowMessageDataForContract && messageDataForContractCall) {
+        params.data = messageDataForContractCall;
+      }
+
+      params.value = `0x${sendValue.toString(16)}`;
       // L2 has extra validation fee so we can not set gasLimit as 21000 when send native token
       const couldSpecifyIntrinsicGas = !CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS.includes(
         chain.enum
