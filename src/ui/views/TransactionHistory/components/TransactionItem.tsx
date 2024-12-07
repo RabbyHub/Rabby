@@ -153,10 +153,7 @@ export const TransactionItem = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket({
-          chainId: chain.serverId,
-          tx: maxGasTx.rawTx,
-        });
+      : await wallet.openapi.gasMarket(chain.serverId);
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
@@ -193,10 +190,7 @@ export const TransactionItem = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket({
-          chainId: chain.serverId,
-          tx: originTx.rawTx,
-        });
+      : await wallet.openapi.gasMarket(chain.serverId);
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
