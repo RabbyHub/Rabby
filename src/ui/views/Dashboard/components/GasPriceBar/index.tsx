@@ -40,7 +40,7 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
         ? await wallet.getCustomTestnetGasMarket({
             chainId: chain?.id,
           })
-        : await wallet.openapi.gasMarketV2({
+        : await wallet.gasMarketV2({
             chainId: currentConnectedSiteChainNativeToken,
           });
       const selectedGasPice = marketGas.find((item) => item.level === 'slow')

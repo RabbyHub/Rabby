@@ -164,8 +164,8 @@ export const useQuoteMethods = () => {
       const lastTimeGas: ChainGas | null = await walletController.getLastTimeGasSelection(
         CHAINS[chain].id
       );
-      const gasMarket = await walletOpenapi.gasMarketV2({
-        chainId: CHAINS[chain].serverId,
+      const gasMarket = await walletController.gasMarketV2({
+        chain: CHAINS[chain],
         tx: {
           ...quote.tx,
           nonce,
@@ -329,7 +329,7 @@ export const useQuoteMethods = () => {
       try {
         let gasPrice: number;
         if (isOpenOcean) {
-          const gasMarket = await walletOpenapi.gasMarketV2({
+          const gasMarket = await walletController.gasMarketV2({
             chainId: CHAINS[chain].serverId,
           });
           gasPrice = gasMarket?.[1]?.price;
