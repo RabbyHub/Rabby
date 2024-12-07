@@ -512,6 +512,118 @@ const SendToken = () => {
     };
   }, [isNativeToken, addressType]);
 
+  const getParams = React.useCallback(
+    ({
+      to,
+      amount,
+      messageDataForSendToEoa,
+      messageDataForContractCall,
+    }: FormSendToken) => {
+      const chain = findChain({
+        serverId: currentToken.chain,
+      })!;
+      const sendValue = new BigNumber(amount || 0)
+        .multipliedBy(10 ** currentToken.decimals)
+        .decimalPlaces(0, BigNumber.ROUND_DOWN);
+      const dataInput = [
+        {
+          name: 'transfer',
+          type: 'function',
+          inputs: [
+            {
+              type: 'address',
+              name: 'to',
+            },
+            {
+              type: 'uint256',
+              name: 'value',
+            },
+          ] as any[],
+        } as const,
+        [
+          to || '0x0000000000000000000000000000000000000000',
+          sendValue.toFixed(0),
+        ] as any[],
+      ] as const;
+      const params: Record<string, any> = {
+        chainId: chain.id,
+        from: currentAccount!.address,
+        to: currentToken.id,
+        value: '0x0',
+        data: abiCoder.encodeFunctionCall(dataInput[0], dataInput[1]),
+        isSend: true,
+      };
+      if (safeInfo?.nonce != null) {
+        params.nonce = safeInfo.nonce;
+      }
+      if (isNativeToken) {
+        params.to = to;
+        delete params.data;
+
+        if (isShowMessageDataForToken && messageDataForSendToEoa) {
+          const encodedValue = formatTxInputDataOnERC20(messageDataForSendToEoa)
+            .hexData;
+
+          params.data = encodedValue;
+        } else if (isShowMessageDataForContract && messageDataForContractCall) {
+          params.data = messageDataForContractCall;
+        }
+
+        params.value = `0x${sendValue.toString(16)}`;
+      }
+
+      return params;
+    },
+    [
+      currentAccount,
+      currentToken.chain,
+      currentToken.decimals,
+      currentToken.id,
+      isNativeToken,
+      isShowMessageDataForContract,
+      isShowMessageDataForToken,
+      safeInfo,
+    ]
+  );
+
+  const fetchGasList = useCallback(async () => {
+    const values = form.getFieldsValue();
+    const params = getParams(values) as Tx;
+
+    const list: GasLevel[] = chainItem?.isTestnet
+      ? await wallet.getCustomTestnetGasMarket({ chainId: chainItem.id })
+      : await wallet.openapi.gasMarketV2({
+          chainId: chainItem?.serverId || '',
+          tx: params,
+        });
+    return list;
+  }, [chainItem, form, getParams, wallet]);
+
+  const [{ value: gasList }, loadGasList] = useAsyncFn(() => {
+    return fetchGasList();
+  }, [fetchGasList]);
+
+  useDebounce(
+    async () => {
+      const targetChain = findChainByEnum(chain)!;
+      let gasList: GasLevel[];
+      if (
+        gasPriceMap[targetChain.enum] &&
+        gasPriceMap[targetChain.enum].expireAt > Date.now()
+      ) {
+        gasList = gasPriceMap[targetChain.enum].list;
+      }
+    },
+    500,
+    [chain]
+  );
+
+  useEffect(() => {
+    if (clickedMax) {
+      loadGasList();
+    }
+  }, [clickedMax, loadGasList]);
+
   const handleSubmit = async ({
     to,
     amount,
