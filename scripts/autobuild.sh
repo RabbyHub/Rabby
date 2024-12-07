@@ -13,7 +13,7 @@ if [ -z $build_type ]; then
 fi
 
 PKG_SLUG="RabbyDebug";
-[ $build_type == "pro" ] && PKG_SLUG="Rabby";
+[[ "$build_type" == "pro" ]] && PKG_SLUG="Rabby";
 
 VERSION=$(node --eval="process.stdout.write(require('./package.json').version)");
 RABBY_GIT_HASH=$(git rev-parse --short HEAD);
