@@ -350,10 +350,11 @@ const GasSelectorHeader = ({
 
   const loadCustomGasData = useCallback(
     async (custom?: number): Promise<GasLevel> => {
-      const list = await wallet.openapi.gasMarket(
-        chain.serverId,
-        custom && custom > 0 ? custom : undefined
-      );
+      const list = await wallet.openapi.gasMarketV2({
+        chainId: chain.serverId,
+        customGas: custom && custom > 0 ? custom : undefined,
+        tx,
+      });
       return list.find((item) => item.level === 'custom')!;
     },
     []
