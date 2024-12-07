@@ -7,6 +7,9 @@ systype=$(uname -s)
 
 . $script_dir/fns.sh --source-only
 
+echo "[pack] notify_lark is $notify_lark"
+echo "[pack] build_type is $build_type"
+
 # debug, pro
 if [ -z $build_type ]; then
   build_type="debug"
@@ -25,6 +28,7 @@ echo "[pack] VERSION is $VERSION";
 
 # for mingw, download zip.exe from http://stahlworks.com/dev/index.php?tool=zipunzip and add to your path
 if [ -z $NO_BUILD ]; then
+    [[ "$build_type" == "pro" ]] && rm -rf $project_dir/node_modules;
     yarn;
     yarn build:${build_type};
 fi
@@ -55,7 +59,7 @@ if [ -z $NO_UPLOAD ]; then
     aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/$PKG_SLUG-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
     echo "[pack] uploaded. DOWNLOAD_URL is $DOWNLOAD_URL";
 
-    if [ ! -z $notify_lark ]; then
+    if [ "$notify_lark" == "true" ]; then
         echo "[pack] update latest link...";
 
         node ./scripts/notify-lark.js "$DOWNLOAD_URL" "$target_md5_value"

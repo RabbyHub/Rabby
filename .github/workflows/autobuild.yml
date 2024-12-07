@@ -80,12 +80,11 @@ jobs:
       - name: build
         run: |
           echo "GIT_REF is $GIT_REF"
-          echo "build_type is $build_type"
           # for branch tmp/202*, force notify_lark=true
           if [[ $GIT_REF == refs/heads/tmp/202* ]]; then
             export notify_lark=true;
           fi
-          bash ./scripts/autobuild.sh;
+          ./scripts/autobuild.sh;
         env:
           RABBY_BUILD_BUCKET: ${{ secrets.RABBY_BUILD_BUCKET }}
           RABBY_LARK_CHAT_URL: ${{ secrets.RABBY_LARK_CHAT_URL }}
