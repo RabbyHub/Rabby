@@ -153,7 +153,7 @@ export const TransactionItem = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket({
+      : await wallet.openapi.gasMarketV2({
           chainId: chain.serverId,
           tx: maxGasTx.rawTx,
         });
@@ -193,7 +193,7 @@ export const TransactionItem = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket({
+      : await wallet.openapi.gasMarketV2({
           chainId: chain.serverId,
           tx: originTx.rawTx,
         });

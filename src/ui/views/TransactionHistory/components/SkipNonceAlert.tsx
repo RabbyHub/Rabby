@@ -167,7 +167,7 @@ export const SkipNonceAlert = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket({
+      : await wallet.openapi.gasMarketV2({
           chainId: chain.serverId,
           tx: maxGasTx.rawTx,
         });
