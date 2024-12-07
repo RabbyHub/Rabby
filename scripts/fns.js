@@ -24,13 +24,16 @@ async function createConsistentZip(
   {
     printFileTable = true,
     silent = false,
+    zipEntryBase = './',
   } = {}
 ) {
   const logger = silent ? loggerSlient : console;
   
   fs.mkdirSync(path.dirname(destZip), { recursive: true });
-  const output = fs.createWriteStream(destZip, { flags: 'w+' });
+  if (fs.existsSync(destZip)) fs.rmSync(destZip);
+  const output = fs.createWriteStream(destZip, { flags: 'w' });
   const archive = archiver('zip', {
+    // store: true,
     zlib: { level: 9 }
   });
 
@@ -69,16 +72,14 @@ async function createConsistentZip(
    * }[]}
    */
   const asciiTable = [];
-  
+
   for (const item of allItems) {
     const itemPath = path.join(srcDir, item);
-    const itemZipPath = path.join('./', item);
+    const itemZipPath = path.join(zipEntryBase, item);
 
     const stat = fs.statSync(itemPath);
 
-    if (stat.isDirectory()) {
-      await addDirectoryToZip(itemPath, itemZipPath);
-    } else if (stat.isFile()) {
+    if (stat.isFile()) {
       const fileStream = fs.createReadStream(itemPath);
       asciiTable.push({
         time: gitUTC0Time,
