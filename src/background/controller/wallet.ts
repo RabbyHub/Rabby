@@ -4927,23 +4927,30 @@ export class WalletController extends BaseController {
         }
   ) => {
     let chainId: string;
-    let tx: Tx | undefined;
+    let tx: any;
 
-    if ('chain' in params) {
-      if (params.tx) {
-        if (params.tx.nonce === undefined) {
-          params.tx.nonce = await this.getRecommendNonce({
-            from: params.tx.from,
-            chainId: params.chain.id,
-          });
-        }
+    if ('tx' in params) {
+      if (params.tx.nonce === undefined) {
+        params.tx.nonce = await this.getRecommendNonce({
+          from: params.tx.from,
+          chainId: params.chain.id,
+        });
+      }
 
-        if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
-          params.tx.gasPrice = '0x0';
-        }
+      if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
+        params.tx.gasPrice = '0x0';
+      }
+      if (params.tx.gas === undefined || params.tx.gas === '') {
+        params.tx.gas = '0x0';
+      }
+      if (params.tx.data === undefined || params.tx.data === '') {
+        params.tx.data = '0x';
       }
       chainId = params.chain.serverId;
       tx = params.tx;
+      delete tx.isSend;
+      delete tx.isSwap;
+      delete tx.swapPreferMEVGuarded;
     } else {
       chainId = params.chainId;
     }
