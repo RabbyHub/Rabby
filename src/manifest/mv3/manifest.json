@@ -73,10 +73,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "user-media-permission.html",
-        "pageProvider.js",
-        "vendor/matomo.js",
-        "/vendor/matomo.client.js"
+        "pageProvider.js"
       ],
       "matches": [
         "<all_urls>"
