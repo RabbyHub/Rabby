@@ -4927,7 +4927,7 @@ export class WalletController extends BaseController {
         }
   ) => {
     let chainId: string;
-    let tx: any;
+    let tx: Tx | undefined;
 
     if ('tx' in params) {
       if (params.tx.nonce === undefined) {
@@ -4947,10 +4947,16 @@ export class WalletController extends BaseController {
         params.tx.data = '0x';
       }
       chainId = params.chain.serverId;
-      tx = params.tx;
-      delete tx.isSend;
-      delete tx.isSwap;
-      delete tx.swapPreferMEVGuarded;
+      tx = {
+        chainId: params.tx.chainId,
+        data: params.tx.data,
+        from: params.tx.from,
+        gas: params.tx.gas,
+        nonce: params.tx.nonce,
+        to: params.tx.to,
+        value: params.tx.value,
+        gasPrice: params.tx.gasPrice,
+      };
     } else {
       chainId = params.chainId;
     }
