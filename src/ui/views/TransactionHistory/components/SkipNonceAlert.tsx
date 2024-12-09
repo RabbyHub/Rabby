@@ -167,7 +167,10 @@ export const SkipNonceAlert = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket(chain.serverId);
+      : await wallet.gasMarketV2({
+          chain,
+          tx: maxGasTx.rawTx,
+        });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
