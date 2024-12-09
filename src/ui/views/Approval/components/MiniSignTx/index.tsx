@@ -851,6 +851,7 @@ export const MiniSignTx = ({
             className={clsx(task.status !== 'idle' && 'pointer-events-none')}
           >
             <GasSelectorHeader
+              tx={txs[0]}
               gasAccountCost={gasAccountCost}
               gasMethod={gasMethod}
               onChangeGasMethod={setGasMethod}

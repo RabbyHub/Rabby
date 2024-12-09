@@ -1,7 +1,7 @@
 import { Button, Input, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel, TxPushType } from 'background/service/openapi';
+import { GasLevel, Tx, TxPushType } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
@@ -58,6 +58,7 @@ export interface GasSelectorResponse extends GasLevel {
 }
 
 interface GasSelectorProps {
+  tx: Tx;
   gasLimit: string | undefined;
   gas: {
     gasCostUsd: number | string | BigNumber;
@@ -298,6 +299,7 @@ const GasSelectorHeader = ({
   gasMethod,
   gasAccountCost,
   onChangeGasMethod,
+  tx,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();

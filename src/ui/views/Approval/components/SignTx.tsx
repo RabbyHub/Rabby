@@ -1997,6 +1997,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <FooterBar
             Header={
               <GasSelectorHeader
+                tx={tx}
                 gasAccountCost={gasAccountCost}
                 gasMethod={gasMethod}
                 onChangeGasMethod={setGasMethod}
