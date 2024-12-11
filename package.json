@@ -71,7 +71,7 @@
     "@safe-global/protocol-kit": "5.0.3",
     "@safe-global/types-kit": "1.0.0",
     "@scure/bip39": "1.2.1",
-    "@sentry/browser": "6.7.2",
+    "@sentry/browser": "7.119.1",
     "@sentry/react": "6.7.2",
     "@sentry/tracing": "6.19.7",
     "@spruceid/siwe-parser": "2.0.2",
