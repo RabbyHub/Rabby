@@ -2,9 +2,14 @@ const path = require('path');
 const { prompt, BooleanPrompt } = require('enquirer');
 const fs = require('fs-extra');
 const shell = require('shelljs');
+const chalk = require('chalk');
 const pkg = require('../package.json');
+const { createConsistentZip, get_md5_file } = require('../scripts/fns');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
+
+const NO_BUILD=process.env.NO_BUILD;
+const NO_PACK=process.env.NO_PACK;
 
 function updateManifestVersion(version, p) {
   const manifestPath = path.resolve(
@@ -18,7 +23,7 @@ function updateManifestVersion(version, p) {
   fs.writeJSONSync(manifestPath, manifest, { spaces: 2 });
 }
 
-async function release([version, isDebug, isRelease]) {
+async function release({ version, isRelease = false }) {
   if (isRelease) {
     shell.exec(`npm version ${version} --force`);
     shell.exec('git add -A');
@@ -26,10 +31,27 @@ async function release([version, isDebug, isRelease]) {
     shell.exec(`git push origin refs/tags/v${version}`);
     shell.exec('git push origin master');
   }
-  return [version, isDebug, isRelease];
+}
+
+async function parse_git_info() {
+  const gitCommittish = shell.exec('git rev-parse HEAD', { silent: true })
+    .stdout.trim();
+  const gitUTC0Time = shell.exec(
+    'TZ=UTC0 git show --quiet --date="format-local:%Y-%m-%dT%H:%M:%S+00:00" --format="%cd"',
+    { silent: true }
+  ).stdout.trim();
+
+  return {
+    gitCommittish,
+    gitUTC0Time,
+  };
 }
 
 async function bundle() {
+  const { gitCommittish, gitUTC0Time } = await parse_git_info();
+
+  const cmd_prefix = `[Rabby::${gitCommittish.slice(0, 7)}]`;
+
   const oldVersion = pkg.version;
   const plus1Version = oldVersion
     .split('.')
@@ -38,42 +60,67 @@ async function bundle() {
   const { version } = await prompt({
     type: 'input',
     name: 'version',
-    message: '[Rabby] Please input the release version:',
-    initial: plus1Version,
+    message: `${cmd_prefix} Please input the release version:`,
+    initial: oldVersion,
   });
 
   const isMV3 = await new BooleanPrompt({
-    message: '[Rabby] Do you want to release to MV3? (y/N)',
+    message: `${cmd_prefix} Do you want to release to MV3? (y/N)`,
+    initial: 'y',
   }).run();
 
   const isDebug = await new BooleanPrompt({
-    message: '[Rabby] Do you want to build a debug version? (y/N)',
+    message: `${cmd_prefix} Do you want to build a debug version? (y/N)`,
+    initial: 'N',
   }).run();
 
   const isRelease = await new BooleanPrompt({
-    message: '[Rabby] Do you want to release? (y/N)',
+    message: `${cmd_prefix} Do you want to create tag & push to remote? (y/N)`,
+    initial: 'N',
   }).run();
 
   const buildStr = isDebug ? 'build:debug' : 'build:pro';
 
   updateManifestVersion(version, 'mv3');
   updateManifestVersion(version, 'mv2');
+
+  if (isRelease) {
+    await release({ version, isDebug, isRelease });
+  }
+
   // shell.env['sourcemap'] = true;
-  if (isMV3) {
-    shell.exec(`cross-env VERSION=${version} yarn ${buildStr}`);
-  } else {
-    shell.exec(`cross-env VERSION=${version} yarn ${buildStr}:mv2`);
+  if (NO_BUILD !== 'true') {
+    if (isMV3) {
+      shell.exec(`cross-env VERSION=${version} yarn ${buildStr}`);
+    } else {
+      shell.exec(`cross-env VERSION=${version} yarn ${buildStr}:mv2`);
+    }
   }
   shell.rm('-rf', './dist/*.js.map');
-  return [version, isDebug, isRelease];
-}
-async function packed([version, isDebug]) {
-  import('./zip.mjs').then((re) => {
-    re.createZipTask(
-      'dist/**',
-      `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`
+
+  do_package: {
+    const hashed_zip = path.resolve(PROJECT_ROOT, `tmp/Rabby_v${version}${isDebug ? '_debug' : ''}.${gitCommittish.slice(0, 7)}.zip`);
+    const package_for_release = path.resolve(PROJECT_ROOT, `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`);
+    const srcDir = path.resolve(PROJECT_ROOT, 'dist');
+
+    console.log(
+      `${cmd_prefix} will pack ${srcDir} to ${hashed_zip} with gitUTC0Time ${gitUTC0Time}`
     );
-  });
+
+    const result = await createConsistentZip(srcDir, hashed_zip, gitUTC0Time, {
+      silent: true,
+      printFileTable: true,
+    })
+    .then(async (result) => {
+      const md5Value = await get_md5_file(hashed_zip);
+      console.log(`${cmd_prefix} ZIP file created at ${hashed_zip} (md5: ${chalk.yellow(md5Value)}, size: ${chalk.yellow(result.totalBytes)} bytes)`);
+    });
+
+    shell.exec(`cp ${hashed_zip} ${package_for_release}`);
+    console.log(`${cmd_prefix} md5 of ${package_for_release}: ${chalk.yellow(await get_md5_file(package_for_release))}`);
+
+    return result;
+  }
 }
 
-bundle().then(release).then(packed);
+bundle();

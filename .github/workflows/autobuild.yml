@@ -10,6 +10,15 @@ on:
         required: true
         type: boolean
         default: false
+      build_type:
+        required: true
+        description: Build Type
+        default: debug
+        type: choice
+        options: 
+          - pro
+          - debug
+        
 
 defaults:
   run:
@@ -43,7 +52,7 @@ jobs:
           token: '${{ secrets.NPM_AUTH_TOKEN }}'
 
   build-debug:
-    name: build debug
+    name: build & package zip
     runs-on: [self-hosted, X64, Linux, webextension, builder]
     needs: setup
     env:
@@ -70,17 +79,18 @@ jobs:
 
       - name: build
         run: |
-          # for branch tmp/202*, force notify_lark=true
           echo "GIT_REF is $GIT_REF"
+          # for branch tmp/202*, force notify_lark=true
           if [[ $GIT_REF == refs/heads/tmp/202* ]]; then
             export notify_lark=true;
           fi
-          sh ./scripts/autobuild.sh;
+          ./scripts/autobuild.sh;
         env:
           RABBY_BUILD_BUCKET: ${{ secrets.RABBY_BUILD_BUCKET }}
           RABBY_LARK_CHAT_URL: ${{ secrets.RABBY_LARK_CHAT_URL }}
           RABBY_LARK_CHAT_SECRET: ${{ secrets.RABBY_LARK_CHAT_SECRET }}
           notify_lark: ${{ inputs.notify_lark }}
+          build_type: ${{ inputs.build_type }}
           # see more details on https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
           ACTIONS_JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GIT_COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
