@@ -39,6 +39,25 @@ export const NewUserImportHardware = () => {
     [t]
   );
 
+  const bitbox02Tips = React.useMemo(
+    () => [
+      <Trans i18nKey="page.newUserImport.importBitBox02.tip1" t={t}>
+        1. Install the
+        <a
+          className="ml-2 underline text-r-blue-default"
+          href="https://bitbox.swiss/download/#bridge"
+          target="_blank"
+          rel="noreferrer"
+        >
+          BitBoxBridge
+        </a>
+      </Trans>,
+      t('page.newUserImport.importBitBox02.tip2'),
+      t('page.newUserImport.importBitBox02.tip3'),
+    ],
+    [t]
+  );
+
   const trezorTips = React.useMemo(
     () => [
       t('page.newUserImport.importTrezor.tip1'),
@@ -63,10 +82,12 @@ export const NewUserImportHardware = () => {
         return trezorTips;
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
         return gridPlusTips;
+      case KEYRING_CLASS.HARDWARE.BITBOX02:
+        return bitbox02Tips;
       default:
         return [];
     }
-  }, [type, oneKeyTips, trezorTips, gridPlusTips]);
+  }, [type, oneKeyTips, trezorTips, gridPlusTips, bitbox02Tips]);
 
   const title = useMemo(() => {
     switch (type) {
@@ -76,6 +97,8 @@ export const NewUserImportHardware = () => {
         return t('page.newUserImport.importTrezor.title');
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
         return t('page.newUserImport.ImportGridPlus.title');
+      case KEYRING_CLASS.HARDWARE.BITBOX02:
+        return t('page.newUserImport.importBitBox02.title');
       default:
         return '';
     }
@@ -89,6 +112,8 @@ export const NewUserImportHardware = () => {
         return t('page.newUserImport.importTrezor.connect');
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
         return t('page.newUserImport.ImportGridPlus.connect');
+      case KEYRING_CLASS.HARDWARE.BITBOX02:
+        return t('page.newUserImport.importBitBox02.connect');
       default:
         return '';
     }
@@ -102,6 +127,8 @@ export const NewUserImportHardware = () => {
         return WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.TREZOR].rcSvg;
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
         return WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.GRIDPLUS].rcSvg;
+      case KEYRING_CLASS.HARDWARE.BITBOX02:
+        return WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.BITBOX02].rcSvg;
       default:
         return WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.ONEKEY].rcSvg;
     }

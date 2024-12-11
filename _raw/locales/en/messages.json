@@ -2401,6 +2401,13 @@
         "tip3": "Open the Ethereum app.",
         "connect": "Connect Ledger"
       },
+      "importBitBox02": {
+        "title": "BitBox02",
+        "tip1": "1. Install the <1>BitBoxBridge<1/>",
+        "tip2": "2. Plug in your BitBox02",
+        "tip3": "3. Unlock your device",
+        "connect": "Connect BitBox02"
+      },
       "importKeystone": {
         "qrcode": {
           "desc": "Scan the QR code on the Keystone hardware wallet"
