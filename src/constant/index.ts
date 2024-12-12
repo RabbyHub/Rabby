@@ -107,6 +107,7 @@ import {
   default as LogoLedgerDark,
   default as LogoLedgerWhite,
   ReactComponent as RcLogoLedgerDark,
+  ReactComponent as RcLogoLedgerWhite,
 } from 'ui/assets/walletlogo/ledger.svg';
 import LogoLedgerDisable, {
   ReactComponent as RcLogoLedgerDisable,
