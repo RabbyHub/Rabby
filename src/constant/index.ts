@@ -1047,8 +1047,8 @@ export const NEXT_KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: {
     dataLight: KEYRING_ICONS_WHITE[HARDWARE_KEYRING_TYPES.Ledger.type],
     dataDark: KEYRING_ICONS[HARDWARE_KEYRING_TYPES.Ledger.type],
-    rcLight: RcLogoLedgerWhite,
-    rcDark: RcLogoLedgerWhite,
+    rcLight: RcLogoLedgerDark,
+    rcDark: RcLogoLedgerDark,
   } as NextKeyringIconType,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: {
     dataLight: KEYRING_ICONS_WHITE[HARDWARE_KEYRING_TYPES.Onekey.type],
