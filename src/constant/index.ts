@@ -466,7 +466,7 @@ export const INTERNAL_REQUEST_SESSION = {
 
 export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
 
-export const INITIAL_TESTNET_OPENAPI_URL = 'https://alpha.rabby.io';
+export const INITIAL_TESTNET_OPENAPI_URL = 'https://api.testnet.rabby.io';
 
 export const EVENTS = {
   broadcastToUI: 'broadcastToUI',
