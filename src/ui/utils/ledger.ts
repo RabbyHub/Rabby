@@ -41,13 +41,13 @@ export const useLedgerDeviceConnected = () => {
 
   useEffect(() => {
     detectDevice();
-    navigator.hid.addEventListener('connect', onConnect);
-    navigator.hid.addEventListener('disconnect', onDisconnect);
+    navigator.hid?.addEventListener('connect', onConnect);
+    navigator.hid?.addEventListener('disconnect', onDisconnect);
     browser.windows.onFocusChanged.addListener(detectDevice);
 
     return () => {
-      navigator.hid.removeEventListener('connect', onConnect);
-      navigator.hid.removeEventListener('disconnect', onDisconnect);
+      navigator.hid?.removeEventListener('connect', onConnect);
+      navigator.hid?.removeEventListener('disconnect', onDisconnect);
       browser.windows.onFocusChanged.removeListener(detectDevice);
     };
   }, []);

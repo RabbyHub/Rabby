@@ -1,4 +1,4 @@
-import { groupBy } from 'lodash';
+import { groupBy, isNull } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
 import browser from 'webextension-polyfill';
@@ -10,6 +10,7 @@ import {
   CHAINS_ENUM,
   EVENTS,
   EVENTS_IN_BG,
+  IS_FIREFOX,
   KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
 } from 'consts';
@@ -37,7 +38,7 @@ import {
   uninstalledService,
 } from './service';
 import { providerController, walletController } from './controller';
-import { getOriginFromUrl } from '@/utils';
+import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
@@ -278,7 +279,25 @@ browser.runtime.onConnect.addListener((port) => {
           case 'controller':
           default:
             if (data.method) {
-              return walletController[data.method].apply(null, data.params);
+              const res = walletController[data.method].apply(
+                null,
+                data.params
+              );
+              if (!IS_FIREFOX) {
+                return res;
+              }
+              if (typeof res?.then === 'function') {
+                return res.then((x) => {
+                  if (typeof x !== 'object' || isNull(x)) {
+                    return x;
+                  }
+                  return transformFunctionsToZero(x);
+                });
+              }
+              if (typeof res !== 'object' || isNull(res)) {
+                return res;
+              }
+              return transformFunctionsToZero(res);
             }
         }
       }

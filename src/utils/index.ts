@@ -79,3 +79,55 @@ export const safeJSONParse = (str: string) => {
     return null;
   }
 };
+
+type AnyFunction = (...args: any[]) => any;
+
+type ObjectWithFunctions =
+  | {
+      [key: string]: any;
+    }
+  | any[];
+
+type ReplaceFunctionWithZero<T> = T extends any[]
+  ? {
+      [K in keyof T]: T[K] extends AnyFunction
+        ? 0
+        : T[K] extends object
+        ? ReplaceFunctionWithZero<T[K]>
+        : T[K];
+    }
+  : {
+      [K in keyof T]: T[K] extends AnyFunction
+        ? 0
+        : T[K] extends object
+        ? ReplaceFunctionWithZero<T[K]>
+        : T[K];
+    };
+
+export const transformFunctionsToZero = <T extends ObjectWithFunctions>(
+  input: T
+): ReplaceFunctionWithZero<T> => {
+  if (Array.isArray(input)) {
+    return input.map((item) => {
+      if (typeof item === 'function') {
+        return 0;
+      } else if (typeof item === 'object' && item !== null) {
+        return transformFunctionsToZero(item);
+      }
+      return item;
+    }) as ReplaceFunctionWithZero<T>;
+  }
+
+  const result: any = {};
+  for (const key in input) {
+    const value = input[key];
+    if (typeof value === 'function') {
+      result[key] = 0;
+    } else if (typeof value === 'object' && value !== null) {
+      result[key] = transformFunctionsToZero(value);
+    } else {
+      result[key] = value;
+    }
+  }
+  return result as ReplaceFunctionWithZero<T>;
+};
