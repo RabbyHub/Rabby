@@ -8,6 +8,7 @@ import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import { EVENTS } from 'consts';
+import browser from 'webextension-polyfill';
 
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 
@@ -157,7 +158,7 @@ const bootstrap = () => {
     main();
     return;
   }
-  chrome.runtime.sendMessage({ type: 'getBackgroundReady' }).then((res) => {
+  browser.runtime.sendMessage({ type: 'getBackgroundReady' }).then((res) => {
     if (!res) {
       setTimeout(() => {
         bootstrap();
