@@ -342,12 +342,12 @@ export const useBridge = () => {
               });
 
             if (alternativeToken) {
-              if (data && currentFetchId === fetchIdRef.current) {
+              if (data?.length && currentFetchId === fetchIdRef.current) {
                 setRecommendFromToken(alternativeToken);
                 return;
               }
             }
-            if (data && currentFetchId === fetchIdRef.current) {
+            if (data?.length && currentFetchId === fetchIdRef.current) {
               originData.push(...data);
             }
             if (currentFetchId === fetchIdRef.current) {
