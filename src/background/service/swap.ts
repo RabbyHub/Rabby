@@ -17,6 +17,7 @@ export type SwapServiceStore = {
   autoSlippage: boolean;
   isCustomSlippage?: boolean;
   slippage: string;
+  recentToTokens?: TokenItem[];
 
   /**
    * @deprecated
@@ -59,6 +60,7 @@ class SwapService {
     preferMEVGuarded: false,
     autoSlippage: true,
     slippage: '0.1',
+    recentToTokens: [],
   };
 
   init = async () => {
@@ -75,6 +77,7 @@ class SwapService {
         sortIncludeGasFee: true,
         autoSlippage: true,
         slippage: '0.1',
+        recentToTokens: [],
       },
     });
     if (storage) {
@@ -257,6 +260,20 @@ class SwapService {
 
   setSlippage = (slippage: string) => {
     this.store.slippage = slippage;
+  };
+
+  getRecentSwapToTokens = () => {
+    return this.store.recentToTokens || [];
+  };
+
+  setRecentSwapToToken = (token: TokenItem) => {
+    const recentToTokens = this.store.recentToTokens || [];
+    this.store.recentToTokens = [
+      token,
+      ...recentToTokens.filter(
+        (item) => item.id !== token.id || item.chain !== token.chain
+      ),
+    ].slice(0, 5);
   };
 }
 

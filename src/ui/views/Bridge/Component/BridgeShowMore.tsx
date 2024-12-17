@@ -1,7 +1,7 @@
 import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, Skeleton, Tooltip } from 'antd';
+import { Button, Skeleton, Switch, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
   Dispatch,
@@ -9,16 +9,36 @@ import React, {
   SetStateAction,
   useEffect,
   useMemo,
-  useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowDownCC } from 'ui/assets/bridge/tiny-down-arrow-cc.svg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
+import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
+import styled from 'styled-components';
 
 const dottedClassName =
   'h-0 flex-1 border-b-[1px] border-solid border-rabby-neutral-line opacity-50';
+
+const PreferMEVGuardSwitch = styled(Switch)`
+  min-width: 20px;
+  height: 12px;
+
+  &.ant-switch-checked {
+    background-color: var(--r-blue-default, #7084ff);
+    .ant-switch-handle {
+      left: calc(100% - 10px - 1px);
+      top: 1px;
+    }
+  }
+  .ant-switch-handle {
+    height: 10px;
+    width: 10px;
+    top: 1px;
+    left: 1px;
+  }
+`;
 
 export const BridgeShowMore = ({
   openQuotesList,
@@ -39,6 +59,13 @@ export const BridgeShowMore = ({
   setIsCustomSlippage,
   open,
   setOpen,
+  type,
+  isWrapToken,
+  isBestQuote,
+  showMEVGuardedSwitch,
+  originPreferMEVGuarded,
+  switchPreferMEV,
+  recommendValue,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -57,8 +84,18 @@ export const BridgeShowMore = ({
   slippageError?: boolean;
   autoSlippage: boolean;
   isCustomSlippage: boolean;
-  setAutoSlippage: Dispatch<SetStateAction<boolean>>;
-  setIsCustomSlippage: Dispatch<SetStateAction<boolean>>;
+  setAutoSlippage: (boolean: boolean) => void;
+  setIsCustomSlippage: (boolean: boolean) => void;
+  type: 'swap' | 'bridge';
+  /**
+   * for swap props
+   */
+  isWrapToken?: boolean;
+  isBestQuote: boolean;
+  showMEVGuardedSwitch?: boolean;
+  originPreferMEVGuarded?: boolean;
+  switchPreferMEV?: (b: boolean) => void;
+  recommendValue?: number;
 }) => {
   const { t } = useTranslation();
 
@@ -66,6 +103,17 @@ export const BridgeShowMore = ({
     () => tokenPriceImpact(fromToken, toToken, amount, toAmount),
     [fromToken, toToken, amount, toAmount]
   );
+
+  const bestQuoteStyle = useMemo(() => {
+    if (isBestQuote) {
+      return {
+        backgroundImage: `url(${imgBestQuoteSharpBg})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '38px',
+      };
+    }
+    return undefined;
+  }, [isBestQuote]);
 
   useEffect(() => {
     if ((!quoteLoading && data?.showLoss) || slippageError) {
@@ -142,7 +190,7 @@ export const BridgeShowMore = ({
           </div>
         )}
 
-        <ListItem name={t('page.bridge.showMore.source')} className="mb-8">
+        <ListItem name={t('page.bridge.showMore.source')} className="mb-12">
           {quoteLoading ? (
             <Skeleton.Input
               active
@@ -154,9 +202,19 @@ export const BridgeShowMore = ({
             />
           ) : (
             <div
-              className="flex items-center gap-4 cursor-pointer"
+              className={clsx(
+                'flex items-center gap-4 cursor-pointer',
+                isBestQuote &&
+                  'border-[0.5px] border-solid border-rabby-blue-default rounded-[4px] pr-[5px]'
+              )}
+              style={bestQuoteStyle}
               onClick={openQuotesList}
             >
+              {isBestQuote ? (
+                <span className="text-r-neutral-title2 text-[12px] font-medium italic py-1 pl-6 pr-8">
+                  {t('page.swap.best')}
+                </span>
+              ) : null}
               {sourceLogo && (
                 <img
                   className="w-12 h-12 rounded-full"
@@ -179,7 +237,35 @@ export const BridgeShowMore = ({
           isCustomSlippage={isCustomSlippage}
           setAutoSlippage={setAutoSlippage}
           setIsCustomSlippage={setIsCustomSlippage}
+          type={type}
+          isWrapToken={isWrapToken}
+          recommendValue={recommendValue}
         />
+        {showMEVGuardedSwitch && type === 'swap' ? (
+          <ListItem
+            name={
+              <Tooltip
+                placement={'topLeft'}
+                overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+                title={t('page.swap.preferMEVTip')}
+              >
+                <span>{t('page.swap.preferMEV')}</span>
+              </Tooltip>
+            }
+            className="mt-12"
+          >
+            <Tooltip
+              placement={'topRight'}
+              overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+              title={t('page.swap.preferMEVTip')}
+            >
+              <PreferMEVGuardSwitch
+                checked={originPreferMEVGuarded}
+                onChange={switchPreferMEV}
+              />
+            </Tooltip>
+          </ListItem>
+        ) : null}
       </div>
     </div>
   );

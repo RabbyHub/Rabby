@@ -6,8 +6,6 @@ import {
   ChangeEventHandler,
   useState,
   useEffect,
-  SetStateAction,
-  Dispatch,
 } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
@@ -53,9 +51,13 @@ const SlippageItem = styled.div`
   }
 `;
 
-const SLIPPAGE = ['0.5', '1'];
+const BRIDGE_SLIPPAGE = ['0.5', '1'];
 
-const MAX_SLIPPAGE = 10;
+const SWAP_SLIPPAGE = ['0.1', '0.5'];
+
+const BRIDGE_MAX_SLIPPAGE = 10;
+
+const SWAP_MAX_SLIPPAGE = 50;
 
 const Wrapper = styled.section`
   .slippage {
@@ -102,8 +104,10 @@ interface BridgeSlippageProps {
   recommendValue?: number;
   autoSlippage: boolean;
   isCustomSlippage: boolean;
-  setAutoSlippage: Dispatch<SetStateAction<boolean>>;
-  setIsCustomSlippage: Dispatch<SetStateAction<boolean>>;
+  setAutoSlippage: (boolean: boolean) => void;
+  setIsCustomSlippage: (boolean: boolean) => void;
+  type: 'swap' | 'bridge';
+  isWrapToken?: boolean;
 }
 export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
   const { t } = useTranslation();
@@ -117,16 +121,39 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
     isCustomSlippage,
     setAutoSlippage,
     setIsCustomSlippage,
+    type,
+    isWrapToken,
   } = props;
 
   const [slippageOpen, setSlippageOpen] = useState(false);
 
+  const [minimumSlippage, maximumSlippage] = useMemo(() => {
+    if (type === 'swap') {
+      return [0.1, 10];
+    }
+    return [0.2, 3];
+  }, [type]);
+
+  const SLIPPAGE = useMemo(() => {
+    if (type === 'swap') {
+      return SWAP_SLIPPAGE;
+    }
+    return BRIDGE_SLIPPAGE;
+  }, [type]);
+
+  const MAX_SLIPPAGE = useMemo(() => {
+    if (type === 'swap') {
+      return SWAP_MAX_SLIPPAGE;
+    }
+    return BRIDGE_MAX_SLIPPAGE;
+  }, [type]);
+
   const [isLow, isHigh] = useMemo(() => {
     return [
-      value?.trim() !== '' && Number(value || 0) < 0.2,
-      value?.trim() !== '' && Number(value || 0) > 3,
+      value?.trim() !== '' && Number(value || 0) < minimumSlippage,
+      value?.trim() !== '' && Number(value || 0) > maximumSlippage,
     ];
-  }, [value]);
+  }, [value, minimumSlippage]);
 
   const setRecommendValue = useCallback(() => {
     onChange(new BigNumber(recommendValue || 0).times(100).toString());
@@ -194,6 +221,24 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
     }
   }, [tips]);
 
+  if (type === 'swap' && isWrapToken) {
+    return (
+      <div
+        className="flex justify-between cursor-pointer text-12"
+        onClick={() => {
+          setSlippageOpen((e) => !e);
+        }}
+      >
+        <span className="font-normal text-r-neutral-foot">
+          {t('page.swap.slippage-tolerance')}
+        </span>
+        <span className="font-medium text-r-neutral-foot">
+          {t('page.swap.no-slippage-for-wrap')}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div
@@ -213,13 +258,6 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
           >
             {displaySlippage}%
           </span>
-          {/* <img
-            src={ImgArrowUp}
-            className={clsx(
-              'transition-transform inline-block w-14 h-[15px]',
-              !slippageOpen && 'rotate-180'
-            )}
-          /> */}
         </span>
       </div>
       <Wrapper className="widget-has-ant-input">

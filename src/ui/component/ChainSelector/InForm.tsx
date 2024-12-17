@@ -7,7 +7,7 @@ import { SelectChainListProps } from '@/ui/component/ChainSelector/components/Se
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
 import styled from 'styled-components';
 import ChainIcon from '@/ui/component/ChainIcon';
-import { ReactComponent as RcImgArrowDown } from '@/ui/assets/swap/arrow-down.svg';
+import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-cc.svg';
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +43,16 @@ const ChainWrapper = styled.div`
       }
     }
   }
+  &.inlineHover {
+    background: transparent;
+    &:hover {
+      background: transparent;
+      .name,
+      .down {
+        color: var(--r-blue-default, #7084ff);
+      }
+    }
+  }
   &:hover {
     background: rgba(134, 151, 255, 0.2);
   }
@@ -51,6 +61,7 @@ const ChainWrapper = styled.div`
       margin-left: auto;
       width: 20px;
       height: 20px;
+      color: var(--r-neutral-body, #3e495e);
     }
     .name {
       color: var(--r-neutral-title-1, #192945);
@@ -65,12 +76,14 @@ export const ChainRender = ({
   className,
   arrowDownComponent,
   mini,
+  inlineHover,
   ...other
 }: {
   chain?: CHAINS_ENUM;
   readonly: boolean;
   arrowDownComponent?: React.ReactNode;
   mini?: boolean;
+  inlineHover?: boolean;
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -94,7 +107,8 @@ export const ChainRender = ({
       className={clsx(
         {
           'cursor-default hover:bg-r-neutral-bg-2': readonly,
-          mini: mini,
+          mini,
+          inlineHover,
         },
         className
       )}
@@ -117,7 +131,7 @@ export const ChainRender = ({
         (arrowDownComponent ? (
           arrowDownComponent
         ) : (
-          <RcImgArrowDown className="down" viewBox="0 0 20 20" />
+          <RcImgArrowDownCC className="down" viewBox="0 0 20 20" />
         ))}
     </ChainWrapper>
   );
@@ -139,6 +153,7 @@ interface ChainSelectorProps {
   excludeChains?: CHAINS_ENUM[];
   drawerHeight?: number;
   showClosableIcon?: boolean;
+  inlineHover?: boolean;
 }
 export default function ChainSelectorInForm({
   value,
@@ -155,6 +170,7 @@ export default function ChainSelectorInForm({
   excludeChains,
   drawerHeight,
   showClosableIcon,
+  inlineHover,
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -183,6 +199,7 @@ export default function ChainSelectorInForm({
         className={chainRenderClassName}
         arrowDownComponent={arrowDownComponent}
         mini={mini}
+        inlineHover={inlineHover}
       />
       {!readonly && (
         <ChainSelectorModal

@@ -8,7 +8,12 @@ import clsx from 'clsx';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TokenRender } from '../../Swap/Component/TokenRender';
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils';
+import {
+  formatTokenAmount,
+  formatUsdValue,
+  isSameAddress,
+  useWallet,
+} from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { MaxButton } from '../../SendToken/components/MaxButton';
 import { tokenAmountBn } from '@/ui/utils/token';
@@ -18,6 +23,9 @@ import BridgeToTokenSelect from './BridgeToTokenSelect';
 import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
 import { useSetSettingVisible } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
+import { useAsync } from 'react-use';
+import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const StyledInput = styled(Input)`
   color: var(--r-neutral-title1, #192945);
@@ -94,6 +102,38 @@ export const BridgeToken = ({
 
   const inputRef = useRef<Input>();
 
+  const fromTokenIsNativeToken = useMemo(() => {
+    if (isFromToken && token && chain) {
+      return isSameAddress(
+        token.id,
+        findChainByEnum(chain)!.nativeTokenAddress
+      );
+    }
+    return false;
+  }, [token, chain, isFromToken]);
+
+  const nativeTokenDecimals = useMemo(
+    () => findChainByEnum(chain)?.nativeTokenDecimals || 1e18,
+    [chain]
+  );
+
+  const gasLimit = useMemo(
+    () => (chain === CHAINS_ENUM.ETH ? 1000000 : 2000000),
+    [chain]
+  );
+
+  const wallet = useWallet();
+
+  const { value: gasList } = useAsync(async () => {
+    if (!isFromToken) {
+      return [];
+    }
+
+    return wallet.gasMarketV2({
+      chainId: findChainByEnum(chain)!.serverId,
+    });
+  }, [chain, isFromToken]);
+
   useLayoutEffect(() => {
     if (isFromToken) {
       if (
@@ -127,9 +167,35 @@ export const BridgeToken = ({
   const handleMax = React.useCallback(() => {
     if (token) {
       isMaxRef.current = true;
+      if (isFromToken && fromTokenIsNativeToken && gasList) {
+        const checkGasIsEnough = (price: number) => {
+          return new BigNumber(token?.raw_amount_hex_str || 0, 16).gte(
+            new BigNumber(gasLimit).times(price)
+          );
+        };
+        const normalPrice =
+          gasList?.find((e) => e.level === 'normal')?.price || 0;
+        const isNormalEnough = checkGasIsEnough(normalPrice);
+        if (isNormalEnough) {
+          const val = tokenAmountBn(token).minus(
+            new BigNumber(gasLimit)
+              .times(normalPrice)
+              .div(10 ** nativeTokenDecimals)
+          );
+          onInputChange?.(val.toString(10));
+          return;
+        }
+      }
       onInputChange?.(tokenAmountBn(token)?.toString(10));
     }
-  }, [token?.raw_amount_hex_str, onInputChange]);
+  }, [
+    token?.raw_amount_hex_str,
+    onInputChange,
+    nativeTokenDecimals,
+    isFromToken,
+    fromTokenIsNativeToken,
+    gasList,
+  ]);
 
   return (
     <div
@@ -233,16 +299,23 @@ export const BridgeToken = ({
               />
             )}
           </div>
-          <div className="flex items-center gap-4">
-            <span>
-              {t('page.bridge.Balance')}
-
-              {token
-                ? formatTokenAmount(tokenAmountBn(token).toString(10)) || '0'
-                : 0}
-            </span>
+          <div className="flex items-center gap-4 relative">
+            <div className="flex items-center gap-4">
+              <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
+              <span>
+                {token
+                  ? formatTokenAmount(tokenAmountBn(token).toString(10)) || '0'
+                  : 0}
+              </span>
+            </div>
             {isFromToken && (
-              <MaxButton onClick={handleMax}>{t('page.swap.max')}</MaxButton>
+              <TooltipWithMagnetArrow
+                visible={fromTokenIsNativeToken ? undefined : false}
+                className="rectangle w-[max-content]"
+                title={t('page.bridge.max-tips')}
+              >
+                <MaxButton onClick={handleMax}>{t('page.swap.max')}</MaxButton>
+              </TooltipWithMagnetArrow>
             )}
           </div>
         </div>
