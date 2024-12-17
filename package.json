@@ -44,6 +44,8 @@
     "@ledgerhq/hw-app-eth": "6.39.0",
     "@ledgerhq/hw-transport-webhid": "6.29.4",
     "@metamask/browser-passworder": "4.1.0",
+    "@metamask/eth-block-tracker": "11.0.3",
+    "@metamask/eth-json-rpc-filters": "9.0.0",
     "@metamask/eth-sig-util": "5.1.0",
     "@metamask/obs-store": "6.0.2",
     "@metamask/post-message-stream": "8.1.0",

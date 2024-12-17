@@ -1,62 +1,58 @@
-import { groupBy, isNull } from 'lodash';
-import 'reflect-metadata';
-import * as Sentry from '@sentry/browser';
-import browser from 'webextension-polyfill';
-import { ethErrors } from 'eth-rpc-errors';
-import { WalletController } from 'background/controller/wallet';
+import eventBus from '@/eventBus';
+import migrateData from '@/migrations';
+import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
+import { appIsDev, getSentryEnv } from '@/utils/env';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Message, sendReadyMessageToTabs } from '@/utils/message';
+import Safe from '@rabby-wallet/gnosis-sdk';
+import * as Sentry from '@sentry/browser';
+import fetchAdapter from '@vespaiach/axios-fetch-adapter';
+import { WalletController } from 'background/controller/wallet';
 import {
-  CHAINS,
-  CHAINS_ENUM,
   EVENTS,
   EVENTS_IN_BG,
   IS_FIREFOX,
   KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
 } from 'consts';
-import { storage } from './webapi';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import { ethErrors } from 'eth-rpc-errors';
+import { groupBy, isNull } from 'lodash';
+import 'reflect-metadata';
+import browser from 'webextension-polyfill';
+import { providerController, walletController } from './controller';
+import createSubscription from './controller/provider/subscriptionManager';
 import {
-  permissionService,
-  preferenceService,
-  sessionService,
+  bridgeService,
+  contactBookService,
+  gasAccountService,
+  HDKeyRingLastAddAddrTimeService,
   keyringService,
   openapiService,
-  transactionWatchService,
   pageStateCacheService,
-  transactionHistoryService,
-  contactBookService,
-  signTextHistoryService,
-  whitelistService,
-  swapService,
+  permissionService,
+  preferenceService,
   RabbyPointsService,
   RPCService,
   securityEngineService,
+  sessionService,
+  signTextHistoryService,
+  swapService,
   transactionBroadcastWatchService,
-  HDKeyRingLastAddAddrTimeService,
-  bridgeService,
-  gasAccountService,
+  transactionHistoryService,
+  transactionWatchService,
   uninstalledService,
+  whitelistService,
 } from './service';
-import { providerController, walletController } from './controller';
-import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
-import rpcCache from './utils/rpcCache';
-import eventBus from '@/eventBus';
-import migrateData from '@/migrations';
-import createSubscription from './controller/provider/subscriptionManager';
-import buildinProvider from 'background/utils/buildinProvider';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import { isSameAddress, setPopupIcon } from './utils';
-import { appIsDev, getSentryEnv } from '@/utils/env';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { testnetOpenapiService } from './service/openapi';
-import fetchAdapter from '@vespaiach/axios-fetch-adapter';
-import Safe from '@rabby-wallet/gnosis-sdk';
 import { customTestnetService } from './service/customTestnet';
-import { findChain } from '@/utils/chain';
-import { syncChainService } from './service/syncChain';
 import { GasAccountServiceStore } from './service/gasAccount';
+import { testnetOpenapiService } from './service/openapi';
+import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
+import { isSameAddress } from './utils';
+import rpcCache from './utils/rpcCache';
+import { storage } from './webapi';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -340,8 +336,7 @@ browser.runtime.onConnect.addListener((port) => {
   }
 
   const pm = new PortMessage(port);
-  const provider = buildinProvider.currentProvider;
-  const subscriptionManager = createSubscription(provider);
+  const subscriptionManager = createSubscription(origin);
 
   subscriptionManager.events.on('notification', (message) => {
     pm.send('message', {
@@ -381,13 +376,10 @@ browser.runtime.onConnect.addListener((port) => {
     // for background push to respective page
     req.session!.setPortMessage(pm);
 
-    if (subscriptionManager.methods[data?.method]) {
-      const connectSite = permissionService.getConnectedSite(session!.origin);
-      if (connectSite) {
-        const chain =
-          findChain({ enum: connectSite.chain }) || CHAINS[CHAINS_ENUM.ETH];
-        provider.chainId = chain.network;
-      }
+    if (
+      subscriptionManager.methods[data?.method] &&
+      permissionService.getConnectedSite(session!.origin)?.isConnected
+    ) {
       return subscriptionManager.methods[data.method].call(null, req);
     }
 
