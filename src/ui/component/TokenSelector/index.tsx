@@ -68,7 +68,7 @@ const TokenSelector = ({
   chainId: chainServerId,
   disabledTips,
   supportChains,
-  drawerHeight = '580px',
+  drawerHeight = '540px',
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');

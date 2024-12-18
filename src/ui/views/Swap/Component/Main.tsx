@@ -15,7 +15,6 @@ import { useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
 import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
-import { InfoCircleFilled } from '@ant-design/icons';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
@@ -40,6 +39,7 @@ import { SwapTokenItem } from './Token';
 import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -360,7 +360,7 @@ export const Main = () => {
     },
   });
 
-  const [showMoreOpen, setShowMoreOpen] = useState(false);
+  const [showMoreOpen, setShowMoreOpen] = useState(!autoSlippage);
 
   const [sourceName, sourceLogo] = useMemo(() => {
     if (activeProvider?.name) {
@@ -373,7 +373,7 @@ export const Main = () => {
     return ['', ''];
   }, [isWrapToken, activeProvider?.name]);
 
-  const noQuote = useMemo(
+  const noQuoteOrigin = useMemo(
     () =>
       Number(inputAmount) > 0 &&
       !inSufficient &&
@@ -393,11 +393,17 @@ export const Main = () => {
     ]
   );
 
+  const noQuote = useDebounceValue(noQuoteOrigin, 16);
+
+  if (noQuote && !showMoreOpen) {
+    setShowMoreOpen(true);
+  }
+
   return (
     <div
       className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
     >
-      <div className="flex">
+      <div className="flex mb-4">
         <ChainSelectorInForm
           mini
           inlineHover
@@ -408,6 +414,8 @@ export const Main = () => {
           hideTestnetTab={true}
           chainRenderClassName={clsx('pl-[30px] text-[13px] font-medium')}
           title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
+          drawerHeight={540}
+          showClosableIcon
         />
       </div>
 
@@ -484,13 +492,42 @@ export const Main = () => {
         />
       </div>
 
+      {inSufficient || noQuote ? (
+        <Alert
+          className={clsx(
+            'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
+          )}
+          icon={
+            <RcIconWarningCC
+              viewBox="0 0 16 16"
+              className={clsx(
+                'relative top-[3px] mr-4 self-start origin-center w-16 h-15',
+                'text-rabby-red-default'
+              )}
+            />
+          }
+          banner
+          message={
+            <span
+              className={clsx(
+                'text-13 leading-[16px]',
+                'text-rabby-red-default'
+              )}
+            >
+              {inSufficient
+                ? t('page.swap.insufficient-balance')
+                : t('page.swap.no-quote-found')}
+            </span>
+          }
+        />
+      ) : null}
+
       {Number(inputAmount) > 0 &&
         !inSufficient &&
         !!amountAvailable &&
         !!payToken &&
-        !!receiveToken &&
-        !!activeProvider && (
-          <div className="mx-20 mb-20">
+        !!receiveToken && (
+          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-28')}>
             <BridgeShowMore
               open={showMoreOpen}
               setOpen={setShowMoreOpen}
@@ -533,35 +570,6 @@ export const Main = () => {
           </div>
         )}
 
-      {inSufficient || noQuote ? (
-        <Alert
-          className={clsx(
-            'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
-          )}
-          icon={
-            <RcIconWarningCC
-              viewBox="0 0 16 16"
-              className={clsx(
-                'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
-                'text-rabby-red-default'
-              )}
-            />
-          }
-          banner
-          message={
-            <span
-              className={clsx(
-                'text-13 leading-[16px]',
-                'text-rabby-red-default'
-              )}
-            >
-              {inSufficient
-                ? t('page.swap.insufficient-balance')
-                : t('page.bridge.no-quote-found')}
-            </span>
-          }
-        />
-      ) : null}
       <div
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',

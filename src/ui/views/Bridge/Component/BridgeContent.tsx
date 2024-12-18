@@ -394,7 +394,7 @@ export const BridgeContent = () => {
         </div>
       </div>
 
-      <div className="mx-20">
+      <div className="mx-20 mt-28">
         {selectedBridgeQuote && (
           <BridgeShowMore
             open={showMoreOpen}
