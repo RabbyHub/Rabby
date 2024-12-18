@@ -256,6 +256,10 @@ export const sendTransaction = async ({
     ? (await Browser.storage.local.get('DEBUG_OTHER_CHAIN_GAS_USD_LIMIT'))
         .DEBUG_OTHER_CHAIN_GAS_USD_LIMIT || 5
     : 5;
+  const DEBUG_SIMULATION_FAILED = process.env.DEBUG
+    ? (await Browser.storage.local.get('DEBUG_SIMULATION_FAILED'))
+        .DEBUG_SIMULATION_FAILED
+    : false;
 
   // generate tx with gas
   const transaction: Tx = {
@@ -271,7 +275,10 @@ export const sendTransaction = async ({
   let failedCode;
   let canUseGasAccount: boolean = false;
 
-  if (!preExecResult?.balance_change?.success) {
+  // random simulation failed for test
+  if (DEBUG_SIMULATION_FAILED && Math.random() > 0.5) {
+    failedCode = FailedCode.SimulationFailed;
+  } else if (!preExecResult?.balance_change?.success) {
     failedCode = FailedCode.SimulationFailed;
   } else if (isGasNotEnough) {
     //  native gas not enough check gasAccount
