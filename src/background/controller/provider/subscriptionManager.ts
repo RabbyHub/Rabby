@@ -1,10 +1,25 @@
-import { PollingBlockTracker } from 'eth-block-tracker';
+import { permissionService } from '@/background/service';
+import { EthereumProvider } from '@/background/utils/buildinProvider';
+import eventBus from '@/eventBus';
+import { Chain } from '@/types/chain';
+import { findChain } from '@/utils/chain';
+import { PollingBlockTracker } from '@metamask/eth-block-tracker';
+import createSubscriptionManager from '@metamask/eth-json-rpc-filters/subscriptionManager';
 
-import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager';
-
-const createSubscription = (provider) => {
+const createSubscription = (origin: string) => {
+  const chain = findChain({
+    enum: permissionService.getConnectedSite(origin)?.chain,
+  });
+  const provider = new EthereumProvider();
+  const handleChangeChange = (params: { origin: string; chain: Chain }) => {
+    if (params.origin === origin) {
+      provider.chainId = params.chain.network;
+    }
+  };
+  eventBus.addEventListener('rabby:chainChanged', handleChangeChange);
+  provider.chainId = chain?.network || '1';
   const blockTracker = new PollingBlockTracker({
-    provider,
+    provider: provider as any,
   });
   const { events, middleware } = createSubscriptionManager({
     provider,
@@ -35,7 +50,11 @@ const createSubscription = (provider) => {
       eth_subscribe: func,
       eth_unsubscribe: func,
     },
-    destroy,
+    destroy: () => {
+      destroy();
+      blockTracker.destroy();
+      eventBus.removeEventListener('rabby:chainChanged', handleChangeChange);
+    },
   };
 };
 
