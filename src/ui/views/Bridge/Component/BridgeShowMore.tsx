@@ -201,7 +201,10 @@ export const BridgeShowMore = ({
           </div>
         )}
 
-        <ListItem name={t('page.bridge.showMore.source')} className="mb-12">
+        <ListItem
+          name={t('page.bridge.showMore.source')}
+          className="mb-12 h-18"
+        >
           {quoteLoading ? (
             <Skeleton.Input
               active
