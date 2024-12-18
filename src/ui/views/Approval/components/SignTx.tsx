@@ -80,11 +80,11 @@ import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
 import { useGasAccountTxsCheck } from '../../GasAccount/hooks/checkTxs';
 import {
-  fetchActionRequiredData,
   parseAction,
   formatSecurityEngineContext,
   ActionRequireData,
   ParsedTransactionActionData,
+  useFetchActionRequiredData,
 } from '@rabby-wallet/rabby-action';
 
 interface BasicCoboArgusInfo {
@@ -389,9 +389,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     },
   });
   const [actionData, setActionData] = useState<ParsedTransactionActionData>({});
-  const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
-    null
-  );
   const { t } = useTranslation();
   const [preprocessSuccess, setPreprocessSuccess] = useState(true);
   const [chainId, setChainId] = useState<number>(
@@ -628,6 +625,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [engineResults, currentTx]);
 
   const isGasTopUp = tx.to?.toLowerCase() === GAS_TOP_UP_ADDRESS.toLowerCase();
+  const {
+    fetchActionRequiredData,
+    requiredData: actionRequireData,
+  } = useFetchActionRequiredData();
 
   const gasExplainResponse = useExplainGas({
     gasUsed,
@@ -869,7 +870,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           const result = await executeEngine(ctx);
           setEngineResults(result);
           setActionData(parsed);
-          setActionRequireData(requiredData);
           const approval = await getApproval();
 
           approval.signingTxId &&

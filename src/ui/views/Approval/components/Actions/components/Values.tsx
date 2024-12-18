@@ -432,11 +432,17 @@ const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
   );
 };
 
-const Interacted = ({ value }: { value: boolean }) => {
+const Interacted = ({ value }: { value: boolean | null }) => {
   const { t } = useTranslation();
   return (
     <span className="flex">
-      {value ? <>{t('page.signTx.yes')}</> : <>{t('page.signTx.no')}</>}
+      {value === null ? (
+        'loading'
+      ) : value ? (
+        <>{t('page.signTx.yes')}</>
+      ) : (
+        <>{t('page.signTx.no')}</>
+      )}
     </span>
   );
 };
