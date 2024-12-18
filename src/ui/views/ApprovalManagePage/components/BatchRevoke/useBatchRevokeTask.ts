@@ -66,6 +66,9 @@ export const FailReason = {
   [FailedCode.DefaultFailed]: i18n.t(
     'page.approvals.revokeModal.defaultFailed'
   ),
+  [FailedCode.SimulationFailed]: i18n.t(
+    'page.approvals.revokeModal.simulationFailed'
+  ),
 };
 
 export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
