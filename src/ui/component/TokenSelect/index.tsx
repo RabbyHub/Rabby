@@ -202,7 +202,14 @@ const TokenSelect = ({
     ).filter((e) => !excludeTokens.includes(e.id));
   }, [allDisplayTokens, searchedTokenByQuery, excludeTokens, queryConds]);
 
-  const displayTokenList = useSortToken(availableToken);
+  const displaySortedTokenList = useSortToken(availableToken);
+
+  const displayTokenList = useMemo(() => {
+    if (type === 'swapTo') {
+      return availableToken;
+    }
+    return displaySortedTokenList;
+  }, [availableToken, displaySortedTokenList, type]);
 
   const isListLoading = queryConds.keyword
     ? isSearchLoading

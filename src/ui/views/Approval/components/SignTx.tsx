@@ -1596,6 +1596,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         source: params?.$ctx?.ga?.source || '',
         trigger: params?.$ctx?.ga?.trigger || '',
         networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+        swapUseSlider: params?.$ctx?.ga?.swapUseSlider ?? '',
       });
 
       matomoRequestEvent({

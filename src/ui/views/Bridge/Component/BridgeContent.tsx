@@ -374,6 +374,7 @@ export const BridgeContent = () => {
           value={amount}
           onInputChange={handleAmountChange}
           excludeChains={toChain ? [toChain] : undefined}
+          inSufficient={inSufficient}
         />
         <BridgeToken
           type="to"
@@ -417,6 +418,13 @@ export const BridgeContent = () => {
             isCustomSlippage={isCustomSlippage}
             setAutoSlippage={setAutoSlippage}
             setIsCustomSlippage={setIsCustomSlippage}
+            type="bridge"
+            isBestQuote={
+              !!bestQuoteId &&
+              !!selectedBridgeQuote &&
+              bestQuoteId?.aggregatorId === selectedBridgeQuote.aggregator.id &&
+              bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id
+            }
           />
         )}
         {noQuote && recommendFromToken && (

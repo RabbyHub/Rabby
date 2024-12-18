@@ -872,10 +872,12 @@
       "price-expired-refresh-quote": "Price expired. Refresh quote.",
       "approve-x-symbol": "Approve {{symbol}}",
       "approve-and-swap": "Approve and Swap via {{name}}",
+      "approve-swap": "Approve and Swap",
       "swap-via-x": "Swap via {{name}}",
       "get-quotes": "Get quotes",
       "chain": "Chain",
       "swap-from": "Swap from",
+      "from": "From",
       "to": "To",
       "search-by-name-address": "Search by Name / Address",
       "amount-in": "Amount in {{symbol}}",
@@ -1005,6 +1007,7 @@
       "est-difference": "Est. Difference:",
       "loss-tips": "You're losing {{usd}}. Try a different amount.",
       "price-impact": "Price Impact",
+      "max-tips": "This value is calculated by subtracting the gas cost for bridge.",
       "showMore": {
         "title": "Show More",
         "source": "Bridge Source"
@@ -2554,7 +2557,9 @@
       },
       "noTokens": "No Tokens",
       "noMatch": "No Match",
-      "noMatchSuggestion": "Try to search contract address on {{ chainName }}"
+      "noMatchSuggestion": "Try to search contract address on {{ chainName }}",
+      "hot": "Hot",
+      "recent": "Recent"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
