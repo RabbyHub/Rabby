@@ -829,7 +829,8 @@
         "ledgerSended": "Please sign the request on Ledger ({{current}}/{{total}})",
         "ledgerSending": "Sending signing request ({{current}}/{{total}})",
         "ledgerAlert": "Please open Ethereum App on your Ledger device",
-        "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})"
+        "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})",
+        "simulationFailed": "Simulation Failed"
       }
     },
     "gasTopUp": {
@@ -883,6 +884,7 @@
       "amount-in": "Amount in {{symbol}}",
       "unlimited-allowance": "Unlimited allowance",
       "insufficient-balance": "Insufficient balance",
+      "no-fee-for-wrap": "No Rabby fee for Wrap",
       "hidden-no-quote-rates_one": "{{count}} rate unavailable",
       "hidden-no-quote-rates_other": "{{count}} rates unavailable",
       "Gas-fee-too-high": "Gas fee too high",

@@ -32,6 +32,7 @@ export enum FailedCode {
   GasNotEnough = 'GasNotEnough',
   GasTooHigh = 'GasTooHigh',
   SubmitTxFailed = 'SubmitTxFailed',
+  SimulationFailed = 'SimulationFailed',
   DefaultFailed = 'DefaultFailed',
 }
 
@@ -270,7 +271,10 @@ export const sendTransaction = async ({
 
   let failedCode;
   let canUseGasAccount: boolean = false;
-  if (isGasNotEnough) {
+
+  if (!preExecResult?.balance_change?.success) {
+    failedCode = FailedCode.SimulationFailed;
+  } else if (isGasNotEnough) {
     //  native gas not enough check gasAccount
     if (autoUseGasAccount && gasAccount?.sig && gasAccount?.accountId) {
       const gasAccountCanPay = await checkEnoughUseGasAccount({

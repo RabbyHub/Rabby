@@ -4,12 +4,18 @@ import styled from 'styled-components';
 
 const StyledSlider = styled(Slider)`
   .ant-slider-rail {
-    background-color: var(--r-blue-light1, #eef1ff);
+    background-color: var(--r-blue-light-1, #eef1ff);
   }
+
+  &:hover .ant-slider-rail {
+    background-color: var(--r-blue-light-2);
+  }
+
   .ant-slider-track,
   &:hover .ant-slider-track {
     background: var(--r-blue-default, #7084ff);
   }
+
   &:hover > .ant-slider-handle {
     border: none !important;
     box-shadow: none !important;
@@ -48,6 +54,7 @@ const StyledSlider = styled(Slider)`
       &::before {
         width: 20px;
         height: 20px;
+        filter: drop-shadow(0px 2px 4px rgba(112, 132, 255, 0.4));
       }
       &::after {
         width: 16px;

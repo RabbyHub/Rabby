@@ -446,7 +446,7 @@ export const BridgeContent = () => {
               viewBox="0 0 16 16"
               className={clsx(
                 'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
-                'text-red-forbidden'
+                'text-rabby-red-default'
               )}
             />
           }

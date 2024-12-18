@@ -17,6 +17,7 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import { useRabbyDispatch } from '@/ui/store';
 import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
 import { QuoteProvider, useSetRabbyFee } from '../hooks';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const StyledInput = styled(Input)`
   height: 46px;
@@ -135,13 +136,20 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   const setRabbyFeeVisible = useSetRabbyFee();
 
+  const isWrapQuote = useMemo(() => {
+    return currentQuote?.name === 'WrapToken';
+  }, [currentQuote?.name]);
+
   const openFeePopup = useCallback(() => {
+    if (isWrapQuote) {
+      return;
+    }
     setRabbyFeeVisible({
       visible: true,
       dexName: currentQuote?.name || undefined,
       feeDexDesc: currentQuote?.quote?.dexFeeDesc || undefined,
     });
-  }, [currentQuote?.name, currentQuote?.quote]);
+  }, [isWrapQuote, currentQuote?.name, currentQuote?.quote]);
 
   const inputRef = useRef<Input>();
 
@@ -154,13 +162,13 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
   return (
     <div className="p-16 pb-20 h-[132px]">
       <div className="flex items-center justify-between">
-        <span className="block w-[150px]">
+        <span className="block w-[150px] text-rabby-neutral-foot">
           {isFrom ? t('page.swap.from') : t('page.swap.to')}
         </span>
         {isFrom && (
-          <div className="w-[126px] flex items-center gap-12">
+          <div className="flex items-center gap-12">
             <SwapSlider
-              className="w-[126px]"
+              className="w-[140px]"
               value={slider}
               onChange={onChangeSlider}
               min={0}
@@ -218,7 +226,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
           <span className="text-13 text-rabby-neutral-foot">{balance}</span>
         </div>
-        <div className="text-13 text-rabby-neutral-foot flex items-center gap-2">
+        <div className="text-13 text-rabby-neutral-foot flex items-center gap-2 relative">
           {valueLoading ? (
             <SkeletonInput
               active
@@ -231,12 +239,18 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           ) : (
             <span>{usdValue}</span>
           )}
-          {!isFrom && !valueLoading && (
-            <RcIconInfoCC
-              onClick={openFeePopup}
-              viewBox="0 0 14 14"
-              className="w-14 h-14 text-r-neutral-foot cursor-pointer"
-            />
+          {!isFrom && !valueLoading && !!value && (
+            <TooltipWithMagnetArrow
+              title={isWrapQuote ? t('page.swap.no-fee-for-wrap') : null}
+              visible={isWrapQuote ? undefined : false}
+              className="rectangle w-[max-content]"
+            >
+              <RcIconInfoCC
+                onClick={openFeePopup}
+                viewBox="0 0 14 14"
+                className="w-14 h-14 text-r-neutral-foot cursor-pointer"
+              />
+            </TooltipWithMagnetArrow>
           )}
         </div>
       </div>
