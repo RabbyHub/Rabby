@@ -184,7 +184,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
               max={100}
               tooltipVisible={false}
             />
-            <span className="absolute top-1/2 -right-16 transform -translate-y-1/2 w-[40px] text-13 text-r-blue-default font-medium">
+            <span className="absolute top-1/2 -right-16 transform -translate-y-1/2 w-[38px] text-13 text-r-blue-default font-medium">
               {slider}%
             </span>
           </div>
