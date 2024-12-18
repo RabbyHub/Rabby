@@ -5,6 +5,7 @@ import { CHAINS_ENUM } from 'consts';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
+import { ReactComponent as RCIconDisconnectCC } from 'ui/assets/dashboard/current-connection/cc-disconnect.svg';
 import IconDapps from 'ui/assets/dapps.svg';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
@@ -121,10 +122,10 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           {site?.isConnected
             ? t('page.dashboard.recentConnection.connected')
             : t('page.dashboard.recentConnection.notConnected')}
-          <img
-            src={IconDisconnect}
-            className="site-status-icon"
-            alt=""
+
+          <RCIconDisconnectCC
+            viewBox="0 0 14 14"
+            className="site-status-icon w-14 h-14 text-r-neutral-foot hover:text-rabby-red-default"
             onClick={() => handleRemove(site!.origin)}
           />
         </div>

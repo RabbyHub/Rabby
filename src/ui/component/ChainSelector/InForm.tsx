@@ -45,6 +45,7 @@ const ChainWrapper = styled.div`
   }
   &.inlineHover {
     background: transparent;
+    gap: 4;
     &:hover {
       background: transparent;
       .name,
@@ -119,8 +120,11 @@ export const ChainRender = ({
         <ChainIcon
           chain={chain}
           customRPC={customRPC}
-          size="small"
+          size={inlineHover ? 'mini' : 'small'}
           showCustomRPCToolTip
+          tooltipProps={{
+            visible: inlineHover ? false : undefined,
+          }}
         />
       )}
       <span className={clsx('name')}>

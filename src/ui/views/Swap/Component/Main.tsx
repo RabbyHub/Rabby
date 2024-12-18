@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { useDetectLoss, useSlippageStore, useTokenPair } from '../hooks/token';
+import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useWallet } from '@/ui/utils';
@@ -39,6 +39,7 @@ import { LowCreditModal, useLowCreditState } from './LowCreditModal';
 import { SwapTokenItem } from './Token';
 import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -79,12 +80,15 @@ export const Main = () => {
     isWrapToken,
     inSufficient,
 
-    setSlippageChanged,
     slippageState,
     isSlippageHigh,
     isSlippageLow,
     slippage,
     setSlippage,
+    autoSlippage,
+    isCustomSlippage,
+    setAutoSlippage,
+    setIsCustomSlippage,
 
     feeRate,
 
@@ -369,18 +373,31 @@ export const Main = () => {
     return ['', ''];
   }, [isWrapToken, activeProvider?.name]);
 
-  const {
-    autoSlippage,
-    isCustomSlippage,
-    setAutoSlippage,
-    setIsCustomSlippage,
-  } = useSlippageStore();
+  const noQuote = useMemo(
+    () =>
+      Number(inputAmount) > 0 &&
+      !inSufficient &&
+      amountAvailable &&
+      !quoteLoading &&
+      !!payToken &&
+      !!receiveToken &&
+      !activeProvider,
+    [
+      inputAmount,
+      inSufficient,
+      amountAvailable,
+      quoteLoading,
+      payToken,
+      receiveToken,
+      activeProvider,
+    ]
+  );
 
   return (
     <div
       className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
     >
-      <div className="flex pb-8">
+      <div className="flex">
         <ChainSelectorInForm
           mini
           inlineHover
@@ -390,6 +407,7 @@ export const Main = () => {
           supportChains={SWAP_SUPPORT_CHAINS}
           hideTestnetTab={true}
           chainRenderClassName={clsx('pl-[30px] text-[13px] font-medium')}
+          title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
         />
       </div>
 
@@ -462,13 +480,13 @@ export const Main = () => {
           chainId={CHAINS[chain].serverId}
           type={'to'}
           excludeTokens={payToken?.id ? [payToken?.id] : undefined}
+          currentQuote={activeProvider}
         />
       </div>
 
       {Number(inputAmount) > 0 &&
         !inSufficient &&
         !!amountAvailable &&
-        !quoteLoading &&
         !!payToken &&
         !!receiveToken &&
         !!activeProvider && (
@@ -480,10 +498,7 @@ export const Main = () => {
               sourceLogo={sourceLogo}
               slippage={slippageState}
               displaySlippage={slippage}
-              onSlippageChange={(e) => {
-                setSlippageChanged(true);
-                setSlippage(e);
-              }}
+              onSlippageChange={setSlippage}
               fromToken={payToken}
               toToken={receiveToken}
               amount={inputAmount}
@@ -518,16 +533,17 @@ export const Main = () => {
           </div>
         )}
 
-      {inSufficient ? (
+      {inSufficient || noQuote ? (
         <Alert
           className={clsx(
             'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
           )}
           icon={
-            <InfoCircleFilled
+            <RcIconWarningCC
+              viewBox="0 0 16 16"
               className={clsx(
-                'pb-[4px] self-start transform rotate-180 origin-center',
-                inSufficient ? 'text-red-forbidden' : 'text-orange'
+                'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
+                'text-rabby-red-default'
               )}
             />
           }
@@ -536,10 +552,12 @@ export const Main = () => {
             <span
               className={clsx(
                 'text-13 leading-[16px]',
-                inSufficient ? 'text-red-forbidden' : 'text-orange'
+                'text-rabby-red-default'
               )}
             >
-              {t('page.swap.insufficient-balance')}
+              {inSufficient
+                ? t('page.swap.insufficient-balance')
+                : t('page.bridge.no-quote-found')}
             </span>
           }
         />

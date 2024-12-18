@@ -1,9 +1,22 @@
 import { useCallback, useMemo, useState } from 'react';
 
-export const useBridgeSlippage = () => {
-  const [slippageState, setSlippageState] = useState('1');
+type SlippageType = 'swap' | 'bridge';
 
-  const slippage = useMemo(() => slippageState || '1', [slippageState]);
+const DEFAULT = {
+  swap: '0.1',
+  bridge: '1',
+};
+const SLIPPAGE_RANGE = {
+  swap: [0.1, 10],
+  bridge: [0.2, 3],
+};
+
+export const useSwapAndBridgeSlippage = (type: SlippageType) => {
+  const [slippageState, setSlippageState] = useState(DEFAULT[type]);
+
+  const slippage = useMemo(() => slippageState || DEFAULT[type], [
+    slippageState,
+  ]);
   const [slippageChanged, setSlippageChanged] = useState(false);
 
   const [autoSlippage, setAutoSlippage] = useState(true);
@@ -15,8 +28,10 @@ export const useBridgeSlippage = () => {
 
   const [isSlippageLow, isSlippageHigh] = useMemo(() => {
     return [
-      slippageState?.trim() !== '' && Number(slippageState || 0) < 0.2,
-      slippageState?.trim() !== '' && Number(slippageState || 0) > 3,
+      slippageState?.trim() !== '' &&
+        Number(slippageState || 0) < SLIPPAGE_RANGE[type][0],
+      slippageState?.trim() !== '' &&
+        Number(slippageState || 0) > SLIPPAGE_RANGE[type][1],
     ];
   }, [slippageState]);
 

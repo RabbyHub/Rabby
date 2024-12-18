@@ -7,16 +7,11 @@ import { BridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
 import useAsync from 'react-use/lib/useAsync';
-import {
-  useQuoteVisible,
-  useRefreshId,
-  useSetQuoteVisible,
-  useSetRefreshId,
-} from './context';
+import { useRefreshId, useSetQuoteVisible, useSetRefreshId } from './context';
 import { getChainDefaultToken, tokenAmountBn } from '@/ui/utils/token';
 import BigNumber from 'bignumber.js';
 import stats from '@/stats';
-import { useBridgeSlippage } from './slippage';
+import { useSwapAndBridgeSlippage } from './slippage';
 import { isNaN } from 'lodash';
 
 export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
@@ -124,7 +119,7 @@ export const useBridge = () => {
 
   const [amount, setAmount] = useState('');
 
-  const slippageObj = useBridgeSlippage();
+  const slippageObj = useSwapAndBridgeSlippage('bridge');
 
   const [recommendFromToken, setRecommendFromToken] = useState<TokenItem>();
 
@@ -616,7 +611,13 @@ export const useBridge = () => {
     switchFromChain,
     toChain,
     toToken,
-    setToToken,
+    setToToken: useCallback(
+      (token: TokenItem) => {
+        setToToken(token);
+        setPending(true);
+      },
+      [setToToken]
+    ),
     switchToChain,
     switchToken,
 

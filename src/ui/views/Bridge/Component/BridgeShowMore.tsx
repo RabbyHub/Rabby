@@ -99,10 +99,18 @@ export const BridgeShowMore = ({
 }) => {
   const { t } = useTranslation();
 
-  const data = useMemo(
-    () => tokenPriceImpact(fromToken, toToken, amount, toAmount),
-    [fromToken, toToken, amount, toAmount]
-  );
+  const data = useMemo(() => {
+    if (quoteLoading) {
+      return {
+        showLoss: false,
+        diff: '',
+        fromUsd: '',
+        toUsd: '',
+        lossUsd: '',
+      };
+    }
+    return tokenPriceImpact(fromToken, toToken, amount, toAmount);
+  }, [fromToken, toToken, amount, toAmount, quoteLoading]);
 
   const bestQuoteStyle = useMemo(() => {
     if (isBestQuote) {
