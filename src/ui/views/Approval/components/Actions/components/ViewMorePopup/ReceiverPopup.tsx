@@ -27,7 +27,7 @@ export interface ReceiverData {
   } | null;
   contract: Record<string, ContractDesc> | null;
   usd_value: number;
-  hasTransfer: boolean;
+  hasTransfer: boolean | null;
   isTokenContract: boolean;
   name: string | null;
   onTransferWhitelist: boolean;

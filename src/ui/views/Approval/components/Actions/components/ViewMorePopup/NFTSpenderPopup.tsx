@@ -19,7 +19,7 @@ interface NFTSpenderData {
   isEOA: boolean;
   isDanger: boolean | null;
   isRevoke?: boolean;
-  hasInteraction: boolean;
+  hasInteraction: boolean | null;
 }
 
 export interface Props {
@@ -110,7 +110,7 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
         <Col>
           <Row>{t('page.signTx.interacted')}</Row>
           <Row>
-            <Values.Boolean value={data.hasInteraction} />
+            <Values.Interacted value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>

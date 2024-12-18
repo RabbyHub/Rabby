@@ -195,7 +195,7 @@ const MultiSwap = ({
           <SubCol>
             <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
             <SubRow>
-              <Values.Boolean value={requireData.hasInteraction} />
+              <Values.Interacted value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
 
