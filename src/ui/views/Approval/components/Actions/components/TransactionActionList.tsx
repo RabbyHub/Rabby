@@ -64,6 +64,7 @@ export const TransactionActionList: React.FC<{
   React.useEffect(() => {
     if (requireData && 'extraState' in requireData) {
       requireData.extraState.hasInteraction?.();
+      requireData.extraState.receiverHasTransfer?.();
     }
   }, []);
 

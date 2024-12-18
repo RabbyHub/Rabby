@@ -27,8 +27,20 @@ import { findChain } from '@/utils/chain';
 import clsx from 'clsx';
 import { copyAddress } from '@/ui/utils/clipboard';
 
-const Boolean = ({ value }: { value: boolean }) => {
-  return <>{value ? 'Yes' : 'No'}</>;
+const Boolean = ({ value }: { value: boolean | null }) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      {value === null ? (
+        'loading'
+      ) : value ? (
+        <>{t('page.signTx.yes')}</>
+      ) : (
+        <>{t('page.signTx.no')}</>
+      )}
+    </>
+  );
 };
 
 const TokenAmountWrapper = styled.div`
@@ -432,29 +444,9 @@ const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
   );
 };
 
-const Interacted = ({ value }: { value: boolean | null }) => {
-  const { t } = useTranslation();
-  return (
-    <span className="flex">
-      {value === null ? (
-        'loading'
-      ) : value ? (
-        <>{t('page.signTx.yes')}</>
-      ) : (
-        <>{t('page.signTx.no')}</>
-      )}
-    </span>
-  );
-};
+const Interacted = Boolean;
 
-const Transacted = ({ value }: { value: boolean }) => {
-  const { t } = useTranslation();
-  return (
-    <span className="flex">
-      {value ? <>{t('page.signTx.yes')}</> : <>{t('page.signTx.no')}</>}
-    </span>
-  );
-};
+const Transacted = Boolean;
 
 const TokenSymbol = ({
   token,
