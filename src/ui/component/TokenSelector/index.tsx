@@ -253,7 +253,7 @@ const TokenSelector = ({
   const swapAndBridgeHeader = React.useMemo(() => {
     if (isSwapOrBridge) {
       return (
-        <li className="token-list__header h-auto mb-8">
+        <li className="token-list__header h-auto mb-0">
           <div>
             {type === 'swapTo'
               ? t('component.TokenSelector.hot')
@@ -284,7 +284,7 @@ const TokenSelector = ({
 
   const SwapToTokenRecenterHeader = React.useMemo(
     () => (
-      <li className="token-list__header h-auto mb-8">
+      <li className="token-list__header h-auto mb-0">
         <div>{t('component.TokenSelector.recent')}</div>
         <div />
         <div>{t('component.TokenSelector.bridge.value')}</div>

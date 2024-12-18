@@ -93,7 +93,7 @@ export const BridgeToken = ({
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
 
   const isFromToken = type === 'from';
-  const isToken = type === 'to';
+  const isToToken = type === 'to';
 
   const name = isFromToken ? t('page.bridge.From') : t('page.bridge.To');
   const chainObj = findChainByEnum(chain);
@@ -136,6 +136,19 @@ export const BridgeToken = ({
     });
   }, [chain, isFromToken]);
 
+  const handleChangeFromToken = React.useCallback(
+    (t: TokenItem) => {
+      onChangeToken(t);
+      if (t.id !== token?.id) {
+        onInputChange?.('');
+        setTimeout(() => {
+          inputRef?.current?.focus?.();
+        }, 200);
+      }
+    },
+    [token, onInputChange, onChangeToken]
+  );
+
   useLayoutEffect(() => {
     if (isFromToken) {
       if (
@@ -148,7 +161,7 @@ export const BridgeToken = ({
     }
   }, [value]);
 
-  const showNoQuote = useMemo(() => isToken && !!noQuote, [type, noQuote]);
+  const showNoQuote = useMemo(() => isToToken && !!noQuote, [type, noQuote]);
 
   const useValue = useMemo(() => {
     if (token && value) {
@@ -248,7 +261,7 @@ export const BridgeToken = ({
               ref={inputRef as any}
             />
           )}
-          {isToken ? (
+          {isToToken ? (
             <BridgeToTokenSelect
               drawerHeight={540}
               fromChainId={fromChainId!}
@@ -264,7 +277,7 @@ export const BridgeToken = ({
             <TokenSelect
               drawerHeight={540}
               token={token}
-              onTokenChange={onChangeToken}
+              onTokenChange={handleChangeFromToken}
               chainId={chainObj?.serverId}
               type={'bridgeFrom'}
               placeholder={t('page.swap.search-by-name-address')}
@@ -294,7 +307,7 @@ export const BridgeToken = ({
             ) : (
               <span>{useValue}</span>
             )}
-            {!valueLoading && isToken && !!value && (
+            {!valueLoading && isToToken && !!value && (
               <RcIconInfoCC
                 onClick={() => openFeePopup(true)}
                 viewBox="0 0 14 14"
@@ -317,7 +330,9 @@ export const BridgeToken = ({
                 className="rectangle w-[max-content]"
                 title={t('page.bridge.max-tips')}
               >
-                <MaxButton onClick={handleMax}>{t('page.swap.max')}</MaxButton>
+                <MaxButton className="ml-0" onClick={handleMax}>
+                  {t('page.swap.max')}
+                </MaxButton>
               </TooltipWithMagnetArrow>
             )}
           </div>

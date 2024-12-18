@@ -21,6 +21,7 @@ import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
+import { useSwapAndBridgeSlippage } from '../../Bridge/hooks/slippage';
 
 const useTokenInfo = ({
   userAddress,
@@ -60,71 +61,6 @@ const useTokenInfo = ({
     console.error('token info error', chain, token?.symbol, token?.id, error);
   }
   return [token, setToken] as const;
-};
-
-export const useSlippage = () => {
-  const previousSlippage = useRabbySelector((s) => s.swap.slippage || '');
-  const [slippageState, setSlippageState] = useState(previousSlippage || '0.1');
-
-  const setSlippageOnStore = useRabbyDispatch().swap.setSlippage;
-
-  const slippage = useMemo(() => slippageState || '0.1', [slippageState]);
-  const [slippageChanged, setSlippageChanged] = useState(false);
-
-  const setSlippage = useCallback(
-    (slippage: string) => {
-      setSlippageOnStore(slippage);
-      setSlippageState(slippage);
-    },
-    [setSlippageOnStore]
-  );
-
-  const [isSlippageLow, isSlippageHigh] = useMemo(() => {
-    return [
-      slippageState?.trim() !== '' && Number(slippageState || 0) < 0.1,
-      slippageState?.trim() !== '' && Number(slippageState || 0) > 10,
-    ];
-  }, [slippageState]);
-
-  return {
-    slippageChanged,
-    setSlippageChanged,
-    slippageState,
-    isSlippageLow,
-    isSlippageHigh,
-    slippage,
-    setSlippage,
-  };
-};
-
-export const useSlippageStore = () => {
-  const { autoSlippage, isCustomSlippage } = useRabbySelector((store) => ({
-    autoSlippage: store.swap.autoSlippage,
-    isCustomSlippage: !!store.swap.isCustomSlippage,
-  }));
-
-  const dispatch = useRabbyDispatch();
-
-  const setAutoSlippage = useCallback(
-    (bool: boolean) => {
-      dispatch.swap.setAutoSlippage(bool);
-    },
-    [dispatch]
-  );
-
-  const setIsCustomSlippage = useCallback(
-    (bool: boolean) => {
-      dispatch.swap.setIsCustomSlippage(bool);
-    },
-    [dispatch]
-  );
-
-  return {
-    autoSlippage,
-    isCustomSlippage,
-    setAutoSlippage,
-    setIsCustomSlippage,
-  };
 };
 
 export interface FeeProps {
@@ -183,7 +119,6 @@ export const useTokenPair = (userAddress: string) => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    setSlippageChanged(false);
     expiredTimer.current = setTimeout(() => {
       setRefreshId((e) => e + 1);
     }, 1000 * 20);
@@ -264,17 +199,7 @@ export const useTokenPair = (userAddress: string) => {
     [payToken]
   );
 
-  const {
-    slippageChanged,
-    setSlippageChanged,
-    slippageState,
-    slippage,
-    setSlippage,
-    isSlippageHigh,
-    isSlippageLow,
-  } = useSlippage();
-
-  const { autoSlippage } = useSlippageStore();
+  const slippageObj = useSwapAndBridgeSlippage('swap');
 
   const [currentProvider, setOriActiveProvider] = useState<
     QuoteProvider | undefined
@@ -285,6 +210,8 @@ export const useTokenPair = (userAddress: string) => {
   const exchangeToken = useCallback(() => {
     setPayToken(receiveToken);
     setReceiveToken(payToken);
+    setPayAmount('');
+    setSlider(0);
   }, [setPayToken, receiveToken, setReceiveToken, payToken]);
 
   const payTokenIsNativeToken = useMemo(() => {
@@ -305,7 +232,10 @@ export const useTokenPair = (userAddress: string) => {
       setPayAmount(v);
       if (payToken) {
         const slider = Number(
-          new BigNumber(v).div(tokenAmountBn(payToken)).times(100).toFixed(0)
+          new BigNumber(v || 0)
+            .div(tokenAmountBn(payToken))
+            .times(100)
+            .toFixed(0)
         );
         setSlider(slider < 0 ? 0 : slider > 100 ? 100 : slider);
       }
@@ -423,17 +353,16 @@ export const useTokenPair = (userAddress: string) => {
     if (isWrapToken) {
       setFeeRate('0');
     }
-    if (autoSlippage) {
-      setSlippage(isStableCoin ? '0.1' : '0.5');
+    if (slippageObj.autoSlippage) {
+      slippageObj.setSlippage(isStableCoin ? '0.1' : '0.5');
     }
-  }, [autoSlippage, isWrapToken, isStableCoin]);
+  }, [slippageObj.autoSlippage, isWrapToken, isStableCoin]);
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
   const visible = useQuoteVisible();
 
   useEffect(() => {
     setQuotesList([]);
-    setActiveProvider(undefined);
   }, [payToken?.id, receiveToken?.id, chain, inputAmount, inSufficient]);
 
   const setQuote = useCallback(
@@ -483,12 +412,11 @@ export const useTokenPair = (userAddress: string) => {
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
-      setActiveProvider(undefined);
       return getAllQuotes({
         userAddress,
         payToken,
         receiveToken,
-        slippage: slippage || '0.1',
+        slippage: slippageObj.slippage || '0.1',
         chain,
         payAmount: inputAmount,
         fee: feeRate,
@@ -496,6 +424,8 @@ export const useTokenPair = (userAddress: string) => {
       }).finally(() => {
         setPending(false);
       });
+    } else {
+      setActiveProvider(undefined);
     }
   }, [
     setActiveProvider,
@@ -509,7 +439,7 @@ export const useTokenPair = (userAddress: string) => {
     chain,
     inputAmount,
     feeRate,
-    slippage,
+    slippageObj.slippage,
   ]);
 
   useEffect(() => {
@@ -624,27 +554,30 @@ export const useTokenPair = (userAddress: string) => {
     error: slippageValidError,
     loading: slippageValidLoading,
   } = useAsync(async () => {
-    if (chain && Number(slippage) && payToken?.id && receiveToken?.id) {
+    if (
+      chain &&
+      Number(slippageObj.slippage) &&
+      payToken?.id &&
+      receiveToken?.id
+    ) {
       return validSlippage({
         chain,
-        slippage,
+        slippage: slippageObj.slippage,
         payTokenId: payToken?.id,
         receiveTokenId: receiveToken?.id,
       });
     }
-  }, [slippage, chain, payToken?.id, receiveToken?.id, refreshId]);
+  }, [slippageObj.slippage, chain, payToken?.id, receiveToken?.id, refreshId]);
   const openQuote = useSetQuoteVisible();
 
   const openQuotesList = useCallback(() => {
     openQuote(true);
-  }, [setSlippageChanged]);
+  }, []);
 
   useEffect(() => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    setActiveProvider(undefined);
-    setSlippageChanged(false);
   }, [payToken?.id, receiveToken?.id, chain, inputAmount, inSufficient]);
 
   useEffect(() => {
@@ -710,13 +643,7 @@ export const useTokenPair = (userAddress: string) => {
     isWrapToken,
     wrapTokenSymbol,
     inSufficient,
-    slippageChanged,
-    setSlippageChanged,
-    slippageState,
-    slippage,
-    setSlippage,
-    isSlippageHigh,
-    isSlippageLow,
+
     feeRate,
 
     //quote
@@ -734,6 +661,8 @@ export const useTokenPair = (userAddress: string) => {
     onChangeSlider,
 
     clearExpiredTimer,
+
+    ...slippageObj,
   };
 };
 
