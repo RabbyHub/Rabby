@@ -279,9 +279,9 @@ export function varyAndSortChainItems(deps: {
     disabled: [] as Chain[],
   };
 
-  const _all = (
-    (netTabKey === 'testnet' ? testnetList : mainnetList) || []
-  ).sort((a, b) => a.name.localeCompare(b.name));
+  const _all = ((netTabKey === 'testnet' ? testnetList : mainnetList) || [])
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .sort((a, b) => a.severity - b.severity);
 
   _all.forEach((item) => {
     const inPinned = pinned.find((pinnedEnum) => pinnedEnum === item.enum);
@@ -475,6 +475,8 @@ export function supportedChainToChain(item: SupportedChain): Chain {
     eip: {
       '1559': item.eip_1559,
     },
+    //@ts-expect-error type annotation
+    severity: item.severity,
   };
 }
 
