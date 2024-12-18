@@ -21,7 +21,7 @@ import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
-import { useSwapAndBridgeSlippage } from '../../Bridge/hooks/slippage';
+import { useSwapSlippage } from './slippage';
 
 const useTokenInfo = ({
   userAddress,
@@ -199,7 +199,7 @@ export const useTokenPair = (userAddress: string) => {
     [payToken]
   );
 
-  const slippageObj = useSwapAndBridgeSlippage('swap');
+  const slippageObj = useSwapSlippage();
 
   const [currentProvider, setOriActiveProvider] = useState<
     QuoteProvider | undefined
@@ -223,9 +223,8 @@ export const useTokenPair = (userAddress: string) => {
 
   const [passGasPrice, setUseGasPrice] = useState(false);
 
-  const handleAmountChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      const v = e.target.value;
+  const handleAmountChange = useCallback(
+    (v: string) => {
       if (!/^\d*(\.\d*)?$/.test(v)) {
         return;
       }

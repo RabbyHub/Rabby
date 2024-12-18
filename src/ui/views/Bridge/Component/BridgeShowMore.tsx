@@ -100,7 +100,7 @@ export const BridgeShowMore = ({
   const { t } = useTranslation();
 
   const data = useMemo(() => {
-    if (quoteLoading) {
+    if (quoteLoading || (!sourceLogo && !sourceName)) {
       return {
         showLoss: false,
         diff: '',
@@ -124,14 +124,17 @@ export const BridgeShowMore = ({
   }, [isBestQuote]);
 
   useEffect(() => {
-    if ((!quoteLoading && data?.showLoss) || slippageError) {
+    if (
+      (!quoteLoading && sourceLogo && sourceName && data?.showLoss) ||
+      slippageError
+    ) {
       setOpen(true);
     }
-  }, [quoteLoading, data?.showLoss]);
+  }, [quoteLoading, data?.showLoss, sourceLogo, sourceName]);
 
   return (
     <div className="mx-16">
-      <div className="flex items-center gap-8 mt-28 mb-8">
+      <div className="flex items-center gap-8 mb-8">
         <div className={clsx(dottedClassName)} />
         <div
           className={clsx(
@@ -230,9 +233,12 @@ export const BridgeShowMore = ({
                   alt={sourceName}
                 />
               )}
-              <span className="text-rabby-blue-default font-medium">
+              <span className="text-12 text-rabby-blue-default font-medium">
                 {sourceName}
               </span>
+              {!sourceLogo && !sourceName ? (
+                <span className="text-12 text-r-neutral-foot">-</span>
+              ) : null}
             </div>
           )}
         </ListItem>

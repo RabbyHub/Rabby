@@ -20,20 +20,16 @@ import { QuoteProvider, useSetRabbyFee } from '../hooks';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const StyledInput = styled(Input)`
-  height: 46px;
-  font-weight: 500;
-  box-shadow: none;
-  border-radius: 4px;
-  border: 1px solid transparent;
-  background: transparent !important;
-  font-size: 24px;
-  text-align: right;
+  &,
   & > .ant-input {
+    height: 46px;
     font-weight: 500;
+    box-shadow: none;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    background: transparent !important;
     font-size: 24px;
     text-align: right;
-    border-width: 0px !important;
-    border-color: transparent;
     padding-right: 0;
   }
   &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
@@ -70,7 +66,7 @@ interface SwapTokenItemProps {
   value: string;
   chainId: string;
   onTokenChange: (token: TokenItem) => void;
-  onValueChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onValueChange?: (s: string) => void;
   label?: React.ReactNode;
   slider?: number;
   onChangeSlider?: (value: number) => void;
@@ -99,6 +95,8 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   const dispatch = useRabbyDispatch();
 
+  const inputRef = useRef<Input>();
+
   const isFrom = type === 'from';
 
   const [balance, usdValue] = useMemo(() => {
@@ -117,10 +115,16 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
   }, [token, valueLoading, value]);
 
   const onTokenSelect = useCallback(
-    (token: TokenItem) => {
-      onTokenChange(token);
+    (newToken: TokenItem) => {
+      onTokenChange(newToken);
+      if (isFrom && newToken.id !== token?.id) {
+        onValueChange?.('');
+        setTimeout(() => {
+          inputRef?.current?.focus?.();
+        });
+      }
       if (type === 'to') {
-        dispatch.swap.setRecentSwapToToken(token);
+        dispatch.swap.setRecentSwapToToken(newToken);
       }
     },
     [onTokenChange, type]
@@ -151,7 +155,12 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     });
   }, [isWrapQuote, currentQuote?.name, currentQuote?.quote]);
 
-  const inputRef = useRef<Input>();
+  const onInputChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      onValueChange?.(e.target.value);
+    },
+    []
+  );
 
   useLayoutEffect(() => {
     if (token?.id && isFrom) {
@@ -166,16 +175,16 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           {isFrom ? t('page.swap.from') : t('page.swap.to')}
         </span>
         {isFrom && (
-          <div className="flex items-center gap-12">
+          <div className="flex items-center gap-10 relative pr-32">
             <SwapSlider
-              className="w-[140px]"
+              className="w-[116px]"
               value={slider}
               onChange={onChangeSlider}
               min={0}
               max={100}
               tooltipVisible={false}
             />
-            <span className="w-[34px] text-13 text-r-blue-default font-medium">
+            <span className="absolute top-1/2 right-0 transform -translate-y-1/2 w-[34px] text-13 text-r-blue-default font-medium text-right">
               {slider}%
             </span>
           </div>
@@ -210,7 +219,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             spellCheck={false}
             placeholder="0"
             value={value}
-            onChange={onValueChange}
+            onChange={onInputChange}
             ref={inputRef as any}
             readOnly={!isFrom}
             className={clsx(

@@ -45,7 +45,7 @@ const ChainWrapper = styled.div`
   }
   &.inlineHover {
     background: transparent;
-    gap: 4;
+    gap: 4px;
     &:hover {
       background: transparent;
       .name,
@@ -103,6 +103,7 @@ export const ChainRender = ({
   useEffect(() => {
     getCustomRPC();
   }, [chain]);
+
   return (
     <ChainWrapper
       className={clsx(

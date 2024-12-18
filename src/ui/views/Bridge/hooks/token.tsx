@@ -11,8 +11,8 @@ import { useRefreshId, useSetQuoteVisible, useSetRefreshId } from './context';
 import { getChainDefaultToken, tokenAmountBn } from '@/ui/utils/token';
 import BigNumber from 'bignumber.js';
 import stats from '@/stats';
-import { useSwapAndBridgeSlippage } from './slippage';
 import { isNaN } from 'lodash';
+import { useBridgeSlippage } from './slippage';
 
 export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
   shouldApproveToken?: boolean;
@@ -119,7 +119,7 @@ export const useBridge = () => {
 
   const [amount, setAmount] = useState('');
 
-  const slippageObj = useSwapAndBridgeSlippage('bridge');
+  const slippageObj = useBridgeSlippage();
 
   const [recommendFromToken, setRecommendFromToken] = useState<TokenItem>();
 

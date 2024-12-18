@@ -41,6 +41,7 @@ const StyledSlider = styled(Slider)`
       width: 16px;
       height: 16px;
       background-color: white;
+      filter: drop-shadow(0px 2px 4px rgba(112, 132, 255, 0.4));
     }
     &::after {
       width: 12px;
@@ -54,7 +55,6 @@ const StyledSlider = styled(Slider)`
       &::before {
         width: 20px;
         height: 20px;
-        filter: drop-shadow(0px 2px 4px rgba(112, 132, 255, 0.4));
       }
       &::after {
         width: 16px;

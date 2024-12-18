@@ -211,6 +211,7 @@ const ChainIcon = ({
           align={{
             offset: [0, 2],
           }}
+          {...tooltipProps}
         >
           <ChainIconWrapper>
             <ChainIconEle
