@@ -829,7 +829,8 @@
         "ledgerSended": "Please sign the request on Ledger ({{current}}/{{total}})",
         "ledgerSending": "Sending signing request ({{current}}/{{total}})",
         "ledgerAlert": "Please open Ethereum App on your Ledger device",
-        "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})"
+        "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})",
+        "simulationFailed": "Simulation Failed"
       }
     },
     "gasTopUp": {
