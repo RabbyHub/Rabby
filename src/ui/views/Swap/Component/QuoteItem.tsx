@@ -98,9 +98,9 @@ const ItemWrapper = styled.div`
     font-weight: 500;
     font-size: 13px;
     font-weight: 500;
-    color: #27c193;
+    color: var(--r-blue-default, #7084ff);
     &.red {
-      color: #ec5151;
+      color: var(--r-red-default, #e34935);
     }
   }
 `;
@@ -545,7 +545,7 @@ export const DexQuoteItem = (
             className={clsx(
               'absolute top-[-1px] left-[-1px] ',
               'px-6 py-[1px] rounded-tl-[4px] rounded-br-[4px]',
-              props.isBestQuote ? 'bg-r-green-light' : 'bg-r-red-light',
+              props.isBestQuote ? 'bg-r-blue-light2' : 'bg-r-red-light',
               'text-r-red-default'
             )}
           >

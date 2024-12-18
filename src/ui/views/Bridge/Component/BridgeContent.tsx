@@ -374,6 +374,7 @@ export const BridgeContent = () => {
           value={amount}
           onInputChange={handleAmountChange}
           excludeChains={toChain ? [toChain] : undefined}
+          inSufficient={inSufficient}
         />
         <BridgeToken
           type="to"

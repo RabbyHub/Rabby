@@ -70,6 +70,7 @@ export const BridgeToken = ({
   fromChainId,
   fromTokenId,
   noQuote,
+  inSufficient,
 }: {
   type?: 'from' | 'to';
   token?: TokenItem;
@@ -80,6 +81,7 @@ export const BridgeToken = ({
   onChangeChain: (chain: CHAINS_ENUM) => void;
   value?: string | number;
   onInputChange?: (v: string) => void;
+  inSufficient?: boolean;
 
   valueLoading?: boolean;
   fromChainId?: string;
@@ -238,6 +240,7 @@ export const BridgeToken = ({
             />
           ) : (
             <StyledInput
+              className={clsx(inSufficient && 'text-rabby-red-default')}
               placeholder={showNoQuote ? t('page.bridge.no-quote') : '0'}
               value={value}
               onChange={inputChange}
