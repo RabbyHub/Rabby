@@ -18,7 +18,7 @@ import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useCss } from 'react-use';
+import { useCss, useDebounce } from 'react-use';
 import {
   DEX_WITH_WRAP,
   KEYRING_CLASS,
@@ -393,11 +393,42 @@ export const Main = () => {
     ]
   );
 
-  const noQuote = useDebounceValue(noQuoteOrigin, 16);
+  const noQuote = useDebounceValue(noQuoteOrigin, 10);
 
-  if (noQuote && !showMoreOpen) {
-    setShowMoreOpen(true);
-  }
+  useEffect(() => {
+    if (noQuote) {
+      setShowMoreOpen(true);
+    }
+  }, [noQuote]);
+
+  useDebounce(
+    () => {
+      if (
+        Number(inputAmount) > 0 &&
+        !inSufficient &&
+        amountAvailable &&
+        !quoteLoading &&
+        !!payToken &&
+        !!receiveToken &&
+        !autoSlippage &&
+        activeProvider
+      ) {
+        setShowMoreOpen(true);
+      }
+    },
+    10,
+    [
+      inputAmount,
+      inSufficient,
+      amountAvailable,
+      payToken,
+      receiveToken,
+      activeProvider,
+      autoSlippage,
+      activeProvider,
+      quoteLoading,
+    ]
+  );
 
   return (
     <div
