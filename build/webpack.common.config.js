@@ -312,7 +312,8 @@ const config = {
   optimization: {
     splitChunks: {
       ...(IS_FIREFOX && {
-        chunks: 'all',
+        chunks: (chunk) =>
+          chunk.name !== 'content-script' && chunk.name !== 'pageProvider',
         minSize: 10000,
         maxSize: 4000000,
         minChunks: 1,
