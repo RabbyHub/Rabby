@@ -6,7 +6,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { findChain } from '@/utils/chain';
-import { SafeMessage } from '@safe-global/api-kit';
+import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
 import { useRequest } from 'ahooks';
 import { timeago, useWallet } from 'ui/utils';
 import { stringToHex } from 'viem';

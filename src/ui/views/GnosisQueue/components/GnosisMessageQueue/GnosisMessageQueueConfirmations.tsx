@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { SafeMessage } from '@safe-global/api-kit';
+import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
 import IconChecked from 'ui/assets/checked.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconUnCheck from 'ui/assets/uncheck.svg';

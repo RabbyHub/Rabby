@@ -1,8 +1,7 @@
-import { SafeMessage } from '@safe-global/api-kit';
 import { useRequest } from 'ahooks';
 import type { Options } from 'ahooks/lib/useRequest/src/types';
-import { useWallet } from '../utils';
 import { sum } from 'lodash';
+import { useWallet } from '../utils';
 
 export const useGnosisPendingCount = (
   params: { address?: string },

@@ -1377,7 +1377,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.IMKEY]: 'imKey',
 };
 
-export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
+export const GNOSIS_SUPPORT_CHAINS = [
   CHAINS_ENUM.ETH,
   CHAINS_ENUM.BSC,
   CHAINS_ENUM.POLYGON,
@@ -1393,7 +1393,11 @@ export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.SCRL,
   CHAINS_ENUM.LINEA,
   'XLAYER',
-]);
+  CHAINS_ENUM.MANTLE,
+  'WORLD',
+  CHAINS_ENUM.BLAST,
+  'SONIC',
+];
 
 export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.ETH,
