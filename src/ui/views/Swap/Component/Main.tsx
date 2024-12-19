@@ -395,7 +395,7 @@ export const Main = () => {
 
   const noQuote = useDebounceValue(noQuoteOrigin, 16);
 
-  if (noQuote && !showMoreOpen) {
+  if ((noQuote || !autoSlippage) && !showMoreOpen) {
     setShowMoreOpen(true);
   }
 
