@@ -157,6 +157,22 @@ export const BridgeToken = ({
     [token, onInputChange, onChangeToken]
   );
 
+  const changeChain = React.useCallback(
+    (newChain: CHAINS_ENUM) => {
+      if (chain !== newChain) {
+        onChangeChain(newChain);
+        if (isFromToken) {
+          onInputChange?.('');
+          setTimeout(() => {
+            inputRef?.current?.focus?.();
+          }, 200);
+          handleSetGasPrice?.();
+        }
+      }
+    },
+    [onChangeChain, chain, isFromToken, onInputChange, handleSetGasPrice]
+  );
+
   useLayoutEffect(() => {
     if (isFromToken) {
       if (
@@ -243,7 +259,7 @@ export const BridgeToken = ({
           mini
           hideTestnetTab
           value={chain}
-          onChange={onChangeChain}
+          onChange={changeChain}
           title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
           excludeChains={excludeChains}
           supportChains={supportedChains}
