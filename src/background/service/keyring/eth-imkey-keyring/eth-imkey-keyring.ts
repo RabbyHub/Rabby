@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import * as ethUtil from 'ethereumjs-util';
 import { FeeMarketEIP1559Transaction, Transaction } from '@ethereumjs/tx';
-import { EVENTS } from '@/constant';
 import { is1559Tx } from '@/utils/transaction';
 import { bytesToHex } from 'web3-utils';
 import { ImKeyBridgeInterface } from './imkey-bridge-interface';
@@ -10,7 +9,7 @@ import { signHashHex } from './utils';
 const keyringType = 'imKey Hardware';
 const MAX_INDEX = 1000;
 
-const convertToBigint = (value: any) => {
+const convertToHex = (value: any) => {
   return typeof value === 'bigint'
     ? `0x${value.toString(16)}`
     : `0x${value.toString('hex')}`;
@@ -255,29 +254,27 @@ export class EthImKeyKeyring extends EventEmitter {
     const txData = is1559
       ? {
           data: dataHex === '' ? '' : `0x${dataHex}`,
-          gasLimit: convertToBigint(transaction.gasLimit),
-          type: convertToBigint(transaction.type.toString()),
+          gasLimit: convertToHex(transaction.gasLimit),
+          type: convertToHex(transaction.type.toString()),
           accessList: transaction.accessList,
-          maxFeePerGas: convertToBigint(transaction.maxFeePerGas),
-          maxPriorityFeePerGas: convertToBigint(
-            transaction.maxPriorityFeePerGas
-          ),
-          nonce: convertToBigint(transaction.nonce),
+          maxFeePerGas: convertToHex(transaction.maxFeePerGas),
+          maxPriorityFeePerGas: convertToHex(transaction.maxPriorityFeePerGas),
+          nonce: convertToHex(transaction.nonce),
           to: transaction.to!.toString(),
-          value: convertToBigint(transaction.value),
+          value: convertToHex(transaction.value),
           chainId: txChainId,
           path: accountDetail.hdPath,
         }
       : {
           to: transaction.to!.toString(),
-          value: convertToBigint(transaction.value),
+          value: convertToHex(transaction.value),
           data: dataHex === '' ? '' : `0x${dataHex}`,
-          nonce: convertToBigint(transaction.nonce),
-          gasLimit: convertToBigint(transaction.gasLimit),
+          nonce: convertToHex(transaction.nonce),
+          gasLimit: convertToHex(transaction.gasLimit),
           gasPrice:
             typeof (transaction as Transaction).gasPrice !== 'undefined'
-              ? convertToBigint((transaction as Transaction).gasPrice)
-              : convertToBigint(
+              ? convertToHex((transaction as Transaction).gasPrice)
+              : convertToHex(
                   (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
                 ),
           chainId: txChainId,
