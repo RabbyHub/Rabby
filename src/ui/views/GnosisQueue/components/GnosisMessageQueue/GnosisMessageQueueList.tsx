@@ -11,7 +11,7 @@ import { useAccount } from '@/ui/store-hooks';
 import { findChain } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
-import { SafeMessage } from '@safe-global/api-kit';
+import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
 import { CHAINS_ENUM } from 'consts';
 import { Virtuoso } from 'react-virtuoso';
 import { isSameAddress, useWallet } from 'ui/utils';

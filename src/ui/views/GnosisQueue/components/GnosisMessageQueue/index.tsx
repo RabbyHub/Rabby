@@ -2,7 +2,7 @@ import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingMessages } from '@/ui/hooks/useGnosisPendingMessages';
 import { useAccount } from '@/ui/store-hooks';
 import { findChain, findChainByEnum } from '@/utils/chain';
-import { SafeMessage } from '@safe-global/api-kit';
+import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
 import { sortBy } from 'lodash';

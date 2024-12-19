@@ -4274,6 +4274,13 @@
   dependencies:
     "@noble/hashes" "1.5.0"
 
+"@noble/curves@^1.6.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.7.0.tgz#0512360622439256df892f21d25b388f52505e45"
+  integrity sha512-UTMhXK9SeDhFJVrHeUJ5uZlI6ajXg10O6Ddocf9S6GjbSBVZsJo88HzKwXznNfGpMTRDyJkqMjNDPYgf0qFWnw==
+  dependencies:
+    "@noble/hashes" "1.6.0"
+
 "@noble/hashes@1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.1.2.tgz#e9e035b9b166ca0af657a7848eb2718f0f22f183"
@@ -4303,6 +4310,11 @@
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.5.0.tgz#abadc5ca20332db2b1b2aa3e496e9af1213570b0"
   integrity sha512-1j6kQFb7QRru7eKN3ZDvRcP13rugwdxZqCjbiAVZfIJwgj2A65UmT4TgARXGlXgnRkORLTDTrO19ZErt7+QXgA==
+
+"@noble/hashes@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.6.0.tgz#d4bfb516ad6e7b5111c216a5cc7075f4cf19e6c5"
+  integrity sha512-YUULf0Uk4/mAA89w+k3+yUYh6NrEvxZa5T6SY3wlMvE2chHkxFUUIDI8/XW1QSC357iA5pSnqt7XEhvFOqmDyQ==
 
 "@noble/hashes@^1.1.2":
   version "1.3.0"
@@ -4548,6 +4560,15 @@
     "@parcel/watcher-win32-ia32" "2.4.1"
     "@parcel/watcher-win32-x64" "2.4.1"
 
+"@peculiar/asn1-schema@^2.3.13":
+  version "2.3.13"
+  resolved "https://registry.yarnpkg.com/@peculiar/asn1-schema/-/asn1-schema-2.3.13.tgz#ec8509cdcbc0da3abe73fd7e690556b57a61b8f4"
+  integrity sha512-3Xq3a01WkHRZL8X04Zsfg//mGaA21xlL4tlVn4v2xGT0JStiztATRkMwa5b+f/HXmY2smsiLXYK46Gwgzvfg3g==
+  dependencies:
+    asn1js "^3.0.5"
+    pvtsutils "^1.3.5"
+    tslib "^2.6.2"
+
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
@@ -4709,10 +4730,10 @@
     events "^3.3.0"
     web3-utils "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@1.3.9":
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.9.tgz#9e773fa98d69979823594ebdaa3d68a51bbfcc22"
-  integrity sha512-9hVB6qHHIfCfDnhGVh1GLD0AUVdsJf3kMFiJ66dWfHYukmsTD0GHfMbNURdGYIZv5923NBjdGxxlnZYHKgovFg==
+"@rabby-wallet/gnosis-sdk@1.3.10":
+  version "1.3.10"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.10.tgz#8dfe8776e1fad7950b7247ba5b9d5657f78dd268"
+  integrity sha512-VatAZIwJmZD6VEsct9RX1/9BGYNAJi/CXn+PpUeRe1N8ArLL4Ig+4J3U2iSx6UyovZykT40DWLjkUfMq2T6bfQ==
   dependencies:
     "@ethersproject/bignumber" "5.5.0"
     "@ethersproject/bytes" "5.5.0"
@@ -4721,11 +4742,11 @@
     "@ethersproject/solidity" "5.5.0"
     "@gnosis.pm/safe-core-sdk" "1.0.0"
     "@gnosis.pm/safe-core-sdk-types" "0.1.1"
-    "@safe-global/api-kit" "2.5.2"
+    "@safe-global/api-kit" "2.5.6"
     "@safe-global/protocol-kit" "5.0.2"
-    "@safe-global/safe-deployments" "1.37.2"
-    "@safe-global/sdk-starter-kit" "1.0.2"
-    "@safe-global/types-kit" "1.0.0"
+    "@safe-global/safe-deployments" "1.37.22"
+    "@safe-global/sdk-starter-kit" "1.1.1"
+    "@safe-global/types-kit" "1.0.1"
     axios "0.24.0"
     bignumber.js "9.0.2"
     ethereumjs-util "7.1.3"
@@ -4902,23 +4923,13 @@
   dependencies:
     reselect "^4.0.0"
 
-"@safe-global/api-kit@2.5.2":
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/@safe-global/api-kit/-/api-kit-2.5.2.tgz#53228d66b3118c7f41fdbef21a0b8ed2885260db"
-  integrity sha512-+3YTBzrZKsXjJ5oW7XyI5j4UR78TLDWSkIGT4Qefq96mX+GYNkfg981toLTEtPm8FKa0RV6ImDhUtnunFzE9Pg==
+"@safe-global/api-kit@2.5.6", "@safe-global/api-kit@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.yarnpkg.com/@safe-global/api-kit/-/api-kit-2.5.6.tgz#d9c79835330f166ee823fc0622991f579a080fba"
+  integrity sha512-rT/RXBavmUbFFH4ojIjKRPhatZb1mwDzddSLKYQbTlFyNGsnrPKrAdcEyjxcNT5+aZnDCnbywlDzg55OtJAmUg==
   dependencies:
-    "@safe-global/protocol-kit" "^5.0.2"
-    "@safe-global/types-kit" "^1.0.0"
-    node-fetch "^2.7.0"
-    viem "^2.21.8"
-
-"@safe-global/api-kit@2.5.3", "@safe-global/api-kit@^2.5.2":
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@safe-global/api-kit/-/api-kit-2.5.3.tgz#8b0e996836a55e1c4cac6609b97a46c48bcb58fc"
-  integrity sha512-BHKKKohtM6cqtWmu2BIBl5YVMFeIzE1kBe2kfDi0JG9UbzTKYUYU8d/RnteFe5Nj/KiO7F7bJ708Z7ZxQ9Ap0g==
-  dependencies:
-    "@safe-global/protocol-kit" "^5.0.3"
-    "@safe-global/types-kit" "^1.0.0"
+    "@safe-global/protocol-kit" "^5.1.1"
+    "@safe-global/types-kit" "^1.0.1"
     node-fetch "^2.7.0"
     viem "^2.21.8"
 
@@ -4935,7 +4946,7 @@
     semver "^7.6.3"
     viem "^2.21.8"
 
-"@safe-global/protocol-kit@5.0.3", "@safe-global/protocol-kit@^5.0.2", "@safe-global/protocol-kit@^5.0.3":
+"@safe-global/protocol-kit@5.0.3":
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/@safe-global/protocol-kit/-/protocol-kit-5.0.3.tgz#187cfdeaf892c832265cb356d0ef5e230cb8fc4f"
   integrity sha512-xVpuj1Ge/XYdLucPe36MXl09yK83f3drPqFK0UPhrONg//SP/K/sgyXnKy5o4zJrjidNV9V0PV7Xw84HOqOxtg==
@@ -4948,21 +4959,36 @@
     semver "^7.6.3"
     viem "^2.21.8"
 
-"@safe-global/relay-kit@^3.2.2":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@safe-global/relay-kit/-/relay-kit-3.2.3.tgz#1c3c2749747d90b09b76763e7ef7c8443395a267"
-  integrity sha512-jA72DaOC8p/jgEK3kmXyYwqsiAvGdEcHy60owVvsWjkJXSaBFPkPAwKlawnhbmE+b5cb11yNJQ22WvVO0I5+PQ==
+"@safe-global/protocol-kit@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@safe-global/protocol-kit/-/protocol-kit-5.1.1.tgz#d4200143f59da4d4a83be52ed1842482020491b2"
+  integrity sha512-NGtZyIX5IYqQrAZjgHhIN2aTKNn4qjfwfSL/wBjeIqX6KcdYoywLHsDOwXbsYO9TPRFcerGgVQFMEX+2XVCDpQ==
+  dependencies:
+    "@safe-global/safe-deployments" "^1.37.22"
+    "@safe-global/safe-modules-deployments" "^2.2.4"
+    "@safe-global/types-kit" "^1.0.1"
+    abitype "^1.0.2"
+    semver "^7.6.3"
+    viem "^2.21.8"
+  optionalDependencies:
+    "@noble/curves" "^1.6.0"
+    "@peculiar/asn1-schema" "^2.3.13"
+
+"@safe-global/relay-kit@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@safe-global/relay-kit/-/relay-kit-3.3.1.tgz#43ec2d18751f5e1e1a8ed5c67c1073a63855511b"
+  integrity sha512-qbe/RKk/V+5KQ++SpBjRrcvnOFAFBGk9j+V9Ssy+It4UV05KwV2rab/JkHFitRokR6hpEvibQrnZwqB33Nl7ew==
   dependencies:
     "@gelatonetwork/relay-sdk" "^5.5.0"
-    "@safe-global/protocol-kit" "^5.0.3"
+    "@safe-global/protocol-kit" "^5.1.1"
     "@safe-global/safe-modules-deployments" "^2.2.4"
-    "@safe-global/types-kit" "^1.0.0"
+    "@safe-global/types-kit" "^1.0.1"
     viem "^2.21.8"
 
-"@safe-global/safe-deployments@1.37.2":
-  version "1.37.2"
-  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.2.tgz#d63947bf631d63f5991f3732fad08b17b7264505"
-  integrity sha512-kWRim5vY9W/yNKUUehUQDhCHz7NWzXjhkpMDvvnrrkEn9U461zwCcmJmPVnPrjnaY4dPpJsGZSzUuU4+uxH+vg==
+"@safe-global/safe-deployments@1.37.22", "@safe-global/safe-deployments@^1.37.22":
+  version "1.37.22"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.22.tgz#e26d4837a74ec92eb75cfb2066ccf237085eee6b"
+  integrity sha512-acUBJ22qqivSjHOwa8laQuHckqpWDjphjdC3zPhUN6G/swHe1WJHN5F2sodtNIjEyRxM73JRRJFsLYfb0EhSAQ==
   dependencies:
     semver "^7.6.2"
 
@@ -4978,18 +5004,25 @@
   resolved "https://registry.yarnpkg.com/@safe-global/safe-modules-deployments/-/safe-modules-deployments-2.2.4.tgz#6e3b22af3a4eeba8e0a8f0952e575d25c5be216e"
   integrity sha512-m396ZrBPhZVYkapTTIuizyOOtoZsCKbicl0ztgDFfDbi7KbS6AtDP6cV89AYosQxUQS+v0q4ksQd30/j3L1BtQ==
 
-"@safe-global/sdk-starter-kit@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@safe-global/sdk-starter-kit/-/sdk-starter-kit-1.0.2.tgz#a67f7ceb9c7e1522d30fb69ed1459fd08ce72a7f"
-  integrity sha512-WdbcaWlkF7uEWWN9OOa4Jp1b0UCyBluoScdmfoFO+Mv9WVH+lbz9qdp0K4+4IMRIpkR1n+MppGMd9xdjAV4XpA==
+"@safe-global/sdk-starter-kit@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@safe-global/sdk-starter-kit/-/sdk-starter-kit-1.1.1.tgz#6d27306d3b11f3b928bd8c82175c592d59e116f5"
+  integrity sha512-aOrfxTecxWwAVrMLbxQ/Usvkc8fQBfvtf1/7kRuA9XVw4nP0DyriZiBvjEqRA0lYv8vuvU71A35JxO7h44PbbQ==
   dependencies:
-    "@safe-global/api-kit" "^2.5.2"
-    "@safe-global/protocol-kit" "^5.0.2"
-    "@safe-global/relay-kit" "^3.2.2"
-    "@safe-global/types-kit" "^1.0.0"
+    "@safe-global/api-kit" "^2.5.6"
+    "@safe-global/protocol-kit" "^5.1.1"
+    "@safe-global/relay-kit" "^3.3.1"
+    "@safe-global/types-kit" "^1.0.1"
     viem "^2.21.8"
 
-"@safe-global/types-kit@1.0.0", "@safe-global/types-kit@^1.0.0":
+"@safe-global/types-kit@1.0.1", "@safe-global/types-kit@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@safe-global/types-kit/-/types-kit-1.0.1.tgz#f725e9f3f7b9ed0a052824348962fe8e16cf924d"
+  integrity sha512-T1mAgUVjtGehpwcZuROHgCx3DJHnaH0d2pSzYNcsEPvXlffu3lfCRTbrlmyEAVMEKtHaNvl7//v+GJKeLIeKhw==
+  dependencies:
+    abitype "^1.0.2"
+
+"@safe-global/types-kit@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@safe-global/types-kit/-/types-kit-1.0.0.tgz#d1f29d65a8ac22f03b0cd3ab54fb518dcf7a85c3"
   integrity sha512-jZNUeHbWobeVrURbcEvfas4Q1IDasQni5UYm2umUtAR6SBDazp1kGni8IjZPRKq3+8q+fYwu9FmKpX50rUYn3w==
@@ -7931,6 +7964,15 @@ asn1.js@^5.2.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
     safer-buffer "^2.1.0"
+
+asn1js@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/asn1js/-/asn1js-3.0.5.tgz#5ea36820443dbefb51cc7f88a2ebb5b462114f38"
+  integrity sha512-FVnvrKJwpt9LP2lAMl8qZswRNm3T4q9CON+bxldk2iwk3FFpuwhx2FfinyitizWHsVYyaY+y5JzDR0rCMV5yTQ==
+  dependencies:
+    pvtsutils "^1.3.2"
+    pvutils "^1.1.3"
+    tslib "^2.4.0"
 
 assert@^2.0.0:
   version "2.0.0"
@@ -17056,6 +17098,18 @@ pushdata-bitcoin@^1.0.1:
   dependencies:
     bitcoin-ops "^1.3.0"
 
+pvtsutils@^1.3.2, pvtsutils@^1.3.5:
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/pvtsutils/-/pvtsutils-1.3.6.tgz#ec46e34db7422b9e4fdc5490578c1883657d6001"
+  integrity sha512-PLgQXQ6H2FWCaeRak8vvk1GW462lMxB5s3Jm673N82zI4vqtVUPuZdffdZbPDFRoU8kAhItWFtPCWiPpp4/EDg==
+  dependencies:
+    tslib "^2.8.1"
+
+pvutils@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/pvutils/-/pvutils-1.1.3.tgz#f35fc1d27e7cd3dfbd39c0826d173e806a03f5a3"
+  integrity sha512-pMpnA0qRdFp32b1sJl1wOJNxZLQ2cbQx+k6tjNtZ8CpvVhNqEPRgivZ2WOUev2YMajecdH7ctUPDvEe87nariQ==
+
 q@^1.1.2:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
@@ -19211,8 +19265,7 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.2.3:
-  name string-width-cjs
+"string-width-cjs@npm:string-width@^4.2.0":
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -19238,6 +19291,15 @@ string-width@^4.1.0, string-width@^4.2.0:
     emoji-regex "^8.0.0"
     is-fullwidth-code-point "^3.0.0"
     strip-ansi "^6.0.0"
+
+string-width@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
 
 string-width@^5.0.1, string-width@^5.1.2:
   version "5.1.2"
@@ -19291,8 +19353,7 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.1:
-  name strip-ansi-cjs
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -19312,6 +19373,13 @@ strip-ansi@^6.0.0:
   integrity sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==
   dependencies:
     ansi-regex "^5.0.0"
+
+strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.0:
   version "7.0.1"
@@ -19949,6 +20017,11 @@ tslib@^2.0.3, tslib@^2.1.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
   integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
+
+tslib@^2.4.0, tslib@^2.6.2, tslib@^2.8.1:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
+  integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
 
 tslib@^2.4.1:
   version "2.6.2"
@@ -21310,8 +21383,7 @@ wildcard@^2.0.0:
   resolved "https://registry.yarnpkg.com/wildcard/-/wildcard-2.0.0.tgz#a77d20e5200c6faaac979e4b3aadc7b3dd7f8fec"
   integrity sha512-JcKqAHLPxcdb9KM49dufGXn2x3ssnfjbcaQdLlfZsL9rH9wgDQjUtDxbo8NE0F6SFvydeu1VhZe7hZuHsB2/pw==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
-  name wrap-ansi-cjs
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -21327,6 +21399,15 @@ wrap-ansi@^2.0.0:
   dependencies:
     string-width "^1.0.1"
     strip-ansi "^3.0.1"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
 
 wrap-ansi@^8.1.0:
   version "8.1.0"
