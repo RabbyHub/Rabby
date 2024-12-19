@@ -46,6 +46,9 @@ const ChainWrapper = styled.div`
   &.inlineHover {
     background: transparent;
     gap: 4px;
+    & > .name {
+      color: var(--r-neutral-body, #3e495e);
+    }
     &:hover {
       background: transparent;
       .name,
