@@ -130,7 +130,7 @@ export const GnonisSafeInfo = ({
       <>
         <div className="rabby-list-item no-hover">
           <div className="rabby-list-item-content border-0">
-            <div className="rabby-list-item-label">
+            <div>
               {t('page.addressDetail.admins')}
               <div className="tabs-container">
                 <div className="tabs">

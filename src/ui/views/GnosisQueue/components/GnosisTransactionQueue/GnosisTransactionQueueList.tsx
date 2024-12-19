@@ -648,6 +648,7 @@ export const GnosisTransactionQueueList = (props: {
       );
       await wallet.execGnosisTransaction(account);
       setIsSubmitting(false);
+      window.close();
     } catch (e) {
       message.error(e.message || JSON.stringify(e));
       setIsSubmitting(false);

@@ -3,7 +3,7 @@ import { useWallet } from '@/ui/utils';
 import { getActionTypeText as getActionTypedDataTypeText } from '@/ui/views/Approval/components/TypedDataActions/utils';
 import { getActionTypeText } from '@/ui/views/Approval/components/TextActions/utils';
 import { parseAction } from '@rabby-wallet/rabby-action';
-import { SafeMessage } from '@safe-global/api-kit';
+import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
 import { useRequest } from 'ahooks';
 import { Button, Skeleton } from 'antd';
 import { isString } from 'lodash';

@@ -9,10 +9,6 @@ import {
 import semverSatisfies from 'semver/functions/satisfies';
 import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
 import SafeMessage from '@safe-global/protocol-kit/dist/src/utils/messages/SafeMessage';
-import { EIP712TypedData } from '@safe-global/types-kit';
-import SafeApiKit, {
-  EIP712TypedData as EIP712TypedDataNew,
-} from '@safe-global/api-kit';
 import {
   adjustVInSignature,
   buildSignatureBytes,
@@ -602,7 +598,7 @@ class GnosisKeyring extends EventEmitter {
     provider: any;
     version: string;
     networkId: string;
-    message: string | EIP712TypedData;
+    message: ConstructorParameters<typeof SafeMessage>[0];
   }) {
     if (
       !this.accounts.find(
@@ -689,9 +685,7 @@ class GnosisKeyring extends EventEmitter {
     ) {
       throw new Error('No message in Gnosis keyring');
     }
-    const apiKit = new SafeApiKit({
-      chainId: BigInt(this.safeInstance.network),
-    });
+    const apiKit = Safe.createSafeApiKit(this.safeInstance.network);
     signature = await adjustVInSignature(
       SigningMethod.ETH_SIGN_TYPED_DATA,
       signature

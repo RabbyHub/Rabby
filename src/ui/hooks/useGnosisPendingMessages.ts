@@ -1,4 +1,3 @@
-import { SafeMessage } from '@safe-global/api-kit';
 import { useRequest } from 'ahooks';
 import type { Options } from 'ahooks/lib/useRequest/src/types';
 import { useWallet } from '../utils';
@@ -6,15 +5,9 @@ import { useWallet } from '../utils';
 export const useGnosisPendingMessages = (
   params: { address?: string },
   options?: Options<
-    | {
-        total: number;
-        results: {
-          networkId: string;
-          messages: SafeMessage[];
-        }[];
-      }
-    | undefined
-    | null,
+    Awaited<
+      ReturnType<ReturnType<typeof useWallet>['getGnosisAllPendingMessages']>
+    >,
     any[]
   >
 ) => {
@@ -25,6 +18,7 @@ export const useGnosisPendingMessages = (
       if (address) {
         return wallet.getGnosisAllPendingMessages(address);
       }
+      return null;
     },
     {
       refreshDeps: [address],
