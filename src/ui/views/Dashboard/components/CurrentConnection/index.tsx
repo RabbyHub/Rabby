@@ -130,7 +130,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
           <RCIconDisconnectCC
             viewBox="0 0 14 14"
-            className="site-status-icon w-14 h-14 ml-4 text-r-neutral-foot hover:text-rabby-red-default"
+            className="site-status-icon w-12 h-12 ml-4 text-r-neutral-foot hover:text-rabby-red-default"
             onClick={() => handleRemove(site!.origin)}
           />
         </div>
