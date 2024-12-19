@@ -229,6 +229,7 @@ export const useBridge = () => {
     switchToChain(fromChain, false);
     setFromToken(toToken);
     setToToken(fromToken);
+    setAmount('');
   }, [
     setFromToken,
     toToken,

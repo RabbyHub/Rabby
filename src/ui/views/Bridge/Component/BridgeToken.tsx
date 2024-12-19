@@ -5,7 +5,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Input } from 'antd';
 import clsx from 'clsx';
-import React, { useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TokenRender } from '../../Swap/Component/TokenRender';
 import {
@@ -120,6 +120,12 @@ export const BridgeToken = ({
     () => findChainByEnum(chain)?.nativeTokenDecimals || 1e18,
     [chain]
   );
+
+  useEffect(() => {
+    if (!fromTokenIsNativeToken) {
+      handleSetGasPrice?.();
+    }
+  }, [fromTokenIsNativeToken]);
 
   const gasLimit = useMemo(
     () => (chain === CHAINS_ENUM.ETH ? 1000000 : 2000000),
