@@ -109,6 +109,7 @@ const TokenSelector = ({
         borderRadius: '16px 16px 0px 0',
         height: 500,
       }}
+      closeIcon={<GasAccountCloseIcon />}
       closable
     >
       <div className="flex flex-col h-full pt-20">
@@ -283,7 +284,7 @@ export const GasAccountDepositPopup = (props: PopupProps) => {
   return (
     <Popup
       placement="bottom"
-      height={375}
+      height={387}
       isSupportDarkMode
       bodyStyle={{
         padding: 0,
