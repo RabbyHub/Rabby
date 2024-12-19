@@ -412,10 +412,12 @@ export const Main = () => {
           disabledTips={getDisabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
           hideTestnetTab={true}
-          chainRenderClassName={clsx(
-            'pl-[30px] text-[13px] text-rabby-neutral-body font-medium'
-          )}
-          title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
+          chainRenderClassName={clsx('pl-[30px] text-[13px] font-medium')}
+          title={
+            <div className="mt-8 text-rabby-neutral-body">
+              {t('page.bridge.select-chain')}
+            </div>
+          }
           drawerHeight={540}
           showClosableIcon
         />
