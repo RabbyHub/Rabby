@@ -79,6 +79,10 @@ export const BridgeContent = () => {
 
   const refresh = useSetRefreshId();
 
+  const [maxNativeTokenGasPrice, setMaxNativeTokenGasPrice] = useState<
+    number | undefined
+  >(undefined);
+
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
@@ -144,6 +148,7 @@ export const BridgeContent = () => {
             shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
             payTokenId: fromToken.id,
             payTokenChainServerId: fromToken.chain,
+            gasPrice: maxNativeTokenGasPrice,
             info: {
               aggregator_id: selectedBridgeQuote.aggregator.id,
               bridge_id: selectedBridgeQuote.bridge_id,
@@ -196,6 +201,7 @@ export const BridgeContent = () => {
     amount,
     rbiSource,
     slippageState,
+    maxNativeTokenGasPrice,
   ]);
 
   const buildTxs = useMemoizedFn(async () => {
@@ -248,6 +254,7 @@ export const BridgeContent = () => {
             shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
             payTokenId: fromToken.id,
             payTokenChainServerId: fromToken.chain,
+            gasPrice: maxNativeTokenGasPrice,
             info: {
               aggregator_id: selectedBridgeQuote.aggregator.id,
               bridge_id: selectedBridgeQuote.bridge_id,
@@ -375,6 +382,7 @@ export const BridgeContent = () => {
           onInputChange={handleAmountChange}
           excludeChains={toChain ? [toChain] : undefined}
           inSufficient={inSufficient}
+          handleSetGasPrice={setMaxNativeTokenGasPrice}
         />
         <BridgeToken
           type="to"
