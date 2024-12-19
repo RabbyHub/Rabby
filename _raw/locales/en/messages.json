@@ -947,6 +947,7 @@
       "loss-tips": "You're losing {{usd}}. Try a smaller amount in a small market.",
       "Auto": "Auto",
       "no-quote-found": "No quote found",
+      "source": "Source",
       "rabbyFee": {
         "title": "Rabby fee",
         "swapDesc": "Rabby Wallet will always find the best possible rate from top aggregators and verify the reliability of their offers. Rabby charges a 0.25% fee (0% for wrapping), which is automatically included in the quote.",

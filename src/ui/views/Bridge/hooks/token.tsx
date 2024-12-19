@@ -611,13 +611,7 @@ export const useBridge = () => {
     switchFromChain,
     toChain,
     toToken,
-    setToToken: useCallback(
-      (token: TokenItem) => {
-        setToToken(token);
-        setPending(true);
-      },
-      [setToToken]
-    ),
+    setToToken,
     switchToChain,
     switchToken,
 
