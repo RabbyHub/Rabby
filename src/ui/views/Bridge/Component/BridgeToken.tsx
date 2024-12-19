@@ -71,6 +71,7 @@ export const BridgeToken = ({
   fromTokenId,
   noQuote,
   inSufficient,
+  handleSetGasPrice,
 }: {
   type?: 'from' | 'to';
   token?: TokenItem;
@@ -82,6 +83,7 @@ export const BridgeToken = ({
   value?: string | number;
   onInputChange?: (v: string) => void;
   inSufficient?: boolean;
+  handleSetGasPrice?: (gasPrice?: number) => void;
 
   valueLoading?: boolean;
   fromChainId?: string;
@@ -175,6 +177,7 @@ export const BridgeToken = ({
   const inputChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onInputChange?.(e.target.value);
+      handleSetGasPrice?.();
     },
     [onInputChange]
   );
@@ -198,12 +201,15 @@ export const BridgeToken = ({
               .div(10 ** nativeTokenDecimals)
           );
           onInputChange?.(val.toString(10));
+          handleSetGasPrice?.(normalPrice);
           return;
         }
       }
+      handleSetGasPrice?.();
       onInputChange?.(tokenAmountBn(token)?.toString(10));
     }
   }, [
+    handleSetGasPrice,
     token?.raw_amount_hex_str,
     onInputChange,
     nativeTokenDecimals,

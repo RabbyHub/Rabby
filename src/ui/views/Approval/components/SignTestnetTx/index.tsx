@@ -208,6 +208,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     isCancel,
     isSend,
     isSwap,
+    isBridge,
     swapPreferMEVGuarded,
     isViewGnosisSafe,
     reqId,
@@ -381,7 +382,11 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       // use cached gasPrice if exist
       customGasPrice = lastTimeGas.gasPrice;
     }
-    if (isSpeedUp || isCancel || ((isSend || isSwap) && tx.gasPrice)) {
+    if (
+      isSpeedUp ||
+      isCancel ||
+      ((isSend || isSwap || isBridge) && tx.gasPrice)
+    ) {
       // use gasPrice set by dapp when it's a speedup or cancel tx
       customGasPrice = parseInt(tx.gasPrice!);
     }
@@ -395,7 +400,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     let gas: GasLevel | null = null;
 
     if (
-      ((isSend || isSwap) && customGasPrice) ||
+      ((isSend || isSwap || isBridge) && customGasPrice) ||
       isSpeedUp ||
       isCancel ||
       lastTimeGas?.lastTimeSelect === 'gasPrice'
