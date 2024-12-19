@@ -17,6 +17,7 @@ import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
 import styled from 'styled-components';
+import { useDebounce } from 'react-use';
 
 const dottedClassName =
   'h-0 flex-1 border-b-[1px] border-solid border-rabby-neutral-line opacity-50';
@@ -123,14 +124,18 @@ export const BridgeShowMore = ({
     return undefined;
   }, [isBestQuote]);
 
-  useEffect(() => {
-    if (
-      (!quoteLoading && sourceLogo && sourceName && data?.showLoss) ||
-      slippageError
-    ) {
-      setOpen(true);
-    }
-  }, [quoteLoading, data?.showLoss, sourceLogo, sourceName]);
+  useDebounce(
+    () => {
+      if (
+        (!quoteLoading && sourceLogo && sourceName && data?.showLoss) ||
+        slippageError
+      ) {
+        setOpen(true);
+      }
+    },
+    50,
+    [quoteLoading, data?.showLoss, sourceLogo, sourceName]
+  );
 
   return (
     <div className="mx-16">
@@ -202,7 +207,11 @@ export const BridgeShowMore = ({
         )}
 
         <ListItem
-          name={t('page.bridge.showMore.source')}
+          name={
+            type === 'bridge'
+              ? t('page.bridge.showMore.source')
+              : t('page.swap.source')
+          }
           className="mb-12 h-18"
         >
           {quoteLoading ? (
