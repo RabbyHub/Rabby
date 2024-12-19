@@ -181,7 +181,9 @@ const Actions = ({
             </div>
           </div>
 
-          {data && <Divide />}
+          {data?.createKey || data?.verifyAddress || data?.common ? (
+            <Divide />
+          ) : null}
 
           {data && (
             <div className="container">

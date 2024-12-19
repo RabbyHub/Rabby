@@ -225,7 +225,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               'rounded-tl-[4px] rounded-br-[4px] px-[6px] py-[1px]',
               'text-12 font-medium',
               props.isBestQuote
-                ? 'text-r-green-default bg-r-green-light'
+                ? 'text-r-blue-default bg-light-r-blue-light2'
                 : 'text-r-red-default bg-r-red-light'
             )}
           >

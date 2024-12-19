@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Input, Drawer, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { useAsync, useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
@@ -20,6 +20,9 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import { isNil } from 'lodash';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useWallet } from '@/ui/utils';
+import { useRabbySelector } from '@/ui/store';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -65,7 +68,7 @@ const TokenSelector = ({
   chainId: chainServerId,
   disabledTips,
   supportChains,
-  drawerHeight = '580px',
+  drawerHeight = '540px',
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -156,8 +159,13 @@ const TokenSelector = ({
     return v.length === 42 && v.toLowerCase().startsWith('0x');
   }, [query]);
 
-  const bridgeFromNoDataTip = useMemo(() => {
-    if (type === 'bridgeFrom') {
+  const isSwapOrBridge = useMemo(
+    () => ['bridgeFrom', 'swapFrom', 'swapTo'].includes(type),
+    [type]
+  );
+
+  const swapAndBridgeNoDataTip = useMemo(() => {
+    if (isSwapOrBridge) {
       return (
         <div className="no-token w-full">
           <RcIconMatchCC
@@ -172,7 +180,7 @@ const TokenSelector = ({
       );
     }
     return null;
-  }, [type]);
+  }, [isSwapOrBridge]);
 
   const NoDataUI = useMemo(
     () =>
@@ -184,8 +192,8 @@ const TokenSelector = ({
               <DefaultLoading key={i} type={type} />
             ))}
         </div>
-      ) : type === 'bridgeFrom' ? (
-        <>{bridgeFromNoDataTip}</>
+      ) : isSwapOrBridge ? (
+        <>{swapAndBridgeNoDataTip}</>
       ) : (
         <div className="no-token w-full">
           <img
@@ -226,8 +234,9 @@ const TokenSelector = ({
       t,
       isSearchAddr,
       chainServerId,
-      bridgeFromNoDataTip,
+      swapAndBridgeNoDataTip,
       type,
+      isSwapOrBridge,
     ]
   );
 
@@ -241,11 +250,15 @@ const TokenSelector = ({
     }
   }, [type, query, isSwapType, displayList, query, chainServerId]);
 
-  const Header = React.useMemo(() => {
-    if (type === 'bridgeFrom') {
+  const swapAndBridgeHeader = React.useMemo(() => {
+    if (isSwapOrBridge) {
       return (
-        <li className="token-list__header h-auto mb-8">
-          <div>{t('component.TokenSelector.bridge.token')}</div>
+        <li className="token-list__header h-auto mb-0">
+          <div>
+            {type === 'swapTo'
+              ? t('component.TokenSelector.hot')
+              : t('component.TokenSelector.bridge.token')}
+          </div>
           <div />
           <div>{t('component.TokenSelector.bridge.value')}</div>
         </li>
@@ -267,67 +280,49 @@ const TokenSelector = ({
         </div>
       </li>
     );
-  }, [type, t]);
+  }, [isSwapOrBridge, type, t]);
 
-  const bridgeFromItemRender = (token: TokenItem) => {
-    const chainItem = findChain({ serverId: token.chain });
-    const disabled =
-      (!!supportChains?.length &&
-        !!chainItem &&
-        !supportChains.includes(chainItem.enum)) ||
-      new BigNumber(token?.raw_amount_hex_str || token.amount || 0).lte(0);
+  const SwapToTokenRecenterHeader = React.useMemo(
+    () => (
+      <li className="token-list__header h-auto mb-0">
+        <div>{t('component.TokenSelector.recent')}</div>
+        <div />
+        <div>{t('component.TokenSelector.bridge.value')}</div>
+      </li>
+    ),
+    [t]
+  );
 
-    return (
-      <Tooltip
-        key={`${token.chain}-${token.id}`}
-        trigger={['click', 'hover']}
-        mouseEnterDelay={3}
-        overlayClassName={clsx('rectangle')}
-        placement="top"
-        title={disabledTips}
-        visible={disabled ? undefined : false}
-        align={{ targetOffset: [0, -30] }}
-      >
-        <li
-          className={clsx(
-            'token-list__item h-[56px]',
-            disabled && 'opacity-50'
-          )}
-          onClick={() => !disabled && onConfirm(token)}
-        >
-          <div>
-            <TokenWithChain
-              token={token}
-              width="28px"
-              height="28px"
-              hideConer
-            />
-            <div className="flex flex-col gap-1">
-              <span className="symbol text-14 text-r-neutral-title-1 font-medium">
-                {getTokenSymbol(token)}
-              </span>
-              <span className="symbol text-13 font-normal text-r-neutral-foot">
-                {chainItem?.name}
-              </span>
-            </div>
-          </div>
+  const swapAndBridgeItemRender = React.useCallback(
+    (token: TokenItem, _type: typeof type, updateToken?: boolean) => {
+      if (!visible && updateToken) {
+        return null;
+      }
+      return (
+        <SwapAndBridgeTokenItem
+          key={`${token.chain}-${token.id}`}
+          disabledTips={disabledTips}
+          onConfirm={onConfirm}
+          token={token}
+          type={_type}
+          supportChains={supportChains}
+          updateToken={updateToken}
+        />
+      );
+    },
+    [disabledTips, onConfirm, supportChains, visible]
+  );
 
-          <div className="flex flex-col"></div>
+  const recentToTokens = useRabbySelector((s) => s.swap.recentToTokens || []);
 
-          <div className="flex flex-col text-right items-end">
-            <div className={clsx('text-14 text-r-neutral-title-1 font-medium')}>
-              {formatTokenAmount(token.amount)}
-            </div>
-            <div className="text-13 font-normal text-r-neutral-foot">
-              {formatUsdValue(
-                new BigNumber(token.price || 0).times(token.amount).toFixed()
-              )}
-            </div>
-          </div>
-        </li>
-      </Tooltip>
-    );
-  };
+  const recentDisplayToTokens = useMemo(() => {
+    if (type === 'swapTo' && query.length < 1) {
+      return recentToTokens.filter((item) => {
+        return item.chain === chainServerId;
+      });
+    }
+    return [];
+  }, [chainServerId, recentToTokens, type, query]);
 
   return (
     <Drawer
@@ -360,7 +355,7 @@ const TokenSelector = ({
         />
       </div>
       <div className="filters-wrapper">
-        {chainItem && type !== 'bridgeFrom' && (
+        {chainItem && !isSwapOrBridge && (
           <>
             <div className="filter-item__chain">
               <img
@@ -392,12 +387,21 @@ const TokenSelector = ({
 
       {!isTestnet ? (
         <ul className={clsx('token-list', { empty: isEmpty })}>
-          {Header}
+          {recentDisplayToTokens.length ? (
+            <div className="mb-10">
+              {SwapToTokenRecenterHeader}
+              {recentDisplayToTokens.map((token) =>
+                swapAndBridgeItemRender(token, type, true)
+              )}
+            </div>
+          ) : null}
+
+          {swapAndBridgeHeader}
           {isEmpty
             ? NoDataUI
             : displayList.map((token) => {
-                if (type === 'bridgeFrom') {
-                  return bridgeFromItemRender(token);
+                if (isSwapOrBridge) {
+                  return swapAndBridgeItemRender(token, type);
                 }
                 const chainItem = findChain({ serverId: token.chain });
                 const disabled =
@@ -572,7 +576,11 @@ const DefaultLoading = ({ type }: { type: TokenSelectorProps['type'] }) => (
       </div>
     </div>
     <div>
-      {type !== 'bridgeFrom' && (
+      {!([
+        'bridgeFrom',
+        'swapFrom',
+        'swapTo',
+      ] as TokenSelectorProps['type'][]).includes(type) && (
         <Skeleton.Input
           active
           className="bg-r-neutral-bg-1 rounded-[2px] w-[72px] h-[20px]"
@@ -587,5 +595,107 @@ const DefaultLoading = ({ type }: { type: TokenSelectorProps['type'] }) => (
     </div>
   </div>
 );
+
+function SwapAndBridgeTokenItem(props: {
+  token: TokenItem;
+  disabledTips?: React.ReactNode;
+  disabled?: boolean;
+  onConfirm: (token: TokenItem) => void;
+  updateToken?: boolean;
+  supportChains?: CHAINS_ENUM[];
+  type: TokenSelectorProps['type'];
+}) {
+  const {
+    token,
+    disabledTips,
+    supportChains,
+    onConfirm,
+    updateToken,
+    type,
+  } = props;
+
+  const wallet = useWallet();
+
+  const currentAccount = useCurrentAccount();
+
+  const chainItem = useMemo(() => findChain({ serverId: token.chain }), [
+    token,
+  ]);
+
+  const currentChainName = useMemo(() => chainItem?.name, [chainItem]);
+
+  const disabled = useMemo(() => {
+    if (type === 'swapTo') {
+      return false;
+    }
+    return (
+      (!!supportChains?.length &&
+        !!chainItem &&
+        !supportChains.includes(chainItem.enum)) ||
+      new BigNumber(token?.raw_amount_hex_str || token.amount || 0).lte(0)
+    );
+  }, []);
+
+  const { value, loading, error } = useAsync(async () => {
+    if (updateToken && currentAccount?.address) {
+      const data = await wallet.openapi.getToken(
+        currentAccount?.address,
+        token.chain,
+        token.id
+      );
+      return data;
+    }
+    return token;
+  }, [currentAccount?.address, updateToken, token?.chain, token?.id]);
+
+  return (
+    <Tooltip
+      trigger={['click', 'hover']}
+      mouseEnterDelay={3}
+      overlayClassName={clsx('rectangle')}
+      placement="top"
+      title={disabledTips}
+      visible={disabled ? undefined : false}
+      align={{ targetOffset: [0, -30] }}
+    >
+      <li
+        className={clsx('token-list__item h-[56px]', disabled && 'opacity-50')}
+        onClick={() => !disabled && onConfirm(value || token)}
+      >
+        <div>
+          <TokenWithChain
+            token={value || token}
+            width="28px"
+            height="28px"
+            hideConer
+          />
+          <div className="flex flex-col gap-1">
+            <span className="symbol text-14 text-r-neutral-title-1 font-medium">
+              {getTokenSymbol(token)}
+            </span>
+            <span className="symbol text-13 font-normal text-r-neutral-foot">
+              {currentChainName}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-col"></div>
+
+        <div className="flex flex-col text-right items-end">
+          <div className={clsx('text-14 text-r-neutral-title-1 font-medium')}>
+            {formatTokenAmount(value?.amount || 0)}
+          </div>
+          <div className="text-13 font-normal text-r-neutral-foot">
+            {formatUsdValue(
+              new BigNumber(value?.price || 0)
+                .times(value?.amount || 0)
+                .toFixed()
+            )}
+          </div>
+        </div>
+      </li>
+    </Tooltip>
+  );
+}
 
 export default TokenSelector;

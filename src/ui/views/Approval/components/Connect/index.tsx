@@ -79,6 +79,8 @@ const ConnectWrapper = styled.div`
         line-height: 26px;
         text-align: center;
         color: var(--r-neutral-title-1, #192945);
+        word-wrap: break-word;
+        max-width: 100%;
       }
     }
   }

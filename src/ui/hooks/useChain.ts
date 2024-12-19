@@ -85,6 +85,12 @@ export function useAsyncInitializeChainList({
       chainRef.current = firstEnum;
       onChainInitializedAsync?.(firstEnum);
     }
+
+    if (!firstEnum && fetchChainDataStageRef.current === 'fetched') {
+      updateInitStage('inited');
+      chainRef.current = CHAINS_ENUM.ETH;
+      onChainInitializedAsync?.(CHAINS_ENUM.ETH);
+    }
   }, [firstEnum, updateInitStage, onChainInitializedAsync]);
 
   return {

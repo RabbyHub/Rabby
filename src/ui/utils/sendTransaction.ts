@@ -161,6 +161,7 @@ export const sendTransaction = async ({
     source: ga?.source || '',
     trigger: ga?.trigger || '',
     networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+    swapUseSlider: ga?.swapUseSlider ?? '',
   });
 
   // pre exec tx
