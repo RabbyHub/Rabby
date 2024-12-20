@@ -153,7 +153,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     (e) => {
       onValueChange?.(e.target.value);
     },
-    []
+    [onValueChange]
   );
 
   useLayoutEffect(() => {
