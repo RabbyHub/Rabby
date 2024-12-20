@@ -1,11 +1,11 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { GasLevel, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAsync, useDebounce } from 'react-use';
+import { useAsync, useAsyncFn, useDebounce } from 'react-use';
 import { QuoteProvider, TDexQuoteData, useQuoteMethods } from './quote';
 import {
   useQuoteVisible,
@@ -21,7 +21,8 @@ import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
-import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { useSwapSlippage } from './slippage';
+import { useLowCreditState } from '../Component/LowCreditModal';
 
 const useTokenInfo = ({
   userAddress,
@@ -63,71 +64,6 @@ const useTokenInfo = ({
   return [token, setToken] as const;
 };
 
-export const useSlippage = () => {
-  const previousSlippage = useRabbySelector((s) => s.swap.slippage || '');
-  const [slippageState, setSlippageState] = useState(previousSlippage || '0.1');
-
-  const setSlippageOnStore = useRabbyDispatch().swap.setSlippage;
-
-  const slippage = useMemo(() => slippageState || '0.1', [slippageState]);
-  const [slippageChanged, setSlippageChanged] = useState(false);
-
-  const setSlippage = useCallback(
-    (slippage: string) => {
-      setSlippageOnStore(slippage);
-      setSlippageState(slippage);
-    },
-    [setSlippageOnStore]
-  );
-
-  const [isSlippageLow, isSlippageHigh] = useMemo(() => {
-    return [
-      slippageState?.trim() !== '' && Number(slippageState || 0) < 0.1,
-      slippageState?.trim() !== '' && Number(slippageState || 0) > 10,
-    ];
-  }, [slippageState]);
-
-  return {
-    slippageChanged,
-    setSlippageChanged,
-    slippageState,
-    isSlippageLow,
-    isSlippageHigh,
-    slippage,
-    setSlippage,
-  };
-};
-
-export const useSlippageStore = () => {
-  const { autoSlippage, isCustomSlippage } = useRabbySelector((store) => ({
-    autoSlippage: store.swap.autoSlippage,
-    isCustomSlippage: !!store.swap.isCustomSlippage,
-  }));
-
-  const dispatch = useRabbyDispatch();
-
-  const setAutoSlippage = useCallback(
-    (bool: boolean) => {
-      dispatch.swap.setAutoSlippage(bool);
-    },
-    [dispatch]
-  );
-
-  const setIsCustomSlippage = useCallback(
-    (bool: boolean) => {
-      dispatch.swap.setIsCustomSlippage(bool);
-    },
-    [dispatch]
-  );
-
-  return {
-    autoSlippage,
-    isCustomSlippage,
-    setAutoSlippage,
-    setIsCustomSlippage,
-  };
-};
-
 export interface FeeProps {
   fee: '0.25' | '0';
   symbol?: string;
@@ -136,6 +72,7 @@ export interface FeeProps {
 export const useTokenPair = (userAddress: string) => {
   const dispatch = useRabbyDispatch();
   const refreshId = useRefreshId();
+  const setRefreshId = useSetRefreshId();
 
   const wallet = useWallet();
 
@@ -169,11 +106,32 @@ export const useTokenPair = (userAddress: string) => {
     defaultToken: defaultSelectedFromToken || getChainDefaultToken(chain),
   });
 
-  const [receiveToken, setReceiveToken] = useTokenInfo({
+  const [receiveToken, _setReceiveToken] = useTokenInfo({
     userAddress,
     chain,
     defaultToken: defaultSelectedToToken,
   });
+
+  const {
+    lowCreditToken,
+    lowCreditVisible,
+    setLowCreditToken,
+    setLowCreditVisible,
+  } = useLowCreditState(receiveToken);
+
+  const setReceiveToken = useCallback(
+    (token?: TokenItem) => {
+      _setReceiveToken(token);
+      if (token) {
+        dispatch.swap.setRecentSwapToToken(token);
+        if (token?.low_credit_score) {
+          setLowCreditToken(token);
+          setLowCreditVisible(true);
+        }
+      }
+    },
+    [_setReceiveToken, dispatch?.swap?.setSelectedToToken]
+  );
 
   const [bestQuoteDex, setBestQuoteDex] = useState<string>('');
 
@@ -183,11 +141,9 @@ export const useTokenPair = (userAddress: string) => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    setSlippageChanged(false);
-    setExpired(false);
     expiredTimer.current = setTimeout(() => {
-      setExpired(true);
-    }, 1000 * 30);
+      setRefreshId((e) => e + 1);
+    }, 1000 * 20);
     setOriActiveProvider(p);
   }, []);
 
@@ -208,6 +164,7 @@ export const useTokenPair = (userAddress: string) => {
         // setPayToken(undefined);
       }
       setPayAmount('');
+      setSlider(0);
       setActiveProvider(undefined);
     },
     [setPayToken, setReceiveToken]
@@ -239,32 +196,44 @@ export const useTokenPair = (userAddress: string) => {
   }, [receiveToken]);
 
   const [inputAmount, setPayAmount] = useState('');
-  const debouncePayAmount = useDebounceValue(inputAmount, 300);
+
+  const [slider, setSlider] = useState<number>(0);
 
   const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0');
 
-  const {
-    slippageChanged,
-    setSlippageChanged,
-    slippageState,
-    slippage,
-    setSlippage,
-    isSlippageHigh,
-    isSlippageLow,
-  } = useSlippage();
+  const [swapUseSlider, setSwapUseSlider] = useState<boolean>(false);
 
-  const { autoSlippage } = useSlippageStore();
+  const onChangeSlider = useCallback(
+    (v: number) => {
+      if (payToken) {
+        setSwapUseSlider(true);
+        setSlider(v);
+
+        if (v === 100) {
+          handleSlider100();
+          return;
+        }
+        setPayAmount(
+          new BigNumber(v).div(100).times(tokenAmountBn(payToken)).toString(10)
+        );
+      }
+    },
+    [payToken]
+  );
+
+  const slippageObj = useSwapSlippage();
 
   const [currentProvider, setOriActiveProvider] = useState<
     QuoteProvider | undefined
   >();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
-  const [expired, setExpired] = useState(false);
 
   const exchangeToken = useCallback(() => {
     setPayToken(receiveToken);
     setReceiveToken(payToken);
+    setPayAmount('');
+    setSlider(0);
   }, [setPayToken, receiveToken, setReceiveToken, payToken]);
 
   const payTokenIsNativeToken = useMemo(() => {
@@ -276,16 +245,25 @@ export const useTokenPair = (userAddress: string) => {
 
   const [passGasPrice, setUseGasPrice] = useState(false);
 
-  const handleAmountChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      const v = e.target.value;
+  const handleAmountChange = useCallback(
+    (v: string) => {
       if (!/^\d*(\.\d*)?$/.test(v)) {
         return;
       }
       setPayAmount(v);
+      if (payToken) {
+        const slider = Number(
+          new BigNumber(v || 0)
+            .div(tokenAmountBn(payToken))
+            .times(100)
+            .toFixed(0)
+        );
+        setSlider(slider < 0 ? 0 : slider > 100 ? 100 : slider);
+      }
       setUseGasPrice(false);
+      setSwapUseSlider(false);
     },
-    []
+    [payToken]
   );
 
   const [gasLevel, setGasLevel] = useState<GasLevelType>('normal');
@@ -296,8 +274,6 @@ export const useTokenPair = (userAddress: string) => {
     setGasLevel('normal');
     return wallet.gasMarketV2({ chainId: CHAINS[chain].serverId });
   }, [chain]);
-
-  const [reserveGasOpen, setReserveGasOpen] = useState(false);
 
   const normalGasPrice = useMemo(
     () => gasList?.find((e) => e.level === 'normal')?.price,
@@ -323,58 +299,38 @@ export const useTokenPair = (userAddress: string) => {
       };
       const normalPrice =
         gasList?.find((e) => e.level === 'normal')?.price || 0;
-      const slowPrice = gasList?.find((e) => e.level === 'slow')?.price || 0;
       const isNormalEnough = checkGasIsEnough(normalPrice);
-      const isSlowEnough = checkGasIsEnough(slowPrice);
       if (isNormalEnough) {
-        setGasLevel('normal');
         gasPriceRef.current = normalGasPrice;
-      } else if (isSlowEnough) {
-        setGasLevel('slow');
-        gasPriceRef.current = slowPrice;
       } else {
-        setGasLevel('custom');
-        gasPriceRef.current = 0;
+        gasPriceRef.current = undefined;
       }
     }
   }, [payTokenIsNativeToken, gasList, gasLimit, payToken?.raw_amount_hex_str]);
 
-  const closeReserveGasOpen = useCallback(() => {
-    setReserveGasOpen(false);
-  }, []);
-
-  const closeReserveGasOpenAndUpdatePayAmount = useCallback(() => {
-    setReserveGasOpen(false);
-
-    if (payToken && gasPriceRef.current !== undefined) {
+  const handleSlider100 = useCallback(() => {
+    if (
+      payTokenIsNativeToken &&
+      payToken &&
+      gasPriceRef.current !== undefined
+    ) {
       const val = tokenAmountBn(payToken).minus(
         new BigNumber(gasLimit)
           .times(gasPriceRef.current)
           .div(10 ** nativeTokenDecimals)
       );
-      setPayAmount(val.lt(0) ? '0' : val.toString(10));
+      if (!val.lt(0)) {
+        setUseGasPrice(true);
+      }
+      setPayAmount(
+        val.lt(0) ? tokenAmountBn(payToken).toString(10) : val.toString(10)
+      );
+    } else {
+      if (payToken) {
+        setPayAmount(tokenAmountBn(payToken).toString(10));
+      }
     }
-  }, [payToken, chain, nativeTokenDecimals, gasLimit]);
-
-  const changeGasPrice = useCallback(
-    (gasLevel: GasLevel) => {
-      gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
-      setGasLevel(gasLevel.level as GasLevelType);
-      closeReserveGasOpenAndUpdatePayAmount();
-      setUseGasPrice(true);
-    },
-    [closeReserveGasOpenAndUpdatePayAmount]
-  );
-
-  const handleBalance = useCallback(() => {
-    if (payTokenIsNativeToken) {
-      setReserveGasOpen(true);
-      return;
-    }
-    if (!payTokenIsNativeToken && payToken) {
-      setPayAmount(tokenAmountBn(payToken).toString(10));
-    }
-  }, [payToken, payTokenIsNativeToken]);
+  }, [payToken, chain, nativeTokenDecimals, gasLimit, payTokenIsNativeToken]);
 
   const isStableCoin = useMemo(() => {
     if (payToken?.price && receiveToken?.price) {
@@ -409,27 +365,26 @@ export const useTokenPair = (userAddress: string) => {
   const inSufficient = useMemo(
     () =>
       payToken
-        ? tokenAmountBn(payToken).lt(debouncePayAmount)
-        : new BigNumber(0).lt(debouncePayAmount),
-    [payToken, debouncePayAmount]
+        ? tokenAmountBn(payToken).lt(inputAmount)
+        : new BigNumber(0).lt(inputAmount),
+    [payToken, inputAmount]
   );
 
   useEffect(() => {
     if (isWrapToken) {
       setFeeRate('0');
     }
-    if (autoSlippage) {
-      setSlippage(isStableCoin ? '0.1' : '0.5');
+    if (slippageObj.autoSlippage) {
+      slippageObj.setSlippage(isStableCoin ? '0.1' : '0.5');
     }
-  }, [autoSlippage, isWrapToken, isStableCoin]);
+  }, [slippageObj.autoSlippage, isWrapToken, isStableCoin]);
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
   const visible = useQuoteVisible();
 
   useEffect(() => {
     setQuotesList([]);
-    setActiveProvider(undefined);
-  }, [payToken?.id, receiveToken?.id, chain, debouncePayAmount, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, inputAmount, inSufficient]);
 
   const setQuote = useCallback(
     (id: number) => (quote: TDexQuoteData) => {
@@ -455,9 +410,14 @@ export const useTokenPair = (userAddress: string) => {
     []
   );
 
+  const [pending, setPending] = useState(false);
+
   const fetchIdRef = useRef(0);
   const { getAllQuotes, validSlippage } = useQuoteMethods();
-  const { loading: quoteLoading, error: quotesError } = useAsync(async () => {
+  const [
+    { loading: quoteLoading, error: quotesError },
+    getQuotes,
+  ] = useAsyncFn(async () => {
     fetchIdRef.current += 1;
     const currentFetchId = fetchIdRef.current;
     if (
@@ -466,24 +426,27 @@ export const useTokenPair = (userAddress: string) => {
       receiveToken?.id &&
       receiveToken &&
       chain &&
-      Number(debouncePayAmount) > 0 &&
+      Number(inputAmount) > 0 &&
       feeRate &&
       !inSufficient
     ) {
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
-      setActiveProvider(undefined);
       return getAllQuotes({
         userAddress,
         payToken,
         receiveToken,
-        slippage: slippage || '0.1',
+        slippage: slippageObj.slippage || '0.1',
         chain,
-        payAmount: debouncePayAmount,
+        payAmount: inputAmount,
         fee: feeRate,
         setQuote: setQuote(currentFetchId),
-      }).finally(() => {});
+      }).finally(() => {
+        setPending(false);
+      });
+    } else {
+      setActiveProvider(undefined);
     }
   }, [
     setActiveProvider,
@@ -495,10 +458,43 @@ export const useTokenPair = (userAddress: string) => {
     payToken?.id,
     receiveToken?.id,
     chain,
-    debouncePayAmount,
+    inputAmount,
     feeRate,
-    // slippage,
+    slippageObj.slippage,
   ]);
+
+  useEffect(() => {
+    if (
+      userAddress &&
+      payToken?.id &&
+      receiveToken?.id &&
+      receiveToken &&
+      chain &&
+      Number(inputAmount) > 0 &&
+      feeRate &&
+      !inSufficient
+    ) {
+      setPending(true);
+    } else {
+      setPending(false);
+    }
+  }, [
+    userAddress,
+    payToken?.id,
+    receiveToken?.id,
+    chain,
+    inputAmount,
+    feeRate,
+    inSufficient,
+  ]);
+
+  useDebounce(
+    () => {
+      getQuotes();
+    },
+    300,
+    [getQuotes]
+  );
 
   useEffect(() => {
     if (
@@ -579,32 +575,31 @@ export const useTokenPair = (userAddress: string) => {
     error: slippageValidError,
     loading: slippageValidLoading,
   } = useAsync(async () => {
-    if (chain && Number(slippage) && payToken?.id && receiveToken?.id) {
+    if (
+      chain &&
+      Number(slippageObj.slippage) &&
+      payToken?.id &&
+      receiveToken?.id
+    ) {
       return validSlippage({
         chain,
-        slippage,
+        slippage: slippageObj.slippage,
         payTokenId: payToken?.id,
         receiveTokenId: receiveToken?.id,
       });
     }
-  }, [slippage, chain, payToken?.id, receiveToken?.id, refreshId]);
+  }, [slippageObj.slippage, chain, payToken?.id, receiveToken?.id, refreshId]);
   const openQuote = useSetQuoteVisible();
-  const setRefreshId = useSetRefreshId();
 
   const openQuotesList = useCallback(() => {
-    setQuotesList([]);
-    setRefreshId((e) => e + 1);
     openQuote(true);
-  }, [setSlippageChanged]);
+  }, []);
 
   useEffect(() => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    setExpired(false);
-    setActiveProvider(undefined);
-    setSlippageChanged(false);
-  }, [payToken?.id, receiveToken?.id, chain, debouncePayAmount, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, inputAmount, inSufficient]);
 
   useEffect(() => {
     if (searchObj.chain && searchObj.payTokenId) {
@@ -632,12 +627,22 @@ export const useTokenPair = (userAddress: string) => {
     }
   }, [rbiSource]);
 
+  const clearExpiredTimer = useCallback(() => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearExpiredTimer();
+    };
+  }, []);
+
   return {
     bestQuoteDex,
     gasLevel,
-    reserveGasOpen,
-    closeReserveGasOpen,
-    changeGasPrice,
+
     gasLimit,
     gasList,
     passGasPrice,
@@ -653,26 +658,18 @@ export const useTokenPair = (userAddress: string) => {
     payTokenIsNativeToken,
 
     handleAmountChange,
-    handleBalance,
     setPayAmount,
     inputAmount,
-    debouncePayAmount,
 
     isWrapToken,
     wrapTokenSymbol,
     inSufficient,
-    slippageChanged,
-    setSlippageChanged,
-    slippageState,
-    slippage,
-    setSlippage,
-    isSlippageHigh,
-    isSlippageLow,
+
     feeRate,
 
     //quote
     openQuotesList,
-    quoteLoading,
+    quoteLoading: quoteLoading || pending,
     quoteList,
     currentProvider,
     setActiveProvider,
@@ -680,7 +677,17 @@ export const useTokenPair = (userAddress: string) => {
     slippageValidInfo,
     slippageValidLoading,
 
-    expired,
+    slider,
+    swapUseSlider,
+    onChangeSlider,
+
+    clearExpiredTimer,
+    lowCreditToken,
+    lowCreditVisible,
+    setLowCreditToken,
+    setLowCreditVisible,
+
+    ...slippageObj,
   };
 };
 

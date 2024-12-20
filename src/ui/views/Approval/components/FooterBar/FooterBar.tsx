@@ -254,6 +254,7 @@ export const FooterBar: React.FC<Props> = ({
           isTestnet={props.isTestnet}
         />
         <ActionGroup
+          key={gasMethod}
           account={account}
           gasLess={useGasLess && !payGasByGasAccount}
           {...props}

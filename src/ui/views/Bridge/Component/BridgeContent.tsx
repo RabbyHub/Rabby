@@ -79,6 +79,10 @@ export const BridgeContent = () => {
 
   const refresh = useSetRefreshId();
 
+  const [maxNativeTokenGasPrice, setMaxNativeTokenGasPrice] = useState<
+    number | undefined
+  >(undefined);
+
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
@@ -144,6 +148,7 @@ export const BridgeContent = () => {
             shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
             payTokenId: fromToken.id,
             payTokenChainServerId: fromToken.chain,
+            gasPrice: maxNativeTokenGasPrice,
             info: {
               aggregator_id: selectedBridgeQuote.aggregator.id,
               bridge_id: selectedBridgeQuote.bridge_id,
@@ -196,6 +201,7 @@ export const BridgeContent = () => {
     amount,
     rbiSource,
     slippageState,
+    maxNativeTokenGasPrice,
   ]);
 
   const buildTxs = useMemoizedFn(async () => {
@@ -248,6 +254,7 @@ export const BridgeContent = () => {
             shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
             payTokenId: fromToken.id,
             payTokenChainServerId: fromToken.chain,
+            gasPrice: maxNativeTokenGasPrice,
             info: {
               aggregator_id: selectedBridgeQuote.aggregator.id,
               bridge_id: selectedBridgeQuote.bridge_id,
@@ -300,6 +307,8 @@ export const BridgeContent = () => {
   const handleBridge = useMemoizedFn(async () => {
     if (
       !toToken?.low_credit_score &&
+      !isSlippageHigh &&
+      !isSlippageLow &&
       [
         KEYRING_TYPE.SimpleKeyring,
         KEYRING_TYPE.HdKeyring,
@@ -374,6 +383,8 @@ export const BridgeContent = () => {
           value={amount}
           onInputChange={handleAmountChange}
           excludeChains={toChain ? [toChain] : undefined}
+          inSufficient={inSufficient}
+          handleSetGasPrice={setMaxNativeTokenGasPrice}
         />
         <BridgeToken
           type="to"
@@ -393,7 +404,7 @@ export const BridgeContent = () => {
         </div>
       </div>
 
-      <div className="mx-20">
+      <div className="mx-20 mt-28">
         {selectedBridgeQuote && (
           <BridgeShowMore
             open={showMoreOpen}
@@ -417,6 +428,13 @@ export const BridgeContent = () => {
             isCustomSlippage={isCustomSlippage}
             setAutoSlippage={setAutoSlippage}
             setIsCustomSlippage={setIsCustomSlippage}
+            type="bridge"
+            isBestQuote={
+              !!bestQuoteId &&
+              !!selectedBridgeQuote &&
+              bestQuoteId?.aggregatorId === selectedBridgeQuote.aggregator.id &&
+              bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id
+            }
           />
         )}
         {noQuote && recommendFromToken && (
@@ -438,7 +456,7 @@ export const BridgeContent = () => {
               viewBox="0 0 16 16"
               className={clsx(
                 'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
-                'text-red-forbidden'
+                'text-rabby-red-default'
               )}
             />
           }

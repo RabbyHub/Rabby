@@ -931,8 +931,8 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'feedback',
             });
-            setFeedbackVisible(true);
             reportSettings('feedback');
+            openInTab('https://debank.com/hi/0a110032');
           },
           rightIcon: (
             <ThemeIcon

@@ -1756,6 +1756,8 @@ export class WalletController extends BaseController {
   setAutoSlippage = swapService.setAutoSlippage;
   setIsCustomSlippage = swapService.setIsCustomSlippage;
   setSlippage = swapService.setSlippage;
+  getRecentSwapToTokens = swapService.getRecentSwapToTokens;
+  setRecentSwapToToken = swapService.setRecentSwapToToken;
 
   setRedirect2Points = RabbyPointsService.setRedirect2Points;
   setRabbyPointsSignature = RabbyPointsService.setSignature;
