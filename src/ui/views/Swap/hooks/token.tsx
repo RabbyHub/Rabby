@@ -22,6 +22,7 @@ import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { useSwapSlippage } from './slippage';
+import { useLowCreditState } from '../Component/LowCreditModal';
 
 const useTokenInfo = ({
   userAddress,
@@ -111,11 +112,22 @@ export const useTokenPair = (userAddress: string) => {
     defaultToken: defaultSelectedToToken,
   });
 
+  const {
+    lowCreditToken,
+    lowCreditVisible,
+    setLowCreditToken,
+    setLowCreditVisible,
+  } = useLowCreditState(receiveToken);
+
   const setReceiveToken = useCallback(
     (token?: TokenItem) => {
       _setReceiveToken(token);
       if (token) {
         dispatch.swap.setRecentSwapToToken(token);
+        if (token?.low_credit_score) {
+          setLowCreditToken(token);
+          setLowCreditVisible(true);
+        }
       }
     },
     [_setReceiveToken, dispatch?.swap?.setSelectedToToken]
@@ -670,6 +682,10 @@ export const useTokenPair = (userAddress: string) => {
     onChangeSlider,
 
     clearExpiredTimer,
+    lowCreditToken,
+    lowCreditVisible,
+    setLowCreditToken,
+    setLowCreditVisible,
 
     ...slippageObj,
   };
