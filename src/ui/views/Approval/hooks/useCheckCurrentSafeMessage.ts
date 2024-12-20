@@ -1,6 +1,6 @@
 import { KEYRING_TYPE } from '@/constant';
 import { useWallet } from '@/ui/utils';
-import { SafeMessage } from '@safe-global/api-kit';
+import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
 import { useRequest } from 'ahooks';
 import type { Options } from 'ahooks/lib/useRequest/src/types';
 import { useTranslation } from 'react-i18next';

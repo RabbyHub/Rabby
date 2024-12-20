@@ -94,6 +94,7 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
 import { isAddress } from 'web3-utils';
 import {
+  ensureChainListValid,
   findChain,
   findChainByEnum,
   findChainByServerID,
@@ -104,7 +105,7 @@ import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { autoLockService } from '../service/autoLock';
 import { t } from 'i18next';
-import { getWeb3Provider, web3AbiCoder } from './utils';
+import { broadcastChainChanged, getWeb3Provider, web3AbiCoder } from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
@@ -130,10 +131,8 @@ import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser from 'webextension-polyfill';
-import SafeApiKit from '@safe-global/api-kit';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
-import { sleep } from '@/ui/views/HDManager/utils';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1855,24 +1854,10 @@ export class WalletController extends BaseController {
     }
 
     permissionService.setSite(data);
-    if (data.isConnected) {
-      // rabby:chainChanged event must be sent before chainChanged event
-      sessionService.broadcastEvent(
-        'rabby:chainChanged',
-        {
-          ...chainItem,
-        },
-        data.origin
-      );
-      sessionService.broadcastEvent(
-        'chainChanged',
-        {
-          chain: chainItem.hex,
-          networkVersion: chainItem.network,
-        },
-        data.origin
-      );
-    }
+    broadcastChainChanged({
+      origin: data.origin,
+      chain: chainItem,
+    });
   };
 
   updateSiteBasicInfo = async (origin: string | string[]) => {
@@ -1940,22 +1925,11 @@ export class WalletController extends BaseController {
     }
 
     permissionService.updateConnectSite(origin, data);
-    // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      {
-        ...chainItem,
-      },
-      data.origin
-    );
-    sessionService.broadcastEvent(
-      'chainChanged',
-      {
-        chain: chainItem.hex,
-        networkVersion: chainItem.network,
-      },
-      data.origin
-    );
+
+    broadcastChainChanged({
+      origin: data.origin,
+      chain: chainItem,
+    });
   };
   addConnectedSiteV2 = permissionService.addConnectedSiteV2;
   removeAllRecentConnectedSites = () => {
@@ -2021,7 +1995,7 @@ export class WalletController extends BaseController {
       return Promise.reject(new Error(t('background.error.invalidAddress')));
     }
     return Promise.all(
-      GNOSIS_SUPPORT_CHAINS.map(async (chainEnum) => {
+      ensureChainListValid(GNOSIS_SUPPORT_CHAINS).map(async (chainEnum) => {
         const chain = findChain({ enum: chainEnum });
         try {
           const safe = await createSafeService({
@@ -2517,9 +2491,7 @@ export class WalletController extends BaseController {
     chainId: number;
     messageHash: string;
   }) => {
-    const apiKit = new SafeApiKit({
-      chainId: BigInt(chainId),
-    });
+    const apiKit = Safe.createSafeApiKit(String(chainId));
     return apiKit.getMessage(messageHash);
   };
 

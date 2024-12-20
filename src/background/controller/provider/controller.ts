@@ -62,6 +62,7 @@ import {
   customTestnetService,
 } from '@/background/service/customTestnet';
 import { isString } from 'lodash';
+import { broadcastChainChanged } from '../utils';
 
 const reportSignText = (params: {
   method: string;
@@ -276,16 +277,10 @@ class ProviderController extends BaseController {
     if (connectSite) {
       const chain = findChain({ enum: connectSite.chain });
       if (chain) {
-        // rabby:chainChanged event must be sent before chainChanged event
-        sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
-        sessionService.broadcastEvent(
-          'chainChanged',
-          {
-            chain: chain.hex,
-            networkVersion: chain.network,
-          },
-          origin
-        );
+        broadcastChainChanged({
+          origin,
+          chain,
+        });
       }
     }
 
@@ -1143,22 +1138,10 @@ class ProviderController extends BaseController {
       true
     );
 
-    // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      {
-        ...chain,
-      },
-      origin
-    );
-    sessionService.broadcastEvent(
-      'chainChanged',
-      {
-        chain: chain.hex,
-        networkVersion: chain.network,
-      },
-      origin
-    );
+    broadcastChainChanged({
+      origin,
+      chain,
+    });
     return null;
   };
 
@@ -1220,22 +1203,10 @@ class ProviderController extends BaseController {
       true
     );
 
-    // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      {
-        ...chain,
-      },
-      origin
-    );
-    sessionService.broadcastEvent(
-      'chainChanged',
-      {
-        chain: chain.hex,
-        networkVersion: chain.network,
-      },
-      origin
-    );
+    broadcastChainChanged({
+      origin,
+      chain,
+    });
     return null;
   };
 
