@@ -14,7 +14,6 @@ import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg
 import { tokenAmountBn } from '@/ui/utils/token';
 import clsx from 'clsx';
 import SkeletonInput from 'antd/lib/skeleton/Input';
-import { useRabbyDispatch } from '@/ui/store';
 import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
 import { QuoteProvider, useSetRabbyFee } from '../hooks';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -93,8 +92,6 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
   } = props;
   const { t } = useTranslation();
 
-  const dispatch = useRabbyDispatch();
-
   const inputRef = useRef<Input>();
 
   const isFrom = type === 'from';
@@ -122,9 +119,6 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
         setTimeout(() => {
           inputRef?.current?.focus?.();
         });
-      }
-      if (type === 'to') {
-        dispatch.swap.setRecentSwapToToken(newToken);
       }
     },
     [onTokenChange, type]
