@@ -47,6 +47,11 @@ import {
 } from 'background/utils/password';
 import uninstalledMetricService from '../uninstalled';
 
+const UNENCRYPTED_IGNORE_KEYRING = [
+  KEYRING_TYPE.SimpleKeyring,
+  KEYRING_TYPE.HdKeyring,
+];
+
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
   HdKeyring,
@@ -62,6 +67,11 @@ export const KEYRING_SDK_TYPES = {
   CoboArgusKeyring,
   CoinbaseKeyring,
   EthImKeyKeyring,
+};
+
+export type KeyringSerializedData<T = any> = {
+  type: string;
+  data: T;
 };
 
 interface MemStoreState {
@@ -344,6 +354,11 @@ export class KeyringService extends EventEmitter {
       //
     } finally {
       this.setUnlocked();
+    }
+
+    // force store unencrypted keyring data if not exist
+    if (!this.store.getState().unencryptedKeyringData) {
+      await this.persistAllKeyrings();
     }
 
     return this.fullUpdate();
@@ -786,14 +801,14 @@ export class KeyringService extends EventEmitter {
    * @param {string} password - The keyring controller password.
    * @returns {Promise<boolean>} Resolves to true once keyrings are persisted.
    */
-  persistAllKeyrings(): Promise<boolean> {
+  async persistAllKeyrings(): Promise<boolean> {
     if (!this.isUnlocked()) {
       return Promise.reject(
         new Error('KeyringController - password is not a string')
       );
     }
 
-    return Promise.all(
+    const serializedKeyrings = await Promise.all(
       this.keyrings.map((keyring) => {
         return Promise.all([keyring.type, keyring.serialize()]).then(
           (serializedKeyringArray) => {
@@ -801,21 +816,28 @@ export class KeyringService extends EventEmitter {
             return {
               type: serializedKeyringArray[0],
               data: serializedKeyringArray[1],
-            };
+            } as KeyringSerializedData;
           }
         );
       })
-    )
-      .then((serializedKeyrings) => {
-        return passwordEncrypt({
-          data: serializedKeyrings,
-          password: this.password,
-        });
+    );
+
+    const unencryptedKeyringData = serializedKeyrings
+      .map(({ type, data }) => {
+        if (!UNENCRYPTED_IGNORE_KEYRING.includes(type as any)) {
+          return { type, data };
+        }
       })
-      .then((encryptedString) => {
-        this.store.updateState({ vault: encryptedString });
-        return true;
-      });
+      .filter(Boolean) as KeyringSerializedData[];
+
+    const encryptedString = await passwordEncrypt({
+      data: serializedKeyrings,
+      password: this.password,
+    });
+
+    this.store.updateState({ vault: encryptedString, unencryptedKeyringData });
+
+    return true;
   }
 
   /**
