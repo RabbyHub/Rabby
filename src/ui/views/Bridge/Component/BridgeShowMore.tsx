@@ -111,7 +111,15 @@ export const BridgeShowMore = ({
       };
     }
     return tokenPriceImpact(fromToken, toToken, amount, toAmount);
-  }, [fromToken, toToken, amount, toAmount, quoteLoading]);
+  }, [
+    fromToken,
+    toToken,
+    amount,
+    toAmount,
+    quoteLoading,
+    sourceLogo,
+    sourceName,
+  ]);
 
   const bestQuoteStyle = useMemo(() => {
     if (isBestQuote) {
