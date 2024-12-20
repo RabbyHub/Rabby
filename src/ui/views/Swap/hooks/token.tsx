@@ -105,11 +105,21 @@ export const useTokenPair = (userAddress: string) => {
     defaultToken: defaultSelectedFromToken || getChainDefaultToken(chain),
   });
 
-  const [receiveToken, setReceiveToken] = useTokenInfo({
+  const [receiveToken, _setReceiveToken] = useTokenInfo({
     userAddress,
     chain,
     defaultToken: defaultSelectedToToken,
   });
+
+  const setReceiveToken = useCallback(
+    (token?: TokenItem) => {
+      _setReceiveToken(token);
+      if (token) {
+        dispatch.swap.setRecentSwapToToken(token);
+      }
+    },
+    [_setReceiveToken, dispatch?.swap?.setSelectedToToken]
+  );
 
   const [bestQuoteDex, setBestQuoteDex] = useState<string>('');
 
