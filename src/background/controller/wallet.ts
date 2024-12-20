@@ -105,7 +105,7 @@ import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { autoLockService } from '../service/autoLock';
 import { t } from 'i18next';
-import { getWeb3Provider, web3AbiCoder } from './utils';
+import { broadcastChainChanged, getWeb3Provider, web3AbiCoder } from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
@@ -1852,24 +1852,10 @@ export class WalletController extends BaseController {
     }
 
     permissionService.setSite(data);
-    if (data.isConnected) {
-      // rabby:chainChanged event must be sent before chainChanged event
-      sessionService.broadcastEvent(
-        'rabby:chainChanged',
-        {
-          ...chainItem,
-        },
-        data.origin
-      );
-      sessionService.broadcastEvent(
-        'chainChanged',
-        {
-          chain: chainItem.hex,
-          networkVersion: chainItem.network,
-        },
-        data.origin
-      );
-    }
+    broadcastChainChanged({
+      origin: data.origin,
+      chain: chainItem,
+    });
   };
 
   updateSiteBasicInfo = async (origin: string | string[]) => {
@@ -1937,22 +1923,11 @@ export class WalletController extends BaseController {
     }
 
     permissionService.updateConnectSite(origin, data);
-    // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      {
-        ...chainItem,
-      },
-      data.origin
-    );
-    sessionService.broadcastEvent(
-      'chainChanged',
-      {
-        chain: chainItem.hex,
-        networkVersion: chainItem.network,
-      },
-      data.origin
-    );
+
+    broadcastChainChanged({
+      origin: data.origin,
+      chain: chainItem,
+    });
   };
   addConnectedSiteV2 = permissionService.addConnectedSiteV2;
   removeAllRecentConnectedSites = () => {

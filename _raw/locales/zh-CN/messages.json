@@ -910,7 +910,8 @@
         "ledgerSigned": "签署。创建交易（{{current}}/{{total}}）",
         "ledgerSending": "正在发送签名请求（{{current}}/{{total}}）",
         "confirmRevokeLedger": "使用账本地址，您可以一键批量撤销 {{count}} 个批准。",
-        "confirmRevokePrivateKey": "使用助记词或私钥地址，您可以一键批量撤销 {{count}} 个批准。"
+        "confirmRevokePrivateKey": "使用助记词或私钥地址，您可以一键批量撤销 {{count}} 个批准。",
+        "simulationFailed": "交易模拟失败"
       }
     },
     "connect": {

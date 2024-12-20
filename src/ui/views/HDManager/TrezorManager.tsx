@@ -94,8 +94,8 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
       sleep(1000).then(fetchCurrentAccountsRetry.retry);
     } else {
       setPreventLoading(true);
-      console.log(errMessage);
-      Sentry.captureException(fetchCurrentAccountsRetry.error);
+      console.error(fetchCurrentAccountsRetry.error);
+      Sentry.captureException(`TrezorManager: ${errMessage}`);
 
       modal.error({
         content: t('page.newAddress.hd.trezor.message.disconnected', [HDName]),
