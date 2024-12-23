@@ -827,6 +827,7 @@ export class KeyringService extends EventEmitter {
         if (!UNENCRYPTED_IGNORE_KEYRING.includes(type as any)) {
           return { type, data };
         }
+        return undefined;
       })
       .filter(Boolean) as KeyringSerializedData[];
 
