@@ -262,6 +262,7 @@ const TokenSelect = ({
             chainId={queryConds.chainServerId!}
             disabledTips={disabledTips}
             supportChains={supportChains}
+            excludeTokens={excludeTokens}
           />
         )}
       </>
@@ -326,6 +327,7 @@ const TokenSelect = ({
           disabledTips={disabledTips}
           supportChains={supportChains}
           drawerHeight={drawerHeight}
+          excludeTokens={excludeTokens}
         />
       )}
     </>

@@ -49,11 +49,14 @@ export interface TokenSelectorProps {
   disabledTips?: React.ReactNode;
   supportChains?: CHAINS_ENUM[] | undefined;
   drawerHeight?: number | string;
+  excludeTokens?: TokenItem['id'][];
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
   return !findChainByServerID(token.chain)?.isTestnet;
 };
+
+const defaultExcludeTokens = [];
 
 const TokenSelector = ({
   visible,
@@ -69,6 +72,7 @@ const TokenSelector = ({
   disabledTips,
   supportChains,
   drawerHeight = '540px',
+  excludeTokens = defaultExcludeTokens,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -318,11 +322,13 @@ const TokenSelector = ({
   const recentDisplayToTokens = useMemo(() => {
     if (type === 'swapTo' && query.length < 1) {
       return recentToTokens.filter((item) => {
-        return item.chain === chainServerId;
+        return (
+          item.chain === chainServerId && !excludeTokens?.includes(item.id)
+        );
       });
     }
     return [];
-  }, [chainServerId, recentToTokens, type, query]);
+  }, [chainServerId, recentToTokens, type, query, excludeTokens]);
 
   return (
     <Drawer
