@@ -15,7 +15,7 @@ import { findChain, findChainByServerID } from '@/utils/chain';
 
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
-import { ReactComponent as RcIconChainFilterClose } from 'ui/assets/chain-select/chain-filter-close.svg';
+import { ReactComponent as RcIconChainFilterCloseCC } from 'ui/assets/chain-select/chain-filter-close-cc.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { isNil } from 'lodash';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
@@ -368,7 +368,7 @@ const TokenSelector = ({
       <div className="filters-wrapper">
         {chainItem && !['swapTo', 'bridgeFrom'].includes(type) && (
           <>
-            <div className="filter-item__chain">
+            <div className="filter-item__chain px-10 group">
               <img
                 className="filter-item__chain-logo"
                 src={chainItem.logo}
@@ -386,9 +386,9 @@ const TokenSelector = ({
                   });
                 }}
               >
-                <ThemeIcon
-                  className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
-                  src={RcIconChainFilterClose}
+                <RcIconChainFilterCloseCC
+                  viewBox="0 0 16 16"
+                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body group-hover:text-r-blue-default"
                 />
               </div>
             </div>
