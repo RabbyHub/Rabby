@@ -346,7 +346,7 @@ export const Main = () => {
     },
   });
 
-  const [showMoreOpen, setShowMoreOpen] = useState(!autoSlippage);
+  const [showMoreOpen, setShowMoreOpen] = useState(false);
 
   const [sourceName, sourceLogo] = useMemo(() => {
     if (activeProvider?.name) {
@@ -381,6 +381,10 @@ export const Main = () => {
 
   const noQuote = useDebounceValue(noQuoteOrigin, 10);
 
+  const [showMoreVisible, setShowMoreVisible] = useState(false);
+
+  const isFirstQuoteRef = useRef(false);
+
   useEffect(() => {
     if (noQuote) {
       setShowMoreOpen(true);
@@ -390,20 +394,23 @@ export const Main = () => {
   useDebounce(
     () => {
       if (
+        !isWrapToken &&
         Number(inputAmount) > 0 &&
         !inSufficient &&
         amountAvailable &&
         !quoteLoading &&
         !!payToken &&
         !!receiveToken &&
-        !autoSlippage &&
-        activeProvider
+        activeProvider &&
+        Number(slippage) > 1
       ) {
         setShowMoreOpen(true);
       }
     },
     10,
     [
+      showMoreVisible,
+      isWrapToken,
       inputAmount,
       inSufficient,
       amountAvailable,
@@ -416,20 +423,32 @@ export const Main = () => {
     ]
   );
 
+  if (quoteLoading) {
+    isFirstQuoteRef.current = true;
+  }
+
+  useEffect(() => {
+    if (isFirstQuoteRef.current && !quoteLoading) {
+      setShowMoreVisible(true);
+    }
+    if (quoteLoading) {
+      isFirstQuoteRef.current = true;
+    }
+  }, [quoteLoading]);
+
   return (
     <div
       className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
     >
-      <div className="flex mb-4">
+      <div className="mb-8 mx-20">
         <ChainSelectorInForm
-          mini
-          inlineHover
+          swap
           value={chain}
           onChange={switchChain}
           disabledTips={getDisabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
           hideTestnetTab={true}
-          chainRenderClassName={clsx('pl-[30px] text-[13px] font-medium')}
+          chainRenderClassName={clsx('text-[13px] font-medium')}
           title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
           drawerHeight={540}
           showClosableIcon
@@ -539,7 +558,8 @@ export const Main = () => {
         />
       ) : null}
 
-      {Number(inputAmount) > 0 &&
+      {showMoreVisible &&
+        Number(inputAmount) > 0 &&
         !inSufficient &&
         !!amountAvailable &&
         !!payToken &&

@@ -86,7 +86,10 @@ export const useTokenPair = (userAddress: string) => {
       initialSelectedChain: state.swap.$$initialSelectedChain,
       oChain: state.swap.selectedChain || CHAINS_ENUM.ETH,
       defaultSelectedFromToken: state.swap.selectedFromToken,
-      defaultSelectedToToken: state.swap.selectedToToken,
+      defaultSelectedToToken:
+        state.swap.selectedToToken?.id !== state.swap.selectedFromToken?.id
+          ? state.swap.selectedToToken
+          : undefined,
     };
   });
 
@@ -203,12 +206,14 @@ export const useTokenPair = (userAddress: string) => {
 
   const [swapUseSlider, setSwapUseSlider] = useState<boolean>(false);
 
+  const [isDraggingSlider, setIsDraggingSlider] = useState<boolean>(false);
+
   const onChangeSlider = useCallback(
-    (v: number) => {
+    (v: number, syncAmount?: boolean) => {
       if (payToken) {
+        setIsDraggingSlider(true);
         setSwapUseSlider(true);
         setSlider(v);
-
         if (v === 100) {
           handleSlider100();
           return;
@@ -216,6 +221,10 @@ export const useTokenPair = (userAddress: string) => {
         setPayAmount(
           new BigNumber(v).div(100).times(tokenAmountBn(payToken)).toString(10)
         );
+
+        if (syncAmount) {
+          setIsDraggingSlider(false);
+        }
       }
     },
     [payToken]
@@ -428,7 +437,8 @@ export const useTokenPair = (userAddress: string) => {
       chain &&
       Number(inputAmount) > 0 &&
       feeRate &&
-      !inSufficient
+      !inSufficient &&
+      !isDraggingSlider
     ) {
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
@@ -461,6 +471,7 @@ export const useTokenPair = (userAddress: string) => {
     inputAmount,
     feeRate,
     slippageObj.slippage,
+    isDraggingSlider,
   ]);
 
   useEffect(() => {
@@ -492,7 +503,7 @@ export const useTokenPair = (userAddress: string) => {
     () => {
       getQuotes();
     },
-    300,
+    1000,
     [getQuotes]
   );
 

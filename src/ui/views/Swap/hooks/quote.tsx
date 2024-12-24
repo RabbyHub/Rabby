@@ -340,8 +340,8 @@ export const useQuoteMethods = () => {
           toToken: receiveToken.id,
         });
 
-        const data = await pRetry(
-          () =>
+        const getData = () =>
+          Promise.race([
             getQuote(
               isSwapWrapToken(payToken.id, receiveToken.id, chain)
                 ? DEX_ENUM.WRAPTOKEN
@@ -366,10 +366,12 @@ export const useQuoteMethods = () => {
               },
               walletOpenapi
             ),
-          {
-            retries: 1,
-          }
-        );
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('timeout')), 5000)
+            ),
+          ]) as Promise<QuoteResult>;
+
+        const data = await getData();
 
         stats.report('swapQuoteResult', {
           dex: dexId,

@@ -68,7 +68,7 @@ interface SwapTokenItemProps {
   onValueChange?: (s: string) => void;
   label?: React.ReactNode;
   slider?: number;
-  onChangeSlider?: (value: number) => void;
+  onChangeSlider?: (value: number, syncAmount?: boolean) => void;
   excludeTokens?: string[];
   inSufficient?: boolean;
   valueLoading?: boolean;
@@ -156,6 +156,13 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     [onValueChange]
   );
 
+  const onAfterChangeSlider = useCallback(
+    (value: number) => {
+      onChangeSlider?.(value, true);
+    },
+    [onChangeSlider]
+  );
+
   useLayoutEffect(() => {
     if (token?.id && isFrom) {
       inputRef.current?.focus();
@@ -174,11 +181,13 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
               className="w-[125px]"
               value={slider}
               onChange={onChangeSlider}
+              onAfterChange={onAfterChangeSlider}
               min={0}
               max={100}
               tooltipVisible={false}
+              disabled={!token}
             />
-            <span className="absolute top-1/2 -right-16 transform -translate-y-1/2 w-[38px] text-13 text-r-blue-default font-medium">
+            <span className="absolute top-1/2 -right-12 transform -translate-y-1/2 w-[38px] text-13 text-r-blue-default font-medium">
               {slider}%
             </span>
           </div>

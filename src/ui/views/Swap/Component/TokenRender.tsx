@@ -40,6 +40,7 @@ const TokenRenderWrapper = styled.div`
   .select {
     color: var(--r-neutral-title-1, #f7fafc);
     flex: 1;
+    gap: 6px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -79,7 +80,7 @@ export const TokenRender = ({
             {getTokenSymbol(token)}
           </span>
           <RcImgArrowDown
-            viewBox="0 0 20 20"
+            viewBox="0 0 16 16"
             className="arrow text-r-neutral-foot w-16 h-16"
           />
         </div>
@@ -87,7 +88,7 @@ export const TokenRender = ({
         <div className="select">
           <span>{t('page.swap.select-token')}</span>
           <RcImgArrowDown
-            viewBox="0 0 20 20"
+            viewBox="0 0 16 16"
             className="arrow text-r-neutral-foot w-16 h-16"
           />
         </div>
