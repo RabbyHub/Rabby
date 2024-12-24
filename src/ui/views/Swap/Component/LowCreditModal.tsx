@@ -91,7 +91,13 @@ export const LowCreditModal = ({
     >
       <div className="flex flex-col">
         <div className="flex items-center justify-center">
-          <TokenWithChain token={token} hideConer width="40px" height="40px" />
+          <TokenWithChain
+            token={token}
+            hideConer
+            width="40px"
+            height="40px"
+            chainSize={16}
+          />
         </div>
         <div className="mt-8 mb-4 text-18 font-medium text-r-neutral-title-1 text-center">
           {getTokenSymbol(token)}

@@ -257,7 +257,12 @@ const TokenSelector = ({
   const swapAndBridgeHeader = React.useMemo(() => {
     if (isSwapOrBridge) {
       return (
-        <li className="token-list__header h-auto mb-0">
+        <li
+          className={clsx(
+            'token-list__header h-auto mb-0',
+            type === 'swapFrom' && 'mt-14'
+          )}
+        >
           <div>
             {type === 'swapTo'
               ? t('component.TokenSelector.hot')
@@ -361,7 +366,7 @@ const TokenSelector = ({
         />
       </div>
       <div className="filters-wrapper">
-        {chainItem && !isSwapOrBridge && (
+        {chainItem && !['swapTo', 'bridgeFrom'].includes(type) && (
           <>
             <div className="filter-item__chain">
               <img

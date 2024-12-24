@@ -108,6 +108,7 @@ export const Main = () => {
     lowCreditVisible,
     setLowCreditToken,
     setLowCreditVisible,
+    showMoreVisible,
   } = useTokenPair(userAddress);
 
   const refresh = useSetRefreshId();
@@ -324,6 +325,17 @@ export const Main = () => {
 
   const lowCreditInit = useRef(false);
 
+  useEffect(() => {
+    if (
+      receiveToken &&
+      receiveToken?.low_credit_score &&
+      !lowCreditInit.current
+    ) {
+      setLowCreditToken(receiveToken);
+      setLowCreditVisible(true);
+    }
+  }, [receiveToken]);
+
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
       background: '#fff',
@@ -381,10 +393,6 @@ export const Main = () => {
 
   const noQuote = useDebounceValue(noQuoteOrigin, 10);
 
-  const [showMoreVisible, setShowMoreVisible] = useState(false);
-
-  const isFirstQuoteRef = useRef(false);
-
   useEffect(() => {
     if (noQuote) {
       setShowMoreOpen(true);
@@ -422,19 +430,6 @@ export const Main = () => {
       quoteLoading,
     ]
   );
-
-  if (quoteLoading) {
-    isFirstQuoteRef.current = true;
-  }
-
-  useEffect(() => {
-    if (isFirstQuoteRef.current && !quoteLoading) {
-      setShowMoreVisible(true);
-    }
-    if (quoteLoading) {
-      isFirstQuoteRef.current = true;
-    }
-  }, [quoteLoading]);
 
   return (
     <div

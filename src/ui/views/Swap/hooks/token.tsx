@@ -419,6 +419,8 @@ export const useTokenPair = (userAddress: string) => {
     []
   );
 
+  const [showMoreVisible, setShowMoreVisible] = useState(false);
+
   const [pending, setPending] = useState(false);
 
   const fetchIdRef = useRef(0);
@@ -454,6 +456,7 @@ export const useTokenPair = (userAddress: string) => {
         setQuote: setQuote(currentFetchId),
       }).finally(() => {
         setPending(false);
+        setShowMoreVisible(true);
       });
     } else {
       setActiveProvider(undefined);
@@ -697,6 +700,7 @@ export const useTokenPair = (userAddress: string) => {
     lowCreditVisible,
     setLowCreditToken,
     setLowCreditVisible,
+    showMoreVisible,
 
     ...slippageObj,
   };
