@@ -46,12 +46,12 @@ const ChainWrapper = styled.div`
     }
   }
   &.swap {
-    gap: 4px;
+    gap: 8px;
     padding: 0 16px;
     border: 0.5px solid transparent;
     background: var(--r-neutral-card1, #fff);
     border-radius: 8px;
-    height: 40px;
+    height: 44px;
     position: relative;
     &::before {
       content: '';
@@ -72,7 +72,8 @@ const ChainWrapper = styled.div`
     }
 
     & > .name {
-      color: var(--r-neutral-body, #3e495e);
+      color: var(--r-neutral-title-1, #192945);
+      font-size: 15px;
     }
   }
   &:hover {
@@ -145,7 +146,7 @@ export const ChainRender = ({
           size={swap ? 'mini' : 'small'}
           showCustomRPCToolTip
           tooltipProps={{
-            visible: swap ? false : undefined,
+            visible: swap || mini ? false : undefined,
           }}
         />
       )}

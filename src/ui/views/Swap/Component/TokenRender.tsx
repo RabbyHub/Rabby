@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as RcImgArrowDown } from '@/ui/assets/swap/arrow-down.svg';
+import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-cc.svg';
 
 const TokenRenderWrapper = styled.div`
   width: auto;
@@ -20,7 +20,7 @@ const TokenRenderWrapper = styled.div`
   border: 1px solid transparent;
   cursor: pointer;
   &:hover {
-    background: rgba(134, 151, 255, 0.2);
+    background: var(--r-blue-light1, #eef1ff);
   }
   .token {
     display: flex;
@@ -79,17 +79,17 @@ export const TokenRender = ({
           <span className="text" title={getTokenSymbol(token)}>
             {getTokenSymbol(token)}
           </span>
-          <RcImgArrowDown
+          <RcImgArrowDownCC
             viewBox="0 0 16 16"
-            className="arrow text-r-neutral-foot w-16 h-16"
+            className="arrow text-r-neutral-body w-16 h-16"
           />
         </div>
       ) : (
         <div className="select">
           <span>{t('page.swap.select-token')}</span>
-          <RcImgArrowDown
+          <RcImgArrowDownCC
             viewBox="0 0 16 16"
-            className="arrow text-r-neutral-foot w-16 h-16"
+            className="arrow text-r-neutral-body w-16 h-16"
           />
         </div>
       )}
