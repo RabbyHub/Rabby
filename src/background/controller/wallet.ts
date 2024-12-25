@@ -4941,6 +4941,9 @@ export class WalletController extends BaseController {
       tx,
     });
   };
+
+  hasUnencryptedKeyringData = async () =>
+    keyringService.hasUnencryptedKeyringData();
 }
 
 const wallet = new WalletController();

@@ -822,11 +822,13 @@ export class KeyringService extends EventEmitter {
       })
     );
 
+    let hasEncryptedKeyringData = false;
     const unencryptedKeyringData = serializedKeyrings
       .map(({ type, data }) => {
         if (!UNENCRYPTED_IGNORE_KEYRING.includes(type as any)) {
           return { type, data };
         }
+        hasEncryptedKeyringData = true;
         return undefined;
       })
       .filter(Boolean) as KeyringSerializedData[];
@@ -836,7 +838,11 @@ export class KeyringService extends EventEmitter {
       password: this.password,
     });
 
-    this.store.updateState({ vault: encryptedString, unencryptedKeyringData });
+    this.store.updateState({
+      vault: encryptedString,
+      unencryptedKeyringData,
+      hasEncryptedKeyringData,
+    });
 
     return true;
   }
@@ -1257,6 +1263,16 @@ export class KeyringService extends EventEmitter {
 
   isUnlocked(): boolean {
     return this.memStore.getState().isUnlocked;
+  }
+
+  // ledger, trezor, etc hardware wallet data is unencrypted
+  hasUnencryptedKeyringData(): boolean {
+    return !!this.store.getState().unencryptedKeyringData;
+  }
+
+  // private key and mnemonic data is encrypted
+  hasEncryptedKeyringData(): boolean {
+    return this.store.getState().hasEncryptedKeyringData;
   }
 }
 
