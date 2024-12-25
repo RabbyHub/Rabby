@@ -1741,7 +1741,10 @@
         "required": "Enter the Password to Unlock",
         "placeholder": "Enter the Password to Unlock",
         "error": "incorrect password"
-      }
+      },
+      "title": "Rabby Wallet",
+      "description": "The game-changing wallet for Ethereum and all EVM chains",
+      "btnForgotPassword": "Forgot Password?"
     },
     "addToken": {
       "noTokenFound": "No token found",
