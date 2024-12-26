@@ -4,19 +4,27 @@ import { useTranslation } from 'react-i18next';
 import { CommonConfirmCard } from './CommonConfirmCard';
 
 export const ResetTip: React.FC<{
-  hasStep: boolean;
+  hasUnencryptedKeyringData: boolean;
   onNext: () => void;
-}> = ({ hasStep = false, onNext }) => {
+}> = ({ hasUnencryptedKeyringData = false, onNext }) => {
   const { t } = useTranslation();
 
   return (
     <CommonConfirmCard
-      hasStep={hasStep}
+      hasStep={hasUnencryptedKeyringData}
       onNext={onNext}
-      buttonText={t('page.forgotPassword.tip.button')}
+      buttonText={
+        hasUnencryptedKeyringData
+          ? t('page.forgotPassword.tip.button')
+          : t('page.forgotPassword.tip.buttonNoData')
+      }
       logo={<RecycleSVG />}
       titleText={t('page.forgotPassword.tip.title')}
-      descriptionText={t('page.forgotPassword.tip.description')}
+      descriptionText={
+        hasUnencryptedKeyringData
+          ? t('page.forgotPassword.tip.description')
+          : t('page.forgotPassword.tip.descriptionNoData')
+      }
     />
   );
 };

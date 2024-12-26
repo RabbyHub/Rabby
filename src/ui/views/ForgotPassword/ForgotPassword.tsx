@@ -75,6 +75,7 @@ export const ForgotPassword = () => {
 
   // This useEffect is used to close the window when the extension icon is clicked
   React.useEffect(() => {
+    wallet.tryOpenOrActiveUserGuide();
     const handleWindowClose = (request: any) => {
       if (request.type === 'pageOpened') {
         window.close();
@@ -108,7 +109,10 @@ export const ForgotPassword = () => {
         />
       )}
       {step === 'reset-tip' && (
-        <ResetTip hasStep={hasUnencryptedKeyringData} onNext={onRestTipNext} />
+        <ResetTip
+          hasUnencryptedKeyringData={hasUnencryptedKeyringData}
+          onNext={onRestTipNext}
+        />
       )}
       {step === 'reset-success' && (
         <ResetSuccess onNext={onResultSuccessNext} />

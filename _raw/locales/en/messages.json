@@ -2468,7 +2468,9 @@
       "tip": {
         "title": "Rabby Wallet 已经重置",
         "description": "请设定一个新的密码继续使用钱包",
-        "button": "设置新密码"
+        "button": "设置新密码",
+        "descriptionNoData": "请重新导入地址后使用钱包",
+        "buttonNoData": "重新导入地址"
       },
       "success": {
         "title": "密码创建成功",
