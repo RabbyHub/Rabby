@@ -6,6 +6,8 @@ import { ResetConfirm } from './ResetConfirm';
 import { PasswordCard } from '../NewUserImport/PasswordCard';
 import { ResetTip } from './ResetTip';
 import { useHistory } from 'react-router-dom';
+import { ResetSuccess } from './ResetSuccess';
+import { message } from 'antd';
 
 export const ForgotPassword = () => {
   const history = useHistory();
@@ -20,7 +22,7 @@ export const ForgotPassword = () => {
     setHasUnencryptedKeyringData,
   ] = React.useState(false);
   const [step, setStep] = React.useState<
-    'entry' | 'reset-confirm' | 'reset-tip' | 'reset-password'
+    'entry' | 'reset-confirm' | 'reset-tip' | 'reset-password' | 'reset-success'
   >('entry');
   const [prevStep, setPrevStep] = React.useState(step);
 
@@ -42,23 +44,34 @@ export const ForgotPassword = () => {
       handleSetStep('reset-password');
     }
   }, [hasEncryptedKeyringData, handleSetStep]);
-  const onResetConfirmNext = React.useCallback(() => {
+  const onResetConfirmNext = React.useCallback(async () => {
+    // If there is no unencrypted keyring data, reset the booted status
+    if (!hasUnencryptedKeyringData) {
+      await wallet.resetBooted();
+    }
     handleSetStep('reset-tip');
-  }, [handleSetStep]);
+  }, [hasUnencryptedKeyringData, handleSetStep]);
   const onRestTipNext = React.useCallback(() => {
     if (hasUnencryptedKeyringData) {
       handleSetStep('reset-password');
     } else {
-      history.push('/new-user/guide');
+      wallet.tryOpenOrActiveUserGuide();
     }
   }, [handleSetStep, hasUnencryptedKeyringData]);
   const onPasswordSubmit = React.useCallback(
     async (password: string) => {
-      // TODO: handle password submit
-      console.log('password', password);
+      try {
+        await wallet.resetPassword(password);
+        handleSetStep('reset-success');
+      } catch (e) {
+        message.error(e.message);
+      }
     },
     [handleSetStep]
   );
+  const onResultSuccessNext = React.useCallback(() => {
+    window.close();
+  }, []);
 
   // This useEffect is used to close the window when the extension icon is clicked
   React.useEffect(() => {
@@ -96,6 +109,9 @@ export const ForgotPassword = () => {
       )}
       {step === 'reset-tip' && (
         <ResetTip hasStep={hasUnencryptedKeyringData} onNext={onRestTipNext} />
+      )}
+      {step === 'reset-success' && (
+        <ResetSuccess onNext={onResultSuccessNext} />
       )}
     </>
   );
