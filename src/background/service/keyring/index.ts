@@ -1285,6 +1285,28 @@ export class KeyringService extends EventEmitter {
   hasUnencryptedKeyringData(): boolean {
     return this.store.getState().unencryptedKeyringData?.length > 0;
   }
+
+  async resetPassword(password: string) {
+    // update vault and booted with new password
+    const unencryptedKeyringData = this.store.getState().unencryptedKeyringData;
+    const booted = await passwordEncrypt({
+      data: 'true',
+      password,
+    });
+    const vault = await passwordEncrypt({
+      data: unencryptedKeyringData,
+      password,
+    });
+
+    this.store.updateState({ vault, booted, hasEncryptedKeyringData: false });
+
+    // lock wallet
+    this.setLocked();
+  }
+
+  async resetBooted() {
+    this.store.updateState({ booted: undefined });
+  }
 }
 
 export default new KeyringService();

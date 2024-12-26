@@ -2469,6 +2469,11 @@
         "title": "Rabby Wallet 已经重置",
         "description": "请设定一个新的密码继续使用钱包",
         "button": "设置新密码"
+      },
+      "success": {
+        "title": "密码创建成功",
+        "description": "请继续使用Rabby",
+        "button": "Done"
       }
     }
   },

@@ -4989,6 +4989,11 @@ export class WalletController extends BaseController {
 
   hasUnencryptedKeyringData = async () =>
     keyringService.hasUnencryptedKeyringData();
+
+  resetPassword = async (password: string) =>
+    keyringService.resetPassword(password);
+
+  resetBooted = async () => keyringService.resetBooted();
 }
 
 const wallet = new WalletController();
