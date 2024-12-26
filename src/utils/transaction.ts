@@ -73,6 +73,9 @@ export const calcMaxPriorityFee = (
   useMaxFee: boolean
 ) => {
   if (target.priority_price && target.priority_price !== null) {
+    if (target.priority_price > target.price) {
+      return target.price;
+    }
     return target.priority_price;
   }
 
