@@ -2,7 +2,7 @@ import { Card } from '@/ui/component/NewUserImport';
 import React from 'react';
 import { ReactComponent as TrashSVG } from '@/ui/assets/forgot/trash-cc.svg';
 import { ReactComponent as TimeSVG } from '@/ui/assets/forgot/time-cc.svg';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input } from 'antd';
 import clsx from 'clsx';
 
@@ -55,8 +55,9 @@ export const ResetConfirm: React.FC<{
         <ul className="mt-12 list-disc pl-16 mb-0">
           {[
             t('page.forgotPassword.reset.tip.hardware'),
+            t('page.forgotPassword.reset.tip.safe'),
+            t('page.forgotPassword.reset.tip.watch'),
             t('page.forgotPassword.reset.tip.whitelist'),
-            t('page.forgotPassword.reset.tip.alias'),
             t('page.forgotPassword.reset.tip.records'),
           ].map((text, index) => (
             <li key={index} className="text-15 text-r-neutral-foot mt-8">
@@ -73,8 +74,11 @@ export const ResetConfirm: React.FC<{
           'text-center'
         )}
       >
-        {t('page.forgotPassword.reset.confirm')}
-        <span className="text-r-red-default font-semibold ml-4">RESET</span>
+        <Trans t={t} i18nKey="page.forgotPassword.reset.confirm">
+          Type
+          <span className="text-r-red-default font-semibold">RESET</span>
+          in the box to confirm and proceed
+        </Trans>
       </div>
 
       <div className="mt-12 mx-20">
