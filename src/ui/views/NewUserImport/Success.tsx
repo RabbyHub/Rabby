@@ -94,7 +94,9 @@ const AccountItem = ({ account }: { account: Account }) => {
           />
         ) : (
           <div className="flex items-center justify-center h-[38px] ">
-            <span className="max-w-[300px] truncate">{name}</span>
+            <span className="max-w-[300px] truncate text-r-neutral-title1">
+              {name}
+            </span>
           </div>
         )}
 

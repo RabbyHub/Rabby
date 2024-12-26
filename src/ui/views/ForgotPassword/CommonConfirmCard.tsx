@@ -33,7 +33,7 @@ export const CommonConfirmCard: React.FC<{
         >
           {titleText}
         </h1>
-        <p className={clsx('mt-16', 'text-15 text-r-neutral-body')}>
+        <p className={clsx('mt-16 mx-16', 'text-15 text-r-neutral-body')}>
           {descriptionText}
         </p>
         <div

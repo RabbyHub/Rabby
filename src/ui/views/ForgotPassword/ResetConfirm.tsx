@@ -70,7 +70,7 @@ export const ResetConfirm: React.FC<{
       <div
         className={clsx(
           'mt-40 mx-20',
-          'text-13 text-light-r-neutral-foot',
+          'text-13 text-r-neutral-foot',
           'text-center'
         )}
       >
@@ -92,7 +92,7 @@ export const ResetConfirm: React.FC<{
           className={clsx(
             'h-[52px] rounded-[8px]',
             'border-rabby-neutral-line bg-r-neutral-bg1 hover:border-rabby-blue-default focus:border-rabby-blue-default',
-            'text-r-neutral-foot text-15'
+            'text-r-neutral-title1 text-15 placeholder-r-neutral-foot placeholder-opacity-70'
           )}
           size="large"
         />
