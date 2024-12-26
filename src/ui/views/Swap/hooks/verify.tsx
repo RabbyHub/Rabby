@@ -9,7 +9,7 @@ import {
 import { useMemo } from 'react';
 import { getRouter, getSpender, isSwapWrapToken } from './quote';
 import BigNumber from 'bignumber.js';
-import { findChain } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 
 type ValidateTokenParam = {
   id: string;
@@ -35,7 +35,7 @@ export const verifyRouterAndSpender = (
   const spenderWhitelist = getSpender(dexId, chain);
   const isNativeToken = isSameAddress(
     payTokenId,
-    CHAINS[chain].nativeTokenAddress
+    findChainByEnum(chain)!.nativeTokenAddress
   );
   const isWrapTokens = isSwapWrapToken(payTokenId, receiveTokenId, chain);
 
@@ -48,7 +48,7 @@ export const verifyRouterAndSpender = (
 };
 
 const isNativeToken = (chain: CHAINS_ENUM, tokenId: string) =>
-  isSameAddress(tokenId, CHAINS[chain].nativeTokenAddress);
+  isSameAddress(tokenId, findChainByEnum(chain)!.nativeTokenAddress);
 
 export const verifyCalldata = <T extends Parameters<typeof decodeCalldata>[1]>(
   data: QuoteResult | null,
@@ -123,7 +123,7 @@ export const verifySdk = <T extends ValidateTokenParam>(
     data,
     actualDexId,
     new BigNumber(slippage).div(100).toFixed(),
-    data?.tx ? { ...data?.tx, chainId: CHAINS[chain].id } : undefined
+    data?.tx ? { ...data?.tx, chainId: findChainByEnum(chain)!.id } : undefined
   );
 
   return {
