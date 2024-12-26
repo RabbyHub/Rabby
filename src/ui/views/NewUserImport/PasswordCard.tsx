@@ -27,10 +27,17 @@ const Container = styled.div`
   }
 
   .ant-input {
-    &::placeholder {
-      color: var(--r-neutral-foot, #6a7587);
-      font-weight: 400;
-    }
+    border-radius: 8px;
+    color: var(--r-neutral-foot, #6a7587);
+    font-size: 15px;
+    height: 52px;
+    background: transparent !important;
+  }
+
+  .ant-input-affix-wrapper {
+    background: var(--r-neutral-bg1, #fff) !important;
+    padding: 0 16px;
+    overflow: hidden;
   }
 
   /* .ant-input {
@@ -158,7 +165,6 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
               ]}
             >
               <Input
-                className={'h-[52px]'}
                 size="large"
                 placeholder={t(
                   'page.newUserImport.PasswordCard.form.password.placeholder'
@@ -204,7 +210,6 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
               ]}
             >
               <Input
-                className="h-[52px]"
                 size="large"
                 placeholder={t(
                   'page.newUserImport.PasswordCard.form.confirmPassword.placeholder'

@@ -4942,6 +4942,12 @@ export class WalletController extends BaseController {
     });
   };
 
+  savedUnencryptedKeyringData = async () =>
+    keyringService.savedUnencryptedKeyringData();
+
+  hasEncryptedKeyringData = async () =>
+    keyringService.hasEncryptedKeyringData();
+
   hasUnencryptedKeyringData = async () =>
     keyringService.hasUnencryptedKeyringData();
 }
