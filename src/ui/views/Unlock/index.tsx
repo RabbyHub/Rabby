@@ -56,7 +56,7 @@ const Unlock = () => {
   };
 
   useEffect(() => {
-    wallet.hasUnencryptedKeyringData().then(setHasForgotPassword);
+    wallet.savedUnencryptedKeyringData().then(setHasForgotPassword);
   }, []);
 
   return (

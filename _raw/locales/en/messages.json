@@ -2441,6 +2441,35 @@
         "placeholder": "Input safe address",
         "loading": "Searching the deployed chain of this address"
       }
+    },
+    "forgotPassword": {
+      "home": {
+        "title": "Forgot Password",
+        "description": "Rabby不会保存你的密码,因此丢失密码无法找回 如果忘记密码只能重置钱包并重新设置密码",
+        "button": "开始重置流程"
+      },
+      "reset": {
+        "title": "Reset Rabby Wallet",
+        "button": "Confirm Reset",
+        "alert": {
+          "title": "重置后会清除以下数据,且无法帮你找回",
+          "seed": "助记词",
+          "privateKey": "私钥"
+        },
+        "tip": {
+          "title": "会保留以下数据",
+          "hardware": "已导入的 硬件钱包/Safe/观察地址",
+          "whitelist": "转账白名单",
+          "alias": "地址备注",
+          "records": "签名记录"
+        },
+        "confirm": "如确认重置钱包, 请输入:"
+      },
+      "tip": {
+        "title": "Rabby Wallet 已经重置",
+        "description": "请设定一个新的密码继续使用钱包",
+        "button": "设置新密码"
+      }
     }
   },
   "component": {

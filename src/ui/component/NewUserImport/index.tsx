@@ -17,7 +17,7 @@ const StyledCard = styled.div`
   width: 400px;
   min-height: 520px;
   border-radius: 16px;
-  background: var(--r-neutral-bg1, #fff);
+  background-color: var(--r-neutral-bg1, #fff);
   box-shadow: 0px 40px 80px 0px rgba(43, 57, 143, 0.4);
   padding: 20px;
   padding-top: 0px;
@@ -85,19 +85,23 @@ export const Card = ({
   onBack,
   className,
   headerClassName,
+  headerBlock,
+  cardStyle,
 }: React.PropsWithChildren<{
   title?: React.ReactNode;
   step?: 1 | 2;
   onBack?: () => void;
   className?: string;
   headerClassName?: string;
+  headerBlock?: boolean;
+  cardStyle?: React.CSSProperties;
 }>) => {
   return (
     <StyedBg>
-      <StyledCard className={className}>
+      <StyledCard className={className} style={cardStyle}>
         <div
           className={clsx(
-            !onBack && !title && !onBack && 'hidden',
+            headerBlock ? 'block' : !onBack && !title && !onBack && 'hidden',
             'header',
             headerClassName,
             step && 'mt-18',

@@ -1265,14 +1265,25 @@ export class KeyringService extends EventEmitter {
     return this.memStore.getState().isUnlocked;
   }
 
-  // ledger, trezor, etc hardware wallet data is unencrypted
-  hasUnencryptedKeyringData(): boolean {
-    return !!this.store.getState().unencryptedKeyringData;
+  /**
+   * unencryptedKeyringData is saved in the store
+   */
+  savedUnencryptedKeyringData(): boolean {
+    return 'unencryptedKeyringData' in this.store.getState();
   }
 
-  // private key and mnemonic data is encrypted
+  /**
+   * has seed phrase or private key in the store
+   */
   hasEncryptedKeyringData(): boolean {
     return this.store.getState().hasEncryptedKeyringData;
+  }
+
+  /**
+   * has unencrypted keyring data (not seed phrase or private key) in the store
+   */
+  hasUnencryptedKeyringData(): boolean {
+    return this.store.getState().unencryptedKeyringData?.length > 0;
   }
 }
 
