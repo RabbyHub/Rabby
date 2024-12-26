@@ -22,6 +22,7 @@ import BigNumber from 'bignumber.js';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbySelector } from '@/ui/store';
 import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
+import clsx from 'clsx';
 
 const DEPOSIT_LIMIT = 1000;
 
@@ -136,12 +137,24 @@ const GasAccountInner = () => {
           </div>
 
           <div className="w-full mt-auto flex gap-12 items-center justify-center relative">
-            <GasAccountBlueBorderedButton
-              block
-              onClick={() => setWithdrawVisible(true)}
+            <TooltipWithMagnetArrow
+              className="rectangle w-[max-content]"
+              visible={!balance ? undefined : false}
+              title={t('page.gasAccount.noBalance')}
             >
-              {t('page.gasAccount.withdraw')}
-            </GasAccountBlueBorderedButton>
+              <GasAccountBlueBorderedButton
+                block
+                className={clsx(!balance && 'opacity-50 cursor-not-allowed')}
+                onClick={() => {
+                  if (!balance) {
+                    return;
+                  }
+                  setWithdrawVisible(true);
+                }}
+              >
+                {t('page.gasAccount.withdraw')}
+              </GasAccountBlueBorderedButton>
+            </TooltipWithMagnetArrow>
             <TooltipWithMagnetArrow
               className="rectangle w-[max-content]"
               visible={isRisk || balance >= DEPOSIT_LIMIT ? undefined : false}

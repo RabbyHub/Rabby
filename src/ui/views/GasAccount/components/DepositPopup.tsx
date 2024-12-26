@@ -1,11 +1,11 @@
-import React, { CSSProperties, useState } from 'react';
+import React, { CSSProperties, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Empty, Item, Popup, TokenWithChain } from '@/ui/component';
 import { Button, Space, Tooltip } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
 import { SvgIconLoading } from 'ui/assets';
 import { FixedSizeList } from 'react-window';
-
+import styled from 'styled-components';
 import { noop } from 'lodash';
 import clsx from 'clsx';
 import { useAsync } from 'react-use';
@@ -17,8 +17,38 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { findChainByServerID } from '@/utils/chain';
 import { L2_DEPOSIT_ADDRESS_MAP } from '@/constant/gas-account';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
+import { Input } from 'antd';
 
-const amountList = [20, 100, 500];
+const amountList = [10, 100];
+
+const Wrapper = styled.div`
+  .input {
+    font-weight: 500;
+    font-size: 18px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+
+    .ant-input {
+      width: min-content;
+      border-radius: 0;
+      text-align: center;
+      font-weight: 500;
+      font-size: 18px;
+    }
+  }
+
+  .warning {
+    color: var(--r-red-default, #e34935);
+    font-size: 13px;
+    height: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    position: relative;
+    margin-top: 8px;
+  }
+`;
 
 const TokenSelector = ({
   visible,
@@ -163,17 +193,24 @@ const TokenSelector = ({
   );
 };
 
+const CUSTOM_AMOUNT = 0;
+
 const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
   const [selectedAmount, setAmount] = useState(100);
   const [tokenListVisible, setTokenListVisible] = useState(false);
   const [token, setToken] = useState<TokenItem | undefined>(undefined);
+  const [formattedValue, setFormattedValue] = useState('');
+  const [rawValue, setRawValue] = useState(0);
 
   const wallet = useWallet();
 
-  const openTokenList = () => {
-    setTokenListVisible(true);
-  };
+  const depositAmount = useMemo(() => {
+    if (selectedAmount === CUSTOM_AMOUNT && rawValue) {
+      return rawValue;
+    }
+    return selectedAmount;
+  }, [selectedAmount, rawValue]);
 
   const topUpGasAccount = () => {
     if (token) {
@@ -182,13 +219,58 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
         to: L2_DEPOSIT_ADDRESS_MAP[chainEnum.enum],
         chainServerId: chainEnum.serverId,
         tokenId: token.id,
-        amount: selectedAmount,
-        rawAmount: new BigNumber(selectedAmount)
+        amount: depositAmount,
+        rawAmount: new BigNumber(depositAmount)
           .times(10 ** token.decimals)
           .toFixed(0),
       });
       window.close();
     }
+  };
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value.replace(/[^0-9]/g, '');
+
+    // only integer and no string
+    if (inputValue === '' || /^\d*$/.test(inputValue)) {
+      // no only 0
+      if (inputValue === '0') {
+        inputValue = '';
+      } else {
+        inputValue = inputValue.replace(/^0+/, '') || ''; // remove 0
+      }
+
+      // add $ prefix
+      if (inputValue && !inputValue.startsWith('$')) {
+        inputValue = `$${inputValue}`;
+      }
+
+      setFormattedValue(inputValue);
+      const numericValue = inputValue.replace(/[^0-9]/g, '');
+      setRawValue(numericValue ? parseInt(numericValue, 10) : 0);
+    }
+  };
+
+  const selectCustomAmount = () => {
+    setAmount(CUSTOM_AMOUNT);
+  };
+
+  const errorTips = useMemo(() => {
+    if (selectedAmount === CUSTOM_AMOUNT && rawValue && rawValue > 500) {
+      return t('page.gasAccount.depositPopup.invalidAmount');
+    }
+  }, [rawValue, selectedAmount]);
+
+  const amountPass = useMemo(() => {
+    if (selectedAmount === CUSTOM_AMOUNT && rawValue) {
+      return rawValue >= 1 && rawValue <= 500;
+    }
+    return false;
+  }, [rawValue, selectedAmount]);
+
+  const openTokenList = () => {
+    if (!amountPass) return;
+    setTokenListVisible(true);
   };
 
   return (
@@ -204,27 +286,50 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
         <div className="mt-12 mb-8 text-13 text-r-neutral-body">
           {t('page.gasAccount.depositPopup.amount')}
         </div>
-        <div className="flex items-center justify-between">
-          {amountList.map((amount) => (
-            <div
-              key={amount}
-              onClick={() => setAmount(amount)}
+        <Wrapper className="flex justify-between flex-col">
+          <div className="flex items-center justify-between">
+            {amountList.map((amount) => (
+              <div
+                key={amount}
+                onClick={() => setAmount(amount)}
+                className={clsx(
+                  'flex items-center justify-center cursor-pointer',
+                  'rounded-[6px] w-[114px] h-[52px]',
+                  'text-18 font-medium',
+                  'bg-r-neutral-card2',
+                  'border border-solid border-transparent',
+                  'hover:bg-r-blue-light-1 hover:border-rabby-blue-default',
+                  selectedAmount === amount
+                    ? 'bg-r-blue-light-1 border-rabby-blue-default text-r-blue-default'
+                    : 'text-r-neutral-title1'
+                )}
+              >
+                ${amount}
+              </div>
+            ))}
+            <Input
               className={clsx(
-                'flex items-center justify-center cursor-pointer',
+                'flex items-center justify-center',
                 'rounded-[6px] w-[114px] h-[52px]',
-                'text-18 font-medium',
-                'bg-r-neutral-card2',
+                'text-18 font-medium text-center',
                 'border border-solid border-transparent',
                 'hover:bg-r-blue-light-1 hover:border-rabby-blue-default',
-                selectedAmount === amount
-                  ? 'bg-r-blue-light-1 border-rabby-blue-default text-r-blue-default'
+                'bg-r-neutral-card2',
+                'input',
+                selectedAmount === CUSTOM_AMOUNT
+                  ? 'bg-r-blue-light-1 border-rabby-blue-default'
                   : 'text-r-neutral-title1'
               )}
-            >
-              ${amount}
-            </div>
-          ))}
-        </div>
+              bordered={false}
+              value={formattedValue}
+              onChange={onInputChange}
+              onFocus={selectCustomAmount}
+              placeholder="$1-500"
+              // prefix={<div>$</div>}
+            />
+          </div>
+          {<div className={clsx('warning')}>{errorTips || ''}</div>}
+        </Wrapper>
 
         <div className="mt-12 mb-8 text-13 text-r-neutral-body">
           {t('page.gasAccount.depositPopup.token')}
@@ -232,7 +337,10 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
         <Item
           px={16}
           py={0}
-          className="rounded-[6px] w-full h-[52px]"
+          className={clsx(
+            'rounded-[6px] w-full h-[52px]',
+            !amountPass && 'opacity-50 cursor-not-allowed'
+          )}
           bgColor="var(--r-neutral-card2, #F2F4F7)"
           left={
             token ? (
@@ -264,7 +372,7 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
           size="large"
           type="primary"
           className="h-[48px] text-r-neutral-title2 text-15 font-medium"
-          disabled={!token}
+          disabled={!token || !amountPass}
         >
           {t('global.Confirm')}
         </Button>
@@ -273,7 +381,7 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
       <TokenSelector
         visible={tokenListVisible}
         onClose={() => setTokenListVisible(false)}
-        cost={selectedAmount}
+        cost={depositAmount}
         onChange={setToken}
       />
     </div>
@@ -284,7 +392,7 @@ export const GasAccountDepositPopup = (props: PopupProps) => {
   return (
     <Popup
       placement="bottom"
-      height={387}
+      height={410}
       isSupportDarkMode
       bodyStyle={{
         padding: 0,

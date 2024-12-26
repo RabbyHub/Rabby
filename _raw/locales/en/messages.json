@@ -2275,6 +2275,7 @@
       "title": "GasAccount",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
+      "noBalance": "No balance",
       "gasExceed": "GasAccount balance cannot exceed $1000",
       "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
@@ -2293,21 +2294,32 @@
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",
-        "desc": "Once logged out, you will no longer be able to use GasAccount to pay for gas fees.",
+        "desc": "Logging out disables GasAccount. You can restore your GasAccount by logging in with this address.",
         "logout": "Log out"
       },
       "depositPopup": {
         "title": "Deposit",
         "desc": "Make a deposit to Rabby's DeBank L2 Account with no extra fees—withdraw anytime.",
+        "invalidAmount": "Must be under 500",
         "amount": "Amount",
         "token": "Token",
         "selectToken": "Select Token to Deposit"
       },
       "withdrawPopup": {
+        "noEnoughGas":"Amount too low to cover gas fees",
+        "riskMessageFromChain": "Due to risk control, the withdrawal limit depends on the total amount deposited from this chain.",
+        "riskMessageFromAddress": "Due to risk control, the withdrawal limit depends on the total amount this address has deposited",
+        "selectDestinationChain":"Select destination chain",
+        "selectRecipientAddress": "Select recipient address",
+        "withdrawalLimit": "Withdrawal limit",
         "title": "Withdraw",
         "desc": "You can withdraw your GasAccount balance to your DeBank L2 Wallet. Log in to your DeBank L2 Wallet to transfer the funds to a supported blockchain as needed.",
         "amount": "Amount",
-        "to": "To"
+        "to": "To",
+        "selectChain": "Select Chain",
+        "recipientAddress": "Recipient address",
+        "destinationChain": "Destination chain",
+        "deductGasFees": "Received amount will deduct gas fees"
       },
       "withdrawConfirmModal": {
         "title": "Transferred to your DeBank L2 Wallet",
