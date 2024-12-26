@@ -53,6 +53,10 @@ export const TestnetChainList = ({
   //   );
   // }
 
+  if (!chainList?.length) {
+    return null;
+  }
+
   return (
     <div
       className={clsx(
