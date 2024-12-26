@@ -214,6 +214,11 @@ export const useTokenPair = (userAddress: string) => {
         setIsDraggingSlider(true);
         setSwapUseSlider(true);
         setSlider(v);
+
+        if (syncAmount) {
+          setIsDraggingSlider(false);
+        }
+
         if (v === 100) {
           handleSlider100();
           return;
@@ -221,10 +226,6 @@ export const useTokenPair = (userAddress: string) => {
         setPayAmount(
           new BigNumber(v).div(100).times(tokenAmountBn(payToken)).toString(10)
         );
-
-        if (syncAmount) {
-          setIsDraggingSlider(false);
-        }
       }
     },
     [payToken]
