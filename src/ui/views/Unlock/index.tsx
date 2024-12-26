@@ -12,6 +12,18 @@ import {
 import { ReactComponent as RabbySVG } from '@/ui/assets/unlock/rabby.svg';
 import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
 import clsx from 'clsx';
+import styled from 'styled-components';
+
+const InputFormStyled = styled(Form.Item)`
+  .ant-form-item-explain {
+    font-size: 13px;
+    line-height: 16px;
+    margin-top: 12px;
+    margin-bottom: 24px;
+    min-height: 0px;
+    color: var(--r-red-default);
+  }
+`;
 
 const Unlock = () => {
   const wallet = useWallet();
@@ -86,7 +98,7 @@ const Unlock = () => {
         </p>
       </div>
       <Form autoComplete="off" form={form} onFinish={handleSubmit}>
-        <Form.Item
+        <InputFormStyled
           className="mt-[34px] mx-20"
           name="password"
           rules={[
@@ -109,7 +121,7 @@ const Unlock = () => {
             ref={inputEl}
             spellCheck={false}
           />
-        </Form.Item>
+        </InputFormStyled>
         <Form.Item className="mx-20">
           <Button
             block
