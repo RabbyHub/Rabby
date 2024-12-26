@@ -2045,8 +2045,8 @@
         "buttonNoData": "设置新密码",
         "button": "开始重置流程",
         "title": "忘记密码",
-        "description": "Rabby不会保存你的密码,因此丢失密码无法找回\n如果忘记密码只能重置钱包并重新设置密码",
-        "descriptionNoData": "Rabby不会保存你的密码,因此丢失密码无法找回\n如果忘记密码只能重新设置密码"
+        "description": "Rabby不会保存你的密码,因此丢失密码无法找回 如果忘记密码只能重置钱包并重新设置密码",
+        "descriptionNoData": "Rabby不会保存你的密码,因此丢失密码无法找回 如果忘记密码只能重新设置密码"
       },
       "reset": {
         "title": "重置 Rabby Wallet",
