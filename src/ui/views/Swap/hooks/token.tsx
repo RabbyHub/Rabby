@@ -449,6 +449,7 @@ export const useTokenPair = (userAddress: string) => {
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
+      setActiveProvider(undefined);
       return getAllQuotes({
         userAddress,
         payToken,
