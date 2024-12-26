@@ -1783,12 +1783,43 @@ export class WalletController extends BaseController {
   getGasAccountSig = gasAccountService.getGasAccountSig;
   setGasAccountSig = gasAccountService.setGasAccountSig;
 
-  setCustomRPC = RPCService.setRPC;
-  removeCustomRPC = RPCService.removeCustomRPC;
+  setCustomRPC = (chainEnum: CHAINS_ENUM, url: string) => {
+    RPCService.setRPC(chainEnum, url);
+    const chain = findChain({
+      enum: chainEnum,
+    });
+    if (chain?.isTestnet && RPCService.hasCustomRPC(chainEnum)) {
+      customTestnetService.setCustomRPC({ chainId: chain.id, url: url });
+    }
+  };
+  removeCustomRPC = (chainEnum: CHAINS_ENUM) => {
+    RPCService.removeCustomRPC(chainEnum);
+    const chain = findChain({
+      enum: chainEnum,
+    });
+    if (chain?.isTestnet) {
+      customTestnetService.removeCustomRPC(chain.id);
+    }
+  };
   getAllCustomRPC = RPCService.getAllRPC;
   getCustomRpcByChain = RPCService.getRPCByChain;
   pingCustomRPC = RPCService.ping;
-  setRPCEnable = RPCService.setRPCEnable;
+  setRPCEnable = (chainEnum: CHAINS_ENUM, enable: boolean) => {
+    RPCService.setRPCEnable(chainEnum, enable);
+    const chain = findChain({
+      enum: chainEnum,
+    });
+    if (chain?.isTestnet) {
+      if (enable) {
+        customTestnetService.setCustomRPC({
+          chainId: chain.id,
+          url: RPCService.getRPCByChain(chainEnum).url,
+        });
+      } else {
+        customTestnetService.removeCustomRPC(chain.id);
+      }
+    }
+  };
   validateRPC = async (url: string, chainId: number) => {
     const chain = findChain({
       id: chainId,
@@ -4758,7 +4789,15 @@ export class WalletController extends BaseController {
     return res;
   };
   updateCustomTestnet = customTestnetService.update;
-  removeCustomTestnet = customTestnetService.remove;
+  removeCustomTestnet = (chainId: number) => {
+    const chain = findChain({
+      id: chainId,
+    });
+    if (chain?.enum) {
+      RPCService.removeCustomRPC(chain.enum);
+    }
+    customTestnetService.remove(chainId);
+  };
   getCustomTestnetList = customTestnetService.getList;
 
   getCustomTestnetNonce = async ({

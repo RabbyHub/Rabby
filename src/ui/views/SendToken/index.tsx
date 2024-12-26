@@ -1263,7 +1263,12 @@ const SendToken = () => {
       let tokenFromOrder: TokenItem | null = null;
 
       const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-      if (lastTimeToken) {
+      if (
+        lastTimeToken &&
+        findChain({
+          serverId: lastTimeToken.chain,
+        })
+      ) {
         setCurrentToken(lastTimeToken);
       } else {
         const { firstChain } = await dispatch.chains.getOrderedChainList({
