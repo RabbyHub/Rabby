@@ -103,10 +103,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   const handleTokenModalOpen = useCallback(() => {
     if (!isFrom) {
-      openTokenModalRef?.current?.openTokenModal?.((e) => {
-        console.log('click', e);
-        return true;
-      });
+      openTokenModalRef?.current?.openTokenModal?.(true);
     }
   }, [isFrom]);
 
