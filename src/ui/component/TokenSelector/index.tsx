@@ -368,7 +368,7 @@ const TokenSelector = ({
       <div className="filters-wrapper">
         {chainItem && !['swapTo', 'bridgeFrom'].includes(type) && (
           <>
-            <div className="filter-item__chain px-10 group">
+            <div className="filter-item__chain px-10">
               <img
                 className="filter-item__chain-logo"
                 src={chainItem.logo}
@@ -388,7 +388,7 @@ const TokenSelector = ({
               >
                 <RcIconChainFilterCloseCC
                   viewBox="0 0 16 16"
-                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body group-hover:text-r-red-default"
+                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body hover:text-r-red-default"
                 />
               </div>
             </div>

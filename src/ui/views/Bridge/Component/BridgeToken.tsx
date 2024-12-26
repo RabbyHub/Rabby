@@ -256,7 +256,7 @@ export const BridgeToken = ({
       >
         <span className="text-12 text-r-neutral-body">{name}</span>
         <ChainSelectorInForm
-          mini
+          bridge
           hideTestnetTab
           value={chain}
           onChange={changeChain}

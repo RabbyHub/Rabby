@@ -21,10 +21,6 @@ const ChainIconEle = styled.img`
     width: 20px;
     height: 20px;
   }
-  &.mini {
-    width: 18px;
-    height: 18px;
-  }
 `;
 
 const AvaliableIcon = styled.div`
@@ -37,8 +33,7 @@ const AvaliableIcon = styled.div`
   background: #27c193;
   border-radius: 100%;
   overflow: hidden;
-  &.small,
-  &.mini {
+  &.small {
     width: 8px;
     height: 8px;
   }
@@ -54,8 +49,7 @@ const UnavaliableIcon = styled.div`
   background: #ec5151;
   border-radius: 100%;
   overflow: hidden;
-  &.small,
-  &.mini {
+  &.small {
     width: 8px;
     height: 8px;
   }
@@ -94,7 +88,7 @@ const TooltipContent = styled.div`
 interface Props {
   chain: CHAINS_ENUM;
   customRPC?: string | undefined;
-  size?: 'normal' | 'small' | 'mini';
+  size?: 'normal' | 'small';
   showCustomRPCToolTip?: boolean;
   nonce?: number;
   innerClassName?: string;

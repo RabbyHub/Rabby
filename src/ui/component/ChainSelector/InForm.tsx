@@ -25,7 +25,7 @@ const ChainWrapper = styled.div`
   cursor: pointer;
   font-size: 16px;
   font-weight: 500;
-  &.mini {
+  &.bridge {
     width: auto;
     height: 28px;
     font-size: 13px;
@@ -98,14 +98,14 @@ export const ChainRender = ({
   readonly,
   className,
   arrowDownComponent,
-  mini,
+  bridge,
   swap,
   ...other
 }: {
   chain?: CHAINS_ENUM;
   readonly: boolean;
   arrowDownComponent?: React.ReactNode;
-  mini?: boolean;
+  bridge?: boolean;
   swap?: boolean;
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
@@ -131,7 +131,7 @@ export const ChainRender = ({
       className={clsx(
         {
           'cursor-default hover:bg-r-neutral-bg-2': readonly,
-          mini,
+          bridge,
           swap,
         },
         className
@@ -143,10 +143,14 @@ export const ChainRender = ({
         <ChainIcon
           chain={chain}
           customRPC={customRPC}
-          size={swap ? 'mini' : 'small'}
+          size={'small'}
+          innerClassName={clsx(
+            bridge && 'w-[16px] h-[16px]',
+            swap && 'w-[18px] h-[18px]'
+          )}
           showCustomRPCToolTip
           tooltipProps={{
-            visible: swap || mini ? false : undefined,
+            visible: swap || bridge ? false : undefined,
           }}
         />
       )}
@@ -175,7 +179,7 @@ interface ChainSelectorProps {
   title?: React.ReactNode;
   chainRenderClassName?: string;
   arrowDownComponent?: React.ReactNode;
-  mini?: boolean;
+  bridge?: boolean;
   hideTestnetTab?: boolean;
   excludeChains?: CHAINS_ENUM[];
   drawerHeight?: number;
@@ -192,7 +196,7 @@ export default function ChainSelectorInForm({
   supportChains,
   chainRenderClassName,
   arrowDownComponent,
-  mini,
+  bridge,
   hideTestnetTab = false,
   excludeChains,
   drawerHeight,
@@ -225,7 +229,7 @@ export default function ChainSelectorInForm({
         readonly={readonly}
         className={chainRenderClassName}
         arrowDownComponent={arrowDownComponent}
-        mini={mini}
+        bridge={bridge}
         swap={swap}
       />
       {!readonly && (
