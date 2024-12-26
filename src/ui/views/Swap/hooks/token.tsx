@@ -500,6 +500,7 @@ export const useTokenPair = (userAddress: string) => {
     inputAmount,
     feeRate,
     inSufficient,
+    slippageObj?.slippage,
   ]);
 
   useDebounce(
