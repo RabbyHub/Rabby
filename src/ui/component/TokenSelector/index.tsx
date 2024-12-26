@@ -388,7 +388,7 @@ const TokenSelector = ({
               >
                 <RcIconChainFilterCloseCC
                   viewBox="0 0 16 16"
-                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body group-hover:text-r-blue-default"
+                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body group-hover:text-r-red-default"
                 />
               </div>
             </div>

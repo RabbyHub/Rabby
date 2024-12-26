@@ -435,7 +435,7 @@ export const Main = () => {
     <div
       className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
     >
-      <div className="mb-8 mx-20">
+      <div className="my-8 mx-20">
         <ChainSelectorInForm
           swap
           value={chain}

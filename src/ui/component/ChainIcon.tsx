@@ -22,8 +22,8 @@ const ChainIconEle = styled.img`
     height: 20px;
   }
   &.mini {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 `;
 
