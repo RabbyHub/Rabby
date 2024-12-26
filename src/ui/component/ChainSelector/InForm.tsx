@@ -138,7 +138,6 @@ export const ChainRender = ({
       )}
       {...other}
     >
-      {/* <img className="logo" src={CHAINS[chain].logo} alt={CHAINS[chain].name} /> */}
       {chain && (
         <ChainIcon
           chain={chain}

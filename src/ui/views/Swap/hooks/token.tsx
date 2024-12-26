@@ -19,7 +19,7 @@ import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
-import { findChain } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
@@ -41,7 +41,7 @@ const useTokenInfo = ({
     if (userAddress && token?.id && chain) {
       const data = await wallet.openapi.getToken(
         userAddress,
-        CHAINS[chain].serverId,
+        findChainByEnum(chain)!.serverId,
         token.id
       );
       return data;
@@ -248,7 +248,10 @@ export const useTokenPair = (userAddress: string) => {
 
   const payTokenIsNativeToken = useMemo(() => {
     if (payToken) {
-      return isSameAddress(payToken.id, CHAINS[chain].nativeTokenAddress);
+      return isSameAddress(
+        payToken.id,
+        findChainByEnum(chain)!.nativeTokenAddress
+      );
     }
     return false;
   }, [chain, payToken]);
@@ -282,7 +285,7 @@ export const useTokenPair = (userAddress: string) => {
   const { value: gasList } = useAsync(() => {
     gasPriceRef.current = undefined;
     setGasLevel('normal');
-    return wallet.gasMarketV2({ chainId: CHAINS[chain].serverId });
+    return wallet.gasMarketV2({ chainId: findChainByEnum(chain)!.serverId });
   }, [chain]);
 
   const normalGasPrice = useMemo(
@@ -357,7 +360,7 @@ export const useTokenPair = (userAddress: string) => {
     if (payToken?.id && receiveToken?.id) {
       const wrapTokens = [
         WrapTokenAddressMap[chain],
-        CHAINS[chain].nativeTokenAddress,
+        findChainByEnum(chain)!.nativeTokenAddress,
       ];
       const res =
         !!wrapTokens.find((token) => isSameAddress(payToken?.id, token)) &&
@@ -709,7 +712,7 @@ export const useTokenPair = (userAddress: string) => {
 };
 
 function getChainDefaultToken(chain: CHAINS_ENUM) {
-  const chainInfo = CHAINS[chain];
+  const chainInfo = findChainByEnum(chain)!;
   return {
     id: chainInfo.nativeTokenAddress,
     decimals: chainInfo.nativeTokenDecimals,

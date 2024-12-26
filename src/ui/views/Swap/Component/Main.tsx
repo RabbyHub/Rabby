@@ -26,7 +26,7 @@ import {
   SWAP_SUPPORT_CHAINS,
 } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
-import { findChainByServerID } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
@@ -471,7 +471,7 @@ export const Main = () => {
             }
             setPayToken(token);
           }}
-          chainId={CHAINS[chain].serverId}
+          chainId={findChainByEnum(chain)!.serverId}
           type={'from'}
           excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
         />
@@ -516,7 +516,7 @@ export const Main = () => {
               setLowCreditVisible(true);
             }
           }}
-          chainId={CHAINS[chain].serverId}
+          chainId={findChainByEnum(chain)!.serverId || CHAINS[chain].serverId}
           type={'to'}
           excludeTokens={payToken?.id ? [payToken?.id] : undefined}
           currentQuote={activeProvider}
