@@ -99,7 +99,12 @@ export const GasAccountHistory = () => {
 
   const { loading, txList, loadingMore, ref } = useGasAccountHistory();
 
-  if (!loading && !txList?.rechargeList.length && !txList?.list.length) {
+  if (
+    !loading &&
+    !txList?.rechargeList.length &&
+    !txList?.withdrawList.length &&
+    !txList?.list.length
+  ) {
     return (
       <div className="bg-r-neutral-card-1 h-[283px] flex flex-col gap-8 items-center rounded-[8px]">
         <RcIconEmptyCC
@@ -128,13 +133,30 @@ export const GasAccountHistory = () => {
           />
         ))}
       {!loading &&
+        txList?.withdrawList?.map((item, index) => (
+          <HistoryItem
+            key={item.create_at}
+            time={item.create_at}
+            value={item.amount}
+            sign={'+'}
+            borderT={index !== 0}
+            isPending={true}
+            chainServerId={item?.chain_id}
+            txId={item?.tx_id}
+          />
+        ))}
+      {!loading &&
         txList?.list.map((item, index) => (
           <HistoryItem
             key={item.create_at}
             time={item.create_at}
             value={item.usd_value}
             sign={item.history_type === 'recharge' ? '+' : '-'}
-            borderT={!txList?.rechargeList.length ? index !== 0 : true}
+            borderT={
+              !txList?.rechargeList.length && !txList?.withdrawList.length
+                ? index !== 0
+                : true
+            }
           />
         ))}
 
@@ -144,7 +166,9 @@ export const GasAccountHistory = () => {
             <LoadingItem
               key={index}
               borderT={
-                !txList?.rechargeList.length && !txList?.list.length
+                !txList?.rechargeList.length &&
+                !txList?.withdrawList.length &&
+                !txList?.list.length
                   ? index !== 0
                   : true
               }

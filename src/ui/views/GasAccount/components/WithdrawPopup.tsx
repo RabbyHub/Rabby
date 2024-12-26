@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Popup, Item, TokenWithChain, AddressViewer } from '@/ui/component';
 import { Button, message, Skeleton, Tooltip } from 'antd';
@@ -21,27 +21,22 @@ import styled from 'styled-components';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { CopyChecked } from '@/ui/component/CopyChecked';
+import {
+  RechargeChainItem,
+  WithdrawListAddressItem,
+} from '@rabby-wallet/rabby-api/dist/types';
 
-export interface RechargeChainItem {
-  chain_id: string;
-  withdraw_limit: number;
-  withdraw_fee: number;
-}
+// export interface RechargeChainItem {
+//   chain_id: string;
+//   withdraw_limit: number;
+//   withdraw_fee: number;
+// }
 
-export interface WithdrawListAddressItem {
-  recharge_addr: string;
-  total_withdraw_limit: number;
-  recharge_chain_list: RechargeChainItem[];
-}
-
-interface SelectorDataItem {
-  chain_id?: string;
-  withdraw_limit?: number;
-  withdraw_fee?: number;
-  recharge_addr?: string;
-  total_withdraw_limit?: number;
-  recharge_chain_list?: RechargeChainItem[];
-}
+// export interface WithdrawListAddressItem {
+//   recharge_addr: string;
+//   total_withdraw_limit: number;
+//   recharge_chain_list: RechargeChainItem[];
+// }
 
 enum SelectorStatus {
   Hidden,
@@ -150,46 +145,49 @@ const Selector = ({
       const disabled = !item.withdraw_limit;
 
       return (
-        <Item
-          key={item.chain_id}
-          style={style}
-          px={16}
-          py={0}
-          className={clsx(
-            'rounded-[6px] w-full h-[56px] px-16',
-            'justify-between',
-            !disabled && 'hover:border-blue-light',
-            disabled && 'opacity-50 cursor-not-allowed',
-            index !== 0 && 'mt-12'
-          )}
-          bgColor="var(--r-neutral-card2, #F2F4F7)"
-          left={
-            <div
-              className={clsx('flex items-center gap-[6px] ', [
-                'rounded-[2px]',
-              ])}
-            >
-              <img
-                src={chainEnum.logo}
-                className="w-[20px] h-[20px] rounded-full"
-              />
-              <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
-                {chainEnum.name}
-              </span>
-            </div>
-          }
-          right={
-            <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
-              {`$${item.withdraw_limit}`}
-            </span>
-          }
-          onClick={() => {
-            if (!disabled) {
-              setChain(item);
-              onClose();
+        <div
+          className={clsx('w-full h-[68px] flex items-center justify-between')}
+        >
+          <Item
+            key={item.chain_id}
+            style={style}
+            px={16}
+            py={0}
+            className={clsx(
+              'rounded-[6px] w-full h-[56px] px-16',
+              'justify-between',
+              !disabled && 'hover:border-blue-light',
+              disabled && 'opacity-50 cursor-not-allowed'
+            )}
+            bgColor="var(--r-neutral-card2, #F2F4F7)"
+            left={
+              <div
+                className={clsx('flex items-center gap-[6px] ', [
+                  'rounded-[2px]',
+                ])}
+              >
+                <img
+                  src={chainEnum.logo}
+                  className="w-[20px] h-[20px] rounded-full"
+                />
+                <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
+                  {chainEnum.name}
+                </span>
+              </div>
             }
-          }}
-        />
+            right={
+              <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
+                {`$${item.withdraw_limit}`}
+              </span>
+            }
+            onClick={() => {
+              if (!disabled) {
+                setChain(item);
+                onClose();
+              }
+            }}
+          />
+        </div>
         // </div>
       );
     },
@@ -213,33 +211,35 @@ const Selector = ({
       );
 
       return (
-        <Item
-          key={item.recharge_addr}
-          style={style}
-          px={16}
-          py={0}
-          className={clsx(
-            'rounded-[6px] w-full h-[56px] px-16 mb-12',
-            'justify-between',
-            !disabled && 'hover:border-blue-light',
-            disabled && 'opacity-50 cursor-not-allowed',
-            index !== 0 && 'mt-12'
-          )}
-          bgColor="var(--r-neutral-card2, #F2F4F7)"
-          left={<AddressRightAreaInItem account={account} />}
-          right={
-            <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
-              {`$${item.total_withdraw_limit}`}
-            </span>
-          }
-          onClick={() => {
-            if (!disabled) {
-              setSelectAddressChainList(item);
-              onClose();
+        <div
+          className={clsx('w-full h-[68px] flex items-center justify-between')}
+        >
+          <Item
+            key={item.recharge_addr}
+            style={style}
+            px={16}
+            py={0}
+            className={clsx(
+              'rounded-[6px] w-full h-[56px] px-16 mb-12',
+              'justify-between',
+              !disabled && 'hover:border-blue-light',
+              disabled && 'opacity-50 cursor-not-allowed'
+            )}
+            bgColor="var(--r-neutral-card2, #F2F4F7)"
+            left={<AddressRightAreaInItem account={account} />}
+            right={
+              <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
+                {`$${item.total_withdraw_limit}`}
+              </span>
             }
-          }}
-        />
-        // </div>
+            onClick={() => {
+              if (!disabled) {
+                setSelectAddressChainList(item);
+                onClose();
+              }
+            }}
+          />
+        </div>
       );
     },
     [isSelectChain, accountsList]
@@ -283,7 +283,7 @@ const Selector = ({
               </div>
               <div className="flex items-center flex-row gap-4">
                 {t('page.gasAccount.withdrawPopup.withdrawalLimit')}
-                <TooltipWithMagnetArrow
+                <Tooltip
                   overlayClassName={clsx('rectangle')}
                   placement="topLeft"
                   title={
@@ -296,7 +296,7 @@ const Selector = ({
                   align={{ targetOffset: [0, 0] }}
                 >
                   <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                </TooltipWithMagnetArrow>
+                </Tooltip>
               </div>
             </div>
           </div>
@@ -308,7 +308,7 @@ const Selector = ({
               height={328}
               itemCount={sortedList?.length || 0}
               itemData={sortedList as RechargeChainItem[]}
-              itemSize={56}
+              itemSize={68}
             >
               {ChainRow}
             </FixedSizeList>
@@ -318,7 +318,7 @@ const Selector = ({
               height={328}
               itemCount={sortedList?.length || 0}
               itemData={sortedList as WithdrawListAddressItem[]}
-              itemSize={56}
+              itemSize={68}
             >
               {AddressRow}
             </FixedSizeList>
@@ -350,50 +350,78 @@ const WithdrawContent = ({
 
   const account = useCurrentAccount();
   const [btnLoading, setBtnLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [withdrawList, setWithdrawList] = useState<WithdrawListAddressItem[]>();
   const { refresh } = useGasAccountRefresh();
 
   const gasAccount = useRabbySelector((s) => s.gasAccount.account);
 
-  const loading = true;
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await wallet.openapi.getWithdrawList({
+        sig: sig!,
+        id: accountId!,
+      });
+      if (res) {
+        const data = res?.filter((item) => {
+          const { recharge_addr } = item;
+          const idx = accountsList.findIndex(
+            (i) => i.address === recharge_addr
+          );
+          return idx > -1;
+        });
 
-  // const { value: withdrawList, loading } = useAsync(
-  //   () => wallet.openapi.getGasAccountWithdrawTokenList(account!.address),
-  //   [account?.address]
-  // );
-  const _withdrawList = [
-    {
-      recharge_addr: account!.address,
-      total_withdraw_limit: 100,
-      recharge_chain_list: [
-        {
-          chain_id: 'eth',
-          withdraw_limit: 50,
-          withdraw_fee: 0.1,
-        },
-        {
-          chain_id: 'bsc',
-          withdraw_limit: 50,
-          withdraw_fee: 0.2,
-        },
-      ],
-    },
-    {
-      recharge_addr: account!.address,
-      total_withdraw_limit: 200,
-      recharge_chain_list: [
-        {
-          chain_id: 'eth',
-          withdraw_limit: 200,
-          withdraw_fee: 0.1,
-        },
-        {
-          chain_id: 'bsc',
-          withdraw_limit: 0.1,
-          withdraw_fee: 0.2,
-        },
-      ],
-    },
-  ] as WithdrawListAddressItem[];
+        setWithdrawList(data);
+        setSelectAddressChainList(data[0]);
+      }
+    } catch (e) {
+      console.error(e?.message || String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (sig && accountId) {
+      fetchData();
+    }
+  }, [sig, accountId]);
+
+  // const _withdrawList = [
+  //   {
+  //     recharge_addr: account!.address,
+  //     total_withdraw_limit: 100,
+  //     recharge_chain_list: [
+  //       {
+  //         chain_id: 'eth',
+  //         withdraw_limit: 50,
+  //         withdraw_fee: 0.1,
+  //       },
+  //       {
+  //         chain_id: 'bsc',
+  //         withdraw_limit: 50,
+  //         withdraw_fee: 0.2,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     recharge_addr: account!.address,
+  //     total_withdraw_limit: 200,
+  //     recharge_chain_list: [
+  //       {
+  //         chain_id: 'eth',
+  //         withdraw_limit: 200,
+  //         withdraw_fee: 0.1,
+  //       },
+  //       {
+  //         chain_id: 'bsc',
+  //         withdraw_limit: 0.1,
+  //         withdraw_fee: 0.2,
+  //       },
+  //     ],
+  //   },
+  // ] as WithdrawListAddressItem[];
 
   const {
     accountsList,
@@ -404,30 +432,32 @@ const WithdrawContent = ({
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
 
-  const withdrawList = useMemo(() => {
-    return _withdrawList.filter((item) => {
-      const { recharge_addr } = item;
-      const idx = accountsList.findIndex((i) => i.address === recharge_addr);
-      return idx > -1;
-    });
-  }, [_withdrawList, accountsList]);
+  useEffect(() => {
+    if (withdrawList && withdrawList.length) {
+      setSelectAddressChainList(withdrawList[0]);
+    }
+  }, [withdrawList]);
 
   const withdraw = async () => {
-    if (balance <= 0) {
-      onClose();
+    if (balance <= 0 || !selectAddressChainList || !chain) {
       return;
     }
+
     try {
       setBtnLoading(true);
       await wallet.openapi.withdrawGasAccount({
         sig: sig!,
         account_id: accountId!,
         amount: balance,
+        user_addr: selectAddressChainList.recharge_addr,
+        fee: chain.withdraw_fee,
+        chain_id: chain.chain_id,
       });
       refresh();
       onClose();
     } catch (error) {
       message.error(error?.message || String(error));
+      console.error(error?.message || String(error));
     } finally {
       setBtnLoading(false);
     }
@@ -469,6 +499,12 @@ const WithdrawContent = ({
     }
   }, [chain]);
 
+  const selectedAccount = useMemo(() => {
+    return accountsList.find(
+      (i) => i.address === selectAddressChainList?.recharge_addr
+    );
+  }, [selectAddressChainList]);
+
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[12px]">
@@ -507,7 +543,7 @@ const WithdrawContent = ({
                 </div>
               </div>
             ) : (
-              <AddressRightAreaInItem account={gasAccount} />
+              <AddressRightAreaInItem account={selectedAccount} />
             )
           }
           hoverBorder={!loading}
@@ -555,7 +591,7 @@ const WithdrawContent = ({
         )}
       >
         {Boolean(BalanceSuffix) && (
-          <div className="flex items-center justify-center flex-row font-medium text-center text-rabby-neutral-foot text-11">
+          <div className="flex items-center justify-center flex-row font-medium text-center text-rabby-neutral-foot text-12">
             <RcIconInfo className="text-rabby-neutral-foot w-14 h-14 mr-4" />
             {t('page.gasAccount.withdrawPopup.deductGasFees')}
             {` ~$${chain?.withdraw_fee.toFixed(2)}`}
@@ -581,15 +617,17 @@ const WithdrawContent = ({
           </Button>
         </TooltipWithMagnetArrow>
       </WrapperDiv>
-      <Selector
-        accountsList={accountsList}
-        status={selectorStatus}
-        onClose={() => setSelectorStatus(SelectorStatus.Hidden)}
-        selectAddressChainList={selectAddressChainList || withdrawList[0]}
-        setChain={setChain}
-        setSelectAddressChainList={setSelectAddressChainList}
-        withdrawList={withdrawList}
-      />
+      {withdrawList && (
+        <Selector
+          accountsList={accountsList}
+          status={selectorStatus}
+          onClose={() => setSelectorStatus(SelectorStatus.Hidden)}
+          selectAddressChainList={selectAddressChainList || withdrawList[0]}
+          setChain={setChain}
+          setSelectAddressChainList={setSelectAddressChainList}
+          withdrawList={withdrawList}
+        />
+      )}
     </div>
   );
 };
