@@ -96,7 +96,10 @@ export const ForgotPassword = () => {
   return (
     <>
       {step === 'entry' && (
-        <CommonEntry hasStep={!hasEncryptedKeyringData} onNext={onEntryNext} />
+        <CommonEntry
+          hasEncryptedKeyringData={hasEncryptedKeyringData}
+          onNext={onEntryNext}
+        />
       )}
       {step === 'reset-confirm' && (
         <ResetConfirm onBack={handleBack} onConfirm={onResetConfirmNext} />
