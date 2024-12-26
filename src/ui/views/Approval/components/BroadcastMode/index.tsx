@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
+import { findChainByEnum } from '@/utils/chain';
 
 const GlobalStyle = createGlobalStyle`
   .broadcast-mode-popup {
@@ -189,7 +190,10 @@ export const BroadcastMode = ({
   const [account] = useAccount();
   const wallet = useWallet();
   const { data: supportedPushType } = useRequest(
-    () => wallet.openapi.gasSupportedPushType(CHAINS[chain]?.serverId),
+    () =>
+      wallet.openapi.gasSupportedPushType(
+        findChainByEnum(chain)!.serverId || CHAINS[chain]?.serverId
+      ),
     {
       refreshDeps: [chain],
     }

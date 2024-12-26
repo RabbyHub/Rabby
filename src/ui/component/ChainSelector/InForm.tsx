@@ -25,12 +25,12 @@ const ChainWrapper = styled.div`
   cursor: pointer;
   font-size: 16px;
   font-weight: 500;
-  &.mini {
+  &.bridge {
     width: auto;
     height: 28px;
     font-size: 13px;
-    padding: 0 6px;
-
+    padding: 0 8px;
+    gap: 0;
     & > {
       .down {
         margin-left: auto;
@@ -40,25 +40,44 @@ const ChainWrapper = styled.div`
       .name {
         color: var(--r-neutral-title-1, #192945);
         line-height: normal;
+        margin-left: 6px;
+        margin-right: 4px;
       }
     }
   }
-  &.inlineHover {
-    background: transparent;
-    gap: 4px;
-    & > .name {
-      color: var(--r-neutral-body, #3e495e);
-    }
-    &:hover {
+  &.swap {
+    gap: 8px;
+    padding: 0 16px;
+    border: 0.5px solid transparent;
+    background: var(--r-neutral-card1, #fff);
+    border-radius: 8px;
+    height: 44px;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: transparent;
-      .name,
-      .down {
-        color: var(--r-blue-default, #7084ff);
+      border-radius: 8px;
+      border: 0.5px solid var(--r-neutral-line, #e0e5ec);
+    }
+
+    &:hover {
+      &::before {
+        border: 1px solid var(--r-blue-default, #7084ff);
       }
+    }
+
+    & > .name {
+      color: var(--r-neutral-title-1, #192945);
+      font-size: 15px;
     }
   }
   &:hover {
-    background: rgba(134, 151, 255, 0.2);
+    background: var(--r-blue-light1, #eef1ff);
   }
   & > {
     .down {
@@ -79,15 +98,15 @@ export const ChainRender = ({
   readonly,
   className,
   arrowDownComponent,
-  mini,
-  inlineHover,
+  bridge,
+  swap,
   ...other
 }: {
   chain?: CHAINS_ENUM;
   readonly: boolean;
   arrowDownComponent?: React.ReactNode;
-  mini?: boolean;
-  inlineHover?: boolean;
+  bridge?: boolean;
+  swap?: boolean;
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -112,22 +131,25 @@ export const ChainRender = ({
       className={clsx(
         {
           'cursor-default hover:bg-r-neutral-bg-2': readonly,
-          mini,
-          inlineHover,
+          bridge,
+          swap,
         },
         className
       )}
       {...other}
     >
-      {/* <img className="logo" src={CHAINS[chain].logo} alt={CHAINS[chain].name} /> */}
       {chain && (
         <ChainIcon
           chain={chain}
           customRPC={customRPC}
-          size={inlineHover ? 'mini' : 'small'}
+          size={'small'}
+          innerClassName={clsx(
+            bridge && 'w-[16px] h-[16px]',
+            swap && 'w-[18px] h-[18px]'
+          )}
           showCustomRPCToolTip
           tooltipProps={{
-            visible: inlineHover ? false : undefined,
+            visible: swap || bridge ? false : undefined,
           }}
         />
       )}
@@ -139,7 +161,7 @@ export const ChainRender = ({
         (arrowDownComponent ? (
           arrowDownComponent
         ) : (
-          <RcImgArrowDownCC className="down" viewBox="0 0 20 20" />
+          <RcImgArrowDownCC className="down" viewBox="0 0 16 16" />
         ))}
     </ChainWrapper>
   );
@@ -156,12 +178,12 @@ interface ChainSelectorProps {
   title?: React.ReactNode;
   chainRenderClassName?: string;
   arrowDownComponent?: React.ReactNode;
-  mini?: boolean;
+  bridge?: boolean;
   hideTestnetTab?: boolean;
   excludeChains?: CHAINS_ENUM[];
   drawerHeight?: number;
   showClosableIcon?: boolean;
-  inlineHover?: boolean;
+  swap?: boolean;
 }
 export default function ChainSelectorInForm({
   value,
@@ -173,12 +195,12 @@ export default function ChainSelectorInForm({
   supportChains,
   chainRenderClassName,
   arrowDownComponent,
-  mini,
+  bridge,
   hideTestnetTab = false,
   excludeChains,
   drawerHeight,
   showClosableIcon,
-  inlineHover,
+  swap,
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -206,8 +228,8 @@ export default function ChainSelectorInForm({
         readonly={readonly}
         className={chainRenderClassName}
         arrowDownComponent={arrowDownComponent}
-        mini={mini}
-        inlineHover={inlineHover}
+        bridge={bridge}
+        swap={swap}
       />
       {!readonly && (
         <ChainSelectorModal

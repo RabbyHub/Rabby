@@ -15,7 +15,7 @@ import { findChain, findChainByServerID } from '@/utils/chain';
 
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
-import { ReactComponent as RcIconChainFilterClose } from 'ui/assets/chain-select/chain-filter-close.svg';
+import { ReactComponent as RcIconChainFilterCloseCC } from 'ui/assets/chain-select/chain-filter-close-cc.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { isNil } from 'lodash';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
@@ -49,11 +49,14 @@ export interface TokenSelectorProps {
   disabledTips?: React.ReactNode;
   supportChains?: CHAINS_ENUM[] | undefined;
   drawerHeight?: number | string;
+  excludeTokens?: TokenItem['id'][];
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
   return !findChainByServerID(token.chain)?.isTestnet;
 };
+
+const defaultExcludeTokens = [];
 
 const TokenSelector = ({
   visible,
@@ -69,6 +72,7 @@ const TokenSelector = ({
   disabledTips,
   supportChains,
   drawerHeight = '540px',
+  excludeTokens = defaultExcludeTokens,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -253,7 +257,12 @@ const TokenSelector = ({
   const swapAndBridgeHeader = React.useMemo(() => {
     if (isSwapOrBridge) {
       return (
-        <li className="token-list__header h-auto mb-0">
+        <li
+          className={clsx(
+            'token-list__header h-auto mb-0',
+            type === 'swapFrom' && 'mt-14'
+          )}
+        >
           <div>
             {type === 'swapTo'
               ? t('component.TokenSelector.hot')
@@ -318,11 +327,13 @@ const TokenSelector = ({
   const recentDisplayToTokens = useMemo(() => {
     if (type === 'swapTo' && query.length < 1) {
       return recentToTokens.filter((item) => {
-        return item.chain === chainServerId;
+        return (
+          item.chain === chainServerId && !excludeTokens?.includes(item.id)
+        );
       });
     }
     return [];
-  }, [chainServerId, recentToTokens, type, query]);
+  }, [chainServerId, recentToTokens, type, query, excludeTokens]);
 
   return (
     <Drawer
@@ -355,9 +366,9 @@ const TokenSelector = ({
         />
       </div>
       <div className="filters-wrapper">
-        {chainItem && !isSwapOrBridge && (
+        {chainItem && !['swapTo', 'bridgeFrom'].includes(type) && (
           <>
-            <div className="filter-item__chain">
+            <div className="filter-item__chain px-10">
               <img
                 className="filter-item__chain-logo"
                 src={chainItem.logo}
@@ -375,9 +386,9 @@ const TokenSelector = ({
                   });
                 }}
               >
-                <ThemeIcon
-                  className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
-                  src={RcIconChainFilterClose}
+                <RcIconChainFilterCloseCC
+                  viewBox="0 0 16 16"
+                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body hover:text-r-red-default"
                 />
               </div>
             </div>

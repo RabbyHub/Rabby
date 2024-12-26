@@ -20,6 +20,7 @@ import { useRabbySelector } from '@/ui/store';
 import stats from '@/stats';
 import { ChainGas } from '@/background/service/preference';
 import { verifySdk } from './verify';
+import { findChainByEnum } from '@/utils/chain';
 
 export interface validSlippageParams {
   chain: CHAINS_ENUM;
@@ -31,6 +32,7 @@ export interface validSlippageParams {
 export const useQuoteMethods = () => {
   const walletController = useWallet();
   const walletOpenapi = walletController.openapi;
+
   const validSlippage = React.useCallback(
     async ({
       chain,
@@ -40,7 +42,7 @@ export const useQuoteMethods = () => {
     }: validSlippageParams) => {
       const p = {
         slippage: new BigNumber(slippage).div(100).toString(),
-        chain_id: CHAINS[chain].serverId,
+        chain_id: findChainByEnum(chain)!.serverId,
         from_token_id: payTokenId,
         to_token_id: receiveTokenId,
       };
@@ -98,8 +100,8 @@ export const useQuoteMethods = () => {
     async ({ addr, chain, tokenId }: getTokenParams) => {
       return walletOpenapi.getToken(
         addr,
-        CHAINS[chain].serverId,
-        tokenId // CHAINS[chain].nativeTokenAddress
+        findChainByEnum(chain)!.serverId,
+        tokenId
       );
     },
     [walletOpenapi]
@@ -116,15 +118,16 @@ export const useQuoteMethods = () => {
       getDexQuoteParams,
       'payToken' | 'receiveToken' | 'payAmount' | 'chain' | 'dexId'
     >) => {
+      const chainInfo = findChainByEnum(chain)!;
       if (
-        payToken?.id === CHAINS[chain].nativeTokenAddress ||
+        payToken?.id === chainInfo.nativeTokenAddress ||
         isSwapWrapToken(payToken.id, receiveToken.id, chain)
       ) {
         return [true, false];
       }
 
       const allowance = await walletController.getERC20Allowance(
-        CHAINS[chain].serverId,
+        chainInfo.serverId,
         payToken.id,
         getSpender(dexId, chain)
       );
@@ -156,19 +159,20 @@ export const useQuoteMethods = () => {
       dexId,
       quote,
     }: getPreExecResultParams) => {
+      const chainInfo = findChainByEnum(chain)!;
       const nonce = await walletController.getRecommendNonce({
         from: userAddress,
-        chainId: CHAINS[chain].id,
+        chainId: chainInfo.id,
       });
       const lastTimeGas: ChainGas | null = await walletController.getLastTimeGasSelection(
-        CHAINS[chain].id
+        chainInfo.id
       );
       const gasMarket = await walletController.gasMarketV2({
-        chain: CHAINS[chain],
+        chain: chainInfo,
         tx: {
           ...quote.tx,
           nonce,
-          chainId: CHAINS[chain].id,
+          chainId: chainInfo.id,
           gas: '0x0',
         },
       });
@@ -205,7 +209,7 @@ export const useQuoteMethods = () => {
           {
             from: userAddress,
             to: payToken.id,
-            chainId: CHAINS[chain].id,
+            chainId: chainInfo.id,
             spender: getSpender(dexId, chain),
             amount,
           }
@@ -270,7 +274,7 @@ export const useQuoteMethods = () => {
         tx: {
           ...quote.tx,
           nonce: nextNonce,
-          chainId: CHAINS[chain].id,
+          chainId: chainInfo.id,
           value: `0x${new BigNumber(quote.tx.value).toString(16)}`,
           gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
           gas: '0x0',
@@ -329,7 +333,7 @@ export const useQuoteMethods = () => {
         let gasPrice: number;
         if (isOpenOcean) {
           const gasMarket = await walletController.gasMarketV2({
-            chainId: CHAINS[chain].serverId,
+            chainId: findChainByEnum(chain)!.serverId,
           });
           gasPrice = gasMarket?.[1]?.price;
         }
@@ -340,36 +344,35 @@ export const useQuoteMethods = () => {
           toToken: receiveToken.id,
         });
 
-        const data = await pRetry(
-          () =>
-            getQuote(
-              isSwapWrapToken(payToken.id, receiveToken.id, chain)
-                ? DEX_ENUM.WRAPTOKEN
-                : dexId,
-              {
-                fromToken: payToken.id,
-                toToken: receiveToken.id,
-                feeAddress: SWAP_FEE_ADDRESS,
-                fromTokenDecimals: payToken.decimals,
-                amount: new BigNumber(payAmount)
-                  .times(10 ** payToken.decimals)
-                  .toFixed(0, 1),
-                userAddress,
-                slippage: Number(slippage),
-                feeRate:
-                  feeAfterDiscount === '0' && isOpenOcean
-                    ? undefined
-                    : Number(feeAfterDiscount) || 0,
-                chain,
-                gasPrice,
-                fee: true,
-              },
-              walletOpenapi
-            ),
-          {
-            retries: 1,
-          }
-        );
+        const getData = () =>
+          getQuote(
+            isSwapWrapToken(payToken.id, receiveToken.id, chain)
+              ? DEX_ENUM.WRAPTOKEN
+              : dexId,
+            {
+              fromToken: payToken.id,
+              toToken: receiveToken.id,
+              feeAddress: SWAP_FEE_ADDRESS,
+              fromTokenDecimals: payToken.decimals,
+              amount: new BigNumber(payAmount)
+                .times(10 ** payToken.decimals)
+                .toFixed(0, 1),
+              userAddress,
+              slippage: Number(slippage),
+              feeRate:
+                feeAfterDiscount === '0' && isOpenOcean
+                  ? undefined
+                  : Number(feeAfterDiscount) || 0,
+              chain,
+              gasPrice,
+              fee: true,
+              chainServerId: findChainByEnum(chain)!.serverId,
+              nativeTokenAddress: findChainByEnum(chain)!.nativeTokenAddress,
+            },
+            walletOpenapi
+          );
+
+        const data = await getData();
 
         stats.report('swapQuoteResult', {
           dex: dexId,
@@ -479,7 +482,9 @@ export const useQuoteMethods = () => {
 
       return Promise.all([
         ...(supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[]).map((dexId) =>
-          getDexQuote({ ...params, dexId })
+          getDexQuote({ ...params, dexId }).finally(() => {
+            console.log('dexid end', dexId);
+          })
         ),
       ]);
     },
@@ -575,7 +580,7 @@ export function isSwapWrapToken(
 ) {
   const wrapTokens = [
     WrapTokenAddressMap[chain as keyof typeof WrapTokenAddressMap],
-    CHAINS[chain].nativeTokenAddress,
+    findChainByEnum(chain)!.nativeTokenAddress,
   ];
   return (
     !!wrapTokens.find((token) => isSameAddress(payTokenId, token)) &&

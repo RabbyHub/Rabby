@@ -19,7 +19,7 @@ import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
-import { findChain } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
@@ -41,7 +41,7 @@ const useTokenInfo = ({
     if (userAddress && token?.id && chain) {
       const data = await wallet.openapi.getToken(
         userAddress,
-        CHAINS[chain].serverId,
+        findChainByEnum(chain)!.serverId,
         token.id
       );
       return data;
@@ -86,7 +86,10 @@ export const useTokenPair = (userAddress: string) => {
       initialSelectedChain: state.swap.$$initialSelectedChain,
       oChain: state.swap.selectedChain || CHAINS_ENUM.ETH,
       defaultSelectedFromToken: state.swap.selectedFromToken,
-      defaultSelectedToToken: state.swap.selectedToToken,
+      defaultSelectedToToken:
+        state.swap.selectedToToken?.id !== state.swap.selectedFromToken?.id
+          ? state.swap.selectedToToken
+          : undefined,
     };
   });
 
@@ -203,11 +206,18 @@ export const useTokenPair = (userAddress: string) => {
 
   const [swapUseSlider, setSwapUseSlider] = useState<boolean>(false);
 
+  const [isDraggingSlider, setIsDraggingSlider] = useState<boolean>(false);
+
   const onChangeSlider = useCallback(
-    (v: number) => {
+    (v: number, syncAmount?: boolean) => {
       if (payToken) {
+        setIsDraggingSlider(true);
         setSwapUseSlider(true);
         setSlider(v);
+
+        if (syncAmount) {
+          setIsDraggingSlider(false);
+        }
 
         if (v === 100) {
           handleSlider100();
@@ -238,7 +248,10 @@ export const useTokenPair = (userAddress: string) => {
 
   const payTokenIsNativeToken = useMemo(() => {
     if (payToken) {
-      return isSameAddress(payToken.id, CHAINS[chain].nativeTokenAddress);
+      return isSameAddress(
+        payToken.id,
+        findChainByEnum(chain)!.nativeTokenAddress
+      );
     }
     return false;
   }, [chain, payToken]);
@@ -272,7 +285,7 @@ export const useTokenPair = (userAddress: string) => {
   const { value: gasList } = useAsync(() => {
     gasPriceRef.current = undefined;
     setGasLevel('normal');
-    return wallet.gasMarketV2({ chainId: CHAINS[chain].serverId });
+    return wallet.gasMarketV2({ chainId: findChainByEnum(chain)!.serverId });
   }, [chain]);
 
   const normalGasPrice = useMemo(
@@ -347,7 +360,7 @@ export const useTokenPair = (userAddress: string) => {
     if (payToken?.id && receiveToken?.id) {
       const wrapTokens = [
         WrapTokenAddressMap[chain],
-        CHAINS[chain].nativeTokenAddress,
+        findChainByEnum(chain)!.nativeTokenAddress,
       ];
       const res =
         !!wrapTokens.find((token) => isSameAddress(payToken?.id, token)) &&
@@ -410,6 +423,8 @@ export const useTokenPair = (userAddress: string) => {
     []
   );
 
+  const [showMoreVisible, setShowMoreVisible] = useState(false);
+
   const [pending, setPending] = useState(false);
 
   const fetchIdRef = useRef(0);
@@ -428,11 +443,13 @@ export const useTokenPair = (userAddress: string) => {
       chain &&
       Number(inputAmount) > 0 &&
       feeRate &&
-      !inSufficient
+      !inSufficient &&
+      !isDraggingSlider
     ) {
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
+      setActiveProvider(undefined);
       return getAllQuotes({
         userAddress,
         payToken,
@@ -444,6 +461,7 @@ export const useTokenPair = (userAddress: string) => {
         setQuote: setQuote(currentFetchId),
       }).finally(() => {
         setPending(false);
+        setShowMoreVisible(true);
       });
     } else {
       setActiveProvider(undefined);
@@ -461,6 +479,7 @@ export const useTokenPair = (userAddress: string) => {
     inputAmount,
     feeRate,
     slippageObj.slippage,
+    isDraggingSlider,
   ]);
 
   useEffect(() => {
@@ -486,13 +505,14 @@ export const useTokenPair = (userAddress: string) => {
     inputAmount,
     feeRate,
     inSufficient,
+    slippageObj?.slippage,
   ]);
 
   useDebounce(
     () => {
       getQuotes();
     },
-    300,
+    1000,
     [getQuotes]
   );
 
@@ -686,13 +706,14 @@ export const useTokenPair = (userAddress: string) => {
     lowCreditVisible,
     setLowCreditToken,
     setLowCreditVisible,
+    showMoreVisible,
 
     ...slippageObj,
   };
 };
 
 function getChainDefaultToken(chain: CHAINS_ENUM) {
-  const chainInfo = CHAINS[chain];
+  const chainInfo = findChainByEnum(chain)!;
   return {
     id: chainInfo.nativeTokenAddress,
     decimals: chainInfo.nativeTokenDecimals,
