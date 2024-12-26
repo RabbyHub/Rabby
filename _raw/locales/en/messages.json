@@ -1527,6 +1527,10 @@
           "running_app_close_error": "Failed to close the running app on your Ledger device."
         }
       },
+      "imkey": {
+        "title": "Connect imKey",
+        "imkeyPermissionTip": "Please click \"Allow\" below and authorize access to your imKey in the following pop-up window."
+      },
       "keystone": {
         "title": "Connect Keystone",
         "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
@@ -1726,9 +1730,6 @@
         "addCoboArgusAddress": "Add Cobo Argus address",
         "findTheAssociatedSafeAddress": "Find the associated safe address",
         "import": "Import"
-      },
-      "imkey": {
-        "title": "Connect imKey"
       },
       "addFromCurrentSeedPhrase": "Add from Current Seed Phrase"
     },

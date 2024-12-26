@@ -54,7 +54,7 @@ const AddressBackup = () => {
             </div>
           </div>
           <div className="flex justify-center">
-            <div className="p-[12px] rounded-[16px] border-rabby-neutral-line border-[1px] bg-r-neutral-card-1">
+            <div className="p-[12px] rounded-[16px] border-rabby-neutral-line border-[1px] bg-white">
               <QRCode value={data} size={240} />
             </div>
           </div>
