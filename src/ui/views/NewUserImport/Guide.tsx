@@ -5,6 +5,8 @@ import { Button } from 'antd';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import BackgroundSVG from '@/ui/assets/new-user-import/background.svg';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export const Guide = () => {
   const { t } = useTranslation();
@@ -18,8 +20,20 @@ export const Guide = () => {
     history.push('/new-user/import-list');
   }, []);
 
+  const { isDarkTheme } = useThemeMode();
+
   return (
-    <Card>
+    <Card
+      cardStyle={
+        isDarkTheme
+          ? {}
+          : {
+              backgroundImage: `url(${BackgroundSVG})`,
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+            }
+      }
+    >
       <div className="flex flex-col items-center">
         <RcIconRabbyLogo
           viewBox="0 0 100 100"

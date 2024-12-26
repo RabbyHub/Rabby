@@ -1702,7 +1702,8 @@
         "error": "密码错误",
         "placeholder": "输入密码解锁",
         "required": "输入密码解锁"
-      }
+      },
+      "btnForgotPassword": "忘记密码？"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名单",
@@ -2038,6 +2039,45 @@
     },
     "sign": {
       "transactionSpeed": "交易速度"
+    },
+    "forgotPassword": {
+      "home": {
+        "buttonNoData": "设置新密码",
+        "button": "开始重置流程",
+        "title": "忘记密码",
+        "description": "Rabby不会保存你的密码,因此丢失密码无法找回 如果忘记密码只能重置钱包并重新设置密码",
+        "descriptionNoData": "Rabby不会保存你的密码,因此丢失密码无法找回 如果忘记密码只能重新设置密码"
+      },
+      "reset": {
+        "title": "重置 Rabby Wallet",
+        "alert": {
+          "title": "重置后会清除以下数据,且无法帮你找回",
+          "seed": "助记词",
+          "privateKey": "私钥"
+        },
+        "tip": {
+          "title": "会保留以下数据",
+          "hardware": "已导入的硬件钱包地址",
+          "safe": "已导入的 Safe 地址",
+          "watch": "已导入的观察地址",
+          "whitelist": "转账白名单",
+          "records": "签名记录"
+        },
+        "confirm": "如确认重置钱包, 请输入: <1>RESET</1>",
+        "button": "确认重置"
+      },
+      "success": {
+        "title": "密码创建成功",
+        "description": "请继续使用 Rabby",
+        "button": "完成"
+      },
+      "tip": {
+        "title": "Rabby Wallet 已经重置",
+        "button": "设置新密码",
+        "buttonNoData": "重新导入地址",
+        "description": "请设定一个新的密码继续使用钱包",
+        "descriptionNoData": "请重新导入地址后使用钱包"
+      }
     }
   },
   "component": {

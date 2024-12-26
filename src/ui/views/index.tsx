@@ -18,6 +18,7 @@ import { useMount } from 'react-use';
 import { useMemoizedFn } from 'ahooks';
 import { useThemeModeOnMain } from '../hooks/usePreference';
 import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
+import { ForgotPassword } from './ForgotPassword/ForgotPassword';
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 
 const useAutoLock = () => {
@@ -74,6 +75,10 @@ const Main = () => {
 
       <Route exact path="/unlock">
         <Unlock />
+      </Route>
+
+      <Route exact path="/forgot-password">
+        <ForgotPassword />
       </Route>
 
       <PrivateRoute exact path="/dashboard">
