@@ -1702,7 +1702,8 @@
         "error": "密码错误",
         "placeholder": "输入密码解锁",
         "required": "输入密码解锁"
-      }
+      },
+      "btnForgotPassword": "忘记密码？"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名单",
@@ -2062,7 +2063,8 @@
           "whitelist": "转账白名单",
           "records": "签名记录"
         },
-        "confirm": "如确认重置钱包, 请输入:<1>RESET</1>"
+        "confirm": "如确认重置钱包, 请输入: <1>RESET</1>",
+        "button": "确认重置"
       },
       "success": {
         "title": "密码创建成功",
