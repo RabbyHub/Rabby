@@ -41,7 +41,7 @@ const RequestPermission = () => {
     imkey: {
       title: t('page.newAddress.ledger.allowRabbyPermissionsTitle'),
       desc: [t('page.newAddress.ledger.ledgerPermission1')],
-      tip: t('page.newAddress.ledger.ledgerPermissionTip'),
+      tip: t('page.newAddress.imkey.imkeyPermissionTip'),
     },
     keystone: {
       title: t('page.newAddress.keystone.allowRabbyPermissionsTitle'),

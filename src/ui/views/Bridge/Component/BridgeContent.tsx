@@ -404,6 +404,33 @@ export const BridgeContent = () => {
         </div>
       </div>
 
+      {inSufficient || (noQuote && !recommendFromToken) ? (
+        <Alert
+          className={clsx(
+            'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
+          )}
+          icon={
+            <RcIconWarningCC
+              viewBox="0 0 16 16"
+              className={clsx(
+                'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
+                'text-rabby-red-default'
+              )}
+            />
+          }
+          banner
+          message={
+            <span
+              className={clsx('text-13 font-medium', 'text-rabby-red-default')}
+            >
+              {inSufficient
+                ? t('page.bridge.insufficient-balance')
+                : t('page.bridge.no-quote-found')}
+            </span>
+          }
+        />
+      ) : null}
+
       <div className="mx-20 mt-28">
         {selectedBridgeQuote && (
           <BridgeShowMore
@@ -445,33 +472,6 @@ export const BridgeContent = () => {
           />
         )}
       </div>
-
-      {inSufficient || (noQuote && !recommendFromToken) ? (
-        <Alert
-          className={clsx(
-            'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
-          )}
-          icon={
-            <RcIconWarningCC
-              viewBox="0 0 16 16"
-              className={clsx(
-                'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
-                'text-rabby-red-default'
-              )}
-            />
-          }
-          banner
-          message={
-            <span
-              className={clsx('text-13 font-medium', 'text-rabby-red-default')}
-            >
-              {inSufficient
-                ? t('page.bridge.insufficient-balance')
-                : t('page.bridge.no-quote-found')}
-            </span>
-          }
-        />
-      ) : null}
 
       <div
         className={clsx(

@@ -68,7 +68,7 @@ interface SwapTokenItemProps {
   onValueChange?: (s: string) => void;
   label?: React.ReactNode;
   slider?: number;
-  onChangeSlider?: (value: number) => void;
+  onChangeSlider?: (value: number, syncAmount?: boolean) => void;
   excludeTokens?: string[];
   inSufficient?: boolean;
   valueLoading?: boolean;
@@ -90,11 +90,22 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     valueLoading,
     currentQuote,
   } = props;
+
+  const openTokenModalRef = useRef<{
+    openTokenModal: React.Dispatch<React.SetStateAction<boolean>>;
+  }>(null);
+
   const { t } = useTranslation();
 
   const inputRef = useRef<Input>();
 
   const isFrom = type === 'from';
+
+  const handleTokenModalOpen = useCallback(() => {
+    if (!isFrom) {
+      openTokenModalRef?.current?.openTokenModal?.(true);
+    }
+  }, [isFrom]);
 
   const [balance, usdValue] = useMemo(() => {
     if (token) {
@@ -153,7 +164,14 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     (e) => {
       onValueChange?.(e.target.value);
     },
-    []
+    [onValueChange]
+  );
+
+  const onAfterChangeSlider = useCallback(
+    (value: number) => {
+      onChangeSlider?.(value, true);
+    },
+    [onChangeSlider]
   );
 
   useLayoutEffect(() => {
@@ -164,7 +182,13 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   return (
     <div className="p-16 pb-20 h-[132px]">
-      <div className="flex items-center justify-between">
+      <div
+        className={clsx(
+          'flex items-center justify-between',
+          !isFrom && 'cursor-pointer'
+        )}
+        onClick={handleTokenModalOpen}
+      >
         <span className="block w-[150px] text-rabby-neutral-foot">
           {isFrom ? t('page.swap.from') : t('page.swap.to')}
         </span>
@@ -174,30 +198,45 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
               className="w-[125px]"
               value={slider}
               onChange={onChangeSlider}
+              onAfterChange={onAfterChangeSlider}
               min={0}
               max={100}
               tooltipVisible={false}
+              disabled={!token}
             />
-            <span className="absolute top-1/2 -right-16 transform -translate-y-1/2 w-[38px] text-13 text-r-blue-default font-medium">
+            <span className="absolute top-1/2 -right-12 transform -translate-y-1/2 w-[38px] text-13 text-r-blue-default font-medium">
               {slider}%
             </span>
           </div>
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-8 pb-12 h-[60px]">
-        <TokenSelect
-          token={token}
-          onTokenChange={onTokenSelect}
-          chainId={chainId}
-          type={isFrom ? 'swapFrom' : 'swapTo'}
-          placeholder={t('page.swap.search-by-name-address')}
-          excludeTokens={excludeTokens}
-          tokenRender={tokenRender}
-          supportChains={SWAP_SUPPORT_CHAINS}
-          useSwapTokenList={!isFrom}
-          disabledTips={t('page.swap.insufficient-balance')}
-        />
+      <div
+        className={clsx(
+          'flex items-center justify-between pt-8 pb-12 h-[60px]',
+          !isFrom && 'cursor-pointer'
+        )}
+        onClick={handleTokenModalOpen}
+      >
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <TokenSelect
+            ref={openTokenModalRef}
+            token={token}
+            onTokenChange={onTokenSelect}
+            chainId={chainId}
+            type={isFrom ? 'swapFrom' : 'swapTo'}
+            placeholder={t('page.swap.search-by-name-address')}
+            excludeTokens={excludeTokens}
+            tokenRender={tokenRender}
+            supportChains={SWAP_SUPPORT_CHAINS}
+            useSwapTokenList={!isFrom}
+            disabledTips={t('page.swap.insufficient-balance')}
+          />
+        </div>
 
         {valueLoading ? (
           <SkeletonInput
@@ -217,7 +256,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             ref={inputRef as any}
             readOnly={!isFrom}
             className={clsx(
-              !isFrom && 'cursor-default',
+              !isFrom && 'cursor-pointer',
               isFrom && inSufficient && 'text-r-red-default'
             )}
           />

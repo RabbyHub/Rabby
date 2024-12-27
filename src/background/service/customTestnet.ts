@@ -6,14 +6,7 @@ import { createPersistStore, withTimeout } from 'background/utils';
 import { BigNumber } from 'bignumber.js';
 import { intToHex } from 'ethereumjs-util';
 import { omit, sortBy } from 'lodash';
-import {
-  Client,
-  createClient,
-  defineChain,
-  erc20Abi,
-  http,
-  isAddress,
-} from 'viem';
+import { createClient, defineChain, erc20Abi, http, isAddress } from 'viem';
 import {
   estimateGas,
   getBalance,
@@ -24,6 +17,8 @@ import {
 } from 'viem/actions';
 import { http as axios } from '../utils/http';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import RPCService, { RPCServiceStore } from './rpc';
+import { storage } from '../webapi';
 
 const MAX_READ_CONTRACT_TIME = 8000;
 
@@ -89,7 +84,7 @@ class CustomTestnetService {
     customTokenList: [],
   };
 
-  chains: Record<string, Client> = {};
+  chains: Record<string, ReturnType<typeof createClientByChain>> = {};
 
   logos: Record<
     string,
@@ -100,16 +95,22 @@ class CustomTestnetService {
   > = {};
 
   init = async () => {
-    const storage = await createPersistStore<CutsomTestnetServiceStore>({
+    const storageCache = await createPersistStore<CutsomTestnetServiceStore>({
       name: 'customTestnet',
       template: {
         customTestnet: {},
         customTokenList: [],
       },
     });
-    this.store = storage || this.store;
+    this.store = storageCache || this.store;
+    const rpcStorage: RPCServiceStore = await storage.get('rpc');
     Object.values(this.store.customTestnet).forEach((chain) => {
-      const client = createClientByChain(chain);
+      const config =
+        rpcStorage.customRPC[chain.enum] &&
+        rpcStorage.customRPC[chain.enum]?.enable
+          ? { ...chain, rpcUrl: rpcStorage.customRPC[chain.enum].url }
+          : chain;
+      const client = createClientByChain(config);
       this.chains[chain.id] = client;
     });
     this.syncChainList();
@@ -176,12 +177,14 @@ class CustomTestnetService {
         },
       };
     }
-
+    const testnetChain = createTestnetChain(chain);
     this.store.customTestnet = {
       ...this.store.customTestnet,
-      [chain.id]: createTestnetChain(chain),
+      [chain.id]: testnetChain,
     };
-    this.chains[chain.id] = createClientByChain(chain);
+    if (!RPCService.hasCustomRPC(testnetChain.enum)) {
+      this.chains[chain.id] = createClientByChain(chain);
+    }
     this.syncChainList();
 
     if (this.getList().length) {
@@ -675,6 +678,25 @@ class CustomTestnetService {
     } catch (e) {
       console.error(e);
       return {};
+    }
+  };
+
+  setCustomRPC = ({ chainId, url }: { chainId: number; url: string }) => {
+    const client = this.getClient(chainId);
+    if (client) {
+      this.chains[chainId] = createClientByChain({
+        ...this.store.customTestnet[chainId],
+        rpcUrl: url,
+      });
+    }
+  };
+
+  removeCustomRPC = (chainId: number) => {
+    const client = this.getClient(chainId);
+    if (client) {
+      this.chains[chainId] = createClientByChain(
+        this.store.customTestnet[chainId]
+      );
     }
   };
 }

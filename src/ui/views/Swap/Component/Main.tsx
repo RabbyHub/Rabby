@@ -26,7 +26,7 @@ import {
   SWAP_SUPPORT_CHAINS,
 } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
-import { findChainByServerID } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
@@ -108,6 +108,7 @@ export const Main = () => {
     lowCreditVisible,
     setLowCreditToken,
     setLowCreditVisible,
+    showMoreVisible,
   } = useTokenPair(userAddress);
 
   const refresh = useSetRefreshId();
@@ -324,6 +325,17 @@ export const Main = () => {
 
   const lowCreditInit = useRef(false);
 
+  useEffect(() => {
+    if (
+      receiveToken &&
+      receiveToken?.low_credit_score &&
+      !lowCreditInit.current
+    ) {
+      setLowCreditToken(receiveToken);
+      setLowCreditVisible(true);
+    }
+  }, [receiveToken]);
+
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
       background: '#fff',
@@ -346,7 +358,7 @@ export const Main = () => {
     },
   });
 
-  const [showMoreOpen, setShowMoreOpen] = useState(!autoSlippage);
+  const [showMoreOpen, setShowMoreOpen] = useState(false);
 
   const [sourceName, sourceLogo] = useMemo(() => {
     if (activeProvider?.name) {
@@ -390,20 +402,23 @@ export const Main = () => {
   useDebounce(
     () => {
       if (
+        !isWrapToken &&
         Number(inputAmount) > 0 &&
         !inSufficient &&
         amountAvailable &&
         !quoteLoading &&
         !!payToken &&
         !!receiveToken &&
-        !autoSlippage &&
-        activeProvider
+        activeProvider &&
+        Number(slippage) > 1
       ) {
         setShowMoreOpen(true);
       }
     },
     10,
     [
+      showMoreVisible,
+      isWrapToken,
       inputAmount,
       inSufficient,
       amountAvailable,
@@ -420,16 +435,15 @@ export const Main = () => {
     <div
       className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
     >
-      <div className="flex mb-4">
+      <div className="my-8 mx-20">
         <ChainSelectorInForm
-          mini
-          inlineHover
+          swap
           value={chain}
           onChange={switchChain}
           disabledTips={getDisabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
           hideTestnetTab={true}
-          chainRenderClassName={clsx('pl-[30px] text-[13px] font-medium')}
+          chainRenderClassName={clsx('text-[13px] font-medium')}
           title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
           drawerHeight={540}
           showClosableIcon
@@ -457,7 +471,7 @@ export const Main = () => {
             }
             setPayToken(token);
           }}
-          chainId={CHAINS[chain].serverId}
+          chainId={findChainByEnum(chain)!.serverId}
           type={'from'}
           excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
         />
@@ -502,7 +516,7 @@ export const Main = () => {
               setLowCreditVisible(true);
             }
           }}
-          chainId={CHAINS[chain].serverId}
+          chainId={findChainByEnum(chain)!.serverId || CHAINS[chain].serverId}
           type={'to'}
           excludeTokens={payToken?.id ? [payToken?.id] : undefined}
           currentQuote={activeProvider}
@@ -539,7 +553,8 @@ export const Main = () => {
         />
       ) : null}
 
-      {Number(inputAmount) > 0 &&
+      {showMoreVisible &&
+        Number(inputAmount) > 0 &&
         !inSufficient &&
         !!amountAvailable &&
         !!payToken &&
