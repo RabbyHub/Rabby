@@ -86,54 +86,13 @@ export const GasACcountCurrentAddress = ({
 };
 
 const GasAccountLoginContent = ({ onClose }: { onClose: () => void }) => {
-  const [toConfirm, setToConfirm] = useState(false);
   const { t } = useTranslation();
 
   const { login } = useGasAccountMethods();
 
   const gotoLogin = () => {
-    setToConfirm(true);
-  };
-
-  const currentAccount = useCurrentAccount();
-
-  const confirmAddress = () => {
     login();
   };
-
-  if (toConfirm && currentAccount) {
-    return (
-      <div className="w-full h-full flex flex-col justify-center items-center">
-        <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[24px]">
-          {t('page.gasAccount.loginConfirmModal.title')}
-        </div>
-        <GasACcountCurrentAddress />
-        <div className=" text-14 text-r-neutral-body px-20 text-center">
-          {t('page.gasAccount.loginConfirmModal.desc')}
-        </div>
-        <div
-          className={clsx(
-            'flex items-center justify-center gap-16',
-            'w-full mt-auto px-20 py-16 border-t-[0.5px] border-solid border-rabby-neutral-line'
-          )}
-        >
-          <GasAccountBlueBorderedButton onClick={onClose} block>
-            {t('global.Cancel')}
-          </GasAccountBlueBorderedButton>
-
-          <Button
-            onClick={confirmAddress}
-            block
-            size="large"
-            type="primary"
-            className="h-[48px] text-r-neutral-title2 text-15 font-medium"
-          >
-            {t('global.Confirm')}
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <GasAccountWrapperBg className="w-full h-full flex flex-col justify-center items-center relative">
