@@ -110,16 +110,7 @@ export const useGasAccountHistory = () => {
     setRefreshListTx((e) => e + 1);
   }, []);
 
-  const {
-    refresh: refreshGasAccountBalance,
-    refreshId,
-  } = useGasAccountRefresh();
-
-  useEffect(() => {
-    if (refreshId) {
-      refreshListTx();
-    }
-  }, [refreshId]);
+  const { refresh: refreshGasAccountBalance } = useGasAccountRefresh();
 
   type History = Awaited<
     ReturnType<typeof wallet.openapi.getGasAccountHistory>
@@ -224,7 +215,10 @@ export const useGasAccountHistory = () => {
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (!loading && !loadingMore && !!txList?.rechargeList?.length) {
+    const hasSomePending = Boolean(
+      txList?.rechargeList?.length || txList?.withdrawList?.length
+    );
+    if (!loading && !loadingMore && hasSomePending) {
       timer = setTimeout(refreshListTx, 2000);
     }
     return () => {

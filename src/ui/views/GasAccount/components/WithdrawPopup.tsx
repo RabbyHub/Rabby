@@ -60,14 +60,12 @@ const AddressRightAreaInItem = ({
     brandName: string;
   };
 }) => {
-  const currentAccount = useCurrentAccount();
-
-  const [alias] = useAlias(account?.address || currentAccount?.address || '');
+  const [alias] = useAlias(account?.address || '');
 
   const addressTypeIcon = useBrandIcon({
-    address: account?.address || currentAccount!.address,
-    brandName: account?.brandName || currentAccount!.brandName,
-    type: account?.type || currentAccount!.type,
+    address: account?.address || '',
+    brandName: account?.brandName || '',
+    type: account?.type || '',
   });
 
   return (
@@ -79,12 +77,12 @@ const AddressRightAreaInItem = ({
         </span>
         <div className="flex items-center">
           <AddressViewer
-            address={account?.address || currentAccount!.address}
+            address={account?.address || ''}
             showArrow={false}
             className="text-[12px] text-r-neutral-body relative top-1"
           />
           <CopyChecked
-            addr={account?.address || currentAccount!.address}
+            addr={account?.address || ''}
             className={clsx(
               'w-[14px] h-[14px] ml-4 text-14  cursor-pointer relative top-1'
             )}
@@ -333,8 +331,10 @@ const Selector = ({
 const WithdrawContent = ({
   balance,
   onClose,
+  handleRefreshHistory,
 }: {
   balance: number;
+  handleRefreshHistory: () => void;
   onClose: () => void;
 }) => {
   const { t } = useTranslation();
@@ -389,41 +389,6 @@ const WithdrawContent = ({
     }
   }, [sig, accountId]);
 
-  // const _withdrawList = [
-  //   {
-  //     recharge_addr: account!.address,
-  //     total_withdraw_limit: 100,
-  //     recharge_chain_list: [
-  //       {
-  //         chain_id: 'eth',
-  //         withdraw_limit: 50,
-  //         withdraw_fee: 0.1,
-  //       },
-  //       {
-  //         chain_id: 'bsc',
-  //         withdraw_limit: 50,
-  //         withdraw_fee: 0.2,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     recharge_addr: account!.address,
-  //     total_withdraw_limit: 200,
-  //     recharge_chain_list: [
-  //       {
-  //         chain_id: 'eth',
-  //         withdraw_limit: 200,
-  //         withdraw_fee: 0.1,
-  //       },
-  //       {
-  //         chain_id: 'bsc',
-  //         withdraw_limit: 0.1,
-  //         withdraw_fee: 0.2,
-  //       },
-  //     ],
-  //   },
-  // ] as WithdrawListAddressItem[];
-
   const {
     accountsList,
     highlightedAddresses = [],
@@ -449,6 +414,7 @@ const WithdrawContent = ({
         chain_id: chain.chain_id,
       });
       refresh();
+      handleRefreshHistory();
       onClose();
     } catch (error) {
       message.error(error?.message || String(error));
@@ -481,19 +447,27 @@ const WithdrawContent = ({
       return '';
     } else {
       const withdrawTotal = Math.min(balance, chain.withdraw_limit);
-      // const withdrawBalance = withdrawTotal - chain.withdraw_fee;
       const usdValue = formatUsdValue(withdrawTotal, BigNumber.ROUND_DOWN);
       return ` ${usdValue}`;
     }
   }, [balance, chain]);
 
-  const isNotCoverGasFee = useMemo(() => {
+  const withdrawBtnDisabledTips = useMemo(() => {
     if (!chain) {
-      return false;
-    } else {
-      return chain.withdraw_limit < chain.withdraw_fee;
+      return '';
     }
-  }, [chain]);
+
+    if (chain.withdraw_limit < chain.withdraw_fee) {
+      return t('page.gasAccount.withdrawPopup.noEnoughGas');
+    }
+
+    const withdrawTotal = Math.min(balance, chain.withdraw_limit);
+    if (withdrawTotal > chain.l1_balance) {
+      return t('page.gasAccount.withdrawPopup.noEnoughValuetBalance');
+    }
+
+    return '';
+  }, [chain, balance]);
 
   const selectedAccount = useMemo(() => {
     return accountsList.find(
@@ -596,8 +570,8 @@ const WithdrawContent = ({
         <TooltipWithMagnetArrow
           overlayClassName={clsx('rectangle')}
           placement="top"
-          visible={isNotCoverGasFee ? undefined : false}
-          title={t('page.gasAccount.withdrawPopup.noEnoughGas')}
+          visible={withdrawBtnDisabledTips ? undefined : false}
+          title={withdrawBtnDisabledTips}
         >
           <Button
             type="primary"
@@ -605,7 +579,7 @@ const WithdrawContent = ({
             onClick={withdraw}
             block
             size="large"
-            disabled={!chain || isNotCoverGasFee}
+            disabled={!chain || Boolean(withdrawBtnDisabledTips)}
             loading={btnLoading}
           >
             {t('page.gasAccount.withdrawPopup.title')}
@@ -628,7 +602,9 @@ const WithdrawContent = ({
   );
 };
 
-export const WithdrawPopup = (props: PopupProps & { balance: number }) => {
+export const WithdrawPopup = (
+  props: PopupProps & { balance: number; handleRefreshHistory: () => void }
+) => {
   return (
     <>
       <Popup
@@ -647,6 +623,7 @@ export const WithdrawPopup = (props: PopupProps & { balance: number }) => {
         <WithdrawContent
           onClose={props.onCancel || props.onClose || noop}
           balance={props.balance}
+          handleRefreshHistory={props.handleRefreshHistory}
         />
       </Popup>
     </>

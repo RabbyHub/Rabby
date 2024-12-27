@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { ReactComponent as RcIconMore } from '@/ui/assets/gas-account/more.svg';
 
@@ -34,12 +34,18 @@ const GasAccountInner = () => {
 
   const [depositVisible, setDepositVisible] = useState(false);
 
+  const [refreshHistoryKey, setRefreshHistoryKey] = useState(0);
+
   const [withdrawVisible, setWithdrawVisible] = useState(false);
 
   const history = useHistory();
   const gotoDashboard = () => {
     history.push('/dashboard');
   };
+
+  const handleRefreshHistory = useCallback(() => {
+    setRefreshHistoryKey((prevKey) => prevKey + 1);
+  }, [setRefreshHistoryKey]);
 
   const { value, loading } = useGasAccountInfo();
   const { isLogin } = useGasAccountLogin({ value, loading });
@@ -178,7 +184,7 @@ const GasAccountInner = () => {
           </div>
         </GasAccountWrapperBg>
 
-        <GasAccountHistory />
+        <GasAccountHistory key={refreshHistoryKey} />
       </div>
 
       <GasAccountLoginPopup
@@ -203,6 +209,7 @@ const GasAccountInner = () => {
       <WithdrawPopup
         visible={withdrawVisible}
         onCancel={() => setWithdrawVisible(false)}
+        handleRefreshHistory={handleRefreshHistory}
         balance={balance}
       />
 

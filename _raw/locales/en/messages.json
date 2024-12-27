@@ -2307,6 +2307,7 @@
         "selectToken": "Select Token to Deposit"
       },
       "withdrawPopup": {
+        "noEnoughValuetBalance": "Vault Balance insufficient. Switch chain or try again later.",
         "noEnoughGas":"Amount too low to cover gas fees",
         "riskMessageFromChain": "Due to risk control, the withdrawal limit depends on the total amount deposited from this chain.",
         "riskMessageFromAddress": "Due to risk control, the withdrawal limit depends on the total amount this address has deposited",

@@ -262,10 +262,10 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
   }, [rawValue, selectedAmount]);
 
   const amountPass = useMemo(() => {
-    if (selectedAmount === CUSTOM_AMOUNT && rawValue) {
+    if (selectedAmount === CUSTOM_AMOUNT) {
       return rawValue >= 1 && rawValue <= 500;
     }
-    return false;
+    return true;
   }, [rawValue, selectedAmount]);
 
   const openTokenList = () => {

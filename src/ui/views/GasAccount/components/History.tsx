@@ -147,7 +147,7 @@ export const GasAccountHistory = () => {
             key={item.create_at}
             time={item.create_at}
             value={item.amount}
-            sign={'+'}
+            sign={'-'}
             borderT={index !== 0}
             isPending={true}
             chainServerId={item?.chain_id}
