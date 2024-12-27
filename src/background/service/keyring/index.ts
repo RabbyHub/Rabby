@@ -1307,6 +1307,12 @@ export class KeyringService extends EventEmitter {
   async resetBooted() {
     this.store.updateState({ booted: undefined });
   }
+
+  async getUnencryptedKeyringTypes() {
+    return (this.store
+      .getState()
+      .unencryptedKeyringData?.map((item) => item.type) ?? []) as string[];
+  }
 }
 
 export default new KeyringService();

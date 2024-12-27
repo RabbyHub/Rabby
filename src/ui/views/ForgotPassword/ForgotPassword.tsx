@@ -21,6 +21,7 @@ export const ForgotPassword = () => {
     hasUnencryptedKeyringData,
     setHasUnencryptedKeyringData,
   ] = React.useState(false);
+  const [keyringTypes, setKeyringTypes] = React.useState<string[]>([]);
   const [step, setStep] = React.useState<
     'entry' | 'reset-confirm' | 'reset-tip' | 'reset-password' | 'reset-success'
   >('entry');
@@ -91,6 +92,7 @@ export const ForgotPassword = () => {
   React.useEffect(() => {
     wallet.hasEncryptedKeyringData().then(setHasEncryptedKeyringData);
     wallet.hasUnencryptedKeyringData().then(setHasUnencryptedKeyringData);
+    wallet.getUnencryptedKeyringTypes().then(setKeyringTypes);
   }, []);
 
   return (
@@ -102,7 +104,11 @@ export const ForgotPassword = () => {
         />
       )}
       {step === 'reset-confirm' && (
-        <ResetConfirm onBack={handleBack} onConfirm={onResetConfirmNext} />
+        <ResetConfirm
+          onBack={handleBack}
+          onConfirm={onResetConfirmNext}
+          keyringTypes={keyringTypes}
+        />
       )}
       {step === 'reset-password' && (
         <PasswordCard

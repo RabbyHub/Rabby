@@ -3,9 +3,15 @@ import styled from 'styled-components';
 import { ReactComponent as IconBackCC } from '@/ui/assets/new-user-import/back-cc.svg';
 import { ReactComponent as IconDotCC } from '@/ui/assets/new-user-import/dot-cc.svg';
 import clsx from 'clsx';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
-const StyedBg = styled.div`
-  background: var(--r-blue-default, #7084ff);
+const StyedBg = styled.div<{
+  isDarkTheme: boolean;
+}>`
+  background: ${(props) =>
+    props.isDarkTheme
+      ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.60) 100%), var(--r-blue-default, #7084FF)'
+      : 'var(--r-blue-default, #7084ff)'};
   overflow-x: auto;
   min-height: 100vh;
   display: flex;
@@ -96,8 +102,10 @@ export const Card = ({
   headerBlock?: boolean;
   cardStyle?: React.CSSProperties;
 }>) => {
+  const { isDarkTheme } = useThemeMode();
+
   return (
-    <StyedBg>
+    <StyedBg isDarkTheme={isDarkTheme}>
       <StyledCard className={className} style={cardStyle}>
         <div
           className={clsx(

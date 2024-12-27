@@ -5,11 +5,15 @@ import { ReactComponent as TimeSVG } from '@/ui/assets/forgot/time-cc.svg';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input } from 'antd';
 import clsx from 'clsx';
+import { KEYRING_CLASS } from '@/constant';
+
+const HARDWARE_TYPES = Object.values(KEYRING_CLASS.HARDWARE);
 
 export const ResetConfirm: React.FC<{
   onConfirm: () => void;
   onBack: () => void;
-}> = ({ onConfirm, onBack }) => {
+  keyringTypes: string[];
+}> = ({ onConfirm, onBack, keyringTypes }) => {
   const { t } = useTranslation();
   const [disabled, setDisabled] = React.useState(true);
   const [input, setInput] = React.useState('');
@@ -47,23 +51,28 @@ export const ResetConfirm: React.FC<{
         )}
       >
         <div className="gap-6 flex items-center">
-          <TimeSVG className="text-r-neutral-foot" />
-          <h1 className="text-15 font-medium text-r-neutral-foot">
+          <TimeSVG className="text-r-neutral-body" />
+          <h1 className="text-15 font-medium text-r-neutral-body">
             {t('page.forgotPassword.reset.tip.title')}
           </h1>
         </div>
         <ul className="mt-12 list-disc pl-16 mb-0">
           {[
-            t('page.forgotPassword.reset.tip.hardware'),
-            t('page.forgotPassword.reset.tip.safe'),
-            t('page.forgotPassword.reset.tip.watch'),
+            keyringTypes.some((type) => HARDWARE_TYPES.includes(type as any)) &&
+              t('page.forgotPassword.reset.tip.hardware'),
+            keyringTypes.some((type) => type === KEYRING_CLASS.GNOSIS) &&
+              t('page.forgotPassword.reset.tip.safe'),
+            keyringTypes.some((type) => type === KEYRING_CLASS.WATCH) &&
+              t('page.forgotPassword.reset.tip.watch'),
             t('page.forgotPassword.reset.tip.whitelist'),
             t('page.forgotPassword.reset.tip.records'),
-          ].map((text, index) => (
-            <li key={index} className="text-15 text-r-neutral-foot mt-8">
-              {text}
-            </li>
-          ))}
+          ]
+            .filter(Boolean)
+            .map((text, index) => (
+              <li key={index} className="text-15 text-r-neutral-foot mt-8">
+                {text}
+              </li>
+            ))}
         </ul>
       </div>
 

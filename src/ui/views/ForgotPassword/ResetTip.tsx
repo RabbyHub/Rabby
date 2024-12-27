@@ -19,6 +19,7 @@ export const ResetTip: React.FC<{
           : t('page.forgotPassword.tip.buttonNoData')
       }
       logo={<RecycleSVG />}
+      logoClassName="flex justify-center"
       titleText={t('page.forgotPassword.tip.title')}
       descriptionText={
         hasUnencryptedKeyringData
