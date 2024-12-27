@@ -25,6 +25,7 @@ import {
   RechargeChainItem,
   WithdrawListAddressItem,
 } from '@rabby-wallet/rabby-api/dist/types';
+import BigNumber from 'bignumber.js';
 
 // export interface RechargeChainItem {
 //   chain_id: string;
@@ -432,12 +433,6 @@ const WithdrawContent = ({
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
 
-  useEffect(() => {
-    if (withdrawList && withdrawList.length) {
-      setSelectAddressChainList(withdrawList[0]);
-    }
-  }, [withdrawList]);
-
   const withdraw = async () => {
     if (balance <= 0 || !selectAddressChainList || !chain) {
       return;
@@ -487,7 +482,8 @@ const WithdrawContent = ({
     } else {
       const withdrawTotal = Math.min(balance, chain.withdraw_limit);
       // const withdrawBalance = withdrawTotal - chain.withdraw_fee;
-      return ` $${withdrawTotal.toFixed(2)}`;
+      const usdValue = formatUsdValue(withdrawTotal, BigNumber.ROUND_DOWN);
+      return ` ${usdValue}`;
     }
   }, [balance, chain]);
 
@@ -617,12 +613,12 @@ const WithdrawContent = ({
           </Button>
         </TooltipWithMagnetArrow>
       </WrapperDiv>
-      {withdrawList && (
+      {withdrawList && selectAddressChainList && (
         <Selector
           accountsList={accountsList}
           status={selectorStatus}
           onClose={() => setSelectorStatus(SelectorStatus.Hidden)}
-          selectAddressChainList={selectAddressChainList || withdrawList[0]}
+          selectAddressChainList={selectAddressChainList}
           setChain={setChain}
           setSelectAddressChainList={setSelectAddressChainList}
           withdrawList={withdrawList}

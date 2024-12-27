@@ -110,7 +110,16 @@ export const useGasAccountHistory = () => {
     setRefreshListTx((e) => e + 1);
   }, []);
 
-  const { refresh: refreshGasAccountBalance } = useGasAccountRefresh();
+  const {
+    refresh: refreshGasAccountBalance,
+    refreshId,
+  } = useGasAccountRefresh();
+
+  useEffect(() => {
+    if (refreshId) {
+      refreshListTx();
+    }
+  }, [refreshId]);
 
   type History = Awaited<
     ReturnType<typeof wallet.openapi.getGasAccountHistory>

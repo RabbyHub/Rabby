@@ -18,6 +18,7 @@ const HistoryItem = ({
   borderT = false,
   chainServerId,
   txId,
+  isWithdraw = false,
 }: {
   time: number;
   value: number;
@@ -25,13 +26,14 @@ const HistoryItem = ({
   className?: string;
   isPending?: boolean;
   borderT?: boolean;
+  isWithdraw?: boolean;
   chainServerId?: string;
   txId?: string;
 }) => {
   const { t } = useTranslation();
 
   const gotoTxDetail = () => {
-    if (chainServerId && txId) {
+    if (chainServerId && txId && !isWithdraw) {
       const chain = findChainByServerID(chainServerId);
       if (chain && chain.scanLink) {
         const scanLink = chain.scanLink.replace('_s_', '');
@@ -65,8 +67,14 @@ const HistoryItem = ({
             viewBox="0 0 16 16"
             className="w-16 h-16 animate-spin"
           />
-          <div>{t('page.gasAccount.deposit')}</div>
-          <RcIconOpenExternalCC viewBox="0 0 12 12" className="w-12 h-12" />
+          <div>
+            {isWithdraw
+              ? t('page.gasAccount.withdraw')
+              : t('page.gasAccount.deposit')}
+          </div>
+          {!isWithdraw && (
+            <RcIconOpenExternalCC viewBox="0 0 12 12" className="w-12 h-12" />
+          )}
         </div>
       ) : (
         <div className="text-14 text-r-neutral-foot">{sinceTime(time)}</div>
@@ -135,6 +143,7 @@ export const GasAccountHistory = () => {
       {!loading &&
         txList?.withdrawList?.map((item, index) => (
           <HistoryItem
+            isWithdraw={true}
             key={item.create_at}
             time={item.create_at}
             value={item.amount}

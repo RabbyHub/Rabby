@@ -197,7 +197,7 @@ const CUSTOM_AMOUNT = 0;
 
 const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
-  const [selectedAmount, setAmount] = useState(100);
+  const [selectedAmount, setAmount] = useState(amountList[0]);
   const [tokenListVisible, setTokenListVisible] = useState(false);
   const [token, setToken] = useState<TokenItem | undefined>(undefined);
   const [formattedValue, setFormattedValue] = useState('');

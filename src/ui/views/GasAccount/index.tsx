@@ -57,13 +57,13 @@ const GasAccountInner = () => {
   const isRisk = useAml();
 
   const openDepositPopup = () => {
-    if (
-      gasAccount?.address &&
-      currentAccount?.address !== gasAccount?.address
-    ) {
-      setSwitchAddrVisible(true);
-      return;
-    }
+    // if (
+    //   gasAccount?.address &&
+    //   currentAccount?.address !== gasAccount?.address
+    // ) {
+    //   setSwitchAddrVisible(true);
+    //   return;
+    // }
     setDepositVisible(true);
   };
 
