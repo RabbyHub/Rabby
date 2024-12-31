@@ -28,7 +28,7 @@ const Container = styled.div`
 
   .ant-input {
     border-radius: 8px;
-    color: var(--r-neutral-foot, #6a7587);
+    color: var(--r-neutral-title1);
     font-size: 15px;
     height: 52px;
     background: transparent !important;
