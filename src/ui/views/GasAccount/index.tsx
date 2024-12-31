@@ -20,7 +20,7 @@ import { GasAccountWrapperBg } from './components/WrapperBg';
 import { GasAccountBlueLogo } from './components/GasAccountBlueLogo';
 import BigNumber from 'bignumber.js';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
 import clsx from 'clsx';
 
@@ -61,6 +61,14 @@ const GasAccountInner = () => {
   const [switchAddrVisible, setSwitchAddrVisible] = useState(false);
 
   const isRisk = useAml();
+
+  const dispatch = useRabbyDispatch();
+
+  useEffect(() => {
+    dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
+    });
+  }, []);
 
   const openDepositPopup = () => {
     // if (

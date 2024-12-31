@@ -1,4 +1,4 @@
-import React, { CSSProperties, useMemo, useState } from 'react';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Empty, Item, Popup, TokenWithChain } from '@/ui/component';
 import { Button, Space, Tooltip } from 'antd';
@@ -272,6 +272,12 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
     if (!amountPass) return;
     setTokenListVisible(true);
   };
+
+  useEffect(() => {
+    if (token && depositAmount && token.amount < depositAmount) {
+      setToken(undefined);
+    }
+  }, [depositAmount]);
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center leading-normal">
