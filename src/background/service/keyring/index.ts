@@ -828,6 +828,13 @@ export class KeyringService extends EventEmitter {
         if (!UNENCRYPTED_IGNORE_KEYRING.includes(type as any)) {
           return { type, data };
         }
+
+        // maybe empty keyring
+        // TODO: maybe need remove simple keyring if empty
+        if (type === KEYRING_TYPE.SimpleKeyring && !data.length) {
+          return undefined;
+        }
+
         hasEncryptedKeyringData = true;
         return undefined;
       })
