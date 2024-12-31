@@ -11,7 +11,7 @@ import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 import { formatUsdValue, openInTab, useAlias, useWallet } from '@/ui/utils';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -355,8 +355,6 @@ const WithdrawContent = ({
   const [withdrawList, setWithdrawList] = useState<WithdrawListAddressItem[]>();
   const { refresh } = useGasAccountRefresh();
 
-  const gasAccount = useRabbySelector((s) => s.gasAccount.account);
-
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -389,13 +387,8 @@ const WithdrawContent = ({
     }
   }, [sig, accountId]);
 
-  const {
-    accountsList,
-    highlightedAddresses = [],
-    loadingAccounts,
-  } = useRabbySelector((s) => ({
+  const { accountsList } = useRabbySelector((s) => ({
     ...s.accountToDisplay,
-    highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
 
   const withdraw = async () => {
@@ -405,10 +398,12 @@ const WithdrawContent = ({
 
     try {
       setBtnLoading(true);
+
+      const amount = Math.min(balance, chain.withdraw_limit);
       await wallet.openapi.withdrawGasAccount({
         sig: sig!,
         account_id: accountId!,
-        amount: balance,
+        amount,
         user_addr: selectAddressChainList.recharge_addr,
         fee: chain.withdraw_fee,
         chain_id: chain.chain_id,
@@ -473,7 +468,7 @@ const WithdrawContent = ({
     return accountsList.find(
       (i) => i.address === selectAddressChainList?.recharge_addr
     );
-  }, [selectAddressChainList]);
+  }, [selectAddressChainList, accountsList]);
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">

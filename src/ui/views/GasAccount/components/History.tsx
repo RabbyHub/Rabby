@@ -148,7 +148,7 @@ export const GasAccountHistory = () => {
             time={item.create_at}
             value={item.amount}
             sign={'-'}
-            borderT={index !== 0}
+            borderT={!txList.rechargeList.length ? index !== 0 : true}
             isPending={true}
             chainServerId={item?.chain_id}
             txId={item?.tx_id}
