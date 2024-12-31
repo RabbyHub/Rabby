@@ -452,11 +452,11 @@ const WithdrawContent = ({
       return '';
     }
 
-    if (chain.withdraw_limit < chain.withdraw_fee) {
+    const withdrawTotal = Math.min(balance, chain.withdraw_limit);
+    if (withdrawTotal < chain.withdraw_fee) {
       return t('page.gasAccount.withdrawPopup.noEnoughGas');
     }
 
-    const withdrawTotal = Math.min(balance, chain.withdraw_limit);
     if (withdrawTotal > chain.l1_balance) {
       return t('page.gasAccount.withdrawPopup.noEnoughValuetBalance');
     }
