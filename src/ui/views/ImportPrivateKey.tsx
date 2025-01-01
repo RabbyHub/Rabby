@@ -3,7 +3,7 @@ import { Input, Form, message } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { KEYRING_TYPE } from 'consts';
+import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import IconSuccess from 'ui/assets/success.svg';
 
 import { Navbar, StrayPageWithButton } from 'ui/component';
@@ -11,6 +11,8 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import { clearClipboard } from 'ui/utils/clipboard';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
+import { useRepeatImportConfirm } from '../utils/useRepeatImportConfirm';
+import { safeJSONParse } from '@/utils';
 
 const TipTextList = styled.div`
   margin-top: 32px;
@@ -44,6 +46,7 @@ const ImportPrivateKey = () => {
   );
   const isWide = useMedia('(min-width: 401px)');
 
+  const { show, contextHolder } = useRepeatImportConfirm();
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
     onSuccess(accounts) {
       const successShowAccounts = accounts.map((item, index) => {
@@ -62,14 +65,23 @@ const ImportPrivateKey = () => {
       });
     },
     onError(err) {
-      form.setFields([
-        {
-          name: 'key',
-          errors: [
-            err?.message || t('page.newAddress.privateKey.notAValidPrivateKey'),
-          ],
-        },
-      ]);
+      if (err.message?.includes?.('DuplicateAccountError')) {
+        const address = safeJSONParse(err.message)?.address;
+        show({
+          address,
+          type: KEYRING_CLASS.PRIVATE_KEY,
+        });
+      } else {
+        form.setFields([
+          {
+            name: 'key',
+            errors: [
+              err?.message ||
+                t('page.newAddress.privateKey.notAValidPrivateKey'),
+            ],
+          },
+        ]);
+      }
     },
   });
 
@@ -94,6 +106,7 @@ const ImportPrivateKey = () => {
 
   return (
     <>
+      {contextHolder}
       <StrayPageWithButton
         custom={isWide}
         spinning={loading}
@@ -107,7 +120,7 @@ const ImportPrivateKey = () => {
         formProps={{
           onValuesChange: (states) => {
             wallet.setPageStateCache({
-              path: history.location.pathname,
+              path: '/import/key',
               params: {},
               states,
             });

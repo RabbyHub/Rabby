@@ -2,7 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 export const fetchLocale = async (locale) => {
-  const res = await window.fetch(`./locales/${locale}/messages.json`);
+  const res = await fetch(`./locales/${locale}/messages.json`);
   const data = await res.json();
   return data;
   // return Object.keys(data).reduce((res, key) => {
@@ -23,6 +23,7 @@ i18n
       skipOnVariables: true,
     },
     returnNull: false,
+    returnEmptyString: false,
   });
 
 export const I18N_NS = 'translations';
@@ -41,5 +42,10 @@ addResourceBundle('en');
 i18n.on('languageChanged', function (lng) {
   addResourceBundle(lng);
 });
+
+export const changeLanguage = (locale: string) => {
+  i18n.changeLanguage(locale);
+  document.documentElement.lang = locale;
+};
 
 export default i18n;

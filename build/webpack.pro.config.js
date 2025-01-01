@@ -1,13 +1,6 @@
 const webpack = require('webpack');
-const path = require('path');
-const fs = require('fs-extra');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserPlugin = require('terser-webpack-plugin');
-const SentryCliPlugin = require('@sentry/webpack-plugin');
-
-const PROJECT_ROOT = path.resolve(__dirname, '..');
-const manifestPath = path.resolve(PROJECT_ROOT, '_raw', 'manifest.json');
-const manifest = fs.readJSONSync(manifestPath);
+const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
 const sentrySourceMap = !!process.env.sourcemap || false;
 
@@ -24,13 +17,20 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
     sentrySourceMap &&
-      new SentryCliPlugin({
+      sentryWebpackPlugin({
         include: './dist',
         ignoreFile: '.sentrycliignore',
         ignore: ['node_modules', 'webpack.config.js'],
         configFile: 'sentry.properties',
-        release: manifest.version,
+        release: {
+          name: process.env.VERSION,
+        },
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+
+        authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
+    ,
   ].filter(Boolean),
 
   optimization: {

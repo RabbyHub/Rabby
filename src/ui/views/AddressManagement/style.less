@@ -94,6 +94,7 @@
     &-content {
       flex: 1;
       margin-right: auto;
+      overflow: hidden;
     }
     &-title {
       font-weight: 500;
@@ -158,9 +159,6 @@
       }
       &:hover {
         border: none;
-        .rabby-address-item-left {
-          background-color: var(--r-blue-light-1, #eef1ff);
-        }
       }
     }
   }
@@ -341,8 +339,9 @@
   .search-input {
     padding-left: 8px;
     border: none;
-    
-    &, & .ant-input {
+
+    &,
+    & .ant-input {
       background: transparent;
     }
 

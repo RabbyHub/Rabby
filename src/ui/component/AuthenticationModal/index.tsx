@@ -12,6 +12,25 @@ import { useTranslation } from 'react-i18next';
 import { Popup, Checkbox, Field } from 'ui/component';
 import { WrappedComponentProps, wrapModalPromise } from '../Modal/WrapPromise';
 
+const AuthFormItemWrapper = styled.div`
+  .ant-form-item-has-error {
+    .ant-input {
+      border-color: #f24822 !important;
+    }
+  }
+  .ant-input.ant-input-lg.popup-input {
+    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
+    background: transparent !important;
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587) !important;
+    }
+    &:focus,
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff) !important;
+    }
+  }
+`;
+
 interface AuthenticationModalProps extends WrappedComponentProps {
   validationHandler?(password: string): Promise<void>;
   confirmText?: string;
@@ -199,28 +218,30 @@ const AuthenticationModal = ({
         </FieldList>
       )}
       <Form onFinish={handleSubmit} form={form}>
-        <Form.Item
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: t('component.AuthenticationModal.passwordRequired'),
-            },
-          ]}
-        >
-          <Input
-            className="popup-input"
-            placeholder={
-              placeholder ??
-              t('component.AuthenticationModal.passwordPlaceholder')
-            }
-            type="password"
-            size="large"
-            autoFocus
-            ref={inputRef}
-            spellCheck={false}
-          />
-        </Form.Item>
+        <AuthFormItemWrapper>
+          <Form.Item
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: t('component.AuthenticationModal.passwordRequired'),
+              },
+            ]}
+          >
+            <Input
+              className="popup-input"
+              placeholder={
+                placeholder ??
+                t('component.AuthenticationModal.passwordPlaceholder')
+              }
+              type="password"
+              size="large"
+              autoFocus
+              ref={inputRef}
+              spellCheck={false}
+            />
+          </Form.Item>
+        </AuthFormItemWrapper>
         <div
           className={clsx(
             'flex pt-6 popup-footer px-20',

@@ -18,7 +18,9 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { Modal } from 'ui/component';
 import IconBack from 'ui/assets/icon-back.svg';
+import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
+import { safeJSONParse } from '@/utils';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
@@ -39,6 +41,7 @@ const ImportWatchAddress = () => {
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const isWide = useMedia('(min-width: 401px)');
   const [isValidAddr, setIsValidAddr] = useState(false);
+  const { show, contextHolder } = useRepeatImportConfirm();
   const ModalComponent = isWide ? Modal : Popup;
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
@@ -58,15 +61,23 @@ const ImportWatchAddress = () => {
       });
     },
     onError(err) {
-      setDisableKeydown(false);
-      form.setFields([
-        {
-          name: 'address',
-          errors: [
-            err?.message || t('page.newAddress.addContacts.notAValidAddress'),
-          ],
-        },
-      ]);
+      if (err.message?.includes?.('DuplicateAccountError')) {
+        const address = safeJSONParse(err.message)?.address;
+        show({
+          address,
+          type: KEYRING_CLASS.WATCH,
+        });
+      } else {
+        setDisableKeydown(false);
+        form.setFields([
+          {
+            name: 'address',
+            errors: [
+              err?.message || t('page.newAddress.addContacts.notAValidAddress'),
+            ],
+          },
+        ]);
+      }
     },
   });
   const handleConfirmENS = (result: string) => {
@@ -136,7 +147,7 @@ const ImportWatchAddress = () => {
   };
   const handleScanQRCodeError = async () => {
     await wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: '/import/watch-address',
       params: {},
       states: form.getFieldsValue(),
     });
@@ -210,21 +221,24 @@ const ImportWatchAddress = () => {
       NextButtonContent={t('global.confirm')}
       nextDisabled={!isValidAddr}
     >
-      <header className="create-new-header create-password-header h-[264px] res dark:bg-r-blue-disable">
+      {contextHolder}
+      <header className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
         <div className="rabby-container">
           <img
-            className="icon-back z-10 relative"
+            className="icon-back mb-0 z-10 relative"
             src={IconBack}
             alt="back"
             onClick={handleClickBack}
           />
-          <img className="w-[80px] h-[75px] mb-28 mx-auto" src={WatchLogo} />
-          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-            {t('page.newAddress.addContacts.content')}
-          </p>
-          <p className="text-14 mb-0 mt-4 text-white  text-center">
-            {t('page.newAddress.addContacts.description')}
-          </p>
+          <div className="relative -top-10">
+            <img className="w-[60px] h-[60px] mb-10 mx-auto" src={WatchLogo} />
+            <p className="text-20 mb-4 mt-0 text-white text-center font-bold">
+              {t('page.newAddress.addContacts.content')}
+            </p>
+            <p className="text-14 mb-0 mt-0 text-white text-center">
+              {t('page.newAddress.addContacts.description')}
+            </p>
+          </div>
         </div>
       </header>
       <div className="rabby-container widget-has-ant-input">
@@ -239,11 +253,13 @@ const ImportWatchAddress = () => {
               },
             ]}
           >
-            <Input
+            <Input.TextArea
               placeholder={t('page.newAddress.addContacts.addressEns')}
-              size="large"
               maxLength={44}
+              size="large"
+              className="border-bright-on-active leading-normal"
               autoFocus
+              autoSize
               spellCheck={false}
             />
           </Form.Item>

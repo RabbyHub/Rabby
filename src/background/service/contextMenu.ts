@@ -4,6 +4,7 @@ import {
   preferenceService,
   sessionService,
 } from 'background/service';
+import Browser, { Menus, Tabs } from 'webextension-polyfill';
 
 const getTabsOriginList = () => {
   const res: string[] = [];
@@ -15,7 +16,7 @@ const getTabsOriginList = () => {
   return res;
 };
 
-const getContextMenuTitle = (origin: string) => {
+const getContextMenuTitle = (origin: string | number) => {
   const site = permissionService.getSite(origin);
   const title = site?.preferMetamask
     ? 'Do not prefer to use MetaMask on this dapp'
@@ -27,7 +28,7 @@ export class ContextMenu {
   store = new Set<string>();
 
   constructor() {
-    chrome.contextMenus.onClicked.addListener(this.listener);
+    Browser.contextMenus.onClicked.addListener(this.listener);
   }
 
   create(origin: string) {
@@ -35,16 +36,15 @@ export class ContextMenu {
       return;
     }
 
-    chrome.contextMenus.create(
+    Browser.contextMenus.create(
       {
         id: origin,
         title: getContextMenuTitle(origin),
         documentUrlPatterns: [`${origin}/*`],
       },
-      () => {
-        this.store.add(origin);
-      }
+      () => {}
     );
+    this.store.add(origin);
   }
   createOrUpdate(origin: string) {
     if (this.store.has(origin)) {
@@ -53,12 +53,13 @@ export class ContextMenu {
       this.create(origin);
     }
   }
-  update(origin: string) {
-    if (!this.store.has(origin)) {
+  update(origin: string | number) {
+    const _origin = origin.toString();
+    if (!this.store.has(_origin)) {
       return;
     }
 
-    chrome.contextMenus.update(origin, {
+    Browser.contextMenus.update(origin, {
       title: getContextMenuTitle(origin),
     });
   }
@@ -66,13 +67,13 @@ export class ContextMenu {
     if (!this.store.has(origin)) {
       return;
     }
-    chrome.contextMenus.remove(origin, () => {
+    Browser.contextMenus.remove(origin).then(() => {
       this.store.delete(origin);
     });
   }
   removeAll() {
     this.store.clear();
-    chrome.contextMenus.removeAll();
+    Browser.contextMenus.removeAll();
   }
 
   async sync() {
@@ -97,10 +98,7 @@ export class ContextMenu {
     });
   }
 
-  private listener = (
-    info: chrome.contextMenus.OnClickData,
-    tab?: chrome.tabs.Tab
-  ) => {
+  private listener = (info: Menus.OnClickData, tab: Tabs.Tab | undefined) => {
     if (!info.menuItemId) {
       return;
     }
@@ -108,7 +106,7 @@ export class ContextMenu {
     let site = permissionService.getSite(info.menuItemId);
     if (!site && tab) {
       site = {
-        origin: info.menuItemId,
+        origin: info.menuItemId.toString(),
         icon: tab.favIconUrl || '',
         name: tab.title || '',
         isSigned: false,

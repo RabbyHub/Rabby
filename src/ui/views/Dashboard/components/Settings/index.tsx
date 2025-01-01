@@ -2,8 +2,6 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
 import {
-  CHAINS,
-  DARK_MODE_TYPE,
   INITIAL_OPENAPI_URL,
   INITIAL_TESTNET_OPENAPI_URL,
   LANGS,
@@ -14,14 +12,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
+import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-import { ReactComponent as RcIconArrowBlueRight } from 'ui/assets/dashboard/settings/icon-right-arrow-blue.svg';
-import { ReactComponent as RcIconArrowOrangeRight } from 'ui/assets/dashboard/settings/icon-right-arrow-orange.svg';
-import IconSettingsDeBank from 'ui/assets/dashboard/settings/debank.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconCustomRPC } from 'ui/assets/dashboard/custom-rpc.svg';
+import { ReactComponent as RcIconCustomTestnet } from 'ui/assets/dashboard/icon-custom-testnet.svg';
 import { ReactComponent as RcIconPreferMetamask } from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import { ReactComponent as RcIconAutoLock } from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
 import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings/lock.svg';
@@ -32,13 +29,13 @@ import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
 import { ReactComponent as RcIconTwitter } from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
+import { ReactComponent as RcIconClearCC } from 'ui/assets/icon-clear-cc.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
-import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
+import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
-import { Field, PageHeader, Popup } from 'ui/component';
+import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
-import { openInTab, useWallet } from 'ui/utils';
+import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
 import './style.less';
 
 import IconCheck from 'ui/assets/check-2.svg';
@@ -46,7 +43,8 @@ import { ReactComponent as RcIconSettingsFeatureConnectedDapps } from 'ui/assets
 import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboard/settings/follow-us.svg';
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
-import IconSettingsRabbyBadge from 'ui/assets/badge/rabby-badge-s.svg';
+import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
+import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 
@@ -57,6 +55,8 @@ import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
+import { getChainList } from '@/utils/chain';
+import { SvgIconCross } from '@/ui/assets';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -212,11 +212,13 @@ const ResetAccountModal = ({
   onCancel(): void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [clearNonce, setClearNonce] = useState(false);
   const wallet = useWallet();
   const { t } = useTranslation();
 
   const handleCancel = () => {
     setIsVisible(false);
+    setClearNonce(false);
     setTimeout(() => {
       onCancel();
     }, 500);
@@ -225,6 +227,9 @@ const ResetAccountModal = ({
   const handleResetAccount = async () => {
     const currentAddress = (await wallet.getCurrentAccount())?.address || '';
     await wallet.clearAddressPendingTransactions(currentAddress);
+    if (clearNonce) {
+      await wallet.clearAddressTransactions(currentAddress);
+    }
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('page.dashboard.settings.pendingTransactionCleared'),
@@ -259,11 +264,42 @@ const ResetAccountModal = ({
         <p className="reset-account-content">
           {t('page.dashboard.settings.clearPendingTip2')}
         </p>
-        <div className="flex justify-center mt-24 popup-footer">
+        <div className="flex flex-col mt-auto popup-footer px-20 bottom-18">
+          <div className="absolute left-0 top-[40px] w-full h-0 border-solid border-t-[0.5px] border-rabby-neutral-line"></div>
+          <div className="flex justify-center mb-[38px]">
+            <Checkbox
+              checked={clearNonce}
+              unCheckBackground="transparent"
+              checkIcon={
+                clearNonce ? undefined : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                  >
+                    <path
+                      d="M7.97578 13.7748C11.179 13.7748 13.7758 11.1781 13.7758 7.9748C13.7758 4.77155 11.179 2.1748 7.97578 2.1748C4.77253 2.1748 2.17578 4.77155 2.17578 7.9748C2.17578 11.1781 4.77253 13.7748 7.97578 13.7748Z"
+                      stroke="var(--r-neutral-body)"
+                      stroke-width="0.90625"
+                      stroke-miterlimit="10"
+                    />
+                  </svg>
+                )
+              }
+              onChange={setClearNonce}
+            >
+              <span className="text-13 text-r-neutral-body">
+                Also reset my local nonce data and signature record
+              </span>
+            </Checkbox>
+          </div>
+
           <Button
             type="primary"
             size="large"
-            className="w-[200px]"
+            block
             onClick={handleResetAccount}
           >
             {t('global.confirm')}
@@ -422,58 +458,30 @@ const SwitchLangModal = ({
   );
 };
 
-const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="setting-block">
-      <div className="setting-items">
-        <Field
-          leftIcon={
-            <ThemeIcon src={IconSettingsRabbyBadge} className="w-28 h-28" />
-          }
-          rightIcon={
-            <ThemeIcon
-              src={RcIconArrowBlueRight}
-              className="icon icon-arrow-right w-20 h-20"
-            />
-          }
-          onClick={onClick}
-          className="text-blue-light bg-r-blue-light-1 font-medium"
-        >
-          {t('page.dashboard.settings.claimRabbyBadge')}
-        </Field>
-      </div>
-    </div>
-  );
-};
-
-const RequestDeBankTestnetGasToken = () => {
-  const { t } = useTranslation();
-  const history = useHistory();
-  return (
-    <div className="setting-block mt-8">
-      <div className="setting-items">
-        <Field
-          leftIcon={
-            <ThemeIcon src={IconSettingsDeBank} className="w-28 h-28" />
-          }
-          rightIcon={
-            <ThemeIcon
-              src={RcIconArrowOrangeRight}
-              className="icon icon-arrow-right w-20 h-20"
-            />
-          }
-          onClick={() => {
-            history.push('/request-debank-testnet-gas-token');
-          }}
-          className="text-[#FF6238] bg-[#FFF4F1] dark:bg-[#43332F] font-medium hover:border-[#FF6238]"
-        >
-          {t('page.dashboard.settings.requestDeBankTestnetGasToken')}
-        </Field>
-      </div>
-    </div>
-  );
-};
+// const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
+//   const { t } = useTranslation();
+//   return (
+//     <div className="setting-block">
+//       <div className="setting-items">
+//         <Field
+//           leftIcon={
+//             <ThemeIcon src={IconSettingsRabbyBadge} className="w-28 h-28" />
+//           }
+//           rightIcon={
+//             <ThemeIcon
+//               src={RcIconArrowCCRight}
+//               className="icon icon-arrow-right w-20 h-20 text-[#109D63]"
+//             />
+//           }
+//           onClick={onClick}
+//           className="bg-[rgba(16,157,99,0.20)] text-[#109D63] hover:border-[#109D63] font-medium"
+//         >
+//           {t('page.dashboard.settings.claimFreeGasBadge')}
+//         </Field>
+//       </div>
+//     </div>
+//   );
+// };
 
 type SettingItem = {
   leftIcon: ThemeIconType;
@@ -577,10 +585,6 @@ const SettingsInner = ({
     return semver(process.env.release || '0.0.0', data.version_tag) === -1;
   });
 
-  const handleSwitchIsShowTestnet = (value: boolean) => {
-    dispatch.preference.setIsShowTestnet(value);
-  };
-
   const updateVersionClassName = useCss({
     '& .ant-modal-body': {
       padding: '15px 14px 28px 14px',
@@ -604,6 +608,9 @@ const SettingsInner = ({
         width: 320,
         closable: true,
         centered: true,
+        closeIcon: (
+          <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
+        ),
         className: clsx(updateVersionClassName, 'modal-support-darkmode'),
         title: t('page.dashboard.settings.updateVersion.title'),
         content: (
@@ -673,6 +680,26 @@ const SettingsInner = ({
           },
         },
         {
+          leftIcon: RcIconPoints,
+          content: t('page.dashboard.settings.features.rabbyPoints'),
+          onClick: () => {
+            history.push('/rabby-points');
+          },
+        },
+        {
+          leftIcon: RcIconSettingsSearchDapps,
+          content: t('page.dashboard.settings.features.searchDapps'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Search Dapps',
+            });
+            reportSettings('Search Dapps');
+            openInternalPageInTab('dapp-search');
+          },
+        },
+        {
           leftIcon: RcIconSettingsFeatureConnectedDapps,
           content: t('page.dashboard.settings.features.connectedDapp'),
           onClick: () => {
@@ -702,15 +729,19 @@ const SettingsInner = ({
             />
           ),
         },
+
         {
-          leftIcon: RcIconTestnet,
-          content: t('page.dashboard.settings.settings.enableTestnets'),
-          rightIcon: (
-            <Switch
-              checked={isShowTestnet}
-              onChange={handleSwitchIsShowTestnet}
-            />
-          ),
+          leftIcon: RcIconCustomTestnet,
+          content: t('page.dashboard.settings.settings.customTestnet'),
+          onClick: () => {
+            history.push('/custom-testnet');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Custom Testnet',
+            });
+            reportSettings('Custom Testnet');
+          },
         },
         {
           leftIcon: RcIconCustomRPC,
@@ -841,6 +872,53 @@ const SettingsInner = ({
         },
       ] as SettingItem[],
     },
+    debugkits: {
+      label: 'Debug Kits (Not present on production)',
+      items: [
+        {
+          leftIcon: RcIconServerCC,
+          content: (
+            <span>{t('page.dashboard.settings.backendServiceUrl')}</span>
+          ),
+          onClick: () => setShowOpenApiModal(true),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconServerCC,
+          content: (
+            <span>{t('page.dashboard.settings.testnetBackendServiceUrl')}</span>
+          ),
+          onClick: () => setShowTestnetOpenApiModal(true),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconClearCC,
+          content: <span>{t('page.dashboard.settings.clearWatchMode')}</span>,
+          onClick: handleClickClearWatchMode,
+        },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: <span>Git Build Hash</span>,
+          rightIcon: (
+            <>
+              <span className="text-14 mr-[8px]">
+                {process.env.RABBY_BUILD_GIT_HASH}
+              </span>
+            </>
+          ),
+        },
+      ] as SettingItem[],
+    },
     about: {
       label: t('page.dashboard.settings.aboutUs'),
       items: [
@@ -853,8 +931,8 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'feedback',
             });
-            setFeedbackVisible(true);
             reportSettings('feedback');
+            openInTab('https://debank.com/hi/0a110032');
           },
           rightIcon: (
             <ThemeIcon
@@ -928,7 +1006,7 @@ const SettingsInner = ({
                 className="text-14 mr-[8px] text-r-neutral-title-1"
                 role="button"
               >
-                {Object.values(CHAINS).length}
+                {getChainList('mainnet').length}
               </span>
               <ThemeIcon
                 src={RcIconArrowRight}
@@ -996,34 +1074,9 @@ const SettingsInner = ({
     },
   };
 
-  if (process.env.DEBUG) {
-    renderData.features.items.splice(
-      -1,
-      0,
-      {
-        leftIcon: RcIconServer,
-        content: t('page.dashboard.settings.backendServiceUrl'),
-        onClick: () => setShowOpenApiModal(true),
-        rightIcon: (
-          <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
-        ),
-      } as typeof renderData.features.items[0],
-      {
-        leftIcon: RcIconServer,
-        content: t('page.dashboard.settings.testnetBackendServiceUrl'),
-        onClick: () => setShowTestnetOpenApiModal(true),
-        rightIcon: (
-          <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
-        ),
-      } as typeof renderData.features.items[0]
-    );
-  }
-
-  if (process.env.DEBUG) {
-    renderData.features.items.push({
-      content: t('page.dashboard.settings.clearWatchMode'),
-      onClick: handleClickClearWatchMode,
-    } as typeof renderData.features.items[0]);
+  if (!process.env.DEBUG) {
+    // @ts-expect-error we know it's not defined on production
+    delete renderData.debugkits;
   }
 
   const lockWallet = async () => {
@@ -1057,18 +1110,7 @@ const SettingsInner = ({
   return (
     <div className="popup-settings">
       <div className="content">
-        {/* <Button
-              block
-              size="large"
-              type="primary"
-              className="flex justify-center items-center lock-wallet"
-              onClick={lockWallet}
-            >
-              <img src={IconLock} className="icon icon-lock" />{' '}
-              {'Lock Wallet'}
-            </Button> */}
-        <ClaimRabbyBadge onClick={onOpenBadgeModal} />
-        <RequestDeBankTestnetGasToken />
+        {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">

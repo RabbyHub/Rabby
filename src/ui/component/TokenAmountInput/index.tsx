@@ -1,3 +1,11 @@
+import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
+import { useRabbySelector } from '@/ui/store';
+import { useTokens } from '@/ui/utils/portfolio/token';
+import { findChain } from '@/utils/chain';
+import { Input } from 'antd';
+import { TokenItem } from 'background/service/openapi';
+import clsx from 'clsx';
+import uniqBy from 'lodash/uniqBy';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -5,20 +13,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Input } from 'antd';
-import uniqBy from 'lodash/uniqBy';
-import { TokenItem } from 'background/service/openapi';
-import { splitNumberByStep } from 'ui/utils';
-import { getTokenSymbol, abstractTokenToTokenItem } from 'ui/utils/token';
-import TokenWithChain from '../TokenWithChain';
-import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
-import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
-import './style.less';
-import clsx from 'clsx';
-import { useTokens } from '@/ui/utils/portfolio/token';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
-import { useRabbySelector } from '@/ui/store';
+import { splitNumberByStep } from 'ui/utils';
+import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
+import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
+import TokenWithChain from '../TokenWithChain';
+import './style.less';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
+import { ReactComponent as RcIconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -55,6 +58,16 @@ const TokenAmountInput = ({
   );
   const [keyword, setKeyword] = useState('');
   const [chainServerId, setChainServerId] = useState(chainId);
+
+  const chainItem = useMemo(
+    () =>
+      findChain({
+        serverId: chainServerId,
+      }),
+    [chainServerId]
+  );
+
+  const isTestnet = chainItem?.isTestnet;
 
   useLayoutEffect(() => {
     if (amountFocus && !tokenSelectorVisible) {
@@ -100,6 +113,17 @@ const TokenAmountInput = ({
     list: searchedTokenByQuery,
   } = useSearchToken(currentAccount?.address, keyword, chainServerId);
 
+  const {
+    loading: isSearchTestnetLoading,
+    testnetTokenList,
+  } = useSearchTestnetToken({
+    address: currentAccount?.address,
+    withBalance: keyword ? false : true,
+    chainId: chainItem?.id,
+    q: keyword,
+    enabled: isTestnet,
+  });
+
   const availableToken = useMemo(() => {
     const allTokens = chainServerId
       ? allDisplayTokens.filter((token) => token.chain === chainServerId)
@@ -118,7 +142,19 @@ const TokenAmountInput = ({
     chainServerId,
   ]);
   const displayTokenList = useSortToken(availableToken);
-  const isListLoading = keyword ? isSearchLoading : isLoadingAllTokens;
+
+  const isListLoading = useMemo(() => {
+    if (isTestnet) {
+      return isSearchTestnetLoading;
+    }
+    return keyword ? isSearchLoading : isLoadingAllTokens;
+  }, [
+    keyword,
+    isSearchLoading,
+    isLoadingAllTokens,
+    isSearchTestnetLoading,
+    isTestnet,
+  ]);
 
   const handleSearchTokens = React.useCallback(async (ctx) => {
     setKeyword(ctx.keyword);
@@ -131,6 +167,12 @@ const TokenAmountInput = ({
 
   const valueNum = Number(value);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (INPUT_NUMBER_RE.test(e.target.value)) {
+      onChange?.(filterNumber(e.target.value));
+    }
+  };
+
   return (
     <div className={clsx('token-amount-input', className)}>
       <div className="left" onClick={handleSelectToken}>
@@ -138,7 +180,10 @@ const TokenAmountInput = ({
         <span className="token-input__symbol" title={getTokenSymbol(token)}>
           {getTokenSymbol(token)}
         </span>
-        <img src={IconArrowDown} className="icon icon-arrow-down" />
+        <RcIconRcArrowDownTriangle
+          viewBox="0 0 24 24"
+          className="w-18 h-18 text-r-neutral-foot"
+        />
       </div>
       <div
         className={clsx(
@@ -151,7 +196,7 @@ const TokenAmountInput = ({
           placeholder="0"
           className={clsx(!valueNum && 'h-[100%]')}
           value={value}
-          onChange={(e) => onChange && onChange(e.target.value)}
+          onChange={handleChange}
           title={value}
         />
         {inlinePrize && (
@@ -173,7 +218,7 @@ const TokenAmountInput = ({
       </div>
       <TokenSelector
         visible={tokenSelectorVisible}
-        list={displayTokenList}
+        list={isTestnet ? testnetTokenList : displayTokenList}
         onConfirm={handleCurrentTokenChange}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}

@@ -10,6 +10,9 @@ import { Account } from 'background/service/preference';
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {};
 
+import { ledgerUSBVendorId } from '@ledgerhq/devices';
+import { getImKeyDevices } from './imKey';
+
 export * from './WalletContext';
 export * from './WindowContext';
 
@@ -100,7 +103,7 @@ export const isMetaMaskActive = async () => {
   if (!url) return false;
 
   try {
-    const res = await window.fetch(url);
+    const res = await fetch(url);
     await res.text();
 
     return true;
@@ -124,6 +127,9 @@ export const ellipsisOverflowedText = (
   return `${cut}...`;
 };
 
+/**
+ * @description compare address is same, ignore case
+ */
 export const isSameAddress = (a: string, b: string) => {
   if (!a || !b) return false;
   return a.toLowerCase() === b.toLowerCase();
@@ -156,4 +162,16 @@ export const getAccountIcon = (account: Account) => {
 
 export const isStringOrNumber = (data) => {
   return typeof data === 'string' || typeof data === 'number';
+};
+
+export const hasConnectedLedgerDevice = async () => {
+  const devices = await navigator.hid?.getDevices();
+  return (
+    devices?.filter((device) => device.vendorId === ledgerUSBVendorId).length >
+    0
+  );
+};
+
+export const hasConnectedImKeyDevice = async () => {
+  return !!(await getImKeyDevices()).length;
 };

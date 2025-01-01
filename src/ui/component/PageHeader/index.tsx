@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 import IconBack from 'ui/assets/back.svg';
 import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
-import { ReactComponent as RcIconClose } from 'ui/assets/component/close.svg';
+import { ReactComponent as RcIconClose } from 'ui/assets/component/close-cc.svg';
 import './style.less';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 
@@ -52,8 +52,20 @@ const PageHeader = ({
       {closeable && (
         <ThemeIcon
           src={RcIconClose}
-          className={clsx('icon-close', invertBack && 'filter invert', closeCn)}
-          onClick={onClose || (() => history.goBack())}
+          className={clsx(
+            'icon-close text-r-neutral-body',
+            invertBack && 'filter invert',
+            closeCn
+          )}
+          onClick={() => {
+            if (onClose) {
+              onClose();
+            } else if (history.length > 1) {
+              history.goBack();
+            } else {
+              history.replace('/');
+            }
+          }}
         />
       )}
     </div>

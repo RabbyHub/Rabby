@@ -30,7 +30,7 @@ const ListScrollWrapper = styled.div`
 
 const ListFooterWrapper = styled.div`
   height: 80px;
-  padding: 20px 0;
+  padding: 20px;
   display: flex;
   justify-content: center;
   position: fixed;
@@ -45,6 +45,10 @@ const AccountItemSelector = styled.div`
   margin-bottom: 8px;
   &:nth-last-child(1) {
     margin-bottom: 0;
+  }
+  .rabby-checkbox__label {
+    flex: 1;
+    margin-left: 12px;
   }
 `;
 
@@ -139,7 +143,7 @@ const EditWhitelist = ({
             <Checkbox
               width="20px"
               height="20px"
-              className="mr-12"
+              className="flex-1"
               background="var(--r-green-default, #2ABB7F)"
               checked={
                 !!checkedList.find((item) =>
@@ -149,8 +153,9 @@ const EditWhitelist = ({
               onChange={(checked) =>
                 handleCheckAddress(checked, account.address)
               }
-            />
-            <AccountItem account={account} />
+            >
+              <AccountItem account={account} />
+            </Checkbox>
           </AccountItemSelector>
         ))}
       </ListScrollWrapper>
@@ -158,7 +163,7 @@ const EditWhitelist = ({
         <Button
           type="primary"
           size="large"
-          className="w-[215px] h-[40px] text-15"
+          className="w-[100%] h-[40px] text-15"
           onClick={handleSaveWhitelist}
         >
           {t('component.Contact.EditWhitelist.save', {

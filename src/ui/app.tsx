@@ -1,26 +1,25 @@
-// import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import Views from './views';
 import { Message } from '@/utils/message';
-import { getUITypeName } from 'ui/utils';
+import { getUiType, getUITypeName, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
-import i18n, { addResourceBundle } from 'src/i18n';
+import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import { EVENTS } from 'consts';
+import browser from 'webextension-polyfill';
 
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 
 import store from './store';
 
-import '../i18n';
-import { getSentryEnv } from '@/utils/env';
+import { getSentryEnv, isManifestV3 } from '@/utils/env';
+import { updateChainStore } from '@/utils/chain';
 
 Sentry.init({
   dsn:
-    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
+    'https://a864fbae7ba680ce68816ff1f6ef2c4e@o4507018303438848.ingest.us.sentry.io/4507018389749760',
   release: process.env.release,
   environment: getSentryEnv(),
   ignoreErrors: [
@@ -29,6 +28,7 @@ Sentry.init({
     'Network Error',
     'Request limit exceeded.',
     'Non-Error promise rejection captured with keys: code, message',
+    'Non-Error promise rejection captured with keys: message, stack',
     'Failed to fetch',
   ],
 });
@@ -54,8 +54,6 @@ initAppMeta();
 const { PortMessage } = Message;
 
 const portMessageChannel = new PortMessage();
-
-portMessageChannel.connect(getUITypeName());
 
 const wallet = new Proxy(
   {},
@@ -122,16 +120,54 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 });
 
 store.dispatch.app.initWallet({ wallet });
-store.dispatch.app.initBizStore();
 
-wallet.getLocale().then((locale) => {
-  addResourceBundle(locale).then(() => {
-    i18n.changeLanguage(locale);
-    ReactDOM.render(
-      <Provider store={store}>
-        <Views wallet={wallet} />
-      </Provider>,
-      document.getElementById('root')
-    );
-  });
+eventBus.addEventListener('syncChainList', (params) => {
+  store.dispatch.chains.setField(params);
+  updateChainStore(params);
 });
+
+const main = () => {
+  portMessageChannel.connect(getUITypeName());
+
+  store.dispatch.app.initBizStore();
+  store.dispatch.chains.init();
+
+  if (getUiType().isPop) {
+    wallet.tryOpenOrActiveUserGuide().then((opened) => {
+      if (opened) {
+        window.close();
+      }
+    });
+  }
+
+  wallet.getLocale().then((locale) => {
+    addResourceBundle(locale).then(() => {
+      changeLanguage(locale);
+      ReactDOM.render(
+        <Provider store={store}>
+          <Views wallet={wallet} />
+        </Provider>,
+        document.getElementById('root')
+      );
+    });
+  });
+};
+
+const bootstrap = () => {
+  if (!isManifestV3) {
+    main();
+    return;
+  }
+  browser.runtime.sendMessage({ type: 'getBackgroundReady' }).then((res) => {
+    if (!res) {
+      setTimeout(() => {
+        bootstrap();
+      }, 100);
+      return;
+    }
+
+    main();
+  });
+};
+
+bootstrap();

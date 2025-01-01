@@ -13,8 +13,6 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
 import { ReactComponent as RcIconAddAddress } from '@/ui/assets/address/new-address.svg';
-import { ReactComponent as RcIconRefresh } from '@/ui/assets/address/refresh.svg';
-import { ReactComponent as RcIconLoading } from '@/ui/assets/address/loading.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 
@@ -304,6 +302,24 @@ const AddressManagement = () => {
     dispatch.whitelist.init();
   }, []);
 
+  const AddNewAddressColumn = useMemo(() => {
+    return (
+      <div
+        onClick={gotoAddAddress}
+        className="mt-24 h-[52px] flex items-center justify-center gap-[8px] bg-r-neutral-card-1 rounded-lg cursor-pointer"
+      >
+        <RcIconAddAddress
+          viewBox="0 0 20 20"
+          className={clsx('text-r-blue-default w-[20px] h-[20px] ')}
+        />
+
+        <span className="text-13 text-r-blue-default font-medium">
+          {t('page.manageAddress.addNewAddress')}
+        </span>
+      </div>
+    );
+  }, [gotoAddAddress]);
+
   const Row = useCallback(
     (
       props: any //ListChildComponentProps<typeof accountsList[] | typeof accountsList>
@@ -322,60 +338,66 @@ const AddressManagement = () => {
         );
 
         return (
-          <div
-            className={clsx(
-              'address-wrap-with-padding px-[20px]',
-              isGroup && 'row-group'
-            )}
-            style={!isGroup ? style : undefined}
-            key={account.address}
-          >
-            <AddressItem
-              balance={account.balance}
-              address={account.address}
-              type={account.type}
-              brandName={account.brandName}
-              alias={account.alianName}
-              isUpdatingBalance={isUpdateAllBalanceLoading}
-              extra={
-                <div
-                  className={clsx(
-                    'icon-star border-none px-0',
-                    favorited
-                      ? 'is-active'
-                      : 'opacity-0 group-hover:opacity-100'
-                  )}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    dispatch.addressManagement.toggleHighlightedAddressAsync({
+          <>
+            <div
+              className={clsx(
+                'address-wrap-with-padding px-[20px]',
+                isGroup && 'row-group'
+              )}
+              style={!isGroup ? style : undefined}
+              key={account.address}
+            >
+              <AddressItem
+                balance={account.balance}
+                address={account.address}
+                type={account.type}
+                brandName={account.brandName}
+                alias={account.alianName}
+                isUpdatingBalance={isUpdateAllBalanceLoading}
+                extra={
+                  <div
+                    className={clsx(
+                      'icon-star border-none px-0',
+                      favorited
+                        ? 'is-active'
+                        : 'opacity-0 group-hover:opacity-100'
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      dispatch.addressManagement.toggleHighlightedAddressAsync({
+                        address: account.address,
+                        brandName: account.brandName,
+                      });
+                    }}
+                  >
+                    <ThemeIcon
+                      className="w-[13px] h-[13px]"
+                      src={favorited ? RcIconPinnedFill : RcIconPinned}
+                    />
+                  </div>
+                }
+                onClick={() => {
+                  history.push(
+                    `/settings/address-detail?${obj2query({
                       address: account.address,
+                      type: account.type,
                       brandName: account.brandName,
-                    });
-                  }}
-                >
-                  <ThemeIcon
-                    className="w-[13px] h-[13px]"
-                    src={favorited ? RcIconPinnedFill : RcIconPinned}
-                  />
-                </div>
-              }
-              onClick={() => {
-                history.push(
-                  `/settings/address-detail?${obj2query({
-                    address: account.address,
-                    type: account.type,
-                    brandName: account.brandName,
-                    //@ts-expect-error byImport is boolean
-                    byImport: account.byImport || '',
-                  })}`
-                );
-              }}
-              onSwitchCurrentAccount={() => {
-                switchAccount(account);
-              }}
-              enableSwitch={enableSwitch}
-            />
-          </div>
+                      //@ts-expect-error byImport is boolean
+                      byImport: account.byImport || '',
+                    })}`
+                  );
+                }}
+                onSwitchCurrentAccount={() => {
+                  switchAccount(account);
+                }}
+                enableSwitch={enableSwitch}
+              />
+
+              {!isGroup && index === data.length - 1
+                ? AddNewAddressColumn
+                : null}
+            </div>
+          </>
         );
       };
 
@@ -383,6 +405,9 @@ const AddressManagement = () => {
         return (
           <div style={style} className="address-type-container">
             {(account as typeof accountsList)?.map((e) => render(e, true))}
+            {index === data.length - 1 ? (
+              <div className="mx-20">{AddNewAddressColumn}</div>
+            ) : null}
           </div>
         );
       }
@@ -464,7 +489,9 @@ const AddressManagement = () => {
 
   const getItemSize = React.useCallback(
     (i: number) => {
-      const lastPadding = i === filteredAccounts.length - 1 ? 24 : 0;
+      const lastAddAddrBtn = 52 + 24;
+      const lastPadding =
+        i === filteredAccounts.length - 1 ? 24 + lastAddAddrBtn : 0;
       if (addressSortStore.sortType === 'addressType') {
         return (
           52 * (filteredAccounts as typeof accountsList[])[i].length +
@@ -488,43 +515,15 @@ const AddressManagement = () => {
         {enableSwitch
           ? t('page.manageAddress.current-address')
           : t('page.manageAddress.address-management')}
-        <div className="absolute top-24 right-[42px]">
+        <div className="bg-r-neutral-card1 rounded absolute top-20 right-0 w-[32px] h-[28px] flex items-center justify-center">
           <RcIconAddAddress
             viewBox="0 0 20 20"
             className={clsx(
-              'text-r-neutral-title-1 w-[20px] h-[20px] cursor-pointer'
+              'text-r-blue-default w-[20px] h-[20px] cursor-pointer'
             )}
             onClick={gotoAddAddress}
           />
         </div>
-        <Tooltip
-          title={t('page.manageAddress.update-balance-data')}
-          overlayClassName="rectangle"
-          placement="left"
-        >
-          <div className="absolute right-0 top-[24px]">
-            {isUpdateAllBalanceLoading ? (
-              <div className="w-[20px] h-[20px] flex items-center justify-center">
-                <RcIconLoading
-                  viewBox="0 0 20 20"
-                  className="text-r-neutral-title-1 w-[16px] h-[16px] cursor-pointer"
-                />
-              </div>
-            ) : (
-              <RcIconRefresh
-                className={clsx(
-                  'text-r-neutral-title-1 w-[20px] h-[20px] cursor-pointer'
-                )}
-                onClick={() => {
-                  if (isUpdateAllBalanceLoading) {
-                    return;
-                  }
-                  handleUpdateAllBalance();
-                }}
-              />
-            )}
-          </div>
-        </Tooltip>
       </PageHeader>
 
       {currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
@@ -556,6 +555,7 @@ const AddressManagement = () => {
                   address={accountList[currentAccountIndex].address || ''}
                   brandName={accountList[currentAccountIndex].brandName || ''}
                   className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                  type={accountList[currentAccountIndex].type}
                 />
               )}
               {isLedger && (
@@ -572,6 +572,7 @@ const AddressManagement = () => {
                   address={accountList[currentAccountIndex].address || ''}
                   brandName={KEYRING_CLASS.Coinbase}
                   className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                  type={KEYRING_CLASS.Coinbase}
                 />
               )}
             </AddressItem>
@@ -584,11 +585,11 @@ const AddressManagement = () => {
           onChange={(e) => setSearchKeyword(e.target.value)}
         />
         <div
-          className="flex items-center cursor-pointer"
+          className="flex items-center cursor-pointer "
           onClick={gotoManageAddress}
         >
           <span>{t('page.manageAddress.manage-address')}</span>
-          <RcIconRight />
+          <RcIconRight className="relative top-1" />
         </div>
       </div>
       {noAnyAccount ? (

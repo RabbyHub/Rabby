@@ -24,11 +24,11 @@ const DEFAULT_SCROLL = { y: 300, x: '100vw' };
 function TableBodyEmpty({
   isLoading,
   loadingText = 'Loading...',
-  noMatchText = 'No Match',
+  emptyText = 'No Match',
 }: {
   isLoading?: boolean;
   loadingText?: string;
-  noMatchText?: string;
+  emptyText?: string;
 }) {
   return (
     <Empty
@@ -36,7 +36,7 @@ function TableBodyEmpty({
       image={
         <RcIconNoMatchCC className="w-[52px] h-[52px] text-r-neutral-body" />
       }
-      description={isLoading ? loadingText : noMatchText}
+      description={isLoading ? loadingText : emptyText}
     />
   );
 }
@@ -192,7 +192,9 @@ export function VirtualTable<RecordType extends object>({
   getCellKey,
   getCellClassName,
   showScrollbar = true,
+  emptyText = 'No Data',
   sortedInfo,
+  overlayClassName,
   ...props
 }: TableProps<RecordType> & {
   markHoverRow?: boolean;
@@ -207,7 +209,9 @@ export function VirtualTable<RecordType extends object>({
   getCellKey?: (params: IVGridContextualPayload<RecordType>) => string | number;
   getCellClassName?: IVGridItemDataType<RecordType>['getCellClassName'];
   showScrollbar?: boolean;
+  emptyText?: string;
   sortedInfo?: SorterResult<RecordType>;
+  overlayClassName?: string;
 }) {
   const { columns, scroll = { ...DEFAULT_SCROLL } } = props;
   const [tableWidth, setTableWidth] = useState(0);
@@ -299,9 +303,7 @@ export function VirtualTable<RecordType extends object>({
           loadingText={t(
             'page.approvals.component.table.bodyEmpty.loadingText'
           )}
-          noMatchText={t(
-            'page.approvals.component.table.bodyEmpty.noMatchText'
-          )}
+          emptyText={emptyText}
         />
       );
     }
@@ -405,7 +407,11 @@ export function VirtualTable<RecordType extends object>({
       >
         <Table<RecordType>
           {...props}
-          className={clsx('am-virtual-table', props.className)}
+          className={
+            overlayClassName
+              ? overlayClassName
+              : clsx('am-virtual-table', props.className)
+          }
           columns={mergedColumns}
           pagination={false}
           components={{

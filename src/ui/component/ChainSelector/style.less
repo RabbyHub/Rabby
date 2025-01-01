@@ -42,10 +42,10 @@
   }
 }
 
-.chain-selector__modal {
+.chain-selector__modal.chain-selector__modal {
   .ant-drawer-content-wrapper {
     max-height: calc(100vh - 40px);
-    height: 494px !important;
+    // height: 494px !important;
   }
   header {
     padding-top: 8px;
@@ -60,6 +60,7 @@
       background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
       border-radius: 6px;
       height: 44px;
+      border-width: 1px;
 
       input::placeholder {
         color: var(--r-neutral-foot, #6a7587);
@@ -68,7 +69,7 @@
 
     .ant-input-affix-wrapper:focus,
     .ant-input-affix-wrapper-focused {
-      border-color: #b0bdff;
+      border-color: var(--r-blue-default);
     }
   }
   .ant-drawer-header {
@@ -95,6 +96,7 @@
   }
   .ant-drawer-body {
     padding-top: 0 !important;
+    // position: relative;
     &::-webkit-scrollbar {
       display: none !important;
     }
@@ -222,6 +224,9 @@
       color: var(--r-neutral-title-1, #192945);
     }
   }
+  // .ant-drawer-body {
+  //   position: relative;
+  // }
   .chain-selector-large-modal-content {
     padding-left: 20px;
     padding-right: 20px;
@@ -322,7 +327,6 @@
       left: 16px;
       right: 16px;
       border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-      border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     }
 
     .chain-icon-comp {
@@ -335,6 +339,7 @@
     &-icon {
       width: 24px;
       height: 24px;
+      border-radius: 50%;
     }
     &-info {
       margin-left: 12px;
@@ -359,12 +364,17 @@
     &-checked {
       margin-left: 16px;
     }
-    &:hover {
+    &:not(.select-chain-item-disabled):hover {
       background: var(--r-blue-light-1, #eef1ff);
       border: 1px solid var(--r-blue-default, #7084ff);
       &::after {
         display: none;
       }
+      .select-chain-item-star {
+        display: block;
+      }
+    }
+    &.select-chain-item-disabled:hover {
       .select-chain-item-star {
         display: block;
       }

@@ -1,13 +1,11 @@
 import React, { useMemo, ReactNode, useState, useEffect } from 'react';
 import { message } from 'antd';
 import styled from 'styled-components';
-import ClipboardJS from 'clipboard';
 import { useTranslation } from 'react-i18next';
 import { Chain, TokenItem } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
-import { CHAINS } from 'consts';
-import { isSameAddress, useWallet } from 'ui/utils';
+import { isSameAddress, useHover, useWallet } from 'ui/utils';
 import { getTimeSpan } from 'ui/utils/time';
 import { useRabbyDispatch } from 'ui/store';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
@@ -19,13 +17,15 @@ import IconEdit from 'ui/assets/editpen.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconScam from 'ui/assets/sign/tx/token-scam.svg';
 import IconFake from 'ui/assets/sign/tx/token-fake.svg';
-import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
-import IconExternal from 'ui/assets/icon-share.svg';
-import IconInteracted from 'ui/assets/sign/tx/interacted.svg';
-import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
+import { ReactComponent as IconAddressCopy } from 'ui/assets/icon-copy-cc.svg';
+import { ReactComponent as IconExternal } from 'ui/assets/icon-share-currentcolor.svg';
+import { ReactComponent as IconArrowRight } from 'ui/assets/sign/arrow-right-lite.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import AccountAlias from '../../AccountAlias';
 import { getAddressScanLink } from '@/utils';
+import { findChain } from '@/utils/chain';
+import clsx from 'clsx';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -36,9 +36,15 @@ const TokenAmountWrapper = styled.div`
   white-space: nowrap;
   overflow: hidden;
 `;
-const TokenAmount = ({ value }: { value: string | number }) => {
+const TokenAmount = ({
+  value,
+  hasTitle = true,
+}: {
+  value: string | number;
+  hasTitle?: boolean;
+}) => {
   return (
-    <TokenAmountWrapper title={String(value)}>
+    <TokenAmountWrapper title={hasTitle ? String(value) : ''}>
       {formatAmount(value)}
     </TokenAmountWrapper>
   );
@@ -87,6 +93,9 @@ const TimeSpanFuture = ({
   const timeSpan = useMemo(() => {
     if (!to) return '-';
     const { d, h, m } = getTimeSpan(to - from);
+    if (d >= 365000) {
+      return 'Forever';
+    }
     if (d > 0) {
       return `${d} day${d > 1 ? 's' : ''}`;
     }
@@ -120,11 +129,11 @@ const AddressMark = ({
   onWhitelist: boolean;
   onBlacklist: boolean;
   address: string;
-  chain: Chain;
+  chain?: Chain;
   isContract?: boolean;
   onChange(): void;
 }) => {
-  const chainId = chain.serverId;
+  const chainId = chain?.serverId;
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
@@ -264,9 +273,14 @@ const TokenLabel = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex gap-4 shrink-0 relative">
+    <div
+      className={clsx('flex gap-4 shrink-0 relative', {
+        'ml-4': isScam || isFake,
+      })}
+    >
       {isFake && (
         <TooltipWithMagnetArrow
+          inApproval
           overlayClassName="rectangle w-[max-content]"
           title={t('page.signTx.fakeTokenAlert')}
         >
@@ -275,6 +289,7 @@ const TokenLabel = ({
       )}
       {isScam && (
         <TooltipWithMagnetArrow
+          inApproval
           overlayClassName="rectangle w-[max-content]"
           title={t('page.signTx.scamTokenAlert')}
         >
@@ -287,69 +302,110 @@ const TokenLabel = ({
 
 const AddressWrapper = styled.div`
   display: flex;
+  .address-box {
+    padding: 3px 6px;
+    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    cursor: pointer;
+    color: var(--r-neutral-title1, #192945);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 900px;
+    display: flex;
+    .icon-arrow-right {
+      margin-left: 2px;
+      color: var(--r-neutral-foot, #6a7587);
+    }
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff);
+      background-color: var(--r-blue-light1, #eef1ff);
+    }
+  }
 `;
 const Address = ({
   address,
   chain,
-  iconWidth = '12px',
+  iconWidth = '14px',
+  hasHover = false,
+  id,
 }: {
   address: string;
   chain?: Chain;
   iconWidth?: string;
+  hasHover?: boolean;
+  id?: string;
 }) => {
-  const { t } = useTranslation();
-  const handleClickContractId = () => {
-    if (!chain) return;
-    openInTab(getAddressScanLink(chain.scanLink, address), false);
-  };
-  const handleCopyContractAddress = () => {
-    const clipboard = new ClipboardJS('.value-address', {
-      text: function () {
-        return address;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              {t('global.copied')}
-            </div>
-            <div className="text-white">{address}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
-  };
   return (
     <AddressWrapper className="value-address relative">
       <TooltipWithMagnetArrow
+        inApproval
         title={address}
         className="rectangle w-[max-content]"
       >
-        <span>{ellipsis(address)}</span>
+        <div className="address-box" id={id}>
+          {ellipsis(address)}
+          <IconArrowRight className="icon-arrow-right" />
+        </div>
       </TooltipWithMagnetArrow>
-      {chain && (
-        <img
-          onClick={handleClickContractId}
-          src={IconExternal}
+    </AddressWrapper>
+  );
+};
+
+const AddressWithCopy = ({
+  address,
+  chain,
+  iconWidth = '14px',
+  hasHover = false,
+  id,
+}: {
+  address: string;
+  chain?: Chain;
+  iconWidth?: string;
+  hasHover?: boolean;
+  id?: string;
+}) => {
+  const handleClickContractId = (e) => {
+    e.stopPropagation();
+    if (!chain) return;
+    openInTab(getAddressScanLink(chain.scanLink, address), false);
+  };
+  const handleCopyContractAddress = (e) => {
+    e.stopPropagation();
+    copyAddress(address);
+  };
+  const [isHoverToolbar, hoverToolbarProps] = useHover();
+
+  return (
+    <AddressWrapper className="value-address relative" id={id}>
+      <TooltipWithMagnetArrow
+        inApproval
+        title={address}
+        className="rectangle w-[max-content]"
+      >
+        <span
+          className={clsx({
+            'cursor-pointer group-hover:underline hover:text-r-blue-default':
+              hasHover && !isHoverToolbar,
+          })}
+        >
+          {ellipsis(address)}
+        </span>
+      </TooltipWithMagnetArrow>
+      <div className="flex items-center" {...hoverToolbarProps}>
+        {chain && (
+          <IconExternal
+            onClick={handleClickContractId}
+            width={iconWidth}
+            height={iconWidth}
+            className="ml-6 cursor-pointer text-r-neutral-foot hover:text-r-blue-default"
+          />
+        )}
+        <IconAddressCopy
+          onClick={handleCopyContractAddress}
           width={iconWidth}
           height={iconWidth}
-          className="ml-6 cursor-pointer"
+          className="ml-6 cursor-pointer icon-copy text-r-neutral-foot hover:text-r-blue-default"
         />
-      )}
-      <img
-        onClick={handleCopyContractAddress}
-        src={IconAddressCopy}
-        width={iconWidth}
-        height={iconWidth}
-        className="ml-6 cursor-pointer icon-copy"
-      />
+      </div>
     </AddressWrapper>
   );
 };
@@ -364,9 +420,9 @@ const Text = ({ children }: { children: ReactNode }) => {
 
 const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
   const chain = useMemo(() => {
-    return Object.values(CHAINS).find(
-      (item) => item.serverId === chainServerId
-    );
+    return findChain({
+      serverId: chainServerId,
+    });
   }, [chainServerId]);
   if (!chain) return null;
   return (
@@ -380,17 +436,7 @@ const Interacted = ({ value }: { value: boolean }) => {
   const { t } = useTranslation();
   return (
     <span className="flex">
-      {value ? (
-        <>
-          <img src={IconInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.interacted')}
-        </>
-      ) : (
-        <>
-          <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.neverInteracted')}
-        </>
-      )}
+      {value ? <>{t('page.signTx.yes')}</> : <>{t('page.signTx.no')}</>}
     </span>
   );
 };
@@ -399,29 +445,28 @@ const Transacted = ({ value }: { value: boolean }) => {
   const { t } = useTranslation();
   return (
     <span className="flex">
-      {value ? (
-        <>
-          <img src={IconInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.transacted')}
-        </>
-      ) : (
-        <>
-          <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.neverTransacted')}
-        </>
-      )}
+      {value ? <>{t('page.signTx.yes')}</> : <>{t('page.signTx.no')}</>}
     </span>
   );
 };
 
-const TokenSymbol = ({ token }: { token: TokenItem }) => {
+const TokenSymbol = ({
+  token,
+  disableHover,
+}: {
+  token: TokenItem;
+  disableHover?: boolean;
+}) => {
   const dispatch = useRabbyDispatch();
   const handleClickTokenSymbol = () => {
     dispatch.sign.openTokenDetailPopup(token);
   };
   return (
     <span
-      className="hover:underline cursor-pointer"
+      className={clsx(
+        'hover:text-r-blue-default cursor-pointer',
+        !disableHover && 'group-hover:underline'
+      )}
       onClick={handleClickTokenSymbol}
       title={getTokenSymbol(token)}
     >
@@ -477,4 +522,5 @@ export {
   TokenSymbol,
   AccountAlias,
   KnownAddress,
+  AddressWithCopy,
 };

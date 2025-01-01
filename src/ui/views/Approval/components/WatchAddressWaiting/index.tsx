@@ -7,6 +7,7 @@ import {
   WALLETCONNECT_STATUS_MAP,
   EVENTS,
   KEYRING_CATEGORY_MAP,
+  CHAINS_ENUM,
 } from 'consts';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import eventBus from '@/eventBus';
@@ -15,7 +16,8 @@ import Scan from './Scan';
 import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -26,6 +28,12 @@ interface ApprovalParams {
   $ctx?: any;
   extra?: Record<string, any>;
   signingTxId?: string;
+  safeMessage?: {
+    safeMessageHash: string;
+    safeAddress: string;
+    message: string;
+    chainId: number;
+  };
 }
 
 const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
@@ -41,9 +49,10 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!.enum;
+  const chain =
+    findChain({
+      id: params.chainId || 1,
+    })?.enum || CHAINS_ENUM.ETH;
   const isSignTextRef = useRef(false);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const explainRef = useRef<any | null>(null);
@@ -93,12 +102,11 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     const account = params.isGnosis
       ? params.account!
       : (await wallet.syncGetCurrentAccount())!;
-    // await wallet.killWalletConnectConnector(account.address, account.brandName);
-    // await initWalletConnect();
-    setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
+    setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     setConnectError(null);
-    wallet.resendWalletConnect(account);
+    wallet.resendSign();
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
+    emitSignComponentAmounted();
   };
 
   const handleRefreshQrCode = () => {
@@ -126,12 +134,20 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, sig);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
-              await wallet.gnosisAddSignature(account.address, sig);
-              await wallet.postGnosisTransaction();
+              const sigs = await wallet.getGnosisTransactionSignatures();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, sig);
+              } else {
+                await wallet.gnosisAddSignature(account.address, sig);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {
@@ -156,7 +172,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             //     preExecSuccess: explain
             //       ? explain?.calcSuccess && explain?.pre_exec.success
             //       : true,
-            //     createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+            //     createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
             //     source: params?.$ctx?.ga?.source || '',
             //     trigger: params?.$ctx?.ga?.trigger || '',
             //   });
@@ -185,7 +201,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             //   preExecSuccess: explain
             //     ? explain?.calcSuccess && explain?.pre_exec.success
             //     : true,
-            //   createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+            //   createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
             //   source: params?.$ctx?.ga?.source || '',
             //   trigger: params?.$ctx?.ga?.trigger || '',
             // });
@@ -206,9 +222,10 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         ) {
           if (!isText && !isSignTriggered) {
             const explain = explainRef.current;
+            const chainInfo = findChainByEnum(chain);
 
             // const tx = approval.data?.params;
-            if (explain) {
+            if (explain || chainInfo?.isTestnet) {
               // const { nonce, from, chainId } = tx;
               // const explain = await wallet.getExplainCache({
               //   nonce: Number(nonce),
@@ -218,20 +235,25 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
               wallet.reportStats('signTransaction', {
                 type: account.brandName,
-                chainId: findChainByEnum(chain)?.serverId || '',
+                chainId: chainInfo?.serverId || '',
                 category: KEYRING_CATEGORY_MAP[account.type],
                 preExecSuccess: explain
                   ? explain?.calcSuccess && explain?.pre_exec.success
                   : true,
-                createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+                createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
                 source: params?.$ctx?.ga?.source || '',
                 trigger: params?.$ctx?.ga?.trigger || '',
+                networkType: chainInfo?.isTestnet
+                  ? 'Custom Network'
+                  : 'Integrated Network',
               });
             }
             matomoRequestEvent({
               category: 'Transaction',
               action: 'Submit',
-              label: account.brandName,
+              label: chainInfo?.isTestnet
+                ? 'Custom Network'
+                : 'Integrated Network',
             });
             isSignTriggered = true;
           }
@@ -271,7 +293,8 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         }
       }
     );
-    initWalletConnect();
+    await initWalletConnect();
+    emitSignComponentAmounted();
   };
 
   useEffect(() => {

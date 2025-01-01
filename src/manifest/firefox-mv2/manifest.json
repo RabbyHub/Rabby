@@ -1,0 +1,74 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_appName__",
+  "short_name": "__MSG_appName__",
+  "version": "0.93.7",
+  "default_locale": "en",
+  "description": "__MSG_appDescription__",
+  "icons": {
+    "16": "images/icon-16.png",
+    "19": "images/icon-19.png",
+    "32": "images/icon-32.png",
+    "38": "images/icon-38.png",
+    "48": "images/icon-48.png",
+    "64": "images/icon-64.png",
+    "128": "images/icon-128.png",
+    "512": "images/icon-512.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "images/icon-16.png",
+      "19": "images/icon-19.png",
+      "32": "images/icon-32.png",
+      "48": "images/icon-48.png",
+      "128": "images/icon-128.png"
+    },
+    "default_title": "Rabby",
+    "default_popup": "popup.html"
+  },
+  "author": "https://rabby.io/",
+  "background": {
+    "page": "background.html",
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": [
+        "webextension-polyfill.js",
+        "content-script.js"
+      ],
+      "matches": [
+        "file://*/*",
+        "http://*/*",
+        "https://*/*"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://connect.trezor.io/*/popup.html",
+        "https://connect.onekey.so/popup.html"
+      ],
+      "js": [
+        "vendor/trezor/trezor-content-script.js"
+      ]
+    }
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; object-src 'self'",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "activeTab",
+    "contextMenus",
+    "http://*/*",
+    "https://*/*",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*.eth/",
+    "notifications"
+  ],
+  "web_accessible_resources": [
+    "pageProvider.js"
+  ]
+}

@@ -65,6 +65,40 @@ import version09248 from './09248.md';
 import version09249 from './09249.md';
 import version09250 from './09250.md';
 import version09251 from './09251.md';
+import version09252 from './09252.md';
+import version09253 from './09253.md';
+import version09254 from './09254.md';
+import version09255 from './09255.md';
+import version09257 from './09257.md';
+import version09259 from './09259.md';
+import version09264 from './09264.md';
+import version09266 from './09266.md';
+import version09268 from './09268.md';
+import version09269 from './09269.md';
+import version09270 from './09270.md';
+import version09271 from './09271.md';
+import version09272 from './09272.md';
+import version09273 from './09273.md';
+import version09274 from './09274.md';
+import version09276 from './09276.md';
+import version09277 from './09277.md';
+import version09280 from './09280.md';
+import version09284 from './09284.md';
+import version09285 from './09285.md';
+import version09286 from './09286.md';
+import version09287 from './09287.md';
+import version09288 from './09288.md';
+import version09289 from './09289.md';
+import version09290 from './09290.md';
+import version09292 from './09292.md';
+import version09295 from './09295.md';
+import version09296 from './09296.md';
+import version09298 from './09298.md';
+import version0931 from './0931.md';
+import version0933 from './0933.md';
+import version0935 from './0935.md';
+import version0936 from './0936.md';
+import version0937 from './0937.md';
 
 const version = process.env.release || '0';
 const versionMap = {
@@ -136,6 +170,40 @@ const versionMap = {
   '0.92.49': version09249,
   '0.92.50': version09250,
   '0.92.51': version09251,
+  '0.92.52': version09252,
+  '0.92.53': version09253,
+  '0.92.54': version09254,
+  '0.92.55': version09255,
+  '0.92.57': version09257,
+  '0.92.59': version09259,
+  '0.92.64': version09264,
+  '0.92.66': version09266,
+  '0.92.68': version09268,
+  '0.92.69': version09269,
+  '0.92.70': version09270,
+  '0.92.71': version09271,
+  '0.92.72': version09272,
+  '0.92.73': version09273,
+  '0.92.74': version09274,
+  '0.92.76': version09276,
+  '0.92.77': version09277,
+  '0.92.80': version09280,
+  '0.92.84': version09284,
+  '0.92.85': version09285,
+  '0.92.86': version09286,
+  '0.92.87': version09287,
+  '0.92.88': version09288,
+  '0.92.89': version09289,
+  '0.92.90': version09290,
+  '0.92.92': version09292,
+  '0.92.95': version09295,
+  '0.92.96': version09296,
+  '0.92.98': version09298,
+  '0.93.1': version0931,
+  '0.93.3': version0933,
+  '0.93.5': version0935,
+  '0.93.6': version0936,
+  '0.93.7': version0937,
 };
 export const getUpdateContent = () => {
   return versionMap[version];

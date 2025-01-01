@@ -23,7 +23,7 @@ export function useCheckAddressType(
     }
 
     try {
-      const code = await wallet.requestETHRpc(
+      const code = await wallet.requestETHRpc<any>(
         {
           method: 'eth_getCode',
           params: [addr, 'latest'],

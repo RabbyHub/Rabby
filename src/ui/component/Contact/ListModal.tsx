@@ -28,7 +28,7 @@ const ListScrollWrapper = styled.div`
 
 const ListFooterWrapper = styled.div`
   height: 80px;
-  padding: 20px 0;
+  padding: 20px;
   display: flex;
   justify-content: center;
   position: fixed;
@@ -161,7 +161,7 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
             <Button
               type="primary"
               size="large"
-              className="w-[169px] h-[40px] text-15"
+              className="w-[100%] h-[40px] text-15"
               onClick={handleClickEditWhitelist}
             >
               {t('component.Contact.ListModal.editWhitelist')}

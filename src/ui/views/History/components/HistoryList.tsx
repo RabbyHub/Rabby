@@ -7,17 +7,15 @@ import { useAccount } from '@/ui/store-hooks';
 import { useInfiniteScroll } from 'ahooks';
 import { Virtuoso } from 'react-virtuoso';
 import { Empty, Modal } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { sleep, useWallet } from 'ui/utils';
 import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
 
 const PAGE_COUNT = 10;
 
 export const HistoryList = ({
-  isMainnet = true,
   isFilterScam = false,
 }: {
-  isMainnet?: boolean;
   isFilterScam?: boolean;
 }) => {
   const wallet = useWallet();
@@ -29,9 +27,7 @@ export const HistoryList = ({
   const getAllTxHistory = (
     params: Parameters<typeof wallet.openapi.getAllTxHistory>[0]
   ) => {
-    const getHistory = isMainnet
-      ? wallet.openapi.getAllTxHistory
-      : wallet.testnetOpenapi.getAllTxHistory;
+    const getHistory = wallet.openapi.getAllTxHistory;
 
     return getHistory(params).then((res) => {
       if (res.history_list) {
@@ -45,10 +41,16 @@ export const HistoryList = ({
 
   const fetchData = async (startTime = 0) => {
     const { address } = account!;
-
-    const getHistory = isMainnet
-      ? wallet.openapi.listTxHisotry
-      : wallet.testnetOpenapi.listTxHisotry;
+    if (startTime) {
+      await sleep(500);
+    }
+    const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
+    if (apiLevel >= 1) {
+      return {
+        list: [],
+      };
+    }
+    const getHistory = wallet.openapi.listTxHisotry;
 
     const res = isFilterScam
       ? await getAllTxHistory({
@@ -153,15 +155,15 @@ export const HistoryList = ({
                     tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
                     key={item.id}
                     onViewInputData={setFocusingHistoryItem}
-                    isTestnet={!isMainnet}
                   />
                 );
               }}
               endReached={loadMore}
+              increaseViewportBy={100}
               components={{
                 Footer: () => {
                   if (loadingMore) {
-                    return <Loading count={4} active />;
+                    return <Loading count={2} active />;
                   }
                   return null;
                 },

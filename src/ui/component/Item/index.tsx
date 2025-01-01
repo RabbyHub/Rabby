@@ -79,7 +79,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
     rightIcon = IconArrowRight,
     hoverBorder = true,
     px = 16,
-    py = 16,
+    py = 15,
     bgColor = 'var(--r-neutral-card-1, #fff)',
     hoverBgColor = 'var(--r-blue-light-2, rgba(222, 227, 252, 1))',
     className = '',
@@ -197,7 +197,10 @@ export const BlueHeader = ({
     <>
       <BlueHeaderWrapper {...rest}>
         {showBackIcon && (
-          <div className={clsx('back', leftIconClassName)} onClick={goBack}>
+          <div
+            className={clsx('back top-1/2 -translate-y-2/4', leftIconClassName)}
+            onClick={goBack}
+          >
             <img src={ArrowLeftWhiteBack} />
           </div>
         )}

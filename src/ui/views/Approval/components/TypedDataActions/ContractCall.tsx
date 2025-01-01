@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ContractRequireData, TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
@@ -13,6 +13,8 @@ import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { isSameAddress } from '@/ui/utils';
+import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
+import { ContractRequireData } from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .contract-call-header {
@@ -56,7 +58,7 @@ const ContractCall = ({
   raw,
   engineResults,
 }: {
-  data: TypedDataActionData['contractCall'];
+  data: ParsedTypedDataActionData['contractCall'];
   requireData: ContractRequireData;
   chain: Chain;
   raw: Record<string, string | number>;
@@ -91,60 +93,80 @@ const ContractCall = ({
     return map;
   }, [engineResults]);
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>{t('page.signTx.interactContract')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.interactContract')}
+          </Row>
           <Row>
-            <div>
-              <Values.Address address={requireData.id} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              <ProtocolListItem protocol={requireData.protocol} />
-              <li>
-                <Values.Interacted value={requireData.hasInteraction} />
-              </li>
-
-              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
-
-              <SecurityListItem
-                id="1135"
-                engineResult={engineResultMap['1135']}
-                forbiddenText={t('page.signTx.markAsBlock')}
+            <ViewMore
+              type="contract"
+              data={{
+                bornAt: requireData.bornAt,
+                protocol: requireData.protocol,
+                rank: requireData.rank,
+                address: requireData.id,
+                hasInteraction: requireData.hasInteraction,
+                chain,
+              }}
+            >
+              <Values.Address
+                id="contract-call-address"
+                hasHover
+                address={requireData.id}
+                chain={chain}
               />
-
-              <SecurityListItem
-                id="1137"
-                engineResult={engineResultMap['1137']}
-                warningText={t('page.signTx.markAsBlock')}
-              />
-              <li>
-                <ViewMore
-                  type="contract"
-                  data={{
-                    hasInteraction: requireData.hasInteraction,
-                    bornAt: requireData.bornAt,
-                    protocol: requireData.protocol,
-                    rank: requireData.rank,
-                    address: requireData.id,
-                    chain,
-                  }}
-                />
-              </li>
-            </ul>
+            </ViewMore>
           </Row>
         </Col>
+        <SubTable target="contract-call-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow>
+              <Values.Interacted value={requireData.hasInteraction} />
+            </SubRow>
+          </SubCol>
+          {isInWhitelist && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+              <SubRow>{t('page.signTx.trusted')}</SubRow>
+            </SubCol>
+          )}
+
+          <SecurityListItem
+            id="1135"
+            engineResult={engineResultMap['1135']}
+            forbiddenText={t('page.signTx.markAsBlock')}
+            title={t('page.signTx.myMark')}
+          />
+
+          <SecurityListItem
+            id="1137"
+            engineResult={engineResultMap['1137']}
+            warningText={t('page.signTx.markAsBlock')}
+            title={t('page.signTx.myMark')}
+          />
+        </SubTable>
         <Col>
           <Row isTitle>{t('page.signTx.contractCall.operation')}</Row>
           <Row>
             <div className="relative flex items-center">
-              {operation || '-'}
+              <span
+                className="overflow-ellipsis whitespace-nowrap overflow-hidden"
+                title={operation || '-'}
+              >
+                {operation || '-'}
+              </span>
               <TooltipWithMagnetArrow
+                inApproval
                 overlayClassName="rectangle w-[max-content]"
                 title={
                   operation

@@ -5,6 +5,52 @@ import { useRabbySelector } from '@/ui/store';
 import { useAsync } from 'react-use';
 import { uniqBy } from 'lodash';
 import { SwapItem } from '@rabby-wallet/rabby-api/dist/types';
+import { useWallet } from '@/ui/utils';
+
+export const usePollSwapPendingNumber = (timer = 10000) => {
+  const [refetchCount, setRefetchCount] = useState(0);
+
+  const wallet = useWallet();
+
+  const { value, loading, error } = useAsync(async () => {
+    const account = await wallet.getCurrentAccount();
+    if (!account?.address) {
+      return 0;
+    }
+
+    const data = await wallet.openapi.getSwapTradeList({
+      user_addr: account!.address,
+      start: '0',
+      limit: '10',
+    });
+    return (
+      data?.history_list?.filter((item) => item?.status === 'Pending')
+        ?.length || 0
+    );
+  }, [refetchCount]);
+
+  const timerRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if ((!loading && value !== undefined) || error) {
+      timerRef.current = setTimeout(() => {
+        setRefetchCount((e) => e + 1);
+      }, timer);
+    }
+
+    return () => {
+      timerRef.current && clearTimeout(timerRef.current);
+    };
+  }, [loading, value, error, timer]);
+
+  useEffect(() => {
+    return () => {
+      timerRef.current && clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  return value;
+};
 
 export const useSwapHistory = () => {
   const { getSwapList } = useQuoteMethods();
@@ -29,7 +75,7 @@ export const useSwapHistory = () => {
     (d) =>
       getSwapList(
         addr,
-        d?.list?.length && d?.list?.length > 1 ? d?.list?.length - 1 : 0,
+        d?.list?.length && d?.list?.length > 1 ? d?.list?.length : 0,
         5
       ),
     {

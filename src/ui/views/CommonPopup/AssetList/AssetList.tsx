@@ -8,8 +8,21 @@ import NetSwitchTabs, {
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { CustomTestnetAssetList } from './CustomTestnetAssetList';
+import { AddCustomTokenPopup } from './CustomAssetList/AddCustomTokenPopup';
+import { Button } from 'antd';
+import { SpecialTokenListPopup } from './components/TokenButton';
+import { useRabbySelector } from '@/ui/store';
+import useSortToken from '@/ui/hooks/useSortTokens';
+import { TestnetChainList } from './TestnetChainList';
 
-export const AssetList = ({ visible }: { visible: boolean }) => {
+export const AssetList = ({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose?(): void;
+}) => {
   const { t } = useTranslation();
   const { setHeight, data } = useCommonPopupView();
   const [selectChainId, setSelectChainId] = useState<string | null>(null);
@@ -36,6 +49,12 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
     }
   }, [visible]);
 
+  const [isShowAddModal, setIsShowAddModal] = useState<boolean>(false);
+
+  const { customize } = useRabbySelector((store) => store.account.tokens);
+  const tokens = useSortToken(customize);
+  const [showCustomizedTokens, setShowCustomizedTokens] = React.useState(false);
+
   return (
     <>
       {isShowTestnet && (
@@ -46,11 +65,51 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         />
       )}
       <div className={clsx(selectedTab === 'mainnet' ? 'block' : 'hidden')}>
-        <div className={clsx('mt-[160px]', isEmptyAssets ? 'block' : 'hidden')}>
+        <div className={clsx('mt-[120px]', isEmptyAssets ? 'block' : 'hidden')}>
           <AssetEmptySVG className="m-auto" />
-          <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
+          <div className="mt-0 text-r-neutral-foot text-[14px] text-center">
             {t('page.dashboard.assets.noAssets')}
           </div>
+
+          {isEmptyAssets ? (
+            <div className="w-[100%] flex justify-center items-center">
+              <Button
+                type="primary"
+                className="w-[200px] h-[44px] mt-[50px]"
+                onClick={() => {
+                  setIsShowAddModal(true);
+                }}
+              >
+                {t('page.dashboard.assets.customButtonText')}
+              </Button>
+              <AddCustomTokenPopup
+                visible={isShowAddModal}
+                onClose={() => {
+                  setIsShowAddModal(false);
+                }}
+                onConfirm={(addedToken) => {
+                  setIsShowAddModal(false);
+                  setShowCustomizedTokens(true);
+                }}
+              />
+            </div>
+          ) : (
+            <SpecialTokenListPopup
+              label={
+                tokens?.length > 1
+                  ? t('page.dashboard.tokenDetail.customizedButtons')
+                  : t('page.dashboard.tokenDetail.customizedButton')
+              }
+              buttonText={t('page.dashboard.assets.customButtonText')}
+              description={t('page.dashboard.assets.customDescription')}
+              onClickButton={() => {
+                setShowCustomizedTokens(true);
+              }}
+              tokens={tokens}
+              visible={showCustomizedTokens}
+              onClose={() => setShowCustomizedTokens(false)}
+            />
+          )}
         </div>
         <div className={clsx(isEmptyAssets ? 'hidden' : 'block')}>
           <ChainList onChange={handleSelectChainChange} />
@@ -63,27 +122,12 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         </div>
       </div>
       <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
-        <div
-          className={clsx(
-            'mt-[160px]',
-            isTestnetEmptyAssets ? 'block' : 'hidden'
-          )}
-        >
-          <AssetEmptySVG className="m-auto" />
-          <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
-            {t('page.dashboard.assets.noAssets')}
-          </div>
-        </div>
-        <div className={clsx(isTestnetEmptyAssets ? 'hidden' : 'block')}>
-          <ChainList onChange={handleTestnetSelectChainChange} isTestnet />
-          <AssetListContainer
-            className="mt-12"
-            selectChainId={selectTestnetChainId}
-            visible={visible}
-            onEmptyAssets={setIsTestnetEmptyAssets}
-            isTestnet
-          />
-        </div>
+        <TestnetChainList onChange={handleTestnetSelectChainChange} />
+        <CustomTestnetAssetList
+          selectChainId={selectTestnetChainId}
+          visible={visible}
+          onClose={onClose}
+        />
       </div>
     </>
   );

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Drawer, Input, Button, Form } from 'antd';
 import { useWallet } from 'ui/utils';
 import { UIContactBookItem } from 'background/service/contactBook';
+import { Divide } from '@/ui/views/Approval/components/Divide';
+import clsx from 'clsx';
 import './style.less';
 
 interface EditModalProps {
@@ -76,10 +78,10 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
       visible={visible}
       onClose={onCancel}
       placement="bottom"
-      height="240px"
+      height="224px"
       destroyOnClose
     >
-      <Form onFinish={handleConfirm}>
+      <Form onFinish={handleConfirm} className="mt-[8px] mb-[28px]">
         <Input
           autoFocus
           allowClear
@@ -89,10 +91,25 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
           ref={inputRef}
         />
       </Form>
-      <div className="flex justify-center">
+      <Divide className="bg-r-neutral-line absolute left-0" />
+      <div className="text-center flex gap-x-16 pt-20">
+        <Button
+          size="large"
+          type="ghost"
+          onClick={onCancel}
+          className={clsx(
+            'w-[200px]',
+            'text-blue-light',
+            'border-blue-light',
+            'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+            'before:content-none'
+          )}
+        >
+          {t('global.Cancel')}
+        </Button>
         <Button
           type="primary"
-          className="mt-32 w-[200px]"
+          className="w-[200px]"
           onClick={handleConfirm}
           size="large"
           disabled={!name}

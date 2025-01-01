@@ -4,13 +4,13 @@ import { useRabbySelector } from '@/ui/store';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useTranslation } from 'react-i18next';
 
-interface Props {
-  onClickLink: () => void;
+type Props = {
+  onClickButton: () => void;
   isTestnet: boolean;
-}
+};
 
 export const CustomizedButton: React.FC<Props> = ({
-  onClickLink,
+  onClickButton,
   isTestnet,
 }) => {
   const { customize } = useRabbySelector((store) =>
@@ -21,11 +21,15 @@ export const CustomizedButton: React.FC<Props> = ({
 
   return (
     <TokenButton
-      label={t('page.dashboard.tokenDetail.customizedButton')}
-      linkText={t('page.dashboard.assets.customLinkText')}
+      label={
+        list?.length > 1
+          ? t('page.dashboard.tokenDetail.customizedButtons')
+          : t('page.dashboard.tokenDetail.customizedButton')
+      }
+      buttonText={t('page.dashboard.assets.customButtonText')}
       description={t('page.dashboard.assets.customDescription')}
       tokens={list}
-      onClickLink={onClickLink}
+      onClickButton={onClickButton}
     />
   );
 };

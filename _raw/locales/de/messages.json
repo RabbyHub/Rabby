@@ -20,7 +20,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}} unterstützte Blockchains",
+      "title": "",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
@@ -50,7 +50,7 @@
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "Nur bei Bedarf ändern",
       "gasPriceMedian": "Median der letzten 100 On-Chain-Transaktionen: ",
-      "myNativeTokenBalance": "Mein {{symbol}} Guthaben: {{amount}} {{symbol}}",
+      "myNativeTokenBalance": "Mein Gas Guthaben: ",
       "gasLimitEmptyAlert": "Bitte geben Sie das Gas-Limit ein",
       "gasLimitMinValueAlert": "Das Gas-Limit sollte mehr als 21000 betragen",
       "balanceChange": {
@@ -621,7 +621,7 @@
       "no-transaction-records": "Kein Transaktionsverlauf",
       "swap-history": "Tauschverlauf",
       "InSufficientTip": "Unzureichendes Guthaben für Transaktionssimulation und Gasschätzung. Ursprüngliche Aggregator-Angebote werden angezeigt",
-      "testnet-is-not-supported": "Testnet wird nicht unterstützt",
+      "testnet-is-not-supported": "",
       "not-supported": "Wird nicht unterstützt",
       "slippage-adjusted-refresh-quote": "Kursabweichung angepasst. Angebot aktualisieren.",
       "price-expired-refresh-quote": "Preis abgelaufen. Angebot aktualisieren.",
@@ -876,7 +876,7 @@
         "settings": {
           "label": "Einstellungen",
           "enableWhitelistForSendingAssets": "Whitelist für das Senden von Vermögenswerten aktivieren",
-          "customRpc": "Benutzerdefinierte RPC",
+          "customRpc": "",
           "metamaskPreferredDapps": "Bevorzugte MetaMask Dapps",
           "currentLanguage": "Aktuelle Sprache",
           "enableTestnets": "Testnets aktivieren"
@@ -884,7 +884,7 @@
         "aboutUs": "Über uns",
         "currentVersion": "Aktuelle Version",
         "updateAvailable": "Update verfügbar",
-        "supportedChains": "Unterstützte Chains",
+        "supportedChains": "",
         "followUs": "Folge uns",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Beobachtungsmodus zurücksetzen",
@@ -1225,6 +1225,7 @@
         "manageAirgap": "AirGap verwalten",
         "manageCoolwallet": "CoolWallet verwalten",
         "manageBitbox02": "BitBox02 verwalten",
+        "manageNgraveZero": "NGRAVE ZERO verwalten",
         "done": "Fertig",
         "addressesIn": "Adressen in {{0}}",
         "addressesInRabby": "Adressen in Rabby{{0}}",
@@ -1275,7 +1276,7 @@
       "noTokenFoundOnThisChain": "Kein Token auf dieser Chain gefunden"
     },
     "switchChain": {
-      "title": "Wechseln zu {{chain}}",
+      "title": "",
       "chainNotSupport": "Die angeforderte Blockchain wird von Rabby noch nicht unterstützt",
       "testnetTip": "Bitte aktivieren Sie unter \"Mehr\" die Option \"Testnets aktivieren\", bevor Sie sich mit Testnets verbinden",
       "chainNotSupportYet": "Die angeforderte Blockchain wird von Rabby noch nicht unterstützt",
@@ -1382,15 +1383,15 @@
     "customRpc": {
       "opened": "Geöffnet",
       "closed": "Geschlossen",
-      "empty": "Keine benutzerdefinierten RPCs",
-      "title": "Benutzerdefinierte RPCs",
-      "desc": "Das Aktivieren von benutzerdefinierten RPCs ersetzt Rabby als Standardknoten. Um Rabby weiterhin zu verwenden, deaktivieren oder entfernen Sie den benutzerdefinierten RPC-Knoten.",
-      "add": "RPC hinzufügen",
+      "empty": "",
+      "title": "",
+      "desc": "",
+      "add": "",
       "EditRPCModal": {
         "invalidRPCUrl": "Ungültige RPC-URL",
         "invalidChainId": "Ungültige Chain-ID",
         "rpcAuthFailed": "Authentifizierung für RPC fehlgeschlagen",
-        "title": "RPC bearbeiten",
+        "title": "",
         "rpcUrl": "RPC-URL",
         "rpcUrlPlaceholder": "Geben Sie die RPC-URL ein"
       }
@@ -1570,8 +1571,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "Mainnets",
-        "testnet": "Testnets"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCommonPopupView } from '@/ui/utils';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { useTranslation } from 'react-i18next';
 
 export const useLedgerStatus = () => {

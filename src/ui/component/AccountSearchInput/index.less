@@ -1,4 +1,4 @@
-@import "@/ui/style/var.less";
+@import '@/ui/style/var.less';
 
 @search-result-item-h: 52px;
 @popover-padding-y: 4px;
@@ -10,10 +10,9 @@
     display: none;
   }
 
-
   &.dark-mode {
     .ant-popover-inner {
-      box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.40);
+      box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.4);
     }
   }
 
@@ -22,8 +21,8 @@
     padding: 4px;
     max-height: @search-result-item-h * 3.5 + @popover-padding-y * 2;
     overflow: overlay;
-    border: 0.5px solid var(--r-neutral-line, #D3D8E0);
-    background: var(--r-neutral-bg-1, #FFF);
+    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    background: var(--r-neutral-bg-1, #fff);
   }
 
   .account-search-input-results .no-matched-address {
@@ -46,9 +45,10 @@
   border: 1px solid transparent;
   cursor: pointer;
 
-  &.active, &:hover {
-    border: 1px solid rgba(134, 151, 255, 0.50);
-    background: rgba(134, 151, 255, 0.20);
+  &.active,
+  &:hover {
+    border: 1px solid rgba(134, 151, 255, 0.5);
+    background: rgba(134, 151, 255, 0.2);
   }
 }
 
@@ -61,4 +61,12 @@
   font-size: 13px;
   font-weight: 500;
   padding-bottom: 2px;
+}
+.account-search-input-wrapper {
+  .ant-input {
+    &:focus,
+    &:hover {
+      border: 1px solid var(--r-blue-default, #7084ff);
+    }
+  }
 }

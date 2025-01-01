@@ -13,13 +13,13 @@ interface NFTSpenderData {
     name: string;
     logo_url: string;
   } | null;
-  hasInteraction: boolean;
   bornAt: number | null;
   rank: number | null;
   riskExposure: number;
   isEOA: boolean;
   isDanger: boolean | null;
   isRevoke?: boolean;
+  hasInteraction: boolean;
 }
 
 export interface Props {
@@ -57,7 +57,7 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
         {data.isRevoke
           ? t('page.signTx.revokeTokenApprove.revokeFrom')
           : t('page.signTx.tokenApprove.approveTo')}{' '}
-        <Values.Address
+        <Values.AddressWithCopy
           address={data.spender}
           chain={data.chain}
           iconWidth="14px"
@@ -65,21 +65,17 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.protocolTitle')}
-          </Row>
+          <Row>{t('page.signTx.protocolTitle')}</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressTypeTitle')}
-          </Row>
+          <Row>{t('page.signTx.addressTypeTitle')}</Row>
           <Row>{data.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
+          <Row>
             {data.isEOA
               ? t('page.signTx.firstOnChain')
               : t('page.signTx.deployTimeTitle')}
@@ -89,10 +85,7 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row
-            tip={t('page.signTx.nftApprove.nftContractTrustValueTip')}
-            className="bg-r-neutral-card-3"
-          >
+          <Row tip={t('page.signTx.nftApprove.nftContractTrustValueTip')}>
             {t('page.signTx.trustValue')}
           </Row>
           <Row>
@@ -104,9 +97,7 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.popularity')}
-          </Row>
+          <Row>{t('page.signTx.popularity')}</Row>
           <Row>
             {data.rank
               ? t('page.signTx.contractPopularity', [
@@ -117,23 +108,19 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.interacted')}
-          </Row>
+          <Row>{t('page.signTx.interacted')}</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressNote')}
-          </Row>
+          <Row>{t('page.signTx.addressNote')}</Row>
           <Row>
             <Values.AddressMemo address={data.spender} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">{t('page.signTx.myMark')}</Row>
+          <Row>{t('page.signTx.myMark')}</Row>
           <Row>
             <Values.AddressMark
               isContract
@@ -147,9 +134,7 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
         </Col>
         {data.isDanger && (
           <Col>
-            <Row className="bg-r-neutral-card-3">
-              {t('page.signTx.tokenApprove.flagByRabby')}
-            </Row>
+            <Row>{t('page.signTx.tokenApprove.flagByRabby')}</Row>
             <Row>
               <Values.Boolean value={!!data.isDanger} />
             </Row>

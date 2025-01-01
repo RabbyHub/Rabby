@@ -56,14 +56,37 @@ const ImportMnemonics = () => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const [needPassphrase, setNeedPassphrase] = React.useState(false);
+  const [slip39ErrorIndex, setSlip39ErrorIndex] = React.useState<number>(-1);
+  const [isSlip39, setIsSlip39] = React.useState(false);
+  const [slip39GroupNumber, setSlip39GroupNumber] = React.useState(1);
+
   let keyringId: number | null;
 
   const onPassphrase = React.useCallback((val: boolean) => {
     setNeedPassphrase(val);
   }, []);
 
+  const checkSubmitSlip39Mnemonics = React.useCallback(
+    async (mnemonics: string) => {
+      if (!isSlip39) return;
+      const secretShares = mnemonics.split('\n').filter((v) => v);
+
+      for (let i = 0; i < secretShares.length; i++) {
+        try {
+          await wallet.slip39DecodeMnemonic(secretShares[i]);
+        } catch (err) {
+          setSlip39ErrorIndex(i);
+          throw new Error(err.message);
+        }
+      }
+    },
+    [isSlip39]
+  );
+
   const [run, loading] = useWalletRequest(
     async (mnemonics: string, passphrase: string) => {
+      await checkSubmitSlip39Mnemonics(mnemonics);
+
       const {
         keyringId: stashKeyringId,
         isExistedKR,
@@ -138,11 +161,36 @@ const ImportMnemonics = () => {
     }
   }, [needPassphrase]);
 
+  const [secretShares, setSecretShares] = React.useState<string[]>([]);
+  const checkSlip39Mnemonics = React.useCallback(
+    async (mnemonics: string) => {
+      if (!isSlip39) return;
+      const _secretShares = mnemonics.split('\n').filter((v) => v);
+
+      setSecretShares(_secretShares);
+      try {
+        const groupThreshold = await wallet.slip39GetThreshold(_secretShares);
+        setSlip39GroupNumber(groupThreshold);
+        form.setFieldsValue({
+          mnemonics: _secretShares.slice(0, groupThreshold).join('\n'),
+        });
+      } catch (err) {
+        console.log('slip39GetThreshold error', err);
+      }
+    },
+    [isSlip39]
+  );
+
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
 
+  const disabledButton = React.useMemo(() => {
+    if (!isSlip39) return;
+    return secretShares.length < slip39GroupNumber;
+  }, [isSlip39, secretShares, slip39GroupNumber]);
+
   return (
-    <main className="w-screen h-screen bg-r-neutral-bg-2">
-      <div className={clsx('mx-auto pt-[58px]', 'w-[600px]')}>
+    <main className="w-screen h-screen bg-r-neutral-bg-2 flex items-center">
+      <div className="mx-auto w-[600px]">
         <img src={LogoSVG} alt="Rabby" className="mb-[12px]" />
         <Form
           form={form}
@@ -153,11 +201,7 @@ const ImportMnemonics = () => {
           onFinish={({ mnemonics, passphrase }) => run(mnemonics, passphrase)}
           onValuesChange={(states) => {
             setErrMsgs([]);
-            wallet.setPageStateCache({
-              path: history.location.pathname,
-              params: {},
-              states,
-            });
+            setSlip39ErrorIndex(-1);
           }}
         >
           <h1
@@ -170,6 +214,7 @@ const ImportMnemonics = () => {
             <ThemeIcon
               className="w-[24px] text-r-neutral-body"
               src={RcIconMnemonicInkCC}
+              viewBox="0 0 32 32"
             />
             <span>{t('page.newAddress.importSeedPhrase')}</span>
           </h1>
@@ -178,13 +223,19 @@ const ImportMnemonics = () => {
               <Form.Item
                 name="mnemonics"
                 className={clsx(
-                  'mb-[24px]',
+                  isSlip39 ? 'mb-16' : 'mb-[24px]',
                   errMsgs?.length && 'mnemonics-with-error'
                 )}
               >
                 <WordsMatrix.MnemonicsInputs
+                  slip39GroupNumber={slip39GroupNumber}
+                  isSlip39={isSlip39}
+                  onSlip39Change={setIsSlip39}
                   onPassphrase={onPassphrase}
                   errMsgs={errMsgs}
+                  onChange={checkSlip39Mnemonics}
+                  setSlip39GroupNumber={setSlip39GroupNumber}
+                  errorIndexes={[slip39ErrorIndex]}
                 />
               </Form.Item>
               {needPassphrase && (
@@ -192,7 +243,8 @@ const ImportMnemonics = () => {
                   <Input
                     type="password"
                     className={clsx(
-                      'h-[44px] border-rabby-neutral-line bg-rabby-neutral-card-3'
+                      isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
+                      'border-solid border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue'
                     )}
                     spellCheck={false}
                     placeholder={t('page.newAddress.seedPhrase.passphrase')}
@@ -227,7 +279,9 @@ const ImportMnemonics = () => {
             <Button
               htmlType="submit"
               type="primary"
-              className="w-[210px] h-[44px] mt-[40px]"
+              className="h-[44px] mt-[40px]"
+              block
+              disabled={disabledButton}
             >
               {t('global.confirm')}
             </Button>

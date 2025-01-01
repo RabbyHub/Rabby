@@ -3,13 +3,17 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ParsedActionData, RevokeNFTRequireData } from './utils';
+import {
+  RevokeNFTRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
+import { SubCol, SubRow, SubTable } from './components/SubTable';
 
 const Wrapper = styled.div`
   .header {
@@ -49,7 +53,7 @@ const RevokeNFT = ({
   requireData,
   chain,
 }: {
-  data: ParsedActionData['revokeNFT'];
+  data: ParsedTransactionActionData['revokeNFT'];
   requireData: RevokeNFTRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -58,52 +62,55 @@ const RevokeNFT = ({
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.revokeNFTApprove.revokeNFT')}</Row>
           <Row>
-            <NFTWithName nft={actionData?.nft}></NFTWithName>
-            <ul className="desc-list">
-              <li>
-                <ViewMore
-                  type="nft"
-                  data={{
-                    nft: actionData.nft,
-                    chain,
-                  }}
-                />
-              </li>
-            </ul>
+            <ViewMore
+              type="nft"
+              data={{
+                nft: actionData.nft,
+                chain,
+              }}
+            >
+              <NFTWithName hasHover nft={actionData?.nft}></NFTWithName>
+            </ViewMore>
           </Row>
         </Col>
         <Col>
-          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.revokeTokenApprove.revokeFrom')}
+          </Row>
           <Row>
-            <div>
-              <Values.Address address={actionData.spender} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              <ProtocolListItem protocol={requireData.protocol} />
-              <li>
-                <ViewMore
-                  type="nftSpender"
-                  data={{
-                    ...requireData,
-                    spender: actionData.spender,
-                    chain,
-                    isRevoke: true,
-                  }}
-                />
-              </li>
-            </ul>
+            <ViewMore
+              type="nftSpender"
+              data={{
+                ...requireData,
+                spender: actionData.spender,
+                chain,
+                isRevoke: true,
+              }}
+            >
+              <Values.Address
+                id="revoke-nft-address"
+                hasHover
+                address={actionData.spender}
+                chain={chain}
+              />
+            </ViewMore>
           </Row>
         </Col>
+
+        <SubTable target="revoke-nft-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+        </SubTable>
       </Table>
     </Wrapper>
   );

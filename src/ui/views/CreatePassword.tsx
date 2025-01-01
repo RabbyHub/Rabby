@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { Input, Form, Spin, Button, Drawer } from 'antd';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { openInTab, useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
 import IconCheck from 'ui/assets/check.svg';
 import clsx from 'clsx';
@@ -64,6 +64,14 @@ const CreatePassword = () => {
   const [invalidForm, setInValidForm] = useState(isInvalidForm);
 
   const disable = !agreeTerm || invalidForm;
+
+  const gotoTermsOfUse = () => {
+    openInTab('https://rabby.io/docs/terms-of-use');
+  };
+
+  const gotoPrivacy = () => {
+    openInTab('https://rabby.io/docs/privacy');
+  };
 
   const drawClassName = useCss({
     '& .ant-drawer-content': {
@@ -128,7 +136,7 @@ const CreatePassword = () => {
             <p className="text-24 mb-8 mt-0 text-r-neutral-title2 text-center font-bold">
               {t('page.createPassword.title')}
             </p>
-            <p className="text-14 mb-0 text-r-neutral-title2 opacity-80 text-center">
+            <p className="text-13 mb-0 text-r-neutral-title2 opacity-80 text-center">
               It will be used to unlock your wallet and encrypt local data
             </p>
             <img src="/images/create-password-mask.png" className="mask" />
@@ -189,28 +197,39 @@ const CreatePassword = () => {
             </Form.Item>
           </div>
           <div
-            className="flex items-center justify-center mb-[24px] cursor-pointer"
+            className="flex justify-center mb-[24px] cursor-pointer mx-32"
             onClick={toggleAgreeTerm}
           >
             <div
               className={clsx(
+                'relative top-[3px]',
                 'w-[15px] h-[15px] mr-[6px] flex items-center justify-center  rounded-full overflow-hidden',
                 agreeTerm ? 'bg-r-blue-default' : 'bg-r-neutral-foot'
               )}
             >
               <img src={IconCheck} className="w-[10px]" />
             </div>
-            <span className="text-[13px] text-r-neutral-body">
+            <span className="flex-1 text-[13px] text-r-neutral-body">
               <Trans t={t} i18nKey="page.createPassword.agree">
                 have read and agree to the{' '}
                 <span
                   className="text-r-blue-default cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
-                    toggleVisible();
+                    gotoTermsOfUse();
                   }}
                 >
                   Terms of Use
+                </span>
+                and
+                <span
+                  className="text-r-blue-default cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    gotoPrivacy();
+                  }}
+                >
+                  Privacy Policy
                 </span>
               </Trans>
             </span>

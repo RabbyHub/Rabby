@@ -6,6 +6,7 @@ import notificationService from 'background/service/notification';
 import wallet from '../controller/wallet';
 import { CHAINS, INTERNAL_REQUEST_SESSION, CHAINS_ENUM } from 'consts';
 import { underline2Camelcase } from 'background/utils';
+import { findChain } from '@/utils/chain';
 
 interface StateProvider {
   accounts: string[] | null;
@@ -78,9 +79,12 @@ export class EthereumProvider extends EventEmitter {
     const currentAccount = preferenceService.getCurrentAccount()!;
     const networkId = this.chainId || CHAINS[CHAINS_ENUM.ETH].id.toString();
 
-    const chain = Object.values(CHAINS).find(
-      (item) => item.id.toString() === networkId
-    )!;
+    const chain = findChain({
+      networkId: networkId,
+    });
+    if (!chain) {
+      throw new Error('chain not found');
+    }
     if (!providerController[mapMethod]) {
       // TODO: make rpc whitelist
       if (method.startsWith('eth_') || method === 'net_version') {
@@ -204,7 +208,7 @@ export class EthereumProvider extends EventEmitter {
 
 const provider = new EthereumProvider();
 
-window.dispatchEvent(new Event('ethereum#initialized'));
+// window.dispatchEvent(new Event('ethereum#initialized'));
 
 export default {
   currentProvider: new Proxy(provider, {

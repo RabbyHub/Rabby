@@ -1,6 +1,5 @@
 import React, { useMemo, forwardRef, HTMLAttributes, useEffect } from 'react';
-import { Chain } from '@/background/service/openapi';
-import { CHAINS_ENUM } from '@debank/common';
+import { CHAINS_ENUM, Chain } from '@debank/common';
 import { Tooltip } from 'antd';
 import clsx from 'clsx';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -17,6 +16,7 @@ import IconChainBalance, {
 } from 'ui/assets/chain-select/chain-balance.svg';
 import { formatUsdValue } from '@/ui/utils';
 import ThemeIcon from '../../ThemeMode/ThemeIcon';
+import { TestnetChainLogo } from '../../TestnetChainLogo';
 
 export type SelectChainItemProps = {
   stared?: boolean;
@@ -77,15 +77,16 @@ export const SelectChainItem = forwardRef(
       <Tooltip
         trigger={['click', 'hover']}
         mouseEnterDelay={3}
-        overlayClassName={clsx('rectangle left-[20px]')}
+        overlayClassName={clsx('rectangle')}
         placement="top"
         title={finalDisabledTips}
         visible={disabled ? undefined : false}
+        align={{ targetOffset: [0, -30] }}
       >
         <div
           className={clsx(
             'select-chain-item',
-            disabled && 'opacity-50',
+            disabled && 'opacity-50 select-chain-item-disabled cursor-default',
             className
           )}
           ref={ref}
@@ -93,15 +94,39 @@ export const SelectChainItem = forwardRef(
           onClick={() => !disabled && onChange?.(data.enum)}
         >
           <div className="flex items-center flex-1">
-            {showRPCStatus ? (
-              <ChainIcon
-                chain={data.enum}
-                customRPC={
-                  customRPC[data.enum]?.enable ? customRPC[data.enum].url : ''
-                }
-              />
+            {data.isTestnet ? (
+              data.logo ? (
+                <img
+                  src={data.logo}
+                  alt=""
+                  className="select-chain-item-icon"
+                />
+              ) : (
+                <TestnetChainLogo
+                  name={data.name}
+                  className="select-chain-item-icon"
+                />
+              )
             ) : (
-              <img src={data.logo} alt="" className="select-chain-item-icon" />
+              <>
+                {showRPCStatus ? (
+                  <ChainIcon
+                    chain={data.enum}
+                    customRPC={
+                      customRPC[data.enum]?.enable
+                        ? customRPC[data.enum].url
+                        : ''
+                    }
+                    showCustomRPCToolTip
+                  />
+                ) : (
+                  <img
+                    src={data.logo}
+                    alt=""
+                    className="select-chain-item-icon"
+                  />
+                )}
+              </>
             )}
             <div className="select-chain-item-info">
               <div className="select-chain-item-name">{data.name}</div>

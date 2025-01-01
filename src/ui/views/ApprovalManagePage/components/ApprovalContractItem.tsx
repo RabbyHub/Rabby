@@ -4,7 +4,7 @@ import React, { MouseEventHandler, useMemo } from 'react';
 import { useEffect, useRef } from 'react';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { ReactComponent as RcIconExternal } from '../icons/icon-share-cc.svg';
-import { ReactComponent as IconArrowRight } from 'ui/assets/approval-management/right.svg';
+import { ReactComponent as RcIconArrowRightCC } from '../icons/right-cc.svg';
 import { Alert } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
@@ -129,13 +129,13 @@ export const ApprovalContractItem = ({
                 ))}
           {}
         </span>
-        {onSelect && <IconArrowRight />}
+        {onSelect && <RcIconArrowRightCC className="text-r-blue-default" />}
       </div>
       {risky && (
         <div className="pb-[12px]">
           <Alert
             className={clsx(
-              'mx-[16px]  rounded-[4px] px-[8px] py-[3px]',
+              'mx-[16px] rounded-[4px] px-[8px] py-[3px] leading-[1.2]',
               item.risk_level === 'danger' ? 'bg-[#ec5151]' : 'bg-orange'
             )}
             icon={

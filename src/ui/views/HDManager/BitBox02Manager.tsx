@@ -12,6 +12,7 @@ import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg
 import { useAsyncRetry } from 'react-use';
 import * as Sentry from '@sentry/browser';
 import { useTranslation } from 'react-i18next';
+import { Modal as CustomModal } from '@/ui/component';
 
 export const BitBox02Manager: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
@@ -94,7 +95,7 @@ export const BitBox02Manager: React.FC = () => {
         preventLoading={preventLoading}
       />
 
-      <Modal
+      <CustomModal
         destroyOnClose
         className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
@@ -108,7 +109,7 @@ export const BitBox02Manager: React.FC = () => {
           onConfirm={onConfirmAdvanced}
           initSettingData={setting}
         />
-      </Modal>
+      </CustomModal>
     </>
   );
 };

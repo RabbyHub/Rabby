@@ -4,7 +4,7 @@ import { NameAndAddress } from '@/ui/component';
 import { ReactComponent as RcIconShare } from '../icons/icon-share-cc.svg';
 import { ReactComponent as RcIconCopy } from '../icons/icon-copy-cc.svg';
 
-type Props = Omit<React.ComponentProps<typeof NameAndAddress>, 'copyIcon'>;
+type Props = Omit<React.ComponentProps<typeof NameAndAddress>, ''>;
 
 export default function ApprovalsNameAndAddr(props: Props) {
   return (

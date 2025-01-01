@@ -1,16 +1,9 @@
 const webpack = require('webpack');
-const path = require('path');
-const fs = require('fs-extra');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const SentryCliPlugin = require('@sentry/webpack-plugin');
-
-const PROJECT_ROOT = path.resolve(__dirname, '..');
-const manifestPath = path.resolve(PROJECT_ROOT, '_raw', 'manifest.json');
-const manifest = fs.readJSONSync(manifestPath);
+const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
 const config = {
   mode: 'production',
-  devtool: 'sourcemap',
+  devtool: 'hidden-source-map',
   performance: {
     maxEntrypointSize: 2500000,
     maxAssetSize: 2500000,
@@ -20,12 +13,18 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
-    new SentryCliPlugin({
+    sentryWebpackPlugin({
       include: './dist',
       ignoreFile: '.sentrycliignore',
       ignore: ['node_modules', 'webpack.config.js'],
       configFile: 'sentry.properties',
-      release: manifest.version,
+      release: {
+        name: process.env.VERSION
+      },
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+
+      authToken: process.env.SENTRY_AUTH_TOKEN,
     }),
   ],
 };

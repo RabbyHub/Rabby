@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet, useApproval } from 'ui/utils';
 import { IExtractFromPromise } from '@/ui/utils/type';
-
+import { ApprovalUtilsProvider } from './hooks/useApprovalUtils';
 import * as ApprovalComponent from './components';
 
 import './style.less';
@@ -49,11 +49,13 @@ const Approval: React.FC<{
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <CurrentApprovalComponent
-          params={params}
-          origin={origin}
-          // requestDefer={requestDefer}
-        />
+        <ApprovalUtilsProvider>
+          <CurrentApprovalComponent
+            params={params}
+            origin={origin}
+            // requestDefer={requestDefer}
+          />
+        </ApprovalUtilsProvider>
       )}
     </div>
   );

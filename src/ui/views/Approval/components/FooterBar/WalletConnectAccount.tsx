@@ -1,10 +1,9 @@
 import { Account } from '@/background/service/preference';
-import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT } from '@/constant';
+import { WALLET_BRAND_TYPES } from '@/constant';
 import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useDisplayBrandName } from '@/ui/component/WalletConnect/useDisplayBrandName';
 import { useSessionChainId } from '@/ui/component/WalletConnect/useSessionChainId';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
-import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import { Button } from 'antd';
@@ -12,6 +11,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CommonAccount } from './CommonAccount';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export interface Props {
   account: Account;
@@ -22,18 +22,12 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
   const { activePopup, setAccount, setVisible } = useCommonPopupView();
   const { t } = useTranslation();
   const { address, brandName, type } = account;
-  const brandIcon = useWalletConnectIcon({
+
+  const addressTypeIcon = useBrandIcon({
     address,
     brandName,
     type,
   });
-  const addressTypeIcon = React.useMemo(
-    () =>
-      brandIcon ||
-      WALLET_BRAND_CONTENT?.[brandName]?.image ||
-      KEYRINGS_LOGOS[type],
-    [type, brandName, brandIcon]
-  );
   const [displayBrandName, realBrandName] = useDisplayBrandName(
     brandName,
     address
@@ -51,9 +45,9 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
   });
 
   const tipStatus = React.useMemo(() => {
-    if (chain && chain.id !== sessionChainId && status === 'CONNECTED') {
-      return 'CHAIN_ERROR';
-    }
+    // if (chain && chain.id !== sessionChainId && status === 'CONNECTED') {
+    //   return 'CHAIN_ERROR';
+    // }
     switch (status) {
       case 'ACCOUNT_ERROR':
         return 'ACCOUNT_ERROR';
@@ -71,10 +65,15 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
 
   const wallet = useWallet();
   React.useEffect(() => {
-    if (chain && sessionChainId && chain.id !== sessionChainId) {
+    if (
+      brandName === WALLET_BRAND_TYPES.METAMASK &&
+      chain &&
+      sessionChainId &&
+      chain.id !== sessionChainId
+    ) {
       wallet.walletConnectSwitchChain(account, chain.id);
     }
-  }, [sessionChainId, chain]);
+  }, [sessionChainId, chain, brandName]);
 
   const TipContent = () => {
     switch (tipStatus) {
@@ -89,22 +88,22 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
             </div>
           </div>
         );
-      case 'CHAIN_ERROR':
-        return (
-          <div className="text-orange">
-            <div>
-              {t('page.signFooterBar.walletConnect.connectedButCantSign')}
-            </div>
-            <div className="mt-8">
-              {t('page.signFooterBar.walletConnect.switchChainAlert', {
-                chain: chain?.name,
-              })}
-            </div>
-          </div>
-        );
+      // case 'CHAIN_ERROR':
+      //   return (
+      //     <div className="text-orange">
+      //       <div>
+      //         {t('page.signFooterBar.walletConnect.connectedButCantSign')}
+      //       </div>
+      //       <div className="mt-8">
+      //         {t('page.signFooterBar.walletConnect.switchChainAlert', {
+      //           chain: chain?.name,
+      //         })}
+      //       </div>
+      //     </div>
+      //   );
       case 'DISCONNECTED':
         return (
-          <div className="text-red-forbidden">
+          <div className="text-red-light">
             {t('page.signFooterBar.walletConnect.notConnectToMobile', {
               brand: displayBrandName,
             })}
@@ -126,18 +125,23 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       brandName,
       realBrandName,
       chainId: chain?.id,
+      type,
     });
     if (tipStatus === 'DISCONNECTED') {
       activePopup('WalletConnect');
     } else if (tipStatus === 'ACCOUNT_ERROR') {
       activePopup('SwitchAddress');
-    } else if (tipStatus === 'CHAIN_ERROR') {
-      activePopup('SwitchChain');
     }
+    // else if (tipStatus === 'CHAIN_ERROR') {
+    //   activePopup('SwitchChain');
+    // }
   };
 
   React.useEffect(() => {
-    if (tipStatus === 'ACCOUNT_ERROR' || tipStatus === 'CHAIN_ERROR') {
+    if (
+      tipStatus === 'ACCOUNT_ERROR'
+      // || tipStatus === 'CHAIN_ERROR'
+    ) {
       setVisible(false);
     }
   }, [tipStatus]);
@@ -177,8 +181,8 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       >
         {tipStatus === 'ACCOUNT_ERROR' &&
           t('page.signFooterBar.walletConnect.howToSwitch')}
-        {tipStatus === 'CHAIN_ERROR' &&
-          t('page.signFooterBar.walletConnect.howToSwitch')}
+        {/* {tipStatus === 'CHAIN_ERROR' &&
+          t('page.signFooterBar.walletConnect.howToSwitch')} */}
       </div>
     </CommonAccount>
   );

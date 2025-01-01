@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 
 export const fetchLocale = async (locale) => {
-  const res = await window.fetch(`./locales/${locale}/messages.json`);
+  const res = await fetch(`./locales/${locale}/messages.json`);
   const data: Record<
     string,
     { message: string; description: string }
@@ -21,6 +21,8 @@ i18n.init({
   interpolation: {
     escapeValue: false, // react already safes from xss
   },
+  returnNull: false,
+  returnEmptyString: false,
 });
 
 export const I18N_NS = 'translations';

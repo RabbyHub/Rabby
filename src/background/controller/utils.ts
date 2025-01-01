@@ -1,9 +1,18 @@
-import { CHAINS } from '@debank/common';
+import { Chain } from '@/types/chain';
+import { findChain } from '@/utils/chain';
 import { ethers } from 'ethers';
-import { preferenceService } from '../service';
-import buildinProvider from '../utils/buildinProvider';
-import { Account } from '../service/preference';
 import { t } from 'i18next';
+import _abiCoder, { AbiCoder } from 'web3-eth-abi';
+import {
+  permissionService,
+  preferenceService,
+  sessionService,
+} from '../service';
+import { Account } from '../service/preference';
+import buildinProvider from '../utils/buildinProvider';
+import eventBus from '@/eventBus';
+
+export const web3AbiCoder = (_abiCoder as unknown) as AbiCoder;
 
 export const getWeb3Provider = async ({
   chainServerId,
@@ -17,9 +26,10 @@ export const getWeb3Provider = async ({
   }
   if (!account) throw new Error(t('background.error.noCurrentAccount'));
 
-  const chainId = Object.values(CHAINS)
-    .find((chain) => chain.serverId === chainServerId)
-    ?.id.toString();
+  const chainId = findChain({
+    serverId: chainServerId,
+  })?.id.toString();
+
   if (!chainId) throw new Error(t('background.error.invalidChainId'));
 
   buildinProvider.currentProvider.currentAccount = account.address;
@@ -32,4 +42,35 @@ export const getWeb3Provider = async ({
   );
 
   return provider;
+};
+
+export const broadcastChainChanged = ({
+  origin,
+  chain,
+}: {
+  origin: string;
+  chain: Chain;
+}) => {
+  if (permissionService.getConnectedSite(origin)?.isConnected) {
+    // rabby:chainChanged event must be sent before chainChanged event
+    sessionService.broadcastEvent(
+      'rabby:chainChanged',
+      {
+        ...chain,
+      },
+      origin
+    );
+    sessionService.broadcastEvent(
+      'chainChanged',
+      {
+        chain: chain.hex,
+        networkVersion: chain.network,
+      },
+      origin
+    );
+    eventBus.emit('rabby:chainChanged', {
+      chain,
+      origin,
+    });
+  }
 };

@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
-import { TokenTabEnum, TokenTabs } from './TokenTabs';
+import AddTokenEntry, { AddTokenEntryInst } from './AddTokenEntry';
 import { useRabbySelector } from '@/ui/store';
-import { TokenList } from './TokenList';
+import { HomeTokenList } from './TokenList';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import useSearchToken from '@/ui/hooks/useSearchToken';
 import {
@@ -12,8 +12,6 @@ import {
 import ProtocolList from './ProtocolList';
 import { useQueryProjects } from 'ui/utils/portfolio';
 import { Input } from 'antd';
-import { SummaryList } from './SummaryList';
-import { HistoryList } from './HisotryList';
 import { useFilterProtocolList } from './useFilterProtocolList';
 
 interface Props {
@@ -35,6 +33,7 @@ export const AssetListContainer: React.FC<Props> = ({
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
   }, []);
+  const [isFocus, setIsFocus] = React.useState<boolean>(false);
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
@@ -47,9 +46,7 @@ export const AssetListContainer: React.FC<Props> = ({
     blockedTokens,
     customizeTokens,
   } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
-  const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
-    TokenTabEnum.List
-  );
+
   const isEmptyAssets =
     !isTokensLoading &&
     !tokenList.length &&
@@ -97,13 +94,14 @@ export const AssetListContainer: React.FC<Props> = ({
 
   React.useEffect(() => {
     if (!visible) {
-      setActiveTab(TokenTabEnum.List);
       setSearch('');
       inputRef.current?.setValue('');
       inputRef.current?.focus();
       inputRef.current?.blur();
     }
   }, [visible]);
+
+  const addTokenEntryRef = React.useRef<AddTokenEntryInst>(null);
 
   if (isTokensLoading && !hasTokens) {
     return <TokenListViewSkeleton />;
@@ -120,39 +118,41 @@ export const AssetListContainer: React.FC<Props> = ({
   return (
     <div className={className}>
       <div className="flex items-center justify-between gap-x-12 widget-has-ant-input">
-        <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
-        <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <TokenSearchInput
+          ref={inputRef}
+          onSearch={handleOnSearch}
+          onFocus={() => {
+            setIsFocus(true);
+          }}
+          onBlur={() => {
+            setIsFocus(false);
+          }}
+          className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
+        />
+        {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />}
       </div>
       {isTokensLoading || isSearching ? (
         <TokenListSkeleton />
       ) : (
         <div className="mt-18">
-          {(activeTab === TokenTabEnum.List || search) && (
-            <TokenList
-              list={sortTokens}
-              onFocusInput={handleFocusInput}
-              isSearch={!!search}
-              isNoResults={isNoResults}
-              blockedTokens={blockedTokens}
-              customizeTokens={customizeTokens}
-              isTestnet={isTestnet}
-            />
-          )}
-          {activeTab === TokenTabEnum.Summary && !search && (
-            <SummaryList chainId={selectChainId} />
-          )}
-          {activeTab === TokenTabEnum.History && !search && <HistoryList />}
+          <HomeTokenList
+            list={sortTokens}
+            onFocusInput={handleFocusInput}
+            onOpenAddEntryPopup={() => {
+              addTokenEntryRef.current?.startAddToken();
+            }}
+            isSearch={!!search}
+            isNoResults={isNoResults}
+            blockedTokens={blockedTokens}
+            customizeTokens={customizeTokens}
+            isTestnet={isTestnet}
+          />
         </div>
       )}
 
       <div
         style={{
-          display:
-            visible &&
-            activeTab !== TokenTabEnum.Summary &&
-            activeTab !== TokenTabEnum.History
-              ? 'block'
-              : 'none',
+          display: visible ? 'block' : 'none',
         }}
       >
         {isPortfoliosLoading ? (

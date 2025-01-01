@@ -1,6 +1,5 @@
 import React from 'react';
 import { MainContainer } from './MainContainer';
-import { Modal } from 'antd';
 import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
 import {
   AdvancedSettings,
@@ -13,6 +12,7 @@ import { HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
 import { KEYRING_CLASS } from '@/constant';
 import { useWallet } from '@/ui/utils';
+import { Modal } from '@/ui/component';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -73,11 +73,13 @@ export const MnemonicManager: React.FC = () => {
 
   return (
     <>
-      <div className="setting text-r-neutral-body" onClick={openAdvanced}>
-        <RcSettingSVG className="icon" />
-        <span className="title">
-          {t('page.newAddress.hd.advancedSettings')}
-        </span>
+      <div className="toolbar">
+        <div className="toolbar-item" onClick={openAdvanced}>
+          <RcSettingSVG className="icon text-r-neutral-title1" />
+          <span className="title">
+            {t('page.newAddress.hd.advancedSettings')}
+          </span>
+        </div>
       </div>
 
       <MainContainer setting={setting} loading={loading} HDName="Seed Phrase" />

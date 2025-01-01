@@ -62,8 +62,8 @@
       display: none;
     }
     .icon-account {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       path {
         fill: var(--r-blue-default, #7084ff);
       }
@@ -86,14 +86,19 @@
     }
   }
   .ant-input {
-    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-    background: var(--r-neutral-card-2, #f5f6fa);
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
+    background: transparent;
     border-radius: 4px;
     padding: 10px 12px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
     color: var(--r-neutral-title-1, #192945);
+
+    &::placeholder {
+      color: var(--r-neutral-foot);
+      font-weight: 400;
+    }
   }
   .ant-form-item {
     margin: 0;
@@ -107,7 +112,7 @@
     }
   }
   .ant-form-item-has-error .ant-input:hover {
-    background: var(--r-neutral-card-1, #FFF);
+    background: var(--r-neutral-card-1, #fff);
   }
   .ant-form-item-explain,
   .ant-form-item-extra {
@@ -215,12 +220,12 @@
       justify-content: space-between;
       font-size: 12px;
       line-height: 14px;
-      color: var(--r-neutral-foot, #6A7587);
+      color: var(--r-neutral-foot, #6a7587);
       margin-bottom: 8px;
       .address-viewer-text.normal {
         font-size: 12px;
         line-height: 14px;
-        color: var(--r-neutral-foot, #6A7587);
+        color: var(--r-neutral-foot, #6a7587);
         font-weight: normal;
         margin-right: 0;
       }
@@ -236,13 +241,14 @@
     }
 
     &::after {
-      content: " ";
+      content: ' ';
       display: block;
       position: absolute;
       left: 16px;
       top: -16px;
       border: 6px solid transparent;
-      border-bottom: 10px solid var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+      border-bottom: 10px solid
+        var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
       z-index: 0;
     }
   }
@@ -329,11 +335,12 @@
 
     .ant-input {
       @border-w: 0.5px;
-      border: @border-w solid var(--r-neutral-line, #D3D8E0);
-      background: var(--r-neutral-card-2, #F2F4F7);
+      border: @border-w solid var(--r-neutral-line, #d3d8e0);
+      background: var(--r-neutral-card-2, #f2f4f7);
       line-height: 1.5;
 
-      &:focus, &:hover {
+      &:focus,
+      &:hover {
         box-shadow: none;
         border-right-width: @border-w !important;
       }
@@ -341,13 +348,13 @@
   }
 
   .footer {
-    padding: 16px 0 20px;
+    padding: 20px 0;
     margin-left: -20px;
     margin-right: -20px;
     width: 100vw;
 
-    background-color: var(--r-neutral-card-1, #FFF);
-    border-top: 0.5px solid var(--r-neutral-line, #D3D8E0);
+    background: var(--r-neutral-bg1, rgba(255, 255, 255, 0.06));
+    border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
   }
 
   .footer .whitelist-alert {
@@ -359,7 +366,7 @@
 .send-token-gas-selector {
   .gas-selector {
     background: var(--r-neutral-card-2);
-    border: 1px solid var(--r-neutral-line, #D3D8E0);
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
     border-radius: 6px;
     display: flex;
     margin-bottom: 20px;
@@ -446,7 +453,7 @@
           margin: 4px auto 0;
           font-weight: 500;
           .ant-input {
-            background: transparent;
+            background: transparent !important;
             transition: none;
           }
         }

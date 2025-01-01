@@ -9,6 +9,7 @@ import {
 import providerController from './controller';
 import { findChainByEnum } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
+import wallet from '../wallet';
 
 const networkIdMap: {
   [key: string]: string;
@@ -23,6 +24,10 @@ const tabCheckin = ({
 }) => {
   session.setProp({ origin, name, icon });
   contextMenuService.createOrUpdate(origin);
+  const site = permissionService.getSite(origin);
+  if (site) {
+    permissionService.updateConnectSite(origin, { ...site, icon, name }, true);
+  }
 };
 
 const getProviderState = async (req) => {
@@ -80,7 +85,9 @@ const hasOtherProvider = () => {
   if (!prev) {
     contextMenuService.init();
   }
-  setPopupIcon(isRabby ? 'rabby' : 'metamask');
+  if (wallet.isUnlocked()) {
+    setPopupIcon(isRabby ? 'rabby' : 'metamask');
+  }
   return true;
 };
 

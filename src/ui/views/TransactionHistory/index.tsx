@@ -37,7 +37,6 @@ const TransactionHistory = () => {
     );
     setPendingList(pendings);
     setCompleteList(completeds);
-    console.log('loadList', pendings, completeds);
   };
 
   const loadPendingListQueue = async () => {
@@ -78,7 +77,13 @@ const TransactionHistory = () => {
 
   return (
     <div className="tx-history">
-      <SkipNonceAlert pendings={pendingList} />
+      <SkipNonceAlert
+        pendings={pendingList}
+        onClearPending={() => {
+          init();
+          loadPendingListQueue();
+        }}
+      />
       {pendingList.length > 0 && (
         <div className="tx-history__pending">
           {pendingList.map((item) => (

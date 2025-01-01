@@ -8,18 +8,18 @@ import { isSameAddress } from '@/ui/utils';
 
 interface SpenderData {
   spender: string;
-  chain: Chain;
+  chain?: Chain;
   protocol: {
     name: string;
     logo_url: string;
   } | null;
-  hasInteraction: boolean;
   bornAt: number | null;
   rank: number | null;
   riskExposure: number;
   isEOA: boolean;
   isDanger: boolean | null;
   isRevoke?: boolean;
+  hasInteraction: boolean;
 }
 
 export interface Props {
@@ -41,12 +41,12 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
       isInBlackList: contractBlacklist.some(
         ({ address, chainId }) =>
           isSameAddress(address, data.spender) &&
-          chainId === data.chain.serverId
+          chainId === data.chain?.serverId
       ),
       isInWhiteList: contractWhitelist.some(
         ({ address, chainId }) =>
           isSameAddress(address, data.spender) &&
-          chainId === data.chain.serverId
+          chainId === data.chain?.serverId
       ),
     };
   }, [data.spender, data.chain, contractBlacklist, contractWhitelist]);
@@ -57,7 +57,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
         {data.isRevoke
           ? t('page.signTx.revokeTokenApprove.revokeFrom')
           : t('page.signTx.tokenApprove.approveTo')}{' '}
-        <Values.Address
+        <Values.AddressWithCopy
           address={data.spender}
           chain={data.chain}
           iconWidth="14px"
@@ -65,21 +65,17 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.protocolTitle')}
-          </Row>
+          <Row>{t('page.signTx.protocolTitle')}</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressTypeTitle')}
-          </Row>
+          <Row>{t('page.signTx.addressTypeTitle')}</Row>
           <Row>{data.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
+          <Row>
             {data.isEOA
               ? t('page.signTx.firstOnChain')
               : t('page.signTx.deployTimeTitle')}
@@ -89,10 +85,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row
-            className="bg-r-neutral-card-3"
-            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
-          >
+          <Row tip={t('page.signTx.tokenApprove.contractTrustValueTip')}>
             {t('page.signTx.trustValue')}
           </Row>
           <Row>
@@ -104,46 +97,38 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.popularity')}
-          </Row>
+          <Row>{t('page.signTx.popularity')}</Row>
           <Row>
             {data.rank
               ? t('page.signTx.contractPopularity', [
                   data.rank,
-                  data.chain.name,
+                  data.chain?.name,
                 ])
               : '-'}
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.interacted')}
-          </Row>
+          <Row>{t('page.signTx.interacted')}</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressNote')}
-          </Row>
+          <Row>{t('page.signTx.addressNote')}</Row>
           <Row>
             <Values.AddressMemo address={data.spender} />
           </Row>
         </Col>
         {data.isDanger && (
           <Col>
-            <Row className="bg-r-neutral-card-3">
-              {t('page.signTx.tokenApprove.flagByRabby')}
-            </Row>
+            <Row>{t('page.signTx.tokenApprove.flagByRabby')}</Row>
             <Row>
               <Values.Boolean value={!!data.isDanger} />
             </Row>
           </Col>
         )}
         <Col>
-          <Row className="bg-r-neutral-card-3">{t('page.signTx.myMark')}</Row>
+          <Row>{t('page.signTx.myMark')}</Row>
           <Row>
             <Values.AddressMark
               isContract

@@ -1,0 +1,1 @@
+export const ALARMS_SYNC_CHAINS = 'ALARMS_SYNC_CHAINS';

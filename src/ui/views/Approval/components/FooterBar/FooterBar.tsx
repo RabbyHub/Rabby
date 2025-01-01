@@ -9,13 +9,21 @@ import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import { CHAINS, INTERNAL_REQUEST_ORIGIN, SecurityEngineLevel } from 'consts';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { AccountInfo } from './AccountInfo';
 import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { findChain } from '@/utils/chain';
+import {
+  GasLessNotEnough,
+  GasLessActivityToSign,
+  GasLessConfig,
+  GasAccountTips,
+} from './GasLessComponents';
+import { GasAccountCheckResult } from '@/background/service/openapi';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -28,6 +36,23 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   isTestnet?: boolean;
   engineResults?: Result[];
   onIgnoreAllRules(): void;
+  useGasLess?: boolean;
+  showGasLess?: boolean;
+  enableGasLess?: () => void;
+  canUseGasLess?: boolean;
+  Header?: React.ReactNode;
+  gasLessFailedReason?: string;
+  isWatchAddr?: boolean;
+  gasLessConfig?: GasLessConfig;
+  isGasNotEnough?: boolean;
+  gasMethod?: 'native' | 'gasAccount';
+  gasAccountCost?: GasAccountCheckResult;
+  onChangeGasAccount?: () => void;
+  isGasAccountLogin?: boolean;
+  isWalletConnect?: boolean;
+  gasAccountCanPay?: boolean;
+  noCustomRPC?: boolean;
+  canGotoUseGasAccount?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -35,55 +60,14 @@ const Wrapper = styled.section`
   padding-top: 12px;
   border-radius: 16px 16px 0px 0px;
   background: var(--r-neutral-bg-1, #3d4251);
-  box-shadow: 0px -8px 24px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.1);
 
   &.is-darkmode {
-    box-shadow: 0px -8px 12px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.3);
   }
 
   position: relative;
 
-  .request-origin {
-    height: 30px;
-    font-weight: 500;
-    font-size: 13px;
-    line-height: 15px;
-    color: #707280;
-    padding-bottom: 12px;
-    position: relative;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    .origin {
-      color: var(--r-neutral-title-1, #f7fafc);
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 15px;
-      line-height: 18px;
-    }
-    .right {
-      font-size: 12px;
-      line-height: 14px;
-      color: #707280;
-    }
-    .security-level-tag {
-      margin-top: -15px;
-    }
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100vw;
-      margin-left: -20px;
-      height: 1px;
-      height: 0.5px;
-      background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-    }
-  }
   .security-level-tip {
     margin-top: 10px;
     border-radius: 4px;
@@ -105,17 +89,17 @@ const Wrapper = styled.section`
       height: 0;
       border: 5px solid transparent;
       border-bottom: 8px solid currentColor;
-      top: -12px;
+      top: -13px;
       left: 115px;
     }
   }
 `;
 
-const Shadow = styled.div`
+const Shadow = styled.div<{ isShow: boolean }>`
   pointer-events: none;
   position: absolute;
   top: -85px;
-  height: 85px;
+  height: 100px;
   left: 0;
   width: 100%;
   background: linear-gradient(
@@ -124,7 +108,9 @@ const Shadow = styled.div`
     rgba(175, 175, 175, 0.168147) 41.66%,
     rgba(130, 130, 130, 0.35) 83.44%
   );
-  z-index: 10;
+  z-index: 0;
+  opacity: ${(props) => (props.isShow ? 1 : 0)};
+  transition: opacity 0.1s;
 `;
 
 const ChainLogo = styled.img`
@@ -162,7 +148,23 @@ export const FooterBar: React.FC<Props> = ({
   engineResults = [],
   hasUnProcessSecurityResult,
   hasShadow = false,
+  showGasLess = false,
+  useGasLess = false,
+  canUseGasLess = false,
   onIgnoreAllRules,
+  enableGasLess,
+  Header,
+  gasLessFailedReason,
+  isWatchAddr,
+  gasLessConfig,
+  gasAccountCost,
+  gasMethod,
+  onChangeGasAccount,
+  isGasAccountLogin,
+  isWalletConnect,
+  gasAccountCanPay,
+  noCustomRPC,
+  canGotoUseGasAccount,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -174,13 +176,6 @@ export const FooterBar: React.FC<Props> = ({
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  const displayOirigin = useMemo(() => {
-    if (origin === INTERNAL_REQUEST_ORIGIN) {
-      return 'Rabby Wallet';
-    }
-    return origin;
-  }, [origin]);
-
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
@@ -191,7 +186,9 @@ export const FooterBar: React.FC<Props> = ({
       return props.chain || CHAINS.ETH;
     } else {
       if (!connectedSite) return CHAINS.ETH;
-      return CHAINS[connectedSite.chain];
+      return findChain({
+        enum: connectedSite.chain,
+      })!;
     }
   }, [props.chain, origin, connectedSite]);
 
@@ -202,6 +199,8 @@ export const FooterBar: React.FC<Props> = ({
     });
     return map;
   }, [engineResults]);
+
+  const payGasByGasAccount = gasMethod === 'gasAccount';
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
@@ -219,7 +218,6 @@ export const FooterBar: React.FC<Props> = ({
     const currentAccount =
       gnosisAccount || (await wallet.syncGetCurrentAccount());
     if (currentAccount) setAccount(currentAccount);
-    dispatch.securityEngine.init();
   };
 
   useEffect(() => {
@@ -242,65 +240,43 @@ export const FooterBar: React.FC<Props> = ({
 
   return (
     <div className="relative">
-      {!isDarkTheme && hasShadow && <Shadow />}
+      {!isDarkTheme && <Shadow isShow={hasShadow} />}
       <Wrapper
         className={clsx({
           'is-darkmode': hasShadow,
+          'pt-[20px]': !Header,
         })}
       >
-        {origin && (
-          <div className="request-origin">
-            {originLogo && (
-              <div className="relative mr-8">
-                <FallbackSiteLogo
-                  url={originLogo}
-                  origin={origin}
-                  width="24px"
-                  height="24px"
-                />
-                <TooltipWithMagnetArrow
-                  className="rectangle w-[max-content]"
-                  title={currentChain.name}
-                >
-                  <ChainLogo src={currentChain.logo} />
-                </TooltipWithMagnetArrow>
-              </div>
-            )}
-            <span className="origin">{displayOirigin}</span>
-            <span className="right">{t('page.signFooterBar.requestFrom')}</span>
-            {engineResultMap['1088'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1088'].enable}
-                level={
-                  processedRules.includes('1088')
-                    ? 'proceed'
-                    : engineResultMap['1088'].level
-                }
-                onClick={() => handleClickRule('1088')}
-                right="0px"
-                className="security-level-tag"
-              />
-            )}
-            {engineResultMap['1089'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1089'].enable}
-                level={
-                  processedRules.includes('1089')
-                    ? 'proceed'
-                    : engineResultMap['1089'].level
-                }
-                onClick={() => handleClickRule('1089')}
-                className="security-level-tag"
-              />
-            )}
-          </div>
-        )}
+        {Header}
         <AccountInfo
           chain={props.chain}
           account={account}
           isTestnet={props.isTestnet}
         />
-        <ActionGroup account={account} {...props} />
+        <ActionGroup
+          key={gasMethod}
+          account={account}
+          gasLess={useGasLess && !payGasByGasAccount}
+          {...props}
+          disabledProcess={
+            payGasByGasAccount
+              ? !gasAccountCanPay ||
+                (!!securityLevel && !!hasUnProcessSecurityResult)
+              : useGasLess
+              ? false
+              : props.disabledProcess
+          }
+          enableTooltip={
+            payGasByGasAccount
+              ? false
+              : useGasLess
+              ? false
+              : props.enableTooltip
+          }
+          gasLessThemeColor={
+            isDarkTheme ? gasLessConfig?.dark_color : gasLessConfig?.theme_color
+          }
+        />
         {securityLevel && hasUnProcessSecurityResult && (
           <div
             className="security-level-tip"
@@ -332,6 +308,34 @@ export const FooterBar: React.FC<Props> = ({
             </span>
           </div>
         )}
+        {showGasLess &&
+        !payGasByGasAccount &&
+        (!securityLevel || !hasUnProcessSecurityResult) ? (
+          canUseGasLess ? (
+            <GasLessActivityToSign
+              gasLessEnable={useGasLess}
+              handleFreeGas={() => {
+                enableGasLess?.();
+              }}
+              gasLessConfig={gasLessConfig}
+            />
+          ) : isWatchAddr ? null : (
+            <GasLessNotEnough
+              gasLessFailedReason={gasLessFailedReason}
+              canGotoUseGasAccount={canGotoUseGasAccount}
+              onChangeGasAccount={onChangeGasAccount}
+            />
+          )
+        ) : null}
+
+        {payGasByGasAccount && !gasAccountCanPay ? (
+          <GasAccountTips
+            gasAccountCost={gasAccountCost}
+            isGasAccountLogin={isGasAccountLogin}
+            isWalletConnect={isWalletConnect}
+            noCustomRPC={noCustomRPC}
+          />
+        ) : null}
       </Wrapper>
     </div>
   );

@@ -8,7 +8,7 @@ const IGNORE_MODULES = [
   'multiformats',
   'nanoid',
   'uuid',
-  'ethereumjs-wallet',
+  '@ethereumjs',
 ].join('|');
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:

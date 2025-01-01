@@ -1,13 +1,14 @@
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbySelector } from '@/ui/store';
 import { splitNumberByStep, useWallet } from '@/ui/utils';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { useAsync } from 'react-use';
 import { ReactComponent as RcIconGas } from 'ui/assets/dashboard/gas.svg';
+import IconUnknown from 'ui/assets/token-default.svg';
 
 interface Props {
   currentConnectedSiteChain: CHAINS_ENUM;
@@ -20,7 +21,9 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
   const currentConnectedSiteChainNativeToken = useMemo(
     () =>
       currentConnectedSiteChain
-        ? CHAINS?.[currentConnectedSiteChain]?.nativeTokenAddress || 'eth'
+        ? findChain({
+            enum: currentConnectedSiteChain,
+          })?.nativeTokenAddress || 'eth'
         : 'eth',
     [currentConnectedSiteChain]
   );
@@ -30,9 +33,16 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
     loading: gasPriceLoading,
   } = useAsync(async () => {
     try {
-      const marketGas = await wallet.openapi.gasMarket(
-        currentConnectedSiteChainNativeToken
-      );
+      const chain = findChain({
+        serverId: currentConnectedSiteChainNativeToken,
+      });
+      const marketGas = chain?.isTestnet
+        ? await wallet.getCustomTestnetGasMarket({
+            chainId: chain?.id,
+          })
+        : await wallet.gasMarketV2({
+            chainId: currentConnectedSiteChainNativeToken,
+          });
       const selectedGasPice = marketGas.find((item) => item.level === 'slow')
         ?.price;
       if (selectedGasPice) {
@@ -99,7 +109,7 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
           />
         ) : (
           <img
-            src={tokenLogo}
+            src={tokenLogo || IconUnknown}
             className={clsx('rounded-full', {
               'w-[18px] h-[18px]': isETH,
               'w-[16px] h-[16px]': !isETH,

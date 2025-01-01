@@ -18,3 +18,7 @@ export * from './contextMenu';
 export { default as securityEngineService } from './securityEngine';
 export * from './transactionBroadcastWatcher';
 export { default as RabbyPointsService } from './rabbyPoints';
+export { default as HDKeyRingLastAddAddrTimeService } from './HDKeyRingLastAddAddrTime';
+export { default as bridgeService } from './bridge';
+export { default as gasAccountService } from './gasAccount';
+export { default as uninstalledService } from './uninstalled';

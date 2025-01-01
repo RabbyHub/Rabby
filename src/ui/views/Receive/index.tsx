@@ -26,6 +26,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -47,9 +48,9 @@ const useAccount = () => {
 
       wallet
         .getAddressCacheBalance(address)
-        .then((d) => setCacheBalance(d!.total_usd_value));
+        .then((d) => setCacheBalance(d?.total_usd_value || 0));
       wallet
-        .getAddressBalance(address)
+        .getInMemoryAddressBalance(address)
         .then((d) => setBalance(d.total_usd_value));
     }
   }, [address]);
@@ -65,7 +66,7 @@ const useAccount = () => {
 const useReceiveTitle = (search: string) => {
   const { t } = useTranslation();
   const qs = useMemo(() => query2obj(search), [search]);
-  const chain = findChainByEnum(qs.chain)?.name || 'Ethereum';
+  const chain = findChainByEnum(qs.chain)?.name || 'EVM chains';
   const token = qs.token || t('global.assets');
 
   return t('page.receive.title', {
@@ -80,8 +81,6 @@ const Receive = () => {
   const rbisource = useRbiSource();
   const [isShowAccount, setIsShowAccount] = useState(true);
 
-  const ref = useRef<HTMLButtonElement>(null);
-
   const account = useAccount();
   const title = useReceiveTitle(history.location.search);
   const qs = useMemo(() => query2obj(history.location.search), [
@@ -91,40 +90,19 @@ const Receive = () => {
 
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const clipboard = new ClipboardJS(ref.current!, {
-      text: function () {
-        return account.address || '';
-      },
+  const handleCopyAddress = () => {
+    matomoRequestEvent({
+      category: 'Receive',
+      action: 'copyAddress',
+      label: [
+        chain,
+        getKRCategoryByType(account?.type),
+        account?.brandName,
+        filterRbiSource('Receive', rbisource) && rbisource,
+      ].join('|'),
     });
-
-    clipboard.on('success', () => {
-      matomoRequestEvent({
-        category: 'Receive',
-        action: 'copyAddress',
-        label: [
-          chain,
-          getKRCategoryByType(account?.type),
-          account?.brandName,
-          filterRbiSource('Receive', rbisource) && rbisource,
-        ].join('|'),
-      });
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              {t('global.copied')}
-            </div>
-            <div className="text-white">{account.address}</div>
-          </div>
-        ),
-      });
-    });
-    return () => clipboard.destroy();
-  }, [account.address]);
+    copyAddress(account.address!);
+  };
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
@@ -254,8 +232,12 @@ const Receive = () => {
         <div className="qr-card-img">
           {account?.address && <QRCode value={account.address} size={175} />}
         </div>
-        <div className="qr-card-address">{account?.address}</div>
-        <button type="button" className="qr-card-btn" ref={ref}>
+        <div className="qr-card-address text-13">{account?.address}</div>
+        <button
+          type="button"
+          className="qr-card-btn"
+          onClick={handleCopyAddress}
+        >
           <ThemeIcon
             src={RcIconCopy}
             className="icon-copy text-r-neutral-title-1"

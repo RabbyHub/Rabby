@@ -2,7 +2,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { KEYRING_TYPE, WALLET_BRAND_CATEGORY } from 'consts';
+import { KEYRING_CLASS, KEYRING_TYPE, WALLET_BRAND_CATEGORY } from 'consts';
 import { isValidAddress } from 'ethereumjs-util';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,9 @@ import { useHistory } from 'react-router-dom';
 import IconBack from 'ui/assets/icon-back.svg';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { useWallet } from 'ui/utils';
+import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 import './style.less';
+import { safeJSONParse } from '@/utils';
 
 const ImportGnosisAddress = () => {
   const { t } = useTranslation();
@@ -20,6 +22,7 @@ const ImportGnosisAddress = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [form] = useForm();
+  const { show, contextHolder } = useRepeatImportConfirm();
   const { data: chainList, runAsync, error, loading } = useRequest(
     async (address: string) => {
       const res = await wallet.fetchGnosisChainList(address);
@@ -66,12 +69,21 @@ const ImportGnosisAddress = () => {
       });
     },
     onError(err) {
-      setErrorMessage(err?.message || t('Not a valid address'));
+      if (err.message?.includes?.('DuplicateAccountError')) {
+        const address = safeJSONParse(err.message)?.address;
+        show({
+          address,
+          type: KEYRING_CLASS.GNOSIS,
+        });
+      } else {
+        setErrorMessage(err?.message || t('Not a valid address'));
+      }
     },
   });
 
   return (
     <div className="import-gnosis h-full relative">
+      {contextHolder}
       <header className="header h-[180px] relative dark:bg-r-blue-disable">
         <div className="rabby-container pt-[40px]">
           <img
@@ -96,29 +108,43 @@ const ImportGnosisAddress = () => {
       </header>
       <div className="rabby-container">
         <div className="relative p-20">
-          <Form form={form}>
+          <Form
+            form={form}
+            onValuesChange={(changedValues) => {
+              const value = changedValues.address;
+              if (!value) {
+                setErrorMessage(t('page.importSafe.error.required'));
+                return;
+              }
+              if (!isValidAddress(value)) {
+                setErrorMessage(t('page.importSafe.error.invalid'));
+                return;
+              }
+              runAsync(value);
+            }}
+          >
             <Form.Item
               name="address"
               className="mb-0"
               validateStatus={errorMessage ? 'error' : undefined}
+              getValueFromEvent={(e) => {
+                const value = e.target.value;
+                if (
+                  value.includes(':') &&
+                  isValidAddress(value.split(':')[1])
+                ) {
+                  return value.split(':')[1];
+                }
+                return value;
+              }}
             >
-              <Input
+              <Input.TextArea
+                className="leading-normal"
+                autoSize
                 size="large"
                 autoFocus
                 placeholder={t('page.importSafe.placeholder')}
                 autoComplete="off"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (!value) {
-                    setErrorMessage(t('page.importSafe.error.required'));
-                    return;
-                  }
-                  if (!isValidAddress(value)) {
-                    setErrorMessage(t('page.importSafe.error.invalid'));
-                    return;
-                  }
-                  runAsync(e.target.value);
-                }}
               />
             </Form.Item>
           </Form>
@@ -163,7 +189,7 @@ const ImportGnosisAddress = () => {
         <Button
           type="primary"
           size="large"
-          className="w-[152px] h-[42px]"
+          className="w-full h-[42px]"
           disabled={loading || !!errorMessage || !chainList?.length}
           onClick={() =>
             handleNext(

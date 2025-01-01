@@ -3,12 +3,12 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
-import { getUiType } from './index';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
-import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/utils/ledger';
+import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useApprovalPopup } from './approval-popup';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
+import { useDeviceConnect } from './useDeviceConnect';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -16,6 +16,7 @@ export const useApproval = () => {
   const { showPopup, enablePopup } = useApprovalPopup();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
+  const deviceConnect = useDeviceConnect();
 
   const resolveApproval = async (
     data?: any,
@@ -23,6 +24,11 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
+    // handle connect
+    if (!(await deviceConnect(data))) {
+      return;
+    }
+
     const approval = await getApproval();
 
     if (approval) {
@@ -52,16 +58,6 @@ export const useApproval = () => {
       history.push('/');
     }
   };
-
-  useEffect(() => {
-    if (!getUiType().isNotification) {
-      return;
-    }
-    window.addEventListener('beforeunload', rejectApproval);
-
-    return () => window.removeEventListener('beforeunload', rejectApproval);
-  }, []);
-
   return [getApproval, resolveApproval, rejectApproval] as const;
 };
 
@@ -193,10 +189,11 @@ export type HoverProps = Pick<
 export const useHover = ({
   mouseEnterDelayMS = 0,
   mouseLeaveDelayMS = 0,
-}: UseHoverOptions = {}): [boolean, HoverProps] => {
+}: UseHoverOptions = {}): [boolean, HoverProps, () => void] => {
   const [isHovering, setIsHovering] = useState(false);
   let mouseEnterTimer: number | undefined;
   let mouseOutTimer: number | undefined;
+
   return [
     isHovering,
     {
@@ -215,6 +212,7 @@ export const useHover = ({
         );
       },
     },
+    () => setIsHovering(false),
   ];
 };
 
@@ -251,7 +249,7 @@ export const useBalance = (address: string) => {
         .getAddressCacheBalance(address)
         .then((d) => flag && setCacheBalance(d?.total_usd_value || 0));
       wallet
-        .getAddressBalance(address)
+        .getInMemoryAddressBalance(address)
         .then((d) => flag && setBalance(d.total_usd_value));
     }
     return () => {
@@ -335,9 +333,8 @@ export const useAccountInfo = (
   const dispatch = useRabbyDispatch();
   const isLedger = type === KEYRING_CLASS.HARDWARE.LEDGER;
   const isGridPlus = type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
-  const isTrezorLike =
-    type === KEYRING_CLASS.HARDWARE.TREZOR ||
-    type === KEYRING_CLASS.HARDWARE.ONEKEY;
+  const isTrezor = type === KEYRING_CLASS.HARDWARE.TREZOR;
+  const isOneKey = type === KEYRING_CLASS.HARDWARE.ONEKEY;
   const isMnemonics = type === KEYRING_CLASS.MNEMONIC;
   const isKeystone = brand === 'Keystone';
   const mnemonicAccounts = useRabbySelector((state) => state.account);
@@ -376,9 +373,9 @@ export const useAccountInfo = (
   }, []);
 
   useEffect(() => {
-    if (isLedger || isGridPlus || isKeystone) {
+    if (isLedger || isGridPlus || isKeystone || isTrezor) {
       fetAccountInfo();
-    } else if (isTrezorLike) {
+    } else if (isOneKey) {
       fetchTrezorLikeAccount();
     } else if (isMnemonics) {
       fetchMnemonicsAccount();

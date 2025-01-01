@@ -13,15 +13,17 @@ export interface Props {
   list?: TokenItemProps['item'][];
   isSearch: boolean;
   onFocusInput: () => void;
+  onOpenAddEntryPopup: () => void;
   isNoResults?: boolean;
   blockedTokens?: TokenItemProps['item'][];
   customizeTokens?: TokenItemProps['item'][];
   isTestnet: boolean;
 }
 
-export const TokenList: React.FC<Props> = ({
+export const HomeTokenList = ({
   list,
   onFocusInput,
+  onOpenAddEntryPopup,
   isSearch,
   isNoResults,
   blockedTokens,
@@ -54,6 +56,7 @@ export const TokenList: React.FC<Props> = ({
     blockedTokens?.length ||
     customizeTokens?.length
   );
+  const hasLowValueList = !!lowValueList?.length;
 
   return (
     <div>
@@ -62,13 +65,16 @@ export const TokenList: React.FC<Props> = ({
           list={isSearch ? list : currentList}
           EmptyComponent={<div></div>}
         />
-        {!isSearch && hasList && (
+        {!isSearch && hasList && hasLowValueList && (
           <TokenLowValueItem list={lowValueList} className="h-[40px]" />
         )}
       </div>
       {!isSearch && hasList && (
-        <div className="flex gap-12 pt-12 border-t-[0.5px] border-rabby-neutral-line">
-          <CustomizedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
+        <div className="flex gap-12 pt-12 border-t-[0.5px] border-rabby-neutral-line mt-[1px]">
+          <CustomizedButton
+            onClickButton={onOpenAddEntryPopup}
+            isTestnet={isTestnet}
+          />
           <BlockedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
         </div>
       )}

@@ -2,7 +2,7 @@
 
 @radius-value: 6px;
 
-@main-w: 1060px;
+@main-w: 1160px;
 
 @page-pt-without-switchnet-tabs: 40px;
 
@@ -125,21 +125,25 @@
   align-items: center;
   justify-content: space-between;
 
-  > .search-input-wrapper {
+   .search-input-wrapper {
     height: @tools-h;
     background-color: var(--r-neutral-card1);
     border-radius: @radius-value;
     overflow: hidden;
-    border: 0.5px solid var(--r-neutral-line);
+    border: 1px solid var(--r-neutral-line);
     transition: ease-in 0.2s border-color;
 
     .ant-input-affix-wrapper.search-input, .ant-input {
       background-color: transparent;
       color: var(--r-neutral-title1);
+      &::placeholder {
+        color: var(--r-neutral-foot);
+      }
     }
 
     &.is-focusing, &:hover {
       border-color: var(--r-blue-default, #7084ff);
+      border-width: 1px;
     }
   }
 
@@ -322,15 +326,22 @@
         border-bottom-right-radius: @radius-value;
       }
     }
+  }
 
-    &.is-contract-row__risky > .am-virtual-table-cell-inner,
-    &.is-contract-row__danger > .am-virtual-table-cell-inner {
-      background: #fefafa;
-    }
+  &:not(.dark) .am-virtual-table-cell.is-contract-row__risky > .am-virtual-table-cell-inner,
+  &:not(.dark) .am-virtual-table-cell.is-contract-row__danger > .am-virtual-table-cell-inner {
+    background: #fefafa;
+  }
+  & .am-virtual-table-cell.is-contract-row__risky > .am-virtual-table-cell-inner,
+  & .am-virtual-table-cell.is-contract-row__danger > .am-virtual-table-cell-inner {
+    background: #3d3b46;
+  }
 
-    &.is-contract-row__warning > .am-virtual-table-cell-inner {
-      background: #fffdf8;
-    }
+  &:not(.dark) .am-virtual-table-cell.is-contract-row__warning > .am-virtual-table-cell-inner {
+    background: #fffdf8;
+  }
+  &.dark .am-virtual-table-cell.is-contract-row__warning > .am-virtual-table-cell-inner {
+    background: #3d3b46;
   }
 
   &.J_table_by_contracts .am-virtual-table-cell {
@@ -348,6 +359,10 @@
     //------------ special column customizations ------------
     &.column-cell-J_key-approveSpender > .am-virtual-table-cell-inner {
       padding-right: 4px;
+    }
+    
+    &.column-cell-J_key-approveSpender > .am-virtual-table-cell-inner .name-and-address .name {
+      max-width: 50px;
     }
 
     &.column-cell-J_key-assetApproveTime > .am-virtual-table-cell-inner {
@@ -487,7 +502,7 @@
 
 .J-risk-cell__tooltip,
 .J-table__tooltip,
-.J-modal-item__tooltip {
+.J_permit2-tooltip {
   color: #fff;
   font-size: 12px;
   font-weight: 400;
@@ -495,6 +510,7 @@
   .ant-tooltip-inner {
     line-height: 18px;
     border-radius: 2px;
+    background-color: var(--r-neutral-black);
 
     p {
       margin-bottom: 0;
@@ -506,18 +522,28 @@
   }
 }
 
+.J_permit2-tooltip .ant-tooltip-content {
+  width: 370px;
+}
+
+.J-modal-item__tooltip.min-width-limit {
+  .ant-tooltip-inner {
+    word-wrap: normal;
+    min-width: 300px;
+  }
+}
+
 .J-risk-cell__tooltip {
   &.tip-trust-value .ant-tooltip-inner {
-    width: 210px;
     line-height: 20px;
     text-align: center;
   }
 
   &.is-danger.tip-recent-revokes .ant-tooltip-inner {
-    min-width: 440px;
+    min-width: 460px;
   }
   &.is-warning.tip-recent-revokes .ant-tooltip-inner {
-    min-width: 440px;
+    min-width: 460px;
   }
 }
 
@@ -554,5 +580,43 @@
     color: var(--r-neutral-body);
     max-width: 10em;
     .ellipsis();
+  }
+}
+
+.am-revoke-info-modal {
+  .ant-modal-content {
+    width: 400px;
+    height: 232px;
+  }
+
+  .ant-modal-body {
+    height: 100%;
+    padding-top: 40px;
+    padding-bottom: 32px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .ant-modal-confirm-title {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .ant-modal-confirm-content {
+    margin-top: 0;
+    padding: 16px 20px 40px;
+  }
+
+  .ant-modal-confirm-btns {
+    padding: 0 40px;
+    margin-top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .ant-modal-close-x {
+    width: 44px;
+    height: 44px;
   }
 }

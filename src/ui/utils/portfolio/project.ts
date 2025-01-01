@@ -297,6 +297,10 @@ class DisplayedPortfolio implements AbstractPortfolio {
   // static createFromHistory(h: PortfolioItem) {}
 }
 
+export function encodeProjectTokenId(token: PortfolioItemToken) {
+  return token.id + token.chain;
+}
+
 export class DisplayedToken implements AbstractPortfolioToken {
   [immerable] = true;
   id: string;
@@ -315,6 +319,8 @@ export class DisplayedToken implements AbstractPortfolioToken {
   is_verified: boolean;
   time_at: number;
   price_24h_change?: number | null;
+  low_credit_score?: boolean;
+  raw_amount_hex_str?: string;
   _amountStr?: string;
   _priceStr?: string;
   _amountChange?: number;
@@ -332,7 +338,7 @@ export class DisplayedToken implements AbstractPortfolioToken {
   constructor(token: PortfolioItemToken) {
     this._tokenId = token.id;
     this.amount = token.amount || 0;
-    this.id = token.id + token.chain;
+    this.id = encodeProjectTokenId(token);
     this.chain = token.chain;
     this.logo_url = token.logo_url;
     this.price = token.price || 0;
@@ -353,6 +359,8 @@ export class DisplayedToken implements AbstractPortfolioToken {
     this.name = token.name;
     this.time_at = token.time_at;
     this.price_24h_change = token.price_24h_change;
+    this.low_credit_score = token.low_credit_score;
+    this.raw_amount_hex_str = token.raw_amount_hex_str;
 
     // 默认是它
     this._usdValueChangeStr = '-';

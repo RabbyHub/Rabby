@@ -13,6 +13,9 @@ import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
+import { findChain } from '@/utils/chain';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
+import { gnosisController } from './gnosisController';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -21,6 +24,10 @@ const isSignApproval = (type: string) => {
 
 const lockedOrigins = new Set<string>();
 const connectOrigins = new Set<string>();
+
+const getScreenAvailHeight = async () => {
+  return 1000;
+};
 
 const flow = new PromiseFlow<{
   request: ProviderRequest & {
@@ -110,10 +117,7 @@ const flowContext = flow
         ctx.request.requestedApproval = true;
         connectOrigins.add(origin);
         try {
-          const {
-            defaultChain,
-            signPermission,
-          } = await notificationService.requestApproval(
+          const { defaultChain } = await notificationService.requestApproval(
             {
               params: { origin, name, icon },
               approvalComponent: 'Connect',
@@ -126,7 +130,6 @@ const flowContext = flow
             name,
             icon,
             defaultChain,
-            signPermission,
           });
         } catch (e) {
           connectOrigins.delete(origin);
@@ -153,11 +156,9 @@ const flowContext = flow
       windowHeight = options.height;
     } else {
       const minHeight = 500;
-      // if (screen.availHeight > windowHeight) {
-      //   windowHeight = screen.availHeight;
-      // }
-      if (screen.availHeight < 880) {
-        windowHeight = screen.availHeight;
+      const screenAvailHeight = await getScreenAvailHeight();
+      if (screenAvailHeight < 880) {
+        windowHeight = screenAvailHeight;
       }
       if (windowHeight < minHeight) {
         windowHeight = minHeight;
@@ -188,9 +189,9 @@ const flowContext = flow
       if (approvalType === 'SignTx' && !('chainId' in params[0])) {
         const site = permissionService.getConnectedSite(origin);
         if (site) {
-          const chain = Object.values(CHAINS).find(
-            (item) => item.enum === site.chain
-          );
+          const chain = findChain({
+            enum: site.chain,
+          });
           if (chain) {
             params[0].chainId = chain.id;
           }
@@ -229,39 +230,62 @@ const flowContext = flow
     } = request;
     const requestDeferFn = () =>
       new Promise((resolve, reject) => {
-        return Promise.resolve(
-          providerController[mapMethod]({
-            ...request,
-            approvalRes,
-          })
-        )
-          .then((result) => {
-            if (isSignApproval(approvalType)) {
-              eventBus.emit(EVENTS.broadcastToUI, {
-                method: EVENTS.SIGN_FINISHED,
-                params: {
-                  success: true,
-                  data: result,
-                },
-              });
-            }
-            return result;
-          })
-          .then(resolve)
-          .catch((e: any) => {
-            Sentry.captureException(e);
-            if (isSignApproval(approvalType)) {
-              eventBus.emit(EVENTS.broadcastToUI, {
+        let waitSignComponentPromise = Promise.resolve();
+        if (isSignApproval(approvalType) && uiRequestComponent) {
+          waitSignComponentPromise = waitSignComponentAmounted();
+        }
+
+        // if (approvalRes?.isGnosis && !approvalRes.safeMessage) {
+        //   return resolve(undefined);
+        // }
+        if (approvalRes?.isGnosis) {
+          return resolve(undefined);
+        }
+
+        return waitSignComponentPromise.then(() =>
+          Promise.resolve(
+            providerController[mapMethod]({
+              ...request,
+              approvalRes,
+            })
+          )
+            .then((result) => {
+              if (isSignApproval(approvalType)) {
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.SIGN_FINISHED,
+                  params: {
+                    success: true,
+                    data: result,
+                  },
+                });
+              }
+              return result;
+            })
+            .then(resolve)
+            .catch((e: any) => {
+              const payload = {
                 method: EVENTS.SIGN_FINISHED,
                 params: {
                   success: false,
                   errorMsg: e?.message || JSON.stringify(e),
                 },
-              });
-            }
-          });
+              };
+              if (e.method) {
+                payload.method = e.method;
+                payload.params = e.message;
+              }
+
+              Sentry.captureException(e);
+              if (isSignApproval(approvalType)) {
+                eventBus.emit(EVENTS.broadcastToUI, payload);
+              }
+            })
+        );
       });
-    notificationService.setCurrentRequestDeferFn(requestDeferFn);
+
+    if (!approvalRes?.isGnosis) {
+      notificationService.setCurrentRequestDeferFn(requestDeferFn);
+    }
     const requestDefer = requestDeferFn();
     async function requestApprovalLoop({ uiRequestComponent, ...rest }) {
       ctx.request.requestedApproval = true;
@@ -278,11 +302,31 @@ const flowContext = flow
         return res;
       }
     }
+
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
       reportStatsData();
-      return result;
+      if (rest?.safeMessage) {
+        const safeMessage: {
+          safeAddress: string;
+          message: string | Record<string, any>;
+          chainId: number;
+          safeMessageHash: string;
+        } = rest.safeMessage;
+        if (ctx.request.requestedApproval) {
+          flow.requestedApproval = false;
+          // only unlock notification if current flow is an approval flow
+          notificationService.unLock();
+        }
+        return gnosisController.watchMessage({
+          address: safeMessage.safeAddress,
+          chainId: safeMessage.chainId,
+          safeMessageHash: safeMessage.safeMessageHash,
+        });
+      } else {
+        return result;
+      }
     }
 
     return requestDefer;
@@ -301,9 +345,10 @@ function reportStatsData() {
       category: statsData?.category,
       success: statsData?.signedSuccess,
       preExecSuccess: statsData?.preExecSuccess,
-      createBy: statsData?.createBy,
+      createdBy: statsData?.createdBy,
       source: statsData?.source,
       trigger: statsData?.trigger,
+      networkType: statsData?.networkType,
     };
     if (statsData.signMethod) {
       sData.signMethod = statsData.signMethod;
@@ -317,9 +362,10 @@ function reportStatsData() {
       category: statsData?.category,
       success: statsData?.submitSuccess,
       preExecSuccess: statsData?.preExecSuccess,
-      createBy: statsData?.createBy,
+      createdBy: statsData?.createdBy,
       source: statsData?.source,
       trigger: statsData?.trigger,
+      networkType: statsData?.networkType || '',
     });
   }
 
@@ -338,7 +384,6 @@ export default (request: ProviderRequest) => {
       flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow
       notificationService.unLock();
-      keyringService.resetResend();
     }
   });
 };

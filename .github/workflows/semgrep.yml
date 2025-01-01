@@ -1,0 +1,30 @@
+on:
+  workflow_dispatch: {}
+  pull_request: {}
+  push:
+    branches:
+    - develop
+    paths:
+    - .github/workflows/semgrep.yml
+name: Semgrep
+jobs:
+  semgrep:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+    container:
+      image: returntocorp/semgrep
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          apk add --no-cache yarn
+          yarn install || true
+          
+      - name: scan dependencies code
+        run: mv node_modules _node_modules
+      
+      - name: Run Semgrep
+        run: semgrep ci

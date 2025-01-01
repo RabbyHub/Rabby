@@ -1,22 +1,92 @@
+// import { customTestnetService } from '@/background/service/customTestnet';
+import {
+  CustomTestnetToken,
+  TestnetChain,
+} from '@/background/service/customTestnet';
+import defaultSuppordChain from '@/constant/default-support-chains.json';
+import eventBus from '@/eventBus';
 import { Chain } from '@debank/common';
 import {
   ChainWithBalance,
+  SupportedChain,
   TokenItem,
 } from '@rabby-wallet/rabby-api/dist/types';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS, CHAINS_ENUM, EVENTS } from 'consts';
+import { toHex } from 'viem';
+import browser from 'webextension-polyfill';
 
-const ALL_CHAINS = Object.values(CHAINS);
-const ALL_CHAINS_TESTNET = [] as Chain[];
-const ALL_CHAINS_MAINNET = ALL_CHAINS.filter((chain) => {
-  if (chain.isTestnet) {
-    ALL_CHAINS_TESTNET.push(chain);
+export const getMainnetListFromLocal = () => {
+  return browser.storage.local.get('rabbyMainnetChainList').then((res) => {
+    return res?.rabbyMainnetChainList || [];
+  });
+};
+
+getMainnetListFromLocal().then((list) => {
+  if (list.length) {
+    updateChainStore({
+      mainnetList: list,
+    });
   }
-  return !chain.isTestnet;
 });
 
-export const CHAINS_BY_NET = {
-  mainnet: ALL_CHAINS_MAINNET,
-  testnet: ALL_CHAINS_TESTNET,
+const store = {
+  mainnetList: defaultSuppordChain
+    .filter((item) => !item.is_disabled)
+    .map((item) => {
+      return supportedChainToChain(item);
+    }),
+  testnetList: [] as TestnetChain[],
+};
+
+export const updateChainStore = (params: Partial<typeof store>) => {
+  Object.assign(store, params);
+  eventBus.emit(EVENTS.broadcastToUI, {
+    method: 'syncChainList',
+    params,
+  });
+};
+
+export const getTestnetChainList = () => {
+  return store.testnetList;
+};
+
+export const getMainnetChainList = () => {
+  return store.mainnetList;
+};
+
+export const getChainList = (net?: 'mainnet' | 'testnet') => {
+  if (net === 'mainnet') {
+    return store.mainnetList;
+  }
+  if (net === 'testnet') {
+    return store.testnetList;
+  }
+  return [...store.mainnetList, ...store.testnetList];
+};
+
+export const findChain = (params: {
+  enum?: CHAINS_ENUM | string | null;
+  id?: number | null;
+  serverId?: string | null;
+  hex?: string | null;
+  networkId?: string | null;
+}): Chain | TestnetChain | null | undefined => {
+  const { enum: chainEnum, id, serverId, hex, networkId } = params;
+  if (chainEnum && chainEnum.startsWith('CUSTOM_')) {
+    return findChain({
+      id: +chainEnum.replace('CUSTOM_', ''),
+    });
+  }
+  const chain = [...store.mainnetList, ...store.testnetList].find(
+    (item) =>
+      item.enum === chainEnum ||
+      (id && +item.id === +id) ||
+      item.serverId === serverId ||
+      item.hex === hex ||
+      item.network === networkId
+  );
+
+  return chain;
 };
 
 /**
@@ -40,7 +110,7 @@ export function findChainByEnum(
 
   if (!chainEnum) return toFallbackChain;
 
-  return CHAINS[chainEnum] || toFallbackChain;
+  return findChain({ enum: chainEnum }) || toFallbackChain;
 }
 
 export function filterChainEnum(chainEnum: CHAINS_ENUM) {
@@ -62,26 +132,28 @@ export function ensureChainHashValid<
   return newObj;
 }
 
-export function ensureChainListValid<T extends CHAINS_ENUM[]>(list: T) {
+export function ensureChainListValid<T extends (CHAINS_ENUM | string)[]>(
+  list: T
+) {
   return list.filter((chainEnum) => findChainByEnum(chainEnum));
 }
 
 /**
  * @description safe find chain
  */
-export function findChainByID(chainId: Chain['id']): Chain | null {
-  return !chainId
-    ? null
-    : ALL_CHAINS.find((chain) => chain.id === Number(chainId)) || null;
+export function findChainByID(chainId: Chain['id']) {
+  return findChain({
+    id: chainId,
+  });
 }
 
 /**
  * @description safe find chain by serverId
  */
-export function findChainByServerID(chainId: Chain['serverId']): Chain | null {
-  return !chainId
-    ? null
-    : ALL_CHAINS.find((chain) => chain.serverId === chainId) || null;
+export function findChainByServerID(chainId: Chain['serverId']) {
+  return findChain({
+    serverId: chainId,
+  });
 }
 
 export function isTestnet(chainServerId?: string) {
@@ -106,9 +178,9 @@ export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
 export function formatChainToDisplay(
   item: ChainWithBalance
 ): DisplayChainWithWhiteLogo {
-  const chainsArray = Object.values(CHAINS);
-  const chain = chainsArray.find((chain) => chain.id === item.community_id);
-
+  const chain = findChain({
+    id: item.community_id,
+  });
   return {
     ...item,
     logo: chain?.logo || item.logo_url,
@@ -183,6 +255,8 @@ export function varyAndSortChainItems(deps: {
     [x: string]: DisplayChainWithWhiteLogo | undefined;
   };
   netTabKey?: import('@/ui/component/PillsSwitch/NetSwitchTabs').NetSwitchTabsKey;
+  mainnetList?: Chain[];
+  testnetList?: Chain[];
 }) {
   const {
     supportChains,
@@ -190,6 +264,8 @@ export function varyAndSortChainItems(deps: {
     pinned,
     matteredChainBalances,
     netTabKey,
+    mainnetList = store.mainnetList,
+    testnetList = store.testnetList,
   } = deps;
 
   const unpinnedListGroup = {
@@ -203,10 +279,9 @@ export function varyAndSortChainItems(deps: {
     disabled: [] as Chain[],
   };
 
-  const _all = (
-    (netTabKey ? CHAINS_BY_NET[netTabKey] : CHAINS_BY_NET.mainnet) ||
-    CHAINS_BY_NET.mainnet
-  ).sort((a, b) => a.name.localeCompare(b.name));
+  const _all = ((netTabKey === 'testnet' ? testnetList : mainnetList) || [])
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .sort((a, b) => a.severity - b.severity);
 
   _all.forEach((item) => {
     const inPinned = pinned.find((pinnedEnum) => pinnedEnum === item.enum);
@@ -289,3 +364,134 @@ export function makeTokenFromChain(chain: Chain): TokenItem {
     time_at: 0,
   };
 }
+
+export function supportedChainToChain(item: SupportedChain): Chain {
+  const chainServerIdEnumDict = {
+    eth: 'ETH',
+    bsc: 'BSC',
+    xdai: 'GNOSIS',
+    matic: 'POLYGON',
+    ftm: 'FTM',
+    okt: 'OKT',
+    heco: 'HECO',
+    avax: 'AVAX',
+    arb: 'ARBITRUM',
+    op: 'OP',
+    celo: 'CELO',
+    movr: 'MOVR',
+    cro: 'CRO',
+    boba: 'BOBA',
+    metis: 'METIS',
+    btt: 'BTT',
+    aurora: 'AURORA',
+    mobm: 'MOBM',
+    sbch: 'SBCH',
+    hmy: 'HMY',
+    fuse: 'FUSE',
+    astar: 'ASTAR',
+    klay: 'KLAY',
+    rsk: 'RSK',
+    iotx: 'IOTX',
+    kcc: 'KCC',
+    wan: 'WAN',
+    sgb: 'SGB',
+    evmos: 'EVMOS',
+    dfk: 'DFK',
+    tlos: 'TLOS',
+    nova: 'NOVA',
+    canto: 'CANTO',
+    doge: 'DOGE',
+    step: 'STEP',
+    kava: 'KAVA',
+    mada: 'MADA',
+    cfx: 'CFX',
+    brise: 'BRISE',
+    ckb: 'CKB',
+    tomb: 'TOMB',
+    pze: 'PZE',
+    era: 'ERA',
+    eos: 'EOS',
+    core: 'CORE',
+    flr: 'FLR',
+    wemix: 'WEMIX',
+    mtr: 'METER',
+    etc: 'ETC',
+    fsn: 'FSN',
+    pls: 'PULSE',
+    rose: 'ROSE',
+    ron: 'RONIN',
+    oas: 'OAS',
+    zora: 'ZORA',
+    linea: 'LINEA',
+    base: 'BASE',
+    mnt: 'MANTLE',
+    tenet: 'TENET',
+    lyx: 'LYX',
+    opbnb: 'OPBNB',
+    loot: 'LOOT',
+    shib: 'SHIB',
+    manta: 'MANTA',
+    scrl: 'SCRL',
+    fx: 'FX',
+    beam: 'BEAM',
+    pego: 'PEGO',
+    zkfair: 'ZKFAIR',
+    fon: 'FON',
+    bfc: 'BFC',
+    alot: 'ALOT',
+    xai: 'XAI',
+    zeta: 'ZETA',
+    rari: 'RARI',
+    hubble: 'HUBBLE',
+    mode: 'MODE',
+    merlin: 'MERLIN',
+    dym: 'DYM',
+    eon: 'EON',
+    blast: 'BLAST',
+    sx: 'SX',
+    platon: 'PLATON',
+    map: 'MAP',
+    frax: 'FRAX',
+    aze: 'AZE',
+    karak: 'KARAK',
+  };
+  return {
+    id: item.community_id,
+    enum: chainServerIdEnumDict[item.id] || item.id.toUpperCase(),
+    name: item.name,
+    serverId: item.id,
+    hex: toHex(+item.community_id),
+    network: item.community_id + '',
+    nativeTokenSymbol: item.native_token?.symbol,
+    nativeTokenLogo: item.native_token?.logo,
+    nativeTokenDecimals: item.native_token?.decimals,
+    nativeTokenAddress: item.native_token?.id,
+    needEstimateGas: item.need_estimate_gas,
+    scanLink: `${item.explorer_host}/${
+      item.id === 'heco' ? 'transaction' : 'tx'
+    }/_s_`,
+    logo: item.logo_url,
+    whiteLogo: item.white_logo_url,
+    eip: {
+      '1559': item.eip_1559,
+    },
+    //@ts-expect-error type annotation
+    severity: item.severity,
+  };
+}
+
+export const isSameTesnetToken = <
+  T1 extends Pick<CustomTestnetToken, 'id' | 'chainId'>,
+  T2 extends Pick<CustomTestnetToken, 'id' | 'chainId'>
+>(
+  token1: T1,
+  token2: T2
+) => {
+  if (!token1 || !token2) {
+    return false;
+  }
+  return (
+    token1.id?.toLowerCase() === token2.id?.toLowerCase() &&
+    +token1.chainId === +token2.chainId
+  );
+};

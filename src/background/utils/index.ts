@@ -1,5 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import pageStateCache from '../service/pageStateCache';
+import { isManifestV3 } from '@/utils/env';
+import browser from 'webextension-polyfill';
 export { default as createPersistStore } from './persistStore';
 
 // {a:{b: string}} => {1: 'a.b'}
@@ -55,15 +57,6 @@ export function normalizeAddress(input: number | string): string {
   return ethUtil.addHexPrefix(input);
 }
 
-export const wait = (fn: () => void, ms = 1000) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      fn();
-      resolve(true);
-    }, ms);
-  });
-};
-
 export const setPageStateCacheWhenPopupClose = (data) => {
   const cache = pageStateCache.get();
   if (cache && cache.path === '/import/wallet-connect') {
@@ -89,17 +82,43 @@ export const isSameAddress = (a: string, b: string) => {
   return a.toLowerCase() === b.toLowerCase();
 };
 
-export const setPopupIcon = (type: 'default' | 'rabby' | 'metamask') => {
+export const setPopupIcon = (
+  type: 'default' | 'rabby' | 'metamask' | 'locked'
+) => {
   const icons = [16, 19, 32, 48, 128].reduce((res, size) => {
-    if (type === 'default') {
-      res[size] = `images/icon-${size}.png`;
-    } else {
+    if (type === 'rabby' || type === 'metamask') {
       res[size] = `images/icon-default-${type}-${size}.png`;
+    } else if (type === 'locked') {
+      res[size] = `images/icon-lock-${size}.png`;
+    } else {
+      res[size] = `images/icon-${size}.png`;
     }
     return res;
   }, {});
-  return chrome.browserAction.setIcon({
+  const action = isManifestV3 ? browser.action : browser.browserAction;
+  return action.setIcon({
     path: icons,
+  });
+};
+
+export const withTimeout = <T>(
+  promise: Promise<T>,
+  timeout: number
+): Promise<T> => {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error('Request timed out')),
+      timeout
+    );
+    promise
+      .then((result: T) => {
+        clearTimeout(timer);
+        resolve(result);
+      })
+      .catch((err: any) => {
+        clearTimeout(timer);
+        reject(err);
+      });
   });
 };
 

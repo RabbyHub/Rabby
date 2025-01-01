@@ -1,9 +1,9 @@
-import { SIGN_PERMISSION_TYPES } from './../../constant/index';
+import { CHAINS, SIGN_PERMISSION_TYPES } from './../../constant/index';
 import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { max } from 'lodash';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { BasicDappInfo } from './openapi';
 
 export interface ConnectedSite {
@@ -13,14 +13,10 @@ export interface ConnectedSite {
   chain: CHAINS_ENUM;
   e?: number;
   isSigned: boolean;
-  /**
-   * @deprecated
-   */
   isTop: boolean;
   order?: number;
   isConnected: boolean;
   preferMetamask?: boolean;
-  signPermission?: SIGN_PERMISSION_TYPES;
   isFavorite?: boolean;
   info?: BasicDappInfo;
 }
@@ -78,13 +74,20 @@ class PermissionService {
 
     if (!siteItem) return siteItem;
 
-    const chainItem = findChainByEnum(siteItem.chain);
+    const chainItem = findChain({ enum: siteItem.chain });
 
-    return chainItem ? siteItem : undefined;
+    return chainItem
+      ? siteItem
+      : {
+          ...siteItem,
+          chain: CHAINS_ENUM.ETH,
+          isConnected: false,
+        };
   };
 
-  getSite = (origin: string) => {
-    return this._getSite(origin);
+  getSite = (origin: string | number) => {
+    const _origin = origin.toString();
+    return this._getSite(_origin);
   };
 
   setSite = (site: ConnectedSite) => {
@@ -130,14 +133,12 @@ class PermissionService {
     icon,
     defaultChain,
     isSigned = false,
-    signPermission,
   }: {
     origin: string;
     name: string;
     icon: string;
     defaultChain: CHAINS_ENUM;
     isSigned?: boolean;
-    signPermission?: SIGN_PERMISSION_TYPES;
   }) => {
     if (!this.lruCache) return;
 
@@ -152,7 +153,6 @@ class PermissionService {
       isTop: false,
       chain: defaultChain,
       isConnected: true,
-      signPermission,
     });
     this.sync();
   };
@@ -172,7 +172,7 @@ class PermissionService {
     if (!this.lruCache || !this.lruCache.has(origin)) return;
     if (origin === INTERNAL_REQUEST_ORIGIN) return;
 
-    if (value.chain && !findChainByEnum(value.chain)) {
+    if (value.chain && !findChain({ enum: value.chain })) {
       return;
     }
 

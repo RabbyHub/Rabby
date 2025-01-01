@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useWallet } from '@/ui/utils';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { TooltipWithMagnetArrow } from './Tooltip/TooltipWithMagnetArrow';
 import { t } from 'i18next';
 
@@ -120,7 +120,7 @@ const ChainIcon = ({
   showCustomRPCToolTip = false,
   nonce,
   innerClassName,
-  tooltipTriggerElement = 'chain',
+  tooltipTriggerElement = 'dot',
   tooltipProps,
 }: Props) => {
   const wallet = useWallet();
@@ -158,7 +158,7 @@ const ChainIcon = ({
   }, [chain, _customRPC, nonce]);
 
   const { chainItem, customRPC } = React.useMemo(() => {
-    const item = findChainByEnum(chain);
+    const item = findChain({ enum: chain });
     return {
       chainItem: item,
       customRPC: item ? _customRPC : undefined,
@@ -197,7 +197,7 @@ const ChainIcon = ({
     );
   } else {
     return (
-      <div className="chain-icon-comp">
+      <div className="chain-icon-comp relative">
         <Tooltip
           placement="top"
           overlayClassName={clsx('rectangle')}
@@ -205,6 +205,7 @@ const ChainIcon = ({
           align={{
             offset: [0, 2],
           }}
+          {...tooltipProps}
         >
           <ChainIconWrapper>
             <ChainIconEle
@@ -213,7 +214,7 @@ const ChainIcon = ({
             />
           </ChainIconWrapper>
         </Tooltip>
-        <Tooltip
+        <TooltipWithMagnetArrow
           placement="top"
           overlayClassName={clsx('rectangle')}
           {...tooltipProps}
@@ -233,7 +234,7 @@ const ChainIcon = ({
             ) : (
               <UnavaliableIcon className={clsx(size)} />
             ))}
-        </Tooltip>
+        </TooltipWithMagnetArrow>
       </div>
     );
   }

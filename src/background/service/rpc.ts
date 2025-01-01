@@ -1,7 +1,7 @@
 import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
-import axios from 'axios';
 import { findChainByEnum } from '@/utils/chain';
+import { http } from '../utils/http';
 
 export interface RPCItem {
   url: string;
@@ -124,7 +124,7 @@ class RPCService {
     params: any[],
     timeout = 5000
   ) => {
-    const { data } = await axios.post(
+    const { data } = await http.post(
       host,
       {
         jsonrpc: '2.0',

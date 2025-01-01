@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect } from 'react';
-import { BigNumber } from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -7,7 +6,10 @@ import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
-import { ParsedActionData, SwapRequireData } from './utils';
+import {
+  SwapRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
@@ -15,6 +17,7 @@ import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
+import { SubCol, SubRow, SubTable } from './components/SubTable';
 
 const Wrapper = styled.div`
   .header {
@@ -40,7 +43,7 @@ const Swap = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['swap'];
+  data: ParsedTransactionActionData['swap'];
   requireData: SwapRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -99,12 +102,6 @@ const Swap = ({
     });
   };
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>
@@ -121,20 +118,12 @@ const Swap = ({
               }
               logoRadius="100%"
             />
-            <ul className="desc-list">
-              <li>
-                ≈
-                {formatUsdValue(
-                  new BigNumber(payToken.amount).times(payToken.price).toFixed()
-                )}
-              </li>
-            </ul>
           </Row>
         </Col>
         <Col>
           <Row isTitle>{t('page.signTx.swap.receiveToken')}</Row>
           <Row>
-            <div className="flex relative pr-10">
+            <div className="flex relative" id="swap-receive">
               <LogoWithText
                 logo={receiveToken.logo_url}
                 logoRadius="100%"
@@ -181,50 +170,48 @@ const Swap = ({
                 />
               )}
             </div>
-            <ul className="desc-list">
-              {balanceChange.success && balanceChange.support && (
-                <>
-                  <li>
-                    ≈
-                    {formatUsdValue(
-                      new BigNumber(receiveToken.amount)
-                        .times(receiveToken.price)
-                        .toFixed()
-                    )}
-                  </li>
-                  <SecurityListItem
-                    engineResult={engineResultMap['1012']}
-                    id="1012"
-                    dangerText={
-                      <>
-                        {t('page.signTx.swap.valueDiff')}{' '}
-                        <Values.Percentage value={usdValuePercentage!} /> (
-                        {formatUsdValue(usdValueDiff || '')})
-                      </>
-                    }
-                    warningText={
-                      <>
-                        {t('page.signTx.swap.valueDiff')}{' '}
-                        <Values.Percentage value={usdValuePercentage!} /> (
-                        {formatUsdValue(usdValueDiff || '')})
-                      </>
-                    }
-                  />
-                </>
-              )}
-              {balanceChange.support && !balanceChange.success && (
-                <li>{t('page.signTx.swap.simulationFailed')}</li>
-              )}
-              {!balanceChange.support && (
-                <li>{t('page.signTx.swap.simulationNotSupport')}</li>
-              )}
-            </ul>
           </Row>
         </Col>
+
+        <SubTable target="swap-receive">
+          {balanceChange.success && balanceChange.support && (
+            <SecurityListItem
+              title={t('page.signTx.swap.valueDiff')}
+              engineResult={engineResultMap['1012']}
+              id="1012"
+              dangerText={
+                <>
+                  {t('page.signTx.swap.valueDiff')}{' '}
+                  <Values.Percentage value={usdValuePercentage!} /> (
+                  {formatUsdValue(usdValueDiff || '')})
+                </>
+              }
+              warningText={
+                <>
+                  {t('page.signTx.swap.valueDiff')}{' '}
+                  <Values.Percentage value={usdValuePercentage!} /> (
+                  {formatUsdValue(usdValueDiff || '')})
+                </>
+              }
+            />
+          )}
+          {balanceChange.support && !balanceChange.success && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.swap.valueDiff')}</SubRow>
+              <SubRow>{t('page.signTx.swap.simulationFailed')}</SubRow>
+            </SubCol>
+          )}
+          {!balanceChange.support && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.swap.valueDiff')}</SubRow>
+              <SubRow>{t('page.signTx.swap.simulationNotSupport')}</SubRow>
+            </SubCol>
+          )}
+        </SubTable>
         <Col>
           <Row isTitle>{t('page.signTx.swap.minReceive')}</Row>
           <Row>
-            <div>
+            <div id="swap-min">
               <LogoWithText
                 logo={minReceive.logo_url}
                 logoRadius="100%"
@@ -236,30 +223,28 @@ const Swap = ({
                 }
               />
             </div>
-            <ul className="desc-list">
-              <li>
-                ≈
-                {formatUsdValue(
-                  new BigNumber(minReceive.amount)
-                    .times(minReceive.price)
-                    .toFixed()
+          </Row>
+        </Col>
+        <SubTable target="swap-min">
+          {slippageTolerance === null && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.swap.slippageTolerance')}</SubRow>
+              <SubRow>{t('page.signTx.swap.slippageFailToLoad')}</SubRow>
+            </SubCol>
+          )}
+          {slippageTolerance !== null && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.swap.slippageTolerance')}</SubRow>
+              <SubRow>
+                {hasReceiver ? (
+                  '-'
+                ) : (
+                  <Values.Percentage value={slippageTolerance} />
                 )}
-              </li>
-              <li>
-                {slippageTolerance === null &&
-                  t('page.signTx.swap.slippageFailToLoad')}
-                {slippageTolerance !== null && (
-                  <>
-                    {t('page.signTx.swap.slippageTolerance')}{' '}
-                    {hasReceiver ? (
-                      '-'
-                    ) : (
-                      <Values.Percentage value={slippageTolerance} />
-                    )}
-                  </>
-                )}
+
                 {engineResultMap['1011'] && (
                   <SecurityLevelTagNoText
+                    inSubTable
                     enable={engineResultMap['1011'].enable}
                     level={
                       processedRules.includes('1011')
@@ -269,76 +254,104 @@ const Swap = ({
                     onClick={() => handleClickRule('1011')}
                   />
                 )}
-              </li>
-            </ul>
-          </Row>
-        </Col>
+              </SubRow>
+            </SubCol>
+          )}
+        </SubTable>
         {hasReceiver && (
-          <Col>
-            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
-            <Row>
-              <Values.Address address={receiver} chain={chain} />
-              <ul className="desc-list">
-                <SecurityListItem
-                  engineResult={engineResultMap['1069']}
-                  id="1069"
-                  warningText={t('page.signTx.swap.unknownAddress')}
+          <>
+            <Col>
+              <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
+              <Row>
+                <Values.AddressWithCopy
+                  id="swap-receiver"
+                  address={receiver}
+                  chain={chain}
                 />
-                {!engineResultMap['1069'] && (
-                  <>
-                    <li>
+              </Row>
+            </Col>
+            <SubTable target="swap-receiver">
+              <SecurityListItem
+                engineResult={engineResultMap['1069']}
+                id="1069"
+                warningText={t('page.signTx.swap.unknownAddress')}
+              />
+              {!engineResultMap['1069'] && (
+                <>
+                  <SubCol>
+                    <SubRow isTitle>{t('page.signTx.address')}</SubRow>
+                    <SubRow>
                       <Values.AccountAlias address={receiver} />
-                    </li>
-                    <li>
+                    </SubRow>
+                  </SubCol>
+                  <SubCol>
+                    <SubRow isTitle>{t('page.addressDetail.source')}</SubRow>
+                    <SubRow>
                       <Values.KnownAddress address={receiver} />
-                    </li>
-                  </>
-                )}
-              </ul>
-            </Row>
-          </Col>
+                    </SubRow>
+                  </SubCol>
+                </>
+              )}
+            </SubTable>
+          </>
         )}
         <Col>
-          <Row isTitle>{t('page.signTx.interactContract')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.interactContract')}
+          </Row>
           <Row>
-            <div>
-              <Values.Address address={requireData.id} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              <ProtocolListItem protocol={requireData.protocol} />
-              <li>
-                <Values.Interacted value={requireData.hasInteraction} />
-              </li>
-
-              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
-
-              <SecurityListItem
-                id="1135"
-                engineResult={engineResultMap['1135']}
-                forbiddenText={t('page.signTx.markAsBlock')}
+            <ViewMore
+              type="contract"
+              data={{
+                bornAt: requireData.bornAt,
+                protocol: requireData.protocol,
+                rank: requireData.rank,
+                address: requireData.id,
+                hasInteraction: requireData.hasInteraction,
+                chain,
+              }}
+            >
+              <Values.Address
+                id="swap-contract"
+                hasHover
+                address={requireData.id}
+                chain={chain}
               />
-
-              <SecurityListItem
-                id="1137"
-                engineResult={engineResultMap['1137']}
-                warningText={t('page.signTx.markAsBlock')}
-              />
-              <li>
-                <ViewMore
-                  type="contract"
-                  data={{
-                    hasInteraction: requireData.hasInteraction,
-                    bornAt: requireData.bornAt,
-                    protocol: requireData.protocol,
-                    rank: requireData.rank,
-                    address: requireData.id,
-                    chain,
-                  }}
-                />
-              </li>
-            </ul>
+            </ViewMore>
           </Row>
         </Col>
+        <SubTable target="swap-contract">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow>
+              <Values.Interacted value={requireData.hasInteraction} />
+            </SubRow>
+          </SubCol>
+          {isInWhitelist && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+              <SubRow>{t('page.signTx.trusted')}</SubRow>
+            </SubCol>
+          )}
+          <SecurityListItem
+            title={t('page.signTx.myMark')}
+            id="1135"
+            engineResult={engineResultMap['1135']}
+            forbiddenText={t('page.signTx.markAsBlock')}
+          />
+          <SecurityListItem
+            title={t('page.signTx.myMark')}
+            id="1137"
+            engineResult={engineResultMap['1137']}
+            warningText={t('page.signTx.markAsBlock')}
+          />
+        </SubTable>
       </Table>
     </Wrapper>
   );

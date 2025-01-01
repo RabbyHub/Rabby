@@ -8,7 +8,11 @@ const AddAddress = () => {
 
   return (
     <div className="add-address">
-      <BlueHeader fixed className="mx-[-20px]" fillClassName="mb-[20px]">
+      <BlueHeader
+        fixed
+        className="mx-[-20px] h-[48px]"
+        fillClassName="mb-[20px] h-[48px]"
+      >
         {t('page.newAddress.title')}
       </BlueHeader>
       <AddAddressOptions />

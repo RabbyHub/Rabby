@@ -1,6 +1,7 @@
-import { findChainByID } from '@/utils/chain';
+import { findChainByEnum, findChainByID } from '@/utils/chain';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import {
+  bridgeService,
   openapiService,
   swapService,
   transactionWatchService,
@@ -77,11 +78,7 @@ class TransactionBroadcastWatcher {
     );
 
     const res = await Promise.all([
-      testnetList?.length
-        ? testnetOpenapiService
-            .getTxRequests(testnetList.map((item) => item.reqId))
-            .catch(() => [] as TxRequest[])
-        : ([] as TxRequest[]),
+      [] as TxRequest[],
       mainnetList?.length
         ? openapiService
             .getTxRequests(mainnetList.map((item) => item.reqId))
@@ -104,6 +101,7 @@ class TransactionBroadcastWatcher {
           const chain = findChainByID(item.signed_tx.chainId);
           if (chain) {
             swapService.postSwap(chain?.enum, item.tx_id, item.signed_tx);
+            bridgeService.postBridge(chain?.enum, item.tx_id, item.signed_tx);
           }
         }
       }
@@ -148,11 +146,18 @@ class TransactionBroadcastWatcher {
     }, 5000);
   };
 
-  clearPendingTx = (address: string) => {
+  clearPendingTx = (address: string, chainId?: number) => {
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [key, v]) => {
+        if (!v) {
+          return m;
+        }
+        const isSameAddr = isSameAddress(address, v.address);
+        if (chainId ? +chainId === v.chainId && isSameAddr : isSameAddr) {
+          return m;
+        }
         // keep pending txs of other addresses
-        if (v && !isSameAddress(address, v.address)) {
+        if (v) {
           m[key] = v;
         }
 

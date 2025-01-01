@@ -6,17 +6,18 @@ import * as Sentry from '@sentry/browser';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 import {
-  CHAINS,
   KEYRING_CATEGORY_MAP,
   IS_LINUX,
   IS_VIVALDI,
   IS_CHROME,
   KEYRING_CATEGORY,
+  IS_WINDOWS,
 } from 'consts';
 import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
-import BigNumber from 'bignumber.js';
+import { findChain } from '@/utils/chain';
+import { isManifestV3 } from '@/utils/env';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -59,11 +60,12 @@ export type StatsData = {
   chainId: string;
   category: KEYRING_CATEGORY;
   preExecSuccess: boolean;
-  createBy: string;
+  createdBy: string;
   source: any;
   trigger: any;
   reported: boolean;
   signMethod?: string;
+  networkType?: string;
 };
 
 // something need user approval in window
@@ -91,15 +93,17 @@ class NotificationService extends Events {
 
   set approvals(val: Approval[]) {
     this._approvals = val;
+    const action = isManifestV3 ? browser.action : browser.browserAction;
+
     if (val.length <= 0) {
-      browser.browserAction.setBadgeText({
-        text: null,
+      action.setBadgeText({
+        text: isManifestV3 ? '' : null,
       });
     } else {
-      browser.browserAction.setBadgeText({
+      action.setBadgeText({
         text: val.length + '',
       });
-      browser.browserAction.setBadgeBackgroundColor({
+      action.setBadgeBackgroundColor({
         color: '#FE815F',
       });
     }
@@ -108,17 +112,30 @@ class NotificationService extends Events {
   constructor() {
     super();
 
-    winMgr.event.on('windowRemoved', (winId: number) => {
-      if (winId === this.notifiWindowId) {
-        this.notifiWindowId = null;
-        this.rejectAllApprovals();
-      }
+    winMgr.event.on('closeNotification', () => {
+      this.notifiWindowId = null;
     });
+
+    winMgr.event.on(
+      'windowRemoved',
+      (winId: number, isManuallyClosed: boolean) => {
+        if (winId === this.notifiWindowId) {
+          this.notifiWindowId = null;
+          if (isManuallyClosed) {
+            this.rejectAllApprovals();
+          }
+        }
+      }
+    );
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
       if (IS_VIVALDI) return;
-      if (IS_CHROME && winId === chrome.windows.WINDOW_ID_NONE && IS_LINUX) {
-        // When sign on Linux, will focus on -1 first then focus on sign window
+      if (
+        IS_CHROME &&
+        winId === browser.windows.WINDOW_ID_NONE &&
+        (IS_LINUX || IS_WINDOWS)
+      ) {
+        // When sign on Linux or Windows, will focus on -1 first then focus on sign window
         return;
       }
 
@@ -249,15 +266,24 @@ class NotificationService extends Events {
         : null;
       const explain = signingTx?.explain;
 
-      if (explain && currentAccount) {
+      const chain = findChain({
+        id: signingTx?.rawTx.chainId,
+      });
+
+      if ((explain || chain?.isTestnet) && currentAccount) {
         stats.report('preExecTransaction', {
           type: currentAccount.brandName,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          chainId: explain.native_token.chain,
-          success: explain.calcSuccess && explain.pre_exec.success,
-          createBy: data?.params.$ctx?.ga ? 'rabby' : 'dapp',
+          chainId: chain?.serverId || '',
+          success: explain
+            ? explain.calcSuccess && explain.pre_exec.success
+            : true,
+          createdBy: data?.params.$ctx?.ga ? 'rabby' : 'dapp',
           source: data?.params.$ctx?.ga?.source || '',
           trigger: data?.params.$ctx?.ga.trigger || '',
+          networkType: chain?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
       }
     };
@@ -322,23 +348,11 @@ class NotificationService extends Events {
           this.currentApproval = approval;
         }
       }
+
       if (
-        ['wallet_switchEthereumChain', 'wallet_addEthereumChain'].includes(
-          data?.params?.method
-        )
+        this.notifiWindowId !== null &&
+        QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(data.approvalComponent)
       ) {
-        const chainId = data.params?.data?.[0]?.chainId;
-        const chain = Object.values(CHAINS).find((chain) =>
-          new BigNumber(chain.hex).isEqualTo(chainId)
-        );
-
-        if (chain) {
-          this.resolveApproval(null);
-          return;
-        }
-      }
-
-      if (this.notifiWindowId !== null) {
         browser.windows.update(this.notifiWindowId, {
           focused: true,
         });

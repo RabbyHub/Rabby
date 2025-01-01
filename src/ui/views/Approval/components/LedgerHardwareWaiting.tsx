@@ -1,32 +1,28 @@
-import React from 'react';
-import { message } from 'antd';
-import { useTranslation } from 'react-i18next';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { Account } from 'background/service/preference';
-import {
-  CHAINS,
-  WALLETCONNECT_STATUS_MAP,
-  EVENTS,
-  KEYRING_CLASS,
-  KEYRING_CATEGORY_MAP,
-} from 'consts';
-import {
-  useApproval,
-  openInTab,
-  openInternalPageInTab,
-  useWallet,
-  useCommonPopupView,
-} from 'ui/utils';
-import { adjustV } from 'ui/utils/gnosis';
 import eventBus from '@/eventBus';
 import stats from '@/stats';
+import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
+import { findChain } from '@/utils/chain';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
+import * as Sentry from '@sentry/browser';
+import { message } from 'antd';
+import { Account } from 'background/service/preference';
+import { EVENTS, KEYRING_CATEGORY_MAP, WALLETCONNECT_STATUS_MAP } from 'consts';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import LedgerSVG from 'ui/assets/walletlogo/ledger.svg';
+import {
+  openInternalPageInTab,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
+import { adjustV } from 'ui/utils/gnosis';
 import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
-import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
-import * as Sentry from '@sentry/browser';
+import { isLedgerLockError } from '@/ui/utils/ledger';
 
 interface ApprovalParams {
   address: string;
@@ -36,10 +32,22 @@ interface ApprovalParams {
   account?: Account;
   $ctx?: any;
   extra?: Record<string, any>;
+  safeMessage?: {
+    safeMessageHash: string;
+    safeAddress: string;
+    message: string;
+    chainId: number;
+  };
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
-  const { setTitle, setVisible, visible, closePopup } = useCommonPopupView();
+  const {
+    setTitle,
+    setVisible,
+    setHeight,
+    closePopup,
+    setPopupProps,
+  } = useCommonPopupView();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
   >('SENDING');
@@ -51,9 +59,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     WALLETCONNECT_STATUS_MAP.WAITING
   );
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!;
+  const chain = findChain({
+    id: params.chainId || 1,
+  });
   const { t } = useTranslation();
   const [isSignText, setIsSignText] = React.useState(false);
   const [result, setResult] = React.useState('');
@@ -84,12 +92,13 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
+    emitSignComponentAmounted();
   };
 
-  const handleClickResult = () => {
-    const url = chain.scanLink.replace(/_s_/, result);
-    openInTab(url);
-  };
+  // const handleClickResult = () => {
+  //   const url = chain.scanLink.replace(/_s_/, result);
+  //   openInTab(url);
+  // };
 
   const init = async () => {
     const account = params.isGnosis
@@ -114,23 +123,26 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
 
         const signingTx = await wallet.getSigningTx(signingTxId);
 
-        if (!signingTx?.explain) {
+        if (!signingTx?.explain && chain && !chain.isTestnet) {
           setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
           return;
         }
 
-        const explain = signingTx.explain;
+        const explain = signingTx?.explain;
 
-        stats.report('signTransaction', {
+        wallet.reportStats('signTransaction', {
           type: account.brandName,
-          chainId: chain.serverId,
+          chainId: chain?.serverId || '',
           category: KEYRING_CATEGORY_MAP[account.type],
           preExecSuccess: explain
             ? explain?.calcSuccess && explain?.pre_exec.success
             : true,
-          createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+          createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
           source: params?.$ctx?.ga?.source || '',
           trigger: params?.$ctx?.ga?.trigger || '',
+          networkType: chain?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
       }
     } else {
@@ -140,10 +152,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         method: params?.extra?.signTextMethod,
       });
     }
-    eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {
-      rejectApproval(data, false, true);
-    });
-    eventBus.addEventListener(EVENTS.LEDGER.REJECTED, async (data) => {
+    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
       setErrorMessage(data);
       if (/DisconnectedDeviceDuringOperation/i.test(data)) {
         await rejectApproval('User rejected the request.');
@@ -163,11 +172,19 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
             const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, sig);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
-              await wallet.gnosisAddSignature(account.address, sig);
-              await wallet.postGnosisTransaction();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, sig);
+              } else {
+                await wallet.gnosisAddSignature(account.address, sig);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {
@@ -178,7 +195,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
-          label: KEYRING_CLASS.HARDWARE.LEDGER,
+          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
 
         setSignFinishedData({
@@ -193,14 +210,16 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         setErrorMessage(data.errorMsg);
       }
     });
+
+    emitSignComponentAmounted();
   };
 
   React.useEffect(() => {
     if (firstConnectRef.current) {
-      if (sessionStatus === 'DISCONNECTED') {
-        setVisible(false);
-        message.error(t('page.signFooterBar.ledger.notConnected'));
-      }
+      // if (sessionStatus === 'DISCONNECTED') {
+      //   setVisible(false);
+      //   message.error(t('page.signFooterBar.ledger.notConnected'));
+      // }
     }
 
     if (sessionStatus === 'CONNECTED') {
@@ -209,6 +228,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [sessionStatus]);
 
   React.useEffect(() => {
+    setHeight(360);
     setTitle(
       <div className="flex justify-center items-center">
         <img src={LedgerSVG} className="w-20 mr-8" />
@@ -220,6 +240,10 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     init();
     mountedRef.current = true;
   }, []);
+
+  React.useEffect(() => {
+    setPopupProps(params?.extra?.popupProps);
+  }, [params?.extra?.popupProps]);
 
   // React.useEffect(() => {
   //   if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {
@@ -276,7 +300,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [connectStatus, errorMessage]);
 
   const currentDescription = React.useMemo(() => {
-    if (description.includes('0x5515') || description.includes('0x6b0c')) {
+    if (isLedgerLockError(description)) {
       return t('page.signFooterBar.ledger.unlockAlert');
     } else if (
       description.includes('0x6e00') ||

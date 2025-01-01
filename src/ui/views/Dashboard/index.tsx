@@ -32,7 +32,7 @@ import {
   useRabbyGetter,
   useRabbySelector,
 } from 'ui/store';
-import { isSameAddress, useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import {
   BalanceView,
   ChainAndSiteSelector,
@@ -44,9 +44,7 @@ import './style.less';
 import PendingApproval from './components/PendingApproval';
 import PendingTxs from './components/PendingTxs';
 import { getKRCategoryByType } from '@/utils/transaction';
-import eventBus from '@/eventBus';
 
-import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 import Queue from './components/Queue';
 import { copyAddress } from '@/ui/utils/clipboard';
@@ -54,6 +52,10 @@ import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConn
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
+import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHomeBalanceView';
+import { EcologyPopup } from './components/EcologyPopup';
+import { GasAccountDashBoardHeader } from '../GasAccount/components/DashBoardHeader';
+import { useGnosisPendingCount } from '@/ui/hooks/useGnosisPendingCount';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -69,7 +71,7 @@ const Dashboard = () => {
     ...s.transactions,
   }));
 
-  const { firstNotice, updateContent } = useRabbySelector((s) => ({
+  const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
     ...s.appVersion,
   }));
 
@@ -85,7 +87,6 @@ const Dashboard = () => {
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
-  const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
 
   const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
   const gnosisPendingCount = useRabbySelector(
@@ -136,7 +137,7 @@ const Dashboard = () => {
     }
   );
 
-  useGnosisPendingTxs(
+  useGnosisPendingCount(
     {
       address:
         currentAccount?.address &&
@@ -150,9 +151,9 @@ const Dashboard = () => {
           gnosisPendingCount: 0,
         });
       },
-      onSuccess(res) {
+      onSuccess(total) {
         dispatch.chains.setField({
-          gnosisPendingCount: res?.total || 0,
+          gnosisPendingCount: total || 0,
         });
       },
     }
@@ -170,25 +171,7 @@ const Dashboard = () => {
           dispatch.account.setField({ alianName: name });
           setDisplayName(name!);
         });
-
-      eventBus.addEventListener(EVENTS.TX_COMPLETED, async ({ address }) => {
-        if (isSameAddress(address, currentAccount.address)) {
-          const count = await dispatch.transactions.getPendingTxCountAsync(
-            currentAccount.address
-          );
-          if (count === 0) {
-            setTimeout(() => {
-              // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
-              // delay 5s for waiting db sync data
-              setAccountBalanceUpdateNonce(accountBalanceUpdateNonce + 1);
-            }, 5000);
-          }
-        }
-      });
     }
-    return () => {
-      eventBus.removeAllEventListeners(EVENTS.TX_COMPLETED);
-    };
   }, [currentAccount]);
 
   useEffect(() => {
@@ -285,18 +268,21 @@ const Dashboard = () => {
       dispatch.accountToDisplay.setField({ accountsList: newAccountList });
     }
   };
-
-  const gotoAddAddress = () => {
+  const gotoGasAccount = () => {
     matomoRequestEvent({
       category: 'Front Page Click',
       action: 'Click',
-      label: 'Add Address',
+      label: 'Gas Account',
     });
-    history.push('/add-address');
+    history.push('/gas-account');
   };
+  const { dashboardBalanceCacheInited } = useHomeBalanceViewOuterPrefetch(
+    currentAccount?.address
+  );
+
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();
-  }, []);
+  }, [dispatch]);
 
   const hideAllList = () => {
     setShowAssets(false);
@@ -341,7 +327,7 @@ const Dashboard = () => {
               className={clsx('flex header items-center relative', topAnimate)}
             >
               <div
-                className="h-[36px] flex header-wrapper items-center relative"
+                className="h-[36px] flex header-wrapper items-center relative mr-0"
                 onClick={switchAddress}
               >
                 <Popover
@@ -384,12 +370,13 @@ const Dashboard = () => {
                       />
                     )}
                   </div>
-                  <IconArrowRight className="ml-8" />
+                  <IconArrowRight className="ml-6" />
                 </Popover>
               </div>
 
               <RcIconCopy
-                className="copyAddr"
+                viewBox="0 0 18 18"
+                className="copyAddr actionIcon w-16 h-16 ml-8 mr-16"
                 onClick={() => {
                   copyAddress(currentAccount.address);
                   matomoRequestEvent({
@@ -403,19 +390,14 @@ const Dashboard = () => {
                 }}
               />
 
-              <div
-                className="ml-auto w-[36px] h-[36px] bg-white bg-opacity-[0.12] hover:bg-opacity-[0.3] backdrop-blur-[20px] rounded-[6px] flex items-center justify-center cursor-pointer"
-                role="button"
-                onClick={gotoAddAddress}
-              >
-                <IconAddAddress className="text-white w-[20px] h-[20px]" />
+              <div className="ml-auto cursor-pointer" onClick={gotoGasAccount}>
+                <GasAccountDashBoardHeader />
               </div>
             </div>
           )}
-          <BalanceView
-            currentAccount={currentAccount}
-            accountBalanceUpdateNonce={accountBalanceUpdateNonce}
-          />
+          {dashboardBalanceCacheInited && (
+            <BalanceView currentAccount={currentAccount} />
+          )}
           {isGnosis ? (
             <Queue
               count={gnosisPendingCount || 0}
@@ -452,7 +434,10 @@ const Dashboard = () => {
         }}
         maxHeight="420px"
       >
-        <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
+        <div>
+          <p className="mb-12">{version}</p>
+          <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
+        </div>
       </Modal>
       <Modal
         visible={hovered}
@@ -548,7 +533,7 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="qrcode-container">
-              <QRCode value={currentAccount?.address} size={100} />
+              <QRCode value={currentAccount?.address || ''} size={100} />
             </div>
           </div>
         </div>
