@@ -1,1 +1,2697 @@
-
+[
+  {
+    "page": {
+      "transactions": {
+        "title": "Transaksi",
+        "empty": {
+          "title": "Tidak ada transaksi",
+          "desc": "Tidak ada transaksi ditemukan pada <1>rantai yang didukung</1>"
+        },
+        "explain": {
+          "approve": "Setujui {{amount}} {{symbol}} untuk {{project}}",
+          "unknown": "Interaksi Kontrak",
+          "cancel": "Membatalkan transaksi yang tertunda"
+        },
+        "txHistory": {
+          "tipInputData": "Transaksi termasuk pesan",
+          "parseInputDataError": "Gagal mengurai pesan",
+          "scamToolTip": "Transaksi ini diinisiasi oleh penipu untuk mengirim token dan NFT penipuan. Harap jangan berinteraksi dengannya."
+        },
+        "modalViewMessage": {
+          "title": "Lihat Pesan"
+        },
+        "filterScam": {
+          "title": "Sembunyikan transaksi penipuan",
+          "loading": "Memuat mungkin memerlukan waktu, dan penundaan data mungkin terjadi",
+          "btn": "Sembunyikan transaksi penipuan"
+        }
+      },
+      "chainList": {
+        "title": "{{count}} rantai Terintegrasi",
+        "mainnet": "Jaringan Utama",
+        "testnet": "Jaringan Uji"
+      },
+      "signTx": {
+        "nftIn": "NFT di",
+        "gasLimitNotEnough": "Batas gas kurang dari 21000. Transaksi tidak dapat dikirim",
+        "gasLimitLessThanExpect": "Batas gas rendah. Ada 1% kemungkinan transaksi bisa gagal.",
+        "gasLimitLessThanGasUsed": "Batas gas terlalu rendah. Ada 95% kemungkinan transaksi bisa gagal.",
+        "nativeTokenNotEngouthForGas": "Saldo gas tidak cukup untuk transaksi",
+        "nonceLowerThanExpect": "Nonce terlalu rendah, minimum harus {{0}}",
+        "canOnlyUseImportedAddress": "Anda tidak dapat menandatangani transaksi dengan alamat hanya lihat.",
+        "multiSigChainNotMatch": "Alamat multi-tanda tangan tidak ada di rantai ini dan tidak dapat memulai transaksi",
+        "safeAddressNotSupportChain": "Alamat aman saat ini tidak didukung di rantai {{0}}",
+        "noGasRequired": "Tidak ada gas yang diperlukan",
+        "gasSelectorTitle": "Gas",
+        "failToFetchGasCost": "Gagal memperkirakan biaya gas",
+        "gasMoreButton": "Lebih",
+        "manuallySetGasLimitAlert": "Anda telah mengatur batas gas secara manual ke",
+        "gasNotRequireForSafeTransaction": "Biaya gas tidak diperlukan untuk transaksi Aman",
+        "gasPriceTitle": "Harga Gas (Gwei)",
+        "maxPriorityFee": "Biaya Prioritas Maksimal (Gwei)",
+        "eip1559Desc1": "Pada rantai yang mendukung EIP-1559, Biaya Prioritas adalah tip untuk penambang untuk memproses transaksi Anda. Anda dapat menghemat biaya gas akhir Anda dengan menurunkan Biaya Prioritas, yang mungkin memakan waktu lebih lama untuk transaksi diproses.",
+        "eip1559Desc2": "Di sini di Rabby, Biaya Prioritas (Tip) = Biaya Maksimal - Biaya Dasar. Setelah Anda mengatur Biaya Prioritas Maksimal, Biaya Dasar akan dikurangkan darinya dan sisa akan diberikan sebagai tip kepada penambang.",
+        "hardwareSupport1559Alert": "Pastikan firmware dompet perangkat keras Anda telah diperbarui ke versi yang mendukung EIP 1559",
+        "gasLimitTitle": "Batas Gas",
+        "recommendGasLimitTip": "Estimasi {{est}}. Saat ini {{current}}x, rekomendasi ",
+        "nonceTitle": "Nonce",
+        "gasLimitModifyOnlyNecessaryAlert": "Modifikasi hanya jika perlu",
+        "gasPriceMedian": "Median dari 100 transaksi on-chain terakhir: ",
+        "myNativeTokenBalance": "Saldo Gas saya: ",
+        "gasLimitEmptyAlert": "Silakan masukkan batas gas",
+        "gasLimitMinValueAlert": "Batas gas harus lebih dari 21000",
+        "nativeTokenForGas": "Gunakan token {{tokenName}} di {{chainName}} untuk membayar gas",
+        "gasAccountForGas": "Gunakan USD dari Akun Gas saya untuk membayar gas",
+        "gasAccount": {
+          "totalCost": "Biaya total: ",
+          "currentTxCost": "Jumlah gas yang dikirim ke alamat Anda: ",
+          "gasCost": "Biaya gas untuk mentransfer gas ke alamat Anda: ",
+          "estimatedGas": "Perkiraan Gas: ",
+          "maxGas": "Gas Maksimal: ",
+          "sendGas": "Transfer Gas kepada Anda untuk transaksi saat ini: "
+        },
+        "balanceChange": {
+          "successTitle": "Hasil Simulasi",
+          "failedTitle": "Simulasi Gagal",
+          "noBalanceChange": "Tidak ada perubahan saldo",
+          "tokenOut": "Token keluar",
+          "tokenIn": "Token masuk",
+          "errorTitle": "Gagal mengambil perubahan saldo",
+          "notSupport": "Simulasi Tidak Didukung",
+          "nftOut": "NFT keluar"
+        },
+        "enoughSafeSigCollected": "Tanda tangan yang cukup dikumpulkan",
+        "moreSafeSigNeeded": "Membutuhkan {{0}} tanda tangan lebih banyak untuk mengonfirmasi",
+        "safeAdminSigned": "Ditandatangani",
+        "customRPCErrorModal": {
+          "title": "Kesalahan RPC Kustom",
+          "content": "RPC kustom Anda tidak tersedia saat ini. Anda dapat menonaktifkannya dan melanjutkan tanda tangan menggunakan RPC resmi Rabby",
+          "button": "Nonaktifkan RPC Kustom"
+        },
+        "swap": {
+          "title": "Tukar Token",
+          "payToken": "Bayar",
+          "receiveToken": "Terima",
+          "failLoadReceiveToken": "Gagal memuat",
+          "valueDiff": "Perbedaan nilai",
+          "simulationFailed": "Simulasi transaksi gagal",
+          "simulationNotSupport": "Simulasi transaksi tidak didukung di rantai ini",
+          "minReceive": "Minimum Terima",
+          "slippageFailToLoad": "Gagal memuat",
+          "slippageTolerance": "Toleransi slippage",
+          "receiver": "Penerima",
+          "notPaymentAddress": "Bukan alamat pembayaran",
+          "unknownAddress": "Alamat tidak dikenal"
+        },
+        "crossChain": {
+          "title": "Rantai Silang"
+        },
+        "swapAndCross": {
+          "title": "Tukar Token dan Rantai Silang"
+        },
+        "wrapToken": "Membungkus Token",
+        "unwrap": "Membuka Token",
+        "transferOwner": {
+          "title": "Transfer Kepemilikan Aset",
+          "description": "Deskripsi",
+          "transferTo": "Transfer ke"
+        },
+        "swapLimitPay": {
+          "title": "Tukar Batas Pembayaran Token",
+          "maxPay": "Maksimal bayar"
+        },
+        "send": {
+          "title": "Kirim Token",
+          "sendToken": "Kirim token",
+          "sendTo": "Kirim ke",
+          "receiverIsTokenAddress": "Alamat token",
+          "contractNotOnThisChain": "Tidak di rantai ini",
+          "notTopupAddress": "Bukan alamat setoran",
+          "tokenNotSupport": "{{0}} tidak didukung",
+          "onMyWhitelist": "Dalam daftar putih saya",
+          "notOnThisChain": "Tidak di rantai ini",
+          "cexAddress": "Alamat CEX",
+          "addressBalanceTitle": "Saldo alamat",
+          "whitelistTitle": "Daftar Putih",
+          "notOnWhitelist": "Tidak dalam daftar putih saya",
+          "scamAddress": "Alamat penipuan",
+          "fromMySeedPhrase": "Dari frase benih saya",
+          "fromMyPrivateKey": "Dari kunci pribadi saya"
+        },
+        "tokenApprove": {
+          "title": "Persetujuan Token",
+          "approveToken": "Setujui token",
+          "myBalance": "Saldo saya",
+          "approveTo": "Setujui ke",
+          "eoaAddress": "EOA",
+          "trustValueLessThan": "≤ {{value}}",
+          "deployTimeLessThan": "< {{value}} hari",
+          "amountPopupTitle": "Jumlah yang disetujui",
+          "flagByRabby": "Bendera oleh Rabby",
+          "contractTrustValueTip": "Nilai kepercayaan mengacu pada total nilai aset yang dikeluarkan oleh kontrak ini. Nilai kepercayaan yang rendah menunjukkan risiko atau tidak aktif selama 180 hari.",
+          "amount": "Jumlah Disetujui:",
+          "exceed": "Melampaui saldo saat ini"
+        },
+        "revokeTokenApprove": {
+          "title": "Cabut Persetujuan Token",
+          "revokeFrom": "Cabut dari",
+          "revokeToken": "Cabut token"
+        },
+        "sendNFT": {
+          "title": "Kirim NFT",
+          "nftNotSupport": "NFT tidak didukung"
+        },
+        "nftApprove": {
+          "title": "Persetujuan NFT",
+          "approveNFT": "Setujui NFT",
+          "nftContractTrustValueTip": "Nilai kepercayaan mengacu pada nilai NFT teratas yang dikeluarkan oleh kontrak ini. Nilai kepercayaan yang rendah menunjukkan risiko atau tidak aktif selama 180 hari."
+        },
+        "revokeNFTApprove": {
+          "title": "Cabut Persetujuan NFT",
+          "revokeNFT": "Cabut NFT"
+        },
+        "nftCollectionApprove": {
+          "title": "Persetujuan Koleksi NFT",
+          "approveCollection": "Setujui koleksi"
+        },
+        "revokeNFTCollectionApprove": {
+          "title": "Cabut Persetujuan Koleksi NFT",
+          "revokeCollection": "Cabut koleksi"
+        },
+        "deployContract": {
+          "title": "Terapkan Kontrak",
+          "descriptionTitle": "Deskripsi",
+          "description": "Anda menerapkan kontrak pintar"
+        },
+        "cancelTx": {
+          "title": "Batalkan Transaksi Tertunda",
+          "txToBeCanceled": "Transaksi yang akan dibatalkan",
+          "gasPriceAlert": "Atur harga gas saat ini lebih dari {{value}} Gwei untuk membatalkan transaksi yang tertunda"
+        },
+        "submitMultisig": {
+          "title": "Kirim Transaksi Multisig",
+          "multisigAddress": "Alamat multisig"
+        },
+        "contractCall": {
+          "title": "Panggilan Kontrak",
+          "operation": "Operasi",
+          "operationABIDesc": "Operasi diuraikan dari ABI",
+          "operationCantDecode": "Operasi tidak dapat diurai",
+          "payNativeToken": "Bayar {{symbol}}",
+          "suspectedReceiver": "Alamat Pengecualian",
+          "receiver": "Alamat Penerima"
+        },
+        "revokePermit2": {
+          "title": "Cabut Persetujuan Permit2"
+        },
+        "batchRevokePermit2": {
+          "title": "Batch Cabut Persetujuan Permit2"
+        },
+        "revokePermit": {
+          "title": "Cabut Persetujuan Token"
+        },
+        "assetOrder": {
+          "title": "Pesanan Aset",
+          "listAsset": "Daftar aset",
+          "receiveAsset": "Terima aset"
+        },
+        "unknownAction": "Jenis Tanda Tangan Tidak Dikenal",
+        "interactContract": "Interaksi kontrak",
+        "markAsTrust": "Ditandai sebagai tepercaya",
+        "markAsBlock": "Ditandai sebagai diblokir",
+        "interacted": "Pernah berinteraksi sebelumnya",
+        "neverInteracted": "Belum pernah berinteraksi sebelumnya",
+        "transacted": "Pernah bertransaksi sebelumnya",
+        "neverTransacted": "Belum pernah bertransaksi sebelumnya",
+        "importedAddress": "Alamat yang diimpor",
+        "fakeTokenAlert": "Ini adalah token penipuan yang ditandai oleh Rabby",
+        "scamTokenAlert": "Ini adalah token yang berpotensi berkualitas rendah dan penipuan berdasarkan deteksi Rabby",
+        "trusted": "Tepercaya",
+        "blocked": "Diblokir",
+        "noMark": "Tidak ada tanda",
+        "markRemoved": "Tanda dihapus",
+        "speedUpTooltip": "Transaksi yang dipercepat ini dan transaksi asli, hanya satu yang akan diselesaikan",
+        "decodedTooltip": "Tanda tangan ini diuraikan oleh Dompet Rabby",
+        "signTransactionOnChain": "Tandatangani Transaksi {{chain}}",
+        "viewRaw": "Lihat Mentah",
+        "chain": "Rantai",
+        "unknownActionType": "Jenis Aksi Tidak Dikenal",
+        "sigCantDecode": "Tanda tangan ini tidak dapat diurai oleh Dompet Rabby",
+        "nftCollection": "Koleksi NFT",
+        "floorPrice": "Harga Dasar",
+        "contractAddress": "Alamat kontrak",
+        "protocolTitle": "Protokol",
+        "deployTimeTitle": "Waktu Diterapkan",
+        "popularity": "Popularitas",
+        "contractPopularity": "No.{{0}} di {{1}}",
+        "addressNote": "Catatan alamat",
+        "myMarkWithContract": "Tanda saya pada kontrak {{chainName}}",
+        "myMark": "Tanda saya",
+        "collectionTitle": "Koleksi",
+        "addressTypeTitle": "Tipe alamat",
+        "firstOnChain": "Pertama di on-chain",
+        "trustValue": "Nilai kepercayaan",
+        "importedDelegatedAddress": "Alamat delegasi yang diimpor",
+        "noDelegatedAddress": "Tidak ada alamat delegasi yang diimpor",
+        "coboSafeNotPermission": "Alamat delegasi ini tidak memiliki izin untuk memulai transaksi ini",
+        "l2GasEstimateTooltip": "Perkiraan gas untuk rantai L2 tidak termasuk biaya gas L1. Biaya aktual akan lebih tinggi dari perkiraan saat ini.",
+        "BroadcastMode": {
+          "instant": {
+            "title": "Instan",
+            "desc": "Transaksi akan segera disiarkan ke jaringan"
+          },
+          "lowGas": {
+            "title": "Hemat Gas",
+            "desc": "Transaksi akan disiarkan saat biaya gas jaringan rendah"
+          },
+          "mev": {
+            "title": "Dilindungi MEV",
+            "desc": "Transaksi akan disiarkan ke node MEV yang ditunjuk"
+          },
+          "title": "Mode Siaran",
+          "tips": {
+            "walletConnect": "Tidak didukung oleh WalletConnect",
+            "notSupportChain": "Tidak didukung di rantai ini",
+            "customRPC": "Tidak didukung saat menggunakan RPC kustom",
+            "notSupported": "Tidak didukung"
+          },
+          "lowGasDeadline": {
+            "label": "Batas Waktu",
+            "1h": "1 jam",
+            "4h": "4 jam",
+            "24h": "24 jam"
+          }
+        },
+        "SafeNonceSelector": {
+          "explain": {
+            "contractCall": "Panggilan Kontrak",
+            "send": "Kirim Token",
+            "unknown": "Transaksi Tidak Dikenal"
+          },
+          "optionGroup": {
+            "recommendTitle": "Nonce yang Direkomendasikan",
+            "replaceTitle": "Ganti transaksi dalam Antrian "
+          },
+          "option": {
+            "new": "Transaksi Baru"
+          },
+          "error": {
+            "pendingList": "Gagal memuat transaksi tertunda, <1/><2>Coba Lagi</2>"
+          }
+        },
+        "coboSafeCreate": {
+          "safeWalletTitle": "Safe{Wallet}",
+          "descriptionTitle": "Deskripsi",
+          "title": "Buat Cobo Safe"
+        },
+        "coboSafeModificationRole": {
+          "title": "Kirim Modifikasi Peran Safe",
+          "safeWalletTitle": "Safe{Wallet}",
+          "descriptionTitle": "Deskripsi"
+        },
+        "coboSafeModificationDelegatedAddress": {
+          "title": "Kirim Modifikasi Alamat Delegasi",
+          "safeWalletTitle": "Safe{Wallet}",
+          "descriptionTitle": "Deskripsi"
+        },
+        "coboSafeModificationTokenApproval": {
+          "title": "Kirim Modifikasi Persetujuan Token",
+          "safeWalletTitle": "Safe{Wallet}",
+          "descriptionTitle": "Deskripsi"
+        },
+        "common": {
+          "description": "Deskripsi",
+          "interactContract": "Interaksi kontrak",
+          "descTipSafe": "Tanda tangan tidak menyebabkan perubahan aset atau memverifikasi kepemilikan alamat",
+          "descTipWarningPrivacy": "Tanda tangan mungkin memverifikasi kepemilikan alamat",
+          "descTipWarningAssets": "Tanda tangan mungkin menyebabkan perubahan aset",
+          "descTipWarningBoth": "Tanda tangan mungkin menyebabkan perubahan aset dan memverifikasi kepemilikan alamat"
+        },
+        "protocol": "Protokol",
+        "yes": "Ya",
+        "no": "Tidak",
+        "hasInteraction": "Pernah berinteraksi sebelumnya",
+        "address": "Alamat",
+        "advancedSettings": "Pengaturan Lanjutan",
+        "amount": "Jumlah",
+        "contract": "Kontrak pintar",
+        "trustValueTitle": "Nilai kepercayaan",
+        "typedDataMessage": "Tandatangani Data Berjenis",
+        "label": "Label",
+        "addressSource": "Sumber Alamat",
+        "maxPriorityFeeDisabledAlert": "Silakan atur Harga Gas terlebih dahulu"
+      },
+      "signFooterBar": {
+        "requestFrom": "Permintaan dari",
+        "processRiskAlert": "Silakan proses peringatan sebelum menandatangani",
+        "ignoreAll": "Abaikan semua",
+        "gridPlusConnected": "GridPlus terhubung",
+        "gridPlusNotConnected": "GridPlus tidak terhubung",
+        "connectButton": "Sambungkan",
+        "connecting": "Menyambungkan...",
+        "ledgerNotConnected": "Ledger tidak terhubung",
+        "keystoneNotConnected": "Keystone tidak terhubung",
+        "keystoneConnected": "Keystone terhubung",
+        "ledgerConnected": "Ledger terhubung",
+        "signAndSubmitButton": "Tandatangani",
+        "gasless": {
+          "unavailable": "Saldo Gas Anda tidak cukup",
+          "notEnough": "Saldo gas tidak cukup",
+          "GetFreeGasToSign": "Dapatkan Gas Gratis",
+          "rabbyPayGas": "Rabby akan membayar gas yang diperlukan – cukup tanda tangani",
+          "customRpcUnavailableTip": "RPC kustom tidak didukung untuk Gas Gratis",
+          "walletConnectUnavailableTip": "Dompet seluler yang terhubung melalui WalletConnect tidak didukung untuk Gas Gratis",
+          "watchUnavailableTip": "Alamat hanya lihat tidak didukung untuk Gas Gratis"
+        },
+        "gasAccount": {
+          "customRPC": "Tidak didukung saat menggunakan RPC kustom",
+          "notEnough": "GasAccount tidak cukup",
+          "useGasAccount": "Gunakan GasAccount",
+          "WalletConnectTips": "WalletConnect tidak didukung oleh GasAccount",
+          "chainNotSupported": "Rantai ini tidak didukung oleh GasAccount",
+          "loginFirst": "Silakan masuk ke GasAccount terlebih dahulu",
+          "login": "Masuk",
+          "gotIt": "Mengerti",
+          "deposit": "Setoran"
+        },
+        "walletConnect": {
+          "connectedButCantSign": "Terhubung tetapi tidak dapat menandatangani.",
+          "switchToCorrectAddress": "Silakan beralih ke alamat yang benar di dompet seluler",
+          "switchChainAlert": "Silakan beralih ke {{chain}} di dompet seluler",
+          "notConnectToMobile": "Tidak terhubung ke {{brand}}",
+          "connected": "Terhubung dan siap untuk menandatangani",
+          "howToSwitch": "Cara beralih",
+          "wrongAddressAlert": "Anda telah beralih ke alamat yang berbeda di dompet seluler. Silakan beralih ke alamat yang benar di dompet seluler",
+          "connectBeforeSign": "{{0}} tidak terhubung ke Rabby, silakan sambungkan sebelum menandatangani",
+          "chainSwitched": "Anda telah beralih ke rantai yang berbeda di dompet seluler. Silakan beralih ke {{0}} di dompet seluler",
+          "latency": "Latensi",
+          "requestSuccessToast": "Permintaan berhasil dikirim",
+          "sendingRequest": "Mengirim permintaan tanda tangan",
+          "signOnYourMobileWallet": "Silakan tanda tangani di dompet seluler Anda.",
+          "requestFailedToSend": "Permintaan tanda tangan gagal dikirim"
+        },
+        "beginSigning": "Mulai proses tanda tangan",
+        "addressTip": {
+          "onekey": "Alamat OneKey",
+          "trezor": "Alamat Trezor",
+          "bitbox": "Alamat BitBox02",
+          "keystone": "Alamat Keystone",
+          "airgap": "Alamat AirGap",
+          "coolwallet": "Alamat CoolWallet",
+          "privateKey": "Alamat Kunci Pribadi",
+          "seedPhrase": "Alamat Frasa Benih",
+          "watchAddress": "Tidak dapat menandatangani dengan alamat hanya lihat",
+          "safe": "Alamat Aman",
+          "coboSafe": "Alamat Cobo Argus",
+          "seedPhraseWithPassphrase": "Alamat Frasa Benih (Passphrase)"
+        },
+        "qrcode": {
+          "signWith": "Tandatangani dengan {{brand}}",
+          "failedToGetExplain": "Gagal mendapatkan penjelasan",
+          "txFailed": "Gagal membuat",
+          "sigReceived": "Tanda tangan diterima",
+          "sigCompleted": "Transaksi dibuat",
+          "getSig": "Dapatkan tanda tangan",
+          "qrcodeDesc": "Pindai dengan {{brand}} Anda untuk menandatangani<br></br>Setelah menandatangani, klik tombol di bawah untuk menerima tanda tangan",
+          "misMatchSignId": "Data transaksi tidak cocok. Silakan periksa detail transaksi.",
+          "unknownQRCode": "Kesalahan: Kami tidak dapat mengidentifikasi kode QR itu",
+          "afterSignDesc": "Setelah menandatangani, tempatkan kode QR di {{brand}} di depan kamera PC Anda"
+        },
+        "keystone": {
+          "signWith": "Beralih ke {{method}} untuk menandatangani",
+          "qrcodeDesc": "Pindai untuk menandatangani. Setelah menandatangani, klik di bawah untuk mendapatkan tanda tangan. Untuk USB, sambungkan kembali dan otorisasi untuk memulai proses tanda tangan lagi.",
+          "misMatchSignId": "Data transaksi tidak cocok. Silakan periksa detail transaksi.",
+          "unsupportedType": "Kesalahan: Jenis transaksi tidak didukung atau tidak dikenal.",
+          "siging": "Mengirim permintaan tanda tangan",
+          "txRejected": "Transaksi ditolak",
+          "shouldRetry": "Terjadi kesalahan. Silakan coba lagi.",
+          "hardwareRejectError": "Permintaan Keystone dibatalkan. Untuk melanjutkan, silakan otorisasi ulang.",
+          "mismatchedWalletError": "Dompet tidak cocok",
+          "verifyPasswordError": "Gagal tanda tangan, silakan coba lagi setelah membuka kunci",
+          "shouldOpenKeystoneHomePageError": "Pastikan Keystone 3 Pro Anda berada di halaman utama"
+        },
+        "ledger": {
+          "resent": "Dikirim ulang",
+          "signError": "Kesalahan tanda tangan Ledger:",
+          "notConnected": "Dompet Anda tidak terhubung. Silakan sambungkan kembali.",
+          "siging": "Mengirim permintaan tanda tangan",
+          "txRejected": "Transaksi ditolak",
+          "unlockAlert": "Silakan colokkan dan buka kunci Ledger Anda, buka Ethereum di dalamnya",
+          "updateFirmwareAlert": "Silakan perbarui firmware dan Aplikasi Ethereum di Ledger Anda",
+          "txRejectedByLedger": "Transaksi ditolak di Ledger Anda",
+          "blindSigTutorial": "Tutorial Tanda Tangan Buta dari Ledger",
+          "submitting": "Ditandatangani. Membuat transaksi",
+          "resubmited": "Dikirim ulang"
+        },
+        "common": {
+          "notSupport": "{{0}} tidak didukung"
+        },
+        "resend": "Coba lagi",
+        "submitTx": "Kirim Transaksi",
+        "testnet": "Jaringan Uji",
+        "mainnet": "Jaringan Utama",
+        "cancelTransaction": "Batalkan Transaksi",
+        "detectedMultipleRequestsFromThisDapp": "Terdeteksi beberapa permintaan dari Dapp ini",
+        "cancelCurrentTransaction": "Batalkan transaksi saat ini",
+        "cancelAll": "Batalkan semua {{count}} permintaan dari Dapp",
+        "blockDappFromSendingRequests": "Blokir Dapp dari mengirim permintaan selama 1 menit",
+        "cancelConnection": "Batalkan koneksi",
+        "cancelCurrentConnection": "Batalkan koneksi saat ini",
+        "imKeyNotConnected": "imKey tidak terhubung",
+        "imKeyConnected": "imKey terhubung"
+      }
+    }
+  },
+  {
+    "signTypedData": {
+      "signTypeDataOnChain": "Tandatangani Data Bertipe {{chain}}",
+      "safeCantSignText": "Ini adalah alamat Safe, dan tidak dapat digunakan untuk menandatangani teks.",
+      "permit": {
+        "title": "Persetujuan Token Permit"
+      },
+      "permit2": {
+        "title": "Persetujuan Token Permit2",
+        "sigExpireTimeTip": "Durasi tanda tangan ini berlaku di on-chain",
+        "sigExpireTime": "Waktu kedaluwarsa tanda tangan",
+        "approvalExpiretime": "Waktu kedaluwarsa persetujuan"
+      },
+      "swapTokenOrder": {
+        "title": "Urutan Token"
+      },
+      "sellNFT": {
+        "title": "Pesanan NFT",
+        "receiveToken": "Terima token",
+        "listNFT": "Daftar NFT",
+        "specificBuyer": "Pembeli tertentu"
+      },
+      "signMultiSig": {
+        "title": "Konfirmasi Transaksi"
+      },
+      "createKey": {
+        "title": "Buat Kunci"
+      },
+      "verifyAddress": {
+        "title": "Verifikasi Alamat"
+      },
+      "buyNFT": {
+        "payToken": "Bayar token",
+        "receiveNFT": "Terima NFT",
+        "expireTime": "Waktu kedaluwarsa",
+        "listOn": "Daftar di"
+      },
+      "contractCall": {
+        "operationDecoded": "Operasi terdekripsi dari pesan"
+      }
+    },
+    "activities": {
+      "title": "Rekam Tanda Tangan",
+      "signedTx": {
+        "label": "Transaksi",
+        "empty": {
+          "title": "Belum ada transaksi yang ditandatangani",
+          "desc": "Semua transaksi yang ditandatangani melalui Rabby akan terdaftar di sini."
+        },
+        "common": {
+          "unlimited": "tidak terbatas",
+          "unknownProtocol": "Protokol tidak dikenal",
+          "unknown": "Tidak dikenal",
+          "speedUp": "Percepat",
+          "cancel": "Batalkan",
+          "pendingDetail": "Detail tertunda"
+        },
+        "tips": {
+          "pendingDetail": "Hanya satu transaksi yang akan diselesaikan, dan hampir selalu yang memiliki harga gas tertinggi",
+          "canNotCancel": "Tidak dapat mempercepat atau membatalkan: Bukan transaksi tertunda pertama",
+          "pendingBroadcast": "Mode hemat gas: menunggu biaya jaringan yang lebih rendah. Maks {{deadline}} jam tunggu.",
+          "pendingBroadcastBtn": "Siarkan sekarang",
+          "pendingBroadcastRetry": "Siaran gagal. Percobaan terakhir: {{pushAt}}",
+          "pendingBroadcastRetryBtn": "Siarkan ulang"
+        },
+        "status": {
+          "canceled": "Dibatalkan",
+          "failed": "Gagal",
+          "submitFailed": "Gagal mengirim",
+          "pending": "Tertunda",
+          "withdrawed": "Pembatalan cepat",
+          "pendingBroadcasted": "Tertunda: disiarkan",
+          "pendingBroadcast": "Tertunda: akan disiarkan",
+          "pendingBroadcastFailed": "Tertunda: Siaran gagal"
+        },
+        "txType": {
+          "initial": "Transaksi awal",
+          "cancel": "Transaksi batal",
+          "speedUp": "Percepat transaksi"
+        },
+        "explain": {
+          "unknown": "Transaksi Tidak Dikenal",
+          "send": "Kirim {{amount}} {{symbol}}",
+          "cancel": "Batalkan Persetujuan {{token}} untuk {{protocol}}",
+          "approve": "Persetujuan {{count}} {{token}} untuk {{protocol}}",
+          "cancelNFTCollectionApproval": "Batalkan Persetujuan Koleksi NFT untuk {{protocol}}",
+          "cancelSingleNFTApproval": "Batalkan Persetujuan NFT Tunggal untuk {{protocol}}",
+          "singleNFTApproval": "Persetujuan NFT Tunggal untuk {{protocol}}",
+          "nftCollectionApproval": "Persetujuan Koleksi NFT untuk {{protocol}}"
+        },
+        "CancelTxPopup": {
+          "title": "Batalkan transaksi",
+          "options": {
+            "quickCancel": {
+              "title": "Pembatalan Cepat",
+              "desc": "Batalkan sebelum disiarkan, tanpa biaya gas",
+              "tips": "Hanya didukung untuk transaksi yang belum disiarkan"
+            },
+            "onChainCancel": {
+              "title": "Pembatalan On-chain",
+              "desc": "Transaksi baru untuk dibatalkan, memerlukan gas"
+            }
+          }
+        },
+        "MempoolList": {
+          "empty": "Tidak ditemukan di node mana pun",
+          "reBroadcastBtn": "Siarkan ulang",
+          "title": "Muncul di {{count}} node RPC"
+        },
+        "message": {
+          "reBroadcastSuccess": "Siaran ulang berhasil",
+          "broadcastSuccess": "Siaran berhasil",
+          "cancelSuccess": "Dibatalkan"
+        },
+        "gas": {
+          "noCost": "Tidak ada biaya Gas"
+        },
+        "SkipNonceAlert": {
+          "alert": "Nonce #{{nonce}} dilewati di rantai {{chainName}}. Ini mungkin menyebabkan transaksi tertunda di depan. <5></5> <6>Kirim tx</6> <7></7> di rantai untuk menyelesaikan",
+          "clearPendingAlert": "Transaksi {{chainName}} ({{nonces}}) telah tertunda lebih dari 3 menit. Anda dapat <5></5> <6>membersihkan transaksi tertunda di rantai ini</6> <7></7> dan memulai yang baru."
+        },
+        "PredictTime": {
+          "time": "Diperkirakan akan dikemas dalam {{time}}",
+          "noTime": "Waktu pengemasan sedang diperkirakan",
+          "failed": "Prediksi waktu pengemasan gagal"
+        }
+      },
+      "signedText": {
+        "label": "Teks",
+        "empty": {
+          "title": "Belum ada teks yang ditandatangani",
+          "desc": "Semua teks yang ditandatangani melalui Rabby akan terdaftar di sini."
+        }
+      }
+    },
+    "receive": {
+      "title": "Terima {{token}} di {{chain}}",
+      "watchModeAlert1": "Ini adalah alamat Mode Lihat.",
+      "watchModeAlert2": "Apakah Anda yakin ingin menggunakannya untuk menerima aset?"
+    },
+    "sendToken": {
+      "addressNotInContract": "Tidak ada dalam daftar alamat. <1></1><2>Tambahkan ke kontak</2>",
+      "AddToContactsModal": {
+        "addedAsContacts": "Ditambahkan sebagai kontak",
+        "editAddr": {
+          "placeholder": "Masukkan Catatan Alamat",
+          "validator__empty": "Silakan masukkan catatan alamat"
+        },
+        "editAddressNote": "Edit catatan alamat",
+        "error": "Gagal menambahkan ke kontak"
+      },
+      "allowTransferModal": {
+        "error": "kata sandi salah",
+        "placeholder": "Masukkan Kata Sandi untuk Mengonfirmasi",
+        "validator__empty": "Silakan masukkan kata sandi",
+        "addWhitelist": "Tambahkan ke daftar putih"
+      },
+      "GasSelector": {
+        "confirm": "Konfirmasi",
+        "level": {
+          "$unknown": "Tidak Dikenal",
+          "custom": "Kustom",
+          "fast": "Instan",
+          "normal": "Cepat",
+          "slow": "Normal"
+        },
+        "popupDesc": "Biaya gas akan dicadangkan dari jumlah transfer berdasarkan harga gas yang Anda atur",
+        "popupTitle": "Atur Harga Gas (Gwei)"
+      },
+      "header": {
+        "title": "Kirim"
+      },
+      "modalConfirmAddToContacts": {
+        "confirmText": "Konfirmasi",
+        "title": "Tambahkan ke kontak"
+      },
+      "modalConfirmAllowTransferTo": {
+        "cancelText": "Batalkan",
+        "confirmText": "Konfirmasi",
+        "title": "Masukkan Kata Sandi untuk Mengonfirmasi"
+      },
+      "sectionBalance": {
+        "title": "Saldo"
+      },
+      "sectionChain": {
+        "title": "Rantai"
+      },
+      "sectionFrom": {
+        "title": "Dari"
+      },
+      "sectionTo": {
+        "addrValidator__empty": "Silakan masukkan alamat",
+        "addrValidator__invalid": "Alamat ini tidak valid",
+        "searchInputPlaceholder": "Cari atau masukkan alamat",
+        "title": "Ke"
+      },
+      "sendButton": "Kirim",
+      "tokenInfoFieldLabel": {
+        "chain": "Rantai",
+        "contract": "Alamat Kontrak"
+      },
+      "tokenInfoPrice": "Harga",
+      "whitelistAlert__disabled": "Daftar putih dinonaktifkan. Anda dapat mentransfer ke alamat mana pun.",
+      "whitelistAlert__notWhitelisted": "Alamat ini tidak ada dalam daftar putih. <1 /> Saya setuju memberikan izin sementara untuk transfer.",
+      "whitelistAlert__temporaryGranted": "Izin sementara diberikan",
+      "whitelistAlert__whitelisted": "Alamat ini ada dalam daftar putih",
+      "balanceWarn": {
+        "gasFeeReservation": "Cadangan biaya gas diperlukan"
+      },
+      "balanceError": {
+        "insufficientBalance": "Saldo tidak cukup"
+      },
+      "max": "MAKS",
+      "sectionMsgDataForEOA": {
+        "placeholder": "Opsional",
+        "title": "Pesan",
+        "currentIsOriginal": "Input saat ini adalah Data Asli. UTF-8 adalah:",
+        "currentIsUTF8": "Input saat ini adalah UTF-8. Data Asli adalah:"
+      },
+      "sectionMsgDataForContract": {
+        "placeholder": "Opsional",
+        "title": "Panggilan kontrak",
+        "parseError": "Gagal mendekode panggilan kontrak",
+        "simulation": "Simulasi panggilan kontrak:",
+        "notHexData": "Hanya mendukung data hex"
+      }
+    },
+    "sendTokenComponents": {
+      "GasReserved": "Dicadangkan <1>0</1> {{ tokenName }} untuk biaya gas",
+      "SwitchReserveGas": "Cadangkan Gas <1 />"
+    },
+    "sendNFT": {
+      "header": {
+        "title": "Kirim"
+      },
+      "sectionChain": {
+        "title": "Rantai"
+      },
+      "sectionFrom": {
+        "title": "Dari"
+      },
+      "sectionTo": {
+        "title": "Ke",
+        "addrValidator__empty": "Silakan masukkan alamat",
+        "addrValidator__invalid": "Alamat ini tidak valid",
+        "searchInputPlaceholder": "Cari atau masukkan alamat"
+      },
+      "nftInfoFieldLabel": {
+        "Collection": "Koleksi",
+        "Contract": "Kontrak",
+        "sendAmount": "Jumlah Kirim"
+      },
+      "sendButton": "Kirim",
+      "whitelistAlert__disabled": "Daftar putih dinonaktifkan. Anda dapat mentransfer ke alamat mana pun.",
+      "whitelistAlert__whitelisted": "Alamat ini ada dalam daftar putih",
+      "whitelistAlert__temporaryGranted": "Izin sementara diberikan",
+      "whitelistAlert__notWhitelisted": "Alamat ini tidak ada dalam daftar putih. <1 /> Saya setuju memberikan izin sementara untuk transfer.",
+      "tipNotOnAddressList": "Tidak ada dalam daftar alamat.",
+      "tipAddToContacts": "Tambahkan ke kontak",
+      "confirmModal": {
+        "title": "Masukkan Kata Sandi untuk Mengonfirmasi"
+      }
+    },
+    "approvals": {
+      "header": {
+        "title": "Persetujuan di {{ address }}"
+      },
+      "tab-switch": {
+        "contract": "Berdasarkan Kontrak",
+        "assets": "Berdasarkan Aset"
+      },
+      "component": {
+        "table": {
+          "bodyEmpty": {
+            "loadingText": "Memuat...",
+            "noDataText": "Tidak ada Persetujuan",
+            "noMatchText": "Tidak Ada Kecocokan"
+          }
+        },
+        "ApprovalContractItem": {
+          "ApprovalCount_one": "Persetujuan",
+          "ApprovalCount_other": "Persetujuan"
+        },
+        "RevokeButton": {
+          "btnText_zero": "Batalkan",
+          "btnText_one": "Batalkan ({{count}})",
+          "btnText_other": "Batalkan ({{count}})",
+          "permit2Batch": {
+            "modalContent": "Persetujuan dari kontrak Permit2 yang sama akan dikemas bersama di bawah tanda tangan yang sama.",
+            "modalTitle_one": "Total <2>{{count}}</2> tanda tangan diperlukan",
+            "modalTitle_other": "Total <2>{{count}}</2> tanda tangan diperlukan"
+          }
+        },
+        "ViewMore": {
+          "text": "Lihat lebih banyak"
+        }
+      },
+      "search": {
+        "placeholder": "Cari {{ type }} berdasarkan nama/alamat"
+      },
+      "tableConfig": {
+        "byContracts": {
+          "columnTitle": {
+            "contract": "Kontrak",
+            "contractTrustValue": "Nilai Kepercayaan Kontrak",
+            "revokeTrends": "Tren Pembatalan 24 jam",
+            "myApprovedAssets": "Aset Saya yang Disetujui",
+            "myApprovalTime": "Waktu Persetujuan Saya"
+          },
+          "columnTip": {
+            "contractTrustValue": "Nilai kepercayaan mengacu pada total nilai aset yang dikeluarkan oleh kontrak ini. Nilai kepercayaan yang rendah menunjukkan risiko atau tidak aktif selama 180 hari.",
+            "contractTrustValueWarning": "Nilai kepercayaan kontrak < $100,000",
+            "contractTrustValueDanger": "Nilai kepercayaan kontrak < $10,000"
+          }
+        },
+        "byAssets": {
+          "columnTitle": {
+            "asset": "Aset",
+            "type": "Tipe",
+            "approvedAmount": "Jumlah yang Disetujui",
+            "approvedSpender": "Pengguna yang Disetujui",
+            "myApprovalTime": "Waktu Persetujuan Saya"
+          },
+          "columnCell": {
+            "approvedAmount": {
+              "tipApprovedAmount": "Jumlah yang Disetujui",
+              "tipMyBalance": "Saldo Saya"
+            }
+          }
+        }
+      },
+      "RevokeApprovalModal": {
+        "subTitleTokenAndNFT": "Token dan NFT yang Disetujui",
+        "subTitleContract": "Disetujui untuk Kontrak Berikut",
+        "selectAll": "Pilih Semua",
+        "unSelectAll": "Batalkan Pilihan Semua",
+        "confirm": "Konfirmasi {{ selectedCount }}",
+        "title": "Persetujuan",
+        "tooltipPermit2": "Persetujuan ini disetujui melalui kontrak Permit2:\n{{ permit2Id }}"
+      },
+      "revokeModal": {
+        "confirmRevokePrivateKey": "Menggunakan frase benih atau alamat kunci pribadi, Anda dapat membatalkan {{count}} persetujuan dengan 1 klik.",
+        "confirmRevokeLedger": "Menggunakan alamat Ledger, Anda dapat membatalkan {{count}} persetujuan dengan 1 klik.",
+        "batchRevoke": "Batch Batalkan",
+        "revokeOneByOne": "Batalkan Satu per Satu",
+        "revoked": "Dibatalkan:",
+        "totalRevoked": "Total:",
+        "approvalCount_zero": "{{count}} persetujuan",
+        "approvalCount_one": "{{count}} persetujuan",
+        "approvalCount_other": "{{count}} persetujuan",
+        "signAndStartRevoke": "Tandatangani dan Mulai Pembatalan",
+        "pause": "Jeda",
+        "resume": "Lanjutkan",
+        "done": "Selesai",
+        "confirmTitle": "Batch Batalkan dengan Satu Klik",
+        "cancelTitle": "Batalkan Pembatalan yang Tersisa",
+        "confirm": "Konfirmasi",
+        "cancelBody": "Jika Anda menutup halaman ini, pembatalan yang tersisa tidak akan dieksekusi.",
+        "gasNotEnough": "Gas tidak cukup untuk dikirim",
+        "gasTooHigh": "Biaya gas tinggi",
+        "submitTxFailed": "Gagal Mengirim",
+        "defaultFailed": "Transaksi gagal",
+        "stillRevoke": "Masih Membatalkan",
+        "paused": "Dijeda",
+        "waitInQueue": "Menunggu dalam antrean",
+        "useGasAccount": "Saldo gas Anda rendah. GasAccount Anda akan menanggung biaya gas.",
+        "revokeWithLedger": "Mulai Pembatalan dengan Ledger",
+        "connectLedger": "Sambungkan Ledger",
+        "ledgerSended": "Silakan tanda tangani permintaan di Ledger ({{current}}/{{total}})",
+        "ledgerSending": "Mengirim permintaan tanda tangan ({{current}}/{{total}})",
+        "ledgerAlert": "Silakan buka Aplikasi Ethereum di perangkat Ledger Anda",
+        "ledgerSigned": "Ditandatangani. Membuat transaksi ({{current}}/{{total}})",
+        "simulationFailed": "Simulasi Gagal",
+        "gasTopUp": {
+          "title": "Isi Ulang Gas Instan",
+          "description": "Isi ulang gas dengan mengirimkan token yang tersedia di rantai lain. Transfer instan segera setelah pembayaran Anda dikonfirmasi, tanpa menunggu hingga tidak dapat dibatalkan.",
+          "topUpChain": "Rantai Isi Ulang",
+          "Amount": "Jumlah",
+          "Continue": "Lanjutkan",
+          "InsufficientBalance": "Saldo tidak cukup di alamat kontrak Rabby untuk rantai saat ini. Silakan coba lagi nanti.",
+          "hightGasFees": "Jumlah isi ulang ini terlalu kecil karena jaringan target memerlukan biaya gas yang tinggi.",
+          "No_Tokens": "Tidak Ada Token",
+          "InsufficientBalanceTips": "Saldo tidak cukup",
+          "payment": "Pembayaran Isi Ulang Gas",
+          "Loading_Tokens": "Memuat Token...",
+          "Including-service-fee": "Termasuk biaya layanan {{fee}}",
+          "service-fee-tip": "Dengan menyediakan layanan untuk Isi Ulang Gas, Rabby harus menanggung kerugian fluktuasi token dan biaya gas untuk isi ulang. Oleh karena itu, biaya layanan sebesar 20% dikenakan.",
+          "Confirm": "Konfirmasi",
+          "Select-from-supported-tokens": "Pilih dari token yang didukung",
+          "Value": "Nilai",
+          "Payment-Token": "Token Pembayaran",
+          "Select-payment-token": "Pilih token pembayaran",
+          "Token": "Token",
+          "Balance": "Saldo"
+        },
+        "swap": {
+          "title": "Tukar",
+          "pendingTip": "Transaksi diajukan. Jika transaksi tertunda terlalu lama, Anda dapat mencoba menghapus pending di pengaturan.",
+          "Pending": "Tertunda",
+          "completedTip": "Transaksi di rantai, mendekode data untuk menghasilkan catatan",
+          "Completed": "Selesai",
+          "slippage_tolerance": "Toleransi slippage:",
+          "actual-slippage": "Slippage Aktual:",
+          "gas-x-price": "Harga gas: {{price}} Gwei.",
+          "no-transaction-records": "Tidak ada catatan transaksi",
+          "swap-history": "Riwayat Tukar",
+          "InSufficientTip": "Saldo tidak cukup untuk simulasi transaksi dan estimasi gas. Kutipan agregator asli ditampilkan",
+          "testnet-is-not-supported": "Jaringan kustom tidak didukung",
+          "not-supported": "Tidak didukung",
+          "slippage-adjusted-refresh-quote": "Slippage disesuaikan. Segarkan kutipan.",
+          "price-expired-refresh-quote": "Harga kedaluwarsa. Segarkan kutipan.",
+          "approve-x-symbol": "Setujui {{symbol}}",
+          "approve-and-swap": "Setujui dan Tukar melalui {{name}}",
+          "approve-swap": "Setujui dan Tukar",
+          "swap-via-x": "Tukar melalui {{name}}",
+          "get-quotes": "Dapatkan kutipan",
+          "chain": "Rantai",
+          "swap-from": "Tukar dari",
+          "from": "Dari",
+          "to": "Ke",
+          "search-by-name-address": "Cari berdasarkan Nama / Alamat",
+          "amount-in": "Jumlah dalam {{symbol}}",
+          "unlimited-allowance": "Batas tidak terbatas",
+          "insufficient-balance": "Saldo tidak cukup",
+          "no-fee-for-wrap": "Tidak ada biaya Rabby untuk Wrap",
+          "hidden-no-quote-rates_one": "{{count}} tarif tidak tersedia",
+          "hidden-no-quote-rates_other": "{{count}} tarif tidak tersedia",
+          "Gas-fee-too-high": "Biaya gas terlalu tinggi",
+          "rabby-fee": "Biaya Rabby",
+          "preferMEV": "Sukai MEV Guarded",
+          "preferMEVTip": "Aktifkan fitur \"MEV Guarded\" untuk pertukaran Ethereum untuk mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat wallet connect",
+          "minimum-received": "Minimum diterima",
+          "there-is-no-fee-and-slippage-for-this-trade": "Tidak ada slippage untuk perdagangan ini",
+          "no-slippage-for-wrap": "Tidak ada slippage untuk Wrap",
+          "approve-tips": "1. Setujui → 2. Tukar",
+          "best": "Terbaik",
+          "unable-to-fetch-the-price": "Tidak dapat mengambil harga",
+          "fail-to-simulate-transaction": "Gagal mensimulasikan transaksi",
+          "security-verification-failed": "Verifikasi keamanan gagal",
+          "need-to-approve-token-before-swap": "Perlu menyetujui token sebelum tukar",
+          "this-exchange-is-not-enabled-to-trade-by-you": "Pertukaran ini tidak diizinkan untuk Anda.",
+          "enable-it": "Aktifkan",
+          "this-token-pair-is-not-supported": "Pasangan token tidak didukung",
+          "QuoteLessWarning": "Jumlah yang diterima diperkirakan dari simulasi transaksi Rabby. Tawaran yang diberikan oleh dex adalah {{receive}}. Anda akan menerima {{diff}} kurang dari tawaran yang diharapkan.",
+          "by-transaction-simulation-the-quote-is-valid": "Dengan simulasi transaksi, kutipan valid",
+          "wrap-contract": "Kontrak Wrap",
+          "directlySwap": "Membungkus token {{symbol}} langsung dengan kontrak pintar",
+          "rates-from-cex": "Tarif dari CEX",
+          "edit": "Sunting",
+          "tradingSettingTips": "{{viewCount}} pertukaran menawarkan kutipan, dan {{tradeCount}} memungkinkan perdagangan",
+          "the-following-swap-rates-are-found": "Ditemukan tarif berikut",
+          "sort-with-gas": "Urutkan dengan gas",
+          "est-payment": "Estimasi Pembayaran:",
+          "est-receiving": "Estimasi Penerimaan:",
+          "est-difference": "Estimasi Perbedaan:",
+          "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Tawaran yang dipilih sangat berbeda dari tarif saat ini, dapat menyebabkan kerugian besar",
+          "rate": "Tarif",
+          "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Slippage rendah dapat menyebabkan transaksi gagal karena volatilitas tinggi",
+          "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "Transaksi mungkin akan di depan karena toleransi slippage tinggi",
+          "recommend-slippage": "Untuk mencegah front-running, kami merekomendasikan slippage <2>{{ slippage }}</2>%",
+          "slippage-tolerance": "Toleransi slippage",
+          "select-token": "Pilih Token",
+          "enable-exchanges": "Aktifkan Pertukaran",
+          "exchanges": "Pertukaran",
+          "view-quotes": "Lihat kutipan",
+          "trade": "Perdagangan",
+          "dex": "Dex",
+          "cex": "Cex",
+          "enable-trading": "Aktifkan Perdagangan",
+          "i-understand-and-accept-it": "Saya mengerti dan menerimanya",
+          "confirm": "Konfirmasi",
+          "tradingSettingTip1": "1. Setelah diaktifkan, Anda akan berinteraksi dengan kontrak dari pertukaran secara langsung",
+          "tradingSettingTip2": "2. Rabby tidak bertanggung jawab atas risiko yang timbul dari kontrak pertukaran",
+          "gas-fee": "Biaya Gas: {{gasUsed}}",
+          "estimate": "Estimasi:",
+          "actual": "Aktual:",
+          "max": "MAKS",
+          "two-step-approve": "Tandatangani 2 transaksi untuk mengubah batas",
+          "two-step-approve-details": "Token USDT memerlukan 2 transaksi untuk mengubah batas. Pertama Anda perlu mengatur batas menjadi nol, dan hanya kemudian menetapkan nilai batas baru.",
+          "process-with-two-step-approve": "Lanjutkan dengan persetujuan dua langkah",
+          "fetch-best-quote": "Mengambil kutipan terbaik",
+          "usd-after-fees": "≈ {{usd}} ",
+          "no-fees-for-wrap": "Tidak ada biaya Rabby untuk Wrap",
+          "No-available-quote": "Tidak ada kutipan yang tersedia",
+          "price-impact": "Dampak Harga",
+          "loss-tips": "Anda kehilangan {{usd}}. Cobalah jumlah yang lebih kecil di pasar kecil.",
+          "Auto": "Otomatis",
+          "no-quote-found": "Tidak ada kutipan ditemukan",
+          "source": "Sumber",
+          "rabbyFee": {
+            "title": "Biaya Rabby",
+            "swapDesc": "Dompet Rabby akan selalu menemukan tarif terbaik yang mungkin dari agregator teratas dan memverifikasi keandalan tawaran mereka. Rabby mengenakan biaya 0,25% (0% untuk membungkus), yang secara otomatis termasuk dalam kutipan.",
+            "bridgeDesc": "Dompet Rabby akan selalu menemukan tarif terbaik yang mungkin dari agregator teratas dan memverifikasi keandalan tawaran mereka. Rabby mengenakan biaya 0,25%, yang secara otomatis termasuk dalam kutipan.",
+            "wallet": "Dompet",
+            "rate": "Tarif biaya",
+            "button": "Mengerti"
+          },
+          "lowCreditModal": {
+            "title": "Token ini memiliki nilai kredit rendah",
+            "desc": "Nilai kredit rendah sering kali menandakan risiko tinggi, seperti token honeypot atau likuiditas yang sangat rendah."
+          },
+          "bridge": {
+            "From": "Dari",
+            "To": "Ke",
+            "Balance": "Saldo: ",
+            "Select": "Pilih",
+            "select-chain": "Pilih Rantai",
+            "no-quote-found": "Tidak ada kutipan ditemukan. Silakan coba pasangan token lainnya.",
+            "no-quote": "Tidak Ada Kutipan",
+            "title": "Jembatan",
+            "history": "Riwayat Jembatan",
+            "the-following-bridge-route-are-found": "Ditemukan rute berikut",
+            "no-transaction-records": "Tidak ada catatan transaksi",
+            "pendingTip": "Transaksi diajukan. Jika transaksi tertunda terlalu lama, Anda dapat mencoba menghapus pending di pengaturan.",
+            "Pending": "Tertunda",
+            "completedTip": "Transaksi di rantai, mendekode data untuk menghasilkan catatan",
+            "Completed": "Selesai",
+            "estimate": "Estimasi:",
+            "actual": "Aktual:",
+            "gas-fee": "Biaya Gas: {{gasUsed}}",
+            "gas-x-price": "Harga gas: {{price}} Gwei.",
+            "detail-tx": "Detail",
+            "unlimited-allowance": "Batas tidak terbatas",
+            "insufficient-balance": "Saldo tidak cukup",
+            "bridgeTo": "Jembatani Ke",
+            "BridgeTokenPair": "Pasangan Token Jembatan",
+            "tokenPairPlaceholder": "Pilih Pasangan Token",
+            "Amount": "Jumlah",
+            "getRoutes": "Dapatkan rute",
+            "slippage-adjusted-refresh-quote": "Slippage disesuaikan. Segarkan rute.",
+            "price-expired-refresh-route": "Harga kedaluwarsa. Segarkan rute.",
+            "approve-x-symbol": "Setujui {{symbol}}",
+            "approve-and-bridge": "Setujui dan Jembatan",
+            "need-to-approve-token-before-bridge": "Perlu menyetujui token sebelum jembatan",
+            "via-bridge": "via {{bridge}}",
+            "duration": "{{duration}} menit",
+            "estimated-value": "≈ {{value}} ",
+            "best": "Terbaik",
+            "bridge-cost": "Biaya Jembatan",
+            "rabby-fee": "Biaya Rabby",
+            "bridge-via-x": "Jembatan di {{name}}",
+            "no-route-found": "Tidak ada rute ditemukan",
+            "aggregator-not-enabled": "Agregator ini tidak diizinkan untuk Anda.",
+            "enable-it": "Aktifkan",
+            "recommendFromToken": "Jembatani dari <1></1> untuk kutipan yang tersedia",
+            "est-payment": "Estimasi Pembayaran:",
+            "est-receiving": "Estimasi Penerimaan:",
+            "est-difference": "Estimasi Perbedaan:",
+            "loss-tips": "Anda kehilangan {{usd}}. Cobalah jumlah yang berbeda.",
+            "price-impact": "Dampak Harga",
+            "max-tips": "Nilai ini dihitung dengan mengurangkan biaya gas untuk jembatan.",
+            "showMore": {
+              "title": "Tampilkan Lebih Banyak",
+              "source": "Sumber Jembatan"
+            },
+            "settingModal": {
+              "title": "Aktifkan Agregator Jembatan untuk perdagangan",
+              "confirm": "Konfirmasi",
+              "SupportedBridge": "Jembatan yang Didukung:",
+              "confirmModal": {
+                "title": "Aktifkan Perdagangan dengan Agregator ini",
+                "tip1": "1. Setelah diaktifkan, Anda akan berinteraksi langsung dengan kontrak dari agregator ini.",
+                "tip2": "2. Rabby tidak bertanggung jawab atas risiko yang timbul dari kontrak agregator ini",
+                "i-understand-and-accept-it": "Saya mengerti dan menerimanya"
+              }
+            },
+            "tokenPairDrawer": {
+              "title": "Pilih dari pasangan token yang didukung",
+              "tokenPair": "Pasangan Token",
+              "balance": "Nilai Saldo",
+              "noData": "Tidak Ada Pasangan Token yang Didukung"
+            }
+          },
+          "manageAddress": {
+            "no-address": "Tidak ada alamat",
+            "no-match": "Tidak ada kecocokan",
+            "current-address": "Alamat Saat Ini",
+            "address-management": "Manajemen Alamat",
+            "update-balance-data": "Perbarui data saldo",
+            "search": "Cari",
+            "manage-address": "Kelola Alamat",
+            "deleted": "Dihapus",
+            "whitelisted-address": "Alamat yang Diizinkan",
+            "addressTypeTip": "Diimpor oleh {{type}}",
+            "delete-desc": "Sebelum Anda menghapus, ingatlah hal berikut untuk memahami cara melindungi aset Anda.",
+            "delete-checklist-1": "Saya mengerti bahwa jika saya menghapus alamat ini, Kunci Pribadi & Frasa Benih yang sesuai dengan alamat ini akan dihapus dan Rabby TIDAK akan dapat memulihkannya.",
+            "delete-checklist-2": "Saya mengonfirmasi bahwa saya telah mencadangkan kunci pribadi atau Frasa Benih dan saya siap untuk menghapusnya sekarang.",
+            "confirm": "Konfirmasi",
+            "cancel": "Batal",
+            "delete-private-key-modal-title_one": "Hapus alamat kunci pribadi {{count}}",
+            "delete-private-key-modal-title_other": "Hapus alamat kunci pribadi {{count}}",
+            "delete-seed-phrase-title_one": "Hapus frasa benih dan alamat {{count}}-nya",
+            "delete-seed-phrase-title_other": "Hapus frasa benih dan alamat {{count}}-nya",
+            "delete-title_one": "Hapus alamat {{count}} {{brand}}",
+            "delete-title_other": "Hapus alamat {{count}} {{brand}}",
+            "delete-empty-seed-phrase": "Hapus frasa benih dan alamat 0-nya",
+            "hd-path": "Jalur HD:",
+            "no-address-under-seed-phrase": "Anda belum mengimpor alamat apapun di bawah frasa benih ini.",
+            "add-address": "Tambah alamat",
+            "delete-seed-phrase": "Hapus frasa benih",
+            "confirm-delete": "Konfirmasi Hapus",
+            "private-key": "Kunci Pribadi",
+            "seed-phrase": "Frasa Benih",
+            "watch-address": "Alamat Tonton",
+            "backup-seed-phrase": "Cadangkan Frasa Benih",
+            "delete-all-addresses-but-keep-the-seed-phrase": "Hapus semua alamat, tetapi simpan frasa benih",
+            "delete-all-addresses-and-the-seed-phrase": "Hapus semua alamat dan frasa benih",
+            "seed-phrase-delete-title": "Hapus frasa benih?",
+            "sort-by-balance": "Urutkan berdasarkan saldo",
+            "sort-by-address-type": "Urutkan berdasarkan jenis alamat",
+            "sort-by-address-note": "Urutkan berdasarkan catatan alamat",
+            "sort-address": "Urutkan Alamat",
+            "enterThePassphrase": "Masukkan Passphrase",
+            "enterPassphraseTitle": "Masukkan Passphrase untuk Menandatangani",
+            "passphraseError": "Passphrase tidak valid",
+            "addNewAddress": "Tambah Alamat Baru"
+          },
+          "dashboard": {
+            "home": {
+              "offline": "Jaringan terputus dan tidak ada data yang diperoleh",
+              "panel": {
+                "swap": "Tukar",
+                "send": "Kirim",
+                "receive": "Terima",
+                "gasTopUp": "Isi Ulang Gas",
+                "queue": "Antrian",
+                "transactions": "Transaksi",
+                "approvals": "Persetujuan",
+                "feedback": "Umpan Balik",
+                "rabbyPoints": "Poin Rabby",
+                "more": "Lebih",
+                "manageAddress": "Kelola Alamat",
+                "nft": "NFT",
+                "ecology": "Ekosistem",
+                "bridge": "Jembatan"
+              },
+              "comingSoon": "Segera Hadir",
+              "soon": "Segera",
+              "refreshTheWebPageToTakeEffect": "Segarkan halaman web untuk mengambil efek",
+              "rabbyIsInUseAndMetamaskIsBanned": "Rabby sedang digunakan dan Metamask diblokir",
+              "flip": "Balik",
+              "metamaskIsInUseAndRabbyIsBanned": "MetaMask sedang digunakan dan Rabby diblokir",
+              "transactionNeedsToSign": "transaksi perlu ditandatangani",
+              "transactionsNeedToSign": "transaksi perlu ditandatangani",
+              "view": "Lihat",
+              "viewFirstOne": "Lihat yang pertama",
+              "rejectAll": "Tolak Semua",
+              "pendingCount": "1 Tertunda",
+              "pendingCountPlural": "{{countStr}} Tertunda",
+              "queue": {
+                "title": "Antrian",
+                "count": "{{count}} dalam"
+              },
+              "whatsNew": "Apa yang baru",
+              "importType": "Diimpor oleh {{type}}",
+              "missingDataTooltip": "Saldo mungkin tidak diperbarui karena masalah jaringan saat ini dengan {{text}}.",
+              "chain": " rantai, ",
+              "chainEnd": " rantai"
+            },
+            "recentConnection": {
+              "disconnected": "Terputus",
+              "rpcUnavailable": "RPC kustom tidak tersedia",
+              "metamaskTooltip": "Anda lebih suka menggunakan MetaMask dengan dapp ini. Perbarui pengaturan ini kapan saja di Pengaturan > Dapps yang Dipilih MetaMask",
+              "connected": "Terhubung",
+              "notConnected": "Tidak terhubung",
+              "connectedDapp": "Rabby tidak terhubung ke Dapp saat ini. Untuk terhubung, temukan dan klik tombol sambungkan di halaman web Dapp.",
+              "noDappFound": "Tidak ada Dapp ditemukan",
+              "disconnectAll": "Putuskan Semua",
+              "disconnectRecentlyUsed": {
+                "title_one": "Putuskan <strong>{{count}}</strong> Dapp yang terhubung",
+                "title_other": "Putuskan <strong>{{count}}</strong> Dapps yang terhubung",
+                "description": "DApps yang dipin akan tetap terhubung",
+                "title": "Putuskan <strong>{{count}}</strong> DApps yang baru digunakan"
+              },
+              "title": "Dapps Terhubung",
+              "pinned": "Dipin",
+              "noPinnedDapps": "Tidak ada dapps yang dipin",
+              "dragToSort": "Seret untuk mengurutkan",
+              "recentlyConnected": "Baru saja terhubung",
+              "noRecentlyConnectedDapps": "Tidak ada Dapps yang baru terhubung",
+              "noConnectedDapps": "Tidak ada Dapps yang terhubung",
+              "dapps": "Dapps"
+            },
+            "feedback": {
+              "directMessage": {
+                "content": "Pesan Langsung",
+                "description": "Obrolan dengan Rabby Wallet Resmi di DeBank"
+              },
+              "proposal": {
+                "content": "Usulan",
+                "description": "Kirim usulan untuk Rabby Wallet di DeBank"
+              },
+              "title": "Umpan Balik"
+            },
+            "nft": {
+              "empty": "Tidak ada NFT ditemukan di Koleksi yang didukung",
+              "collectionList": {
+                "collections": {
+                  "label": "Koleksi"
+                },
+                "all_nfts": {
+                  "label": "Semua NFT"
+                }
+              },
+              "listEmpty": "Anda belum mendapatkan NFT apapun",
+              "modal": {
+                "collection": "Koleksi",
+                "chain": "Rantai",
+                "lastPrice": "Harga Terakhir",
+                "purchaseDate": "Tanggal Pembelian",
+                "sendTooltip": "Hanya NFT ERC 721 dan ERC 1155 yang didukung untuk saat ini",
+                "send": "Kirim"
+              }
+            },
+            "rabbyBadge": {
+              "imageLabel": "lencana rabby",
+              "title": "Klaim Lencana Rabby untuk",
+              "freeGasTitle": "Klaim Lencana Gas Gratis untuk",
+              "enterClaimCode": "Masukkan kode klaim",
+              "swapTip": "Anda perlu menyelesaikan tukar dengan dex yang terkenal dalam Rabby Wallet terlebih dahulu.",
+              "freeGasTip": "Silakan tanda tangani transaksi menggunakan Gas Gratis. Tombol 'Gas Gratis' akan muncul secara otomatis ketika gas Anda tidak cukup.",
+              "learnMore": "Pelajari Lebih Lanjut",
+              "goToSwap": "Pergi ke Tukar",
+              "claim": "Klaim",
+              "viewYourClaimCode": "Lihat kode klaim Anda di DeBank",
+              "noCode": "Anda belum mengaktifkan kode klaim untuk alamat ini",
+              "freeGasNoCode": "Silakan klik tombol di bawah untuk mengunjungi DeBank dan mendapatkan kode klaim menggunakan alamat Anda saat ini terlebih dahulu.",
+              "learnMoreOnDebank": "Pelajari lebih lanjut di DeBank",
+              "rabbyValuedUserNo": "Pengguna Berharga Rabby No.{{num}}",
+              "rabbyFreeGasUserNo": "Pengguna Gas Gratis Rabby No.{{num}}",
+              "claimSuccess": "Klaim Sukses",
+              "viewOnDebank": "Lihat di DeBank"
+            },
+            "contacts": {
+              "noDataLabel": "tidak ada data",
+              "noData": "Tidak ada data",
+              "oldContactList": "Daftar Kontak Lama",
+              "oldContactListDescription": "Karena penggabungan kontak dan alamat model tonton, kontak lama akan dicadangkan untuk Anda di sini dan setelah beberapa waktu kami akan menghapus daftar tersebut. Harap tambahkan tepat waktu jika Anda terus menggunakan."
+            },
+            "security": {
+              "tokenApproval": "Persetujuan Token",
+              "nftApproval": "Persetujuan NFT",
+              "comingSoon": "Fitur lebih banyak segera hadir",
+              "title": "Keamanan"
+            },
+            "settings": {
+              "lock": {
+                "never": "Tidak Pernah"
+              },
+              "7Days": "7 hari",
+              "1Day": "1 hari",
+              "4Hours": "4 jam",
+              "1Hour": "1 jam",
+              "10Minutes": "10 menit",
+              "backendServiceUrl": "URL Layanan Backend",
+              "inputOpenapiHost": "Silakan masukkan host openapi",
+              "pleaseCheckYourHost": "Silakan periksa host Anda",
+              "host": "Host",
+              "reset": "Kembalikan pengaturan awal",
+              "save": "Simpan",
+              "pendingTransactionCleared": "Transaksi yang tertunda dibersihkan",
+              "clearPending": "Bersihkan Pending",
+              "clearPendingTip1": "Ini akan membersihkan semua transaksi yang tertunda. Ini dapat membantu Anda menyelesaikan masalah bahwa dalam beberapa kasus status transaksi di Rabby tidak cocok dengan status di blockchain.",
+              "clearPendingTip2": "Ini tidak akan mengubah saldo di akun Anda atau meminta Anda untuk memasukkan kembali frasa benih Anda. Semua informasi aset dan akun Anda akan tetap aman.",
+              "autoLockTime": "Waktu kunci otomatis",
+              "claimRabbyBadge": "Klaim Lencana Rabby!",
+              "cancel": "Batal",
+              "enableWhitelist": "Aktifkan Daftar Putih",
+              "disableWhitelist": "Nonaktifkan Daftar Putih",
+              "enableWhitelistTip": "Setelah diaktifkan, Anda hanya dapat mengirim aset ke alamat dalam daftar putih menggunakan Rabby.",
+              "disableWhitelistTip": "Anda dapat mengirim aset ke alamat mana pun setelah dinonaktifkan",
+              "warning": "Peringatan",
+              "clearWatchAddressContent": "Apakah Anda yakin untuk menghapus semua alamat Mode Tonton?",
+              "updateVersion": {
+                "content": "Pembaruan baru untuk Rabby Wallet tersedia. Klik untuk memeriksa cara memperbarui secara manual.",
+                "okText": "Lihat Tutorial",
+                "successTip": "Anda menggunakan versi terbaru",
+                "title": "Pembaruan Tersedia"
+              },
+              "features": {
+                "label": "Fitur",
+                "lockWallet": "Kunci Dompet",
+                "signatureRecord": "Rekaman Tanda Tangan",
+                "manageAddress": "Kelola Alamat",
+                "connectedDapp": "Dapps Terhubung",
+                "searchDapps": "Cari Dapps",
+                "gasTopUp": "Isi Ulang Gas",
+                "rabbyPoints": "Poin Rabby"
+              },
+              "settings": {
+                "label": "Pengaturan",
+                "enableWhitelistForSendingAssets": "Aktifkan Daftar Putih Untuk Mengirim Aset",
+                "customRpc": "Ubah URL RPC",
+                "metamaskPreferredDapps": "Dapps yang Dipilih MetaMask",
+                "currentLanguage": "Bahasa Saat Ini",
+                "enableTestnets": "Aktifkan Testnets",
+                "toggleThemeMode": "Mode Tema",
+                "themeMode": "Mode Tema",
+                "customTestnet": "Tambahkan Jaringan Kustom"
+              },
+              "aboutUs": "Tentang kami",
+              "currentVersion": "Versi Saat Ini",
+              "updateAvailable": "Pembaruan Tersedia",
+              "supportedChains": "Rantai yang Terintegrasi",
+              "followUs": "Ikuti Kami",
+              "testnetBackendServiceUrl": "URL Layanan Backend Testnet",
+              "clearWatchMode": "Bersihkan Mode Tonton",
+              "requestDeBankTestnetGasToken": "Minta Token Gas Testnet DeBank"
+            },
+            "tokenDetail": {
+              "blockedTip": "Token yang diblokir tidak akan ditampilkan dalam daftar token",
+              "blocked": "Diblokir",
+              "selectedCustom": "Token tidak terdaftar oleh Rabby. Anda telah menambahkannya ke daftar token secara manual.",
+              "notSelectedCustom": "Token tidak terdaftar oleh Rabby. Ini akan ditambahkan ke daftar token jika Anda menghidupkannya.",
+              "customized": "Disesuaikan",
+              "scamTx": "Transaksi penipuan",
+              "txFailed": "Gagal",
+              "notSupported": "Token di rantai ini tidak didukung",
+              "swap": "Tukar",
+              "send": "Kirim",
+              "receive": "Terima",
+              "noTransactions": "Tidak Ada Transaksi",
+              "customizedButton": "token kustom",
+              "customizedButtons": "token kustom",
+              "blockedButton": "token diblokir",
+              "blockedButtons": "token diblokir"
+            },
+            "assets": {
+              "usdValue": "NILAI USD",
+              "amount": "JUMLAH",
+              "portfolio": {
+                "nftTips": "Dihitung berdasarkan harga lantai yang dikenali oleh protokol ini.",
+                "fractionTips": "Dihitung berdasarkan harga token ERC20 yang terhubung."
+              },
+              "tokenButton": {
+                "subTitle": "Token di daftar ini tidak akan ditambahkan ke total saldo"
+              },
+              "table": {
+                "assetAmount": "Aset / Jumlah",
+                "price": "Harga",
+                "useValue": "Nilai USD",
+                "healthRate": "Tingkat kesehatan",
+                "debtRatio": "Rasio Utang",
+                "unlockAt": "Buka kunci di",
+                "lentAgainst": "DIPINJAM MELAWAN",
+                "type": "Tipe",
+                "strikePrice": "Harga strike",
+                "exerciseEnd": "Akhir latihan",
+                "tradePair": "Pasangan perdagangan",
+                "side": "Sisi",
+                "leverage": "Leverage",
+                "PL": "P&L",
+                "unsupportedPoolType": "Tipe pool tidak didukung",
+                "claimable": "Dapat diklaim",
+                "endAt": "Akhir di",
+                "dailyUnlock": "Buka kunci harian",
+                "pool": "POOL",
+                "token": "Token",
+                "balanceValue": "Saldo / Nilai",
+                "percent": "Persen",
+                "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
+                "summaryDescription": "Semua aset dalam protokol (misalnya token LP) diselesaikan ke aset dasar untuk perhitungan statistik",
+                "noMatch": "Tidak Ada Kecocokan",
+                "lowValueDescription": "Aset nilai rendah akan ditampilkan di sini",
+                "lowValueAssets_0": "{{count}} token nilai rendah",
+                "lowValueAssets_one": "{{count}} token nilai rendah",
+                "lowValueAssets_other": "{{count}} token nilai rendah"
+              },
+              "noAssets": "Tidak ada aset",
+              "blockLinkText": "Cari alamat untuk memblokir token",
+              "blockDescription": "Token yang diblokir oleh Anda akan ditampilkan di sini",
+              "unfoldChain": "Buka 1 rantai",
+              "unfoldChainPlural": "Buka {{moreLen}} rantai",
+              "customButtonText": "Tambahkan token kustom",
+              "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
+              "comingSoon": "Segera Hadir...",
+              "searchPlaceholder": "Token",
+              "AddMainnetToken": {
+                "title": "Tambahkan Token Kustom",
+                "selectChain": "Pilih rantai",
+                "searching": "Mencari Token",
+                "tokenAddress": "Alamat Token",
+                "tokenAddressPlaceholder": "Alamat Token",
+                "notFound": "Token tidak ditemukan",
+                "isBuiltInToken": "Token sudah didukung"
+              },
+              "AddTestnetToken": {
+                "title": "Tambahkan Token Jaringan Kustom",
+                "selectChain": "Pilih rantai",
+                "searching": "Mencari Token",
+                "tokenAddress": "Alamat Token",
+                "tokenAddressPlaceholder": "Alamat Token",
+                "notFound": "Token tidak ditemukan"
+              },
+              "TestnetAssetListContainer": {
+                "add": "Token",
+                "addTestnet": "Jaringan"
+              },
+              "noTestnetAssets": "Tidak Ada Aset Jaringan Kustom",
+              "addTokenEntryText": "Token"
+            },
+            "hd": {
+              "howToConnectLedger": "Cara Menghubungkan Ledger",
+              "howToConnectKeystone": "Cara Menghubungkan Keystone",
+              "userRejectedTheRequest": "Pengguna menolak permintaan.",
+              "ledger": {
+                "doc1": "Colokkan satu Ledger",
+                "doc2": "Masukkan PIN untuk membuka kunci",
+                "doc3": "Buka Aplikasi Ethereum",
+                "reconnect": "Jika tidak berhasil, coba <1>hubungkan kembali dari awal.</1>",
+                "connected": "Ledger terhubung"
+              },
+              "keystone": {
+                "title": "Pastikan Keystone 3 Pro Anda ada di beranda",
+                "doc1": "Colokkan satu Keystone",
+                "doc2": "Masukkan kata sandi untuk membuka kunci",
+                "doc3": "Setujui koneksi ke komputer",
+                "reconnect": "Jika tidak berhasil, silakan coba <1>hubungkan kembali dari awal.</1>"
+              },
+              "howToSwitch": "Cara beralih",
+              "imkey": {
+                "doc1": "Colokkan satu imKey",
+                "doc2": "Masukkan PIN untuk membuka kunci"
+              },
+              "howToConnectImKey": "Cara Menghubungkan imKey",
+              "ledgerIsDisconnected": "Ledger Anda tidak terhubung"
+            },
+            "GnosisWrongChainAlertBar": {
+              "warning": "Alamat aman tidak mendukung {{chain}}"
+            },
+            "echologyPopup": {
+              "title": "Ekosistem"
+            }
+          },
+          "nft": {
+            "floorPrice": "/ Harga Dasar:",
+            "title": "NFT",
+            "all": "Semua",
+            "starred": "Ditaruh Bintang ({{count}})",
+            "empty": {
+              "title": "Tidak Ada NFT yang Ditaruh Bintang",
+              "description": "Anda dapat memilih NFT dari \"Semua\" dan menambahkannya ke \"Ditaruh Bintang\""
+            },
+            "noNft": "Tidak Ada NFT"
+          },
+          "newAddress": {
+            "title": "Tambahkan Alamat",
+            "importSeedPhrase": "Impor Frasa Benih",
+            "importPrivateKey": "Impor Kunci Pribadi",
+            "importMyMetamaskAccount": "Impor Akun MetaMask Saya",
+            "addContacts": {
+              "content": "Tambahkan Kontak",
+              "description": "Anda juga dapat menggunakannya sebagai alamat hanya untuk ditonton",
+              "required": "Silakan masukkan alamat",
+              "notAValidAddress": "Bukan alamat yang valid",
+              "scanViaMobileWallet": "Pindai melalui dompet seluler",
+              "scanViaPcCamera": "Pindai melalui kamera PC",
+              "scanQRCode": "Pindai kode QR dengan dompet yang kompatibel dengan WalletConnect",
+              "walletConnect": "Koneksi dompet",
+              "walletConnectVPN": "WalletConnect akan tidak stabil jika Anda menggunakan VPN.",
+              "cameraTitle": "Silakan pindai kode QR dengan kamera Anda",
+              "addressEns": "Alamat / ENS"
+            },
+            "unableToImport": {
+              "title": "Tidak Dapat Mengimpor",
+              "description": "Impor beberapa dompet perangkat keras berbasis QR tidak didukung. Silakan hapus semua alamat dari {{0}} sebelum mengimpor perangkat lain."
+            },
+            "connectHardwareWallets": "Sambungkan Dompet Perangkat Keras",
+            "firefoxLedgerDisableTips": "Ledger tidak kompatibel dengan Firefox",
+            "connectMobileWalletApps": "Sambungkan Aplikasi Dompet Seluler",
+            "connectInstitutionalWallets": "Sambungkan Dompet Institusional",
+            "createNewSeedPhrase": "Buat Frasa Benih Baru",
+            "importKeystore": "Impor KeyStore",
+            "selectImportMethod": "Pilih Metode Impor",
+            "theSeedPhraseIsInvalidPleaseCheck": "Frasa benih tidak valid, silakan periksa!",
+            "seedPhrase": {
+              "importTips": "Anda dapat menempelkan seluruh frasa pemulihan rahasia Anda di kolom pertama",
+              "whatIsASeedPhrase": {
+                "question": "Apa itu Frasa Benih?",
+                "answer": "Frasa 12, 18, atau 24 kata yang digunakan untuk mengontrol aset Anda."
+              },
+              "isItSafeToImportItInRabby": {
+                "question": "Apakah aman untuk mengimpornya di Rabby?",
+                "answer": "Ya, itu akan disimpan secara lokal di browser Anda dan hanya dapat diakses oleh Anda."
+              },
+              "importError": "[CreateMnemonics] langkah tak terduga {{0}}",
+              "importQuestion1": "Jika saya kehilangan frasa benih saya, aset saya akan hilang selamanya.",
+              "importQuestion2": "Jika saya membagikan frasa benih saya dengan orang lain, aset saya akan dicuri.",
+              "importQuestion3": "Frasa benih hanya disimpan di komputer saya, dan Rabby tidak memiliki akses ke sana.",
+              "importQuestion4": "Jika saya menghapus Rabby tanpa mencadangkan frasa benih, Rabby tidak dapat mengambilnya untuk saya.",
+              "riskTips": "Sebelum Anda mulai, harap baca dan ingat tips keamanan berikut.",
+              "showSeedPhrase": "Tampilkan Frasa Benih",
+              "backup": "Cadangkan Frasa Benih",
+              "backupTips": "Pastikan tidak ada orang lain yang melihat layar Anda saat Anda mencadangkan frasa benih",
+              "copy": "Salin frasa benih",
+              "saved": "Saya Telah Menyimpan Frasa",
+              "pleaseSelectWords": "Silakan pilih kata-kata",
+              "verificationFailed": "Verifikasi gagal",
+              "createdSuccessfully": "Berhasil Dibuat",
+              "verifySeedPhrase": "Verifikasi Frasa Benih",
+              "fillInTheBackupSeedPhraseInOrder": "Isi frasa benih cadangan dalam urutan",
+              "wordPhrase": "Saya memiliki frasa <1>{{count}}</1>-kata",
+              "wordPhraseAndPassphrase": "Saya memiliki frasa <1>{{count}}</1>-kata dengan Passphrase",
+              "slip39SeedPhrase": "Saya memiliki Frasa Benih <0>{{SLIP39}}</0>",
+              "slip39SeedPhraseWithPassphrase": "Saya memiliki Frasa Benih <0>{{SLIP39}}</0> dengan Passphrase",
+              "slip39SeedPhrasePlaceholder_one": "Masukkan ${count} frasa benih di sini",
+              "slip39SeedPhrasePlaceholder_two": "Masukkan ${count} frasa benih di sini",
+              "slip39SeedPhrasePlaceholder_few": "Masukkan ${count} frasa benih di sini",
+              "slip39SeedPhrasePlaceholder_other": "Masukkan ${count} frasa benih di sini",
+              "clearAll": "Bersihkan Semua",
+              "pastedAndClear": "Ditempelkan dan clipboard dibersihkan",
+              "invalidContent": "Konten tidak valid",
+              "inputInvalidCount_one": "1 input tidak sesuai dengan norma Frasa Benih, silakan periksa.",
+              "inputInvalidCount_other": "{{count}} input tidak sesuai dengan norma Frasa Benih, silakan periksa.",
+              "passphrase": "Passphrase"
+            },
+            "metamask": {
+              "step1": "Ekspor frasa benih atau kunci pribadi dari MetaMask <br /> <1>Klik untuk melihat tutorial <1/></1>",
+              "step2": "Impor frasa benih atau kunci pribadi di Rabby",
+              "step3": "Impor selesai dan semua aset Anda akan <br /> muncul secara otomatis",
+              "how": "Bagaimana cara mengimpor Akun MetaMask saya?",
+              "step": "Langkah",
+              "importSeedPhrase": "Impor frasa benih atau kunci pribadi",
+              "importSeedPhraseTips": "Ini hanya akan disimpan secara lokal di browser. Rabby tidak akan pernah memiliki akses ke informasi pribadi Anda.",
+              "tips": "Tips:",
+              "tipsDesc": "Frasa benih/kunci pribadi Anda tidak dimiliki oleh MetaMask atau dompet tertentu mana pun; itu hanya milik Anda."
+            },
+            "privateKey": {
+              "required": "Silakan masukkan Kunci Pribadi",
+              "placeholder": "Masukkan kunci pribadi Anda",
+              "whatIsAPrivateKey": {
+                "question": "Apa itu kunci pribadi?",
+                "answer": "Serangkaian huruf dan angka yang digunakan untuk mengontrol aset Anda."
+              },
+              "repeatImportTips": {
+                "desc": "Alamat ini telah diimpor.",
+                "question": "Apakah Anda ingin beralih ke alamat ini?"
+              },
+              "isItSafeToImportItInRabby": {
+                "question": "Apakah aman untuk mengimpornya di Rabby?",
+                "answer": "Ya, itu akan disimpan secara lokal di browser Anda dan hanya dapat diakses oleh Anda."
+              },
+              "isItPossibleToImportKeystore": {
+                "question": "Apakah mungkin untuk mengimpor KeyStore?",
+                "answer": "Ya, Anda dapat <1> mengimpor KeyStore </1> di sini."
+              },
+              "notAValidPrivateKey": "Bukan kunci pribadi yang valid"
+            },
+            "importedSuccessfully": "Berhasil Diimpor",
+            "ledger": {
+              "title": "Sambungkan Ledger",
+              "cameraPermissionTitle": "Izinkan Rabby mengakses kamera",
+              "cameraPermission1": "Izinkan Rabby untuk mengakses kamera dalam pop-up browser",
+              "allowRabbyPermissionsTitle": "Izinkan izin Rabby untuk:",
+              "ledgerPermission1": "Sambungkan ke perangkat HID",
+              "ledgerPermissionTip": "Silakan klik \"Izinkan\" di bawah ini dan beri otorisasi akses ke Ledger Anda di jendela pop-up berikutnya.",
+              "permissionsAuthorized": "Izin Diberikan",
+              "nowYouCanReInitiateYourTransaction": "Sekarang Anda dapat memulai ulang transaksi Anda.",
+              "allow": "Izinkan",
+              "error": {
+                "ethereum_app_not_installed_error": "Silakan instal aplikasi Ethereum di perangkat Ledger Anda.",
+                "ethereum_app_unconfirmed_error": "Anda telah menolak permintaan untuk membuka aplikasi Ethereum.",
+                "ethereum_app_open_error": "Silakan instal/terima aplikasi Ethereum di perangkat Ledger Anda.",
+                "running_app_close_error": "Gagal menutup aplikasi yang sedang berjalan di perangkat Ledger Anda."
+              }
+            },
+            "imkey": {
+              "title": "Sambungkan imKey",
+              "imkeyPermissionTip": "Silakan klik \"Izinkan\" di bawah ini dan beri otorisasi akses ke imKey Anda di jendela pop-up berikutnya."
+            },
+            "keystone": {
+              "title": "Sambungkan Keystone",
+              "allowRabbyPermissionsTitle": "Izinkan izin Rabby untuk:",
+              "keystonePermission1": "Sambungkan ke perangkat USB",
+              "keystonePermissionTip": "Silakan klik \"Izinkan\" di bawah ini untuk memberi otorisasi akses ke Keystone Anda di jendela pop-up berikutnya, dan pastikan Keystone 3 Pro Anda berada di halaman utama.",
+              "noDeviceFoundError": "Colokkan satu Keystone",
+              "deviceIsLockedError": "Masukkan kata sandi untuk membuka kunci",
+              "deviceRejectedExportAddress": "Setujui koneksi ke Rabby",
+              "deviceIsBusy": "Perangkat sedang sibuk",
+              "exportAddressJustAllowedOnHomePage": "Ekspor alamat hanya diizinkan di halaman utama",
+              "unknowError": "Kesalahan tidak diketahui, silakan coba lagi"
+            },
+            "walletConnect": {
+              "connectYour": "Sambungkan",
+              "viaWalletConnect": "melalui Wallet Connect",
+              "connectedSuccessfully": "Terhubung dengan sukses",
+              "qrCodeError": "Silakan periksa jaringan Anda atau segarkan kode QR",
+              "qrCode": "Kode QR",
+              "url": "URL",
+              "changeBridgeServer": "Ubah server jembatan",
+              "status": {
+                "received": "Pindai berhasil. Menunggu konfirmasi",
+                "rejected": "Koneksi dibatalkan. Silakan pindai kode QR untuk mencoba lagi.",
+                "brandError": "Aplikasi dompet salah.",
+                "brandErrorDesc": "Silakan gunakan {{brandName}} untuk terhubung",
+                "accountError": "Alamat tidak cocok.",
+                "accountErrorDesc": "Silakan ganti alamat di dompet seluler Anda",
+                "connected": "Terhubung",
+                "duplicate": "Alamat yang Anda coba impor adalah duplikat",
+                "default": "Pindai dengan {{brand}} Anda"
+              },
+              "title": "Sambungkan dengan {{brandName}}",
+              "disconnected": "Terputus",
+              "accountError": {},
+              "tip": {
+                "accountError": {
+                  "tip1": "Terhubung tetapi tidak dapat menandatangani.",
+                  "tip2": "Silakan ganti ke alamat yang benar di dompet seluler"
+                },
+                "disconnected": {
+                  "tip": "Tidak terhubung ke {{brandName}}"
+                },
+                "connected": {
+                  "tip": "Terhubung ke {{brandName}}"
+                }
+              },
+              "button": {
+                "disconnect": "Putuskan Koneksi",
+                "connect": "Sambungkan",
+                "howToSwitch": "Bagaimana cara beralih"
+              }
+            },
+            "hd": {
+              "tooltip": {
+                "removed": "Alamat telah dihapus dari Rabby",
+                "added": "Alamat telah ditambahkan ke Rabby",
+                "connectError": "Koneksi telah berhenti. Silakan segarkan halaman untuk menyambung kembali.",
+                "disconnected": "Tidak dapat terhubung ke dompet perangkat keras. Silakan coba sambung kembali."
+              },
+              "waiting": "Menunggu",
+              "clickToGetInfo": "Klik untuk mendapatkan informasi di rantai",
+              "addToRabby": "Tambahkan ke Rabby",
+              "basicInformation": "Informasi Dasar",
+              "addresses": "Alamat",
+              "loadingAddress": "Memuat {{0}}/{{1}} alamat",
+              "notes": "Catatan",
+              "getOnChainInformation": "Dapatkan informasi di rantai",
+              "hideOnChainInformation": "Sembunyikan informasi di rantai",
+              "usedChains": "Rantai yang Digunakan",
+              "firstTransactionTime": "Waktu transaksi pertama",
+              "balance": "Saldo",
+              "ledger": {
+                "hdPathType": {
+                  "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Di 3 alamat pertama, terdapat alamat yang digunakan di rantai.",
+                  "bip44": "Standar BIP44: Jalur HD yang ditentukan oleh protokol BIP44. Di 3 alamat pertama, terdapat alamat yang digunakan di rantai.",
+                  "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto. Di 3 alamat pertama, terdapat alamat yang digunakan di rantai."
+                },
+                "hdPathTypeNoChain": {
+                  "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Di 3 alamat pertama, tidak ada alamat yang digunakan di rantai.",
+                  "bip44": "Standar BIP44: Jalur HD yang ditentukan oleh protokol BIP44. Di 3 alamat pertama, tidak ada alamat yang digunakan di rantai.",
+                  "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto. Di 3 alamat pertama, tidak ada alamat yang digunakan di rantai."
+                }
+              },
+              "trezor": {
+                "hdPathType": {
+                  "bip44": "BIP44: Jalur HD yang ditentukan oleh protokol BIP44.",
+                  "ledgerLive": "Ledger Live: Jalur HD resmi Ledger.",
+                  "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto."
+                },
+                "hdPathTypeNoChain": {
+                  "bip44": "BIP44: Jalur HD yang ditentukan oleh protokol BIP44.",
+                  "ledgerLive": "Ledger Live: Jalur HD resmi Ledger.",
+                  "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto."
+                },
+                "message": {
+                  "disconnected": "{{0}} Koneksi telah berhenti. Silakan segarkan halaman untuk menyambung kembali."
+                }
+              },
+              "onekey": {
+                "hdPathType": {
+                  "bip44": "BIP44: Jalur HD yang ditentukan oleh protokol BIP44."
+                },
+                "hdPathTypeNoChain": {
+                  "bip44": "BIP44: Jalur HD yang ditentukan oleh protokol BIP44."
+                }
+              },
+              "mnemonic": {
+                "hdPathType": {
+                  "default": "Default: Jalur HD Default untuk mengimpor frasa benih digunakan.",
+                  "bip44": "Standar BIP44: Jalur HD yang ditentukan oleh protokol BIP44.",
+                  "ledgerLive": "Ledger Live: Jalur HD resmi Ledger.",
+                  "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto."
+                },
+                "hdPathTypeNoChain": {
+                  "default": "Default: Jalur HD Default untuk mengimpor frasa benih digunakan."
+                }
+              },
+              "gridplus": {
+                "hdPathType": {
+                  "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Di 3 alamat pertama, terdapat alamat yang digunakan di rantai.",
+                  "bip44": "Standar BIP44: Jalur HD yang ditentukan oleh protokol BIP44. Di 3 alamat pertama, terdapat alamat yang digunakan di rantai.",
+                  "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto. Di 3 alamat pertama, terdapat alamat yang digunakan di rantai."
+                }
+              },
+              "hdPathTypeNoChain": {
+                "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Di 3 alamat pertama, tidak ada alamat yang digunakan di rantai.",
+                "bip44": "Standar BIP44: Jalur HD yang ditentukan oleh protokol BIP44. Di 3 alamat pertama, tidak ada alamat yang digunakan di rantai.",
+                "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto. Di 3 alamat pertama, tidak ada alamat yang digunakan di rantai."
+              },
+              "switch": {
+                "title": "Beralih ke perangkat GridPlus baru",
+                "content": "Tidak mendukung impor beberapa perangkat GridPlus. Jika Anda beralih ke perangkat GridPlus baru, daftar alamat perangkat saat ini akan dihapus sebelum memulai proses impor."
+              },
+              "switchToAnotherGridplus": "Beralih ke GridPlus lain",
+              "keystone": {
+                "hdPathType": {
+                  "bip44": "BIP44: Jalur HD yang ditentukan oleh protokol BIP44.",
+                  "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Anda hanya dapat mengelola 10 alamat dengan jalur Ledger Live.",
+                  "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto."
+                },
+                "hdPathTypeNoChain": {
+                  "bip44": "BIP44: Jalur HD yang ditentukan oleh protokol BIP44.",
+                  "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Anda hanya dapat mengelola 10 alamat dengan jalur Ledger Live.",
+                  "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto."
+                }
+              },
+              "bitbox02": {
+                "hdPathType": {
+                  "bip44": "BIP44: Jalur HD yang ditentukan oleh protokol BIP44."
+                },
+                "hdPathTypeNoChain": {
+                  "bip44": "BIP44: Jalur HD yang ditentukan oleh protokol BIP44."
+                },
+                "disconnected": "Tidak dapat terhubung ke BitBox02. Silakan segarkan halaman untuk menyambung kembali. Alasan: {{0}}"
+              },
+              "selectHdPath": "Pilih jalur HD:",
+              "selectIndexTip": "Pilih nomor seri alamat untuk memulai dari:",
+              "manageAddressFrom": "Kelola alamat dari {{0}} hingga {{1}}",
+              "advancedSettings": "Pengaturan Lanjutan",
+              "customAddressHdPath": "Jalur HD Alamat Kustom",
+              "connectedToLedger": "Terhubung ke Ledger",
+              "connectedToTrezor": "Terhubung ke Trezor",
+              "connectedToOnekey": "Terhubung ke OneKey",
+              "manageSeedPhrase": "Kelola Frasa Benih",
+              "manageGridplus": "Kelola GridPlus",
+              "manageKeystone": "Kelola Keystone",
+              "manageAirgap": "Kelola AirGap",
+              "manageImtokenOffline": "Kelola imToken",
+              "manageCoolwallet": "Kelola CoolWallet",
+              "manageBitbox02": "Kelola BitBox02",
+              "manageNgraveZero": "Kelola NGRAVE ZERO",
+              "done": "Selesai",
+              "addressesIn": "Alamat di {{0}}",
+              "addressesInRabby": "Alamat di Rabby{{0}}",
+              "qrCode": {
+                "switch": {
+                  "title": "Beralih ke perangkat {{0}} baru",
+                  "content": "Tidak mendukung impor beberapa perangkat {{0}}. Jika Anda beralih ke perangkat {{0}} baru, daftar alamat perangkat saat ini akan dihapus sebelum memulai proses impor."
+                },
+                "switchAnother": "Beralih ke {{0}} lain"
+              },
+              "manageImKey": "Kelola imKey",
+              "importYourKeystore": "Impor KeyStore Anda",
+              "incorrectPassword": "kata sandi salah",
+              "keystore": {
+                "description": "Pilih file keystore yang ingin Anda impor dan masukkan kata sandi yang sesuai",
+                "password": {
+                  "required": "Silakan masukkan Kata Sandi",
+                  "placeholder": "Kata Sandi"
+                }
+              },
+              "coboSafe": {
+                "inputSafeModuleAddress": "Masukkan alamat Safe Module",
+                "invalidAddress": "Alamat tidak valid",
+                "whichChainIsYourCoboAddressOn": "Jaringan mana yang digunakan alamat cobo Anda",
+                "addCoboArgusAddress": "Tambahkan alamat Cobo Argus",
+                "findTheAssociatedSafeAddress": "Temukan alamat aman yang terkait",
+                "import": "Impor"
+              },
+              "addFromCurrentSeedPhrase": "Tambahkan dari Frasa Benih Saat Ini",
+              "unlock": {
+                "btn": {
+                  "unlock": "Buka Kunci"
+                },
+                "password": {
+                  "required": "Masukkan Kata Sandi untuk Membuka Kunci",
+                  "placeholder": "Masukkan Kata Sandi untuk Membuka Kunci",
+                  "error": "kata sandi salah"
+                }
+              },
+              "addToken": {
+                "noTokenFound": "Tidak ada token yang ditemukan",
+                "tokenSupported": "Token telah didukung di Rabby",
+                "tokenCustomized": "Token saat ini telah ditambahkan ke kustom",
+                "tokenNotFound": "Token tidak ditemukan dari alamat kontrak ini",
+                "title": "Tambahkan token kustom ke Rabby",
+                "balance": "Saldo",
+                "tokenOnMultiChains": "Alamat token di beberapa rantai. Silakan pilih salah satu",
+                "noTokenFoundOnThisChain": "Tidak ada token yang ditemukan di rantai ini",
+                "hasAdded": "Anda telah menambahkan token ini."
+              },
+              "switchChain": {
+                "title": "Tambahkan Jaringan Kustom ke Rabby",
+                "chainNotSupport": "Rantai yang diminta belum didukung oleh Rabby",
+                "testnetTip": "Silakan aktifkan \"Aktifkan Testnet\" di bawah \"Lainnya\" sebelum menghubungkan ke testnet",
+                "chainNotSupportYet": "Rantai yang diminta belum didukung oleh Rabby",
+                "chainId": "ID Rantai:",
+                "unknownChain": "Rantai tidak dikenal",
+                "requestsReceived": "1 permintaan diterima",
+                "requestsReceivedPlural": "{{count}} permintaan diterima",
+                "requestRabbyToSupport": "Minta Rabby untuk Mendukung",
+                "chainNotSupportAddChain": "Rantai yang diminta belum terintegrasi oleh Rabby. Anda dapat menambahkannya sebagai Testnet Kustom.",
+                "addChain": "Tambahkan Testnet",
+                "desc": "Jaringan yang diminta belum terintegrasi oleh Rabby. Anda dapat menambahkannya sebagai jaringan kustom secara manual."
+              },
+              "signText": {
+                "title": "Tandatangani Teks",
+                "message": "Pesan Teks",
+                "createKey": {
+                  "interactDapp": "Interaksi Dapp",
+                  "description": "Deskripsi"
+                },
+                "sameSafeMessageAlert": "Pesan yang sama telah dikonfirmasi; tidak perlu tanda tangan tambahan."
+              },
+              "securityEngine": {
+                "yes": "Ya",
+                "no": "Tidak",
+                "whenTheValueIs": "ketika nilai adalah {{value}}",
+                "currentValueIs": "Nilai saat ini adalah {{value}}",
+                "viewRules": "Lihat aturan keamanan",
+                "undo": "Batalkan",
+                "riskProcessed": "Peringatan risiko telah diabaikan",
+                "ignoreAlert": "Abaikan peringatan",
+                "ruleDisabled": "Aturan keamanan telah dinonaktifkan. Demi keselamatan Anda, Anda dapat mengaktifkannya kapan saja.",
+                "unknownResult": "Hasil tidak diketahui karena mesin keamanan tidak tersedia saat ini",
+                "alertTriggerReason": "Alasan pemicu peringatan:",
+                "understandRisk": "Saya memahami dan menerima tanggung jawab atas segala kerugian",
+                "forbiddenCantIgnore": "Menemukan risiko terlarang yang tidak dapat diabaikan.",
+                "ruleDetailTitle": "Detail Risiko",
+                "enableRule": "Aktifkan aturan",
+                "viewRiskLevel": "Lihat tingkat risiko"
+              },
+              "connect": {
+                "listedBy": "Terdaftar oleh",
+                "sitePopularity": "Popularitas situs",
+                "myMark": "Tanda Saya",
+                "flagByRabby": "Ditandai oleh Rabby",
+                "flagByMM": "Ditandai oleh MetaMask",
+                "flagByScamSniffer": "Ditandai oleh ScamSniffer",
+                "verifiedByRabby": "Diverifikasi oleh Rabby",
+                "foundForbiddenRisk": "Menemukan risiko terlarang. Koneksi diblokir.",
+                "markAsTrustToast": "Tandai sebagai \"Terpercaya\"",
+                "markAsBlockToast": "Tandai sebagai \"Diblokir\"",
+                "markRemovedToast": "Tanda dihapus",
+                "title": "Sambungkan ke Dapp",
+                "selectChainToConnect": "Pilih rantai untuk terhubung",
+                "markRuleText": "Tanda Saya",
+                "connectBtn": "Sambungkan",
+                "noWebsite": "Tidak ada",
+                "popularLevelHigh": "Tinggi",
+                "popularLevelMedium": "Sedang",
+                "popularLevelLow": "Rendah",
+                "popularLevelVeryLow": "Sangat Rendah",
+                "noMark": "Tidak ada tanda",
+                "blocked": "Diblokir",
+                "trusted": "Terpercaya",
+                "addedToWhitelist": "Ditambahkan ke daftar putih Anda",
+                "addedToBlacklist": "Ditambahkan ke daftar hitam Anda",
+                "removedFromAll": "Dihapus dari semua daftar",
+                "notOnAnyList": "Tidak ada di daftar mana pun",
+                "onYourBlacklist": "Di daftar hitam Anda",
+                "onYourWhitelist": "Di daftar putih Anda",
+                "manageWhiteBlackList": "Kelola daftar putih/hitam",
+                "SignTestnetPermission": {
+                  "title": "Izin Penandatanganan"
+                },
+                "ignoreAll": "Abaikan semua"
+              },
+              "addressDetail": {
+                "add-to-whitelist": "Tambahkan ke Daftar Putih",
+                "remove-from-whitelist": "Hapus dari Daftar Putih",
+                "address-detail": "Detail Alamat",
+                "backup-private-key": "Cadangkan Kunci Pribadi",
+                "backup-seed-phrase": "Cadangkan Frasa Benih",
+                "delete-address": "Hapus alamat",
+                "delete-desc": "Sebelum Anda menghapus, ingatlah poin-poin berikut untuk memahami cara melindungi aset Anda.",
+                "direct-delete-desc": "Alamat ini adalah alamat {{renderBrand}}, Rabby tidak menyimpan kunci pribadi atau frasa benih untuk alamat ini, Anda dapat langsung menghapusnya.",
+                "admins": "Admin",
+                "tx-requires": "Setiap transaksi memerlukan <2>{{num}}</2> konfirmasi",
+                "edit-memo-title": "Edit catatan alamat",
+                "please-input-address-note": "Silakan masukkan catatan alamat",
+                "address": "Alamat",
+                "address-note": "Catatan Alamat",
+                "assets": "Aset",
+                "qr-code": "Kode QR",
+                "source": "Sumber",
+                "hd-path": "Jalur HD",
+                "manage-seed-phrase": "Kelola Frasa Benih",
+                "manage-addresses-under-this-seed-phrase": "Kelola alamat di bawah Frasa Benih ini",
+                "safeModuleAddress": "Alamat Safe Module",
+                "coboSafeErrorModule": "Alamat telah kedaluwarsa, silakan hapus dan impor alamat lagi.",
+                "importedDelegatedAddress": "Alamat Delegasi yang Diimpor",
+                "manage-addresses-under": "Kelola alamat di bawah {{brand}} ini"
+              },
+              "preferMetamaskDapps": {
+                "title": "Dapps yang Dipilih MetaMask",
+                "desc": "Dapps berikut akan tetap terhubung melalui MetaMask, terlepas dari dompet yang Anda gunakan",
+                "howToAdd": "Cara Menambahkan",
+                "howToAddDesc": "Klik kanan pada situs web dan temukan opsi ini",
+                "empty": "Tidak ada dapps"
+              },
+              "customRpc": {
+                "opened": "Dibuka",
+                "closed": "Tutup",
+                "empty": "Tidak ada URL RPC kustom",
+                "title": "Modifikasi URL RPC",
+                "desc": "Setelah dimodifikasi, RPC kustom akan menggantikan node Rabby. Untuk terus menggunakan node Rabby, hapus RPC kustom.",
+                "add": "Modifikasi URL RPC",
+                "EditRPCModal": {
+                  "invalidRPCUrl": "URL RPC tidak valid",
+                  "invalidChainId": "ID Rantai tidak valid",
+                  "rpcAuthFailed": "Autentikasi RPC gagal",
+                  "title": "Modifikasi URL RPC",
+                  "rpcUrl": "URL RPC",
+                  "rpcUrlPlaceholder": "Masukkan URL RPC"
+                },
+                "EditCustomTestnetModal": {
+                  "title": "Tambahkan Jaringan Kustom",
+                  "quickAdd": "Tambah cepat dari Chainlist"
+                }
+              },
+              "requestDebankTestnetGasToken": {
+                "title": "Minta Token Gas Testnet DeBank",
+                "mintedTip": "Pemegang Lencana Rabby dapat meminta sekali sehari",
+                "notMintedTip": "Permintaan tersedia hanya untuk pemegang Lencana Rabby",
+                "claimBadgeBtn": "Klaim Lencana Rabby",
+                "time": "Per hari",
+                "requested": "Anda telah meminta hari ini",
+                "requestBtn": "Permintaan"
+              },
+              "safeQueue": {
+                "title": "Antrian ({{total}})",
+                "sameNonceWarning": "Transaksi ini konflik karena menggunakan nonce yang sama. Melaksanakan satu akan secara otomatis menggantikan yang lain.",
+                "loading": "Memuat transaksi yang tertunda",
+                "noData": "Tidak ada transaksi yang tertunda",
+                "loadingFaild": "Karena ketidakstabilan server Safe, data tidak tersedia, silakan periksa lagi setelah 5 menit",
+                "accountSelectTitle": "Anda dapat mengajukan transaksi ini menggunakan alamat apa pun",
+                "LowerNonceError": "Transaksi dengan nonce {{nonce}} perlu dijalankan terlebih dahulu",
+                "submitBtn": "Ajukan transaksi",
+                "unknownTx": "Transaksi Tidak Dikenal",
+                "cancelExplain": "Batalkan {{token}} Persetujuan untuk {{protocol}}",
+                "unknownProtocol": "Protokol Tidak Dikenal",
+                "approvalExplain": "Setujui {{count}} {{token}} untuk {{protocol}}",
+                "unlimited": "tidak terbatas",
+                "action": {
+                  "send": "Kirim",
+                  "cancel": "Batalkan Transaksi Tertunda"
+                },
+                "viewBtn": "Lihat",
+                "replaceBtn": "Ganti",
+                "ReplacePopup": {
+                  "options": {
+                    "send": "Kirim Token",
+                    "reject": "Tolak Transaksi"
+                  },
+                  "title": "Pilih cara untuk mengganti transaksi ini",
+                  "desc": "Transaksi yang telah ditandatangani tidak dapat dihapus tetapi dapat diganti dengan transaksi baru dengan nonce yang sama."
+                }
+              },
+              "importSuccess": {
+                "title": "Berhasil Diimpor",
+                "addressCount": "{{count}} alamat",
+                "gnosisChainDesc": "Alamat ini ditemukan diterapkan di {{count}} rantai"
+              },
+              "backupSeedPhrase": {
+                "title": "Cadangkan Frasa Benih",
+                "alert": "Frasa Benih ini adalah kredensial untuk aset Anda. JANGAN kehilangan atau mengungkapkannya kepada orang lain, jika tidak Anda mungkin kehilangan aset Anda selamanya. Silakan lihat di lingkungan yang aman dan simpan dengan hati-hati.",
+                "clickToShow": "Klik untuk menunjukkan Frasa Benih",
+                "copySeedPhrase": "Salin frasa benih",
+                "showQrCode": "Tampilkan Kode QR",
+                "qrCodePopupTitle": "Kode QR",
+                "qrCodePopupTips": "Jangan pernah bagikan kode QR frasa benih kepada orang lain. Silakan lihat di lingkungan yang aman dan simpan dengan hati-hati."
+              },
+              "backupPrivateKey": {
+                "title": "Cadangkan Kunci Pribadi",
+                "alert": "Kunci Pribadi ini adalah kredensial untuk aset Anda. JANGAN kehilangan atau mengungkapkannya kepada orang lain, jika tidak Anda mungkin kehilangan aset Anda selamanya. Silakan lihat di lingkungan yang aman dan simpan dengan hati-hati.",
+                "clickToShow": "Klik untuk menunjukkan kunci pribadi",
+                "clickToShowQr": "Klik untuk menunjukkan Kode QR kunci pribadi"
+              },
+              "ethSign": {
+                "alert": "Menandatangani dengan 'eth_sign' dapat menyebabkan kehilangan aset. Demi keamanan Anda, Rabby tidak mendukung metode ini."
+              },
+              "createPassword": {
+                "title": "Atur Kata Sandi",
+                "passwordRequired": "Silakan masukkan Kata Sandi",
+                "passwordMin": "Kata sandi harus terdiri dari minimal 8 karakter",
+                "passwordPlaceholder": "Kata sandi harus terdiri dari minimal 8 karakter",
+                "confirmRequired": "Silakan Konfirmasi Kata Sandi",
+                "confirmError": "Kata sandi tidak cocok",
+                "confirmPlaceholder": "Konfirmasi kata sandi",
+                "agree": "Saya telah membaca dan setuju dengan <1/> <2>Ketentuan Penggunaan</2> dan <4>Kebijakan Privasi</4>"
+              },
+              "welcome": {
+                "step1": {
+                  "title": "Akses Semua Dapps",
+                  "desc": "Rabby terhubung ke semua Dapps yang didukung oleh MetaMask"
+                },
+                "step2": {
+                  "title": "Kemandirian",
+                  "desc": "Kunci pribadi disimpan secara lokal dengan akses eksklusif untuk Anda",
+                  "btnText": "Mulai"
+                }
+              },
+              "importSafe": {
+                "title": "Tambahkan alamat Safe",
+                "placeholder": "Silakan masukkan alamat",
+                "error": {
+                  "invalid": "Bukan alamat yang valid",
+                  "required": "Silakan masukkan alamat"
+                },
+                "loading": "Mencari rantai yang diterapkan untuk alamat ini",
+                "gnosisChainDesc": "Alamat ini ditemukan diterapkan di {{count}} rantai"
+              },
+              "importQrBase": {
+                "desc": "Pindai kode QR di dompet perangkat keras {{brandName}}",
+                "btnText": "Coba Lagi"
+              },
+              "pendingDetail": {
+                "Header": {
+                  "predictTime": "Diprediksi akan dikemas dalam"
+                },
+                "TxStatus": {
+                  "completed": "Selesai",
+                  "pendingBroadcasted": "Tertunda: Disiarkan",
+                  "pendingBroadcast": "Tertunda: Akan disiarkan",
+                  "reBroadcastBtn": "Siarkan ulang"
+                },
+                "TxHash": {
+                  "hash": "Hash Tx"
+                },
+                "TxTimeline": {
+                  "pending": "Memeriksa status...",
+                  "created": "Transaksi dibuat",
+                  "broadcasted": "Baru saja disiarkan",
+                  "broadcastedCount_ordinal_one": "{{count}} siaran",
+                  "broadcastedCount_ordinal_two": "{{count}} siaran",
+                  "broadcastedCount_ordinal_few": "{{count}} siaran",
+                  "broadcastedCount_ordinal_other": "{{count}} siaran"
+                },
+                "MempoolList": {
+                  "col": {
+                    "nodeName": "Nama node",
+                    "nodeOperator": "Operator node",
+                    "txStatus": "Status transaksi"
+                  },
+                  "txStatus": {
+                    "appeared": "Tampil",
+                    "appearedOnce": "Tampil sekali",
+                    "notFound": "Tidak ditemukan"
+                  },
+                  "title": "Tampil di {{count}} node RPC"
+                },
+                "PendingTxList": {
+                  "title": "GasPrice Peringkat #{{rank}} di Semua Tx Tertunda",
+                  "titleNotFound": "Tidak Ada Peringkat di Semua Tx Tertunda",
+                  "filterBaseFee": {
+                    "label": "Hanya memenuhi syarat biaya dasar",
+                    "tooltip": "Tampilkan hanya transaksi yang harga gasnya memenuhi persyaratan biaya dasar blok"
+                  },
+                  "col": {
+                    "gasPrice": "Harga Gas",
+                    "action": "Aksi Transaksi",
+                    "balanceChange": "Perubahan Saldo",
+                    "actionType": "Jenis Aksi",
+                    "interact": "Interaksi dengan"
+                  },
+                  "titleSame": "GasPrice Peringkat #{{rank}} di Sama dengan Saat Ini",
+                  "titleSameNotFound": "Tidak Ada Peringkat di Sama dengan Saat Ini"
+                },
+                "Empty": {
+                  "noData": "Data tidak ditemukan"
+                },
+                "PrePackInfo": {
+                  "col": {
+                    "prePackContent": "Konten Pra-paket",
+                    "expectations": "Ekspektasi",
+                    "prePackResults": "Hasil Pra-paket",
+                    "difference": "Periksa hasil"
+                  },
+                  "type": {
+                    "pay": "Bayar",
+                    "receive": "Terima"
+                  },
+                  "noLoss": "Tidak ada kerugian ditemukan",
+                  "noError": "Tidak ada kesalahan ditemukan",
+                  "title": "Pemeriksaan Pra-paket",
+                  "error": "{{count}} kesalahan ditemukan",
+                  "loss": "{{lossCount}} kerugian ditemukan",
+                  "desc": "Simulasi dieksekusi di blok terbaru, diperbarui {{time}}"
+                },
+                "Predict": {
+                  "completed": "Transaksi Selesai",
+                  "predictFailed": "Prediksi waktu pengemasan gagal",
+                  "skipNonce": "Alamat Anda memiliki Nonce yang dilewati di rantai Ethereum yang menyebabkan transaksi saat ini tidak dapat diselesaikan"
+                }
+              },
+              "dappSearch": {
+                "selectChain": "Pilih Rantai",
+                "searchResult": {
+                  "foundDapps": "Ditemukan <2>{{count}}</2> Dapps",
+                  "totalDapps": "Total <2>{{count}}</2> Dapps"
+                },
+                "expand": "Perluas",
+                "emptyFavorite": "Tidak Ada Dapp Favorit",
+                "favorite": "Favorit",
+                "emptySearch": "Tidak Ada Dapp Ditemukan",
+                "listBy": "Dapp telah terdaftar oleh"
+              },
+              "rabbyPoints": {
+                "title": "Poin Rabby",
+                "out-of-x-current-total-points": "Dari {{total}} Total Poin yang Didistribusikan",
+                "share-on": "Bagikan di",
+                "referral-code-copied": "Kode rujukan disalin",
+                "earn-points": "Dapatkan Poin",
+                "top-100": "Top 100",
+                "claimItem": {
+                  "claim": "Klaim",
+                  "disabledTip": "Tidak ada poin yang dapat diklaim sekarang",
+                  "go": "Ayo",
+                  "earnTip": "Batas sekali sehari. Silakan dapatkan poin setelah 00:00 UTC+0",
+                  "claimed": "Telah diklaim"
+                },
+                "claimModal": {
+                  "title": "Klaim Poin Awal",
+                  "snapshotTime": "Waktu snapshot: {{time}}",
+                  "placeholder": "Masukkan Kode Rujukan untuk poin tambahan (opsional)",
+                  "claim": "Klaim",
+                  "addressBalance": "Saldo dompet",
+                  "MetaMaskSwap": "Pertukaran MetaMask",
+                  "rabbyUser": "Pengguna Aktif Rabby",
+                  "rabbyValuedUserBadge": "Lencana Pengguna Bernilai Rabby",
+                  "rabbyDesktopGenesisNft": "NFT Genesis Desktop Rabby",
+                  "walletBalance": "Saldo Dompet",
+                  "activeStats": "Status Aktif",
+                  "referral-code": "Kode Rujukan",
+                  "invalid-code": "kode tidak valid",
+                  "cantUseOwnCode": "Anda tidak dapat menggunakan kode rujukan Anda sendiri.",
+                  "season2": "Musim 2"
+                },
+                "referralCode": {
+                  "referral-code-cannot-be-empty": "Kode rujukan tidak boleh kosong",
+                  "referral-code-cannot-exceed-15-characters": "Kode rujukan tidak boleh lebih dari 15 karakter",
+                  "referral-code-already-exists": "Kode rujukan sudah ada",
+                  "referral-code-available": "Kode rujukan tersedia",
+                  "my-referral-code": "Kode rujukan saya",
+                  "refer-a-new-user-to-get-50-points": "Rujuk pengguna baru untuk mendapatkan 50 poin",
+                  "set-my-code": "Atur kode saya",
+                  "set-my-referral-code": "Atur kode rujukan saya",
+                  "once-set-this-referral-code-is-permanent-and-cannot-change": "Setelah diatur, kode rujukan ini permanen dan tidak dapat diubah.",
+                  "max-15-characters-use-numbers-and-letters-only": "Maksimal 15 karakter, gunakan hanya angka dan huruf.",
+                  "confirm": "Konfirmasi",
+                  "verifyAddressModal": {
+                    "verify-address": "Verifikasi Alamat",
+                    "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Silakan tandatangani pesan teks ini untuk memverifikasi bahwa Anda adalah pemilik alamat ini",
+                    "cancel": "Batal",
+                    "sign": "Tandatangani"
+                  }
+                },
+                "code-set-successfully": "Kode rujukan berhasil diatur",
+                "initialPointsClaimEnded": "Klaim Poin Awal telah berakhir",
+                "firstRoundEnded": "🎉 Putaran pertama Poin Rabby telah berakhir",
+                "secondRoundEnded": "🎉 Putaran kedua Poin Rabby telah berakhir"
+              },
+              "customTestnet": {
+                "title": "Jaringan Kustom",
+                "desc": "Rabby tidak dapat memverifikasi keamanan jaringan kustom. Silakan tambahkan hanya jaringan yang tepercaya.",
+                "add": "Tambahkan Jaringan Kustom",
+                "empty": "Tidak Ada Jaringan Kustom",
+                "currency": "Mata Uang",
+                "id": "ID",
+                "CustomTestnetForm": {
+                  "id": "ID Rantai",
+                  "name": "Nama Jaringan",
+                  "rpcUrl": "URL RPC",
+                  "idRequired": "Silakan masukkan ID rantai",
+                  "nameRequired": "Silakan masukkan nama jaringan",
+                  "rpcUrlRequired": "Silakan masukkan URL RPC",
+                  "nativeTokenSymbol": "Simbol mata uang",
+                  "nativeTokenSymbolRequired": "Silakan masukkan simbol mata uang",
+                  "blockExplorerUrl": "URL penjelajah blok (Opsional)"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "AddFromChainList": {
+      "title": "Tambah Cepat dari Chainlist",
+      "search": "Cari nama atau ID jaringan kustom",
+      "empty": "Tidak ada rantai yang ditemukan",
+      "tips": {
+        "added": "Anda sudah menambahkan rantai ini",
+        "supported": "Rantai sudah terintegrasi oleh Rabby Wallet"
+      }
+    },
+    "signTx": {
+      "title": "Data Transaksi"
+    },
+    "ConfirmModifyRpcModal": {
+      "desc": "Rantai sudah terintegrasi oleh Rabby. Apakah Anda perlu memodifikasi URL RPC-nya?"
+    },
+    "addChain": {
+      "title": "Tambahkan Jaringan Kustom ke Rabby",
+      "desc": "Rabby tidak dapat memverifikasi keamanan jaringan kustom. Silakan tambahkan jaringan yang tepercaya saja."
+    },
+    "sign": {
+      "transactionSpeed": "Kecepatan Transaksi"
+    },
+    "ecology": {
+      "sonic": {
+        "home": {
+          "airdrop": "Airdrop",
+          "airdropDesc": "~200 juta S untuk pengguna di Opera dan Sonic.",
+          "airdropBtn": "Dapatkan poin",
+          "arcadeDesc": "Mainkan permainan gratis untuk mendapatkan poin untuk airdrop S.",
+          "arcadeBtn": "Mainkan sekarang",
+          "migrateTitle": "Migrasi",
+          "migrateDesc": "→",
+          "migrateBtn": "Segera hadir",
+          "earnTitle": "Dapatkan",
+          "earnDesc": "Staking $S Anda",
+          "earnBtn": "Segera hadir",
+          "socialsTitle": "Terlibat"
+        },
+        "points": {
+          "sonicPoints": "Poin Sonic",
+          "referralCode": "Kode rujukan",
+          "referralCodeCopied": "Kode rujukan disalin",
+          "today": "Hari ini",
+          "shareOn": "Bagikan di",
+          "sonicArcade": "Sonic Arcade",
+          "sonicArcadeBtn": "Mulai bermain",
+          "pointsDashboard": "Dasbor Poin",
+          "pointsDashboardBtn": "Mulai dapatkan poin",
+          "errorTitle": "Tidak dapat memuat poin",
+          "errorDesc": "Terjadi kesalahan saat memuat poin Anda. Silakan coba lagi.",
+          "retry": "Coba lagi",
+          "getReferralCode": "Dapatkan kode rujukan"
+        }
+      },
+      "dbk": {
+        "home": {
+          "bridge": "Jembatan ke DBK Chain",
+          "bridgePoweredBy": "Ditenagai oleh OP Superchain",
+          "bridgeBtn": "Jembatan",
+          "mintNFT": "Mint NFT Genesis DBK",
+          "mintNFTDesc": "Jadilah saksi DBK Chain",
+          "mintNFTBtn": "Mint"
+        },
+        "bridge": {
+          "tabs": {
+            "deposit": "Setor",
+            "withdraw": "Tarik"
+          },
+          "labelFrom": "Dari",
+          "labelTo": "Ke",
+          "info": {
+            "toAddress": "Alamat tujuan",
+            "receiveOn": "Terima di {{chainName}}",
+            "completeTime": "Waktu penyelesaian",
+            "gasFee": "Biaya gas"
+          },
+          "error": {
+            "notEnoughBalance": "Saldo tidak mencukupi"
+          },
+          "ActivityPopup": {
+            "empty": "Belum ada aktivitas",
+            "deposit": "Setor",
+            "withdraw": "Tarik",
+            "status": {
+              "deposit": "Setor",
+              "withdraw": "Tarik",
+              "waitingToProve": "Akar keadaan diterbitkan",
+              "rootPublished": "Akar keadaan diterbitkan",
+              "readyToProve": "Siap untuk membuktikan",
+              "proved": "Terbukti",
+              "challengePeriod": "Periode tantangan",
+              "readyToClaim": "Siap untuk mengklaim",
+              "claimed": "Telah diklaim"
+            },
+            "proveBtn": "Buktikan",
+            "claimBtn": "Klaim",
+            "title": "Aktivitas"
+          },
+          "WithdrawConfirmPopup": {
+            "question1": "Saya mengerti bahwa akan memakan waktu ~7 hari sampai dana saya dapat diklaim di Ethereum setelah saya membuktikan penarikan saya",
+            "question2": "Saya mengerti bahwa sekali penarikan dimulai, tidak dapat dipercepat atau dibatalkan",
+            "question3": "Saya mengerti bahwa biaya jaringan bersifat perkiraan dan akan berubah",
+            "title": "Penarikan DBK Chain memakan waktu ~7 hari",
+            "tips": "Penarikan melibatkan proses 3 langkah, memerlukan 1 transaksi DBK Chain dan 2 transaksi Ethereum",
+            "step1": "Mulai penarikan",
+            "step2": "Buktikan di Ethereum",
+            "step3": "Klaim di Ethereum",
+            "btn": "Tarik"
+          }
+        },
+        "minNFT": {
+          "title": "DBK Genesis",
+          "minted": "Telah dimint",
+          "myBalance": "Saldo Saya",
+          "mintBtn": "Mint"
+        }
+      }
+    },
+    "miniSignFooterBar": {
+      "signWithLedger": "Tanda tangani dengan Ledger",
+      "status": {
+        "txCreated": "Transaksi dibuat",
+        "txSigned": "Ditandatangani. Membuat transaksi",
+        "txSending": "Mengirim permintaan tanda tangan",
+        "txSendings": "Mengirim permintaan tanda tangan({{current}}/{{total}})"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "deposit": "Setor",
+      "withdraw": "Tarik",
+      "gasExceed": "Saldo GasAccount tidak boleh melebihi $1000",
+      "risk": "Alamat Anda saat ini terdeteksi berisiko, jadi fitur ini tidak tersedia.",
+      "logout": "Keluar dari GasAccount saat ini",
+      "history": {
+        "noHistory": "Tidak ada riwayat"
+      },
+      "loginInTip": {
+        "title": "Setor USDC / USDT",
+        "desc": "Bayar Biaya Gas di Semua Rantai",
+        "login": "Masuk ke GasAccount",
+        "gotIt": "Mengerti"
+      },
+      "loginConfirmModal": {
+        "title": "Masuk dengan Alamat Saat Ini",
+        "desc": "Setelah dikonfirmasi, Anda hanya dapat menyetorkan di alamat ini"
+      },
+      "logoutConfirmModal": {
+        "title": "Keluar dari GasAccount saat ini",
+        "desc": "Setelah keluar, Anda tidak akan dapat menggunakan GasAccount untuk membayar biaya gas.",
+        "logout": "Keluar"
+      },
+      "depositPopup": {
+        "title": "Setor",
+        "desc": "Lakukan setoran ke Akun DeBank L2 Rabby tanpa biaya tambahan—tarik kapan saja.",
+        "amount": "Jumlah",
+        "token": "Token",
+        "selectToken": "Pilih Token untuk Disetor"
+      },
+      "withdrawPopup": {
+        "title": "Tarik",
+        "desc": "Anda dapat menarik saldo GasAccount Anda ke Dompet DeBank L2 Anda. Masuk ke Dompet DeBank L2 Anda untuk mentransfer dana ke blockchain yang didukung sesuai kebutuhan.",
+        "amount": "Jumlah",
+        "to": "Ke"
+      },
+      "withdrawConfirmModal": {
+        "title": "Ditransfer ke Dompet DeBank L2 Anda",
+        "button": "Lihat di DeBank"
+      },
+      "GasAccountDepositTipPopup": {
+        "title": "Buka GasAccount dan Setor",
+        "gotIt": "Mengerti"
+      },
+      "switchLoginAddressBeforeDeposit": {
+        "title": "Ganti alamat sebelum setor",
+        "desc": "Silakan ganti ke alamat login Anda."
+      }
+    },
+    "safeMessageQueue": {
+      "loading": "Memuat pesan",
+      "noData": "Tidak ada pesan"
+    },
+    "newUserImport": {
+      "guide": {
+        "title": "Selamat datang di Rabby Wallet",
+        "desc": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM",
+        "createNewAddress": "Buat alamat baru",
+        "importAddress": "Saya sudah memiliki alamat"
+      },
+      "createNewAddress": {
+        "title": "Buat Frasa Benih Baru",
+        "desc": "Sebelum Anda mulai, silakan baca dan simpan tips keamanan berikut.",
+        "tip1": "Jika saya kehilangan atau membagikan frasa benih saya, aset saya akan hilang selamanya.",
+        "tip2": "Frasa benih hanya disimpan di komputer saya, dan Rabby tidak memiliki akses ke sana.",
+        "tip3": "Jika saya menghapus Rabby tanpa mencadangkan frasa benih, Rabby tidak dapat mengambilnya untuk saya.",
+        "showSeedPhrase": "Tampilkan Frasa Benih"
+      },
+      "importList": {
+        "title": "Pilih Metode Impor"
+      },
+      "importPrivateKey": {
+        "title": "Impor Kunci Pribadi",
+        "pasteCleared": "Disalin dan clipboard dibersihkan"
+      },
+      "PasswordCard": {
+        "title": "Atur Kata Sandi",
+        "form": {
+          "password": {
+            "label": "Kata Sandi",
+            "placeholder": "minimal 8 karakter",
+            "required": "Silakan masukkan Kata Sandi",
+            "min": "Kata Sandi harus memiliki panjang minimal 8 karakter"
+          },
+          "confirmPassword": {
+            "label": "Konfirmasi Kata Sandi",
+            "placeholder": "Kata Sandi",
+            "required": "Silakan Konfirmasi Kata Sandi",
+            "notMatch": "Kata Sandi tidak cocok"
+          }
+        },
+        "agree": "Saya setuju dengan <1/> <2>Syarat Penggunaan</2> dan <4>Kebijakan Privasi</4>",
+        "desc": "Ini akan digunakan untuk membuka kunci dompet dan mengenkripsi data"
+      },
+      "successful": {
+        "create": "Berhasil Dibuat",
+        "import": "Berhasil Diimpor",
+        "start": "Mulai",
+        "addMoreAddr": "Tambahkan lebih banyak alamat dari Frasa Benih ini",
+        "addMoreFrom": "Tambahkan lebih banyak alamat dari {{name}}"
+      },
+      "readyToUse": {
+        "title": "Rabby Wallet Siap Digunakan",
+        "desc": "Sematkan Rabby Wallet di toolbar Anda untuk akses mudah.",
+        "pin": "Sematkan Rabby Wallet",
+        "extensionTip": "Klik <1/> dan kemudian <3/>"
+      },
+      "importSeedPhrase": {
+        "title": "Impor Frasa Benih"
+      },
+      "importOneKey": {
+        "title": "OneKey",
+        "tip1": "1. Instal <1>OneKey Bridge<1/>",
+        "tip2": "2. Colokkan perangkat OneKey Anda",
+        "tip3": "3. Buka kunci perangkat Anda",
+        "connect": "Sambungkan OneKey"
+      },
+      "importTrezor": {
+        "title": "Trezor",
+        "tip1": "1. Colokkan perangkat Trezor Anda",
+        "tip2": "2. Buka kunci perangkat Anda",
+        "connect": "Sambungkan Trezor"
+      },
+      "ImportGridPlus": {
+        "title": "GridPlus",
+        "tip1": "1. Buka perangkat GridPlus Anda",
+        "tip2": "2. Sambungkan melalui Lattice Connector",
+        "connect": "Sambungkan GridPlus"
+      },
+      "importLedger": {
+        "title": "Ledger",
+        "tip1": "Colokkan perangkat Ledger Anda.",
+        "tip2": "Masukkan PIN Anda untuk membuka kunci.",
+        "tip3": "Buka aplikasi Ethereum.",
+        "connect": "Sambungkan Ledger"
+      },
+      "importBitBox02": {
+        "title": "BitBox02",
+        "tip1": "1. Instal <1>BitBoxBridge<1/>",
+        "tip2": "2. Colokkan BitBox02 Anda",
+        "tip3": "3. Buka kunci perangkat Anda",
+        "connect": "Sambungkan BitBox02"
+      },
+      "importKeystone": {
+        "qrcode": {
+          "desc": "Pindai kode QR di dompet keras Keystone"
+        },
+        "usb": {
+          "desc": "Pastikan Keystone 3 Pro Anda berada di beranda",
+          "tip1": "Colokkan perangkat Keystone Anda",
+          "tip2": "Masukkan kata sandi Anda untuk membuka kunci",
+          "tip3": "Setujui koneksi ke komputer Anda",
+          "connect": "Sambungkan Keystone"
+        }
+      },
+      "importSafe": {
+        "title": "Tambahkan Alamat Aman",
+        "error": {
+          "required": "Silakan masukkan alamat",
+          "invalid": "Bukan alamat yang valid"
+        },
+        "placeholder": "Masukkan alamat aman",
+        "loading": "Mencari rantai yang diterapkan untuk alamat ini"
+      }
+    },
+    "component": {
+      "AccountSearchInput": {
+        "noMatchAddress": "Tidak ada alamat yang cocok",
+        "AddressItem": {
+          "whitelistedAddressTip": "Alamat yang diizinkan"
+        }
+      },
+      "AccountSelectDrawer": {
+        "btn": {
+          "cancel": "Batal",
+          "proceed": "Lanjutkan"
+        }
+      },
+      "AddressList": {
+        "AddressItem": {
+          "addressTypeTip": "Diimpor oleh {{type}}"
+        }
+      },
+      "AuthenticationModal": {
+        "passwordError": "kata sandi tidak benar",
+        "passwordRequired": "Silakan masukkan kata sandi",
+        "passwordPlaceholder": "Masukkan Kata Sandi untuk Mengonfirmasi"
+      },
+      "ConnectStatus": {
+        "connecting": "Menghubungkan...",
+        "connect": "Sambungkan",
+        "gridPlusConnected": "GridPlus terhubung",
+        "gridPlusNotConnected": "GridPlus tidak terhubung",
+        "ledgerNotConnected": "Ledger tidak terhubung",
+        "ledgerConnected": "Ledger terhubung",
+        "keystoneConnected": "Keystone terhubung",
+        "keystoneNotConnected": "Keystone tidak terhubung",
+        "imKeyrNotConnected": "imKey tidak terhubung",
+        "imKeyConnected": "imKey terhubung"
+      },
+      "Contact": {
+        "AddressItem": {
+          "notWhitelisted": "Alamat ini tidak diizinkan",
+          "whitelistedTip": "Alamat yang diizinkan"
+        },
+        "EditModal": {
+          "title": "Edit catatan alamat"
+        },
+        "EditWhitelist": {
+          "backModalTitle": "Buang Perubahan",
+          "backModalContent": "Perubahan yang Anda buat tidak akan disimpan",
+          "title": "Edit Daftar Putih",
+          "tip": "Pilih alamat yang ingin Anda izinkan dan simpan.",
+          "save": "Simpan ke Daftar Putih ({{count}})"
+        },
+        "ListModal": {
+          "title": "Pilih Alamat",
+          "whitelistEnabled": "Daftar putih diaktifkan. Anda hanya dapat mengirim aset ke alamat yang diizinkan atau Anda dapat menonaktifkannya di \"Pengaturan\"",
+          "whitelistDisabled": "Daftar putih dinonaktifkan. Anda dapat mengirim aset ke alamat mana pun",
+          "editWhitelist": "Edit Daftar Putih",
+          "whitelistUpdated": "Daftar Putih Diperbarui",
+          "authModal": {
+            "title": "Simpan ke Daftar Putih"
+          }
+        }
+      },
+      "LoadingOverlay": {
+        "loadingData": "Memuat data..."
+      },
+      "MultiSelectAddressList": {
+        "imported": "Diimpor"
+      },
+      "NFTNumberInput": {
+        "erc1155Tips": "Saldo Anda adalah {{amount}}",
+        "erc721Tips": "Hanya satu NFT dari ERC 721 yang dapat dikirim sekaligus"
+      },
+      "TiledSelect": {
+        "errMsg": "Urutan frasa benih salah, silakan periksa"
+      },
+      "Uploader": {
+        "placeholder": "Pilih file JSON"
+      },
+      "WalletConnectBridgeModal": {
+        "title": "URL server jembatan",
+        "requiredMsg": "Silakan masukkan host server jembatan",
+        "invalidMsg": "Silakan periksa host Anda",
+        "restore": "Pulihkan pengaturan awal"
+      },
+      "PillsSwitch": {
+        "NetSwitchTabs": {
+          "mainnet": "Jaringan Terintegrasi",
+          "testnet": "Jaringan Kustom"
+        }
+      },
+      "ChainSelectorModal": {
+        "searchPlaceholder": "Cari rantai",
+        "noChains": "Tidak ada rantai",
+        "addTestnet": "Tambahkan Jaringan Kustom"
+      },
+      "TokenSelector": {
+        "listTableHead": {
+          "assetAmount": {
+            "title": "ASET / JUMLAH"
+          },
+          "price": {
+            "title": "HARGA"
+          },
+          "usdValue": {
+            "title": "NILAI USD"
+          }
+        },
+        "bridge": {
+          "token": "Token",
+          "value": "Nilai",
+          "liquidity": "Likuiditas",
+          "liquidityTips": "Semakin tinggi volume perdagangan historis, semakin besar kemungkinan jembatan akan berhasil.",
+          "low": "Rendah",
+          "high": "Tinggi"
+        },
+        "searchInput": {
+          "placeholder": "Cari berdasarkan Nama / Alamat"
+        },
+        "header": {
+          "title": "Pilih Token"
+        },
+        "noTokens": "Tidak Ada Token",
+        "noMatch": "Tidak Ada Kecocokan",
+        "noMatchSuggestion": "Coba cari alamat kontrak di {{ chainName }}",
+        "hot": "Populer",
+        "recent": "Terbaru"
+      },
+      "ModalPreviewNFTItem": {
+        "FieldLabel": {
+          "Collection": "Koleksi",
+          "Chain": "Rantai",
+          "PurschaseDate": "Tanggal Pembelian",
+          "LastPrice": "Harga Terakhir"
+        }
+      }
+    }
+  },
+  {
+    "signPermissionCheckModal": {
+      "title": "Anda hanya mengizinkan Dapp ini untuk menandatangani di testnet",
+      "reconnect": "Sambungkan kembali Dapp"
+    },
+    "testnetCheckModal": {
+      "title": "Silakan aktifkan \"Aktifkan Testnet\" di bawah \"Lainnya\" sebelum menandatangani di testnet"
+    },
+    "EcologyNavBar": {
+      "providedBy": "Disediakan oleh {{chainName}}"
+    },
+    "EcologyNoticeModal": {
+      "title": "Pemberitahuan",
+      "desc": "Layanan berikut akan disediakan langsung oleh Mitra Ekosistem pihak ketiga. Rabby Wallet tidak bertanggung jawab atas keamanan layanan ini.",
+      "notRemind": "Jangan ingatkan saya lagi"
+    },
+    "ReserveGasPopup": {
+      "title": "Cadangkan Gas",
+      "instant": "Instan",
+      "fast": "Cepat",
+      "normal": "Normal",
+      "doNotReserve": "Jangan cadangkan Gas"
+    },
+    "OpenExternalWebsiteModal": {
+      "title": "Anda akan meninggalkan Rabby Wallet",
+      "content": "Anda akan mengunjungi situs web eksternal. Rabby Wallet tidak bertanggung jawab atas konten atau keamanan situs ini.",
+      "button": "Lanjutkan"
+    },
+    "global": {
+      "appName": "Rabby Wallet",
+      "appDescription": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM",
+      "copied": "Disalin",
+      "confirm": "Konfirmasi",
+      "next": "Berikutnya",
+      "back": "Kembali",
+      "ok": "OK",
+      "refresh": "Segarkan",
+      "failed": "Gagal",
+      "scamTx": "Transaksi penipuan",
+      "gas": "Gas",
+      "unknownNFT": "NFT tidak dikenal",
+      "copyAddress": "Salin alamat",
+      "watchModeAddress": "Alamat Mode Tonton",
+      "assets": "aset",
+      "Confirm": "Konfirmasi",
+      "Cancel": "Batal",
+      "Clear": "Bersihkan",
+      "Save": "Simpan",
+      "confirmButton": "Konfirmasi",
+      "cancelButton": "Batal",
+      "backButton": "Kembali",
+      "proceedButton": "Lanjutkan",
+      "editButton": "Edit",
+      "addButton": "Tambah",
+      "closeButton": "Tutup",
+      "Deleted": "Dihapus",
+      "Loading": "Memuat",
+      "nonce": "nonce",
+      "Balance": "Saldo",
+      "Done": "Selesai",
+      "Nonce": "Nonce",
+      "tryAgain": "Coba Lagi",
+      "notSupportTesntnet": "Tidak didukung untuk jaringan kustom"
+    },
+    "background": {
+      "error": {
+        "noCurrentAccount": "Tidak ada akun saat ini",
+        "invalidChainId": "ID rantai tidak valid",
+        "notFindChain": "Tidak dapat menemukan rantai {{chain}}",
+        "unknownAbi": "ABI kontrak tidak dikenal",
+        "invalidAddress": "Bukan alamat yang valid",
+        "notFoundGnosisKeyring": "Tidak ada keyring Gnosis ditemukan",
+        "notFoundTxGnosisKeyring": "Tidak ada transaksi dalam keyring Gnosis ditemukan",
+        "addKeyring404": "gagal menambahkan keyring, keyring tidak terdefinisi",
+        "emptyAccount": "akun saat ini kosong",
+        "generateCacheAliasNames": "[GenerateCacheAliasNames]: perlu setidaknya satu alamat",
+        "invalidPrivateKey": "Kunci pribadi tidak valid",
+        "invalidJson": "file input tidak valid",
+        "invalidMnemonic": "Frasa benih tidak valid, silakan periksa!",
+        "notFoundKeyringByAddress": "Tidak dapat menemukan keyring berdasarkan alamat",
+        "txPushFailed": "Pengiriman transaksi gagal",
+        "unlock": "Anda perlu membuka kunci dompet terlebih dahulu",
+        "duplicateAccount": "Akun yang Anda coba impor adalah duplikat",
+        "canNotUnlock": "Tidak dapat membuka kunci tanpa brankas sebelumnya"
+      },
+      "transactionWatcher": {
+        "submitted": "Transaksi telah diajukan",
+        "more": "klik untuk melihat lebih banyak informasi",
+        "txCompleteMoreContent": "{{chain}} #{{nonce}} selesai. Klik untuk melihat lebih banyak.",
+        "txFailedMoreContent": "{{chain}} #{{nonce}} gagal. Klik untuk melihat lebih banyak.",
+        "completed": "Transaksi selesai",
+        "failed": "Transaksi gagal"
+      },
+      "alias": {
+        "HdKeyring": "Frasa Benih",
+        "simpleKeyring": "Kunci Pribadi",
+        "watchAddressKeyring": "Kontak"
+      }
+    },
+    "constant": {
+      "KEYRING_TYPE_TEXT": {
+        "HdKeyring": "Dibuat oleh Frasa Benih",
+        "SimpleKeyring": "Diimpor oleh Kunci Pribadi",
+        "WatchAddressKeyring": "Kontak"
+      },
+      "IMPORTED_HD_KEYRING": "Diimpor oleh Frasa Benih",
+      "SIGN_PERMISSION_OPTIONS": {
+        "MAINNET_AND_TESTNET": "Mainnet & Testnet",
+        "TESTNET": "Hanya Testnet"
+      },
+      "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Diimpor oleh Frasa Benih (Passphrase)"
+    }
+  }
+]
