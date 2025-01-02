@@ -123,9 +123,7 @@ const Selector = ({
         ? selectAddressChainList?.recharge_chain_list?.sort(
             (a, b) => b.withdraw_limit - a.withdraw_limit
           ) || []
-        : withdrawList?.sort(
-            (a, b) => b.total_withdraw_limit - a.total_withdraw_limit
-          ) || [],
+        : withdrawList,
     [selectAddressChainList, withdrawList, isSelectChain]
   );
 
@@ -363,13 +361,15 @@ const WithdrawContent = ({
         id: accountId!,
       });
       if (res) {
-        const data = res?.filter((item) => {
-          const { recharge_addr } = item;
-          const idx = accountsList.findIndex(
-            (i) => i.address === recharge_addr
-          );
-          return idx > -1;
-        });
+        const data = res
+          ?.filter((item) => {
+            const { recharge_addr } = item;
+            const idx = accountsList.findIndex(
+              (i) => i.address === recharge_addr
+            );
+            return idx > -1;
+          })
+          .sort((a, b) => b.total_withdraw_limit - a.total_withdraw_limit);
 
         setWithdrawList(data);
         setSelectAddressChainList(data[0]);
