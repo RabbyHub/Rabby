@@ -1307,6 +1307,7 @@ export class KeyringService extends EventEmitter {
 
     this.store.updateState({ vault, booted, hasEncryptedKeyringData: false });
 
+    this.emit('resetPassword');
     // lock wallet
     this.setLocked();
   }
