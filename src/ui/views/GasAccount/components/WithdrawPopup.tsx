@@ -400,7 +400,7 @@ const WithdrawContent = ({
       setBtnLoading(true);
 
       const amount = Math.min(balance, chain.withdraw_limit);
-      await wallet.openapi.withdrawGasAccount({
+      const res: any = await wallet.openapi.withdrawGasAccount({
         sig: sig!,
         account_id: accountId!,
         amount,
@@ -408,6 +408,9 @@ const WithdrawContent = ({
         fee: chain.withdraw_fee,
         chain_id: chain.chain_id,
       });
+      if (!res.success) {
+        throw new Error(res?.msg || 'withdraw failed');
+      }
       refresh();
       handleRefreshHistory();
       onClose();
