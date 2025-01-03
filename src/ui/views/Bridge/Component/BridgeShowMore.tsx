@@ -161,7 +161,10 @@ export const BridgeShowMore = ({
             viewBox="0 0 14 14"
             width={14}
             height={14}
-            className={clsx('transition-transform', open && 'rotate-180')}
+            className={clsx(
+              'transition-transform',
+              open && 'rotate-180 translate-y-1'
+            )}
           />
         </div>
       </div>
