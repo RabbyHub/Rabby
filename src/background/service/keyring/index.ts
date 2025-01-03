@@ -322,6 +322,12 @@ export class KeyringService extends EventEmitter {
    */
   async setLocked(): Promise<MemStoreState> {
     // set locked
+    // release all transport before lock wallet
+    this.keyrings.forEach((keyring) => {
+      if (keyring.cleanUp) {
+        keyring.cleanUp();
+      }
+    });
     this.password = null;
     passwordClearKey();
     this.memStore.updateState({ isUnlocked: false });
