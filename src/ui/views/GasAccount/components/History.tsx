@@ -18,6 +18,7 @@ const HistoryItem = ({
   borderT = false,
   chainServerId,
   txId,
+  isWithdraw = false,
 }: {
   time: number;
   value: number;
@@ -25,13 +26,14 @@ const HistoryItem = ({
   className?: string;
   isPending?: boolean;
   borderT?: boolean;
+  isWithdraw?: boolean;
   chainServerId?: string;
   txId?: string;
 }) => {
   const { t } = useTranslation();
 
   const gotoTxDetail = () => {
-    if (chainServerId && txId) {
+    if (chainServerId && txId && !isWithdraw) {
       const chain = findChainByServerID(chainServerId);
       if (chain && chain.scanLink) {
         const scanLink = chain.scanLink.replace('_s_', '');
@@ -65,8 +67,14 @@ const HistoryItem = ({
             viewBox="0 0 16 16"
             className="w-16 h-16 animate-spin"
           />
-          <div>{t('page.gasAccount.deposit')}</div>
-          <RcIconOpenExternalCC viewBox="0 0 12 12" className="w-12 h-12" />
+          <div>
+            {isWithdraw
+              ? t('page.gasAccount.withdraw')
+              : t('page.gasAccount.deposit')}
+          </div>
+          {!isWithdraw && (
+            <RcIconOpenExternalCC viewBox="0 0 12 12" className="w-12 h-12" />
+          )}
         </div>
       ) : (
         <div className="text-14 text-r-neutral-foot">{sinceTime(time)}</div>
@@ -99,7 +107,12 @@ export const GasAccountHistory = () => {
 
   const { loading, txList, loadingMore, ref } = useGasAccountHistory();
 
-  if (!loading && !txList?.rechargeList.length && !txList?.list.length) {
+  if (
+    !loading &&
+    !txList?.rechargeList.length &&
+    !txList?.withdrawList.length &&
+    !txList?.list.length
+  ) {
     return (
       <div className="bg-r-neutral-card-1 h-[283px] flex flex-col gap-8 items-center rounded-[8px]">
         <RcIconEmptyCC
@@ -128,13 +141,31 @@ export const GasAccountHistory = () => {
           />
         ))}
       {!loading &&
+        txList?.withdrawList?.map((item, index) => (
+          <HistoryItem
+            isWithdraw={true}
+            key={item.create_at}
+            time={item.create_at}
+            value={item.amount}
+            sign={'-'}
+            borderT={!txList.rechargeList.length ? index !== 0 : true}
+            isPending={true}
+            chainServerId={item?.chain_id}
+            txId={item?.tx_id}
+          />
+        ))}
+      {!loading &&
         txList?.list.map((item, index) => (
           <HistoryItem
             key={item.create_at}
             time={item.create_at}
             value={item.usd_value}
             sign={item.history_type === 'recharge' ? '+' : '-'}
-            borderT={!txList?.rechargeList.length ? index !== 0 : true}
+            borderT={
+              !txList?.rechargeList.length && !txList?.withdrawList.length
+                ? index !== 0
+                : true
+            }
           />
         ))}
 
@@ -144,7 +175,9 @@ export const GasAccountHistory = () => {
             <LoadingItem
               key={index}
               borderT={
-                !txList?.rechargeList.length && !txList?.list.length
+                !txList?.rechargeList.length &&
+                !txList?.withdrawList.length &&
+                !txList?.list.length
                   ? index !== 0
                   : true
               }

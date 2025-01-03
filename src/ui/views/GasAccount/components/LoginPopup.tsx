@@ -85,8 +85,15 @@ export const GasACcountCurrentAddress = ({
   );
 };
 
-const GasAccountLoginContent = ({ onClose }: { onClose: () => void }) => {
-  const [toConfirm, setToConfirm] = useState(false);
+const GasAccountLoginContent = ({
+  onClose,
+  showConfirm,
+  setToConfirm,
+}: {
+  onClose: () => void;
+  showConfirm: boolean;
+  setToConfirm: (value: boolean) => void;
+}) => {
   const { t } = useTranslation();
 
   const { login } = useGasAccountMethods();
@@ -95,22 +102,17 @@ const GasAccountLoginContent = ({ onClose }: { onClose: () => void }) => {
     setToConfirm(true);
   };
 
-  const currentAccount = useCurrentAccount();
-
   const confirmAddress = () => {
     login();
   };
 
-  if (toConfirm && currentAccount) {
+  if (showConfirm) {
     return (
       <div className="w-full h-full flex flex-col justify-center items-center">
         <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[24px]">
           {t('page.gasAccount.loginConfirmModal.title')}
         </div>
         <GasACcountCurrentAddress />
-        <div className=" text-14 text-r-neutral-body px-20 text-center">
-          {t('page.gasAccount.loginConfirmModal.desc')}
-        </div>
         <div
           className={clsx(
             'flex items-center justify-center gap-16',
@@ -167,10 +169,13 @@ const GasAccountLoginContent = ({ onClose }: { onClose: () => void }) => {
 };
 
 export const GasAccountLoginPopup = (props: PopupProps) => {
+  const [toConfirm, setToConfirm] = useState(false);
+  const currentAccount = useCurrentAccount();
+
   return (
     <Popup
       placement="bottom"
-      height={280}
+      height={toConfirm ? 240 : 280}
       isSupportDarkMode
       bodyStyle={{
         padding: 0,
@@ -180,6 +185,8 @@ export const GasAccountLoginPopup = (props: PopupProps) => {
     >
       <GasAccountLoginContent
         onClose={props.onCancel || props.onClose || noop}
+        showConfirm={toConfirm && Boolean(currentAccount)}
+        setToConfirm={setToConfirm}
       />
     </Popup>
   );
