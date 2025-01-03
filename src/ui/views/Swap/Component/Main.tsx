@@ -582,7 +582,7 @@ export const Main = () => {
         !!amountAvailable &&
         !!payToken &&
         !!receiveToken && (
-          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-28')}>
+          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
             <BridgeShowMore
               openFeePopup={openFeePopup}
               open={showMoreOpen}

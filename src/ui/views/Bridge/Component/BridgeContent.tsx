@@ -442,7 +442,7 @@ export const BridgeContent = () => {
         />
       ) : null}
 
-      <div className="mx-20 mt-28">
+      <div className="mx-20 mt-20">
         {selectedBridgeQuote && (
           <BridgeShowMore
             openFeePopup={openFeePopup}

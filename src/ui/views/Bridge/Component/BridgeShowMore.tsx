@@ -147,10 +147,10 @@ export const BridgeShowMore = ({
 
   return (
     <div className="mx-16">
-      <div className="flex items-center gap-8 mb-8">
+      <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
-            'flex items-center justify-center opacity-30',
+            'flex items-center opacity-30',
             'cursor-pointer',
             'text-r-neutral-foot text-12'
           )}
