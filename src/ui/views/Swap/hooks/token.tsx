@@ -300,7 +300,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const nativeTokenDecimals = useMemo(
     () => findChain({ enum: chain })?.nativeTokenDecimals || 1e18,
-    [CHAINS?.[chain]]
+    [chain]
   );
 
   const gasLimit = useMemo(
