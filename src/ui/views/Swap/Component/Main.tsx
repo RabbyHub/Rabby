@@ -14,7 +14,12 @@ import BigNumber from 'bignumber.js';
 import { useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
-import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
+import {
+  useQuoteVisible,
+  useSetQuoteVisible,
+  useSetRabbyFee,
+  useSetRefreshId,
+} from '../hooks';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
@@ -431,6 +436,24 @@ export const Main = () => {
     ]
   );
 
+  const setRabbyFeeVisible = useSetRabbyFee();
+
+  const openFeePopup = useCallback(() => {
+    if (isWrapToken) {
+      return;
+    }
+    setRabbyFeeVisible({
+      visible: true,
+      dexName: activeProvider?.name || undefined,
+      feeDexDesc: activeProvider?.quote?.dexFeeDesc || undefined,
+    });
+  }, [
+    isWrapToken,
+    setRabbyFeeVisible,
+    activeProvider?.name,
+    activeProvider?.quote,
+  ]);
+
   return (
     <div
       className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
@@ -559,8 +582,9 @@ export const Main = () => {
         !!amountAvailable &&
         !!payToken &&
         !!receiveToken && (
-          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-28')}>
+          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
             <BridgeShowMore
+              openFeePopup={openFeePopup}
               open={showMoreOpen}
               setOpen={setShowMoreOpen}
               sourceName={sourceName}

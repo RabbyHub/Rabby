@@ -8,6 +8,7 @@ import {
   DEFAULT_BRIDGE_AGGREGATOR,
   DEFAULT_BRIDGE_SUPPORTED_CHAIN,
 } from '@/constant/bridge';
+import { findChainByServerID } from '@/utils/chain';
 
 export const bridge = createModel<RootModel>()({
   name: 'bridge',
@@ -122,7 +123,9 @@ export const bridge = createModel<RootModel>()({
           return acc;
         }, {} as Record<string, CHAINS_ENUM>);
         this.setField({
-          supportedChains: chains.map((item) => mappings[item]),
+          supportedChains: chains.map(
+            (item) => findChainByServerID(item)?.enum || mappings[item]
+          ),
         });
       }
     },
