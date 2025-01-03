@@ -6,7 +6,12 @@ import BigNumber from 'bignumber.js';
 import { useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
-import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
+import {
+  useQuoteVisible,
+  useSetQuoteVisible,
+  useSetRefreshId,
+  useSetSettingVisible,
+} from '../hooks';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
 import { findChainByEnum } from '@/utils/chain';
@@ -366,6 +371,12 @@ export const BridgeContent = () => {
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);
 
+  const switchFeePopup = useSetSettingVisible();
+
+  const openFeePopup = useCallback(() => {
+    switchFeePopup(true);
+  }, [switchFeePopup]);
+
   return (
     <div
       className={clsx(
@@ -434,6 +445,7 @@ export const BridgeContent = () => {
       <div className="mx-20 mt-28">
         {selectedBridgeQuote && (
           <BridgeShowMore
+            openFeePopup={openFeePopup}
             open={showMoreOpen}
             setOpen={setShowMoreOpen}
             sourceName={selectedBridgeQuote?.aggregator.name || ''}
