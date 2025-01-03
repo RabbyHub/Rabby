@@ -4980,6 +4980,23 @@ export class WalletController extends BaseController {
       tx,
     });
   };
+
+  savedUnencryptedKeyringData = async () =>
+    keyringService.savedUnencryptedKeyringData();
+
+  hasEncryptedKeyringData = async () =>
+    keyringService.hasEncryptedKeyringData();
+
+  hasUnencryptedKeyringData = async () =>
+    keyringService.hasUnencryptedKeyringData();
+
+  resetPassword = async (password: string) =>
+    keyringService.resetPassword(password);
+
+  resetBooted = async () => keyringService.resetBooted();
+
+  getUnencryptedKeyringTypes = async () =>
+    keyringService.getUnencryptedKeyringTypes();
 }
 
 const wallet = new WalletController();

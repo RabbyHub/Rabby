@@ -47,6 +47,11 @@ import {
 } from 'background/utils/password';
 import uninstalledMetricService from '../uninstalled';
 
+const UNENCRYPTED_IGNORE_KEYRING = [
+  KEYRING_TYPE.SimpleKeyring,
+  KEYRING_TYPE.HdKeyring,
+];
+
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
   HdKeyring,
@@ -62,6 +67,11 @@ export const KEYRING_SDK_TYPES = {
   CoboArgusKeyring,
   CoinbaseKeyring,
   EthImKeyKeyring,
+};
+
+export type KeyringSerializedData<T = any> = {
+  type: string;
+  data: T;
 };
 
 interface MemStoreState {
@@ -312,6 +322,12 @@ export class KeyringService extends EventEmitter {
    */
   async setLocked(): Promise<MemStoreState> {
     // set locked
+    // release all transport before lock wallet
+    this.keyrings.forEach((keyring) => {
+      if (keyring.cleanUp) {
+        keyring.cleanUp();
+      }
+    });
     this.password = null;
     passwordClearKey();
     this.memStore.updateState({ isUnlocked: false });
@@ -344,6 +360,11 @@ export class KeyringService extends EventEmitter {
       //
     } finally {
       this.setUnlocked();
+    }
+
+    // force store unencrypted keyring data if not exist
+    if (!this.store.getState().unencryptedKeyringData) {
+      await this.persistAllKeyrings();
     }
 
     return this.fullUpdate();
@@ -786,14 +807,14 @@ export class KeyringService extends EventEmitter {
    * @param {string} password - The keyring controller password.
    * @returns {Promise<boolean>} Resolves to true once keyrings are persisted.
    */
-  persistAllKeyrings(): Promise<boolean> {
+  async persistAllKeyrings(): Promise<boolean> {
     if (!this.isUnlocked()) {
       return Promise.reject(
         new Error('KeyringController - password is not a string')
       );
     }
 
-    return Promise.all(
+    const serializedKeyrings = await Promise.all(
       this.keyrings.map((keyring) => {
         return Promise.all([keyring.type, keyring.serialize()]).then(
           (serializedKeyringArray) => {
@@ -801,21 +822,42 @@ export class KeyringService extends EventEmitter {
             return {
               type: serializedKeyringArray[0],
               data: serializedKeyringArray[1],
-            };
+            } as KeyringSerializedData;
           }
         );
       })
-    )
-      .then((serializedKeyrings) => {
-        return passwordEncrypt({
-          data: serializedKeyrings,
-          password: this.password,
-        });
+    );
+
+    let hasEncryptedKeyringData = false;
+    const unencryptedKeyringData = serializedKeyrings
+      .map(({ type, data }) => {
+        if (!UNENCRYPTED_IGNORE_KEYRING.includes(type as any)) {
+          return { type, data };
+        }
+
+        // maybe empty keyring
+        // TODO: maybe need remove simple keyring if empty
+        if (type === KEYRING_TYPE.SimpleKeyring && !data.length) {
+          return undefined;
+        }
+
+        hasEncryptedKeyringData = true;
+        return undefined;
       })
-      .then((encryptedString) => {
-        this.store.updateState({ vault: encryptedString });
-        return true;
-      });
+      .filter(Boolean) as KeyringSerializedData[];
+
+    const encryptedString = await passwordEncrypt({
+      data: serializedKeyrings,
+      password: this.password,
+    });
+
+    this.store.updateState({
+      vault: encryptedString,
+      unencryptedKeyringData,
+      hasEncryptedKeyringData,
+    });
+
+    return true;
   }
 
   /**
@@ -1234,6 +1276,56 @@ export class KeyringService extends EventEmitter {
 
   isUnlocked(): boolean {
     return this.memStore.getState().isUnlocked;
+  }
+
+  /**
+   * unencryptedKeyringData is saved in the store
+   */
+  savedUnencryptedKeyringData(): boolean {
+    return 'unencryptedKeyringData' in this.store.getState();
+  }
+
+  /**
+   * has seed phrase or private key in the store
+   */
+  hasEncryptedKeyringData(): boolean {
+    return this.store.getState().hasEncryptedKeyringData;
+  }
+
+  /**
+   * has unencrypted keyring data (not seed phrase or private key) in the store
+   */
+  hasUnencryptedKeyringData(): boolean {
+    return this.store.getState().unencryptedKeyringData?.length > 0;
+  }
+
+  async resetPassword(password: string) {
+    // update vault and booted with new password
+    const unencryptedKeyringData = this.store.getState().unencryptedKeyringData;
+    const booted = await passwordEncrypt({
+      data: 'true',
+      password,
+    });
+    const vault = await passwordEncrypt({
+      data: unencryptedKeyringData,
+      password,
+    });
+
+    this.store.updateState({ vault, booted, hasEncryptedKeyringData: false });
+
+    this.emit('resetPassword');
+    // lock wallet
+    this.setLocked();
+  }
+
+  async resetBooted() {
+    this.store.updateState({ booted: undefined });
+  }
+
+  async getUnencryptedKeyringTypes() {
+    return (this.store
+      .getState()
+      .unencryptedKeyringData?.map((item) => item.type) ?? []) as string[];
   }
 }
 

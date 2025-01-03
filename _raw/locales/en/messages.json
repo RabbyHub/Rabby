@@ -1741,7 +1741,10 @@
         "required": "Enter the Password to Unlock",
         "placeholder": "Enter the Password to Unlock",
         "error": "incorrect password"
-      }
+      },
+      "title": "Rabby Wallet",
+      "description": "The game-changing wallet for Ethereum and all EVM chains",
+      "btnForgotPassword": "Forgot Password?"
     },
     "addToken": {
       "noTokenFound": "No token found",
@@ -2450,6 +2453,45 @@
         },
         "placeholder": "Input safe address",
         "loading": "Searching the deployed chain of this address"
+      }
+    },
+    "forgotPassword": {
+      "home": {
+        "title": "Forgot Password",
+        "description": "Rabby Wallet doesn't store your password and can't help you retrieve it. Reset your wallet to set up a new one.",
+        "button": "Begin Reset Process",
+        "descriptionNoData": "Rabby Wallet doesn't store your password and can't help you retrieve it. Set a new password if you forgot",
+        "buttonNoData": "Set Password"
+      },
+      "reset": {
+        "title": "Reset Rabby Wallet",
+        "button": "Confirm Reset",
+        "alert": {
+          "title": "Data will be deleted and unrecoverable:",
+          "seed": "Seed Phrase",
+          "privateKey": "Private Key"
+        },
+        "tip": {
+          "title": "Data will be kept:",
+          "hardware": "Imported Hardware Wallets",
+          "whitelist": "Whitelist Settings",
+          "records": "Signature Records",
+          "safe": "Imported Safe Wallets",
+          "watch": "Contacts and Watch-Only Addresses"
+        },
+        "confirm": "Type <1>RESET</1> in the box to confirm and proceed"
+      },
+      "tip": {
+        "title": "Rabby Wallet Reset Completed",
+        "description": "Create a new password to continue",
+        "button": "Set Password",
+        "descriptionNoData": "Add your address to get started",
+        "buttonNoData": "Add Address"
+      },
+      "success": {
+        "title": "Password Successfully Set",
+        "description": "You're all set to use Rabby Wallet",
+        "button": "Done"
       }
     }
   },
