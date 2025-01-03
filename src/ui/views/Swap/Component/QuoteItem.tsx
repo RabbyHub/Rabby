@@ -10,20 +10,18 @@ import BigNumber from 'bignumber.js';
 import ImgLock from '@/ui/assets/swap/lock.svg';
 import { ReactComponent as RcIconGasCC } from '@/ui/assets/swap/gas-cc.svg';
 import ImgVerified from '@/ui/assets/swap/verified.svg';
-import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 
 import {
   QuotePreExecResultInfo,
   QuoteProvider,
   isSwapWrapToken,
 } from '../hooks/quote';
-import { useSetQuoteVisible, useSetRabbyFee, verifySdk } from '../hooks';
+import { useSetQuoteVisible } from '../hooks';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useTranslation } from 'react-i18next';
 import { TokenWithChain } from '@/ui/component';
 import { Tooltip } from 'antd';
-import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 
 const GAS_USE_AMOUNT_LIMIT = 2_000_000;
 
@@ -158,8 +156,6 @@ export const DexQuoteItem = (
   const { t } = useTranslation();
 
   const openSwapQuote = useSetQuoteVisible();
-
-  const setRabbyFeeVisible = useSetRabbyFee();
 
   const isSdkDataPass = !!preExecResult?.isSdkPass;
 
@@ -495,21 +491,8 @@ export const DexQuoteItem = (
                 className={clsx(
                   'flex items-center gap-6 justify-end',
                   'text-13 font-medium',
-                  'relative',
-                  !isWrapToken && 'cursor-pointer'
+                  'relative'
                 )}
-                onClick={
-                  isWrapToken
-                    ? undefined
-                    : (e) => {
-                        e.stopPropagation();
-                        setRabbyFeeVisible({
-                          visible: true,
-                          dexName: dexId,
-                          feeDexDesc: quote?.dexFeeDesc || undefined,
-                        });
-                      }
-                }
               >
                 {disabled ? (
                   <span className="text-r-red-default">{bestQuotePercent}</span>
@@ -522,14 +505,6 @@ export const DexQuoteItem = (
                             usd: receivedTokenUsd,
                           })}
                     </span>
-                    <TooltipWithMagnetArrow
-                      arrowPointAtCenter
-                      overlayClassName={clsx('rectangle', 'w-[max-content]')}
-                      title={t('page.swap.no-fees-for-wrap')}
-                      visible={isWrapToken ? undefined : false}
-                    >
-                      <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                    </TooltipWithMagnetArrow>
                   </>
                 )}
               </div>

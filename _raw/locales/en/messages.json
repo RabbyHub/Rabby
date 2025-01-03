@@ -942,7 +942,7 @@
       "process-with-two-step-approve": "Proceed with two step approve",
       "fetch-best-quote": "Fetching the Best quote",
       "usd-after-fees": "≈ {{usd}} ",
-      "no-fees-for-wrap": "No Rabby fees for Wrap",
+      "no-fees-for-wrap": "No Rabby fee for Wrap",
       "No-available-quote": "No available quote",
       "price-impact": "Price Impact",
       "loss-tips": "You're losing {{usd}}. Try a smaller amount in a small market.",
