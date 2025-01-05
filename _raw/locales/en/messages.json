@@ -32,10 +32,10 @@
     },
     "signTx": {
       "nftIn": "NFT in",
-      "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
-      "gasLimitLessThanExpect": "Gas limit is low. There is 1% chance that the transaction may fail.",
-      "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
-      "nativeTokenNotEngouthForGas": "Gas balance is not enough for transaction",
+      "gasLimitNotEnough": "Gas limit is less than 21000. Transaction cannot be submitted",
+      "gasLimitLessThanExpect": "The gas limit is low, resulting in a 1% chance of transaction failure.",
+      "gasLimitLessThanGasUsed": "Gas limit is too low. There is a 95% chance of transaction failure.",
+      "nativeTokenNotEngouthForGas": "The gas balance is insufficient for the transaction.",
       "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
       "canOnlyUseImportedAddress": "You cannot sign transactions with a watch-only address.",
       "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
@@ -57,8 +57,8 @@
       "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
       "gasPriceMedian": "Median of last 100 on-chain transactions: ",
       "myNativeTokenBalance": "My Gas balance: ",
-      "gasLimitEmptyAlert": "Please input gas limit",
-      "gasLimitMinValueAlert": "Gas limit should be more than 21000",
+      "gasLimitEmptyAlert": "Please enter the gas limit",
+      "gasLimitMinValueAlert": "Gas limit should be greater than 21000",
       "nativeTokenForGas": "Use {{tokenName}} token on {{chainName}} to pay for gas",
       "gasAccountForGas": "Use USD from my GasAccount to pay for gas",
       "gasAccount": {
@@ -158,7 +158,7 @@
       },
       "sendNFT": {
         "title": "Send NFT",
-        "nftNotSupport": "NFT not supported"
+        "nftNotSupport": "NFTs are not supported"
       },
       "nftApprove": {
         "title": "NFT Approval",
@@ -665,7 +665,7 @@
       "whitelistAlert__temporaryGranted": "Temporary permission granted",
       "whitelistAlert__whitelisted": "The address is whitelisted",
       "balanceWarn": {
-        "gasFeeReservation": "Gas fee reservation required"
+        "gasFeeReservation": "Gas fee reservation is required"
       },
       "balanceError": {
         "insufficientBalance": "Insufficient balance"
