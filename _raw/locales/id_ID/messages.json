@@ -1,5 +1,4 @@
-[
-  {
+{
     "page": {
       "transactions": {
         "title": "Transaksi",
@@ -2694,4 +2693,3 @@
       "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Diimpor oleh Frasa Benih (Passphrase)"
     }
   }
-]
