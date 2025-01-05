@@ -20,7 +20,6 @@ import { tokenAmountBn } from '@/ui/utils/token';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import styled from 'styled-components';
 import BridgeToTokenSelect from './BridgeToTokenSelect';
-import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
 import { useSetSettingVisible } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
 import { useAsync } from 'react-use';
@@ -99,8 +98,6 @@ export const BridgeToken = ({
 
   const name = isFromToken ? t('page.bridge.From') : t('page.bridge.To');
   const chainObj = findChainByEnum(chain);
-
-  const openFeePopup = useSetSettingVisible();
 
   const isMaxRef = useRef(false);
 
@@ -334,13 +331,6 @@ export const BridgeToken = ({
               />
             ) : (
               <span>{useValue}</span>
-            )}
-            {!valueLoading && isToToken && !!value && (
-              <RcIconInfoCC
-                onClick={() => openFeePopup(true)}
-                viewBox="0 0 14 14"
-                className="w-14 h-14 text-r-neutral-foot cursor-pointer"
-              />
             )}
           </div>
           <div className="flex items-center gap-4 relative">

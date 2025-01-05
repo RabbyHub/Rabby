@@ -14,9 +14,7 @@ import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg
 import { tokenAmountBn } from '@/ui/utils/token';
 import clsx from 'clsx';
 import SkeletonInput from 'antd/lib/skeleton/Input';
-import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
-import { QuoteProvider, useSetRabbyFee } from '../hooks';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { QuoteProvider } from '../hooks';
 
 const StyledInput = styled(Input)`
   &,
@@ -143,22 +141,9 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     openTokenModal: () => void;
   }) => React.ReactNode = useCallback((p) => <TokenRender {...p} />, []);
 
-  const setRabbyFeeVisible = useSetRabbyFee();
-
   const isWrapQuote = useMemo(() => {
     return currentQuote?.name === 'WrapToken';
   }, [currentQuote?.name]);
-
-  const openFeePopup = useCallback(() => {
-    if (isWrapQuote) {
-      return;
-    }
-    setRabbyFeeVisible({
-      visible: true,
-      dexName: currentQuote?.name || undefined,
-      feeDexDesc: currentQuote?.quote?.dexFeeDesc || undefined,
-    });
-  }, [isWrapQuote, currentQuote?.name, currentQuote?.quote]);
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -280,19 +265,6 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             />
           ) : (
             <span>{usdValue}</span>
-          )}
-          {!isFrom && !valueLoading && !!value && (
-            <TooltipWithMagnetArrow
-              title={isWrapQuote ? t('page.swap.no-fee-for-wrap') : null}
-              visible={isWrapQuote ? undefined : false}
-              className="rectangle w-[max-content]"
-            >
-              <RcIconInfoCC
-                onClick={openFeePopup}
-                viewBox="0 0 14 14"
-                className="w-14 h-14 text-r-neutral-foot cursor-pointer"
-              />
-            </TooltipWithMagnetArrow>
           )}
         </div>
       </div>
