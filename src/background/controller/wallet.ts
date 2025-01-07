@@ -4917,6 +4917,12 @@ export class WalletController extends BaseController {
       throw e;
     }
   };
+  ethPersonalSign = async (
+    ...args: Parameters<typeof providerController.personalSign>
+  ) => {
+    return providerController.personalSign(...args);
+  };
+
   tryOpenOrActiveUserGuide = async () => {
     if (this.isBooted()) {
       return false;
