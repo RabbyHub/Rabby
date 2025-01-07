@@ -2408,10 +2408,10 @@
         "connect": "Connect OneKey"
       },
       "importTrezor": {
-        "title": "Terzor",
+        "title": "Trezor",
         "tip1": "1. Plug in your Trezor device",
         "tip2": "2. Unlock your device",
-        "connect": "Connect Terzor"
+        "connect": "Connect Trezor"
       },
       "ImportGridPlus": {
         "title": "GridPlus",
