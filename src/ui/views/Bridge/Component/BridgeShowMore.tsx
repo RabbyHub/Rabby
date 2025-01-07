@@ -7,7 +7,6 @@ import React, {
   Dispatch,
   PropsWithChildren,
   SetStateAction,
-  useEffect,
   useMemo,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -18,9 +17,6 @@ import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
 import styled from 'styled-components';
 import { useDebounce } from 'react-use';
-
-const dottedClassName =
-  'h-0 flex-1 border-b-[1px] border-solid border-rabby-neutral-line opacity-50';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -67,6 +63,7 @@ export const BridgeShowMore = ({
   originPreferMEVGuarded,
   switchPreferMEV,
   recommendValue,
+  openFeePopup,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -97,8 +94,11 @@ export const BridgeShowMore = ({
   originPreferMEVGuarded?: boolean;
   switchPreferMEV?: (b: boolean) => void;
   recommendValue?: number;
+  openFeePopup: () => void;
 }) => {
   const { t } = useTranslation();
+
+  const RABBY_FEE = '0.25%';
 
   const data = useMemo(() => {
     if (quoteLoading || (!sourceLogo && !sourceName)) {
@@ -147,8 +147,7 @@ export const BridgeShowMore = ({
 
   return (
     <div className="mx-16">
-      <div className="flex items-center gap-8 mb-8">
-        <div className={clsx(dottedClassName)} />
+      <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
             'flex items-center opacity-30',
@@ -162,10 +161,12 @@ export const BridgeShowMore = ({
             viewBox="0 0 14 14"
             width={14}
             height={14}
-            className={clsx('transition-transform', open && 'rotate-180')}
+            className={clsx(
+              'transition-transform',
+              open && 'rotate-180 translate-y-1'
+            )}
           />
         </div>
-        <div className={clsx(dottedClassName)} />
       </div>
 
       <div className={clsx('overflow-hidden', !open && 'h-0')}>
@@ -275,6 +276,23 @@ export const BridgeShowMore = ({
           isWrapToken={isWrapToken}
           recommendValue={recommendValue}
         />
+
+        <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
+          <div
+            className={clsx(
+              'text-12 font-medium',
+              isWrapToken
+                ? 'text-r-neutral-foot'
+                : 'text-r-blue-default cursor-pointer'
+            )}
+            onClick={openFeePopup}
+          >
+            {isWrapToken && type === 'swap'
+              ? t('page.swap.no-fees-for-wrap')
+              : RABBY_FEE}
+          </div>
+        </ListItem>
+
         {showMEVGuardedSwitch && type === 'swap' ? (
           <ListItem
             name={

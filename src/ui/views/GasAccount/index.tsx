@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { ReactComponent as RcIconMore } from '@/ui/assets/gas-account/more.svg';
 
@@ -20,8 +20,9 @@ import { GasAccountWrapperBg } from './components/WrapperBg';
 import { GasAccountBlueLogo } from './components/GasAccountBlueLogo';
 import BigNumber from 'bignumber.js';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
+import clsx from 'clsx';
 
 const DEPOSIT_LIMIT = 1000;
 
@@ -33,12 +34,18 @@ const GasAccountInner = () => {
 
   const [depositVisible, setDepositVisible] = useState(false);
 
+  const [refreshHistoryKey, setRefreshHistoryKey] = useState(0);
+
   const [withdrawVisible, setWithdrawVisible] = useState(false);
 
   const history = useHistory();
   const gotoDashboard = () => {
     history.push('/dashboard');
   };
+
+  const handleRefreshHistory = useCallback(() => {
+    setRefreshHistoryKey((prevKey) => prevKey + 1);
+  }, [setRefreshHistoryKey]);
 
   const { value, loading } = useGasAccountInfo();
   const { isLogin } = useGasAccountLogin({ value, loading });
@@ -55,14 +62,22 @@ const GasAccountInner = () => {
 
   const isRisk = useAml();
 
+  const dispatch = useRabbyDispatch();
+
+  useEffect(() => {
+    dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
+    });
+  }, []);
+
   const openDepositPopup = () => {
-    if (
-      gasAccount?.address &&
-      currentAccount?.address !== gasAccount?.address
-    ) {
-      setSwitchAddrVisible(true);
-      return;
-    }
+    // if (
+    //   gasAccount?.address &&
+    //   currentAccount?.address !== gasAccount?.address
+    // ) {
+    //   setSwitchAddrVisible(true);
+    //   return;
+    // }
     setDepositVisible(true);
   };
 
@@ -136,12 +151,24 @@ const GasAccountInner = () => {
           </div>
 
           <div className="w-full mt-auto flex gap-12 items-center justify-center relative">
-            <GasAccountBlueBorderedButton
-              block
-              onClick={() => setWithdrawVisible(true)}
+            <TooltipWithMagnetArrow
+              className="rectangle w-[max-content]"
+              visible={!balance ? undefined : false}
+              title={t('page.gasAccount.noBalance')}
             >
-              {t('page.gasAccount.withdraw')}
-            </GasAccountBlueBorderedButton>
+              <GasAccountBlueBorderedButton
+                block
+                className={clsx(!balance && 'opacity-50 cursor-not-allowed')}
+                onClick={() => {
+                  if (!balance) {
+                    return;
+                  }
+                  setWithdrawVisible(true);
+                }}
+              >
+                {t('page.gasAccount.withdraw')}
+              </GasAccountBlueBorderedButton>
+            </TooltipWithMagnetArrow>
             <TooltipWithMagnetArrow
               className="rectangle w-[max-content]"
               visible={isRisk || balance >= DEPOSIT_LIMIT ? undefined : false}
@@ -165,7 +192,7 @@ const GasAccountInner = () => {
           </div>
         </GasAccountWrapperBg>
 
-        <GasAccountHistory />
+        <GasAccountHistory key={refreshHistoryKey} />
       </div>
 
       <GasAccountLoginPopup
@@ -190,6 +217,7 @@ const GasAccountInner = () => {
       <WithdrawPopup
         visible={withdrawVisible}
         onCancel={() => setWithdrawVisible(false)}
+        handleRefreshHistory={handleRefreshHistory}
         balance={balance}
       />
 

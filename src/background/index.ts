@@ -244,6 +244,20 @@ restoreAppState();
   );
 }
 
+keyringService.on('resetPassword', async () => {
+  const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
+
+  if (
+    gasAccount?.account?.type === KEYRING_TYPE.SimpleKeyring ||
+    gasAccount?.account?.type === KEYRING_TYPE.HdKeyring
+  ) {
+    gasAccountService.setGasAccountSig();
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+    });
+  }
+});
+
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
   if (

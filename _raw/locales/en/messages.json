@@ -942,7 +942,7 @@
       "process-with-two-step-approve": "Proceed with two step approve",
       "fetch-best-quote": "Fetching the Best quote",
       "usd-after-fees": "≈ {{usd}} ",
-      "no-fees-for-wrap": "No Rabby fees for Wrap",
+      "no-fees-for-wrap": "No Rabby fee for Wrap",
       "No-available-quote": "No available quote",
       "price-impact": "Price Impact",
       "loss-tips": "You're losing {{usd}}. Try a smaller amount in a small market.",
@@ -1750,7 +1750,10 @@
         "required": "Enter the Password to Unlock",
         "placeholder": "Enter the Password to Unlock",
         "error": "incorrect password"
-      }
+      },
+      "title": "Rabby Wallet",
+      "description": "The game-changing wallet for Ethereum and all EVM chains",
+      "btnForgotPassword": "Forgot Password?"
     },
     "addToken": {
       "noTokenFound": "No token found",
@@ -2285,6 +2288,7 @@
       "title": "GasAccount",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
+      "noBalance": "No balance",
       "gasExceed": "GasAccount balance cannot exceed $1000",
       "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
@@ -2303,21 +2307,33 @@
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",
-        "desc": "Once logged out, you will no longer be able to use GasAccount to pay for gas fees.",
+        "desc": "Logging out disables GasAccount. You can restore your GasAccount by logging in with this address.",
         "logout": "Log out"
       },
       "depositPopup": {
         "title": "Deposit",
         "desc": "Make a deposit to Rabby's DeBank L2 Account with no extra fees—withdraw anytime.",
+        "invalidAmount": "Must be under 500",
         "amount": "Amount",
         "token": "Token",
         "selectToken": "Select Token to Deposit"
       },
       "withdrawPopup": {
+        "noEnoughValuetBalance": "Vault Balance insufficient. Switch chain or try again later.",
+        "noEnoughGas": "Amount too low to cover gas fees",
+        "riskMessageFromChain": "Due to risk control, the withdrawal limit depends on the total amount deposited from this chain.",
+        "riskMessageFromAddress": "Due to risk control, the withdrawal limit depends on the total amount this address has deposited",
+        "selectDestinationChain": "Select destination chain",
+        "selectRecipientAddress": "Select recipient address",
+        "withdrawalLimit": "Withdrawal limit",
         "title": "Withdraw",
         "desc": "You can withdraw your GasAccount balance to your DeBank L2 Wallet. Log in to your DeBank L2 Wallet to transfer the funds to a supported blockchain as needed.",
         "amount": "Amount",
-        "to": "To"
+        "to": "To",
+        "selectChain": "Select Chain",
+        "recipientAddress": "Recipient address",
+        "destinationChain": "Destination chain",
+        "deductGasFees": "Received amount will deduct gas fees"
       },
       "withdrawConfirmModal": {
         "title": "Transferred to your DeBank L2 Wallet",
@@ -2451,6 +2467,45 @@
     "metamaskModeDapps": {
       "title": "MetaMask Mode",
       "desc": "MetaMask Mode enabled for the following Dapps. You can connect Rabby by selecting the MetaMask option."
+    },
+    "forgotPassword": {
+      "home": {
+        "title": "Forgot Password",
+        "description": "Rabby Wallet doesn't store your password and can't help you retrieve it. Reset your wallet to set up a new one.",
+        "button": "Begin Reset Process",
+        "descriptionNoData": "Rabby Wallet doesn't store your password and can't help you retrieve it. Set a new password if you forgot",
+        "buttonNoData": "Set Password"
+      },
+      "reset": {
+        "title": "Reset Rabby Wallet",
+        "button": "Confirm Reset",
+        "alert": {
+          "title": "Data will be deleted and unrecoverable:",
+          "seed": "Seed Phrase",
+          "privateKey": "Private Key"
+        },
+        "tip": {
+          "title": "Data will be kept:",
+          "hardware": "Imported Hardware Wallets",
+          "whitelist": "Whitelist Settings",
+          "records": "Signature Records",
+          "safe": "Imported Safe Wallets",
+          "watch": "Contacts and Watch-Only Addresses"
+        },
+        "confirm": "Type <1>RESET</1> in the box to confirm and proceed"
+      },
+      "tip": {
+        "title": "Rabby Wallet Reset Completed",
+        "description": "Create a new password to continue",
+        "button": "Set Password",
+        "descriptionNoData": "Add your address to get started",
+        "buttonNoData": "Add Address"
+      },
+      "success": {
+        "title": "Password Successfully Set",
+        "description": "You're all set to use Rabby Wallet",
+        "button": "Done"
+      }
     }
   },
   "component": {
