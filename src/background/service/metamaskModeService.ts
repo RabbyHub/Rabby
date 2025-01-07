@@ -83,6 +83,7 @@ class MetamaskModeService {
         delete (window as any).rabbyWalletRouter.rabbyProvider.isRabby;
         (window as any).rabbyWalletRouter.rabbyEthereumProvider.isMetaMask = true;
         delete (window as any).rabbyWalletRouter.rabbyEthereumProvider.isRabby;
+        window.dispatchEvent(new Event('eip6963:requestProvider'));
       }
     })();
   };
