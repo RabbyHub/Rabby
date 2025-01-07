@@ -104,9 +104,11 @@ const flowContext = flow
     const {
       request: {
         session: { origin, name, icon },
+        data,
       },
       mapMethod,
     } = ctx;
+    console.log(ctx);
     if (!Reflect.getMetadata('SAFE', providerController, mapMethod)) {
       if (!permissionService.hasPermission(origin)) {
         if (connectOrigins.has(origin)) {
@@ -119,12 +121,13 @@ const flowContext = flow
         try {
           const { defaultChain } = await notificationService.requestApproval(
             {
-              params: { origin, name, icon },
+              params: { origin, name, icon, $ctx: data.$ctx },
               approvalComponent: 'Connect',
             },
             { height: 800 }
           );
           connectOrigins.delete(origin);
+          console.log('xxxxx');
           permissionService.addConnectedSiteV2({
             origin,
             name,

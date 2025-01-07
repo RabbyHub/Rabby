@@ -813,15 +813,15 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconPreferMetamask,
-          content: t('page.dashboard.settings.settings.metamaskPreferredDapps'),
+          content: t('page.dashboard.settings.settings.metamaskMode'),
           onClick: () => {
-            history.push('/prefer-metamask-dapps');
+            history.push('/metamask-mode-dapps');
             matomoRequestEvent({
               category: 'Setting',
               action: 'clickToUse',
-              label: 'MetaMask Preferred Dapps',
+              label: 'MetaMask Mode Dapps',
             });
-            reportSettings('MetaMask Preferred Dapps');
+            reportSettings('MetaMask Mode Dapps');
           },
         },
         {
