@@ -58,7 +58,7 @@ export const formatTokenAmount = (
   if (moreDecimalsWhenNotEnough && bn.lt(0.00000001)) {
     return '<0.00000001';
   }
-  if (bn.lte(0.00001)) {
+  if (bn.lte(0.0001)) {
     return formatLittleNumber(bn.toFixed());
   }
   if (!split[1] || split[1].length < realDecimals) {
@@ -173,12 +173,9 @@ export const formatAmount = (amount: string | number, decimals = 4) => {
   if (amount > 1) return formatNumber(amount, 4);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  if (amount < 0.00001) {
+  if (amount < 0.0001) {
     const str = new BigNumber(amount).toFixed();
-    if (str.length > 8) {
-      return formatLittleNumber(str);
-    }
-    return amount.toString();
+    return formatLittleNumber(str);
   }
   return formatNumber(amount, decimals);
 };
