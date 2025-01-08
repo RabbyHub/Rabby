@@ -220,6 +220,35 @@ class TransactionWatcher {
     );
   };
 
+  clearSinglePendingTx = ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) => {
+    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
+      (m, [key, v]) => {
+        // address_chain_nonce
+        const [kAddress, , _nonce] = key.split('_');
+        const chainItem = findChainByEnum(v.chain);
+        const isSameAddr = isSameAddress(address, kAddress);
+        if (+chainId === chainItem?.id && isSameAddr && +_nonce === +nonce) {
+          return m;
+        }
+        // keep pending txs of other addresses
+        if (v) {
+          m[key] = v;
+        }
+
+        return m;
+      },
+      {}
+    );
+  };
+
   _clearBefore = (id: string) => {
     const [address, nonceStr, chain] = id.split('_');
     const nonce = Number(nonceStr);
