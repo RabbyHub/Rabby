@@ -317,12 +317,7 @@ class LedgerBridgeKeyring {
     const hdPath = await this.unlockAccountByAddress(address);
     await this.makeApp(true);
     try {
-      const resolution = await ledgerService.resolveTransaction(
-        rawTxHex,
-        {},
-        {}
-      );
-      const res = await this.app!.signTransaction(hdPath, rawTxHex, resolution);
+      const res = await this.app!.signTransaction(hdPath, rawTxHex);
       const newOrMutatedTx = handleSigning(res);
       const valid = newOrMutatedTx.verifySignature();
       if (valid) {
