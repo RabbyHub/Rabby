@@ -13,6 +13,7 @@ import {
 } from '@/constant';
 import { Item } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'antd';
 
 export const ImportWalletList = () => {
   const { t } = useTranslation();
@@ -34,6 +35,10 @@ export const ImportWalletList = () => {
         {
           type: KEYRING_CLASS.HARDWARE.LEDGER,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.LEDGER].icon,
+          preventClick:
+            WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.LEDGER].preventClick,
+          tipI18nKey:
+            WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.LEDGER].tipI18nKey,
         },
         {
           type: KEYRING_CLASS.HARDWARE.TREZOR,
@@ -103,20 +108,30 @@ export const ImportWalletList = () => {
       <div className="mt-24 flex flex-col items-center justify-center gap-16">
         {tipList.map((item, index) => {
           return (
-            <Item
+            <Tooltip
+              title={item.tipI18nKey ? t(item.tipI18nKey) : undefined}
               key={item.type}
-              bgColor="var(--r-neutral-card2, #F2F4F7)"
-              px={16}
-              py={20}
-              leftIcon={item.logo}
-              leftIconClassName="w-24 h-24 mr-12"
-              onClick={() => {
-                gotoImport(item.type);
-              }}
-              className="rounded-[8px] text-[17px] font-medium text-r-neutral-title1"
+              overlayClassName="rectangle"
             >
-              {BRAND_ALIAN_TYPE_TEXT[item.type]}
-            </Item>
+              <Item
+                key={item.type}
+                bgColor="var(--r-neutral-card2, #F2F4F7)"
+                px={16}
+                py={20}
+                leftIcon={item.logo}
+                leftIconClassName="w-24 h-24 mr-12"
+                disabled={item.preventClick}
+                onClick={() => {
+                  if (item.preventClick) {
+                    return;
+                  }
+                  gotoImport(item.type);
+                }}
+                className="rounded-[8px] text-[17px] font-medium text-r-neutral-title1"
+              >
+                {BRAND_ALIAN_TYPE_TEXT[item.type]}
+              </Item>
+            </Tooltip>
           );
         })}
       </div>

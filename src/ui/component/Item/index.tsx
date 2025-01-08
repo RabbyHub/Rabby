@@ -22,6 +22,7 @@ const ItemWrapper = styled.div<{
   bgColor: string;
   // default var(--r-blue-light-1, #eef1ff);
   hoverBgColor: string;
+  disabled?: boolean;
 }>`
   width: 100%;
 
@@ -35,9 +36,10 @@ const ItemWrapper = styled.div<{
   padding-bottom: ${({ py: y }) => (typeof y === 'number' ? y + 'px' : y)};
   padding-left: ${({ px: x }) => (typeof x === 'number' ? x + 'px' : x)};
   padding-right: ${({ px: x }) => (typeof x === 'number' ? x + 'px' : x)};
+  opacity: ${(p) => (p.disabled ? 0.6 : 1)};
 
   ${(p) =>
-    p.hoverBorder
+    p.hoverBorder && !p.disabled
       ? css`
           &:hover {
             background-color: ${p.hoverBgColor};
@@ -69,6 +71,7 @@ interface ItemProps extends ComponentPropsWithoutRef<'div'> {
   rightIconClassName?: string;
   left?: ReactNode;
   right?: ReactNode;
+  disabled?: boolean;
 }
 
 export const Item = (props: PropsWithChildren<ItemProps>) => {
