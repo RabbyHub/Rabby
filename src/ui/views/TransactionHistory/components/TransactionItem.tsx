@@ -42,6 +42,7 @@ export const TransactionItem = ({
   onQuickCancel,
   onRetry,
   txRequests,
+  onClearPending,
 }: {
   item: TransactionGroup;
   canCancel: boolean;
@@ -49,6 +50,7 @@ export const TransactionItem = ({
   txRequests: Record<string, TxRequest>;
   onQuickCancel?(): void;
   onRetry?(): void;
+  onClearPending?(): void;
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -85,6 +87,9 @@ export const TransactionItem = ({
     if (mode === CANCEL_TX_TYPE.ON_CHAIN_CANCEL) {
       handleOnChainCancel();
     }
+    if (mode === CANCEL_TX_TYPE.CLEAR_PENDING_TX) {
+      handleClearPending();
+    }
     setIsShowCancelPopup(false);
   };
   const handleQuickCancel = async () => {
@@ -99,6 +104,23 @@ export const TransactionItem = ({
         });
         onQuickCancel?.();
         message.success(t('page.activities.signedTx.message.cancelSuccess'));
+      } catch (e) {
+        message.error(e.message);
+      }
+    }
+  };
+
+  const handleClearPending = async () => {
+    const maxGasTx = findMaxGasTx(item.txs);
+    if (maxGasTx?.reqId) {
+      try {
+        await wallet.clearPendingTransaction({
+          chainId: maxGasTx.rawTx.chainId,
+          nonce: +maxGasTx.rawTx.nonce,
+          address: maxGasTx.rawTx.from,
+        });
+        message.success(t('page.activities.signedTx.message.deleteSuccess'));
+        onClearPending?.();
       } catch (e) {
         message.error(e.message);
       }

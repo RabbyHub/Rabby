@@ -199,7 +199,7 @@
         "cancel": "取消",
         "claimRabbyBadge": "領取 Rabby Badge",
         "clearPending": "清除待完成交易",
-        "clearPendingTip1": "這將清除你所有待完成的交易。這可以幫助你解決在某些情況下 Rabby 中的交易狀態與鏈上狀態不匹配的問題。",
+        "clearPendingTip1": "",
         "clearPendingTip2": "這不會改變你帳戶中的結餘，也不會要求你重新輸入助記詞。你的所有資產和帳戶信息都將保持安全。",
         "clearWatchAddressContent": "你確定刪除所有觀察地址嗎？",
         "clearWatchMode": "清除觀察地址",

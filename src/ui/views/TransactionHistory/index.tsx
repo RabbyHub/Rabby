@@ -77,13 +77,7 @@ const TransactionHistory = () => {
 
   return (
     <div className="tx-history">
-      <SkipNonceAlert
-        pendings={pendingList}
-        onClearPending={() => {
-          init();
-          loadPendingListQueue();
-        }}
-      />
+      <SkipNonceAlert pendings={pendingList} />
       {pendingList.length > 0 && (
         <div className="tx-history__pending">
           {pendingList.map((item) => (
@@ -97,6 +91,9 @@ const TransactionHistory = () => {
                 )?.nonce === item.nonce
               }
               onComplete={() => handleTxComplete()}
+              onClearPending={() => {
+                init();
+              }}
               txRequests={txRequests}
               // onQuickCancel={init}
             />
