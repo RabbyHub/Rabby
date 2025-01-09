@@ -922,10 +922,13 @@ const SettingsInner = ({
           leftIcon: RcIconSettingsGitForkCC,
           content: 'Test sendPersonalMessage',
           onClick: async () => {
+            const currentAddress =
+              (await wallet.getCurrentAccount())?.address || '';
+
             const result = await sendPersonalMessage({
               data: [
                 '0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765',
-                '0x7175eb01f7e4abfbfe6a32f583763ab3afdbcca4',
+                currentAddress,
                 'Example password',
               ],
               wallet,

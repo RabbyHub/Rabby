@@ -1,8 +1,7 @@
 import { EVENTS, INTERNAL_REQUEST_SESSION } from '@/constant';
-import { hex2Text, WalletControllerType } from '@/ui/utils';
+import { WalletControllerType } from '@/ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 import eventBus from '@/eventBus';
-import { parseAction } from '@rabby-wallet/rabby-action';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 
 // fail code
@@ -67,29 +66,12 @@ export const sendPersonalMessage = async ({
 }) => {
   onProgress?.('building');
   const { address, ...currentAccount } = (await wallet.getCurrentAccount())!;
-  const [hexData, from] = data;
-  const signText = hex2Text(hexData);
 
   report({
     action: 'createSignText',
     wallet,
     currentAccount,
   });
-
-  // fetch action data
-  const actionData = await wallet.openapi.parseText({
-    text: signText,
-    address,
-    origin: INTERNAL_REQUEST_SESSION.origin,
-  });
-  const parsed = parseAction({
-    type: 'text',
-    data: actionData.action,
-    text: signText,
-    sender: from,
-  });
-
-  const logId = actionData.log_id;
 
   onProgress?.('builded');
 
