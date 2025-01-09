@@ -93,6 +93,13 @@ const getProvider = ({ origin }: { origin: string }) => {
   return permissionService.getSite(origin)?.rdns;
 };
 
+const resetProvider = ({ origin }: { origin: string }) => {
+  const site = permissionService.getSite(origin);
+  if (site) {
+    permissionService.setSite({ ...site, rdns: undefined });
+  }
+};
+
 export default {
   tabCheckin,
   getProviderState,
@@ -100,4 +107,5 @@ export default {
   hasOtherProvider,
   isDefaultWallet,
   'rabby:getProvider': getProvider,
+  'rabby:resetProvider': resetProvider,
 };

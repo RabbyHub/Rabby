@@ -776,13 +776,13 @@ const Connect = (props: ConnectProps) => {
                   <div
                     className={clsx(
                       'bg-r-neutral-card-2 p-[14px] h-[48px]  text-center rounded-[6px]',
-                      'text-[16px] leading-[19px] font-medium cursor-pointer'
+                      'text-[16px] leading-[19px] font-medium cursor-pointer text-r-neutral-body'
                     )}
                     onClick={() => {
                       setIsShowSelectWallet(true);
                     }}
                   >
-                    Connect with Another Wallet
+                    {t('page.connect.otherWalletBtn')}
                   </div>
                 </div>
               ) : null}
