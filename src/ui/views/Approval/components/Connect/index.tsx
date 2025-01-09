@@ -776,7 +776,9 @@ const Connect = (props: ConnectProps) => {
                   <div
                     className={clsx(
                       'bg-r-neutral-card-2 p-[14px] h-[48px]  text-center rounded-[6px]',
-                      'text-[16px] leading-[19px] font-medium cursor-pointer text-r-neutral-body'
+                      'text-[16px] leading-[19px] font-medium cursor-pointer text-r-neutral-body',
+                      'border-[1px] border-transparent',
+                      'hover:border-rabby-blue-default hover:bg-r-blue-light1'
                     )}
                     onClick={() => {
                       setIsShowSelectWallet(true);
