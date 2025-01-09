@@ -131,6 +131,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
+                            setIsShowTooltip(false);
                             setIsShowMetamaskModePopup(true);
                           }}
                         >
