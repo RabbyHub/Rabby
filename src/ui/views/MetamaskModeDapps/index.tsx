@@ -63,7 +63,7 @@ export const MetamaskModeDapps = () => {
         <img
           src={isDarkTheme ? IconMetamaskModeDark : IconMetamaskMode}
           alt=""
-          className="block mx-auto w-[216px] h-[48px] mb-[12px]"
+          className="block mx-auto w-[221px] h-[54px] mb-[6px]"
         />
         <div className="text-r-neutral-body text-[13px] leading-[140%]">
           {t('page.metamaskModeDapps.desc')}

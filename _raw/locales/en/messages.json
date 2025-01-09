@@ -1841,7 +1841,12 @@
       "SignTestnetPermission": {
         "title": "Signing permission"
       },
-      "ignoreAll": "Ignore all"
+      "ignoreAll": "Ignore all",
+      "otherWalletBtn": "Connect with Another Wallet",
+      "SelectWallet": {
+        "title": "Select a Wallet to Connect",
+        "desc": "Choose from the wallets you have installed"
+      }
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",

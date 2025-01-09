@@ -116,6 +116,9 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                     placement="top"
                     overlayClassName={clsx('rectangle max-w-[225px]')}
                     visible={isShowTooltip}
+                    align={{
+                      offset: [0, 4],
+                    }}
                     title={
                       <Trans
                         t={t}

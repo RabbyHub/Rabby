@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconBack } from 'ui/assets/icon-back-cc.svg';
 
 export interface EIP6963ProviderInfo {
@@ -19,6 +20,7 @@ export const SelectWallet: React.FC<Props> = ({
   providers,
   onSelect,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="py-[32px] px-[20px]">
       <div>
@@ -27,10 +29,10 @@ export const SelectWallet: React.FC<Props> = ({
         </div>
         <div className="text-center mb-[32px]">
           <h1 className="text-[24px] leading-[29px] font-medium text-r-neutral-title1 mt-0 mb-[8px]">
-            Select a Wallet to Connect
+            {t('page.connect.SelectWallet.title')}
           </h1>
           <p className="text-[15px] leading-[18px] text-r-neutral-body m-0">
-            Choose from the wallets you have installed
+            {t('page.connect.SelectWallet.desc')}
           </p>
         </div>
       </div>
@@ -41,8 +43,9 @@ export const SelectWallet: React.FC<Props> = ({
               key={item.uuid}
               className={clsx(
                 'p-[20px] w-[172px] h-[100px] cursor-pointer',
-                'bg-r-neutral-card-2 rounded-[8px]',
-                'flex flex-col items-center justify-center'
+                'bg-r-neutral-card-2 rounded-[8px] border-[1px] border-transparent',
+                'flex flex-col items-center justify-center',
+                'hover:bg-r-blue-light1 hover:border-rabby-blue-default'
               )}
               onClick={() => {
                 onSelect?.(item);
