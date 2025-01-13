@@ -41,8 +41,6 @@ export const SubmitActions: React.FC<Props> = ({
     setIsSign(false);
   }, []);
 
-  console.log('gasLess', gasLess);
-
   return (
     <ActionsContainer onCancel={onCancel}>
       {isSign ? (

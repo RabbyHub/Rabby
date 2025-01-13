@@ -856,6 +856,36 @@ class TxHistory {
     });
   }
 
+  removeLocalPendingTx({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) {
+    const transactions = this.store.transactions[address.toLowerCase()];
+    if (!transactions) return;
+    this._setStoreTransaction({
+      ...this.store.transactions,
+      [address.toLowerCase()]: Object.values(transactions)
+        .filter((transaction) => {
+          return !(
+            transaction.isPending &&
+            +chainId === +transaction.chainId &&
+            +transaction.nonce === +nonce
+          );
+        })
+        .reduce((res, current) => {
+          return {
+            ...res,
+            [`${current.chainId}-${current.nonce}`]: current,
+          };
+        }, {}),
+    });
+  }
+
   getPendingTxByHash(hash: string) {
     for (const address in this.store.transactions) {
       const addressTxMap = this.store.transactions[address];
@@ -914,34 +944,6 @@ class TxHistory {
     }
 
     return maxLocalOrProcessingNonce + 1;
-  }
-
-  getSkipedTxs(address: string) {
-    const dict = groupBy(
-      Object.values(this.store.transactions[address.toLowerCase()] || {}),
-      (item) => item.chainId
-    );
-
-    return Object.entries(dict).reduce((res, [key, list]) => {
-      const maxNonce =
-        maxBy(
-          list.filter((item) => {
-            const maxGasTx = findMaxGasTx(item.txs);
-            return !item.isSubmitFailed && !maxGasTx?.isWithdrawed;
-          }),
-          (item) => item.nonce
-        )?.nonce || 0;
-
-      res[key] = sortBy(
-        list.filter(
-          (item) =>
-            item.nonce < maxNonce && findMaxGasTx(item.txs)?.isWithdrawed
-        ),
-        (item) => -item.nonce
-      );
-
-      return res;
-    }, {} as Record<string, TransactionGroup[]>);
   }
 
   quickCancelTx = async ({
