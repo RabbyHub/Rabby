@@ -18,7 +18,7 @@ import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import IconSuccess from 'ui/assets/success.svg';
 import { ChainSelector, FallbackSiteLogo, Spin } from 'ui/component';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import { sleep, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import RuleResult from './RuleResult';
@@ -627,6 +627,7 @@ const Connect = (props: ConnectProps) => {
               name,
               rdns: info.rdns,
             });
+            await sleep(150);
             rejectApproval();
           }}
           providers={$ctx?.providers || []}
