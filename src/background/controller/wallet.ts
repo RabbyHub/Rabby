@@ -2947,6 +2947,33 @@ export class WalletController extends BaseController {
     return;
   };
 
+  removeLocalPendingTx = ({
+    address,
+    nonce,
+    chainId,
+  }: {
+    address: string;
+    nonce: number;
+    chainId: number;
+  }) => {
+    transactionHistoryService.removeLocalPendingTx({
+      address,
+      nonce,
+      chainId,
+    });
+    transactionWatcher.removeLocalPendingTx({
+      address,
+      nonce,
+      chainId,
+    });
+    transactionBroadcastWatchService.removeLocalPendingTx({
+      address,
+      nonce,
+      chainId,
+    });
+    return;
+  };
+
   clearAddressTransactions = (address: string) => {
     transactionHistoryService.removeList(address);
     return;
@@ -3844,8 +3871,49 @@ export class WalletController extends BaseController {
   getPendingTxsByNonce = (address: string, chainId: number, nonce: number) =>
     transactionHistoryService.getPendingTxsByNonce(address, chainId, nonce);
 
-  getSkipedTxs = (address: string) =>
-    transactionHistoryService.getSkipedTxs(address);
+  getSkipedTxs = async (address: string) => {
+    const { pendings: pendingList } = transactionHistoryService.getList(
+      address
+    );
+    const dict = groupBy(pendingList, (item) => item.chainId);
+
+    const res: Record<string, { chainId: number; nonce: number }[]> = {};
+    for (const [chainId, list] of Object.entries(dict)) {
+      const chain = findChain({
+        id: +chainId,
+      });
+      if (!chain) {
+        continue;
+      }
+      const onChainNonce = await providerController.ethRpc(
+        {
+          data: {
+            method: 'eth_getTransactionCount',
+            params: [address, 'latest'],
+          },
+          session: INTERNAL_REQUEST_SESSION,
+        },
+        chain.serverId
+      );
+      const localNonce =
+        transactionHistoryService.getNonceByChain(address, +chainId) || 0;
+      for (let nonce = +onChainNonce; nonce < +localNonce; nonce++) {
+        if (
+          !list.find((txGroup) => {
+            return +txGroup.nonce === nonce;
+          })
+        ) {
+          if (res[chainId]) {
+            res[chainId].push({ nonce, chainId: +chainId });
+          } else {
+            res[chainId] = [{ nonce, chainId: +chainId }];
+          }
+        }
+      }
+    }
+
+    return res;
+  };
 
   quickCancelTx = transactionHistoryService.quickCancelTx;
 

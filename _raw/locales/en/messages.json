@@ -559,7 +559,15 @@
             "onChainCancel": {
               "title": "On-chain Cancel",
               "desc": "New transaction to cancel, requires gas"
+            },
+            "removeLocalPendingTx": {
+              "title": "Delete Transaction Locally",
+              "desc": "Fix transaction block caused by long pending time"
             }
+          },
+          "removeLocalPendingTx": {
+            "title": "Delete Transaction Locally",
+            "desc": "This action will delete the pending transaction locally. The pending transaction may still be successfully submitted in the future."
           }
         },
         "MempoolList": {
@@ -570,7 +578,8 @@
         "message": {
           "reBroadcastSuccess": "Re-broadcasted",
           "broadcastSuccess": "Broadcasted",
-          "cancelSuccess": "Canceled"
+          "cancelSuccess": "Canceled",
+          "deleteSuccess": "Deleted successfully"
         },
         "gas": {
           "noCost": "No Gas cost"
@@ -1224,8 +1233,8 @@
         "save": "Save",
         "pendingTransactionCleared": "Pending transaction cleared",
         "clearPending": "Clear Pending",
-        "clearPendingTip1": "This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain.",
-        "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
+        "clearPendingTip1": "This will delete all your pending transactions locally and help resolve issues caused by long pending times.",
+        "clearPendingTip2": "It will not affect your account balances or require you to re-enter your seed phrase. All your assets and account information will remain secure.",
         "autoLockTime": "Auto lock time",
         "claimRabbyBadge": "Claim Rabby Badge!",
         "cancel": "Cancel",
@@ -1270,7 +1279,8 @@
         "followUs": "Follow Us",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
-        "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token"
+        "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token",
+        "clearPendingWarningTip": "The pending transactions may still be successfully submitted in the future."
       },
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
@@ -2422,10 +2432,10 @@
         "connect": "Connect OneKey"
       },
       "importTrezor": {
-        "title": "Terzor",
+        "title": "Trezor",
         "tip1": "1. Plug in your Trezor device",
         "tip2": "2. Unlock your device",
-        "connect": "Connect Terzor"
+        "connect": "Connect Trezor"
       },
       "ImportGridPlus": {
         "title": "GridPlus",

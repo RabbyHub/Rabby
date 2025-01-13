@@ -356,6 +356,18 @@
           "cancelSingleNFTApproval": "Скасувати єдине схвалення NFT для {{protocol}}",
           "singleNFTApproval": "Окреме схвалення NFT для {{protocol}}",
           "nftCollectionApproval": "Схвалення колекції NFT для {{protocol}}"
+        },
+        "CancelTxPopup": {
+          "options": {
+            "removeLocalPendingTx": {
+              "title": "Delete Transaction Locally",
+              "desc": "Fix transaction block caused by long pending time"
+            }
+          },
+          "removeLocalPendingTx": {
+            "title": "Delete Transaction Locally",
+            "desc": "This action will delete the pending transaction locally. The pending transaction may still be successfully submitted in the future."
+          }
         }
       },
       "signedText": {
@@ -822,8 +834,8 @@
         "save": "Зберегти",
         "pendingTransactionCleared": "Незавершена транзакція очищена",
         "clearPending": "Видалити незавершені транзакції",
-        "clearPendingTip1": "Це очистить всі ваші незавешені транзакції. Це може допомогти вам вирішити проблему, що в деяких випадках стан транзакції в Rabby не збігається зі станом у мережі.",
-        "clearPendingTip2": "Це не змінить залишки на ваших рахунках і не вимагатиме від вас повторного введення ключової фрази. Всі ваші активи та інформація про рахунки залишаться в безпеці.",
+        "clearPendingTip1": "This will delete all your pending transactions locally and help resolve issues caused by long pending times.",
+        "clearPendingTip2": "It will not affect your account balances or require you to re-enter your seed phrase. All your assets and account information will remain secure.",
         "autoLockTime": "Час автоматичного блокування",
         "claimRabbyBadge": "Отримати Rabby Badge!",
         "cancel": "Скасувати",
@@ -860,7 +872,8 @@
         "followUs": "Слідкуйте за нами",
         "testnetBackendServiceUrl": "URL-адреса внутрішньої служби Testnet",
         "clearWatchMode": "Очистити режим спостереження",
-        "requestDeBankTestnetGasToken": "Запросити тестові токени для DeBank Testnet"
+        "requestDeBankTestnetGasToken": "Запросити тестові токени для DeBank Testnet",
+        "clearPendingWarningTip": "The pending transactions may still be successfully submitted in the future."
       },
       "tokenDetail": {
         "blockedTip": "Заблокований токен не буде показано у списку токенів",
