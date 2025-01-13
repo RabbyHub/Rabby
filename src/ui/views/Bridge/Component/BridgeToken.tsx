@@ -3,7 +3,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { Input } from 'antd';
+import { DrawerProps, Input } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -71,6 +71,7 @@ export const BridgeToken = ({
   noQuote,
   inSufficient,
   handleSetGasPrice,
+  getContainer,
 }: {
   type?: 'from' | 'to';
   token?: TokenItem;
@@ -88,6 +89,7 @@ export const BridgeToken = ({
   fromChainId?: string;
   fromTokenId?: string;
   noQuote?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
 
@@ -262,6 +264,7 @@ export const BridgeToken = ({
           supportChains={supportedChains}
           drawerHeight={540}
           showClosableIcon
+          getContainer={getContainer}
         />
       </div>
 
@@ -297,6 +300,7 @@ export const BridgeToken = ({
               type={'to'}
               placeholder={t('page.swap.search-by-name-address')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
+              getContainer={getContainer}
             />
           ) : (
             <TokenSelect
@@ -309,6 +313,7 @@ export const BridgeToken = ({
               disabledTips={t('page.bridge.insufficient-balance')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               supportChains={supportedChains}
+              getContainer={getContainer}
             />
           )}
         </div>

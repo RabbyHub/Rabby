@@ -3,7 +3,7 @@ import { useRabbySelector } from '@/ui/store';
 import { useBridge } from '../hooks/token';
 import { Alert, Button, message, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import { useWallet } from '@/ui/utils';
+import { getUiType, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import {
@@ -28,6 +28,7 @@ import { BridgeToken } from './BridgeToken';
 import { BridgeShowMore, RecommendFromToken } from './BridgeShowMore';
 import { BridgeSwitchBtn } from './BridgeSwitchButton';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+const isTab = getUiType().isTab;
 
 export const BridgeContent = () => {
   const { userAddress } = useRabbySelector((state) => ({
@@ -396,6 +397,7 @@ export const BridgeContent = () => {
           excludeChains={toChain ? [toChain] : undefined}
           inSufficient={inSufficient}
           handleSetGasPrice={setMaxNativeTokenGasPrice}
+          getContainer={isTab ? '.js-rabby-popup-container' : ''}
         />
         <BridgeToken
           type="to"
@@ -409,6 +411,7 @@ export const BridgeContent = () => {
           value={selectedBridgeQuote?.to_token_amount}
           excludeChains={fromChain ? [fromChain] : undefined}
           noQuote={noQuote}
+          getContainer={isTab ? '.js-rabby-popup-container' : ''}
         />
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <BridgeSwitchBtn onClick={switchToken} />
@@ -489,7 +492,8 @@ export const BridgeContent = () => {
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
           'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
-          'py-[16px]'
+          'py-[16px]',
+          isTab ? 'rounded-b-[16px]' : ''
         )}
       >
         <Button
@@ -554,6 +558,7 @@ export const BridgeContent = () => {
           receiveToken={toToken}
           inSufficient={inSufficient}
           setSelectedBridgeQuote={setSelectedBridgeQuote}
+          getContainer={isTab ? '.js-rabby-popup-container' : false}
         />
       ) : null}
       <MiniApproval
@@ -586,6 +591,7 @@ export const BridgeContent = () => {
             // }, 500);
           }, 500);
         }}
+        getContainer={isTab ? '.js-rabby-popup-container' : ''}
       />
     </div>
   );

@@ -11,7 +11,7 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import { useWallet } from '@/ui/utils';
+import { getUiType, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
 import {
@@ -45,6 +45,7 @@ import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+const isTab = getUiType().isTab;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -470,6 +471,7 @@ export const Main = () => {
           title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
           drawerHeight={540}
           showClosableIcon
+          getContainer={isTab ? '.js-rabby-popup-container' : false}
         />
       </div>
 
@@ -497,6 +499,7 @@ export const Main = () => {
           chainId={findChainByEnum(chain)!.serverId}
           type={'from'}
           excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
+          getContainer={isTab ? '.js-rabby-popup-container' : false}
         />
 
         <div
@@ -543,6 +546,7 @@ export const Main = () => {
           type={'to'}
           excludeTokens={payToken?.id ? [payToken?.id] : undefined}
           currentQuote={activeProvider}
+          getContainer={isTab ? '.js-rabby-popup-container' : false}
         />
       </div>
 
@@ -630,7 +634,8 @@ export const Main = () => {
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
           'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
-          'py-[13px]'
+          'py-[13px]',
+          isTab ? 'rounded-b-[16px]' : ''
         )}
       >
         <Button
@@ -734,6 +739,7 @@ export const Main = () => {
             // }, 500);
           }, 500);
         }}
+        getContainer={isTab ? '.js-rabby-popup-container' : ''}
       />
       <LowCreditModal
         token={lowCreditToken}

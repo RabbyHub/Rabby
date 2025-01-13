@@ -1,6 +1,6 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { Button, Drawer, Input } from 'antd';
+import { Button, Drawer, DrawerProps, Input } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
@@ -46,6 +46,7 @@ interface ChainSelectorModalProps {
   zIndex?: number;
   excludeChains?: CHAINS_ENUM[];
   showClosableIcon?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const useChainSeletorList = ({
@@ -145,6 +146,7 @@ const ChainSelectorModal = ({
   zIndex,
   excludeChains,
   showClosableIcon = false,
+  getContainer,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -226,6 +228,7 @@ const ChainSelectorModal = ({
         closeIcon={
           <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
         }
+        getContainer={getContainer}
       >
         <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
           {isShowTestnet && !hideMainnetTab && (

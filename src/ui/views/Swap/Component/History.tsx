@@ -18,6 +18,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import { DEX } from '@/constant';
+import { DrawerProps } from 'antd';
 
 const TokenCost = ({
   payToken,
@@ -279,9 +280,11 @@ const HistoryList = () => {
 export const SwapTxHistory = ({
   visible,
   onClose,
+  getContainer,
 }: {
   visible: boolean;
   onClose: () => void;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
   return (
@@ -298,6 +301,7 @@ export const SwapTxHistory = ({
       destroyOnClose
       isSupportDarkMode
       isNew
+      getContainer={getContainer}
     >
       <HistoryList />
     </Popup>

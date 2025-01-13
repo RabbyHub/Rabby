@@ -16,6 +16,7 @@ import { ellipsis } from '@/ui/utils/address';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import { BridgeHistory } from '@/background/service/openapi';
+import { DrawerProps } from 'antd';
 
 const BridgeTokenIcon = (props: { token: TokenItem }) => {
   const { token } = props;
@@ -259,9 +260,11 @@ const HistoryList = () => {
 export const BridgeTxHistory = ({
   visible,
   onClose,
+  getContainer,
 }: {
   visible: boolean;
   onClose: () => void;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
   return (
@@ -278,6 +281,7 @@ export const BridgeTxHistory = ({
       destroyOnClose
       isSupportDarkMode
       isNew
+      getContainer={getContainer}
     >
       <HistoryList />
     </Popup>
