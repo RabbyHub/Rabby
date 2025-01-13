@@ -1,7 +1,7 @@
 import { isManifestV3 } from '@/utils/env';
 import browser from 'webextension-polyfill';
 import { createPersistStore } from '../utils';
-import { ALARMS_SYNC_CHAINS } from '../utils/alarms';
+import { ALARMS_SYNC_METAMASK_DAPPS } from '../utils/alarms';
 import { http } from '../utils/http';
 import permissionService from './permission';
 
@@ -26,6 +26,7 @@ class MetamaskModeService {
     });
     this.store = storageCache || this.store;
 
+    this.syncMetamaskModeList();
     this.resetTimer();
     this.localSites = permissionService.getMetamaskModeSites().map((item) => {
       return item.origin.replace(/^https?:\/\//, '');
@@ -52,16 +53,16 @@ class MetamaskModeService {
     if (this.timer) {
       clearInterval(this.timer);
     } else if (isManifestV3) {
-      browser.alarms.clear(ALARMS_SYNC_CHAINS);
+      browser.alarms.clear(ALARMS_SYNC_METAMASK_DAPPS);
     }
 
     if (isManifestV3) {
-      browser.alarms.create(ALARMS_SYNC_CHAINS, {
+      browser.alarms.create(ALARMS_SYNC_METAMASK_DAPPS, {
         delayInMinutes: periodInMinutes,
         periodInMinutes: periodInMinutes,
       });
       browser.alarms.onAlarm.addListener((alarm) => {
-        if (alarm.name === ALARMS_SYNC_CHAINS) {
+        if (alarm.name === ALARMS_SYNC_METAMASK_DAPPS) {
           this.syncMetamaskModeList();
         }
       });
