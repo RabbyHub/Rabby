@@ -4909,6 +4909,8 @@ export class WalletController extends BaseController {
 
   getCustomTestnetGasPrice = customTestnetService.getGasPrice;
 
+  getCustomBlockGasLimit = customTestnetService.getBlockGasLimit;
+
   getCustomTestnetGasMarket = customTestnetService.getGasMarket;
 
   getCustomTestnetToken = customTestnetService.getToken;
