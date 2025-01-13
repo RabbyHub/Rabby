@@ -82,6 +82,7 @@ import {
   SendReserveGasPopup,
 } from '../Swap/Component/ReserveGasPopup';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const isTab = getUiType().isTab;
 
@@ -1444,12 +1445,21 @@ const SendToken = () => {
     }
   }, [currentToken, gasList]);
 
+  const { isDarkTheme } = useThemeMode();
+
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-r-blue-default">
+    <div
+      className="h-full w-full flex flex-col items-center justify-center"
+      style={{
+        background: isDarkTheme
+          ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), var(--r-blue-default, #7084FF)'
+          : 'var(--r-blue-default, #7084FF)',
+      }}
+    >
       <div
         className={clsx(
           isTab
-            ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[600px] translate-x-0'
+            ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[600px] translate-x-0 scale-[1.20]'
             : 'w-full'
         )}
       >

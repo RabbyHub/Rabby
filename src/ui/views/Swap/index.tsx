@@ -8,18 +8,27 @@ import {
 } from './hooks';
 import clsx from 'clsx';
 import { getUiType } from '@/ui/utils';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 const isTab = getUiType().isTab;
 
 const Swap = () => {
+  const { isDarkTheme } = useThemeMode();
   return (
     <RefreshIdProvider>
       <QuoteVisibleProvider>
         <RabbyFeeProvider>
-          <div className="h-full w-full flex flex-col items-center justify-center bg-r-blue-default js-rabby-popup-container-p">
+          <div
+            className="h-full w-full flex flex-col items-center justify-center"
+            style={{
+              background: isDarkTheme
+                ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), var(--r-blue-default, #7084FF)'
+                : 'var(--r-blue-default, #7084FF)',
+            }}
+          >
             <div
               className={clsx(
                 isTab
-                  ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[600px] translate-x-0'
+                  ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[600px] translate-x-0 scale-[1.20]'
                   : 'w-full h-full'
               )}
             >
