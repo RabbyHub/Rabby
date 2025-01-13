@@ -87,8 +87,8 @@ export const TransactionItem = ({
     if (mode === CANCEL_TX_TYPE.ON_CHAIN_CANCEL) {
       handleOnChainCancel();
     }
-    if (mode === CANCEL_TX_TYPE.CLEAR_PENDING_TX) {
-      handleClearPending();
+    if (mode === CANCEL_TX_TYPE.REMOVE_LOCAL_PENDING_TX) {
+      handleRemoveLocalPendingTx();
     }
     setIsShowCancelPopup(false);
   };
@@ -110,11 +110,11 @@ export const TransactionItem = ({
     }
   };
 
-  const handleClearPending = async () => {
+  const handleRemoveLocalPendingTx = async () => {
     const maxGasTx = findMaxGasTx(item.txs);
     if (maxGasTx?.reqId) {
       try {
-        await wallet.clearPendingTransaction({
+        await wallet.removeLocalPendingTx({
           chainId: maxGasTx.rawTx.chainId,
           nonce: +maxGasTx.rawTx.nonce,
           address: maxGasTx.rawTx.from,

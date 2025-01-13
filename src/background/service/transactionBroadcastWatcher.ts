@@ -167,7 +167,7 @@ class TransactionBroadcastWatcher {
     );
   };
 
-  clearSinglePendingTx = ({
+  removeLocalPendingTx = ({
     address,
     chainId,
     nonce,

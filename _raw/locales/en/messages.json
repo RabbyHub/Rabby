@@ -560,12 +560,12 @@
               "title": "On-chain Cancel",
               "desc": "New transaction to cancel, requires gas"
             },
-            "removeLocalTx": {
+            "removeLocalPendingTx": {
               "title": "Delete Transaction Locally",
               "desc": "Fix transaction block caused by long pending time"
             }
           },
-          "clearPending": {
+          "removeLocalPendingTx": {
             "title": "Delete Transaction Locally",
             "desc": "This action will delete the pending transaction locally. The pending transaction may still be successfully submitted in the future."
           }
