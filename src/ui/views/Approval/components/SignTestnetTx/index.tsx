@@ -282,20 +282,32 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     async () => {
       try {
         const currentAccount = (await wallet.getCurrentAccount())!;
-        const res = await wallet.estimateCustomTestnetGas({
+        const estimateGas = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
           chainId: chainId,
           tx: tx,
         });
+        const blockGasLimit = await wallet.getCustomBlockGasLimit(chainId);
+
         if (!gasLimit) {
+          let recommendGasLimit = new BigNumber(estimateGas)
+            .times(DEFAULT_GAS_LIMIT_RATIO)
+            .toFixed(0);
+
+          if (
+            blockGasLimit &&
+            new BigNumber(recommendGasLimit).gt(blockGasLimit)
+          ) {
+            recommendGasLimit = new BigNumber(blockGasLimit)
+              .times(0.95)
+              .toFixed(0);
+          }
+
           setGasLimit(
-            `0x${new BigNumber(res)
-              .multipliedBy(1.5)
-              .integerValue()
-              .toString(16)}`
+            `0x${new BigNumber(recommendGasLimit).integerValue().toString(16)}`
           );
         }
-        return `0x${new BigNumber(res).integerValue().toString(16)}`;
+        return `0x${new BigNumber(estimateGas).integerValue().toString(16)}`;
       } catch (e) {
         console.error(e);
         const fallback = intToHex(2000000);
