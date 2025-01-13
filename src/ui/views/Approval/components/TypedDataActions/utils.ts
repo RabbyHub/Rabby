@@ -5,6 +5,7 @@ import { encodeSingle } from '@metamask/eth-sig-util';
 import { bufferToHex } from 'ethereumjs-util';
 import { hexToString } from 'web3-utils';
 import BigNumber from 'bignumber.js';
+import { filterPrimaryType } from '../SignTypedDataExplain/parseSignTypedDataMessage';
 
 export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
   const { t } = i18n;
@@ -148,6 +149,13 @@ function parseSignTypedData(typedData: {
   }
 
   typedData.message = parseAndDecode(message, primaryType);
+
+  // Filter out the fields that are not part of the primary type
+  typedData.message = filterPrimaryType({
+    primaryType,
+    types,
+    message: typedData.message,
+  });
 
   return typedData;
 }

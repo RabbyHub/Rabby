@@ -6,6 +6,18 @@ export const parseSignTypedDataMessage = (raw: string) => {
   }
 
   const { primaryType, message, types } = data;
+  return filterPrimaryType({ primaryType, types, message });
+};
+
+export const filterPrimaryType = ({
+  primaryType,
+  types,
+  message,
+}: {
+  primaryType: string;
+  types: Record<string, any>;
+  message: Record<string, any>;
+}) => {
   const keys = types[primaryType];
   const filteredMessage: Record<string, string> = {};
 
