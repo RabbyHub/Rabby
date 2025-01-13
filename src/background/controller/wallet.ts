@@ -2947,7 +2947,7 @@ export class WalletController extends BaseController {
     return;
   };
 
-  clearPendingTransaction = ({
+  removeLocalPendingTx = ({
     address,
     nonce,
     chainId,
@@ -2956,17 +2956,17 @@ export class WalletController extends BaseController {
     nonce: number;
     chainId: number;
   }) => {
-    transactionHistoryService.clearPendingTransaction({
+    transactionHistoryService.removeLocalPendingTx({
       address,
       nonce,
       chainId,
     });
-    transactionWatcher.clearSinglePendingTx({
+    transactionWatcher.removeLocalPendingTx({
       address,
       nonce,
       chainId,
     });
-    transactionBroadcastWatchService.clearSinglePendingTx({
+    transactionBroadcastWatchService.removeLocalPendingTx({
       address,
       nonce,
       chainId,

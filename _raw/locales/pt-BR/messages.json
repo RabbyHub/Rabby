@@ -347,6 +347,18 @@
           "cancelSingleNFTApproval": "Cancelar a Aprovação de NFT Individual para {{protocol}}",
           "singleNFTApproval": "Aprovação de NFT Individual para {{protocol}}",
           "nftCollectionApproval": "Aprovação de Coleção de NFT para {{protocol}}"
+        },
+        "CancelTxPopup": {
+          "options": {
+            "removeLocalPendingTx": {
+              "title": "Excluir transação localmente",
+              "desc": "Corrigir bloqueio de transação causado por longo tempo pendente"
+            }
+          },
+          "removeLocalPendingTx": {
+            "title": "Excluir transação localmente",
+            "desc": "Esta ação excluirá a transação pendente localmente. \nA transação pendente ainda poderá ser enviada com sucesso no futuro."
+          }
         }
       },
       "signedText": {
@@ -794,8 +806,8 @@
         "save": "Salvar",
         "pendingTransactionCleared": "Transações pendentes removidas",
         "clearPending": "Limpar Pendentes",
-        "clearPendingTip1": "",
-        "clearPendingTip2": "",
+        "clearPendingTip1": "Isso excluirá todas as suas transações pendentes localmente e ajudará a resolver problemas causados ​​por longos períodos de espera.",
+        "clearPendingTip2": "Isso não afetará os saldos de sua conta nem exigirá que você insira novamente sua frase-semente. \nTodos os seus ativos e informações da conta permanecerão seguros.",
         "autoLockTime": "Tempo de Bloqueio Automático",
         "claimRabbyBadge": "Reivindique a Medalha Rabby!",
         "cancel": "Cancelar",
@@ -832,7 +844,8 @@
         "followUs": "Siga-nos",
         "testnetBackendServiceUrl": "URL do Serviço de Backend de Teste",
         "clearWatchMode": "Limpar Modo de Observação",
-        "requestDeBankTestnetGasToken": "Solicitar Token de Gás de Testnet DeBank"
+        "requestDeBankTestnetGasToken": "Solicitar Token de Gás de Testnet DeBank",
+        "clearPendingWarningTip": "As transações pendentes ainda poderão ser enviadas com sucesso no futuro."
       },
       "tokenDetail": {
         "blockedTip": "Tokens bloqueados não serão exibidos na lista de tokens",

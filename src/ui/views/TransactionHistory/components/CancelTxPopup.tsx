@@ -63,7 +63,10 @@ interface Props {
 }
 export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
   const { t } = useTranslation();
-  const [isShowClearPendingTips, setIsShowClearPendingTips] = useState(false);
+  const [
+    isShowRemoveLocalPendingTxTips,
+    setIsShowRemoveLocalPendingTxTips,
+  ] = useState(false);
   const options = [
     {
       title: t(
@@ -89,12 +92,12 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
     },
     {
       title: t(
-        'page.activities.signedTx.CancelTxPopup.options.removeLocalTx.title'
+        'page.activities.signedTx.CancelTxPopup.options.removeLocalPendingTx.title'
       ),
       desc: t(
-        'page.activities.signedTx.CancelTxPopup.options.removeLocalTx.desc'
+        'page.activities.signedTx.CancelTxPopup.options.removeLocalPendingTx.desc'
       ),
-      value: CANCEL_TX_TYPE.CLEAR_PENDING_TX,
+      value: CANCEL_TX_TYPE.REMOVE_LOCAL_PENDING_TX,
     },
   ];
   return (
@@ -120,8 +123,8 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
                   if (item?.disabled) {
                     return;
                   }
-                  if (item.value === CANCEL_TX_TYPE.CLEAR_PENDING_TX) {
-                    setIsShowClearPendingTips(true);
+                  if (item.value === CANCEL_TX_TYPE.REMOVE_LOCAL_PENDING_TX) {
+                    setIsShowRemoveLocalPendingTxTips(true);
                     return;
                   }
                   onCancelTx?.(item.value);
@@ -141,7 +144,7 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
         className={clsx(
           'absolute z-[99] w-full h-full left-0 top-0',
           'bg-r-neutral-bg-1 rounded-t-[16px] transition-transform duration-300',
-          isShowClearPendingTips ? 'translate-x-0' : 'translate-x-full'
+          isShowRemoveLocalPendingTxTips ? 'translate-x-0' : 'translate-x-full'
         )}
       >
         <div className="px-[20px]">
@@ -149,15 +152,19 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
             forceShowBack
             className="bg-transparent"
             onBack={() => {
-              setIsShowClearPendingTips(false);
+              setIsShowRemoveLocalPendingTxTips(false);
             }}
           >
-            {t('page.activities.signedTx.CancelTxPopup.clearPending.title')}
+            {t(
+              'page.activities.signedTx.CancelTxPopup.removeLocalPendingTx.title'
+            )}
           </PageHeader>
         </div>
         <div className="px-[20px] pt-[2px]">
           <p className="m-0 text-[14px] leading-[140%] text-r-neutral-body">
-            {t('page.activities.signedTx.CancelTxPopup.clearPending.desc')}
+            {t(
+              'page.activities.signedTx.CancelTxPopup.removeLocalPendingTx.desc'
+            )}
           </p>
         </div>
         <div
@@ -173,8 +180,8 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
             block
             // onClick={handleResetAccount}
             onClick={() => {
-              onCancelTx?.(CANCEL_TX_TYPE.CLEAR_PENDING_TX);
-              setIsShowClearPendingTips(false);
+              onCancelTx?.(CANCEL_TX_TYPE.REMOVE_LOCAL_PENDING_TX);
+              setIsShowRemoveLocalPendingTxTips(false);
             }}
           >
             {t('global.confirm')}

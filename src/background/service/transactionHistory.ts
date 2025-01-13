@@ -856,7 +856,7 @@ class TxHistory {
     });
   }
 
-  clearPendingTransaction({
+  removeLocalPendingTx({
     address,
     chainId,
     nonce,

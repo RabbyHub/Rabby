@@ -380,6 +380,18 @@
           "cancelSingleNFTApproval": "Einzelne NFT-Genehmigung für {{protocol}} widerrufen",
           "singleNFTApproval": "Einzelne NFT-Genehmigung für {{protocol}}",
           "nftCollectionApproval": "NFT-Sammlungsgenehmigung für {{protocol}}"
+        },
+        "CancelTxPopup": {
+          "options": {
+            "removeLocalPendingTx": {
+              "title": "Transaktion lokal löschen",
+              "desc": "Behebung einer durch lange Wartezeit verursachten Transaktionsblockade"
+            }
+          },
+          "removeLocalPendingTx": {
+            "title": "Transaktion lokal löschen",
+            "desc": "Durch diese Aktion wird die ausstehende Transaktion lokal gelöscht. \nDie ausstehende Transaktion kann auch in Zukunft erfolgreich eingereicht werden."
+          }
         }
       },
       "signedText": {
@@ -850,8 +862,8 @@
         "save": "Speichern",
         "pendingTransactionCleared": "Ausstehende Transaktionen gelöscht",
         "clearPending": "Ausstehende Transaktionen löschen",
-        "clearPendingTip1": "",
-        "clearPendingTip2": "",
+        "clearPendingTip1": "Dadurch werden alle Ihre ausstehenden Transaktionen lokal gelöscht und Probleme gelöst, die durch lange Wartezeiten verursacht werden.",
+        "clearPendingTip2": "Dies wirkt sich nicht auf Ihren Kontostand aus und erfordert keine erneute Eingabe Ihrer Startphrase. \nAlle Ihre Vermögenswerte und Kontoinformationen bleiben sicher.",
         "autoLockTime": "Automatische Sperrzeit",
         "claimRabbyBadge": "Rabby Abzeichen beanspruchen!",
         "cancel": "Abbrechen",
@@ -888,7 +900,8 @@
         "followUs": "Folge uns",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Beobachtungsmodus zurücksetzen",
-        "requestDeBankTestnetGasToken": "Testnet Gas Token von DeBank anfordern"
+        "requestDeBankTestnetGasToken": "Testnet Gas Token von DeBank anfordern",
+        "clearPendingWarningTip": "Die ausstehenden Transaktionen können auch in Zukunft noch erfolgreich eingereicht werden."
       },
       "tokenDetail": {
         "blockedTip": "Blockierte Token werden nicht in der Tokenliste angezeigt",

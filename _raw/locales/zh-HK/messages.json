@@ -199,7 +199,7 @@
         "cancel": "取消",
         "claimRabbyBadge": "領取 Rabby Badge",
         "clearPending": "清除待完成交易",
-        "clearPendingTip1": "",
+        "clearPendingTip1": "這將在本地刪除所有待處理的交易，並幫助解決因待處理時間過長而導致的問題。",
         "clearPendingTip2": "這不會改變你帳戶中的結餘，也不會要求你重新輸入助記詞。你的所有資產和帳戶信息都將保持安全。",
         "clearWatchAddressContent": "你確定刪除所有觀察地址嗎？",
         "clearWatchMode": "清除觀察地址",
@@ -248,7 +248,8 @@
         },
         "warning": "警告",
         "requestDeBankTestnetGasToken": "獲取 DeBank Testnet Gas Token",
-        "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！"
+        "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！",
+        "clearPendingWarningTip": "待處理的交易將來仍有可能成功提交。"
       },
       "tokenDetail": {
         "blockedTip": "已隱藏的代幣將不會顯示在代幣列表中",
@@ -775,7 +776,15 @@
             "onChainCancel": {
               "title": "鏈上取消",
               "desc": "發起新的鏈上交易來取消，需要Gasfee"
+            },
+            "removeLocalPendingTx": {
+              "title": "本地刪除交易",
+              "desc": "修復因等待時間過長導致交易阻塞的問題"
             }
+          },
+          "removeLocalPendingTx": {
+            "title": "本地刪除交易",
+            "desc": "此操作將在本機刪除待處理的事務。\n待處理的交易將來仍有可能成功提交。"
           }
         },
         "SkipNonceAlert": {
