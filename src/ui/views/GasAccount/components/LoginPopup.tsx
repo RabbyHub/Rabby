@@ -102,7 +102,7 @@ const GasAccountLoginContent = ({
     setToConfirm(true);
   };
 
-  const confirmAddress = () => {
+  const confirmAddress = async () => {
     login();
   };
 
