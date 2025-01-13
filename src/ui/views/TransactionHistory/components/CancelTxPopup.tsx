@@ -1,9 +1,10 @@
 import { TransactionHistoryItem } from '@/background/service/transactionHistory';
 import { CANCEL_TX_TYPE } from '@/constant';
-import { Popup } from '@/ui/component';
+import { PageHeader, Popup } from '@/ui/component';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { Button } from 'antd';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -62,6 +63,10 @@ interface Props {
 }
 export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
   const { t } = useTranslation();
+  const [
+    isShowRemoveLocalPendingTxTips,
+    setIsShowRemoveLocalPendingTxTips,
+  ] = useState(false);
   const options = [
     {
       title: t(
@@ -85,6 +90,15 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
       ),
       value: CANCEL_TX_TYPE.ON_CHAIN_CANCEL,
     },
+    {
+      title: t(
+        'page.activities.signedTx.CancelTxPopup.options.removeLocalPendingTx.title'
+      ),
+      desc: t(
+        'page.activities.signedTx.CancelTxPopup.options.removeLocalPendingTx.desc'
+      ),
+      value: CANCEL_TX_TYPE.REMOVE_LOCAL_PENDING_TX,
+    },
   ];
   return (
     <Popup
@@ -92,7 +106,7 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
       visible={visible}
       onClose={onClose}
       closable
-      height={228}
+      height={308}
       isSupportDarkMode
     >
       <OptionsList>
@@ -109,6 +123,10 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
                   if (item?.disabled) {
                     return;
                   }
+                  if (item.value === CANCEL_TX_TYPE.REMOVE_LOCAL_PENDING_TX) {
+                    setIsShowRemoveLocalPendingTxTips(true);
+                    return;
+                  }
                   onCancelTx?.(item.value);
                 }}
               >
@@ -122,6 +140,54 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
           );
         })}
       </OptionsList>
+      <div
+        className={clsx(
+          'absolute z-[99] w-full h-full left-0 top-0',
+          'bg-r-neutral-bg-1 rounded-t-[16px] transition-transform duration-300',
+          isShowRemoveLocalPendingTxTips ? 'translate-x-0' : 'translate-x-full'
+        )}
+      >
+        <div className="px-[20px]">
+          <PageHeader
+            forceShowBack
+            className="bg-transparent"
+            onBack={() => {
+              setIsShowRemoveLocalPendingTxTips(false);
+            }}
+          >
+            {t(
+              'page.activities.signedTx.CancelTxPopup.removeLocalPendingTx.title'
+            )}
+          </PageHeader>
+        </div>
+        <div className="px-[20px] pt-[2px]">
+          <p className="m-0 text-[14px] leading-[140%] text-r-neutral-body">
+            {t(
+              'page.activities.signedTx.CancelTxPopup.removeLocalPendingTx.desc'
+            )}
+          </p>
+        </div>
+        <div
+          className={clsx(
+            'absolute bottom-0 left-0 right-0',
+            'mt-auto py-[18px] px-[20px]',
+            'border-solid border-t-[0.5px] border-rabby-neutral-line'
+          )}
+        >
+          <Button
+            type="primary"
+            size="large"
+            block
+            // onClick={handleResetAccount}
+            onClick={() => {
+              onCancelTx?.(CANCEL_TX_TYPE.REMOVE_LOCAL_PENDING_TX);
+              setIsShowRemoveLocalPendingTxTips(false);
+            }}
+          >
+            {t('global.confirm')}
+          </Button>
+        </div>
+      </div>
     </Popup>
   );
 };

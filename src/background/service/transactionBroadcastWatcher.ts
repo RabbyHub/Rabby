@@ -166,6 +166,35 @@ class TransactionBroadcastWatcher {
       {}
     );
   };
+
+  removeLocalPendingTx = ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) => {
+    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
+      (m, [key, v]) => {
+        if (!v) {
+          return m;
+        }
+        const isSameAddr = isSameAddress(address, v.address);
+        if (+chainId === v.chainId && isSameAddr && +v.nonce === +nonce) {
+          return m;
+        }
+        // keep pending txs of other addresses
+        if (v) {
+          m[key] = v;
+        }
+
+        return m;
+      },
+      {}
+    );
+  };
 }
 
 export const transactionBroadcastWatchService = new TransactionBroadcastWatcher();
