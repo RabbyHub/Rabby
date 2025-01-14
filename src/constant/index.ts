@@ -1178,6 +1178,8 @@ export const SAFE_GAS_LIMIT_RATIO = {
 
 export const SAFE_GAS_LIMIT_BUFFER = {
   '996': 0.86,
+  '49088': 0.86,
+  '3068': 0.86,
 };
 
 export const DEFAULT_GAS_LIMIT_BUFFER = 0.95;
