@@ -34,6 +34,10 @@ import { BitBox02Manager } from './BitBox02Manager';
 import { useTranslation } from 'react-i18next';
 import { ImKeyManager } from './ImKeyManager';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { useRabbyDispatch } from '@/ui/store';
+import { account } from '@/ui/models/account';
+import { useNewUserGuideStore } from '../NewUserImport/hooks/useNewUserGuideStore';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -67,12 +71,18 @@ export const HDManager: React.FC<StateProviderProps> = ({
   brand,
 }) => {
   const { search } = useLocation();
-  const [isNewUserImport, noRedirect, isLazyImport] = React.useMemo(() => {
+  const [
+    isNewUserImport,
+    noRedirect,
+    isLazyImport,
+    needSetPassword,
+  ] = React.useMemo(() => {
     const query = new URLSearchParams(search);
     return [
       query.get('isNewUserImport'),
       query.get('noRedirect'),
       !!query.get('isLazyImport'),
+      !!query.get('needSetPassword'),
     ];
   }, [search]);
   console.log(isLazyImport);
@@ -152,7 +162,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
     };
   }, []);
 
-  const handleCloseWin = React.useCallback(() => {
+  const handleCloseWin = useMemoizedFn(async () => {
     if (isNewUserImport && !noRedirect) {
       history.push(
         `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${brand}`
@@ -160,7 +170,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
       return;
     }
     window.close();
-  }, []);
+  });
 
   if (!initialed) {
     return (
@@ -192,28 +202,86 @@ export const HDManager: React.FC<StateProviderProps> = ({
           </div>
           <Manager brand={brand} />
         </main>
-        <DoneButton onClick={handleCloseWin} />
-        {/* <div
+        <DoneButton
           onClick={handleCloseWin}
-          className="absolute bottom-[40px] left-0 right-0 text-center"
-        >
-          <Button type="primary" className="w-[280px] h-[60px] text-20">
-            {t('page.newAddress.hd.done')}
-          </Button>
-        </div> */}
+          needSetPassword={needSetPassword}
+        />
       </div>
     </HDManagerStateProvider>
   );
 };
 
-const DoneButton = ({ onClick }: { onClick?(): void }) => {
+const DoneButton = ({
+  onClick,
+  needSetPassword,
+}: {
+  onClick?(): void;
+  needSetPassword?: boolean;
+}) => {
   const { t } = useTranslation();
 
-  const { currentAccounts, selectedAccounts, isLazyImport } = React.useContext(
-    HDManagerStateContext
-  );
+  const {
+    currentAccounts,
+    selectedAccounts,
+    getCurrentAccounts,
+    isLazyImport,
+    createTask,
+    keyring,
+    keyringId,
+  } = React.useContext(HDManagerStateContext);
 
-  console.log(isLazyImport);
+  const dispatch = useRabbyDispatch();
+
+  const { store } = useNewUserGuideStore();
+
+  const wallet = useWallet();
+  const history = useHistory();
+
+  const { loading, runAsync: handleAdd } = useRequest(
+    async () => {
+      if (needSetPassword) {
+        if (store.password) {
+          await wallet.boot(store.password);
+        } else {
+          history.push('/new-user/guide');
+        }
+      }
+      await Promise.all(
+        selectedAccounts.map(async (account) => {
+          await createTask(async () => {
+            if (keyring === KEYRING_CLASS.MNEMONIC) {
+              await dispatch.importMnemonics.setSelectedAccounts([
+                account.address,
+              ]);
+              await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+            } else {
+              await wallet.unlockHardwareAccount(
+                keyring,
+                [account.index - 1],
+                keyringId
+              );
+            }
+          });
+
+          await createTask(() =>
+            wallet.requestKeyring(
+              keyring,
+              'setCurrentUsedHDPathType',
+              keyringId
+            )
+          );
+        })
+      );
+      message.success({
+        content: t('page.newAddress.hd.tooltip.added'),
+      });
+      await createTask(() => getCurrentAccounts());
+      onClick?.();
+    },
+    {
+      manual: true,
+    }
+  );
 
   return (
     <div className="absolute bottom-[40px] left-0 right-0 text-center">
@@ -221,7 +289,8 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
         <Button
           type="primary"
           className="w-[280px] h-[60px] text-20"
-          onClick={onClick}
+          onClick={handleAdd}
+          loading={loading}
           disabled={!selectedAccounts.length}
         >
           {t('page.newAddress.hd.importBtn', {

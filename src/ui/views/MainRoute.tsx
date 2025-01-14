@@ -172,6 +172,10 @@ const Main = () => {
           <ReadyToUse />
         </Route>
 
+        <Route exact path="/new-user/import/select-address">
+          <SelectAddress />
+        </Route>
+
         <Route exact path="/password">
           <CreatePassword />
         </Route>

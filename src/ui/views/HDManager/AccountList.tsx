@@ -222,17 +222,17 @@ export const AccountList: React.FC<Props> = ({
           record.address ? (
             isLazyImport && tab === 'hd' ? (
               <AddToRabby
-                checked={currentAccounts?.some((item) =>
-                  isSameAddress(item.address, record.address)
-                )}
-                onChange={(val) => handleAddAccount(val, record)}
-              />
-            ) : (
-              <AddToRabby
                 checked={selectedAccounts?.some((item) =>
                   isSameAddress(item.address, record.address)
                 )}
                 onChange={(val) => handleSelectAccount(val, record)}
+              />
+            ) : (
+              <AddToRabby
+                checked={currentAccounts?.some((item) =>
+                  isSameAddress(item.address, record.address)
+                )}
+                onChange={(val) => handleAddAccount(val, record)}
               />
             )
           ) : (
