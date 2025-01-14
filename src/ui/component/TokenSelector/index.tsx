@@ -408,12 +408,17 @@ const TokenSelector = ({
                     className={clsx(
                       'flex items-center justify-center gap-6',
                       'cursor-pointer py-8 px-12 rounded-[8px]',
-                      'bg-r-neutral-card2 hover:bg-r-blue-light1',
+                      'bg-r-neutral-card2 hover:bg-r-blue-light-2',
                       'text-15 text-r-neutral-title1 font-medium'
                     )}
                     onClick={() => onConfirm(token)}
                   >
-                    <TokenWithChain token={token} width="20px" height="20px" />
+                    <TokenWithChain
+                      token={token}
+                      width="20px"
+                      height="20px"
+                      chainClassName="-top-4 -right-4"
+                    />
 
                     <span>{getTokenSymbol(token)}</span>
                   </div>
