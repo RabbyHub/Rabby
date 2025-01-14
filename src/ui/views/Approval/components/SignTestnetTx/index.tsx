@@ -14,12 +14,14 @@ import {
 } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
+  DEFAULT_GAS_LIMIT_BUFFER,
   DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
   KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_TYPE,
   MINIMUM_GAS_LIMIT,
+  SAFE_GAS_LIMIT_BUFFER,
 } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -282,15 +284,17 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     async () => {
       try {
         const currentAccount = (await wallet.getCurrentAccount())!;
-        const estimateGas = await wallet.estimateCustomTestnetGas({
+        let estimateGas = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
           chainId: chainId,
           tx: tx,
         });
         const blockGasLimit = await wallet.getCustomBlockGasLimit(chainId);
 
+        let recommendGasLimit = estimateGas;
+
         if (!gasLimit) {
-          let recommendGasLimit = new BigNumber(estimateGas)
+          recommendGasLimit = new BigNumber(estimateGas)
             .times(DEFAULT_GAS_LIMIT_RATIO)
             .toFixed(0);
 
@@ -298,8 +302,12 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
             blockGasLimit &&
             new BigNumber(recommendGasLimit).gt(blockGasLimit)
           ) {
+            const buffer =
+              SAFE_GAS_LIMIT_BUFFER[chainId] || DEFAULT_GAS_LIMIT_BUFFER;
+
+            estimateGas = blockGasLimit;
             recommendGasLimit = new BigNumber(blockGasLimit)
-              .times(0.95)
+              .times(buffer)
               .toFixed(0);
           }
 

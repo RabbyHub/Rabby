@@ -2,10 +2,12 @@ import { intToHex, isHexString } from 'ethereumjs-util';
 import BigNumber from 'bignumber.js';
 import {
   CAN_ESTIMATE_L1_FEE_CHAINS,
+  DEFAULT_GAS_LIMIT_BUFFER,
   DEFAULT_GAS_LIMIT_RATIO,
   GASPRICE_RANGE,
   KEYRING_CATEGORY_MAP,
   MINIMUM_GAS_LIMIT,
+  SAFE_GAS_LIMIT_BUFFER,
   SAFE_GAS_LIMIT_RATIO,
 } from 'consts';
 import { ExplainTxResponse, GasLevel, Tx } from 'background/service/openapi';
@@ -171,7 +173,8 @@ export async function calcGasLimit({
     ? gas.times(ratio).toFixed(0)
     : gas.toFixed(0);
   if (block && new BigNumber(recommendGasLimit).gt(block.gasLimit)) {
-    recommendGasLimit = new BigNumber(block.gasLimit).times(0.95).toFixed(0);
+    const buffer = SAFE_GAS_LIMIT_BUFFER[chain.id] || DEFAULT_GAS_LIMIT_BUFFER;
+    recommendGasLimit = new BigNumber(block.gasLimit).times(buffer).toFixed(0);
   }
   const gasLimit = intToHex(
     Math.max(Number(recommendGasLimit), Number(tx.gas || 0))
