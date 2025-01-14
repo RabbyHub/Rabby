@@ -284,7 +284,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     async () => {
       try {
         const currentAccount = (await wallet.getCurrentAccount())!;
-        const estimateGas = await wallet.estimateCustomTestnetGas({
+        let estimateGas = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
           chainId: chainId,
           tx: tx,
@@ -305,6 +305,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
             const buffer =
               SAFE_GAS_LIMIT_BUFFER[chainId] || DEFAULT_GAS_LIMIT_BUFFER;
 
+            estimateGas = blockGasLimit;
             recommendGasLimit = new BigNumber(blockGasLimit)
               .times(buffer)
               .toFixed(0);
@@ -314,9 +315,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
             `0x${new BigNumber(recommendGasLimit).integerValue().toString(16)}`
           );
         }
-        return `0x${new BigNumber(recommendGasLimit)
-          .integerValue()
-          .toString(16)}`;
+        return `0x${new BigNumber(estimateGas).integerValue().toString(16)}`;
       } catch (e) {
         console.error(e);
         const fallback = intToHex(2000000);
