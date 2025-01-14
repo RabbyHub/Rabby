@@ -2291,6 +2291,7 @@
       "withdraw": "Withdraw",
       "noBalance": "No balance",
       "gasExceed": "GasAccount balance cannot exceed $1000",
+      "safeAddressDepositTips": "Multisig addresses are not supported for deposits.",
       "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
       "history": {
