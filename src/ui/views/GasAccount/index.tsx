@@ -23,6 +23,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
 import clsx from 'clsx';
+import { KEYRING_TYPE } from '@/constant';
 
 const DEPOSIT_LIMIT = 1000;
 
@@ -63,6 +64,26 @@ const GasAccountInner = () => {
   const isRisk = useAml();
 
   const dispatch = useRabbyDispatch();
+
+  const isGnosisSafe = React.useMemo(
+    () => currentAccount?.type === KEYRING_TYPE.GnosisKeyring,
+    [currentAccount?.type]
+  );
+
+  const depositDisabled = isRisk || balance >= DEPOSIT_LIMIT || isGnosisSafe;
+
+  const depositTips = React.useMemo(() => {
+    if (isGnosisSafe) {
+      return t('page.gasAccount.safeAddressDepositTips');
+    }
+    if (isRisk) {
+      return t('page.gasAccount.risk');
+    }
+    if (balance >= DEPOSIT_LIMIT) {
+      return t('page.gasAccount.gasExceed');
+    }
+    return '';
+  }, [isRisk, balance, t, isGnosisSafe]);
 
   useEffect(() => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
@@ -171,19 +192,18 @@ const GasAccountInner = () => {
             </TooltipWithMagnetArrow>
             <TooltipWithMagnetArrow
               className="rectangle w-[max-content]"
-              visible={isRisk || balance >= DEPOSIT_LIMIT ? undefined : false}
-              title={
-                isRisk
-                  ? t('page.gasAccount.risk')
-                  : t('page.gasAccount.gasExceed')
-              }
+              visible={depositDisabled ? undefined : false}
+              title={depositTips}
             >
               <Button
-                disabled={isRisk || balance >= DEPOSIT_LIMIT}
+                disabled={depositDisabled}
                 block
                 size="large"
                 type="primary"
                 className="h-[48px] text-r-neutral-title2 text-15 font-medium"
+                style={{
+                  height: 48,
+                }}
                 onClick={openDepositPopup}
               >
                 {t('page.gasAccount.deposit')}

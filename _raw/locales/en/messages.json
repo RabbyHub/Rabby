@@ -2281,6 +2281,7 @@
       "withdraw": "Withdraw",
       "noBalance": "No balance",
       "gasExceed": "GasAccount balance cannot exceed $1000",
+      "safeAddressDepositTips": "Multisig addresses are not supported for deposits.",
       "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
       "history": {
@@ -2311,10 +2312,10 @@
       },
       "withdrawPopup": {
         "noEnoughValuetBalance": "Vault Balance insufficient. Switch chain or try again later.",
-        "noEnoughGas":"Amount too low to cover gas fees",
+        "noEnoughGas": "Amount too low to cover gas fees",
         "riskMessageFromChain": "Due to risk control, the withdrawal limit depends on the total amount deposited from this chain.",
         "riskMessageFromAddress": "Due to risk control, the withdrawal limit depends on the total amount this address has deposited",
-        "selectDestinationChain":"Select destination chain",
+        "selectDestinationChain": "Select destination chain",
         "selectRecipientAddress": "Select recipient address",
         "withdrawalLimit": "Withdrawal limit",
         "title": "Withdraw",
