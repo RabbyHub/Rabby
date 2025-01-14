@@ -11,7 +11,7 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import { getUiType, useWallet } from '@/ui/utils';
+import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
 import {
@@ -31,7 +31,7 @@ import {
   SWAP_SUPPORT_CHAINS,
 } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
-import { findChainByEnum, findChainByServerID } from '@/utils/chain';
+import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +45,8 @@ import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { Header } from './Header';
+import { obj2query } from '@/ui/utils/url';
 const isTab = getUiType().isTab;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
@@ -456,299 +458,317 @@ export const Main = () => {
   ]);
 
   return (
-    <div
-      className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
-    >
-      <div className="mb-8 mx-20">
-        <ChainSelectorInForm
-          swap
-          value={chain}
-          onChange={switchChain}
-          disabledTips={getDisabledTips}
-          supportChains={SWAP_SUPPORT_CHAINS}
-          hideTestnetTab={true}
-          chainRenderClassName={clsx('text-[13px] font-medium')}
-          title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
-          drawerHeight={540}
-          showClosableIcon
-          getContainer={isTab ? '.js-rabby-popup-container' : false}
-        />
-      </div>
-
+    <>
+      <Header
+        onOpenInTab={() => {
+          openInternalPageInTab(
+            `dex-swap?${obj2query({
+              chain:
+                findChain({
+                  enum: chain,
+                })?.serverId || '',
+              payTokenId: payToken?.id || '',
+              receiveTokenId: receiveToken?.id || '',
+              inputAmount,
+              rbiSource,
+            })}`
+          );
+        }}
+      />
       <div
-        className={clsx(
-          'relative bg-r-neutral-card-1 rounded-[8px] mx-20',
-          'border-[0.5px] border-rabby-neutral-line'
-        )}
+        className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
       >
-        <SwapTokenItem
-          inSufficient={inSufficient}
-          slider={slider}
-          onChangeSlider={onChangeSlider}
-          value={inputAmount}
-          onValueChange={handleAmountChange}
-          token={payToken}
-          onTokenChange={(token) => {
-            const chainItem = findChainByServerID(token.chain);
-            if (chainItem?.enum !== chain) {
-              switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
-              setReceiveToken(undefined);
-            }
-            setPayToken(token);
-          }}
-          chainId={findChainByEnum(chain)!.serverId}
-          type={'from'}
-          excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
-          getContainer={isTab ? '.js-rabby-popup-container' : false}
-        />
+        <div className="mb-8 mx-20">
+          <ChainSelectorInForm
+            swap
+            value={chain}
+            onChange={switchChain}
+            disabledTips={getDisabledTips}
+            supportChains={SWAP_SUPPORT_CHAINS}
+            hideTestnetTab={true}
+            chainRenderClassName={clsx('text-[13px] font-medium')}
+            title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
+            drawerHeight={540}
+            showClosableIcon
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+          />
+        </div>
 
         <div
           className={clsx(
-            'w-full h-[0.5px] bg-rabby-neutral-line',
-            'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
+            'relative bg-r-neutral-card-1 rounded-[8px] mx-20',
+            'border-[0.5px] border-rabby-neutral-line'
           )}
-        />
+        >
+          <SwapTokenItem
+            inSufficient={inSufficient}
+            slider={slider}
+            onChangeSlider={onChangeSlider}
+            value={inputAmount}
+            onValueChange={handleAmountChange}
+            token={payToken}
+            onTokenChange={(token) => {
+              const chainItem = findChainByServerID(token.chain);
+              if (chainItem?.enum !== chain) {
+                switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+                setReceiveToken(undefined);
+              }
+              setPayToken(token);
+            }}
+            chainId={findChainByEnum(chain)!.serverId}
+            type={'from'}
+            excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+          />
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <BridgeSwitchBtn onClick={exchangeToken} />
+          <div
+            className={clsx(
+              'w-full h-[0.5px] bg-rabby-neutral-line',
+              'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
+            )}
+          />
+
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <BridgeSwitchBtn onClick={exchangeToken} />
+          </div>
+
+          <SwapTokenItem
+            valueLoading={
+              quoteLoading &&
+              amountAvailable &&
+              !inSufficient &&
+              !activeProvider?.manualClick
+            }
+            value={
+              !activeProvider
+                ? ''
+                : activeProvider?.actualReceiveAmount
+                ? activeProvider?.actualReceiveAmount + ''
+                : activeProvider?.name === 'WrapToken'
+                ? inputAmount
+                : '0'
+            }
+            token={receiveToken}
+            onTokenChange={(token) => {
+              const chainItem = findChainByServerID(token.chain);
+              if (chainItem?.enum !== chain) {
+                switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+                setPayToken(undefined);
+              }
+              setReceiveToken(token);
+              if (token?.low_credit_score) {
+                setLowCreditToken(token);
+                setLowCreditVisible(true);
+              }
+            }}
+            chainId={findChainByEnum(chain)!.serverId || CHAINS[chain].serverId}
+            type={'to'}
+            excludeTokens={payToken?.id ? [payToken?.id] : undefined}
+            currentQuote={activeProvider}
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+          />
         </div>
 
-        <SwapTokenItem
-          valueLoading={
-            quoteLoading &&
-            amountAvailable &&
-            !inSufficient &&
-            !activeProvider?.manualClick
-          }
-          value={
-            !activeProvider
-              ? ''
-              : activeProvider?.actualReceiveAmount
-              ? activeProvider?.actualReceiveAmount + ''
-              : activeProvider?.name === 'WrapToken'
-              ? inputAmount
-              : '0'
-          }
-          token={receiveToken}
-          onTokenChange={(token) => {
-            const chainItem = findChainByServerID(token.chain);
-            if (chainItem?.enum !== chain) {
-              switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
-              setPayToken(undefined);
+        {inSufficient || noQuote ? (
+          <Alert
+            className={clsx(
+              'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
+            )}
+            icon={
+              <RcIconWarningCC
+                viewBox="0 0 16 16"
+                className={clsx(
+                  'relative top-[3px] mr-4 self-start origin-center w-16 h-15',
+                  'text-rabby-red-default'
+                )}
+              />
             }
-            setReceiveToken(token);
-            if (token?.low_credit_score) {
-              setLowCreditToken(token);
-              setLowCreditVisible(true);
+            banner
+            message={
+              <span
+                className={clsx(
+                  'text-13 leading-[16px]',
+                  'text-rabby-red-default'
+                )}
+              >
+                {inSufficient
+                  ? t('page.swap.insufficient-balance')
+                  : t('page.swap.no-quote-found')}
+              </span>
             }
-          }}
-          chainId={findChainByEnum(chain)!.serverId || CHAINS[chain].serverId}
-          type={'to'}
-          excludeTokens={payToken?.id ? [payToken?.id] : undefined}
-          currentQuote={activeProvider}
-          getContainer={isTab ? '.js-rabby-popup-container' : false}
-        />
-      </div>
+          />
+        ) : null}
 
-      {inSufficient || noQuote ? (
-        <Alert
-          className={clsx(
-            'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
+        {showMoreVisible &&
+          Number(inputAmount) > 0 &&
+          !inSufficient &&
+          !!amountAvailable &&
+          !!payToken &&
+          !!receiveToken && (
+            <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
+              <BridgeShowMore
+                openFeePopup={openFeePopup}
+                open={showMoreOpen}
+                setOpen={setShowMoreOpen}
+                sourceName={sourceName}
+                sourceLogo={sourceLogo}
+                slippage={slippageState}
+                displaySlippage={slippage}
+                onSlippageChange={setSlippage}
+                fromToken={payToken}
+                toToken={receiveToken}
+                amount={inputAmount}
+                toAmount={
+                  isWrapToken
+                    ? inputAmount
+                    : activeProvider?.actualReceiveAmount || 0
+                }
+                openQuotesList={openQuotesList}
+                quoteLoading={quoteLoading}
+                slippageError={isSlippageHigh || isSlippageLow}
+                autoSlippage={!!autoSlippage}
+                isCustomSlippage={isCustomSlippage}
+                setAutoSlippage={setAutoSlippage}
+                setIsCustomSlippage={setIsCustomSlippage}
+                type="swap"
+                isWrapToken={isWrapToken}
+                isBestQuote={
+                  !!activeProvider &&
+                  !!bestQuoteDex &&
+                  bestQuoteDex === activeProvider?.name
+                }
+                showMEVGuardedSwitch={showMEVGuardedSwitch}
+                originPreferMEVGuarded={originPreferMEVGuarded}
+                switchPreferMEV={switchPreferMEV}
+                recommendValue={
+                  slippageValidInfo?.is_valid
+                    ? undefined
+                    : slippageValidInfo?.suggest_slippage
+                }
+              />
+            </div>
           )}
-          icon={
-            <RcIconWarningCC
-              viewBox="0 0 16 16"
-              className={clsx(
-                'relative top-[3px] mr-4 self-start origin-center w-16 h-15',
-                'text-rabby-red-default'
-              )}
-            />
-          }
-          banner
-          message={
-            <span
-              className={clsx(
-                'text-13 leading-[16px]',
-                'text-rabby-red-default'
-              )}
-            >
-              {inSufficient
-                ? t('page.swap.insufficient-balance')
-                : t('page.swap.no-quote-found')}
-            </span>
-          }
-        />
-      ) : null}
 
-      {showMoreVisible &&
-        Number(inputAmount) > 0 &&
-        !inSufficient &&
-        !!amountAvailable &&
-        !!payToken &&
-        !!receiveToken && (
-          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
-            <BridgeShowMore
-              openFeePopup={openFeePopup}
-              open={showMoreOpen}
-              setOpen={setShowMoreOpen}
-              sourceName={sourceName}
-              sourceLogo={sourceLogo}
-              slippage={slippageState}
-              displaySlippage={slippage}
-              onSlippageChange={setSlippage}
-              fromToken={payToken}
-              toToken={receiveToken}
-              amount={inputAmount}
-              toAmount={
-                isWrapToken
-                  ? inputAmount
-                  : activeProvider?.actualReceiveAmount || 0
-              }
-              openQuotesList={openQuotesList}
-              quoteLoading={quoteLoading}
-              slippageError={isSlippageHigh || isSlippageLow}
-              autoSlippage={!!autoSlippage}
-              isCustomSlippage={isCustomSlippage}
-              setAutoSlippage={setAutoSlippage}
-              setIsCustomSlippage={setIsCustomSlippage}
-              type="swap"
-              isWrapToken={isWrapToken}
-              isBestQuote={
-                !!activeProvider &&
-                !!bestQuoteDex &&
-                bestQuoteDex === activeProvider?.name
-              }
-              showMEVGuardedSwitch={showMEVGuardedSwitch}
-              originPreferMEVGuarded={originPreferMEVGuarded}
-              switchPreferMEV={switchPreferMEV}
-              recommendValue={
-                slippageValidInfo?.is_valid
-                  ? undefined
-                  : slippageValidInfo?.suggest_slippage
-              }
-            />
-          </div>
-        )}
-
-      <div
-        className={clsx(
-          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
-          'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
-          'py-[13px]',
-          isTab ? 'rounded-b-[16px]' : ''
-        )}
-      >
-        <Button
-          type="primary"
-          block
-          size="large"
-          className="h-[48px] text-white text-[16px] font-medium"
-          onClick={() => {
-            if (!activeProvider) {
-              refresh((e) => e + 1);
-              return;
-            }
-            if (activeProvider?.shouldTwoStepApprove) {
-              return Modal.confirm({
-                width: 360,
-                closable: true,
-                centered: true,
-                className: twoStepApproveCn,
-                title: null,
-                content: (
-                  <>
-                    <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                      {t('page.swap.two-step-approve')}
-                    </div>
-                    <div className="text-13 leading-[17px]  text-r-neutral-body">
-                      {t('page.swap.two-step-approve-details')}
-                    </div>
-                  </>
-                ),
-                okText: t('page.swap.process-with-two-step-approve'),
-                onOk() {
-                  // gotoSwap();
-                  handleSwap();
-                },
-              });
-            }
-            // gotoSwap();
-            // runBuildSwapTxs();
-            handleSwap();
-          }}
-          disabled={
-            quoteLoading ||
-            !payToken ||
-            !receiveToken ||
-            !amountAvailable ||
-            inSufficient ||
-            !activeProvider
-          }
+        <div
+          className={clsx(
+            'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
+            'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+            'py-[13px]',
+            isTab ? 'rounded-b-[16px]' : ''
+          )}
         >
-          {btnText}
-        </Button>
-      </div>
+          <Button
+            type="primary"
+            block
+            size="large"
+            className="h-[48px] text-white text-[16px] font-medium"
+            onClick={() => {
+              if (!activeProvider) {
+                refresh((e) => e + 1);
+                return;
+              }
+              if (activeProvider?.shouldTwoStepApprove) {
+                return Modal.confirm({
+                  width: 360,
+                  closable: true,
+                  centered: true,
+                  className: twoStepApproveCn,
+                  title: null,
+                  content: (
+                    <>
+                      <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                        {t('page.swap.two-step-approve')}
+                      </div>
+                      <div className="text-13 leading-[17px]  text-r-neutral-body">
+                        {t('page.swap.two-step-approve-details')}
+                      </div>
+                    </>
+                  ),
+                  okText: t('page.swap.process-with-two-step-approve'),
+                  onOk() {
+                    // gotoSwap();
+                    handleSwap();
+                  },
+                });
+              }
+              // gotoSwap();
+              // runBuildSwapTxs();
+              handleSwap();
+            }}
+            disabled={
+              quoteLoading ||
+              !payToken ||
+              !receiveToken ||
+              !amountAvailable ||
+              inSufficient ||
+              !activeProvider
+            }
+          >
+            {btnText}
+          </Button>
+        </div>
 
-      {payToken && receiveToken && chain ? (
-        <QuoteList
-          list={quoteList}
-          loading={quoteLoading}
-          visible={visible}
-          onClose={() => {
-            setVisible(false);
+        {payToken && receiveToken && chain ? (
+          <QuoteList
+            list={quoteList}
+            loading={quoteLoading}
+            visible={visible}
+            onClose={() => {
+              setVisible(false);
+            }}
+            userAddress={userAddress}
+            chain={chain}
+            slippage={slippage}
+            payToken={payToken}
+            payAmount={inputAmount}
+            receiveToken={receiveToken}
+            fee={feeRate}
+            inSufficient={inSufficient}
+            setActiveProvider={setActiveProvider}
+          />
+        ) : null}
+        <MiniApproval
+          visible={isShowSign}
+          txs={txs}
+          ga={{
+            category: 'Swap',
+            source: 'swap',
+            trigger: rbiSource,
+            swapUseSlider,
           }}
-          userAddress={userAddress}
-          chain={chain}
-          slippage={slippage}
-          payToken={payToken}
-          payAmount={inputAmount}
-          receiveToken={receiveToken}
-          fee={feeRate}
-          inSufficient={inSufficient}
-          setActiveProvider={setActiveProvider}
-        />
-      ) : null}
-      <MiniApproval
-        visible={isShowSign}
-        txs={txs}
-        ga={{
-          category: 'Swap',
-          source: 'swap',
-          trigger: rbiSource,
-          swapUseSlider,
-        }}
-        onClose={() => {
-          setIsShowSign(false);
-          refresh((e) => e + 1);
-          setTimeout(() => {
-            mutateTxs([]);
-          }, 500);
-        }}
-        onReject={() => {
-          setIsShowSign(false);
-          refresh((e) => e + 1);
-          mutateTxs([]);
-        }}
-        onResolve={() => {
-          setTimeout(() => {
+          onClose={() => {
             setIsShowSign(false);
+            refresh((e) => e + 1);
+            setTimeout(() => {
+              mutateTxs([]);
+            }, 500);
+          }}
+          onReject={() => {
+            setIsShowSign(false);
+            refresh((e) => e + 1);
             mutateTxs([]);
-            // setPayAmount('');
-            // setTimeout(() => {
-            history.replace('/');
-            // }, 500);
-          }, 500);
-        }}
-        getContainer={isTab ? '.js-rabby-popup-container' : ''}
-      />
-      <LowCreditModal
-        token={lowCreditToken}
-        visible={lowCreditVisible}
-        onCancel={() => {
-          setLowCreditVisible(false);
-          lowCreditInit.current = true;
-        }}
-      />
-    </div>
+          }}
+          onResolve={() => {
+            setTimeout(() => {
+              setIsShowSign(false);
+              mutateTxs([]);
+              // setPayAmount('');
+              // setTimeout(() => {
+              history.replace('/');
+              // }, 500);
+            }, 500);
+          }}
+          getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+        />
+        <LowCreditModal
+          token={lowCreditToken}
+          visible={lowCreditVisible}
+          onCancel={() => {
+            setLowCreditVisible(false);
+            lowCreditInit.current = true;
+          }}
+        />
+      </div>
+    </>
   );
 };

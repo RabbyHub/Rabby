@@ -17,7 +17,7 @@ import { getUiType, openInternalPageInTab } from '@/ui/utils';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 const isTab = getUiType().isTab;
 
-export const Header = () => {
+export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
   const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
 
@@ -54,7 +54,7 @@ export const Header = () => {
               <div
                 className="text-r-neutral-title1 cursor-pointer"
                 onClick={() => {
-                  openInternalPageInTab(`dex-swap${history.location.search}`);
+                  onOpenInTab?.();
                 }}
               >
                 <RcIconFullscreen />
@@ -78,14 +78,14 @@ export const Header = () => {
         onClose={useCallback(() => {
           setHistoryVisible(false);
         }, [])}
-        getContainer={isTab ? '.js-rabby-popup-container' : false}
+        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
       />
       <RabbyFeePopup
         visible={visible}
         dexName={dexName}
         feeDexDesc={feeDexDesc}
         onClose={() => setRabbyFeeVisible({ visible: false })}
-        getContainer={isTab ? '.js-rabby-popup-container' : false}
+        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
       />
     </>
   );

@@ -13,6 +13,8 @@ import BigNumber from 'bignumber.js';
 import stats from '@/stats';
 import { isNaN } from 'lodash';
 import { useBridgeSlippage } from './slippage';
+import { useLocation } from 'react-router-dom';
+import { query2obj } from '@/ui/utils/url';
 
 export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
   shouldApproveToken?: boolean;
@@ -212,8 +214,12 @@ export const useBridge = () => {
   useAsyncInitializeChainList({
     supportChains: supportedChains,
     onChainInitializedAsync: (firstEnum) => {
-      switchFromChain(firstEnum);
-      getRecommendToChain(firstEnum);
+      if (!(searchObj?.fromChain && searchObj?.fromTokenId)) {
+        switchFromChain(firstEnum);
+      }
+      if (!(searchObj?.toTokenId && searchObj.toChain)) {
+        getRecommendToChain(firstEnum);
+      }
     },
   });
 
@@ -602,6 +608,66 @@ export const useBridge = () => {
       clearTimeout(expiredTimer.current);
     }
   }, []);
+
+  const { search } = useLocation();
+  const [searchObj] = useState<{
+    fromChain?: CHAINS_ENUM;
+    fromTokenId?: string;
+    inputAmount?: string;
+    toChain?: CHAINS_ENUM;
+    toTokenId?: string;
+  }>(query2obj(search));
+
+  useEffect(() => {
+    let active = true;
+    if (!searchObj) {
+      return;
+    }
+    if (searchObj.fromChain && searchObj.fromTokenId) {
+      const fromChain = findChain({
+        enum: searchObj.fromChain,
+      });
+      if (userAddress && fromChain) {
+        wallet.openapi
+          .getToken(userAddress, fromChain.serverId, searchObj.fromTokenId)
+          .then((token) => {
+            if (active) {
+              switchFromChain(fromChain.enum);
+              setFromToken(token);
+            }
+          });
+      }
+      if (searchObj.inputAmount) {
+        handleAmountChange(searchObj.inputAmount);
+      }
+    }
+    if (searchObj.toChain && searchObj.toTokenId) {
+      const toChain = findChain({
+        enum: searchObj.toChain,
+      });
+      if (userAddress && toChain) {
+        wallet.openapi
+          .getToken(userAddress, toChain.serverId, searchObj.toTokenId)
+          .then((token) => {
+            if (active) {
+              switchToChain(toChain.enum);
+              setToToken(token);
+              console.log('setTo', toChain.enum, token);
+            }
+          });
+      }
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [
+    searchObj?.fromChain,
+    searchObj?.fromTokenId,
+    searchObj?.inputAmount,
+    searchObj?.toChain,
+    searchObj?.toTokenId,
+  ]);
 
   return {
     clearExpiredTimer,

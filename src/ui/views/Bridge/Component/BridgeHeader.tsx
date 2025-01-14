@@ -17,7 +17,7 @@ import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 const isTab = getUiType().isTab;
 
-export const Header = () => {
+export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
   const feePopupVisible = useSettingVisible();
   const setFeePopupVisible = useSetSettingVisible();
 
@@ -54,7 +54,7 @@ export const Header = () => {
               <div
                 className="text-r-neutral-title1 cursor-pointer"
                 onClick={() => {
-                  openInternalPageInTab(`bridge${history.location.search}`);
+                  onOpenInTab?.();
                 }}
               >
                 <RcIconFullscreen />
@@ -75,13 +75,13 @@ export const Header = () => {
         onClose={useCallback(() => {
           setHistoryVisible(false);
         }, [])}
-        getContainer={isTab ? '.js-rabby-popup-container' : false}
+        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
       />
       <RabbyFeePopup
         type="bridge"
         visible={feePopupVisible}
         onClose={closeFeePopup}
-        getContainer={isTab ? '.js-rabby-popup-container' : false}
+        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
       />
     </>
   );

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Header } from './Component/Header';
 import { Main } from './Component/Main';
 import {
   QuoteVisibleProvider,
@@ -40,7 +39,6 @@ const Swap = () => {
                     : ''
                 )}
               >
-                <Header />
                 <Main />
               </div>
             </div>

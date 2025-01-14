@@ -1513,7 +1513,7 @@ const SendToken = () => {
                   disabledTips={'Not supported'}
                   supportChains={undefined}
                   readonly={!!safeInfo}
-                  getContainer={isTab ? '.js-rabby-popup-container' : false}
+                  getContainer={isTab ? '.js-rabby-popup-container' : undefined}
                 />
                 <div className={clsx('section-title mt-[10px]')}>
                   {t('page.sendToken.sectionFrom.title')}
@@ -1677,7 +1677,9 @@ const SendToken = () => {
                       chainId={chainItem.serverId}
                       excludeTokens={[]}
                       inlinePrize
-                      getContainer={isTab ? '.js-rabby-popup-container' : false}
+                      getContainer={
+                        isTab ? '.js-rabby-popup-container' : undefined
+                      }
                     />
                   )}
                 </Form.Item>
@@ -1783,13 +1785,13 @@ const SendToken = () => {
             onOk={handleConfirmContact}
             onCancel={handleCancelEditContact}
             isEdit={!!contactInfo}
-            getContainer={isTab ? '.js-rabby-popup-container' : false}
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
           />
           <ContactListModal
             visible={showListContactModal}
             onCancel={handleCancelContact}
             onOk={handleConfirmContact}
-            getContainer={isTab ? '.js-rabby-popup-container' : false}
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
           />
 
           <SendReserveGasPopup
@@ -1803,7 +1805,7 @@ const SendToken = () => {
             visible={reserveGasOpen}
             rawHexBalance={currentToken.raw_amount_hex_str}
             onClose={() => handleReserveGasClose()}
-            getContainer={isTab ? '.js-rabby-popup-container' : false}
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
           />
         </div>
       </div>

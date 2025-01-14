@@ -1,5 +1,4 @@
 import React from 'react';
-import { Header } from './Component/BridgeHeader';
 import { BridgeContent } from './Component/BridgeContent';
 import {
   QuoteVisibleProvider,
@@ -40,7 +39,6 @@ export const Bridge = () => {
                     : ''
                 )}
               >
-                <Header />
                 <BridgeContent />
               </div>
             </div>

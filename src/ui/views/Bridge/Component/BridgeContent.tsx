@@ -3,7 +3,7 @@ import { useRabbySelector } from '@/ui/store';
 import { useBridge } from '../hooks/token';
 import { Alert, Button, message, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import { getUiType, useWallet } from '@/ui/utils';
+import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import {
@@ -14,7 +14,7 @@ import {
 } from '../hooks';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 
 import pRetry from 'p-retry';
@@ -28,6 +28,8 @@ import { BridgeToken } from './BridgeToken';
 import { BridgeShowMore, RecommendFromToken } from './BridgeShowMore';
 import { BridgeSwitchBtn } from './BridgeSwitchButton';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { Header } from './BridgeHeader';
+import { obj2query } from '@/ui/utils/url';
 const isTab = getUiType().isTab;
 
 export const BridgeContent = () => {
@@ -379,220 +381,242 @@ export const BridgeContent = () => {
   }, [switchFeePopup]);
 
   return (
-    <div
-      className={clsx(
-        'flex-1 overflow-auto page-has-ant-input',
-        selectedBridgeQuote?.shouldApproveToken ? 'pb-[130px]' : 'pb-[110px]'
-      )}
-    >
-      <div className="relative flex flex-col mx-20 gap-8">
-        <BridgeToken
-          type="from"
-          chain={fromChain}
-          token={fromToken}
-          onChangeToken={setFromToken}
-          onChangeChain={switchFromChain}
-          value={amount}
-          onInputChange={handleAmountChange}
-          excludeChains={toChain ? [toChain] : undefined}
-          inSufficient={inSufficient}
-          handleSetGasPrice={setMaxNativeTokenGasPrice}
-          getContainer={isTab ? '.js-rabby-popup-container' : ''}
-        />
-        <BridgeToken
-          type="to"
-          chain={toChain}
-          token={toToken}
-          onChangeToken={setToToken}
-          onChangeChain={setToChain}
-          fromChainId={fromToken?.chain || findChainByEnum(fromChain)?.serverId}
-          fromTokenId={fromToken?.id}
-          valueLoading={quoteLoading}
-          value={selectedBridgeQuote?.to_token_amount}
-          excludeChains={fromChain ? [fromChain] : undefined}
-          noQuote={noQuote}
-          getContainer={isTab ? '.js-rabby-popup-container' : ''}
-        />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <BridgeSwitchBtn onClick={switchToken} />
-        </div>
-      </div>
-
-      {inSufficient || (noQuote && !recommendFromToken) ? (
-        <Alert
-          className={clsx(
-            'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
-          )}
-          icon={
-            <RcIconWarningCC
-              viewBox="0 0 16 16"
-              className={clsx(
-                'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
-                'text-rabby-red-default'
-              )}
-            />
-          }
-          banner
-          message={
-            <span
-              className={clsx('text-13 font-medium', 'text-rabby-red-default')}
-            >
-              {inSufficient
-                ? t('page.bridge.insufficient-balance')
-                : t('page.bridge.no-quote-found')}
-            </span>
-          }
-        />
-      ) : null}
-
-      <div className="mx-20 mt-20">
-        {selectedBridgeQuote && (
-          <BridgeShowMore
-            openFeePopup={openFeePopup}
-            open={showMoreOpen}
-            setOpen={setShowMoreOpen}
-            sourceName={selectedBridgeQuote?.aggregator.name || ''}
-            sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
-            slippage={slippageState}
-            displaySlippage={slippage}
-            onSlippageChange={(e) => {
-              setSlippageChanged(true);
-              setSlippage(e);
-            }}
-            fromToken={fromToken}
-            toToken={toToken}
-            amount={amount || 0}
-            toAmount={selectedBridgeQuote?.to_token_amount}
-            openQuotesList={openQuotesList}
-            quoteLoading={quoteLoading}
-            slippageError={isSlippageHigh || isSlippageLow}
-            autoSlippage={autoSlippage}
-            isCustomSlippage={isCustomSlippage}
-            setAutoSlippage={setAutoSlippage}
-            setIsCustomSlippage={setIsCustomSlippage}
-            type="bridge"
-            isBestQuote={
-              !!bestQuoteId &&
-              !!selectedBridgeQuote &&
-              bestQuoteId?.aggregatorId === selectedBridgeQuote.aggregator.id &&
-              bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id
-            }
-          />
-        )}
-        {noQuote && recommendFromToken && (
-          <RecommendFromToken
-            token={recommendFromToken}
-            className="mt-16"
-            onOk={fillRecommendFromToken}
-          />
-        )}
-      </div>
-
+    <>
+      <Header
+        onOpenInTab={() => {
+          openInternalPageInTab(
+            `bridge?${obj2query({
+              fromChain: fromChain || '',
+              fromTokenId: fromToken?.id || '',
+              inputAmount: amount || '',
+              toChain: toChain || '',
+              toTokenId: toToken?.id || '',
+              rbiSource: rbiSource || '',
+            })}`
+          );
+        }}
+      />
       <div
         className={clsx(
-          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
-          'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
-          'py-[16px]',
-          isTab ? 'rounded-b-[16px]' : ''
+          'flex-1 overflow-auto page-has-ant-input',
+          selectedBridgeQuote?.shouldApproveToken ? 'pb-[130px]' : 'pb-[110px]'
         )}
       >
-        <Button
-          loading={fetchingBridgeQuote}
-          type="primary"
-          block
-          size="large"
-          className="h-[48px] text-white text-[16px] font-medium"
-          onClick={() => {
-            if (fetchingBridgeQuote) return;
-            if (!selectedBridgeQuote) {
-              refresh((e) => e + 1);
-
-              return;
+        <div className="relative flex flex-col mx-20 gap-8">
+          <BridgeToken
+            type="from"
+            chain={fromChain}
+            token={fromToken}
+            onChangeToken={setFromToken}
+            onChangeChain={switchFromChain}
+            value={amount}
+            onInputChange={handleAmountChange}
+            excludeChains={toChain ? [toChain] : undefined}
+            inSufficient={inSufficient}
+            handleSetGasPrice={setMaxNativeTokenGasPrice}
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+          />
+          <BridgeToken
+            type="to"
+            chain={toChain}
+            token={toToken}
+            onChangeToken={setToToken}
+            onChangeChain={setToChain}
+            fromChainId={
+              fromToken?.chain || findChainByEnum(fromChain)?.serverId
             }
-            if (selectedBridgeQuote?.shouldTwoStepApprove) {
-              return Modal.confirm({
-                width: 360,
-                closable: true,
-                centered: true,
-                className: twoStepApproveCn,
-                title: null,
-                content: (
-                  <>
-                    <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                      Sign 2 transactions to change allowance
-                    </div>
-                    <div className="text-13 leading-[17px]  text-r-neutral-body">
-                      Token USDT requires 2 transactions to change allowance.
-                      First you would need to reset allowance to zero, and only
-                      then set new allowance value.
-                    </div>
-                  </>
-                ),
-                okText: 'Proceed with two step approve',
+            fromTokenId={fromToken?.id}
+            valueLoading={quoteLoading}
+            value={selectedBridgeQuote?.to_token_amount}
+            excludeChains={fromChain ? [fromChain] : undefined}
+            noQuote={noQuote}
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+          />
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <BridgeSwitchBtn onClick={switchToken} />
+          </div>
+        </div>
 
-                onOk() {
-                  // gotoBridge();
-                  handleBridge();
-                },
-              });
+        {inSufficient || (noQuote && !recommendFromToken) ? (
+          <Alert
+            className={clsx(
+              'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
+            )}
+            icon={
+              <RcIconWarningCC
+                viewBox="0 0 16 16"
+                className={clsx(
+                  'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
+                  'text-rabby-red-default'
+                )}
+              />
             }
-            // gotoBridge();
-            handleBridge();
-          }}
-          disabled={btnDisabled}
+            banner
+            message={
+              <span
+                className={clsx(
+                  'text-13 font-medium',
+                  'text-rabby-red-default'
+                )}
+              >
+                {inSufficient
+                  ? t('page.bridge.insufficient-balance')
+                  : t('page.bridge.no-quote-found')}
+              </span>
+            }
+          />
+        ) : null}
+
+        <div className="mx-20 mt-20">
+          {selectedBridgeQuote && (
+            <BridgeShowMore
+              openFeePopup={openFeePopup}
+              open={showMoreOpen}
+              setOpen={setShowMoreOpen}
+              sourceName={selectedBridgeQuote?.aggregator.name || ''}
+              sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
+              slippage={slippageState}
+              displaySlippage={slippage}
+              onSlippageChange={(e) => {
+                setSlippageChanged(true);
+                setSlippage(e);
+              }}
+              fromToken={fromToken}
+              toToken={toToken}
+              amount={amount || 0}
+              toAmount={selectedBridgeQuote?.to_token_amount}
+              openQuotesList={openQuotesList}
+              quoteLoading={quoteLoading}
+              slippageError={isSlippageHigh || isSlippageLow}
+              autoSlippage={autoSlippage}
+              isCustomSlippage={isCustomSlippage}
+              setAutoSlippage={setAutoSlippage}
+              setIsCustomSlippage={setIsCustomSlippage}
+              type="bridge"
+              isBestQuote={
+                !!bestQuoteId &&
+                !!selectedBridgeQuote &&
+                bestQuoteId?.aggregatorId ===
+                  selectedBridgeQuote.aggregator.id &&
+                bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id
+              }
+            />
+          )}
+          {noQuote && recommendFromToken && (
+            <RecommendFromToken
+              token={recommendFromToken}
+              className="mt-16"
+              onOk={fillRecommendFromToken}
+            />
+          )}
+        </div>
+
+        <div
+          className={clsx(
+            'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
+            'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+            'py-[16px]',
+            isTab ? 'rounded-b-[16px]' : ''
+          )}
         >
-          {btnText}
-        </Button>
-      </div>
-      {fromToken && toToken ? (
-        <QuoteList
-          list={quoteList}
-          loading={quoteLoading}
-          visible={visible}
-          onClose={() => {
-            setVisible(false);
+          <Button
+            loading={fetchingBridgeQuote}
+            type="primary"
+            block
+            size="large"
+            className="h-[48px] text-white text-[16px] font-medium"
+            onClick={() => {
+              if (fetchingBridgeQuote) return;
+              if (!selectedBridgeQuote) {
+                refresh((e) => e + 1);
+
+                return;
+              }
+              if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                return Modal.confirm({
+                  width: 360,
+                  closable: true,
+                  centered: true,
+                  className: twoStepApproveCn,
+                  title: null,
+                  content: (
+                    <>
+                      <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                        Sign 2 transactions to change allowance
+                      </div>
+                      <div className="text-13 leading-[17px]  text-r-neutral-body">
+                        Token USDT requires 2 transactions to change allowance.
+                        First you would need to reset allowance to zero, and
+                        only then set new allowance value.
+                      </div>
+                    </>
+                  ),
+                  okText: 'Proceed with two step approve',
+
+                  onOk() {
+                    // gotoBridge();
+                    handleBridge();
+                  },
+                });
+              }
+              // gotoBridge();
+              handleBridge();
+            }}
+            disabled={btnDisabled}
+          >
+            {btnText}
+          </Button>
+        </div>
+        {fromToken && toToken ? (
+          <QuoteList
+            list={quoteList}
+            loading={quoteLoading}
+            visible={visible}
+            onClose={() => {
+              setVisible(false);
+            }}
+            userAddress={userAddress}
+            payToken={fromToken}
+            payAmount={amount}
+            receiveToken={toToken}
+            inSufficient={inSufficient}
+            setSelectedBridgeQuote={setSelectedBridgeQuote}
+            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+          />
+        ) : null}
+        <MiniApproval
+          visible={isShowSign}
+          ga={{
+            category: 'Bridge',
+            source: 'bridge',
+            trigger: rbiSource,
           }}
-          userAddress={userAddress}
-          payToken={fromToken}
-          payAmount={amount}
-          receiveToken={toToken}
-          inSufficient={inSufficient}
-          setSelectedBridgeQuote={setSelectedBridgeQuote}
-          getContainer={isTab ? '.js-rabby-popup-container' : false}
-        />
-      ) : null}
-      <MiniApproval
-        visible={isShowSign}
-        ga={{
-          category: 'Bridge',
-          source: 'bridge',
-          trigger: rbiSource,
-        }}
-        txs={txs}
-        onClose={() => {
-          setIsShowSign(false);
-          refresh((e) => e + 1);
-          setTimeout(() => {
-            mutateTxs([]);
-          }, 500);
-        }}
-        onReject={() => {
-          setIsShowSign(false);
-          refresh((e) => e + 1);
-          mutateTxs([]);
-        }}
-        onResolve={() => {
-          setTimeout(() => {
+          txs={txs}
+          onClose={() => {
             setIsShowSign(false);
+            refresh((e) => e + 1);
+            setTimeout(() => {
+              mutateTxs([]);
+            }, 500);
+          }}
+          onReject={() => {
+            setIsShowSign(false);
+            refresh((e) => e + 1);
             mutateTxs([]);
-            // setPayAmount('');
-            // setTimeout(() => {
-            history.replace('/');
-            // }, 500);
-          }, 500);
-        }}
-        getContainer={isTab ? '.js-rabby-popup-container' : ''}
-      />
-    </div>
+          }}
+          onResolve={() => {
+            setTimeout(() => {
+              setIsShowSign(false);
+              mutateTxs([]);
+              // setPayAmount('');
+              // setTimeout(() => {
+              history.replace('/');
+              // }, 500);
+            }, 500);
+          }}
+          getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+        />
+      </div>
+    </>
   );
 };

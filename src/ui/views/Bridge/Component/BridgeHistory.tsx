@@ -243,7 +243,7 @@ const HistoryList = () => {
         ?.map((swap, idx) => (
           <Transaction
             ref={txList?.list.length - 1 === idx ? ref : undefined}
-            key={`${swap.tx_id}-${swap.chain}`}
+            key={`${swap.detail_url}-${idx}`}
             data={swap}
           />
         ))}

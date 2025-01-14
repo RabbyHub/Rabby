@@ -177,6 +177,8 @@ export const useTokenPair = (userAddress: string) => {
   const [searchObj] = useState<{
     payTokenId?: string;
     chain?: string;
+    inputAmount?: string;
+    receiveTokenId?: string;
   }>(query2obj(search));
 
   useAsyncInitializeChainList({
@@ -627,6 +629,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [payToken?.id, receiveToken?.id, chain, inputAmount, inSufficient]);
 
   useEffect(() => {
+    let active = true;
     if (searchObj.chain && searchObj.payTokenId) {
       const target = findChain({
         serverId: searchObj.chain,
@@ -637,10 +640,31 @@ export const useTokenPair = (userAddress: string) => {
           ...getChainDefaultToken(target?.enum),
           id: searchObj.payTokenId,
         });
-        setReceiveToken(undefined);
+        if (searchObj?.inputAmount) {
+          handleAmountChange(searchObj?.inputAmount);
+        }
+        if (searchObj?.receiveTokenId) {
+          wallet.openapi
+            .getToken(userAddress, target.serverId, searchObj.receiveTokenId)
+            .then((token) => {
+              if (active) {
+                setReceiveToken(token);
+              }
+            });
+        } else {
+          setReceiveToken(undefined);
+        }
       }
     }
-  }, [searchObj?.chain, searchObj?.payTokenId]);
+    return () => {
+      active = false;
+    };
+  }, [
+    searchObj?.chain,
+    searchObj?.payTokenId,
+    searchObj?.inputAmount,
+    searchObj?.receiveTokenId,
+  ]);
 
   const rbiSource = useRbiSource();
 
