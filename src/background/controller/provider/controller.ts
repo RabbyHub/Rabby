@@ -266,7 +266,6 @@ class ProviderController extends BaseController {
   };
 
   ethRequestAccounts = async ({ session: { origin } }) => {
-    console.log('ethRequestAccounts');
     if (!permissionService.hasPermission(origin)) {
       throw ethErrors.provider.unauthorized();
     }
