@@ -196,7 +196,6 @@ const Connect = (props: ConnectProps) => {
   const {
     params: { icon, origin, name, $ctx },
   } = props;
-  console.log(props);
   const { state } = useLocation<{
     showChainsModal?: boolean;
   }>();
