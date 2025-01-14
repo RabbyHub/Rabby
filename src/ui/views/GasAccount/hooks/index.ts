@@ -7,6 +7,10 @@ import React, { useRef } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
 import { useGasAccountRefreshId, useGasAccountSetRefreshId } from './context';
+import { preferenceService } from '@/background/service';
+import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
+import { KEYRING_CLASS } from '@/constant';
+import pRetry from 'p-retry';
 
 export const useGasAccountRefresh = () => {
   const refreshId = useGasAccountRefreshId();
@@ -58,14 +62,55 @@ export const useGasAccountInfo = () => {
 
 export const useGasAccountMethods = () => {
   const wallet = useWallet();
+  const account = useRabbySelector((s) => s.account.currentAccount);
   const dispatch = useRabbyDispatch();
 
   const { sig, accountId } = useGasAccountSign();
+  const { refresh } = useGasAccountRefresh();
+
+  const handleNoSignLogin = useCallback(async () => {
+    if (account) {
+      try {
+        const { text } = await wallet.openapi.getGasAccountSignText(
+          account.address
+        );
+
+        const { txHash: signature } = await sendPersonalMessage({
+          data: [text, account.address],
+          wallet,
+        });
+
+        const result = await pRetry(
+          async () =>
+            wallet.openapi.loginGasAccount({
+              sig: signature,
+              account_id: account.address,
+            }),
+          {
+            retries: 2,
+          }
+        );
+        if (result?.success) {
+          dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+          refresh();
+        }
+      } catch (e) {
+        message.error('Login in error, Please retry');
+      }
+    }
+  }, [account]);
 
   const login = useCallback(async () => {
-    wallet.signGasAccount();
-    window.close();
-  }, []);
+    const noSignType =
+      account?.type === KEYRING_CLASS.PRIVATE_KEY ||
+      account?.type === KEYRING_CLASS.MNEMONIC;
+    if (noSignType) {
+      handleNoSignLogin();
+    } else {
+      wallet.signGasAccount();
+      window.close();
+    }
+  }, [account, handleNoSignLogin]);
 
   const logout = useCallback(async () => {
     if (sig && accountId) {

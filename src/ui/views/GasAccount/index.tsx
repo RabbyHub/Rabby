@@ -109,6 +109,8 @@ const GasAccountInner = () => {
   useEffect(() => {
     if (!isLogin) {
       setLoginVisible(true);
+    } else {
+      setLoginVisible(false);
     }
   }, [isLogin]);
 
