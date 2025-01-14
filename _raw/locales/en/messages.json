@@ -1151,7 +1151,8 @@
         "recentlyConnected": "Recently connected",
         "noRecentlyConnectedDapps": "No recently connected Dapps",
         "noConnectedDapps": "No connected Dapps",
-        "dapps": "Dapps"
+        "dapps": "Dapps",
+        "metamaskModeTooltip": "Can’t connect Rabby on this Dapp? Try enabling <1>MetaMask Mode</1>"
       },
       "feedback": {
         "directMessage": {
@@ -1268,7 +1269,8 @@
           "enableTestnets": "Enable Testnets",
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
-          "customTestnet": "Add Custom Network"
+          "customTestnet": "Add Custom Network",
+          "metamaskMode": "MetaMask Mode"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1403,6 +1405,13 @@
       },
       "echologyPopup": {
         "title": "Ecosystem"
+      },
+      "MetamaskModePopup": {
+        "title": "MetaMask Mode",
+        "desc": "If you can’t connect Rabby on a Dapp, enable MetaMask Mode and connect by selecting the MetaMask option.",
+        "footerText": "Add more Dapps to MetaMask Mode in More > MetaMask Mode",
+        "enableDesc": "Enable if Dapp only works with MetaMask",
+        "toastSuccess": "Enabled. Refresh the page to reconnect."
       }
     },
     "nft": {
@@ -1842,7 +1851,12 @@
       "SignTestnetPermission": {
         "title": "Signing permission"
       },
-      "ignoreAll": "Ignore all"
+      "ignoreAll": "Ignore all",
+      "otherWalletBtn": "Connect with Another Wallet",
+      "SelectWallet": {
+        "title": "Select a Wallet to Connect",
+        "desc": "Choose from the wallets you have installed"
+      }
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -2465,6 +2479,10 @@
         "placeholder": "Input safe address",
         "loading": "Searching the deployed chain of this address"
       }
+    },
+    "metamaskModeDapps": {
+      "title": "MetaMask Mode",
+      "desc": "MetaMask Mode enabled for the following Dapps. You can connect Rabby by selecting the MetaMask option."
     },
     "forgotPassword": {
       "home": {

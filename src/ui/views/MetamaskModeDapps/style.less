@@ -1,0 +1,119 @@
+@import '../../style/var.less';
+
+.page-metamask-mode-dapps {
+  .page();
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 20px;
+  font-size: 12px;
+  line-height: 14px;
+  height: 100vh;
+  overflow: auto;
+  background: var(--r-neutral-bg-2, #3d4251);
+  position: relative;
+
+  .header {
+    .desc {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 18px;
+      color: var(--r-neutral-body, #d3d8e0);
+      margin-top: 18px;
+      margin-bottom: 18px;
+    }
+  }
+  .content {
+    flex: 1;
+    overflow: overlay;
+    padding-bottom: 80px;
+  }
+
+  .dapp-card {
+    display: flex;
+    align-items: center;
+    background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+    border-radius: 6px;
+    padding: 10px 16px;
+    gap: 12px;
+    &:not(:last-child) {
+      margin-bottom: 8px;
+    }
+
+    &-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    &-content {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 15px;
+      color: var(--r-neutral-body, #d3d8e0);
+    }
+
+    &-action {
+      margin-right: auto;
+      flex-shrink: 0;
+
+      &-delete {
+        width: 16px;
+        height: 16px;
+        color: var(--r-neutral-foot, #6a7587);
+
+        cursor: pointer;
+        &:hover {
+          color: var(--r-neutral-red-default, #e34935);
+        }
+      }
+    }
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+    border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+    background: var(--r-neutral-bg1, rgba(255, 255, 255, 0.06));
+
+    .ant-btn {
+      height: 44px;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      border-radius: 6px;
+    }
+  }
+}
+
+.prefer-metamask-popup {
+  .content {
+    text-align: center;
+    border-radius: 6px;
+
+    .info {
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      color: var(--r-neutral-body, #d3d8e0);
+      margin-bottom: 16px;
+    }
+
+    img {
+      width: 267px;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+}

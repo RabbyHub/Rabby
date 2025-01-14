@@ -266,6 +266,7 @@ class ProviderController extends BaseController {
   };
 
   ethRequestAccounts = async ({ session: { origin } }) => {
+    console.log('ethRequestAccounts');
     if (!permissionService.hasPermission(origin)) {
       throw ethErrors.provider.unauthorized();
     }
@@ -1257,7 +1258,7 @@ class ProviderController extends BaseController {
    */
   @Reflect.metadata('SAFE', true)
   walletRevokePermissions = ({ session: { origin }, data: { params } }) => {
-    if (Wallet.isUnlocked() && Wallet.getConnectedSite(origin)) {
+    if (Wallet.isUnlocked() && Wallet.getSite(origin)) {
       if (params?.[0] && 'eth_accounts' in params[0]) {
         Wallet.removeConnectedSite(origin);
       }

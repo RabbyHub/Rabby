@@ -4,7 +4,6 @@ import {
   permissionService,
   keyringService,
   preferenceService,
-  contextMenuService,
 } from 'background/service';
 import providerController from './controller';
 import { findChainByEnum } from '@/utils/chain';
@@ -23,7 +22,6 @@ const tabCheckin = ({
   origin,
 }) => {
   session.setProp({ origin, name, icon });
-  contextMenuService.createOrUpdate(origin);
   const site = permissionService.getSite(origin);
   if (site) {
     permissionService.updateConnectSite(origin, { ...site, icon, name }, true);
@@ -79,12 +77,8 @@ const providerOverwrite = ({
 };
 
 const hasOtherProvider = () => {
-  const prev = preferenceService.getHasOtherProvider();
   preferenceService.setHasOtherProvider(true);
   const isRabby = preferenceService.getIsDefaultWallet();
-  if (!prev) {
-    contextMenuService.init();
-  }
   if (wallet.isUnlocked()) {
     setPopupIcon(isRabby ? 'rabby' : 'metamask');
   }
@@ -95,10 +89,23 @@ const isDefaultWallet = ({ origin }) => {
   return preferenceService.getIsDefaultWallet(origin);
 };
 
+const getProvider = ({ origin }: { origin: string }) => {
+  return permissionService.getSite(origin)?.rdns;
+};
+
+const resetProvider = ({ origin }: { origin: string }) => {
+  const site = permissionService.getSite(origin);
+  if (site) {
+    permissionService.setSite({ ...site, rdns: undefined });
+  }
+};
+
 export default {
   tabCheckin,
   getProviderState,
   providerOverwrite,
   hasOtherProvider,
   isDefaultWallet,
+  'rabby:getProvider': getProvider,
+  'rabby:resetProvider': resetProvider,
 };
