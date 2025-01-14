@@ -67,10 +67,15 @@ export const HDManager: React.FC<StateProviderProps> = ({
   brand,
 }) => {
   const { search } = useLocation();
-  const [isNewUserImport, noRedirect] = React.useMemo(() => {
+  const [isNewUserImport, noRedirect, isLazyImport] = React.useMemo(() => {
     const query = new URLSearchParams(search);
-    return [query.get('isNewUserImport'), query.get('noRedirect')];
+    return [
+      query.get('isNewUserImport'),
+      query.get('noRedirect'),
+      !!query.get('isLazyImport'),
+    ];
   }, [search]);
+  console.log(isLazyImport);
   const history = useHistory();
 
   const wallet = useWallet();
@@ -170,7 +175,11 @@ export const HDManager: React.FC<StateProviderProps> = ({
   const Manager = MANAGER_MAP[keyring];
 
   return (
-    <HDManagerStateProvider keyringId={idRef.current} keyring={keyring}>
+    <HDManagerStateProvider
+      keyringId={idRef.current}
+      keyring={keyring}
+      isLazyImport={isLazyImport}
+    >
       <div className="HDManager relative">
         <main>
           <div className="logo">
@@ -200,18 +209,35 @@ export const HDManager: React.FC<StateProviderProps> = ({
 const DoneButton = ({ onClick }: { onClick?(): void }) => {
   const { t } = useTranslation();
 
-  const { currentAccounts } = React.useContext(HDManagerStateContext);
+  const { currentAccounts, selectedAccounts, isLazyImport } = React.useContext(
+    HDManagerStateContext
+  );
+
+  console.log(isLazyImport);
 
   return (
     <div className="absolute bottom-[40px] left-0 right-0 text-center">
-      <Button
-        type="primary"
-        className="w-[280px] h-[60px] text-20"
-        onClick={onClick}
-        disabled={!currentAccounts.length}
-      >
-        {t('page.newAddress.hd.done')}
-      </Button>
+      {isLazyImport ? (
+        <Button
+          type="primary"
+          className="w-[280px] h-[60px] text-20"
+          onClick={onClick}
+          disabled={!selectedAccounts.length}
+        >
+          {t('page.newAddress.hd.importBtn', {
+            count: selectedAccounts.length,
+          })}
+        </Button>
+      ) : (
+        <Button
+          type="primary"
+          className="w-[280px] h-[60px] text-20"
+          onClick={onClick}
+          disabled={!currentAccounts.length}
+        >
+          {t('page.newAddress.hd.done')}
+        </Button>
+      )}
     </div>
   );
 };

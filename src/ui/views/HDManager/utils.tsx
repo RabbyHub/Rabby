@@ -159,11 +159,11 @@ const useManagerTab = () => {
   };
 };
 
-const useHiddenInfo = () => {
-  const [hiddenInfo, setHiddenInfo] = React.useState(true);
+const useSelectedAccounts = () => {
+  const [selectedAccounts, setSelectedAccounts] = React.useState<Account[]>([]);
   return {
-    hiddenInfo,
-    setHiddenInfo,
+    selectedAccounts,
+    setSelectedAccounts,
   };
 };
 
@@ -207,12 +207,13 @@ export interface StateProviderProps {
   keyringId: number | null;
   keyring: string;
   brand?: string;
+  isLazyImport?: boolean;
 }
 
 export const HDManagerStateContext = React.createContext<
   ReturnType<typeof useGetCurrentAccounts> &
     ReturnType<typeof useManagerTab> &
-    ReturnType<typeof useHiddenInfo> &
+    ReturnType<typeof useSelectedAccounts> &
     ReturnType<typeof useTaskQueue> &
     StateProviderProps
 >({} as any);
@@ -221,24 +222,27 @@ export const HDManagerStateProvider: React.FC<StateProviderProps> = ({
   children,
   keyringId,
   keyring,
+  isLazyImport,
 }) => {
   console.log('keyring', {
     ...useGetCurrentAccounts({ keyringId, keyring }),
     ...useManagerTab(),
-    ...useHiddenInfo(),
+    ...useSelectedAccounts(),
     ...useTaskQueue({ keyring }),
     keyringId,
     keyring,
+    isLazyImport,
   });
   return (
     <HDManagerStateContext.Provider
       value={{
         ...useGetCurrentAccounts({ keyringId, keyring }),
         ...useManagerTab(),
-        ...useHiddenInfo(),
+        ...useSelectedAccounts(),
         ...useTaskQueue({ keyring }),
         keyringId,
         keyring,
+        isLazyImport,
       }}
     >
       {children}

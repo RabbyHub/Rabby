@@ -30,6 +30,8 @@ export const MainContainer: React.FC<Props> = ({
     createTask,
   } = React.useContext(HDManagerStateContext);
 
+  console.log(tab);
+
   React.useEffect(() => {
     const handleFocus = () => {
       if (isBoolean(firstFetchAccounts) && !firstFetchAccounts) {

@@ -17,6 +17,9 @@ import { KEYRING_CLASS } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import { detectClientOS } from '@/ui/utils/os';
+import { useQueryAccountsInfo } from './hooks/useQueryAccontsInfo';
+import { InViewport } from './InViewport';
+import { useMemoizedFn } from 'ahooks';
 
 const isWin32 = detectClientOS() === 'win32';
 
@@ -41,21 +44,20 @@ export const AccountList: React.FC<Props> = ({
   preventLoading,
 }) => {
   const wallet = useWallet();
-  const [list, setList] = React.useState<Account[]>([]);
-  const infoRef = React.useRef<HTMLDivElement>(null);
+  const [list, setList] = React.useState<Account[]>(data || []);
   const currentAccountsRef = React.useRef<Account[]>([]);
-  const [infoColumnWidth, setInfoColumnWidth] = React.useState(0);
-  const [infoColumnTop, setInfoColumnTop] = React.useState(0);
   const {
     currentAccounts,
+    selectedAccounts,
+    setSelectedAccounts,
+    isLazyImport,
     getCurrentAccounts,
-    hiddenInfo,
-    setHiddenInfo,
     createTask,
     keyringId,
     removeCurrentAccount,
     updateCurrentAccountAliasName,
     keyring,
+    tab,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
   const dispatch = useRabbyDispatch();
@@ -64,13 +66,6 @@ export const AccountList: React.FC<Props> = ({
     currentAccountsRef.current = currentAccounts;
   }, [currentAccounts]);
 
-  const toggleHiddenInfo = React.useCallback(
-    (e: React.MouseEvent, val: boolean) => {
-      e.preventDefault();
-      setHiddenInfo(val);
-    },
-    []
-  );
   const { t } = useTranslation();
 
   const copy = React.useCallback((value: string) => {
@@ -89,12 +84,8 @@ export const AccountList: React.FC<Props> = ({
   }, []);
 
   React.useEffect(() => {
-    if (!hiddenInfo) {
-      fetchAccountsInfo(wallet, data ?? []).then(setList);
-    } else {
-      setList(data ?? []);
-    }
-  }, [hiddenInfo, data]);
+    setList(data ?? []);
+  }, [data]);
 
   const currentIndex = React.useMemo(() => {
     if (!preventLoading && list?.length) {
@@ -113,7 +104,6 @@ export const AccountList: React.FC<Props> = ({
             ]);
             await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
           } else {
-            console.log(account, keyring, keyringId);
             await wallet.unlockHardwareAccount(
               keyring,
               [account.index - 1],
@@ -153,6 +143,22 @@ export const AccountList: React.FC<Props> = ({
     [keyring, keyringId, wallet]
   );
 
+  const handleSelectAccount = useMemoizedFn(
+    async (checked: boolean, account: Account) => {
+      if (checked) {
+        setSelectedAccounts((pre) => {
+          return [...pre, account];
+        });
+      } else {
+        setSelectedAccounts((pre) => {
+          return pre.filter(
+            (item) => !isSameAddress(item.address, account.address)
+          );
+        });
+      }
+    }
+  );
+
   const handleChangeAliasName = React.useCallback(
     async (value: string, account?: Account) => {
       if (!account) {
@@ -164,18 +170,6 @@ export const AccountList: React.FC<Props> = ({
     },
     []
   );
-
-  React.useEffect(() => {
-    // watch infoRef resize
-    const resizeObserver = new ResizeObserver(() => {
-      setInfoColumnWidth(infoRef.current?.parentElement?.offsetWidth ?? 0);
-      setInfoColumnTop(infoRef.current?.closest('thead')?.offsetHeight ?? 0);
-    });
-    resizeObserver.observe(infoRef.current ?? new Element());
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
 
   // fake loading progress
   React.useEffect(() => {
@@ -198,6 +192,12 @@ export const AccountList: React.FC<Props> = ({
     };
   }, [loading]);
 
+  const {
+    accountsMap,
+    pendingMap,
+    createQueryAccountJob,
+  } = useQueryAccountsInfo();
+
   return (
     <Table<Account>
       scroll={{ y: 'calc(100vh - 352px)' }}
@@ -214,37 +214,27 @@ export const AccountList: React.FC<Props> = ({
           : false
       }
       pagination={false}
-      summary={() =>
-        list.length && hiddenInfo ? (
-          <tr
-            onClick={(e) => toggleHiddenInfo(e, !hiddenInfo)}
-            className={clsx('info-mask', {
-              'info-mask--center': list.length < 4,
-            })}
-            style={{
-              top: `${infoColumnTop}px`,
-              width: `${infoColumnWidth + (isWin32 ? 6 : 1)}px`,
-            }}
-          >
-            <td>
-              <RcArrowSVG className="icon text-r-neutral-title-1" />
-              <span>{t('page.newAddress.hd.clickToGetInfo')}</span>
-            </td>
-          </tr>
-        ) : null
-      }
     >
       <Table.Column<Account>
         title={t('page.newAddress.hd.addToRabby')}
         key="add"
         render={(val, record) =>
           record.address ? (
-            <AddToRabby
-              checked={currentAccounts?.some((item) =>
-                isSameAddress(item.address, record.address)
-              )}
-              onChange={(val) => handleAddAccount(val, record)}
-            />
+            isLazyImport && tab === 'hd' ? (
+              <AddToRabby
+                checked={currentAccounts?.some((item) =>
+                  isSameAddress(item.address, record.address)
+                )}
+                onChange={(val) => handleAddAccount(val, record)}
+              />
+            ) : (
+              <AddToRabby
+                checked={selectedAccounts?.some((item) =>
+                  isSameAddress(item.address, record.address)
+                )}
+                onChange={(val) => handleSelectAccount(val, record)}
+              />
+            )
           ) : (
             <AccountListSkeleton width={52} />
           )
@@ -319,43 +309,43 @@ export const AccountList: React.FC<Props> = ({
         />
       </Table.ColumnGroup>
 
-      <Table.ColumnGroup
-        className="column-group-wrap"
-        title={
-          <div ref={infoRef} className="column-group">
-            <a href="#" onClick={(e) => toggleHiddenInfo(e, !hiddenInfo)}>
-              {hiddenInfo
-                ? t('page.newAddress.hd.getOnChainInformation')
-                : t('page.newAddress.hd.hideOnChainInformation')}
-            </a>
-          </div>
-        }
-      >
+      <Table.ColumnGroup className="column-group-wrap">
         <Table.Column<Account>
           title={t('page.newAddress.hd.usedChains')}
           dataIndex="usedChains"
           key="usedChains"
           width={140}
-          render={(value, record) =>
-            hiddenInfo ? (
-              <AccountListSkeleton width={100} />
-            ) : (
-              <ChainList account={record} />
-            )
-          }
+          render={(value, record) => {
+            const account = accountsMap[record.address] || record;
+            return (
+              <InViewport
+                callback={() => {
+                  createQueryAccountJob(record);
+                }}
+              >
+                {pendingMap[record.address] ? (
+                  <AccountListSkeleton width={100} />
+                ) : (
+                  <ChainList account={account} />
+                )}
+              </InViewport>
+            );
+          }}
         />
         <Table.Column<Account>
           title={t('page.newAddress.hd.firstTransactionTime')}
           dataIndex="firstTxTime"
           key="firstTxTime"
           width={160}
-          render={(value) =>
-            hiddenInfo ? (
+          render={(_, record) => {
+            const account = accountsMap[record.address] || record;
+            const value = account.firstTxTime;
+            return pendingMap[record.address] ? (
               <AccountListSkeleton width={100} />
-            ) : !isNaN(value) ? (
+            ) : value && !isNaN(value) ? (
               dayjs.unix(value).format('YYYY-MM-DD')
-            ) : null
-          }
+            ) : null;
+          }}
         />
         <Table.Column<Account>
           title={t('page.newAddress.hd.balance')}
@@ -363,13 +353,14 @@ export const AccountList: React.FC<Props> = ({
           key="balance"
           width={200}
           ellipsis
-          render={(balance, record) =>
-            hiddenInfo ? (
+          render={(balance, record) => {
+            const account = accountsMap[record.address] || record;
+            return pendingMap[record.address] ? (
               <AccountListSkeleton width={100} />
-            ) : record.chains?.length && balance ? (
-              `$${splitNumberByStep(balance.toFixed(2))}`
-            ) : null
-          }
+            ) : account.chains?.length && account.balance ? (
+              `$${splitNumberByStep(account.balance.toFixed(2))}`
+            ) : null;
+          }}
         />
       </Table.ColumnGroup>
     </Table>
