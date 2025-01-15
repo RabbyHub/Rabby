@@ -280,7 +280,7 @@ class NotificationService extends Events {
             : true,
           createdBy: data?.params.$ctx?.ga ? 'rabby' : 'dapp',
           source: data?.params.$ctx?.ga?.source || '',
-          trigger: data?.params.$ctx?.ga.trigger || '',
+          trigger: data?.params.$ctx?.ga?.trigger || '',
           networkType: chain?.isTestnet
             ? 'Custom Network'
             : 'Integrated Network',
