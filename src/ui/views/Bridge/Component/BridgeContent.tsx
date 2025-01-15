@@ -313,7 +313,7 @@ export const BridgeContent = () => {
     if (
       !toToken?.low_credit_score &&
       !toToken?.is_scam &&
-      toToken?.is_verified &&
+      receiveToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
       [
