@@ -4851,10 +4851,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.3.tgz#25fd2ec0cb57883997b1bf2c326a764ae8a3da34"
-  integrity sha512-QISfQucW60wa2kmQkb4DSuBuXUD/HkWjHJvzhwS1Mqf3vv6MnivnnBwDVT+VC1UeVOn3SxZKyITUrx1XjGrLvA==
+"@rabby-wallet/page-provider@0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.4.tgz#f04782d73598d57287451007a4681563b24fdcf0"
+  integrity sha512-ZmlIItUoOAY7LUd3NmCBscV44jrZHCfbXgApmhul5cFUG1aNm9j13R8TVErMa92YDXdiTOuxRb/mBkYEH2Jrng==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@metamask/post-message-stream" "8.1.0"
@@ -4865,6 +4865,7 @@
     eth-rpc-errors "^4.0.3"
     events "^3.3.0"
     lodash "^4.17.21"
+    nanoid "5.0.9"
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
@@ -15712,6 +15713,11 @@ nanoid@3.3.6, nanoid@^3.3.6:
   version "3.3.6"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
   integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
+
+nanoid@5.0.9:
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.0.9.tgz#977dcbaac055430ce7b1e19cf0130cea91a20e50"
+  integrity sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==
 
 nanoid@^3.3.7:
   version "3.3.7"
