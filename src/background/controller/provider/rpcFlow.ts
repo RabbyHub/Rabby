@@ -108,7 +108,6 @@ const flowContext = flow
       },
       mapMethod,
     } = ctx;
-    console.log(ctx);
     if (!Reflect.getMetadata('SAFE', providerController, mapMethod)) {
       if (!permissionService.hasPermission(origin)) {
         if (connectOrigins.has(origin)) {
@@ -127,7 +126,6 @@ const flowContext = flow
             { height: 800 }
           );
           connectOrigins.delete(origin);
-          console.log('xxxxx');
           permissionService.addConnectedSiteV2({
             origin,
             name,
