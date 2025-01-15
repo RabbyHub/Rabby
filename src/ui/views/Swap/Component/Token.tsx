@@ -6,7 +6,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { formatTokenAmount } from '@debank/common';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { TokenRender } from './TokenRender';
-import { Input } from 'antd';
+import { DrawerProps, Input } from 'antd';
 import styled from 'styled-components';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
@@ -71,6 +71,7 @@ interface SwapTokenItemProps {
   inSufficient?: boolean;
   valueLoading?: boolean;
   currentQuote?: QuoteProvider;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 export const SwapTokenItem = (props: SwapTokenItemProps) => {
@@ -87,6 +88,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     inSufficient,
     valueLoading,
     currentQuote,
+    getContainer,
   } = props;
 
   const openTokenModalRef = useRef<{
@@ -220,6 +222,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             supportChains={SWAP_SUPPORT_CHAINS}
             useSwapTokenList={!isFrom}
             disabledTips={t('page.swap.insufficient-balance')}
+            getContainer={getContainer}
           />
         </div>
 

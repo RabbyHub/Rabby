@@ -1,4 +1,4 @@
-import { Button, Input, Skeleton, Tooltip } from 'antd';
+import { Button, DrawerProps, Input, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel, Tx, TxPushType } from 'background/service/openapi';
@@ -114,6 +114,7 @@ interface GasSelectorProps {
     balance_is_enough: boolean;
     chain_not_support: boolean;
   };
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const useExplainGas = ({
@@ -300,6 +301,7 @@ const GasSelectorHeader = ({
   gasAccountCost,
   onChangeGasMethod,
   tx,
+  getContainer,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -476,9 +478,12 @@ const GasSelectorHeader = ({
       action: 'EditGas',
       label: chain?.serverId,
     });
-    setTimeout(() => {
-      customerInputRef.current?.focus();
-    }, 50);
+    setTimeout(
+      () => {
+        customerInputRef.current?.focus();
+      },
+      getContainer ? 1000 : 50
+    );
   };
 
   const panelSelection = (e, gas: GasLevel) => {
@@ -960,6 +965,7 @@ const GasSelectorHeader = ({
         destroyOnClose
         closable
         isSupportDarkMode
+        getContainer={getContainer}
       >
         <div className="mb-20 -mt-4">
           {disabled ? (
@@ -1037,7 +1043,11 @@ const GasSelectorHeader = ({
                           onClick={(e) => handlePanelSelection(e, item)}
                           // onPressEnter={customGasConfirm}
                           ref={customerInputRef}
-                          autoFocus={selectedGas?.level === item.level}
+                          autoFocus={
+                            getContainer
+                              ? false
+                              : selectedGas?.level === item.level
+                          }
                           min={0}
                           bordered={false}
                           disabled={disabled}

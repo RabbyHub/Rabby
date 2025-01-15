@@ -12,8 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
 import { PendingTx } from './PendingTx';
 import { RabbyFeePopup } from '../../Swap/Component/RabbyFeePopup';
+import { getUiType, openInternalPageInTab } from '@/ui/utils';
+import { useHistory } from 'react-router-dom';
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+const isTab = getUiType().isTab;
 
-export const Header = () => {
+export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
   const feePopupVisible = useSettingVisible();
   const setFeePopupVisible = useSetSettingVisible();
 
@@ -36,14 +40,26 @@ export const Header = () => {
     dispath.bridge.fetchAggregatorsList();
     dispath.bridge.fetchSupportedChains();
   }, []);
+  const history = useHistory();
 
   return (
     <>
       <PageHeader
         className="mx-[20px] pt-[20px] mb-[16px]"
-        forceShowBack
+        forceShowBack={!isTab}
+        canBack={!isTab}
         rightSlot={
           <div className="flex items-center gap-20 absolute bottom-0 right-0">
+            {isTab ? null : (
+              <div
+                className="text-r-neutral-title1 cursor-pointer"
+                onClick={() => {
+                  onOpenInTab?.();
+                }}
+              >
+                <RcIconFullscreen />
+              </div>
+            )}
             {loadingNumber ? (
               <PendingTx number={loadingNumber} onClick={openHistory} />
             ) : (
@@ -59,11 +75,13 @@ export const Header = () => {
         onClose={useCallback(() => {
           setHistoryVisible(false);
         }, [])}
+        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
       />
       <RabbyFeePopup
         type="bridge"
         visible={feePopupVisible}
         onClose={closeFeePopup}
+        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
       />
     </>
   );

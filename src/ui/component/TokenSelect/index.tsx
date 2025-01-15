@@ -6,7 +6,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { Input, Skeleton } from 'antd';
+import { DrawerProps, Input, Skeleton } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
@@ -81,6 +81,7 @@ interface CommonProps {
   disabledTips?: React.ReactNode;
   drawerHeight?: string | number;
   supportChains?: CHAINS_ENUM[];
+  getContainer?: DrawerProps['getContainer'];
 }
 
 interface BridgeFromProps extends CommonProps {
@@ -118,6 +119,7 @@ const TokenSelect = forwardRef<
       disabledTips = 'Not supported',
       drawerHeight,
       supportChains,
+      getContainer,
     },
     ref
   ) => {
@@ -281,6 +283,7 @@ const TokenSelect = forwardRef<
               disabledTips={disabledTips}
               supportChains={supportChains}
               excludeTokens={excludeTokens}
+              getContainer={getContainer}
             />
           )}
         </>

@@ -17,7 +17,7 @@ import { GasLevel, Tx, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { useMemoizedFn, useRequest, useSetState, useSize } from 'ahooks';
-import { Drawer, Modal } from 'antd';
+import { Drawer, DrawerProps, Modal } from 'antd';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import { Account, ChainGas } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
@@ -64,12 +64,14 @@ export const MiniSignTx = ({
   onResolve,
   onStatusChange,
   ga,
+  getContainer,
 }: {
   txs: Tx[];
   onReject?: () => void;
   onResolve?: () => void;
   onStatusChange?: (status: BatchSignTxTaskType['status']) => void;
   ga?: Record<string, any>;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -830,6 +832,7 @@ export const MiniSignTx = ({
         maskStyle={{
           backgroundColor: 'transparent',
         }}
+        getContainer={getContainer}
       >
         <ApprovalPopupContainer
           hdType={'privatekey'}
@@ -909,6 +912,7 @@ export const MiniSignTx = ({
                 );
                 return totalCost;
               }}
+              getContainer={getContainer}
             />
           </div>
         }
@@ -977,6 +981,7 @@ export const MiniApproval = ({
   onResolve,
   onReject,
   ga,
+  getContainer,
 }: {
   txs?: Tx[];
   visible?: boolean;
@@ -984,6 +989,7 @@ export const MiniApproval = ({
   onReject?: () => void;
   onResolve?: () => void;
   ga?: Record<string, any>;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1011,6 +1017,7 @@ export const MiniApproval = ({
       maskStyle={{
         backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
       }}
+      getContainer={getContainer}
     >
       {txs?.length ? (
         <MiniSignTx
@@ -1023,6 +1030,7 @@ export const MiniApproval = ({
           onResolve={() => {
             onResolve?.();
           }}
+          getContainer={getContainer}
         />
       ) : null}
     </Popup>

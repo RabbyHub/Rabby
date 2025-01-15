@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Input, Drawer, Skeleton, Tooltip } from 'antd';
+import { Input, Drawer, Skeleton, Tooltip, DrawerProps } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
@@ -50,6 +50,7 @@ export interface TokenSelectorProps {
   supportChains?: CHAINS_ENUM[] | undefined;
   drawerHeight?: number | string;
   excludeTokens?: TokenItem['id'][];
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
@@ -73,6 +74,7 @@ const TokenSelector = ({
   supportChains,
   drawerHeight = '540px',
   excludeTokens = defaultExcludeTokens,
+  getContainer,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -345,6 +347,7 @@ const TokenSelector = ({
       closeIcon={
         <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
       }
+      getContainer={getContainer}
     >
       {/* Select a token */}
       <div className="header">{t('component.TokenSelector.header.title')}</div>

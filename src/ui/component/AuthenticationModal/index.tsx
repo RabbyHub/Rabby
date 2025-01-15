@@ -1,4 +1,4 @@
-import { Button, Form, Input } from 'antd';
+import { Button, DrawerProps, Form, Input } from 'antd';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import React, {
@@ -39,6 +39,7 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   description?: string;
   checklist?: string[];
   placeholder?: string;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const Description = styled.div`
@@ -129,6 +130,7 @@ const AuthenticationModal = ({
   confirmText = 'Confirm',
   title = 'Enter Password',
   placeholder,
+  getContainer,
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -187,6 +189,9 @@ const AuthenticationModal = ({
       onCancel={handleCancel}
       height={height}
       isSupportDarkMode
+      getContainer={getContainer}
+      push={false}
+      key={String(visible)}
     >
       {description && <Description>{description}</Description>}
       {checklist.length > 0 && (
