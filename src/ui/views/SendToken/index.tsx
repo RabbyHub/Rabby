@@ -1148,11 +1148,13 @@ const SendToken = () => {
     async (val: CHAINS_ENUM) => {
       setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
       const gasList = await loadGasList();
-      setSelectedGasLevel(
-        gasList.find(
-          (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
-        ) || findInstanceLevel(gasList)
-      );
+      if (gasList && Array.isArray(gasList)) {
+        setSelectedGasLevel(
+          gasList.find(
+            (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
+          ) || findInstanceLevel(gasList)
+        );
+      }
 
       const account = (await wallet.syncGetCurrentAccount())!;
       const chain = findChain({

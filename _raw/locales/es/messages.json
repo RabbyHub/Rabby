@@ -348,7 +348,15 @@
           "options": {
             "quickCancel": {
               "tips": "Only supported for transactions that haven't broadcast"
+            },
+            "removeLocalPendingTx": {
+              "title": "Eliminar transacción localmente",
+              "desc": "Arreglar el bloqueo de transacciones causado por un largo tiempo de espera"
             }
+          },
+          "removeLocalPendingTx": {
+            "title": "Eliminar transacción localmente",
+            "desc": "Esta acción eliminará la transacción pendiente localmente. \nEs posible que la transacción pendiente aún se envíe correctamente en el futuro."
           }
         }
       },
@@ -797,8 +805,8 @@
         "save": "Guardar",
         "pendingTransactionCleared": "Transacciones pendientes eliminadas",
         "clearPending": "Limpiar Pendientes",
-        "clearPendingTip1": "Esto eliminará todas tus transacciones pendientes. Esto puede ayudarte a resolver el problema de que, en algunos casos, el estado de la transacción en Rabby no coincide con el estado en la cadena.",
-        "clearPendingTip2": "Esto no cambiará los saldos en tus cuentas ni requerirá que vuelvas a ingresar tu frase de recuperación. Toda tu información de activos y cuentas permanecerá segura.",
+        "clearPendingTip1": "Esto eliminará todas sus transacciones pendientes localmente y ayudará a resolver los problemas causados ​​por largos tiempos de espera.",
+        "clearPendingTip2": "No afectará los saldos de su cuenta ni requerirá que vuelva a ingresar su frase inicial. \nTodos sus activos y la información de su cuenta permanecerán seguros.",
         "autoLockTime": "Tiempo de Bloqueo Automático",
         "claimRabbyBadge": "¡Reclama la Distinción Rabby!",
         "cancel": "Cancelar",
@@ -835,7 +843,8 @@
         "followUs": "Síguenos",
         "testnetBackendServiceUrl": "URL de Servicio de Backend de Testnet",
         "clearWatchMode": "Limpiar Modo de Observación",
-        "requestDeBankTestnetGasToken": "Solicitar Token de Gas de Testnet DeBank"
+        "requestDeBankTestnetGasToken": "Solicitar Token de Gas de Testnet DeBank",
+        "clearPendingWarningTip": "Es posible que las transacciones pendientes aún se envíen correctamente en el futuro."
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",

@@ -126,14 +126,13 @@ export const useTokenPair = (userAddress: string) => {
     (token?: TokenItem) => {
       _setReceiveToken(token);
       if (token) {
-        dispatch.swap.setRecentSwapToToken(token);
         if (token?.low_credit_score) {
           setLowCreditToken(token);
           setLowCreditVisible(true);
         }
       }
     },
-    [_setReceiveToken, dispatch?.swap?.setSelectedToToken]
+    [_setReceiveToken]
   );
 
   const [bestQuoteDex, setBestQuoteDex] = useState<string>('');
@@ -225,8 +224,15 @@ export const useTokenPair = (userAddress: string) => {
           handleSlider100();
           return;
         }
+
+        const newAmountBn = new BigNumber(v)
+          .div(100)
+          .times(tokenAmountBn(payToken));
+        const isTooSmall = newAmountBn.lt(0.0001);
         setPayAmount(
-          new BigNumber(v).div(100).times(tokenAmountBn(payToken)).toString(10)
+          isTooSmall
+            ? newAmountBn.toString(10)
+            : new BigNumber(newAmountBn.toFixed(4, 1)).toString(10)
         );
       }
     },

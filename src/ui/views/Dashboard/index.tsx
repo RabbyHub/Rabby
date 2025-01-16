@@ -37,7 +37,6 @@ import {
   BalanceView,
   ChainAndSiteSelector,
   GnosisWrongChainAlertBar,
-  DefaultWalletSetting,
 } from './components';
 import './style.less';
 
@@ -538,7 +537,6 @@ const Dashboard = () => {
           </div>
         </div>
       </Modal>
-      {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}
       {pendingApprovalCount > 0 && (
         <PendingApproval
           onRejectAll={() => {

@@ -14,7 +14,6 @@ export { default as swapService } from './swap';
 export { default as RPCService } from './rpc';
 export { default as i18n } from './i18n';
 export { default as unTriggerTxCounter } from './unTriggerTxCounter';
-export * from './contextMenu';
 export { default as securityEngineService } from './securityEngine';
 export * from './transactionBroadcastWatcher';
 export { default as RabbyPointsService } from './rabbyPoints';

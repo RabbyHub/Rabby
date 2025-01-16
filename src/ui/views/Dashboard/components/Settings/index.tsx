@@ -47,6 +47,7 @@ import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/s
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
+import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
 
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -57,6 +58,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
 import { getChainList } from '@/utils/chain';
 import { SvgIconCross } from '@/ui/assets';
+import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -264,6 +266,14 @@ const ResetAccountModal = ({
         <p className="reset-account-content">
           {t('page.dashboard.settings.clearPendingTip2')}
         </p>
+        <div className="flex items-start gap-[4px] p-[10px] bg-r-red-light rounded-[6px] mt-[20px]">
+          <div className="text-r-red-default pt-[2px]">
+            <RcIconWarning />
+          </div>
+          <div className="text-r-red-default text-[13px] leading-[16px] font-medium">
+            {t('page.dashboard.settings.clearPendingWarningTip')}
+          </div>
+        </div>
         <div className="flex flex-col mt-auto popup-footer px-20 bottom-18">
           <div className="absolute left-0 top-[40px] w-full h-0 border-solid border-t-[0.5px] border-rabby-neutral-line"></div>
           <div className="flex justify-center mb-[38px]">
@@ -813,15 +823,15 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconPreferMetamask,
-          content: t('page.dashboard.settings.settings.metamaskPreferredDapps'),
+          content: t('page.dashboard.settings.settings.metamaskMode'),
           onClick: () => {
-            history.push('/prefer-metamask-dapps');
+            history.push('/metamask-mode-dapps');
             matomoRequestEvent({
               category: 'Setting',
               action: 'clickToUse',
-              label: 'MetaMask Preferred Dapps',
+              label: 'MetaMask Mode Dapps',
             });
-            reportSettings('MetaMask Preferred Dapps');
+            reportSettings('MetaMask Mode Dapps');
           },
         },
         {
@@ -916,6 +926,27 @@ const SettingsInner = ({
               </span>
             </>
           ),
+        },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: 'Test sendPersonalMessage',
+          onClick: async () => {
+            const currentAddress =
+              (await wallet.getCurrentAccount())?.address || '';
+
+            const result = await sendPersonalMessage({
+              data: [
+                '0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765',
+                currentAddress,
+                'Example password',
+              ],
+              wallet,
+              onProgress: (progress) => {
+                message.success('sendPersonalMessage progress: ' + progress);
+              },
+            });
+            message.success('sendPersonalMessage result: ' + result.txHash);
+          },
         },
       ] as SettingItem[],
     },
