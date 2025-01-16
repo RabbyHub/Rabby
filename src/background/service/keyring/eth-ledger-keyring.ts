@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import Transport from '@ledgerhq/hw-transport';
-import LedgerEth, { ledgerService } from '@ledgerhq/hw-app-eth';
+import LedgerEth from '@ledgerhq/hw-app-eth';
 import { is1559Tx } from '@/utils/transaction';
 import {
   TransactionFactory,
@@ -34,6 +34,8 @@ const HD_PATH_TYPE = {
   [HD_PATH_BASE['LedgerLive']]: HDPathType.LedgerLive,
 };
 
+let ethApp: LedgerEth | null = null;
+
 interface Account {
   address: string;
   balance: number | null;
@@ -57,7 +59,6 @@ class LedgerBridgeKeyring {
   hdPath: any;
   accounts: any;
   transport: null | Transport;
-  app: null | LedgerEth;
   hasHIDPermission: null | boolean;
   usedHDPathTypeList: Record<string, HDPathType> = {};
 
@@ -69,7 +70,6 @@ class LedgerBridgeKeyring {
     this.paths = {};
     this.hasHIDPermission = null;
     this.transport = null;
-    this.app = null;
     this.usedHDPathTypeList = {};
     this.deserialize(opts);
 
@@ -132,7 +132,7 @@ class LedgerBridgeKeyring {
   }
 
   isUnlocked() {
-    return !!this.app;
+    return !!ethApp;
   }
 
   setAccountToUnlock(index) {
@@ -144,10 +144,10 @@ class LedgerBridgeKeyring {
   }
 
   async makeApp(signing = false) {
-    if (!this.app) {
+    if (!ethApp) {
       try {
         this.transport = await TransportWebHID.create();
-        this.app = new LedgerEth(this.transport);
+        ethApp = new LedgerEth(this.transport);
       } catch (e: any) {
         if (!e.message?.includes('The device is already open')) {
           console.error(e);
@@ -157,7 +157,7 @@ class LedgerBridgeKeyring {
   }
 
   async cleanUp() {
-    this.app = null;
+    ethApp = null;
     if (this.transport) {
       await this.transport.close();
     }
@@ -176,7 +176,7 @@ class LedgerBridgeKeyring {
     await this.makeApp();
     let res: { address: string };
     try {
-      res = await this.app!.getAddress(path, false, true);
+      res = await ethApp!.getAddress(path, false, true);
     } catch (e) {
       if (e.name === 'DisconnectedDeviceDuringOperation') {
         await this.cleanUp();
@@ -317,7 +317,7 @@ class LedgerBridgeKeyring {
     const hdPath = await this.unlockAccountByAddress(address);
     await this.makeApp(true);
     try {
-      const res = await this.app!.signTransaction(hdPath, rawTxHex);
+      const res = await ethApp!.signTransaction(hdPath, rawTxHex);
       const newOrMutatedTx = handleSigning(res);
       const valid = newOrMutatedTx.verifySignature();
       if (valid) {
@@ -341,7 +341,7 @@ class LedgerBridgeKeyring {
     try {
       await this.makeApp(true);
       const hdPath = await this.unlockAccountByAddress(withAccount);
-      const res = await this.app!.signPersonalMessage(
+      const res = await ethApp!.signPersonalMessage(
         hdPath,
         ethUtil.stripHexPrefix(message)
       );
@@ -422,7 +422,7 @@ class LedgerBridgeKeyring {
         isV4
       ).toString('hex');
 
-      const res = await this.app!.signEIP712HashedMessage(
+      const res = await ethApp!.signEIP712HashedMessage(
         hdPath,
         domainSeparatorHex,
         hashStructMessageHex
@@ -555,7 +555,7 @@ class LedgerBridgeKeyring {
   }
   private async getPathBasePublicKey(hdPathType: HDPathType) {
     const pathBase = this.getHDPathBase(hdPathType);
-    const res = await this.app!.getAddress(pathBase, false, true);
+    const res = await ethApp!.getAddress(pathBase, false, true);
 
     return res.publicKey;
   }
@@ -581,7 +581,7 @@ class LedgerBridgeKeyring {
     const hdPathType = this.getHDPathType(detail.hdPath);
 
     // Account
-    const res = await this.app!.getAddress(detail.hdPath, false, true);
+    const res = await ethApp!.getAddress(detail.hdPath, false, true);
     const addressInDevice = res.address;
 
     // The address is not the same, so we don't need to fix
@@ -617,7 +617,7 @@ class LedgerBridgeKeyring {
     await this.unlock();
     const addresses = await this.getAccounts();
     const pathBase = this.hdPath;
-    const { publicKey: currentPublicKey } = await this.app!.getAddress(
+    const { publicKey: currentPublicKey } = await ethApp!.getAddress(
       pathBase,
       false,
       true
@@ -647,7 +647,7 @@ class LedgerBridgeKeyring {
       ) {
         const info = this.getAccountInfo(address);
         if (info?.index === 1) {
-          const res = await this.app!.getAddress(detail.hdPath, false, true);
+          const res = await ethApp!.getAddress(detail.hdPath, false, true);
           if (isSameAddress(res.address, address)) {
             accounts.push(info);
           }
