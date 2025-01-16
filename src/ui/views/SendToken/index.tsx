@@ -83,8 +83,15 @@ import {
 } from '../Swap/Component/ReserveGasPopup';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import {
+  useCurrentAccount,
+  useSubscribeCurrentAccountChanged,
+} from '@/ui/hooks/backgroundState/useAccount';
+import { withAccountChange } from '@/ui/utils/withAccountChange';
+import { useRequest } from 'ahooks';
 
 const isTab = getUiType().isTab;
+const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -363,7 +370,6 @@ const SendToken = () => {
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
   const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
 
@@ -618,107 +624,120 @@ const SendToken = () => {
     }
   }, [clickedMax, loadGasList]);
 
-  const handleSubmit = async ({
-    to,
-    amount,
-    messageDataForSendToEoa,
-    messageDataForContractCall,
-  }: FormSendToken) => {
-    setIsSubmitLoading(true);
-    const chain = findChain({
-      serverId: currentToken.chain,
-    })!;
-    const params = getParams({
+  const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
+    async ({
       to,
       amount,
       messageDataForSendToEoa,
       messageDataForContractCall,
-    });
+    }: FormSendToken) => {
+      const chain = findChain({
+        serverId: currentToken.chain,
+      })!;
+      const params = getParams({
+        to,
+        amount,
+        messageDataForSendToEoa,
+        messageDataForContractCall,
+      });
 
-    if (isNativeToken) {
-      // L2 has extra validation fee so we can not set gasLimit as 21000 when send native token
-      const couldSpecifyIntrinsicGas = !CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS.includes(
-        chain.enum
-      );
-
-      try {
-        const code = await wallet.requestETHRpc<any>(
-          {
-            method: 'eth_getCode',
-            params: [to, 'latest'],
-          },
-          chain.serverId
+      if (isNativeToken) {
+        // L2 has extra validation fee so we can not set gasLimit as 21000 when send native token
+        const couldSpecifyIntrinsicGas = !CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS.includes(
+          chain.enum
         );
-        const notContract = !!code && (code === '0x' || code === '0x0');
 
-        let gasLimit = 0;
+        try {
+          const code = await wallet.requestETHRpc<any>(
+            {
+              method: 'eth_getCode',
+              params: [to, 'latest'],
+            },
+            chain.serverId
+          );
+          const notContract = !!code && (code === '0x' || code === '0x0');
 
-        if (estimatedGas) {
-          gasLimit = estimatedGas;
+          let gasLimit = 0;
+
+          if (estimatedGas) {
+            gasLimit = estimatedGas;
+          }
+
+          /**
+           * we don't need always fetch estimatedGas, if no `params.gas` set below,
+           * `params.gas` would be filled on Tx Page.
+           */
+          if (gasLimit > 0) {
+            params.gas = intToHex(gasLimit);
+          } else if (notContract && couldSpecifyIntrinsicGas) {
+            params.gas = intToHex(DEFAULT_GAS_USED);
+          }
+          if (!notContract) {
+            // not pre-set gasLimit if to address is contract address
+            delete params.gas;
+          }
+        } catch (e) {
+          if (couldSpecifyIntrinsicGas) {
+            params.gas = intToHex(DEFAULT_GAS_USED);
+          }
         }
 
-        /**
-         * we don't need always fetch estimatedGas, if no `params.gas` set below,
-         * `params.gas` would be filled on Tx Page.
-         */
-        if (gasLimit > 0) {
-          params.gas = intToHex(gasLimit);
-        } else if (notContract && couldSpecifyIntrinsicGas) {
-          params.gas = intToHex(DEFAULT_GAS_USED);
-        }
-        if (!notContract) {
-          // not pre-set gasLimit if to address is contract address
+        if (
+          isShowMessageDataForToken &&
+          (messageDataForContractCall || messageDataForSendToEoa)
+        ) {
           delete params.gas;
         }
-      } catch (e) {
-        if (couldSpecifyIntrinsicGas) {
-          params.gas = intToHex(DEFAULT_GAS_USED);
+        if (clickedMax && selectedGasLevel?.price) {
+          params.gasPrice = selectedGasLevel?.price;
         }
       }
+      try {
+        await wallet.setLastTimeSendToken(
+          currentAccount!.address,
+          currentToken
+        );
+        await persistPageStateCache();
+        matomoRequestEvent({
+          category: 'Send',
+          action: 'createTx',
+          label: [
+            chain.name,
+            getKRCategoryByType(currentAccount?.type),
+            currentAccount?.brandName,
+            'token',
+            filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
+          ].join('|'),
+        });
 
-      if (
-        isShowMessageDataForToken &&
-        (messageDataForContractCall || messageDataForSendToEoa)
-      ) {
-        delete params.gas;
-      }
-      setIsSubmitLoading(false);
-      if (clickedMax && selectedGasLevel?.price) {
-        params.gasPrice = selectedGasLevel?.price;
-      }
-    }
-    try {
-      await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
-      await persistPageStateCache();
-      matomoRequestEvent({
-        category: 'Send',
-        action: 'createTx',
-        label: [
-          chain.name,
-          getKRCategoryByType(currentAccount?.type),
-          currentAccount?.brandName,
-          'token',
-          filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
-        ].join('|'),
-      });
-
-      wallet.sendRequest({
-        method: 'eth_sendTransaction',
-        params: [params],
-        $ctx: {
-          ga: {
-            category: 'Send',
-            source: 'sendToken',
-            trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
+        const promise = wallet.sendRequest({
+          method: 'eth_sendTransaction',
+          params: [params],
+          $ctx: {
+            ga: {
+              category: 'Send',
+              source: 'sendToken',
+              trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
+            },
           },
-        },
-      });
-      window.close();
-    } catch (e) {
-      message.error(e.message);
-      console.error(e);
+        });
+        if (isTab) {
+          await promise;
+          form.setFieldsValue({
+            amount: '',
+          });
+        } else {
+          window.close();
+        }
+      } catch (e) {
+        message.error(e.message);
+        console.error(e);
+      }
+    },
+    {
+      manual: true,
     }
-  };
+  );
 
   const handleConfirmContact = (account: UIContactBookItem) => {
     setShowListContactModal(false);
@@ -1369,6 +1388,7 @@ const SendToken = () => {
         dispatch.whitelist.getWhitelist();
         setTemporaryGrant(true);
       },
+      getContainer,
     });
   };
 
@@ -1393,6 +1413,7 @@ const SendToken = () => {
           wallet.getInMemoryAddressBalance(result.contactAddrAdded, true),
         ]);
       },
+      getContainer,
     });
   };
 
@@ -1451,7 +1472,7 @@ const SendToken = () => {
 
   return (
     <div
-      className="h-full w-full flex flex-col items-center justify-center"
+      className="h-full w-full flex flex-col items-center justify-center overflow-auto"
       style={{
         background: isDarkTheme
           ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), var(--r-blue-default, #7084FF)'
@@ -1461,7 +1482,7 @@ const SendToken = () => {
       <div
         className={clsx(
           isTab
-            ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[600px] translate-x-0 scale-[1.20]'
+            ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[700px] translate-x-0'
             : 'w-full'
         )}
       >
@@ -1515,7 +1536,7 @@ const SendToken = () => {
                   disabledTips={'Not supported'}
                   supportChains={undefined}
                   readonly={!!safeInfo}
-                  getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+                  getContainer={getContainer}
                 />
                 <div className={clsx('section-title mt-[10px]')}>
                   {t('page.sendToken.sectionFrom.title')}
@@ -1679,9 +1700,7 @@ const SendToken = () => {
                       chainId={chainItem.serverId}
                       excludeTokens={[]}
                       inlinePrize
-                      getContainer={
-                        isTab ? '.js-rabby-popup-container' : undefined
-                      }
+                      getContainer={getContainer}
                     />
                   )}
                 </Form.Item>
@@ -1787,13 +1806,13 @@ const SendToken = () => {
             onOk={handleConfirmContact}
             onCancel={handleCancelEditContact}
             isEdit={!!contactInfo}
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
           <ContactListModal
             visible={showListContactModal}
             onCancel={handleCancelContact}
             onOk={handleConfirmContact}
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
 
           <SendReserveGasPopup
@@ -1807,7 +1826,7 @@ const SendToken = () => {
             visible={reserveGasOpen}
             rawHexBalance={currentToken.raw_amount_hex_str}
             onClose={() => handleReserveGasClose()}
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
         </div>
       </div>
@@ -1815,4 +1834,6 @@ const SendToken = () => {
   );
 };
 
-export default connectStore()(SendToken);
+export default isTab
+  ? connectStore()(withAccountChange(SendToken))
+  : connectStore()(SendToken);

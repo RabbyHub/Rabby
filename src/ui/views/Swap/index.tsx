@@ -8,6 +8,7 @@ import {
 import clsx from 'clsx';
 import { getUiType } from '@/ui/utils';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { withAccountChange } from '@/ui/utils/withAccountChange';
 const isTab = getUiType().isTab;
 
 const Swap = () => {
@@ -27,7 +28,7 @@ const Swap = () => {
             <div
               className={clsx(
                 isTab
-                  ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[600px] translate-x-0 scale-[1.20]'
+                  ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[600px] translate-x-0'
                   : 'w-full h-full'
               )}
             >
@@ -48,4 +49,4 @@ const Swap = () => {
     </RefreshIdProvider>
   );
 };
-export default Swap;
+export default isTab ? withAccountChange(Swap) : Swap;

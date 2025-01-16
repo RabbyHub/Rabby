@@ -9,7 +9,7 @@ export const PendingTx = ({
 }) => {
   return (
     <div
-      className="w-20 h-20 inline-flex justify-center items-center cursor-pointer"
+      className="w-20 h-20 inline-flex justify-center items-center cursor-pointer relative"
       onClick={onClick}
     >
       <RcIconPending
