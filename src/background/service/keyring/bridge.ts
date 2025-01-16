@@ -17,26 +17,26 @@ const BitBox02Bridge = isManifestV3
   ? require('./eth-bitbox02-keyring/bitbox02-offscreen-bridge')
   : require('./eth-bitbox02-keyring/bitbox02-bridge');
 
-export function getKeyringBridge(type: string) {
+export const getKeyringBridge = async (type: string) => {
   if (type === KEYRING_CLASS.HARDWARE.IMKEY) {
-    return new ImKeyBridge.default();
+    return new (await ImKeyBridge).default();
   }
 
   if (type === KEYRING_CLASS.HARDWARE.ONEKEY) {
-    return new OneKeyBridge.default();
+    return new (await OneKeyBridge).default();
   }
 
   if (type === KEYRING_CLASS.HARDWARE.TREZOR) {
-    return new TrezorBridge.default();
+    return new (await TrezorBridge).default();
   }
 
   if (type === KEYRING_CLASS.HARDWARE.BITBOX02) {
-    return new BitBox02Bridge.default();
+    return new (await BitBox02Bridge).default();
   }
 
   return;
-}
+};
 
-export const hasBridge = (type: string) => {
+export const hasBridge = async (type: string) => {
   return !!getKeyringBridge(type);
 };

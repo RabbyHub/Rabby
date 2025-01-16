@@ -3474,9 +3474,9 @@ export class WalletController extends BaseController {
     } catch {
       const Keyring = keyringService.getKeyringClassForType(type);
       keyring = new Keyring(
-        hasBridge(type)
+        (await hasBridge(type))
           ? {
-              bridge: getKeyringBridge(type),
+              bridge: await getKeyringBridge(type),
             }
           : undefined
       );
@@ -3542,7 +3542,7 @@ export class WalletController extends BaseController {
           keyringType
         );
         keyring = new keystoneKeyring({
-          bridge: getKeyringBridge(keyringType),
+          bridge: await getKeyringBridge(keyringType),
         });
         stashKeyringId = Object.values(stashKeyrings).length + 1;
         stashKeyrings[stashKeyringId] = keyring;
@@ -3571,7 +3571,7 @@ export class WalletController extends BaseController {
           keyringType
         );
         keyring = new keystoneKeyring({
-          bridge: getKeyringBridge(keyringType),
+          bridge: await getKeyringBridge(keyringType),
         });
         stashKeyringId = Object.values(stashKeyrings).length + 1;
         stashKeyrings[stashKeyringId] = keyring;
@@ -3717,7 +3717,7 @@ export class WalletController extends BaseController {
     return keyring.getEncryptionPublicKey(address, options);
   };
 
-  requestKeyring = (
+  requestKeyring = async (
     type: string,
     methodName: string,
     keyringId: number | null,
@@ -3732,7 +3732,9 @@ export class WalletController extends BaseController {
       } catch {
         const Keyring = keyringService.getKeyringClassForType(type);
         keyring = new Keyring(
-          hasBridge(type) ? { bridge: getKeyringBridge(type) } : undefined
+          (await hasBridge(type))
+            ? { bridge: await getKeyringBridge(type) }
+            : undefined
         );
       }
     }
@@ -4379,7 +4381,7 @@ export class WalletController extends BaseController {
         keyringType
       );
       keyring = new keystoneKeyring({
-        bridge: getKeyringBridge(keyringType),
+        bridge: await getKeyringBridge(keyringType),
       });
       stashKeyringId = this.addKeyringToStash(keyring);
     }
