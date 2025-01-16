@@ -412,12 +412,12 @@ export class KeyringService extends EventEmitter {
    * @param {Object} opts - The constructor options for the keyring.
    * @returns {Promise<Keyring>} The new keyring.
    */
-  addNewKeyring(type: string, opts?: any): Promise<any> {
+  async addNewKeyring(type: string, opts?: any): Promise<any> {
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring(
-      hasBridge(type)
+      (await hasBridge(type))
         ? {
-            bridge: getKeyringBridge(type),
+            bridge: await getKeyringBridge(type),
             ...(opts ?? {}),
           }
         : opts
@@ -920,9 +920,9 @@ export class KeyringService extends EventEmitter {
       Keyring?.type === KEYRING_CLASS.WALLETCONNECT
         ? new Keyring(GET_WALLETCONNECT_CONFIG())
         : new Keyring(
-            hasBridge(type)
+            (await hasBridge(type))
               ? {
-                  bridge: getKeyringBridge(type),
+                  bridge: await getKeyringBridge(type),
                 }
               : undefined
           );
