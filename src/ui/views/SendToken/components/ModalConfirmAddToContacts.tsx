@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 import styled from 'styled-components';
-import { Button, Form, Input, message } from 'antd';
+import { Button, DrawerProps, Form, Input, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -60,6 +60,7 @@ interface ConfirmAddToContactsModalProps extends WrappedComponentProps {
   title?: string;
   description?: string;
   checklist?: string[];
+  getContainer?: DrawerProps['getContainer'];
 }
 
 function ModalConfirmAddToContacts({
@@ -71,6 +72,7 @@ function ModalConfirmAddToContacts({
   cancelText,
   confirmText = 'Confirm',
   title = 'Enter Password',
+  getContainer,
 }: ConfirmAddToContactsModalProps) {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -124,7 +126,13 @@ function ModalConfirmAddToContacts({
   useEffect(() => {
     setTimeout(() => {
       setVisible(true);
-      inputRef.current?.focus();
+      if (!getContainer) {
+        inputRef.current?.focus();
+      } else {
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 500);
+      }
     });
   }, []);
 
@@ -135,6 +143,7 @@ function ModalConfirmAddToContacts({
       onCancel={handleCancel}
       height={266}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <Form onFinish={handleSubmit} form={form}>
         <FormInputItem
@@ -159,7 +168,7 @@ function ModalConfirmAddToContacts({
             )}
             type="text"
             size="large"
-            autoFocus
+            autoFocus={!getContainer}
             ref={inputRef}
             spellCheck={false}
           />

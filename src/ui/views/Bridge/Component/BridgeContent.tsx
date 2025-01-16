@@ -142,7 +142,7 @@ export const BridgeContent = () => {
           toChainId: toToken.chain,
           status: tx ? 'success' : 'fail',
         });
-        wallet.bridgeToken(
+        const promise = wallet.bridgeToken(
           {
             to: tx.to,
             value: tx.value,
@@ -178,7 +178,12 @@ export const BridgeContent = () => {
             },
           }
         );
-        window.close();
+        if (!isTab) {
+          window.close();
+        } else {
+          await promise;
+          handleAmountChange('');
+        }
       } catch (error) {
         message.error(error?.message || String(error));
         stats.report('bridgeQuoteResult', {
@@ -610,7 +615,10 @@ export const BridgeContent = () => {
               mutateTxs([]);
               // setPayAmount('');
               // setTimeout(() => {
-              history.replace('/');
+              if (!isTab) {
+                history.replace('/');
+              }
+              handleAmountChange('');
               // }, 500);
             }, 500);
           }}

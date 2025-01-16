@@ -168,74 +168,70 @@ export const Main = () => {
   const rbiSource = useRbiSource();
 
   const [isShowSign, setIsShowSign] = useState(false);
-  const gotoSwap = useCallback(async () => {
-    if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
-      try {
-        wallet.dexSwap(
-          {
-            swapPreferMEVGuarded: preferMEVGuarded,
-            chain,
-            quote: activeProvider?.quote,
-            needApprove: activeProvider.shouldApproveToken,
-            spender:
-              activeProvider?.name === DEX_ENUM.WRAPTOKEN
-                ? ''
-                : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
-            pay_token_id: payToken.id,
-            unlimited: false,
-            shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
-            gasPrice:
-              payTokenIsNativeToken && passGasPrice
-                ? gasList?.find((e) => e.level === gasLevel)?.price
-                : undefined,
-            postSwapParams: {
-              quote: {
-                pay_token_id: payToken.id,
-                pay_token_amount: Number(inputAmount),
-                receive_token_id: receiveToken!.id,
-                receive_token_amount: new BigNumber(
-                  activeProvider?.quote.toTokenAmount
-                )
-                  .div(
-                    10 **
-                      (activeProvider?.quote.toTokenDecimals ||
-                        receiveToken.decimals)
+  const { runAsync: gotoSwap, loading: isSubmitLoading } = useRequest(
+    async () => {
+      if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
+        try {
+          const promise = wallet.dexSwap(
+            {
+              swapPreferMEVGuarded: preferMEVGuarded,
+              chain,
+              quote: activeProvider?.quote,
+              needApprove: activeProvider.shouldApproveToken,
+              spender:
+                activeProvider?.name === DEX_ENUM.WRAPTOKEN
+                  ? ''
+                  : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
+              pay_token_id: payToken.id,
+              unlimited: false,
+              shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+              gasPrice:
+                payTokenIsNativeToken && passGasPrice
+                  ? gasList?.find((e) => e.level === gasLevel)?.price
+                  : undefined,
+              postSwapParams: {
+                quote: {
+                  pay_token_id: payToken.id,
+                  pay_token_amount: Number(inputAmount),
+                  receive_token_id: receiveToken!.id,
+                  receive_token_amount: new BigNumber(
+                    activeProvider?.quote.toTokenAmount
                   )
-                  .toNumber(),
-                slippage: new BigNumber(slippage).div(100).toNumber(),
+                    .div(
+                      10 **
+                        (activeProvider?.quote.toTokenDecimals ||
+                          receiveToken.decimals)
+                    )
+                    .toNumber(),
+                  slippage: new BigNumber(slippage).div(100).toNumber(),
+                },
+                dex_id: activeProvider?.name || 'WrapToken',
               },
-              dex_id: activeProvider?.name || 'WrapToken',
             },
-          },
-          {
-            ga: {
-              category: 'Swap',
-              source: 'swap',
-              trigger: rbiSource,
-              swapUseSlider,
-            },
+            {
+              ga: {
+                category: 'Swap',
+                source: 'swap',
+                trigger: rbiSource,
+                swapUseSlider,
+              },
+            }
+          );
+          if (!isTab) {
+            window.close();
+          } else {
+            await promise;
+            handleAmountChange('');
           }
-        );
-        window.close();
-      } catch (error) {
-        console.error(error);
+        } catch (error) {
+          console.error(error);
+        }
       }
+    },
+    {
+      manual: true,
     }
-  }, [
-    swapUseSlider,
-    payTokenIsNativeToken,
-    gasList,
-    gasLevel,
-    preferMEVGuarded,
-    inSufficient,
-    payToken,
-    unlimitedAllowance,
-    activeProvider?.quote,
-    wallet?.dexSwap,
-    activeProvider?.shouldApproveToken,
-    activeProvider?.name,
-    activeProvider?.shouldTwoStepApprove,
-  ]);
+  );
 
   const buildSwapTxs = useMemoizedFn(async () => {
     if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
@@ -663,6 +659,7 @@ export const Main = () => {
             block
             size="large"
             className="h-[48px] text-white text-[16px] font-medium"
+            loading={isSubmitLoading}
             onClick={() => {
               if (!activeProvider) {
                 refresh((e) => e + 1);
@@ -755,7 +752,10 @@ export const Main = () => {
               mutateTxs([]);
               // setPayAmount('');
               // setTimeout(() => {
-              history.replace('/');
+              if (!isTab) {
+                history.replace('/');
+              }
+              handleAmountChange('');
               // }, 500);
             }, 500);
           }}
