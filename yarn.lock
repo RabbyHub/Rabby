@@ -4851,10 +4851,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.2.tgz#32f58df1bac847baa0ac8c6aeaba0751d2a522f4"
-  integrity sha512-QTgLnw6JpArofBtUj2Ve9vwB/S2Kfyz5KUeekYqA02DFyBCJRhCTbFtY+2FoqS8NlZM9TWf46Yau2p6NIJdf1w==
+"@rabby-wallet/page-provider@0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.4.tgz#f04782d73598d57287451007a4681563b24fdcf0"
+  integrity sha512-ZmlIItUoOAY7LUd3NmCBscV44jrZHCfbXgApmhul5cFUG1aNm9j13R8TVErMa92YDXdiTOuxRb/mBkYEH2Jrng==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@metamask/post-message-stream" "8.1.0"
@@ -4865,6 +4865,7 @@
     eth-rpc-errors "^4.0.3"
     events "^3.3.0"
     lodash "^4.17.21"
+    nanoid "5.0.9"
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
@@ -4900,10 +4901,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@0.0.45":
-  version "0.0.45"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.45.tgz#523f07ebf869ceac171a5c36494a0d053394ef2e"
-  integrity sha512-ps5N9ZyTgqMo+5VWrbzuchHI4L+VQngjpPbRSVNd+6M8Mdqx02haMJy+lGmanKpTWConRMcdZ2AY4qo6I8tBqA==
+"@rabby-wallet/rabby-swap@0.0.46":
+  version "0.0.46"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.46.tgz#f6178166ce7962bf9e287ae56e33fc7b68ff53e1"
+  integrity sha512-X7bJXA0z2Sdbf6+ectjSsVvGXsFdqZwnTA4V1F18M3FcjgQGo4SWAgT9N3ja/Sm6ew+4ryzk7tvJTwFv/8oISA==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
@@ -15712,6 +15713,11 @@ nanoid@3.3.6, nanoid@^3.3.6:
   version "3.3.6"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
   integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
+
+nanoid@5.0.9:
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.0.9.tgz#977dcbaac055430ce7b1e19cf0130cea91a20e50"
+  integrity sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==
 
 nanoid@^3.3.7:
   version "3.3.7"

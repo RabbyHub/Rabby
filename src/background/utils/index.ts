@@ -86,9 +86,7 @@ export const setPopupIcon = (
   type: 'default' | 'rabby' | 'metamask' | 'locked'
 ) => {
   const icons = [16, 19, 32, 48, 128].reduce((res, size) => {
-    if (type === 'rabby' || type === 'metamask') {
-      res[size] = `images/icon-default-${type}-${size}.png`;
-    } else if (type === 'locked') {
+    if (type === 'locked') {
       res[size] = `images/icon-lock-${size}.png`;
     } else {
       res[size] = `images/icon-${size}.png`;

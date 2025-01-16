@@ -104,6 +104,7 @@ const flowContext = flow
     const {
       request: {
         session: { origin, name, icon },
+        data,
       },
       mapMethod,
     } = ctx;
@@ -119,7 +120,7 @@ const flowContext = flow
         try {
           const { defaultChain } = await notificationService.requestApproval(
             {
-              params: { origin, name, icon },
+              params: { origin, name, icon, $ctx: data.$ctx },
               approvalComponent: 'Connect',
             },
             { height: 800 }

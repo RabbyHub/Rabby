@@ -2,11 +2,7 @@ import { ProviderRequest } from './type';
 
 import { ethErrors } from 'eth-rpc-errors';
 import { tab } from 'background/webapi';
-import {
-  sessionService,
-  keyringService,
-  contextMenuService,
-} from 'background/service';
+import { sessionService, keyringService } from 'background/service';
 
 import rpcFlow from './rpcFlow';
 import internalMethod from './internalMethod';

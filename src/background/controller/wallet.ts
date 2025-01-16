@@ -1,7 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isEqual, sortBy, uniq } from 'lodash';
+import { groupBy, isEqual, sortBy, truncate, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -18,7 +18,6 @@ import {
   swapService,
   RPCService,
   unTriggerTxCounter,
-  contextMenuService,
   securityEngineService,
   transactionBroadcastWatchService,
   RabbyPointsService,
@@ -133,6 +132,7 @@ import pRetry from 'p-retry';
 import Browser from 'webextension-polyfill';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
+import { metamaskModeService } from '../service/metamaskModeService';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1935,7 +1935,6 @@ export class WalletController extends BaseController {
     );
     site.preferMetamask = false;
     permissionService.setSite(site);
-    contextMenuService.createOrUpdate(site.origin);
     const currentIsDefaultWallet = preferenceService.getIsDefaultWallet(origin);
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     if (prevIsDefaultWallet !== currentIsDefaultWallet && hasOtherProvider) {
@@ -1976,7 +1975,29 @@ export class WalletController extends BaseController {
     permissionService.removeConnectedSite(origin);
   };
   getSitesByDefaultChain = permissionService.getSitesByDefaultChain;
+  /**
+   * @deprecated
+   */
   getPreferMetamaskSites = permissionService.getPreferMetamaskSites;
+  getMetamaskModeSites = permissionService.getMetamaskModeSites;
+  addMetamaskModeSite = (site: ConnectedSite) => {
+    permissionService.setSite({
+      ...site,
+      isMetamaskMode: true,
+    });
+    metamaskModeService.localSites.push(
+      site.origin.replace(/^https?:\/\//, '')
+    );
+  };
+  removeMetamaskModeSite = (site: ConnectedSite) => {
+    permissionService.setSite({
+      ...site,
+      isMetamaskMode: false,
+    });
+    metamaskModeService.localSites = metamaskModeService.localSites.filter(
+      (item) => item !== site.origin.replace(/^https?:\/\//, '')
+    );
+  };
   topConnectedSite = (origin: string) =>
     permissionService.topConnectedSite(origin);
   unpinConnectedSite = (origin: string) =>
@@ -4888,6 +4909,8 @@ export class WalletController extends BaseController {
 
   getCustomTestnetGasPrice = customTestnetService.getGasPrice;
 
+  getCustomBlockGasLimit = customTestnetService.getBlockGasLimit;
+
   getCustomTestnetGasMarket = customTestnetService.getGasMarket;
 
   getCustomTestnetToken = customTestnetService.getToken;
@@ -4985,6 +5008,12 @@ export class WalletController extends BaseController {
       throw e;
     }
   };
+  ethPersonalSign = async (
+    ...args: Parameters<typeof providerController.personalSign>
+  ) => {
+    return providerController.personalSign(...args);
+  };
+
   tryOpenOrActiveUserGuide = async () => {
     if (this.isBooted()) {
       return false;
@@ -5049,6 +5078,45 @@ export class WalletController extends BaseController {
     });
   };
 
+  changeDappProvider = ({
+    origin,
+    name,
+    icon,
+    rdns,
+  }: {
+    origin: string;
+    name: string;
+    icon: string;
+    rdns: string;
+  }) => {
+    const site = permissionService.getSite(origin);
+    if (site) {
+      permissionService.setSite({
+        ...site,
+        rdns,
+        isConnected: false,
+      });
+    } else {
+      permissionService.setSite({
+        origin,
+        name,
+        icon,
+        chain: CHAINS_ENUM.ETH,
+        isSigned: false,
+        isConnected: false,
+        isTop: false,
+        rdns,
+      });
+    }
+    sessionService.broadcastEvent(
+      'rabby:providerChanged',
+      {
+        rdns,
+      },
+      origin,
+      true
+    );
+  };
   savedUnencryptedKeyringData = async () =>
     keyringService.savedUnencryptedKeyringData();
 

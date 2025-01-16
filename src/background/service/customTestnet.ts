@@ -10,6 +10,7 @@ import { createClient, defineChain, erc20Abi, http, isAddress } from 'viem';
 import {
   estimateGas,
   getBalance,
+  getBlock,
   getGasPrice,
   getTransactionCount,
   getTransactionReceipt,
@@ -345,6 +346,15 @@ class CustomTestnetService {
     }
     const res = await getGasPrice(client);
     return res.toString();
+  };
+
+  getBlockGasLimit = async (chainId: number) => {
+    const client = this.getClient(+chainId);
+    if (!client) {
+      throw new Error(`Invalid chainId: ${chainId}`);
+    }
+    const res = await getBlock(client);
+    return res.gasLimit.toString();
   };
 
   getGasMarket = async ({

@@ -58,6 +58,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
 import { getChainList } from '@/utils/chain';
 import { SvgIconCross } from '@/ui/assets';
+import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -822,15 +823,15 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconPreferMetamask,
-          content: t('page.dashboard.settings.settings.metamaskPreferredDapps'),
+          content: t('page.dashboard.settings.settings.metamaskMode'),
           onClick: () => {
-            history.push('/prefer-metamask-dapps');
+            history.push('/metamask-mode-dapps');
             matomoRequestEvent({
               category: 'Setting',
               action: 'clickToUse',
-              label: 'MetaMask Preferred Dapps',
+              label: 'MetaMask Mode Dapps',
             });
-            reportSettings('MetaMask Preferred Dapps');
+            reportSettings('MetaMask Mode Dapps');
           },
         },
         {
@@ -925,6 +926,27 @@ const SettingsInner = ({
               </span>
             </>
           ),
+        },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: 'Test sendPersonalMessage',
+          onClick: async () => {
+            const currentAddress =
+              (await wallet.getCurrentAccount())?.address || '';
+
+            const result = await sendPersonalMessage({
+              data: [
+                '0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765',
+                currentAddress,
+                'Example password',
+              ],
+              wallet,
+              onProgress: (progress) => {
+                message.success('sendPersonalMessage progress: ' + progress);
+              },
+            });
+            message.success('sendPersonalMessage result: ' + result.txHash);
+          },
         },
       ] as SettingItem[],
     },

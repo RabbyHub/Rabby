@@ -196,6 +196,7 @@ import Logo0X from 'ui/assets/swap/0xswap.png';
 import Logo1inch from 'ui/assets/swap/1inch.png';
 import LogoOdos from 'ui/assets/swap/odos.png';
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
+import LogoMagpie from 'ui/assets/swap/magpie.jpg';
 
 import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
@@ -1175,6 +1176,15 @@ export const SAFE_GAS_LIMIT_RATIO = {
   '1285': 2,
   '1287': 2,
 };
+
+export const SAFE_GAS_LIMIT_BUFFER = {
+  '996': 0.86,
+  '49088': 0.86,
+  '3068': 0.86,
+};
+
+export const DEFAULT_GAS_LIMIT_BUFFER = 0.95;
+
 export const GAS_TOP_UP_ADDRESS = '0x7559e1bbe06e94aeed8000d5671ed424397d25b5';
 export const GAS_TOP_UP_PAY_ADDRESS =
   '0x1f1f2bf8942861e6194fda1c0a9f13921c0cf117';
@@ -1502,6 +1512,12 @@ export const DEX = {
     logo: Logo0X,
     name: '0x',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ZEROXAPIV2],
+  },
+  [DEX_ENUM.MAGPIE]: {
+    id: DEX_ENUM.MAGPIE,
+    logo: LogoMagpie,
+    name: 'Magpie',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.MAGPIE],
   },
 };
 
