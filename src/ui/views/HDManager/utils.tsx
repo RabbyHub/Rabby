@@ -187,7 +187,8 @@ const useTaskQueue = ({ keyring }) => {
         key: 'ledger-error',
       });
       if (keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS) {
-        history.goBack();
+        // todo debug
+        // history.goBack();
       }
     });
 

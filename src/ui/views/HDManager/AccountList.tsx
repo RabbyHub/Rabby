@@ -1,5 +1,5 @@
 import { message, Table } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ReactComponent as RcCopySVG } from 'ui/assets/icon-copy-cc.svg';
 import ClipboardJS from 'clipboard';
 import { AddToRabby } from './AddToRabby';
@@ -61,6 +61,8 @@ export const AccountList: React.FC<Props> = ({
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
   const dispatch = useRabbyDispatch();
+
+  console.log('data', data);
 
   useEffect(() => {
     currentAccountsRef.current = currentAccounts;
@@ -146,8 +148,33 @@ export const AccountList: React.FC<Props> = ({
   const handleSelectAccount = useMemoizedFn(
     async (checked: boolean, account: Account) => {
       if (checked) {
+        const accountWithAlias = { ...account };
+        if (keyring === KEYRING_CLASS.MNEMONIC) {
+          const {
+            confirmingAccounts,
+          } = await dispatch.importMnemonics.setSelectedAccounts([
+            account.address,
+          ]);
+          accountWithAlias.aliasName = confirmingAccounts.find((item) =>
+            isSameAddress(item.address, accountWithAlias.address)
+          )?.alianName;
+
+          // updateCurrentAccountAliasName(
+          //   accountWithAlias.address,
+          //   accountWithAlias.aliasName || ''
+          // );
+          // await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+          console.log(confirmingAccounts, accountWithAlias);
+        } else {
+          // todo
+          // await wallet.unlockHardwareAccount(
+          //   keyring,
+          //   [account.index - 1],
+          //   keyringId
+          // );
+        }
         setSelectedAccounts((pre) => {
-          return [...pre, account];
+          return [...pre, accountWithAlias];
         });
       } else {
         setSelectedAccounts((pre) => {
@@ -197,6 +224,23 @@ export const AccountList: React.FC<Props> = ({
     pendingMap,
     createQueryAccountJob,
   } = useQueryAccountsInfo();
+
+  const initRef = useRef(false);
+
+  useEffect(() => {
+    if (!initRef.current) {
+      return;
+    }
+    if (tab === 'hd' && data?.length) {
+      if (isLazyImport && !selectedAccounts?.length) {
+        setSelectedAccounts([data[0]]);
+      }
+      if (!isLazyImport && !currentAccounts?.length) {
+        handleAddAccount(true, data[0]);
+      }
+      initRef.current = true;
+    }
+  }, [isLazyImport, tab, data, selectedAccounts, currentAccounts]);
 
   return (
     <Table<Account>
@@ -291,9 +335,10 @@ export const AccountList: React.FC<Props> = ({
           key="aliasName"
           className="cell-note"
           render={(value, record) => {
-            const account = currentAccounts?.find((item) =>
-              isSameAddress(item.address, record.address)
-            );
+            const account = (isLazyImport && tab === 'hd'
+              ? selectedAccounts
+              : currentAccounts
+            )?.find((item) => isSameAddress(item.address, record.address));
             return !record.address ? (
               <AccountListSkeleton align="left" width={100} />
             ) : (

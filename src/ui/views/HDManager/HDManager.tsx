@@ -85,7 +85,6 @@ export const HDManager: React.FC<StateProviderProps> = ({
       !!query.get('needSetPassword'),
     ];
   }, [search]);
-  console.log(isLazyImport);
   const history = useHistory();
 
   const wallet = useWallet();

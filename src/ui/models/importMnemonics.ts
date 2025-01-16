@@ -298,7 +298,13 @@ export const importMnemonics = createModel<RootModel>()({
     async setSelectedAccounts(
       addresses: Exclude<Account['address'], void>[],
       store
-    ) {
+    ): Promise<{
+      confirmingAccounts: {
+        address: string;
+        index: number;
+        alianName: string;
+      }[];
+    }> {
       const importedAddresses = store.importMnemonics.importedAddresses;
       const stashKeyringId = store.importMnemonics.stashKeyringId!;
       const isExistedKeyring = store.importMnemonics.isExistedKeyring;
@@ -350,6 +356,10 @@ export const importMnemonics = createModel<RootModel>()({
         confirmingAccounts,
         selectedAddresses,
       });
+      return {
+        confirmingAccounts,
+        // selectedAddresses,
+      };
     },
 
     beforeImportMoreAddresses(_: void, store) {
