@@ -266,36 +266,22 @@ export const ImportOrCreatedSuccess = () => {
         {t('page.newUserImport.successful.start')}
       </Button>
 
-      {!!hd && isSeedPhrase && (
+      {!!hd && (
         <div
           onClick={addMoreAddr}
           className="flex items-center justify-center gap-2 text-[14px] text-r-neutral-foot mt-[23px] cursor-pointer"
         >
-          <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
-          <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
-        </div>
-      )}
-      {!!hd && !isSeedPhrase && (
-        <Button
-          onClick={addMoreAddr}
-          block
-          type="primary"
-          ghost
-          className={clsx(
-            'mt-16 h-[56px] shadow-none rounded-[8px]',
-            'text-[17px] font-medium',
-            'hover:bg-light-r-blue-light1 hover:before:hidden hover:border-rabby-blue-default hover:text-r-blue-default'
-          )}
-        >
-          <div className="inline-flex items-center justify-center gap-2">
+          {isSeedPhrase ? (
+            <span>{t('page.newUserImport.successful.addMoreAddr')}</span>
+          ) : (
             <span>
               {t('page.newUserImport.successful.addMoreFrom', {
                 name: BRAND_ALIAN_TYPE_TEXT[hd] || hd,
               })}
             </span>
-            <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
-          </div>
-        </Button>
+          )}
+          <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
+        </div>
       )}
     </Card>
   );

@@ -18,8 +18,7 @@ export const newUserGuide = createModel<RootModel>()({
   name: 'newUserGuide',
 
   state: <State>{
-    // to do remove debug
-    password: process.env.DEBUG ? '11111111' : '',
+    password: '',
     seedPhrase: '',
     privateKey: '',
     gnosis: undefined,

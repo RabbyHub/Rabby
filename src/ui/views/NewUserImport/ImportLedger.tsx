@@ -56,7 +56,7 @@ export const NewUserImportLedger = () => {
 
         history.push({
           pathname: '/new-user/import/select-address',
-          search: `?hd=${HARDWARE_KEYRING_TYPES.Ledger.type}&keyringId=${keyringId}&isLazyImport=1`,
+          search: `?hd=${HARDWARE_KEYRING_TYPES.Ledger.type}&keyringId=${keyringId}&isLazyImport=true&isNewUserImport=true`,
         });
       }
     } catch (e) {
