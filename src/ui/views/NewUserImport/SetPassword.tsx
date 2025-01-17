@@ -67,14 +67,10 @@ export const NewUserSetPassword = () => {
           stashKeyringId: stashKeyringId as number,
         });
 
-        dispatch.importMnemonics.switchKeyring({
-          stashKeyringId: stashKeyringId as number,
-        });
-
-        const accounts = await dispatch.importMnemonics.getAccounts({
-          start: 0,
-          end: 1,
-        });
+        // const accounts = await dispatch.importMnemonics.getAccounts({
+        //   start: 0,
+        //   end: 1,
+        // });
 
         // await dispatch.importMnemonics.setSelectedAccounts([
         //   accounts[0].address,
@@ -107,10 +103,15 @@ export const NewUserSetPassword = () => {
           keyring!.publicKey!
         );
 
+        dispatch.importMnemonics.switchKeyring({
+          stashKeyringId: stashKeyringId as number,
+        });
+
         const accounts = await dispatch.importMnemonics.getAccounts({
           start: 0,
           end: 1,
         });
+
         await dispatch.importMnemonics.setSelectedAccounts([
           accounts[0].address,
         ]);
@@ -118,9 +119,7 @@ export const NewUserSetPassword = () => {
 
         history.push({
           pathname: '/new-user/success',
-          search: `?hd=${
-            KEYRING_CLASS.MNEMONIC
-          }&keyringId=${stashKeyringId}&isCreated=${isCreated}&isNewUserImport=${1}`,
+          search: `?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${stashKeyringId}&isCreated=${isCreated}`,
         });
       }
     } catch (e) {

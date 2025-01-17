@@ -9,6 +9,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import { isFunction } from 'lodash';
+import { useMemoizedFn } from 'ahooks';
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -161,9 +162,23 @@ const useManagerTab = () => {
 
 const useSelectedAccounts = () => {
   const [selectedAccounts, setSelectedAccounts] = React.useState<Account[]>([]);
+
+  const updateSelectedAccountAliasName = useMemoizedFn(
+    (address: string, aliasName: string) => {
+      setSelectedAccounts((accounts) => {
+        return accounts.map((account) => {
+          if (isSameAddress(account.address, address)) {
+            account.aliasName = aliasName;
+          }
+          return account;
+        });
+      });
+    }
+  );
   return {
     selectedAccounts,
     setSelectedAccounts,
+    updateSelectedAccountAliasName,
   };
 };
 
@@ -187,8 +202,7 @@ const useTaskQueue = ({ keyring }) => {
         key: 'ledger-error',
       });
       if (keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS) {
-        // todo debug
-        // history.goBack();
+        history.goBack();
       }
     });
 

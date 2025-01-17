@@ -71,18 +71,12 @@ export const HDManager: React.FC<StateProviderProps> = ({
   brand,
 }) => {
   const { search } = useLocation();
-  const [
-    isNewUserImport,
-    noRedirect,
-    isLazyImport,
-    needSetPassword,
-  ] = React.useMemo(() => {
+  const [isNewUserImport, noRedirect, isLazyImport] = React.useMemo(() => {
     const query = new URLSearchParams(search);
     return [
       query.get('isNewUserImport'),
       query.get('noRedirect'),
       !!query.get('isLazyImport'),
-      !!query.get('needSetPassword'),
     ];
   }, [search]);
   const history = useHistory();
@@ -201,22 +195,13 @@ export const HDManager: React.FC<StateProviderProps> = ({
           </div>
           <Manager brand={brand} />
         </main>
-        <DoneButton
-          onClick={handleCloseWin}
-          needSetPassword={needSetPassword}
-        />
+        <DoneButton onClick={handleCloseWin} />
       </div>
     </HDManagerStateProvider>
   );
 };
 
-const DoneButton = ({
-  onClick,
-  needSetPassword,
-}: {
-  onClick?(): void;
-  needSetPassword?: boolean;
-}) => {
+const DoneButton = ({ onClick }: { onClick?(): void }) => {
   const { t } = useTranslation();
 
   const {
@@ -236,44 +221,40 @@ const DoneButton = ({
   const wallet = useWallet();
   const history = useHistory();
 
-  const { loading, runAsync: handleAdd } = useRequest(
+  const { loading, runAsync: handleLazyAdd } = useRequest(
     async () => {
-      if (needSetPassword) {
+      if (!(await wallet.isBooted())) {
         if (store.password) {
           await wallet.boot(store.password);
         } else {
           history.push('/new-user/guide');
         }
       }
-      await Promise.all(
-        selectedAccounts.map(async (account) => {
-          await createTask(async () => {
-            if (keyring === KEYRING_CLASS.MNEMONIC) {
-              await dispatch.importMnemonics.setSelectedAccounts([
-                account.address,
-              ]);
-              await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
-            } else {
-              await wallet.unlockHardwareAccount(
-                keyring,
-                [account.index - 1],
-                keyringId
-              );
-            }
+      await createTask(async () => {
+        if (keyring === KEYRING_CLASS.MNEMONIC) {
+          await dispatch.importMnemonics.setField({
+            confirmingAccounts: selectedAccounts.map((account) => {
+              return {
+                address: account.address,
+                index: account.index,
+                alianName: account.aliasName || '',
+              };
+            }),
           });
-
-          await createTask(() =>
-            wallet.requestKeyring(
-              keyring,
-              'setCurrentUsedHDPathType',
-              keyringId
-            )
+          await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+        } else {
+          await wallet.unlockHardwareAccount(
+            keyring,
+            selectedAccounts.map((account) => account.index - 1),
+            keyringId
           );
-        })
-      );
-      message.success({
-        content: t('page.newAddress.hd.tooltip.added'),
+        }
       });
+
+      await createTask(() =>
+        wallet.requestKeyring(keyring, 'setCurrentUsedHDPathType', keyringId)
+      );
+
       await createTask(() => getCurrentAccounts());
       onClick?.();
     },
@@ -288,7 +269,7 @@ const DoneButton = ({
         <Button
           type="primary"
           className="w-[280px] h-[60px] text-20"
-          onClick={handleAdd}
+          onClick={handleLazyAdd}
           loading={loading}
           disabled={!selectedAccounts.length}
         >

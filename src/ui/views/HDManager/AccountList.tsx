@@ -13,13 +13,15 @@ import clsx from 'clsx';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
-import { KEYRING_CLASS } from '@/constant';
+import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import { detectClientOS } from '@/ui/utils/os';
 import { useQueryAccountsInfo } from './hooks/useQueryAccontsInfo';
 import { InViewport } from './InViewport';
 import { useMemoizedFn } from 'ahooks';
+import { generateAliasName } from '@/utils/account';
+import { uniqBy, values } from 'lodash';
 
 const isWin32 = detectClientOS() === 'win32';
 
@@ -56,6 +58,7 @@ export const AccountList: React.FC<Props> = ({
     keyringId,
     removeCurrentAccount,
     updateCurrentAccountAliasName,
+    updateSelectedAccountAliasName,
     keyring,
     tab,
   } = React.useContext(HDManagerStateContext);
@@ -97,7 +100,7 @@ export const AccountList: React.FC<Props> = ({
   }, [list, preventLoading]);
 
   const handleAddAccount = React.useCallback(
-    async (checked: boolean, account: Account) => {
+    async (checked: boolean, account: Account, isHideToast?: boolean) => {
       if (checked) {
         await createTask(async () => {
           if (keyring === KEYRING_CLASS.MNEMONIC) {
@@ -120,9 +123,11 @@ export const AccountList: React.FC<Props> = ({
 
         // update current account list
         await createTask(() => getCurrentAccounts());
-        message.success({
-          content: t('page.newAddress.hd.tooltip.added'),
-        });
+        if (!isHideToast) {
+          message.success({
+            content: t('page.newAddress.hd.tooltip.added'),
+          });
+        }
       } else {
         await createTask(() =>
           wallet.removeAddress(
@@ -135,9 +140,11 @@ export const AccountList: React.FC<Props> = ({
           )
         );
         removeCurrentAccount(account.address);
-        message.success({
-          content: t('page.newAddress.hd.tooltip.removed'),
-        });
+        if (!isHideToast) {
+          message.success({
+            content: t('page.newAddress.hd.tooltip.removed'),
+          });
+        }
       }
 
       return;
@@ -147,31 +154,40 @@ export const AccountList: React.FC<Props> = ({
 
   const handleSelectAccount = useMemoizedFn(
     async (checked: boolean, account: Account) => {
+      const addressCount =
+        uniqBy([...currentAccounts, ...selectedAccounts], (item) =>
+          item.address.toLowerCase()
+        ).length || 0;
+
       if (checked) {
         const accountWithAlias = { ...account };
         if (keyring === KEYRING_CLASS.MNEMONIC) {
-          const {
-            confirmingAccounts,
-          } = await dispatch.importMnemonics.setSelectedAccounts([
-            account.address,
-          ]);
-          accountWithAlias.aliasName = confirmingAccounts.find((item) =>
-            isSameAddress(item.address, accountWithAlias.address)
-          )?.alianName;
+          const index = (await wallet.getKeyringIndex(keyring, keyringId)) || 0;
 
-          // updateCurrentAccountAliasName(
-          //   accountWithAlias.address,
-          //   accountWithAlias.aliasName || ''
-          // );
-          // await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
-          console.log(confirmingAccounts, accountWithAlias);
+          const alias = generateAliasName({
+            keyringType: keyring,
+            keyringCount: index,
+            addressCount,
+          });
+          wallet.updateCacheAlias({
+            address: account.address,
+            name: alias,
+          });
+          accountWithAlias.aliasName = alias;
         } else {
-          // todo
-          // await wallet.unlockHardwareAccount(
-          //   keyring,
-          //   [account.index - 1],
-          //   keyringId
-          // );
+          const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)
+            .map((key) => HARDWARE_KEYRING_TYPES[key])
+            .find((item) => item.type === keyring);
+          const alias = generateAliasName({
+            brandName: brandName,
+            keyringType: keyring,
+            addressCount,
+          });
+          wallet.updateCacheAlias({
+            address: account.address,
+            name: alias,
+          });
+          accountWithAlias.aliasName = alias;
         }
         setSelectedAccounts((pre) => {
           return [...pre, accountWithAlias];
@@ -186,16 +202,18 @@ export const AccountList: React.FC<Props> = ({
     }
   );
 
-  const handleChangeAliasName = React.useCallback(
+  const handleChangeAliasName = useMemoizedFn(
     async (value: string, account?: Account) => {
       if (!account) {
         return;
       }
       await wallet.updateAlianName(account.address, value);
-      updateCurrentAccountAliasName(account.address, value);
-      return;
-    },
-    []
+      if (tab === 'hd' && isLazyImport) {
+        updateSelectedAccountAliasName(account.address, value);
+      } else {
+        updateCurrentAccountAliasName(account.address, value);
+      }
+    }
   );
 
   // fake loading progress
@@ -228,15 +246,15 @@ export const AccountList: React.FC<Props> = ({
   const initRef = useRef(false);
 
   useEffect(() => {
-    if (!initRef.current) {
+    if (initRef.current) {
       return;
     }
-    if (tab === 'hd' && data?.length) {
+    if (tab === 'hd' && data?.[0]?.address) {
       if (isLazyImport && !selectedAccounts?.length) {
-        setSelectedAccounts([data[0]]);
+        handleSelectAccount(true, data[0]);
       }
       if (!isLazyImport && !currentAccounts?.length) {
-        handleAddAccount(true, data[0]);
+        handleAddAccount(true, data[0], true);
       }
       initRef.current = true;
     }
