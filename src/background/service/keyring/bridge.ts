@@ -38,5 +38,5 @@ export const getKeyringBridge = async (type: string) => {
 };
 
 export const hasBridge = async (type: string) => {
-  return !!getKeyringBridge(type);
+  return !!(await getKeyringBridge(type));
 };
