@@ -65,8 +65,6 @@ export const AccountList: React.FC<Props> = ({
   const [loadNum, setLoadNum] = React.useState(0);
   const dispatch = useRabbyDispatch();
 
-  console.log('data', data);
-
   useEffect(() => {
     currentAccountsRef.current = currentAccounts;
   }, [currentAccounts]);

@@ -152,7 +152,6 @@ export const NewUserSetPassword = () => {
   });
 
   const handleSubmit = useMemoizedFn(async (password: string) => {
-    // todo different type
     if (type === 'private-key') {
       handlePrivateKey(password);
     }
