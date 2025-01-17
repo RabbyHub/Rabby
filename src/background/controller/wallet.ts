@@ -3741,7 +3741,7 @@ export class WalletController extends BaseController {
     }
   };
 
-  getKeyringIndex = (type: string, keyringId: number | null) => {
+  getKeyringIndex = async (type: string, keyringId: number | null) => {
     let keyring: any;
     if (keyringId !== null && keyringId !== undefined) {
       keyring = stashKeyrings[keyringId];
@@ -3751,7 +3751,9 @@ export class WalletController extends BaseController {
       } catch {
         const Keyring = keyringService.getKeyringClassForType(type);
         keyring = new Keyring(
-          hasBridge(type) ? { bridge: getKeyringBridge(type) } : undefined
+          (await hasBridge(type))
+            ? { bridge: await getKeyringBridge(type) }
+            : undefined
         );
       }
     }
