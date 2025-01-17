@@ -72,6 +72,7 @@ import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 import { KEYRING_CLASS } from '@/constant';
 import { MetamaskModeDapps } from './MetamaskModeDapps';
+import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 
 declare global {
   interface Window {
@@ -170,6 +171,10 @@ const Main = () => {
 
         <Route exact path="/new-user/ready">
           <ReadyToUse />
+        </Route>
+
+        <Route exact path="/new-user/import/select-address">
+          <NewUserSelectAddress />
         </Route>
 
         <Route exact path="/password">

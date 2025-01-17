@@ -41,22 +41,22 @@ export const NewUserImportLedger = () => {
           needUnlock: true,
         });
 
-        await wallet.requestKeyring(
-          HARDWARE_KEYRING_TYPES.Ledger.type,
-          'setHDPathType',
-          keyringId,
-          LedgerHDPathType.LedgerLive
-        );
-        await wallet.boot(store.password);
-        await wallet.unlockHardwareAccount(
-          HARDWARE_KEYRING_TYPES.Ledger.type,
-          [0],
-          keyringId
-        );
+        // await wallet.requestKeyring(
+        //   HARDWARE_KEYRING_TYPES.Ledger.type,
+        //   'setHDPathType',
+        //   keyringId,
+        //   LedgerHDPathType.LedgerLive
+        // );
+        // await wallet.boot(store.password);
+        // await wallet.unlockHardwareAccount(
+        //   HARDWARE_KEYRING_TYPES.Ledger.type,
+        //   [0],
+        //   keyringId
+        // );
 
         history.push({
-          pathname: '/new-user/success',
-          search: `?hd=${HARDWARE_KEYRING_TYPES.Ledger.type}&keyringId=${keyringId}`,
+          pathname: '/new-user/import/select-address',
+          search: `?hd=${HARDWARE_KEYRING_TYPES.Ledger.type}&keyringId=${keyringId}&isLazyImport=true&isNewUserImport=true`,
         });
       }
     } catch (e) {

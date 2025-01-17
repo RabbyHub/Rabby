@@ -16,7 +16,9 @@ import { Modal as CustomModal } from '@/ui/component';
 
 export const BitBox02Manager: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
-  const { getCurrentAccounts } = React.useContext(HDManagerStateContext);
+  const { getCurrentAccounts, setSelectedAccounts } = React.useContext(
+    HDManagerStateContext
+  );
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
     DEFAULT_SETTING_DATA
@@ -49,6 +51,7 @@ export const BitBox02Manager: React.FC = () => {
       ...data,
       type: HDPathType.BIP44,
     });
+    setSelectedAccounts([]);
   }, []);
   const { t } = useTranslation();
 

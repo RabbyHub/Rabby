@@ -1731,7 +1731,8 @@
           },
           "switchAnother": "Switch to another {{0}}"
         },
-        "manageImKey": "Manage imKey"
+        "manageImKey": "Manage imKey",
+        "importBtn": "Import ({{count}})"
       },
       "importYourKeystore": "Import Your KeyStore",
       "incorrectPassword": "incorrect password",
