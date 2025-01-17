@@ -239,15 +239,6 @@ export const HDManagerStateProvider: React.FC<StateProviderProps> = ({
   keyring,
   isLazyImport,
 }) => {
-  console.log('keyring', {
-    ...useGetCurrentAccounts({ keyringId, keyring }),
-    ...useManagerTab(),
-    ...useSelectedAccounts(),
-    ...useTaskQueue({ keyring }),
-    keyringId,
-    keyring,
-    isLazyImport,
-  });
   return (
     <HDManagerStateContext.Provider
       value={{
