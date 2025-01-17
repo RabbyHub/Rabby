@@ -29,6 +29,7 @@ import { MiniCommonAction } from './MiniCommonAction';
 import { MiniLedgerAction } from './MiniLedgerAction';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import { GasAccountCheckResult } from '@/background/service/openapi';
+import { DrawerProps } from 'antd';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -60,6 +61,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   gasAccountCanPay?: boolean;
   noCustomRPC?: boolean;
   canGotoUseGasAccount?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const Wrapper = styled.section`
@@ -174,6 +176,7 @@ export const MiniFooterBar: React.FC<Props> = ({
   noCustomRPC,
   canGotoUseGasAccount,
   task,
+  getContainer,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -348,6 +351,7 @@ export const MiniFooterBar: React.FC<Props> = ({
                   : gasLessConfig?.theme_color
               }
               footer={footer}
+              getContainer={getContainer}
             ></MiniLedgerAction>
           ) : (
             <MiniCommonAction

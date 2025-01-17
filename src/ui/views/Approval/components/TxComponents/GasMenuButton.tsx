@@ -171,6 +171,7 @@ export const GasMenuButton: React.FC<Props> = ({
   return (
     <Dropdown
       placement="topCenter"
+      trigger={['hover', 'click']}
       overlay={
         <MenuStyled>
           <Menu.ItemGroup
@@ -226,9 +227,9 @@ export const GasMenuButton: React.FC<Props> = ({
           </Menu.ItemGroup>
         </MenuStyled>
       }
-      getPopupContainer={() =>
-        document.querySelector('.js-rabby-popup-container') || document.body
-      }
+      // getPopupContainer={() =>
+      //   document.querySelector('.js-rabby-popup-container') || document.body
+      // }
     >
       {selectedGas ? (
         <MenuButtonStyled>

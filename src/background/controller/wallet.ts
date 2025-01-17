@@ -1506,6 +1506,9 @@ export class WalletController extends BaseController {
     sessionService.broadcastEvent('accountsChanged', []);
     sessionService.broadcastEvent('lock');
     setPopupIcon('locked');
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.LOCK_WALLET,
+    });
   };
 
   setAutoLockTime = (time: number) => {
@@ -5159,9 +5162,6 @@ export class WalletController extends BaseController {
 const wallet = new WalletController();
 autoLockService.onAutoLock = async () => {
   await wallet.lockWallet();
-  eventBus.emit(EVENTS.broadcastToUI, {
-    method: EVENTS.LOCK_WALLET,
-  });
 };
 // check if wallet needs to lock after sw re-active
 autoLockService.syncAutoLockAt();

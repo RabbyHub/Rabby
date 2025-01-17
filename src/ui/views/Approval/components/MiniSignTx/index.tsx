@@ -852,6 +852,7 @@ export const MiniSignTx = ({
         Header={
           <div
             className={clsx(task.status !== 'idle' && 'pointer-events-none')}
+            key={task.status}
           >
             <GasSelectorHeader
               tx={txs[0]}
@@ -969,6 +970,7 @@ export const MiniSignTx = ({
           !canProcess ||
           !!checkErrors.find((item) => item.level === 'forbidden')
         }
+        getContainer={getContainer}
       />
     </>
   );

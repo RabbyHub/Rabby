@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { getUiType } from '@/ui/utils';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
+import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 const isTab = getUiType().isTab;
 
 const Swap = () => {
@@ -17,33 +18,18 @@ const Swap = () => {
     <RefreshIdProvider>
       <QuoteVisibleProvider>
         <RabbyFeeProvider>
-          <div
-            className="h-full w-full flex flex-col items-center justify-center"
-            style={{
-              background: isDarkTheme
-                ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), var(--r-blue-default, #7084FF)'
-                : 'var(--r-blue-default, #7084FF)',
-            }}
-          >
+          <FullscreenContainer>
             <div
               className={clsx(
+                'px-0 overflow-hidden bg-r-neutral-bg-2 h-full relative flex flex-col',
                 isTab
-                  ? 'js-rabby-popup-container overflow-hidden relative w-[400px] h-[600px] translate-x-0'
-                  : 'w-full h-full'
+                  ? 'rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
+                  : ''
               )}
             >
-              <div
-                className={clsx(
-                  'px-0 overflow-hidden bg-r-neutral-bg-2 h-full relative flex flex-col',
-                  isTab
-                    ? 'rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
-                    : ''
-                )}
-              >
-                <Main />
-              </div>
+              <Main />
             </div>
-          </div>
+          </FullscreenContainer>
         </RabbyFeeProvider>
       </QuoteVisibleProvider>
     </RefreshIdProvider>
