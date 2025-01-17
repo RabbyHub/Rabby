@@ -31,6 +31,7 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { Header } from './BridgeHeader';
 import { obj2query } from '@/ui/utils/url';
 const isTab = getUiType().isTab;
+const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 export const BridgeContent = () => {
   const { userAddress } = useRabbySelector((state) => ({
@@ -407,7 +408,7 @@ export const BridgeContent = () => {
           selectedBridgeQuote?.shouldApproveToken ? 'pb-[130px]' : 'pb-[110px]'
         )}
       >
-        <div className="relative flex flex-col mx-20 gap-8">
+        <div className="relative flex flex-col mx-20 gap-[6px]">
           <BridgeToken
             type="from"
             chain={fromChain}
@@ -419,7 +420,7 @@ export const BridgeContent = () => {
             excludeChains={toChain ? [toChain] : undefined}
             inSufficient={inSufficient}
             handleSetGasPrice={setMaxNativeTokenGasPrice}
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
           <BridgeToken
             type="to"
@@ -435,7 +436,7 @@ export const BridgeContent = () => {
             value={selectedBridgeQuote?.to_token_amount}
             excludeChains={fromChain ? [fromChain] : undefined}
             noQuote={noQuote}
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <BridgeSwitchBtn onClick={switchToken} />
@@ -519,7 +520,7 @@ export const BridgeContent = () => {
         <div
           className={clsx(
             'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
-            'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+            'bg-r-neutral-bg-2 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
             'py-[16px]',
             isTab ? 'rounded-b-[16px]' : ''
           )}
@@ -586,7 +587,7 @@ export const BridgeContent = () => {
             receiveToken={toToken}
             inSufficient={inSufficient}
             setSelectedBridgeQuote={setSelectedBridgeQuote}
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
         ) : null}
         <MiniApproval
@@ -622,7 +623,7 @@ export const BridgeContent = () => {
               // }, 500);
             }, 500);
           }}
-          getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+          getContainer={getContainer}
         />
       </div>
     </>

@@ -969,6 +969,7 @@ export const MiniSignTx = ({
           !canProcess ||
           !!checkErrors.find((item) => item.level === 'forbidden')
         }
+        getContainer={getContainer}
       />
     </>
   );

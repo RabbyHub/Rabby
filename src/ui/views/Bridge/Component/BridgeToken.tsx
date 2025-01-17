@@ -240,12 +240,7 @@ export const BridgeToken = ({
   ]);
 
   return (
-    <div
-      className={clsx(
-        'h-[156px] bg-r-neutral-card1 rounded-[8px]',
-        'border-[0.5px] border-solid border-rabby-neutral-line'
-      )}
-    >
+    <div className={clsx('h-[156px] bg-r-neutral-card1 rounded-[8px]')}>
       <div
         className={clsx(
           'flex items-center gap-8',
@@ -253,7 +248,7 @@ export const BridgeToken = ({
           'border-b-[0.5px] border-solid border-rabby-neutral-line'
         )}
       >
-        <span className="text-12 text-r-neutral-body">{name}</span>
+        <span className="text-12 text-r-neutral-foot">{name}</span>
         <ChainSelectorInForm
           bridge
           hideTestnetTab

@@ -48,6 +48,7 @@ import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
 const isTab = getUiType().isTab;
+const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -483,19 +484,19 @@ export const Main = () => {
             disabledTips={getDisabledTips}
             supportChains={SWAP_SUPPORT_CHAINS}
             hideTestnetTab={true}
-            chainRenderClassName={clsx('text-[13px] font-medium')}
+            chainRenderClassName={clsx(
+              'text-[13px] font-medium border-0',
+              'before:border-transparent hover:before:border-rabby-blue-default'
+            )}
             title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
             drawerHeight={540}
             showClosableIcon
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
         </div>
 
         <div
-          className={clsx(
-            'relative bg-r-neutral-card-1 rounded-[8px] mx-20',
-            'border-[0.5px] border-rabby-neutral-line'
-          )}
+          className={clsx('relative bg-r-neutral-card-1 rounded-[8px] mx-20')}
         >
           <SwapTokenItem
             inSufficient={inSufficient}
@@ -515,7 +516,7 @@ export const Main = () => {
             chainId={findChainByEnum(chain)!.serverId}
             type={'from'}
             excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
 
           <div
@@ -562,7 +563,7 @@ export const Main = () => {
             type={'to'}
             excludeTokens={payToken?.id ? [payToken?.id] : undefined}
             currentQuote={activeProvider}
-            getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+            getContainer={getContainer}
           />
         </div>
 
@@ -649,7 +650,7 @@ export const Main = () => {
         <div
           className={clsx(
             'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
-            'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+            'bg-r-neutral-bg-2 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
             'py-[13px]',
             isTab ? 'rounded-b-[16px]' : ''
           )}
@@ -723,6 +724,7 @@ export const Main = () => {
             fee={feeRate}
             inSufficient={inSufficient}
             setActiveProvider={setActiveProvider}
+            getContainer={getContainer}
           />
         ) : null}
         <MiniApproval
@@ -759,7 +761,7 @@ export const Main = () => {
               // }, 500);
             }, 500);
           }}
-          getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+          getContainer={getContainer}
         />
         <LowCreditModal
           token={lowCreditToken}

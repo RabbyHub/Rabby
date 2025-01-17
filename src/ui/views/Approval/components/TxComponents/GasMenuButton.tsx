@@ -226,9 +226,9 @@ export const GasMenuButton: React.FC<Props> = ({
           </Menu.ItemGroup>
         </MenuStyled>
       }
-      getPopupContainer={() =>
-        document.querySelector('.js-rabby-popup-container') || document.body
-      }
+      // getPopupContainer={() =>
+      //   document.querySelector('.js-rabby-popup-container') || document.body
+      // }
     >
       {selectedGas ? (
         <MenuButtonStyled>

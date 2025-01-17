@@ -13,6 +13,7 @@ import { ReactComponent as RcIconHiddenArrow } from '@/ui/assets/swap/hidden-quo
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
+import { DrawerProps } from 'antd';
 
 interface QuotesProps
   extends Omit<
@@ -29,6 +30,7 @@ interface QuotesProps
   activeName?: string;
   visible: boolean;
   onClose: () => void;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 export const Quotes = ({
@@ -36,6 +38,7 @@ export const Quotes = ({
   activeName,
   inSufficient,
   sortIncludeGasFee,
+  getContainer,
   ...other
 }: QuotesProps) => {
   const { t } = useTranslation();
@@ -237,7 +240,7 @@ const bodyStyle = {
 };
 
 export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
-  const { visible, onClose } = props;
+  const { visible, onClose, getContainer } = props;
   const refresh = useSetRefreshId();
 
   const refreshQuote = React.useCallback(() => {
@@ -346,6 +349,7 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
       className="isConnectView z-[999]"
       bodyStyle={bodyStyle}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <Quotes {...props} sortIncludeGasFee={sortIncludeGasFee} />
     </Popup>
