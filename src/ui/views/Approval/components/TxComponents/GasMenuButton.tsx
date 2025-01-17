@@ -171,6 +171,7 @@ export const GasMenuButton: React.FC<Props> = ({
   return (
     <Dropdown
       placement="topCenter"
+      trigger={['hover', 'click']}
       overlay={
         <MenuStyled>
           <Menu.ItemGroup

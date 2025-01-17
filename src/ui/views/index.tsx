@@ -42,7 +42,7 @@ const useAutoLock = () => {
 
   useIdleTimer({
     onAction() {
-      if (autoLockTime > 0) {
+      if (autoLockTime > 0 && location.pathname !== '/unlock') {
         wallet.setLastActiveTime();
       }
     },

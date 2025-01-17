@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
-import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
+import {
+  formatPrice,
+  formatTokenAmount,
+  formatUsdValue,
+} from 'ui/utils/number';
 import { getTokenSymbol } from 'ui/utils/token';
 import './style.less';
 import BigNumber from 'bignumber.js';
@@ -708,7 +712,7 @@ function SwapAndBridgeTokenItem(props: {
               {getTokenSymbol(token)}
             </span>
             <span className="symbol text-13 font-normal text-r-neutral-foot">
-              {currentChainName}
+              {formatPrice(token.price)}
             </span>
           </div>
         </div>
