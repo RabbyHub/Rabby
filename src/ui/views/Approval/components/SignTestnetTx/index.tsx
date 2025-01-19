@@ -14,12 +14,14 @@ import {
 } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
+  DEFAULT_GAS_LIMIT_BUFFER,
   DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
   KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_TYPE,
   MINIMUM_GAS_LIMIT,
+  SAFE_GAS_LIMIT_BUFFER,
 } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -282,20 +284,38 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     async () => {
       try {
         const currentAccount = (await wallet.getCurrentAccount())!;
-        const res = await wallet.estimateCustomTestnetGas({
+        let estimateGas = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
           chainId: chainId,
           tx: tx,
         });
+        const blockGasLimit = await wallet.getCustomBlockGasLimit(chainId);
+
+        let recommendGasLimit = estimateGas;
+
         if (!gasLimit) {
+          recommendGasLimit = new BigNumber(estimateGas)
+            .times(DEFAULT_GAS_LIMIT_RATIO)
+            .toFixed(0);
+
+          if (
+            blockGasLimit &&
+            new BigNumber(recommendGasLimit).gt(blockGasLimit)
+          ) {
+            const buffer =
+              SAFE_GAS_LIMIT_BUFFER[chainId] || DEFAULT_GAS_LIMIT_BUFFER;
+
+            estimateGas = blockGasLimit;
+            recommendGasLimit = new BigNumber(blockGasLimit)
+              .times(buffer)
+              .toFixed(0);
+          }
+
           setGasLimit(
-            `0x${new BigNumber(res)
-              .multipliedBy(1.5)
-              .integerValue()
-              .toString(16)}`
+            `0x${new BigNumber(recommendGasLimit).integerValue().toString(16)}`
           );
         }
-        return `0x${new BigNumber(res).integerValue().toString(16)}`;
+        return `0x${new BigNumber(estimateGas).integerValue().toString(16)}`;
       } catch (e) {
         console.error(e);
         const fallback = intToHex(2000000);

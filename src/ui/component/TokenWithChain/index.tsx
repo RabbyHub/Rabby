@@ -18,6 +18,7 @@ const TokenWithChain = ({
   hideChainIcon = false,
   isShowChainTooltip = false,
   className,
+  chainClassName,
 }: {
   token: TokenItem;
   width?: string;
@@ -28,6 +29,7 @@ const TokenWithChain = ({
   isShowChainTooltip?: boolean;
   className?: string;
   chainSize?: string | number;
+  chainClassName?: string;
 }) => {
   const chainServerId = token.chain;
   const chain = findChain({
@@ -57,7 +59,7 @@ const TokenWithChain = ({
         (isShowChainTooltip ? (
           <TooltipWithMagnetArrow
             title={chain?.name}
-            className="rectangle w-[max-content]"
+            className={clsx('chain-symbol', chainClassName)}
           >
             <img
               className="chain-symbol"
@@ -67,7 +69,7 @@ const TokenWithChain = ({
           </TooltipWithMagnetArrow>
         ) : (
           <img
-            className="chain-symbol"
+            className={clsx('chain-symbol', chainClassName)}
             style={chainStyle}
             src={chain?.logo || IconUnknown}
           />

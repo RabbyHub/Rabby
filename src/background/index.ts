@@ -53,6 +53,7 @@ import { userGuideService } from './service/userGuide';
 import { isSameAddress } from './utils';
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
+import { metamaskModeService } from './service/metamaskModeService';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -104,6 +105,7 @@ async function restoreAppState() {
   await bridgeService.init();
   await gasAccountService.init();
   await uninstalledService.init();
+  await metamaskModeService.init();
 
   await walletController.tryUnlock();
 

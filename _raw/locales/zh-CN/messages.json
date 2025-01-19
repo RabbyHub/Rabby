@@ -199,8 +199,8 @@
         "cancel": "取消",
         "claimRabbyBadge": "领取 Rabby Badge",
         "clearPending": "清除待完成交易",
-        "clearPendingTip1": "这将清除你所有待完成的交易。这可以帮助你解决在某些情况下 Rabby 中的交易状态与链上状态不匹配的问题。",
-        "clearPendingTip2": "这不会改变你帐户中的余额，也不会要求你重新输入助记词。你的所有资产和帐户信息都将保持安全。",
+        "clearPendingTip1": "这将在本地删除所有待处理的交易，并帮助解决因待处理时间过长而导致的问题。",
+        "clearPendingTip2": "它不会影响您的帐户余额或要求您重新输入助记词。\n您的所有资产和帐户信息将保持安全。",
         "clearWatchAddressContent": "你确定删除所有观察地址吗？",
         "clearWatchMode": "清除观察地址",
         "currentVersion": "当前版本",
@@ -248,7 +248,8 @@
         },
         "warning": "警告",
         "requestDeBankTestnetGasToken": "获取 DeBank Testnet Gas Token",
-        "claimFreeGasBadge": "领取 Rabby Free Gas 徽章！"
+        "claimFreeGasBadge": "领取 Rabby Free Gas 徽章！",
+        "clearPendingWarningTip": "待处理的交易将来仍有可能成功提交。"
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -783,7 +784,15 @@
             "onChainCancel": {
               "title": "链上取消",
               "desc": "发起新的链上交易来取消，需要Gasfee"
+            },
+            "removeLocalPendingTx": {
+              "title": "本地删除交易",
+              "desc": "修复因等待时间过长导致交易阻塞的问题"
             }
+          },
+          "removeLocalPendingTx": {
+            "title": "本地删除交易",
+            "desc": "此操作将在本地删除待处理的事务。\n待处理的交易将来仍有可能成功提交。"
           }
         },
         "SkipNonceAlert": {

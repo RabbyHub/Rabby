@@ -347,6 +347,18 @@
           "cancelSingleNFTApproval": "{{protocol}} için Tek NFT Onayını İptal Et",
           "singleNFTApproval": "{{protocol}} için Tek NFT Onayı",
           "nftCollectionApproval": "{{protocol}} için NFT Koleksiyon Onayı"
+        },
+        "CancelTxPopup": {
+          "options": {
+            "removeLocalPendingTx": {
+              "title": "İşlemi Yerel Olarak Sil",
+              "desc": "Uzun bekleme süresinin neden olduğu işlem bloğunu düzeltin"
+            }
+          },
+          "removeLocalPendingTx": {
+            "title": "İşlemi Yerel Olarak Sil",
+            "desc": "Bu eylem, bekleyen işlemi yerel olarak silecektir. \nBekleyen işlem gelecekte de başarıyla gönderilebilir."
+          }
         }
       },
       "signedText": {
@@ -794,8 +806,8 @@
         "save": "Kaydet",
         "pendingTransactionCleared": "Bekleyen işlem temizlendi",
         "clearPending": "Bekleyeni Temizle",
-        "clearPendingTip1": "Bu, tüm bekleyen işlemlerinizi temizleyecektir. Rabby'deki işlemin durumunun zincir üzerindeki durumuyla eşleşmediği bazı durumlarda bu sorunu çözmenize yardımcı olabilir.",
-        "clearPendingTip2": "Bu, hesaplarınızdaki bakiyeleri değiştirmeyecek veya seed phrase dizinizi yeniden girmenizi gerektirmeyecektir. Tüm varlıklarınız ve hesap bilgileriniz güvende kalacaktır.",
+        "clearPendingTip1": "Bu, bekleyen tüm işlemlerinizi yerel olarak silecek ve uzun bekleme sürelerinden kaynaklanan sorunların çözülmesine yardımcı olacaktır.",
+        "clearPendingTip2": "Hesap bakiyelerinizi etkilemez veya başlangıç ​​ifadenizi yeniden girmenizi gerektirmez. \nTüm varlıklarınız ve hesap bilgileriniz güvende kalacaktır.",
         "autoLockTime": "Otomatik kilitlenme süresi",
         "claimRabbyBadge": "Rabby Rozetini Talep Edin!",
         "cancel": "İptal",
@@ -832,7 +844,8 @@
         "followUs": "Bizi Takip Edin",
         "testnetBackendServiceUrl": "Testnet Backend Servis URL'si",
         "clearWatchMode": "İzleme Modunu Temizle",
-        "requestDeBankTestnetGasToken": "DeBank Testnet Gas Tokeni İste"
+        "requestDeBankTestnetGasToken": "DeBank Testnet Gas Tokeni İste",
+        "clearPendingWarningTip": "Bekleyen işlemler gelecekte de başarıyla gönderilebilir."
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",

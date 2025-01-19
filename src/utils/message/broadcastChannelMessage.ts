@@ -17,7 +17,13 @@ export default class BroadcastChannelMessage extends Message {
   }
 
   connect = () => {
-    this._channel.on('data', ({ data: { type, data } }) => {
+    this._channel.on('data', (res) => {
+      if (!res.data) {
+        return;
+      }
+      const {
+        data: { type, data },
+      } = res;
       if (type === 'message') {
         this.emit('message', data);
       } else if (type === 'response') {
@@ -31,7 +37,13 @@ export default class BroadcastChannelMessage extends Message {
   listen = (listenCallback) => {
     this.listenCallback = listenCallback;
 
-    this._channel.on('data', ({ data: { type, data } }) => {
+    this._channel.on('data', (res) => {
+      if (!res.data) {
+        return;
+      }
+      const {
+        data: { type, data },
+      } = res;
       if (type === 'request') {
         this.onRequest(data);
       }

@@ -356,6 +356,18 @@
           "cancelSingleNFTApproval": "{{protocol}}の単一のNFT承認をキャンセル",
           "singleNFTApproval": "{{protocol}}の単一のNFT承認",
           "nftCollectionApproval": "{{protocol}}のNFTコレクション承認"
+        },
+        "CancelTxPopup": {
+          "options": {
+            "removeLocalPendingTx": {
+              "title": "トランザクションをローカルで削除",
+              "desc": "長い保留時間によって引き起こされるトランザクションブロックを修正"
+            }
+          },
+          "removeLocalPendingTx": {
+            "title": "トランザクションをローカルで削除",
+            "desc": "このアクションにより、保留中のトランザクションがローカルで削除されます。\n保留中のトランザクションは今後も正常に送信される可能性があります。"
+          }
         }
       },
       "signedText": {
@@ -822,8 +834,8 @@
         "save": "保存",
         "pendingTransactionCleared": "保留中のトランザクションがクリアされました",
         "clearPending": "保留中のクリア",
-        "clearPendingTip1": "これにより、すべての保留中のトランザクションがクリアされます。これにより、Rabbyのトランザクションの状態がブロックチェーン上の状態と一致しない場合の問題を解決できます。",
-        "clearPendingTip2": "これにより、アカウントの残高は変更されず、シードフレーズを再入力する必要はありません。すべての資産とアカウント情報は安全に保たれます。",
+        "clearPendingTip1": "これにより、保留中のトランザクションがすべてローカルで削除され、長い保留時間によって引き起こされる問題の解決に役立ちます。",
+        "clearPendingTip2": "アカウント残高に影響を与えたり、シードフレーズを再入力する必要はありません。\nすべての資産とアカウント情報は安全に保たれます。",
         "autoLockTime": "自動ロック時間",
         "claimRabbyBadge": "Rabby バッジをクレーム！",
         "cancel": "キャンセル",
@@ -860,7 +872,8 @@
         "followUs": "フォローする",
         "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
         "clearWatchMode": "ウォッチモードをクリア",
-        "requestDeBankTestnetGasToken": "DeBankテストネットガストークンをリクエスト"
+        "requestDeBankTestnetGasToken": "DeBankテストネットガストークンをリクエスト",
+        "clearPendingWarningTip": "保留中のトランザクションは、今後も正常に送信される可能性があります。"
       },
       "tokenDetail": {
         "blockedTip": "ブロックされたトークンはトークンリストに表示されません",

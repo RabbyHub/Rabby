@@ -37,7 +37,6 @@ import { getUiType, useWallet } from '../utils';
 import CustomRPC from './CustomRPC';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { PreferMetamaskDapps } from './PreferMetamaskDapps';
 import { CommonPopup } from './CommonPopup';
 import ManageAddress from './ManageAddress';
 import { NFTView } from './NFTView';
@@ -72,6 +71,7 @@ import { ReadyToUse } from './NewUserImport/ReadyToUse';
 import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 import { KEYRING_CLASS } from '@/constant';
+import { MetamaskModeDapps } from './MetamaskModeDapps';
 
 declare global {
   interface Window {
@@ -327,8 +327,8 @@ const Main = () => {
         <PrivateRoute exact path="/custom-testnet">
           <CustomTestnet />
         </PrivateRoute>
-        <PrivateRoute exact path="/prefer-metamask-dapps">
-          <PreferMetamaskDapps />
+        <PrivateRoute exact path="/metamask-mode-dapps">
+          <MetamaskModeDapps />
         </PrivateRoute>
         <PrivateRoute exact path="/nft">
           <NFTView />
