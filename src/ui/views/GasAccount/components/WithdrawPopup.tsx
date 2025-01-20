@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Popup, Item, TokenWithChain, AddressViewer } from '@/ui/component';
+import {
+  Popup,
+  Item,
+  TokenWithChain,
+  AddressViewer,
+  Empty,
+} from '@/ui/component';
 import { Button, message, Skeleton, Tooltip } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
 import { noop, set } from 'lodash';
@@ -299,7 +305,7 @@ const Selector = ({
           </div>
         </div>
         <div className="overflow-y-auto flex-1 relative px-20">
-          {isSelectChain ? (
+          {!sortedList?.length ? null : isSelectChain ? (
             <FixedSizeList<RechargeChainItem[]>
               width={'100%'}
               height={328}
@@ -319,6 +325,18 @@ const Selector = ({
             >
               {AddressRow}
             </FixedSizeList>
+          )}
+          {!sortedList?.length && (
+            <Empty
+              className="mt-[75px]"
+              title={
+                <span className="text-13 text-r-neutral-foot text-center">
+                  {isSelectChain
+                    ? t('page.gasAccount.withdrawPopup.noEligibleChain')
+                    : t('page.gasAccount.withdrawPopup.noEligibleAddr')}
+                </span>
+              }
+            />
           )}
         </div>
       </div>
@@ -510,8 +528,12 @@ const WithdrawContent = ({
                   />
                 </div>
               </div>
-            ) : (
+            ) : !selectedAccount ? (
               <AddressRightAreaInItem account={selectedAccount} />
+            ) : (
+              <span className="text-15 font-medium text-r-neutral-title1">
+                {t('page.gasAccount.withdrawPopup.selectAddr')}
+              </span>
             )
           }
           hoverBorder={!loading}
@@ -527,8 +549,27 @@ const WithdrawContent = ({
           py={0}
           className="rounded-[6px] w-full h-[52px]"
           bgColor="var(--r-neutral-card2, #F2F4F7)"
+          hoverBorder={!loading}
+          right={loading ? () => null : undefined}
           left={
-            chainInfo ? (
+            loading ? (
+              <div
+                className={clsx('flex items-center gap-[6px] ', [
+                  'rounded-[2px]',
+                ])}
+              >
+                <Skeleton.Avatar
+                  className="rounded-[12px] w-[24px] h-[24px]"
+                  active
+                />
+                <div className="flex flex-col overflow-hidden gap-[6px]">
+                  <Skeleton.Input
+                    className="rounded w-[89px] h-[16px]"
+                    active
+                  />
+                </div>
+              </div>
+            ) : chainInfo ? (
               <div
                 className={clsx('flex items-center gap-[6px] ', [
                   'rounded-[2px]',
