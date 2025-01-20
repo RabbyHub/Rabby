@@ -29,7 +29,7 @@ Use my referral code ${invitedCode} for an extra bonus!
 https://rabby.io/points?code=${invitedCode}
 `);
 
-  openInTab(`https://twitter.com/intent/tweet?text=${text}`);
+  openInTab(`https://z.com/intent/tweet?text=${text}`);
 };
 
 export const CodeAndShare = ({

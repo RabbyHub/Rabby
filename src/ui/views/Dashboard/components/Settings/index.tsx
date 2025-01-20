@@ -1053,14 +1053,14 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <a
-                href="https://twitter.com/rabby_io"
+                href="https://x.com/rabby_io"
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => {
                   matomoRequestEvent({
                     category: 'Setting',
                     action: 'clickToUse',
-                    label: 'Find us|Twitter',
+                    label: 'Find us|X',
                   });
                   reportSettings('twitter');
                 }}
