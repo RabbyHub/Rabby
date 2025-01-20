@@ -2649,6 +2649,7 @@
       "noMatch": "No Match",
       "noMatchSuggestion": "Try to search contract address on {{ chainName }}",
       "hot": "Hot",
+      "common": "Common",
       "recent": "Recent"
     },
     "ModalPreviewNFTItem": {

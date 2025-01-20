@@ -271,7 +271,7 @@ const TokenSelector = ({
         >
           <div>
             {type === 'swapTo'
-              ? t('component.TokenSelector.hot')
+              ? t('component.TokenSelector.common')
               : t('component.TokenSelector.bridge.token')}
           </div>
           <div />
@@ -660,6 +660,8 @@ function SwapAndBridgeTokenItem(props: {
     token,
   ]);
 
+  const isSwapTo = type === 'swapTo';
+
   const currentChainName = useMemo(() => chainItem?.name, [chainItem]);
 
   const disabled = useMemo(() => {
@@ -712,7 +714,9 @@ function SwapAndBridgeTokenItem(props: {
               {getTokenSymbol(token)}
             </span>
             <span className="symbol text-13 font-normal text-r-neutral-foot">
-              {formatPrice(token.price)}
+              {isSwapTo
+                ? `$${formatPrice(token.price || 0)}`
+                : currentChainName}
             </span>
           </div>
         </div>
