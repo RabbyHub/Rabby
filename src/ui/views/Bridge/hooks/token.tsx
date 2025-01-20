@@ -121,6 +121,10 @@ export const useBridge = () => {
 
   const [amount, setAmount] = useState('');
 
+  const [maxNativeTokenGasPrice, setMaxNativeTokenGasPrice] = useState<
+    number | undefined
+  >(undefined);
+
   const slippageObj = useBridgeSlippage();
 
   const [recommendFromToken, setRecommendFromToken] = useState<TokenItem>();
@@ -616,6 +620,7 @@ export const useBridge = () => {
     inputAmount?: string;
     toChain?: CHAINS_ENUM;
     toTokenId?: string;
+    maxNativeTokenGasPrice?: string;
   }>(query2obj(search));
 
   useEffect(() => {
@@ -669,6 +674,17 @@ export const useBridge = () => {
     searchObj?.toTokenId,
   ]);
 
+  const isSetMaxRef = useRef(false);
+  useEffect(() => {
+    if (isSetMaxRef.current) {
+      return;
+    }
+    if (amount === searchObj?.inputAmount && searchObj.maxNativeTokenGasPrice) {
+      setMaxNativeTokenGasPrice(+searchObj.maxNativeTokenGasPrice || undefined);
+      isSetMaxRef.current = true;
+    }
+  }, [amount, searchObj.inputAmount, searchObj.maxNativeTokenGasPrice]);
+
   return {
     clearExpiredTimer,
 
@@ -698,6 +714,10 @@ export const useBridge = () => {
     selectedBridgeQuote,
 
     setSelectedBridgeQuote,
+
+    maxNativeTokenGasPrice,
+    setMaxNativeTokenGasPrice,
+
     ...slippageObj,
   };
 };

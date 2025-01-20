@@ -178,6 +178,7 @@ export const useTokenPair = (userAddress: string) => {
     chain?: string;
     inputAmount?: string;
     receiveTokenId?: string;
+    isMax?: boolean;
   }>(query2obj(search));
 
   useAsyncInitializeChainList({
@@ -295,7 +296,7 @@ export const useTokenPair = (userAddress: string) => {
   const [gasLevel, setGasLevel] = useState<GasLevelType>('normal');
   const gasPriceRef = useRef<number>();
 
-  const { value: gasList } = useAsync(() => {
+  const { value: gasList, loading: isGasMarketLoading } = useAsync(() => {
     gasPriceRef.current = undefined;
     setGasLevel('normal');
     return wallet.gasMarketV2({ chainId: findChainByEnum(chain)!.serverId });
@@ -646,7 +647,7 @@ export const useTokenPair = (userAddress: string) => {
           ...getChainDefaultToken(target?.enum),
           id: searchObj.payTokenId,
         });
-        if (searchObj?.inputAmount) {
+        if (searchObj?.inputAmount && !searchObj?.isMax) {
           handleAmountChange(searchObj?.inputAmount);
         }
         if (searchObj?.receiveTokenId) {
@@ -670,7 +671,19 @@ export const useTokenPair = (userAddress: string) => {
     searchObj?.payTokenId,
     searchObj?.inputAmount,
     searchObj?.receiveTokenId,
+    searchObj?.isMax,
   ]);
+
+  const isSetMaxRef = useRef(false);
+  useEffect(() => {
+    if (isSetMaxRef.current) {
+      return;
+    }
+    if (!isGasMarketLoading && searchObj?.isMax && payToken?.amount) {
+      onChangeSlider(100, true);
+      isSetMaxRef.current = true;
+    }
+  }, [isGasMarketLoading, searchObj?.isMax, payToken]);
 
   const rbiSource = useRbiSource();
 

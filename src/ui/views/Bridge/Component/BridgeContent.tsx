@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useBridge } from '../hooks/token';
 import { Alert, Button, message, Modal } from 'antd';
@@ -78,6 +78,8 @@ export const BridgeContent = () => {
     setIsCustomSlippage,
 
     clearExpiredTimer,
+    maxNativeTokenGasPrice,
+    setMaxNativeTokenGasPrice,
   } = useBridge();
 
   const amountAvailable = useMemo(() => Number(amount) > 0, [amount]);
@@ -87,10 +89,6 @@ export const BridgeContent = () => {
   const setVisible = useSetQuoteVisible();
 
   const refresh = useSetRefreshId();
-
-  const [maxNativeTokenGasPrice, setMaxNativeTokenGasPrice] = useState<
-    number | undefined
-  >(undefined);
 
   const { t } = useTranslation();
 
@@ -398,6 +396,9 @@ export const BridgeContent = () => {
               toChain: toChain || '',
               toTokenId: toToken?.id || '',
               rbiSource: rbiSource || '',
+              maxNativeTokenGasPrice: maxNativeTokenGasPrice
+                ? String(maxNativeTokenGasPrice)
+                : '',
             })}`
           );
         }}
