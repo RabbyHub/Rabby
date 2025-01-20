@@ -248,7 +248,9 @@ export const BridgeToken = ({
           'border-b-[0.5px] border-solid border-rabby-neutral-line'
         )}
       >
-        <span className="text-12 text-r-neutral-foot">{name}</span>
+        <span className="text-[13px] font-normal text-r-neutral-foot">
+          {name}
+        </span>
         <ChainSelectorInForm
           bridge
           hideTestnetTab
@@ -316,7 +318,7 @@ export const BridgeToken = ({
         <div
           className={clsx(
             'flex justify-between items-center',
-            'mt-14 text-13 text-r-neutral-foot'
+            'mt-14 text-13 text-r-neutral-foot font-normal'
           )}
         >
           <div className="flex items-center gap-2">

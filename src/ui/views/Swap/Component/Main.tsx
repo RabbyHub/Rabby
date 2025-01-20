@@ -470,6 +470,7 @@ export const Main = () => {
               payTokenId: payToken?.id || '',
               receiveTokenId: receiveToken?.id || '',
               inputAmount,
+              isMax: slider >= 100 ? 'true' : '',
               rbiSource,
             })}`
           );
