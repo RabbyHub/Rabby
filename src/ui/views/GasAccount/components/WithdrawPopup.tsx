@@ -112,7 +112,7 @@ const Selector = ({
   accountsList: IDisplayedAccountWithBalance[];
   status: SelectorStatus;
   onClose: () => void;
-  selectAddressChainList: WithdrawListAddressItem;
+  selectAddressChainList?: WithdrawListAddressItem;
   setChain: (chain: RechargeChainItem) => void;
   setSelectAddressChainList: (item: WithdrawListAddressItem) => void;
   withdrawList: WithdrawListAddressItem[];
@@ -528,7 +528,7 @@ const WithdrawContent = ({
                   />
                 </div>
               </div>
-            ) : !selectedAccount ? (
+            ) : selectedAccount ? (
               <AddressRightAreaInItem account={selectedAccount} />
             ) : (
               <span className="text-15 font-medium text-r-neutral-title1">
@@ -626,7 +626,7 @@ const WithdrawContent = ({
           </Button>
         </TooltipWithMagnetArrow>
       </WrapperDiv>
-      {withdrawList && selectAddressChainList && (
+      {
         <Selector
           accountsList={accountsList}
           status={selectorStatus}
@@ -634,9 +634,9 @@ const WithdrawContent = ({
           selectAddressChainList={selectAddressChainList}
           setChain={setChain}
           setSelectAddressChainList={setSelectAddressChainList}
-          withdrawList={withdrawList}
+          withdrawList={withdrawList || []}
         />
-      )}
+      }
     </div>
   );
 };
