@@ -1,5 +1,6 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
+import { ga4 } from './ga4';
 
 const ANALYTICS_PATH = 'https://matomo.debank.com/matomo.php';
 const genExtensionId = customAlphabet('1234567890abcdef', 16);
@@ -48,6 +49,8 @@ export const matomoRequestEvent = async (data: {
   value?: number;
   transport?: any;
 }) => {
+  ga4.fireEvent(data.action, data);
+
   const params = await getParams();
 
   if (data.category) {
