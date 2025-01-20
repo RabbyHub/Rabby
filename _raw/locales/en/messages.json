@@ -2347,9 +2347,12 @@
         "amount": "Amount",
         "to": "To",
         "selectChain": "Select Chain",
+        "selectAddr": "Select Address",
         "recipientAddress": "Recipient address",
         "destinationChain": "Destination chain",
-        "deductGasFees": "Received amount will deduct gas fees"
+        "deductGasFees": "Received amount will deduct gas fees",
+        "noEligibleAddr": "No eligible address for withdrawal",
+        "noEligibleChain": "No eligible chain for withdrawal"
       },
       "withdrawConfirmModal": {
         "title": "Transferred to your DeBank L2 Wallet",
