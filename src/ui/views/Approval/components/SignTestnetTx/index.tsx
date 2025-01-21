@@ -41,6 +41,7 @@ import { SignAdvancedSettings } from '../SignAdvancedSettings';
 import clsx from 'clsx';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { Modal } from 'antd';
+import { ga4 } from '@/utils/ga4';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -385,6 +386,10 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         action: 'init',
         label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
+      ga4.fireEvent(`Init_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+        event_category: 'Transaction',
+      });
+
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
         setIsGnosisAccount(true);
       }
@@ -677,6 +682,11 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       action: 'Submit',
       label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
+
+    ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+      event_category: 'Transaction',
+    });
+
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
