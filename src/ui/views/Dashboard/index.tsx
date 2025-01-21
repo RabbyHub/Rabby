@@ -55,6 +55,7 @@ import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHom
 import { EcologyPopup } from './components/EcologyPopup';
 import { GasAccountDashBoardHeader } from '../GasAccount/components/DashBoardHeader';
 import { useGnosisPendingCount } from '@/ui/hooks/useGnosisPendingCount';
+import { ga4 } from '@/utils/ga4';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -273,6 +274,11 @@ const Dashboard = () => {
       action: 'Click',
       label: 'Gas Account',
     });
+
+    ga4.fireEvent('Click_GasAccount', {
+      event_category: 'Front Page Click',
+    });
+
     history.push('/gas-account');
   };
   const { dashboardBalanceCacheInited } = useHomeBalanceViewOuterPrefetch(
@@ -307,6 +313,11 @@ const Dashboard = () => {
       action: 'Click',
       label: 'Change Address',
     });
+
+    ga4.fireEvent('Click_ChangeAddress', {
+      event_category: 'Front Page Click',
+    });
+
     history.push('/switch-address');
   };
 
@@ -385,6 +396,10 @@ const Dashboard = () => {
                       getKRCategoryByType(currentAccount?.type),
                       currentAccount?.brandName,
                     ].join('|'),
+                  });
+
+                  ga4.fireEvent('Click_CopyAddress', {
+                    event_category: 'Front Page Click',
                   });
                 }}
               />

@@ -56,6 +56,7 @@ import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
+import { ga4 } from '@/utils/ga4';
 
 interface SignTypedDataProps {
   method: string;
@@ -340,6 +341,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         ].join('|'),
         transport: 'beacon',
       });
+
+      if (action === 'createSignText') {
+        ga4.fireEvent('Init_SignText', {
+          event_category: 'SignText',
+        });
+      } else if (action === 'startSignText') {
+        ga4.fireEvent('Submit_SignText', {
+          event_category: 'SignText',
+        });
+      }
+
       await wallet.reportStats(action, {
         type: currentAccount.brandName,
         category: getKRCategoryByType(currentAccount.type),

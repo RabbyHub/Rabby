@@ -14,6 +14,7 @@ import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
 import { MetamaskModePopup } from '../MetamaskModePopup';
 import './style.less';
+import { ga4 } from '@/utils/ga4';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -172,6 +173,10 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
             category: 'Front Page Click',
             action: 'Click',
             label: 'Change Chain',
+          });
+
+          ga4.fireEvent('Click_ChangeChain', {
+            event_category: 'Front Page Click',
           });
         }}
         showRPCStatus

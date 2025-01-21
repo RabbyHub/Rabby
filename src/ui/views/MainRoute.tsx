@@ -109,6 +109,15 @@ const Main = () => {
             ? `popup|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`
             : `request|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`,
         });
+
+        ga4.fireEvent(
+          UIType.isPop
+            ? `Popup_${hasOtherProvider ? 'HasMM' : 'NoMM'}`
+            : `Request_${hasOtherProvider ? 'HasMM' : 'NoMM'}`,
+          {
+            event_category: 'User Active',
+          }
+        );
       }
     })();
   }, []);
