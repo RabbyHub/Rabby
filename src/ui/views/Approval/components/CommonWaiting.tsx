@@ -22,6 +22,7 @@ import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
@@ -191,6 +192,11 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
           action: 'Submit',
           label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
+
+        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+          event_category: 'Transaction',
+        });
+
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,

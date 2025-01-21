@@ -17,6 +17,7 @@ import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus'
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
@@ -175,6 +176,14 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
         action: 'Submit',
         label: chainInfo?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
+
+      ga4.fireEvent(
+        `Submit_${chainInfo?.isTestnet ? 'Custom' : 'Integrated'}`,
+        {
+          event_category: 'Transaction',
+        }
+      );
+
       isSignTriggered = true;
     }
     if (isText && !isSignTriggered) {

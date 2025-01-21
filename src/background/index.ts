@@ -54,6 +54,8 @@ import { isSameAddress } from './utils';
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
+import { ga4 } from '@/utils/ga4';
+import { ALARMS_USER_ENABLE } from './utils/alarms';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -116,8 +118,13 @@ async function restoreAppState() {
   syncChainService.roll();
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
-  startEnableUser();
   walletController.syncMainnetChainList();
+
+  // check if user has enabled the extension
+  chrome.alarms.create(ALARMS_USER_ENABLE, {
+    when: Date.now(),
+    periodInMinutes: 60,
+  });
 
   if (!keyringService.isBooted()) {
     userGuideService.init();
@@ -171,6 +178,10 @@ restoreAppState();
           action: 'Custom Network Status',
           value: customTestnetLength,
         });
+
+        ga4.fireEvent('Has Custom Network', {
+          event_category: 'Custom Network',
+        });
       }
       const chains = preferenceService.getSavedChains();
       matomoRequestEvent({
@@ -200,6 +211,10 @@ restoreAppState();
           action: group[0].category,
           label: [group[0].action, group[0].label, group.length].join('|'),
           value: group.length,
+        });
+
+        ga4.fireEvent(`${group[0].category}_${group[0].label}`, {
+          event_category: 'UserAddress',
         });
       });
       preferenceService.updateSendLogTime(Date.now());
@@ -422,6 +437,10 @@ function startEnableUser() {
     category: 'User',
     action: 'enable',
   });
+
+  ga4.fireEvent('User_Enable', {
+    event_category: 'User Enable',
+  });
   preferenceService.updateSendEnableTime(Date.now());
 }
 
@@ -434,3 +453,9 @@ async function onInstall() {
     await userGuideService.openUserGuide();
   }
 }
+
+browser.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === ALARMS_USER_ENABLE) {
+    startEnableUser();
+  }
+});

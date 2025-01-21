@@ -49,6 +49,7 @@ import { generateTypedData } from '@safe-global/protocol-kit';
 import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
 import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
+import { ga4 } from '@/utils/ga4';
 
 interface SignTextProps {
   data: string[];
@@ -195,6 +196,17 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       ].join('|'),
       transport: 'beacon',
     });
+
+    if (action === 'createSignText') {
+      ga4.fireEvent('Init_SignText', {
+        event_category: 'SignText',
+      });
+    } else if (action === 'startSignText') {
+      ga4.fireEvent('Submit_SignText', {
+        event_category: 'SignText',
+      });
+    }
+
     await wallet.reportStats(action, {
       type: currentAccount.brandName,
       category: getKRCategoryByType(currentAccount.type),

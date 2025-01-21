@@ -3,6 +3,7 @@ import { WalletControllerType } from '@/ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 import eventBus from '@/eventBus';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ga4 } from '@/utils/ga4';
 
 // fail code
 export enum FailedCode {
@@ -37,6 +38,17 @@ const report = async ({
     ].join('|'),
     transport: 'beacon',
   });
+
+  if (action === 'createSignText') {
+    ga4.fireEvent('Init_SignText', {
+      event_category: 'SignText',
+    });
+  } else if (action === 'startSignText') {
+    ga4.fireEvent('Submit_SignText', {
+      event_category: 'SignText',
+    });
+  }
+
   await wallet.reportStats(action, {
     type: currentAccount.brandName,
     category: getKRCategoryByType(currentAccount.type),

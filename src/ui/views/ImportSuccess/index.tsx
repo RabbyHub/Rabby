@@ -21,6 +21,7 @@ import './index.less';
 import { useMedia } from 'react-use';
 import { connectStore, useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
+import { ga4 } from '@/utils/ga4';
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -97,6 +98,10 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
         category: 'User',
         action: 'importAddress',
         label: accounts[0].type,
+      });
+
+      ga4.fireEvent(`Import_${accounts[0].type}`, {
+        event_category: 'Import Address',
       });
     }
 

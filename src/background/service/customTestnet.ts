@@ -20,6 +20,7 @@ import { http as axios } from '../utils/http';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import RPCService, { RPCServiceStore } from './rpc';
 import { storage } from '../webapi';
+import { ga4 } from '@/utils/ga4';
 
 const MAX_READ_CONTRACT_TIME = 8000;
 
@@ -194,6 +195,10 @@ class CustomTestnetService {
         action: 'Custom Network Status',
         value: this.getList().length,
       });
+
+      ga4.fireEvent('Has_CustomNetwork', {
+        event_category: 'Custom Network',
+      });
     }
     return this.store.customTestnet[chain.id];
   };
@@ -210,6 +215,10 @@ class CustomTestnetService {
         category: 'Custom Network',
         action: 'Custom Network Status',
         value: this.getList().length,
+      });
+
+      ga4.fireEvent('Has_CustomNetwork', {
+        event_category: 'Custom Network',
       });
     }
   };

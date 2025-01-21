@@ -69,6 +69,7 @@ class Analytics {
     params: {
       session_id?: string;
       engagement_time_msec?: number;
+      event_category?: string;
       [key: string]: any;
     } = {}
   ) {
@@ -96,6 +97,11 @@ class Analytics {
                 params,
               },
             ],
+            user_properties: {
+              Extension_Version: {
+                value: process.env.release || '0.0.0',
+              },
+            },
           }),
         }
       );
