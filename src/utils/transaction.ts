@@ -173,7 +173,10 @@ export async function calcGasLimit({
     ? gas.times(ratio).toFixed(0)
     : gas.toFixed(0);
   const blockGasRatio = SAFE_GAS_LIMIT_BUFFER[chain.id] || 1;
-  if (block && new BigNumber(block.gasLimit).times(blockGasRatio).lt(recommendGasLimit)) {
+  if (
+    block &&
+    new BigNumber(block.gasLimit).times(blockGasRatio).lt(recommendGasLimit)
+  ) {
     const buffer = SAFE_GAS_LIMIT_BUFFER[chain.id] || DEFAULT_GAS_LIMIT_BUFFER;
     recommendGasLimit = new BigNumber(block.gasLimit).times(buffer).toFixed(0);
   }
