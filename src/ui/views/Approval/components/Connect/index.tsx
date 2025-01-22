@@ -24,6 +24,8 @@ import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import RuleResult from './RuleResult';
 import UserListDrawer from './UserListDrawer';
 import { EIP6963ProviderInfo, SelectWallet } from './SelectWallet';
+import { ConnectedSite } from '@/background/service/permission';
+import { ReactComponent as RcIconMetamask } from 'ui/assets/metamask-mode-circle-cc.svg';
 
 interface ConnectProps {
   params: any;
@@ -229,6 +231,8 @@ const Connect = (props: ConnectProps) => {
   const [providerInfo, setProviderInfo] = useState<EIP6963ProviderInfo | null>(
     null
   );
+
+  const [currentSite, setCurrentSite] = useState<ConnectedSite>();
 
   const userListResult = useMemo(() => {
     const originBlacklist = engineResults.find(
@@ -466,6 +470,7 @@ const Connect = (props: ConnectProps) => {
   const init = async () => {
     const account = await wallet.getCurrentAccount();
     const site = await wallet.getSite(origin);
+    setCurrentSite(site);
     let level: 'very_low' | 'low' | 'medium' | 'high' = 'low';
     let collectList: { name: string; logo_url: string }[] = [];
     let defaultChain = CHAINS_ENUM.ETH;
@@ -653,7 +658,18 @@ const Connect = (props: ConnectProps) => {
               />
             </div>
             <div className="connect-card">
-              <FallbackSiteLogo url={icon} origin={origin} width="40px" />
+              <div className="relative">
+                <FallbackSiteLogo url={icon} origin={origin} width="40px" />
+                {currentSite?.isMetamaskMode ? (
+                  <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                    <RcIconMetamask
+                      width={20}
+                      height={20}
+                      viewBox="0 0 16 16"
+                    />
+                  </div>
+                ) : null}
+              </div>
               <p className="connect-origin">{origin}</p>
             </div>
           </div>
