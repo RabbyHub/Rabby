@@ -921,6 +921,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (activeApprovalPopup()) {
       return;
     }
+
+    if (account?.type === KEYRING_TYPE.HdKeyring) {
+      await invokeEnterPassphrase(account.address);
+    }
+
     wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.GnosisKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
