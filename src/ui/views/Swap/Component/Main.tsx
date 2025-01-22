@@ -49,6 +49,7 @@ import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+import { SWAP_SLIPPAGE } from '../../Bridge/Component/BridgeSlippage';
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -418,7 +419,7 @@ export const Main = () => {
         !!payToken &&
         !!receiveToken &&
         activeProvider &&
-        Number(slippage) > 1
+        Number(slippage) >= Number(SWAP_SLIPPAGE[1])
       ) {
         setShowMoreOpen(true);
       }

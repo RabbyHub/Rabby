@@ -53,7 +53,7 @@ const SlippageItem = styled.div`
 
 const BRIDGE_SLIPPAGE = ['0.5', '1'];
 
-const SWAP_SLIPPAGE = ['0.1', '0.5'];
+export const SWAP_SLIPPAGE = ['0.5', '3'];
 
 const BRIDGE_MAX_SLIPPAGE = 10;
 
@@ -214,6 +214,16 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
     },
     [onChange, setAutoSlippage, setIsCustomSlippage]
   );
+
+  useEffect(() => {
+    if (
+      !autoSlippage &&
+      !isCustomSlippage &&
+      SLIPPAGE.findIndex((item) => item === value) === -1
+    ) {
+      setIsCustomSlippage(true);
+    }
+  }, [SLIPPAGE, autoSlippage, isCustomSlippage, setIsCustomSlippage, value]);
 
   useEffect(() => {
     if (tips) {
