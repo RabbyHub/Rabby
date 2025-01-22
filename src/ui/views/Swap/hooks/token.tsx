@@ -643,10 +643,25 @@ export const useTokenPair = (userAddress: string) => {
       });
       if (target) {
         setChain(target?.enum);
-        setPayToken({
-          ...getChainDefaultToken(target?.enum),
-          id: searchObj.payTokenId,
-        });
+        wallet.openapi
+          .getToken(userAddress, target.serverId, searchObj.payTokenId)
+          .then(
+            (token) => {
+              if (active) {
+                if (token) {
+                  setPayToken(token);
+                } else {
+                  switchChain(target.enum);
+                }
+              }
+            },
+            () => {
+              if (active) {
+                switchChain(target.enum);
+              }
+            }
+          );
+
         if (searchObj?.inputAmount && !searchObj?.isMax) {
           handleAmountChange(searchObj?.inputAmount);
         }
