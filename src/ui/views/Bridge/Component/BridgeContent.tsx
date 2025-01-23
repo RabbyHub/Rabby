@@ -320,7 +320,7 @@ export const BridgeContent = () => {
     if (
       !toToken?.low_credit_score &&
       !toToken?.is_scam &&
-      receiveToken?.is_verified !== false &&
+      toToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
       [
