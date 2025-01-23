@@ -91,6 +91,7 @@ class MetamaskModeService {
         browser.scripting.executeScript({
           target: {
             tabId,
+            allFrames: true,
           },
           func: this.defineMetamaskMode,
           injectImmediately: true,
