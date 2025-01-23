@@ -12,7 +12,7 @@ const cachedAccountInfo = new Map<string, Account>();
 export const useQueryAccountsInfo = () => {
   const [result, setResult] = useState<Record<string, Account>>({});
   const [pendingMap, setPendingMap] = useState<Record<string, boolean>>({});
-  const queue = useCreation(() => new PQueue({ concurrency: 1 }), []);
+  const queue = useCreation(() => new PQueue({ concurrency: 2 }), []);
   const wallet = useWallet();
 
   const fetchAccountInfo = useMemoizedFn(async (account: Account) => {
@@ -92,7 +92,7 @@ export const useQueryAccountsInfo = () => {
     });
     try {
       const r = await queue.add(async () => {
-        await sleep(500);
+        await sleep(300);
         return fetchAccountInfo(account);
       });
       setResult((pre) => {

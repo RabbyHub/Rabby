@@ -384,10 +384,12 @@ export const AccountList: React.FC<Props> = ({
                   createQueryAccountJob(record);
                 }}
               >
-                {pendingMap[record.address] ? (
+                {!record.address || pendingMap[record.address] ? (
                   <AccountListSkeleton width={100} />
-                ) : (
+                ) : account.chains?.length ? (
                   <ChainList account={account} />
+                ) : (
+                  '-'
                 )}
               </InViewport>
             );
@@ -401,11 +403,13 @@ export const AccountList: React.FC<Props> = ({
           render={(_, record) => {
             const account = accountsMap[record.address] || record;
             const value = account.firstTxTime;
-            return pendingMap[record.address] ? (
+            return !record.address || pendingMap[record.address] ? (
               <AccountListSkeleton width={100} />
             ) : value && !isNaN(value) ? (
               dayjs.unix(value).format('YYYY-MM-DD')
-            ) : null;
+            ) : (
+              '-'
+            );
           }}
         />
         <Table.Column<Account>
@@ -416,11 +420,13 @@ export const AccountList: React.FC<Props> = ({
           ellipsis
           render={(balance, record) => {
             const account = accountsMap[record.address] || record;
-            return pendingMap[record.address] ? (
+            return !record.address || pendingMap[record.address] ? (
               <AccountListSkeleton width={100} />
             ) : account.chains?.length && account.balance ? (
               `$${splitNumberByStep(account.balance.toFixed(2))}`
-            ) : null;
+            ) : (
+              '-'
+            );
           }}
         />
       </Table.ColumnGroup>
