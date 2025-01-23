@@ -10,7 +10,7 @@ import { uniqBy } from 'lodash';
 import { CHAINS_ENUM } from '@/constant';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync, useDebounce } from 'react-use';
-import { useWallet } from '@/ui/utils';
+import { formatPrice, useWallet } from '@/ui/utils';
 import { TokenWithChain } from '@/ui/component';
 
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
@@ -497,7 +497,7 @@ const TokenSelector = ({
                           {getTokenSymbol(token)}
                         </span>
                         <span className="symbol text-13 font-normal text-r-neutral-foot">
-                          {findChainByServerID(token.chain)?.name || ''}
+                          ${formatPrice(token.price || 0)}
                         </span>
                       </div>
                     </div>
