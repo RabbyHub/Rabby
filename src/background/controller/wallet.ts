@@ -3747,6 +3747,25 @@ export class WalletController extends BaseController {
     }
   };
 
+  getKeyringIndex = async (type: string, keyringId: number | null) => {
+    let keyring: any;
+    if (keyringId !== null && keyringId !== undefined) {
+      keyring = stashKeyrings[keyringId];
+    } else {
+      try {
+        keyring = this._getKeyringByType(type);
+      } catch {
+        const Keyring = keyringService.getKeyringClassForType(type);
+        keyring = new Keyring(
+          (await hasBridge(type))
+            ? { bridge: await getKeyringBridge(type) }
+            : undefined
+        );
+      }
+    }
+    return keyring?.index;
+  };
+
   requestHDKeyringByMnemonics = (
     mnemonics: string,
     methodName: string,
