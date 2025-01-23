@@ -87,7 +87,7 @@ class MetamaskModeService {
   handleInject = (tabId: number) => {
     const sites = new Set([...this.store.sites, ...this.localSites]);
     browser.tabs.get(tabId).then((tab) => {
-      if (tab.url?.startsWith('http') && sites.has(new URL(tab.url).hostname))
+      if (tab.url?.startsWith('http') && sites.has(new URL(tab.url).host))
         browser.scripting.executeScript({
           target: {
             tabId,
