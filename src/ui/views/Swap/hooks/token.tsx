@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
@@ -23,6 +23,7 @@ import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
+const isTab = getUiType().isTab;
 
 const useTokenInfo = ({
   userAddress,
@@ -98,7 +99,9 @@ export const useTokenPair = (userAddress: string) => {
   const handleChain = useCallback(
     (c: CHAINS_ENUM) => {
       setChain(c);
-      dispatch.swap.setSelectedChain(c);
+      if (!isTab) {
+        dispatch.swap.setSelectedChain(c);
+      }
     },
     [dispatch?.swap?.setSelectedChain]
   );
@@ -193,11 +196,15 @@ export const useTokenPair = (userAddress: string) => {
   });
 
   useEffect(() => {
-    dispatch.swap.setSelectedFromToken(payToken);
+    if (!isTab) {
+      dispatch.swap.setSelectedFromToken(payToken);
+    }
   }, [payToken]);
 
   useEffect(() => {
-    dispatch.swap.setSelectedToToken(receiveToken);
+    if (!isTab) {
+      dispatch.swap.setSelectedToToken(receiveToken);
+    }
   }, [receiveToken]);
 
   const [inputAmount, setPayAmount] = useState('');

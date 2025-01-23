@@ -307,7 +307,9 @@ export const Main = () => {
   });
 
   const handleSwap = useMemoizedFn(() => {
-    dispatch.swap.setRecentSwapToToken(receiveToken);
+    if (!isTab) {
+      dispatch.swap.setRecentSwapToToken(receiveToken);
+    }
     if (
       [
         KEYRING_TYPE.SimpleKeyring,
