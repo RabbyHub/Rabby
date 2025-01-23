@@ -389,8 +389,6 @@ export const importMnemonics = createModel<RootModel>()({
         );
       }
 
-      console.log('accountsToImport', accountsToImport);
-
       if (accountsToImport?.length) {
         const { basePublicKey } = await store.app.wallet.requestKeyring(
           KEYRING_TYPE.HdKeyring,
