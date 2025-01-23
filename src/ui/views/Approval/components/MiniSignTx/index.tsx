@@ -57,6 +57,7 @@ import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { useGasAccountTxsCheck } from '@/ui/views/GasAccount/hooks/checkTxs';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 export const MiniSignTx = ({
   txs,
@@ -393,7 +394,13 @@ export const MiniSignTx = ({
     gasAccountCanPay,
   ]);
 
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
+
   const handleAllow = useMemoizedFn(async () => {
+    if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
+      await invokeEnterPassphrase(currentAccount.address);
+    }
+
     if (!txsResult?.length || !selectedGas) {
       return;
     }
