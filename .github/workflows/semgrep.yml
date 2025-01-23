@@ -21,10 +21,12 @@ jobs:
       - name: Install dependencies
         run: |
           apk add --no-cache yarn
-          yarn install || true
+          yarn install --ignore-engines || true
           
       - name: scan dependencies code
-        run: mv node_modules _node_modules
+        run: |
+          ls -al
+          mv node_modules _node_modules
       
       - name: Run Semgrep
         run: semgrep ci
