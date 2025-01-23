@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
@@ -23,6 +23,7 @@ import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
+const isTab = getUiType().isTab;
 
 const useTokenInfo = ({
   userAddress,
@@ -98,7 +99,9 @@ export const useTokenPair = (userAddress: string) => {
   const handleChain = useCallback(
     (c: CHAINS_ENUM) => {
       setChain(c);
-      dispatch.swap.setSelectedChain(c);
+      if (!isTab) {
+        dispatch.swap.setSelectedChain(c);
+      }
     },
     [dispatch?.swap?.setSelectedChain]
   );
@@ -176,6 +179,9 @@ export const useTokenPair = (userAddress: string) => {
   const [searchObj] = useState<{
     payTokenId?: string;
     chain?: string;
+    inputAmount?: string;
+    receiveTokenId?: string;
+    isMax?: boolean;
   }>(query2obj(search));
 
   useAsyncInitializeChainList({
@@ -190,11 +196,15 @@ export const useTokenPair = (userAddress: string) => {
   });
 
   useEffect(() => {
-    dispatch.swap.setSelectedFromToken(payToken);
+    if (!isTab) {
+      dispatch.swap.setSelectedFromToken(payToken);
+    }
   }, [payToken]);
 
   useEffect(() => {
-    dispatch.swap.setSelectedToToken(receiveToken);
+    if (!isTab) {
+      dispatch.swap.setSelectedToToken(receiveToken);
+    }
   }, [receiveToken]);
 
   const [inputAmount, setPayAmount] = useState('');
@@ -293,7 +303,7 @@ export const useTokenPair = (userAddress: string) => {
   const [gasLevel, setGasLevel] = useState<GasLevelType>('normal');
   const gasPriceRef = useRef<number>();
 
-  const { value: gasList } = useAsync(() => {
+  const { value: gasList, loading: isGasMarketLoading } = useAsync(() => {
     gasPriceRef.current = undefined;
     setGasLevel('normal');
     return wallet.gasMarketV2({ chainId: findChainByEnum(chain)!.serverId });
@@ -633,20 +643,69 @@ export const useTokenPair = (userAddress: string) => {
   }, [payToken?.id, receiveToken?.id, chain, inputAmount, inSufficient]);
 
   useEffect(() => {
+    let active = true;
     if (searchObj.chain && searchObj.payTokenId) {
       const target = findChain({
         serverId: searchObj.chain,
       });
       if (target) {
         setChain(target?.enum);
-        setPayToken({
-          ...getChainDefaultToken(target?.enum),
-          id: searchObj.payTokenId,
-        });
-        setReceiveToken(undefined);
+        wallet.openapi
+          .getToken(userAddress, target.serverId, searchObj.payTokenId)
+          .then(
+            (token) => {
+              if (active) {
+                if (token) {
+                  setPayToken(token);
+                } else {
+                  switchChain(target.enum);
+                }
+              }
+            },
+            () => {
+              if (active) {
+                switchChain(target.enum);
+              }
+            }
+          );
+
+        if (searchObj?.inputAmount && !searchObj?.isMax) {
+          handleAmountChange(searchObj?.inputAmount);
+        }
+        if (searchObj?.receiveTokenId) {
+          wallet.openapi
+            .getToken(userAddress, target.serverId, searchObj.receiveTokenId)
+            .then((token) => {
+              if (active) {
+                setReceiveToken(token);
+              }
+            });
+        } else {
+          setReceiveToken(undefined);
+        }
       }
     }
-  }, [searchObj?.chain, searchObj?.payTokenId]);
+    return () => {
+      active = false;
+    };
+  }, [
+    searchObj?.chain,
+    searchObj?.payTokenId,
+    searchObj?.inputAmount,
+    searchObj?.receiveTokenId,
+    searchObj?.isMax,
+  ]);
+
+  const isSetMaxRef = useRef(false);
+  useEffect(() => {
+    if (isSetMaxRef.current) {
+      return;
+    }
+    if (!isGasMarketLoading && searchObj?.isMax && payToken?.amount) {
+      onChangeSlider(100, true);
+      isSetMaxRef.current = true;
+    }
+  }, [isGasMarketLoading, searchObj?.isMax, payToken]);
 
   const rbiSource = useRbiSource();
 

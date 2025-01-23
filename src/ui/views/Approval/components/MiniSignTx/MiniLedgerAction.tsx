@@ -20,6 +20,7 @@ import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { Ledger } from '../../../CommonPopup/Ledger';
 import { useMemoizedFn } from 'ahooks';
+import { DrawerProps } from 'antd';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -43,6 +44,7 @@ interface Props extends ActionGroupProps {
   isGasNotEnough?: boolean;
   task: BatchSignTxTaskType;
   footer?: ReactNode;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 export const MiniLedgerAction: React.FC<Props> = ({
@@ -66,6 +68,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
   account,
   footer,
   onSubmit,
+  getContainer,
   ...props
 }) => {
   const { isDarkTheme } = useThemeMode();
@@ -122,6 +125,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
         maskStyle={{
           backgroundColor: 'transparent',
         }}
+        getContainer={getContainer}
       >
         <Ledger isModalContent />
       </Popup>

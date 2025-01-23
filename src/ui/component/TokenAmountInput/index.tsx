@@ -2,7 +2,7 @@ import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain } from '@/utils/chain';
-import { Input } from 'antd';
+import { DrawerProps, Input } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import uniqBy from 'lodash/uniqBy';
@@ -35,6 +35,7 @@ interface TokenAmountInputProps {
   className?: string;
   type?: TokenSelectorProps['type'];
   placeholder?: string;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const TokenAmountInput = ({
@@ -49,6 +50,7 @@ const TokenAmountInput = ({
   className,
   type = 'default',
   placeholder,
+  getContainer,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const [updateNonce, setUpdateNonce] = useState(0);
@@ -226,6 +228,7 @@ const TokenAmountInput = ({
         type={type}
         placeholder={placeholder}
         chainId={chainServerId}
+        getContainer={getContainer}
       />
     </div>
   );

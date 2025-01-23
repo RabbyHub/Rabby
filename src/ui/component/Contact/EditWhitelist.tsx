@@ -11,8 +11,8 @@ const EditWhitelistWrapper = styled.div`
   position: fixed;
   left: 0;
   top: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background: var(--r-neutral-bg-1, #3d4251);
   z-index: 100;
   padding: 0 12px 80px 20px;
@@ -131,7 +131,7 @@ const EditWhitelist = ({
 
   return (
     <EditWhitelistWrapper>
-      <PageHeader onBack={handleClickBack}>
+      <PageHeader onBack={handleClickBack} forceShowBack>
         {t('component.Contact.EditWhitelist.title')}
       </PageHeader>
       <p className="text-r-neutral-body text-14 mb-20 text-center">
