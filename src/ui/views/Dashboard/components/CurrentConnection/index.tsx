@@ -13,6 +13,7 @@ import { ReactComponent as RCIconQuestionCC } from 'ui/assets/dashboard/question
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
 import { MetamaskModePopup } from '../MetamaskModePopup';
+import { ReactComponent as RcIconMetamask } from 'ui/assets/metamask-mode-circle-cc.svg';
 import './style.less';
 
 interface CurrentConnectionProps {
@@ -91,12 +92,19 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
             setIsShowTooltip(false);
           }}
         >
-          <FallbackSiteLogo
-            url={site.icon}
-            origin={site.origin}
-            width="28px"
-            className="site-icon"
-          ></FallbackSiteLogo>
+          <div className="relative">
+            <FallbackSiteLogo
+              url={site.icon}
+              origin={site.origin}
+              width="28px"
+              className="site-icon"
+            ></FallbackSiteLogo>
+            {site.isMetamaskMode ? (
+              <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                <RcIconMetamask />
+              </div>
+            ) : null}
+          </div>
           <div className="site-content">
             <div className="site-name" title={site?.origin}>
               {site?.origin}
