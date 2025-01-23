@@ -107,7 +107,7 @@ const DivideStyled = styled(Divide)`
   right: 16px;
   width: auto;
   bottom: 4px;
-}`;
+`;
 
 const GweiStyled = styled.span`
   color: var(--r-neutral-foot, #6a7587);
@@ -171,6 +171,7 @@ export const GasMenuButton: React.FC<Props> = ({
   return (
     <Dropdown
       placement="topCenter"
+      trigger={['hover', 'click']}
       overlay={
         <MenuStyled>
           <Menu.ItemGroup
@@ -226,6 +227,9 @@ export const GasMenuButton: React.FC<Props> = ({
           </Menu.ItemGroup>
         </MenuStyled>
       }
+      // getPopupContainer={() =>
+      //   document.querySelector('.js-rabby-popup-container') || document.body
+      // }
     >
       {selectedGas ? (
         <MenuButtonStyled>

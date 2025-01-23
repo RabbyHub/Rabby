@@ -29,6 +29,7 @@ import { useImKeyStatus } from '@/ui/component/ConnectStatus/useImKeyStatus';
 import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
@@ -206,6 +207,10 @@ export const ImKeyHardwareWaiting = ({
           category: 'Transaction',
           action: 'Submit',
           label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+        });
+
+        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+          event_category: 'Transaction',
         });
 
         setSignFinishedData({

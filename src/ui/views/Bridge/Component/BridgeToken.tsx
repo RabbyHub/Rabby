@@ -3,7 +3,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { Input } from 'antd';
+import { DrawerProps, Input } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -71,6 +71,7 @@ export const BridgeToken = ({
   noQuote,
   inSufficient,
   handleSetGasPrice,
+  getContainer,
 }: {
   type?: 'from' | 'to';
   token?: TokenItem;
@@ -88,6 +89,7 @@ export const BridgeToken = ({
   fromChainId?: string;
   fromTokenId?: string;
   noQuote?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
 
@@ -238,12 +240,7 @@ export const BridgeToken = ({
   ]);
 
   return (
-    <div
-      className={clsx(
-        'h-[156px] bg-r-neutral-card1 rounded-[8px]',
-        'border-[0.5px] border-solid border-rabby-neutral-line'
-      )}
-    >
+    <div className={clsx('h-[156px] bg-r-neutral-card1 rounded-[8px]')}>
       <div
         className={clsx(
           'flex items-center gap-8',
@@ -251,7 +248,9 @@ export const BridgeToken = ({
           'border-b-[0.5px] border-solid border-rabby-neutral-line'
         )}
       >
-        <span className="text-12 text-r-neutral-body">{name}</span>
+        <span className="text-[13px] font-normal text-r-neutral-foot">
+          {name}
+        </span>
         <ChainSelectorInForm
           bridge
           hideTestnetTab
@@ -262,6 +261,7 @@ export const BridgeToken = ({
           supportChains={supportedChains}
           drawerHeight={540}
           showClosableIcon
+          getContainer={getContainer}
         />
       </div>
 
@@ -297,6 +297,7 @@ export const BridgeToken = ({
               type={'to'}
               placeholder={t('page.swap.search-by-name-address')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
+              getContainer={getContainer}
             />
           ) : (
             <TokenSelect
@@ -309,6 +310,7 @@ export const BridgeToken = ({
               disabledTips={t('page.bridge.insufficient-balance')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               supportChains={supportedChains}
+              getContainer={getContainer}
             />
           )}
         </div>
@@ -316,7 +318,7 @@ export const BridgeToken = ({
         <div
           className={clsx(
             'flex justify-between items-center',
-            'mt-14 text-13 text-r-neutral-foot'
+            'mt-14 text-13 text-r-neutral-foot font-normal'
           )}
         >
           <div className="flex items-center gap-2">

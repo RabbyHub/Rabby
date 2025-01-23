@@ -59,6 +59,7 @@ import FeedbackPopup from '../Feedback';
 import { getChainList } from '@/utils/chain';
 import { SvgIconCross } from '@/ui/assets';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
+import { ga4 } from '@/utils/ga4';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -552,6 +553,11 @@ const SettingsInner = ({
       action: 'clickToUse',
       label: 'Whitelist',
     });
+
+    ga4.fireEvent('More_Whitelist', {
+      event_category: 'Click More',
+    });
+
     reportSettings('Whitelist');
     handleWhitelistEnableChange(checked);
   };
@@ -660,6 +666,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Lock Wallet',
             });
+
+            ga4.fireEvent('More_LockWallet', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Lock Wallet');
           },
         },
@@ -673,6 +684,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Signature Record',
             });
+
+            ga4.fireEvent('More_SignatureRecord', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Signature Record');
           },
         },
@@ -686,6 +702,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Manage Address',
             });
+
+            ga4.fireEvent('More_ManageAddress', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Manage Address');
           },
         },
@@ -705,6 +726,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Search Dapps',
             });
+
+            ga4.fireEvent('More_SearchDapps', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Search Dapps');
             openInternalPageInTab('dapp-search');
           },
@@ -719,6 +745,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Connected Dapps',
             });
+
+            ga4.fireEvent('More_ConnectedDapps', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Connected Dapps');
           },
         },
@@ -750,6 +781,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Custom Testnet',
             });
+
+            ga4.fireEvent('More_CustomTestnet', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Custom Testnet');
           },
         },
@@ -763,6 +799,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Custom RPC',
             });
+
+            ga4.fireEvent('More_CustomRPC', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Custom RPC');
           },
         },
@@ -775,6 +816,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Current Language',
             });
+
+            ga4.fireEvent('More_CurrentLanguage', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Current Language');
             setIsShowLangModal(true);
           },
@@ -802,6 +848,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Theme Mode',
             });
+
+            ga4.fireEvent('More_ThemeMode', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Theme Mode');
             setIsShowThemeModeModal(true);
           },
@@ -831,6 +882,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'MetaMask Mode Dapps',
             });
+
+            ga4.fireEvent('More_MetaMaskModeDapps', {
+              event_category: 'Click More',
+            });
+
             reportSettings('MetaMask Mode Dapps');
           },
         },
@@ -843,6 +899,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Auto lock time',
             });
+
+            ga4.fireEvent('More_AutoLockTime', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Auto lock time');
             setIsShowAutoLockModal(true);
           },
@@ -870,6 +931,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Reset Account',
             });
+
+            ga4.fireEvent('More_ResetAccount', {
+              event_category: 'Click More',
+            });
+
             setShowResetAccountModal(true);
             reportSettings('Reset Account');
           },
@@ -962,6 +1028,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'feedback',
             });
+
+            ga4.fireEvent('More_Feedback', {
+              event_category: 'Click More',
+            });
+
             reportSettings('feedback');
             openInTab('https://debank.com/hi/0a110032');
           },
@@ -982,6 +1053,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Current Version',
             });
+
+            ga4.fireEvent('More_CurrentVersion', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Current Version');
           },
           rightIcon: (
@@ -1029,6 +1105,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Supported Chains',
             });
+
+            ga4.fireEvent('More_SupportedChains', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Supported Chains');
           },
           rightIcon: (
@@ -1062,6 +1143,11 @@ const SettingsInner = ({
                     action: 'clickToUse',
                     label: 'Find us|X',
                   });
+
+                  ga4.fireEvent('More_FindUsTwitter', {
+                    event_category: 'Click More',
+                  });
+
                   reportSettings('twitter');
                 }}
                 className="ml-12 group"
@@ -1085,6 +1171,11 @@ const SettingsInner = ({
                     action: 'clickToUse',
                     label: 'Find us|Discord',
                   });
+
+                  ga4.fireEvent('More_FindUsDiscord', {
+                    event_category: 'Click More',
+                  });
+
                   reportSettings('discord');
                 }}
                 className="ml-12 group"
@@ -1111,11 +1202,6 @@ const SettingsInner = ({
   }
 
   const lockWallet = async () => {
-    matomoRequestEvent({
-      category: 'Setting',
-      action: 'clickToUse',
-      label: 'lockWallet',
-    });
     reportSettings('lockWallet');
     await wallet.lockWallet();
     history.push('/unlock');

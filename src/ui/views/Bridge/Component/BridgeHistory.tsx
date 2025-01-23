@@ -2,7 +2,13 @@ import { Popup } from '@/ui/component';
 import React, { forwardRef, useMemo } from 'react';
 import { useBridgeHistory } from '../hooks';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { formatAmount, formatUsdValue, openInTab, sinceTime } from '@/ui/utils';
+import {
+  formatAmount,
+  formatUsdValue,
+  getUiType,
+  openInTab,
+  sinceTime,
+} from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ImgPending from 'ui/assets/swap/pending.svg';
@@ -16,6 +22,8 @@ import { ellipsis } from '@/ui/utils/address';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import { BridgeHistory } from '@/background/service/openapi';
+import { DrawerProps } from 'antd';
+const isTab = getUiType().isTab;
 
 const BridgeTokenIcon = (props: { token: TokenItem }) => {
   const { token } = props;
@@ -101,7 +109,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
     const gotoScan = React.useCallback(() => {
       if (data?.detail_url) {
-        openInTab(data?.detail_url);
+        openInTab(data?.detail_url, !isTab);
       }
     }, []);
 
@@ -242,7 +250,7 @@ const HistoryList = () => {
         ?.map((swap, idx) => (
           <Transaction
             ref={txList?.list.length - 1 === idx ? ref : undefined}
-            key={`${swap.tx_id}-${swap.chain}`}
+            key={`${swap.detail_url}-${idx}`}
             data={swap}
           />
         ))}
@@ -259,9 +267,11 @@ const HistoryList = () => {
 export const BridgeTxHistory = ({
   visible,
   onClose,
+  getContainer,
 }: {
   visible: boolean;
   onClose: () => void;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
   return (
@@ -278,6 +288,7 @@ export const BridgeTxHistory = ({
       destroyOnClose
       isSupportDarkMode
       isNew
+      getContainer={getContainer}
     >
       <HistoryList />
     </Popup>

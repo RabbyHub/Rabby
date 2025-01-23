@@ -5,7 +5,7 @@ import {
   useHistory,
   useLocation,
 } from 'react-router-dom';
-import { useWallet, WalletProvider } from 'ui/utils';
+import { getUiType, useWallet, WalletProvider } from 'ui/utils';
 import { PrivateRoute } from 'ui/component';
 import Dashboard from './Dashboard';
 import Unlock from './Unlock';
@@ -20,6 +20,7 @@ import { useThemeModeOnMain } from '../hooks/usePreference';
 import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
 import { ForgotPassword } from './ForgotPassword/ForgotPassword';
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
+const isTab = getUiType().isTab;
 
 const useAutoLock = () => {
   const history = useHistory();
@@ -41,7 +42,7 @@ const useAutoLock = () => {
 
   useIdleTimer({
     onAction() {
-      if (autoLockTime > 0) {
+      if (autoLockTime > 0 && location.pathname !== '/unlock') {
         wallet.setLastActiveTime();
       }
     },
@@ -50,7 +51,15 @@ const useAutoLock = () => {
 
   const listener = useMemoizedFn(() => {
     if (location.pathname !== '/unlock') {
-      history.push('/unlock');
+      if (isTab) {
+        history.replace(
+          `/unlock?from=${encodeURIComponent(
+            location.pathname + location.search
+          )}`
+        );
+      } else {
+        history.push('/unlock');
+      }
     }
   });
 

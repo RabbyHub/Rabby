@@ -75,16 +75,11 @@ class MetamaskModeService {
 
   defineMetamaskMode = () => {
     (function () {
-      console.log('inject by executeScript');
       (window as any).__rabby__inject__ = {
         isMetamaskMode: true,
       };
-      if ((window as any).rabbyWalletRouter) {
-        (window as any).rabbyWalletRouter.rabbyProvider.isMetaMask = true;
-        delete (window as any).rabbyWalletRouter.rabbyProvider.isRabby;
-        (window as any).rabbyWalletRouter.rabbyEthereumProvider.isMetaMask = true;
-        delete (window as any).rabbyWalletRouter.rabbyEthereumProvider.isRabby;
-        window.dispatchEvent(new Event('eip6963:requestProvider'));
+      if ((window as any).rabbyWalletRouter?.announceMetamaskMode) {
+        (window as any).rabbyWalletRouter.announceMetamaskMode();
       }
     })();
   };
@@ -92,7 +87,7 @@ class MetamaskModeService {
   handleInject = (tabId: number) => {
     const sites = new Set([...this.store.sites, ...this.localSites]);
     browser.tabs.get(tabId).then((tab) => {
-      if (tab.url?.startsWith('http') && sites.has(new URL(tab.url).hostname))
+      if (tab.url?.startsWith('http') && sites.has(new URL(tab.url).host))
         browser.scripting.executeScript({
           target: {
             tabId,

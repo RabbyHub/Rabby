@@ -86,6 +86,7 @@ import {
   ActionRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
+import { ga4 } from '@/utils/ga4';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -921,6 +922,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (activeApprovalPopup()) {
       return;
     }
+
+    if (account?.type === KEYRING_TYPE.HdKeyring) {
+      await invokeEnterPassphrase(account.address);
+    }
+
     wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.GnosisKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
@@ -1217,6 +1223,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       action: 'Submit',
       label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
+
+    ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+      event_category: 'Transaction',
+    });
+
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
@@ -1604,6 +1615,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         category: 'Transaction',
         action: 'init',
         label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+      });
+
+      ga4.fireEvent(`Init_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+        event_category: 'Transaction',
       });
 
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useLayoutEffect } from 'react';
 
 import styled from 'styled-components';
-import { Button, Form, Input } from 'antd';
+import { Button, DrawerProps, Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -23,6 +23,7 @@ interface ConfirmAllowTransferModalProps extends WrappedComponentProps {
   title?: string;
   description?: string;
   checklist?: string[];
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const FormInputItem = styled(Form.Item)`
@@ -53,6 +54,7 @@ function ModalConfirmAllowTransfer({
   cancelText,
   confirmText = 'Confirm',
   title = 'Enter Password',
+  getContainer,
 }: ConfirmAllowTransferModalProps) {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -90,7 +92,14 @@ function ModalConfirmAllowTransfer({
   useLayoutEffect(() => {
     setTimeout(() => {
       setVisible(true);
-      inputRef.current?.focus();
+      if (!getContainer) {
+        inputRef.current?.focus();
+      } else {
+        // may chrome bug, when focus popup in wrong position ?
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 500);
+      }
     });
   }, []);
 
@@ -101,6 +110,7 @@ function ModalConfirmAllowTransfer({
       onCancel={handleCancel}
       height={260}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <Form onFinish={handleSubmit} form={form}>
         <FormInputItem
@@ -119,7 +129,7 @@ function ModalConfirmAllowTransfer({
             placeholder={t('page.sendToken.allowTransferModal.placeholder')}
             type="password"
             size="large"
-            autoFocus
+            autoFocus={!getContainer}
             ref={inputRef}
             spellCheck={false}
           />

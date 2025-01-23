@@ -17,9 +17,10 @@ const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const paths = require('./paths');
 
 const BUILD_GIT_HASH = child_process
-  .execSync('git log --format="%h" -n 1')
+  .execSync('git rev-parse HEAD')
   .toString()
-  .trim();
+  .trim()
+  .slice(0, 8);
 
 const {
   transformer: tsStyledComponentTransformer,

@@ -26,9 +26,12 @@ const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
 export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   const [loading, setLoading] = React.useState(true);
-  const { getCurrentAccounts, currentAccounts, keyringId } = React.useContext(
-    HDManagerStateContext
-  );
+  const {
+    getCurrentAccounts,
+    currentAccounts,
+    keyringId,
+    setSelectedAccounts,
+  } = React.useContext(HDManagerStateContext);
   const isKeystone = brand === 'Keystone';
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
@@ -138,6 +141,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       type,
       ...rest,
     });
+    setSelectedAccounts([]);
   }, []);
 
   React.useEffect(() => {

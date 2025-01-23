@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useBridge } from '../hooks/token';
 import { Alert, Button, message, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import { useWallet } from '@/ui/utils';
+import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import {
@@ -14,7 +14,7 @@ import {
 } from '../hooks';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 
 import pRetry from 'p-retry';
@@ -28,6 +28,10 @@ import { BridgeToken } from './BridgeToken';
 import { BridgeShowMore, RecommendFromToken } from './BridgeShowMore';
 import { BridgeSwitchBtn } from './BridgeSwitchButton';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { Header } from './BridgeHeader';
+import { obj2query } from '@/ui/utils/url';
+const isTab = getUiType().isTab;
+const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 export const BridgeContent = () => {
   const { userAddress } = useRabbySelector((state) => ({
@@ -74,6 +78,8 @@ export const BridgeContent = () => {
     setIsCustomSlippage,
 
     clearExpiredTimer,
+    maxNativeTokenGasPrice,
+    setMaxNativeTokenGasPrice,
   } = useBridge();
 
   const amountAvailable = useMemo(() => Number(amount) > 0, [amount]);
@@ -83,10 +89,6 @@ export const BridgeContent = () => {
   const setVisible = useSetQuoteVisible();
 
   const refresh = useSetRefreshId();
-
-  const [maxNativeTokenGasPrice, setMaxNativeTokenGasPrice] = useState<
-    number | undefined
-  >(undefined);
 
   const { t } = useTranslation();
 
@@ -139,7 +141,7 @@ export const BridgeContent = () => {
           toChainId: toToken.chain,
           status: tx ? 'success' : 'fail',
         });
-        wallet.bridgeToken(
+        const promise = wallet.bridgeToken(
           {
             to: tx.to,
             value: tx.value,
@@ -175,7 +177,12 @@ export const BridgeContent = () => {
             },
           }
         );
-        window.close();
+        if (!isTab) {
+          window.close();
+        } else {
+          await promise;
+          handleAmountChange('');
+        }
       } catch (error) {
         message.error(error?.message || String(error));
         stats.report('bridgeQuoteResult', {
@@ -312,6 +319,8 @@ export const BridgeContent = () => {
   const handleBridge = useMemoizedFn(async () => {
     if (
       !toToken?.low_credit_score &&
+      !toToken?.is_scam &&
+      toToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
       [
@@ -378,215 +387,248 @@ export const BridgeContent = () => {
   }, [switchFeePopup]);
 
   return (
-    <div
-      className={clsx(
-        'flex-1 overflow-auto page-has-ant-input',
-        selectedBridgeQuote?.shouldApproveToken ? 'pb-[130px]' : 'pb-[110px]'
-      )}
-    >
-      <div className="relative flex flex-col mx-20 gap-8">
-        <BridgeToken
-          type="from"
-          chain={fromChain}
-          token={fromToken}
-          onChangeToken={setFromToken}
-          onChangeChain={switchFromChain}
-          value={amount}
-          onInputChange={handleAmountChange}
-          excludeChains={toChain ? [toChain] : undefined}
-          inSufficient={inSufficient}
-          handleSetGasPrice={setMaxNativeTokenGasPrice}
-        />
-        <BridgeToken
-          type="to"
-          chain={toChain}
-          token={toToken}
-          onChangeToken={setToToken}
-          onChangeChain={setToChain}
-          fromChainId={fromToken?.chain || findChainByEnum(fromChain)?.serverId}
-          fromTokenId={fromToken?.id}
-          valueLoading={quoteLoading}
-          value={selectedBridgeQuote?.to_token_amount}
-          excludeChains={fromChain ? [fromChain] : undefined}
-          noQuote={noQuote}
-        />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <BridgeSwitchBtn onClick={switchToken} />
-        </div>
-      </div>
-
-      {inSufficient || (noQuote && !recommendFromToken) ? (
-        <Alert
-          className={clsx(
-            'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
-          )}
-          icon={
-            <RcIconWarningCC
-              viewBox="0 0 16 16"
-              className={clsx(
-                'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
-                'text-rabby-red-default'
-              )}
-            />
-          }
-          banner
-          message={
-            <span
-              className={clsx('text-13 font-medium', 'text-rabby-red-default')}
-            >
-              {inSufficient
-                ? t('page.bridge.insufficient-balance')
-                : t('page.bridge.no-quote-found')}
-            </span>
-          }
-        />
-      ) : null}
-
-      <div className="mx-20 mt-20">
-        {selectedBridgeQuote && (
-          <BridgeShowMore
-            openFeePopup={openFeePopup}
-            open={showMoreOpen}
-            setOpen={setShowMoreOpen}
-            sourceName={selectedBridgeQuote?.aggregator.name || ''}
-            sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
-            slippage={slippageState}
-            displaySlippage={slippage}
-            onSlippageChange={(e) => {
-              setSlippageChanged(true);
-              setSlippage(e);
-            }}
-            fromToken={fromToken}
-            toToken={toToken}
-            amount={amount || 0}
-            toAmount={selectedBridgeQuote?.to_token_amount}
-            openQuotesList={openQuotesList}
-            quoteLoading={quoteLoading}
-            slippageError={isSlippageHigh || isSlippageLow}
-            autoSlippage={autoSlippage}
-            isCustomSlippage={isCustomSlippage}
-            setAutoSlippage={setAutoSlippage}
-            setIsCustomSlippage={setIsCustomSlippage}
-            type="bridge"
-            isBestQuote={
-              !!bestQuoteId &&
-              !!selectedBridgeQuote &&
-              bestQuoteId?.aggregatorId === selectedBridgeQuote.aggregator.id &&
-              bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id
-            }
-          />
-        )}
-        {noQuote && recommendFromToken && (
-          <RecommendFromToken
-            token={recommendFromToken}
-            className="mt-16"
-            onOk={fillRecommendFromToken}
-          />
-        )}
-      </div>
-
-      <div
-        className={clsx(
-          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
-          'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
-          'py-[16px]'
-        )}
-      >
-        <Button
-          loading={fetchingBridgeQuote}
-          type="primary"
-          block
-          size="large"
-          className="h-[48px] text-white text-[16px] font-medium"
-          onClick={() => {
-            if (fetchingBridgeQuote) return;
-            if (!selectedBridgeQuote) {
-              refresh((e) => e + 1);
-
-              return;
-            }
-            if (selectedBridgeQuote?.shouldTwoStepApprove) {
-              return Modal.confirm({
-                width: 360,
-                closable: true,
-                centered: true,
-                className: twoStepApproveCn,
-                title: null,
-                content: (
-                  <>
-                    <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                      Sign 2 transactions to change allowance
-                    </div>
-                    <div className="text-13 leading-[17px]  text-r-neutral-body">
-                      Token USDT requires 2 transactions to change allowance.
-                      First you would need to reset allowance to zero, and only
-                      then set new allowance value.
-                    </div>
-                  </>
-                ),
-                okText: 'Proceed with two step approve',
-
-                onOk() {
-                  // gotoBridge();
-                  handleBridge();
-                },
-              });
-            }
-            // gotoBridge();
-            handleBridge();
-          }}
-          disabled={btnDisabled}
-        >
-          {btnText}
-        </Button>
-      </div>
-      {fromToken && toToken ? (
-        <QuoteList
-          list={quoteList}
-          loading={quoteLoading}
-          visible={visible}
-          onClose={() => {
-            setVisible(false);
-          }}
-          userAddress={userAddress}
-          payToken={fromToken}
-          payAmount={amount}
-          receiveToken={toToken}
-          inSufficient={inSufficient}
-          setSelectedBridgeQuote={setSelectedBridgeQuote}
-        />
-      ) : null}
-      <MiniApproval
-        visible={isShowSign}
-        ga={{
-          category: 'Bridge',
-          source: 'bridge',
-          trigger: rbiSource,
-        }}
-        txs={txs}
-        onClose={() => {
-          setIsShowSign(false);
-          refresh((e) => e + 1);
-          setTimeout(() => {
-            mutateTxs([]);
-          }, 500);
-        }}
-        onReject={() => {
-          setIsShowSign(false);
-          refresh((e) => e + 1);
-          mutateTxs([]);
-        }}
-        onResolve={() => {
-          setTimeout(() => {
-            setIsShowSign(false);
-            mutateTxs([]);
-            // setPayAmount('');
-            // setTimeout(() => {
-            history.replace('/');
-            // }, 500);
-          }, 500);
+    <>
+      <Header
+        onOpenInTab={() => {
+          openInternalPageInTab(
+            `bridge?${obj2query({
+              fromChain: fromChain || '',
+              fromTokenId: fromToken?.id || '',
+              inputAmount: amount || '',
+              toChain: toChain || '',
+              toTokenId: toToken?.id || '',
+              rbiSource: rbiSource || '',
+              maxNativeTokenGasPrice: maxNativeTokenGasPrice
+                ? String(maxNativeTokenGasPrice)
+                : '',
+            })}`
+          );
         }}
       />
-    </div>
+      <div
+        className={clsx(
+          'flex-1 overflow-auto page-has-ant-input',
+          selectedBridgeQuote?.shouldApproveToken ? 'pb-[130px]' : 'pb-[110px]'
+        )}
+      >
+        <div className="relative flex flex-col mx-20 gap-[6px]">
+          <BridgeToken
+            type="from"
+            chain={fromChain}
+            token={fromToken}
+            onChangeToken={setFromToken}
+            onChangeChain={switchFromChain}
+            value={amount}
+            onInputChange={handleAmountChange}
+            excludeChains={toChain ? [toChain] : undefined}
+            inSufficient={inSufficient}
+            handleSetGasPrice={setMaxNativeTokenGasPrice}
+            getContainer={getContainer}
+          />
+          <BridgeToken
+            type="to"
+            chain={toChain}
+            token={toToken}
+            onChangeToken={setToToken}
+            onChangeChain={setToChain}
+            fromChainId={
+              fromToken?.chain || findChainByEnum(fromChain)?.serverId
+            }
+            fromTokenId={fromToken?.id}
+            valueLoading={quoteLoading}
+            value={selectedBridgeQuote?.to_token_amount}
+            excludeChains={fromChain ? [fromChain] : undefined}
+            noQuote={noQuote}
+            getContainer={getContainer}
+          />
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <BridgeSwitchBtn onClick={switchToken} />
+          </div>
+        </div>
+
+        {inSufficient || (noQuote && !recommendFromToken) ? (
+          <Alert
+            className={clsx(
+              'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
+            )}
+            icon={
+              <RcIconWarningCC
+                viewBox="0 0 16 16"
+                className={clsx(
+                  'relative top-[3px] mr-2 self-start origin-center w-16 h-15',
+                  'text-rabby-red-default'
+                )}
+              />
+            }
+            banner
+            message={
+              <span
+                className={clsx(
+                  'text-13 font-medium',
+                  'text-rabby-red-default'
+                )}
+              >
+                {inSufficient
+                  ? t('page.bridge.insufficient-balance')
+                  : t('page.bridge.no-quote-found')}
+              </span>
+            }
+          />
+        ) : null}
+
+        <div className="mx-20 mt-20">
+          {selectedBridgeQuote && (
+            <BridgeShowMore
+              openFeePopup={openFeePopup}
+              open={showMoreOpen}
+              setOpen={setShowMoreOpen}
+              sourceName={selectedBridgeQuote?.aggregator.name || ''}
+              sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
+              slippage={slippageState}
+              displaySlippage={slippage}
+              onSlippageChange={(e) => {
+                setSlippageChanged(true);
+                setSlippage(e);
+              }}
+              fromToken={fromToken}
+              toToken={toToken}
+              amount={amount || 0}
+              toAmount={selectedBridgeQuote?.to_token_amount}
+              openQuotesList={openQuotesList}
+              quoteLoading={quoteLoading}
+              slippageError={isSlippageHigh || isSlippageLow}
+              autoSlippage={autoSlippage}
+              isCustomSlippage={isCustomSlippage}
+              setAutoSlippage={setAutoSlippage}
+              setIsCustomSlippage={setIsCustomSlippage}
+              type="bridge"
+              isBestQuote={
+                !!bestQuoteId &&
+                !!selectedBridgeQuote &&
+                bestQuoteId?.aggregatorId ===
+                  selectedBridgeQuote.aggregator.id &&
+                bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id
+              }
+            />
+          )}
+          {noQuote && recommendFromToken && (
+            <RecommendFromToken
+              token={recommendFromToken}
+              className="mt-16"
+              onOk={fillRecommendFromToken}
+            />
+          )}
+        </div>
+
+        <div
+          className={clsx(
+            'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
+            'bg-r-neutral-bg-2 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+            'py-[16px]',
+            isTab ? 'rounded-b-[16px]' : ''
+          )}
+        >
+          <Button
+            loading={fetchingBridgeQuote}
+            type="primary"
+            block
+            size="large"
+            className="h-[48px] text-white text-[16px] font-medium"
+            onClick={() => {
+              if (fetchingBridgeQuote) return;
+              if (!selectedBridgeQuote) {
+                refresh((e) => e + 1);
+
+                return;
+              }
+              if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                return Modal.confirm({
+                  width: 360,
+                  closable: true,
+                  centered: true,
+                  className: twoStepApproveCn,
+                  title: null,
+                  content: (
+                    <>
+                      <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                        Sign 2 transactions to change allowance
+                      </div>
+                      <div className="text-13 leading-[17px]  text-r-neutral-body">
+                        Token USDT requires 2 transactions to change allowance.
+                        First you would need to reset allowance to zero, and
+                        only then set new allowance value.
+                      </div>
+                    </>
+                  ),
+                  okText: 'Proceed with two step approve',
+
+                  onOk() {
+                    // gotoBridge();
+                    handleBridge();
+                  },
+                });
+              }
+              // gotoBridge();
+              handleBridge();
+            }}
+            disabled={btnDisabled}
+          >
+            {btnText}
+          </Button>
+        </div>
+        {fromToken && toToken ? (
+          <QuoteList
+            list={quoteList}
+            loading={quoteLoading}
+            visible={visible}
+            onClose={() => {
+              setVisible(false);
+            }}
+            userAddress={userAddress}
+            payToken={fromToken}
+            payAmount={amount}
+            receiveToken={toToken}
+            inSufficient={inSufficient}
+            setSelectedBridgeQuote={setSelectedBridgeQuote}
+            getContainer={getContainer}
+          />
+        ) : null}
+        <MiniApproval
+          visible={isShowSign}
+          ga={{
+            category: 'Bridge',
+            source: 'bridge',
+            trigger: rbiSource,
+          }}
+          txs={txs}
+          onClose={() => {
+            setIsShowSign(false);
+            refresh((e) => e + 1);
+            setTimeout(() => {
+              mutateTxs([]);
+            }, 500);
+          }}
+          onReject={() => {
+            setIsShowSign(false);
+            refresh((e) => e + 1);
+            mutateTxs([]);
+          }}
+          onResolve={() => {
+            setTimeout(() => {
+              setIsShowSign(false);
+              mutateTxs([]);
+              // setPayAmount('');
+              // setTimeout(() => {
+              if (!isTab) {
+                history.replace('/');
+              }
+              handleAmountChange('');
+              // }, 500);
+            }, 500);
+          }}
+          getContainer={getContainer}
+        />
+      </div>
+    </>
   );
 };

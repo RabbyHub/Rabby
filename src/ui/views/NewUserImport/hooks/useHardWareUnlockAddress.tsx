@@ -45,20 +45,22 @@ export const useHDWalletUnlockAndRedirect = (
       );
 
       if (accounts && accounts.length) {
-        await wallet.boot(store.password);
-        await wallet.unlockHardwareAccount(
-          type,
-          [accounts[0].index - 1],
-          idRef.current
-        );
+        // await wallet.boot(store.password);
+        // await wallet.unlockHardwareAccount(
+        //   type,
+        //   [accounts[0].index - 1],
+        //   idRef.current
+        // );
 
         setStore({
           clearKeyringId: idRef.current!,
         });
 
         history.push({
-          pathname: '/new-user/success',
-          search: `?hd=${encodeURIComponent(type)}&keyringId=${idRef.current}`,
+          pathname: '/new-user/import/select-address',
+          search: `?hd=${encodeURIComponent(type)}&keyringId=${
+            idRef.current
+          }&isLazyImport=true&isNewUserImport=true`,
         });
       }
     } catch (error) {

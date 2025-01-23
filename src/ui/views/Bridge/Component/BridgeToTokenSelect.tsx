@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Drawer, Input, Skeleton, Tooltip } from 'antd';
+import { Drawer, DrawerProps, Input, Skeleton, Tooltip } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import { getTokenSymbol } from 'ui/utils/token';
 import styled from 'styled-components';
@@ -10,7 +10,7 @@ import { uniqBy } from 'lodash';
 import { CHAINS_ENUM } from '@/constant';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync, useDebounce } from 'react-use';
-import { useWallet } from '@/ui/utils';
+import { formatPrice, useWallet } from '@/ui/utils';
 import { TokenWithChain } from '@/ui/component';
 
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
@@ -81,6 +81,7 @@ export interface TokenSelectProps {
       }) => React.ReactNode)
     | React.ReactNode;
   drawerHeight?: string | number;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const defaultExcludeTokens = [];
@@ -100,6 +101,7 @@ const BridgeToTokenSelect = ({
   loading = false,
   tokenRender,
   drawerHeight,
+  getContainer,
 }: TokenSelectProps) => {
   const [queryConds, setQueryConds] = useState({
     keyword: '',
@@ -203,6 +205,7 @@ const BridgeToTokenSelect = ({
             chainId={chainId}
             disabledTips={'Not supported'}
             supportChains={supportChains}
+            getContainer={getContainer}
           />
         )}
       </>
@@ -319,6 +322,7 @@ export interface TokenSelectorProps {
   ) => React.ReactNode;
   onSearch: (q: string) => void;
   height?: number | string;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const TokenSelector = ({
@@ -334,6 +338,7 @@ const TokenSelector = ({
   supportChains,
   itemRender,
   height = '580px',
+  getContainer,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -411,6 +416,7 @@ const TokenSelector = ({
       closeIcon={
         <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
       }
+      getContainer={getContainer}
     >
       {/* Select a token */}
       <div className="header">{t('component.TokenSelector.header.title')}</div>
@@ -497,7 +503,7 @@ const TokenSelector = ({
                           {getTokenSymbol(token)}
                         </span>
                         <span className="symbol text-13 font-normal text-r-neutral-foot">
-                          {findChainByServerID(token.chain)?.name || ''}
+                          ${formatPrice(token.price || 0)}
                         </span>
                       </div>
                     </div>

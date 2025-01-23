@@ -6,7 +6,7 @@ import ImgMetaMask from '@/ui/assets/swap/metamask.png';
 import ImgPhantom from '@/ui/assets/swap/phantom.png';
 import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
 import clsx from 'clsx';
-import { Button } from 'antd';
+import { Button, DrawerProps } from 'antd';
 import { DEX } from '@/constant';
 
 const swapFee = [
@@ -51,12 +51,14 @@ export const RabbyFeePopup = ({
   type = 'swap',
   feeDexDesc,
   dexName,
+  getContainer,
 }: {
   visible: boolean;
   onClose: () => void;
   type?: keyof typeof fee;
   dexName?: string;
   feeDexDesc?: string;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
 
@@ -87,6 +89,7 @@ export const RabbyFeePopup = ({
         display: 'flex',
         flexDirection: 'column',
       }}
+      getContainer={getContainer}
     >
       <div className="w-[52px] h-[52px] flex items-center justify-center rounded-full bg-r-blue-default mx-auto">
         <RCIconRabbyWhite viewBox="0 0 36 30" width="36" height="30" />

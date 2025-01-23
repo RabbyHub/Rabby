@@ -11,6 +11,7 @@ import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
+import { DrawerProps } from 'antd';
 
 const ChainWrapper = styled.div`
   /* height: 40px; */
@@ -184,6 +185,7 @@ interface ChainSelectorProps {
   drawerHeight?: number;
   showClosableIcon?: boolean;
   swap?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }
 export default function ChainSelectorInForm({
   value,
@@ -201,6 +203,7 @@ export default function ChainSelectorInForm({
   drawerHeight,
   showClosableIcon,
   swap,
+  getContainer,
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -245,6 +248,7 @@ export default function ChainSelectorInForm({
           title={title}
           showClosableIcon={showClosableIcon}
           showRPCStatus
+          getContainer={getContainer}
         />
       )}
     </>
