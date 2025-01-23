@@ -55,6 +55,7 @@ import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { EcologyPopup } from '../EcologyPopup';
 import { appIsDev } from '@/utils/env';
+import { ga4 } from '@/utils/ga4';
 
 export default ({
   gnosisPendingCount,
@@ -349,6 +350,11 @@ export default ({
                     action: 'clickEntry',
                     label: item.eventKey,
                   });
+
+                  ga4.fireEvent(`Entry_${item.eventKey}`, {
+                    event_category: 'Dashboard',
+                  });
+
                   item?.onClick(evt);
                 }}
                 className="direction pointer"

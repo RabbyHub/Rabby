@@ -45,6 +45,7 @@ import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { SWAP_SLIPPAGE } from '../../Bridge/Component/BridgeSlippage';
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -315,6 +316,8 @@ export const Main = () => {
         KEYRING_CLASS.HARDWARE.LEDGER,
       ].includes((currentAccount?.type || '') as any) &&
       !receiveToken?.low_credit_score &&
+      !receiveToken?.is_scam &&
+      receiveToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
       !showLoss
@@ -416,7 +419,7 @@ export const Main = () => {
         !!payToken &&
         !!receiveToken &&
         activeProvider &&
-        Number(slippage) > 1
+        Number(slippage) >= Number(SWAP_SLIPPAGE[1])
       ) {
         setShowMoreOpen(true);
       }

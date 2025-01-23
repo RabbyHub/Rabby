@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
-import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
+import {
+  formatPrice,
+  formatTokenAmount,
+  formatUsdValue,
+} from 'ui/utils/number';
 import { getTokenSymbol } from 'ui/utils/token';
 import './style.less';
 import BigNumber from 'bignumber.js';
@@ -265,7 +269,7 @@ const TokenSelector = ({
         >
           <div>
             {type === 'swapTo'
-              ? t('component.TokenSelector.hot')
+              ? t('component.TokenSelector.common')
               : t('component.TokenSelector.bridge.token')}
           </div>
           <div />
@@ -653,6 +657,8 @@ function SwapAndBridgeTokenItem(props: {
     token,
   ]);
 
+  const isSwapTo = type === 'swapTo';
+
   const currentChainName = useMemo(() => chainItem?.name, [chainItem]);
 
   const disabled = useMemo(() => {
@@ -705,7 +711,9 @@ function SwapAndBridgeTokenItem(props: {
               {getTokenSymbol(token)}
             </span>
             <span className="symbol text-13 font-normal text-r-neutral-foot">
-              {currentChainName}
+              {isSwapTo
+                ? `$${formatPrice(token.price || 0)}`
+                : currentChainName}
             </span>
           </div>
         </div>

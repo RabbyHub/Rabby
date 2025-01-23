@@ -73,6 +73,7 @@ import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 import { KEYRING_CLASS } from '@/constant';
 import { MetamaskModeDapps } from './MetamaskModeDapps';
 import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
+import { ga4 } from '@/utils/ga4';
 
 declare global {
   interface Window {
@@ -81,8 +82,13 @@ declare global {
 }
 
 const LogPageView = () => {
+  const path = window.location.hash.replace(/#/, '');
+
+  ga4.firePageViewEvent({
+    pageLocation: path,
+  });
   if (window._paq) {
-    window._paq.push(['setCustomUrl', window.location.hash.replace(/#/, '')]);
+    window._paq.push(['setCustomUrl', path]);
     window._paq.push(['trackPageView']);
   }
 
@@ -104,6 +110,15 @@ const Main = () => {
             ? `popup|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`
             : `request|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`,
         });
+
+        ga4.fireEvent(
+          UIType.isPop
+            ? `Popup_${hasOtherProvider ? 'HasMM' : 'NoMM'}`
+            : `Request_${hasOtherProvider ? 'HasMM' : 'NoMM'}`,
+          {
+            event_category: 'User Active',
+          }
+        );
       }
     })();
   }, []);
