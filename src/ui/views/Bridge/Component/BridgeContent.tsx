@@ -319,6 +319,8 @@ export const BridgeContent = () => {
   const handleBridge = useMemoizedFn(async () => {
     if (
       !toToken?.low_credit_score &&
+      !toToken?.is_scam &&
+      receiveToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
       [

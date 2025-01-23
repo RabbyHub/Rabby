@@ -4851,10 +4851,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@0.4.4":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.4.tgz#f04782d73598d57287451007a4681563b24fdcf0"
-  integrity sha512-ZmlIItUoOAY7LUd3NmCBscV44jrZHCfbXgApmhul5cFUG1aNm9j13R8TVErMa92YDXdiTOuxRb/mBkYEH2Jrng==
+"@rabby-wallet/page-provider@0.4.6":
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.6.tgz#f2aa1b8a4d9ee6a0e6ee32b5836ce0bef9bfba29"
+  integrity sha512-usFHgQz4dhBBgrr6whSNQTNwAqEhfj2qAKcjNiSqQszQPPWxg5nAadUh3DVi0L8CIsotNShPckE2q2Kl0bloQw==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@metamask/post-message-stream" "8.1.0"
@@ -17663,11 +17663,6 @@ react-dom@^18.2.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
-
-react-ga@3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-3.3.0.tgz#c91f407198adcb3b49e2bc5c12b3fe460039b3ca"
-  integrity sha512-o8RScHj6Lb8cwy3GMrVH6NJvL+y0zpJvKtc0+wmH7Bt23rszJmnqEQxRbyrqUzk9DTJIHoP42bfO5rswC9SWBQ==
 
 react-i18next@13.0.3:
   version "13.0.3"

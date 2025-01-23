@@ -47,6 +47,7 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
+import { SWAP_SLIPPAGE } from '../../Bridge/Component/BridgeSlippage';
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
@@ -317,6 +318,8 @@ export const Main = () => {
         KEYRING_CLASS.HARDWARE.LEDGER,
       ].includes((currentAccount?.type || '') as any) &&
       !receiveToken?.low_credit_score &&
+      !receiveToken?.is_scam &&
+      receiveToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
       !showLoss
@@ -418,7 +421,7 @@ export const Main = () => {
         !!payToken &&
         !!receiveToken &&
         activeProvider &&
-        Number(slippage) > 1
+        Number(slippage) >= Number(SWAP_SLIPPAGE[1])
       ) {
         setShowMoreOpen(true);
       }

@@ -21,7 +21,7 @@ import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
-import { useSwapSlippage } from './slippage';
+import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
 const isTab = getUiType().isTab;
 
@@ -409,7 +409,7 @@ export const useTokenPair = (userAddress: string) => {
       setFeeRate('0');
     }
     if (slippageObj.autoSlippage) {
-      slippageObj.setSlippage(isStableCoin ? '0.1' : '0.5');
+      slippageObj.setSlippage(getSwapAutoSlippageValue(isStableCoin));
     }
   }, [slippageObj.autoSlippage, isWrapToken, isStableCoin]);
 

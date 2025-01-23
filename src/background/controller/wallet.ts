@@ -133,6 +133,7 @@ import Browser from 'webextension-polyfill';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
 import { metamaskModeService } from '../service/metamaskModeService';
+import { ga4 } from '@/utils/ga4';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3477,9 +3478,9 @@ export class WalletController extends BaseController {
     } catch {
       const Keyring = keyringService.getKeyringClassForType(type);
       keyring = new Keyring(
-        hasBridge(type)
+        (await hasBridge(type))
           ? {
-              bridge: getKeyringBridge(type),
+              bridge: await getKeyringBridge(type),
             }
           : undefined
       );
@@ -3545,7 +3546,7 @@ export class WalletController extends BaseController {
           keyringType
         );
         keyring = new keystoneKeyring({
-          bridge: getKeyringBridge(keyringType),
+          bridge: await getKeyringBridge(keyringType),
         });
         stashKeyringId = Object.values(stashKeyrings).length + 1;
         stashKeyrings[stashKeyringId] = keyring;
@@ -3574,7 +3575,7 @@ export class WalletController extends BaseController {
           keyringType
         );
         keyring = new keystoneKeyring({
-          bridge: getKeyringBridge(keyringType),
+          bridge: await getKeyringBridge(keyringType),
         });
         stashKeyringId = Object.values(stashKeyrings).length + 1;
         stashKeyrings[stashKeyringId] = keyring;
@@ -3720,7 +3721,7 @@ export class WalletController extends BaseController {
     return keyring.getEncryptionPublicKey(address, options);
   };
 
-  requestKeyring = (
+  requestKeyring = async (
     type: string,
     methodName: string,
     keyringId: number | null,
@@ -3735,7 +3736,9 @@ export class WalletController extends BaseController {
       } catch {
         const Keyring = keyringService.getKeyringClassForType(type);
         keyring = new Keyring(
-          hasBridge(type) ? { bridge: getKeyringBridge(type) } : undefined
+          (await hasBridge(type))
+            ? { bridge: await getKeyringBridge(type) }
+            : undefined
         );
       }
     }
@@ -4382,7 +4385,7 @@ export class WalletController extends BaseController {
         keyringType
       );
       keyring = new keystoneKeyring({
-        bridge: getKeyringBridge(keyringType),
+        bridge: await getKeyringBridge(keyringType),
       });
       stashKeyringId = this.addKeyringToStash(keyring);
     }
@@ -4876,6 +4879,10 @@ export class WalletController extends BaseController {
         category: 'Custom Network',
         action: 'Success Add Network',
         label: `${source}_${String(chain.id)}`,
+      });
+
+      ga4.fireEvent('Add_CustomNetwork', {
+        event_category: 'Custom Network',
       });
     }
     return res;
