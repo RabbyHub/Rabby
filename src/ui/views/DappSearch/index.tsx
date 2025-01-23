@@ -23,6 +23,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ConnectedSite } from '@/background/service/permission';
 import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
 import { ChainSelectorButton } from '../ApprovalManagePage/components/ChainSelectorButton';
+import { ga4 } from '@/utils/ga4';
 const { Search } = Input;
 
 const SearchWrapper = styled.div`
@@ -145,6 +146,10 @@ export const DappSearchPage = () => {
             action: 'Dapps_Search_Begin',
             label: debouncedSearchValue,
           });
+
+          ga4.fireEvent('Dapps_Search_Begin', {
+            event_category: 'DappsSearch',
+          });
         }
       }
       const limit = d?.page?.limit || 30;
@@ -203,6 +208,10 @@ export const DappSearchPage = () => {
     matomoRequestEvent({
       category: 'DappsSearch',
       action: 'Dapps_Search_Enter',
+    });
+
+    ga4.fireEvent('Dapps_Search_Enter', {
+      event_category: 'DappsSearch',
     });
   });
 

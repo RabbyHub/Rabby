@@ -133,6 +133,7 @@ import Browser from 'webextension-polyfill';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
 import { metamaskModeService } from '../service/metamaskModeService';
+import { ga4 } from '@/utils/ga4';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -4875,6 +4876,10 @@ export class WalletController extends BaseController {
         category: 'Custom Network',
         action: 'Success Add Network',
         label: `${source}_${String(chain.id)}`,
+      });
+
+      ga4.fireEvent('Add_CustomNetwork', {
+        event_category: 'Custom Network',
       });
     }
     return res;
