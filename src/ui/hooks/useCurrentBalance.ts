@@ -88,7 +88,9 @@ export default function useCurrentBalance(
       if (update) {
         if (apiLevel < 2) {
           setBalanceLoading(true);
-          await getInMemoryAddressBalance(account, force);
+          setTimeout(() => {
+            getInMemoryAddressBalance(account, force);
+          }, 1000);
         } else {
           setBalanceLoading(false);
         }
@@ -97,7 +99,9 @@ export default function useCurrentBalance(
       }
     } else {
       if (apiLevel < 2) {
-        await getInMemoryAddressBalance(account, force);
+        setTimeout(() => {
+          getInMemoryAddressBalance(account, force);
+        }, 1000);
         setBalanceLoading(false);
         setBalanceFromCache(false);
       } else {
