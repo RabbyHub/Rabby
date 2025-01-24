@@ -55,7 +55,6 @@ import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
-import { ALARMS_USER_ENABLE } from './utils/alarms';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -118,13 +117,8 @@ async function restoreAppState() {
   syncChainService.roll();
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
+  startEnableUser();
   walletController.syncMainnetChainList();
-
-  // check if user has enabled the extension
-  chrome.alarms.create(ALARMS_USER_ENABLE, {
-    when: Date.now(),
-    periodInMinutes: 60,
-  });
 
   if (!keyringService.isBooted()) {
     userGuideService.init();
@@ -179,7 +173,7 @@ restoreAppState();
           value: customTestnetLength,
         });
 
-        ga4.fireEvent('Has Custom Network', {
+        ga4.fireEvent('Has_CustomNetwork', {
           event_category: 'Custom Network',
         });
       }
@@ -429,10 +423,6 @@ declare global {
 }
 
 function startEnableUser() {
-  const time = preferenceService.getSendEnableTime();
-  if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
-    return;
-  }
   matomoRequestEvent({
     category: 'User',
     action: 'enable',
@@ -441,7 +431,6 @@ function startEnableUser() {
   ga4.fireEvent('User_Enable', {
     event_category: 'User Enable',
   });
-  preferenceService.updateSendEnableTime(Date.now());
 }
 
 // On first install, open a new tab with Rabby
@@ -453,9 +442,3 @@ async function onInstall() {
     await userGuideService.openUserGuide();
   }
 }
-
-browser.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === ALARMS_USER_ENABLE) {
-    startEnableUser();
-  }
-});
