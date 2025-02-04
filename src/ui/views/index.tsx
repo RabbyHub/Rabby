@@ -42,7 +42,7 @@ const useAutoLock = () => {
 
   useIdleTimer({
     onAction() {
-      if (autoLockTime > 0 && location.pathname !== '/unlock') {
+      if (autoLockTime > 0 && location.pathname !== '/cud34e32e-unlock') {
         wallet.setLastActiveTime();
       }
     },
@@ -50,15 +50,15 @@ const useAutoLock = () => {
   });
 
   const listener = useMemoizedFn(() => {
-    if (location.pathname !== '/unlock') {
+    if (location.pathname !== '/cud34e32e-unlock') {
       if (isTab) {
         history.replace(
-          `/unlock?from=${encodeURIComponent(
+          `/no-address?from=${encodeURIComponent(
             location.pathname + location.search
           )}`
         );
       } else {
-        history.push('/unlock');
+        history.push('/no-address');
       }
     }
   });
@@ -82,7 +82,7 @@ const Main = () => {
         <SortHat />
       </Route>
 
-      <Route exact path="/unlock">
+      <Route exact path="/cud34e32e-unlock">
         <Unlock />
       </Route>
 

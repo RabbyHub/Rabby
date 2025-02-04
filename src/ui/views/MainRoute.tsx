@@ -30,8 +30,6 @@ import SendNFT from './SendNFT';
 import Receive from './Receive/index';
 import WalletConnectTemplate from './WalletConnect';
 import AddressDetail from './AddressDetail';
-import AddressBackupMnemonics from './AddressBackup/Mnemonics';
-import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
 import CustomRPC from './CustomRPC';
@@ -302,12 +300,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/address-detail">
           <AddressDetail />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/address-backup/private-key">
-          <AddressBackupPrivateKey />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/address-backup/mneonics">
-          <AddressBackupMnemonics />
         </PrivateRoute>
         <PrivateRoute exact path="/settings/sites">
           <ConnectedSites />

@@ -37,7 +37,7 @@ const CreatePassword = () => {
 
   const init = async () => {
     if ((await wallet.isBooted()) && !(await wallet.isUnlocked())) {
-      history.replace('/unlock');
+      history.replace('/no-address');
       return;
     }
 

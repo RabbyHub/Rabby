@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "__MSG_appName__",
-  "short_name": "__MSG_appName__",
+  "name": "Rabby Wallet by Starling",
+  "short_name": "Rabby Wallet by Starling",
   "version": "0.93.28",
   "default_locale": "en",
-  "description": "__MSG_appDescription__",
+  "description": "Rabby Wallet by Starling with security updates",
   "icons": {
     "16": "images/icon-16.png",
     "19": "images/icon-19.png",

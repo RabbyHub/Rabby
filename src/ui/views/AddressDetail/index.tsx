@@ -7,7 +7,6 @@ import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { PageHeader } from 'ui/component';
 import { isSameAddress, useAddressSource, useWallet } from 'ui/utils';
-import { AddressBackup } from './AddressBackup';
 import { AddressDelete } from './AddressDelete';
 import { AddressInfo } from './AddressInfo';
 import './style.less';
@@ -93,11 +92,6 @@ const AddressDetail = () => {
         </div>
       </div>
 
-      <AddressBackup
-        address={address}
-        type={type}
-        brandName={brandName}
-      ></AddressBackup>
       <AddressDelete
         address={address}
         type={type}

@@ -7,7 +7,7 @@ const Wrap = ({ children }) => {
   const [isBooted, setIsBooted] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const to = !isBooted ? '/welcome' : !isUnlocked ? '/unlock' : null;
+  const to = !isBooted ? '/welcome' : !isUnlocked ? '/no-address' : null;
 
   const init = async () => {
     setIsBooted(await wallet.isBooted());
