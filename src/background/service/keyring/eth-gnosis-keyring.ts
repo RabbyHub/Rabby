@@ -5,9 +5,8 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import {
   SafeTransaction,
   SafeTransactionDataPartial,
-} from '@gnosis.pm/safe-core-sdk-types';
+} from '@safe-global/types-kit';
 import semverSatisfies from 'semver/functions/satisfies';
-import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
 import SafeMessage from '@safe-global/protocol-kit/dist/src/utils/messages/SafeMessage';
 import {
   adjustVInSignature,
@@ -393,7 +392,7 @@ class GnosisKeyring extends EventEmitter {
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
-    const sig = new EthSignSignature(address, signature);
+    const sig = new EthSafeSignature(address, signature);
     this.currentTransaction.addSignature(sig);
   }
 
@@ -401,7 +400,7 @@ class GnosisKeyring extends EventEmitter {
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
-    const sig = new EthSignSignature(address, signature);
+    const sig = new EthSafeSignature(address, signature);
     this.currentTransaction.addSignature(sig);
   }
 

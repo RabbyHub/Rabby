@@ -1,21 +1,17 @@
-import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
 import dayjs from 'dayjs';
 import { groupBy } from 'lodash';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { numberToHex } from 'web3-utils';
 
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
 import { useAccount } from '@/ui/store-hooks';
 import { findChain } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
-import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
+import { SafeTransactionDataPartial } from '@safe-global/types-kit';
 import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
 import { CHAINS_ENUM } from 'consts';
 import { Virtuoso } from 'react-virtuoso';
 import { isSameAddress, useWallet } from 'ui/utils';
-import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { GnosisMessageQueueItem } from './GnosisMessageQueueItem';
 import { generateTypedData } from '@safe-global/protocol-kit';
 import { verifyTypedData } from 'viem';
