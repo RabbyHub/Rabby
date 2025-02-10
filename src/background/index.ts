@@ -179,7 +179,7 @@ restoreAppState();
           value: customTestnetLength,
         });
 
-        ga4.fireEvent('Has Custom Network', {
+        ga4.fireEvent('Has_CustomNetwork', {
           event_category: 'Custom Network',
         });
       }
