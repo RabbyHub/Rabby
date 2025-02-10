@@ -168,7 +168,7 @@ const useHDPathTypeGroup = (brand?: string) => {
     [KEYRING_CLASS.HARDWARE.BITBOX02]: [HDPathType.BIP44],
     [KEYRING_CLASS.HARDWARE.IMKEY]: [HDPathType.BIP44],
   });
-  const isAvaliable = useIsKeystoneUsbAvailable(brand);
+  const isAvailable = useIsKeystoneUsbAvailable(brand);
 
   useEffect(() => {
     if (HDPathTypeGroup[KEYRING_CLASS.HARDWARE.KEYSTONE].length === 3) {
@@ -176,7 +176,7 @@ const useHDPathTypeGroup = (brand?: string) => {
       // of connection paths), then there's no need to proceed further.
       return;
     }
-    if (isAvaliable) {
+    if (isAvailable) {
       setHDPathTypeGroup((prev) => ({
         ...prev,
         [KEYRING_CLASS.HARDWARE.KEYSTONE]: [
@@ -191,7 +191,7 @@ const useHDPathTypeGroup = (brand?: string) => {
         [KEYRING_CLASS.HARDWARE.KEYSTONE]: [HDPathType.BIP44],
       }));
     }
-  }, [isAvaliable]);
+  }, [isAvailable]);
 
   return HDPathTypeGroup;
 };
