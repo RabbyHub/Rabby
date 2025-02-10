@@ -7,7 +7,6 @@ import QRCodeReader from 'ui/component/QRCodeReader';
 import { useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import './style.less';
-import * as Sentry from '@sentry/browser';
 import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_CONTENT } from 'consts';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import clsx from 'clsx';
@@ -60,9 +59,7 @@ export const QRCodeConnect = () => {
             stashKeyringIdRef.current
           );
         } else {
-          Sentry.captureException(
-            new Error('QRCodeError ' + JSON.stringify(result))
-          );
+          console.error(new Error('QRCodeError ' + JSON.stringify(result)));
           setErrorMessage(
             t(
               'Invalid QR code. Please scan the sync QR code of the hardware wallet.'
@@ -74,7 +71,7 @@ export const QRCodeConnect = () => {
         goToSelectAddress(stashKeyringIdRef.current);
       }
     } catch (e) {
-      Sentry.captureException(`QRCodeError ${e.message}`);
+      console.error(`QRCodeError ${e.message}`);
       setScan(false);
       setErrorMessage(
         t(

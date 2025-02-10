@@ -10,7 +10,6 @@ import { HDManagerStateContext, sleep } from './utils';
 import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
 import { useAsyncRetry } from 'react-use';
 import useModal from 'antd/lib/modal/useModal';
-import * as Sentry from '@sentry/browser';
 import { useTranslation } from 'react-i18next';
 import { Modal as CustomModal } from '@/ui/component';
 
@@ -73,7 +72,7 @@ export const OneKeyManager: React.FC = () => {
     } else {
       setPreventLoading(true);
       console.log(errMessage);
-      Sentry.captureException(fetchCurrentAccountsRetry.error);
+      console.error(fetchCurrentAccountsRetry.error);
 
       modal.error({
         content: t('page.newAddress.hd.trezor.message.disconnected', [

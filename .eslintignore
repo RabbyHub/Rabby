@@ -5,3 +5,4 @@ dist-mv2/*
 _raw/*
 webpack.config.js
 jest.config.js
+tsconfig.json

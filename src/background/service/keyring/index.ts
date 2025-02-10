@@ -35,7 +35,6 @@ import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
 import contactBook from '../contactBook';
 import { generateAliasName } from '@/utils/account';
-import * as Sentry from '@sentry/browser';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
 import { getKeyringBridge, hasBridge } from './bridge';
@@ -947,9 +946,7 @@ export class KeyringService extends EventEmitter {
       });
 
       keyring.on('transport_error', (data) => {
-        Sentry.captureException(
-          new Error('Transport error: ' + JSON.stringify(data))
-        );
+        console.error(new Error('Transport error: ' + JSON.stringify(data)));
 
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.TRANSPORT_ERROR,
@@ -986,7 +983,6 @@ export class KeyringService extends EventEmitter {
       });
       keyring.on('error', (error) => {
         console.error(error);
-        Sentry.captureException(error);
       });
     }
 

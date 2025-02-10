@@ -5,7 +5,6 @@ import Views from './views';
 import { Message } from '@/utils/message';
 import { getUiType, getUITypeName, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
-import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import { EVENTS } from 'consts';
 import browser from 'webextension-polyfill';
@@ -14,24 +13,8 @@ import type { WalletControllerType } from 'ui/utils/WalletContext';
 
 import store from './store';
 
-import { getSentryEnv, isManifestV3 } from '@/utils/env';
+import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
-
-Sentry.init({
-  dsn:
-    'https://a864fbae7ba680ce68816ff1f6ef2c4e@o4507018303438848.ingest.us.sentry.io/4507018389749760',
-  release: process.env.release,
-  environment: getSentryEnv(),
-  ignoreErrors: [
-    'ResizeObserver loop limit exceeded',
-    'ResizeObserver loop completed with undelivered notifications',
-    'Network Error',
-    'Request limit exceeded.',
-    'Non-Error promise rejection captured with keys: code, message',
-    'Non-Error promise rejection captured with keys: message, stack',
-    'Failed to fetch',
-  ],
-});
 
 function initAppMeta() {
   const head = document.querySelector('head');

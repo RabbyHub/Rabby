@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const path = require('path');
 
 // for extension local test, can build each time
 const config = {
@@ -8,6 +9,14 @@ const config = {
   watchOptions: {
     ignored: ['**/public', '**/node_modules'],
     followSymlinks: false,
+  },
+  resolve: {
+    alias: {
+      '@ethereumjs/common': path.resolve(
+        __dirname,
+        'node_modules/@ethereumjs/common'
+      ),
+    },
   },
   plugins: [
     new webpack.DefinePlugin({

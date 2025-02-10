@@ -30,7 +30,7 @@
     "@dnd-kit/utilities": "3.0.2",
     "@eth-optimism/contracts": "0.5.32",
     "@eth-optimism/contracts-ts": "0.17.2",
-    "@ethereumjs/common": "2.5.0",
+    "@ethereumjs/common": "2.6.4",
     "@ethereumjs/tx": "3.3.2",
     "@ethereumjs/util": "9.0.3",
     "@ethereumjs/wallet": "2.0.3",
@@ -72,9 +72,6 @@
     "@safe-global/protocol-kit": "5.0.3",
     "@safe-global/sdk-starter-kit": "1.1.1",
     "@scure/bip39": "1.2.1",
-    "@sentry/browser": "6.7.2",
-    "@sentry/react": "6.7.2",
-    "@sentry/tracing": "6.19.7",
     "@spruceid/siwe-parser": "2.0.2",
     "@trezor/connect-webextension": "9.2.2",
     "@types/bignumber.js": "5.0.0",
@@ -147,7 +144,6 @@
     "webextension-polyfill": "0.7.0"
   },
   "devDependencies": {
-    "@sentry/webpack-plugin": "2.16.1",
     "@svgr/webpack": "5.5.0",
     "@types/archiver": "6.0.2",
     "@types/chrome": "0.0.263",
@@ -225,6 +221,7 @@
   },
   "resolutions": {
     "@debank/common": "^0.3.0",
+    "@ethereumjs/common": "2.6.4",
     "blake2b": "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36"
   },
   "keywords": [],

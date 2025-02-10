@@ -9,7 +9,6 @@ import { LedgerHDPathType as HDPathType } from '@/ui/utils/ledger';
 import { query2obj } from '@/ui/utils/url';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import { URDecoder } from '@ngraveio/bc-ur';
-import * as Sentry from '@sentry/browser';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import { WALLET_BRAND_CONTENT, WALLET_BRAND_TYPES } from 'consts';
@@ -69,9 +68,7 @@ export const NewUserImportKeystone = () => {
             stashKeyringIdRef.current
           );
         } else {
-          Sentry.captureException(
-            new Error('QRCodeError ' + JSON.stringify(result))
-          );
+          console.error(new Error('QRCodeError ' + JSON.stringify(result)));
           setErrorMessage(
             t(
               'Invalid QR code. Please scan the sync QR code of the hardware wallet.'
@@ -83,7 +80,7 @@ export const NewUserImportKeystone = () => {
         goToSelectAddress(stashKeyringIdRef.current);
       }
     } catch (e) {
-      Sentry.captureException(`QRCodeError ${e.message}`);
+      console.error(`QRCodeError ${e.message}`);
       setScan(false);
       setErrorMessage(
         t(

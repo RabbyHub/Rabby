@@ -79,7 +79,6 @@ import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
 import BigNumber from 'bignumber.js';
-import * as Sentry from '@sentry/browser';
 import {
   addHexPrefix,
   unpadHexString,
@@ -426,7 +425,7 @@ export class WalletController extends BaseController {
         await postGasStationOrder();
         reportGasTopUpPostGasStationOrder();
       } catch (error) {
-        Sentry.captureException(
+        console.error(
           new Error(
             'postGasStationOrder failed, params: ' +
               JSON.stringify({
@@ -2784,9 +2783,7 @@ export class WalletController extends BaseController {
       });
 
       keyring.on('transport_error', (data) => {
-        Sentry.captureException(
-          new Error('Transport error: ' + JSON.stringify(data))
-        );
+        console.error(new Error('Transport error: ' + JSON.stringify(data)));
       });
 
       keyring.on('statusChange', (data) => {
@@ -2819,7 +2816,6 @@ export class WalletController extends BaseController {
       });
       keyring.on('error', (error) => {
         console.error(error);
-        Sentry.captureException(error);
       });
     }
     this._currentWalletConnectStashId = stashId;
@@ -4868,7 +4864,7 @@ export class WalletController extends BaseController {
         nonce: nonce! - 1,
       });
     } else {
-      Sentry.captureException(
+      console.error(
         new Error(
           'topUp GasAccount tx failed, params: ' +
             JSON.stringify({
