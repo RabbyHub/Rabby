@@ -81,6 +81,11 @@ export const GridPlusManager: React.FC = () => {
 
       detectInitialHDPathType(accounts, usedHDPathType);
     } catch (e) {
+      if (e.message.match('Please forget the device and try again')) {
+        wallet
+          .requestKeyring(GRIDPLUS_TYPE, 'forgetDevice', keyringId)
+          .then(() => window.location.reload());
+      }
       console.error(e);
     }
 
