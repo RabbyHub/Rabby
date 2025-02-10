@@ -1,7 +1,6 @@
 import BroadcastChannelMessage from './message/broadcastChannelMessage';
 import PortMessage from './message/portMessage';
 import browser from 'webextension-polyfill';
-import * as Sentry from '@sentry/browser';
 import { EXTENSION_MESSAGES } from '@/constant/message';
 
 export const Message = {
@@ -54,7 +53,7 @@ export const sendReadyMessageToTabs = async () => {
         .catch((error) => {
           // An error may happen if the contentscript is blocked from loading,
           // and thus there is no runtime.onMessage handler to listen to the message.
-          Sentry.captureException(error);
+          console.error(error);
         });
     }
   }

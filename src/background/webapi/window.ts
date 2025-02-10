@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/browser';
 import browser, { Windows } from 'webextension-polyfill';
 import { EventEmitter } from 'events';
 import { IS_WINDOWS } from 'consts';
@@ -78,7 +77,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
           ...rest,
         });
       } else {
-        Sentry.captureException(`tx prompt error: ${JSON.stringify(e)}`);
+        console.error(`tx prompt error: ${JSON.stringify(e)}`);
       }
     }
   }

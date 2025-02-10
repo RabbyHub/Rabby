@@ -10,7 +10,6 @@ import { MainContainer } from './MainContainer';
 import { HDManagerStateContext } from './utils';
 import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
 import { useAsyncRetry } from 'react-use';
-import * as Sentry from '@sentry/browser';
 import { useTranslation } from 'react-i18next';
 import { Modal as CustomModal } from '@/ui/component';
 
@@ -67,7 +66,7 @@ export const BitBox02Manager: React.FC = () => {
 
     setPreventLoading(true);
     console.log(errMessage);
-    Sentry.captureException(fetchCurrentAccountsRetry.error);
+    console.error(fetchCurrentAccountsRetry.error);
 
     Modal.error({
       content: t('page.newAddress.hd.bitbox02.disconnected', [errMessage]),

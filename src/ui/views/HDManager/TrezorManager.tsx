@@ -10,7 +10,6 @@ import { HDManagerStateContext, sleep } from './utils';
 import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
 import { useAsyncRetry } from 'react-use';
 import useModal from 'antd/lib/modal/useModal';
-import * as Sentry from '@sentry/browser';
 import { useTranslation } from 'react-i18next';
 import { Modal as CustomModal } from '@/ui/component';
 import { useWallet } from '@/ui/utils';
@@ -99,7 +98,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
     } else {
       setPreventLoading(true);
       console.error(fetchCurrentAccountsRetry.error);
-      Sentry.captureException(`TrezorManager: ${errMessage}`);
+      console.error(`TrezorManager: ${errMessage}`);
 
       modal.error({
         content: t('page.newAddress.hd.trezor.message.disconnected', [HDName]),

@@ -1,5 +1,4 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import * as Sentry from '@sentry/browser';
 import Common, { Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
@@ -666,18 +665,16 @@ class ProviderController extends BaseController {
         type: is1559 ? '0x2' : '0x0',
       });
 
-      // Report address type(not sensitive information) to sentry when tx signature is invalid
+      // Log address type(not sensitive information) when tx signature is invalid (NOTE: This was originally logging to Sentry)
       if (!buildTx.verifySignature()) {
         if (!buildTx.v) {
-          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
+          console.error(new Error(`v missed, ${keyring.type}`));
         } else if (!buildTx.s) {
-          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
+          console.error(new Error(`s missed, ${keyring.type}`));
         } else if (!buildTx.r) {
-          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
+          console.error(new Error(`r missed, ${keyring.type}`));
         } else {
-          Sentry.captureException(
-            new Error(`invalid signature, ${keyring.type}`)
-          );
+          console.error(new Error(`invalid signature, ${keyring.type}`));
         }
       }
       signedTransactionSuccess = true;

@@ -10,7 +10,6 @@ import {
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import * as Sentry from '@sentry/browser';
 import { Drawer, message, Modal } from 'antd';
 import { maxBy } from 'lodash';
 import {
@@ -145,9 +144,7 @@ export const normalizeTxParams = (tx) => {
       }
     }
   } catch (e) {
-    Sentry.captureException(
-      new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`)
-    );
+    console.error(new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`));
   }
   return copy;
 };

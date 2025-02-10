@@ -2,7 +2,6 @@ import browser, { Windows } from 'webextension-polyfill';
 import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { v4 as uuidv4 } from 'uuid';
-import * as Sentry from '@sentry/browser';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 import {
@@ -171,9 +170,7 @@ class NotificationService extends Events {
       this.currentApproval = approval;
       this.openNotification(approval.winProps, true);
     } catch (e) {
-      Sentry.captureException(
-        'activeFirstApproval failed: ' + JSON.stringify(e)
-      );
+      console.error('activeFirstApproval failed: ' + JSON.stringify(e));
       this.clear();
     }
   };
