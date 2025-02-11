@@ -13,7 +13,7 @@ import {
   EthSafeMessage,
   EthSafeSignature,
   hashSafeMessage,
-  SigningMethod
+  SigningMethod,
 } from '@safe-global/protocol-kit';
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 export const keyringType = 'Gnosis';
