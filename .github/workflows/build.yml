@@ -84,7 +84,7 @@ jobs:
         run: yarn build:pro
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: Rabby_${{github.sha}}
@@ -92,7 +92,7 @@ jobs:
           retention-days: 7
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'push' }}
         with:
           name: Rabby_${{github.ref_name}}
@@ -129,7 +129,7 @@ jobs:
         run: yarn build:debug
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: Rabby_${{github.sha}}_debug
@@ -137,7 +137,7 @@ jobs:
           retention-days: 7
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'push' }}
         with:
           name: Rabby_${{github.ref_name}}_debug
