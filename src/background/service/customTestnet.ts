@@ -5,7 +5,7 @@ import { GasLevel, Tx } from 'background/service/openapi';
 import { createPersistStore, withTimeout } from 'background/utils';
 import { BigNumber } from 'bignumber.js';
 import { intToHex } from 'ethereumjs-util';
-import { omit, sortBy } from 'lodash';
+import { omitBy, sortBy } from 'lodash';
 import { createClient, defineChain, erc20Abi, http, isAddress } from 'viem';
 import {
   estimateGas,
@@ -22,7 +22,7 @@ import RPCService, { RPCServiceStore } from './rpc';
 import { storage } from '../webapi';
 import { ga4 } from '@/utils/ga4';
 
-const MAX_READ_CONTRACT_TIME = 8000;
+const MAX_READ_CONTRACT_TIME = 15_000;
 
 export interface TestnetChainBase {
   id: number;
@@ -105,6 +105,13 @@ class CustomTestnetService {
       },
     });
     this.store = storageCache || this.store;
+    const coped = { ...this.store.customTestnet };
+    Object.keys(coped).forEach((key) => {
+      if (!/^\d+$/.test(key)) {
+        delete coped[key];
+      }
+    });
+    this.store.customTestnet = coped;
     const rpcStorage: RPCServiceStore = await storage.get('rpc');
     Object.values(this.store.customTestnet).forEach((chain) => {
       const config =
@@ -115,6 +122,7 @@ class CustomTestnetService {
       const client = createClientByChain(config);
       this.chains[chain.id] = client;
     });
+
     this.syncChainList();
     this.fetchLogos().then(() => {
       this.syncChainList();
@@ -129,6 +137,7 @@ class CustomTestnetService {
   };
 
   _update = async (chain: TestnetChainBase, isAdd?: boolean) => {
+    chain.id = +chain.id;
     const local = findChain({
       id: +chain.id,
     });
@@ -204,9 +213,11 @@ class CustomTestnetService {
   };
 
   remove = (chainId: number) => {
-    this.store.customTestnet = omit(this.store.customTestnet, chainId);
+    this.store.customTestnet = omitBy(this.store.customTestnet, (item) => {
+      return +chainId === +item.id;
+    });
     this.store.customTokenList = this.store.customTokenList.filter((item) => {
-      return item.chainId !== chainId;
+      return +item.chainId !== +chainId;
     });
     delete this.chains[chainId];
     this.syncChainList();
@@ -743,6 +754,7 @@ const createClientByChain = (chain: TestnetChainBase) => {
 };
 
 export const createTestnetChain = (chain: TestnetChainBase): TestnetChain => {
+  chain.id = +chain.id;
   return {
     ...chain,
     id: +chain.id,

@@ -42,7 +42,7 @@ export const TestnetChainList = ({
     }
   }, [visible]);
 
-  const moreLen = chainList.length - COUNT;
+  const moreLen = chainList.length > COUNT ? chainList.length - COUNT : 0;
 
   // if (balanceLoading) {
   //   return (
@@ -88,7 +88,7 @@ export const TestnetChainList = ({
           </div>
         );
       })}
-      {!showMore && moreLen > COUNT ? (
+      {!showMore && moreLen ? (
         <div
           className={clsx(
             'cursor-pointer text-12 underline text-r-neutral-foot leading-[20px]',

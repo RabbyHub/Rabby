@@ -13,10 +13,16 @@
       },
       "txHistory": {
         "tipInputData": "取引にはメッセージが含まれています",
-        "parseInputDataError": "メッセージの解析に失敗"
+        "parseInputDataError": "メッセージの解析に失敗",
+        "scamToolTip": "この取引は詐欺師によって発信され、詐欺トークン及びNFTを送信するものです。これに関与しないでください。"
       },
       "modalViewMessage": {
         "title": "メッセージを表示"
+      },
+      "filterScam": {
+        "title": "スキャム取引を非表示にする",
+        "btn": "スキャム取引を非表示",
+        "loading": "読み込みには時間がかかる場合があり、データの遅延が発生する可能性があります。"
       }
     },
     "chainList": {
@@ -78,7 +84,8 @@
         "slippageFailToLoad": "スリッページ許容値の読み込みに失敗",
         "slippageTolerance": "スリッページ許容値",
         "receiver": "受取人",
-        "notPaymentAddress": "支払いアドレスではありません"
+        "notPaymentAddress": "支払いアドレスではありません",
+        "unknownAddress": "不明なアドレス"
       },
       "crossChain": {
         "title": "クロスチェーン"
@@ -101,7 +108,10 @@
         "cexAddress": "CEXアドレス",
         "addressBalanceTitle": "アドレスの残高",
         "whitelistTitle": "ホワイトリスト",
-        "notOnWhitelist": "私のホワイトリストにはありません"
+        "notOnWhitelist": "私のホワイトリストにはありません",
+        "fromMySeedPhrase": "私のシードフレーズから",
+        "scamAddress": "詐欺アドレス",
+        "fromMyPrivateKey": "私のプライベートキーから"
       },
       "tokenApprove": {
         "title": "トークンの承認",
@@ -113,7 +123,9 @@
         "deployTimeLessThan": "展開時間 < {{value}} 日",
         "amountPopupTitle": "金額",
         "flagByRabby": "Rabbyによってフラグが付けられた",
-        "contractTrustValueTip": "信頼値は、この契約に対して承認され、露出しているトータルトークンを指します。低い信頼値は、180日の非活動またはリスクを示しています。"
+        "contractTrustValueTip": "信頼値は、この契約に対して承認され、露出しているトータルトークンを指します。低い信頼値は、180日の非活動またはリスクを示しています。",
+        "amount": "承認金額：",
+        "exceed": "現在の残高を超えています"
       },
       "revokeTokenApprove": {
         "title": "トークン承認を取り消し",
@@ -160,7 +172,9 @@
         "operation": "操作",
         "operationABIDesc": "操作はABIからデコードされます",
         "operationCantDecode": "操作はデコードされません",
-        "payNativeToken": "{{symbol}} を支払う"
+        "payNativeToken": "{{symbol}} を支払う",
+        "receiver": "受取人アドレス",
+        "suspectedReceiver": "例外アドレス"
       },
       "revokePermit2": {
         "title": "Permit2トークン承認を取り消す"
@@ -200,7 +214,131 @@
       "trustValue": "信頼値",
       "importedDelegatedAddress": "インポートされた委任アドレス",
       "noDelegatedAddress": "インポートされた委任アドレスがありません",
-      "coboSafeNotPermission": "この委任アドレスは、このトランザクションを開始する権限がありません"
+      "coboSafeNotPermission": "この委任アドレスは、このトランザクションを開始する権限がありません",
+      "gasAccount": {
+        "currentTxCost": "送金されたガス量：",
+        "totalCost": "総コスト:",
+        "estimatedGas": "推定Gas：",
+        "sendGas": "現在のトランザクションに対するGasの送金:",
+        "gasCost": "ガスをあなたのアドレスに転送する際のガスコスト：",
+        "maxGas": "Max Gas: "
+      },
+      "customRPCErrorModal": {
+        "title": "カスタム RPC エラー",
+        "button": "カスタムRPCを無効にする",
+        "content": "ご使用のカスタムRPCは現在利用できません。これを無効にしてRabbyの公式RPCを使用して署名を続けることができます。"
+      },
+      "transferOwner": {
+        "description": "説明",
+        "transferTo": "転送先",
+        "title": "資産の所有権を移転"
+      },
+      "swapLimitPay": {
+        "title": "トークンスワップ制限支払い",
+        "maxPay": "最大支払い"
+      },
+      "batchRevokePermit2": {
+        "title": "一括 Revoke Permit2 Approval"
+      },
+      "revokePermit": {
+        "title": "許可トークン承認を取り消す"
+      },
+      "assetOrder": {
+        "receiveAsset": "資産を受け取る",
+        "title": "資産オーダー",
+        "listAsset": "資産をリストする"
+      },
+      "BroadcastMode": {
+        "instant": {
+          "desc": "トランザクションは直ちにネットワークにブロードキャストされます。",
+          "title": "即時"
+        },
+        "lowGas": {
+          "title": "ガス節約",
+          "desc": "ネットワークのガスが低い時にトランザクションがブロードキャストされます。"
+        },
+        "mev": {
+          "desc": "トランザクションは指定されたMEVノードにブロードキャストされます",
+          "title": "MEV Guarded"
+        },
+        "tips": {
+          "notSupported": "サポートされていません",
+          "walletConnect": "WalletConnectではサポートされていません",
+          "notSupportChain": "このチェーンではサポートされていません",
+          "customRPC": "カスタムRPCを使用するときはサポートされていません"
+        },
+        "lowGasDeadline": {
+          "1h": "1時間",
+          "4h": "4h",
+          "24h": "24h",
+          "label": "タイムアウト"
+        },
+        "title": "ブロードキャストモード"
+      },
+      "SafeNonceSelector": {
+        "explain": {
+          "contractCall": "コントラクトコール",
+          "send": "トークンを送信",
+          "unknown": "不明なTransaction"
+        },
+        "optionGroup": {
+          "replaceTitle": "キュー内のトランザクションを置き換える",
+          "recommendTitle": "推奨nonce"
+        },
+        "option": {
+          "new": "新しいトランザクション"
+        },
+        "error": {
+          "pendingList": "保留中のトランザクションを読み込めません、<1/><2>再試行</2>"
+        }
+      },
+      "coboSafeCreate": {
+        "safeWalletTitle": "セーフ{Wallet}",
+        "descriptionTitle": "説明",
+        "title": "Cobo Safe を作成"
+      },
+      "coboSafeModificationRole": {
+        "title": "セーフロール変更を送信",
+        "descriptionTitle": "説明",
+        "safeWalletTitle": "Safe{Wallet}"
+      },
+      "coboSafeModificationDelegatedAddress": {
+        "descriptionTitle": "説明",
+        "safeWalletTitle": "セーフ{Wallet}",
+        "title": "委任されたアドレス変更を提出"
+      },
+      "coboSafeModificationTokenApproval": {
+        "descriptionTitle": "説明",
+        "title": "トークン承認の修正を送信",
+        "safeWalletTitle": "Safe{Wallet}"
+      },
+      "common": {
+        "interactContract": "コントラクトとインタラクトする",
+        "descTipSafe": "署名は資産の変更やアドレスの所有権の確認を引き起こしません",
+        "description": "説明",
+        "descTipWarningAssets": "署名により資産が変更される可能性があります",
+        "descTipWarningPrivacy": "署名によりアドレス所有権を検証できます。",
+        "descTipWarningBoth": "署名は資産の変更を引き起こす可能性があり、アドレスの所有権を確認します。"
+      },
+      "gasAccountForGas": "GasAccount の USD を使用してガス代を支払う",
+      "nativeTokenForGas": "{{chainName}}でのガス料金の支払いに{{tokenName}}トークンを使用",
+      "chain": "チェーン",
+      "decodedTooltip": "この署名は Rabby Wallet によってデコードされます。",
+      "importedAddress": "インポートされたアドレス",
+      "l2GasEstimateTooltip": "L2チェーンのガス見積もりにはL1ガス料金は含まれていません。実際の料金は現在の見積もりよりも高くなります。",
+      "address": "アドレス",
+      "yes": "はい",
+      "no": "いいえ",
+      "hasInteraction": "以前にインタラクションあり",
+      "advancedSettings": "詳細設定",
+      "contract": "スマートコントラクト",
+      "protocol": "プロトコル",
+      "amount": "量",
+      "maxPriorityFeeDisabledAlert": "最初にGas Priceを設定してください",
+      "label": "ラベル",
+      "trustValueTitle": "信頼の価値",
+      "addressSource": "アドレスソース",
+      "typedDataMessage": "型付きデータに署名"
     },
     "signFooterBar": {
       "requestFrom": "リクエスト元",
@@ -241,7 +379,8 @@
         "seedPhrase": "シードフレーズアドレス",
         "watchAddress": "ウォッチオンリーアドレスで署名できません",
         "safe": "セーフアドレス",
-        "coboSafe": "Cobo Argusアドレス"
+        "coboSafe": "Cobo Argusアドレス",
+        "seedPhraseWithPassphrase": "Seed Phrase アドレス（Passphrase）"
       },
       "qrcode": {
         "signWith": "{{brand}}で署名",
@@ -274,7 +413,51 @@
       "resend": "再試行",
       "submitTx": "トランザクションを送信",
       "testnet": "テストネット",
-      "mainnet": "メインネット"
+      "mainnet": "メインネット",
+      "gasless": {
+        "GetFreeGasToSign": "無料Gasを取得",
+        "watchUnavailableTip": "Watch-only addressはFree Gasをサポートしていません",
+        "unavailable": "ガス残高が不足しています。",
+        "walletConnectUnavailableTip": "モバイルウォレットがWalletConnectを通じて接続されている場合、Free Gasはサポートされていません。",
+        "notEnough": "Gas残高が足りません",
+        "rabbyPayGas": "Rabbyが必要なガス料金を支払います– 署名するだけ",
+        "customRpcUnavailableTip": "カスタムRPCはFree Gasをサポートしていません。"
+      },
+      "gasAccount": {
+        "gotIt": "了解しました",
+        "chainNotSupported": "このチェーンはGasAccountでサポートされていません。",
+        "login": "ログイン",
+        "customRPC": "カスタムRPCを使用する場合はサポートされていません",
+        "useGasAccount": "GasAccountを使用する",
+        "loginFirst": "GasAccount にまずログインしてください。",
+        "notEnough": "GasAccount が不足しています",
+        "WalletConnectTips": "GasAccountではWalletConnectはサポートされていません。",
+        "deposit": "入金"
+      },
+      "keystone": {
+        "txRejected": "トランザクションが拒否されました",
+        "mismatchedWalletError": "ウォレットが一致しません。",
+        "signWith": "{{method}}で署名に切り替え",
+        "verifyPasswordError": "署名失敗、ロック解除後に再試行してください。",
+        "siging": "署名リクエストを送信中",
+        "shouldRetry": "エラーが発生しました。もう一度お試しください。",
+        "unsupportedType": "エラー: トランザクションタイプがサポートされていないか、未知です。",
+        "shouldOpenKeystoneHomePageError": "Keystone 3 Pro をホームページに表示させてください。",
+        "misMatchSignId": "トランザクションデータが一致しません。トランザクションの詳細を確認してください。",
+        "hardwareRejectError": "Keystoneリクエストがキャンセルされました。続行するには、再承認してください。",
+        "qrcodeDesc": "スキャンして署名します。署名後、以下をクリックして署名を取得してください。USBの場合、再接続して認証し、署名プロセスを再開します。"
+      },
+      "keystoneNotConnected": "Keystoneは接続されていません",
+      "keystoneConnected": "Keystone が接続されました",
+      "cancelConnection": "接続をキャンセル",
+      "cancelAll": "すべての {{count}} 件の要求をDappからキャンセルします",
+      "imKeyNotConnected": "imKeyは接続されていません",
+      "imKeyConnected": "imKey が接続されています",
+      "blockDappFromSendingRequests": "Dappが1分間リクエストを送信するのをブロック。",
+      "cancelCurrentConnection": "現在の接続をキャンセル",
+      "cancelTransaction": "トランザクションをキャンセル",
+      "cancelCurrentTransaction": "現在のトランザクションをキャンセルする",
+      "detectedMultipleRequestsFromThisDapp": "このDappからの複数のリクエストを検出しました。"
     },
     "signTypedData": {
       "signTypeDataOnChain": "{{chain}}の型付きデータに署名",
@@ -334,13 +517,21 @@
         },
         "tips": {
           "pendingDetail": "最も高いガス価格を持つものがほとんどの場合、完了する唯一のトランザクションです",
-          "canNotCancel": "スピードアップまたはキャンセルできません: 最初の保留中のtxnではありません"
+          "canNotCancel": "スピードアップまたはキャンセルできません: 最初の保留中のtxnではありません",
+          "pendingBroadcastRetryBtn": "再放送",
+          "pendingBroadcastBtn": "今すぐBroadcast",
+          "pendingBroadcastRetry": "ブロードキャストに失敗しました。最終試行: {{pushAt}}",
+          "pendingBroadcast": "ガス節約モード: ネットワーク手数料が低くなるのを待っています。最大 {{deadline}} 時間待ちます。"
         },
         "status": {
           "canceled": "キャンセル済み",
           "failed": "失敗",
           "submitFailed": "送信に失敗",
-          "pending": "保留中"
+          "pending": "保留中",
+          "pendingBroadcast": "保留中: to be broadcasted",
+          "pendingBroadcasted": "保留中: broadcasted",
+          "withdrawed": "クイックキャンセル",
+          "pendingBroadcastFailed": "保留中: ブロードキャストに失敗しました"
         },
         "txType": {
           "initial": "初期tx",
@@ -362,12 +553,45 @@
             "removeLocalPendingTx": {
               "title": "トランザクションをローカルで削除",
               "desc": "長い保留時間によって引き起こされるトランザクションブロックを修正"
+            },
+            "quickCancel": {
+              "tips": "未送信のトランザクションのみ対応",
+              "title": "クイックキャンセル",
+              "desc": "ブロードキャスト前にキャンセルすると、ガス料金がかかりません。"
+            },
+            "onChainCancel": {
+              "title": "オンチェーンキャンセル",
+              "desc": "新しいキャンセルするためのトランザクション、ガスが必要です"
             }
           },
           "removeLocalPendingTx": {
             "title": "トランザクションをローカルで削除",
             "desc": "このアクションにより、保留中のトランザクションがローカルで削除されます。\n保留中のトランザクションは今後も正常に送信される可能性があります。"
-          }
+          },
+          "title": "トランザクションをキャンセル"
+        },
+        "MempoolList": {
+          "reBroadcastBtn": "再ブロードキャスト",
+          "empty": "どのノードにも見つかりません",
+          "title": "{{count}} RPC ノードに表示されました"
+        },
+        "message": {
+          "cancelSuccess": "キャンセルされました",
+          "broadcastSuccess": "放送済み",
+          "reBroadcastSuccess": "再送信されました",
+          "deleteSuccess": "削除に成功しました"
+        },
+        "gas": {
+          "noCost": "ガス手数料なし"
+        },
+        "SkipNonceAlert": {
+          "clearPendingAlert": "{{chainName}} トランザクション ({{nonces}}) は3分以上保留されています。このチェーンで保留中のトランザクションを<6>クリア</6>し、新しいものを開始できます。",
+          "alert": "Nonce #{{nonce}} は {{chainName}} チェーンでスキップされました。これにより、先に保留中のトランザクションが発生する可能性があります。<5></5> <6>チェーン上でトランザクションを送信</6> <7></7>して解決してください。"
+        },
+        "PredictTime": {
+          "failed": "パッキング時間の予測に失敗しました。",
+          "time": "予想されるパック完了時刻: {{time}}",
+          "noTime": "パッキング時間が予測されています"
         }
       },
       "signedText": {
@@ -471,7 +695,8 @@
       }
     },
     "sendTokenComponents": {
-      "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました"
+      "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました",
+      "SwitchReserveGas": "予備 Gas <1 />"
     },
     "sendNFT": {
       "header": {
@@ -517,7 +742,8 @@
         "table": {
           "bodyEmpty": {
             "loadingText": "読み込み中...",
-            "noMatchText": "該当なし"
+            "noMatchText": "該当なし",
+            "noDataText": "承認なし"
           }
         },
         "ApprovalContractItem": {
@@ -527,7 +753,12 @@
         "RevokeButton": {
           "btnText_zero": "取り消し",
           "btnText_one": "取り消し ({{count}})",
-          "btnText_other": "取り消し ({{count}})"
+          "btnText_other": "取り消し ({{count}})",
+          "permit2Batch": {
+            "modalContent": "同じPermit2コントラクトからの承認は、同じ署名の下にまとめられます。",
+            "modalTitle_other": "合計で <2>{{count}}</2> つの署名が必要です",
+            "modalTitle_one": "<2>{{count}}</2> 件の署名が必要です"
+          }
         },
         "ViewMore": {
           "text": "詳細を表示"
@@ -572,7 +803,43 @@
         "subTitleContract": "以下の契約への承認",
         "selectAll": "すべて選択",
         "confirm": "{{ selectedCount }} を確認",
-        "title": "承認"
+        "title": "承認",
+        "unSelectAll": "すべての選択を解除",
+        "tooltipPermit2": "この承認はPermit2コントラクトを通じて承認されています：\n{{ permit2Id }}"
+      },
+      "revokeModal": {
+        "approvalCount_one": "{{count}} approval",
+        "totalRevoked": "合計：",
+        "batchRevoke": "一括Revoke",
+        "resume": "続行",
+        "cancelTitle": "残りのRevokeをキャンセルする",
+        "confirmTitle": "ワンクリックで一括無効化",
+        "signAndStartRevoke": "署名して取り消しを開始",
+        "done": "完了",
+        "pause": "一時停止",
+        "confirmRevokePrivateKey": "シードフレーズまたはプライベートキーアドレスを使用して、1クリックで{{count}}件の承認を一括で取り消すことができます。",
+        "confirm": "確認",
+        "revokeOneByOne": "一つずつRevoke",
+        "revoked": "無効化済み:",
+        "cancelBody": "このページを閉じると、残りのrevokeは実行されません。",
+        "approvalCount_zero": "{{count}} 件の承認",
+        "confirmRevokeLedger": "Ledgerアドレスを使用すると、1クリックで{{count}}件の承認を一括で取り消すことができます。",
+        "approvalCount_other": "{{count}} approvals",
+        "connectLedger": "Ledger に接続",
+        "submitTxFailed": "提出に失敗しました",
+        "ledgerAlert": "LedgerデバイスでEthereum Appを開いてください。",
+        "gasTooHigh": "Gas fee is high",
+        "stillRevoke": "まだRevoke",
+        "paused": "一時停止しました",
+        "ledgerSending": "署名要求を送信中 ({{current}}/{{total}})",
+        "defaultFailed": "トランザクションが失敗しました",
+        "ledgerSended": "Ledgerでリクエストに署名してください ({{current}}/{{total}})",
+        "revokeWithLedger": "Ledger でRevokeを開始",
+        "waitInQueue": "キューで待機",
+        "ledgerSigned": "署名済み。トランザクションを作成中 ({{current}}/{{total}})",
+        "useGasAccount": "ガス残高が少なくなっています。GasAccountがガス料金をカバーします。",
+        "simulationFailed": "シミュレーション失敗",
+        "gasNotEnough": "Gasが不足しているため、送信できません"
       }
     },
     "gasTopUp": {
@@ -666,7 +933,43 @@
       "tradingSettingTip2": "2. Rabby は取引所の契約から発生するリスクについて責任を負いません",
       "gas-fee": "ガス料金: {{gasUsed}}",
       "estimate": "見積もり:",
-      "actual": "実際:"
+      "actual": "実際:",
+      "rabbyFee": {
+        "button": "了解しました",
+        "rate": "手数料率",
+        "title": "Rabby fee",
+        "wallet": "ウォレット",
+        "bridgeDesc": "Rabby Walletは常にトップアグリゲーターから可能な限り最良のレートを見つけ、それらのオファーの信頼性を検証します。Rabbyは0.25%の手数料を請求し、この手数料は見積もりに自動的に含まれます。",
+        "swapDesc": "Rabby Walletは常にトップアグリゲーターから可能な限り最良のレートを見つけ、その提案の信頼性を確認します。Rabbyは0.25%の手数料（ラッピングには0%）を請求し、これは見積もりに自動的に含まれます。"
+      },
+      "lowCreditModal": {
+        "desc": "低い信用価値は、ハニーポットトークンや非常に低い流動性のような高いリスクを示すことが多いです。",
+        "title": "このトークンはクレジット価値が低いです。"
+      },
+      "max": "MAX",
+      "sort-with-gas": "ガスでソート",
+      "approve-swap": "承認してスワップ",
+      "hidden-no-quote-rates_other": "{{count}} rates unavailable",
+      "from": "から",
+      "Gas-fee-too-high": "Gas fee が高すぎます。",
+      "approve-and-swap": "{{name}} で承認してスワップする",
+      "no-slippage-for-wrap": "ラップの場合、スリッページはありません",
+      "no-fee-for-wrap": "Wrap に Rabby 手数料はかかりません。",
+      "preferMEV": "MEV保護を優先",
+      "hidden-no-quote-rates_one": "{{count}} rate unavailable",
+      "two-step-approve": "2 つのトランザクションに署名してアローワンスを変更してください。",
+      "process-with-two-step-approve": "2段階承認を進める",
+      "usd-after-fees": "≈ {{usd}}",
+      "no-fees-for-wrap": "Wrap に Rabby 手数料はかかりません。",
+      "Auto": "自動",
+      "no-quote-found": "見積もりが見つかりませんでした",
+      "fetch-best-quote": "最適な見積もりを取得中",
+      "source": "ソース",
+      "price-impact": "価格への影響",
+      "two-step-approve-details": "トークン USDT の許可変更には 2 つのトランザクションが必要です。まず、許可をゼロにリセットし、その後に新しい許可の値を設定する必要があります。",
+      "No-available-quote": "利用できるレートはありません",
+      "loss-tips": "{{usd}}を失っています。小さな市場で少額を試してください。",
+      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。"
     },
     "manageAddress": {
       "no-address": "アドレスがありません",
@@ -702,7 +1005,15 @@
       "backup-seed-phrase": "シードフレーズのバックアップ",
       "delete-all-addresses-but-keep-the-seed-phrase": "すべてのアドレスを削除してシードフレーズを保持",
       "delete-all-addresses-and-the-seed-phrase": "すべてのアドレスとシードフレーズを削除",
-      "seed-phrase-delete-title": "シードフレーズを削除しますか？"
+      "seed-phrase-delete-title": "シードフレーズを削除しますか？",
+      "sort-by-balance": "残高で並べ替え",
+      "sort-by-address-type": "アドレスタイプで並べ替え",
+      "sort-address": "アドレスの並べ替え",
+      "addNewAddress": "新しいアドレスを追加",
+      "passphraseError": "パスフレーズが無効です",
+      "sort-by-address-note": "アドレスノートで並べ替え",
+      "enterPassphraseTitle": "パスフレーズを入力して署名",
+      "enterThePassphrase": "パスフレーズを入力してください"
     },
     "dashboard": {
       "home": {
@@ -718,7 +1029,10 @@
           "feedback": "フィードバック",
           "more": "詳細",
           "manageAddress": "アドレス管理",
-          "nft": "NFT"
+          "nft": "NFT",
+          "ecology": "エコシステム",
+          "rabbyPoints": "Rabby Points",
+          "bridge": "Bridge"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -738,7 +1052,10 @@
           "count": "{{count}} 件 in"
         },
         "whatsNew": "新着情報",
-        "importType": "{{type}} によってインポート"
+        "importType": "{{type}} によってインポート",
+        "chainEnd": "チェーン",
+        "chain": "チェーン，",
+        "missingDataTooltip": "現在の{{text}}のネットワーク問題により、残高が更新されない場合があります。"
       },
       "recentConnection": {
         "disconnected": "切断済み",
@@ -751,14 +1068,19 @@
         "disconnectAll": "すべて切断",
         "disconnectRecentlyUsed": {
           "title": "最近使用した<strong>{{count}}</strong>つのDAppを切断",
-          "description": "固定されたDAppsは接続されたままです"
+          "description": "固定されたDAppsは接続されたままです",
+          "title_one": "<strong>{{count}}</strong> 個の接続されたDappを切断する",
+          "title_other": "<strong>{{count}}</strong> 個の接続された Dapp を切断する"
         },
         "title": "接続されたDapp",
         "pinned": "固定済み",
         "noPinnedDapps": "固定されたDappはありません",
         "dragToSort": "並べ替えるにはドラッグ",
         "recentlyConnected": "最近接続した",
-        "noRecentlyConnectedDapps": "最近接続したDappはありません"
+        "noRecentlyConnectedDapps": "最近接続したDappはありません",
+        "dapps": "Dapps",
+        "noConnectedDapps": "接続されているDappsはありません",
+        "metamaskModeTooltip": "このDappでRabbyに接続できませんか？<1>MetaMaskモード</1>を有効にしてみてください。"
       },
       "feedback": {
         "directMessage": {
@@ -803,7 +1125,12 @@
         "learnMoreOnDebank": "DeBankで詳細を確認",
         "rabbyValuedUserNo": "Rabby 評価ユーザー番号{{num}}",
         "claimSuccess": "クレーム成功",
-        "viewOnDebank": "DeBankで表示"
+        "viewOnDebank": "DeBankで表示",
+        "rabbyFreeGasUserNo": "Rabby Free Gas User No.{{num}}",
+        "freeGasTitle": "無料ガスバッジを請求",
+        "freeGasNoCode": "以下のボタンをクリックしてDeBankにアクセスし、現在のアドレスを使用してクレームコードを取得してください。",
+        "learnMore": "詳細情報",
+        "freeGasTip": "Free Gasを使用してトランザクションに署名してください。ガスが足りない場合は、'Free Gas' ボタンが自動的に表示されます。"
       },
       "contacts": {
         "noDataLabel": "データなし",
@@ -848,14 +1175,18 @@
         "updateVersion": {
           "content": "新しいRabby Walletのアップデートが利用可能です。手動でアップデート方法を確認するにはクリックしてください。",
           "okText": "チュートリアルを見る",
-          "successTip": "最新バージョンを使用中です"
+          "successTip": "最新バージョンを使用中です",
+          "title": "アップデート利用可能"
         },
         "features": {
           "label": "機能",
           "lockWallet": "ウォレットをロック",
           "signatureRecord": "署名レコード",
           "manageAddress": "アドレスを管理",
-          "connectedDapp": "接続されたDapp"
+          "connectedDapp": "接続されたDapp",
+          "gasTopUp": "ガストップアップ",
+          "searchDapps": "Dappsを検索",
+          "rabbyPoints": "Rabby Points"
         },
         "settings": {
           "label": "設定",
@@ -863,7 +1194,11 @@
           "customRpc": "",
           "metamaskPreferredDapps": "MetaMask 優先Dapps",
           "currentLanguage": "現在の言語",
-          "enableTestnets": "テストネットを有効にする"
+          "enableTestnets": "テストネットを有効にする",
+          "themeMode": "テーマモード",
+          "metamaskMode": "MetaMask モード",
+          "toggleThemeMode": "テーマモード",
+          "customTestnet": "カスタムネットワークを追加"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
@@ -889,7 +1224,9 @@
         "receive": "受取",
         "noTransactions": "トランザクションなし",
         "customizedButton": "カスタマイズ",
-        "blockedButton": "ブロック"
+        "blockedButton": "ブロック",
+        "customizedButtons": "カスタムトークン",
+        "blockedButtons": "ブロックされたトークン"
       },
       "assets": {
         "usdValue": "USD 価値",
@@ -928,7 +1265,10 @@
           "summaryDescription": "すべてのプロトコル内のアセット（LPトークンなど）は統計計算のために基礎アセットに解決されます",
           "noMatch": "一致なし",
           "lowValueDescription": "低価値アセットがここに表示されます",
-          "lowValueAssets": "{{count}}の低価値アセット"
+          "lowValueAssets": "{{count}}の低価値アセット",
+          "lowValueAssets_0": "{{count}} 個の low value token",
+          "lowValueAssets_one": "{{count}} low value token",
+          "lowValueAssets_other": "{{count}} 個の低価値トークン"
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
@@ -938,7 +1278,31 @@
         "customLinkText": "カスタムトークンを追加するためのアドレスを検索",
         "customDescription": "ユーザーによって追加されたカスタムトークンがここに表示されます",
         "comingSoon": "近日公開...",
-        "searchPlaceholder": "トークン"
+        "searchPlaceholder": "トークン",
+        "AddMainnetToken": {
+          "searching": "トークンを検索中",
+          "title": "カスタムトークンを追加",
+          "selectChain": "チェーンを選択",
+          "tokenAddress": "トークンアドレス",
+          "tokenAddressPlaceholder": "トークンアドレス",
+          "isBuiltInToken": "トークンは既にサポートされています。",
+          "notFound": "トークンが見つかりません"
+        },
+        "AddTestnetToken": {
+          "tokenAddress": "トークンアドレス",
+          "tokenAddressPlaceholder": "トークンアドレス",
+          "selectChain": "チェーンを選択",
+          "searching": "トークンを検索中",
+          "title": "カスタムネットワークトークンを追加",
+          "notFound": "トークンが見つかりません"
+        },
+        "TestnetAssetListContainer": {
+          "addTestnet": "ネットワーク",
+          "add": "トークン"
+        },
+        "addTokenEntryText": "トークン",
+        "noTestnetAssets": "カスタムネットワーク資産なし",
+        "customButtonText": "カスタムトークンを追加"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -947,9 +1311,37 @@
           "doc1": "シングルLedgerを接続します",
           "doc2": "PINを入力してロックを解除します",
           "doc3": "Ethereumアプリを開きます",
-          "reconnect": "うまくいかない場合は、<1>最初から再接続を試してみてください。</1>"
+          "reconnect": "うまくいかない場合は、<1>最初から再接続を試してみてください。</1>",
+          "connected": "Ledger connected"
         },
-        "howToSwitch": "切り替え方法"
+        "howToSwitch": "切り替え方法",
+        "keystone": {
+          "reconnect": "うまくいかない場合は、<1>最初から再接続してみてください。</1>",
+          "doc3": "コンピュータへの接続を承認する",
+          "title": "Keystone 3 Proがホームページにあることを確認してください",
+          "doc2": "パスワードを入力して、ロックを解除してください。",
+          "doc1": "Keystoneを1つ接続する"
+        },
+        "imkey": {
+          "doc1": "imKey を一つ接続する",
+          "doc2": "ピンを入力してロックを解除"
+        },
+        "ledgerIsDisconnected": "Ledger が接続されていません。",
+        "howToConnectKeystone": "Keystone を接続する方法",
+        "howToConnectImKey": "imKeyを接続する方法"
+      },
+      "GnosisWrongChainAlertBar": {
+        "warning": "Safe address does not support {{chain}}"
+      },
+      "echologyPopup": {
+        "title": "エコシステム"
+      },
+      "MetamaskModePopup": {
+        "title": "MetaMaskモード",
+        "footerText": "その他 > MetaMaskモードでMetaMaskモードにさらにDappを追加",
+        "desc": "RabbyをDappで接続できない場合は、MetaMaskモードを有効にし、MetaMaskオプションを選択して接続してください。",
+        "enableDesc": "MetaMaskでのみ動作するDappの場合は有効にする",
+        "toastSuccess": "有効になりました。ページを更新して再接続してください。"
       }
     },
     "nft": {
@@ -1019,7 +1411,19 @@
         "verifySeedPhrase": "シードフレーズを検証",
         "fillInTheBackupSeedPhraseInOrder": "バックアップシードフレーズを順番に入力してください",
         "wordPhrase": "私は<1>{{count}}</1>単語フレーズを持っています",
-        "clearAll": "すべてクリア"
+        "clearAll": "すべてクリア",
+        "slip39SeedPhrasePlaceholder_few": "{{count}} 番目のシードフレーズの共有をここに入力してください",
+        "slip39SeedPhrase": "<0>{{SLIP39}}</0> シードフレーズを持っています。",
+        "invalidContent": "無効なコンテンツ",
+        "slip39SeedPhrasePlaceholder_other": "ここにあなたの{{count}}番目のシードフレーズシェアを入力してください",
+        "passphrase": "パスフレーズ",
+        "slip39SeedPhraseWithPassphrase": "私はパスフレーズ付きの<0>{{SLIP39}}</0>シードフレーズを持っています。",
+        "pastedAndClear": "貼り付けとクリップボードをクリアしました",
+        "slip39SeedPhrasePlaceholder_two": "ここに{{count}}番目のシードフレーズシェアを入力してください。",
+        "inputInvalidCount_other": "{{count}} 件の入力がシードフレーズの規範に適合していません。確認してください。",
+        "inputInvalidCount_one": "1入力がシードフレーズの基準に合致していません。ご確認ください。",
+        "wordPhraseAndPassphrase": "私はPassphrase付きの<1>{{count}}</1>単語のフレーズを持っています。",
+        "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズシェアを入力してください。"
       },
       "metamask": {
         "step1": "MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
@@ -1047,7 +1451,11 @@
           "question": "KeyStoreをインポートすることは可能ですか？",
           "answer": "はい、ここでKeyStoreをインポートできます。"
         },
-        "notAValidPrivateKey": "有効なプライベートキーではありません"
+        "notAValidPrivateKey": "有効なプライベートキーではありません",
+        "repeatImportTips": {
+          "question": "このアドレスに切り替えますか？",
+          "desc": "このアドレスはインポート済みです。"
+        }
       },
       "importedSuccessfully": "インポートが成功しました",
       "ledger": {
@@ -1059,7 +1467,13 @@
         "ledgerPermissionTip": "以下のポップアップウィンドウでLedgerへのアクセスを許可するために、\\\"許可\\\"をクリックしてください。",
         "permissionsAuthorized": "権限が許可されました",
         "nowYouCanReInitiateYourTransaction": "これでトランザクションを再開できます。",
-        "allow": "許可"
+        "allow": "許可",
+        "error": {
+          "ethereum_app_open_error": "LedgerデバイスにEthereumアプリをインストール/承認してください。",
+          "ethereum_app_unconfirmed_error": "Ethereumアプリを開くリクエストを拒否しました。",
+          "ethereum_app_not_installed_error": "LedgerデバイスにEthereumアプリをインストールしてください。",
+          "running_app_close_error": "Ledger デバイスで実行中のアプリを閉じることに失敗しました。"
+        }
       },
       "walletConnect": {
         "connectYour": "接続する",
@@ -1134,10 +1548,14 @@
         },
         "trezor": {
           "hdPathType": {
-            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。",
+            "ledgerLive": "Ledger Live: Ledger公式のHDパス。",
+            "legacy": "レガシー: MEW / Mycryptoで使用されるHDパス。"
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "legacy": "従来: MEW / Mycrypto によって使用される HD path。"
           },
           "message": {
             "disconnected": "{{0}}接続が停止しました。ページを更新して接続し直してください。"
@@ -1153,7 +1571,10 @@
         },
         "mnemonic": {
           "hdPathType": {
-            "default": "デフォルト: シードフレーズをインポートするためのデフォルトHDパスが使用されます。"
+            "default": "デフォルト: シードフレーズをインポートするためのデフォルトHDパスが使用されます。",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "bip44": "BIP44標準：BIP44プロトコルによって定義されたHDパス。",
+            "legacy": "レガシー: MEW / Mycryptoで使用されるHDパス。"
           },
           "hdPathTypeNoChain": {
             "default": "デフォルト: シードフレーズをインポートするためのデフォルトHDパスが使用されます。"
@@ -1178,10 +1599,14 @@
         },
         "keystone": {
           "hdPathType": {
-            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。",
+            "legacy": "レガシー：MEW / Mycryptoで使用されるHDパス。",
+            "ledgerLive": "Ledger Live: Ledger official HD path. Ledger Live path では 10 個のアドレスしか管理できません。"
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。",
+            "legacy": "レガシー: MEW / Mycryptoで使用されるHDパス。",
+            "ledgerLive": "Ledger Live: Ledger official HD path. Ledger Live path では 10 のアドレスしか管理できません。"
           }
         },
         "bitbox02": {
@@ -1217,7 +1642,10 @@
             "content": "{{0}}デバイスを複数インポートすることはサポートされていません。新しい{{0}}デバイスに切り替えると、現在のデバイスのアドレスリストは削除され、インポートプロセスが開始されます。"
           },
           "switchAnother": "{{0}}に切り替える"
-        }
+        },
+        "manageImtokenOffline": "imToken を管理",
+        "manageImKey": "imKey を管理",
+        "importBtn": "インポート ({{count}})"
       },
       "importYourKeystore": "KeyStoreをインポート",
       "incorrectPassword": "パスワードが正しくありません",
@@ -1235,7 +1663,25 @@
         "addCoboArgusAddress": "Cobo Argusアドレスを追加",
         "findTheAssociatedSafeAddress": "関連するセーフアドレスを検索",
         "import": "インポート"
-      }
+      },
+      "imkey": {
+        "title": "imKey に接続",
+        "imkeyPermissionTip": "以下のポップアップウィンドウで「Allow」をクリックして、あなたの imKey へのアクセスを許可してください。"
+      },
+      "keystone": {
+        "keystonePermission1": "USBデバイスに接続",
+        "noDeviceFoundError": "Keystone を一つ差し込んでください",
+        "title": "Keystoneを接続",
+        "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可する：",
+        "deviceRejectedExportAddress": "Rabby への接続を承認",
+        "keystonePermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、Keystone へのアクセスを承認し、Keystone 3 Pro がホームページにあることを確認してください。",
+        "exportAddressJustAllowedOnHomePage": "エクスポートアドレスはホームページでのみ許可されています。",
+        "deviceIsLockedError": "パスワードを入力してロックを解除してください",
+        "deviceIsBusy": "デバイスは使用中です",
+        "unknowError": "不明なエラーが発生しました。再試行してください。"
+      },
+      "firefoxLedgerDisableTips": "Ledger は Firefox と互換性がありません。",
+      "addFromCurrentSeedPhrase": "現在のシードフレーズから追加"
     },
     "unlock": {
       "btn": {
@@ -1245,7 +1691,10 @@
         "required": "アンロックするにはパスワードを入力してください",
         "placeholder": "アンロックするにはパスワードを入力してください",
         "error": "パスワードが正しくありません"
-      }
+      },
+      "title": "Rabby Wallet",
+      "btnForgotPassword": "パスワードをお忘れですか?",
+      "description": "EthereumおよびすべてのEVMチェーン対応の画期的なウォレット"
     },
     "addToken": {
       "noTokenFound": "トークンが見つかりません",
@@ -1255,12 +1704,22 @@
       "title": "Rabbyにカスタムトークンを追加",
       "balance": "残高",
       "tokenOnMultiChains": "複数のチェーン上のトークンアドレスです。お好きなものを選んでください",
-      "noTokenFoundOnThisChain": "このチェーン上でトークンが見つかりません"
+      "noTokenFoundOnThisChain": "このチェーン上でトークンが見つかりません",
+      "hasAdded": "このトークンが追加されました。"
     },
     "switchChain": {
       "title": "",
       "chainNotSupport": "要求されたチェーンはまだRabbyでサポートされていません",
-      "testnetTip": "テストネットに接続する前に、「詳細設定」の下にある「テストネットを有効にする」をオンにしてください"
+      "testnetTip": "テストネットに接続する前に、「詳細設定」の下にある「テストネットを有効にする」をオンにしてください",
+      "unknownChain": "不明なチェーン",
+      "requestsReceivedPlural": "{{count}} 件のリクエストを受信しました",
+      "chainId": "チェーンID：",
+      "requestsReceived": "1 リクエストを受信しました",
+      "requestRabbyToSupport": "Rabbyにサポートをリクエスト",
+      "addChain": "テストネットを追加",
+      "chainNotSupportYet": "リクエストされたチェーンはまだRabbyによってサポートされていません",
+      "chainNotSupportAddChain": "要求的链尚未被Rabby集成。您可以将其添加为カスタムテストネット。",
+      "desc": "要求されたネットワークはまだRabbyに統合されていません 手動でカスタムネットワークとして追加することができます"
     },
     "signText": {
       "title": "テキストを署名",
@@ -1268,7 +1727,8 @@
       "createKey": {
         "interactDapp": "Dappとのインタラクション",
         "description": "説明"
-      }
+      },
+      "sameSafeMessageAlert": "同じメッセージが確認されました。追加の署名は必要ありません。"
     },
     "securityEngine": {
       "yes": "はい",
@@ -1322,7 +1782,12 @@
       "SignTestnetPermission": {
         "title": "署名許可"
       },
-      "ignoreAll": "すべて無視"
+      "ignoreAll": "すべて無視",
+      "SelectWallet": {
+        "desc": "インストールしたウォレットから選択する",
+        "title": "ウォレットを選んで接続してください"
+      },
+      "otherWalletBtn": "別のウォレットに接続"
     },
     "addressDetail": {
       "add-to-whitelist": "ホワイトリストに追加",
@@ -1347,7 +1812,8 @@
       "manage-addresses-under-this-seed-phrase": "このシードフレーズの下のアドレスを管理",
       "safeModuleAddress": "セーフモジュールのアドレス",
       "coboSafeErrorModule": "アドレスが期限切れです。アドレスを削除して再インポートしてください。",
-      "importedDelegatedAddress": "インポートされた委任アドレス"
+      "importedDelegatedAddress": "インポートされた委任アドレス",
+      "manage-addresses-under": "この{{brand}}の下でアドレスを管理する"
     },
     "preferMetamaskDapps": {
       "title": "MetaMask優先Dapps",
@@ -1370,6 +1836,10 @@
         "title": "",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "RPC URLを入力してください"
+      },
+      "EditCustomTestnetModal": {
+        "title": "カスタムネットワークを追加",
+        "quickAdd": "Chainlistから簡単に追加"
       }
     },
     "requestDebankTestnetGasToken": {
@@ -1396,9 +1866,19 @@
       "approvalExplain": "{{protocol}} の {{token}} を承認する",
       "unlimited": "無制限",
       "action": {
-        "send": "送信"
+        "send": "送信",
+        "cancel": "保留中のトランザクションをキャンセル"
       },
-      "viewBtn": "表示"
+      "viewBtn": "表示",
+      "ReplacePopup": {
+        "options": {
+          "send": "トークンを送信",
+          "reject": "トランザクションを拒否"
+        },
+        "title": "このトランザクションの置き換え方法を選択します",
+        "desc": "署名されたトランザクションは削除できませんが、同じnonceを持つ新しいトランザクションで置き換えることができます。"
+      },
+      "replaceBtn": "置換"
     },
     "importSuccess": {
       "title": "インポート成功",
@@ -1409,7 +1889,10 @@
       "title": "シードフレーズのバックアップ",
       "alert": "このシードフレーズはあなたの資産の認証情報です。絶対に失くしたり他人に見せたりしないでください。さもないと、資産を永遠に失う可能性があります。安全な環境で表示し、注意して保管してください。",
       "clickToShow": "シードフレーズを表示するにはクリック",
-      "copySeedPhrase": "シードフレーズをコピー"
+      "copySeedPhrase": "シードフレーズをコピー",
+      "qrCodePopupTitle": "QR Code",
+      "showQrCode": "QRコードを表示",
+      "qrCodePopupTips": "シードフレーズのQRコードを他人と共有しないでください。安全な環境で表示し、慎重に保管してください。"
     },
     "backupPrivateKey": {
       "title": "プライベートキーのバックアップ",
@@ -1454,6 +1937,597 @@
     "importQrBase": {
       "desc": "{{brandName}}ハードウェアウォレットのQRコードをスキャンします",
       "btnText": "再試行"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "もっと表示",
+        "source": "ブリッジソース"
+      },
+      "settingModal": {
+        "confirmModal": {
+          "i-understand-and-accept-it": "私は理解し、受け入れます",
+          "tip1": "有効にすると、このアグリゲーターから直接コントラクトとやり取りします。",
+          "tip2": "2. Rabby は、このアグリゲーターのコントラクトから生じるいかなるリスクに対しても責任を負いません。",
+          "title": "このアグリゲーターを使用して取引を有効にする"
+        },
+        "SupportedBridge": "サポートされているBridge:",
+        "title": "Bridge Aggregatorsで取引を有効にする",
+        "confirm": "確認"
+      },
+      "tokenPairDrawer": {
+        "tokenPair": "トークンペア",
+        "balance": "バランスバリュー",
+        "noData": "サポートされているトークンペアはありません",
+        "title": "サポートされているトークンペアから選択"
+      },
+      "no-quote": "見積もりなし",
+      "Pending": "保留中",
+      "no-transaction-records": "取引記録なし",
+      "history": "ブリッジ履歴",
+      "To": "に",
+      "title": "Bridge",
+      "Select": "選択",
+      "the-following-bridge-route-are-found": "ルートが見つかりました",
+      "From": "から",
+      "pendingTip": "Txが送信されました。Txが長時間保留状態の場合は、設定で保留をクリアすることを試みてください。",
+      "select-chain": "チェーンを選択",
+      "Balance": "残高：",
+      "best": "最高",
+      "actual": "実際:",
+      "detail-tx": "詳細",
+      "BridgeTokenPair": "Bridge Token Pair",
+      "estimated-value": "≈ {{value}}",
+      "completedTip": "チェーントランザクション、データをデコードして記録を生成",
+      "bridgeTo": "橋接到",
+      "Amount": "数量",
+      "tokenPairPlaceholder": "トークンペアを選択",
+      "slippage-adjusted-refresh-quote": "スリッページが調整されました。ルートをリフレッシュしてください。",
+      "bridge-cost": "ブリッジコスト",
+      "rabby-fee": "Rabby fee",
+      "approve-and-bridge": "承認してブリッジする",
+      "insufficient-balance": "残高不足",
+      "bridge-via-x": "{{name}}でブリッジ",
+      "approve-x-symbol": "{{symbol}} を承認",
+      "gas-x-price": "ガス価格: {{price}} Gwei.",
+      "duration": "{{duration}} 分",
+      "price-expired-refresh-route": "価格が無効になりました。ルートを更新してください。",
+      "aggregator-not-enabled": "このアグリゲーターはあなたによって取引が有効化されていません。",
+      "recommendFromToken": "<1></1> からのブリッジの見積もりを取得",
+      "getRoutes": "ルートを取得",
+      "via-bridge": "{{bridge}} 経由",
+      "need-to-approve-token-before-bridge": "ブリッジする前にトークンを承認する必要があります",
+      "gas-fee": "GasFee: {{gasUsed}}",
+      "estimate": "見積もり:",
+      "no-route-found": "ルートが見つかりません",
+      "Completed": "完了",
+      "enable-it": "有効にする",
+      "est-receiving": "受取予定：",
+      "est-difference": "推定差：",
+      "price-impact": "価格影響",
+      "est-payment": "推定支払額:",
+      "max-tips": "この値は、bridgeのガスコストを差し引いた額で計算されます。",
+      "loss-tips": "損失しています {{usd}}。異なる金額を試してください。",
+      "unlimited-allowance": "無制限の許可",
+      "no-quote-found": "見積もりが見つかりませんでした。他のトークンペアをお試しください。"
+    },
+    "pendingDetail": {
+      "Header": {
+        "predictTime": "予測されるパッケージング"
+      },
+      "TxStatus": {
+        "pendingBroadcasted": "保留中：放送済み",
+        "completed": "完了",
+        "reBroadcastBtn": "再放送",
+        "pendingBroadcast": "保留中: 放送待ち"
+      },
+      "TxHash": {
+        "hash": "Tx Hash"
+      },
+      "TxTimeline": {
+        "broadcastedCount_ordinal_few": "{{count}} 回目の放送",
+        "broadcasted": "最近ブロードキャストされた",
+        "broadcastedCount_ordinal_one": "{{count}}回目の放送",
+        "broadcastedCount_ordinal_two": "{{count}}番目のブロードキャスト",
+        "created": "トランザクションが作成されました",
+        "broadcastedCount_ordinal_other": "{{count}}回目の放送",
+        "pending": "ステータスを確認しています…"
+      },
+      "MempoolList": {
+        "col": {
+          "txStatus": "トランザクションステータス",
+          "nodeOperator": "ノードオペレーター",
+          "nodeName": "ノード名"
+        },
+        "txStatus": {
+          "notFound": "見つかりません",
+          "appeared": "現れた",
+          "appearedOnce": "一度登場"
+        },
+        "title": "{{count}} RPCノードに現れました。"
+      },
+      "PendingTxList": {
+        "filterBaseFee": {
+          "label": "Base fee の要件のみを満たしています",
+          "tooltip": "ブロックのベース料金要件を満たすガス価格のトランザクションのみを表示"
+        },
+        "col": {
+          "action": "トランザクションアクション",
+          "balanceChange": "残高の変動",
+          "gasPrice": "Gas Price",
+          "interact": "とやり取りする",
+          "actionType": "アクションタイプ"
+        },
+        "titleNotFound": "全ての保留中のトランザクションでランクがありません。",
+        "titleSame": "GasPrice 同様の現在で #{{rank}} にランクイン",
+        "titleSameNotFound": "同順位なし（同様の現在）",
+        "title": "GasPrice がすべての保留中のトランザクションの中で #{{rank}} にランクされました"
+      },
+      "Empty": {
+        "noData": "データが見つかりませんでした"
+      },
+      "PrePackInfo": {
+        "col": {
+          "prePackResults": "事前パック結果",
+          "prePackContent": "プリパックコンテンツ",
+          "expectations": "期待",
+          "difference": "結果を確認"
+        },
+        "type": {
+          "receive": "受け取る",
+          "pay": "支払う"
+        },
+        "noLoss": "損失は見つかりませんでした",
+        "loss": "{{lossCount}} loss found",
+        "noError": "エラーは見つかりませんでした",
+        "title": "Pre-pack Check",
+        "error": "{{count}} 件のエラーが見つかりました",
+        "desc": "最新ブロックでシミュレーションを実行しました。更新日時：{{time}}"
+      },
+      "Predict": {
+        "completed": "トランザクションが完了しました。",
+        "predictFailed": "パッキング時間の予測に失敗しました",
+        "skipNonce": "あなたのアドレスはEthereumチェーンでNonceがスキップされたため、現在のトランザクションを完了できません。"
+      }
+    },
+    "dappSearch": {
+      "searchResult": {
+        "totalDapps": "合計 <2>{{count}}</2> Dapps",
+        "foundDapps": "<2>{{count}}</2> Dapps が見つかりました"
+      },
+      "favorite": "お気に入り",
+      "listBy": "Dapp は によってリストされました",
+      "emptyFavorite": "お気に入りのDappがありません",
+      "expand": "拡張",
+      "selectChain": "チェーンを選択",
+      "emptySearch": "Dappが見つかりませんでした"
+    },
+    "rabbyPoints": {
+      "claimItem": {
+        "go": "行く",
+        "claim": "請求",
+        "claimed": "請求済み",
+        "disabledTip": "現在は獲得できるポイントがありません",
+        "earnTip": "1日1回の制限があります。00:00 UTC+0以降にポイントを獲得してください。"
+      },
+      "claimModal": {
+        "addressBalance": "ウォレットバランス",
+        "claim": "請求",
+        "rabbyUser": "Rabby アクティブユーザー",
+        "placeholder": "リファラルコードを入力して追加ポイントを獲得 (オプション)",
+        "MetaMaskSwap": "MetaMask Swap",
+        "snapshotTime": "スナップショット時間: {{time}}",
+        "title": "初期ポイントを申請する",
+        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "season2": "シーズン2",
+        "rabbyValuedUserBadge": "Rabby Valued User Badge",
+        "walletBalance": "ウォレット残高",
+        "cantUseOwnCode": "自分の紹介コードを使用することはできません。",
+        "referral-code": "紹介コード",
+        "activeStats": "アクティブステータス",
+        "invalid-code": "無効なコード"
+      },
+      "referralCode": {
+        "verifyAddressModal": {
+          "verify-address": "アドレスを確認",
+          "cancel": "キャンセル",
+          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "このアドレスの所有者であることを確認するために、このテキストメッセージに署名してください。",
+          "sign": "署名"
+        },
+        "confirm": "確認",
+        "referral-code-already-exists": "紹介コードは既に存在します",
+        "once-set-this-referral-code-is-permanent-and-cannot-change": "設定されると、この紹介コードは永久的で変更できません。",
+        "my-referral-code": "私の紹介コード",
+        "refer-a-new-user-to-get-50-points": "新しいユーザーを紹介して50ポイントを獲得",
+        "set-my-code": "マイコードを設定する",
+        "referral-code-available": "紹介コード利用可能",
+        "referral-code-cannot-be-empty": "紹介コードを空にすることはできません。",
+        "set-my-referral-code": "リファーラルコードを設定する",
+        "referral-code-cannot-exceed-15-characters": "紹介コードは15文字を超えることはできません",
+        "max-15-characters-use-numbers-and-letters-only": "最大 15 文字、数字と文字のみを使用してください。"
+      },
+      "top-100": "トップ 100",
+      "title": "Rabby Points",
+      "share-on": "シェアする",
+      "out-of-x-current-total-points": "{{total}} 点数の合計中",
+      "earn-points": "ポイントを獲得",
+      "referral-code-copied": "紹介コードをコピーしました。",
+      "initialPointsClaimEnded": "初期ポイント請求終了",
+      "firstRoundEnded": "🎉 第1回のRabby Pointsは終了しました",
+      "secondRoundEnded": "🎉 Rabby Points の第2ラウンドが終了しました",
+      "code-set-successfully": "リファーラルコードが正常に設定されました"
+    },
+    "customTestnet": {
+      "CustomTestnetForm": {
+        "rpcUrlRequired": "RPC URLを入力してください。",
+        "name": "ネットワーク名",
+        "nameRequired": "ネットワーク名を入力してください",
+        "idRequired": "チェーンIDを入力してください",
+        "rpcUrl": "RPC URL",
+        "nativeTokenSymbolRequired": "通貨記号を入力してください",
+        "id": "Chain ID",
+        "blockExplorerUrl": "Block explorer URL（オプション）",
+        "nativeTokenSymbol": "通貨記号"
+      },
+      "AddFromChainList": {
+        "tips": {
+          "added": "このチェーンはすでに追加されています。",
+          "supported": "Rabby Walletによってすでに統合されているチェーン"
+        },
+        "search": "カスタムネットワーク名またはIDを検索",
+        "empty": "チェーンが見つかりませんでした",
+        "title": "Chainlistから素早く追加"
+      },
+      "signTx": {
+        "title": "取引データ"
+      },
+      "ConfirmModifyRpcModal": {
+        "desc": "このチェーンはすでにRabbyによって統合されています。RPC URLを変更する必要がありますか？"
+      },
+      "add": "カスタムネットワークを追加",
+      "title": "カスタムネットワーク",
+      "currency": "通貨",
+      "id": "ID",
+      "empty": "カスタムネットワークなし",
+      "desc": "Rabby はカスタムネットワークの安全性を検証できません。信頼できるネットワークのみを追加してください。"
+    },
+    "addChain": {
+      "title": "Rabby にカスタムネットワークを追加",
+      "desc": "Rabbyはカスタムネットワークのセキュリティを確認できません。信頼できるネットワークのみを追加してください。"
+    },
+    "sign": {
+      "transactionSpeed": "トランザクションスピード"
+    },
+    "ecology": {
+      "sonic": {
+        "home": {
+          "migrateTitle": "移行",
+          "airdrop": "エアドロップ",
+          "arcadeBtn": "今すぐプレイ",
+          "airdropBtn": "ポイントを獲得",
+          "migrateBtn": "近日公開予定",
+          "migrateDesc": "→",
+          "airdropDesc": "~200 million SをOperaおよびSonicのユーザーに。",
+          "arcadeDesc": "無料ゲームをプレイして、Sエアドロップのポイントを獲得しましょう。",
+          "socialsTitle": "参加する",
+          "earnBtn": "近日公開予定",
+          "earnTitle": "収益",
+          "earnDesc": "$S をステークする"
+        },
+        "points": {
+          "referralCode": "紹介コード",
+          "referralCodeCopied": "紹介コードをコピーしました",
+          "shareOn": "共有",
+          "sonicPoints": "Sonic Points",
+          "sonicArcade": "Sonic Arcade",
+          "retry": "再試行",
+          "errorDesc": "ポイントの読み込み中にエラーが発生しました。もう一度お試しください。",
+          "pointsDashboard": "ポイントダッシュボード",
+          "pointsDashboardBtn": "ポイントを獲得し始める",
+          "getReferralCode": "紹介コードを取得",
+          "errorTitle": "ポイントを読み込めません",
+          "today": "今日",
+          "sonicArcadeBtn": "プレイを開始"
+        }
+      },
+      "dbk": {
+        "home": {
+          "bridgeBtn": "ブリッジ",
+          "bridgePoweredBy": "OP Superchain 提供技术支持",
+          "mintNFT": "DBK Genesis NFT をミント",
+          "mintNFTBtn": "ミント",
+          "bridge": "DBK Chain にブリッジする",
+          "mintNFTDesc": "DBK Chain の目撃者になろう"
+        },
+        "bridge": {
+          "tabs": {
+            "withdraw": "引き出し",
+            "deposit": "預け入れ"
+          },
+          "info": {
+            "receiveOn": "{{chainName}} で受信",
+            "completeTime": "完了時間",
+            "toAddress": "宛先",
+            "gasFee": "Gas fee"
+          },
+          "error": {
+            "notEnoughBalance": "残高不足"
+          },
+          "ActivityPopup": {
+            "status": {
+              "withdraw": "出金",
+              "deposit": "預け入れ",
+              "claimed": "クレーム済み",
+              "challengePeriod": "チャレンジ期間",
+              "rootPublished": "State root published",
+              "readyToClaim": "受取り準備完了",
+              "proved": "証明済み",
+              "readyToProve": "準備完了証明",
+              "waitingToProve": "ステートルート発表"
+            },
+            "claimBtn": "請求",
+            "proveBtn": "証明",
+            "deposit": "入金",
+            "empty": "まだアクティビティはありません",
+            "withdraw": "出金",
+            "title": "アクティビティ"
+          },
+          "WithdrawConfirmPopup": {
+            "step2": "Ethereumで証明する",
+            "step1": "引き出しを開始",
+            "question3": "ネットワーク手数料は概算であり、変更されることを理解しています。",
+            "step3": "Ethereumで請求する",
+            "title": "DBK Chain Withdrawal takes ～7日",
+            "btn": "引き出し",
+            "question2": "出金が開始されると、そのスピードアップやキャンセルはできないことを理解しています。",
+            "question1": "資金を出金したことを証明した後、Ethereum で資金が請求可能になるまで約 7 日かかることを理解しています。",
+            "tips": "引き出しは3つのステップが必要であり、1つのDBK Chainトランザクションと2つのEthereumトランザクションが必要です。"
+          },
+          "labelFrom": "From",
+          "labelTo": "に"
+        },
+        "minNFT": {
+          "minted": "ミント済み",
+          "title": "DBK Genesis",
+          "myBalance": "私の残高",
+          "mintBtn": "ミント"
+        }
+      }
+    },
+    "miniSignFooterBar": {
+      "status": {
+        "txSending": "署名リクエストの送信中",
+        "txSigned": "署名済み。トランザクションを作成中",
+        "txCreated": "トランザクションが作成されました。",
+        "txSendings": "署名リクエストを送信中（{{current}}/{{total}}）"
+      },
+      "signWithLedger": "Ledgerで署名"
+    },
+    "gasAccount": {
+      "history": {
+        "noHistory": "履歴なし"
+      },
+      "loginInTip": {
+        "title": "USDC / USDTを入金",
+        "gotIt": "了解しました",
+        "login": "GasAccount にログイン",
+        "desc": "すべてのチェーンでガス料金を支払う"
+      },
+      "loginConfirmModal": {
+        "title": "現在のアドレスでログイン",
+        "desc": "確認すると、このアドレスにのみデポジットできます。"
+      },
+      "logoutConfirmModal": {
+        "logout": "ログアウト",
+        "title": "現在のGasAccountからログアウト",
+        "desc": "ログアウトするとGasAccountが無効になります。このアドレスでログインすることでGasAccountを復元できます。"
+      },
+      "depositPopup": {
+        "amount": "金額",
+        "title": "入金",
+        "invalidAmount": "500未満である必要があります",
+        "desc": "RabbyのDeBank L2アカウントに手数料なしで入金し、いつでも引き出し可能。",
+        "selectToken": "トークンを選択して入金",
+        "token": "トークン"
+      },
+      "withdrawPopup": {
+        "noEnoughValuetBalance": "Vault Balance insufficient. チェーンを切り替えるか、後でもう一度お試しください。",
+        "selectRecipientAddress": "受取人のアドレスを選択",
+        "recipientAddress": "受取人アドレス",
+        "withdrawalLimit": "出金限度",
+        "to": "に",
+        "selectAddr": "アドレスを選択",
+        "destinationChain": "送信先チェーン",
+        "selectDestinationChain": "宛先チェーンを選択",
+        "amount": "量",
+        "title": "出金",
+        "selectChain": "チェーンを選択",
+        "noEligibleChain": "引き出し可能なチェーンがありません。",
+        "riskMessageFromChain": "リスク管理のため、引き出し限度額はこのチェーンから預け入れた合計金額に依存します。",
+        "noEligibleAddr": "引き出し対象のアドレスがありません。",
+        "noEnoughGas": "ガス料金をカバーするには金額が低すぎます",
+        "deductGasFees": "受け取った金額からガス料金が差し引かれます",
+        "riskMessageFromAddress": "リスク管理のため、引き出し制限はこのアドレスが預けた総額に依存します",
+        "desc": "GasAccountの残高をDeBank L2ウォレットに引き出すことができます。必要に応じてサポートされているブロックチェーンに資金を転送するために、DeBank L2ウォレットにログインしてください。"
+      },
+      "withdrawConfirmModal": {
+        "button": "DeBankで表示",
+        "title": "DeBank L2 Walletに転送されました"
+      },
+      "GasAccountDepositTipPopup": {
+        "gotIt": "了解しました",
+        "title": "GasAccountを開いて入金する"
+      },
+      "switchLoginAddressBeforeDeposit": {
+        "title": "入金の前にアドレスを切り替える",
+        "desc": "ログインアドレスに切り替えてください。"
+      },
+      "noBalance": "残高なし",
+      "title": "GasAccount",
+      "withdraw": "引き出す",
+      "deposit": "入金",
+      "gasExceed": "GasAccountの残高は$1000を超えることはできません。",
+      "risk": "現在のアドレスがリスキーであると検出されたため、この機能は利用できません。",
+      "safeAddressDepositTips": "マルチシグアドレスは入金には対応していません。",
+      "logout": "現在のGasAccountからログアウト"
+    },
+    "safeMessageQueue": {
+      "loading": "メッセージを読み込み中",
+      "noData": "メッセージはありません"
+    },
+    "newUserImport": {
+      "guide": {
+        "createNewAddress": "新しいアドレスを作成",
+        "importAddress": "すでにアドレスを持っています。",
+        "title": "Rabby Walletへようこそ",
+        "desc": "EthereumおよびすべてのEVMチェーンに対応する画期的なウォレット"
+      },
+      "createNewAddress": {
+        "title": "新しいSeed Phraseを作成",
+        "tip3": "Rabbyをアンインストールしてシードフレーズをバックアップしていない場合、Rabbyはそれを取得できません。",
+        "tip1": "シードフレーズを紛失したり共有したりすると、私の資産は永遠に失われます。",
+        "showSeedPhrase": "シードフレーズを表示",
+        "tip2": "シードフレーズは私のコンピュータにのみ保存されており、Rabby はそれにアクセスできません。",
+        "desc": "開始する前に、次のセキュリティの注意事項をよく読み、心に留めておいてください。"
+      },
+      "importList": {
+        "title": "インポート方法を選択"
+      },
+      "importPrivateKey": {
+        "title": "秘密鍵のインポート",
+        "pasteCleared": "貼り付けてクリップボードをクリアしました"
+      },
+      "PasswordCard": {
+        "form": {
+          "password": {
+            "label": "パスワード",
+            "placeholder": "8文字以上",
+            "required": "パスワードを入力してください",
+            "min": "パスワードは8文字以上である必要があります。"
+          },
+          "confirmPassword": {
+            "placeholder": "パスワード",
+            "label": "パスワードを確認",
+            "notMatch": "パスワードが一致しません。",
+            "required": "パスワードを確認してください"
+          }
+        },
+        "title": "パスワードを設定",
+        "desc": "ウォレットをアンロックし、データを暗号化するために使用されます。",
+        "agree": "私は<1/><2>利用規約</2>と<4>プライバシーポリシー</4>に同意します"
+      },
+      "successful": {
+        "start": "スタート",
+        "create": "作成に成功しました",
+        "addMoreAddr": "このシードフレーズからさらにアドレスを追加します。",
+        "addMoreFrom": "{{name}} からさらにアドレスを追加",
+        "import": "インポートしました"
+      },
+      "readyToUse": {
+        "pin": "Rabby Wallet をピン留め",
+        "extensionTip": "<1/> をクリックして、次に <3/> をクリックしてください",
+        "desc": "Rabby Walletをツールバーに固定して簡単にアクセス。",
+        "title": "Rabby Walletの準備ができました"
+      },
+      "importSeedPhrase": {
+        "title": "シードフレーズをインポート"
+      },
+      "importOneKey": {
+        "title": "OneKey",
+        "connect": "OneKeyに接続",
+        "tip2": "2. OneKeyデバイスを接続する",
+        "tip1": "1. <1>OneKey Bridge<1/>をインストール",
+        "tip3": "3. デバイスをアンロック"
+      },
+      "importTrezor": {
+        "connect": "Trezor に接続",
+        "title": "Trezor",
+        "tip2": "2. デバイスのロックを解除する",
+        "tip1": "1. Trezor デバイスを差し込んでください。"
+      },
+      "ImportGridPlus": {
+        "tip1": "GridPlus デバイスを開いてください。",
+        "connect": "GridPlus に接続",
+        "title": "GridPlus",
+        "tip2": "2. Lattice Connectorを通じて接続する"
+      },
+      "importLedger": {
+        "tip3": "Ethereum アプリを開きます。",
+        "title": "Ledger",
+        "tip1": "Ledgerデバイスを接続してください。",
+        "connect": "Ledger を接続",
+        "tip2": "PIN を入力してロックを解除します。"
+      },
+      "importBitBox02": {
+        "connect": "BitBox02 に接続",
+        "tip3": "3. デバイスをアンロックします",
+        "tip1": "1. <1>BitBoxBridge<1/>をインストールする",
+        "title": "BitBox02",
+        "tip2": "2. BitBox02 を接続します。"
+      },
+      "importKeystone": {
+        "qrcode": {
+          "desc": "KeystoneハードウェアウォレットのQRコードをスキャンしてください"
+        },
+        "usb": {
+          "tip2": "パスワードを入力してロックを解除してください。",
+          "tip3": "コンピュータへの接続を承認してください",
+          "connect": "Keystone を接続",
+          "desc": "Keystone 3 Pro がホームページにあることを確認してください。",
+          "tip1": "Keystone デバイスを接続してください"
+        }
+      },
+      "importSafe": {
+        "error": {
+          "required": "アドレスを入力してください",
+          "invalid": "有効なアドレスではありません"
+        },
+        "title": "Safeアドレスを追加",
+        "loading": "このアドレスのデプロイされたチェーンを検索しています",
+        "placeholder": "セーフアドレスを入力"
+      }
+    },
+    "metamaskModeDapps": {
+      "title": "MetaMask モード",
+      "desc": "以下 Dapps 已启用 MetaMask モード。MetaMask オプションを選択して Rabby を接続できます。"
+    },
+    "forgotPassword": {
+      "home": {
+        "title": "パスワードを忘れた場合",
+        "button": "リセットプロセスを開始",
+        "buttonNoData": "パスワードを設定",
+        "descriptionNoData": "Rabby Walletはパスワードを保存せず、パスワードを取得するお手伝いはできません。忘れた場合は新しいパスワードを設定してください。",
+        "description": "Rabby Walletはパスワードを保存せず、パスワードの復元をお手伝いすることができません。ウォレットをリセットして新しいウォレットを設定してください。"
+      },
+      "reset": {
+        "alert": {
+          "title": "データは削除され、復元不可能になります。",
+          "seed": "シードフレーズ",
+          "privateKey": "プライベートキー"
+        },
+        "tip": {
+          "records": "署名記録",
+          "whitelist": "ホワイトリスト設定",
+          "safe": "インポートされた Safe Wallets",
+          "watch": "連絡先と監視用アドレス",
+          "hardware": "インポートされたハードウェアウォレット",
+          "title": "データの保持先："
+        },
+        "button": "リセットを確認",
+        "title": "Rabby Wallet をリセット",
+        "confirm": "ボックスに<1>RESET</1>と入力して確認し、続行します。"
+      },
+      "tip": {
+        "title": "Rabby Wallet リセットが完了しました",
+        "description": "新しいパスワードを作成して続行してください",
+        "buttonNoData": "アドレスを追加",
+        "button": "パスワードを設定",
+        "descriptionNoData": "アドレスを追加して開始する"
+      },
+      "success": {
+        "button": "完了",
+        "description": "Rabby Wallet を使用する準備が整いました。",
+        "title": "パスワードが正常に設定されました"
+      }
     }
   },
   "component": {
@@ -1485,7 +2559,11 @@
       "gridPlusConnected": "GridPlusが接続されています",
       "gridPlusNotConnected": "GridPlusは接続されていません",
       "ledgerNotConnected": "Ledgerは接続されていません",
-      "ledgerConnected": "Ledgerが接続されています"
+      "ledgerConnected": "Ledgerが接続されています",
+      "imKeyConnected": "imKey is connected",
+      "keystoneConnected": "Keystone が接続されました",
+      "imKeyrNotConnected": "imKeyは接続されていません",
+      "keystoneNotConnected": "Keystone is not connected"
     },
     "Contact": {
       "AddressItem": {
@@ -1543,7 +2621,8 @@
     },
     "ChainSelectorModal": {
       "searchPlaceholder": "チェーンを検索",
-      "noChains": "チェーンがありません"
+      "noChains": "チェーンがありません",
+      "addTestnet": "カスタムネットワークを追加"
     },
     "TokenSelector": {
       "listTableHead": {
@@ -1565,7 +2644,18 @@
       },
       "noTokens": "トークンがありません",
       "noMatch": "一致するものがありません",
-      "noMatchSuggestion": "{{ chainName }}の契約アドレスを検索してみてください"
+      "noMatchSuggestion": "{{ chainName }}の契約アドレスを検索してみてください",
+      "bridge": {
+        "value": "値",
+        "token": "トークン",
+        "liquidity": "流動性",
+        "high": "高い",
+        "low": "低い",
+        "liquidityTips": "過去の取引量が多いほど、ブリッジが成功する可能性が高くなります。"
+      },
+      "hot": "ホット",
+      "recent": "最近",
+      "common": "一般"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -1581,6 +2671,26 @@
     },
     "testnetCheckModal": {
       "title": "\"詳細\"の下で\"テストネットを有効にする\"をオンにしてください"
+    },
+    "EcologyNavBar": {
+      "providedBy": "{{chainName}} 提供"
+    },
+    "EcologyNoticeModal": {
+      "title": "通知",
+      "notRemind": "再び通知しない",
+      "desc": "以下のサービスは、サードパーティーのエコシステムパートナーによって直接提供されます。Rabby Walletはこれらのサービスのセキュリティに対して責任を負いません。"
+    },
+    "ReserveGasPopup": {
+      "title": "ガスを予約する",
+      "instant": "即時",
+      "normal": "ノーマル",
+      "doNotReserve": "ガスを予約しない",
+      "fast": "速い"
+    },
+    "OpenExternalWebsiteModal": {
+      "title": "Rabby Wallet を離れようとしています",
+      "button": "続行",
+      "content": "外部のウェブサイトを訪れようとしています。Rabby Walletはこのサイトの内容やセキュリティに責任を負いません。"
     }
   },
   "global": {
@@ -1614,7 +2724,10 @@
     "Loading": "読み込み中",
     "nonce": "Nonce",
     "Balance": "残高",
-    "Done": "完了"
+    "Done": "完了",
+    "Nonce": "Nonce",
+    "notSupportTesntnet": "カスタムネットワークには対応していません。",
+    "tryAgain": "再試行してください"
   },
   "background": {
     "error": {
@@ -1641,7 +2754,9 @@
       "submitted": "トランザクションが提出されました",
       "more": "詳細情報を表示するにはクリック",
       "completed": "トランザクションが完了しました",
-      "failed": "トランザクションが失敗しました"
+      "failed": "トランザクションが失敗しました",
+      "txCompleteMoreContent": "{{chain}} #{{nonce}} 完了しました。クリックして詳細をご覧ください。",
+      "txFailedMoreContent": "{{chain}} #{{nonce}} が失敗しました。クリックして詳細を表示します。"
     },
     "alias": {
       "HdKeyring": "シードフレーズによって作成",
@@ -1659,6 +2774,7 @@
     "SIGN_PERMISSION_OPTIONS": {
       "MAINNET_AND_TESTNET": "メインネットおよびテストネット",
       "TESTNET": "テストネットのみ"
-    }
+    },
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Seed Phrase (Passphrase) でインポート"
   }
 }

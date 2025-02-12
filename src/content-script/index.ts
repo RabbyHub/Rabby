@@ -88,4 +88,4 @@ const onMessageSetUpExtensionStreams = (msg) => {
 };
 browser.runtime.onMessage.addListener(onMessageSetUpExtensionStreams);
 
-injectProviderScript(false);
+// injectProviderScript(false);

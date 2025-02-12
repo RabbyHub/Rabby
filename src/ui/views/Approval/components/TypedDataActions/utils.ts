@@ -157,5 +157,11 @@ function parseSignTypedData(typedData: {
     message: typedData.message,
   });
 
+  typedData.domain = filterPrimaryType({
+    primaryType: 'EIP712Domain',
+    types,
+    message: domain,
+  });
+
   return typedData;
 }

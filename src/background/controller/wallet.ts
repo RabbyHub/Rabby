@@ -3115,9 +3115,9 @@ export class WalletController extends BaseController {
         address,
         brandName: brand || type,
       });
+      preferenceService.removeAddressBalance(address);
+      preferenceService.removeCurvePoints(address);
     }
-    preferenceService.removeAddressBalance(address);
-    preferenceService.removeCurvePoints(address);
     const current = preferenceService.getCurrentAccount();
     if (
       current?.address === address &&

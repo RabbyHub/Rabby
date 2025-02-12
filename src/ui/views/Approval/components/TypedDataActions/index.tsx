@@ -143,13 +143,22 @@ const Actions = ({
 
           {data && <Divide />}
 
-          <div className="container">
-            {raw.primaryType && isUnknown && (
+          {raw.primaryType && chain.isTestnet && (
+            <div className="container border-b border-rabby-neutral-line">
               <Col>
                 <Row isTitle>{t('page.signTx.primaryType')}</Row>
-                <Row>{raw.primaryType}</Row>
+                <Row wrap>
+                  <div className="relative flex items-center">
+                    <span className="break-all" title={raw.primaryType}>
+                      {raw.primaryType}
+                    </span>
+                  </div>
+                </Row>
               </Col>
-            )}
+            </div>
+          )}
+
+          <div className="container">
             {!chain.isTestnet && (
               <>
                 {(data?.actionType || data?.actionType === null) && (
