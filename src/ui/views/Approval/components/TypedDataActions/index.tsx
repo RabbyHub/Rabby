@@ -144,7 +144,7 @@ const Actions = ({
           {data && <Divide />}
 
           <div className="container">
-            {raw.primaryType && (
+            {raw.primaryType && isUnknown && (
               <Col>
                 <Row isTitle>{t('page.signTx.primaryType')}</Row>
                 <Row>{raw.primaryType}</Row>
