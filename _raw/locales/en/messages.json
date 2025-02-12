@@ -333,12 +333,13 @@
       "address": "Address",
       "advancedSettings": "Advanced Settings",
       "amount": "Amount",
-      "contract": "Smart contract",
+      "contract": "Smart contract address",
       "trustValueTitle": "Trust value",
       "typedDataMessage": "Sign Typed Data",
       "label": "Label",
       "addressSource": "Address Source",
-      "maxPriorityFeeDisabledAlert": "Please set Gas Price first"
+      "maxPriorityFeeDisabledAlert": "Please set Gas Price first",
+      "primaryType": "Primary type"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
