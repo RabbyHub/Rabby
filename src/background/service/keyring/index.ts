@@ -849,6 +849,7 @@ export class KeyringService extends EventEmitter {
     const encryptedString = await passwordEncrypt({
       data: serializedKeyrings,
       password: this.password,
+      persisted: true,
     });
 
     this.store.updateState({
@@ -879,6 +880,7 @@ export class KeyringService extends EventEmitter {
     const vault = await passwordDecrypt({
       password,
       encryptedData: encryptedVault,
+      persisted: true,
     });
     // TODO: FIXME
     await Promise.all(
@@ -1309,6 +1311,7 @@ export class KeyringService extends EventEmitter {
     const vault = await passwordEncrypt({
       data: unencryptedKeyringData,
       password,
+      persisted: true,
     });
 
     this.store.updateState({ vault, booted, hasEncryptedKeyringData: false });
