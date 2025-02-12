@@ -146,10 +146,7 @@ const SendNFT = ({
           {!!requireData.name && (
             <SubCol nested>
               <SubRow> </SubRow>
-              <SubRow>
-                {requireData.name.replace(/^Token: /, 'Token ') +
-                  ' contract address'}
-              </SubRow>
+              <SubRow>{requireData.name.replace(/^Token: /, 'Token ')}</SubRow>
             </SubCol>
           )}
           <SecurityListItem
