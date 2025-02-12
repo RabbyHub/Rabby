@@ -150,8 +150,7 @@ const Send = ({
                     }}
                   />
                 ) : (
-                  requireData.name.replace(/^Token: /, 'Token ') +
-                  ' contract address'
+                  requireData.name.replace(/^Token: /, 'Token ')
                 )}
               </SubRow>
             </SubCol>
