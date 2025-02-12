@@ -19,9 +19,11 @@ import Browser from 'webextension-polyfill';
 export const passwordEncrypt = async ({
   data,
   password,
+  persisted,
 }: {
   data: any;
   password?: string | null;
+  persisted?: boolean;
 }) => {
   if (!isNil(password)) {
     const { vault, exportedKeyString } = await encryptWithDetail(
@@ -32,7 +34,7 @@ export const passwordEncrypt = async ({
       ReturnType<typeof decryptWithDetail>
     >;
 
-    if (isManifestV3) {
+    if (isManifestV3 && persisted) {
       Browser.storage.session.set({ exportedKey: exportedKeyString, salt });
     }
 
@@ -65,9 +67,11 @@ export const passwordEncrypt = async ({
 export const passwordDecrypt = async ({
   encryptedData,
   password,
+  persisted,
 }: {
   encryptedData: string;
   password?: string | null;
+  persisted?: boolean;
 }) => {
   if (!isNil(password)) {
     const { vault, exportedKeyString, salt } = await decryptWithDetail(
@@ -75,7 +79,7 @@ export const passwordDecrypt = async ({
       encryptedData
     );
 
-    if (isManifestV3) {
+    if (isManifestV3 && persisted) {
       Browser.storage.session.set({ exportedKey: exportedKeyString, salt });
     }
 
