@@ -73,6 +73,7 @@ const registerInPageContentScript = async () => {
         js: ['pageProvider.js'],
         runAt: 'document_start',
         world: 'MAIN',
+        allFrames: true,
       },
     ]);
   } catch (err) {
@@ -82,6 +83,7 @@ const registerInPageContentScript = async () => {
   }
 };
 
+registerInPageContentScript();
 clearAlarms();
 createOffscreen();
 keepAlive();
