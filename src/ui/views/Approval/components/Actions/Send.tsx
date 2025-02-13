@@ -126,7 +126,7 @@ const Send = ({
               </SubRow>
             </SubCol>
           )}
-          {!!requireData.contract && (
+          {!!requireData.name && (
             <SubCol>
               <SubRow isTitle>{t('page.signTx.addressTypeTitle')}</SubRow>
               <SubRow>{t('page.signTx.contract')}</SubRow>
