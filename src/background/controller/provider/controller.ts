@@ -628,6 +628,7 @@ class ProviderController extends BaseController {
               isSubmitFailed: true,
             },
             explain: cacheExplain,
+            actionData: action,
             origin,
           });
         }

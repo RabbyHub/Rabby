@@ -236,9 +236,11 @@ class TxHistory {
     tx,
     explain,
     origin,
+    actionData,
   }: {
     tx: TransactionHistoryItem;
     explain: TransactionGroup['explain'];
+    actionData: TransactionGroup['action'];
     origin: string;
   }) {
     const nonce = Number(tx.rawTx.nonce);
@@ -263,6 +265,10 @@ class TxHistory {
     }
     if (explain) {
       tx.explain = explain;
+    }
+
+    if (actionData) {
+      tx.action = actionData;
     }
 
     if (!this.store.transactions[from]) {
@@ -290,6 +296,7 @@ class TxHistory {
             createdAt: tx.createdAt,
             isPending: true,
             explain: explain,
+            action: actionData,
             isFailed: false,
             isSubmitFailed: true,
           },
