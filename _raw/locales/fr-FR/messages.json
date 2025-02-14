@@ -95,7 +95,7 @@
         },
         "editWhitelist": "Modifier liste blanche",
         "title": "Sélectionner l'adresse",
-        "whitelistDisabled": "La liste blanche est désactivée. Vous pouvez envoyer des actifs vers n’importe quelle adresse",
+        "whitelistDisabled": "La liste blanche est désactivée. Vous pouvez envoyer des actifs vers n'importe quelle adresse",
         "whitelistEnabled": "La liste blanche est activée. Vous ne pouvez envoyer des actifs que vers une adresse sur liste blanche ou vous pouvez la désactiver dans \"Paramètres\".",
         "whitelistUpdated": "Liste blanche mise à jour"
       }
@@ -125,7 +125,7 @@
       }
     },
     "TiledSelect": {
-      "errMsg": "L’ordre des mots de la seed phrase est erroné, veuillez vérifier"
+      "errMsg": "L'ordre des mots de la seed phrase est erroné, veuillez vérifier"
     },
     "TokenSelector": {
       "header": {
@@ -154,7 +154,7 @@
         "low": "Faible",
         "token": "Token",
         "liquidity": "Liquidité",
-        "liquidityTips": "Plus le volume des transactions historiques est élevé, plus il est probable que le pont réussira."
+        "liquidityTips": "Plus le volume des transactions historiques est élevé, plus il est probable que le bridge réussira."
       },
       "hot": "Chaud",
       "common": "Commun",
@@ -165,9 +165,9 @@
     },
     "WalletConnectBridgeModal": {
       "invalidMsg": "Veuillez vérifier votre hôte",
-      "requiredMsg": "Veuillez saisir l'hôte du serveur de pont",
+      "requiredMsg": "Veuillez saisir l'hôte du serveur de bridge",
       "restore": "Restaurer le réglage initial",
-      "title": "URL du serveur de pont"
+      "title": "URL du serveur de bridge"
     },
     "signPermissionCheckModal": {
       "reconnect": "Reconnecter DApp",
@@ -372,7 +372,7 @@
       "backup-seed-phrase": "Sauvegarder la seed phrase",
       "coboSafeErrorModule": "L'adresse a expiré, veuillez supprimer et importer à nouveau celle-ci.",
       "delete-address": "Supprimer l'adresse",
-      "delete-desc": "Avant de supprimer, gardez les points suivants à l’esprit pour comprendre comment protéger vos actifs.",
+      "delete-desc": "Avant de supprimer, gardez les points suivants à l'esprit pour comprendre comment protéger vos actifs.",
       "direct-delete-desc": "Cette adresse est une adresse {{renderBrand}}, Rabby ne stocke pas la clé privée ou la seed phrase pour celle-ci, vous pouvez simplement la supprimer",
       "edit-memo-title": "Modifier la note d'adresse",
       "hd-path": "HD Path",
@@ -582,7 +582,7 @@
       "add": "Ajouter un RPC",
       "closed": "Fermé",
       "desc": "L'activation du RPC personnalisé remplacera Rabby comme nœud par défaut. Pour continuer à utiliser Rabby, veuillez désactiver ou supprimer le nœud RPC personnalisé.",
-      "empty": "",
+      "empty": "Aucun RPC personnalisé",
       "opened": "Ouvert",
       "title": "RPC personnalisé",
       "EditCustomTestnetModal": {
@@ -729,7 +729,7 @@
           "swap": "Échanger",
           "transactions": "Transactions",
           "ecology": "Écosystème",
-          "bridge": "Pont",
+          "bridge": "Bridger",
           "rabbyPoints": "Rabby Points"
         },
         "pendingCount": "1 en attente",
@@ -780,7 +780,7 @@
         "learnMoreOnDebank": "En savoir plus sur DeBank",
         "noCode": "Vous n'avez pas activé le code de réclamation pour cette adresse",
         "rabbyValuedUserNo": "Utilisateur Rabby estimé n°{{num}}",
-        "swapTip": "Vous devez d’abord effectuer un échange avec un DEX notable dans Rabby Wallet.",
+        "swapTip": "Vous devez d'abord effectuer un échange avec un DEX notable dans Rabby Wallet.",
         "title": "Réclamer le badge Rabby pour",
         "viewOnDebank": "Voir sur DeBank",
         "viewYourClaimCode": "Afficher votre code de réclamation",
@@ -792,28 +792,28 @@
       },
       "recentConnection": {
         "connected": "Connecté",
-        "connectedDapp": "Rabby n'est pas connecté à la DApp actuelle. Pour vous connecter, recherchez et cliquez sur le bouton de connexion sur la page Web de la DApp.",
+        "connectedDapp": "Rabby n'est pas connecté à la dApp actuelle. Pour vous connecter, recherchez et cliquez sur le bouton de connexion sur la page Web de la dApp.",
         "disconnectAll": "Tout déconnecter",
         "disconnectRecentlyUsed": {
-          "description": "Les DApps épinglées resteront connectées",
+          "description": "Les dApps épinglées resteront connectées",
           "title": "Déconnecter les <strong>{{count}}</strong> DApps récemment utilisées",
-          "title_other": "Déconnecter <strong>{{count}}</strong> Dapps connectées",
-          "title_one": "Déconnecter <strong>{{count}}</strong> Dapp connectée"
+          "title_other": "Déconnecter <strong>{{count}}</strong> dApps connectées",
+          "title_one": "Déconnecter <strong>{{count}}</strong> dApp connectée"
         },
         "disconnected": "Déconnecté",
         "dragToSort": "Faire glisser pour trier",
-        "metamaskTooltip": "Vous préférez utiliser MetaMask avec cette DApp. Mettez à jour ce paramètre à tout moment dans Paramètres > DApps préférées de MetaMask",
-        "noDappFound": "Aucun DApp trouvée",
-        "noPinnedDapps": "Aucune DApp épinglée",
-        "noRecentlyConnectedDapps": "Aucune DApp récemment connectée",
+        "metamaskTooltip": "Vous préférez utiliser MetaMask avec cette dApp. Mettez à jour ce paramètre à tout moment dans Paramètres > DApps préférées de MetaMask",
+        "noDappFound": "Aucune dApp trouvée",
+        "noPinnedDapps": "Aucune dApp épinglée",
+        "noRecentlyConnectedDapps": "Aucune dApp récemment connectée",
         "notConnected": "Non connecté",
         "pinned": "Épinglé",
         "recentlyConnected": "Récemment connecté",
         "rpcUnavailable": "Le RPC personnalisé n'est pas disponible",
-        "title": "DApp connectée",
-        "dapps": "Dapps",
-        "noConnectedDapps": "Aucune Dapp connectée",
-        "metamaskModeTooltip": "Impossible de connecter Rabby sur cette Dapp ? Essayez d'activer le <1>Mode MetaMask</1>"
+        "title": "DApps connectées",
+        "dapps": "DApps",
+        "noConnectedDapps": "Aucune dApp connectée",
+        "metamaskModeTooltip": "Impossible de connecter Rabby sur cette dApp ? Essayez d'activer le <1>Mode MetaMask</1>"
       },
       "security": {
         "comingSoon": "Plus de fonctionnalités à venir",
@@ -827,29 +827,29 @@
         "1Hour": "1 heure",
         "4Hours": "4 heures",
         "7Days": "7 jours",
-        "aboutUs": "À propos de nous",
-        "autoLockTime": "Temps de verrouillage automatique",
+        "aboutUs": "À propos",
+        "autoLockTime": "Temps avant verrouillage auto",
         "backendServiceUrl": "URL du service backend",
         "cancel": "Annuler",
         "claimRabbyBadge": "Réclamer le badge Rabby !",
         "clearPending": "Effacer transaction(s) en attente",
         "clearPendingTip1": "Cela supprimera localement toutes vos transactions en attente et aidera à résoudre les problèmes causés par de longs délais d'attente.",
-        "clearPendingTip2": "Cela n’affectera pas les soldes de votre compte et ne vous obligera pas à ressaisir votre phrase de départ. \nTous vos actifs et informations de compte resteront sécurisés.",
+        "clearPendingTip2": "Cela n'affectera pas les soldes de votre compte et ne vous obligera pas à ressaisir votre phrase de départ. \nTous vos actifs et informations de compte resteront sécurisés.",
         "clearWatchAddressContent": "Êtes-vous certain de vouloir supprimer toutes les adresses du mode observation ?",
         "clearWatchMode": "Effacer le mode observation",
         "currentVersion": "Version actuelle",
         "disableWhitelist": "Désactiver la liste blanche",
-        "disableWhitelistTip": "Vous pouvez envoyer des actifs vers n’importe quelle adresse une fois désactivé",
+        "disableWhitelistTip": "Vous pouvez envoyer des actifs vers n'importe quelle adresse une fois désactivé",
         "enableWhitelist": "Activer la liste blanche",
         "enableWhitelistTip": "Une fois activée, vous ne pouvez envoyer des actifs, via Rabby, qu'aux adresses de la liste blanche.",
         "features": {
-          "connectedDapp": "DApp connectée",
+          "connectedDapp": "DApps connectées",
           "label": "Fonctionnalités",
           "lockWallet": "Verrouiller le wallet",
           "manageAddress": "Gérer les adresses",
           "signatureRecord": "Journal des signatures",
           "rabbyPoints": "Rabby Points",
-          "searchDapps": "Rechercher des Dapps",
+          "searchDapps": "Rechercher des dApps",
           "gasTopUp": "Recharge de Gas"
         },
         "followUs": "Suivez-nous",
@@ -894,11 +894,11 @@
         "customized": "Personnalisé",
         "customizedButton": "personnalisé",
         "noTransactions": "Aucune transaction",
-        "notSelectedCustom": "Le token n’est pas répertorié par Rabby. Il sera ajouté à la liste des tokens si vous activez.",
+        "notSelectedCustom": "Le token n'est pas répertorié par Rabby. Il sera ajouté à la liste des tokens si vous activez.",
         "notSupported": "Le token sur cette chaîne n'est pas pris en charge",
         "receive": "Recevoir",
         "scamTx": "Transaction frauduleuse",
-        "selectedCustom": "Le token n’est pas répertorié par Rabby. Vous l'avez ajouté à la liste des tokens personnalisés.",
+        "selectedCustom": "Le token n'est pas répertorié par Rabby. Vous l'avez ajouté à la liste des tokens personnalisés.",
         "send": "Envoyer",
         "swap": "Échanger",
         "txFailed": "Échoué",
@@ -913,14 +913,14 @@
       },
       "MetamaskModePopup": {
         "title": "Mode MetaMask",
-        "enableDesc": "Activez si Dapp fonctionne uniquement avec MetaMask",
-        "desc": "Si vous ne pouvez pas connecter Rabby sur une Dapp, activez le Mode MetaMask et connectez-vous en sélectionnant l'option MetaMask.",
+        "enableDesc": "Activez si dApp fonctionne uniquement avec MetaMask",
+        "desc": "Si vous ne pouvez pas connecter Rabby sur une dApp, activez le Mode MetaMask et connectez-vous en sélectionnant l'option MetaMask.",
         "toastSuccess": "Activé. Actualisez la page pour vous reconnecter.",
-        "footerText": "Ajoutez plus de Dapps au Mode MetaMask dans Plus > Mode MetaMask"
+        "footerText": "Ajoutez plus de dApps au Mode MetaMask dans Plus > Mode MetaMask"
       }
     },
     "ethSign": {
-      "alert": "Signer avec \"eth_sign\" peut entraîner une perte d’actifs. Pour votre sécurité, Rabby ne prend pas en charge cette méthode."
+      "alert": "Signer avec \"eth_sign\" peut entraîner une perte d'actifs. Pour votre sécurité, Rabby ne prend pas en charge cette méthode."
     },
     "gasTopUp": {
       "Amount": "Quantité",
@@ -976,7 +976,7 @@
       "delete-all-addresses-but-keep-the-seed-phrase": "Supprimer toutes les adresses, mais conserver la seed phrase",
       "delete-checklist-1": "Je comprends que si je supprime cette adresse, la clé privée et la seed phrase correspondantes seront supprimées et Rabby ne pourra PAS les récupérer.",
       "delete-checklist-2": "Je confirme que j'ai sauvegardé la clé privée ou la seed phrase et que je suis prêt pour la suppression.",
-      "delete-desc": "Avant de supprimer, gardez les points suivants à l’esprit pour comprendre comment protéger vos actifs.",
+      "delete-desc": "Avant de supprimer, gardez les points suivants à l'esprit pour comprendre comment protéger vos actifs.",
       "delete-empty-seed-phrase": "Supprimer la seed phrase et son adresse 0",
       "delete-private-key-modal-title_one": "Supprimer {{count}} adresse de clé privée",
       "delete-private-key-modal-title_other": "Supprimer {{count}} adresses de clé privée",
@@ -989,10 +989,10 @@
       "hd-path": "HD path:",
       "manage-address": "Gérer l'adresse",
       "no-address": "Pas d'adresse",
-      "no-address-under-seed-phrase": "Vous n’avez importé aucune adresse via cette seed phrase.",
+      "no-address-under-seed-phrase": "Vous n'avez importé aucune adresse via cette seed phrase.",
       "no-match": "Aucune concordance",
       "private-key": "Clé privée",
-      "search": "Recherche",
+      "search": "Rechercher",
       "seed-phrase": "Seed phrase",
       "seed-phrase-delete-title": "Supprimer la seed phrase ?",
       "update-balance-data": "Mettre à jour les données du solde",
@@ -1210,11 +1210,11 @@
       "privateKey": {
         "isItPossibleToImportKeystore": {
           "answer": "Oui, vous pouvez <1> importer KeyStore </1> ici.",
-          "question": "Est-il possible d’importer KeyStore ?"
+          "question": "Est-il possible d'importer KeyStore ?"
         },
         "isItSafeToImportItInRabby": {
           "answer": "Oui, elle sera stockée localement sur votre navigateur et uniquement accessible par vous.",
-          "question": "Est-il sécurisé de l’importer dans Rabby ?"
+          "question": "Est-il sécurisé de l'importer dans Rabby ?"
         },
         "notAValidPrivateKey": "N'est pas une clé privée valide",
         "placeholder": "Entrer votre clé privée",
@@ -1243,10 +1243,10 @@
         "importTips": "Vous pouvez coller l'intégralité de votre seed phrase dans le 1er champ",
         "isItSafeToImportItInRabby": {
           "answer": "Oui, elle sera stockée localement sur votre navigateur et uniquement accessible par vous.",
-          "question": "Est-il sécurisé de l’importer dans Rabby ?"
+          "question": "Est-il sécurisé de l'importer dans Rabby ?"
         },
         "pleaseSelectWords": "Veuillez sélectionner les mots",
-        "riskTips": "Avant de commencer, veuillez lire et garder à l’esprit les conseils de sécurité suivants.",
+        "riskTips": "Avant de commencer, veuillez lire et garder à l'esprit les conseils de sécurité suivants.",
         "saved": "J'ai sauvegardé la phrase",
         "showSeedPhrase": "Afficher la seed phrase",
         "verificationFailed": "Échec de la vérification",
@@ -1282,7 +1282,7 @@
           "disconnect": "Déconnecter",
           "howToSwitch": "Comment changer"
         },
-        "changeBridgeServer": "Changer de serveur de pont",
+        "changeBridgeServer": "Changer de serveur de bridge",
         "connectYour": "Connecter votre",
         "connectedSuccessfully": "Connecté avec succès",
         "disconnected": "Déconnecté",
@@ -1355,7 +1355,7 @@
     },
     "receive": {
       "title": "Recevoir {{token}} sur {{chain}}",
-      "watchModeAlert1": "Il s’agit d’une adresse du mode observation.",
+      "watchModeAlert1": "Il s'agit d'une adresse du mode observation.",
       "watchModeAlert2": "Êtes-vous sûr de vouloir l'utiliser pour recevoir des actifs ?"
     },
     "requestDebankTestnetGasToken": {
@@ -1379,7 +1379,7 @@
       "loading": "Chargement des transactions en attente",
       "loadingFaild": "En raison de l'instabilité du serveur Safe, les données ne sont pas disponibles, veuillez vérifier à nouveau dans 5 minutes",
       "noData": "Aucune transaction en attente",
-      "sameNonceWarning": "Ces transactions sont en conflit car elles utilisent le même nonce. L’exécution de l’une remplacera automatiquement la ou les autre(s).",
+      "sameNonceWarning": "Ces transactions sont en conflit car elles utilisent le même nonce. L'exécution de l'une remplacera automatiquement la ou les autre(s).",
       "submitBtn": "Soumettre la transaction",
       "title": "File d'attente",
       "unknownProtocol": "Protocole inconnu",
@@ -1441,7 +1441,7 @@
       "sendButton": "Envoyer",
       "tipAddToContacts": "Ajouter aux contacts",
       "tipNotOnAddressList": "N'est pas dans la liste d'adresses.",
-      "whitelistAlert__disabled": "Liste blanche désactivée. Vous pouvez transférer vers n’importe quelle adresse.",
+      "whitelistAlert__disabled": "Liste blanche désactivée. Vous pouvez transférer vers n'importe quelle adresse.",
       "whitelistAlert__notWhitelisted": "L'adresse n'est pas sur liste blanche. <1 /> J'accepte d'accorder une autorisation temporaire de transfert.",
       "whitelistAlert__temporaryGranted": "Autorisation temporaire accordée",
       "whitelistAlert__whitelisted": "L'adresse est sur liste blanche"
@@ -1515,7 +1515,7 @@
         "contract": "Adresse du contrat"
       },
       "tokenInfoPrice": "Prix",
-      "whitelistAlert__disabled": "Liste blanche désactivée. Vous pouvez transférer vers n’importe quelle adresse.",
+      "whitelistAlert__disabled": "Liste blanche désactivée. Vous pouvez transférer vers n'importe quelle adresse.",
       "whitelistAlert__notWhitelisted": "L'adresse n'est pas sur liste blanche. <1 /> J'accepte d'accorder une autorisation temporaire de transfert.",
       "whitelistAlert__temporaryGranted": "Autorisation temporaire accordée",
       "whitelistAlert__whitelisted": "L'adresse est sur liste blanche",
@@ -1611,13 +1611,13 @@
         "switchToCorrectAddress": "Veuillez passer sur la bonne adresse dans le wallet mobile",
         "wrongAddressAlert": "Vous avez changé d'adresse sur le wallet mobile. Veuillez passer sur la bonne adresse dans le wallet mobile"
       },
-      "blockDappFromSendingRequests": "Empêcher la DApp d'envoyer des requêtes pendant 1 minute",
-      "cancelAll": "Annuler les {{count}} demandes de la DApp",
+      "blockDappFromSendingRequests": "Empêcher la dApp d'envoyer des requêtes pendant 1 minute",
+      "cancelAll": "Annuler les {{count}} demandes de la dApp",
       "cancelConnection": "Annuler la connexion",
       "cancelCurrentConnection": "Annuler la connexion actuelle",
       "cancelCurrentTransaction": "Annuler la transaction en cours",
       "cancelTransaction": "Annuler la transaction",
-      "detectedMultipleRequestsFromThisDapp": "Détection de plusieurs requêtes de cette DApp",
+      "detectedMultipleRequestsFromThisDapp": "Détection de plusieurs requêtes de cette dApp",
       "keystone": {
         "qrcodeDesc": "Scannez pour signer. Après avoir signé, cliquez ci-dessous pour obtenir la signature. Pour USB, reconnectez et autorisez pour recommencer le processus de signature.",
         "hardwareRejectError": "La demande Keystone a été annulée. Pour continuer, veuillez vous réauthentifier.",
@@ -1659,7 +1659,7 @@
     "signText": {
       "createKey": {
         "description": "Description",
-        "interactDapp": "Interagir avec DApp"
+        "interactDapp": "Interagir avec dApp"
       },
       "message": "Message",
       "title": "Signer le texte",
@@ -1916,7 +1916,7 @@
       },
       "decodedTooltip": "Cette signature est décodée par Rabby Wallet",
       "importedAddress": "Adresse importée",
-      "l2GasEstimateTooltip": "L'estimation du gaz pour la chaîne L2 n'inclut pas les frais de gaz L1. Les frais réels seront plus élevés que l’estimation actuelle.",
+      "l2GasEstimateTooltip": "L'estimation du gaz pour la chaîne L2 n'inclut pas les frais de gaz L1. Les frais réels seront plus élevés que l'estimation actuelle.",
       "gasAccount": {
         "currentTxCost": "Montant de Gas envoyé à votre adresse :",
         "totalCost": "Coût total :",
@@ -1997,7 +1997,7 @@
         "sigExpireTimeTip": "La durée durant laquelle cette signature reste valide on-chain",
         "title": "Approbation Permit2 du token"
       },
-      "safeCantSignText": "Il s’agit d’une adresse Safe et elle ne peut pas être utilisée pour signer du texte.",
+      "safeCantSignText": "Il s'agit d'une adresse Safe et elle ne peut pas être utilisée pour signer du texte.",
       "sellNFT": {
         "listNFT": "Lister le NFT",
         "receiveToken": "Recevoir un token",
@@ -2025,7 +2025,7 @@
       "amount-in": "Quantité en {{symbol}}",
       "approve-tips": "1.Approuver → 2.Échanger",
       "approve-x-symbol": "Approuver {{symbol}}",
-      "best": "Meilleur",
+      "best": "Top",
       "by-transaction-simulation-the-quote-is-valid": "Par simulation de transaction, la cotation est valide",
       "cex": "CEX",
       "chain": "Chaîne",
@@ -2069,7 +2069,7 @@
       "swap-from": "Échange de",
       "swap-history": "Historique des échanges",
       "swap-via-x": "Échange via {{name}}",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "Le réseau personnalisé n'est pas pris en charge",
       "the-following-swap-rates-are-found": "Les taux de swap suivants sont trouvés",
       "there-is-no-fee-and-slippage-for-this-trade": "Il n'y a pas de frais ni de slippage pour cette transaction",
       "this-exchange-is-not-enabled-to-trade-by-you": "Cet exchange n'est pas autorisé à négocier par vous.",
@@ -2109,7 +2109,7 @@
       "two-step-approve-details": "Le jeton USDT nécessite 2 transactions pour modifier l'autorisation. Vous devez d'abord réinitialiser l'autorisation à zéro, puis définir la nouvelle valeur de l'autorisation.",
       "process-with-two-step-approve": "Poursuivre avec une approbation en deux étapes",
       "Gas-fee-too-high": "Frais de gas trop élevés",
-      "two-step-approve": "Signez 2 transactions pour changer l’allocation",
+      "two-step-approve": "Signez 2 transactions pour changer l'allocation",
       "hidden-no-quote-rates_one": "{{count}} taux non disponible",
       "fetch-best-quote": "Récupération de la meilleure offre",
       "Auto": "Auto",
@@ -2276,7 +2276,7 @@
           "tip1": "Une fois activé, vous interagirez directement avec le contrat depuis cet agrégateur.",
           "tip2": "2. Rabby n'est pas responsable des risques découlant du contrat de cet agrégateur"
         },
-        "SupportedBridge": "Pont pris en charge :",
+        "SupportedBridge": "Bridge pris en charge :",
         "confirm": "Confirmer",
         "title": "Activer Bridge Aggregators pour échanger"
       },
@@ -2290,7 +2290,7 @@
       "no-transaction-records": "Aucun enregistrement de transaction",
       "Balance": "Solde :",
       "select-chain": "Sélectionner la chaîne",
-      "title": "Pont",
+      "title": "Bridger",
       "pendingTip": "Tx soumise. Si la tx est en attente pendant de longues heures, vous pouvez essayer de supprimer les en attente dans les paramètres.",
       "To": "À",
       "From": "De",
@@ -2300,7 +2300,7 @@
       "duration": "{{duration}} min",
       "no-route-found": "Aucun itinéraire trouvé",
       "enable-it": "Activez-le",
-      "best": "Meilleur",
+      "best": "Top",
       "unlimited-allowance": "Autorisation illimitée",
       "Completed": "Terminé",
       "gas-fee": "GasFee : {{gasUsed}}",
@@ -2311,7 +2311,7 @@
       "tokenPairPlaceholder": "Sélectionner la paire de jetons",
       "actual": "Réel :",
       "detail-tx": "Détail",
-      "BridgeTokenPair": "Pair de tokens de pont",
+      "BridgeTokenPair": "Bridger paire de tokens",
       "no-quote-found": "Aucune cotation trouvée. Veuillez essayer d'autres paires de jetons.",
       "via-bridge": "via {{bridge}}",
       "rabby-fee": "Frais Rabby",
@@ -2320,9 +2320,9 @@
       "bridgeTo": "Passerelle vers",
       "getRoutes": "Obtenir des itinéraires",
       "estimated-value": "≈ {{value}}",
-      "history": "Historique des ponts",
+      "history": "Historique des bridges",
       "approve-x-symbol": "Approuver {{symbol}}",
-      "bridge-via-x": "Pont sur {{name}}",
+      "bridge-via-x": "Brdiger sur {{name}}",
       "completedTip": "Transaction on chain, décodage des données pour générer un enregistrement",
       "price-expired-refresh-route": "Le prix a expiré. Actualiser l'itinéraire.",
       "recommendFromToken": "Passerelle de <1></1> pour un devis disponible",
@@ -2338,15 +2338,15 @@
     },
     "dappSearch": {
       "searchResult": {
-        "foundDapps": "Trouvé <2>{{count}}</2> Dapps",
-        "totalDapps": "Total <2>{{count}}</2> Dapps"
+        "foundDapps": "Trouvé <2>{{count}}</2> dApps",
+        "totalDapps": "Total <2>{{count}}</2> dApps"
       },
       "selectChain": "Sélectionner la chaîne",
       "favorite": "Favoris",
       "expand": "Étendre",
-      "emptyFavorite": "Aucune Dapp Favorite",
-      "emptySearch": "Aucune Dapp trouvée",
-      "listBy": "Dapp a été listé par"
+      "emptyFavorite": "Aucune dApp Favorite",
+      "emptySearch": "Aucune dApp trouvée",
+      "listBy": "DApp listée par"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2478,9 +2478,9 @@
       },
       "dbk": {
         "home": {
-          "bridgeBtn": "Bridge",
+          "bridgeBtn": "Bridger",
           "mintNFTBtn": "Monnaie",
-          "bridge": "Bridge vers DBK Chain",
+          "bridge": "Bridger vers DBK Chain",
           "mintNFT": "Frappement NFT Genesis DBK",
           "mintNFTDesc": "Soyez témoin de DBK Chain",
           "bridgePoweredBy": "Propulsé par OP Superchain"
@@ -2735,7 +2735,7 @@
     },
     "metamaskModeDapps": {
       "title": "Mode MetaMask",
-      "desc": "Mode MetaMask activé pour les Dapps suivantes. Vous pouvez connecter Rabby en sélectionnant l'option MetaMask."
+      "desc": "Mode MetaMask activé pour les dApps suivantes. Vous pouvez connecter Rabby en sélectionnant l'option MetaMask."
     },
     "forgotPassword": {
       "home": {
