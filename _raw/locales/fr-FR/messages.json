@@ -2481,7 +2481,7 @@
           "bridgeBtn": "Bridger",
           "mintNFTBtn": "Monnaie",
           "bridge": "Bridger vers DBK Chain",
-          "mintNFT": "Frappement NFT Genesis DBK",
+          "mintNFT": "Minter NFT Genesis DBK",
           "mintNFTDesc": "Soyez témoin de DBK Chain",
           "bridgePoweredBy": "Propulsé par OP Superchain"
         },
@@ -2533,10 +2533,10 @@
           "labelTo": "À"
         },
         "minNFT": {
-          "mintBtn": "Frappé",
+          "mintBtn": "Minter",
           "myBalance": "Mon solde",
           "title": "DBK Genesis",
-          "minted": "Frappé"
+          "minted": "Minté"
         }
       }
     },
@@ -2775,4 +2775,6 @@
         "title": "Mot de passe défini avec succès",
         "description": "Vous êtes prêt à utiliser Rabby Wallet."
       }
-37d577d1a66a86782106ec2040a5957e5ff0f6:_raw/locales/fr_FR/messages.json
+    }
+  }
+}
