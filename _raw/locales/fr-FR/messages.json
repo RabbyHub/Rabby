@@ -2479,7 +2479,7 @@
       "dbk": {
         "home": {
           "bridgeBtn": "Bridger",
-          "mintNFTBtn": "Monnaie",
+          "mintNFTBtn": "Minter",
           "bridge": "Bridger vers DBK Chain",
           "mintNFT": "Minter NFT Genesis DBK",
           "mintNFTDesc": "Soyez témoin de DBK Chain",
