@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import { groupBy } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isSameAddress, useWallet } from 'ui/utils';
 import { AddressItem, ownerPriority } from './DrawerAddressItem';
