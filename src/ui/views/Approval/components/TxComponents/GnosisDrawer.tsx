@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import { groupBy } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isSameAddress, useWallet } from 'ui/utils';
 import { AddressItem, ownerPriority } from './DrawerAddressItem';
@@ -135,7 +135,10 @@ const GnosisDrawer = ({
             onSelect={handleSelectAccount}
             checked={
               checkedAccount
-                ? isSameAddress(owner.address, checkedAccount.address)
+                ? isSameAddress(owner.address, checkedAccount.address) &&
+                  !signatures.find((sig) =>
+                    isSameAddress(sig.signer, checkedAccount.address)
+                  )
                 : false
             }
           />
@@ -159,7 +162,12 @@ const GnosisDrawer = ({
         <Button
           type="primary"
           onClick={handleConfirm}
-          disabled={!checkedAccount}
+          disabled={
+            !checkedAccount ||
+            !!signatures.find((sig) =>
+              isSameAddress(sig.signer, checkedAccount.address)
+            )
+          }
           loading={isLoading}
           className="h-[48px]"
         >
