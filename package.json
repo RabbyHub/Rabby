@@ -1,4 +1,4 @@
-{
+{ 
   "name": "rabby",
   "version": "0.93.13",
   "description": "A browser plugin for DeFi users",
@@ -11,7 +11,7 @@
     "build:dev:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:dev:default",
     "build:pro:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:pro:default",
     "build:debug:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:debug:default",
-    "build:dev": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:dev:default",
+    "build:dev": "NODE_OPTIONS=--max_old_space_size=8192 cross-env MANIFEST_TYPE=chrome-mv3 npm run build:dev:default",
     "build:pro": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:pro:default",
     "build:debug": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:debug:default",
     "build:sourcemap": "npm run clean && npm run make-theme && webpack --progress --env config=sourcemap",
