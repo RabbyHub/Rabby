@@ -3,6 +3,7 @@ import PortMessage from '@/utils/message/portMessage';
 import browser from 'webextension-polyfill';
 
 import { EXTENSION_MESSAGES } from '@/constant/message';
+import { isManifestV3 } from '@/utils/env';
 
 const createDefer = <T>() => {
   let resolve: ((value: T) => void) | undefined;
@@ -88,4 +89,6 @@ const onMessageSetUpExtensionStreams = (msg) => {
 };
 browser.runtime.onMessage.addListener(onMessageSetUpExtensionStreams);
 
-// injectProviderScript(false);
+if (!isManifestV3) {
+  injectProviderScript(false);
+}

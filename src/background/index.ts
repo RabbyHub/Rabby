@@ -1,7 +1,7 @@
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
 import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
-import { appIsDev, getSentryEnv } from '@/utils/env';
+import { appIsDev, getSentryEnv, isManifestV3 } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Message, sendReadyMessageToTabs } from '@/utils/message';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -121,10 +121,16 @@ async function restoreAppState() {
   walletController.syncMainnetChainList();
 
   // check if user has enabled the extension
-  chrome.alarms.create(ALARMS_USER_ENABLE, {
-    when: Date.now(),
-    periodInMinutes: 60,
-  });
+  if (isManifestV3) {
+    browser.alarms.create(ALARMS_USER_ENABLE, {
+      when: Date.now(),
+      periodInMinutes: 60,
+    });
+  } else {
+    setInterval(() => {
+      startEnableUser();
+    }, 1 * 60 * 60 * 1000);
+  }
 
   if (!keyringService.isBooted()) {
     userGuideService.init();
@@ -454,8 +460,10 @@ async function onInstall() {
   }
 }
 
-browser.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === ALARMS_USER_ENABLE) {
-    startEnableUser();
-  }
-});
+if (isManifestV3) {
+  browser.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === ALARMS_USER_ENABLE) {
+      startEnableUser();
+    }
+  });
+}
