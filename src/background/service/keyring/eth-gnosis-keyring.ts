@@ -5,18 +5,16 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import {
   SafeTransaction,
   SafeTransactionDataPartial,
-} from '@gnosis.pm/safe-core-sdk-types';
+} from '@safe-global/types-kit';
 import semverSatisfies from 'semver/functions/satisfies';
-import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
-import SafeMessage from '@safe-global/protocol-kit/dist/src/utils/messages/SafeMessage';
+import { adjustVInSignature } from '@safe-global/protocol-kit/dist/src/utils';
 import {
-  adjustVInSignature,
   buildSignatureBytes,
-  calculateSafeMessageHash,
+  EthSafeMessage,
   EthSafeSignature,
   hashSafeMessage,
-} from '@safe-global/protocol-kit/dist/src/utils';
-import { SigningMethod } from '@safe-global/protocol-kit';
+  SigningMethod,
+} from '@safe-global/protocol-kit';
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
@@ -189,7 +187,7 @@ class GnosisKeyring extends EventEmitter {
   networkIdsMap: Record<string, string[]> = {};
   currentTransaction: SafeTransaction | null = null;
   currentTransactionHash: string | null = null;
-  currentSafeMessage: SafeMessage | null = null;
+  currentSafeMessage: EthSafeMessage | null = null;
   currentSafeMessageHash: string | null = null;
   onExecedTransaction: ((hash: string) => void) | null = null;
   safeInstance: Safe | null = null;
@@ -393,7 +391,7 @@ class GnosisKeyring extends EventEmitter {
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
-    const sig = new EthSignSignature(address, signature);
+    const sig = new EthSafeSignature(address, signature);
     this.currentTransaction.addSignature(sig);
   }
 
@@ -401,7 +399,7 @@ class GnosisKeyring extends EventEmitter {
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
-    const sig = new EthSignSignature(address, signature);
+    const sig = new EthSafeSignature(address, signature);
     this.currentTransaction.addSignature(sig);
   }
 
@@ -598,7 +596,7 @@ class GnosisKeyring extends EventEmitter {
     provider: any;
     version: string;
     networkId: string;
-    message: ConstructorParameters<typeof SafeMessage>[0];
+    message: ConstructorParameters<typeof EthSafeMessage>[0];
   }) {
     if (
       !this.accounts.find(
@@ -609,7 +607,7 @@ class GnosisKeyring extends EventEmitter {
     }
     const checksumAddress = toChecksumAddress(address);
     const safe = new Safe(checksumAddress, version, provider, networkId);
-    const safeMessage = new SafeMessage(message);
+    const safeMessage = new EthSafeMessage(message);
     this.safeInstance = safe;
     this.currentSafeMessage = safeMessage;
     this.currentSafeMessageHash = await safe.getSafeMessageHash(

@@ -2511,7 +2511,7 @@ export class WalletController extends BaseController {
     signerAddress: string;
     signature: string;
   }) => {
-    const sigs = await this.getGnosisMessageSignatures();
+    const sigs = this.getGnosisMessageSignatures();
     if (sigs.length > 0) {
       await wallet.addGnosisMessageSignature({
         signature: signature,
