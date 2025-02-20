@@ -45,7 +45,7 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
   }
 
   if (uiTypes.isTab) {
-    const hashValue = window.location.hash;
+    const hashValue = window.location.hash?.split('?')?.[0];
 
     return (
       userSelectedDark &&
@@ -63,6 +63,10 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
 
         '#/dapp-search',
         '#/approval-manage',
+
+        '#/send-token',
+        '#/dex-swap',
+        '#/bridge',
       ].includes(hashValue)
     );
   }
