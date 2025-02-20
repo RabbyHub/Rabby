@@ -339,14 +339,16 @@ const OptionList = ({
   );
 
   const pendingOptionlist = useMemo(() => {
-    return sortBy(uniqBy(pendingList || [], 'nonce'), 'nonce');
+    return sortBy(uniqBy(pendingList || [], 'nonce'), (item) =>
+      Number(item.nonce)
+    );
   }, [pendingList]);
 
   const recommendNonce = useMemo(() => {
     const maxNonceTx = pendingList?.length
-      ? maxBy(pendingList || [], (item) => item.nonce)
+      ? maxBy(pendingList || [], (item) => Number(item.nonce))
       : null;
-    return maxNonceTx != null ? maxNonceTx.nonce + 1 : safeInfo?.nonce;
+    return maxNonceTx != null ? Number(maxNonceTx.nonce) + 1 : safeInfo?.nonce;
   }, [pendingList, safeInfo]);
 
   if (isLoadingPendingList && !pendingList) {
