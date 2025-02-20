@@ -323,7 +323,7 @@ const GnosisTransactionItem = ({
         to: data.to,
         data: data.data || '0x',
         value: `0x${Number(data.value).toString(16)}`,
-        nonce: intToHex(data.nonce),
+        nonce: intToHex(Number(data.nonce)),
         gasPrice: '0x0',
         gas: '0x0',
       },
@@ -342,7 +342,7 @@ const GnosisTransactionItem = ({
       to: data.to,
       data: data.data || '0x',
       value: `0x${Number(data.value).toString(16)}`,
-      nonce: intToHex(data.nonce),
+      nonce: intToHex(Number(data.nonce)),
       safeTxGas: data.safeTxGas,
       gasPrice: Number(data.gasPrice),
       baseGas: data.baseGas,
@@ -399,7 +399,7 @@ const GnosisTransactionItem = ({
         to: toChecksumAddress(data.safe),
         data: '0x',
         value: '0x',
-        nonce: intToHex(data.nonce),
+        nonce: intToHex(Number(data.nonce)),
         safeTxGas: 0,
         gasPrice: '0',
         baseGas: 0,
@@ -422,7 +422,7 @@ const GnosisTransactionItem = ({
         className={clsx('queue-item', {
           canExec:
             data.confirmations.length >= safeInfo.threshold &&
-            data.nonce === safeInfo.nonce,
+            +data.nonce === +safeInfo.nonce,
         })}
       >
         <div className="queue-item__time">
@@ -452,7 +452,7 @@ const GnosisTransactionItem = ({
           <Tooltip
             overlayClassName="rectangle"
             title={
-              data.nonce !== safeInfo.nonce ? (
+              +data.nonce !== +safeInfo.nonce ? (
                 <Trans
                   i18nKey="page.safeQueue.LowerNonceError"
                   values={{ nonce: safeInfo.nonce }}
@@ -468,7 +468,7 @@ const GnosisTransactionItem = ({
                 onClick={() => onSubmit(data)}
                 disabled={
                   data.confirmations.length < safeInfo.threshold ||
-                  data.nonce !== safeInfo.nonce
+                  +data.nonce !== +safeInfo.nonce
                 }
               >
                 {t('page.safeQueue.submitBtn')}
@@ -545,7 +545,7 @@ export const GnosisTransactionQueueList = (props: {
             to: safeTx.to,
             value: numberToHex(safeTx.value),
             safeTxGas: safeTx.safeTxGas,
-            nonce: safeTx.nonce,
+            nonce: +safeTx.nonce,
             operation: safeTx.operation,
             baseGas: safeTx.baseGas,
           };
@@ -574,7 +574,7 @@ export const GnosisTransactionQueueList = (props: {
             to: safeTx.to,
             value: numberToHex(safeTx.value),
             safeTxGas: safeTx.safeTxGas,
-            nonce: safeTx.nonce,
+            nonce: +safeTx.nonce,
             operation: safeTx.operation,
             baseGas: safeTx.baseGas,
           };
@@ -625,7 +625,7 @@ export const GnosisTransactionQueueList = (props: {
         to: data.to,
         data: data.data || '0x',
         value: numberToHex(data.value),
-        nonce: intToHex(data.nonce),
+        nonce: intToHex(Number(data.nonce)),
         safeTxGas: data.safeTxGas,
         gasPrice: Number(data.gasPrice),
         baseGas: data.baseGas,
