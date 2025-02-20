@@ -794,13 +794,23 @@ const Connect = (props: ConnectProps) => {
                       'bg-r-neutral-card-2 p-[14px] h-[48px]  text-center rounded-[6px]',
                       'text-[16px] leading-[19px] font-medium cursor-pointer text-r-neutral-body',
                       'border-[1px] border-transparent',
-                      'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+                      'hover:border-rabby-blue-default hover:bg-r-blue-light1',
+                      'flex items-center justify-center'
                     )}
                     onClick={() => {
                       setIsShowSelectWallet(true);
                     }}
                   >
-                    {t('page.connect.otherWalletBtn')}
+                    <span className="mr-8">
+                      {t('page.connect.otherWalletBtn')}
+                    </span>
+                    {$ctx?.providers.length > 0 && (
+                      <div className="flex gap-8">
+                        {$ctx?.providers.slice(0, 3).map((item) => (
+                          <img className="w-16" src={item.icon} />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : null}
