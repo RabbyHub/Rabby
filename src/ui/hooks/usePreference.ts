@@ -63,6 +63,10 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
 
         '#/dapp-search',
         '#/approval-manage',
+
+        '#/send-token',
+        '#/dex-swap',
+        '#/bridge',
       ].includes(hashValue)
     );
   }
