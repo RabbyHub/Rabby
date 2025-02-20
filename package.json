@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "node build/clean.js",
     "make-theme": "node ./scripts/make-theme.js",
-    "build:dev:default": "npm run clean && npm run make-theme && cross-env TAILWIND_MODE=watch webpack --progress --env config=dev",
+    "build:dev:default": "NODE_OPTIONS=--max_old_space_size=8192 npm run clean && npm run make-theme && cross-env TAILWIND_MODE=watch webpack --progress --env config=dev",
     "build:pro:default": "npm run clean && npm run make-theme && webpack --progress --env config=pro",
     "build:debug:default": "npm run clean && npm run make-theme && webpack --progress --env config=debug",
     "build:dev:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:dev:default",
