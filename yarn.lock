@@ -4851,10 +4851,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@0.4.7":
-  version "0.4.7"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.7.tgz#b7297bbb901773bf37dfc8cd1c01d3c700f304ea"
-  integrity sha512-uwiIoUHcs6JEhKGmb7bpfwv094m7KMlGdbIli9CSUc/DiV3cXLy39Pvmp9TQaGI6fro29Dpefq7hvDKzmhZfjw==
+"@rabby-wallet/page-provider@0.4.8":
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.8.tgz#ccf6e5383d3d76ec10e57b3c8b90805bf956671b"
+  integrity sha512-+XjgYrxQs9SfYvtHNECSgGEi0VKJAE1xQfgsNul19XN2VNH8HusPVLSqEjczYfrgR09TnAvxeE/tqz+WqVCAag==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@metamask/post-message-stream" "8.1.0"
