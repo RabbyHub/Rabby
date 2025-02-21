@@ -1,6 +1,5 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import * as Sentry from '@sentry/browser';
-import Common, { Hardfork } from '@ethereumjs/common';
+import { Common, Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
@@ -9,6 +8,7 @@ import {
   addHexPrefix,
   intToHex,
 } from 'ethereumjs-util';
+import { bytesToHex } from '@ethereumjs/util';
 import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import {
@@ -85,6 +85,13 @@ const reportSignText = (params: {
     method,
     success,
   });
+};
+
+const convertToHex = (data: Buffer | bigint) => {
+  if (typeof data === 'bigint') {
+    return `0x${data.toString(16)}`;
+  }
+  return bufferToHex(data);
 };
 
 interface ApprovalRes extends Tx {
@@ -416,7 +423,7 @@ class ProviderController extends BaseController {
     if (is1559) {
       txData.type = '0x2';
     }
-    const tx = TransactionFactory.fromTxData(txData, {
+    const tx = TransactionFactory.fromTxData(txData as any, {
       common,
     });
     const currentAccount = preferenceService.getCurrentAccount()!;
@@ -481,6 +488,7 @@ class ProviderController extends BaseController {
 
     let signedTx;
     try {
+      console.log('tx', tx);
       signedTx = await keyringService.signTransaction(
         keyring,
         tx,
@@ -488,6 +496,7 @@ class ProviderController extends BaseController {
         opts
       );
     } catch (e) {
+      console.error(e);
       const errObj =
         typeof e === 'object'
           ? { message: e.message }
@@ -540,9 +549,9 @@ class ProviderController extends BaseController {
         const _rawTx = {
           ...rawTx,
           ...approvalRes,
-          r: bufferToHex(signedTx.r),
-          s: bufferToHex(signedTx.s),
-          v: bufferToHex(signedTx.v),
+          r: convertToHex(signedTx.r),
+          s: convertToHex(signedTx.s),
+          v: convertToHex(signedTx.v),
         };
         if (is1559) {
           delete _rawTx.gasPrice;
@@ -659,28 +668,6 @@ class ProviderController extends BaseController {
         return signedTx;
       }
 
-      const buildTx = TransactionFactory.fromTxData({
-        ...approvalRes,
-        r: addHexPrefix(signedTx.r),
-        s: addHexPrefix(signedTx.s),
-        v: addHexPrefix(signedTx.v),
-        type: is1559 ? '0x2' : '0x0',
-      });
-
-      // Report address type(not sensitive information) to sentry when tx signature is invalid
-      if (!buildTx.verifySignature()) {
-        if (!buildTx.v) {
-          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
-        } else if (!buildTx.s) {
-          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
-        } else if (!buildTx.r) {
-          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
-        } else {
-          Sentry.captureException(
-            new Error(`invalid signature, ${keyring.type}`)
-          );
-        }
-      }
       signedTransactionSuccess = true;
       statsData.signed = true;
       statsData.signedSuccess = true;
@@ -704,7 +691,7 @@ class ProviderController extends BaseController {
               txData.type = '0x2';
             }
             const tx = TransactionFactory.fromTxData(txData);
-            const rawTx = bufferToHex(tx.serialize());
+            const rawTx = bytesToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
                 chain,
@@ -728,9 +715,9 @@ class ProviderController extends BaseController {
             const res = await openapiService.submitTx({
               tx: {
                 ...approvalRes,
-                r: bufferToHex(signedTx.r),
-                s: bufferToHex(signedTx.s),
-                v: bufferToHex(signedTx.v),
+                r: convertToHex(signedTx.r),
+                s: convertToHex(signedTx.s),
+                v: convertToHex(signedTx.v),
                 value: approvalRes.value || '0x0',
               },
               push_type: pushType,
@@ -769,7 +756,7 @@ class ProviderController extends BaseController {
             txData.type = '0x2';
           }
           const tx = TransactionFactory.fromTxData(txData);
-          const rawTx = bufferToHex(tx.serialize());
+          const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
           hash = await client.request({

@@ -1,8 +1,15 @@
 import EventEmitter from 'events';
 import * as ethUtil from 'ethereumjs-util';
-import { FeeMarketEIP1559Transaction, Transaction } from '@ethereumjs/tx';
+import {
+  FeeMarketEIP1559Transaction,
+  FeeMarketEIP1559TxData,
+  LegacyTransaction,
+  LegacyTxData,
+  Transaction,
+  TransactionType,
+} from '@ethereumjs/tx';
+import { bytesToHex } from '@ethereumjs/util';
 import { is1559Tx } from '@/utils/transaction';
-import { bytesToHex } from 'web3-utils';
 import { ImKeyBridgeInterface } from './imkey-bridge-interface';
 import { signHashHex } from './utils';
 
@@ -240,25 +247,33 @@ export class EthImKeyKeyring extends EventEmitter {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  async signTransaction(address: string, transaction) {
+  async signTransaction(
+    address: string,
+    transaction: Transaction[
+      | TransactionType.Legacy
+      | TransactionType.FeeMarketEIP1559]
+  ) {
     await this.unlock();
     const checksummedAddress = ethUtil.toChecksumAddress(address);
     const accountDetail = this.accountDetails[checksummedAddress];
 
     const txChainId = getChainId(transaction.common);
-    const dataHex = transaction.data.toString('hex');
+    const dataHex = bytesToHex(transaction.data);
 
     const txJSON = transaction.toJSON();
-    const is1559 = is1559Tx(txJSON);
+    const is1559 = is1559Tx(txJSON as any);
 
     const txData = is1559
       ? {
           data: dataHex === '' ? '' : `0x${dataHex}`,
           gasLimit: convertToHex(transaction.gasLimit),
           type: convertToHex(transaction.type.toString()),
-          accessList: transaction.accessList,
-          maxFeePerGas: convertToHex(transaction.maxFeePerGas),
-          maxPriorityFeePerGas: convertToHex(transaction.maxPriorityFeePerGas),
+          maxFeePerGas: convertToHex(
+            (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
+          ),
+          maxPriorityFeePerGas: convertToHex(
+            (transaction as FeeMarketEIP1559Transaction).maxPriorityFeePerGas
+          ),
           nonce: convertToHex(transaction.nonce),
           to: transaction.to!.toString(),
           value: convertToHex(transaction.value),
@@ -272,8 +287,8 @@ export class EthImKeyKeyring extends EventEmitter {
           nonce: convertToHex(transaction.nonce),
           gasLimit: convertToHex(transaction.gasLimit),
           gasPrice:
-            typeof (transaction as Transaction).gasPrice !== 'undefined'
-              ? convertToHex((transaction as Transaction).gasPrice)
+            typeof (transaction as LegacyTransaction).gasPrice !== 'undefined'
+              ? convertToHex((transaction as LegacyTransaction).gasPrice)
               : convertToHex(
                   (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
                 ),
@@ -289,19 +304,20 @@ export class EthImKeyKeyring extends EventEmitter {
     if (is1559) {
       decoded = ethUtil.rlp.decode('0x' + signature.substring(4), true);
 
-      txJSON.r = bytesToHex(decoded.data[10]);
-      txJSON.s = bytesToHex(decoded.data[11]);
-      txJSON.v = bytesToHex(decoded.data[9]);
-      txJSON.hash = txHash;
-      return FeeMarketEIP1559Transaction.fromTxData(txJSON);
+      txJSON.r = bytesToHex(decoded.data[10]) as `0x${string}`;
+      txJSON.s = bytesToHex(decoded.data[11]) as `0x${string}`;
+      txJSON.v = bytesToHex(decoded.data[9]) as `0x${string}`;
+      return FeeMarketEIP1559Transaction.fromTxData(
+        txJSON as FeeMarketEIP1559TxData
+      );
     } else {
       decoded = ethUtil.rlp.decode(signature, true);
 
-      txJSON.r = bytesToHex(decoded.data[7]);
-      txJSON.s = bytesToHex(decoded.data[8]);
-      txJSON.v = bytesToHex(decoded.data[6]);
-      txJSON.hash = txHash;
-      return Transaction.fromTxData(txJSON);
+      txJSON.r = bytesToHex(decoded.data[7]) as `0x${string}`;
+      txJSON.s = bytesToHex(decoded.data[8]) as `0x${string}`;
+      txJSON.v = bytesToHex(decoded.data[6]) as `0x${string}`;
+      // txJSON.hash = txHash;
+      return LegacyTransaction.fromTxData(txJSON as LegacyTxData);
     }
   }
 

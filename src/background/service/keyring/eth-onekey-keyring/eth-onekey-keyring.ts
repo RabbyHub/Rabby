@@ -1,11 +1,19 @@
 import EventEmitter from 'events';
-import * as ethUtil from 'ethereumjs-util';
+import {
+  toChecksumAddress,
+  stripHexPrefix,
+  addHexPrefix,
+  publicToAddress,
+  bytesToHex,
+} from '@ethereumjs/util';
 import * as sigUtil from 'eth-sig-util';
-import { TransactionFactory } from '@ethereumjs/tx';
+import {
+  FeeMarketEIP1559Transaction,
+  LegacyTransaction,
+  TransactionFactory,
+} from '@ethereumjs/tx';
 import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
-import { EVENTS } from '@/constant';
-import type { EVMTransaction, EVMTransactionEIP1559 } from '@onekeyfe/hd-core';
 import { OneKeyBridgeInterface } from './onekey-bridge-interface';
 import { isManifestV3 } from '@/utils/env';
 import browser from 'webextension-polyfill';
@@ -43,23 +51,6 @@ interface AccountDetail {
   hdPath: string;
   hdPathType: HDPathType;
   index: number;
-}
-
-/**
- * Check if the given transaction is made with ethereumjs-tx or @ethereumjs/tx
- *
- * Transactions built with older versions of ethereumjs-tx have a
- * getChainId method that newer versions do not.
- * Older versions are mutable
- * while newer versions default to being immutable.
- * Expected shape and type
- * of data for v, r and s differ (Buffer (old) vs BN (new)).
- *
- * @param {TypedTransaction | OldEthJsTransaction} tx
- * @returns {tx is OldEthJsTransaction} Returns `true` if tx is an old-style ethereumjs-tx transaction.
- */
-function isOldStyleEthereumjsTx(tx) {
-  return typeof tx.getChainId === 'function';
 }
 
 class OneKeyKeyring extends EventEmitter {
@@ -238,7 +229,7 @@ class OneKeyKeyring extends EventEmitter {
             const address = this._addressFromIndex(pathBase, i);
             if (!this.accounts.includes(address)) {
               this.accounts.push(address);
-              this.accountDetails[ethUtil.toChecksumAddress(address)] = {
+              this.accountDetails[toChecksumAddress(address)] = {
                 hdPath: this._pathFromAddress(address),
                 hdPathType: LedgerHDPathType.BIP44,
                 hdPathBasePublicKey: this.getPathBasePublicKey(),
@@ -283,7 +274,7 @@ class OneKeyKeyring extends EventEmitter {
               balance: null,
               index: i + 1,
             });
-            this.paths[ethUtil.toChecksumAddress(address)] = i;
+            this.paths[toChecksumAddress(address)] = i;
           }
           resolve(accounts);
         })
@@ -314,7 +305,7 @@ class OneKeyKeyring extends EventEmitter {
               balance: null,
               index: i + 1,
             });
-            this.paths[ethUtil.toChecksumAddress(address)] = i;
+            this.paths[toChecksumAddress(address)] = i;
           }
           resolve(accounts);
         })
@@ -337,64 +328,47 @@ class OneKeyKeyring extends EventEmitter {
     this.accounts = this.accounts.filter(
       (a) => a.toLowerCase() !== address.toLowerCase()
     );
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     delete this.accountDetails[checksummedAddress];
     delete this.paths[checksummedAddress];
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  signTransaction(address: string, tx): Promise<any> {
+  signTransaction(
+    address: string,
+    tx: FeeMarketEIP1559Transaction | LegacyTransaction
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
       this.unlock()
         .then((status) => {
           setTimeout(
             (_) => {
-              if (isOldStyleEthereumjsTx(tx)) {
-                // In this version of ethereumjs-tx we must add the chainId in hex format
-                // to the initial v value. The chainId must be included in the serialized
-                // transaction which is only communicated to ethereumjs-tx in this
-                // value. In newer versions the chainId is communicated via the 'Common'
-                // object.
-                this._signTransaction(
-                  address,
-                  tx.getChainId(),
-                  tx,
-                  (payload) => {
-                    tx.v = Buffer.from(payload.v, 'hex');
-                    tx.r = Buffer.from(payload.r, 'hex');
-                    tx.s = Buffer.from(payload.s, 'hex');
-                    return tx;
-                  }
-                )
-                  .then(resolve)
-                  .catch(reject);
-              } else {
-                this._signTransaction(
-                  address,
-                  Number(tx.common.chainId()),
-                  tx,
-                  (payload) => {
-                    // Because tx will be immutable, first get a plain javascript object that
-                    // represents the transaction. Using txData here as it aligns with the
-                    // nomenclature of ethereumjs/tx.
-                    const txData = tx.toJSON();
-                    // The fromTxData utility expects a type to support transactions with a type other than 0
-                    txData.type = tx.type;
-                    // The fromTxData utility expects v,r and s to be hex prefixed
-                    txData.v = ethUtil.addHexPrefix(payload.v);
-                    txData.r = ethUtil.addHexPrefix(payload.r);
-                    txData.s = ethUtil.addHexPrefix(payload.s);
-                    // Adopt the 'common' option from the original transaction and set the
-                    // returned object to be frozen if the original is frozen.
-                    return TransactionFactory.fromTxData(txData, {
-                      common: tx.common,
-                      freeze: Object.isFrozen(tx),
-                    });
-                  }
-                )
-                  .then(resolve)
-                  .catch(reject);
-              }
+              this._signTransaction(
+                address,
+                Number(tx.common.chainId()),
+                tx,
+                (payload) => {
+                  // Because tx will be immutable, first get a plain javascript object that
+                  // represents the transaction. Using txData here as it aligns with the
+                  // nomenclature of ethereumjs/tx.
+                  const txData = tx.toJSON();
+                  // The fromTxData utility expects a type to support transactions with a type other than 0
+                  txData.type = `0x${tx.type.toString(16)}`;
+                  // The fromTxData utility expects v,r and s to be hex prefixed
+                  txData.v = addHexPrefix(payload.v) as `0x${string}`;
+                  txData.r = addHexPrefix(payload.r) as `0x${string}`;
+                  txData.s = addHexPrefix(payload.s) as `0x${string}`;
+                  // Adopt the 'common' option from the original transaction and set the
+                  // returned object to be frozen if the original is frozen.
+                  return TransactionFactory.fromTxData(txData, {
+                    common: tx.common,
+                    freeze: Object.isFrozen(tx),
+                  });
+                }
+              )
+                .then(resolve)
+                .catch(reject);
+
               // This is necessary to avoid popup collision
               // between the unlock & sign trezor popups
             },
@@ -407,44 +381,32 @@ class OneKeyKeyring extends EventEmitter {
     });
   }
 
-  async _signTransaction(address, chainId, tx, handleSigning) {
-    let transaction: EVMTransaction | EVMTransactionEIP1559;
-    if (isOldStyleEthereumjsTx(tx)) {
-      // legacy transaction from ethereumjs-tx package has no .toJSON() function,
-      // so we need to convert to hex-strings manually manually
-      transaction = {
-        to: this._normalize(tx.to),
-        value: this._normalize(tx.value),
-        data: this._normalize(tx.data),
-        chainId,
-        nonce: this._normalize(tx.nonce),
-        gasLimit: this._normalize(tx.gasLimit),
-        gasPrice: this._normalize(tx.gasPrice),
-      };
-    } else {
-      // new-style transaction from @ethereumjs/tx package
-      // we can just copy tx.toJSON() for everything except chainId, which must be a number
-      transaction = {
-        ...tx.toJSON(),
-        chainId,
-        to: this._normalize(tx.to),
-      };
-    }
+  async _signTransaction(
+    address,
+    chainId,
+    tx: LegacyTransaction | FeeMarketEIP1559Transaction,
+    handleSigning
+  ) {
+    // new-style transaction from @ethereumjs/tx package
+    // we can just copy tx.toJSON() for everything except chainId, which must be a number
+    const transaction = {
+      ...tx.toJSON(),
+      chainId,
+      to: tx.to?.toString(),
+    };
     return this.bridge
       .evmSignTransaction(this.connectId!, this.deviceId!, {
         path: this._pathFromAddress(address),
         passphraseState: this.passphraseState,
-        transaction,
+        transaction: transaction as any,
       })
       .then((res) => {
         if (res.success) {
           const newOrMutatedTx = handleSigning(res.payload);
-          const addressSignedWith = ethUtil.toChecksumAddress(
-            ethUtil.addHexPrefix(
-              newOrMutatedTx.getSenderAddress().toString('hex')
-            )
+          const addressSignedWith = toChecksumAddress(
+            addHexPrefix(newOrMutatedTx.getSenderAddress().toString('hex'))
           );
-          const correctAddress = ethUtil.toChecksumAddress(address);
+          const correctAddress = toChecksumAddress(address);
           if (addressSignedWith !== correctAddress) {
             throw new Error('signature doesnt match the right address');
           }
@@ -472,14 +434,14 @@ class OneKeyKeyring extends EventEmitter {
               this.bridge
                 .evmSignMessage(this.connectId!, this.deviceId!, {
                   path: this._pathFromAddress(withAccount),
-                  messageHex: ethUtil.stripHexPrefix(message),
+                  messageHex: stripHexPrefix(message),
                   passphraseState: this.passphraseState,
                 })
                 .then((response) => {
                   if (response.success) {
                     if (
                       response.payload.address !==
-                      ethUtil.toChecksumAddress(withAccount)
+                      toChecksumAddress(withAccount)
                     ) {
                       reject(
                         new Error('signature doesnt match the right address')
@@ -577,8 +539,7 @@ class OneKeyKeyring extends EventEmitter {
                   .then((response) => {
                     if (response.success) {
                       if (
-                        response.payload.address !==
-                        ethUtil.toChecksumAddress(address)
+                        response.payload.address !== toChecksumAddress(address)
                       ) {
                         reject(
                           new Error('signature doesnt match the right address')
@@ -652,16 +613,14 @@ class OneKeyKeyring extends EventEmitter {
   /* PRIVATE METHODS */
 
   _normalize(buf: Buffer): string {
-    return ethUtil.bufferToHex(buf).toString();
+    return bytesToHex(buf).toString();
   }
 
   // eslint-disable-next-line no-shadow
   _addressFromIndex(pathBase: string, i: number): string {
     const dkey = this.hdk.derive(`${pathBase}/${i}`);
-    const address = ethUtil
-      .publicToAddress(dkey.publicKey, true)
-      .toString('hex');
-    return ethUtil.toChecksumAddress(`0x${address}`);
+    const address = bytesToHex(publicToAddress(dkey.publicKey, true));
+    return toChecksumAddress(address);
   }
 
   _pathFromAddress(address: string): string {
@@ -669,7 +628,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   indexFromAddress(address: string) {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     let index =
       this.paths[checksummedAddress] ||
       this.accountDetails[checksummedAddress]?.index;
@@ -699,7 +658,7 @@ class OneKeyKeyring extends EventEmitter {
       const address = addresses[i];
       await this._fixAccountDetail(address);
 
-      const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+      const detail = this.accountDetails[toChecksumAddress(address)];
 
       if (detail?.hdPathBasePublicKey !== currentPublicKey) {
         continue;
@@ -724,7 +683,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   private async _fixAccountDetail(address: string) {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     const detail = this.accountDetails[checksummedAddress];
 
     // The detail is already fixed
