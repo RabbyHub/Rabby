@@ -251,7 +251,7 @@ export class EthImKeyKeyring extends EventEmitter {
     const accountDetail = this.accountDetails[checksummedAddress];
 
     const txChainId = getChainId(transaction.common);
-    const dataHex = bufferToHex(transaction.data);
+    const dataHex = transaction.data.toString('hex');
 
     const txJSON = transaction.toJSON();
     const is1559 = is1559Tx(txJSON as any);
