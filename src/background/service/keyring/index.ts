@@ -2,7 +2,7 @@
 
 import { EventEmitter } from 'events';
 import log from 'loglevel';
-import * as ethUtil from 'ethereumjs-util';
+import { stripHexPrefix } from '@ethereumjs/util';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { ObservableStore } from '@metamask/obs-store';
@@ -477,8 +477,7 @@ export class KeyringService extends EventEmitter {
     const isIncluded = newAccountArray.find((account) => {
       return accounts.find(
         (key) =>
-          key === account.toLowerCase() ||
-          key === ethUtil.stripHexPrefix(account)
+          key === account.toLowerCase() || key === stripHexPrefix(account)
       );
     });
 

@@ -4,7 +4,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useMemoizedFn, useMount, useRequest } from 'ahooks';
 import { Button, Form, Input } from 'antd';
 import clsx from 'clsx';
-import { isValidAddress } from 'ethereumjs-util';
+import { isValidAddress } from '@ethereumjs/util';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';

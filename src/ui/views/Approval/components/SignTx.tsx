@@ -35,11 +35,11 @@ import {
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
 } from 'consts';
-import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
+import { addHexPrefix, isHexPrefixed, isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
-import { useAsync, useAsyncFn, useDebounce, useScroll } from 'react-use';
+import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {

@@ -1,5 +1,5 @@
 import { MetaMaskKeyring } from '@keystonehq/metamask-airgapped-keyring';
-import { toChecksumAddress } from 'ethereumjs-util';
+import { toChecksumAddress } from '@ethereumjs/util';
 import { StoredKeyring } from '@keystonehq/base-eth-keyring';
 import { Eth, default as EthLegacy } from '@keystonehq/hw-app-eth';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';

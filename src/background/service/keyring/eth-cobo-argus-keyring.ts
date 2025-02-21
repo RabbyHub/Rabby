@@ -1,6 +1,5 @@
-import { addHexPrefix } from 'ethereumjs-util';
+import { addHexPrefix } from '@ethereumjs/util';
 import EventEmitter from 'events';
-import { t } from 'i18next';
 import { isAddress } from 'web3-utils';
 
 export const keyringType = 'CoboArgus';

@@ -1,4 +1,9 @@
-import * as ethUtil from 'ethereumjs-util';
+import {
+  stripHexPrefix,
+  isValidPrivate,
+  addHexPrefix,
+  toChecksumAddress,
+} from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
 import { groupBy, isEqual, sortBy, truncate, uniq } from 'lodash';
@@ -80,11 +85,6 @@ import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
-import {
-  addHexPrefix,
-  unpadHexString,
-  toChecksumAddress,
-} from 'ethereumjs-util';
 import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
@@ -305,11 +305,9 @@ export class WalletController extends BaseController {
       params.to = to;
       delete params.data;
       params.value = addHexPrefix(
-        unpadHexString(
-          ((abiCoder as unknown) as AbiCoder).encodeParameter(
-            'uint256',
-            rawAmount
-          )
+        ((abiCoder as unknown) as AbiCoder).encodeParameter(
+          'uint256',
+          rawAmount
         )
       );
     }
@@ -2984,12 +2982,12 @@ export class WalletController extends BaseController {
   };
 
   validatePrivateKey = async (data: string) => {
-    const privateKey = ethUtil.stripHexPrefix(data);
+    const privateKey = stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
 
     const error = new Error(t('background.error.invalidPrivateKey'));
     try {
-      if (!ethUtil.isValidPrivate(buffer)) {
+      if (!isValidPrivate(buffer)) {
         throw error;
       }
     } catch {
@@ -2998,12 +2996,12 @@ export class WalletController extends BaseController {
   };
 
   importPrivateKey = async (data) => {
-    const privateKey = ethUtil.stripHexPrefix(data);
+    const privateKey = stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
 
     const error = new Error(t('background.error.invalidPrivateKey'));
     try {
-      if (!ethUtil.isValidPrivate(buffer)) {
+      if (!isValidPrivate(buffer)) {
         throw error;
       }
     } catch {
@@ -3033,7 +3031,7 @@ export class WalletController extends BaseController {
 
     const privateKey = wallet.getPrivateKeyString();
     const keyring = await keyringService.importPrivateKey(
-      ethUtil.stripHexPrefix(privateKey)
+      stripHexPrefix(privateKey)
     );
     return this._setCurrentAccountFromKeyring(keyring);
   };
@@ -3698,7 +3696,7 @@ export class WalletController extends BaseController {
     options?: any;
   }) => {
     if (data.startsWith('0x')) {
-      const stripped = ethUtil.stripHexPrefix(data);
+      const stripped = stripHexPrefix(data);
       const buff = Buffer.from(stripped, 'hex');
       data = JSON.parse(buff.toString('utf8'));
     } else {

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { isAddress, toChecksumAddress } from 'web3-utils';
-import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
+import { addHexPrefix, bufferToHex } from '@ethereumjs/util';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import {
   SafeTransaction,
@@ -12,12 +12,12 @@ import SafeMessage from '@safe-global/protocol-kit/dist/src/utils/messages/SafeM
 import {
   adjustVInSignature,
   buildSignatureBytes,
-  calculateSafeMessageHash,
   EthSafeSignature,
   hashSafeMessage,
 } from '@safe-global/protocol-kit/dist/src/utils';
 import { SigningMethod } from '@safe-global/protocol-kit';
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
+import { TypedTransaction } from '@ethereumjs/tx';
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
 export const TransactionConfirmedEvent = 'TransactionConfirmed';
@@ -543,7 +543,7 @@ class GnosisKeyring extends EventEmitter {
 
   async signTransaction(
     address: string,
-    transaction,
+    transaction: TypedTransaction,
     opts: SignTransactionOptions
   ) {
     // eslint-disable-next-line no-async-promise-executor
@@ -556,7 +556,7 @@ class GnosisKeyring extends EventEmitter {
     }
     let safeTransaction: SafeTransaction;
     let transactionHash: string;
-    const networkId = transaction?.chainId?.toString();
+    const networkId = transaction.common.chainId().toString();
     const checksumAddress = toChecksumAddress(address);
     const version = await Safe.getSafeVersion({
       provider: opts.provider,
