@@ -264,7 +264,6 @@ const flowContext = flow
             })
             .then(resolve)
             .catch((e: any) => {
-              console.error(e);
               const payload = {
                 method: EVENTS.SIGN_FINISHED,
                 params: {

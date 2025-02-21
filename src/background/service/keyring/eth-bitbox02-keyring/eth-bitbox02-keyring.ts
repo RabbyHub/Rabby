@@ -202,9 +202,9 @@ class BitBox02Keyring extends EventEmitter {
       txData.gasPrice = `0x${tx.gasPrice.toString(16)}`;
     }
     txData.chainId = `0x${tx.common.chainId().toString(16)}`;
-    txData.r = result.r;
-    txData.s = result.s;
-    txData.v = result.v;
+    txData.r = bufferToHex(result.r);
+    txData.s = bufferToHex(result.s);
+    txData.v = bufferToHex(result.v);
     const signedTx = TransactionFactory.fromTxData(txData);
     const addressSignedWith = toChecksumAddress(
       signedTx.getSenderAddress().toString()

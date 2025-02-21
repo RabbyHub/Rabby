@@ -4817,10 +4817,10 @@
     ethereum-cryptography "^2.1.2"
     slip39 "^0.1.9"
 
-"@rabby-wallet/eth-lattice-keyring@1.2.3-alpha-1":
-  version "1.2.3-alpha-1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.2.3-alpha-1.tgz#e3cf1e5cf13fbe79a41375dc6fda6354e8e9eeb4"
-  integrity sha512-6ZcA+LlCQLEQ13WB6TfKOgh/UBjlRs4B44VoOpFXkWvFLZKriOH7sDBHTeI2beZN5Euk6qK5eRKXn6NlM60A3g==
+"@rabby-wallet/eth-lattice-keyring@1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.2.4.tgz#92085eded9e4cc8b9a47e51ffbc973c2d55b0f0a"
+  integrity sha512-fMPahQJ8hiDiHOhFKHrHbIm34LBLQIlNHS9MOkfEUkqkEt4JBYbdQoUF85AG49Yn+Xfo08E32V+ivQgyTdzq5Q==
   dependencies:
     "@ethereumjs/tx" "4.1.1"
     "@ethereumjs/util" "8.0.5"
@@ -4845,10 +4845,10 @@
     ethereumjs-wallet "^1.0.2"
     randombytes "^2.1.0"
 
-"@rabby-wallet/eth-trezor-keyring@2.6.2-alpha-2":
-  version "2.6.2-alpha-2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-2.6.2-alpha-2.tgz#1c13679570567ee8438548e123543f385a8f7036"
-  integrity sha512-9jRNxM72x9Fhpsh/Xmu8w0pxT//HLDKqeHMlJKdihBwD5GaHeuJcyX0MC65DFxi9QbWyxRoxL1wS/p7lcCWDug==
+"@rabby-wallet/eth-trezor-keyring@2.6.3":
+  version "2.6.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-2.6.3.tgz#adee5aac9aa9a3004186f8954eca0754a9dc94d3"
+  integrity sha512-WkjaydKljDKG1ssz6Izo1ZEGYHLSksMZW8EVCLK9+r0uPas2DWq1DcnUPE6j4zMoCAqJbUf3t56UC/+H46+JSQ==
   dependencies:
     "@ethereumjs/tx" "4.1.1"
     "@ethereumjs/util" "8.0.5"

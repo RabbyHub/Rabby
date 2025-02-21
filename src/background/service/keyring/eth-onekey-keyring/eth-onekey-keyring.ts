@@ -618,7 +618,7 @@ class OneKeyKeyring extends EventEmitter {
   _addressFromIndex(pathBase: string, i: number): string {
     const dkey = this.hdk.derive(`${pathBase}/${i}`);
     const address = bufferToHex(publicToAddress(dkey.publicKey, true));
-    return toChecksumAddress(`0x${address}`);
+    return toChecksumAddress(address);
   }
 
   _pathFromAddress(address: string): string {
