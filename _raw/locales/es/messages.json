@@ -2166,7 +2166,8 @@
         "rpcUrl": "RPC URL",
         "id": "Chain ID",
         "name": "Nombre de la red",
-        "idRequired": "Por favor, introduzca el id de la cadena"
+        "idRequired": "Por favor, introduzca el id de la cadena",
+        "hasPreconfs": "Esta red soporta preconfirmaciones"
       },
       "AddFromChainList": {
         "tips": {

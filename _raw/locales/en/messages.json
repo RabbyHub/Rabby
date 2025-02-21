@@ -2171,7 +2171,8 @@
         "rpcUrlRequired": "Please input RPC URL",
         "nativeTokenSymbol": "Currency symbol",
         "nativeTokenSymbolRequired": "Please input currency symbol",
-        "blockExplorerUrl": "Block explorer URL (Optional)"
+        "blockExplorerUrl": "Block explorer URL (Optional)",
+        "hasPreconfs": "This network supports preconfirmations"
       },
       "AddFromChainList": {
         "title": "Quick add from Chainlist",
