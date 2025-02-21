@@ -1,14 +1,12 @@
 import EventEmitter from 'events';
-import * as ethUtil from 'ethereumjs-util';
 import {
   FeeMarketEIP1559Transaction,
   FeeMarketEIP1559TxData,
-  LegacyTransaction,
-  LegacyTxData,
   Transaction,
-  TransactionType,
+  TypedTransaction,
 } from '@ethereumjs/tx';
-import { bytesToHex } from '@ethereumjs/util';
+import { bufferToHex, toChecksumAddress } from '@ethereumjs/util';
+import { RLP, utils } from '@ethereumjs/rlp';
 import { is1559Tx } from '@/utils/transaction';
 import { ImKeyBridgeInterface } from './imkey-bridge-interface';
 import { signHashHex } from './utils';
@@ -140,7 +138,7 @@ export class EthImKeyKeyring extends EventEmitter {
             const address = await this.addressFromIndex(i);
             if (!this.accounts.includes(address)) {
               this.accounts.push(address);
-              this.accountDetails[ethUtil.toChecksumAddress(address)] = {
+              this.accountDetails[toChecksumAddress(address)] = {
                 hdPath: this.getPathForIndex(i),
                 hdPathType: this.hdPathType,
                 hdPathBasePublicKey: await this.getPathBasePublicKey(
@@ -187,7 +185,7 @@ export class EthImKeyKeyring extends EventEmitter {
               balance: null,
               index: i + 1,
             });
-            this.paths[ethUtil.toChecksumAddress(address)] = i;
+            this.paths[toChecksumAddress(address)] = i;
           }
           resolve(accounts);
         })
@@ -218,7 +216,7 @@ export class EthImKeyKeyring extends EventEmitter {
               balance: null,
               index: i + 1,
             });
-            this.paths[ethUtil.toChecksumAddress(address)] = i;
+            this.paths[toChecksumAddress(address)] = i;
           }
           resolve(accounts);
         })
@@ -241,24 +239,19 @@ export class EthImKeyKeyring extends EventEmitter {
     this.accounts = this.accounts.filter(
       (a) => a.toLowerCase() !== address.toLowerCase()
     );
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     delete this.accountDetails[checksummedAddress];
     delete this.paths[checksummedAddress];
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  async signTransaction(
-    address: string,
-    transaction: Transaction[
-      | TransactionType.Legacy
-      | TransactionType.FeeMarketEIP1559]
-  ) {
+  async signTransaction(address: string, transaction: TypedTransaction) {
     await this.unlock();
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     const accountDetail = this.accountDetails[checksummedAddress];
 
     const txChainId = getChainId(transaction.common);
-    const dataHex = bytesToHex(transaction.data);
+    const dataHex = bufferToHex(transaction.data);
 
     const txJSON = transaction.toJSON();
     const is1559 = is1559Tx(txJSON as any);
@@ -287,8 +280,8 @@ export class EthImKeyKeyring extends EventEmitter {
           nonce: convertToHex(transaction.nonce),
           gasLimit: convertToHex(transaction.gasLimit),
           gasPrice:
-            typeof (transaction as LegacyTransaction).gasPrice !== 'undefined'
-              ? convertToHex((transaction as LegacyTransaction).gasPrice)
+            typeof (transaction as Transaction).gasPrice !== 'undefined'
+              ? convertToHex((transaction as Transaction).gasPrice)
               : convertToHex(
                   (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
                 ),
@@ -302,22 +295,22 @@ export class EthImKeyKeyring extends EventEmitter {
     let decoded;
 
     if (is1559) {
-      decoded = ethUtil.rlp.decode('0x' + signature.substring(4), true);
+      decoded = RLP.decode('0x' + signature.substring(4), true);
 
-      txJSON.r = bytesToHex(decoded.data[10]) as `0x${string}`;
-      txJSON.s = bytesToHex(decoded.data[11]) as `0x${string}`;
-      txJSON.v = bytesToHex(decoded.data[9]) as `0x${string}`;
+      txJSON.r = utils.bytesToHex(decoded.data[10]);
+      txJSON.s = utils.bytesToHex(decoded.data[11]);
+      txJSON.v = utils.bytesToHex(decoded.data[9]);
       return FeeMarketEIP1559Transaction.fromTxData(
         txJSON as FeeMarketEIP1559TxData
       );
     } else {
-      decoded = ethUtil.rlp.decode(signature, true);
+      decoded = RLP.decode(signature, true);
 
-      txJSON.r = bytesToHex(decoded.data[7]) as `0x${string}`;
-      txJSON.s = bytesToHex(decoded.data[8]) as `0x${string}`;
-      txJSON.v = bytesToHex(decoded.data[6]) as `0x${string}`;
+      txJSON.r = utils.bytesToHex(decoded.data[7]);
+      txJSON.s = utils.bytesToHex(decoded.data[8]);
+      txJSON.v = utils.bytesToHex(decoded.data[6]);
       // txJSON.hash = txHash;
-      return LegacyTransaction.fromTxData(txJSON as LegacyTxData);
+      return Transaction.fromTxData(txJSON);
     }
   }
 
@@ -328,7 +321,7 @@ export class EthImKeyKeyring extends EventEmitter {
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(address: string, message: string) {
     await this.unlock();
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     const accountDetail = this.accountDetails[checksummedAddress];
 
     const res = await this.invokeApp('signMessage', [
@@ -342,7 +335,7 @@ export class EthImKeyKeyring extends EventEmitter {
 
   async signTypedData(address, data, opts) {
     await this.unlock();
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     const accountDetail = this.accountDetails[checksummedAddress];
     const isV4 = opts.version === 'V4';
 
@@ -374,10 +367,6 @@ export class EthImKeyKeyring extends EventEmitter {
 
   /* PRIVATE METHODS */
 
-  _normalize(buf: Buffer): string {
-    return ethUtil.bufferToHex(buf).toString();
-  }
-
   private getPathForIndex(i: number) {
     let htPath = this.getHDPathBase(this.hdPathType);
     if (this.hdPathType === HDPathType.LedgerLive) {
@@ -402,7 +391,7 @@ export class EthImKeyKeyring extends EventEmitter {
   }
 
   async indexFromAddress(address: string): Promise<number> {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     let index =
       this.paths[checksummedAddress] ||
       this.accountDetails[checksummedAddress]?.index;
@@ -431,7 +420,7 @@ export class EthImKeyKeyring extends EventEmitter {
     for (let i = 0; i < addresses.length; i++) {
       const address = addresses[i];
 
-      const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+      const detail = this.accountDetails[toChecksumAddress(address)];
 
       if (detail?.hdPathBasePublicKey !== currentPublicKey) {
         continue;

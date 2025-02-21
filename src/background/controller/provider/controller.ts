@@ -3,12 +3,11 @@ import { Common, Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
-  bufferToHex,
   isHexString,
   addHexPrefix,
   intToHex,
-} from 'ethereumjs-util';
-import { bytesToHex } from '@ethereumjs/util';
+  bufferToHex,
+} from '@ethereumjs/util';
 import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import {
@@ -423,7 +422,7 @@ class ProviderController extends BaseController {
     if (is1559) {
       txData.type = '0x2';
     }
-    const tx = TransactionFactory.fromTxData(txData as any, {
+    const tx = TransactionFactory.fromTxData(txData, {
       common,
     });
     const currentAccount = preferenceService.getCurrentAccount()!;
@@ -488,7 +487,6 @@ class ProviderController extends BaseController {
 
     let signedTx;
     try {
-      console.log('tx', tx);
       signedTx = await keyringService.signTransaction(
         keyring,
         tx,
@@ -691,7 +689,7 @@ class ProviderController extends BaseController {
               txData.type = '0x2';
             }
             const tx = TransactionFactory.fromTxData(txData);
-            const rawTx = bytesToHex(tx.serialize());
+            const rawTx = bufferToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
                 chain,
@@ -756,7 +754,7 @@ class ProviderController extends BaseController {
             txData.type = '0x2';
           }
           const tx = TransactionFactory.fromTxData(txData);
-          const rawTx = bytesToHex(tx.serialize());
+          const rawTx = bufferToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
           hash = await client.request({

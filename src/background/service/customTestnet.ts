@@ -4,7 +4,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel, Tx } from 'background/service/openapi';
 import { createPersistStore, withTimeout } from 'background/utils';
 import { BigNumber } from 'bignumber.js';
-import { intToHex } from 'ethereumjs-util';
+import { intToHex } from '@ethereumjs/util';
 import { omitBy, sortBy } from 'lodash';
 import { createClient, defineChain, erc20Abi, http, isAddress } from 'viem';
 import {

@@ -4,13 +4,14 @@ import {
   stripHexPrefix,
   addHexPrefix,
   publicToAddress,
-  bytesToHex,
+  bufferToHex,
 } from '@ethereumjs/util';
 import * as sigUtil from 'eth-sig-util';
 import {
   FeeMarketEIP1559Transaction,
-  LegacyTransaction,
+  Transaction,
   TransactionFactory,
+  TypedTransaction,
 } from '@ethereumjs/tx';
 import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
@@ -334,10 +335,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  signTransaction(
-    address: string,
-    tx: FeeMarketEIP1559Transaction | LegacyTransaction
-  ): Promise<any> {
+  signTransaction(address: string, tx: TypedTransaction): Promise<any> {
     return new Promise((resolve, reject) => {
       this.unlock()
         .then((status) => {
@@ -355,9 +353,9 @@ class OneKeyKeyring extends EventEmitter {
                   // The fromTxData utility expects a type to support transactions with a type other than 0
                   txData.type = `0x${tx.type.toString(16)}`;
                   // The fromTxData utility expects v,r and s to be hex prefixed
-                  txData.v = addHexPrefix(payload.v) as `0x${string}`;
-                  txData.r = addHexPrefix(payload.r) as `0x${string}`;
-                  txData.s = addHexPrefix(payload.s) as `0x${string}`;
+                  txData.v = addHexPrefix(payload.v);
+                  txData.r = addHexPrefix(payload.r);
+                  txData.s = addHexPrefix(payload.s);
                   // Adopt the 'common' option from the original transaction and set the
                   // returned object to be frozen if the original is frozen.
                   return TransactionFactory.fromTxData(txData, {
@@ -384,7 +382,7 @@ class OneKeyKeyring extends EventEmitter {
   async _signTransaction(
     address,
     chainId,
-    tx: LegacyTransaction | FeeMarketEIP1559Transaction,
+    tx: TypedTransaction,
     handleSigning
   ) {
     // new-style transaction from @ethereumjs/tx package
@@ -402,9 +400,9 @@ class OneKeyKeyring extends EventEmitter {
       })
       .then((res) => {
         if (res.success) {
-          const newOrMutatedTx = handleSigning(res.payload);
+          const newOrMutatedTx: TypedTransaction = handleSigning(res.payload);
           const addressSignedWith = toChecksumAddress(
-            addHexPrefix(newOrMutatedTx.getSenderAddress().toString('hex'))
+            addHexPrefix(newOrMutatedTx.getSenderAddress().toString())
           );
           const correctAddress = toChecksumAddress(address);
           if (addressSignedWith !== correctAddress) {
@@ -613,14 +611,14 @@ class OneKeyKeyring extends EventEmitter {
   /* PRIVATE METHODS */
 
   _normalize(buf: Buffer): string {
-    return bytesToHex(buf).toString();
+    return bufferToHex(buf);
   }
 
   // eslint-disable-next-line no-shadow
   _addressFromIndex(pathBase: string, i: number): string {
     const dkey = this.hdk.derive(`${pathBase}/${i}`);
-    const address = bytesToHex(publicToAddress(dkey.publicKey, true));
-    return toChecksumAddress(address);
+    const address = bufferToHex(publicToAddress(dkey.publicKey, true));
+    return toChecksumAddress(`0x${address}`);
   }
 
   _pathFromAddress(address: string): string {

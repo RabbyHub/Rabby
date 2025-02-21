@@ -23,7 +23,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
 import { useRequest } from 'ahooks';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
-import { intToHex } from 'ethereumjs-util';
+import { intToHex } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 import IconUser from 'ui/assets/address-management.svg';
