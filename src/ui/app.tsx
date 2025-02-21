@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import Views from './views';
 import { Message } from '@/utils/message';
-import { getUITypeName } from 'ui/utils';
+import { getUiType, getUITypeName, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import { EVENTS } from 'consts';
+import browser from 'webextension-polyfill';
 
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 
@@ -131,6 +132,14 @@ const main = () => {
   store.dispatch.app.initBizStore();
   store.dispatch.chains.init();
 
+  if (getUiType().isPop) {
+    wallet.tryOpenOrActiveUserGuide().then((opened) => {
+      if (opened) {
+        window.close();
+      }
+    });
+  }
+
   wallet.getLocale().then((locale) => {
     addResourceBundle(locale).then(() => {
       changeLanguage(locale);
@@ -149,7 +158,7 @@ const bootstrap = () => {
     main();
     return;
   }
-  chrome.runtime.sendMessage({ type: 'getBackgroundReady' }).then((res) => {
+  browser.runtime.sendMessage({ type: 'getBackgroundReady' }).then((res) => {
     if (!res) {
       setTimeout(() => {
         bootstrap();

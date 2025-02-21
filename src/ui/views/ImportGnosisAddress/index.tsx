@@ -108,29 +108,43 @@ const ImportGnosisAddress = () => {
       </header>
       <div className="rabby-container">
         <div className="relative p-20">
-          <Form form={form}>
+          <Form
+            form={form}
+            onValuesChange={(changedValues) => {
+              const value = changedValues.address;
+              if (!value) {
+                setErrorMessage(t('page.importSafe.error.required'));
+                return;
+              }
+              if (!isValidAddress(value)) {
+                setErrorMessage(t('page.importSafe.error.invalid'));
+                return;
+              }
+              runAsync(value);
+            }}
+          >
             <Form.Item
               name="address"
               className="mb-0"
               validateStatus={errorMessage ? 'error' : undefined}
+              getValueFromEvent={(e) => {
+                const value = e.target.value;
+                if (
+                  value.includes(':') &&
+                  isValidAddress(value.split(':')[1])
+                ) {
+                  return value.split(':')[1];
+                }
+                return value;
+              }}
             >
-              <Input
+              <Input.TextArea
+                className="leading-normal"
+                autoSize
                 size="large"
                 autoFocus
                 placeholder={t('page.importSafe.placeholder')}
                 autoComplete="off"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (!value) {
-                    setErrorMessage(t('page.importSafe.error.required'));
-                    return;
-                  }
-                  if (!isValidAddress(value)) {
-                    setErrorMessage(t('page.importSafe.error.invalid'));
-                    return;
-                  }
-                  runAsync(e.target.value);
-                }}
               />
             </Form.Item>
           </Form>

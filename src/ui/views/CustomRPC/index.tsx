@@ -1,6 +1,6 @@
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { findChain, findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum, getTestnetChainList } from '@/utils/chain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { CHAINS_ENUM } from '@debank/common';
 import { Button, Switch, message } from 'antd';
@@ -345,7 +345,7 @@ const CustomRPC = () => {
         onChange={handleChainChanged}
         onCancel={handleCancelSelectChain}
         showRPCStatus
-        hideTestnetTab
+        hideTestnetTab={!getTestnetChainList().length}
       />
       <EditRPCModal
         visible={rpcModalVisible}

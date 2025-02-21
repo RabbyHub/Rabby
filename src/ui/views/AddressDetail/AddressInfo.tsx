@@ -14,7 +14,12 @@ import IconPen from 'ui/assets/editpen.svg';
 import './style.less';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { useForm } from 'antd/lib/form/Form';
-import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
+import {
+  HARDWARE_KEYRING_TYPES,
+  KEYRING_CLASS,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+} from '@/constant';
 import { connectStore } from '@/ui/store';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
@@ -26,6 +31,8 @@ import { CoboArgusInfo } from './CoboArugsInfo';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
+import clsx from 'clsx';
+import { HardwareBar } from './HardwareBar';
 
 type Props = {
   address: string;
@@ -56,6 +63,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       title: t('page.addressDetail.edit-memo-title'),
       isSupportDarkMode: true,
       height: 215,
+      isNew: true,
       content: (
         <div className="pt-[4px]">
           <Form
@@ -86,7 +94,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             >
               <Input
                 ref={inputRef}
-                className="popup-input h-[48px]"
+                className="popup-input h-[48px] bg-r-neutral-card-1"
                 size="large"
                 placeholder={t('page.addressDetail.please-input-address-note')}
                 autoFocus
@@ -96,14 +104,28 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
                 maxLength={50}
               ></Input>
             </Form.Item>
-            <div className="text-center">
+            <div className="text-center flex gap-x-16">
+              <Button
+                size="large"
+                type="ghost"
+                onClick={() => destroy()}
+                className={clsx(
+                  'w-[200px]',
+                  'text-blue-light',
+                  'border-blue-light',
+                  'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                  'before:content-none'
+                )}
+              >
+                {t('global.Cancel')}
+              </Button>
               <Button
                 type="primary"
                 size="large"
                 className="w-[200px]"
                 htmlType="submit"
               >
-                {t('global.Confirm')}
+                {t('global.confirm')}
               </Button>
             </div>
           </Form>
@@ -216,19 +238,11 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             />
           </div>
         )}
-        {type === KEYRING_CLASS.HARDWARE.LEDGER && (
+        {Object.values(HARDWARE_KEYRING_TYPES).find(
+          (item) => item.type === type
+        ) && (
           <div className="pb-[20px]">
-            <LedgerStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
-          </div>
-        )}
-        {brandName === 'Keystone' && (
-          <div className="pb-[20px]">
-            <KeystoneStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
-          </div>
-        )}
-        {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
-          <div className="pb-[20px]">
-            <GridPlusStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
+            <HardwareBar address={address} type={type} brand={brandName} />
           </div>
         )}
         {type === KEYRING_CLASS.MNEMONIC && (

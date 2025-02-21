@@ -14,7 +14,7 @@
     }
   }
   .ant-drawer-close .anticon.anticon-close > svg {
-    color: var(--r-neutral-foot, #6A7587);
+    color: var(--r-neutral-foot, #6a7587);
   }
   .header {
     font-weight: 500;
@@ -31,12 +31,13 @@
     .ant-input-affix-wrapper-lg {
       padding: 9.25px;
       border-radius: 6px;
-      // border: 1px solid @color-border;
-      // background-color: @color-bg;
+      border: 1px solid var(--r-neutral-line, #d3d8e0);
+      background: transparent !important;
       transition: border-color 0.3s;
       .ant-input {
-        // border-radius: 0;
-        // background-color: transparent;
+        &::placeholder {
+          color: var(--r-neutral-foot, #6a7587) !important;
+        }
       }
       &:hover,
       &.active {
@@ -50,7 +51,7 @@
     padding: 0 @token-selector-px;
     justify-content: flex-end;
     align-items: center;
-    color: var(--r-neutral-foot, #6A7587);
+    color: var(--r-neutral-foot, #6a7587);
     font-size: 12px;
     line-height: 14px;
     span {
@@ -82,6 +83,10 @@
           width: 160px;
           display: flex;
           align-items: center;
+          .token-with-chain + div {
+            max-width: calc(100% - 24px);
+          }
+
           .symbol {
             flex: 1;
             overflow: hidden;
@@ -89,8 +94,9 @@
             white-space: nowrap;
             font-size: 12px;
             line-height: 15px;
-            color: var(--r-neutral-body, #3E495E);
+            color: var(--r-neutral-body, #3e495e);
             margin-left: 12px;
+            max-width: 100%;
           }
         }
         &:nth-child(2) {
@@ -98,7 +104,7 @@
           text-align: left;
           font-size: 12px;
           line-height: 14px;
-          color: var(--r-neutral-body, #3E495E);
+          color: var(--r-neutral-body, #3e495e);
         }
         &:nth-child(3) {
           width: 100px;
@@ -119,7 +125,7 @@
       cursor: initial;
       font-size: 12px;
       line-height: 14px;
-      color: var(--r-neutral-foot, #6A7587);
+      color: var(--r-neutral-foot, #6a7587);
       height: 35px;
       align-items: center;
       margin-bottom: 8px;
@@ -133,7 +139,7 @@
       & > div {
         font-size: 12px;
         line-height: 14px;
-        color: var(--r-neutral-foot, #6A7587);
+        color: var(--r-neutral-foot, #6a7587);
         font-weight: normal;
         &:nth-last-child(1) {
           flex: 1;
@@ -184,14 +190,17 @@
       justify-content: center;
       align-items: center;
 
-      border-radius: 4px;
-      color: var(--r-neutral-body, #D3D8E0);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--r-neutral-body, #d3d8e0);
       background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     }
 
     img.filter-item__chain-logo {
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
+      border-radius: 1000px;
     }
 
     .filter-item__chain-close {

@@ -42,6 +42,7 @@ export const app = createModel<RootModel>()({
       dispatch.swap.init();
       dispatch.whitelist.init();
       dispatch.bridge.init();
+      dispatch.gasAccount.init();
     },
   }),
 });

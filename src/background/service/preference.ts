@@ -122,6 +122,7 @@ export interface PreferenceStore {
   themeMode?: DARK_MODE_TYPE;
   addressSortStore: AddressSortStore;
 
+  /** @deprecated */
   reserveGasOnSendToken?: boolean;
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
 }
@@ -578,6 +579,7 @@ class PreferenceService {
     this.store.themeMode = themeMode;
   };
 
+  /** @deprecated */
   isReserveGasOnSendToken = () => {
     return this.store.reserveGasOnSendToken;
   };

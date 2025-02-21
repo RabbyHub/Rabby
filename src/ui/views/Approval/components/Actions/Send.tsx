@@ -4,7 +4,10 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ParsedActionData, SendRequireData } from './utils';
+import {
+  SendRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { useRabbyDispatch } from '@/ui/store';
@@ -37,7 +40,7 @@ const Send = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['send'];
+  data: ParsedTransactionActionData['send'];
   requireData: SendRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -115,7 +118,15 @@ const Send = ({
               <Values.AddressMemo address={actionData.to} />
             </SubRow>
           </SubCol>
-          {!!requireData.contract && (
+          {requireData.protocol && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+              <SubRow>
+                <Values.Protocol value={requireData.protocol} />
+              </SubRow>
+            </SubCol>
+          )}
+          {!!requireData.name && (
             <SubCol>
               <SubRow isTitle>{t('page.signTx.addressTypeTitle')}</SubRow>
               <SubRow>{t('page.signTx.contract')}</SubRow>
@@ -139,8 +150,7 @@ const Send = ({
                     }}
                   />
                 ) : (
-                  requireData.name.replace(/^Token: /, 'Token ') +
-                  ' contract address'
+                  requireData.name.replace(/^Token: /, 'Token ')
                 )}
               </SubRow>
             </SubCol>
@@ -180,7 +190,7 @@ const Send = ({
                     textStyle={{
                       fontSize: '13px',
                       lineHeight: '15px',
-                      color: '#4B4D59',
+                      color: 'var(--r-neutral-body, #4B4D59)',
                       fontWeight: 'normal',
                     }}
                   />

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { DBK_CHAIN_ID } from '@/constant';
+import { DBK_CHAIN_BRIDGE_CONTRACT, DBK_CHAIN_ID } from '@/constant';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useWallet } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
@@ -9,10 +9,15 @@ import { DbkBridgeHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { message } from 'antd';
 import BigNumber from 'bignumber.js';
-import { parseEther } from 'viem';
+import { getContract, parseEther, WriteContractParameters } from 'viem';
 import { getWithdrawals } from 'viem/op-stack';
 import { DbkBridgeStatus, dbk } from '../../../utils';
 import { useCreateViemClient } from './useCreateViemClient';
+import {
+  l1StandardBridgeABI,
+  optimismPortalABI,
+} from '@eth-optimism/contracts-ts';
+import { writeContract } from 'viem/actions';
 
 export const useDbkChainBridge = ({
   action,
@@ -44,16 +49,17 @@ export const useDbkChainBridge = ({
       return;
     }
     try {
-      const args = await clientL2.buildDepositTransaction({
-        account: (account!.address as unknown) as `0x${string}`,
-        mint: parseEther(payAmount),
-        to: (account!.address as unknown) as `0x${string}`,
+      const contract = getContract({
+        abi: l1StandardBridgeABI,
+        address: DBK_CHAIN_BRIDGE_CONTRACT,
+        client: clientL1,
+      });
+      const hash = await contract.write.depositETH([200_000, '0x'], {
+        account: account.address as `0x${string}`,
+        value: parseEther(payAmount),
+        gas: undefined,
       });
 
-      const hash = await clientL1.depositTransaction({
-        ...args,
-        gas: null,
-      });
       if (hash) {
         await wallet.openapi.createDbkBridgeHistory({
           user_addr: account.address,
@@ -64,13 +70,6 @@ export const useDbkChainBridge = ({
         });
       }
       window.close();
-
-      // const receipt = await clientL1.waitForTransactionReceipt({ hash });
-
-      // const [l2Hash] = getL2TransactionHashes(receipt);
-      // const l2Receipt = await clientL2.waitForTransactionReceipt({
-      //   hash: l2Hash,
-      // });
     } catch (e) {
       console.error(e);
       const msg = 'details' in e ? e.details : e.message;
@@ -83,13 +82,14 @@ export const useDbkChainBridge = ({
       return;
     }
     try {
-      const args = await clientL1.buildInitiateWithdrawal({
-        account: account!.address as any,
-        to: account!.address as any,
-        value: parseEther(payAmount),
-      });
       const hash = await clientL2.initiateWithdrawal({
-        ...args,
+        account: account.address as `0x${string}`,
+        request: {
+          // https://github.com/superbridgeapp/superbridge-app/blob/main/apps/bridge/hooks/use-transaction-args/withdraw-args/use-optimism-withdraw-args.ts#L58
+          gas: BigInt(200_000),
+          to: account.address as `0x${string}`,
+          value: parseEther(payAmount),
+        },
         gas: null,
       });
       if (hash) {
@@ -160,11 +160,23 @@ export const useDbkChainBridge = ({
           const [withdrawal] = getWithdrawals(receipt);
 
           // 2. Finalize the withdrawal.
-          const hash = await clientL1.finalizeWithdrawal({
+          // viem has a bug, it will ignore gas
+          // const hash = await clientL1.finalizeWithdrawal({
+          //   account: (account!.address as unknown) as `0x${string}`,
+          //   targetChain: clientL2.chain as any,
+          //   withdrawal,
+          //   gas: null
+          // });
+
+          await writeContract(clientL1, {
             account: (account!.address as unknown) as `0x${string}`,
-            targetChain: clientL2.chain as any,
-            withdrawal,
-            gas: null,
+            abi: optimismPortalABI,
+            address:
+              clientL2.chain?.contracts?.portal?.[clientL1.chain.id].address,
+            chain: clientL1.chain,
+            functionName: 'finalizeWithdrawalTransaction',
+            args: [withdrawal],
+            gas: BigInt(700_000),
           });
 
           window.close();
@@ -203,43 +215,47 @@ export const useDbkChainBridge = ({
   );
 
   const fetchGasPrice = useMemoizedFn(async (serverId: string) => {
-    const marketGas = await wallet.openapi.gasMarket(serverId);
-    const selectedGasPice = marketGas.find((item) => item.level === 'slow')
-      ?.price;
-    if (selectedGasPice) {
-      return Number(selectedGasPice / 1e9);
-    }
+    const marketGas = await wallet.gasMarketV2({ chainId: serverId });
+    const selectedGasPice = marketGas.find((item) => item.level === 'normal');
+    return selectedGasPice;
   });
 
-  const { data: l1GasPrice } = useRequest(() =>
+  const { data: l1GasLevel } = useRequest(() =>
     fetchGasPrice(ethChain.serverId)
   );
 
-  const { data: l2GasPrice } = useRequest(() =>
+  const { data: l2GasLevel } = useRequest(() =>
     fetchGasPrice(dbkChain.serverId)
   );
 
   const { data: l1DepositGas } = useRequest(
     async () => {
-      const gas = await clientL1.estimateDepositTransactionGas({
-        account: account!.address as any,
-        request: {
-          gas: 21_000n,
-          mint: parseEther(payAmount || '0'),
-          to: (account!.address as unknown) as `0x${string}`,
-        },
-        targetChain: dbk,
+      if (!l1GasLevel?.price || action !== 'deposit') {
+        return;
+      }
+      const gas = await clientL1.estimateContractGas({
+        abi: l1StandardBridgeABI,
+        address: DBK_CHAIN_BRIDGE_CONTRACT,
+        functionName: 'depositETH',
+        args: [200_000, '0x'],
+        account: account!.address as `0x${string}`,
+        value: parseEther(payAmount),
+        maxFeePerGas: BigInt(l1GasLevel.price),
+        maxPriorityFeePerGas: BigInt(l1GasLevel.price),
       });
       return gas;
     },
     {
       debounceWait: 500,
-      refreshDeps: [payAmount],
+      refreshDeps: [payAmount, action],
     }
   );
 
   const { data: l2WithdrawGas } = useRequest(
     async () => {
+      if (action !== 'withdraw') {
+        return;
+      }
       const gas = await clientL2.estimateInitiateWithdrawalGas({
         account: account!.address as any,
         request: {
@@ -252,53 +268,53 @@ export const useDbkChainBridge = ({
     },
     {
       debounceWait: 500,
-      refreshDeps: [payAmount],
+      refreshDeps: [payAmount, action],
     }
   );
 
   const depositGasFee = useMemo(() => {
-    if (!l1GasPrice || !l1DepositGas || !payToken?.price) {
+    if (!l1GasLevel?.price || !l1DepositGas || !payToken?.price) {
       return;
     }
-    return new BigNumber(l1GasPrice)
+    return new BigNumber(l1GasLevel?.price)
       .multipliedBy(l1DepositGas.toString())
       .multipliedBy(payToken.price)
-      .dividedBy(1e9)
+      .dividedBy(1e18)
       .toNumber();
-  }, [l1DepositGas, l1GasPrice, payToken?.price]);
+  }, [l1DepositGas, l1GasLevel?.price, payToken?.price]);
 
   const withdrawGasFee1 = useMemo(() => {
-    if (!l2GasPrice || !l2WithdrawGas || !payToken?.price) {
+    if (!l2GasLevel?.price || !l2WithdrawGas || !payToken?.price) {
       return;
     }
-    return new BigNumber(l2GasPrice)
+    return new BigNumber(l2GasLevel?.price)
       .multipliedBy(l2WithdrawGas.toString())
       .multipliedBy(payToken.price)
-      .dividedBy(1e9)
+      .dividedBy(1e18)
       .toNumber();
-  }, [l2GasPrice, l2WithdrawGas, payToken?.price]);
+  }, [l2GasLevel?.price, l2WithdrawGas, payToken?.price]);
 
   const withdrawProveGasFee = useMemo(() => {
-    if (!l1GasPrice || !payToken?.price) {
+    if (!l1GasLevel?.price || !payToken?.price) {
       return;
     }
-    return new BigNumber(l1GasPrice)
+    return new BigNumber(l1GasLevel.price)
       .multipliedBy(206529)
       .multipliedBy(payToken.price)
-      .dividedBy(1e9)
+      .dividedBy(1e18)
       .toNumber();
-  }, [l1GasPrice, payToken?.price]);
+  }, [l1GasLevel?.price, payToken?.price]);
 
   const withdrawFinalizeGasFee = useMemo(() => {
-    if (!l1GasPrice || !payToken?.price) {
+    if (!l1GasLevel?.price || !payToken?.price) {
       return;
     }
-    return new BigNumber(l1GasPrice)
-      .multipliedBy(455939)
+    return new BigNumber(l1GasLevel?.price)
+      .multipliedBy(270_000)
       .multipliedBy(payToken.price)
-      .dividedBy(1e9)
+      .dividedBy(1e18)
       .toNumber();
-  }, [l1GasPrice, payToken?.price]);
+  }, [l1GasLevel?.price, payToken?.price]);
 
   useEffect(() => {
     if (action === 'deposit') {

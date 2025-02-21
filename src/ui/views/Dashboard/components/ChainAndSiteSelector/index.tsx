@@ -17,11 +17,11 @@ import IconSendToken, {
 import IconSwap, {
   ReactComponent as RcIconSwap,
 } from 'ui/assets/dashboard/swap.svg';
-
+import IconReceive, {
+  ReactComponent as RcIconReceive,
+} from 'ui/assets/dashboard/receive.svg';
 import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
-import IconGasTopUp, {
-  ReactComponent as RcIconGasTopUp,
-} from 'ui/assets/dashboard/gas-top-up.svg';
+
 import IconNFT, {
   ReactComponent as RcIconNFT,
 } from 'ui/assets/dashboard/nft.svg';
@@ -31,8 +31,6 @@ import IconTransactions, {
 import IconAddresses, {
   ReactComponent as RcIconAddresses,
 } from 'ui/assets/dashboard/addresses.svg';
-import { ReactComponent as RcIconClaimableRabbyPoints } from 'ui/assets/dashboard/claimable-points.svg';
-import { ReactComponent as RcIconUnclaimableRabbyPoints } from 'ui/assets/dashboard/unclaimable-points.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 
 import IconMoreSettings, {
@@ -45,9 +43,10 @@ import {
   useWallet,
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
+import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { Settings } from '../index';
 import './style.less';
-import { CHAINS_ENUM, ThemeIconType } from '@/constant';
+import { CHAINS_ENUM, ThemeIconType, KEYRING_TYPE } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import { GasPriceBar } from '../GasPriceBar';
@@ -55,6 +54,8 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { EcologyPopup } from '../EcologyPopup';
+import { appIsDev } from '@/utils/env';
+import { ga4 } from '@/utils/ga4';
 
 export default ({
   gnosisPendingCount,
@@ -84,8 +85,6 @@ export default ({
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
 
-  const [rabbyPointsVisible, setRabbyPointVisible] = useState(false);
-
   const [settingVisible, setSettingVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
@@ -95,6 +94,9 @@ export default ({
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false, trigger } = state ?? {};
+  const [isShowReceiveModal, setIsShowReceiveModal] = useState(
+    trigger === 'receive' && showChainsModal
+  );
 
   const [isShowEcology, setIsShowEcologyModal] = useState(false);
 
@@ -105,14 +107,12 @@ export default ({
   const [approvalRiskAlert, setApprovalRiskAlert] = useState(0);
 
   const { value: approvalState } = useAsync(async () => {
-    if (account?.address) {
-      const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
-      if (apiLevel < 1) {
-        const data = await wallet.openapi.approvalStatus(account.address);
-        return data;
-      } else {
-        return [];
-      }
+    if (
+      account?.address &&
+      (account.type !== KEYRING_TYPE.WatchAddressKeyring || appIsDev)
+    ) {
+      const data = await wallet.openapi.approvalStatus(account.address);
+      return data;
     }
     return;
   }, [account?.address]);
@@ -183,6 +183,7 @@ export default ({
     onClick: import('react').MouseEventHandler<HTMLElement>;
     badge?: number;
     badgeAlert?: boolean;
+    badgeClassName?: string;
     iconSpin?: boolean;
     hideForGnosis?: boolean;
     showAlert?: boolean;
@@ -207,7 +208,7 @@ export default ({
       content: t('page.dashboard.home.panel.send'),
       onClick: () => history.push('/send-token?rbisource=dashboard'),
     } as IPanelItem,
-    receive: {
+    bridge: {
       icon: RcIconBridge,
       eventKey: 'Bridge',
       content: t('page.dashboard.home.panel.bridge'),
@@ -215,12 +216,12 @@ export default ({
         history.push('/bridge');
       },
     } as IPanelItem,
-    gasTopUp: {
-      icon: RcIconGasTopUp,
-      eventKey: 'Gas Top Up',
-      content: t('page.dashboard.home.panel.gasTopUp'),
+    receive: {
+      icon: RcIconReceive,
+      eventKey: 'Receive',
+      content: t('page.dashboard.home.panel.receive'),
       onClick: () => {
-        history.push('/gas-top-up');
+        setIsShowReceiveModal(true);
       },
     } as IPanelItem,
     queue: {
@@ -249,16 +250,6 @@ export default ({
       },
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
-    } as IPanelItem,
-    feedback: {
-      icon: claimable
-        ? RcIconClaimableRabbyPoints
-        : RcIconUnclaimableRabbyPoints,
-      eventKey: 'Rabby Points',
-      content: t('page.dashboard.home.panel.rabbyPoints'),
-      onClick: () => {
-        history.push('/rabby-points');
-      },
     } as IPanelItem,
     more: {
       icon: RcIconMoreSettings,
@@ -299,10 +290,9 @@ export default ({
       'swap',
       'send',
       'receive',
-      'nft',
-      // 'queue',
+      'bridge',
       'transactions',
-      'feedback',
+      'nft',
       'security',
       'ecology',
       'more',
@@ -312,9 +302,9 @@ export default ({
       'swap',
       'send',
       'receive',
-      'nft',
+      'bridge',
       'transactions',
-      'feedback',
+      'nft',
       'security',
       'ecology',
       'more',
@@ -360,6 +350,11 @@ export default ({
                     action: 'clickEntry',
                     label: item.eventKey,
                   });
+
+                  ga4.fireEvent(`Entry_${item.eventKey}`, {
+                    event_category: 'Dashboard',
+                  });
+
                   item?.onClick(evt);
                 }}
                 className="direction pointer"
@@ -371,7 +366,12 @@ export default ({
                   <Badge
                     count={item.badge}
                     size="small"
-                    className={item.badgeAlert ? 'alert' : ''}
+                    className={clsx(
+                      {
+                        alert: item.badgeAlert && !item.badgeClassName,
+                      },
+                      item.badgeClassName
+                    )}
                   >
                     <ThemeIcon
                       src={item.icon}
@@ -405,6 +405,19 @@ export default ({
               chain,
             });
           }
+        }}
+      />
+      <ChainSelectorModal
+        className="receive-chain-select-modal"
+        value={CHAINS_ENUM.ETH}
+        visible={isShowReceiveModal}
+        showRPCStatus
+        onChange={(chain) => {
+          history.push(`/receive?rbisource=dashboard&chain=${chain}`);
+          setIsShowReceiveModal(false);
+        }}
+        onCancel={() => {
+          setIsShowReceiveModal(false);
         }}
       />
 

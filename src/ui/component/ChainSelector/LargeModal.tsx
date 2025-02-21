@@ -30,6 +30,18 @@ import NetSwitchTabs, {
 } from '../PillsSwitch/NetSwitchTabs';
 import { useTranslation } from 'react-i18next';
 import { LoadingBalances } from './LoadingBalances';
+import styled from 'styled-components';
+
+const Warper = styled.div`
+  .ant-input {
+    &::placeholder {
+      color: var(--r-neutral-foot);
+    }
+  }
+  .select-chain-item::after {
+    border-bottom-width: 0.5px !important;
+  }
+`;
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -190,62 +202,65 @@ export const ChainSelectorLargeModal = ({
       centered
       destroyOnClose
     >
-      <header className={title ? 'pt-[0px]' : 'pt-[20px]'}>
-        <div className="modal-title">{title}</div>
-        {isShowTestnet && (
-          <NetSwitchTabs
-            value={selectedTab}
-            onTabChange={onTabChange}
-            className="h-[28px] box-content mt-[20px] mb-[20px]"
+      <Warper>
+        <header className={title ? 'pt-[0px]' : 'pt-[20px]'}>
+          <div className="modal-title">{title}</div>
+          {isShowTestnet && (
+            <NetSwitchTabs
+              value={selectedTab}
+              onTabChange={onTabChange}
+              className="h-[28px] box-content mt-[20px] mb-[20px]"
+            />
+          )}
+          <Input
+            prefix={<img src={IconSearch} />}
+            // Search chain
+            placeholder={t('component.ChainSelectorModal.searchPlaceholder')}
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            allowClear
+            className="bg-r-neutral-card-1 hover:border-rabby-blue-default"
           />
+        </header>
+        {isLoading ? (
+          <div className="chain-selector-large-modal-content">
+            <LoadingBalances loading={isLoading} />
+          </div>
+        ) : (
+          <div className="chain-selector-large-modal-content">
+            <SelectChainList
+              supportChains={supportChains}
+              data={matteredList}
+              sortable={false /* !supportChains */}
+              pinned={pinned as CHAINS_ENUM[]}
+              onStarChange={handleStarChange}
+              onSort={handleSort}
+              onChange={handleChange}
+              value={value}
+              disabledTips={disabledTips}
+              showRPCStatus={showRPCStatus}
+            ></SelectChainList>
+            <SelectChainList
+              supportChains={supportChains}
+              data={unmatteredList}
+              value={value}
+              pinned={pinned as CHAINS_ENUM[]}
+              onStarChange={handleStarChange}
+              onChange={handleChange}
+              disabledTips={disabledTips}
+              showRPCStatus={showRPCStatus}
+            ></SelectChainList>
+            {matteredList.length === 0 && unmatteredList.length === 0 ? (
+              <div className="select-chain-list pt-[70px] pb-[120px]">
+                <Empty>
+                  {/* No chains */}
+                  {t('component.ChainSelectorModal.noChains')}
+                </Empty>
+              </div>
+            ) : null}
+          </div>
         )}
-        <Input
-          prefix={<img src={IconSearch} />}
-          // Search chain
-          placeholder={t('component.ChainSelectorModal.searchPlaceholder')}
-          onChange={(e) => setSearch(e.target.value)}
-          value={search}
-          allowClear
-        />
-      </header>
-      {isLoading ? (
-        <div className="chain-selector-large-modal-content">
-          <LoadingBalances loading={isLoading} />
-        </div>
-      ) : (
-        <div className="chain-selector-large-modal-content">
-          <SelectChainList
-            supportChains={supportChains}
-            data={matteredList}
-            sortable={false /* !supportChains */}
-            pinned={pinned as CHAINS_ENUM[]}
-            onStarChange={handleStarChange}
-            onSort={handleSort}
-            onChange={handleChange}
-            value={value}
-            disabledTips={disabledTips}
-            showRPCStatus={showRPCStatus}
-          ></SelectChainList>
-          <SelectChainList
-            supportChains={supportChains}
-            data={unmatteredList}
-            value={value}
-            pinned={pinned as CHAINS_ENUM[]}
-            onStarChange={handleStarChange}
-            onChange={handleChange}
-            disabledTips={disabledTips}
-            showRPCStatus={showRPCStatus}
-          ></SelectChainList>
-          {matteredList.length === 0 && unmatteredList.length === 0 ? (
-            <div className="select-chain-list pt-[70px] pb-[120px]">
-              <Empty>
-                {/* No chains */}
-                {t('component.ChainSelectorModal.noChains')}
-              </Empty>
-            </div>
-          ) : null}
-        </div>
-      )}
+      </Warper>
     </Modal>
   );
 };

@@ -1,7 +1,11 @@
 import './index.less';
 import { useWallet } from '@/ui/utils';
 import React from 'react';
-import { HDManagerStateProvider, StateProviderProps } from './utils';
+import {
+  HDManagerStateContext,
+  HDManagerStateProvider,
+  StateProviderProps,
+} from './utils';
 import { Button, Spin, message } from 'antd';
 import {
   HARDWARE_KEYRING_TYPES,
@@ -21,6 +25,7 @@ import { ReactComponent as ImKeySVG } from 'ui/assets/walletlogo/imkey.svg';
 import { ReactComponent as RcMnemonicSVG } from '@/ui/assets/walletlogo/mnemonic-ink-cc.svg';
 import { ReactComponent as GridPlusSVG } from '@/ui/assets/walletlogo/gridplus.svg';
 import KeyStoneSVG from '@/ui/assets/walletlogo/keystone.svg';
+import NgraveSVG from '@/ui/assets/walletlogo/ngrave.svg';
 import { ReactComponent as AirGapSVG } from '@/ui/assets/walletlogo/airgap.svg';
 import { ReactComponent as CoolWalletSVG } from '@/ui/assets/walletlogo/coolwallet.svg';
 import { ReactComponent as BitBox02SVG } from '@/ui/assets/walletlogo/bitbox02.svg';
@@ -28,6 +33,11 @@ import { ReactComponent as imtokenOfflineSVG } from '@/ui/assets/walletlogo/imTo
 import { BitBox02Manager } from './BitBox02Manager';
 import { useTranslation } from 'react-i18next';
 import { ImKeyManager } from './ImKeyManager';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { useRabbyDispatch } from '@/ui/store';
+import { account } from '@/ui/models/account';
+import { useNewUserGuideStore } from '../NewUserImport/hooks/useNewUserGuideStore';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -41,6 +51,7 @@ const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: BitBox02SVG,
   [WALLET_BRAND_TYPES.IMTOKENOFFLINE]: imtokenOfflineSVG,
   [HARDWARE_KEYRING_TYPES.ImKey.type]: ImKeySVG,
+  [WALLET_BRAND_TYPES.NGRAVEZERO]: NgraveSVG,
 };
 
 const MANAGER_MAP = {
@@ -59,6 +70,17 @@ export const HDManager: React.FC<StateProviderProps> = ({
   keyringId,
   brand,
 }) => {
+  const { search } = useLocation();
+  const [isNewUserImport, noRedirect, isLazyImport] = React.useMemo(() => {
+    const query = new URLSearchParams(search);
+    return [
+      query.get('isNewUserImport'),
+      query.get('noRedirect'),
+      !!query.get('isLazyImport'),
+    ];
+  }, [search]);
+  const history = useHistory();
+
   const wallet = useWallet();
   const [initialed, setInitialed] = React.useState(false);
   const idRef = React.useRef<number | null>(null);
@@ -90,6 +112,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
       'page.newAddress.hd.manageBitbox02'
     ),
     [HARDWARE_KEYRING_TYPES.ImKey.type]: t('page.newAddress.hd.manageImKey'),
+    [WALLET_BRAND_TYPES.NGRAVEZERO]: t('page.newAddress.hd.manageNgraveZero'),
   };
 
   React.useEffect(() => {
@@ -119,19 +142,28 @@ export const HDManager: React.FC<StateProviderProps> = ({
           });
         });
     }
-
-    window.addEventListener('beforeunload', () => {
-      closeConnect();
-    });
+    if (!isNewUserImport) {
+      window.addEventListener('beforeunload', () => {
+        closeConnect();
+      });
+    }
 
     return () => {
-      closeConnect();
+      if (!isNewUserImport) {
+        closeConnect();
+      }
     };
   }, []);
 
-  const handleCloseWin = React.useCallback(() => {
+  const handleCloseWin = useMemoizedFn(async () => {
+    if (isNewUserImport && !noRedirect) {
+      history.push(
+        `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${brand}`
+      );
+      return;
+    }
     window.close();
-  }, []);
+  });
 
   if (!initialed) {
     return (
@@ -146,7 +178,11 @@ export const HDManager: React.FC<StateProviderProps> = ({
   const Manager = MANAGER_MAP[keyring];
 
   return (
-    <HDManagerStateProvider keyringId={idRef.current} keyring={keyring}>
+    <HDManagerStateProvider
+      keyringId={idRef.current}
+      keyring={keyring}
+      isLazyImport={isLazyImport}
+    >
       <div className="HDManager relative">
         <main>
           <div className="logo">
@@ -159,15 +195,98 @@ export const HDManager: React.FC<StateProviderProps> = ({
           </div>
           <Manager brand={brand} />
         </main>
-        <div
-          onClick={handleCloseWin}
-          className="absolute bottom-[40px] left-0 right-0 text-center"
-        >
-          <Button type="primary" className="w-[280px] h-[60px] text-20">
-            {t('page.newAddress.hd.done')}
-          </Button>
-        </div>
+        <DoneButton onClick={handleCloseWin} />
       </div>
     </HDManagerStateProvider>
+  );
+};
+
+const DoneButton = ({ onClick }: { onClick?(): void }) => {
+  const { t } = useTranslation();
+
+  const {
+    currentAccounts,
+    selectedAccounts,
+    getCurrentAccounts,
+    isLazyImport,
+    createTask,
+    keyring,
+    keyringId,
+  } = React.useContext(HDManagerStateContext);
+
+  const dispatch = useRabbyDispatch();
+
+  const { store } = useNewUserGuideStore();
+
+  const wallet = useWallet();
+  const history = useHistory();
+
+  const { loading, runAsync: handleLazyAdd } = useRequest(
+    async () => {
+      if (!(await wallet.isBooted())) {
+        if (store.password) {
+          await wallet.boot(store.password);
+        } else {
+          history.push('/new-user/guide');
+        }
+      }
+      await createTask(async () => {
+        if (keyring === KEYRING_CLASS.MNEMONIC) {
+          await dispatch.importMnemonics.setField({
+            confirmingAccounts: selectedAccounts.map((account) => {
+              return {
+                address: account.address,
+                index: account.index,
+                alianName: account.aliasName || '',
+              };
+            }),
+          });
+          await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+        } else {
+          await wallet.unlockHardwareAccount(
+            keyring,
+            selectedAccounts.map((account) => account.index - 1),
+            keyringId
+          );
+        }
+      });
+
+      await createTask(() =>
+        wallet.requestKeyring(keyring, 'setCurrentUsedHDPathType', keyringId)
+      );
+
+      await createTask(() => getCurrentAccounts());
+      onClick?.();
+    },
+    {
+      manual: true,
+    }
+  );
+
+  return (
+    <div className="absolute bottom-[40px] left-0 right-0 text-center">
+      {isLazyImport ? (
+        <Button
+          type="primary"
+          className="w-[280px] h-[60px] text-20"
+          onClick={handleLazyAdd}
+          loading={loading}
+          disabled={!selectedAccounts.length}
+        >
+          {t('page.newAddress.hd.importBtn', {
+            count: selectedAccounts.length,
+          })}
+        </Button>
+      ) : (
+        <Button
+          type="primary"
+          className="w-[280px] h-[60px] text-20"
+          onClick={onClick}
+          disabled={!currentAccounts.length}
+        >
+          {t('page.newAddress.hd.done')}
+        </Button>
+      )}
+    </div>
   );
 };

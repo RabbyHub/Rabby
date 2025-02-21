@@ -22,6 +22,7 @@ import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
@@ -32,11 +33,22 @@ interface ApprovalParams {
   $ctx?: any;
   extra?: Record<string, any>;
   type: string;
+  safeMessage?: {
+    safeMessageHash: string;
+    safeAddress: string;
+    message: string;
+    chainId: number;
+  };
 }
 
 export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   const wallet = useWallet();
-  const { setTitle, setVisible, closePopup } = useCommonPopupView();
+  const {
+    setTitle,
+    setVisible,
+    closePopup,
+    setPopupProps,
+  } = useCommonPopupView();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const { type } = params;
@@ -71,6 +83,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.resendSign();
     message.success(t('page.signFooterBar.ledger.resent'));
+    emitSignComponentAmounted();
   };
 
   const handleCancel = () => {
@@ -153,12 +166,20 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, data.data);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
-              await wallet.gnosisAddSignature(account.address, data.data);
-              await wallet.postGnosisTransaction();
+              const sigs = await wallet.getGnosisTransactionSignatures();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, data.data);
+              } else {
+                await wallet.gnosisAddSignature(account.address, data.data);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {
@@ -171,6 +192,11 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
           action: 'Submit',
           label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
+
+        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+          event_category: 'Transaction',
+        });
+
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
@@ -202,6 +228,10 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       init();
     })();
   }, []);
+
+  React.useEffect(() => {
+    setPopupProps(params?.extra?.popupProps);
+  }, [params?.extra?.popupProps]);
 
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {

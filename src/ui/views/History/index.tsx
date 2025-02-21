@@ -11,6 +11,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Empty, PageHeader } from 'ui/component';
 import { HistoryList } from './components/HistoryList';
 import './style.less';
+import { TestnetTransactionHistory } from '../TransactionHistory/TestnetTranasctionHistory';
 
 const Null = () => null;
 
@@ -50,14 +51,7 @@ const History = () => {
           <HistoryList />
         </Tabs.TabPane>
         <Tabs.TabPane key="testnet">
-          <Empty
-            desc={
-              <div className="mt-[-12px] text-r-neutral-foot leading-[20px]">
-                {t('global.notSupportTesntnet')}
-              </div>
-            }
-            className="pt-[108px]"
-          ></Empty>
+          <TestnetTransactionHistory />
         </Tabs.TabPane>
       </Tabs>
     </div>

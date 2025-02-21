@@ -13,13 +13,13 @@ interface SpenderData {
     name: string;
     logo_url: string;
   } | null;
-  hasInteraction: boolean;
   bornAt: number | null;
   rank: number | null;
   riskExposure: number;
   isEOA: boolean;
   isDanger: boolean | null;
   isRevoke?: boolean;
+  hasInteraction: boolean;
 }
 
 export interface Props {

@@ -1,23 +1,22 @@
-import { findChain } from '@/utils/chain';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconBack } from 'ui/assets/icon-back-cc.svg';
+import { EcoChains } from 'ui/views/Ecology/constants';
 
 interface Props {
   className?: string;
   style?: React.CSSProperties;
   chainId: number;
 }
+
+const findChain = (id: number) => {
+  return EcoChains.find((chain) => chain.id === id);
+};
+
 export const EcologyNavBar = ({ className, style, chainId }: Props) => {
-  const chain = useMemo(
-    () =>
-      findChain({
-        id: chainId,
-      }),
-    [chainId]
-  );
+  const chain = useMemo(() => findChain(chainId), [chainId]);
   const history = useHistory();
 
   const { t } = useTranslation();
@@ -25,7 +24,7 @@ export const EcologyNavBar = ({ className, style, chainId }: Props) => {
   return (
     <div
       className={clsx(
-        'flex items-center px-[20px] py-[10px] min-h-[48px]',
+        'flex items-center px-[20px] py-[10px] min-h-[48px] z-[100]',
         'border-b-[0.5px] border-rabby-neutral-line',
         'bg-r-neutral-bg1',
         className

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ContractRequireData, TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
@@ -14,6 +14,7 @@ import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { isSameAddress } from '@/ui/utils';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
+import { ContractRequireData } from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .contract-call-header {
@@ -57,7 +58,7 @@ const ContractCall = ({
   raw,
   engineResults,
 }: {
-  data: TypedDataActionData['contractCall'];
+  data: ParsedTypedDataActionData['contractCall'];
   requireData: ContractRequireData;
   chain: Chain;
   raw: Record<string, string | number>;
@@ -103,11 +104,11 @@ const ContractCall = ({
             <ViewMore
               type="contract"
               data={{
-                hasInteraction: requireData.hasInteraction,
                 bornAt: requireData.bornAt,
                 protocol: requireData.protocol,
                 rank: requireData.rank,
                 address: requireData.id,
+                hasInteraction: requireData.hasInteraction,
                 chain,
               }}
             >
@@ -156,12 +157,9 @@ const ContractCall = ({
         </SubTable>
         <Col>
           <Row isTitle>{t('page.signTx.contractCall.operation')}</Row>
-          <Row>
+          <Row wrap>
             <div className="relative flex items-center">
-              <span
-                className="overflow-ellipsis whitespace-nowrap overflow-hidden"
-                title={operation || '-'}
-              >
+              <span className="break-all" title={operation || '-'}>
                 {operation || '-'}
               </span>
               <TooltipWithMagnetArrow

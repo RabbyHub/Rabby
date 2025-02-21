@@ -2,8 +2,6 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
 import {
-  CHAINS,
-  DARK_MODE_TYPE,
   INITIAL_OPENAPI_URL,
   INITIAL_TESTNET_OPENAPI_URL,
   LANGS,
@@ -14,12 +12,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
-import { ReactComponent as RcIconGasTopUp } from 'ui/assets/dashboard/gas-top-up-1.svg';
+import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-import { ReactComponent as RcIconArrowOrangeRight } from 'ui/assets/dashboard/settings/icon-right-arrow-orange.svg';
-import { ReactComponent as RcIconArrowCCRight } from 'ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
-
-import IconSettingsDeBank from 'ui/assets/dashboard/settings/debank.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
@@ -37,10 +31,8 @@ import { ReactComponent as RcIconTwitter } from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
 import { ReactComponent as RcIconClearCC } from 'ui/assets/icon-clear-cc.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
-// import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
 import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
-// import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
@@ -53,9 +45,9 @@ import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
-import IconSettingsRabbyBadge from 'ui/assets/badge/free-gas-badge-s.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
+import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
 
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -64,8 +56,10 @@ import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
-import { getChainList, getMainnetChainList } from '@/utils/chain';
+import { getChainList } from '@/utils/chain';
 import { SvgIconCross } from '@/ui/assets';
+import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
+import { ga4 } from '@/utils/ga4';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -273,6 +267,14 @@ const ResetAccountModal = ({
         <p className="reset-account-content">
           {t('page.dashboard.settings.clearPendingTip2')}
         </p>
+        <div className="flex items-start gap-[4px] p-[10px] bg-r-red-light rounded-[6px] mt-[20px]">
+          <div className="text-r-red-default pt-[2px]">
+            <RcIconWarning />
+          </div>
+          <div className="text-r-red-default text-[13px] leading-[16px] font-medium">
+            {t('page.dashboard.settings.clearPendingWarningTip')}
+          </div>
+        </div>
         <div className="flex flex-col mt-auto popup-footer px-20 bottom-18">
           <div className="absolute left-0 top-[40px] w-full h-0 border-solid border-t-[0.5px] border-rabby-neutral-line"></div>
           <div className="flex justify-center mb-[38px]">
@@ -467,58 +469,30 @@ const SwitchLangModal = ({
   );
 };
 
-const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="setting-block">
-      <div className="setting-items">
-        <Field
-          leftIcon={
-            <ThemeIcon src={IconSettingsRabbyBadge} className="w-28 h-28" />
-          }
-          rightIcon={
-            <ThemeIcon
-              src={RcIconArrowCCRight}
-              className="icon icon-arrow-right w-20 h-20 text-[#109D63]"
-            />
-          }
-          onClick={onClick}
-          className="bg-[rgba(16,157,99,0.20)] text-[#109D63] hover:border-[#109D63] font-medium"
-        >
-          {t('page.dashboard.settings.claimFreeGasBadge')}
-        </Field>
-      </div>
-    </div>
-  );
-};
-
-const RequestDeBankTestnetGasToken = () => {
-  const { t } = useTranslation();
-  const history = useHistory();
-  return (
-    <div className="setting-block mt-8">
-      <div className="setting-items">
-        <Field
-          leftIcon={
-            <ThemeIcon src={IconSettingsDeBank} className="w-28 h-28" />
-          }
-          rightIcon={
-            <ThemeIcon
-              src={RcIconArrowOrangeRight}
-              className="icon icon-arrow-right w-20 h-20"
-            />
-          }
-          onClick={() => {
-            history.push('/request-debank-testnet-gas-token');
-          }}
-          className="text-[#FF6238] bg-[#FFF4F1] dark:bg-[#43332F] font-medium hover:border-[#FF6238]"
-        >
-          {t('page.dashboard.settings.requestDeBankTestnetGasToken')}
-        </Field>
-      </div>
-    </div>
-  );
-};
+// const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
+//   const { t } = useTranslation();
+//   return (
+//     <div className="setting-block">
+//       <div className="setting-items">
+//         <Field
+//           leftIcon={
+//             <ThemeIcon src={IconSettingsRabbyBadge} className="w-28 h-28" />
+//           }
+//           rightIcon={
+//             <ThemeIcon
+//               src={RcIconArrowCCRight}
+//               className="icon icon-arrow-right w-20 h-20 text-[#109D63]"
+//             />
+//           }
+//           onClick={onClick}
+//           className="bg-[rgba(16,157,99,0.20)] text-[#109D63] hover:border-[#109D63] font-medium"
+//         >
+//           {t('page.dashboard.settings.claimFreeGasBadge')}
+//         </Field>
+//       </div>
+//     </div>
+//   );
+// };
 
 type SettingItem = {
   leftIcon: ThemeIconType;
@@ -579,6 +553,11 @@ const SettingsInner = ({
       action: 'clickToUse',
       label: 'Whitelist',
     });
+
+    ga4.fireEvent('More_Whitelist', {
+      event_category: 'Click More',
+    });
+
     reportSettings('Whitelist');
     handleWhitelistEnableChange(checked);
   };
@@ -621,10 +600,6 @@ const SettingsInner = ({
 
     return semver(process.env.release || '0.0.0', data.version_tag) === -1;
   });
-
-  const handleSwitchIsShowTestnet = (value: boolean) => {
-    dispatch.preference.setIsShowTestnet(value);
-  };
 
   const updateVersionClassName = useCss({
     '& .ant-modal-body': {
@@ -691,20 +666,12 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Lock Wallet',
             });
-            reportSettings('Lock Wallet');
-          },
-        },
-        {
-          leftIcon: RcIconGasTopUp,
-          content: t('page.dashboard.settings.features.gasTopUp'),
-          onClick: () => {
-            history.push('/gas-top-up');
-            matomoRequestEvent({
-              category: 'Setting',
-              action: 'clickToUse',
-              label: 'Gas Top Up',
+
+            ga4.fireEvent('More_LockWallet', {
+              event_category: 'Click More',
             });
-            reportSettings('Gas Top Up');
+
+            reportSettings('Lock Wallet');
           },
         },
         {
@@ -717,6 +684,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Signature Record',
             });
+
+            ga4.fireEvent('More_SignatureRecord', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Signature Record');
           },
         },
@@ -730,7 +702,19 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Manage Address',
             });
+
+            ga4.fireEvent('More_ManageAddress', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Manage Address');
+          },
+        },
+        {
+          leftIcon: RcIconPoints,
+          content: t('page.dashboard.settings.features.rabbyPoints'),
+          onClick: () => {
+            history.push('/rabby-points');
           },
         },
         {
@@ -742,6 +726,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Search Dapps',
             });
+
+            ga4.fireEvent('More_SearchDapps', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Search Dapps');
             openInternalPageInTab('dapp-search');
           },
@@ -756,6 +745,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Connected Dapps',
             });
+
+            ga4.fireEvent('More_ConnectedDapps', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Connected Dapps');
           },
         },
@@ -787,6 +781,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Custom Testnet',
             });
+
+            ga4.fireEvent('More_CustomTestnet', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Custom Testnet');
           },
         },
@@ -800,6 +799,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Custom RPC',
             });
+
+            ga4.fireEvent('More_CustomRPC', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Custom RPC');
           },
         },
@@ -812,6 +816,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Current Language',
             });
+
+            ga4.fireEvent('More_CurrentLanguage', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Current Language');
             setIsShowLangModal(true);
           },
@@ -839,6 +848,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Theme Mode',
             });
+
+            ga4.fireEvent('More_ThemeMode', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Theme Mode');
             setIsShowThemeModeModal(true);
           },
@@ -860,15 +874,20 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconPreferMetamask,
-          content: t('page.dashboard.settings.settings.metamaskPreferredDapps'),
+          content: t('page.dashboard.settings.settings.metamaskMode'),
           onClick: () => {
-            history.push('/prefer-metamask-dapps');
+            history.push('/metamask-mode-dapps');
             matomoRequestEvent({
               category: 'Setting',
               action: 'clickToUse',
-              label: 'MetaMask Preferred Dapps',
+              label: 'MetaMask Mode Dapps',
             });
-            reportSettings('MetaMask Preferred Dapps');
+
+            ga4.fireEvent('More_MetaMaskModeDapps', {
+              event_category: 'Click More',
+            });
+
+            reportSettings('MetaMask Mode Dapps');
           },
         },
         {
@@ -880,6 +899,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Auto lock time',
             });
+
+            ga4.fireEvent('More_AutoLockTime', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Auto lock time');
             setIsShowAutoLockModal(true);
           },
@@ -907,6 +931,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Reset Account',
             });
+
+            ga4.fireEvent('More_ResetAccount', {
+              event_category: 'Click More',
+            });
+
             setShowResetAccountModal(true);
             reportSettings('Reset Account');
           },
@@ -964,6 +993,27 @@ const SettingsInner = ({
             </>
           ),
         },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: 'Test sendPersonalMessage',
+          onClick: async () => {
+            const currentAddress =
+              (await wallet.getCurrentAccount())?.address || '';
+
+            const result = await sendPersonalMessage({
+              data: [
+                '0x4578616d706c652060706572736f6e616c5f7369676e60206d657373616765',
+                currentAddress,
+                'Example password',
+              ],
+              wallet,
+              onProgress: (progress) => {
+                message.success('sendPersonalMessage progress: ' + progress);
+              },
+            });
+            message.success('sendPersonalMessage result: ' + result.txHash);
+          },
+        },
       ] as SettingItem[],
     },
     about: {
@@ -978,8 +1028,13 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'feedback',
             });
-            setFeedbackVisible(true);
+
+            ga4.fireEvent('More_Feedback', {
+              event_category: 'Click More',
+            });
+
             reportSettings('feedback');
+            openInTab('https://debank.com/hi/0a110032');
           },
           rightIcon: (
             <ThemeIcon
@@ -998,6 +1053,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Current Version',
             });
+
+            ga4.fireEvent('More_CurrentVersion', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Current Version');
           },
           rightIcon: (
@@ -1045,6 +1105,11 @@ const SettingsInner = ({
               action: 'clickToUse',
               label: 'Supported Chains',
             });
+
+            ga4.fireEvent('More_SupportedChains', {
+              event_category: 'Click More',
+            });
+
             reportSettings('Supported Chains');
           },
           rightIcon: (
@@ -1078,6 +1143,11 @@ const SettingsInner = ({
                     action: 'clickToUse',
                     label: 'Find us|Twitter',
                   });
+
+                  ga4.fireEvent('More_FindUsTwitter', {
+                    event_category: 'Click More',
+                  });
+
                   reportSettings('twitter');
                 }}
                 className="ml-12 group"
@@ -1101,6 +1171,11 @@ const SettingsInner = ({
                     action: 'clickToUse',
                     label: 'Find us|Discord',
                   });
+
+                  ga4.fireEvent('More_FindUsDiscord', {
+                    event_category: 'Click More',
+                  });
+
                   reportSettings('discord');
                 }}
                 className="ml-12 group"
@@ -1127,11 +1202,6 @@ const SettingsInner = ({
   }
 
   const lockWallet = async () => {
-    matomoRequestEvent({
-      category: 'Setting',
-      action: 'clickToUse',
-      label: 'lockWallet',
-    });
     reportSettings('lockWallet');
     await wallet.lockWallet();
     history.push('/unlock');
@@ -1157,18 +1227,7 @@ const SettingsInner = ({
   return (
     <div className="popup-settings">
       <div className="content">
-        {/* <Button
-              block
-              size="large"
-              type="primary"
-              className="flex justify-center items-center lock-wallet"
-              onClick={lockWallet}
-            >
-              <img src={IconLock} className="icon icon-lock" />{' '}
-              {'Lock Wallet'}
-            </Button> */}
-        <ClaimRabbyBadge onClick={onOpenBadgeModal} />
-        {/* <RequestDeBankTestnetGasToken /> */}
+        {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">

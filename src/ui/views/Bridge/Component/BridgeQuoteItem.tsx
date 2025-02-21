@@ -18,38 +18,11 @@ import {
 } from '../hooks';
 import { Tooltip } from 'antd';
 import { useRabbySelector } from '@/ui/store';
-import ImgWhiteWarning from '@/ui/assets/swap/warning-white.svg';
 import styled from 'styled-components';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 
 const ItemWrapper = styled.div`
   position: relative;
-
-  .disabled-trade {
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform: translateY(-20px);
-    opacity: 0;
-    width: 100%;
-    height: 0;
-    padding-left: 16px;
-    background: #000000;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 400;
-    font-size: 13px;
-    color: #ffffff;
-    pointer-events: none;
-  }
-  &.enabledAggregator:hover .disabled-trade {
-    cursor: pointer;
-    pointer-events: auto;
-    height: 100%;
-    transform: translateY(0);
-    opacity: 1;
-  }
 `;
 
 interface QuoteItemProps extends SelectedBridgeQuote {
@@ -59,9 +32,7 @@ interface QuoteItemProps extends SelectedBridgeQuote {
   isBestQuote?: boolean;
   bestQuoteUsd: string;
   sortIncludeGasFee: boolean;
-  setSelectedBridgeQuote?: React.Dispatch<
-    React.SetStateAction<SelectedBridgeQuote | undefined>
-  >;
+  setSelectedBridgeQuote?: (quote: SelectedBridgeQuote) => void;
   onlyShow?: boolean;
   loading?: boolean;
   inSufficient?: boolean;
@@ -79,11 +50,8 @@ export const bridgeQuoteEstimatedValueBn = (
 
 export const BridgeQuoteItem = (props: QuoteItemProps) => {
   const { t } = useTranslation();
-  const [disabledTipsOpen, setDisabledTipsOpen] = useState(false);
 
   const openSwapQuote = useSetQuoteVisible();
-
-  const openSettings = useSetSettingVisible();
 
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
@@ -91,16 +59,6 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
   const selectedAggregators = useRabbySelector(
     (s) => s.bridge.selectedAggregators || []
   );
-
-  const availableSelectedAggregators = useMemo(() => {
-    return selectedAggregators?.filter((e) =>
-      aggregatorsList.some((item) => item.id === e)
-    );
-  }, [selectedAggregators, aggregatorsList]);
-
-  const enabledAggregator = useMemo(() => {
-    return availableSelectedAggregators.includes(props?.aggregator?.id);
-  }, [props?.aggregator?.id, availableSelectedAggregators]);
 
   const diffPercent = React.useMemo(() => {
     if (props.onlyShow || props.isBestQuote) {
@@ -125,10 +83,8 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     if (props.inSufficient) {
       return;
     }
-    if (!enabledAggregator) {
-      return;
-    }
-    props?.setSelectedBridgeQuote?.(props);
+
+    props?.setSelectedBridgeQuote?.({ ...props, manualClick: true });
     openSwapQuote(false);
   };
   return (
@@ -143,16 +99,20 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     >
       <ItemWrapper
         className={clsx(
-          ' flex flex-col gap-10  justify-center rounded-md',
-          !props.inSufficient && !enabledAggregator && 'enabledAggregator',
+          ' flex flex-col gap-12  justify-center rounded-md',
+          !props.inSufficient && 'enabledAggregator',
           props.onlyShow
             ? 'bg-transparent h-auto'
-            : props.inSufficient || !enabledAggregator
-            ? 'h-80 px-16 bg-transparent border-[0.5px] border-solid border-rabby-neutral-line'
-            : 'h-80 px-16 cursor-pointer bg-r-neutral-card1 border-[0.5px] border-solid border-transparent hover:bg-rabby-blue-light1  hover:border-rabby-blue-default'
+            : props.inSufficient
+            ? 'h-[88px] p-16 pt-[20px] bg-transparent border-[1px] border-solid border-rabby-neutral-line'
+            : clsx(
+                'h-[88px] p-16 pt-[20px] cursor-pointer',
+                'bg-r-neutral-card1 border-[1px] border-solid border-transparent hover:bg-rabby-blue-light1',
+                ' hover:after:absolute hover:after:rounded-md hover:after:inset-[-1px] hover:after:border hover:after:border-rabby-blue-default hover:after:pointer-events-none'
+              )
         )}
         style={
-          props.onlyShow || props.inSufficient || !enabledAggregator
+          props.onlyShow || props.inSufficient
             ? {}
             : {
                 boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.05)',
@@ -160,21 +120,35 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
         }
         onClick={handleClick}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex gap-6  items-center relative">
+        <div className="flex items-center justify-between relative">
+          <div className="flex gap-6  items-center  overflow-hidden pr-16">
             <QuoteLogo
               logo={props.aggregator.logo_url}
               bridgeLogo={props.bridge.logo_url}
-              isLoading={props.loading}
+              isLoading={props.onlyShow ? false : props.loading}
             />
             <span className="text-[16px] font-medium text-r-neutral-title1">
               {props.aggregator.name}
             </span>
-            <span className="text-13 text-r-neutral-foot">
-              {t('page.bridge.via-bridge', {
+            <TooltipWithMagnetArrow
+              title={t('page.bridge.via-bridge', {
                 bridge: props.bridge.name,
               })}
-            </span>
+              className="rectangle w-[max-content]"
+              arrowPointAtCenter
+              visible={props.onlyShow ? undefined : false}
+            >
+              <span
+                className={clsx(
+                  'text-13 text-r-neutral-foot',
+                  'overflow-hidden overflow-ellipsis whitespace-nowrap'
+                )}
+              >
+                {t('page.bridge.via-bridge', {
+                  bridge: props.bridge.name,
+                })}
+              </span>
+            </TooltipWithMagnetArrow>
             {/* {props.shouldApproveToken &&  */}
             {props.shouldApproveToken && (
               <TooltipWithMagnetArrow
@@ -188,15 +162,21 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             )}
           </div>
 
-          <div className="flex items-center gap-8 flex-1 overflow-hidden justify-end">
+          <div className="flex items-center gap-8 flex-1 justify-end">
             <TokenWithChain
-              token={props.payToken}
+              token={props.receiveToken}
               width="20px"
               height="20px"
               hideChainIcon
               hideConer
             />
-            <span className="text-[16px] font-medium text-rabby-neutral-title1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <span
+              className={clsx(
+                'text-[16px] font-medium text-rabby-neutral-title1 overflow-hidden overflow-ellipsis whitespace-nowrap',
+                props.onlyShow ? 'max-w-[126px]' : 'max-w-[138px]'
+              )}
+              title={formatTokenAmount(props.to_token_amount)}
+            >
               {formatTokenAmount(props.to_token_amount)}
             </span>
           </div>
@@ -216,7 +196,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               })}
             </span>
           </div>
-          <div className="flex items-center gap-6 text-13 text-r-neutral-foot">
+          <div className="flex items-center gap-2 text-13 text-r-neutral-foot">
             <span>
               {t('page.bridge.estimated-value', {
                 value: formatUsdValue(
@@ -226,39 +206,21 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
                 ),
               })}
             </span>
-            {!props.onlyShow && (
-              <span
-                className={clsx(
-                  props.isBestQuote
-                    ? 'text-r-green-default'
-                    : 'text-r-red-default'
-                )}
-              >
-                {props.isBestQuote ? t('page.bridge.best') : diffPercent}
-              </span>
-            )}
           </div>
         </div>
 
-        {!props.inSufficient && !enabledAggregator && (
+        {!props.onlyShow && (
           <div
-            className={clsx('disabled-trade')}
-            onClick={(e) => {
-              e.stopPropagation();
-              openSettings(true);
-            }}
+            className={clsx(
+              'absolute top-[-1px] left-[-1px]',
+              'rounded-tl-[4px] rounded-br-[4px] px-[6px] py-[1px]',
+              'text-12 font-medium',
+              props.isBestQuote
+                ? 'text-r-blue-default bg-light-r-blue-light2'
+                : 'text-r-red-default bg-r-red-light'
+            )}
           >
-            <img
-              src={ImgWhiteWarning}
-              className="w-12 h-12 relative top-[-10px]"
-            />
-            <span>
-              {t('page.bridge.aggregator-not-enabled')}
-              <br />
-              <span className="underline-transparent underline cursor-pointer ml-4">
-                {t('page.bridge.enable-it')}
-              </span>
-            </span>
+            {props.isBestQuote ? t('page.bridge.best') : diffPercent}
           </div>
         )}
       </ItemWrapper>

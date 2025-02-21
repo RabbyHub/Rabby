@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useWallet } from 'ui/utils';
 import './style.less';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
@@ -20,7 +19,6 @@ import QRCode from 'qrcode.react';
 import { ReactComponent as RcIconQrCode } from 'ui/assets/qrcode-cc.svg';
 
 const AddressBackup = () => {
-  const wallet = useWallet();
   const { t } = useTranslation();
 
   const history = useHistory();
@@ -56,7 +54,7 @@ const AddressBackup = () => {
             </div>
           </div>
           <div className="flex justify-center">
-            <div className="p-[12px] rounded-[16px] border-rabby-neutral-line border-[1px] bg-r-neutral-card-1">
+            <div className="p-[12px] rounded-[16px] border-rabby-neutral-line border-[1px] bg-white">
               <QRCode value={data} size={240} />
             </div>
           </div>
@@ -91,11 +89,11 @@ const AddressBackup = () => {
         )}
         {t('page.backupSeedPhrase.title')}
       </header>
-      <div className="alert mb-[34px]">
+      <div className="alert mb-20">
         <InfoCircleOutlined className="rotate-180" />
         {t('page.backupSeedPhrase.alert')}
       </div>
-      <div className="mb-[74px]">
+      <div className="mb-[94px]">
         <div className="relative">
           <div
             onClick={() => setMasked(false)}
@@ -105,6 +103,34 @@ const AddressBackup = () => {
             <p className="mt-[16px] mb-0 text-white">
               {t('page.backupSeedPhrase.clickToShow')}
             </p>
+          </div>
+          <div className="flex items-center gap-[24px] justify-center mb-20">
+            <div
+              onClick={handleShowQrCode}
+              className={clsx(
+                'copy text-r-neutral-foot',
+                masked ? 'invisible' : 'visible'
+              )}
+            >
+              <ThemeIcon
+                src={RcIconQrCode}
+                className="text-r-neutral-foot w-[16px] h-[16px]"
+              />
+              {t('page.backupSeedPhrase.showQrCode')}
+            </div>
+            <div
+              onClick={onCopyMnemonics}
+              className={clsx(
+                'copy text-r-neutral-foot',
+                masked ? 'invisible' : 'visible'
+              )}
+            >
+              <ThemeIcon
+                src={RcIconCopyCC}
+                className="text-r-neutral-foot w-[16px] h-[16px]"
+              />
+              {t('page.backupSeedPhrase.copySeedPhrase')}
+            </div>
           </div>
           <div
             className="rounded-[6px] flex items-center w-full"
@@ -122,36 +148,8 @@ const AddressBackup = () => {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-[24px] justify-center">
-          <div
-            onClick={handleShowQrCode}
-            className={clsx(
-              'copy text-r-neutral-foot',
-              masked ? 'invisible' : 'visible'
-            )}
-          >
-            <ThemeIcon
-              src={RcIconQrCode}
-              className="text-r-neutral-foot w-[16px] h-[16px]"
-            />
-            {t('page.backupSeedPhrase.showQrCode')}
-          </div>
-          <div
-            onClick={onCopyMnemonics}
-            className={clsx(
-              'copy text-r-neutral-foot',
-              masked ? 'invisible' : 'visible'
-            )}
-          >
-            <ThemeIcon
-              src={RcIconCopyCC}
-              className="text-r-neutral-foot w-[16px] h-[16px]"
-            />
-            {t('page.backupSeedPhrase.copySeedPhrase')}
-          </div>
-        </div>
       </div>
-      <div className="footer pb-[20px]">
+      <div className="footer pb-[20px] z-20">
         <Button
           type="primary"
           className="w-full"

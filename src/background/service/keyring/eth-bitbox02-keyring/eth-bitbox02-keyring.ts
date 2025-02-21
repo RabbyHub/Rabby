@@ -11,7 +11,6 @@ import {
   AccessListEIP2930Transaction,
 } from '@ethereumjs/tx';
 import { EVENTS } from '@/constant';
-import { SignHelper } from '../helper';
 import { BitBox02BridgeInterface } from './bitbox02-bridge-interface';
 
 const hdPathString = "m/44'/60'/0'/0";
@@ -28,9 +27,6 @@ class BitBox02Keyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
-  signHelper = new SignHelper({
-    errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
-  });
 
   bridge!: BitBox02BridgeInterface;
 
@@ -64,10 +60,6 @@ class BitBox02Keyring extends EventEmitter {
     this.page = opts.page || 0;
     this.perPage = 5;
     return Promise.resolve();
-  }
-
-  resend() {
-    this.signHelper.resend();
   }
 
   async init() {
@@ -178,52 +170,51 @@ class BitBox02Keyring extends EventEmitter {
 
   // tx is an instance of the ethereumjs-transaction class.
   async signTransaction(address, tx: TypedTransaction) {
-    return this.signHelper.invoke(async () => {
-      await this.init();
+    await this.init();
 
-      let result;
-      const txData: JsonTx = {
-        to: tx.to!.toString(),
-        value: `0x${tx.value.toString('hex')}`,
-        data: this._normalize(tx.data),
-        nonce: `0x${tx.nonce.toString('hex')}`,
-        gasLimit: `0x${tx.gasLimit.toString('hex')}`,
-      };
+    let result;
+    const txData: JsonTx = {
+      to: tx.to!.toString(),
+      value: `0x${tx.value.toString('hex')}`,
+      data: this._normalize(tx.data),
+      nonce: `0x${tx.nonce.toString('hex')}`,
+      gasLimit: `0x${tx.gasLimit.toString('hex')}`,
+    };
 
-      if (tx instanceof FeeMarketEIP1559Transaction) {
-        result = await this.bridge.ethSign1559Transaction(
-          this._pathFromAddress(address),
-          tx.toJSON()
-        );
-        txData.type = '0x02';
-        txData.maxPriorityFeePerGas = `0x${tx.maxPriorityFeePerGas.toString(
-          'hex'
-        )}`;
-        txData.maxFeePerGas = `0x${tx.maxFeePerGas.toString('hex')}`;
-      } else if (
-        tx instanceof Transaction ||
-        tx instanceof AccessListEIP2930Transaction
-      ) {
-        result = await this.bridge.ethSignTransaction(
-          tx.common.chainIdBN().toNumber(),
-          this._pathFromAddress(address),
-          tx.toJSON()
-        );
-        txData.gasPrice = `0x${tx.gasPrice.toString('hex')}`;
-      }
-      txData.r = result.r;
-      txData.s = result.s;
-      txData.v = result.v;
-      const signedTx = TransactionFactory.fromTxData(txData);
-      const addressSignedWith = ethUtil.toChecksumAddress(
-        signedTx.getSenderAddress().toString()
+    if (tx instanceof FeeMarketEIP1559Transaction) {
+      result = await this.bridge.ethSign1559Transaction(
+        this._pathFromAddress(address),
+        tx.toJSON()
       );
-      const correctAddress = ethUtil.toChecksumAddress(address);
-      if (addressSignedWith !== correctAddress) {
-        throw new Error('signature doesnt match the right address');
-      }
-      return signedTx;
-    });
+      txData.type = '0x02';
+      txData.maxPriorityFeePerGas = `0x${tx.maxPriorityFeePerGas.toString(
+        'hex'
+      )}`;
+      txData.maxFeePerGas = `0x${tx.maxFeePerGas.toString('hex')}`;
+    } else if (
+      tx instanceof Transaction ||
+      tx instanceof AccessListEIP2930Transaction
+    ) {
+      result = await this.bridge.ethSignTransaction(
+        tx.common.chainIdBN().toNumber(),
+        this._pathFromAddress(address),
+        tx.toJSON()
+      );
+      txData.gasPrice = `0x${tx.gasPrice.toString('hex')}`;
+    }
+    txData.chainId = `0x${tx.common.chainIdBN().toString('hex')}`;
+    txData.r = result.r;
+    txData.s = result.s;
+    txData.v = result.v;
+    const signedTx = TransactionFactory.fromTxData(txData);
+    const addressSignedWith = ethUtil.toChecksumAddress(
+      signedTx.getSenderAddress().toString()
+    );
+    const correctAddress = ethUtil.toChecksumAddress(address);
+    if (addressSignedWith !== correctAddress) {
+      throw new Error('signature doesnt match the right address');
+    }
+    return signedTx;
   }
 
   signMessage(withAccount: string, data: string): Promise<any> {
@@ -231,23 +222,21 @@ class BitBox02Keyring extends EventEmitter {
   }
 
   async signPersonalMessage(withAccount, message) {
-    return this.signHelper.invoke(async () => {
-      await this.init();
+    await this.init();
 
-      const result = await this.bridge.ethSignMessage(
-        1,
-        this._pathFromAddress(withAccount),
-        message
-      );
-      const sig = Buffer.concat([
-        Buffer.from(result.r),
-        Buffer.from(result.s),
-        Buffer.from(result.v),
-      ]);
+    const result = await this.bridge.ethSignMessage(
+      1,
+      this._pathFromAddress(withAccount),
+      message
+    );
+    const sig = Buffer.concat([
+      Buffer.from(result.r),
+      Buffer.from(result.s),
+      Buffer.from(result.v),
+    ]);
 
-      const sigHex = `0x${sig.toString('hex')}`;
-      return sigHex;
-    });
+    const sigHex = `0x${sig.toString('hex')}`;
+    return sigHex;
   }
 
   async signTypedData(withAccount, data, options: any = {}) {
@@ -256,32 +245,30 @@ class BitBox02Keyring extends EventEmitter {
         `Only version 4 of typed data signing is supported. Provided version: ${options.version}`
       );
     }
-    return this.signHelper.invoke(async () => {
-      await this.init();
-      const result = await this.bridge.ethSignTypedMessage(
-        data.domain.chainId || 1,
-        this._pathFromAddress(withAccount),
-        data
-      );
-      const sig = Buffer.concat([
-        Buffer.from(result.r),
-        Buffer.from(result.s),
-        Buffer.from(result.v),
-      ]);
-      const sigHex = `0x${sig.toString('hex')}`;
-      const addressSignedWith = sigUtil.recoverTypedSignature({
-        data,
-        signature: sigHex,
-        version: options.version,
-      });
-      if (
-        ethUtil.toChecksumAddress(addressSignedWith) !==
-        ethUtil.toChecksumAddress(withAccount)
-      ) {
-        throw new Error('The signature doesnt match the right address');
-      }
-      return sigHex;
+    await this.init();
+    const result = await this.bridge.ethSignTypedMessage(
+      data.domain.chainId || 1,
+      this._pathFromAddress(withAccount),
+      data
+    );
+    const sig = Buffer.concat([
+      Buffer.from(result.r),
+      Buffer.from(result.s),
+      Buffer.from(result.v),
+    ]);
+    const sigHex = `0x${sig.toString('hex')}`;
+    const addressSignedWith = sigUtil.recoverTypedSignature({
+      data,
+      signature: sigHex,
+      version: options.version,
     });
+    if (
+      ethUtil.toChecksumAddress(addressSignedWith) !==
+      ethUtil.toChecksumAddress(withAccount)
+    ) {
+      throw new Error('The signature doesnt match the right address');
+    }
+    return sigHex;
   }
 
   exportAccount(): Promise<any> {

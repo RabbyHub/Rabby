@@ -11,14 +11,37 @@ import * as Sentry from '@sentry/browser';
 type ViewKey = keyof typeof CEX | keyof typeof DEX;
 
 export type SwapServiceStore = {
-  gasPriceCache: GasCache;
-  selectedDex: DEX_ENUM | null;
   selectedChain: CHAINS_ENUM | null;
   selectedFromToken?: TokenItem;
   selectedToToken?: TokenItem;
+  autoSlippage: boolean;
+  isCustomSlippage?: boolean;
+  slippage: string;
+  recentToTokens?: TokenItem[];
+
+  /**
+   * @deprecated
+   */
+  gasPriceCache: GasCache;
+  /**
+   * @deprecated
+   */
   unlimitedAllowance: boolean;
+  /**
+   * @deprecated
+   */
+  selectedDex: DEX_ENUM | null;
+  /**
+   * @deprecated
+   */
   viewList: Record<ViewKey, boolean>;
+  /**
+   * @deprecated
+   */
   tradeList: Record<ViewKey, boolean>;
+  /**
+   * @deprecated
+   */
   sortIncludeGasFee?: boolean;
   preferMEVGuarded: boolean;
 };
@@ -35,6 +58,9 @@ class SwapService {
     tradeList: {} as SwapServiceStore['tradeList'],
     sortIncludeGasFee: false,
     preferMEVGuarded: false,
+    autoSlippage: true,
+    slippage: '0.1',
+    recentToTokens: [],
   };
 
   init = async () => {
@@ -49,6 +75,9 @@ class SwapService {
         tradeList: {} as SwapServiceStore['tradeList'],
         preferMEVGuarded: false,
         sortIncludeGasFee: true,
+        autoSlippage: true,
+        slippage: '0.1',
+        recentToTokens: [],
       },
     });
     if (storage) {
@@ -219,6 +248,32 @@ class SwapService {
 
   setSwapPreferMEVGuarded = (bool: boolean) => {
     this.store.preferMEVGuarded = bool;
+  };
+
+  setAutoSlippage = (auto: boolean) => {
+    this.store.autoSlippage = auto;
+  };
+
+  setIsCustomSlippage = (isCustomSlippage: boolean) => {
+    this.store.isCustomSlippage = isCustomSlippage;
+  };
+
+  setSlippage = (slippage: string) => {
+    this.store.slippage = slippage;
+  };
+
+  getRecentSwapToTokens = () => {
+    return this.store.recentToTokens || [];
+  };
+
+  setRecentSwapToToken = (token: TokenItem) => {
+    const recentToTokens = this.store.recentToTokens || [];
+    this.store.recentToTokens = [
+      token,
+      ...recentToTokens.filter(
+        (item) => item.id !== token.id || item.chain !== token.chain
+      ),
+    ].slice(0, 5);
   };
 }
 

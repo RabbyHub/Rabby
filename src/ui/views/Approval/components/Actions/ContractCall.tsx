@@ -4,7 +4,10 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ContractCallRequireData, ParsedActionData } from './utils';
+import {
+  ContractCallRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatTokenAmount } from 'ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
@@ -58,7 +61,7 @@ const ContractCall = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['contractCall'];
+  data: ParsedTransactionActionData['contractCall'];
   requireData: ContractCallRequireData;
   chain: Chain;
   raw: Record<string, string | number>;
@@ -98,11 +101,11 @@ const ContractCall = ({
             <ViewMore
               type="contract"
               data={{
-                hasInteraction: requireData.hasInteraction,
                 bornAt: requireData.bornAt,
                 protocol: requireData.protocol,
                 rank: requireData.rank,
                 address: requireData.id,
+                hasInteraction: requireData.hasInteraction,
                 chain,
               }}
             >
@@ -123,9 +126,9 @@ const ContractCall = ({
             </SubRow>
           </SubCol>
           <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
             <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
+              <Values.Boolean value={requireData.hasInteraction} />
             </SubRow>
           </SubCol>
           {isInWhitelist && (
@@ -134,6 +137,14 @@ const ContractCall = ({
               <SubRow>{t('page.signTx.trusted')}</SubRow>
             </SubCol>
           )}
+
+          <SecurityListItem
+            id="1152"
+            engineResult={engineResultMap['1152']}
+            title={t('page.signTx.tokenApprove.flagByRabby')}
+            dangerText={t('page.signTx.yes')}
+          />
+
           <SecurityListItem
             id="1135"
             engineResult={engineResultMap['1135']}

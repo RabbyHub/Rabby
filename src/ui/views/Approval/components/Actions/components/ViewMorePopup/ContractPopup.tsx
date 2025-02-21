@@ -13,10 +13,10 @@ interface ContractData {
     name: string;
     logo_url: string;
   } | null;
-  hasInteraction: boolean;
   bornAt: number | null;
   rank: number | null;
   title?: string;
+  hasInteraction: boolean;
 }
 
 export interface Props {

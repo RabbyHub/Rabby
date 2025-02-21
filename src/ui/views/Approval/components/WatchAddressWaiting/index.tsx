@@ -18,6 +18,7 @@ import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus'
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
@@ -28,6 +29,12 @@ interface ApprovalParams {
   $ctx?: any;
   extra?: Record<string, any>;
   signingTxId?: string;
+  safeMessage?: {
+    safeMessageHash: string;
+    safeAddress: string;
+    message: string;
+    chainId: number;
+  };
 }
 
 const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
@@ -96,12 +103,11 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     const account = params.isGnosis
       ? params.account!
       : (await wallet.syncGetCurrentAccount())!;
-    // await wallet.killWalletConnectConnector(account.address, account.brandName);
-    // await initWalletConnect();
-    setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
+    setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     setConnectError(null);
-    wallet.resendWalletConnect(account);
+    wallet.resendSign();
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
+    emitSignComponentAmounted();
   };
 
   const handleRefreshQrCode = () => {
@@ -129,12 +135,20 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, sig);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
-              await wallet.gnosisAddSignature(account.address, sig);
-              await wallet.postGnosisTransaction();
+              const sigs = await wallet.getGnosisTransactionSignatures();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, sig);
+              } else {
+                await wallet.gnosisAddSignature(account.address, sig);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {
@@ -242,6 +256,14 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
                 ? 'Custom Network'
                 : 'Integrated Network',
             });
+
+            ga4.fireEvent(
+              `Submit_${chainInfo?.isTestnet ? 'Custom' : 'Integrated'}`,
+              {
+                event_category: 'Transaction',
+              }
+            );
+
             isSignTriggered = true;
           }
           if (isText && !isSignTriggered) {

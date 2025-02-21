@@ -25,7 +25,7 @@ const MenuButtonStyled = styled.div`
   color: var(--r-neutral-body, #3e495e);
   font-weight: 500;
   border-width: 1px;
-  border-width: 0.5px;
+  /* border-width: 0.5px; */
   border-style: solid;
   border-color: var(--r-neutral-line, #d3d8e0);
   cursor: pointer;
@@ -77,6 +77,7 @@ const MenuStyled = styled(Menu)`
   border: 0.5px solid var(--r-neutral-line, #d3d8e0);
   background: var(--r-neutral-bg1, #fff);
   padding: 4px;
+  margin-right: 10px;
 
   .ant-dropdown-menu-item-group-title {
     padding: 0;
@@ -106,7 +107,7 @@ const DivideStyled = styled(Divide)`
   right: 16px;
   width: auto;
   bottom: 4px;
-}`;
+`;
 
 const GweiStyled = styled.span`
   color: var(--r-neutral-foot, #6a7587);
@@ -170,6 +171,7 @@ export const GasMenuButton: React.FC<Props> = ({
   return (
     <Dropdown
       placement="topCenter"
+      trigger={['hover', 'click']}
       overlay={
         <MenuStyled>
           <Menu.ItemGroup
@@ -225,15 +227,18 @@ export const GasMenuButton: React.FC<Props> = ({
           </Menu.ItemGroup>
         </MenuStyled>
       }
+      // getPopupContainer={() =>
+      //   document.querySelector('.js-rabby-popup-container') || document.body
+      // }
     >
       {selectedGas ? (
         <MenuButtonStyled>
           <span>{t(getGasLevelI18nKey(selectedGas.level ?? 'slow'))}</span>
-          {(selectedGas.level !== 'custom' || showCustomGasPrice) && (
+          {/* {(selectedGas.level !== 'custom' || showCustomGasPrice) && (
             <GweiStyled>
               {new BigNumber(selectedGas.price / 1e9).toFixed().slice(0, 8)}
             </GweiStyled>
-          )}
+          )} */}
           <ArrowSVG className="text-r-neutral-foot ml-2" />
         </MenuButtonStyled>
       ) : (

@@ -66,8 +66,7 @@ export const MainContainer: React.FC<Props> = ({
         key="hd"
       >
         <AddressesInHD
-          type={setting.type}
-          startNo={setting.startNo}
+          setting={setting}
           loading={loading}
           preventLoading={preventLoading}
         />

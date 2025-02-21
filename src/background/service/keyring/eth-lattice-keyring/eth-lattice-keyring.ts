@@ -1,6 +1,6 @@
 /* eslint-disable */
 import OldLatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
-import { SignHelper, LedgerHDPathType } from '../helper';
+import { LedgerHDPathType } from '../helper';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '@/background/utils';
 
@@ -11,6 +11,7 @@ import {
   KnownOrigins,
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
+import Browser from 'webextension-polyfill';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0/x",
@@ -24,12 +25,13 @@ const HD_PATH_TYPE = {
   [HD_PATH_BASE[HDPathType.LedgerLive]]: HDPathType.LedgerLive,
 };
 
+let callStackCounter = 0;
+
 class LatticeKeyring extends OldLatticeKeyring {
   [x: string]: any;
+  appName = 'Rabby';
   static type = keyringType;
-  signHelper = new SignHelper({
-    errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
-  });
+  type = keyringType;
 
   async _getCreds() {
     if (!isManifestV3) {
@@ -47,60 +49,19 @@ class LatticeKeyring extends OldLatticeKeyring {
 
       // send a msg to the render process to open lattice connector
       // and collect the credentials
-      const creds = await new Promise<{
-        deviceID: string;
-        password: string;
-        endpoint: string;
-      }>((resolve, reject) => {
-        chrome.runtime.sendMessage(
-          {
-            target: OffscreenCommunicationTarget.latticeOffscreen,
-            params: {
-              url,
-            },
-          },
-          (response) => {
-            if (response.error) {
-              reject(response.error);
-            }
-
-            resolve(response.result);
-          }
-        );
+      const credsResult = await Browser.runtime.sendMessage({
+        target: OffscreenCommunicationTarget.latticeOffscreen,
+        params: {
+          url,
+        },
       });
-
-      return creds;
+      if (credsResult.error) {
+        throw new Error(credsResult.error);
+      }
+      return credsResult.result;
     } catch (err: any) {
       throw new Error(err);
     }
-  }
-
-  resend() {
-    this.signHelper.resend();
-  }
-
-  resetResend() {
-    this.signHelper.resetResend();
-  }
-
-  async signTransaction(address, tx) {
-    return this.signHelper.invoke(async () => {
-      return super.signTransaction(address, tx);
-    });
-  }
-
-  async signMessage(address, msg) {
-    return this.signHelper.invoke(async () => {
-      return super.signMessage(address, msg);
-    });
-  }
-
-  async signTypedData(address, msg, opts) {
-    return this.signHelper.invoke(async () => {
-      // waiting ui render
-      await new Promise((r) => setTimeout(r, 500));
-      return super.signTypedData(address, msg, opts);
-    });
   }
 
   async getCurrentAccounts() {
@@ -133,6 +94,7 @@ class LatticeKeyring extends OldLatticeKeyring {
           index: start + i + 1,
         };
       });
+      callStackCounter = 0;
       return accounts;
     } catch (err) {
       // This will get hit for a few reasons. Here are two possibilities:
@@ -142,6 +104,8 @@ class LatticeKeyring extends OldLatticeKeyring {
       // In either event we should try to resync the wallet and if that
       // fails throw an error
       try {
+        if (callStackCounter > 20) throw new Error('Max call stacks');
+        callStackCounter++;
         await this._connect();
         return this.getAddresses(start, end);
       } catch (err) {

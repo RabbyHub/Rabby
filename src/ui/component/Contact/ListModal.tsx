@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, message } from 'antd';
+import { Button, DrawerProps, message } from 'antd';
 import styled from 'styled-components';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
@@ -19,6 +19,7 @@ interface ListModalProps {
   visible: boolean;
   onOk(account: UIContactBookItem): void;
   onCancel(): void;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const ListScrollWrapper = styled.div`
@@ -31,13 +32,18 @@ const ListFooterWrapper = styled.div`
   padding: 20px;
   display: flex;
   justify-content: center;
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
 `;
 
-const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
+const ListModal = ({
+  visible,
+  onOk,
+  onCancel,
+  getContainer,
+}: ListModalProps) => {
   const [editWhitelistVisible, setEditWhitelistVisible] = useState(false);
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
@@ -112,6 +118,7 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
         // do nothing
       },
       wallet,
+      getContainer: getContainer,
     });
   };
 
@@ -129,6 +136,8 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
       height={580}
       closable
       isSupportDarkMode
+      getContainer={getContainer}
+      push={false}
     >
       <div
         className={clsx('flex flex-col pb-80 h-full', {

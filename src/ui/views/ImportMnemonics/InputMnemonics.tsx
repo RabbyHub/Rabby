@@ -189,8 +189,8 @@ const ImportMnemonics = () => {
   }, [isSlip39, secretShares, slip39GroupNumber]);
 
   return (
-    <main className="w-screen h-screen bg-r-neutral-bg-2">
-      <div className={clsx('mx-auto pt-[58px]', 'w-[600px]')}>
+    <main className="w-screen h-screen bg-r-neutral-bg-2 flex items-center">
+      <div className="mx-auto w-[600px]">
         <img src={LogoSVG} alt="Rabby" className="mb-[12px]" />
         <Form
           form={form}
@@ -202,11 +202,6 @@ const ImportMnemonics = () => {
           onValuesChange={(states) => {
             setErrMsgs([]);
             setSlip39ErrorIndex(-1);
-            wallet.setPageStateCache({
-              path: history.location.pathname,
-              params: {},
-              states,
-            });
           }}
         >
           <h1
@@ -228,7 +223,7 @@ const ImportMnemonics = () => {
               <Form.Item
                 name="mnemonics"
                 className={clsx(
-                  'mb-[24px]',
+                  isSlip39 ? 'mb-16' : 'mb-[24px]',
                   errMsgs?.length && 'mnemonics-with-error'
                 )}
               >
@@ -248,7 +243,8 @@ const ImportMnemonics = () => {
                   <Input
                     type="password"
                     className={clsx(
-                      'h-[44px] border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue'
+                      isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
+                      'border-solid border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue'
                     )}
                     spellCheck={false}
                     placeholder={t('page.newAddress.seedPhrase.passphrase')}

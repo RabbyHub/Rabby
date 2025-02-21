@@ -21,6 +21,8 @@ import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 import { ReactComponent as RcIconMnemonicsShow } from '@/ui/assets/import/mnemonics-show.svg';
 import { ReactComponent as RcIconMnemonicsHide } from '@/ui/assets/import/mnemonics-hide.svg';
+import { ReactComponent as RcIconArrowCC } from '@/ui/assets/import/arrow-cc.svg';
+import { ReactComponent as RcIconSwipeCC } from '@/ui/assets/import/swipe-cc.svg';
 
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
@@ -60,6 +62,47 @@ const MatrixWrapper = styled.div.withConfig<{
   background-color: var(--r-neutral-card-3, #f7fafc);
   display: flex;
   flex-wrap: wrap;
+
+  &.new-user-import {
+    background-color: transparent;
+    gap: 9px;
+    .matrix-word-item {
+      border-radius: 8px;
+      width: calc(calc(100% - 18px) / 3);
+      border: 1px solid var(--r-neutral-line, #e0e5ec) !important;
+
+      .mnemonics-input {
+        text-align: center;
+        &:hover {
+          border-color: var(--r-blue-default, #7084ff);
+        }
+        &:focus,
+        &.ant-input-focused {
+          box-shadow: none;
+        }
+      }
+
+      &:not(.invalid) {
+        .mnemonics-input:hover {
+          border-color: var(--r-blue-default, #7084ff);
+        }
+      }
+
+      ${styid(NumberFlag)} {
+        top: 8px;
+        left: 8px;
+        color: var(--r-neutral-body, #3e495e);
+        font-size: 13px;
+        font-style: normal;
+        font-weight: 400;
+      }
+    }
+    .matrix-word-item.invalid {
+      ${styid(NumberFlag)} {
+        color: var(--r-red-default, #e34935);
+      }
+    }
+  }
 
   .matrix-word-item {
     box-sizing: border-box;
@@ -218,6 +261,7 @@ const SLIP39_MNEMONICS_COUNTS: { passphrase: boolean }[] = [
 ];
 
 function MnemonicsInputs({
+  newUserImport,
   className,
   rowCount = ROW_COUNT,
   value = '',
@@ -232,6 +276,7 @@ function MnemonicsInputs({
   setSlip39GroupNumber,
   ...props
 }: React.PropsWithChildren<{
+  newUserImport?: boolean;
   className?: string;
   rowCount?: number;
   value?: string;
@@ -502,26 +547,46 @@ function MnemonicsInputs({
               )}
             </span>
 
-            <img className="ml-[2px]" src={IconCaretDown} />
+            {newUserImport ? (
+              <RcIconArrowCC
+                className="ml-[2px] text-r-neutral-body w-16 h-16"
+                viewBox="0 0 16 16"
+              />
+            ) : (
+              <img className="ml-[2px]" src={IconCaretDown} />
+            )}
           </div>
         </Dropdown>
         <div
-          className="right flex items-center cursor-pointer"
+          className={clsx(
+            'right flex items-center cursor-pointer',
+            newUserImport && 'min-w-max p-4 hover:bg-r-neutral-card2 rounded'
+          )}
           onClick={() => {
             clearAll();
           }}
         >
-          <ThemeIcon src={RcIconClearAll} />
-          <span className="ml-[6px]">
-            {t('page.newAddress.seedPhrase.clearAll')}
-          </span>
+          {newUserImport ? (
+            <RcIconSwipeCC
+              viewBox="0 0 16 16"
+              className="w-16 h-16 text-r-neutral-foot"
+            />
+          ) : (
+            <ThemeIcon src={RcIconClearAll} svgSize={16} />
+          )}
+          {!newUserImport && (
+            <span className="ml-[6px]">
+              {t('page.newAddress.seedPhrase.clearAll')}
+            </span>
+          )}
         </div>
       </HeadToolbar>
       <MatrixWrapper
         className={clsx(
           'rounded-[6px] text-center',
-          'border border-rabby-neutral-line border-solid',
+          !newUserImport && 'border border-rabby-neutral-line border-solid',
           isSlip39 && 'hidden',
+          newUserImport && 'new-user-import',
           className
         )}
         rowCount={rowCount}
@@ -563,7 +628,8 @@ function MnemonicsInputs({
                   debounce={150}
                   key={`word-input-${ver}-${word}-${idx}`}
                   className={clsx(
-                    'mnemonics-input pl-[46px] pr-10',
+                    'mnemonics-input  pr-10',
+                    newUserImport ? 'pl-[10px]' : 'pl-[46px]',
                     isCurrentFocusing && 'ant-input-focused',
                     {
                       'opacity-50':
@@ -623,7 +689,7 @@ function MnemonicsInputs({
       {errMsgs?.[0] || invalidWords.length > 0 ? (
         <div
           className={
-            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px]'
+            'ant-form-item-explain ant-form-item-explain-error text-r-red-default mt-[12px] pt-[0] min-h-0 text-[13px]'
           }
         >
           {invalidWords.length > 0 && (
@@ -651,33 +717,24 @@ const SLIP39MnemonicsInput = ({
   onTextChange: (text: string) => void;
   idx: number;
   error?: boolean;
-  onPaste?: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
+  onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
 }) => {
   const { t } = useTranslation();
-  const [show, setShow] = useState(false);
 
   return (
     <div className="relative ">
-      <Input.TextArea
+      <Input
+        type={'password'}
         key={`slip39-seed-phrase-${idx}`}
         autoComplete="off"
         autoCorrect="off"
         autoCapitalize="off"
-        // type="password"
-        autoSize
-        style={
-          !show
-            ? {
-                WebkitTextSecurity: 'disc',
-              }
-            : undefined
-        }
         onPaste={onPaste}
         className={clsx(
-          'min-h-[100px] p-12 border-rabby-neutral-line bg-rabby-neutral-card-1 ',
-          'text-13 text-r-neutral-title-1 font-medium leading-[18px]',
+          'h-[56px] border-rabby-neutral-line bg-rabby-neutral-card-1 ',
+          'text-15 text-r-neutral-title-1 font-normal leading-[18px]',
           error ? 'border-rabby-red-default' : '',
-          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-13 focus:border-blue'
+          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-14 focus:border-blue'
         )}
         spellCheck={false}
         placeholder={t(
@@ -689,18 +746,6 @@ const SLIP39MnemonicsInput = ({
           onTextChange(e.target.value);
         }}
       />
-      {value ? (
-        <div
-          className="absolute right-8 bottom-8 cursor-pointer"
-          onClick={() => setShow(!show)}
-        >
-          {show ? (
-            <RcIconMnemonicsHide viewBox="0 0 14 14" className="w-14 h-14" />
-          ) : (
-            <RcIconMnemonicsShow viewBox="0 0 14 14" className="w-14 h-14" />
-          )}
-        </div>
-      ) : null}
     </div>
   );
 };
@@ -729,7 +774,7 @@ export const SLIP39MnemonicsInputs = ({
   }, [number]);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       {sli39values.map((_, idx) => (
         <SLIP39MnemonicsInput
           key={`slip39-seed-phrase-${idx}`}

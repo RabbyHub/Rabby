@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useLayoutEffect } from 'react';
 
 import styled from 'styled-components';
-import { Button, Form, Input } from 'antd';
+import { Button, DrawerProps, Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -23,6 +23,7 @@ interface ConfirmAllowTransferModalProps extends WrappedComponentProps {
   title?: string;
   description?: string;
   checklist?: string[];
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const FormInputItem = styled(Form.Item)`
@@ -31,9 +32,15 @@ const FormInputItem = styled(Form.Item)`
   &.ant-form-item-has-error {
     margin-bottom: 0;
   }
-  .ant-input {
-    &:focus {
-      border-color: var(--r-blue-default, #7084ff);
+  .ant-input.ant-input-lg.popup-input {
+    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
+    background: transparent !important;
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587) !important;
+    }
+    &:focus,
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff) !important;
     }
   }
 `;
@@ -47,6 +54,7 @@ function ModalConfirmAllowTransfer({
   cancelText,
   confirmText = 'Confirm',
   title = 'Enter Password',
+  getContainer,
 }: ConfirmAllowTransferModalProps) {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -84,7 +92,14 @@ function ModalConfirmAllowTransfer({
   useLayoutEffect(() => {
     setTimeout(() => {
       setVisible(true);
-      inputRef.current?.focus();
+      if (!getContainer) {
+        inputRef.current?.focus();
+      } else {
+        // may chrome bug, when focus popup in wrong position ?
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 500);
+      }
     });
   }, []);
 
@@ -95,6 +110,7 @@ function ModalConfirmAllowTransfer({
       onCancel={handleCancel}
       height={260}
       isSupportDarkMode
+      getContainer={getContainer}
     >
       <Form onFinish={handleSubmit} form={form}>
         <FormInputItem
@@ -113,7 +129,7 @@ function ModalConfirmAllowTransfer({
             placeholder={t('page.sendToken.allowTransferModal.placeholder')}
             type="password"
             size="large"
-            autoFocus
+            autoFocus={!getContainer}
             ref={inputRef}
             spellCheck={false}
           />

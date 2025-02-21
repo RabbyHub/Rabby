@@ -2,7 +2,7 @@ import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain } from '@/utils/chain';
-import { Input } from 'antd';
+import { DrawerProps, Input } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import uniqBy from 'lodash/uniqBy';
@@ -13,7 +13,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
 import { splitNumberByStep } from 'ui/utils';
@@ -22,6 +21,7 @@ import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
 import './style.less';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
+import { ReactComponent as RcIconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -35,6 +35,7 @@ interface TokenAmountInputProps {
   className?: string;
   type?: TokenSelectorProps['type'];
   placeholder?: string;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const TokenAmountInput = ({
@@ -49,6 +50,7 @@ const TokenAmountInput = ({
   className,
   type = 'default',
   placeholder,
+  getContainer,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const [updateNonce, setUpdateNonce] = useState(0);
@@ -180,7 +182,10 @@ const TokenAmountInput = ({
         <span className="token-input__symbol" title={getTokenSymbol(token)}>
           {getTokenSymbol(token)}
         </span>
-        <img src={IconArrowDown} className="icon icon-arrow-down" />
+        <RcIconRcArrowDownTriangle
+          viewBox="0 0 24 24"
+          className="w-18 h-18 text-r-neutral-foot"
+        />
       </div>
       <div
         className={clsx(
@@ -223,6 +228,7 @@ const TokenAmountInput = ({
         type={type}
         placeholder={placeholder}
         chainId={chainServerId}
+        getContainer={getContainer}
       />
     </div>
   );

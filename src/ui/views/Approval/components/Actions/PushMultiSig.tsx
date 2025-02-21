@@ -5,7 +5,7 @@ import { PushMultiSigAction } from '@rabby-wallet/rabby-api/dist/types';
 import { Col, Row, Table } from './components/Table';
 import * as Values from './components/Values';
 import { Chain } from 'background/service/openapi';
-import { PushMultiSigRequireData } from './utils';
+import { PushMultiSigRequireData } from '@rabby-wallet/rabby-action';
 import LogoWithText from './components/LogoWithText';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
 

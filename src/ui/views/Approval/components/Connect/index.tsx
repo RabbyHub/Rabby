@@ -18,11 +18,14 @@ import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import IconSuccess from 'ui/assets/success.svg';
 import { ChainSelector, FallbackSiteLogo, Spin } from 'ui/component';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import { sleep, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import RuleResult from './RuleResult';
 import UserListDrawer from './UserListDrawer';
+import { EIP6963ProviderInfo, SelectWallet } from './SelectWallet';
+import { ConnectedSite } from '@/background/service/permission';
+import { ReactComponent as RcIconMetamask } from 'ui/assets/metamask-mode-circle-cc.svg';
 
 interface ConnectProps {
   params: any;
@@ -79,6 +82,8 @@ const ConnectWrapper = styled.div`
         line-height: 26px;
         text-align: center;
         color: var(--r-neutral-title-1, #192945);
+        word-wrap: break-word;
+        max-width: 100%;
       }
     }
   }
@@ -189,7 +194,10 @@ const SecurityLevelTipColor = {
   },
 };
 
-const Connect = ({ params: { icon, origin } }: ConnectProps) => {
+const Connect = (props: ConnectProps) => {
+  const {
+    params: { icon, origin, name, $ctx },
+  } = props;
   const { state } = useLocation<{
     showChainsModal?: boolean;
   }>();
@@ -218,6 +226,13 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     level?: Level;
     ignored: boolean;
   } | null>(null);
+
+  const [isShowSelectWallet, setIsShowSelectWallet] = useState(false);
+  const [providerInfo, setProviderInfo] = useState<EIP6963ProviderInfo | null>(
+    null
+  );
+
+  const [currentSite, setCurrentSite] = useState<ConnectedSite>();
 
   const userListResult = useMemo(() => {
     const originBlacklist = engineResults.find(
@@ -455,6 +470,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const init = async () => {
     const account = await wallet.getCurrentAccount();
     const site = await wallet.getSite(origin);
+    setCurrentSite(site);
     let level: 'very_low' | 'low' | 'medium' | 'high' = 'low';
     let collectList: { name: string; logo_url: string }[] = [];
     let defaultChain = CHAINS_ENUM.ETH;
@@ -603,58 +619,71 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
 
   return (
     <Spin spinning={isLoading}>
-      <ConnectWrapper>
-        <div className="approval-connect">
-          <div className="flex justify-between items-center mb-20">
-            <div className="approval-title">{t('page.connect.title')}</div>
-            <ChainSelector
-              title={
-                <div>
-                  <div className="chain-selector-tips">
-                    {t('page.connect.selectChainToConnect')}
+      {isShowSelectWallet ? (
+        <SelectWallet
+          onBack={() => {
+            setIsShowSelectWallet(false);
+          }}
+          onSelect={async (info) => {
+            await wallet.changeDappProvider({
+              origin,
+              icon,
+              name,
+              rdns: info.rdns,
+            });
+            await sleep(150);
+            rejectApproval();
+          }}
+          providers={$ctx?.providers || []}
+        />
+      ) : (
+        <ConnectWrapper>
+          <div className="approval-connect">
+            <div className="flex justify-between items-center mb-20">
+              <div className="approval-title">{t('page.connect.title')}</div>
+              <ChainSelector
+                title={
+                  <div>
+                    <div className="chain-selector-tips">
+                      {t('page.connect.selectChainToConnect')}
+                    </div>
+                    <div className="chain-selector-site">{origin}</div>
                   </div>
-                  <div className="chain-selector-site">{origin}</div>
-                </div>
-              }
-              value={defaultChain}
-              onChange={handleChainChange}
-              connection
-              showModal={showModal}
-              modalHeight={540}
-            />
+                }
+                value={defaultChain}
+                onChange={handleChainChange}
+                connection
+                showModal={showModal}
+                modalHeight={540}
+              />
+            </div>
+            <div className="connect-card">
+              <div className="relative">
+                <FallbackSiteLogo url={icon} origin={origin} width="40px" />
+                {currentSite?.isMetamaskMode ? (
+                  <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                    <RcIconMetamask
+                      width={20}
+                      height={20}
+                      viewBox="0 0 16 16"
+                    />
+                  </div>
+                ) : null}
+              </div>
+              <p className="connect-origin">{origin}</p>
+            </div>
           </div>
-          <div className="connect-card">
-            <FallbackSiteLogo url={icon} origin={origin} width="40px" />
-            <p className="connect-origin">{origin}</p>
-          </div>
-        </div>
 
-        <div className="rule-list">
-          {RuleDesc.map((rule) => {
-            if (rule.id === '1006') {
-              return (
-                <RuleResult
-                  rule={{
-                    id: '1006',
-                    desc: t('page.connect.markRuleText'),
-                    result: userListResult || null,
-                  }}
-                  onSelect={handleSelectRule}
-                  collectList={collectList}
-                  popularLevel={originPopularLevel}
-                  userListResult={userListResult}
-                  ignored={processedRules.includes(rule.id)}
-                  hasSafe={hasSafe}
-                  hasForbidden={hasForbidden}
-                  onEditUserList={handleEditUserDataList}
-                />
-              );
-            } else {
-              if (sortRules.find((item) => item.id === rule.id) || rule.fixed) {
+          <div className="rule-list">
+            {RuleDesc.map((rule) => {
+              if (rule.id === '1006') {
                 return (
                   <RuleResult
-                    rule={sortRules.find((item) => item.id === rule.id)!}
-                    key={rule.id}
+                    rule={{
+                      id: '1006',
+                      desc: t('page.connect.markRuleText'),
+                      result: userListResult || null,
+                    }}
                     onSelect={handleSelectRule}
                     collectList={collectList}
                     popularLevel={originPopularLevel}
@@ -666,97 +695,146 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
                   />
                 );
               } else {
-                return null;
-              }
-            }
-          })}
-        </div>
-        <div>
-          <Footer>
-            <div className="action-buttons flex flex-col mt-4 items-center">
-              <Button
-                type="primary"
-                size="large"
-                onClick={() => handleAllow()}
-                disabled={connectBtnStatus.disabled}
-                className={clsx({
-                  'mb-0': !connectBtnStatus.text,
-                })}
-              >
-                {t('page.connect.connectBtn')}
-              </Button>
-              {connectBtnStatus.text && (
-                <div
-                  className={clsx('security-tip', connectBtnStatus.level)}
-                  style={{
-                    color: SecurityLevelTipColor[connectBtnStatus.level].bg,
-                    backgroundColor:
-                      SecurityLevelTipColor[connectBtnStatus.level].bg,
-                  }}
-                >
-                  <img
-                    src={SecurityLevelTipColor[connectBtnStatus.level].icon}
-                    className="icon icon-level"
-                  />
-                  <span
-                    className="flex-1"
-                    style={{
-                      color: SecurityLevelTipColor[connectBtnStatus.level].text,
-                    }}
-                  >
-                    {connectBtnStatus.text}
-                  </span>
-                  <span
-                    className="underline text-13 font-medium cursor-pointer"
-                    style={{
-                      color: SecurityLevelTipColor[connectBtnStatus.level].text,
-                    }}
-                    onClick={onIgnoreAllRules}
-                  >
-                    {t('page.connect.ignoreAll')}
-                  </span>
-                </div>
-              )}
-              <Button
-                type="primary"
-                ghost
-                className={clsx(
-                  'rabby-btn-ghost',
-                  'flex items-center justify-center gap-2'
-                )}
-                size="large"
-                onClick={
-                  displayBlockedRequestApproval
-                    ? activeCancelPopup
-                    : handleCancel
+                if (
+                  sortRules.find((item) => item.id === rule.id) ||
+                  rule.fixed
+                ) {
+                  return (
+                    <RuleResult
+                      rule={sortRules.find((item) => item.id === rule.id)!}
+                      key={rule.id}
+                      onSelect={handleSelectRule}
+                      collectList={collectList}
+                      popularLevel={originPopularLevel}
+                      userListResult={userListResult}
+                      ignored={processedRules.includes(rule.id)}
+                      hasSafe={hasSafe}
+                      hasForbidden={hasForbidden}
+                      onEditUserList={handleEditUserDataList}
+                    />
+                  );
+                } else {
+                  return null;
                 }
-              >
-                {connectBtnStatus.cancelBtnText}
-                {displayBlockedRequestApproval && (
-                  <ArrowDownSVG className="w-16" />
+              }
+            })}
+          </div>
+          <div>
+            <Footer>
+              <div className="action-buttons flex flex-col mt-4 items-center">
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={() => handleAllow()}
+                  disabled={connectBtnStatus.disabled}
+                  className={clsx({
+                    'mb-0': !connectBtnStatus.text,
+                  })}
+                >
+                  {t('page.connect.connectBtn')}
+                </Button>
+                {connectBtnStatus.text && (
+                  <div
+                    className={clsx('security-tip', connectBtnStatus.level)}
+                    style={{
+                      color: SecurityLevelTipColor[connectBtnStatus.level].bg,
+                      backgroundColor:
+                        SecurityLevelTipColor[connectBtnStatus.level].bg,
+                    }}
+                  >
+                    <img
+                      src={SecurityLevelTipColor[connectBtnStatus.level].icon}
+                      className="icon icon-level"
+                    />
+                    <span
+                      className="flex-1"
+                      style={{
+                        color:
+                          SecurityLevelTipColor[connectBtnStatus.level].text,
+                      }}
+                    >
+                      {connectBtnStatus.text}
+                    </span>
+                    <span
+                      className="underline text-13 font-medium cursor-pointer"
+                      style={{
+                        color:
+                          SecurityLevelTipColor[connectBtnStatus.level].text,
+                      }}
+                      onClick={onIgnoreAllRules}
+                    >
+                      {t('page.connect.ignoreAll')}
+                    </span>
+                  </div>
                 )}
-              </Button>
-            </div>
-          </Footer>
-        </div>
-        <RuleDrawer
-          selectRule={selectRule}
-          visible={ruleDrawerVisible}
-          onIgnore={handleIgnoreRule}
-          onUndo={handleUndoIgnore}
-          onRuleEnableStatusChange={handleRuleEnableStatusChange}
-          onClose={handleRuleDrawerClose}
-        />
-        <UserListDrawer
-          origin={origin}
-          logo={icon}
-          onWhitelist={isInWhitelist}
-          onBlacklist={isInBlacklist}
-          visible={listDrawerVisible}
-          onChange={handleUserListChange}
-          onClose={() => setListDrawerVisible(false)}
-        />
-      </ConnectWrapper>
+                <Button
+                  type="primary"
+                  ghost
+                  className={clsx(
+                    'rabby-btn-ghost',
+                    'flex items-center justify-center gap-2'
+                  )}
+                  size="large"
+                  onClick={
+                    displayBlockedRequestApproval
+                      ? activeCancelPopup
+                      : handleCancel
+                  }
+                >
+                  {connectBtnStatus.cancelBtnText}
+                  {displayBlockedRequestApproval && (
+                    <ArrowDownSVG className="w-16" />
+                  )}
+                </Button>
+              </div>
+              {$ctx?.providers?.length ? (
+                <div className="border-t-rabby-neutral-line border-t-[1px] border-dotted mt-[20px] pt-[20px]">
+                  <div
+                    className={clsx(
+                      'bg-r-neutral-card-2 p-[14px] h-[48px]  text-center rounded-[6px]',
+                      'text-[16px] leading-[19px] font-medium cursor-pointer text-r-neutral-body',
+                      'border-[1px] border-transparent',
+                      'hover:border-rabby-blue-default hover:bg-r-blue-light1',
+                      'flex items-center justify-center'
+                    )}
+                    onClick={() => {
+                      setIsShowSelectWallet(true);
+                    }}
+                  >
+                    <span className="mr-8">
+                      {t('page.connect.otherWalletBtn')}
+                    </span>
+                    {$ctx?.providers.length > 0 && (
+                      <div className="flex gap-8">
+                        {$ctx?.providers.slice(0, 3).map((item) => (
+                          <img className="w-16" src={item.icon} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </Footer>
+          </div>
+          <RuleDrawer
+            selectRule={selectRule}
+            visible={ruleDrawerVisible}
+            onIgnore={handleIgnoreRule}
+            onUndo={handleUndoIgnore}
+            onRuleEnableStatusChange={handleRuleEnableStatusChange}
+            onClose={handleRuleDrawerClose}
+          />
+          <UserListDrawer
+            origin={origin}
+            logo={icon}
+            onWhitelist={isInWhitelist}
+            onBlacklist={isInBlacklist}
+            visible={listDrawerVisible}
+            onChange={handleUserListChange}
+            onClose={() => setListDrawerVisible(false)}
+          />
+        </ConnectWrapper>
+      )}
     </Spin>
   );
 };

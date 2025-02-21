@@ -104,9 +104,9 @@ class TransactionWatcher {
 
     const url = getTxScanLink(chainItem.scanLink, hash);
     const [address] = id.split('_');
-
+    let gasUsed: number | undefined;
     if (txReceipt) {
-      await transactionHistoryService.reloadTx({
+      gasUsed = await transactionHistoryService.reloadTx({
         address,
         nonce: Number(nonce),
         chainId: chainItem.id,
@@ -133,7 +133,7 @@ class TransactionWatcher {
 
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.TX_COMPLETED,
-      params: { address, hash },
+      params: { address, hash, gasUsed },
     });
 
     eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED, {
@@ -207,6 +207,35 @@ class TransactionWatcher {
         const chainItem = findChainByEnum(v.chain);
         const isSameAddr = isSameAddress(address, kAddress);
         if (chainId ? +chainId === chainItem?.id && isSameAddr : isSameAddr) {
+          return m;
+        }
+        // keep pending txs of other addresses
+        if (v) {
+          m[key] = v;
+        }
+
+        return m;
+      },
+      {}
+    );
+  };
+
+  removeLocalPendingTx = ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) => {
+    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
+      (m, [key, v]) => {
+        // address_chain_nonce
+        const [kAddress, , _nonce] = key.split('_');
+        const chainItem = findChainByEnum(v.chain);
+        const isSameAddr = isSameAddress(address, kAddress);
+        if (+chainId === chainItem?.id && isSameAddr && +_nonce === +nonce) {
           return m;
         }
         // keep pending txs of other addresses

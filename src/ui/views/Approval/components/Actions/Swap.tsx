@@ -6,7 +6,10 @@ import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
-import { ParsedActionData, SwapRequireData } from './utils';
+import {
+  SwapRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
@@ -40,7 +43,7 @@ const Swap = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['swap'];
+  data: ParsedTransactionActionData['swap'];
   requireData: SwapRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -300,11 +303,11 @@ const Swap = ({
             <ViewMore
               type="contract"
               data={{
-                hasInteraction: requireData.hasInteraction,
                 bornAt: requireData.bornAt,
                 protocol: requireData.protocol,
                 rank: requireData.rank,
                 address: requireData.id,
+                hasInteraction: requireData.hasInteraction,
                 chain,
               }}
             >

@@ -30,6 +30,13 @@ import { ReactComponent as RcIconExternalCC } from 'ui/assets/open-external-cc.s
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import IconWarning from 'ui/assets/icon-subtract.svg';
 import { findChain } from '@/utils/chain';
+import {
+  CustomTestnetToken,
+  TestnetChain,
+} from '@/background/service/customTestnet';
+import IconTokenDefault from '@/ui/assets/token-default.svg';
+import { Chain } from '@/types/chain';
+import { getAddressScanLink, getTxScanLink } from '@/utils';
 
 interface AddAssetProps {
   data: {
@@ -187,8 +194,30 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   const [isTokenHistoryLoaded, setIsTokenHistoryLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [customTokens, setCustomTokens] = useState<Token[]>([]);
+  const [currentChain, setCurrentChain] = useState<
+    Chain | TestnetChain | null | undefined
+  >(null);
+  const [
+    customTestnetToken,
+    setCustomTestnetToken,
+  ] = useState<CustomTestnetToken | null>(null);
+  const [isCustomTestnetTokenAdded, setIsCustomTestnetTokenAdded] = useState(
+    false
+  );
 
   const addButtonStatus = useMemo(() => {
+    if (customTestnetToken) {
+      if (isCustomTestnetTokenAdded) {
+        return {
+          disable: true,
+          reason: t('page.addToken.hasAdded'),
+        };
+      }
+      return {
+        disable: false,
+        reason: '',
+      };
+    }
     if (!token)
       return {
         disable: true,
@@ -213,15 +242,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
       disable: false,
       reason: '',
     };
-  }, [customTokens, token]);
-
-  const currentChain = useMemo(() => {
-    if (!token) return CHAINS[CHAINS_ENUM.ETH];
-    const target = findChain({
-      serverId: token.chain,
-    });
-    return target || CHAINS[CHAINS_ENUM.ETH];
-  }, [token]);
+  }, [customTokens, token, customTestnetToken, isCustomTestnetTokenAdded]);
 
   const supportChains = useMemo(() => {
     const chains: CHAINS_ENUM[] = [];
@@ -248,33 +269,64 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   };
 
   const handleOpenExplorer = () => {
-    if (token) {
-      const explorer = currentChain.scanLink.replace('/tx/_s_', '');
-      const url = `${explorer}/address/${token.id}`;
-      openInTab(url, false);
+    const tokenId = token?.id || customTestnetToken?.id;
+    if (!tokenId || !currentChain) {
+      return;
     }
+    const url = getAddressScanLink(currentChain.scanLink, tokenId);
+    openInTab(url, false);
   };
 
   const init = async () => {
     const account = await wallet.getCurrentAccount();
-    const customTokens = await wallet.getCustomizedToken();
-    if (account) {
-      const { address } = params.data.options;
-      const result = await wallet.openapi.searchToken(
-        account.address,
-        address,
-        undefined,
-        true
-      );
-      setTokens(result);
-      if (result.length === 1) {
-        setToken(result[0]);
+    const site = await wallet.getConnectedSite(params.session.origin);
+    const chain = findChain({
+      enum: site?.chain,
+    });
+    setCurrentChain(chain);
+    if (chain?.isTestnet) {
+      if (account) {
+        const { address } = params.data.options;
+        const isAdded = await wallet.isAddedCustomTestnetToken({
+          id: address,
+          chainId: chain.id,
+        });
+        const result = await wallet.getCustomTestnetToken({
+          chainId: chain.id,
+          address: account?.address,
+          tokenId: address,
+        });
+        setCustomTestnetToken(result);
+        setIsCustomTestnetTokenAdded(isAdded);
       }
-      if (result.length > 1) {
-        setChainSelectorVisible(true);
+    } else {
+      const customTokens = await wallet.getCustomizedToken();
+      if (account) {
+        const { address } = params.data.options;
+        const result = await wallet.openapi.searchToken(
+          account.address,
+          address,
+          undefined,
+          true
+        );
+        setTokens(result);
+        if (result.length === 1) {
+          setToken(result[0]);
+        }
+        if (result.length > 1) {
+          setChainSelectorVisible(true);
+        }
+        const token = result[0];
+        if (token) {
+          const target = findChain({
+            serverId: token.chain,
+          });
+          setCurrentChain(target || CHAINS[CHAINS_ENUM.ETH]);
+        }
       }
+      setCustomTokens(customTokens);
     }
-    setCustomTokens(customTokens);
+
     setIsLoading(false);
   };
 
@@ -301,11 +353,23 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   };
 
   const handleConfirm = () => {
-    if (!token) return;
-    resolveApproval({
-      id: token.id,
-      chain: token.chain,
-    });
+    if (token) {
+      resolveApproval({
+        id: token.id,
+        chain: token.chain,
+        symbol: token.symbol,
+        decimals: token.decimals,
+        chainId: currentChain?.id || '',
+      });
+    } else if (customTestnetToken) {
+      resolveApproval({
+        id: customTestnetToken.id,
+        chain: currentChain?.serverId || '',
+        symbol: customTestnetToken.symbol,
+        decimals: customTestnetToken.decimals,
+        chainId: currentChain?.id || '',
+      });
+    }
   };
 
   useEffect(() => {
@@ -318,7 +382,13 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
     }
   }, [token]);
 
-  if (!token && !isLoading && !chainSelectorVisible) {
+  useEffect(() => {
+    if (customTestnetToken) {
+      setIsTokenHistoryLoaded(true);
+    }
+  }, [customTestnetToken]);
+
+  if (!token && !customTestnetToken && !isLoading && !chainSelectorVisible) {
     return (
       <NoTokenWrapper>
         <div className="content flex-1">
@@ -344,7 +414,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
       <AddAssetWrapper>
         <div className="header">{t('page.addToken.title')}</div>
         <div className="token">
-          {token && (
+          {token ? (
             <>
               <div className="token-info text-r-neutral-title1">
                 <img
@@ -353,7 +423,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
                 />
                 <span className="token-symbol">{getTokenSymbol(token)}</span>
                 <div className="token-address">
-                  <img src={currentChain.logo} className="icon icon-chain" />
+                  <img src={currentChain?.logo} className="icon icon-chain" />
                   {ellipsis(token.id)}
                   <RcIconExternalCC
                     className="icon icon-open-external cursor-pointer text-r-neutral-foot"
@@ -400,7 +470,65 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
                 ))}
               </div>
             </>
-          )}
+          ) : customTestnetToken ? (
+            <>
+              <div className="token-info text-r-neutral-title1">
+                <img src={IconTokenDefault} className="icon icon-token" />
+                <span className="token-symbol">
+                  {customTestnetToken.symbol}
+                </span>
+                <div className="token-address">
+                  <img
+                    src={currentChain?.logo || IconUnknown}
+                    className="icon icon-chain"
+                  />
+                  {ellipsis(customTestnetToken.id)}
+                  <RcIconExternalCC
+                    className="icon icon-open-external cursor-pointer text-r-neutral-foot"
+                    onClick={handleOpenExplorer}
+                  />
+                  <CopyChecked
+                    addr={customTestnetToken.id}
+                    className="w-14 h-14 cursor-pointer text-r-neutral-foot"
+                  />
+                </div>
+              </div>
+              <div className="token-balance text-r-neutral-body">
+                <div>
+                  {customTestnetToken.symbol} {t('page.addToken.balance')}
+                </div>
+                <div>
+                  <span className="amount text-r-neutral-title1">
+                    {formatTokenAmount(customTestnetToken.amount)}
+                  </span>{' '}
+                  ≈{' '}
+                  {formatUsdValue(
+                    new BigNumber(customTestnetToken.amount).times(0).toFixed()
+                  )}
+                </div>
+              </div>
+              <div className="token-history">
+                {isTokenHistoryLoaded && tokenHistory.length <= 0 && (
+                  <div className="empty">
+                    <img className="no-data" src="./images/nodata-tx.png" />
+                    <p className="text-[12px] text-r-neutral-body mt-[12px]">
+                      {t('page.dashboard.tokenDetail.noTransactions')}
+                    </p>
+                  </div>
+                )}
+                {tokenHistory.map((item) => (
+                  <HistoryItem
+                    data={item}
+                    projectDict={item.projectDict}
+                    cateDict={item.cateDict}
+                    tokenDict={item.tokenDict}
+                    canClickToken={false}
+                    key={item.id}
+                  />
+                ))}
+              </div>
+            </>
+          ) : null}
         </div>
         <div className="footer h-[80px] flex items-center relative">
           <div
@@ -436,6 +564,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
             onChange={handleChainChanged}
             onCancel={() => rejectApproval('User rejected the request.')}
             disabledTips={t('page.addToken.noTokenFoundOnThisChain')}
+            showRPCStatus
           />
         </div>
       </AddAssetWrapper>

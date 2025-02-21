@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ApproveTokenRequireData, TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -14,6 +14,7 @@ import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 import { TokenAmountItem } from '../Actions/components/TokenAmountItem';
+import { ApproveTokenRequireData } from '@rabby-wallet/rabby-action';
 
 const Wrapper = styled.div`
   .header {
@@ -40,7 +41,7 @@ const Permit2 = ({
   chain,
   engineResults,
 }: {
-  data: TypedDataActionData['permit2'];
+  data: ParsedTypedDataActionData['permit2'];
   requireData: ApproveTokenRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -70,10 +71,11 @@ const Permit2 = ({
           <Row isTitle className="flex-none items-center">
             {t('page.signTx.tokenApprove.approveToken')}
           </Row>
-          <Row className="overflow-hidden pl-6">
+          <Row className="pl-6">
             <TokenAmountItem
               amount={actionData.token.amount}
               logoUrl={actionData.token.logo_url}
+              balance={tokenBalance}
             />
           </Row>
         </Col>
@@ -141,6 +143,12 @@ const Permit2 = ({
               <ProtocolListItem protocol={requireData.protocol} />
             </SubRow>
           </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow>
+              <Values.Interacted value={requireData.hasInteraction} />
+            </SubRow>
+          </SubCol>
 
           <SecurityListItem
             id="1071"
@@ -150,25 +158,10 @@ const Permit2 = ({
           />
 
           <SecurityListItem
-            id="1074"
-            engineResult={engineResultMap['1074']}
-            warningText={<Values.Interacted value={false} />}
-            defaultText={
-              <Values.Interacted value={requireData.hasInteraction} />
-            }
-            title={t('page.signTx.interacted')}
-          />
-
-          <SecurityListItem
             tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
-            id="1072"
-            engineResult={engineResultMap['1072']}
-            dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {
-              value: '$10,000',
-            })}
-            warningText={t('page.signTx.tokenApprove.trustValueLessThan', {
-              value: '$100,000',
-            })}
+            id="1149"
+            engineResult={engineResultMap['1149']}
+            warningText={'$0'}
             title={t('page.signTx.trustValueTitle')}
           />
 

@@ -2,7 +2,13 @@ import { Popup } from '@/ui/component';
 import React, { forwardRef, useMemo } from 'react';
 import { useBridgeHistory } from '../hooks';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { formatAmount, formatUsdValue, openInTab, sinceTime } from '@/ui/utils';
+import {
+  formatAmount,
+  formatUsdValue,
+  getUiType,
+  openInTab,
+  sinceTime,
+} from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ImgPending from 'ui/assets/swap/pending.svg';
@@ -16,6 +22,8 @@ import { ellipsis } from '@/ui/utils/address';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import { BridgeHistory } from '@/background/service/openapi';
+import { DrawerProps } from 'antd';
+const isTab = getUiType().isTab;
 
 const BridgeTokenIcon = (props: { token: TokenItem }) => {
   const { token } = props;
@@ -101,7 +109,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
     const gotoScan = React.useCallback(() => {
       if (data?.detail_url) {
-        openInTab(data?.detail_url);
+        openInTab(data?.detail_url, !isTab);
       }
     }, []);
 
@@ -110,11 +118,11 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     return (
       <div
         className={clsx(
-          'bg-r-neutral-card-2 rounded-[6px] p-12 relative text-12 text-r-neutral-body'
+          'bg-r-neutral-card-1 rounded-[6px] p-12 relative text-12 text-r-neutral-body'
         )}
         ref={ref}
       >
-        <div className="flex justify-between items-center pb-8 border-b-[0.5px] border-solid border-rabby-neutral-line">
+        <div className="flex justify-between items-center pb-8 border-b-[0.5px] border-solid border-rabby-neutral-line gap-12">
           <div className="flex items-center text-12 font-medium text-r-neutral-title-1">
             {isPending && (
               <TooltipWithMagnetArrow title={t('page.bridge.pendingTip')}>
@@ -131,7 +139,9 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
               </TooltipWithMagnetArrow>
             )}
 
-            <span>{!isPending && sinceTime(time)}</span>
+            <span className="whitespace-nowrap">
+              {!isPending && sinceTime(time)}
+            </span>
           </div>
           <div className="flex items-center gap-4">
             <img
@@ -141,7 +151,12 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             <span className="text-13 font-medium text-r-neutral-title1 rounded-full">
               {data.aggregator.name}
             </span>
-            <span>
+            <span
+              className="truncate"
+              title={t('page.bridge.via-bridge', {
+                bridge: data?.bridge?.name || '',
+              })}
+            >
               {t('page.bridge.via-bridge', {
                 bridge: data?.bridge?.name || '',
               })}
@@ -235,7 +250,7 @@ const HistoryList = () => {
         ?.map((swap, idx) => (
           <Transaction
             ref={txList?.list.length - 1 === idx ? ref : undefined}
-            key={`${swap.tx_id}-${swap.chain}`}
+            key={`${swap.detail_url}-${idx}`}
             data={swap}
           />
         ))}
@@ -252,9 +267,11 @@ const HistoryList = () => {
 export const BridgeTxHistory = ({
   visible,
   onClose,
+  getContainer,
 }: {
   visible: boolean;
   onClose: () => void;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
   return (
@@ -270,6 +287,8 @@ export const BridgeTxHistory = ({
       }}
       destroyOnClose
       isSupportDarkMode
+      isNew
+      getContainer={getContainer}
     >
       <HistoryList />
     </Popup>

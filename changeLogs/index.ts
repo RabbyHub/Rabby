@@ -83,6 +83,27 @@ import version09274 from './09274.md';
 import version09276 from './09276.md';
 import version09277 from './09277.md';
 import version09280 from './09280.md';
+import version09284 from './09284.md';
+import version09285 from './09285.md';
+import version09286 from './09286.md';
+import version09287 from './09287.md';
+import version09288 from './09288.md';
+import version09289 from './09289.md';
+import version09290 from './09290.md';
+import version09292 from './09292.md';
+import version09295 from './09295.md';
+import version09296 from './09296.md';
+import version09298 from './09298.md';
+import version0931 from './0931.md';
+import version0933 from './0933.md';
+import version0935 from './0935.md';
+import version0936 from './0936.md';
+import version0937 from './0937.md';
+import version0938 from './0938.md';
+import version0939 from './0939.md';
+import version09311 from './09311.md';
+import version09312 from './09312.md';
+import version09313 from './09313.md';
 
 const version = process.env.release || '0';
 const versionMap = {
@@ -172,6 +193,27 @@ const versionMap = {
   '0.92.76': version09276,
   '0.92.77': version09277,
   '0.92.80': version09280,
+  '0.92.84': version09284,
+  '0.92.85': version09285,
+  '0.92.86': version09286,
+  '0.92.87': version09287,
+  '0.92.88': version09288,
+  '0.92.89': version09289,
+  '0.92.90': version09290,
+  '0.92.92': version09292,
+  '0.92.95': version09295,
+  '0.92.96': version09296,
+  '0.92.98': version09298,
+  '0.93.1': version0931,
+  '0.93.3': version0933,
+  '0.93.5': version0935,
+  '0.93.6': version0936,
+  '0.93.7': version0937,
+  '0.93.8': version0938,
+  '0.93.9': version0939,
+  '0.93.11': version09311,
+  '0.93.12': version09312,
+  '0.93.13': version09313,
 };
 export const getUpdateContent = () => {
   return versionMap[version];

@@ -8,7 +8,16 @@ import {
 } from '@gnosis.pm/safe-core-sdk-types';
 import semverSatisfies from 'semver/functions/satisfies';
 import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
-
+import SafeMessage from '@safe-global/protocol-kit/dist/src/utils/messages/SafeMessage';
+import {
+  adjustVInSignature,
+  buildSignatureBytes,
+  calculateSafeMessageHash,
+  EthSafeSignature,
+  hashSafeMessage,
+} from '@safe-global/protocol-kit/dist/src/utils';
+import { SigningMethod } from '@safe-global/protocol-kit';
+import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
 export const TransactionConfirmedEvent = 'TransactionConfirmed';
@@ -180,6 +189,8 @@ class GnosisKeyring extends EventEmitter {
   networkIdsMap: Record<string, string[]> = {};
   currentTransaction: SafeTransaction | null = null;
   currentTransactionHash: string | null = null;
+  currentSafeMessage: SafeMessage | null = null;
+  currentSafeMessageHash: string | null = null;
   onExecedTransaction: ((hash: string) => void) | null = null;
   safeInstance: Safe | null = null;
 
@@ -574,6 +585,141 @@ class GnosisKeyring extends EventEmitter {
         hash: transactionHash,
       },
     });
+  }
+
+  async buildMessage({
+    address,
+    provider,
+    version,
+    networkId,
+    message,
+  }: {
+    address: string;
+    provider: any;
+    version: string;
+    networkId: string;
+    message: ConstructorParameters<typeof SafeMessage>[0];
+  }) {
+    if (
+      !this.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    const checksumAddress = toChecksumAddress(address);
+    const safe = new Safe(checksumAddress, version, provider, networkId);
+    const safeMessage = new SafeMessage(message);
+    this.safeInstance = safe;
+    this.currentSafeMessage = safeMessage;
+    this.currentSafeMessageHash = await safe.getSafeMessageHash(
+      hashSafeMessage(safeMessage.data)
+    );
+
+    return {
+      safeMessageHash: this.currentSafeMessageHash,
+    };
+  }
+
+  async getMessageInfo() {
+    if (
+      !this.currentSafeMessage ||
+      !this.safeInstance ||
+      !this.currentSafeMessageHash
+    ) {
+      throw new Error('No message in Gnosis keyring');
+    }
+    try {
+      const message = await this.safeInstance.apiKit.getMessage(
+        this.currentSafeMessageHash
+      );
+
+      return {
+        safeAddress: this.safeInstance.safeAddress,
+        status:
+          message.confirmations.length ===
+          (await this.safeInstance.getThreshold())
+            ? SafeClientTxStatus.MESSAGE_CONFIRMED
+            : SafeClientTxStatus.MESSAGE_PENDING_SIGNATURES,
+        safeMessageHash: this.currentSafeMessageHash,
+        message,
+      };
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  async addMessage({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) {
+    if (!this.currentSafeMessage || !this.safeInstance) {
+      throw new Error('No message in Gnosis keyring');
+    }
+    signature = await adjustVInSignature(
+      SigningMethod.ETH_SIGN_TYPED_DATA,
+      signature
+    );
+    const safeSignature = new EthSafeSignature(signerAddress, signature);
+    this.currentSafeMessage.addSignature(safeSignature);
+    return this.safeInstance.addMessage({
+      safeMessage: this.currentSafeMessage,
+    });
+  }
+
+  async addMessageSignature({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) {
+    if (
+      !this.currentSafeMessage ||
+      !this.safeInstance ||
+      !this.currentSafeMessageHash
+    ) {
+      throw new Error('No message in Gnosis keyring');
+    }
+    const apiKit = Safe.createSafeApiKit(this.safeInstance.network);
+    signature = await adjustVInSignature(
+      SigningMethod.ETH_SIGN_TYPED_DATA,
+      signature
+    );
+    const safeSignature = new EthSafeSignature(signerAddress, signature);
+    this.currentSafeMessage.addSignature(safeSignature);
+
+    return apiKit.addMessageSignature(
+      this.currentSafeMessageHash,
+      buildSignatureBytes([safeSignature])
+    );
+  }
+
+  async addPureMessageSignature({
+    signerAddress,
+    signature,
+  }: {
+    signerAddress: string;
+    signature: string;
+  }) {
+    if (
+      !this.currentSafeMessage ||
+      !this.safeInstance ||
+      !this.currentSafeMessageHash
+    ) {
+      throw new Error('No message in Gnosis keyring');
+    }
+
+    signature = await adjustVInSignature(
+      SigningMethod.ETH_SIGN_TYPED_DATA,
+      signature
+    );
+    const safeSignature = new EthSafeSignature(signerAddress, signature);
+    this.currentSafeMessage.addSignature(safeSignature);
   }
 
   signTypedData() {

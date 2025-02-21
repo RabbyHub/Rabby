@@ -86,7 +86,7 @@ export const SelectChainItem = forwardRef(
         <div
           className={clsx(
             'select-chain-item',
-            disabled && 'opacity-50 select-chain-item-disabled',
+            disabled && 'opacity-50 select-chain-item-disabled cursor-default',
             className
           )}
           ref={ref}
@@ -95,10 +95,18 @@ export const SelectChainItem = forwardRef(
         >
           <div className="flex items-center flex-1">
             {data.isTestnet ? (
-              <TestnetChainLogo
-                name={data.name}
-                className="select-chain-item-icon"
-              />
+              data.logo ? (
+                <img
+                  src={data.logo}
+                  alt=""
+                  className="select-chain-item-icon"
+                />
+              ) : (
+                <TestnetChainLogo
+                  name={data.name}
+                  className="select-chain-item-icon"
+                />
+              )
             ) : (
               <>
                 {showRPCStatus ? (
@@ -109,6 +117,7 @@ export const SelectChainItem = forwardRef(
                         ? customRPC[data.enum].url
                         : ''
                     }
+                    showCustomRPCToolTip
                   />
                 ) : (
                   <img

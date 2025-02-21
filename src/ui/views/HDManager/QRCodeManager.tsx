@@ -26,9 +26,12 @@ const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
 export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   const [loading, setLoading] = React.useState(true);
-  const { getCurrentAccounts, currentAccounts, keyringId } = React.useContext(
-    HDManagerStateContext
-  );
+  const {
+    getCurrentAccounts,
+    currentAccounts,
+    keyringId,
+    setSelectedAccounts,
+  } = React.useContext(HDManagerStateContext);
   const isKeystone = brand === 'Keystone';
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
@@ -104,19 +107,25 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       try {
         setLoading(true);
 
-        if (type !== setting.type) {
+        if (setting.type && type !== setting.type) {
           /**
            * This code is written to be consistent with the behavior of importing wallets via QR Code.
            */
           await removeAddressAndForgetDevice(false);
         }
 
-        await wallet.requestKeyring(
-          KEYSTONE_TYPE,
-          'getAddressesViaUSB',
-          keyringId,
-          type
-        );
+        try {
+          await wallet.requestKeyring(
+            KEYSTONE_TYPE,
+            'getAddressesViaUSB',
+            keyringId,
+            type
+          );
+        } catch (e) {
+          // ignore
+          console.error(e);
+        }
+
         await getCurrentAccounts();
         setLoading(false);
       } catch (error) {
@@ -132,6 +141,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       type,
       ...rest,
     });
+    setSelectedAccounts([]);
   }, []);
 
   React.useEffect(() => {

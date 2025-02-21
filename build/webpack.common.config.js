@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
-const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
+// const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
@@ -17,9 +17,25 @@ const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const paths = require('./paths');
 
 const BUILD_GIT_HASH = child_process
-  .execSync('git log --format="%h" -n 1')
+  .execSync('git rev-parse HEAD')
   .toString()
-  .trim();
+  .trim()
+  .slice(0, 8);
+
+const {
+  transformer: tsStyledComponentTransformer,
+  webpackPlugin: tsStyledComponentPlugin,
+} = createStyledComponentsTransformer({
+  ssr: true, // always enable it to make all styled generated component has id.
+  displayName: isEnvDevelopment,
+  minify: false, // it's still an experimental feature
+  componentIdPrefix: 'rabby-',
+});
+// 'chrome-mv2', 'chrome-mv3', 'firefox-mv2', 'firefox-mv3'
+const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'chrome-mv2';
+const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
+const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
+const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
 
 const config = {
   entry: {
@@ -32,7 +48,7 @@ const config = {
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },
   output: {
-    path: paths.dist,
+    path: FINAL_DIST,
     filename: '[name].js',
     publicPath: '/',
   },
@@ -96,12 +112,7 @@ const config = {
               getCustomTransformers: () => ({
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
-                  createStyledComponentsTransformer({
-                    ssr: true, // always enable it to make all styled generated component has id.
-                    displayName: isEnvDevelopment,
-                    minify: false, // it's still an experimental feature
-                    componentIdPrefix: 'rabby-',
-                  }),
+                  tsStyledComponentTransformer,
                 ],
               }),
             },
@@ -229,52 +240,58 @@ const config = {
       'process.env.version': JSON.stringify(`version: ${process.env.VERSION}`),
       'process.env.release': JSON.stringify(process.env.VERSION),
       'process.env.RABBY_BUILD_GIT_HASH': JSON.stringify(BUILD_GIT_HASH),
+      'process.env.ETHERSCAN_KEY': JSON.stringify(process.env.ETHERSCAN_KEY),
     }),
     new CopyPlugin({
       patterns: [
-        { from: paths.rootResolve('_raw'), to: paths.rootResolve('dist') },
+        { from: paths.rootResolve('_raw'), to: FINAL_DIST },
         {
-          from: process.env.ENABLE_MV3
-            ? paths.rootResolve('src/manifest/mv3/manifest.json')
-            : paths.rootResolve('src/manifest/mv2/manifest.json'),
-          to: paths.dist,
+          from: paths.rootResolve(
+            `src/manifest/${MANIFEST_TYPE}/manifest.json`
+          ),
+          to: FINAL_DIST,
         },
-        process.env.ENABLE_MV3
+        IS_MANIFEST_MV3
           ? {
               from: require.resolve(
                 '@trezor/connect-webextension/build/content-script.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-content-script.js'
+              to: path.resolve(
+                FINAL_DIST,
+                './vendor/trezor/trezor-content-script.js'
               ),
             }
           : {
               from: require.resolve(
                 '@trezor/connect-web/lib/webextension/trezor-content-script.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-content-script.js'
+              to: path.resolve(
+                FINAL_DIST,
+                './vendor/trezor/trezor-content-script.js'
               ),
             },
-        process.env.ENABLE_MV3
+        IS_MANIFEST_MV3
           ? {
               from: require.resolve(
                 '@trezor/connect-webextension/build/trezor-connect-webextension.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-connect-webextension.js'
+              to: path.resolve(
+                FINAL_DIST,
+                './vendor/trezor/trezor-connect-webextension.js'
               ),
             }
           : {
               from: require.resolve(
                 '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
               ),
-              to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-usb-permissions.js'
+              to: path.resolve(
+                FINAL_DIST,
+                './vendor/trezor/trezor-usb-permissions.js'
               ),
             },
       ],
     }),
+    tsStyledComponentPlugin,
   ],
   resolve: {
     alias: {
@@ -295,13 +312,36 @@ const config = {
   stats: 'minimal',
   optimization: {
     splitChunks: {
+      ...(IS_FIREFOX && {
+        chunks: (chunk) =>
+          chunk.name !== 'content-script' && chunk.name !== 'pageProvider',
+        minSize: 10000,
+        maxSize: 4000000,
+        minChunks: 1,
+        maxAsyncRequests: 30,
+        maxInitialRequests: 30,
+      }),
       cacheGroups: {
         'webextension-polyfill': {
           minSize: 0,
           test: /[\\/]node_modules[\\/]webextension-polyfill/,
           name: 'webextension-polyfill',
           chunks: 'all',
+          priority: 100,
         },
+        ...(IS_FIREFOX && {
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
+            reuseExistingChunk: true,
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        }),
       },
     },
   },

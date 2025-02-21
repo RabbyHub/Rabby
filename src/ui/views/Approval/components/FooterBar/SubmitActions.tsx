@@ -1,4 +1,4 @@
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
@@ -6,6 +6,8 @@ import clsx from 'clsx';
 import { ReactComponent as IconClose } from 'ui/assets/close-16-cc.svg';
 import { GasLessAnimatedWrapper } from './GasLessComponents';
 import styled from 'styled-components';
+import { LoadingOutlined } from '@ant-design/icons';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const ButtonStyled = styled(Button)`
   &:hover {
@@ -22,6 +24,7 @@ export const SubmitActions: React.FC<Props> = ({
   gasLess,
   gasLessThemeColor,
   isGasNotEnough,
+  isSubmitting,
 }) => {
   const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
@@ -52,17 +55,24 @@ export const SubmitActions: React.FC<Props> = ({
             'before:bg-[#FFFFFF1A]',
             'before:h-[32px] before:w-1',
             'hover:before:hidden',
-            'overflow-hidden'
+            'overflow-hidden',
+            isSubmitting ? 'opacity-70 pointer-events-none' : ''
           )}
         >
           <button
             className={clsx(
               'hover:bg-[#00000033]',
               'w-[184px] h-full',
-              'font-medium'
+              'font-medium',
+              isSubmitting ? 'flex items-center justify-center gap-[8px]' : ''
             )}
             onClick={handleClickConfirm}
           >
+            {isSubmitting ? (
+              <div className="text-[14px]">
+                <LoadingOutlined className="block" />
+              </div>
+            ) : null}
             {t('global.confirmButton')}
           </button>
           <button
@@ -77,9 +87,11 @@ export const SubmitActions: React.FC<Props> = ({
           </button>
         </div>
       ) : (
-        <Tooltip
+        <TooltipWithMagnetArrow
           overlayClassName="rectangle sign-tx-forbidden-tooltip"
           title={enableTooltip ? tooltipContent : null}
+          inApproval
+          viewportOffset={[20, -20, -20, 20]}
         >
           <GasLessAnimatedWrapper>
             <ButtonStyled
@@ -107,7 +119,7 @@ export const SubmitActions: React.FC<Props> = ({
               {t('page.signFooterBar.signAndSubmitButton')}
             </ButtonStyled>
           </GasLessAnimatedWrapper>
-        </Tooltip>
+        </TooltipWithMagnetArrow>
       )}
     </ActionsContainer>
   );

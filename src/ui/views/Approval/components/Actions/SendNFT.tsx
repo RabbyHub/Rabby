@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ParsedActionData, SendNFTRequireData } from './utils';
+import {
+  SendNFTRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
@@ -52,7 +55,7 @@ const SendNFT = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['sendNFT'];
+  data: ParsedTransactionActionData['sendNFT'];
   requireData: SendNFTRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -134,7 +137,7 @@ const SendNFT = ({
               <Values.AddressMemo address={actionData.to} />
             </SubRow>
           </SubCol>
-          {!!requireData.contract && (
+          {!!requireData.name && (
             <SubCol>
               <SubRow isTitle>{t('page.signTx.addressTypeTitle')}</SubRow>
               <SubRow>{t('page.signTx.contract')}</SubRow>
@@ -143,10 +146,7 @@ const SendNFT = ({
           {!!requireData.name && (
             <SubCol nested>
               <SubRow> </SubRow>
-              <SubRow>
-                {requireData.name.replace(/^Token: /, 'Token ') +
-                  ' contract address'}
-              </SubRow>
+              <SubRow>{requireData.name.replace(/^Token: /, 'Token ')}</SubRow>
             </SubCol>
           )}
           <SecurityListItem
@@ -183,7 +183,7 @@ const SendNFT = ({
                     textStyle={{
                       fontSize: '13px',
                       lineHeight: '15px',
-                      color: '#4B4D59',
+                      color: 'var(--r-neutral-body, #4B4D59)',
                       fontWeight: 'normal',
                     }}
                   />

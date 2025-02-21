@@ -49,11 +49,60 @@ import _ from 'lodash';
 import { connectStore } from '@/ui/store';
 import { Item } from '../Item';
 import { useWallet } from '@/ui/utils';
-import { Modal } from 'antd';
+import { Modal, Tooltip } from 'antd';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { useHadSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
+
+const AddressItem = ({ data }) => {
+  const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+
+  const leftNode = (
+    <div className="relative w-[29px] h-[28px]">
+      <img src={data.image} className="w-[28px] h-[28px]" />
+      {data.connectType === 'WalletConnect' &&
+        data.brand !== WALLET_BRAND_TYPES.WALLETCONNECT && (
+          <img
+            src={IconWalletConnect}
+            className="absolute -bottom-6 -right-6 w-[14px] h-[14px] rounded-full"
+          />
+        )}
+    </div>
+  );
+  return (
+    <Item
+      bgColor="transparent"
+      className={clsx('flex-col justify-center hover:border-transparent', {
+        'cursor-not-allowed': data.preventClick,
+      })}
+      hoverBgColor={data.preventClick ? '' : undefined}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+      py={10}
+      px={0}
+      key={data.brand}
+      left={
+        <Tooltip
+          title={t(data.tipI18nKey)}
+          placement="topLeft"
+          visible={data.tipI18nKey && visible}
+          arrowPointAtCenter
+          overlayClassName="rectangle w-[max-content] max-w-[355px]"
+        >
+          {leftNode}
+        </Tooltip>
+      }
+      rightIcon={null}
+      onClick={data.onClick}
+    >
+      <span className="text-12 font-medium text-r-neutral-title-1 mt-[8px]">
+        {data.content}
+      </span>
+    </Item>
+  );
+};
 
 const AddAddressOptions = () => {
   const history = useHistory();
@@ -198,13 +247,20 @@ const AddAddressOptions = () => {
         .map((item) => {
           if (item.hidden) return;
           return {
-            leftIcon: item.image,
+            leftIcon: item.leftIcon || item.image,
             content: item.name,
             brand: item.brand,
             connectType: item.connectType,
             image: item.image,
-            onClick: () => connectRouter(item),
+            onClick: () => {
+              if (item.preventClick) {
+                return;
+              }
+              connectRouter(item);
+            },
             category: item.category,
+            preventClick: item.preventClick,
+            tipI18nKey: item.tipI18nKey,
           };
         })
         .filter(Boolean) as any).sort(
@@ -416,35 +472,9 @@ const AddAddressOptions = () => {
                 )}
               >
                 <div className="py-[8px] grid grid-cols-3 gap-x-0">
-                  {item.values.map((v) => {
-                    return (
-                      <Item
-                        bgColor="transparent"
-                        className="flex-col justify-center hover:border-transparent"
-                        py={10}
-                        px={0}
-                        key={v.brand}
-                        left={
-                          <div className="relative w-[28px] h-[28px]">
-                            <img src={v.image} className="w-[28px] h-[28px]" />
-                            {v.connectType === 'WalletConnect' &&
-                              v.brand !== WALLET_BRAND_TYPES.WALLETCONNECT && (
-                                <img
-                                  src={IconWalletConnect}
-                                  className="absolute -bottom-6 -right-6 w-[14px] h-[14px] rounded-full"
-                                />
-                              )}
-                          </div>
-                        }
-                        rightIcon={null}
-                        onClick={v.onClick}
-                      >
-                        <span className="text-12 font-medium text-r-neutral-title-1 mt-[8px]">
-                          {v.content}
-                        </span>
-                      </Item>
-                    );
-                  })}
+                  {item.values.map((v) => (
+                    <AddressItem key={v.brand} data={v} />
+                  ))}
                 </div>
               </div>
             </div>

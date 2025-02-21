@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Col, Row, Table } from '../Actions/components/Table';
-import { TypedDataActionData } from './utils';
+import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import * as Values from '../Actions/components/Values';
 import LogoWithText from '../Actions/components/LogoWithText';
 import IconSafe from '@/ui/assets/walletlogo/safe.svg';
@@ -13,7 +13,7 @@ const Wrapper = styled.div``;
 const CoboSafeModificationDelegatedAddress = ({
   data,
 }: {
-  data: TypedDataActionData['coboSafeModificationDelegatedAddress'];
+  data: ParsedTypedDataActionData['coboSafeModificationDelegatedAddress'];
 }) => {
   const { t } = useTranslation();
   const actionData = data!;

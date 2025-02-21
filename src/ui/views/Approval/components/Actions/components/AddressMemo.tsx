@@ -3,10 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Popup } from 'ui/component';
+import styled from 'styled-components';
+
 import IconEdit from 'ui/assets/editpen.svg';
 import { useApprovalUtils } from '../../../hooks/useApprovalUtils';
 import clsx from 'clsx';
 import { Divide } from '../../Divide';
+
+const DIV = styled.div`
+  margin-top: 16px;
+  .popup-input {
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff) !important;
+    }
+  }
+`;
 
 const AddressMemo = ({ address }: { address: string }) => {
   const { alias } = useApprovalUtils();
@@ -38,7 +49,7 @@ const AddressMemo = ({ address }: { address: string }) => {
         padding: '0 20px',
       },
       content: (
-        <div className="mt-16">
+        <DIV>
           <Form
             form={form}
             onFinish={async () => {
@@ -98,7 +109,7 @@ const AddressMemo = ({ address }: { address: string }) => {
               </Button>
             </div>
           </Form>
-        </div>
+        </DIV>
       ),
     });
   };

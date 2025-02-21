@@ -1,7 +1,7 @@
+import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { useRequest } from 'ahooks';
 import type { Options } from 'ahooks/lib/useRequest/src/types';
-import { WalletController, useWallet } from '../utils';
-import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { useWallet } from '../utils';
 
 export const useGnosisPendingTxs = (
   params: { address?: string },
@@ -29,6 +29,7 @@ export const useGnosisPendingTxs = (
     {
       refreshDeps: [address],
       cacheKey: `useGnosisPendingTxs-${address}`,
+      cacheTime: 500,
       ...options,
     }
   );

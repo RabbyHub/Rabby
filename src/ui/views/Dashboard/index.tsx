@@ -23,7 +23,6 @@ import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconEditPen from 'ui/assets/editpen.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy.svg';
-import { ReactComponent as RcIconReceive } from 'ui/assets/dashboard/receive-header.svg';
 
 import IconSuccess from 'ui/assets/success.svg';
 import { AddressViewer, Modal } from 'ui/component';
@@ -38,7 +37,6 @@ import {
   BalanceView,
   ChainAndSiteSelector,
   GnosisWrongChainAlertBar,
-  DefaultWalletSetting,
 } from './components';
 import './style.less';
 
@@ -46,7 +44,6 @@ import PendingApproval from './components/PendingApproval';
 import PendingTxs from './components/PendingTxs';
 import { getKRCategoryByType } from '@/utils/transaction';
 
-import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 import Queue from './components/Queue';
 import { copyAddress } from '@/ui/utils/clipboard';
@@ -56,6 +53,9 @@ import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHomeBalanceView';
 import { EcologyPopup } from './components/EcologyPopup';
+import { GasAccountDashBoardHeader } from '../GasAccount/components/DashBoardHeader';
+import { useGnosisPendingCount } from '@/ui/hooks/useGnosisPendingCount';
+import { ga4 } from '@/utils/ga4';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -137,7 +137,7 @@ const Dashboard = () => {
     }
   );
 
-  useGnosisPendingTxs(
+  useGnosisPendingCount(
     {
       address:
         currentAccount?.address &&
@@ -151,9 +151,9 @@ const Dashboard = () => {
           gnosisPendingCount: 0,
         });
       },
-      onSuccess(res) {
+      onSuccess(total) {
         dispatch.chains.setField({
-          gnosisPendingCount: res?.total || 0,
+          gnosisPendingCount: total || 0,
         });
       },
     }
@@ -268,16 +268,19 @@ const Dashboard = () => {
       dispatch.accountToDisplay.setField({ accountsList: newAccountList });
     }
   };
-
-  const gotoAddAddress = () => {
+  const gotoGasAccount = () => {
     matomoRequestEvent({
       category: 'Front Page Click',
       action: 'Click',
-      label: 'Add Address',
+      label: 'Gas Account',
     });
-    history.push('/add-address');
-  };
 
+    ga4.fireEvent('Click_GasAccount', {
+      event_category: 'Front Page Click',
+    });
+
+    history.push('/gas-account');
+  };
   const { dashboardBalanceCacheInited } = useHomeBalanceViewOuterPrefetch(
     currentAccount?.address
   );
@@ -310,6 +313,11 @@ const Dashboard = () => {
       action: 'Click',
       label: 'Change Address',
     });
+
+    ga4.fireEvent('Click_ChangeAddress', {
+      event_category: 'Front Page Click',
+    });
+
     history.push('/switch-address');
   };
 
@@ -329,7 +337,7 @@ const Dashboard = () => {
               className={clsx('flex header items-center relative', topAnimate)}
             >
               <div
-                className="h-[36px] flex header-wrapper items-center relative"
+                className="h-[36px] flex header-wrapper items-center relative mr-0"
                 onClick={switchAddress}
               >
                 <Popover
@@ -372,12 +380,13 @@ const Dashboard = () => {
                       />
                     )}
                   </div>
-                  <IconArrowRight className="ml-8" />
+                  <IconArrowRight className="ml-6" />
                 </Popover>
               </div>
 
               <RcIconCopy
-                className="copyAddr actionIcon"
+                viewBox="0 0 18 18"
+                className="copyAddr actionIcon w-16 h-16 ml-8 mr-16"
                 onClick={() => {
                   copyAddress(currentAccount.address);
                   matomoRequestEvent({
@@ -388,27 +397,15 @@ const Dashboard = () => {
                       currentAccount?.brandName,
                     ].join('|'),
                   });
-                }}
-              />
 
-              <RcIconReceive
-                className="mx-8 cursor-pointer actionIcon"
-                onClick={() => {
-                  matomoRequestEvent({
-                    category: 'Front Page Click',
-                    action: 'Click',
-                    label: 'Receive',
+                  ga4.fireEvent('Click_CopyAddress', {
+                    event_category: 'Front Page Click',
                   });
-                  history.push('/receive?rbisource=dashboard');
                 }}
               />
 
-              <div
-                className="ml-auto w-[36px] h-[36px] bg-white bg-opacity-[0.12] hover:bg-opacity-[0.3] backdrop-blur-[20px] rounded-[6px] flex items-center justify-center cursor-pointer"
-                role="button"
-                onClick={gotoAddAddress}
-              >
-                <IconAddAddress className="text-white w-[20px] h-[20px]" />
+              <div className="ml-auto cursor-pointer" onClick={gotoGasAccount}>
+                <GasAccountDashBoardHeader />
               </div>
             </div>
           )}
@@ -555,7 +552,6 @@ const Dashboard = () => {
           </div>
         </div>
       </Modal>
-      {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}
       {pendingApprovalCount > 0 && (
         <PendingApproval
           onRejectAll={() => {

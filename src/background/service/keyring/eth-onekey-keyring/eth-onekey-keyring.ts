@@ -4,16 +4,26 @@ import * as sigUtil from 'eth-sig-util';
 import { TransactionFactory } from '@ethereumjs/tx';
 import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
-import { SignHelper } from '../helper';
 import { EVENTS } from '@/constant';
 import type { EVMTransaction, EVMTransactionEIP1559 } from '@onekeyfe/hd-core';
 import { OneKeyBridgeInterface } from './onekey-bridge-interface';
+import { isManifestV3 } from '@/utils/env';
+import browser from 'webextension-polyfill';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
 const pathBase = 'm';
 const MAX_INDEX = 1000;
 const DELAY_BETWEEN_POPUPS = 1000;
+const ONEKEY_SESSION_STATE_KEY = 'onekeySessionState';
+
+interface OneKeySessionState {
+  passphraseState: string;
+  deviceId: string;
+  connectId: string;
+  publicKey: string;
+  chainCode: string;
+}
 
 export enum LedgerHDPathType {
   LedgerLive = 'LedgerLive',
@@ -69,10 +79,6 @@ class OneKeyKeyring extends EventEmitter {
 
   bridge!: OneKeyBridgeInterface;
 
-  signHelper = new SignHelper({
-    errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
-  });
-
   constructor(
     opts: any & {
       bridge: OneKeyBridgeInterface;
@@ -88,8 +94,20 @@ class OneKeyKeyring extends EventEmitter {
     this.init();
   }
 
-  init() {
+  async init() {
     this.bridge.init();
+    if (isManifestV3) {
+      // resume passphrase state from session after sw inactive
+      const value = await browser.storage.session.get(ONEKEY_SESSION_STATE_KEY);
+      const state: OneKeySessionState = value[ONEKEY_SESSION_STATE_KEY];
+      if (state) {
+        this.passphraseState = state.passphraseState;
+        this.deviceId = state.deviceId;
+        this.connectId = state.connectId;
+        this.hdk.publicKey = Buffer.from(state.publicKey, 'hex');
+        this.hdk.chainCode = Buffer.from(state.chainCode, 'hex');
+      }
+    }
   }
 
   serialize(): Promise<any> {
@@ -120,14 +138,6 @@ class OneKeyKeyring extends EventEmitter {
 
   cleanUp() {
     this.hdk = new HDKey();
-  }
-
-  resend() {
-    this.signHelper.resend();
-  }
-
-  resetResend() {
-    this.signHelper.resetResend();
   }
 
   unlock(): Promise<string> {
@@ -178,7 +188,7 @@ class OneKeyKeyring extends EventEmitter {
                 path: hdPathString,
                 passphraseState: passphraseState.payload,
               })
-              .then((res) => {
+              .then(async (res) => {
                 if (res.success) {
                   this.hdk.publicKey = Buffer.from(
                     res.payload.publicKey,
@@ -188,6 +198,18 @@ class OneKeyKeyring extends EventEmitter {
                     res.payload.node.chain_code,
                     'hex'
                   );
+                  if (isManifestV3) {
+                    const sessionState: OneKeySessionState = {
+                      passphraseState: passphraseState.payload,
+                      publicKey: res.payload.publicKey,
+                      chainCode: res.payload.node.chain_code,
+                      deviceId,
+                      connectId,
+                    };
+                    await browser.storage.session.set({
+                      [ONEKEY_SESSION_STATE_KEY]: sessionState,
+                    });
+                  }
                   resolve('just unlocked');
                 } else {
                   reject('getPublicKey failed');
@@ -322,68 +344,66 @@ class OneKeyKeyring extends EventEmitter {
 
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address: string, tx): Promise<any> {
-    return this.signHelper.invoke(async () => {
-      return new Promise((resolve, reject) => {
-        this.unlock()
-          .then((status) => {
-            setTimeout(
-              (_) => {
-                if (isOldStyleEthereumjsTx(tx)) {
-                  // In this version of ethereumjs-tx we must add the chainId in hex format
-                  // to the initial v value. The chainId must be included in the serialized
-                  // transaction which is only communicated to ethereumjs-tx in this
-                  // value. In newer versions the chainId is communicated via the 'Common'
-                  // object.
-                  this._signTransaction(
-                    address,
-                    tx.getChainId(),
-                    tx,
-                    (payload) => {
-                      tx.v = Buffer.from(payload.v, 'hex');
-                      tx.r = Buffer.from(payload.r, 'hex');
-                      tx.s = Buffer.from(payload.s, 'hex');
-                      return tx;
-                    }
-                  )
-                    .then(resolve)
-                    .catch(reject);
-                } else {
-                  this._signTransaction(
-                    address,
-                    Number(tx.common.chainId()),
-                    tx,
-                    (payload) => {
-                      // Because tx will be immutable, first get a plain javascript object that
-                      // represents the transaction. Using txData here as it aligns with the
-                      // nomenclature of ethereumjs/tx.
-                      const txData = tx.toJSON();
-                      // The fromTxData utility expects a type to support transactions with a type other than 0
-                      txData.type = tx.type;
-                      // The fromTxData utility expects v,r and s to be hex prefixed
-                      txData.v = ethUtil.addHexPrefix(payload.v);
-                      txData.r = ethUtil.addHexPrefix(payload.r);
-                      txData.s = ethUtil.addHexPrefix(payload.s);
-                      // Adopt the 'common' option from the original transaction and set the
-                      // returned object to be frozen if the original is frozen.
-                      return TransactionFactory.fromTxData(txData, {
-                        common: tx.common,
-                        freeze: Object.isFrozen(tx),
-                      });
-                    }
-                  )
-                    .then(resolve)
-                    .catch(reject);
-                }
-                // This is necessary to avoid popup collision
-                // between the unlock & sign trezor popups
-              },
-              status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
-            );
-          })
-          .catch((e) => {
-            reject(new Error((e && e.toString()) || 'Unknown error'));
-          });
-      });
+    return new Promise((resolve, reject) => {
+      this.unlock()
+        .then((status) => {
+          setTimeout(
+            (_) => {
+              if (isOldStyleEthereumjsTx(tx)) {
+                // In this version of ethereumjs-tx we must add the chainId in hex format
+                // to the initial v value. The chainId must be included in the serialized
+                // transaction which is only communicated to ethereumjs-tx in this
+                // value. In newer versions the chainId is communicated via the 'Common'
+                // object.
+                this._signTransaction(
+                  address,
+                  tx.getChainId(),
+                  tx,
+                  (payload) => {
+                    tx.v = Buffer.from(payload.v, 'hex');
+                    tx.r = Buffer.from(payload.r, 'hex');
+                    tx.s = Buffer.from(payload.s, 'hex');
+                    return tx;
+                  }
+                )
+                  .then(resolve)
+                  .catch(reject);
+              } else {
+                this._signTransaction(
+                  address,
+                  Number(tx.common.chainId()),
+                  tx,
+                  (payload) => {
+                    // Because tx will be immutable, first get a plain javascript object that
+                    // represents the transaction. Using txData here as it aligns with the
+                    // nomenclature of ethereumjs/tx.
+                    const txData = tx.toJSON();
+                    // The fromTxData utility expects a type to support transactions with a type other than 0
+                    txData.type = tx.type;
+                    // The fromTxData utility expects v,r and s to be hex prefixed
+                    txData.v = ethUtil.addHexPrefix(payload.v);
+                    txData.r = ethUtil.addHexPrefix(payload.r);
+                    txData.s = ethUtil.addHexPrefix(payload.s);
+                    // Adopt the 'common' option from the original transaction and set the
+                    // returned object to be frozen if the original is frozen.
+                    return TransactionFactory.fromTxData(txData, {
+                      common: tx.common,
+                      freeze: Object.isFrozen(tx),
+                    });
+                  }
+                )
+                  .then(resolve)
+                  .catch(reject);
+              }
+              // This is necessary to avoid popup collision
+              // between the unlock & sign trezor popups
+            },
+            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+          );
+        })
+        .catch((e) => {
+          reject(new Error((e && e.toString()) || 'Unknown error'));
+        });
     });
   }
 
@@ -444,54 +464,52 @@ class OneKeyKeyring extends EventEmitter {
 
   // For personal_sign, we need to prefix the message:
   signPersonalMessage(withAccount: string, message: string): Promise<any> {
-    return this.signHelper.invoke(async () => {
-      return new Promise((resolve, reject) => {
-        this.unlock()
-          .then((status) => {
-            setTimeout(
-              (_) => {
-                this.bridge
-                  .evmSignMessage(this.connectId!, this.deviceId!, {
-                    path: this._pathFromAddress(withAccount),
-                    messageHex: ethUtil.stripHexPrefix(message),
-                    passphraseState: this.passphraseState,
-                  })
-                  .then((response) => {
-                    if (response.success) {
-                      if (
-                        response.payload.address !==
-                        ethUtil.toChecksumAddress(withAccount)
-                      ) {
-                        reject(
-                          new Error('signature doesnt match the right address')
-                        );
-                      }
-                      const signature = `0x${response.payload.signature}`;
-                      resolve(signature);
-                    } else {
+    return new Promise((resolve, reject) => {
+      this.unlock()
+        .then((status) => {
+          setTimeout(
+            (_) => {
+              this.bridge
+                .evmSignMessage(this.connectId!, this.deviceId!, {
+                  path: this._pathFromAddress(withAccount),
+                  messageHex: ethUtil.stripHexPrefix(message),
+                  passphraseState: this.passphraseState,
+                })
+                .then((response) => {
+                  if (response.success) {
+                    if (
+                      response.payload.address !==
+                      ethUtil.toChecksumAddress(withAccount)
+                    ) {
                       reject(
-                        new Error(
-                          (response.payload && response.payload.error) ||
-                            'Unknown error'
-                        )
+                        new Error('signature doesnt match the right address')
                       );
                     }
-                  })
-                  .catch((e) => {
-                    console.log('Error while trying to sign a message ', e);
-                    reject(new Error((e && e.toString()) || 'Unknown error'));
-                  });
-                // This is necessary to avoid popup collision
-                // between the unlock & sign trezor popups
-              },
-              status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
-            );
-          })
-          .catch((e) => {
-            console.log('Error while trying to sign a message ', e);
-            reject(new Error((e && e.toString()) || 'Unknown error'));
-          });
-      });
+                    const signature = `0x${response.payload.signature}`;
+                    resolve(signature);
+                  } else {
+                    reject(
+                      new Error(
+                        (response.payload && response.payload.error) ||
+                          'Unknown error'
+                      )
+                    );
+                  }
+                })
+                .catch((e) => {
+                  console.log('Error while trying to sign a message ', e);
+                  reject(new Error((e && e.toString()) || 'Unknown error'));
+                });
+              // This is necessary to avoid popup collision
+              // between the unlock & sign trezor popups
+            },
+            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+          );
+        })
+        .catch((e) => {
+          console.log('Error while trying to sign a message ', e);
+          reject(new Error((e && e.toString()) || 'Unknown error'));
+        });
     });
   }
 
@@ -510,9 +528,7 @@ class OneKeyKeyring extends EventEmitter {
 
   signTypedData_v1(address, typedData, opts = {}) {
     // Waiting on trezor to enable this
-    return this.signHelper.invoke(async () => {
-      throw new Error('Not supported on this device');
-    });
+    throw new Error('Not supported on this device');
   }
 
   // personal_signTypedData, signs data along with the schema
@@ -521,107 +537,103 @@ class OneKeyKeyring extends EventEmitter {
     typedData,
     opts: { version?: 'V3' | 'V4' } = {}
   ) {
-    return this.signHelper.invoke(async () => {
-      return new Promise((resolve, reject) => {
-        const isV4 = opts.version === 'V4';
-        const {
-          domain,
-          types,
-          primaryType,
-          message,
-        } = sigUtil.TypedDataUtils.sanitizeData(typedData);
-        const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
-          'EIP712Domain',
-          domain,
-          types,
-          isV4
-        ).toString('hex');
-        const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
-          primaryType as string,
-          message,
-          types,
-          isV4
-        ).toString('hex');
-        this.unlock()
-          .then((status) => {
-            setTimeout(
-              (_) => {
-                try {
-                  this.bridge
-                    .evmSignTypedData(this.connectId!, this.deviceId!, {
-                      path: this._pathFromAddress(address),
-                      data: typedData,
-                      passphraseState: this.passphraseState,
-                      metamaskV4Compat: isV4,
-                      domainHash: domainSeparatorHex,
-                      messageHash: hashStructMessageHex,
-                      chainId: domain.chainId
-                        ? Number(domain.chainId)
-                        : undefined,
-                    })
-                    .then((response) => {
-                      if (response.success) {
-                        if (
-                          response.payload.address !==
-                          ethUtil.toChecksumAddress(address)
-                        ) {
-                          reject(
-                            new Error(
-                              'signature doesnt match the right address'
-                            )
-                          );
-                        }
-                        const signature = `0x${response.payload.signature}`;
-                        resolve(signature);
-                      } else {
-                        let code =
-                          (response.payload && response.payload.code) || '';
-                        const message =
-                          (response.payload && response.payload.error) || '';
-                        let errorMsg =
-                          (response.payload && response.payload.error) ||
-                          'Unknown error';
-
-                        let errorUrl = '';
-                        if (message.includes('EIP712Domain')) {
-                          code = 'EIP712_DOMAIN_NOT_SUPPORT';
-                        } else if (message.includes('EIP712')) {
-                          code = 'EIP712_BLIND_SIGN_DISABLED';
-                          errorUrl =
-                            'https://help.onekey.so/hc/zh-cn/articles/4406637762959';
-                        }
-                        if (code === 'Failure_UnexpectedMessage') {
-                          code = 'EIP712_FIRMWARE_NOT_SUPPORT';
-                          errorMsg = 'Not supported on this device';
-                        }
-
-                        const error = new Error(
-                          JSON.stringify({
-                            code,
-                            errorMsg,
-                          })
+    return new Promise((resolve, reject) => {
+      const isV4 = opts.version === 'V4';
+      const {
+        domain,
+        types,
+        primaryType,
+        message,
+      } = sigUtil.TypedDataUtils.sanitizeData(typedData);
+      const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+        'EIP712Domain',
+        domain,
+        types,
+        isV4
+      ).toString('hex');
+      const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+        primaryType as string,
+        message,
+        types,
+        isV4
+      ).toString('hex');
+      this.unlock()
+        .then((status) => {
+          setTimeout(
+            (_) => {
+              try {
+                this.bridge
+                  .evmSignTypedData(this.connectId!, this.deviceId!, {
+                    path: this._pathFromAddress(address),
+                    data: typedData,
+                    passphraseState: this.passphraseState,
+                    metamaskV4Compat: isV4,
+                    domainHash: domainSeparatorHex,
+                    messageHash: hashStructMessageHex,
+                    chainId: domain.chainId
+                      ? Number(domain.chainId)
+                      : undefined,
+                  })
+                  .then((response) => {
+                    if (response.success) {
+                      if (
+                        response.payload.address !==
+                        ethUtil.toChecksumAddress(address)
+                      ) {
+                        reject(
+                          new Error('signature doesnt match the right address')
                         );
-                        reject(error);
                       }
-                    })
-                    .catch((e) => {
-                      console.log('Error while trying to sign a message ', e);
-                      reject(new Error((e && e.toString()) || 'Unknown error'));
-                    });
-                } catch (e) {
-                  reject(new Error((e && e.toString()) || 'Unknown error'));
-                }
-                // This is necessary to avoid popup collision
-                // between the unlock & sign trezor popups
-              },
-              status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
-            );
-          })
-          .catch((e) => {
-            console.log('Error while trying to sign a message ', e);
-            reject(new Error((e && e.toString()) || 'Unknown error'));
-          });
-      });
+                      const signature = `0x${response.payload.signature}`;
+                      resolve(signature);
+                    } else {
+                      let code =
+                        (response.payload && response.payload.code) || '';
+                      const message =
+                        (response.payload && response.payload.error) || '';
+                      let errorMsg =
+                        (response.payload && response.payload.error) ||
+                        'Unknown error';
+
+                      let errorUrl = '';
+                      if (message.includes('EIP712Domain')) {
+                        code = 'EIP712_DOMAIN_NOT_SUPPORT';
+                      } else if (message.includes('EIP712')) {
+                        code = 'EIP712_BLIND_SIGN_DISABLED';
+                        errorUrl =
+                          'https://help.onekey.so/hc/zh-cn/articles/4406637762959';
+                      }
+                      if (code === 'Failure_UnexpectedMessage') {
+                        code = 'EIP712_FIRMWARE_NOT_SUPPORT';
+                        errorMsg = 'Not supported on this device';
+                      }
+
+                      const error = new Error(
+                        JSON.stringify({
+                          code,
+                          errorMsg,
+                        })
+                      );
+                      reject(error);
+                    }
+                  })
+                  .catch((e) => {
+                    console.log('Error while trying to sign a message ', e);
+                    reject(new Error((e && e.toString()) || 'Unknown error'));
+                  });
+              } catch (e) {
+                reject(new Error((e && e.toString()) || 'Unknown error'));
+              }
+              // This is necessary to avoid popup collision
+              // between the unlock & sign trezor popups
+            },
+            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+          );
+        })
+        .catch((e) => {
+          console.log('Error while trying to sign a message ', e);
+          reject(new Error((e && e.toString()) || 'Unknown error'));
+        });
     });
   }
 

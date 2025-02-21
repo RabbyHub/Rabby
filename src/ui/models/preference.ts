@@ -72,6 +72,7 @@ export const preference = createModel<RootModel>()({
 
   selectors: (slice) => {
     return {
+      /** @deprecated */
       isReserveGasOnSendToken() {
         return slice((preference) => preference.reserveGasOnSendToken);
       },

@@ -1,8 +1,6 @@
 import EventEmitter from 'events';
 import * as ethUtil from 'ethereumjs-util';
 import { FeeMarketEIP1559Transaction, Transaction } from '@ethereumjs/tx';
-import { SignHelper } from '../helper';
-import { EVENTS } from '@/constant';
 import { is1559Tx } from '@/utils/transaction';
 import { bytesToHex } from 'web3-utils';
 import { ImKeyBridgeInterface } from './imkey-bridge-interface';
@@ -11,7 +9,7 @@ import { signHashHex } from './utils';
 const keyringType = 'imKey Hardware';
 const MAX_INDEX = 1000;
 
-const convertToBigint = (value: any) => {
+const convertToHex = (value: any) => {
   return typeof value === 'bigint'
     ? `0x${value.toString(16)}`
     : `0x${value.toString('hex')}`;
@@ -64,10 +62,6 @@ export class EthImKeyKeyring extends EventEmitter {
 
   bridge!: ImKeyBridgeInterface;
 
-  signHelper = new SignHelper({
-    errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
-  });
-
   hasHIDPermission = false;
 
   constructor(
@@ -119,14 +113,6 @@ export class EthImKeyKeyring extends EventEmitter {
   invokeApp: ImKeyBridgeInterface['invokeApp'] = (method, params) => {
     return this.bridge.invokeApp(method, params);
   };
-
-  resend() {
-    this.signHelper.resend();
-  }
-
-  resetResend() {
-    this.signHelper.resetResend();
-  }
 
   async unlock() {
     return await this.bridge.unlock();
@@ -254,73 +240,69 @@ export class EthImKeyKeyring extends EventEmitter {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  signTransaction(address: string, transaction) {
-    return this.signHelper.invoke(async () => {
-      await this.unlock();
-      const checksummedAddress = ethUtil.toChecksumAddress(address);
-      const accountDetail = this.accountDetails[checksummedAddress];
+  async signTransaction(address: string, transaction) {
+    await this.unlock();
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const accountDetail = this.accountDetails[checksummedAddress];
 
-      const txChainId = getChainId(transaction.common);
-      const dataHex = transaction.data.toString('hex');
+    const txChainId = getChainId(transaction.common);
+    const dataHex = transaction.data.toString('hex');
 
-      const txJSON = transaction.toJSON();
-      const is1559 = is1559Tx(txJSON);
+    const txJSON = transaction.toJSON();
+    const is1559 = is1559Tx(txJSON);
 
-      const txData = is1559
-        ? {
-            data: dataHex === '' ? '' : `0x${dataHex}`,
-            gasLimit: convertToBigint(transaction.gasLimit),
-            type: convertToBigint(transaction.type.toString()),
-            accessList: transaction.accessList,
-            maxFeePerGas: convertToBigint(transaction.maxFeePerGas),
-            maxPriorityFeePerGas: convertToBigint(
-              transaction.maxPriorityFeePerGas
-            ),
-            nonce: convertToBigint(transaction.nonce),
-            to: transaction.to!.toString(),
-            value: convertToBigint(transaction.value),
-            chainId: txChainId,
-            path: accountDetail.hdPath,
-          }
-        : {
-            to: transaction.to!.toString(),
-            value: convertToBigint(transaction.value),
-            data: dataHex === '' ? '' : `0x${dataHex}`,
-            nonce: convertToBigint(transaction.nonce),
-            gasLimit: convertToBigint(transaction.gasLimit),
-            gasPrice:
-              typeof (transaction as Transaction).gasPrice !== 'undefined'
-                ? convertToBigint((transaction as Transaction).gasPrice)
-                : convertToBigint(
-                    (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
-                  ),
-            chainId: txChainId,
-            path: accountDetail.hdPath,
-          };
+    const txData = is1559
+      ? {
+          data: dataHex === '' ? '' : `0x${dataHex}`,
+          gasLimit: convertToHex(transaction.gasLimit),
+          type: convertToHex(transaction.type.toString()),
+          accessList: transaction.accessList,
+          maxFeePerGas: convertToHex(transaction.maxFeePerGas),
+          maxPriorityFeePerGas: convertToHex(transaction.maxPriorityFeePerGas),
+          nonce: convertToHex(transaction.nonce),
+          to: transaction.to!.toString(),
+          value: convertToHex(transaction.value),
+          chainId: txChainId,
+          path: accountDetail.hdPath,
+        }
+      : {
+          to: transaction.to!.toString(),
+          value: convertToHex(transaction.value),
+          data: dataHex === '' ? '' : `0x${dataHex}`,
+          nonce: convertToHex(transaction.nonce),
+          gasLimit: convertToHex(transaction.gasLimit),
+          gasPrice:
+            typeof (transaction as Transaction).gasPrice !== 'undefined'
+              ? convertToHex((transaction as Transaction).gasPrice)
+              : convertToHex(
+                  (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
+                ),
+          chainId: txChainId,
+          path: accountDetail.hdPath,
+        };
 
-      const { signature, txHash } = await this.invokeApp('signTransaction', [
-        txData,
-      ]);
-      let decoded;
+    const { signature, txHash } = await this.invokeApp('signTransaction', [
+      txData,
+    ]);
+    let decoded;
 
-      if (is1559) {
-        decoded = ethUtil.rlp.decode('0x' + signature.substring(4), true);
+    if (is1559) {
+      decoded = ethUtil.rlp.decode('0x' + signature.substring(4), true);
 
-        txJSON.r = bytesToHex(decoded.data[10]);
-        txJSON.s = bytesToHex(decoded.data[11]);
-        txJSON.v = bytesToHex(decoded.data[9]);
-        txJSON.hash = txHash;
-        return FeeMarketEIP1559Transaction.fromTxData(txJSON);
-      } else {
-        decoded = ethUtil.rlp.decode(signature, true);
+      txJSON.r = bytesToHex(decoded.data[10]);
+      txJSON.s = bytesToHex(decoded.data[11]);
+      txJSON.v = bytesToHex(decoded.data[9]);
+      txJSON.hash = txHash;
+      return FeeMarketEIP1559Transaction.fromTxData(txJSON);
+    } else {
+      decoded = ethUtil.rlp.decode(signature, true);
 
-        txJSON.r = bytesToHex(decoded.data[7]);
-        txJSON.s = bytesToHex(decoded.data[8]);
-        txJSON.v = bytesToHex(decoded.data[6]);
-        txJSON.hash = txHash;
-        return Transaction.fromTxData(txJSON);
-      }
-    });
+      txJSON.r = bytesToHex(decoded.data[7]);
+      txJSON.s = bytesToHex(decoded.data[8]);
+      txJSON.v = bytesToHex(decoded.data[6]);
+      txJSON.hash = txHash;
+      return Transaction.fromTxData(txJSON);
+    }
   }
 
   signMessage(withAccount: string, data: string) {
@@ -328,43 +310,39 @@ export class EthImKeyKeyring extends EventEmitter {
   }
 
   // For personal_sign, we need to prefix the message:
-  signPersonalMessage(address: string, message: string) {
-    return this.signHelper.invoke(async () => {
-      await this.unlock();
-      const checksummedAddress = ethUtil.toChecksumAddress(address);
-      const accountDetail = this.accountDetails[checksummedAddress];
+  async signPersonalMessage(address: string, message: string) {
+    await this.unlock();
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const accountDetail = this.accountDetails[checksummedAddress];
 
-      const res = await this.invokeApp('signMessage', [
-        accountDetail.hdPath,
-        message,
-        checksummedAddress,
-        true,
-      ]);
-      return res?.signature;
-    });
+    const res = await this.invokeApp('signMessage', [
+      accountDetail.hdPath,
+      message,
+      checksummedAddress,
+      true,
+    ]);
+    return res?.signature;
   }
 
   async signTypedData(address, data, opts) {
-    return this.signHelper.invoke(async () => {
-      await this.unlock();
-      const checksummedAddress = ethUtil.toChecksumAddress(address);
-      const accountDetail = this.accountDetails[checksummedAddress];
-      const isV4 = opts.version === 'V4';
+    await this.unlock();
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const accountDetail = this.accountDetails[checksummedAddress];
+    const isV4 = opts.version === 'V4';
 
-      if (opts.version !== 'V4' && opts.version !== 'V3') {
-        throw new Error('ImKey only supports V3 and V4 of typed data');
-      }
+    if (opts.version !== 'V4' && opts.version !== 'V3') {
+      throw new Error('ImKey only supports V3 and V4 of typed data');
+    }
 
-      const eip712HashHexWithoutSha3 = signHashHex(data, isV4);
+    const eip712HashHexWithoutSha3 = signHashHex(data, isV4);
 
-      const res = await this.invokeApp('signMessage', [
-        accountDetail.hdPath,
-        eip712HashHexWithoutSha3,
-        checksummedAddress,
-        false,
-      ]);
-      return res?.signature;
-    });
+    const res = await this.invokeApp('signMessage', [
+      accountDetail.hdPath,
+      eip712HashHexWithoutSha3,
+      checksummedAddress,
+      false,
+    ]);
+    return res?.signature;
   }
 
   exportAccount(): Promise<any> {

@@ -2,21 +2,15 @@ import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { findChain, isSameTesnetToken, updateChainStore } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel, Tx } from 'background/service/openapi';
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, withTimeout } from 'background/utils';
 import { BigNumber } from 'bignumber.js';
 import { intToHex } from 'ethereumjs-util';
-import { omit, sortBy } from 'lodash';
-import {
-  Client,
-  createClient,
-  defineChain,
-  erc20Abi,
-  http,
-  isAddress,
-} from 'viem';
+import { omitBy, sortBy } from 'lodash';
+import { createClient, defineChain, erc20Abi, http, isAddress } from 'viem';
 import {
   estimateGas,
   getBalance,
+  getBlock,
   getGasPrice,
   getTransactionCount,
   getTransactionReceipt,
@@ -24,6 +18,11 @@ import {
 } from 'viem/actions';
 import { http as axios } from '../utils/http';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import RPCService, { RPCServiceStore } from './rpc';
+import { storage } from '../webapi';
+import { ga4 } from '@/utils/ga4';
+
+const MAX_READ_CONTRACT_TIME = 15_000;
 
 export interface TestnetChainBase {
   id: number;
@@ -47,6 +46,7 @@ export interface TestnetChain extends TestnetChainBase {
   logo: string;
   whiteLogo?: string;
   needEstimateGas?: boolean;
+  severity: number;
 }
 
 export interface RPCItem {
@@ -64,6 +64,7 @@ export interface CustomTestnetTokenBase {
 export interface CustomTestnetToken extends CustomTestnetTokenBase {
   amount: number;
   rawAmount: string;
+  logo?: string;
 }
 
 export type CutsomTestnetServiceStore = {
@@ -85,25 +86,46 @@ class CustomTestnetService {
     customTokenList: [],
   };
 
-  chains: Record<string, Client> = {};
+  chains: Record<string, ReturnType<typeof createClientByChain>> = {};
+
+  logos: Record<
+    string,
+    {
+      chain_logo_url: string;
+      token_logo_url?: string;
+    }
+  > = {};
 
   init = async () => {
-    const storage = await createPersistStore<CutsomTestnetServiceStore>({
+    const storageCache = await createPersistStore<CutsomTestnetServiceStore>({
       name: 'customTestnet',
       template: {
         customTestnet: {},
         customTokenList: [],
       },
     });
-    this.store = storage || this.store;
+    this.store = storageCache || this.store;
+    const coped = { ...this.store.customTestnet };
+    Object.keys(coped).forEach((key) => {
+      if (!/^\d+$/.test(key)) {
+        delete coped[key];
+      }
+    });
+    this.store.customTestnet = coped;
+    const rpcStorage: RPCServiceStore = await storage.get('rpc');
     Object.values(this.store.customTestnet).forEach((chain) => {
-      const client = createClientByChain(chain);
+      const config =
+        rpcStorage.customRPC[chain.enum] &&
+        rpcStorage.customRPC[chain.enum]?.enable
+          ? { ...chain, rpcUrl: rpcStorage.customRPC[chain.enum].url }
+          : chain;
+      const client = createClientByChain(config);
       this.chains[chain.id] = client;
     });
-    updateChainStore({
-      testnetList: Object.values(this.store.customTestnet).map((item) => {
-        return createTestnetChain(item);
-      }),
+
+    this.syncChainList();
+    this.fetchLogos().then(() => {
+      this.syncChainList();
     });
   };
   add = async (chain: TestnetChainBase) => {
@@ -115,6 +137,7 @@ class CustomTestnetService {
   };
 
   _update = async (chain: TestnetChainBase, isAdd?: boolean) => {
+    chain.id = +chain.id;
     const local = findChain({
       id: +chain.id,
     });
@@ -165,12 +188,14 @@ class CustomTestnetService {
         },
       };
     }
-
+    const testnetChain = createTestnetChain(chain);
     this.store.customTestnet = {
       ...this.store.customTestnet,
-      [chain.id]: createTestnetChain(chain),
+      [chain.id]: testnetChain,
     };
-    this.chains[chain.id] = createClientByChain(chain);
+    if (!RPCService.hasCustomRPC(testnetChain.enum)) {
+      this.chains[chain.id] = createClientByChain(chain);
+    }
     this.syncChainList();
 
     if (this.getList().length) {
@@ -179,14 +204,20 @@ class CustomTestnetService {
         action: 'Custom Network Status',
         value: this.getList().length,
       });
+
+      ga4.fireEvent('Has_CustomNetwork', {
+        event_category: 'Custom Network',
+      });
     }
     return this.store.customTestnet[chain.id];
   };
 
   remove = (chainId: number) => {
-    this.store.customTestnet = omit(this.store.customTestnet, chainId);
+    this.store.customTestnet = omitBy(this.store.customTestnet, (item) => {
+      return +chainId === +item.id;
+    });
     this.store.customTokenList = this.store.customTokenList.filter((item) => {
-      return item.chainId !== chainId;
+      return +item.chainId !== +chainId;
     });
     delete this.chains[chainId];
     this.syncChainList();
@@ -195,6 +226,10 @@ class CustomTestnetService {
         category: 'Custom Network',
         action: 'Custom Network Status',
         value: this.getList().length,
+      });
+
+      ga4.fireEvent('Has_CustomNetwork', {
+        event_category: 'Custom Network',
       });
     }
   };
@@ -205,7 +240,14 @@ class CustomTestnetService {
 
   getList = () => {
     const list = Object.values(this.store.customTestnet).map((item) => {
-      return createTestnetChain(item);
+      const res = createTestnetChain(item);
+
+      if (this.logos?.[res.id]) {
+        res.logo = this.logos[res.id].chain_logo_url;
+        res.nativeTokenLogo = this.logos[res.id].token_logo_url || '';
+      }
+
+      return res;
     });
 
     return list;
@@ -255,6 +297,7 @@ class CustomTestnetService {
             id: chain.nativeTokenAddress,
             chainId: chain.id,
             rawAmount: '0',
+            logo: this.logos?.[chain.id]?.token_logo_url,
           }),
         };
       })
@@ -271,6 +314,7 @@ class CustomTestnetService {
             id: chain.nativeTokenAddress,
             chainId: chain.id,
             rawAmount: '0',
+            logo: this.logos?.[chain.id]?.token_logo_url,
           }),
         };
       });
@@ -322,6 +366,15 @@ class CustomTestnetService {
     }
     const res = await getGasPrice(client);
     return res.toString();
+  };
+
+  getBlockGasLimit = async (chainId: number) => {
+    const client = this.getClient(+chainId);
+    if (!client) {
+      throw new Error(`Invalid chainId: ${chainId}`);
+    }
+    const res = await getBlock(client);
+    return res.gasLimit.toString();
   };
 
   getGasMarket = async ({
@@ -442,7 +495,7 @@ class CustomTestnetService {
     chainId: number;
     address: string;
     tokenId?: string | null;
-  }) => {
+  }): Promise<CustomTestnetToken> => {
     const [balance, tokenInfo] = await Promise.all([
       this.getBalance({
         chainId,
@@ -461,6 +514,10 @@ class CustomTestnetService {
       ...tokenInfo,
       amount: new BigNumber(balance.toString()).div(10 ** decimals).toNumber(),
       rawAmount: balance.toString(),
+      logo:
+        !tokenId || tokenId?.replace('custom_', '') === String(chainId)
+          ? this.logos?.[chainId]?.token_logo_url
+          : undefined,
     };
   };
 
@@ -571,6 +628,7 @@ class CustomTestnetService {
           id: null,
           chainId: item.id,
           symbol: item.nativeTokenSymbol,
+          logo: this.logos?.[item.id]?.token_logo_url,
         };
       }
     );
@@ -613,7 +671,7 @@ class CustomTestnetService {
 
     const res = await Promise.all(
       queryList.map((item) =>
-        this.getToken(item).catch((e) => {
+        withTimeout(this.getToken(item), MAX_READ_CONTRACT_TIME).catch((e) => {
           console.error(e);
           return null;
         })
@@ -639,6 +697,38 @@ class CustomTestnetService {
       testnetList: testnetList,
     });
   };
+
+  fetchLogos = async () => {
+    try {
+      const { data } = await axios.get<typeof this.logos>(
+        'https://static.debank.com/supported_testnet_chains.json'
+      );
+      this.logos = data;
+      return data;
+    } catch (e) {
+      console.error(e);
+      return {};
+    }
+  };
+
+  setCustomRPC = ({ chainId, url }: { chainId: number; url: string }) => {
+    const client = this.getClient(chainId);
+    if (client) {
+      this.chains[chainId] = createClientByChain({
+        ...this.store.customTestnet[chainId],
+        rpcUrl: url,
+      });
+    }
+  };
+
+  removeCustomRPC = (chainId: number) => {
+    const client = this.getClient(chainId);
+    if (client) {
+      this.chains[chainId] = createClientByChain(
+        this.store.customTestnet[chainId]
+      );
+    }
+  };
 }
 
 export const customTestnetService = new CustomTestnetService();
@@ -659,11 +749,12 @@ const createClientByChain = (chain: TestnetChainBase) => {
         },
       },
     }),
-    transport: http(chain.rpcUrl),
+    transport: http(chain.rpcUrl, { timeout: 30_000 }),
   });
 };
 
 export const createTestnetChain = (chain: TestnetChainBase): TestnetChain => {
+  chain.id = +chain.id;
   return {
     ...chain,
     id: +chain.id,
@@ -675,12 +766,13 @@ export const createTestnetChain = (chain: TestnetChainBase): TestnetChain => {
     nativeTokenDecimals: 18,
     nativeTokenLogo: '',
     scanLink: chain.scanLink || '',
-    logo: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%236A7587'></circle><text x='16' y='17' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='12' font-weight='400'>${encodeURIComponent(
-      chain.name.substring(0, 3)
+    logo: `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'><circle cx='14' cy='14' r='14' fill='%236A7587'></circle><text x='14' y='15' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='16' font-weight='500'>${encodeURIComponent(
+      chain.name.trim().substring(0, 1).toUpperCase()
     )}</text></svg>`,
     eip: {
       1559: false,
     },
     isTestnet: true,
+    severity: 0,
   };
 };

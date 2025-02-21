@@ -6,7 +6,6 @@ import * as Sentry from '@sentry/browser';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 import {
-  CHAINS,
   KEYRING_CATEGORY_MAP,
   IS_LINUX,
   IS_VIVALDI,
@@ -17,7 +16,6 @@ import {
 import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
-import BigNumber from 'bignumber.js';
 import { findChain } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
 
@@ -114,18 +112,27 @@ class NotificationService extends Events {
   constructor() {
     super();
 
-    winMgr.event.on('windowRemoved', (winId: number) => {
-      if (winId === this.notifiWindowId) {
-        this.notifiWindowId = null;
-        this.rejectAllApprovals();
-      }
+    winMgr.event.on('closeNotification', () => {
+      this.notifiWindowId = null;
     });
+
+    winMgr.event.on(
+      'windowRemoved',
+      (winId: number, isManuallyClosed: boolean) => {
+        if (winId === this.notifiWindowId) {
+          this.notifiWindowId = null;
+          if (isManuallyClosed) {
+            this.rejectAllApprovals();
+          }
+        }
+      }
+    );
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
       if (IS_VIVALDI) return;
       if (
         IS_CHROME &&
-        winId === chrome.windows.WINDOW_ID_NONE &&
+        winId === browser.windows.WINDOW_ID_NONE &&
         (IS_LINUX || IS_WINDOWS)
       ) {
         // When sign on Linux or Windows, will focus on -1 first then focus on sign window
@@ -273,7 +280,7 @@ class NotificationService extends Events {
             : true,
           createdBy: data?.params.$ctx?.ga ? 'rabby' : 'dapp',
           source: data?.params.$ctx?.ga?.source || '',
-          trigger: data?.params.$ctx?.ga.trigger || '',
+          trigger: data?.params.$ctx?.ga?.trigger || '',
           networkType: chain?.isTestnet
             ? 'Custom Network'
             : 'Integrated Network',

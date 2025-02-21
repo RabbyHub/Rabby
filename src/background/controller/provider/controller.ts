@@ -43,6 +43,8 @@ import {
   KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
   EVENTS,
+  INTERNAL_REQUEST_SESSION,
+  INTERNAL_REQUEST_ORIGIN,
 } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
@@ -55,9 +57,12 @@ import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChain, findChainByEnum, isTestnet } from '@/utils/chain';
 import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
-import { customTestnetService } from '@/background/service/customTestnet';
-import { sendTransaction } from 'viem/actions';
-// import { customTestnetService } from '@/background/service/customTestnet';
+import {
+  CustomTestnetTokenBase,
+  customTestnetService,
+} from '@/background/service/customTestnet';
+import { isString } from 'lodash';
+import { broadcastChainChanged } from '../utils';
 
 const reportSignText = (params: {
   method: string;
@@ -100,6 +105,7 @@ interface ApprovalRes extends Tx {
   lowGasDeadline?: number;
   reqId?: string;
   isGasLess?: boolean;
+  isGasAccount?: boolean;
   logId?: string;
 }
 
@@ -135,8 +141,9 @@ const signTypedDataVlidation = ({
   } catch (e) {
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
-  const currentChain = permissionService.getConnectedSite(session.origin)
-    ?.chain;
+  const currentChain = permissionService.isInternalOrigin(session.origin)
+    ? findChain({ id: jsonData.domain.chainId })?.enum
+    : permissionService.getConnectedSite(session.origin)?.chain;
   if (jsonData.domain.chainId) {
     const chainItem = findChainByEnum(currentChain);
     if (
@@ -160,8 +167,10 @@ class ProviderController extends BaseController {
   ethRpc = (req, forceChainServerId?: string) => {
     const {
       data: { method, params },
-      session: { origin },
+      session: { origin: _origin },
     } = req;
+
+    let origin = _origin;
 
     if (
       !permissionService.hasPermission(origin) &&
@@ -171,6 +180,14 @@ class ProviderController extends BaseController {
     }
 
     const site = permissionService.getSite(origin);
+
+    if (method === 'net_version') {
+      if (!site?.isConnected) {
+        return Promise.resolve('1');
+      }
+      origin = INTERNAL_REQUEST_ORIGIN;
+    }
+
     let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
     if (site) {
       chainServerId =
@@ -260,16 +277,10 @@ class ProviderController extends BaseController {
     if (connectSite) {
       const chain = findChain({ enum: connectSite.chain });
       if (chain) {
-        // rabby:chainChanged event must be sent before chainChanged event
-        sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
-        sessionService.broadcastEvent(
-          'chainChanged',
-          {
-            chain: chain.hex,
-            networkVersion: chain.network,
-          },
-          origin
-        );
+        broadcastChainChanged({
+          origin,
+          chain,
+        });
       }
     }
 
@@ -338,7 +349,7 @@ class ProviderController extends BaseController {
       $ctx?: any;
       params: any;
     };
-    session: Session;
+    session: typeof INTERNAL_REQUEST_SESSION;
     approvalRes: ApprovalRes;
     pushed: boolean;
     result: any;
@@ -363,6 +374,7 @@ class ProviderController extends BaseController {
     const preReqId = approvalRes.reqId;
     const isGasLess = approvalRes.isGasLess || false;
     const logId = approvalRes.logId || '';
+    const isGasAccount = approvalRes.isGasAccount || false;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -383,6 +395,7 @@ class ProviderController extends BaseController {
     delete txParams.isCoboSafe;
     delete approvalRes.isGasLess;
     delete approvalRes.logId;
+    delete approvalRes.isGasAccount;
 
     let is1559 = is1559Tx(approvalRes);
     if (
@@ -466,13 +479,25 @@ class ProviderController extends BaseController {
       reported: false,
     };
 
+    let signedTx;
     try {
-      const signedTx = await keyringService.signTransaction(
+      signedTx = await keyringService.signTransaction(
         keyring,
         tx,
         txParams.from,
         opts
       );
+    } catch (e) {
+      const errObj =
+        typeof e === 'object'
+          ? { message: e.message }
+          : ({ message: e } as any);
+      errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
+
+      throw errObj;
+    }
+
+    try {
       if (
         currentAccount.type === KEYRING_TYPE.GnosisKeyring ||
         currentAccount.type === KEYRING_TYPE.CoboArgusKeyring
@@ -512,15 +537,22 @@ class ProviderController extends BaseController {
         if (isSend) {
           pageStateCacheService.clear();
         }
+        const _rawTx = {
+          ...rawTx,
+          ...approvalRes,
+          r: bufferToHex(signedTx.r),
+          s: bufferToHex(signedTx.s),
+          v: bufferToHex(signedTx.v),
+        };
+        if (is1559) {
+          delete _rawTx.gasPrice;
+        } else {
+          delete _rawTx.maxPriorityFeePerGas;
+          delete _rawTx.maxFeePerGas;
+        }
         transactionHistoryService.addTx({
           tx: {
-            rawTx: {
-              ...rawTx,
-              ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-            },
+            rawTx: _rawTx,
             createdAt: Date.now(),
             isCompleted: false,
             hash,
@@ -596,6 +628,7 @@ class ProviderController extends BaseController {
               isSubmitFailed: true,
             },
             explain: cacheExplain,
+            actionData: action,
             origin,
           });
         }
@@ -672,11 +705,22 @@ class ProviderController extends BaseController {
             }
             const tx = TransactionFactory.fromTxData(txData);
             const rawTx = bufferToHex(tx.serialize());
-            hash = await RPCService.requestCustomRPC(
-              chain,
-              'eth_sendRawTransaction',
-              [rawTx]
-            );
+            try {
+              hash = await RPCService.requestCustomRPC(
+                chain,
+                'eth_sendRawTransaction',
+                [rawTx]
+              );
+            } catch (e) {
+              let errMsg = typeof e === 'object' ? e.message : e;
+              if (RPCService.hasCustomRPC(chain)) {
+                errMsg = `[From Custom RPC] ${errMsg}`;
+              }
+              onTransactionSubmitFailed({
+                ...e,
+                message: errMsg,
+              });
+            }
 
             onTransactionCreated({ hash, reqId, pushType });
             notificationService.setStatsData(statsData);
@@ -694,6 +738,7 @@ class ProviderController extends BaseController {
               req_id: preReqId || '',
               origin,
               is_gasless: isGasLess,
+              is_gas_account: isGasAccount,
               log_id: logId,
             });
             hash = res.req.tx_id || undefined;
@@ -792,15 +837,23 @@ class ProviderController extends BaseController {
     if (!data.params) return;
 
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
       const keyring = await this._checkAddress(from);
+      // todo
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
         approvalRes?.extra
       );
+
       signTextHistoryService.createHistory({
         address: from,
         text: string,
@@ -849,6 +902,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -887,6 +946,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -925,6 +990,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -963,6 +1034,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -1062,22 +1139,10 @@ class ProviderController extends BaseController {
       true
     );
 
-    // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      {
-        ...chain,
-      },
-      origin
-    );
-    sessionService.broadcastEvent(
-      'chainChanged',
-      {
-        chain: chain.hex,
-        networkVersion: chain.network,
-      },
-      origin
-    );
+    broadcastChainChanged({
+      origin,
+      chain,
+    });
     return null;
   };
 
@@ -1139,22 +1204,10 @@ class ProviderController extends BaseController {
       true
     );
 
-    // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      {
-        ...chain,
-      },
-      origin
-    );
-    sessionService.broadcastEvent(
-      'chainChanged',
-      {
-        chain: chain.hex,
-        networkVersion: chain.network,
-      },
-      origin
-    );
+    broadcastChainChanged({
+      origin,
+      chain,
+    });
     return null;
   };
 
@@ -1162,13 +1215,25 @@ class ProviderController extends BaseController {
   walletWatchAsset = ({
     approvalRes,
   }: {
-    approvalRes: { id: string; chain: string };
+    approvalRes: { id: string; chain: string } & CustomTestnetTokenBase;
   }) => {
-    const { id, chain } = approvalRes;
-    preferenceService.addCustomizedToken({
-      address: id,
-      chain,
+    const { id, chain, chainId, symbol, decimals } = approvalRes;
+    const chainInfo = findChain({
+      serverId: chain,
     });
+    if (chainInfo?.isTestnet) {
+      customTestnetService.addToken({
+        chainId,
+        symbol,
+        decimals,
+        id,
+      });
+    } else {
+      preferenceService.addCustomizedToken({
+        address: id,
+        chain,
+      });
+    }
   };
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {
@@ -1186,6 +1251,19 @@ class ProviderController extends BaseController {
       result.push({ parentCapability: 'eth_accounts' });
     }
     return result;
+  };
+
+  /**
+   * https://github.com/MetaMask/metamask-improvement-proposals/blob/main/MIPs/mip-2.md
+   */
+  @Reflect.metadata('SAFE', true)
+  walletRevokePermissions = ({ session: { origin }, data: { params } }) => {
+    if (Wallet.isUnlocked() && Wallet.getSite(origin)) {
+      if (params?.[0] && 'eth_accounts' in params[0]) {
+        Wallet.removeConnectedSite(origin);
+      }
+    }
+    return null;
   };
 
   personalEcRecover = ({

@@ -1,39 +1,25 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-
+import { EcologyNavBar } from '@/ui/component/Ecology/EcologyNavBar';
+import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { DbkChainEntry } from './dbk-chain/Entry';
-import { EcologyNoticeModal } from '@/ui/component/Ecology/EcologyNoticeModal';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { EcoChainMap } from './constants';
 
 export const Ecology = () => {
-  const { t } = useTranslation();
-
   const { chainId } = useParams<{ chainId: string }>();
 
-  const isHideEcologyNoticeDict = useRabbySelector(
-    (state) => state.preference.isHideEcologyNoticeDict
-  );
-  const [isShowNotice, setIsShowNotice] = React.useState(
-    !isHideEcologyNoticeDict[chainId]
-  );
-  const dispatch = useRabbyDispatch();
+  const chain = useMemo(() => EcoChainMap[chainId], [chainId]);
 
   return (
-    <>
-      <DbkChainEntry />
-      <EcologyNoticeModal
-        visible={isShowNotice}
-        onCancel={() => {
-          setIsShowNotice(false);
-        }}
-        onConfirm={(v) => {
-          if (v) {
-            dispatch.preference.setIsHideEcologyNoticeDict({ [chainId]: true });
-          }
-          setIsShowNotice(false);
-        }}
+    <div
+      className="bg-r-neutral-bg2 h-full"
+      style={{
+        fontFamily: "'Lato', sans-serif",
+      }}
+    >
+      <EcologyNavBar
+        className={`sticky top-0 w-full ${chain.navBarClassName}`}
+        chainId={+chainId}
       />
-    </>
+      {chain.entry && <chain.entry />}
+    </div>
   );
 };

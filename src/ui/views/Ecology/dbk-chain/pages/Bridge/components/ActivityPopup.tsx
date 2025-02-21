@@ -84,18 +84,37 @@ const ActivityBridgeStatus = ({
   }
   return (
     <div className="mt-[16px] flex flex-col gap-[12px] items-start">
-      <div
-        className="inline-flex items-center gap-[6px] px-[10px] py-[6px] rounded-full bg-r-green-light cursor-pointer"
-        onClick={() => {
-          openInTab(getTxScanLink(chain.scanLink, item.tx_id));
-        }}
-      >
-        <RcIconChecked className="text-r-green-default" />
-        <div className="text-[13px] leading-[16px] text-r-green-default font-bold">
-          {t('page.ecology.dbk.bridge.ActivityPopup.status.withdraw')}
+      {status === 'withdraw-pending' ? (
+        <div
+          className={clsx(
+            'inline-flex items-center gap-[6px]',
+            'px-[10px] py-[6px] rounded-full',
+            'bg-[rgba(255,124,96,0.10)] text-r-orange-DBK cursor-pointer'
+          )}
+          onClick={() => {
+            openInTab(getTxScanLink(chain.scanLink, item.tx_id));
+          }}
+        >
+          <Loading3QuartersOutlined className="text-[14px] animate-spin block" />
+          <div className="text-[13px] leading-[16px] font-bold">
+            {t('page.ecology.dbk.bridge.ActivityPopup.status.withdraw')}
+          </div>
+          <RcIconJump />
         </div>
-        <RcIconJump className="text-r-green-default" />
-      </div>
+      ) : (
+        <div
+          className="inline-flex items-center gap-[6px] px-[10px] py-[6px] rounded-full bg-r-green-light cursor-pointer"
+          onClick={() => {
+            openInTab(getTxScanLink(chain.scanLink, item.tx_id));
+          }}
+        >
+          <RcIconChecked className="text-r-green-default" />
+          <div className="text-[13px] leading-[16px] text-r-green-default font-bold">
+            {t('page.ecology.dbk.bridge.ActivityPopup.status.withdraw')}
+          </div>
+          <RcIconJump className="text-r-green-default" />
+        </div>
+      )}
       {status === 'waiting-to-prove' ? (
         <div className="flex items-center justify-between w-full">
           <div

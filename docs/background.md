@@ -27,6 +27,6 @@ it will pass through multi-middlewares to check the wallet status, if it's need 
 
 ## session
 
-in the `runtime.onConnect`, we will store the port and dapp's icon, name... as session.
+in the `runtime.onConnect`, we will store session information, including the port, dapp's icon and name, etc.
 
 if we need send message to dapp, just use `port.sendMessage`.

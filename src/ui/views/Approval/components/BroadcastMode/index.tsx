@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
+import { findChainByEnum } from '@/utils/chain';
 
 const GlobalStyle = createGlobalStyle`
   .broadcast-mode-popup {
@@ -189,7 +190,10 @@ export const BroadcastMode = ({
   const [account] = useAccount();
   const wallet = useWallet();
   const { data: supportedPushType } = useRequest(
-    () => wallet.openapi.gasSupportedPushType(CHAINS[chain]?.serverId),
+    () =>
+      wallet.openapi.gasSupportedPushType(
+        findChainByEnum(chain)!.serverId || CHAINS[chain]?.serverId
+      ),
     {
       refreshDeps: [chain],
     }
@@ -264,13 +268,6 @@ export const BroadcastMode = ({
       title: t('page.signTx.BroadcastMode.instant.title'),
       desc: t('page.signTx.BroadcastMode.instant.desc'),
       value: 'default',
-    },
-    {
-      title: t('page.signTx.BroadcastMode.lowGas.title'),
-      desc: t('page.signTx.BroadcastMode.lowGas.desc'),
-      value: 'low_gas',
-      disabled: disabledMap.low_gas.disabled,
-      tips: disabledMap.low_gas.tips,
     },
     {
       title: t('page.signTx.BroadcastMode.mev.title'),
@@ -365,7 +362,7 @@ export const BroadcastMode = ({
       <Popup
         isNew
         placement="bottom"
-        height="352px"
+        height="265px"
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         maskClosable
