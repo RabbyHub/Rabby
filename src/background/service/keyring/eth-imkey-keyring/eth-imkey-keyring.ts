@@ -5,7 +5,7 @@ import {
   Transaction,
   TypedTransaction,
 } from '@ethereumjs/tx';
-import { bufferToHex, toChecksumAddress } from '@ethereumjs/util';
+import { addHexPrefix, bufferToHex, toChecksumAddress } from '@ethereumjs/util';
 import { RLP, utils } from '@ethereumjs/rlp';
 import { is1559Tx } from '@/utils/transaction';
 import { ImKeyBridgeInterface } from './imkey-bridge-interface';
@@ -297,18 +297,18 @@ export class EthImKeyKeyring extends EventEmitter {
     if (is1559) {
       decoded = RLP.decode('0x' + signature.substring(4), true);
 
-      txJSON.r = utils.bytesToHex(decoded.data[10]);
-      txJSON.s = utils.bytesToHex(decoded.data[11]);
-      txJSON.v = utils.bytesToHex(decoded.data[9]);
+      txJSON.r = addHexPrefix(utils.bytesToHex(decoded.data[10]));
+      txJSON.s = addHexPrefix(utils.bytesToHex(decoded.data[11]));
+      txJSON.v = addHexPrefix(utils.bytesToHex(decoded.data[9]));
       return FeeMarketEIP1559Transaction.fromTxData(
         txJSON as FeeMarketEIP1559TxData
       );
     } else {
       decoded = RLP.decode(signature, true);
 
-      txJSON.r = utils.bytesToHex(decoded.data[7]);
-      txJSON.s = utils.bytesToHex(decoded.data[8]);
-      txJSON.v = utils.bytesToHex(decoded.data[6]);
+      txJSON.r = addHexPrefix(utils.bytesToHex(decoded.data[7]));
+      txJSON.s = addHexPrefix(utils.bytesToHex(decoded.data[8]));
+      txJSON.v = addHexPrefix(utils.bytesToHex(decoded.data[6]));
       // txJSON.hash = txHash;
       return Transaction.fromTxData(txJSON);
     }
