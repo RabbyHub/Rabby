@@ -22,7 +22,7 @@ the other data like `preference`, `chain`... will store directly in the local st
 
 when message received from `runtime.onConnect`, it will be send to _rpcFlow.ts_.
 
-it will pass through multi-middlewares to check the wallet status, if it's need to `set approval`, at last it will sended to the `providerController`.
+it will pass through multi-middlewares to check the wallet status, if it's need to `set approval`, at last it will sent to the `providerController`.
 
 
 ## session
