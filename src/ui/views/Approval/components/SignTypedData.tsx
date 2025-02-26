@@ -155,24 +155,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, [engineResults, currentTx]);
 
   const { data, session, method, isGnosis, isSend, account } = params;
-  let parsedMessage = '';
-  let _message = '';
-  try {
-    // signTypeDataV1 [Message, from]
-    if (/^eth_signTypedData(_v1)?$/.test(method)) {
-      _message = data[0].reduce((m, n) => {
-        m[n.name] = n.value;
-        return m;
-      }, {});
-    } else {
-      // [from, Message]
-      _message = parseSignTypedDataMessage(data[1]);
-    }
-
-    parsedMessage = JSON.stringify(_message, null, 4);
-  } catch (err) {
-    console.log('parse message error', parsedMessage);
-  }
+  const [parsedMessage, setParsedMessage] = useState('');
+  const [_message, setMessage] = useState('');
 
   const isSignTypedDataV1 = useMemo(
     () => /^eth_signTypedData(_v1)?$/.test(method),
@@ -192,6 +176,27 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
     return null;
   }, [data, isSignTypedDataV1]);
+
+  useEffect(() => {
+    try {
+      // signTypeDataV1 [Message, from]
+      let message;
+      if (/^eth_signTypedData(_v1)?$/.test(method)) {
+        message = data[0].reduce((m, n) => {
+          m[n.name] = n.value;
+          return m;
+        }, {});
+      } else {
+        // [from, Message]
+        message = parseSignTypedDataMessage(signTypedData || data[1]);
+      }
+
+      setMessage(message);
+      setParsedMessage(JSON.stringify(message, null, 4));
+    } catch (err) {
+      console.log('parse message error', err);
+    }
+  }, []);
 
   const chain = useMemo(() => {
     if (!isSignTypedDataV1 && signTypedData) {
