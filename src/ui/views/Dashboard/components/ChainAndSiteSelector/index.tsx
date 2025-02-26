@@ -418,9 +418,7 @@ export default ({
           setIsShowReceiveModal(false);
         }}
         supportChains={isSafe ? safeSupportChains : undefined}
-        disabledTips={({ chain }) =>
-          t('page.signTx.safeAddressNotSupportChain', [chain.name])
-        }
+        disabledTips={t('page.dashboard.GnosisWrongChainAlertBar.notDeployed')}
       />
 
       <Settings
