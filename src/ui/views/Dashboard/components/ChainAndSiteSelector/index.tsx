@@ -1,41 +1,23 @@
 import { Badge, Tooltip } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconAlertRed from 'ui/assets/alert-red.svg';
-import IconQuene, {
-  ReactComponent as RcIconQuene,
-} from 'ui/assets/dashboard/quene.svg';
-import IconSecurity, {
-  ReactComponent as RcIconSecurity,
-} from 'ui/assets/dashboard/security.svg';
-import IconSendToken, {
-  ReactComponent as RcIconSendToken,
-} from 'ui/assets/dashboard/sendtoken.svg';
-import IconSwap, {
-  ReactComponent as RcIconSwap,
-} from 'ui/assets/dashboard/swap.svg';
-import IconReceive, {
-  ReactComponent as RcIconReceive,
-} from 'ui/assets/dashboard/receive.svg';
+import { ReactComponent as RcIconQuene } from 'ui/assets/dashboard/quene.svg';
+import { ReactComponent as RcIconSecurity } from 'ui/assets/dashboard/security.svg';
+import { ReactComponent as RcIconSendToken } from 'ui/assets/dashboard/sendtoken.svg';
+import { ReactComponent as RcIconSwap } from 'ui/assets/dashboard/swap.svg';
+import { ReactComponent as RcIconReceive } from 'ui/assets/dashboard/receive.svg';
 import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
 
-import IconNFT, {
-  ReactComponent as RcIconNFT,
-} from 'ui/assets/dashboard/nft.svg';
-import IconTransactions, {
-  ReactComponent as RcIconTransactions,
-} from 'ui/assets/dashboard/transactions.svg';
-import IconAddresses, {
-  ReactComponent as RcIconAddresses,
-} from 'ui/assets/dashboard/addresses.svg';
+import { ReactComponent as RcIconNFT } from 'ui/assets/dashboard/nft.svg';
+import { ReactComponent as RcIconTransactions } from 'ui/assets/dashboard/transactions.svg';
+import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 
-import IconMoreSettings, {
-  ReactComponent as RcIconMoreSettings,
-} from 'ui/assets/dashboard/more-settings.svg';
+import { ReactComponent as RcIconMoreSettings } from 'ui/assets/dashboard/more-settings.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import {
   getCurrentConnectSite,
@@ -56,6 +38,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { EcologyPopup } from '../EcologyPopup';
 import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';
+import { findChainByID } from '@/utils/chain';
 
 export default ({
   gnosisPendingCount,
@@ -100,6 +83,8 @@ export default ({
 
   const [isShowEcology, setIsShowEcologyModal] = useState(false);
 
+  const [safeSupportChains, setSafeSupportChains] = useState<CHAINS_ENUM[]>([]);
+
   const wallet = useWallet();
 
   const account = useRabbySelector((state) => state.account.currentAccount);
@@ -117,15 +102,9 @@ export default ({
     return;
   }, [account?.address]);
 
-  const { value: claimable } = useAsync(async () => {
-    if (account?.address) {
-      const data = await wallet.openapi.checkClaimInfoV2({
-        id: account?.address,
-      });
-      return !!data?.claimable_points && data?.claimable_points > 0;
-    }
-    return false;
-  }, [account?.address]);
+  const isSafe = useMemo(() => {
+    return account?.type === KEYRING_TYPE.GnosisKeyring;
+  }, [account]);
 
   useEffect(() => {
     if (approvalState) {
@@ -176,6 +155,25 @@ export default ({
       }
     }
   }, [showDrawer]);
+
+  const getSafeNetworks = async () => {
+    if (!account) return;
+    const chainIds = await wallet.getGnosisNetworkIds(account.address);
+    const chains: CHAINS_ENUM[] = [];
+    chainIds.forEach((id) => {
+      const chain = findChainByID(Number(id));
+      if (chain) {
+        chains.push(chain.enum);
+      }
+    });
+    setSafeSupportChains(chains);
+  };
+
+  useEffect(() => {
+    if (isSafe) {
+      getSafeNetworks();
+    }
+  }, [isSafe]);
 
   type IPanelItem = {
     icon: ThemeIconType;
@@ -419,6 +417,10 @@ export default ({
         onCancel={() => {
           setIsShowReceiveModal(false);
         }}
+        supportChains={isSafe ? safeSupportChains : undefined}
+        disabledTips={({ chain }) =>
+          t('page.signTx.safeAddressNotSupportChain', [chain.name])
+        }
       />
 
       <Settings
