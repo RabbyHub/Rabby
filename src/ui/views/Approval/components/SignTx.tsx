@@ -87,6 +87,7 @@ import {
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import { ga4 } from '@/utils/ga4';
+import { EIP7702Warning } from './EIP7702Warning';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -143,6 +144,12 @@ export const normalizeTxParams = (tx) => {
       if (!tx.data.startsWith('0x')) {
         copy.data = `0x${tx.data}`;
       }
+    }
+
+    if ('authorizationList' in copy) {
+      copy.authorizationList = copy.authorizationList.map((item) => {
+        return normalizeHex(item);
+      });
     }
   } catch (e) {
     Sentry.captureException(
@@ -468,6 +475,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
+  const [support7702, setSupport7702] = useState(chain.eip['7702']);
   const [isLedger, setIsLedger] = useState(false);
   const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
@@ -570,7 +578,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isViewGnosisSafe,
     reqId,
     safeTxGas,
-  } = normalizeTxParams(params.data[0]);
+    authorizationList,
+  } = useMemo(() => {
+    return normalizeTxParams(params.data[0]);
+  }, [params.data]);
+
+  // is eip7702
+  if (authorizationList) {
+    return <EIP7702Warning />;
+  }
 
   const [pushInfo, setPushInfo] = useState<{
     type: TxPushType;

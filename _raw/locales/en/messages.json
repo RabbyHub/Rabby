@@ -2528,6 +2528,9 @@
         "description": "You're all set to use Rabby Wallet",
         "button": "Done"
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 is not supported yet"
     }
   },
   "component": {
