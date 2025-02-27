@@ -378,7 +378,8 @@
         "ledgerIsDisconnected": "您的 Ledger 已断开连接"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Safe 地址不支持 {{chain}}"
+        "warning": "Safe 地址不支持 {{chain}}",
+        "notDeployed": "您的 Safe 地址未在此链上部署。"
       },
       "echologyPopup": {
         "title": "生态系统"
@@ -1651,7 +1652,9 @@
         "title": "批量撤销 Permit2 许可"
       },
       "gasAccountForGas": "使用我 GasAccount 中的 USD 支付 gas 费",
-      "nativeTokenForGas": "使用 {{tokenName}} 代币在 {{chainName}} 支付 gas 费用"
+      "nativeTokenForGas": "使用 {{tokenName}} 代币在 {{chainName}} 支付 gas 费用",
+      "primaryType": "主要类型",
+      "safeServiceNotAvailable": "当前无法提供安全服务，请稍后再试。"
     },
     "signTypedData": {
       "buyNFT": {

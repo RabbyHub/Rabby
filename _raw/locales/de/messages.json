@@ -338,7 +338,9 @@
       "addressSource": "Address Source",
       "amount": "Betrag",
       "address": "Adresse",
-      "maxPriorityFeeDisabledAlert": "Bitte zuerst den Gaspreis festlegen"
+      "maxPriorityFeeDisabledAlert": "Bitte zuerst den Gaspreis festlegen",
+      "primaryType": "Primärtyp",
+      "safeServiceNotAvailable": "Der sichere Dienst ist derzeit nicht verfügbar, bitte versuchen Sie es später erneut."
     },
     "signFooterBar": {
       "requestFrom": "Anfrage von",
@@ -1331,7 +1333,8 @@
         "howToConnectImKey": "So verbinden Sie imKey"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Die Safe-Adresse unterstützt {{chain}} nicht"
+        "warning": "Die Safe-Adresse unterstützt {{chain}} nicht",
+        "notDeployed": "Ihre Safe-Adresse ist nicht auf dieser Chain bereitgestellt."
       },
       "echologyPopup": {
         "title": "Ökosystem"
