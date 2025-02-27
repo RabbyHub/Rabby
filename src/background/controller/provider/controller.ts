@@ -58,10 +58,12 @@ import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
 import {
   CustomTestnetTokenBase,
+  TestnetChain,
   customTestnetService,
 } from '@/background/service/customTestnet';
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
+import { getOriginFromUrl } from '@/utils';
 
 const reportSignText = (params: {
   method: string;
@@ -699,7 +701,9 @@ class ProviderController extends BaseController {
             } catch (e) {
               let errMsg = typeof e === 'object' ? e.message : e;
               if (RPCService.hasCustomRPC(chain)) {
-                errMsg = `[From Custom RPC] ${errMsg}`;
+                const rpc = RPCService.getRPCByChain(chain);
+                const origin = getOriginFromUrl(rpc.url);
+                errMsg = `[From ${origin}] ${errMsg}`;
               }
               onTransactionSubmitFailed({
                 ...e,
@@ -767,8 +771,17 @@ class ProviderController extends BaseController {
 
         return hash;
       } catch (e: any) {
+        const chainData = findChain({
+          enum: chain,
+        })!;
+        let errMsg = e.details || e.message || JSON.stringify(e);
+        if (chainData) {
+          errMsg = `[From ${getOriginFromUrl(
+            (chainData as TestnetChain).rpcUrl
+          )}] ${errMsg}`;
+        }
         console.log('submit tx failed', e);
-        onTransactionSubmitFailed(e);
+        onTransactionSubmitFailed(errMsg);
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
