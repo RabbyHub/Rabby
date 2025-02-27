@@ -1178,6 +1178,8 @@ export const SAFE_GAS_LIMIT_RATIO = {
 };
 
 export const SAFE_GAS_LIMIT_BUFFER = {
+  '998': 1.05, // Hyperliquid testnet
+  '999': 1.05, // Hyperliquid mainnet
   '996': 0.86,
   '49088': 0.86,
   '3068': 0.86,
