@@ -338,7 +338,9 @@
       "label": "Etiqueta",
       "maxPriorityFeeDisabledAlert": "Por favor, establece primero el Gas Price.",
       "typedDataMessage": "Firmar Datos Tipados",
-      "trustValueTitle": "Confianza en el valor"
+      "trustValueTitle": "Confianza en el valor",
+      "primaryType": "Tipo principal",
+      "safeServiceNotAvailable": "El servicio Safe no está disponible ahora, por favor intente más tarde."
     },
     "signFooterBar": {
       "requestFrom": "Solicitud de",
@@ -1331,7 +1333,8 @@
         "howToConnectImKey": "Cómo conectar imKey"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "La dirección segura no es compatible con {{chain}}"
+        "warning": "La dirección segura no es compatible con {{chain}}",
+        "notDeployed": "Tu dirección Safe no está desplegada en esta cadena"
       },
       "echologyPopup": {
         "title": "Ecosistema"

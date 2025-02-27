@@ -14,9 +14,7 @@ const GnosisWrongChainAlert = () => {
   return (
     <div className="gnosis-wrong-chain-alert">
       <img className="icon-alert" src={IconAlert} />
-      {t('page.dashboard.GnosisWrongChainAlertBar.warning', {
-        chain: chain?.name,
-      })}
+      {t('page.dashboard.GnosisWrongChainAlertBar.notDeployed')}
     </div>
   );
 };

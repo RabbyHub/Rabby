@@ -338,7 +338,9 @@
       "importedAddress": "Endereço importado",
       "addressSource": "Fonte do Endereço",
       "maxPriorityFeeDisabledAlert": "Por favor, defina o Gas Price primeiro",
-      "label": "Rótulo"
+      "label": "Rótulo",
+      "primaryType": "Tipo principal",
+      "safeServiceNotAvailable": "O serviço Safe não está disponível no momento, por favor, tente mais tarde."
     },
     "signFooterBar": {
       "requestFrom": "Solicitação de",
@@ -1331,7 +1333,8 @@
         "ledgerIsDisconnected": "Seu Ledger não está conectado"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "O endereço seguro não suporta {{chain}}"
+        "warning": "O endereço seguro não suporta {{chain}}",
+        "notDeployed": "Seu endereço Safe não está implantado nesta rede"
       },
       "echologyPopup": {
         "title": "Ecossistema"

@@ -906,7 +906,8 @@
         "customizedButtons": "jetons personnalisés"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "L'adresse Safe ne prend pas en charge {{chain}}"
+        "warning": "L'adresse Safe ne prend pas en charge {{chain}}",
+        "notDeployed": "Votre adresse Safe n'est pas déployée sur cette chaîne"
       },
       "echologyPopup": {
         "title": "Écosystème"
@@ -1973,7 +1974,9 @@
       "trustValueTitle": "Valeur de confiance",
       "amount": "Montant",
       "no": "Non",
-      "hasInteraction": "Interagi auparavant"
+      "hasInteraction": "Interagi auparavant",
+      "primaryType": "Type primaire",
+      "safeServiceNotAvailable": "Le service Safe n'est pas disponible pour le moment, veuillez réessayer plus tard."
     },
     "signTypedData": {
       "buyNFT": {

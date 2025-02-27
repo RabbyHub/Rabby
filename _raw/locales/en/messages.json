@@ -214,6 +214,7 @@
         "listAsset": "List asset",
         "receiveAsset": "Receive asset"
       },
+      "safeServiceNotAvailable": "Safe service is not available now, please try latter",
       "unknownAction": "Unknown Signature Type",
       "interactContract": "Interact contract",
       "markAsTrust": "Marked as trusted",
@@ -1402,7 +1403,7 @@
         "ledgerIsDisconnected": "Your ledger is not connected"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Safe address does not support {{chain}}"
+        "notDeployed": "Your Safe address is not deployed on this chain"
       },
       "echologyPopup": {
         "title": "Ecosystem"

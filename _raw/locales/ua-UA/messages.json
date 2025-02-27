@@ -338,7 +338,9 @@
       "addressSource": "Джерело адреси",
       "typedDataMessage": "Підписати Типізовані Дані",
       "advancedSettings": "Розширені налаштування",
-      "decodedTooltip": "Цей підпис розшифровано Rabby Wallet"
+      "decodedTooltip": "Цей підпис розшифровано Rabby Wallet",
+      "primaryType": "Первинний тип",
+      "safeServiceNotAvailable": "Вибачте, служба Safe зараз недоступна, спробуйте пізніше."
     },
     "signFooterBar": {
       "requestFrom": "Запит від",
@@ -1335,7 +1337,8 @@
         "howToConnectKeystone": "Як підключити Keystone"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Safe address does not support {{chain}}"
+        "warning": "Safe address does not support {{chain}}",
+        "notDeployed": "Ваша Safe адреса не розгорнута на цьому ланцюжку"
       },
       "echologyPopup": {
         "title": "Екосистема"
