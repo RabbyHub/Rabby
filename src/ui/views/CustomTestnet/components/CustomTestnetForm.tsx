@@ -1,5 +1,5 @@
 import { TestnetChainBase } from '@/background/service/customTestnet';
-import { Form, FormInstance, Input } from 'antd';
+import { Checkbox, Form, FormInstance, Input } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMount } from 'ahooks';
@@ -9,7 +9,8 @@ const Warper = styled.div`
   .ant-form-item {
     margin-bottom: 16px;
   }
-  .ant-form-item-label > label {
+  .ant-form-item-label > label,
+  .ant-checkbox-wrapper {
     color: var(--r-neutral-body, #3e495e);
     font-size: 13px;
     line-height: 16px;
@@ -146,6 +147,11 @@ export const CustomTestnetForm = ({
           name="scanLink"
         >
           <Input autoComplete="off" disabled={disabled} />
+        </Form.Item>
+        <Form.Item name="hasPreconfs" valuePropName="checked">
+          <Checkbox disabled={disabled}>
+            {t('page.customTestnet.CustomTestnetForm.hasPreconfs')}
+          </Checkbox>
         </Form.Item>
       </Form>
     </Warper>
