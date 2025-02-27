@@ -214,6 +214,7 @@
         "listAsset": "List asset",
         "receiveAsset": "Receive asset"
       },
+      "safeServiceNotAvailable": "Safe service is not available now, please try latter",
       "unknownAction": "Unknown Signature Type",
       "interactContract": "Interact contract",
       "markAsTrust": "Marked as trusted",

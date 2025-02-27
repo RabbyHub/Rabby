@@ -1471,42 +1471,48 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         throw e;
       }
     }
-    const pendingTxs = await Safe.getPendingTransactions(
-      currentAccount.address,
-      networkId,
-      safeInfo.nonce
-    );
-    const maxNonceTx = maxBy(pendingTxs.results, (item) => Number(item.nonce));
-    let recommendSafeNonce = maxNonceTx
-      ? Number(maxNonceTx.nonce) + 1
-      : safeInfo.nonce;
-    setSafeInfo(safeInfo);
-    setRecommendNonce(`0x${recommendSafeNonce.toString(16)}`);
+    try {
+      const pendingTxs = await Safe.getPendingTransactions(
+        currentAccount.address,
+        networkId,
+        safeInfo.nonce
+      );
+      const maxNonceTx = maxBy(pendingTxs.results, (item) =>
+        Number(item.nonce)
+      );
+      let recommendSafeNonce = maxNonceTx
+        ? Number(maxNonceTx.nonce) + 1
+        : safeInfo.nonce;
+      setSafeInfo(safeInfo);
+      setRecommendNonce(`0x${recommendSafeNonce.toString(16)}`);
 
-    if (
-      tx.nonce !== undefined &&
-      tx.nonce !== null &&
-      Number(tx.nonce || '0') >= safeInfo.nonce &&
-      origin === INTERNAL_REQUEST_ORIGIN
-    ) {
-      recommendSafeNonce = Number(tx.nonce || '0');
-      setRecommendNonce(tx.nonce || '0x0');
-    }
-    if (Number(tx.nonce || 0) < safeInfo.nonce) {
-      setTx({
-        ...tx,
-        nonce: `0x${recommendSafeNonce.toString(16)}`,
-      });
-      setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
-    } else {
-      setRealNonce(`0x${Number(tx.nonce).toString(16)}`);
-    }
-    if (tx.nonce === undefined || tx.nonce === null) {
-      setTx({
-        ...tx,
-        nonce: `0x${recommendSafeNonce.toString(16)}`,
-      });
-      setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
+      if (
+        tx.nonce !== undefined &&
+        tx.nonce !== null &&
+        Number(tx.nonce || '0') >= safeInfo.nonce &&
+        origin === INTERNAL_REQUEST_ORIGIN
+      ) {
+        recommendSafeNonce = Number(tx.nonce || '0');
+        setRecommendNonce(tx.nonce || '0x0');
+      }
+      if (Number(tx.nonce || 0) < safeInfo.nonce) {
+        setTx({
+          ...tx,
+          nonce: `0x${recommendSafeNonce.toString(16)}`,
+        });
+        setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
+      } else {
+        setRealNonce(`0x${Number(tx.nonce).toString(16)}`);
+      }
+      if (tx.nonce === undefined || tx.nonce === null) {
+        setTx({
+          ...tx,
+          nonce: `0x${recommendSafeNonce.toString(16)}`,
+        });
+        setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
+      }
+    } catch (e) {
+      throw new Error(t('page.signTx.safeServiceNotAvailable'));
     }
   };
 
