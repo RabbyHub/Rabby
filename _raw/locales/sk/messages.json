@@ -20,260 +20,260 @@
         "title": "Zobraziť Správu"
       },
       "filterScam": {
-        "title": "Hide scam transactions",
-        "loading": "Loading may take a moment, and data delays are possible",
-        "btn": "Hide scam transactions"
+        "title": "Skryť podvodné transakcie",
+        "loading": "Načítavanie môže chvíľu trvať, a oneskorenie dát je možné",
+        "btn": "Skryť podvodné transakcie"
       }
     },
     "chainList": {
-      "title": "{{count}} chains Integrated",
+      "title": "{{count}} sietí Integrovaných",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
     "signTx": {
-      "nftIn": "NFT in",
-      "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
-      "gasLimitLessThanExpect": "Gas limit is low. There is 1% chance that the transaction may fail.",
-      "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
-      "nativeTokenNotEngouthForGas": "Gas balance is not enough for transaction",
-      "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
-      "canOnlyUseImportedAddress": "You cannot sign transactions with a watch-only address.",
-      "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
-      "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
-      "noGasRequired": "No gas required",
+      "nftIn": "NFT do",
+      "gasLimitNotEnough": "Gas limit je menej ako 21000. Transakcia nemôže byť odoslaná.",
+      "gasLimitLessThanExpect": "Gas limit je nízky. Existuje 1% šanca, že transakcia zlyhá.",
+      "gasLimitLessThanGasUsed": "Gas limit je príliš nízky. Existuje 95% šanca že transakcia zlyhá.",
+      "nativeTokenNotEngouthForGas": "Gas na účte nie je dostatočný na transakciu.",
+      "nonceLowerThanExpect": "Nonce je príliš nízka, minimum by malo byť {{0}}",
+      "canOnlyUseImportedAddress": "Nemôžeš podpísať transakciu cez len-sledovaciu adresu.",
+      "multiSigChainNotMatch": "Multi-podpisové adresy nie sú na tejto sieti a nemôžu vytvoriť transakcie.",
+      "safeAddressNotSupportChain": "Táto safe adresa nie je podporovaná na {{0}} sieti",
+      "noGasRequired": "Žiadny potrebný gas",
       "gasSelectorTitle": "Gas",
-      "failToFetchGasCost": "Fail to estimate gas",
-      "gasMoreButton": "More",
-      "manuallySetGasLimitAlert": "You have manually set the Gas limit to",
-      "gasNotRequireForSafeTransaction": "Gas fee is not required for Safe transactions",
-      "gasPriceTitle": "Gas Price (Gwei)",
-      "maxPriorityFee": "Max Priority Fee (Gwei)",
-      "eip1559Desc1": "On chains that support EIP-1559, the Priority Fee is the tip for miners to process your transaction. You can save your final gas cost by lowering the Priority Fee, which may cost more time for the transaction to be processed.",
-      "eip1559Desc2": "Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
-      "hardwareSupport1559Alert": "Make sure your hardware wallet firmware has been upgraded to the version that supports EIP 1559",
+      "failToFetchGasCost": "Zlyhalo odhadnutie gas",
+      "gasMoreButton": "Viac",
+      "manuallySetGasLimitAlert": "Musíte manuálne nastaviť Gas limit na",
+      "gasNotRequireForSafeTransaction": "Gas poplatok nie je potrebny pre Safe transakcie",
+      "gasPriceTitle": "Gas Cena (Gwei)",
+      "maxPriorityFee": "Max Priorita Poplatok (Gwei)",
+      "eip1559Desc1": "Na sieťach, ktoré podporujú EIP-1559, Priority poplatok je úplatok validátorom, aby spracovali tvoju transakciu. Môžeš ušetriť finálny gas náklad znížením Priority poplatku, to však môže zapríčiniť dhší čas pre potvrdenie transakcie.",
+      "eip1559Desc2": "Tu v Rabby, Priority Poplatok (Úplatok) = Max Poplatok - Základ Poplatok. Po nastavení Max Priority Poplatok, Základ Poplatok bude od toho odčítaný a zvyšok pripísaný validátorom.",
+      "hardwareSupport1559Alert": "Skontroluj, že firmware tvojej hardwareovej peňaženky bol aktualizovaný na taký, ktorý podporuje EIP 1559",
       "gasLimitTitle": "Gas limit",
-      "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, recommend ",
+      "recommendGasLimitTip": "Odhad. {{est}}. Aktuálne {{current}}x, odporúčanie ",
       "nonceTitle": "Nonce",
-      "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
-      "gasPriceMedian": "Median of last 100 on-chain transactions: ",
-      "myNativeTokenBalance": "My Gas balance: ",
-      "gasLimitEmptyAlert": "Please input gas limit",
-      "gasLimitMinValueAlert": "Gas limit should be more than 21000",
-      "nativeTokenForGas": "Use {{tokenName}} token on {{chainName}} to pay for gas",
-      "gasAccountForGas": "Use USD from my GasAccount to pay for gas",
+      "gasLimitModifyOnlyNecessaryAlert": "Upraviť len ak nevyhnutné",
+      "gasPriceMedian": "Medián posledných 100 on-chain transakcií: ",
+      "myNativeTokenBalance": "Moj Gas na účte: ",
+      "gasLimitEmptyAlert": "Prosím zvoľ gas limit",
+      "gasLimitMinValueAlert": "Gas limit musi byť viac ako 21000",
+      "nativeTokenForGas": "Použiť {{tokenName}} token na {{chainName}} pre úhradu gas",
+      "gasAccountForGas": "Použiť USD z môjho GasAccount pre úhradu gas",
       "gasAccount": {
-        "totalCost": "Total cost: ",
-        "currentTxCost": "Gas amount sent to your address: ",
-        "gasCost": "Gas cost for transferring gas to your address: ",
-        "estimatedGas": "Estimated Gas: ",
+        "totalCost": "Celková cena: ",
+        "currentTxCost": "Gas množstvo zaslané na tvoju adresu: ",
+        "gasCost": "Gas cena zaslania gas na tvoju adresu: ",
+        "estimatedGas": "Odhadovaný Gas: ",
         "maxGas": "Max Gas: ",
-        "sendGas": "The Gas transfer to you for current transaction: "
+        "sendGas": "Gas prevod tebe za túto transakciu: "
       },
       "balanceChange": {
-        "successTitle": "Simulation Results",
-        "failedTitle": "Simulation Failed",
-        "noBalanceChange": "No balance change",
-        "tokenOut": "Token out",
-        "tokenIn": "Token in",
-        "errorTitle": "Fail to fetch balance change",
-        "notSupport": "Simulation Not Supported",
-        "nftOut": "NFT out"
+        "successTitle": "Výsledok Simulácie",
+        "failedTitle": "Simulácia Zlyhala",
+        "noBalanceChange": "Žiadna zmena stavu účtu",
+        "tokenOut": "Token von",
+        "tokenIn": "Token dnu",
+        "errorTitle": "Zlyhanie načítania zmeny stavu účtu",
+        "notSupport": "Simulácia Nepodporovaná",
+        "nftOut": "NFT von"
       },
-      "enoughSafeSigCollected": "Enough signature collected",
-      "moreSafeSigNeeded": "Need {{0}} more signatures to confirm",
-      "safeAdminSigned": "Signed",
+      "enoughSafeSigCollected": "Získaných dostatok podpisov",
+      "moreSafeSigNeeded": "Potreba {{0}} ďalších podpisov pre potvrdenie",
+      "safeAdminSigned": "Podpísané",
       "customRPCErrorModal": {
-        "title": "Custom RPC Error",
-        "content": "Your custom RPC is unavailable now. You can disable it and continue signing using Rabby's official RPC",
-        "button": "Disable Custom RPC"
+        "title": "Vlastné RPC Zlyhanie",
+        "content": "Tvoje vlastné RPC je teraz nedostupné. Môžeš ho vypnúť a pokračovať v podpisovaní s Rabby oficiálnym RPC",
+        "button": "Vypnúť Vlastné RPC"
       },
       "swap": {
-        "title": "Swap Token",
-        "payToken": "Pay",
-        "receiveToken": "Receive",
-        "failLoadReceiveToken": "Fail to load",
-        "valueDiff": "Value diff",
-        "simulationFailed": "Transaction simulation failed",
-        "simulationNotSupport": "Transaction simulation not supported on this chain",
-        "minReceive": "Minimum Receive",
-        "slippageFailToLoad": "Fail to load",
-        "slippageTolerance": "Slippage tolerance",
-        "receiver": "Receiver",
-        "notPaymentAddress": "Not the payment address",
-        "unknownAddress": "Unknown address"
+        "title": "Vymeniť Token",
+        "payToken": "Zaplatiť",
+        "receiveToken": "Prijať",
+        "failLoadReceiveToken": "Zlyhanie načítania",
+        "valueDiff": "Rozdiel hodnoty",
+        "simulationFailed": "Simulácia transakcie zlyhala",
+        "simulationNotSupport": "Simulácia transakcie nepodporovaná na tejto sieti",
+        "minReceive": "Minimum Prijať",
+        "slippageFailToLoad": "Zlyhanie načítania",
+        "slippageTolerance": "Slippage tolerancia",
+        "receiver": "Príjemca",
+        "notPaymentAddress": "Nie platobná adresa",
+        "unknownAddress": "Neznáma adresa"
       },
       "crossChain": {
         "title": "Cross Chain"
       },
       "swapAndCross": {
-        "title": "Swap Token and Cross Chain"
+        "title": "Vymeň Token and Cross Chain"
       },
       "wrapToken": "Wrap Token",
       "unwrap": "Unwrap Token",
       "transferOwner": {
-        "title": "Transfer Assets Ownership",
-        "description": "Description",
-        "transferTo": "Transfer to"
+        "title": "Zmeň Vlastníctvo Aktív",
+        "description": "Popis",
+        "transferTo": "Zmeň na"
       },
       "swapLimitPay": {
-        "title": "Swap Token Limit Pay",
-        "maxPay": "Maximum pay"
+        "title": "Vymeň Token Limit Zaplať",
+        "maxPay": "Maximum zaplať"
       },
       "send": {
-        "title": "Send Token",
-        "sendToken": "Send token",
-        "sendTo": "Send to",
-        "receiverIsTokenAddress": "Token address",
-        "contractNotOnThisChain": "Not on this chain",
-        "notTopupAddress": "Not a deposit address",
-        "tokenNotSupport": "{{0}} not supported",
-        "onMyWhitelist": "On my whitelist",
-        "notOnThisChain": "Not on this chain",
-        "cexAddress": "CEX address",
-        "addressBalanceTitle": "Address balance",
-        "whitelistTitle": "Whitelist",
-        "notOnWhitelist": "Not on my whitelist",
-        "scamAddress": "Scam address",
-        "fromMySeedPhrase": "From my seed phrase",
-        "fromMyPrivateKey": "From my private key"
+        "title": "Pošli Token",
+        "sendToken": "Pošli token",
+        "sendTo": "Pošli na",
+        "receiverIsTokenAddress": "Token adresa",
+        "contractNotOnThisChain": "Nie na tejto sieti",
+        "notTopupAddress": "Nie depozitná adresa",
+        "tokenNotSupport": "{{0}} nepodporované",
+        "onMyWhitelist": "Na mojom liste povolených",
+        "notOnThisChain": "Nie na tejto sieti",
+        "cexAddress": "CEX adresa",
+        "addressBalanceTitle": "Stav adresy",
+        "whitelistTitle": "List Povolených",
+        "notOnWhitelist": "Nie na mojom liste povolených",
+        "scamAddress": "Podvodná adresa",
+        "fromMySeedPhrase": "Z mojej seed frázy",
+        "fromMyPrivateKey": "Z môjho privátneho kľúča"
       },
       "tokenApprove": {
-        "title": "Token Approval",
-        "approveToken": "Approve token",
-        "myBalance": "My balance",
-        "approveTo": "Approve to",
+        "title": "Povoliť Token",
+        "approveToken": "Povoliť token",
+        "myBalance": "Moj stav účtu",
+        "approveTo": "Povoliť pre",
         "eoaAddress": "EOA",
         "trustValueLessThan": "≤ {{value}}",
-        "deployTimeLessThan": "< {{value}} days",
-        "amountPopupTitle": "Approve amount",
-        "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total asset value spent by this contract. A low trust value indicates either risk or inactivity for 180 days.",
-        "amount": "Approve Amount:",
-        "exceed": "Exceeds your current balance"
+        "deployTimeLessThan": "< {{value}} dní",
+        "amountPopupTitle": "Povoliť množštvo",
+        "flagByRabby": "Nahlásené od Rabby",
+        "contractTrustValueTip": "Hodnota dôvery je celková hodnota aktív použitá týmto kontraktom. Nízka hodnota dôvery indikuje risk alebo neaktivitu počas 180 dní.",
+        "amount": "Povoliť Množstvo:",
+        "exceed": "Prevyšuje tvoj stav účtu"
       },
       "revokeTokenApprove": {
-        "title": "Revoke Token Approval",
-        "revokeFrom": "Revoke from",
-        "revokeToken": "Revoke token"
+        "title": "Odobrať Povolenie Tokenu",
+        "revokeFrom": "Odobrať z",
+        "revokeToken": "Odobrať token"
       },
       "sendNFT": {
-        "title": "Send NFT",
-        "nftNotSupport": "NFT not supported"
+        "title": "Poslať NFT",
+        "nftNotSupport": "NFT nepodporované"
       },
       "nftApprove": {
-        "title": "NFT Approval",
-        "approveNFT": "Approve NFT",
-        "nftContractTrustValueTip": "Trust value refers to the top NFT value spent by this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "title": "NFT Povolenie",
+        "approveNFT": "Povoliť NFT",
+        "nftContractTrustValueTip": "Hodnota dôvery označuje top NFT hodnotu použitú týmto kontraktom. Nízka hodnota dôvery indikuje risk alebo neaktivitu počas 180 dní."
       },
       "revokeNFTApprove": {
-        "title": "Revoke NFT Approval",
-        "revokeNFT": "Revoke NFT"
+        "title": "Odobrať NFT Povolenie",
+        "revokeNFT": "Odobrať NFT"
       },
       "nftCollectionApprove": {
-        "title": "NFT Collection Approval",
-        "approveCollection": "Approve collection"
+        "title": "Povolenie NFT Kolekcie",
+        "approveCollection": "Povoliť kolekciu"
       },
       "revokeNFTCollectionApprove": {
-        "title": "Revoke NFT Collection",
-        "revokeCollection": "Revoke collection"
+        "title": "Odobrať NFT Kolekciu",
+        "revokeCollection": "Odobrať kolekciu"
       },
       "deployContract": {
-        "title": "Deploy a Contract",
-        "descriptionTitle": "Description",
-        "description": "You are deploying a smart contract"
+        "title": "Deploynúť Kontrakt",
+        "descriptionTitle": "Popis",
+        "description": "Zverejňuješ smart kontrakt"
       },
       "cancelTx": {
-        "title": "Cancel Pending Transaction",
-        "txToBeCanceled": "Transaction to be canceled",
-        "gasPriceAlert": "Set current gas price more than {{value}} Gwei to cancel the pending transaction"
+        "title": "Zrušiť Nepotvrdenú Transakciu",
+        "txToBeCanceled": "Transakcia na zrušenie",
+        "gasPriceAlert": "Zvoľ cenu gas na vačšiu ako {{value}} Gwei pre zrušenie tranzakcie"
       },
       "submitMultisig": {
-        "title": "Submit Multisig Transaction",
-        "multisigAddress": "Multisig address"
+        "title": "Odoslať Multisig Transakciu",
+        "multisigAddress": "Multisig adresa"
       },
       "contractCall": {
-        "title": "Contract Call",
-        "operation": "Operation",
-        "operationABIDesc": "Operation is decoded from ABI",
-        "operationCantDecode": "Operation is not decoded",
-        "payNativeToken": "Pay {{symbol}}",
-        "suspectedReceiver": "Exception Address",
-        "receiver": "Receiver Address"
+        "title": "Volanie Kontraktu",
+        "operation": "Operácia",
+        "operationABIDesc": "Operácia dekódovaná z ABI",
+        "operationCantDecode": "Operácie nie je dekódovaná",
+        "payNativeToken": "Zaplatiť {{symbol}}",
+        "suspectedReceiver": "Výnimka Adresa",
+        "receiver": "Adresa Príjemcu"
       },
       "revokePermit2": {
-        "title": "Revoke Permit2 Approval"
+        "title": "Odobrať Permit2 Povolenie"
       },
       "batchRevokePermit2": {
-        "title": "Batch Revoke Permit2 Approval"
+        "title": "Zložene Odobrať Permit2 Povolenie"
       },
       "revokePermit": {
-        "title": "Revoke Permit Token Approval"
+        "title": "Odobrať Permit Token Povolenie"
       },
       "assetOrder": {
-        "title": "Asset Order",
-        "listAsset": "List asset",
-        "receiveAsset": "Receive asset"
+        "title": "Zoradenie Aktíva",
+        "listAsset": "Zoznam aktíva",
+        "receiveAsset": "Prijať aktívum"
       },
-      "safeServiceNotAvailable": "Safe service is not available now, please try latter",
-      "unknownAction": "Unknown Signature Type",
-      "interactContract": "Interact contract",
-      "markAsTrust": "Marked as trusted",
-      "markAsBlock": "Marked as blocked",
-      "interacted": "Interacted before",
-      "neverInteracted": "Never interacted before",
-      "transacted": "Transacted before",
-      "neverTransacted": "Never transacted before",
-      "importedAddress": "Imported address",
-      "fakeTokenAlert": "This is a scam token marked by Rabby",
-      "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
-      "trusted": "Trusted",
-      "blocked": "Blocked",
-      "noMark": "No mark",
-      "markRemoved": "Mark removed",
-      "speedUpTooltip": "This accelerated transaction and the original transaction, only one of which will eventually be completed",
-      "decodedTooltip": "This signature is decoded by Rabby Wallet",
-      "signTransactionOnChain": "Sign {{chain}} Transaction",
-      "viewRaw": "View Raw",
-      "chain": "Chain",
-      "unknownActionType": "Unknown Action Type",
-      "sigCantDecode": "This signature can't be decoded by Rabby Wallet",
-      "nftCollection": "NFT Collection",
-      "floorPrice": "Floor price",
-      "contractAddress": "Contract address",
-      "protocolTitle": "Protocol",
-      "deployTimeTitle": "Deployed time",
-      "popularity": "Popularity",
-      "contractPopularity": "No.{{0}} on {{1}}",
-      "addressNote": "Address note",
-      "myMarkWithContract": "My mark on {{chainName}} contract",
-      "myMark": "My mark",
-      "collectionTitle": "Collection",
-      "addressTypeTitle": "Address type",
-      "firstOnChain": "First on-chain",
-      "trustValue": "Trust value",
-      "importedDelegatedAddress": "Imported delegated address",
-      "noDelegatedAddress": "No imported delegated address",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
-      "l2GasEstimateTooltip": "The gas estimate for L2 chain does not include the L1 gas fee. The actual fee will be higher than current estimate.",
+      "safeServiceNotAvailable": "Safe služba je práve nedostupná, prosím skúste neskôr znova.",
+      "unknownAction": "Neznámy Typ Podpisu",
+      "interactContract": "Interakcia kontrakt",
+      "markAsTrust": "Označené ako dôveryhodné",
+      "markAsBlock": "Označené ako zablokované",
+      "interacted": "Interagované predtým",
+      "neverInteracted": "Nikdy neinteragované predtým",
+      "transacted": "Transaktované predtým",
+      "neverTransacted": "Nikdy netransaktované predtým",
+      "importedAddress": "Importovaná adresa",
+      "fakeTokenAlert": "Toto je podvodný token označný Rabby",
+      "scamTokenAlert": "Toto je potenciálne nízko-kvalitný a podvodný token na základe Rabby detekcie",
+      "trusted": "Dôverné",
+      "blocked": "Zablokované",
+      "noMark": "Bez značky",
+      "markRemoved": "Označené ako vymazané",
+      "speedUpTooltip": "Táto akcelerovaná a pôvodná tranzakcia, len jedna z nich bude potvrdená",
+      "decodedTooltip": "Tento podpis je dekódovaný Rabby Peňaženkou",
+      "signTransactionOnChain": "Podpísať {{chain}} Tranzakciu",
+      "viewRaw": "Pozrieť Raw",
+      "chain": "Sieť",
+      "unknownActionType": "Neznámy Typ Akcie",
+      "sigCantDecode": "Tento podpis nemožno dekódovať Rabby Peňaženkou",
+      "nftCollection": "NFT Kolekcia",
+      "floorPrice": "Najnižšia cena",
+      "contractAddress": "Kontrakt adresa",
+      "protocolTitle": "Protokol",
+      "deployTimeTitle": "Ča Deploynutia",
+      "popularity": "Popularita",
+      "contractPopularity": "Č.{{0}} na {{1}}",
+      "addressNote": "Poznámka adresy",
+      "myMarkWithContract": "Moja značka na {{chainName}} kontrakte",
+      "myMark": "Moja značka",
+      "collectionTitle": "Kolekcia",
+      "addressTypeTitle": "Typ Adresy",
+      "firstOnChain": "Prvýkrát on-chain",
+      "trustValue": "Hodnota Dôvery",
+      "importedDelegatedAddress": "Importovaná delegovaná adresa",
+      "noDelegatedAddress": "Žiadna delegovaná adresa",
+      "coboSafeNotPermission": "Táto delegovaná adresa nemá právo na iniciovanie transakcie.",
+      "l2GasEstimateTooltip": "Odhad gas na L2 sieť neobsahuje L1 gas poplatok. Reálny poplatok bude vyšší ako tento.",
       "BroadcastMode": {
         "instant": {
-          "title": "Instant",
-          "desc": "Transactions will be immediately broadcast to the network"
+          "title": "Instatné",
+          "desc": "Transakcie budú instantne odoslané do siete"
         },
         "lowGas": {
-          "title": "Gas-saving",
-          "desc": "Transactions will be broadcast when network gas is low"
+          "title": "Gas-šetriace",
+          "desc": "Transakcie budú odoslané do siete až bude gas nižší"
         },
         "mev": {
-          "title": "MEV Guarded",
-          "desc": "Transactions will be broadcast to the designated MEV node"
+          "title": "MEV Ochránené",
+          "desc": "Transakcie budú odoslané do špeciálneho MEV uzlu"
         },
-        "title": "Broadcast Mode",
+        "title": "Mód Odosielania",
         "tips": {
-          "walletConnect": "Not supported by WalletConnect",
-          "notSupportChain": "Not supported on this chain",
-          "customRPC": "Not supported when using custom RPC",
-          "notSupported": "Not supported"
+          "walletConnect": "Nepodporované WalletConnect",
+          "notSupportChain": "Nepodporované na tejto sieti",
+          "customRPC": "Nepodporované na vlastnom RPC",
+          "notSupported": "Nepodporované"
         },
         "lowGasDeadline": {
           "label": "Timeout",
@@ -284,112 +284,112 @@
       },
       "SafeNonceSelector": {
         "explain": {
-          "contractCall": "Contract Call",
-          "send": "Send Token",
-          "unknown": "Unknown Transaction"
+          "contractCall": "Volanie Kontraktu",
+          "send": "Poslať Token",
+          "unknown": "Neznáma Transakcia"
         },
         "optionGroup": {
-          "recommendTitle": "Recommended nonce",
-          "replaceTitle": "Replace the transaction in Queue "
+          "recommendTitle": "Odporúčaná nonce",
+          "replaceTitle": "Nahradiť transakciu v rade "
         },
         "option": {
-          "new": "New Transaction"
+          "new": "Nová Transakcia"
         },
         "error": {
-          "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
+          "pendingList": "Zlyhanie načítania čakajúcich transakcií, <1/><2>Skúsiť znovu</2>"
         }
       },
       "coboSafeCreate": {
         "safeWalletTitle": "Safe{Wallet}",
-        "descriptionTitle": "Description",
-        "title": "Create Cobo Safe"
+        "descriptionTitle": "Popis",
+        "title": "Vytvoriť Cobo Safe"
       },
       "coboSafeModificationRole": {
-        "title": "Submit Safe Role Modification",
+        "title": "Odoslať Safe Role Modifikáciu",
         "safeWalletTitle": "Safe{Wallet}",
-        "descriptionTitle": "Description"
+        "descriptionTitle": "Popis"
       },
       "coboSafeModificationDelegatedAddress": {
-        "title": "Submit Delegated Address Modification",
+        "title": "Odoslať Modifikáciu Delegovanej Adresy",
         "safeWalletTitle": "Safe{Wallet}",
-        "descriptionTitle": "Description"
+        "descriptionTitle": "Popis"
       },
       "coboSafeModificationTokenApproval": {
-        "title": "Submit Token Approval Modification",
+        "title": "Odoslať Modifikáciu Povolenia Tokenu",
         "safeWalletTitle": "Safe{Wallet}",
         "descriptionTitle": "Description"
       },
       "common": {
-        "description": "Description",
-        "interactContract": "Interact contract",
-        "descTipSafe": "Signature does not cause asset change or verify address ownership",
-        "descTipWarningPrivacy": "Signature may verify address ownership",
-        "descTipWarningAssets": "Signature may cause asset change",
-        "descTipWarningBoth": "Signature may cause asset change and verify address ownership"
+        "description": "Popis",
+        "interactContract": "Kontrakt Interakcie",
+        "descTipSafe": "Podpis nespôsobí zmenu aktíva ani overenie adresy vlastníctva",
+        "descTipWarningPrivacy": "Podpis môže overiť adresu vlastníctva",
+        "descTipWarningAssets": "Podpis môže sposobiť zmenu aktíva",
+        "descTipWarningBoth": "Môže spôsobiť zmenu aktíva a overenie adresy vlastníctva"
       },
-      "protocol": "Protocol",
-      "yes": "Yes",
-      "no": "No",
-      "hasInteraction": "Interacted before",
-      "address": "Address",
-      "advancedSettings": "Advanced Settings",
-      "amount": "Amount",
-      "contract": "Smart contract address",
-      "trustValueTitle": "Trust value",
-      "typedDataMessage": "Sign Typed Data",
-      "label": "Label",
-      "addressSource": "Address Source",
-      "maxPriorityFeeDisabledAlert": "Please set Gas Price first",
-      "primaryType": "Primary type"
+      "protocol": "Protokol",
+      "yes": "Áno",
+      "no": "Nie",
+      "hasInteraction": "Interagované predtým",
+      "address": "Adresa",
+      "advancedSettings": "Pokročilé Nastavenia",
+      "amount": "Množstvo",
+      "contract": "Smart kontrakt adresa",
+      "trustValueTitle": "Hodnota dôvery",
+      "typedDataMessage": "Podpísať Typované Dáta",
+      "label": "Štítok",
+      "addressSource": "Zdroj Adresy",
+      "maxPriorityFeeDisabledAlert": "Prosím najprv zvoľ Gas Cenu",
+      "primaryType": "Primárny typ"
     },
     "signFooterBar": {
-      "requestFrom": "Request from",
-      "processRiskAlert": "Please process the alert before signing",
-      "ignoreAll": "Ignore all",
-      "gridPlusConnected": "GridPlus is connected",
-      "gridPlusNotConnected": "GridPlus is not connected",
-      "connectButton": "Connect",
-      "connecting": "Connecting...",
-      "ledgerNotConnected": "Ledger is not connected",
-      "keystoneNotConnected": "Keystone is not connected",
-      "keystoneConnected": "Keystone is connected",
-      "ledgerConnected": "Ledger is connected",
-      "signAndSubmitButton": "Sign",
+      "requestFrom": "Formulár Žiadosti",
+      "processRiskAlert": "Prosím spracuj upozornenie pred podpisom",
+      "ignoreAll": "Ignorovať všetko",
+      "gridPlusConnected": "GridPlus je pripojený",
+      "gridPlusNotConnected": "GridPlus nie je pripojený",
+      "connectButton": "Pripojiť",
+      "connecting": "Pripájanie...",
+      "ledgerNotConnected": "Ledger nie je pripojený",
+      "keystoneNotConnected": "Keystone nie je pripojený",
+      "keystoneConnected": "Keystone je pripojený",
+      "ledgerConnected": "Ledger je pripojený",
+      "signAndSubmitButton": "Podpísať",
       "gasless": {
-        "unavailable": "Your Gas Balance is not enough",
-        "notEnough": "Gas balance is not enough",
-        "GetFreeGasToSign": "Get Free Gas",
-        "rabbyPayGas": "Rabby'll pay for the gas needed – just sign on",
-        "customRpcUnavailableTip": "Custom RPCs are not supported for Free Gas",
-        "walletConnectUnavailableTip": "Mobile wallet connected via WalletConnect is not supported for Free Gas",
-        "watchUnavailableTip": "Watch-only address is not supported for Free Gas"
+        "unavailable": "Stav tvôjho Gas Balance je nedostatočný",
+        "notEnough": "Stav Gas je nedostatočný",
+        "GetFreeGasToSign": "Získať Zdarma Gas",
+        "rabbyPayGas": "Rabby zaplatí potrebný gas – len podpíš",
+        "customRpcUnavailableTip": "Vlastné RPCs nie sú podporované pre Zdarma Gas",
+        "walletConnectUnavailableTip": "Mobilná peňaženka pripojená cez WalletConnect nie je podporovaná pre Zdarma Gas",
+        "watchUnavailableTip": "Len-sledovacia adresa je nepodporovaná pre Zdarma Gas"
       },
       "gasAccount": {
-        "customRPC": "Not supported when using custom RPC",
-        "notEnough": "GasAccount is not enough",
-        "useGasAccount": "Use GasAccount",
-        "WalletConnectTips": "WalletConnect is not supported by GasAccount",
-        "chainNotSupported": "This chain is not supported by GasAccount",
-        "loginFirst": "Please log in to GasAccount first",
-        "login": "Log in",
-        "gotIt": "Got it",
-        "deposit": "Deposit"
+        "customRPC": "Nepodporované pri používaní vlastného RPC",
+        "notEnough": "GasAccount je nedostatočný",
+        "useGasAccount": "Použiť GasAccount",
+        "WalletConnectTips": "WalletConnect je nepodporovaný pre GasAccount",
+        "chainNotSupported": "Táto sieť je nepodporovaná GasAccount",
+        "loginFirst": "Prosím najprv sa prihlás do GasAccount",
+        "login": "Prihlásiť sa",
+        "gotIt": "Rozumiem",
+        "deposit": "Depozit"
       },
       "walletConnect": {
-        "connectedButCantSign": "Connected but unable to sign.",
-        "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",
-        "switchChainAlert": "Please switch to {{chain}} in mobile wallet",
-        "notConnectToMobile": "Not connected to {{brand}}",
-        "connected": "Connected and ready to sign",
-        "howToSwitch": "How to switch",
-        "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
-        "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
-        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet",
-        "latency": "Latency",
-        "requestSuccessToast": "Request successfully sent",
-        "sendingRequest": "Sending signing request",
-        "signOnYourMobileWallet": "Please sign on your mobile wallet.",
-        "requestFailedToSend": "Signing request failed to send"
+        "connectedButCantSign": "Pripojené ale nemožno podpísať.",
+        "switchToCorrectAddress": "Prosím zmeň na správnu adresu v mobilnej peňaženke",
+        "switchChainAlert": "Prosím prepni na {{chain}} v mobilnej peňaženke",
+        "notConnectToMobile": "Nepripojené k {{brand}}",
+        "connected": "Pripojené a priprávané na podpis",
+        "howToSwitch": "Ako prepnúť",
+        "wrongAddressAlert": "Prepol si na inú adresu v mobilnej peňaženke. Prosím prepni na správnu adresu v mobilnej peňaženke",
+        "connectBeforeSign": "{{0}} je nepripojené k Rabby, prosím pripoj pred podpisom",
+        "chainSwitched": "Prepol si na inú sieť na mobilnej peňaženke. Prosím prepni na {{0}} v mobilnej peňaženke",
+        "latency": "Oneskorenie",
+        "requestSuccessToast": "Žiadosť úspešne odoslaná",
+        "sendingRequest": "Odosielam žiadosť k podpisu",
+        "signOnYourMobileWallet": "Prosím podpíš na mobilnej peňaženke.",
+        "requestFailedToSend": "Odosielanie žiadosti k podpisu zlyhalo"
       },
       "beginSigning": "Begin signing process",
       "addressTip": {
