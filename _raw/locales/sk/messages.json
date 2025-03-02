@@ -391,114 +391,114 @@
         "signOnYourMobileWallet": "Prosím podpíš na mobilnej peňaženke.",
         "requestFailedToSend": "Odosielanie žiadosti k podpisu zlyhalo"
       },
-      "beginSigning": "Begin signing process",
+      "beginSigning": "Začať proces podpisovania",
       "addressTip": {
-        "onekey": "OneKey address",
-        "trezor": "Trezor address",
-        "bitbox": "BitBox02 address",
-        "keystone": "Keystone address",
-        "airgap": "AirGap address",
-        "coolwallet": "CoolWallet address",
-        "privateKey": "Private Key address",
-        "seedPhrase": "Seed Phrase address",
-        "watchAddress": "Unable to sign with watch-only address",
-        "safe": "Safe address",
-        "coboSafe": "Cobo Argus Address",
-        "seedPhraseWithPassphrase": "Seed Phrase address (Passphrase)"
+        "onekey": "OneKey adresa",
+        "trezor": "Trezor adresa",
+        "bitbox": "BitBox02 adresa",
+        "keystone": "Keystone adresa",
+        "airgap": "AirGap adresa",
+        "coolwallet": "CoolWallet adresa",
+        "privateKey": "Adresa Privátneho Kľúča",
+        "seedPhrase": "Adresa Seed Frázy",
+        "watchAddress": "Nemožno podpísať so sledovať-len adresou",
+        "safe": "Safe adresa",
+        "coboSafe": "Cobo Argus Adresa",
+        "seedPhraseWithPassphrase": "Adresa Seed Frázy (Passphrase)"
       },
       "qrcode": {
-        "signWith": "Sign with {{brand}}",
-        "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Fail to create",
-        "sigReceived": "Signature received",
-        "sigCompleted": "Transaction created",
-        "getSig": "Get signature",
-        "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
-        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
-        "unknownQRCode": "Error: We couldn't identify that QR code",
-        "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera"
+        "signWith": "Podpísať s {{brand}}",
+        "failedToGetExplain": "Zlyhanie bez vysvetlenia",
+        "txFailed": "Zlyhanie vytvorenia",
+        "sigReceived": "Podpis prijatý",
+        "sigCompleted": "Transakcia vytvorená",
+        "getSig": "Získať podpis",
+        "qrcodeDesc": "Naskenuj s tvojim {{brand}} pre podpísanie<br></br>Po podpísaní, klikni na tlačidlo podtým pre prijatie podpisu",
+        "misMatchSignId": "Nekonzistentné transakčné dáta. Prosím skontroluj transakčné detaily.",
+        "unknownQRCode": "Zlyhanie: Neidentifikovali sme QR kód",
+        "afterSignDesc": "Po podpísaní, umiestni QR kód na {{brand}} kameru tvojho PC"
       },
       "keystone": {
-        "signWith": "Switch to {{method}} for signing",
-        "qrcodeDesc": "Scan to sign. After signing, click below to get the signature. For USB, reconnect and authorize to begin the signing process again.",
-        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
-        "unsupportedType": "Error: The transaction type is unsupported or unknown.",
-        "siging": "Sending signing request",
-        "txRejected": "Transaction rejected",
-        "shouldRetry": "Some error occurred. Please retry.",
-        "hardwareRejectError": "Keystone request was cancelled. To proceed, please reauthorize.",
-        "mismatchedWalletError": "Mismatched wallet",
-        "verifyPasswordError": "Signature failure, please try again after unlocking",
-        "shouldOpenKeystoneHomePageError": "Ensure your Keystone 3 Pro is on the homepage"
+        "signWith": "Prepnúť na {{method}} pre podpísanie",
+        "qrcodeDesc": "Skenovať pre podpis. Po podpísaní, klikni dole pre získanie podpisu. Pre USB, znovu pripoj a autorizuj pre začatie podpisujúceho procesu znovu..",
+        "misMatchSignId": "Nekonzistentné transakčné dáta. Prosím skontroluj transakčné detaily.",
+        "unsupportedType": "Zlyhanie: Transakčný typ je nepodporovaný alebo neznámy.",
+        "siging": "Zasielam žiadosť na podpis",
+        "txRejected": "Transakcia zamietnutá",
+        "shouldRetry": "Nastalo zlyhanie. Skús znovu.",
+        "hardwareRejectError": "Keystone žiadosť bola zrušená. Pre pokračovanie, reautorizuj.",
+        "mismatchedWalletError": "Nekompatibilná peňaženka",
+        "verifyPasswordError": "Zlyhanie podpisu, prosím skús znovu po odomknutí",
+        "shouldOpenKeystoneHomePageError": "Zabezpeč, aby tvoj Keystone 3 Pro bol na domovskej stránke"
       },
       "ledger": {
-        "resent": "Resent",
-        "signError": "Ledger sign error:",
-        "notConnected": "Your wallet is not connected. Please re-connect.",
-        "siging": "Sending signing request",
-        "txRejected": "Transaction rejected",
-        "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
-        "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
-        "txRejectedByLedger": "Transaction is rejected on your Ledger",
-        "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "submitting": "Signed. Creating transaction",
-        "resubmited": "Resubmited"
+        "resent": "Znovu poš",
+        "signError": "Ledger zlyhanie podpisu:",
+        "notConnected": "Tvoja peňaženka nie je pripojená. Prosím pripoj ju znovu.",
+        "siging": "Posielam žiadosť o podpis",
+        "txRejected": "Transakcia zamietnutá",
+        "unlockAlert": "Prosím pripoj a odomkni tvoj Ledger, otvor na ňom Ethereum",
+        "updateFirmwareAlert": "Prosím aktualizuj firmvér a Ethereum appku na Ledgeri",
+        "txRejectedByLedger": "Transakcia je zamietnutá na tvojom Ledgeri",
+        "blindSigTutorial": "Návod na Slepý Podpis od Ledgeru",
+        "submitting": "Podpísané. Vytváram transakciu",
+        "resubmited": "Znovu odoslané"
       },
       "common": {
-        "notSupport": "{{0}} is not supported"
+        "notSupport": "{{0}} nie je podporované."
       },
-      "resend": "Retry",
-      "submitTx": "Submit Transaction",
+      "resend": "Skúsiť znovu",
+      "submitTx": "Odoslať Transakciu",
       "testnet": "Testnet",
       "mainnet": "Mainnet",
-      "cancelTransaction": "Cancel Transaction",
-      "detectedMultipleRequestsFromThisDapp": "Detected multiple requests from this Dapp",
-      "cancelCurrentTransaction": "Cancel current transaction",
-      "cancelAll": "Cancel all {{count}} requests from Dapp",
-      "blockDappFromSendingRequests": "Block Dapp from sending requests for 1 min",
-      "cancelConnection": "Cancel connection",
-      "cancelCurrentConnection": "Cancel current connection",
-      "imKeyNotConnected": "imKey is not connected",
-      "imKeyConnected": "imKey is connected"
+      "cancelTransaction": "Zrusiť Transakciu",
+      "detectedMultipleRequestsFromThisDapp": "Detegovaných viacero žiadostí z Dapp",
+      "cancelCurrentTransaction": "Zrušiť aktuálnu transakciu",
+      "cancelAll": "Zrušiť všetky {{count}} žiadosti z Dapp",
+      "blockDappFromSendingRequests": "Zablokovať Dapp z posielania žiadostí na 1 min",
+      "cancelConnection": "Zrušiť pripojenie",
+      "cancelCurrentConnection": "Zrušiť aktuálne pripojenie",
+      "imKeyNotConnected": "imKey nie je pripojený",
+      "imKeyConnected": "imKey je pripojený"
     },
     "signTypedData": {
-      "signTypeDataOnChain": "Sign {{chain}} Typed Data",
-      "safeCantSignText": "This is a Safe address, and it cannot be used to sign text.",
+      "signTypeDataOnChain": "Podpísať {{chain}} Typované Dáta",
+      "safeCantSignText": "Toto je Safe adresa a nemôže byť použitá na podpísanie textu.",
       "permit": {
-        "title": "Permit Token Approval"
+        "title": "Permit Token Povolenie"
       },
       "permit2": {
-        "title": "Permit2 Token Approval",
-        "sigExpireTimeTip": "The duration for this signature to be valid on-chain",
-        "sigExpireTime": "Signature expire time",
-        "approvalExpiretime": "Approval expire time"
+        "title": "Permit2 Token Povolenie",
+        "sigExpireTimeTip": "Trvanie on-chain validity podpisu.",
+        "sigExpireTime": "Doba expirácie podpisu",
+        "approvalExpiretime": "Povolenie doby expirácie"
       },
       "swapTokenOrder": {
-        "title": "Token Order"
+        "title": "Token Objednávka"
       },
       "sellNFT": {
-        "title": "NFT Order",
-        "receiveToken": "Receive token",
-        "listNFT": "List NFT",
-        "specificBuyer": "Specific buyer"
+        "title": "NFT Objednávka",
+        "receiveToken": "Prijať token",
+        "listNFT": "Listnutie NFT",
+        "specificBuyer": "Špecifický kupca"
       },
       "signMultiSig": {
-        "title": "Confirm Transaction"
+        "title": "Potvrdiť Transakcu"
       },
       "createKey": {
-        "title": "Create Key"
+        "title": "Vytvoriť Kľúč"
       },
       "verifyAddress": {
-        "title": "Verify Address"
+        "title": "Overiť Adresu"
       },
       "buyNFT": {
-        "payToken": "Pay token",
-        "receiveNFT": "Receive NFT",
-        "expireTime": "Expire time",
-        "listOn": "List on"
+        "payToken": "Zaplatiť token",
+        "receiveNFT": "Prijať NFT",
+        "expireTime": "Doba Expirácie",
+        "listOn": "Listnúť na"
       },
       "contractCall": {
-        "operationDecoded": "Operation is decoded from message"
+        "operationDecoded": "Operácia je dekódovaná zo správy"
       }
     },
     "activities": {
