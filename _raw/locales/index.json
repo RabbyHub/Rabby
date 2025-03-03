@@ -9,5 +9,6 @@
   { "code": "pt-BR", "name": "Português Brasileiro" },
   { "code": "ru", "name": "Русский" },
   { "code": "de", "name": "Deutsch" },
-  { "code": "ja", "name": "日本語" }
+  { "code": "ja", "name": "日本語" },
+  { "code": "sk", "name": "Slovenčina"}
 ]
