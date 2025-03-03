@@ -34,11 +34,12 @@ import {
   KEYRING_CATEGORY_MAP,
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
+  SELF_HOST_SAFE_NETWORKS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
@@ -52,7 +53,6 @@ import {
 import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
@@ -1717,6 +1717,37 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const handleIsGnosisAccountChange = async () => {
     if (!isViewGnosisSafe) {
       await wallet.clearGnosisTransaction();
+    }
+    if (SELF_HOST_SAFE_NETWORKS.includes(chainId.toString())) {
+      const hasConfirmed = await wallet.hasConfirmSafeSelfHost(
+        chainId.toString()
+      );
+      const sigs = await wallet.getGnosisTransactionSignatures();
+      const isNewTx = sigs.length <= 0;
+      if (isNewTx && !hasConfirmed) {
+        Modal.info({
+          closable: false,
+          centered: true,
+          width: 320,
+          className: 'modal-support-darkmode external-link-alert-modal',
+          title: t('page.signTx.safeTx.selfHostConfirm.title'),
+
+          content: (
+            <Trans i18nKey={'page.signTx.safeTx.selfHostConfirm.content'} />
+          ),
+          okText: t('page.signTx.safeTx.selfHostConfirm.button'),
+          okButtonProps: {
+            className: 'w-full',
+          },
+          cancelText: null,
+          onOk() {
+            wallet.setConfirmSafeSelfHost(chainId.toString());
+          },
+          onCancel() {
+            wallet.setConfirmSafeSelfHost(chainId.toString());
+          },
+        });
+      }
     }
   };
 
