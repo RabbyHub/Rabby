@@ -17,6 +17,7 @@ import {
 } from '@safe-global/protocol-kit';
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 import { TypedTransaction } from '@ethereumjs/tx';
+import BigNumber from 'bignumber.js';
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
 export const TransactionConfirmedEvent = 'TransactionConfirmed';
@@ -481,7 +482,7 @@ class GnosisKeyring extends EventEmitter {
       data: transaction.data,
       from: address,
       to: this._normalize(transaction.to),
-      value: this._normalize(transaction.value) || '0x0', // prevent 0x
+      value: new BigNumber(transaction.value).toFixed() || '0',
       safeTxGas: transaction.safeTxGas,
       nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
       baseGas: transaction.baseGas,
@@ -526,7 +527,7 @@ class GnosisKeyring extends EventEmitter {
       data: transaction.data,
       from: address,
       to: this._normalize(transaction.to),
-      value: this._normalize(transaction.value) || '0x0', // prevent 0x
+      value: transaction.value || '0', // prevent 0x
       safeTxGas: transaction.safeTxGas,
       nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
       baseGas: transaction.baseGas,
@@ -570,7 +571,7 @@ class GnosisKeyring extends EventEmitter {
         data: this._normalize(transaction.data) || '0x',
         from: address,
         to: this._normalize(transaction.to),
-        value: this._normalize(transaction.value) || '0x0', // prevent 0x
+        value: transaction.value.toString() || '0', // prevent 0x
       };
       safeTransaction = await safe.buildTransaction(tx);
       this.currentTransaction = safeTransaction;
