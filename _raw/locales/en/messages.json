@@ -284,9 +284,9 @@
       },
       "safeTx": {
         "selfHostConfirm": {
-          "title": "Safe API is Unavailable",
-          "content": "Switch to the Safe service deployed by Rabby to keep your Safe functional. All Safe signers must use Rabby to authorize transactions.",
-          "button": "Switch to Rabby's Safe service"
+          "title": "Switch to Rabby's Safe Service",
+          "content": "Safe API is unavailable. Switch to the Safe service deployed by Rabby to keep your Safe functional. <strong>All Safe signers must use Rabby Wallet to authorize transactions.<strong>",
+          "button": "OK"
         }
       },
       "SafeNonceSelector": {
