@@ -1,119 +1,128 @@
-# Rabby Wallet
+<div align="center">
+  <a href="https://rabby.io">
+    <img src="https://github.com/RabbyHub/Rabby/blob/develop/src/ui/assets/logo.svg" alt="Rabby Wallet Logo" width="300">
+  </a>
+</div>
 
-Rabby Wallet is an open-source browser plugin for the DeFi ecosystem, providing users with a better-to-use and more secure multi-chain experience.
+# 🔐 Rabby Wallet
 
-## Install
+**Rabby Wallet** is an open-source **browser extension** designed for the **DeFi ecosystem**, offering users a **better and more secure** multi-chain experience.
 
-You can download the latest Rabby [here](https://github.com/RabbyHub/Rabby/releases/latest).
+<div align="center">
 
-## Guideline for Integrating Rabby Wallet
+[![GitHub Repo stars](https://img.shields.io/github/stars/RabbyHub/Rabby?logo=github&color=yellow)](https://github.com/RabbyHub/Rabby/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/RabbyHub/Rabby?logo=github&color=blue)](https://github.com/RabbyHub/Rabby/network/members)
+[![GitHub last commit](https://img.shields.io/github/last-commit/RabbyHub/Rabby?logo=git)](https://github.com/RabbyHub/Rabby/commits/main)
+[![Discord](https://img.shields.io/discord/924442927399313448?logo=discord&color=5865F2)](https://discord.com/invite/seFBCWmUre)
+[![Twitter Follow](https://img.shields.io/twitter/follow/rabby_io?style=flat&logo=twitter)](https://x.com/rabby_io)
 
-To help dapp developers support and integrate Rabby Wallet more easily, we recommend using our integration solution that has almost NO development cost and does not introduce any uncertainty:
+</div>
 
-### Problem
+---
 
-When a dapp connects to an extension wallet, it usually works in this way:
+## 🚀 **Install Rabby Wallet**
+You can download the latest version of Rabby Wallet here:  
+➡️ **[Download Rabby Wallet](https://github.com/RabbyHub/Rabby/releases/latest)**
 
-1. The extension wallet will integrate an "Ethereum" object into the dapp page while it's loading.
-2. The dapp will look for this "Ethereum" object to determine if an extension wallet is installed.
-3. If the "Ethereum" object is detected, all following interactions between the dapp and the extension wallet are realized by this "Ethereum" object.
-4. If the "Ethereum" object is not detected, the dapp will ask users to download a new extension wallet.
+---
 
-The problem is that many dapps will wrongly display this detected "Ethereum" object as "MetaMask" and display a "connect to MetaMask" button by default, which brings a lot of confusion to the users since any Web3 wallet can inject this "Ethereum" object.
+## 🛠 **Integration Guide for Dapp Developers**
 
-### Solution
+We provide an easy integration solution for **dapp developers** with **almost no development cost** and **no added uncertainty**.
 
-We recommend solving the above problem with simple modifications as follows:
+### ⚠️ **The Problem**
+When a dapp connects to a browser wallet, it follows these steps:
+1. The extension injects an `"Ethereum"` object into the dapp page.
+2. The dapp detects this `"Ethereum"` object to confirm a wallet is installed.
+3. The dapp uses this object for interactions with the extension wallet.
+4. If the `"Ethereum"` object is not found, the dapp prompts users to install a wallet.
 
-1. On your connection page, display both connection buttons for "MetaMask" and "Rabby Wallet" when the "Ethereum" object is detected. These two buttons basically have the same function. Users can click either of them to interact with the "Ethereum" object and perform the connection operation. These two buttons are only used to display both brands' logos to help users understand their operation path.
-2. If the "Ethereum" object is not detected, then suggest that users download the extension wallet and provide download links for both "MetaMask" and "Rabby Wallet."
+However, **many dapps incorrectly assume the `"Ethereum"` object belongs to MetaMask** and display a **"Connect to MetaMask"** button, leading to **user confusion**. Any Web3 wallet can inject this object, not just MetaMask.
 
-This solution does not involve any changes to your actual business logic and is just simple UI adjustments. It does not introduce any uncertainty and is rather low cost.
+### ✅ **The Solution**
+We recommend the following **UI changes** to solve this issue:
 
-You can refer to [debank.com](https://debank.com) for the final display effect.
+1. **Display both "Connect to MetaMask" and "Connect to Rabby Wallet" buttons** when detecting the `"Ethereum"` object.  
+   - Both buttons **function the same way** but help users recognize **which wallet they are using**.  
+2. **If no `"Ethereum"` object is found**, prompt users to **download** both MetaMask and Rabby Wallet.  
 
-### Potential Issues
+This **simple UI adjustment** requires **no changes to business logic**, is **cost-effective**, and prevents confusion.  
 
-According to the above solution, if a user is using the "Rabby Wallet" and clicks the "connect to MetaMask" button, they will still interact with the "Rabby Wallet" and vice versa, which might be a bit weird.
+For reference, see **[debank.com](https://debank.com)**.
 
-However, this issue is a very rare scenario and very unlikely to happen because users are not likely to click and interact with an extension wallet they haven't installed. Even if it happens, it's not a real problem from the user's perspective.
+### 🔹 **Potential Issues**
+- If a **Rabby Wallet user clicks "Connect to MetaMask"**, it will still connect to Rabby.  
+- This scenario is **rare** since users typically connect with the wallet they installed.  
+- Even if it happens, **it does not affect user experience**.
 
-Please don't hesitate to reach out if you have any doubts.
+If you have any doubts, feel free to **reach out to us**!
 
-## Contribution
+---
 
-### Install Dependency
+## 🛠 **Contribution Guide**
 
-1. Install Node.js version 14 or later.
-2. Install Yarn: `npm install -g yarn`
-3. Run `yarn` to install dependencies.
+### 📦 **Install Dependencies**
+1. Install **Node.js v14+**  
+2. Install **Yarn**:  
+   📌 `npm install -g yarn`  
+3. Install dependencies:  
+   📌 `yarn`
 
-### Development
+### 🔧 **Development**
+- Start development mode:  
+  📌 `yarn build:dev`  
+  _(Enables file watching, logs requests in the console, and prevents notifications from closing)_  
 
-Run `yarn build:dev` to develop with file watching and development logging (you can see requests sent by the dapp in the website console in this mode, and notifications will not close when focus is lost).
+- Build for production:  
+  📌 `yarn build:pro`  
+  _(Outputs files to the `dist` folder)_  
 
-Run `yarn build:pro` to build a production package, which will be in the `dist` folder.
+---
 
-## Architecture
+## ⚙️ **Architecture**
 
 ![architecture](./docs/architecture.png)
 
-## Extension's Scripts
+## 🔍 **Extension Scripts Overview**
 
-Below 4 scripts all live in different contexts!
+The **Rabby Wallet extension** consists of **four main scripts**, each running in a **different context**.
 
-### `background.js`
+### 🛠 **`background.js`**  
+Handles **async requests, encryption tasks, and user data storage** in Chrome local storage.  
+It has **two key controllers**:  
+1. **`walletController`** – Exposes methods to `background.js`, allowing other scripts (like `ui.js`) to access wallet functions.  
+2. **`providerController`** – Handles dapp **requests to the Ethereum provider**.
 
-Handles all async requests and encryption tasks.
+### 🌍 **`content-script.js`**  
+- Injected **at `document_start`**, sharing the **same DOM** as the dapp.  
+- Uses `broadcastChannel` to **communicate with `pageProvider.js`**.  
+- Injects `pageProvider.js` to pass messages between dapps and the background script.
 
-User's keyrings, passwords, and wallet personal preference data are all stored in Chrome local storage.
+### 🔗 **`pageProvider.js`**  
+- Injected into the dapp's **context** via `content-script`.  
+- Mounts `window.ethereum`, allowing the dapp to interact with Rabby.  
+- Forwards requests between `content-script` and `background.js` via `broadcastChannel` and `runtime.connect`.
 
-It has 2 main controllers:
+### 🖥 **UI Scripts**  
+- **`notification.html`** – Prompts users for **wallet permissions**.  
+- **`index.html`** – A full-page **UI for a better experience**.  
+- **`popup.html`** – The **mini-popup UI** shown when clicking the extension icon.
 
-1. `walletController`
+---
 
-   Exposes methods to the background window, so other scripts can access these methods with `runtime.getBackgroundPage`, e.g., `ui.js`.
+## 🎉 **Acknowledgments**
+Special thanks to the **MetaMask team** for their contributions to the browser extension wallet ecosystem.  
+Rabby Wallet **leverages and improves upon** their work.
 
-2. `providerController`
+---
 
-   Handles requests from pages (dapp requests).
+## 💬 **Join the Community**
+<p align="left">
+  <a href="https://discord.com/invite/seFBCWmUre">
+    <img src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=white&style=for-the-badge" alt="Discord">
+  </a>
+  <a href="https://x.com/rabby_io">
+    <img src="https://img.shields.io/badge/Twitter-000000?logo=x&logoColor=white&style=for-the-badge" alt="Twitter (X)">
+  </a>
+</p>
 
-### `content-script`
-
-Injected at `document_start`, shares the same DOM with the dapp, and uses `broadcastChannel` to tap `pageProvider`.
-
-The main purpose is to inject `pageProvider.js` and pass messages between `pageProvider.js` and `background.js`.
-
-### `pageProvider.js`
-
-This script is injected into the dapp's context through `content-script`. It mounts `ethereum` to `window`.
-
-When the dapp uses `window.ethereum` to request, it will send a message to `content-script` with `broadcastChannel` and wait for its response.
-
-Then the `content-script` will send a message to `background` with `runtime.connect`.
-
-After `background` receives the message, it will use `providerController` to handle the request and keep the message channel in `sessionService` for later communication.
-
-### `ui`
-
-Used by 3 pages which share the same JS code, but the HTML template is different for each respective purpose.
-
-1. `notification.html`
-
-   Triggered by the dapp to request the user's permission.
-
-2. `index.html`
-
-   Opened in a browser tab for a better user interaction experience.
-
-3. `popup.html`
-
-   Shown when the user clicks the extension icon to the right of the address bar.
-
-## Thanks
-
-Thanks to contributions from the MetaMask team to the browser extension wallet community, Rabby uses (or forks) them to make Rabby better.
-
-## Other Docs
-
-- [How to add a new translation to Rabby](/docs/translation.md)
