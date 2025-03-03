@@ -120,7 +120,7 @@ export const OfflineChainNotify = () => {
               overlayClassName="rectangle w-[max-content]"
               title={t('page.dashboard.offlineChain.tips', {
                 chain: chainInfo.name,
-                date: dayjs(e.offline_at * 1000).format('MM/DD'),
+                date: dayjs.unix(e.offline_at).format('YYYY/MM/DD'),
               })}
             >
               <RcIconInfoCC
