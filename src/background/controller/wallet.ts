@@ -2610,6 +2610,14 @@ export class WalletController extends BaseController {
     return currentSafeMessageHash === hash;
   };
 
+  hasConfirmSafeSelfHost = (networkId: string) => {
+    return preferenceService.hasConfirmSafeSelfHost(networkId);
+  };
+
+  setConfirmSafeSelfHost = (networkId: string) => {
+    preferenceService.setConfirmSafeSelfHost(networkId);
+  };
+
   /**
    * @description add address as watch only account, and DON'T set it as current account
    */
