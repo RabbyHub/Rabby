@@ -39,7 +39,7 @@ import {
 import { addHexPrefix, isHexPrefixed, isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
@@ -53,7 +53,6 @@ import {
 import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
@@ -1727,12 +1726,22 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       const isNewTx = sigs.length <= 0;
       if (isNewTx && !hasConfirmed) {
         Modal.info({
-          closable: true,
+          closable: false,
           centered: true,
           width: 320,
           className: 'modal-support-darkmode external-link-alert-modal',
           title: t('page.signTx.safeTx.selfHostConfirm.title'),
-          content: t('page.signTx.safeTx.selfHostConfirm.content'),
+
+          content: (
+            <Trans i18nkey={'page.signTx.safeTx.selfHostConfirm.content'}>
+              Safe API is unavailable. Switch to the Safe service deployed by
+              Rabby to keep your Safe functional.{' '}
+              <strong>
+                All Safe signers must use Rabby Wallet to authorize
+                transactions.
+              </strong>
+            </Trans>
+          ),
           okText: t('page.signTx.safeTx.selfHostConfirm.button'),
           okButtonProps: {
             className: 'w-full',
