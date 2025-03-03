@@ -26,6 +26,9 @@ import UserListDrawer from './UserListDrawer';
 import { EIP6963ProviderInfo, SelectWallet } from './SelectWallet';
 import { ConnectedSite } from '@/background/service/permission';
 import { ReactComponent as RcIconMetamask } from 'ui/assets/metamask-mode-circle-cc.svg';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ga4 } from '@/utils/ga4';
+import { useMount } from 'ahooks';
 
 interface ConnectProps {
   params: any;
@@ -617,6 +620,19 @@ const Connect = (props: ConnectProps) => {
     activePopup('CancelConnect');
   };
 
+  useMount(() => {
+    if ($ctx?.providers?.length) {
+      matomoRequestEvent({
+        category: 'Wallet Conflict',
+        action: 'OtherWallet_Show',
+      });
+
+      ga4.fireEvent('OtherWallet_Show', {
+        event_category: 'Wallet Conflict',
+      });
+    }
+  });
+
   return (
     <Spin spinning={isLoading}>
       {isShowSelectWallet ? (
@@ -630,6 +646,14 @@ const Connect = (props: ConnectProps) => {
               icon,
               name,
               rdns: info.rdns,
+            });
+            matomoRequestEvent({
+              category: 'Wallet Conflict',
+              action: `OtherWallet_${name.trim().replace(/\s+/g, '')}`,
+            });
+
+            ga4.fireEvent(`OtherWallet_${name.trim().replace(/\s+/g, '')}`, {
+              event_category: 'Wallet Conflict',
             });
             await sleep(150);
             rejectApproval();
@@ -799,6 +823,14 @@ const Connect = (props: ConnectProps) => {
                     )}
                     onClick={() => {
                       setIsShowSelectWallet(true);
+                      matomoRequestEvent({
+                        category: 'Wallet Conflict',
+                        action: 'OtherWallet_Click',
+                      });
+
+                      ga4.fireEvent('OtherWallet_Click', {
+                        event_category: 'Wallet Conflict',
+                      });
                     }}
                   >
                     <span className="mr-8">
