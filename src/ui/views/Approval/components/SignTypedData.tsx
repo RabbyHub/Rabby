@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { Button, Drawer, Modal, Skeleton, message } from 'antd';
+import { Button, Drawer, Modal, Skeleton } from 'antd';
 import { useScroll } from 'react-use';
-import { useSize, useDebounceFn, useRequest } from 'ahooks';
+import { useSize, useDebounceFn } from 'ahooks';
+import { cloneDeep } from 'lodash';
 import { underline2Camelcase } from '@/background/utils';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import {
@@ -18,7 +18,6 @@ import {
   KEYRING_TYPE,
   REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
-import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   getTimeSpan,
   useApproval,
@@ -27,7 +26,6 @@ import {
 } from 'ui/utils';
 import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
-import { adjustV } from '@/ui/utils/gnosis';
 import { FooterBar } from './FooterBar/FooterBar';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
@@ -162,25 +160,30 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     () => /^eth_signTypedData(_v1)?$/.test(method),
     [method]
   );
-
-  const signTypedData: null | Record<string, any> = useMemo(() => {
+  const [signTypedData, rawMessage]: (null | Record<
+    string,
+    any
+  >)[] = useMemo(() => {
     if (!isSignTypedDataV1) {
       try {
+        console.log(data[1]);
         const v = JSON.parse(data[1]);
+        const displayData = cloneDeep(v);
         const normalized = normalizeTypeData(v);
-        return normalized;
+        return [normalized, displayData];
       } catch (error) {
         console.error('parse signTypedData error: ', error);
-        return null;
+        return [null, null];
       }
     }
-    return null;
+    return [null, null];
   }, [data, isSignTypedDataV1]);
 
   useEffect(() => {
     try {
       // signTypeDataV1 [Message, from]
       let message;
+      let displayMessage;
       if (/^eth_signTypedData(_v1)?$/.test(method)) {
         message = data[0].reduce((m, n) => {
           m[n.name] = n.value;
@@ -188,11 +191,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         }, {});
       } else {
         // [from, Message]
+        /**
+         * To avoid bypass, we need to normalize body of typedData before
+         * decode from server, but normalized value may not same as origin
+         * so use displayMessage for UI display
+         * */
+        displayMessage = parseSignTypedDataMessage(data[1]);
         message = parseSignTypedDataMessage(signTypedData || data[1]);
       }
 
       setMessage(message);
-      setParsedMessage(JSON.stringify(message, null, 4));
+      setParsedMessage(JSON.stringify(displayMessage, null, 4));
     } catch (err) {
       console.log('parse message error', err);
     }
@@ -745,7 +754,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             requireData={actionRequireData}
             chain={chain}
             engineResults={engineResults}
-            raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}
+            raw={isSignTypedDataV1 ? data[0] : rawMessage || data[1]}
             message={parsedMessage}
             origin={params.session.origin}
             originLogo={params.session.icon}
