@@ -338,7 +338,9 @@
       "addressSource": "Adres Kaynağı",
       "label": "Etiket",
       "maxPriorityFeeDisabledAlert": "Lütfen önce Gas Price ayarlayın",
-      "yes": "Evet"
+      "yes": "Evet",
+      "primaryType": "Birincil tür",
+      "safeServiceNotAvailable": "Güvenli hizmet şu anda mevcut değil, lütfen daha sonra tekrar deneyin."
     },
     "signFooterBar": {
       "requestFrom": "Talep eden",
@@ -1331,7 +1333,8 @@
         "ledgerIsDisconnected": "Defteriniz bağlı değil"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Güvenli adres {{chain}} desteklemiyor"
+        "warning": "Güvenli adres {{chain}} desteklemiyor",
+        "notDeployed": "Safe adresiniz bu zincirde dağıtılmamış."
       },
       "echologyPopup": {
         "title": "Ekosistem"

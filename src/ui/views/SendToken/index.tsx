@@ -6,10 +6,10 @@ import BigNumber from 'bignumber.js';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { createGlobalState, useAsyncFn, useDebounce } from 'react-use';
+import { useAsyncFn, useDebounce } from 'react-use';
 import { Input, Form, Skeleton, message, Button, InputProps } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
-import { isValidAddress, intToHex, zeroAddress } from 'ethereumjs-util';
+import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
 
 import {
   CHAINS_ENUM,

@@ -4,7 +4,7 @@ import mockEncryptor from './mock-encryptor';
 import contactBook from '@/background/service/contactBook';
 import { normalizeAddress } from '@/background/utils';
 import { Wallet } from '@ethereumjs/wallet';
-import { bytesToHex } from '@ethereumjs/util';
+import { utils } from '@ethereumjs/rlp';
 
 const password = 'password123';
 const walletOneSeedWords =
@@ -286,7 +286,7 @@ describe('keyringService', () => {
       );
 
       const wallet = Wallet.fromPrivateKey(Buffer.from(privateAppKey, 'hex'));
-      const recoveredAddress = bytesToHex(wallet.getAddress());
+      const recoveredAddress = utils.bytesToHex(wallet.getAddress());
 
       expect(recoveredAddress).toBe(appKeyAddress);
       expect(privateAppKey).not.toBe(privateKey);

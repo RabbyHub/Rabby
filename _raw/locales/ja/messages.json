@@ -338,7 +338,9 @@
       "label": "ラベル",
       "trustValueTitle": "信頼の価値",
       "addressSource": "アドレスソース",
-      "typedDataMessage": "型付きデータに署名"
+      "typedDataMessage": "型付きデータに署名",
+      "primaryType": "プライマリタイプ",
+      "safeServiceNotAvailable": "現在、Safeサービスは利用できません。後でもう一度お試しください。"
     },
     "signFooterBar": {
       "requestFrom": "リクエスト元",
@@ -1331,7 +1333,8 @@
         "howToConnectImKey": "imKeyを接続する方法"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Safe address does not support {{chain}}"
+        "warning": "Safe address does not support {{chain}}",
+        "notDeployed": "あなたのSafeアドレスはこのチェーンではデプロイされていません。"
       },
       "echologyPopup": {
         "title": "エコシステム"

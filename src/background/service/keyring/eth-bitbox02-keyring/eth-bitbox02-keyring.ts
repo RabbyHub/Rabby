@@ -1,17 +1,18 @@
 import 'regenerator-runtime/runtime';
 import EventEmitter from 'events';
 import * as ethUtil from 'ethereumjs-util';
+import { toChecksumAddress } from '@ethereumjs/util';
 import * as sigUtil from '@metamask/eth-sig-util';
 import {
   TypedTransaction,
   FeeMarketEIP1559Transaction,
-  Transaction,
   JsonTx,
   TransactionFactory,
   AccessListEIP2930Transaction,
+  Transaction,
 } from '@ethereumjs/tx';
-import { EVENTS } from '@/constant';
 import { BitBox02BridgeInterface } from './bitbox02-bridge-interface';
+import { bufferToHex } from '@ethereumjs/util';
 
 const hdPathString = "m/44'/60'/0'/0";
 const keyringType = 'BitBox02 Hardware';
@@ -127,7 +128,7 @@ class BitBox02Keyring extends EventEmitter {
         balance: null,
         index: i + 1,
       });
-      this.paths[ethUtil.toChecksumAddress(address)] = i;
+      this.paths[toChecksumAddress(address)] = i;
     }
     return accounts;
   }
@@ -148,7 +149,7 @@ class BitBox02Keyring extends EventEmitter {
         balance: null,
         index: i + 1,
       });
-      this.paths[ethUtil.toChecksumAddress(address)] = i;
+      this.paths[toChecksumAddress(address)] = i;
     }
     return accounts;
   }
@@ -175,10 +176,10 @@ class BitBox02Keyring extends EventEmitter {
     let result;
     const txData: JsonTx = {
       to: tx.to!.toString(),
-      value: `0x${tx.value.toString('hex')}`,
+      value: `0x${tx.value.toString(16)}`,
       data: this._normalize(tx.data),
-      nonce: `0x${tx.nonce.toString('hex')}`,
-      gasLimit: `0x${tx.gasLimit.toString('hex')}`,
+      nonce: `0x${tx.nonce.toString(16)}`,
+      gasLimit: `0x${tx.gasLimit.toString(16)}`,
     };
 
     if (tx instanceof FeeMarketEIP1559Transaction) {
@@ -187,30 +188,28 @@ class BitBox02Keyring extends EventEmitter {
         tx.toJSON()
       );
       txData.type = '0x02';
-      txData.maxPriorityFeePerGas = `0x${tx.maxPriorityFeePerGas.toString(
-        'hex'
-      )}`;
-      txData.maxFeePerGas = `0x${tx.maxFeePerGas.toString('hex')}`;
+      txData.maxPriorityFeePerGas = `0x${tx.maxPriorityFeePerGas.toString(16)}`;
+      txData.maxFeePerGas = `0x${tx.maxFeePerGas.toString(16)}`;
     } else if (
       tx instanceof Transaction ||
       tx instanceof AccessListEIP2930Transaction
     ) {
       result = await this.bridge.ethSignTransaction(
-        tx.common.chainIdBN().toNumber(),
+        Number(tx.common.chainId()),
         this._pathFromAddress(address),
         tx.toJSON()
       );
-      txData.gasPrice = `0x${tx.gasPrice.toString('hex')}`;
+      txData.gasPrice = `0x${tx.gasPrice.toString(16)}`;
     }
-    txData.chainId = `0x${tx.common.chainIdBN().toString('hex')}`;
-    txData.r = result.r;
-    txData.s = result.s;
-    txData.v = result.v;
+    txData.chainId = `0x${tx.common.chainId().toString(16)}`;
+    txData.r = bufferToHex(result.r);
+    txData.s = bufferToHex(result.s);
+    txData.v = bufferToHex(result.v);
     const signedTx = TransactionFactory.fromTxData(txData);
-    const addressSignedWith = ethUtil.toChecksumAddress(
+    const addressSignedWith = toChecksumAddress(
       signedTx.getSenderAddress().toString()
     );
-    const correctAddress = ethUtil.toChecksumAddress(address);
+    const correctAddress = toChecksumAddress(address);
     if (addressSignedWith !== correctAddress) {
       throw new Error('signature doesnt match the right address');
     }
@@ -263,8 +262,7 @@ class BitBox02Keyring extends EventEmitter {
       version: options.version,
     });
     if (
-      ethUtil.toChecksumAddress(addressSignedWith) !==
-      ethUtil.toChecksumAddress(withAccount)
+      toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)
     ) {
       throw new Error('The signature doesnt match the right address');
     }
@@ -285,7 +283,7 @@ class BitBox02Keyring extends EventEmitter {
   /* PRIVATE METHODS */
 
   _normalize(buf: Buffer): string {
-    return ethUtil.bufferToHex(buf).toString();
+    return bufferToHex(buf);
   }
 
   // eslint-disable-next-line no-shadow
@@ -294,11 +292,11 @@ class BitBox02Keyring extends EventEmitter {
     const address = ethUtil
       .publicToAddress(dkey.publicKey, true)
       .toString('hex');
-    return ethUtil.toChecksumAddress(`0x${address}`);
+    return toChecksumAddress(`0x${address}`);
   }
 
   _pathFromAddress(address: string): string {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     let index = this.paths[checksummedAddress];
     if (typeof index === 'undefined') {
       for (let i = 0; i < MAX_INDEX; i++) {
@@ -320,7 +318,7 @@ class BitBox02Keyring extends EventEmitter {
     const addrs = await this.getAccounts();
 
     return addrs.map((address) => {
-      const checksummedAddress = ethUtil.toChecksumAddress(address);
+      const checksummedAddress = toChecksumAddress(address);
       return {
         address,
         index: this.paths[checksummedAddress] + 1,

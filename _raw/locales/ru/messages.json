@@ -338,7 +338,9 @@
         "title": "Одновременная отмена разрешения Permit2"
       },
       "nativeTokenForGas": "Используйте токен {{tokenName}} в {{chainName}} для оплаты газа",
-      "gasAccountForGas": "Использовать USD с моего GasAccount для оплаты газа"
+      "gasAccountForGas": "Использовать USD с моего GasAccount для оплаты газа",
+      "primaryType": "Основной тип",
+      "safeServiceNotAvailable": "Сервис Safe в данный момент недоступен, попробуйте позже."
     },
     "signFooterBar": {
       "requestFrom": "Запрос от",
@@ -1332,7 +1334,8 @@
         "ledgerIsDisconnected": "Ваш Ledger не подключен"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Safe адрес не поддерживается в сети {{chain}}"
+        "warning": "Safe адрес не поддерживается в сети {{chain}}",
+        "notDeployed": "Ваш адрес Safe не развернут в этой сети"
       },
       "echologyPopup": {
         "title": "Экосистема"

@@ -1,4 +1,4 @@
-import { intToHex, isHexString } from 'ethereumjs-util';
+import { intToHex, isHexString } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
 import {
   CAN_ESTIMATE_L1_FEE_CHAINS,

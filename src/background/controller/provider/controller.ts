@@ -1,14 +1,13 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import * as Sentry from '@sentry/browser';
-import Common, { Hardfork } from '@ethereumjs/common';
+import { Common, Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
-  bufferToHex,
   isHexString,
   addHexPrefix,
   intToHex,
-} from 'ethereumjs-util';
+  bufferToHex,
+} from '@ethereumjs/util';
 import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import {
@@ -59,10 +58,12 @@ import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
 import {
   CustomTestnetTokenBase,
+  TestnetChain,
   customTestnetService,
 } from '@/background/service/customTestnet';
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
+import { getOriginFromUrl } from '@/utils';
 
 const reportSignText = (params: {
   method: string;
@@ -85,6 +86,13 @@ const reportSignText = (params: {
     method,
     success,
   });
+};
+
+const convertToHex = (data: Buffer | bigint) => {
+  if (typeof data === 'bigint') {
+    return `0x${data.toString(16)}`;
+  }
+  return bufferToHex(data);
 };
 
 interface ApprovalRes extends Tx {
@@ -488,6 +496,7 @@ class ProviderController extends BaseController {
         opts
       );
     } catch (e) {
+      console.error(e);
       const errObj =
         typeof e === 'object'
           ? { message: e.message }
@@ -540,9 +549,9 @@ class ProviderController extends BaseController {
         const _rawTx = {
           ...rawTx,
           ...approvalRes,
-          r: bufferToHex(signedTx.r),
-          s: bufferToHex(signedTx.s),
-          v: bufferToHex(signedTx.v),
+          r: convertToHex(signedTx.r),
+          s: convertToHex(signedTx.s),
+          v: convertToHex(signedTx.v),
         };
         if (is1559) {
           delete _rawTx.gasPrice;
@@ -659,28 +668,6 @@ class ProviderController extends BaseController {
         return signedTx;
       }
 
-      const buildTx = TransactionFactory.fromTxData({
-        ...approvalRes,
-        r: addHexPrefix(signedTx.r),
-        s: addHexPrefix(signedTx.s),
-        v: addHexPrefix(signedTx.v),
-        type: is1559 ? '0x2' : '0x0',
-      });
-
-      // Report address type(not sensitive information) to sentry when tx signature is invalid
-      if (!buildTx.verifySignature()) {
-        if (!buildTx.v) {
-          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
-        } else if (!buildTx.s) {
-          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
-        } else if (!buildTx.r) {
-          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
-        } else {
-          Sentry.captureException(
-            new Error(`invalid signature, ${keyring.type}`)
-          );
-        }
-      }
       signedTransactionSuccess = true;
       statsData.signed = true;
       statsData.signedSuccess = true;
@@ -714,7 +701,9 @@ class ProviderController extends BaseController {
             } catch (e) {
               let errMsg = typeof e === 'object' ? e.message : e;
               if (RPCService.hasCustomRPC(chain)) {
-                errMsg = `[From Custom RPC] ${errMsg}`;
+                const rpc = RPCService.getRPCByChain(chain);
+                const origin = getOriginFromUrl(rpc.url);
+                errMsg = `[From ${origin}] ${errMsg}`;
               }
               onTransactionSubmitFailed({
                 ...e,
@@ -728,9 +717,9 @@ class ProviderController extends BaseController {
             const res = await openapiService.submitTx({
               tx: {
                 ...approvalRes,
-                r: bufferToHex(signedTx.r),
-                s: bufferToHex(signedTx.s),
-                v: bufferToHex(signedTx.v),
+                r: convertToHex(signedTx.r),
+                s: convertToHex(signedTx.s),
+                v: convertToHex(signedTx.v),
                 value: approvalRes.value || '0x0',
               },
               push_type: pushType,
@@ -782,8 +771,17 @@ class ProviderController extends BaseController {
 
         return hash;
       } catch (e: any) {
+        const chainData = findChain({
+          enum: chain,
+        })!;
+        let errMsg = e.details || e.message || JSON.stringify(e);
+        if (chainData) {
+          errMsg = `[From ${getOriginFromUrl(
+            (chainData as TestnetChain).rpcUrl
+          )}] ${errMsg}`;
+        }
         console.log('submit tx failed', e);
-        onTransactionSubmitFailed(e);
+        onTransactionSubmitFailed(errMsg);
       }
     } catch (e) {
       if (!signedTransactionSuccess) {

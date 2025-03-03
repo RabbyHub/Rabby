@@ -1,16 +1,16 @@
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Tooltip, message } from 'antd';
-import { GasLevel, TokenItem, TxRequest } from 'background/service/openapi';
+import { GasLevel, TxRequest } from 'background/service/openapi';
 import {
   TransactionGroup,
   TransactionHistoryItem,
 } from 'background/service/transactionHistory';
 import clsx from 'clsx';
-import { CANCEL_TX_TYPE, CHAINS } from 'consts';
-import { intToHex } from 'ethereumjs-util';
+import { CANCEL_TX_TYPE } from 'consts';
+import { intToHex } from '@ethereumjs/util';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { SvgPendingSpin } from 'ui/assets';
@@ -25,7 +25,7 @@ import { TransactionWebsite } from './TransactionWebsite';
 import { CancelTxPopup } from './CancelTxPopup';
 import { TransactionPendingTag } from './TransactionPendingTag';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
-import { useGetTx, useLoadTxData } from '../hooks';
+import { useLoadTxData } from '../hooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
