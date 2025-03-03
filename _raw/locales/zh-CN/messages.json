@@ -2569,6 +2569,9 @@
     "metamaskModeDapps": {
       "title": "MetaMask 模式",
       "desc": "MetaMask 模式已为以下 Dapps 启用。您可以通过选择 MetaMask 选项连接 Rabby。"
+    },
+    "eip7702": {
+      "alert": "EIP-7702 尚未支持"
     }
   },
   "component": {
