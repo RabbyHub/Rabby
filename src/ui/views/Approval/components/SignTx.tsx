@@ -1733,14 +1733,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           title: t('page.signTx.safeTx.selfHostConfirm.title'),
 
           content: (
-            <Trans i18nkey={'page.signTx.safeTx.selfHostConfirm.content'}>
-              Safe API is unavailable. Switch to the Safe service deployed by
-              Rabby to keep your Safe functional.{' '}
-              <strong>
-                All Safe signers must use Rabby Wallet to authorize
-                transactions.
-              </strong>
-            </Trans>
+            <Trans i18nKey={'page.signTx.safeTx.selfHostConfirm.content'} />
           ),
           okText: t('page.signTx.safeTx.selfHostConfirm.button'),
           okButtonProps: {
