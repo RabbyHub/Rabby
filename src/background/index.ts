@@ -44,6 +44,7 @@ import {
   transactionWatchService,
   uninstalledService,
   whitelistService,
+  OfflineChainsService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -108,6 +109,7 @@ async function restoreAppState() {
   await gasAccountService.init();
   await uninstalledService.init();
   await metamaskModeService.init();
+  await OfflineChainsService.init();
 
   await walletController.tryUnlock();
 

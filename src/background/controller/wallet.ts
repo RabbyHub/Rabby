@@ -30,6 +30,7 @@ import {
   bridgeService,
   gasAccountService,
   uninstalledService,
+  OfflineChainsService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1784,6 +1785,9 @@ export class WalletController extends BaseController {
   getGasAccountData = gasAccountService.getGasAccountData;
   getGasAccountSig = gasAccountService.getGasAccountSig;
   setGasAccountSig = gasAccountService.setGasAccountSig;
+
+  getCloseTipsChains = OfflineChainsService.getCloseTipsChains;
+  setCloseTipsChains = OfflineChainsService.setCloseTipsChains;
 
   setCustomRPC = (chainEnum: CHAINS_ENUM, url: string) => {
     RPCService.setRPC(chainEnum, url);
