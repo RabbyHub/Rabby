@@ -39,7 +39,7 @@ const AvaliableIcon = styled.div`
   }
 `;
 
-const UnavaliableIcon = styled.div`
+const UnavailableIcon = styled.div`
   position: absolute;
   right: -2px;
   top: -2px;
@@ -77,7 +77,7 @@ const TooltipContent = styled.div`
       background-color: #27c193;
     }
   }
-  &.unavaliable {
+  &.unavailable {
     color: #ec5151;
     .alert-icon {
       background-color: #ec5151;
@@ -104,7 +104,7 @@ const CustomRPCTooltipContent = ({
   avaliable: boolean;
 }) => {
   return (
-    <TooltipContent className={clsx({ avaliable, unavaliable: !avaliable })}>
+    <TooltipContent className={clsx({ avaliable, unavailable: !avaliable })}>
       <div className="alert-icon" />
       <span>
         RPC {avaliable ? 'avaliable' : 'unavailable'}: {rpc}
@@ -190,7 +190,7 @@ const ChainIcon = ({
             (customRPCAvaliable ? (
               <AvaliableIcon className={clsx(size)} />
             ) : (
-              <UnavaliableIcon className={clsx(size)} />
+              <UnavailableIcon className={clsx(size)} />
             ))}
         </ChainIconWrapper>
       </Tooltip>
@@ -232,7 +232,7 @@ const ChainIcon = ({
             (customRPCAvaliable ? (
               <AvaliableIcon className={clsx(size)} />
             ) : (
-              <UnavaliableIcon className={clsx(size)} />
+              <UnavailableIcon className={clsx(size)} />
             ))}
         </TooltipWithMagnetArrow>
       </div>
