@@ -282,6 +282,13 @@
           "24h": "24h"
         }
       },
+      "safeTx": {
+        "selfHostConfirm": {
+          "title": "Safe API is Unavailable",
+          "content": "Switch to the Safe service deployed by Rabby to keep your Safe functional. All Safe signers must use Rabby to authorize transactions.",
+          "button": "Switch to Rabby's Safe service"
+        }
+      },
       "SafeNonceSelector": {
         "explain": {
           "contractCall": "Contract Call",

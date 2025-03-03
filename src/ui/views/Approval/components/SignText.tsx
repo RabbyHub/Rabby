@@ -44,7 +44,6 @@ import {
 } from '@rabby-wallet/rabby-action';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import { toBytes } from 'viem';
 import { generateTypedData } from '@safe-global/protocol-kit';
 import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
 import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';

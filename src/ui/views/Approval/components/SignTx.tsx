@@ -34,6 +34,7 @@ import {
   KEYRING_CATEGORY_MAP,
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
+  SELF_HOST_SAFE_NETWORKS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -1717,6 +1718,34 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const handleIsGnosisAccountChange = async () => {
     if (!isViewGnosisSafe) {
       await wallet.clearGnosisTransaction();
+    }
+    if (SELF_HOST_SAFE_NETWORKS.includes(chainId.toString())) {
+      const hasConfirmed = await wallet.hasConfirmSafeSelfHost(
+        chainId.toString()
+      );
+      const sigs = await wallet.getGnosisTransactionSignatures();
+      const isNewTx = sigs.length <= 0;
+      if (isNewTx && !hasConfirmed) {
+        Modal.info({
+          closable: true,
+          centered: true,
+          width: 320,
+          className: 'modal-support-darkmode external-link-alert-modal',
+          title: t('page.signTx.safeTx.selfHostConfirm.title'),
+          content: t('page.signTx.safeTx.selfHostConfirm.content'),
+          okText: t('page.signTx.safeTx.selfHostConfirm.button'),
+          okButtonProps: {
+            className: 'w-full',
+          },
+          cancelText: null,
+          onOk() {
+            wallet.setConfirmSafeSelfHost(chainId.toString());
+          },
+          onCancel() {
+            wallet.setConfirmSafeSelfHost(chainId.toString());
+          },
+        });
+      }
     }
   };
 
