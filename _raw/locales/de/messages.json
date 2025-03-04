@@ -2479,6 +2479,11 @@
           "tip2": "Geben Sie Ihr Passwort ein, um zu entsperren"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "Scannen Sie den QR-Code auf der NGRAVE ZERO-Hardware-Wallet"
+        }
+      },
       "importSafe": {
         "error": {
           "required": "Bitte Adresse eingeben",

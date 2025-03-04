@@ -2487,6 +2487,11 @@
           "connect": "Connect Keystone"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "Scan the QR code on the NGRAVE ZERO hardware wallet"
+        }
+      },
       "importSafe": {
         "title": "Add Safe Address",
         "error": {

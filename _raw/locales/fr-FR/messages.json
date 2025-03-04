@@ -2726,6 +2726,11 @@
           "tip2": "Entrez votre mot de passe pour déverrouiller"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "Scannez le code QR sur le portefeuille matériel NGRAVE ZERO"
+        }
+      },
       "importSafe": {
         "error": {
           "required": "Veuillez saisir l'adresse",

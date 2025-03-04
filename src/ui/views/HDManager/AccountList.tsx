@@ -38,12 +38,14 @@ export interface Props {
   loading: boolean;
   data?: Account[];
   preventLoading?: boolean;
+  brand?: string;
 }
 
 export const AccountList: React.FC<Props> = ({
   loading,
   data,
   preventLoading,
+  brand,
 }) => {
   const wallet = useWallet();
   const [list, setList] = React.useState<Account[]>(data || []);
@@ -64,6 +66,8 @@ export const AccountList: React.FC<Props> = ({
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
   const dispatch = useRabbyDispatch();
+
+  const isNgraveZero = brand === 'NGRAVE ZERO';
 
   useEffect(() => {
     currentAccountsRef.current = currentAccounts;
@@ -177,7 +181,7 @@ export const AccountList: React.FC<Props> = ({
             .map((key) => HARDWARE_KEYRING_TYPES[key])
             .find((item) => item.type === keyring);
           const alias = generateAliasName({
-            brandName: brandName,
+            brandName: isNgraveZero ? 'NGRAVE ZERO' : brandName,
             keyringType: keyring,
             addressCount,
           });

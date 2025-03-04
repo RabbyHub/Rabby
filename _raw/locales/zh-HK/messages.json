@@ -2517,6 +2517,11 @@
           "tip3": "批准連接到你的電腦"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "請掃描 NGRAVE ZERO 硬件錢包上的 QR 碼"
+        }
+      },
       "importSafe": {
         "error": {
           "required": "請輸入地址",

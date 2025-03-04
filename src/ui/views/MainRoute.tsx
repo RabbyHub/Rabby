@@ -74,6 +74,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { MetamaskModeDapps } from './MetamaskModeDapps';
 import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
+import { NewUserImportNgraveZero } from './NewUserImport/ImportNgraveZero';
 
 declare global {
   interface Window {
@@ -162,6 +163,10 @@ const Main = () => {
           path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.KEYSTONE}`}
         >
           <NewUserImportKeystone />
+        </Route>
+
+        <Route exact path={'/new-user/import/hardware/ngravezero'}>
+          <NewUserImportNgraveZero />
         </Route>
 
         <Route exact path="/new-user/import/hardware/:type">

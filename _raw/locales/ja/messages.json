@@ -2479,6 +2479,11 @@
           "tip1": "Keystone デバイスを接続してください"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "NGRAVE ZEROハードウェアウォレットのQRコードをスキャンしてください"
+        }
+      },
       "importSafe": {
         "error": {
           "required": "アドレスを入力してください",

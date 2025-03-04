@@ -171,7 +171,8 @@ export const NewUserSetPassword = () => {
         KEYRING_CLASS.HARDWARE.LEDGER,
         KEYRING_CLASS.HARDWARE.KEYSTONE,
         KEYRING_CLASS.HARDWARE.BITBOX02,
-      ] as string[]).includes(type)
+      ] as string[]).includes(type) ||
+      type == 'ngravezero'
     ) {
       setStore({
         password,
