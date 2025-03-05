@@ -766,9 +766,12 @@ class ProviderController extends BaseController {
         })!;
         let errMsg = e.details || e.message || JSON.stringify(e);
         if (chainData) {
-          errMsg = `[From ${getOriginFromUrl(
-            (chainData as TestnetChain).rpcUrl
-          )}] ${errMsg}`;
+          const rpcUrl = RPCService.hasCustomRPC(chain)
+            ? RPCService.getRPCByChain(chain).url
+            : (chainData as TestnetChain).rpcUrl;
+          errMsg = rpcUrl
+            ? `[From ${getOriginFromUrl(rpcUrl)}] ${errMsg}`
+            : errMsg;
         }
         console.log('submit tx failed', e);
         onTransactionSubmitFailed(errMsg);
