@@ -4819,7 +4819,7 @@
     "@trezor/connect-web" "^9.2.1"
     hdkey "0.8.0"
 
-"@rabby-wallet/eth-walletconnect-keyring@^2.1.6":
+"@rabby-wallet/eth-walletconnect-keyring@2.1.6":
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-2.1.6.tgz#323f997d25ba49adb98f218c91c21f7ae399d9f6"
   integrity sha512-nQl94Sl6vdf37yDxIs+gtcxfryIJQ6mQ23T03cBW8cIDoXS5jh7zTcOFF623NoXFhDMDYSCeewVMZjg+KsNJKQ==
