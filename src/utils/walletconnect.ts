@@ -1,8 +1,8 @@
 import { t } from 'i18next';
-import { CHAINS_LIST } from '@debank/common';
 import { getChainList } from './chain';
+import { ConstructorOptions } from '@rabby-wallet/eth-walletconnect-keyring/type';
 
-export const GET_WALLETCONNECT_CONFIG = () => {
+export const GET_WALLETCONNECT_CONFIG: () => ConstructorOptions = () => {
   return {
     // 1h
     maxDuration: 3600000,
@@ -15,23 +15,6 @@ export const GET_WALLETCONNECT_CONFIG = () => {
       name: 'Rabby',
     },
     projectId: 'ed21a1293590bdc995404dff7e033f04',
-    v2Whitelist: [
-      'AMBER',
-      'Zerion',
-      'Bitget',
-      'TP',
-      'WALLETCONNECT',
-      'WalletConnect',
-      'FIREBLOCKS',
-      'MPCVault',
-      'MetaMask',
-      'Rainbow',
-      'imToken',
-      'MATHWALLET',
-      'TRUSTWALLET',
-      'Utila',
-      'IMTOKEN',
-    ],
   };
 };
 

@@ -10,11 +10,40 @@ import {
   SAFE_GAS_LIMIT_BUFFER,
   SAFE_GAS_LIMIT_RATIO,
 } from 'consts';
-import { ExplainTxResponse, GasLevel, Tx } from 'background/service/openapi';
+import {
+  ExplainTxResponse,
+  GasLevel,
+  Tx,
+  TxPushType,
+} from 'background/service/openapi';
 import { findChain } from './chain';
 import type { WalletControllerType } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import i18n from '@/i18n';
+import { Account } from 'background/service/preference';
+
+export interface ApprovalRes extends Tx {
+  type?: string;
+  address?: string;
+  uiRequestComponent?: string;
+  isSend?: boolean;
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
+  isSwap?: boolean;
+  isGnosis?: boolean;
+  account?: Account;
+  extra?: Record<string, any>;
+  traceId?: string;
+  $ctx?: any;
+  signingTxId?: string;
+  pushType?: TxPushType;
+  lowGasDeadline?: number;
+  reqId?: string;
+  isGasLess?: boolean;
+  isGasAccount?: boolean;
+  logId?: string;
+  authorizationList?: (Uint8Array | string)[];
+}
 
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = findChain({
@@ -61,6 +90,19 @@ export const convertLegacyTo1559 = (tx: Tx) => {
 export const is1559Tx = (tx: Tx) => {
   if (!('maxFeePerGas' in tx) || !('maxPriorityFeePerGas' in tx)) return false;
   return isHexString(tx.maxFeePerGas!) && isHexString(tx.maxPriorityFeePerGas!);
+};
+
+export const is7702Tx = (tx: ApprovalRes) => {
+  if ('authorizationList' in tx) {
+    if (
+      Array.isArray(tx.authorizationList) &&
+      tx.authorizationList.length > 0
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 export function getKRCategoryByType(type?: string) {

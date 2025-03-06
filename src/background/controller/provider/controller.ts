@@ -48,7 +48,12 @@ import {
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
-import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
+import {
+  validateGasPriceRange,
+  is1559Tx,
+  ApprovalRes,
+  is7702Tx,
+} from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
@@ -94,28 +99,6 @@ const convertToHex = (data: Buffer | bigint) => {
   }
   return bufferToHex(data);
 };
-
-interface ApprovalRes extends Tx {
-  type?: string;
-  address?: string;
-  uiRequestComponent?: string;
-  isSend?: boolean;
-  isSpeedUp?: boolean;
-  isCancel?: boolean;
-  isSwap?: boolean;
-  isGnosis?: boolean;
-  account?: Account;
-  extra?: Record<string, any>;
-  traceId?: string;
-  $ctx?: any;
-  signingTxId?: string;
-  pushType?: TxPushType;
-  lowGasDeadline?: number;
-  reqId?: string;
-  isGasLess?: boolean;
-  isGasAccount?: boolean;
-  logId?: string;
-}
 
 interface Web3WalletPermission {
   // The name of the method corresponding to the permission
@@ -406,6 +389,13 @@ class ProviderController extends BaseController {
     delete approvalRes.isGasAccount;
 
     let is1559 = is1559Tx(approvalRes);
+    const is7702 = is7702Tx(approvalRes);
+
+    if (is7702) {
+      // todo
+      throw new Error('not support 7702');
+    }
+
     if (
       is1559 &&
       approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas
@@ -776,9 +766,12 @@ class ProviderController extends BaseController {
         })!;
         let errMsg = e.details || e.message || JSON.stringify(e);
         if (chainData) {
-          errMsg = `[From ${getOriginFromUrl(
-            (chainData as TestnetChain).rpcUrl
-          )}] ${errMsg}`;
+          const rpcUrl = RPCService.hasCustomRPC(chain)
+            ? RPCService.getRPCByChain(chain).url
+            : (chainData as TestnetChain).rpcUrl;
+          errMsg = rpcUrl
+            ? `[From ${getOriginFromUrl(rpcUrl)}] ${errMsg}`
+            : errMsg;
         }
         console.log('submit tx failed', e);
         onTransactionSubmitFailed(errMsg);

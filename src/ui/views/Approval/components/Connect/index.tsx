@@ -649,12 +649,15 @@ const Connect = (props: ConnectProps) => {
             });
             matomoRequestEvent({
               category: 'Wallet Conflict',
-              action: `OtherWallet_${name.trim().replace(/\s+/g, '')}`,
+              action: `OtherWallet_${info.name.trim().replace(/\s+/g, '')}`,
             });
 
-            ga4.fireEvent(`OtherWallet_${name.trim().replace(/\s+/g, '')}`, {
-              event_category: 'Wallet Conflict',
-            });
+            ga4.fireEvent(
+              `OtherWallet_${info.name.trim().replace(/\s+/g, '')}`,
+              {
+                event_category: 'Wallet Conflict',
+              }
+            );
             await sleep(150);
             rejectApproval();
           }}
