@@ -1604,4 +1604,11 @@ export const DBK_CHAIN_BRIDGE_CONTRACT =
 export const DBK_NFT_CONTRACT_ADDRESS =
   '0x633b7472E1641D59334886a7692107D6332B1ff0';
 
-export const SELF_HOST_SAFE_NETWORKS = ['1'];
+export const SELF_HOST_SAFE_NETWORKS = [
+  '1',
+  '56',
+  '42161',
+  '137',
+  '10',
+  '8453',
+];
