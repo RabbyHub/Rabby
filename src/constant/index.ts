@@ -243,10 +243,8 @@ export const KEYRING_TYPE = {
   CoinbaseKeyring: 'Coinbase',
 } as const;
 
-export const KEYRING_CLASS = {
-  PRIVATE_KEY: 'Simple Key Pair',
-  MNEMONIC: 'HD Key Tree',
-  HARDWARE: {
+const createHardwareObject = () => {
+  const hardware = {
     BITBOX02: 'BitBox02 Hardware',
     TREZOR: 'Trezor Hardware',
     LEDGER: 'Ledger Hardware',
@@ -254,7 +252,16 @@ export const KEYRING_CLASS = {
     GRIDPLUS: 'GridPlus Hardware',
     KEYSTONE: 'QR Hardware Wallet Device',
     IMKEY: 'imKey Hardware',
-  },
+    NGRAVEZERO: 'QR Hardware Wallet Device',
+  };
+
+  return hardware;
+};
+
+export const KEYRING_CLASS = {
+  PRIVATE_KEY: 'Simple Key Pair',
+  MNEMONIC: 'HD Key Tree',
+  HARDWARE: createHardwareObject(),
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
   GNOSIS: 'Gnosis',
@@ -279,6 +286,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.PRIVATE_KEY,
   KEYRING_CLASS.MNEMONIC,
   KEYRING_CLASS.HARDWARE.KEYSTONE,
+  KEYRING_CLASS.HARDWARE.NGRAVEZERO,
   KEYRING_CLASS.HARDWARE.TREZOR,
   KEYRING_CLASS.HARDWARE.ONEKEY,
   KEYRING_CLASS.HARDWARE.BITBOX02,
@@ -295,6 +303,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Imported by GridPlus',
   [KEYRING_CLASS.GNOSIS]: 'Imported by Safe',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by QRCode Base',
+  [KEYRING_CLASS.HARDWARE.NGRAVEZERO]: 'Imported by QRCode Base',
   [KEYRING_CLASS.HARDWARE.IMKEY]: 'Imported by imKey',
 };
 
@@ -322,6 +331,10 @@ export const HARDWARE_KEYRING_TYPES = {
   Keystone: {
     type: 'QR Hardware Wallet Device',
     brandName: 'Keystone',
+  },
+  NGRAVEZERO: {
+    type: 'QR Hardware Wallet Device',
+    brandName: 'NGRAVE ZERO',
   },
   ImKey: {
     type: 'imKey Hardware',
@@ -1160,6 +1173,7 @@ export const KEYRING_CATEGORY_MAP = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.BITBOX02]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.NGRAVEZERO]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.WALLETCONNECT]: KEYRING_CATEGORY.WalletConnect,
   [KEYRING_CLASS.Coinbase]: KEYRING_CATEGORY.WalletConnect,
@@ -1378,6 +1392,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.GNOSIS]: 'Safe',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Keystone',
+  [KEYRING_CLASS.HARDWARE.NGRAVEZERO]: 'NGRAVE ZERO',
   [WALLET_BRAND_TYPES.TP]: WALLET_BRAND_CONTENT.TP.name,
   [WALLET_BRAND_TYPES.METAMASK]: WALLET_BRAND_CONTENT.MetaMask.name,
   [WALLET_BRAND_TYPES.IMTOKEN]: WALLET_BRAND_CONTENT.IMTOKEN.name,
@@ -1442,6 +1457,7 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.GRIDPLUS,
   WALLET_BRAND_TYPES.ONEKEY,
   WALLET_BRAND_TYPES.KEYSTONE,
+  WALLET_BRAND_TYPES.NGRAVEZERO,
   WALLET_BRAND_TYPES.BITBOX02,
   WALLET_BRAND_TYPES.COOLWALLET,
   WALLET_BRAND_TYPES.AIRGAP,
