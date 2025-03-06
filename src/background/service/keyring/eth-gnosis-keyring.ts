@@ -482,7 +482,7 @@ class GnosisKeyring extends EventEmitter {
       data: transaction.data,
       from: address,
       to: this._normalize(transaction.to),
-      value: new BigNumber(transaction.value).toFixed() || '0',
+      value: new BigNumber(transaction.value || 0).toFixed() || '0',
       safeTxGas: transaction.safeTxGas,
       nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
       baseGas: transaction.baseGas,
@@ -571,7 +571,7 @@ class GnosisKeyring extends EventEmitter {
         data: this._normalize(transaction.data) || '0x',
         from: address,
         to: this._normalize(transaction.to),
-        value: transaction.value.toString() || '0', // prevent 0x
+        value: (transaction.value || 0).toString(),
       };
       safeTransaction = await safe.buildTransaction(tx);
       this.currentTransaction = safeTransaction;
