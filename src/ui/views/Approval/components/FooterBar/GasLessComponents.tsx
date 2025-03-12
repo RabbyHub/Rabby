@@ -12,7 +12,7 @@ import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg
 
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { GasAccountCheckResult } from '@/background/service/openapi';
-import { Button, Modal } from 'antd';
+import { Button } from 'antd';
 import {
   GasAccountDepositTipPopup,
   GasAccountLogInTipPopup,
@@ -20,8 +20,7 @@ import {
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { KEYRING_CLASS } from '@/constant';
 import { useGasAccountMethods } from '@/ui/views/GasAccount/hooks';
-import { useCss } from 'react-use';
-import { useHistory } from 'react-router-dom';
+import { useLoginDepositConfirm } from '@/ui/views/GasAccount/hooks/checkTxs';
 
 export type GasLessConfig = {
   button_text: string;
@@ -36,24 +35,22 @@ export function GasLessNotEnough({
   gasLessFailedReason,
   onChangeGasAccount,
   canGotoUseGasAccount,
+  canDepositUseGasAccount,
+  miniFooter,
 }: {
   url?: string;
   gasLessFailedReason?: string;
   onChangeGasAccount?: () => void;
   canGotoUseGasAccount?: boolean;
+  canDepositUseGasAccount?: boolean;
+  miniFooter?: boolean;
 }) {
   const { t } = useTranslation();
-  const [
-    hoverGasLessFailedReason,
-    setHoverGasLessFailedReason,
-  ] = React.useState(false);
+
+  const modalConfirm = useLoginDepositConfirm();
 
   return (
-    <div
-      className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center"
-      onMouseEnter={() => setHoverGasLessFailedReason(true)}
-      onMouseLeave={() => setHoverGasLessFailedReason(false)}
-    >
+    <div className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center">
       <RcIconGas
         viewBox="0 0 16 16"
         className="w-16 h-16 mr-4 text-r-neutral-title-1"
@@ -61,6 +58,18 @@ export function GasLessNotEnough({
       <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
         {t('page.signFooterBar.gasless.notEnough')}
       </span>
+
+      {miniFooter && canDepositUseGasAccount ? (
+        <Button
+          type="primary"
+          className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
+          onClick={() => {
+            modalConfirm('deposit');
+          }}
+        >
+          {t('page.signFooterBar.gasAccount.deposit')}
+        </Button>
+      ) : null}
 
       {canGotoUseGasAccount ? (
         <div
@@ -395,11 +404,6 @@ export function GasAccountTips({
     };
   }, [isGasAccountLogin, isWalletConnect, gasAccountCost, noCustomRPC, t]);
 
-  const history = useHistory();
-  const gotoGasAccount = () => {
-    history.push('/gas-account');
-  };
-
   const currentAccount = useCurrentAccount();
   const { login } = useGasAccountMethods();
 
@@ -412,70 +416,7 @@ export function GasAccountTips({
     return () => setTipPopupVisible(false);
   }, []);
 
-  const depositCn = useCss({
-    '& .ant-modal-content': {
-      background: 'var(--r-neutral-bg1, #FFF)',
-      borderRadius: '16px',
-    },
-    '& .ant-modal-confirm-title': {
-      color: 'var(--r-neutral-title1, #192945)',
-      textAlign: 'center',
-      fontSize: '15px',
-      fontStyle: 'normal',
-      fontWeight: 500,
-      lineHeight: 'normal',
-    },
-    '& .ant-modal-body': {
-      padding: '24px 16px 20px 16px',
-    },
-    '& .ant-modal-confirm-content': {
-      padding: '4px 0 0 0',
-    },
-    '& .ant-modal-confirm-btns': {
-      justifyContent: 'center',
-      '.ant-btn-primary': {
-        width: '260px',
-        height: '40px',
-      },
-    },
-  });
-
-  const modalConfirm = React.useCallback(
-    (type: 'login' | 'deposit') => {
-      const isLogin = type === 'login';
-      const title = isLogin
-        ? t('page.signFooterBar.gasAccount.loginTips')
-        : t('page.signFooterBar.gasAccount.depositTips');
-      Modal.confirm({
-        width: 320,
-        closable: false,
-        centered: true,
-        className: depositCn,
-        title: t('page.signFooterBar.gasAccount.depositTips'),
-        content: null,
-        cancelButtonProps: {
-          ghost: true,
-          className: clsx(
-            'h-[40px] border-blue-light text-blue-light',
-            'hover:bg-r-blue-light1 active:bg-[#0000001A]',
-            'rounded-[6px]',
-            'before:content-none',
-            'flex items-center justify-center'
-          ),
-        },
-        cancelText: t('global.Cancel'),
-        okText: t('global.Confirm'),
-        onOk() {
-          if (isLogin && currentAccount) {
-            login(currentAccount);
-          } else {
-            gotoGasAccount();
-          }
-        },
-      });
-    },
-    [t, depositCn, login, gotoGasAccount]
-  );
+  const modalConfirm = useLoginDepositConfirm();
 
   if (
     !isWalletConnect &&

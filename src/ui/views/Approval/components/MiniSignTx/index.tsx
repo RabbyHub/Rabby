@@ -56,7 +56,10 @@ import { MiniFooterBar } from './MiniFooterBar';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
-import { useGasAccountTxsCheck } from '@/ui/views/GasAccount/hooks/checkTxs';
+import {
+  useAutoLoginOnSwitchedGasAccount,
+  useGasAccountTxsCheck,
+} from '@/ui/views/GasAccount/hooks/checkTxs';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 export const MiniSignTx = ({
@@ -335,11 +338,18 @@ export const MiniSignTx = ({
     isGasAccountLogin,
     gasAccountCanPay,
     canGotoUseGasAccount,
+    canDepositUseGasAccount,
   } = useGasAccountTxsCheck({
     isReady,
     txs: gasAccountTxs,
     noCustomRPC,
     isSupportedAddr,
+  });
+
+  useAutoLoginOnSwitchedGasAccount({
+    isGasAccountLogin,
+    isPayByGasAccount: gasMethod === 'gasAccount',
+    gasAccountCanPay,
   });
 
   useEffect(() => {
@@ -929,6 +939,7 @@ export const MiniSignTx = ({
         gasAccountCost={gasAccountCost}
         gasAccountCanPay={gasAccountCanPay}
         canGotoUseGasAccount={canGotoUseGasAccount}
+        canDepositUseGasAccount={canDepositUseGasAccount}
         isGasAccountLogin={isGasAccountLogin}
         isWalletConnect={
           currentAccountType === KEYRING_TYPE.WalletConnectKeyring

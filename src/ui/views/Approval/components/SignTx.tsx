@@ -78,7 +78,10 @@ import GasSelectorHeader, {
 } from './TxComponents/GasSelectorHeader';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
-import { useGasAccountTxsCheck } from '../../GasAccount/hooks/checkTxs';
+import {
+  useAutoLoginOnSwitchedGasAccount,
+  useGasAccountTxsCheck,
+} from '../../GasAccount/hooks/checkTxs';
 import {
   fetchActionRequiredData,
   parseAction,
@@ -722,6 +725,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     txs,
     noCustomRPC,
     isSupportedAddr,
+  });
+
+  useAutoLoginOnSwitchedGasAccount({
+    isGasAccountLogin,
+    isPayByGasAccount: gasMethod === 'gasAccount',
+    gasAccountCanPay,
   });
 
   useEffect(() => {
