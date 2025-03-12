@@ -30,7 +30,15 @@ const SortHat = () => {
 
     await wallet.tryUnlock();
     if (!(await wallet.isUnlocked())) {
-      setTo('/unlock');
+      if (
+        isInNotification &&
+        approval?.data?.approvalComponent === 'Connect' &&
+        approval?.data?.params?.$ctx?.providers?.length
+      ) {
+        setTo('/connect-approval');
+      } else {
+        setTo('/unlock');
+      }
       return;
     }
     if (

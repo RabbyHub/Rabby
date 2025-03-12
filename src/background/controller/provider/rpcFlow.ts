@@ -69,13 +69,22 @@ const flowContext = flow
       mapMethod,
       request: {
         session: { origin },
+        data,
       },
     } = ctx;
 
     if (!Reflect.getMetadata('SAFE', providerController, mapMethod)) {
       // check lock
       const isUnlock = keyringService.memStore.getState().isUnlocked;
+      const isConnected = permissionService.hasPermission(origin);
+      const hasOtherProvider = !!data?.$ctx?.providers?.length;
 
+      /**
+       * if not connected and has other provider ignore lock check
+       */
+      if (!isConnected && hasOtherProvider) {
+        return next();
+      }
       if (!isUnlock) {
         if (lockedOrigins.has(origin)) {
           throw ethErrors.rpc.resourceNotFound(
@@ -118,12 +127,13 @@ const flowContext = flow
         ctx.request.requestedApproval = true;
         connectOrigins.add(origin);
         try {
+          const isUnlock = keyringService.memStore.getState().isUnlocked;
           const { defaultChain } = await notificationService.requestApproval(
             {
               params: { origin, name, icon, $ctx: data.$ctx },
               approvalComponent: 'Connect',
             },
-            { height: 800 }
+            { height: isUnlock ? 800 : 628 }
           );
           connectOrigins.delete(origin);
           permissionService.addConnectedSiteV2({

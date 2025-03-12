@@ -1,21 +1,20 @@
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { getOriginFromUrl } from '@/utils';
+import { ga4 } from '@/utils/ga4';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { message, Tooltip } from 'antd';
+import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import IconDapps from 'ui/assets/dapps.svg';
 import { ReactComponent as RCIconDisconnectCC } from 'ui/assets/dashboard/current-connection/cc-disconnect.svg';
-import { ReactComponent as RCIconQuestionCC } from 'ui/assets/dashboard/question-cc.svg';
+import IconMetamaskMode from 'ui/assets/metamask-mode-circle.svg';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
-import { MetamaskModePopup } from '../MetamaskModePopup';
-import { ReactComponent as RcIconMetamask } from 'ui/assets/metamask-mode-circle-cc.svg';
 import './style.less';
-import { ga4 } from '@/utils/ga4';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -35,8 +34,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   const [visible, setVisible] = useState(
     trigger === 'current-connection' && showChainsModal
   );
-
-  const [isShowTooltip, setIsShowTooltip] = useState(false);
 
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
@@ -84,15 +81,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   return (
     <div className={clsx('current-connection-block h-[52px]')}>
       {site ? (
-        <div
-          className="site mr-[18px]"
-          onMouseEnter={() => {
-            setIsShowTooltip(true);
-          }}
-          onMouseLeave={() => {
-            setIsShowTooltip(false);
-          }}
-        >
+        <div className="site mr-[18px]">
           <div className="relative">
             <FallbackSiteLogo
               url={site.icon}
@@ -101,9 +90,20 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
               className="site-icon"
             ></FallbackSiteLogo>
             {site.isMetamaskMode ? (
-              <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
-                <RcIconMetamask />
-              </div>
+              <TooltipWithMagnetArrow
+                placement="top"
+                overlayClassName={clsx('rectangle max-w-[360px] w-[360px]')}
+                align={{
+                  offset: [0, 4],
+                }}
+                title={t(
+                  'page.dashboard.recentConnection.metamaskModeTooltipNew'
+                )}
+              >
+                <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                  <img src={IconMetamaskMode} alt="metamask mode"></img>
+                </div>
+              </TooltipWithMagnetArrow>
             ) : null}
           </div>
           <div className="site-content">
@@ -119,42 +119,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
               {site?.isConnected
                 ? t('page.dashboard.recentConnection.connected')
                 : t('page.dashboard.recentConnection.notConnected')}
-              {!site?.isConnected ? (
-                <>
-                  <Tooltip
-                    placement="top"
-                    overlayClassName={clsx('rectangle max-w-[225px]')}
-                    visible={isShowTooltip}
-                    align={{
-                      offset: [0, 4],
-                    }}
-                    title={
-                      <Trans
-                        t={t}
-                        i18nKey="page.dashboard.recentConnection.metamaskModeTooltip"
-                      >
-                        Can’t connect Rabby on this Dapp? Try enabling
-                        <a
-                          href=""
-                          className="text-r-blue-default underline-light-r-blue-default underline"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setIsShowTooltip(false);
-                            setIsShowMetamaskModePopup(true);
-                          }}
-                        >
-                          MetaMask Mode
-                        </a>
-                      </Trans>
-                    }
-                  >
-                    <div className="text-r-neutral-foot ml-[2px]">
-                      <RCIconQuestionCC />
-                    </div>
-                  </Tooltip>
-                </>
-              ) : null}
               <RCIconDisconnectCC
                 viewBox="0 0 14 14"
                 className="site-status-icon w-12 h-12 ml-4 text-r-neutral-foot hover:text-rabby-red-default"
@@ -189,18 +153,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
         }}
         showRPCStatus
       />
-      {site ? (
-        <MetamaskModePopup
-          site={site}
-          visible={isShowMetamaskModePopup}
-          onClose={() => {
-            setIsShowMetamaskModePopup(false);
-          }}
-          onChangeMetamaskMode={(v) => {
-            getCurrentSite();
-          }}
-        />
-      ) : null}
     </div>
   );
 });

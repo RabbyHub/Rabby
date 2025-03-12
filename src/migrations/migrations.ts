@@ -5,3 +5,4 @@ export { default as connectedSiteMigration } from './connectedSiteMigration';
 export { default as customRPCMigration } from './customRPCMigration';
 export { default as customizedTokenMigration } from './customizedTokenMigration';
 export { default as localeMigration } from './localeMigration';
+export { default as metamaskModeSiteMigration } from './metamaskModeSiteMigration';
