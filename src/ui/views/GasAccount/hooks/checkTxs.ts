@@ -26,9 +26,8 @@ export const useGasAccountTxsCheck = ({
     if (!isReady) {
       return;
     }
-    if (!sig || !accountId) {
-      setIsGasAccountLogin(false);
-    }
+    setIsGasAccountLogin(!!sig && !!accountId);
+
     return wallet.openapi.checkGasAccountTxs({
       sig: sig || '',
       account_id: accountId!,

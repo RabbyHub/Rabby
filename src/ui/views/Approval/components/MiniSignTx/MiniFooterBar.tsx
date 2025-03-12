@@ -309,6 +309,7 @@ export const MiniFooterBar: React.FC<Props> = ({
           isGasAccountLogin={isGasAccountLogin}
           isWalletConnect={isWalletConnect}
           noCustomRPC={noCustomRPC}
+          miniFooter
         />
       ) : null}
     </>

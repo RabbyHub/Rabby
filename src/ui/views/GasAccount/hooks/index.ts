@@ -11,6 +11,7 @@ import { preferenceService } from '@/background/service';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { KEYRING_CLASS } from '@/constant';
 import pRetry from 'p-retry';
+import { Account } from '@/background/service/preference';
 
 export const useGasAccountRefresh = () => {
   const refreshId = useGasAccountRefreshId();
@@ -62,55 +63,78 @@ export const useGasAccountInfo = () => {
 
 export const useGasAccountMethods = () => {
   const wallet = useWallet();
-  const account = useRabbySelector((s) => s.account.currentAccount);
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
   const dispatch = useRabbyDispatch();
 
   const { sig, accountId } = useGasAccountSign();
   const { refresh } = useGasAccountRefresh();
 
-  const handleNoSignLogin = useCallback(async () => {
-    if (account) {
-      try {
-        const { text } = await wallet.openapi.getGasAccountSignText(
-          account.address
-        );
+  const handleNoSignLogin = useCallback(
+    async (account: Account) => {
+      if (account) {
+        const currentUseAccount = currentAccount;
+        const shouldSwitchAccount =
+          currentUseAccount?.address !== account.address ||
+          currentUseAccount?.type !== account.type ||
+          currentUseAccount?.brandName !== account.brandName;
 
-        const { txHash: signature } = await sendPersonalMessage({
-          data: [text, account.address],
-          wallet,
-        });
-
-        const result = await pRetry(
-          async () =>
-            wallet.openapi.loginGasAccount({
-              sig: signature,
-              account_id: account.address,
-            }),
-          {
-            retries: 2,
+        const resume = async () => {
+          if (currentUseAccount && shouldSwitchAccount) {
+            await dispatch.account.changeAccountAsync(currentUseAccount);
           }
-        );
-        if (result?.success) {
-          dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
-          refresh();
-        }
-      } catch (e) {
-        message.error('Login in error, Please retry');
-      }
-    }
-  }, [account]);
+        };
+        try {
+          const { text } = await wallet.openapi.getGasAccountSignText(
+            account.address
+          );
 
-  const login = useCallback(async () => {
-    const noSignType =
-      account?.type === KEYRING_CLASS.PRIVATE_KEY ||
-      account?.type === KEYRING_CLASS.MNEMONIC;
-    if (noSignType) {
-      handleNoSignLogin();
-    } else {
-      wallet.signGasAccount();
-      window.close();
-    }
-  }, [account, handleNoSignLogin]);
+          if (shouldSwitchAccount) {
+            await dispatch.account.changeAccountAsync(account);
+          }
+
+          const { txHash: signature } = await sendPersonalMessage({
+            data: [text, account.address],
+            wallet,
+          });
+
+          const result = await pRetry(
+            async () =>
+              wallet.openapi.loginGasAccount({
+                sig: signature,
+                account_id: account.address,
+              }),
+            {
+              retries: 2,
+            }
+          );
+          if (result?.success) {
+            dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+            refresh();
+          }
+          await resume();
+        } catch (e) {
+          message.error('Login in error, Please retry');
+          await resume();
+        }
+      }
+    },
+    [currentAccount]
+  );
+
+  const login = useCallback(
+    async (account: Account) => {
+      const noSignType =
+        account?.type === KEYRING_CLASS.PRIVATE_KEY ||
+        account?.type === KEYRING_CLASS.MNEMONIC;
+      if (noSignType) {
+        handleNoSignLogin(account);
+      } else {
+        wallet.signGasAccount(account);
+        window.close();
+      }
+    },
+    [currentAccount, handleNoSignLogin]
+  );
 
   const logout = useCallback(async () => {
     if (sig && accountId) {
