@@ -318,14 +318,16 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
                 'flex items-center justify-center',
                 'rounded-[6px] w-[114px] h-[52px]',
                 'text-18 font-medium text-center',
-                'border border-solid border-transparent',
+                'border border-solid border-rabby-neutral-line',
                 'hover:bg-r-blue-light-1 hover:border-rabby-blue-default',
-                'bg-r-neutral-card2',
                 'input',
                 selectedAmount === CUSTOM_AMOUNT
                   ? 'bg-r-blue-light-1 border-rabby-blue-default'
                   : 'text-r-neutral-title1'
               )}
+              style={{
+                '--r-neutral-card-2': 'transparent',
+              }}
               bordered={false}
               value={formattedValue}
               onChange={onInputChange}
