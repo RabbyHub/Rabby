@@ -1198,7 +1198,7 @@
           "currentLanguage": "Idioma Atual",
           "enableTestnets": "Ativar Redes de Teste",
           "toggleThemeMode": "Modo de tema",
-          "metamaskMode": "Modo MetaMask",
+          "metamaskMode": "",
           "customTestnet": "Adicionar Rede Personalizada",
           "themeMode": "Modo de Tema"
         },
@@ -2490,7 +2490,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "Modo MetaMask",
+      "title": "",
       "desc": "Modo MetaMask ativado para os seguintes Dapps. Você pode conectar o Rabby selecionando a opção MetaMask."
     },
     "forgotPassword": {

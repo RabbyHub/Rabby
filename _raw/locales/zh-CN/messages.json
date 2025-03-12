@@ -241,7 +241,7 @@
           "toggleThemeMode": "主题模式",
           "themeMode": "主题模式",
           "customTestnet": "",
-          "metamaskMode": "MetaMask 模式"
+          "metamaskMode": ""
         },
         "supportedChains": "",
         "testnetBackendServiceUrl": "测试网后端服务 URL",
@@ -2567,7 +2567,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "MetaMask 模式",
+      "title": "",
       "desc": "MetaMask 模式已为以下 Dapps 启用。您可以通过选择 MetaMask 选项连接 Rabby。"
     },
     "eip7702": {

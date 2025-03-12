@@ -1199,7 +1199,7 @@
           "enableTestnets": "Testnets aktivieren",
           "toggleThemeMode": "Themenmodus",
           "themeMode": "Themenmodus",
-          "metamaskMode": "MetaMask-Modus",
+          "metamaskMode": "",
           "customTestnet": "Benutzerdefiniertes Netzwerk hinzufügen"
         },
         "aboutUs": "Über uns",
@@ -2490,7 +2490,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "MetaMask Modus",
+      "title": "",
       "desc": "MetaMask-Modus für die folgenden Dapps aktiviert. Sie können Rabby verbinden, indem Sie die MetaMask-Option auswählen."
     },
     "forgotPassword": {

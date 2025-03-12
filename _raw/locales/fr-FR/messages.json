@@ -872,7 +872,7 @@
           "metamaskPreferredDapps": "DApps préférées de MetaMask",
           "themeMode": "Thème",
           "toggleThemeMode": "Thème",
-          "metamaskMode": "Mode MetaMask",
+          "metamaskMode": "",
           "customTestnet": "Ajouter un réseau personnalisé"
         },
         "supportedChains": "Chaînes prises en charge",
@@ -2737,7 +2737,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "Mode MetaMask",
+      "title": "",
       "desc": "Mode MetaMask activé pour les dApps suivantes. Vous pouvez connecter Rabby en sélectionnant l'option MetaMask."
     },
     "forgotPassword": {

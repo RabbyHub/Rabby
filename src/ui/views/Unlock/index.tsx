@@ -54,7 +54,11 @@ const Unlock = () => {
   const [run] = useWalletRequest(wallet.unlock, {
     onSuccess() {
       if (UiType.isNotification) {
-        resolveApproval();
+        if (query.from === '/connect-approval') {
+          history.replace('/approval?ignoreOtherWallet=1');
+        } else {
+          resolveApproval();
+        }
       } else if (UiType.isTab) {
         history.replace(query.from && isString(query.from) ? query.from : '/');
       } else {

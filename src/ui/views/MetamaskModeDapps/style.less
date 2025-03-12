@@ -1,5 +1,24 @@
 @import '../../style/var.less';
 
+.page-metamask-mode-dapps-guide {
+  .page();
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 20px;
+  font-size: 12px;
+  line-height: 14px;
+  height: 100vh;
+  overflow: auto;
+  background: var(--r-neutral-bg-2, #3d4251);
+  position: relative;
+  .ant-switch {
+    background-color: var(--r-neutral-line, #e0e5ec);
+  }
+  .ant-switch-checked {
+    background-color: var(--r-blue-default, #7084ff) !important;
+  }
+}
+
 .page-metamask-mode-dapps {
   .page();
   display: flex;
@@ -33,10 +52,10 @@
     align-items: center;
     background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
-    padding: 10px 16px;
+    padding: 14px 16px 14px 18px;
     gap: 12px;
     &:not(:last-child) {
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     &-icon {
@@ -51,10 +70,10 @@
       white-space: nowrap;
       flex: 1;
 
-      font-weight: 400;
+      font-weight: 500;
       font-size: 13px;
       line-height: 15px;
-      color: var(--r-neutral-body, #d3d8e0);
+      color: var(--r-neutral-title1, #192945);
     }
 
     &-action {
