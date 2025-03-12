@@ -95,7 +95,7 @@ export const SelectGasAccountList = ({
 
   return (
     <>
-      <div className="w-full flex justify-between px-20 mb-8">
+      <div className="w-full flex justify-between px-20 mb-8 text-r-neutral-foot">
         <div>{t('page.gasAccount.gasAccountList.address')}</div>
         <div>{t('page.gasAccount.gasAccountList.gasAccountBalance')}</div>
       </div>
