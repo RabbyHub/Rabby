@@ -260,8 +260,7 @@ export const FooterBar: React.FC<Props> = ({
           {...props}
           disabledProcess={
             payGasByGasAccount
-              ? !isGasAccountLogin ||
-                !gasAccountCanPay ||
+              ? !gasAccountCanPay ||
                 (!!securityLevel && !!hasUnProcessSecurityResult)
               : useGasLess
               ? false
@@ -329,7 +328,7 @@ export const FooterBar: React.FC<Props> = ({
           )
         ) : null}
 
-        {payGasByGasAccount && (!gasAccountCanPay || !isGasAccountLogin) ? (
+        {payGasByGasAccount && !gasAccountCanPay ? (
           <GasAccountTips
             gasAccountCost={gasAccountCost}
             isGasAccountLogin={isGasAccountLogin}
