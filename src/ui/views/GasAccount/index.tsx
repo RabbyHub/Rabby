@@ -94,7 +94,7 @@ const GasAccountInner = () => {
         <Menu.Item
           className="px-12 h-40 flex items-center gap-[6px] bg-transparent hover:bg-transparent border-b-[0.5px] border-solid border-rabby-neutral-line"
           onClick={() => {
-            setLogoutVisible(true);
+            setLoginVisible(true);
           }}
         >
           <RcIconSwitchCC className="w-16 h-16 text-r-neutral-title-1" />
@@ -102,6 +102,7 @@ const GasAccountInner = () => {
             {t('page.gasAccount.switchAccount')}
           </span>
         </Menu.Item>
+
         <Menu.Item
           className="px-12 h-40 flex items-center gap-[6px] bg-transparent hover:bg-transparent"
           onClick={() => {
@@ -125,14 +126,16 @@ const GasAccountInner = () => {
         forceShowBack
         onBack={goBack}
         rightSlot={
-          <div className="flex items-center gap-20 absolute bottom-0 right-0">
-            <Dropdown overlay={rightItems} mouseLeaveDelay={0.3}>
-              <RcIconMore
-                viewBox="0 0 20 20"
-                className="w-20 h-20 cursor-pointer"
-              />
-            </Dropdown>
-          </div>
+          isLogin ? (
+            <div className="flex items-center gap-20 absolute bottom-0 right-0">
+              <Dropdown overlay={rightItems} mouseLeaveDelay={0.3}>
+                <RcIconMore
+                  viewBox="0 0 20 20"
+                  className="w-20 h-20 cursor-pointer"
+                />
+              </Dropdown>
+            </div>
+          ) : null
         }
       >
         <span className="text-20 font-medium text-r-neutral-title-1">
