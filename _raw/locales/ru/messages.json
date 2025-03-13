@@ -1201,7 +1201,7 @@
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
           "customTestnet": "Добавить свою сеть",
-          "metamaskMode": "MetaMask Mode"
+          "metamaskMode": ""
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",
@@ -2489,7 +2489,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "Режим MetaMask",
+      "title": "",
       "desc": "Режим MetaMask включен для следующих Dapps. Вы можете подключить Rabby, выбрав опцию MetaMask."
     },
     "forgotPassword": {
