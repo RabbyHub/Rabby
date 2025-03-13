@@ -84,7 +84,6 @@ export const useGasAccountTxsCheck = ({
     !!gasAccountCost.is_gas_account;
 
   const canDepositUseGasAccount =
-    isGasAccountLogin &&
     isSupportedAddr &&
     noCustomRPC &&
     gasAccountCost &&
