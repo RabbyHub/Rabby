@@ -2478,6 +2478,11 @@
           "desc": "Убедитесь, что ваш Keystone 3 Pro находится на домашней странице"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "Отсканируйте QR-код на аппаратном кошельке NGRAVE ZERO"
+        }
+      },
       "importSafe": {
         "error": {
           "invalid": "Недействительный адрес",

@@ -2556,6 +2556,11 @@
           "desc": "确保您的 Keystone 3 Pro 位于主页上"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "扫描 NGRAVE ZERO 硬件钱包上的二维码"
+        }
+      },
       "importSafe": {
         "error": {
           "invalid": "不是有效的地址",

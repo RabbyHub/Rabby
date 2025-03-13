@@ -51,6 +51,7 @@ export const ImportWalletList = () => {
         {
           type: KEYRING_CLASS.HARDWARE.KEYSTONE,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].icon,
+          isKeystone: true,
         },
         {
           type: KEYRING_CLASS.HARDWARE.GRIDPLUS,
@@ -64,11 +65,24 @@ export const ImportWalletList = () => {
           type: KEYRING_CLASS.GNOSIS,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.GNOSIS].icon,
         },
+        {
+          type: KEYRING_CLASS.HARDWARE.NGRAVEZERO,
+          logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.NGRAVEZERO].icon,
+          isNgraveZero: true,
+        },
       ].slice(0, !showMore ? 3 : undefined),
     [showMore]
   );
 
-  const gotoImport = (type: typeof tipList[number]['type']) => {
+  const gotoImport = (
+    type: typeof tipList[number]['type'],
+    isNgraveZero: boolean
+  ) => {
+    if (isNgraveZero) {
+      history.push('/new-user/import/ngravezero/set-password');
+      return;
+    }
+
     switch (type) {
       case KEYRING_TYPE.SimpleKeyring:
         history.push('/new-user/import/private-key');
@@ -110,11 +124,11 @@ export const ImportWalletList = () => {
           return (
             <Tooltip
               title={item.tipI18nKey ? t(item.tipI18nKey) : undefined}
-              key={item.type}
+              key={item.type + index}
               overlayClassName="rectangle"
             >
               <Item
-                key={item.type}
+                key={item.type + index}
                 bgColor="var(--r-neutral-card2, #F2F4F7)"
                 px={16}
                 py={20}
@@ -125,11 +139,15 @@ export const ImportWalletList = () => {
                   if (item.preventClick) {
                     return;
                   }
-                  gotoImport(item.type);
+                  gotoImport(item.type, item.isNgraveZero == true);
                 }}
                 className="rounded-[8px] text-[17px] font-medium text-r-neutral-title1"
               >
-                {BRAND_ALIAN_TYPE_TEXT[item.type]}
+                {item.isKeystone == true
+                  ? 'Keystone'
+                  : item.isNgraveZero == true
+                  ? 'NGRAVE ZERO'
+                  : BRAND_ALIAN_TYPE_TEXT[item.type]}
               </Item>
             </Tooltip>
           );

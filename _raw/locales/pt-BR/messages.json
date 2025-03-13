@@ -2479,6 +2479,11 @@
           "tip1": "Conecte seu dispositivo Keystone"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "Escaneie o código QR na carteira de hardware NGRAVE ZERO"
+        }
+      },
       "importSafe": {
         "error": {
           "invalid": "Endereço inválido",
