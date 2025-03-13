@@ -13,14 +13,11 @@ import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { Button } from 'antd';
+import { useLoginDepositConfirm } from '@/ui/views/GasAccount/hooks/checkTxs';
 import {
   GasAccountDepositTipPopup,
   GasAccountLogInTipPopup,
 } from '@/ui/views/GasAccount/components/GasAccountTxPopups';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { KEYRING_CLASS } from '@/constant';
-import { useGasAccountMethods } from '@/ui/views/GasAccount/hooks';
-import { useLoginDepositConfirm } from '@/ui/views/GasAccount/hooks/checkTxs';
 
 export type GasLessConfig = {
   button_text: string;
@@ -59,7 +56,7 @@ export function GasLessNotEnough({
         {t('page.signFooterBar.gasless.notEnough')}
       </span>
 
-      {miniFooter && canDepositUseGasAccount ? (
+      {canDepositUseGasAccount ? (
         <Button
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
@@ -369,7 +366,7 @@ export function GasAccountTips({
       };
     }
 
-    if (!isGasAccountLogin) {
+    if (!isGasAccountLogin && !miniFooter) {
       return {
         tip: t('page.signFooterBar.gasAccount.loginFirst'),
         btnText: t('page.signFooterBar.gasAccount.login'),
@@ -402,15 +399,14 @@ export function GasAccountTips({
       loginGasAccount: false,
       depositGasAccount: false,
     };
-  }, [isGasAccountLogin, isWalletConnect, gasAccountCost, noCustomRPC, t]);
-
-  const currentAccount = useCurrentAccount();
-  const { login } = useGasAccountMethods();
-
-  const canDirectLogin =
-    loginGasAccount &&
-    (currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
-      currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY);
+  }, [
+    miniFooter,
+    isGasAccountLogin,
+    isWalletConnect,
+    gasAccountCost,
+    noCustomRPC,
+    t,
+  ]);
 
   useEffect(() => {
     return () => setTipPopupVisible(false);
@@ -420,7 +416,7 @@ export function GasAccountTips({
 
   if (
     !isWalletConnect &&
-    isGasAccountLogin &&
+    // isGasAccountLogin &&
     gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
     noCustomRPC
@@ -443,11 +439,7 @@ export function GasAccountTips({
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
           onClick={() => {
-            if (canDirectLogin) {
-              login(currentAccount);
-            } else if (loginGasAccount) {
-              modalConfirm('login');
-            } else if (miniFooter && depositGasAccount) {
+            if (depositGasAccount && miniFooter) {
               modalConfirm('deposit');
             } else {
               setTipPopupVisible(true);
@@ -457,7 +449,6 @@ export function GasAccountTips({
           {btnText}
         </Button>
       ) : null}
-
       <GasAccountDepositTipPopup
         visible={
           !isWalletConnect && isGasAccountLogin ? tipPopupVisible : false
