@@ -718,6 +718,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     gasAccountCanPay,
     canGotoUseGasAccount,
     canDepositUseGasAccount,
+    sig,
   } = useGasAccountTxsCheck({
     isReady,
     txs,
@@ -1215,6 +1216,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         isGasLess: gasMethod === 'native' ? useGasLess : false,
         isGasAccount: gasAccountCanPay,
         logId: logId.current,
+        sig,
       });
 
       return;

@@ -367,6 +367,7 @@ class ProviderController extends BaseController {
     const isGasLess = approvalRes.isGasLess || false;
     const logId = approvalRes.logId || '';
     const isGasAccount = approvalRes.isGasAccount || false;
+    const sig = approvalRes.sig;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -388,6 +389,7 @@ class ProviderController extends BaseController {
     delete approvalRes.isGasLess;
     delete approvalRes.logId;
     delete approvalRes.isGasAccount;
+    delete approvalRes.sig;
 
     let is1559 = is1559Tx(approvalRes);
     const is7702 = is7702Tx(approvalRes);
@@ -720,6 +722,7 @@ class ProviderController extends BaseController {
               is_gasless: isGasLess,
               is_gas_account: isGasAccount,
               log_id: logId,
+              sig,
             });
             if (res.access_token) {
               gasAccountService.setGasAccountSig(
