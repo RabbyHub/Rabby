@@ -157,7 +157,8 @@
         "recentlyConnected": "最近连接",
         "noConnectedDapps": "没有已连接的 Dapps",
         "dapps": "Dapps",
-        "metamaskModeTooltip": "无法在此 Dapp 上连接 Rabby？尝试启用 <1>MetaMask 模式</1>。"
+        "metamaskModeTooltip": "无法在此 Dapp 上连接 Rabby？尝试启用 <1>MetaMask 模式</1>。",
+        "metamaskModeTooltipNew": "Rabby Wallet将在您在Dapp中选择“MetaMask”时连接。您可以在更多 > 通过伪装为MetaMask连接Rabby中进行管理。"
       },
       "contacts": {
         "noData": "没有数据",
@@ -390,6 +391,10 @@
         "enableDesc": "如果 Dapp 仅与 MetaMask 一起使用，请启用",
         "desc": "如果无法在 Dapp 上连接 Rabby，请启用 MetaMask 模式并通过选择 MetaMask 选项进行连接。",
         "footerText": "在“更多 > MetaMask 模式”中的 MetaMask 模式中添加更多 Dapps"
+      },
+      "offlineChain": {
+        "chain": "{{chain}} 将很快不再被集成。",
+        "tips": "{{chain}}链将不会在{{date}}集成。您的资产不会受到影响，但不会包含在您的总余额中。如需访问，您可以在“更多”中将其添加为自定义网络。"
       }
     },
     "chainList": {
@@ -1332,7 +1337,9 @@
         "WalletConnectTips": "GasAccount 不支持 WalletConnect",
         "useGasAccount": "使用 GasAccount",
         "gotIt": "知道了",
-        "chainNotSupported": "此链不被GasAccount支持"
+        "chainNotSupported": "此链不被GasAccount支持",
+        "loginTips": "要完成 GasAccount 登录，此交易将被丢弃。您需要在登录后重新进行。",
+        "depositTips": "要完成 GasAccount 存款，此交易将被丢弃。存款完成后，您需要重新发起交易。"
       }
     },
     "signText": {
@@ -1654,7 +1661,14 @@
       "gasAccountForGas": "使用我 GasAccount 中的 USD 支付 gas 费",
       "nativeTokenForGas": "使用 {{tokenName}} 代币在 {{chainName}} 支付 gas 费用",
       "primaryType": "主要类型",
-      "safeServiceNotAvailable": "当前无法提供安全服务，请稍后再试。"
+      "safeServiceNotAvailable": "当前无法提供安全服务，请稍后再试。",
+      "safeTx": {
+        "selfHostConfirm": {
+          "title": "切换到 Rabby 的 Safe Service",
+          "button": "OK",
+          "content": "Safe API 暂不可用。切换到由 Rabby 部署的 Safe 服务以保持您的 Safe 功能正常。<strong>所有 Safe 签署者必须使用 Rabby Wallet 授权交易。</strong>"
+        }
+      }
     },
     "signTypedData": {
       "buyNFT": {
@@ -2448,7 +2462,13 @@
       "withdraw": "提取",
       "safeAddressDepositTips": "多签地址不支持存款。",
       "logout": "退出当前 GasAccount",
-      "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。"
+      "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。",
+      "gasAccountList": {
+        "gasAccountBalance": "Gas Balance",
+        "address": "地址"
+      },
+      "switchAccount": "切换 GasAccount",
+      "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。"
     },
     "safeMessageQueue": {
       "loading": "加载消息",
@@ -2572,6 +2592,20 @@
     },
     "eip7702": {
       "alert": "EIP-7702 尚未支持"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "enabled": "伪装已启用。刷新 Dapp 以重新连接。",
+        "disabled": "伪装已禁用。刷新 Dapp。"
+      },
+      "step1": "第 1 步",
+      "noDappFound": "未找到 Dapp",
+      "step1Desc": "允许 Rabby 在当前 Dapp 上伪装成 MetaMask",
+      "alert": "无法连接到 Dapp，因为它未显示 Rabby Wallet 作为选项？",
+      "step2": "步骤 2",
+      "title": "通过伪装成 MetaMask 来连接 Rabby",
+      "step2Desc": "刷新并通过 MetaMask 连接",
+      "manage": "管理 Allowed Dapps"
     }
   },
   "component": {

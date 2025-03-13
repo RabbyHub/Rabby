@@ -340,7 +340,14 @@
       "address": "Adresse",
       "maxPriorityFeeDisabledAlert": "Bitte zuerst den Gaspreis festlegen",
       "primaryType": "Primärtyp",
-      "safeServiceNotAvailable": "Der sichere Dienst ist derzeit nicht verfügbar, bitte versuchen Sie es später erneut."
+      "safeServiceNotAvailable": "Der sichere Dienst ist derzeit nicht verfügbar, bitte versuchen Sie es später erneut.",
+      "safeTx": {
+        "selfHostConfirm": {
+          "button": "OK",
+          "title": "Wechseln Sie zum Rabby Safe Service",
+          "content": "Safe API ist nicht verfügbar. Wechseln Sie zum von Rabby bereitgestellten Safe-Dienst, um Ihren Safe funktionsfähig zu halten. <strong>Alle Safe-Signierer müssen Rabby Wallet verwenden, um Transaktionen zu autorisieren.<strong>"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "Anfrage von",
@@ -441,7 +448,9 @@
         "customRPC": "Nicht unterstützt bei der Verwendung eines benutzerdefinierten RPC",
         "loginFirst": "Bitte loggen Sie sich zuerst bei GasAccount ein。",
         "useGasAccount": "Verwenden Sie GasAccount",
-        "chainNotSupported": "Diese Kette wird von GasAccount nicht unterstützt"
+        "chainNotSupported": "Diese Kette wird von GasAccount nicht unterstützt",
+        "loginTips": "Um den GasAccount-Login abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach dem Login erneut erstellen.",
+        "depositTips": "Um die GasAccount-Einzahlung abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach der Einzahlung erneut erstellen."
       },
       "keystone": {
         "verifyPasswordError": "Signatur fehlgeschlagen, bitte versuchen Sie es nach dem Entsperren erneut.",
@@ -1082,7 +1091,8 @@
         "noRecentlyConnectedDapps": "Keine kürzlich verbundenen Dapps",
         "dapps": "Dapps",
         "noConnectedDapps": "Keine verbundenen Dapps",
-        "metamaskModeTooltip": "Kann Rabby in dieser Dapp nicht verbinden? Versuchen Sie, den <1>MetaMask-Modus</1> zu aktivieren."
+        "metamaskModeTooltip": "Kann Rabby in dieser Dapp nicht verbinden? Versuchen Sie, den <1>MetaMask-Modus</1> zu aktivieren.",
+        "metamaskModeTooltipNew": "Rabby Wallet wird verbunden, wenn Sie \"MetaMask\" in der Dapp auswählen. Sie können dies unter Mehr > Verbinde Rabby, indem Sie sich als MetaMask ausgeben, verwalten."
       },
       "feedback": {
         "directMessage": {
@@ -1345,6 +1355,10 @@
         "toastSuccess": "Aktiviert. Aktualisieren Sie die Seite, um die Verbindung wiederherzustellen.",
         "title": "MetaMask Mode",
         "desc": "Wenn Sie Rabby in einer DApp nicht verbinden können, aktivieren Sie den MetaMask-Modus und verbinden Sie sich, indem Sie die MetaMask-Option auswählen."
+      },
+      "offlineChain": {
+        "chain": "{{chain}} wird bald nicht integriert sein.",
+        "tips": "Die {{chain}} Chain wird am {{date}} nicht integriert. Ihre Vermögenswerte werden nicht beeinträchtigt, aber sie werden nicht in Ihrem Gesamtguthaben enthalten sein. Um darauf zuzugreifen, können Sie es unter „Mehr“ als benutzerdefiniertes Netzwerk hinzufügen."
       }
     },
     "nft": {
@@ -2371,7 +2385,13 @@
       "safeAddressDepositTips": "Multisig-Adressen werden für Einzahlungen nicht unterstützt.",
       "logout": "Aktuelles GasAccount abmelden",
       "risk": "Ihre aktuelle Adresse wurde als riskant erkannt, daher ist diese Funktion nicht verfügbar.",
-      "gasExceed": "GasAccount-Saldo darf $1000 nicht überschreiten"
+      "gasExceed": "GasAccount-Saldo darf $1000 nicht überschreiten",
+      "gasAccountList": {
+        "address": "Adresse",
+        "gasAccountBalance": "Gas Balance"
+      },
+      "withdrawDisabledIAP": "Abhebungen sind deaktiviert, da Ihr Guthaben Fiat-Mittel enthält, die nicht abgehoben werden können. Kontaktieren Sie den Support, um Ihr Token-Guthaben abzuheben.",
+      "switchAccount": "Wechseln Sie GasAccount"
     },
     "safeMessageQueue": {
       "noData": "Keine Nachrichten",
@@ -2531,6 +2551,23 @@
         "description": "Du bist bereit, Rabby Wallet zu verwenden",
         "title": "Passwort erfolgreich festgelegt"
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 wird noch nicht unterstützt"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "disabled": "Tarnung deaktiviert. Aktualisieren Sie die Dapp.",
+        "enabled": "Tarnung aktiviert. Aktualisieren Sie die Dapp, um die Verbindung wiederherzustellen."
+      },
+      "noDappFound": "Keine Dapp gefunden",
+      "manage": "Verwalte zulässige Dapps",
+      "step1": "Schritt 1",
+      "step1Desc": "Erlaube Rabby, sich auf der aktuellen Dapp als MetaMask auszugeben.",
+      "step2Desc": "Aktualisieren und über MetaMask verbinden",
+      "step2": "Schritt 2",
+      "alert": "Kann keine Verbindung zu einer Dapp herstellen, weil Rabby Wallet nicht als Option angezeigt wird?",
+      "title": "Verbinden Sie Rabby, indem Sie sich als MetaMask ausgeben"
     }
   },
   "component": {

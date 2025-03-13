@@ -340,7 +340,14 @@
       "nativeTokenForGas": "Используйте токен {{tokenName}} в {{chainName}} для оплаты газа",
       "gasAccountForGas": "Использовать USD с моего GasAccount для оплаты газа",
       "primaryType": "Основной тип",
-      "safeServiceNotAvailable": "Сервис Safe в данный момент недоступен, попробуйте позже."
+      "safeServiceNotAvailable": "Сервис Safe в данный момент недоступен, попробуйте позже.",
+      "safeTx": {
+        "selfHostConfirm": {
+          "button": "OK",
+          "title": "Переключитесь на службу безопасности Rabby",
+          "content": "API Safe недоступен. Переключитесь на службу Safe, развернутую Rabby, чтобы сохранить работоспособность вашего Safe. <strong>Все подписанты Safe должны использовать Rabby Wallet для авторизации транзакций.<strong>"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "Запрос от",
@@ -458,7 +465,9 @@
         "chainNotSupported": "Эта цепочка не поддерживается GasAccount",
         "notEnough": "GasAccount is not enough",
         "login": "Войти",
-        "useGasAccount": "Используйте GasAccount"
+        "useGasAccount": "Используйте GasAccount",
+        "depositTips": "Чтобы завершить депозит GasAccount, эта транзакция будет отменена. Вам нужно будет создать ее заново после депозита.",
+        "loginTips": "Чтобы завершить вход в GasAccount, эта транзакция будет отменена. Вам нужно будет создать её заново после входа."
       }
     },
     "signTypedData": {
@@ -1082,7 +1091,8 @@
         "noRecentlyConnectedDapps": "Нет недавно подключенных Dapps",
         "noConnectedDapps": "Нет подключенных Dapps",
         "dapps": "Dapps",
-        "metamaskModeTooltip": "Не удается подключить Rabby на этом Dapp? Попробуйте включить <1>режим MetaMask</1>."
+        "metamaskModeTooltip": "Не удается подключить Rabby на этом Dapp? Попробуйте включить <1>режим MetaMask</1>.",
+        "metamaskModeTooltipNew": "Rabby Wallet подключится, когда вы выберете \"MetaMask\" на Dapp. Вы можете управлять этим в разделе Еще > Подключить Rabby, замаскировав его как MetaMask."
       },
       "feedback": {
         "directMessage": {
@@ -1346,6 +1356,10 @@
         "footerText": "Добавьте больше Dapps в режим MetaMask в разделе Ещё > Режим MetaMask",
         "desc": "Если вы не можете подключить Rabby в Dapp, включите MetaMask Mode и подключитесь, выбрав опцию MetaMask.",
         "toastSuccess": "Включено. Обновите страницу, чтобы переподключиться."
+      },
+      "offlineChain": {
+        "chain": "Вскоре {{chain}} больше не будет интегрироваться.",
+        "tips": "Цепочка {{chain}} не будет интегрирована {{date}}. Ваши активы не будут затронуты, но не будут включены в ваш общий баланс. Чтобы получить к ним доступ, вы можете добавить ее как пользовательскую сеть в разделе «More»."
       }
     },
     "nft": {
@@ -2370,7 +2384,13 @@
       "gasExceed": "Баланс GasAccount не может превышать $1000",
       "noBalance": "Нет баланса",
       "risk": "Ваш текущий адрес был определен как рискованный, поэтому эта функция недоступна.",
-      "safeAddressDepositTips": "Мультиподписи не поддерживаются для депозитов."
+      "safeAddressDepositTips": "Мультиподписи не поддерживаются для депозитов.",
+      "gasAccountList": {
+        "address": "Адрес",
+        "gasAccountBalance": "Gas Balance"
+      },
+      "switchAccount": "Переключить GasAccount",
+      "withdrawDisabledIAP": "Вывод средств отключен, поскольку ваш баланс включает фиатные средства, которые не могут быть выведены. Свяжитесь с поддержкой, чтобы снять остаток с вашего токенового баланса."
     },
     "safeMessageQueue": {
       "loading": "Загрузка сообщений",
@@ -2530,6 +2550,23 @@
         "title": "Пароль успешно установлен",
         "description": "Вы готовы использовать Rabby Wallet"
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 пока не поддерживается"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "enabled": "Маскировка включена. Обновите Dapp, чтобы переподключиться.",
+        "disabled": "Замаскировать отключено. Обновите Dapp."
+      },
+      "manage": "Управление разрешенными Dapps",
+      "noDappFound": "Dapp не найдено",
+      "step2Desc": "Обновить и подключиться через MetaMask",
+      "step1Desc": "Разрешить Rabby маскироваться под MetaMask в текущем Dapp",
+      "title": "Подключите Rabby, замаскировавшись под MetaMask",
+      "step1": "Шаг 1",
+      "step2": "Шаг 2",
+      "alert": "Не удается подключиться к Dapp, потому что Rabby Wallet не отображается в качестве опции?"
     }
   },
   "component": {

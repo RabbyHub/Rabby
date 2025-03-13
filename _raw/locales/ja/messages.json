@@ -340,7 +340,14 @@
       "addressSource": "アドレスソース",
       "typedDataMessage": "型付きデータに署名",
       "primaryType": "プライマリタイプ",
-      "safeServiceNotAvailable": "現在、Safeサービスは利用できません。後でもう一度お試しください。"
+      "safeServiceNotAvailable": "現在、Safeサービスは利用できません。後でもう一度お試しください。",
+      "safeTx": {
+        "selfHostConfirm": {
+          "button": "OK",
+          "title": "RabbyのSafe Serviceに切り替える",
+          "content": "Safe API は利用できません。Rabby によってデプロイされた Safe サービスに切り替えて、Safe を機能させ続けてください。<strong>すべての Safe 署名者は Rabby Wallet を使用してトランザクションを承認する必要があります。<strong>"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "リクエスト元",
@@ -434,7 +441,9 @@
         "loginFirst": "GasAccount にまずログインしてください。",
         "notEnough": "GasAccount が不足しています",
         "WalletConnectTips": "GasAccountではWalletConnectはサポートされていません。",
-        "deposit": "入金"
+        "deposit": "入金",
+        "loginTips": "GasAccountログインを完了するために、このトランザクションは破棄されます。ログイン後に再作成する必要があります。",
+        "depositTips": "GasAccountの入金を完了するためには、この取引は破棄されます。入金後に再度作成する必要があります。"
       },
       "keystone": {
         "txRejected": "トランザクションが拒否されました",
@@ -1082,7 +1091,8 @@
         "noRecentlyConnectedDapps": "最近接続したDappはありません",
         "dapps": "Dapps",
         "noConnectedDapps": "接続されているDappsはありません",
-        "metamaskModeTooltip": "このDappでRabbyに接続できませんか？<1>MetaMaskモード</1>を有効にしてみてください。"
+        "metamaskModeTooltip": "このDappでRabbyに接続できませんか？<1>MetaMaskモード</1>を有効にしてみてください。",
+        "metamaskModeTooltipNew": "Rabby Walletは、Dappで「MetaMask」を選択すると接続されます。これを管理するには、[その他] > [MetaMaskとして偽装してRabbyを接続]に進んでください。"
       },
       "feedback": {
         "directMessage": {
@@ -1345,6 +1355,10 @@
         "desc": "RabbyをDappで接続できない場合は、MetaMaskモードを有効にし、MetaMaskオプションを選択して接続してください。",
         "enableDesc": "MetaMaskでのみ動作するDappの場合は有効にする",
         "toastSuccess": "有効になりました。ページを更新して再接続してください。"
+      },
+      "offlineChain": {
+        "tips": "{{chain}} Chainは{{date}}に統合されません。あなたの資産には影響はありませんが、総残高には含まれません。それらにアクセスするには、「More」でカスタムネットワークとして追加することができます。",
+        "chain": "{{chain}} はまもなく統合されなくなります。"
       }
     },
     "nft": {
@@ -2371,7 +2385,13 @@
       "gasExceed": "GasAccountの残高は$1000を超えることはできません。",
       "risk": "現在のアドレスがリスキーであると検出されたため、この機能は利用できません。",
       "safeAddressDepositTips": "マルチシグアドレスは入金には対応していません。",
-      "logout": "現在のGasAccountからログアウト"
+      "logout": "現在のGasAccountからログアウト",
+      "gasAccountList": {
+        "address": "アドレス",
+        "gasAccountBalance": "Gas Balance"
+      },
+      "switchAccount": "GasAccount を切り替える",
+      "withdrawDisabledIAP": "引き出しは無効になっています。これは、バランスに法定通貨が含まれており、それらを引き出すことができないためです。トークン残高を引き出すには、サポートにお問い合わせください。"
     },
     "safeMessageQueue": {
       "loading": "メッセージを読み込み中",
@@ -2531,6 +2551,23 @@
         "description": "Rabby Wallet を使用する準備が整いました。",
         "title": "パスワードが正常に設定されました"
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 はまだサポートされていません"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "disabled": "偽装が無効になりました。Dappを更新してください。",
+        "enabled": "偽装が有効になりました。Dapp を更新して再接続してください。"
+      },
+      "step1": "ステップ 1",
+      "step2": "ステップ 2",
+      "step2Desc": "MetaMaskを介して更新して接続",
+      "noDappFound": "Dapp が見つかりません",
+      "step1Desc": "Rabbyに現在のDappでMetaMaskとして偽装を許可する",
+      "manage": "許可されたDappsを管理",
+      "title": "MetaMaskとして偽装してRabbyを接続する",
+      "alert": "Dappに接続できません。Rabby Walletがオプションとして表示されていないためですか？"
     }
   },
   "component": {
