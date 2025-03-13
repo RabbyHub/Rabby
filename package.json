@@ -75,7 +75,7 @@
     "@sentry/react": "6.7.2",
     "@sentry/tracing": "6.19.7",
     "@spruceid/siwe-parser": "2.0.2",
-    "@trezor/connect-webextension": "9.2.2",
+    "@trezor/connect-webextension": "9.3.0",
     "@types/bignumber.js": "5.0.0",
     "@types/lodash": "4.14.172",
     "@types/react-window": "1.8.5",
