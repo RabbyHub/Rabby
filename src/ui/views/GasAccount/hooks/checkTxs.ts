@@ -9,17 +9,21 @@ import { useHistory } from 'react-router-dom';
 import React from 'react';
 import { Modal } from 'antd';
 import clsx from 'clsx';
+import { Account } from '@/background/service/preference';
+import { useRequest } from 'ahooks';
 
 export const useGasAccountTxsCheck = ({
   isReady,
   txs,
   noCustomRPC,
   isSupportedAddr,
+  currentAccount,
 }: {
   isReady: boolean;
   txs: Tx[];
   noCustomRPC: boolean;
   isSupportedAddr: boolean;
+  currentAccount: Account;
 }) => {
   const wallet = useWallet();
   const [gasMethod, setGasMethod] = useState<'native' | 'gasAccount'>('native');
@@ -28,19 +32,34 @@ export const useGasAccountTxsCheck = ({
     !!sig && !!accountId
   );
 
-  const [{ value: gasAccountCost }, gasAccountCostFn] = useAsyncFn(async () => {
-    if (!isReady) {
-      return;
+  const [isFirstGasCostLoading, setIsFirstGasCostLoading] = useState(true);
+  const gasAccountAddress = accountId || currentAccount.address;
+
+  const { data: gasAccountCost, runAsync: gasAccountCostFn } = useRequest(
+    async () => {
+      if (!isReady) {
+        return;
+      }
+      if (!sig || !accountId) {
+        setIsGasAccountLogin(false);
+      }
+      const res = await wallet.openapi.checkGasAccountTxs({
+        sig: sig || '',
+        account_id: gasAccountAddress,
+        tx_list: txs,
+      });
+
+      return res;
+    },
+    {
+      refreshDeps: [sig, accountId, isReady, txs],
+      onFinally() {
+        if (isReady) {
+          setIsFirstGasCostLoading(false);
+        }
+      },
     }
-    setIsGasAccountLogin(!!sig && !!accountId);
-
-    return wallet.openapi.checkGasAccountTxs({
-      sig: sig || '',
-      account_id: accountId!,
-      tx_list: txs,
-    });
-  }, [sig, accountId, isReady, txs]);
-
+  );
   useDebounce(
     () => {
       gasAccountCostFn();
@@ -81,37 +100,11 @@ export const useGasAccountTxsCheck = ({
     gasAccountCanPay,
     canGotoUseGasAccount,
     canDepositUseGasAccount,
+    gasAccountCostFn,
+    gasAccountAddress,
+    sig,
+    isFirstGasCostLoading,
   };
-};
-
-export const useAutoLoginOnSwitchedGasAccount = ({
-  isGasAccountLogin,
-  isPayByGasAccount,
-  gasAccountCanPay,
-}: {
-  isGasAccountLogin: boolean;
-  isPayByGasAccount: boolean;
-  gasAccountCanPay: boolean;
-}) => {
-  const currentAccount = useCurrentAccount();
-  const { login } = useGasAccountMethods();
-
-  useEffect(() => {
-    if (
-      !isGasAccountLogin &&
-      gasAccountCanPay &&
-      isPayByGasAccount &&
-      currentAccount
-    ) {
-      login(currentAccount);
-    }
-  }, [
-    isGasAccountLogin,
-    isPayByGasAccount,
-    currentAccount,
-    login,
-    gasAccountCanPay,
-  ]);
 };
 
 export const useLoginDepositConfirm = () => {

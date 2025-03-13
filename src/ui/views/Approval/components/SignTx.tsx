@@ -77,10 +77,7 @@ import GasSelectorHeader, {
 } from './TxComponents/GasSelectorHeader';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
-import {
-  useAutoLoginOnSwitchedGasAccount,
-  useGasAccountTxsCheck,
-} from '../../GasAccount/hooks/checkTxs';
+import { useGasAccountTxsCheck } from '../../GasAccount/hooks/checkTxs';
 import {
   fetchActionRequiredData,
   parseAction,
@@ -711,6 +708,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       },
     ] as Tx[];
   }, [tx, realNonce, gasLimit]);
+  const _currentAccount = useRabbySelector((s) => s.account.currentAccount!);
 
   const {
     gasAccountCost,
@@ -724,12 +722,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     txs,
     noCustomRPC,
     isSupportedAddr,
-  });
-
-  useAutoLoginOnSwitchedGasAccount({
-    isGasAccountLogin,
-    isPayByGasAccount: gasMethod === 'gasAccount',
-    gasAccountCanPay,
+    currentAccount: _currentAccount,
   });
 
   useEffect(() => {

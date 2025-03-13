@@ -31,7 +31,13 @@ export const gasAccount = createModel<RootModel>()({
       const logout = () => {
         this.setGasAccountSig({});
       };
+
+      const login = () => {
+        this.syncState();
+      };
       eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_OUT, logout);
+      eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_IN, login);
+
       return this.syncState();
     },
     async syncState(key: keyof GasAccountServiceStore | undefined, store) {
