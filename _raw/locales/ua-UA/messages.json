@@ -1201,7 +1201,7 @@
           "currentLanguage": "Поточна мова",
           "enableTestnets": "Увімкнути тестові мережі",
           "toggleThemeMode": "Тема режиму",
-          "metamaskMode": "MetaMask Mode",
+          "metamaskMode": "",
           "customTestnet": "Додати власну мережу",
           "themeMode": "Тема режиму"
         },
@@ -2502,7 +2502,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "Режим MetaMask",
+      "title": "",
       "desc": "Увімкнено режим MetaMask для наступних Dapps. Ви можете підключити Rabby, вибравши опцію MetaMask."
     },
     "forgotPassword": {

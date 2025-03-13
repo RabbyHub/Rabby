@@ -1161,7 +1161,8 @@
         "noRecentlyConnectedDapps": "No recently connected Dapps",
         "noConnectedDapps": "No connected Dapps",
         "dapps": "Dapps",
-        "metamaskModeTooltip": "Can’t connect Rabby on this Dapp? Try enabling <1>MetaMask Mode</1>"
+        "metamaskModeTooltip": "Can’t connect Rabby on this Dapp? Try enabling <1>MetaMask Mode</1>",
+        "metamaskModeTooltipNew": "Rabby Wallet will connect when you select \"MetaMask\" on the Dapp. You can manage this in More > Connect Rabby by Disguising as MetaMask"
       },
       "feedback": {
         "directMessage": {
@@ -1279,7 +1280,7 @@
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
           "customTestnet": "Add Custom Network",
-          "metamaskMode": "MetaMask Mode"
+          "metamaskMode": "Connect Rabby by Disguising as MetaMask"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1869,7 +1870,7 @@
       "otherWalletBtn": "Connect with Another Wallet",
       "SelectWallet": {
         "title": "Select a Wallet to Connect",
-        "desc": "Choose from the wallets you have installed"
+        "desc": "Select from the wallets you have installed"
       }
     },
     "addressDetail": {
@@ -2498,7 +2499,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "MetaMask Mode",
+      "title": "Manage Allowed Dapps",
       "desc": "MetaMask Mode enabled for the following Dapps. You can connect Rabby by selecting the MetaMask option."
     },
     "forgotPassword": {
@@ -2542,6 +2543,20 @@
     },
     "eip7702": {
       "alert": "EIP-7702 is not supported yet"
+    },
+    "metamaskModeDappsGuide": {
+      "title": "Connect Rabby by Disguising as MetaMask",
+      "alert": "Can't connect to a Dapp because it doesn't show Rabby Wallet as an option?",
+      "step1": "Step 1",
+      "step1Desc": "Allow Rabby to disguise as MetaMask on the current Dapp",
+      "step2": "Step 2",
+      "step2Desc": "Refresh and connect via MetaMask",
+      "manage": "Manage Allowed Dapps",
+      "noDappFound": "No Dapp found",
+      "toast": {
+        "enabled": "Disguise enabled. Refresh the Dapp to reconnect.",
+        "disabled": "Disguise disabled. Refresh the Dapp."
+      }
     }
   },
   "component": {

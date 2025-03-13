@@ -1200,7 +1200,7 @@
           "customTestnet": "Özel Ağ Ekle",
           "themeMode": "Tema Modu",
           "toggleThemeMode": "Tema Modu",
-          "metamaskMode": "MetaMask Modu"
+          "metamaskMode": ""
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -2493,7 +2493,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "MetaMask Modu",
+      "title": "",
       "desc": "MetaMask Modu aşağıdaki Dapp’ler için etkinleştirildi. MetaMask seçeneğini seçerek Rabby bağlanabilirsiniz."
     },
     "forgotPassword": {
