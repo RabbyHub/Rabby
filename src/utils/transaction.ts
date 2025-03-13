@@ -43,6 +43,7 @@ export interface ApprovalRes extends Tx {
   isGasAccount?: boolean;
   logId?: string;
   authorizationList?: (Uint8Array | string)[];
+  sig?: string;
 }
 
 export const validateGasPriceRange = (tx: Tx) => {
