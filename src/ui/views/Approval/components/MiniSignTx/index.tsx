@@ -79,10 +79,6 @@ export const MiniSignTx = ({
     id: chainId,
   })!;
   const currentAccount = useCurrentAccount();
-  const renderStartAt = useRef(0);
-  const securityEngineCtx = useRef<any>(null);
-  const logId = useRef('');
-  const actionType = useRef('');
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [canProcess, setCanProcess] = useState(true);
@@ -216,14 +212,12 @@ export const MiniSignTx = ({
     null
   );
   const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollRefSize = useSize(scrollRef);
-  const scrollInfo = useScroll(scrollRef);
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
-  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
+  const { currentTx } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
@@ -318,7 +312,7 @@ export const MiniSignTx = ({
       return [] as Tx[];
     }
     return (
-      txsResult.map((item, index) => {
+      txsResult.map((item) => {
         return {
           ...item.tx,
           gas: item.gasLimit,
@@ -328,6 +322,8 @@ export const MiniSignTx = ({
     );
   }, [txsResult, realNonce, selectedGas?.price]);
 
+  const _currentAccount = useRabbySelector((s) => s.account.currentAccount!);
+
   const {
     gasAccountCost,
     gasMethod,
@@ -335,11 +331,14 @@ export const MiniSignTx = ({
     isGasAccountLogin,
     gasAccountCanPay,
     canGotoUseGasAccount,
+    canDepositUseGasAccount,
+    sig,
   } = useGasAccountTxsCheck({
     isReady,
     txs: gasAccountTxs,
     noCustomRPC,
     isSupportedAddr,
+    currentAccount: _currentAccount,
   });
 
   useEffect(() => {
@@ -378,6 +377,7 @@ export const MiniSignTx = ({
             pushType: pushInfo.type,
             ignoreGasCheck: true,
             ignoreGasNotEnoughCheck: true,
+            sig,
           },
           status: 'idle',
         };
@@ -505,7 +505,7 @@ export const MiniSignTx = ({
       setGasLessLoading(true);
       const res = await wallet.openapi.gasLessTxsCheck({
         tx_list:
-          txsResult.map((item, index) => {
+          txsResult.map((item) => {
             return {
               ...item.tx,
               gas: item.gasLimit,
@@ -788,7 +788,7 @@ export const MiniSignTx = ({
 
   const checkErrors = useMemo(() => {
     let balance = nativeTokenBalance;
-    const res = txsResult.map((item, index) => {
+    const res = txsResult.map((item) => {
       const result = checkGasAndNonce({
         recommendGasLimitRatio: item.recommendGasLimitRatio,
         recommendGasLimit: item.gasLimit,
@@ -929,6 +929,7 @@ export const MiniSignTx = ({
         gasAccountCost={gasAccountCost}
         gasAccountCanPay={gasAccountCanPay}
         canGotoUseGasAccount={canGotoUseGasAccount}
+        canDepositUseGasAccount={canDepositUseGasAccount}
         isGasAccountLogin={isGasAccountLogin}
         isWalletConnect={
           currentAccountType === KEYRING_TYPE.WalletConnectKeyring

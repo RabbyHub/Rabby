@@ -380,7 +380,9 @@
         "loginFirst": "Please log in to GasAccount first",
         "login": "Log in",
         "gotIt": "Got it",
-        "deposit": "Deposit"
+        "deposit": "Deposit",
+        "depositTips": "To complete the GasAccount deposit, this transaction will be discarded. You’ll need to remake it after the deposit.",
+        "loginTips": "To complete the GasAccount login, this transaction will be discarded. You’ll need to remake it after the login."
       },
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
@@ -2323,6 +2325,8 @@
       "safeAddressDepositTips": "Multisig addresses are not supported for deposits.",
       "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
+      "switchAccount": "Switch GasAccount",
+      "withdrawDisabledIAP": "Withdrawals are disabled because your balance includes fiat funds, which cannot be withdrawn. Contact support to withdraw your token balance",
       "history": {
         "noHistory": "No history"
       },
@@ -2333,8 +2337,12 @@
         "gotIt": "Got it"
       },
       "loginConfirmModal": {
-        "title": "Log in with Current Address",
+        "title": "Select an address to log in",
         "desc": "Once confirmed, you can only deposit it at this address"
+      },
+      "gasAccountList": {
+        "address": "Address",
+        "gasAccountBalance": "Gas Balance"
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",

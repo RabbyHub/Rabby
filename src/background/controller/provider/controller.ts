@@ -30,6 +30,7 @@ import {
   transactionBroadcastWatchService,
   notificationService,
   bridgeService,
+  gasAccountService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx, TxPushType } from 'background/service/openapi';
@@ -720,6 +721,15 @@ class ProviderController extends BaseController {
               is_gas_account: isGasAccount,
               log_id: logId,
             });
+            if (res.access_token) {
+              gasAccountService.setGasAccountSig(
+                res.access_token,
+                currentAccount
+              );
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.GAS_ACCOUNT.LOG_IN,
+              });
+            }
             hash = res.req.tx_id || undefined;
             reqId = res.req.id || undefined;
             if (res.req.push_status === 'failed') {

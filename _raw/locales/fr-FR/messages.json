@@ -813,7 +813,8 @@
         "title": "DApps connectées",
         "dapps": "DApps",
         "noConnectedDapps": "Aucune dApp connectée",
-        "metamaskModeTooltip": "Impossible de connecter Rabby sur cette dApp ? Essayez d'activer le <1>Mode MetaMask</1>"
+        "metamaskModeTooltip": "Impossible de connecter Rabby sur cette dApp ? Essayez d'activer le <1>Mode MetaMask</1>",
+        "metamaskModeTooltipNew": "Rabby Wallet se connectera lorsque vous sélectionnez \"MetaMask\" sur le Dapp. Vous pouvez gérer cela dans Plus > Connecter Rabby en se déguisant en MetaMask"
       },
       "security": {
         "comingSoon": "Plus de fonctionnalités à venir",
@@ -872,8 +873,8 @@
           "metamaskPreferredDapps": "DApps préférées de MetaMask",
           "themeMode": "Thème",
           "toggleThemeMode": "Thème",
-          "metamaskMode": "",
-          "customTestnet": "Ajouter un réseau personnalisé"
+          "customTestnet": "Ajouter un réseau personnalisé",
+          "metamaskMode": "Connectez Rabby en se faisant passer pour MetaMask"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -918,6 +919,10 @@
         "desc": "Si vous ne pouvez pas connecter Rabby sur une dApp, activez le Mode MetaMask et connectez-vous en sélectionnant l'option MetaMask.",
         "toastSuccess": "Activé. Actualisez la page pour vous reconnecter.",
         "footerText": "Ajoutez plus de dApps au Mode MetaMask dans Plus > Mode MetaMask"
+      },
+      "offlineChain": {
+        "chain": "{{chain}} sera bientôt non intégré.",
+        "tips": "La chaîne {{chain}} ne sera pas intégrée le {{date}}. Vos actifs ne seront pas affectés mais ne seront pas inclus dans votre solde total. Pour y accéder, vous pouvez l'ajouter comme réseau personnalisé dans \"More\"."
       }
     },
     "ethSign": {
@@ -1652,7 +1657,9 @@
         "login": "Se connecter",
         "deposit": "Dépôt",
         "chainNotSupported": "Cette chaîne n'est pas prise en charge par GasAccount.",
-        "customRPC": "Non pris en charge lors de l'utilisation de custom RPC"
+        "customRPC": "Non pris en charge lors de l'utilisation de custom RPC",
+        "loginTips": "Pour terminer la connexion GasAccount, cette transaction sera annulée. Vous devrez la refaire après la connexion.",
+        "depositTips": "Pour compléter le dépôt GasAccount, cette transaction sera annulée. Vous devrez la recréer après le dépôt."
       },
       "imKeyConnected": "imKey est connecté",
       "imKeyNotConnected": "imKey n'est pas connecté"
@@ -1976,7 +1983,14 @@
       "no": "Non",
       "hasInteraction": "Interagi auparavant",
       "primaryType": "Type primaire",
-      "safeServiceNotAvailable": "Le service Safe n'est pas disponible pour le moment, veuillez réessayer plus tard."
+      "safeServiceNotAvailable": "Le service Safe n'est pas disponible pour le moment, veuillez réessayer plus tard.",
+      "safeTx": {
+        "selfHostConfirm": {
+          "title": "Passer au service Safe de Rabby",
+          "content": "L'API Safe est indisponible. Passez au service Safe déployé par Rabby pour que votre Safe reste fonctionnel. <strong>Tous les signataires Safe doivent utiliser Rabby Wallet pour autoriser les transactions.<strong>",
+          "button": "OK"
+        }
+      }
     },
     "signTypedData": {
       "buyNFT": {
@@ -2618,7 +2632,13 @@
       "safeAddressDepositTips": "Les adresses Multisig ne sont pas prises en charge pour les dépôts.",
       "logout": "Déconnecter le GasAccount actuel",
       "risk": "Votre adresse actuelle a été détectée comme risquée, cette fonctionnalité est donc indisponible.",
-      "title": "GasAccount"
+      "title": "GasAccount",
+      "gasAccountList": {
+        "address": "Adresse",
+        "gasAccountBalance": "Solde de Gas"
+      },
+      "switchAccount": "Changer GasAccount",
+      "withdrawDisabledIAP": "Les retraits sont désactivés car votre solde inclut des fonds fiat, qui ne peuvent pas être retirés. Contactez le support pour retirer le solde de vos tokens."
     },
     "safeMessageQueue": {
       "noData": "Aucun message",
@@ -2778,6 +2798,23 @@
         "title": "Mot de passe défini avec succès",
         "description": "Vous êtes prêt à utiliser Rabby Wallet."
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 n'est pas encore pris en charge"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "enabled": "Déguisement activé. Actualisez la Dapp pour vous reconnecter.",
+        "disabled": "Déguisement désactivé. Actualisez le Dapp."
+      },
+      "step2Desc": "Actualiser et se connecter via MetaMask",
+      "step1": "Étape 1",
+      "noDappFound": "Aucune Dapp trouvée",
+      "alert": "Impossible de se connecter à un Dapp car il ne propose pas Rabby Wallet comme option ?",
+      "step1Desc": "Permettre à Rabby de se déguiser en MetaMask sur le Dapp actuel",
+      "title": "Connecter Rabby en se faisant passer pour MetaMask",
+      "manage": "Gérer les Dapps autorisées",
+      "step2": "Étape 2"
     }
   }
 }

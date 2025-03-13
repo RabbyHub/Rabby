@@ -3,29 +3,22 @@ import { PageHeader } from '@/ui/component';
 import { ReactComponent as RcIconMore } from '@/ui/assets/gas-account/more.svg';
 
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue, useWallet } from '@/ui/utils';
-import { Button, Dropdown, Menu } from 'antd';
+import { useWallet } from '@/ui/utils';
+import { Dropdown, Menu } from 'antd';
 import { GasAccountHistory } from './components/History';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { GasAccountLoginPopup } from './components/LoginPopup';
 import { GasAccountDepositPopup } from './components/DepositPopup';
-import { useAml, useGasAccountInfo, useGasAccountLogin } from './hooks';
+import { useGasAccountInfo, useGasAccountLogin } from './hooks';
 import { ReactComponent as RcIconLogout } from '@/ui/assets/gas-account/logout.svg';
-import { GasAccountBlueBorderedButton } from './components/Button';
+import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/gas-account/switch-cc.svg';
+
 import { GasAccountLogoutPopup } from './components/LogoutPopop';
 import { WithdrawPopup } from './components/WithdrawPopup';
 import { useHistory } from 'react-router-dom';
 import { GasAccountRefreshIdProvider } from './hooks/context';
-import { GasAccountWrapperBg } from './components/WrapperBg';
-import { GasAccountBlueLogo } from './components/GasAccountBlueLogo';
-import BigNumber from 'bignumber.js';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
-import clsx from 'clsx';
-import { KEYRING_TYPE } from '@/constant';
-
-const DEPOSIT_LIMIT = 1000;
+import { GasAccountCard } from './components/GasAccountCard';
 
 const GasAccountInner = () => {
   const { t } = useTranslation();
@@ -44,46 +37,30 @@ const GasAccountInner = () => {
     history.push('/dashboard');
   };
 
+  const goBack = () => {
+    if (history.length > 1) {
+      history.goBack();
+    } else {
+      gotoDashboard();
+    }
+  };
+
   const handleRefreshHistory = useCallback(() => {
     setRefreshHistoryKey((prevKey) => prevKey + 1);
   }, [setRefreshHistoryKey]);
 
-  const { value, loading } = useGasAccountInfo();
-  const { isLogin } = useGasAccountLogin({ value, loading });
+  const { value: gasAccount, loading } = useGasAccountInfo();
+  const { isLogin } = useGasAccountLogin({ value: gasAccount, loading });
 
   const wallet = useWallet();
 
-  const balance = value?.account?.balance || 0;
+  const balance = gasAccount?.account?.balance || 0;
 
-  const currentAccount = useCurrentAccount();
-
-  const gasAccount = useRabbySelector((s) => s.gasAccount.account);
+  // const gasAccount = useRabbySelector((s) => s.gasAccount.account);
 
   const [switchAddrVisible, setSwitchAddrVisible] = useState(false);
 
-  const isRisk = useAml();
-
   const dispatch = useRabbyDispatch();
-
-  const isGnosisSafe = React.useMemo(
-    () => currentAccount?.type === KEYRING_TYPE.GnosisKeyring,
-    [currentAccount?.type]
-  );
-
-  const depositDisabled = isRisk || balance >= DEPOSIT_LIMIT || isGnosisSafe;
-
-  const depositTips = React.useMemo(() => {
-    if (isGnosisSafe) {
-      return t('page.gasAccount.safeAddressDepositTips');
-    }
-    if (isRisk) {
-      return t('page.gasAccount.risk');
-    }
-    if (balance >= DEPOSIT_LIMIT) {
-      return t('page.gasAccount.gasExceed');
-    }
-    return '';
-  }, [isRisk, balance, t, isGnosisSafe]);
 
   useEffect(() => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
@@ -106,20 +83,6 @@ const GasAccountInner = () => {
     wallet.clearPageStateCache();
   }, [wallet?.clearPageStateCache]);
 
-  useEffect(() => {
-    if (!isLogin) {
-      setLoginVisible(true);
-    } else {
-      setLoginVisible(false);
-    }
-  }, [isLogin]);
-
-  useEffect(() => {
-    if (!loading && !isLogin) {
-      setLoginVisible(true);
-    }
-  }, [loading, isLogin]);
-
   const rightItems = React.useMemo(
     () => (
       <Menu
@@ -128,6 +91,18 @@ const GasAccountInner = () => {
           boxShadow: '0px 8px 24px 0px rgba(0, 0, 0, 0.14)',
         }}
       >
+        <Menu.Item
+          className="px-12 h-40 flex items-center gap-[6px] bg-transparent hover:bg-transparent border-b-[0.5px] border-solid border-rabby-neutral-line"
+          onClick={() => {
+            setLoginVisible(true);
+          }}
+        >
+          <RcIconSwitchCC className="w-16 h-16 text-r-neutral-title-1" />
+          <span className="text-r-neutral-title-1 text-13 font-medium">
+            {t('page.gasAccount.switchAccount')}
+          </span>
+        </Menu.Item>
+
         <Menu.Item
           className="px-12 h-40 flex items-center gap-[6px] bg-transparent hover:bg-transparent"
           onClick={() => {
@@ -149,16 +124,18 @@ const GasAccountInner = () => {
       <PageHeader
         className="mx-[20px] pt-[20px] mb-[20px]"
         forceShowBack
-        onBack={gotoDashboard}
+        onBack={goBack}
         rightSlot={
-          <div className="flex items-center gap-20 absolute bottom-0 right-0">
-            <Dropdown overlay={rightItems} mouseLeaveDelay={0.3}>
-              <RcIconMore
-                viewBox="0 0 20 20"
-                className="w-20 h-20 cursor-pointer"
-              />
-            </Dropdown>
-          </div>
+          isLogin ? (
+            <div className="flex items-center gap-20 absolute bottom-0 right-0">
+              <Dropdown overlay={rightItems} mouseLeaveDelay={0.3}>
+                <RcIconMore
+                  viewBox="0 0 20 20"
+                  className="w-20 h-20 cursor-pointer"
+                />
+              </Dropdown>
+            </div>
+          ) : null
         }
       >
         <span className="text-20 font-medium text-r-neutral-title-1">
@@ -167,67 +144,35 @@ const GasAccountInner = () => {
       </PageHeader>
 
       <div className="flex-1 overflow-auto mx-20">
-        <GasAccountWrapperBg className="mb-[20px] flex flex-col items-center h-[260px] bg-r-neutral-card1 rounded-[8px] py-20 px-16 pt-24">
-          <GasAccountBlueLogo />
-          <div className="text-r-neutral-title-1 text-[32px] leading-normal font-bold mt-24">
-            {formatUsdValue(balance, BigNumber.ROUND_DOWN)}
-          </div>
+        <GasAccountCard
+          isLogin={isLogin}
+          onLoginPress={() => {
+            setLoginVisible(true);
+          }}
+          onDepositPress={openDepositPopup}
+          onWithdrawPress={() => {
+            if (!balance) {
+              return;
+            }
+            setWithdrawVisible(true);
+          }}
+          gasAccountInfo={gasAccount?.account}
+        />
 
-          <div className="w-full mt-auto flex gap-12 items-center justify-center relative">
-            <TooltipWithMagnetArrow
-              className="rectangle w-[max-content]"
-              visible={!balance ? undefined : false}
-              title={t('page.gasAccount.noBalance')}
-            >
-              <GasAccountBlueBorderedButton
-                block
-                className={clsx(!balance && 'opacity-50 cursor-not-allowed')}
-                onClick={() => {
-                  if (!balance) {
-                    return;
-                  }
-                  setWithdrawVisible(true);
-                }}
-              >
-                {t('page.gasAccount.withdraw')}
-              </GasAccountBlueBorderedButton>
-            </TooltipWithMagnetArrow>
-            <TooltipWithMagnetArrow
-              className="rectangle w-[max-content]"
-              visible={depositDisabled ? undefined : false}
-              title={depositTips}
-            >
-              <Button
-                disabled={depositDisabled}
-                block
-                size="large"
-                type="primary"
-                className="h-[48px] text-r-neutral-title2 text-15 font-medium"
-                style={{
-                  height: 48,
-                }}
-                onClick={openDepositPopup}
-              >
-                {t('page.gasAccount.deposit')}
-              </Button>
-            </TooltipWithMagnetArrow>
-          </div>
-        </GasAccountWrapperBg>
-
-        <GasAccountHistory key={refreshHistoryKey} />
+        <GasAccountHistory
+          key={refreshHistoryKey + `-${isLogin}-${gasAccount?.account}`}
+        />
       </div>
 
       <GasAccountLoginPopup
         visible={loginVisible}
         onCancel={() => {
-          gotoDashboard();
           setLoginVisible(false);
         }}
       />
       <GasAccountLogoutPopup
         visible={logoutVisible}
         onCancel={() => {
-          gotoDashboard();
           setLogoutVisible(false);
         }}
       />

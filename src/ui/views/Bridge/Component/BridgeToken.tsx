@@ -345,15 +345,15 @@ export const BridgeToken = ({
               </span>
             </div>
             {isFromToken && (
-              <TooltipWithMagnetArrow
-                visible={fromTokenIsNativeToken ? undefined : false}
-                className="rectangle w-[max-content]"
-                title={t('page.bridge.max-tips')}
-              >
-                <MaxButton className="ml-0" onClick={handleMax}>
-                  {t('page.swap.max')}
-                </MaxButton>
-              </TooltipWithMagnetArrow>
+              // <TooltipWithMagnetArrow
+              //   visible={fromTokenIsNativeToken ? undefined : false}
+              //   className="rectangle w-[max-content]"
+              //   title={t('page.bridge.max-tips')}
+              // >
+              <MaxButton className="ml-0" onClick={handleMax}>
+                {t('page.swap.max')}
+              </MaxButton>
+              // </TooltipWithMagnetArrow>
             )}
           </div>
         </div>

@@ -340,7 +340,14 @@
       "maxPriorityFeeDisabledAlert": "Lütfen önce Gas Price ayarlayın",
       "yes": "Evet",
       "primaryType": "Birincil tür",
-      "safeServiceNotAvailable": "Güvenli hizmet şu anda mevcut değil, lütfen daha sonra tekrar deneyin."
+      "safeServiceNotAvailable": "Güvenli hizmet şu anda mevcut değil, lütfen daha sonra tekrar deneyin.",
+      "safeTx": {
+        "selfHostConfirm": {
+          "button": "OK",
+          "title": "Rabby'nin Safe Servisi'ne Geç",
+          "content": "Safe API kullanılamıyor. Safe'inizin işlevselliğini sürdürmek için Rabby tarafından dağıtılan Safe hizmetine geçin. <strong>Tüm Safe imzalayıcılarının işlemleri yetkilendirmek için Rabby Wallet kullanması gerekiyor.<strong>"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "Talep eden",
@@ -434,7 +441,9 @@
         "gotIt": "Anladım",
         "loginFirst": "Lütfen önce GasAccount'a giriş yapın",
         "chainNotSupported": "Bu zincir GasAccount tarafından desteklenmiyor",
-        "customRPC": "Özel RPC kullanıldığında desteklenmez"
+        "customRPC": "Özel RPC kullanıldığında desteklenmez",
+        "loginTips": "GasAccount girişini tamamlamak için bu işlem iptal edilecektir. Giriş yaptıktan sonra işlemi yeniden oluşturmanız gerekecek.",
+        "depositTips": "GasAccount para yatırma işlemini tamamlamak için, bu işlem iptal edilecektir. Para yatırma işleminden sonra yeniden yapmanız gerekecek."
       },
       "keystone": {
         "siging": "İmza isteği gönderiliyor",
@@ -1082,7 +1091,8 @@
         "noRecentlyConnectedDapps": "Son bağlanılan Dapp yok",
         "noConnectedDapps": "Bağlı Dapp yok",
         "dapps": "Dapps",
-        "metamaskModeTooltip": "Bu Dapp'te Rabby bağlanamıyor mu? <1>MetaMask Modu</1>'nu etkinleştirmeyi deneyin."
+        "metamaskModeTooltip": "Bu Dapp'te Rabby bağlanamıyor mu? <1>MetaMask Modu</1>'nu etkinleştirmeyi deneyin.",
+        "metamaskModeTooltipNew": "Rabby Wallet, Dapp'ta \"MetaMask\" seçtiğinizde bağlanacaktır. Bunu Daha Fazla > MetaMask olarak Gizlenerek Rabby Bağlan'da yönetebilirsiniz"
       },
       "feedback": {
         "directMessage": {
@@ -1200,7 +1210,7 @@
           "customTestnet": "Özel Ağ Ekle",
           "themeMode": "Tema Modu",
           "toggleThemeMode": "Tema Modu",
-          "metamaskMode": ""
+          "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -1345,6 +1355,10 @@
         "footerText": "Daha fazla Dapp eklemek için Daha Fazla > MetaMask Modu altında MetaMask Modu",
         "toastSuccess": "Etkinleştirildi. Yeniden bağlanmak için sayfayı yenileyin.",
         "desc": "Dapp'te Rabby'yi bağlayamıyorsanız, MetaMask Modunu etkinleştirin ve MetaMask seçeneğini seçerek bağlanın."
+      },
+      "offlineChain": {
+        "chain": "{{chain}} yakında entegre edilmeyecek.",
+        "tips": "{{chain}} Zinciri {{date}} tarihinde entegre edilmeyecek. Varlıklarınız etkilenmeyecek ancak toplam bakiyenize dahil edilmeyecektir. Onlara erişmek için “Daha Fazla” altında özel bir ağ olarak ekleyebilirsiniz."
       }
     },
     "nft": {
@@ -2374,7 +2388,13 @@
       "gasExceed": "GasAccount bakiyesi $1000'ı aşamaz",
       "deposit": "Para Yatırma",
       "risk": "Mevcut adresiniz riskli olarak tespit edildiğinden bu özellik kullanılamıyor.",
-      "logout": "Geçerli GasAccount'tan çıkış yap"
+      "logout": "Geçerli GasAccount'tan çıkış yap",
+      "gasAccountList": {
+        "gasAccountBalance": "Gas Bakiyesi",
+        "address": "Adres"
+      },
+      "switchAccount": "GasAccount Değiştir",
+      "withdrawDisabledIAP": "Para çekme işlemleri devre dışı bırakılmıştır çünkü bakiyeniz çekilemeyen fiat fonlarını içermektedir. Token bakiyenizi çekmek için destekle iletişime geçin."
     },
     "safeMessageQueue": {
       "noData": "Mesaj yok",
@@ -2534,6 +2554,23 @@
         "title": "Şifre Başarıyla Ayarlandı",
         "description": "Rabby Wallet kullanmaya hazırsınız."
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 henüz desteklenmiyor"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "disabled": "Kılık değiştirme devre dışı. Dapp'i yenile.",
+        "enabled": "Kılık etkinleştirildi. Yeniden bağlanmak için Dapp'i yenileyin."
+      },
+      "step2": "Adım 2",
+      "step1Desc": "Rabby'nin mevcut Dapp'te MetaMask gibi görünmesine izin ver",
+      "step1": "Adım 1",
+      "title": "MetaMask gibi görünerek Rabby'yi Bağla",
+      "step2Desc": "MetaMask ile yenileyin ve bağlanın",
+      "alert": "Bir Dapp'e bağlanamıyor musunuz çünkü Rabby Wallet bir seçenek olarak gözükmüyor mu?",
+      "noDappFound": "Dapp bulunamadı",
+      "manage": "İzin Verilen Dapp'leri Yönet"
     }
   },
   "component": {
