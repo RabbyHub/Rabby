@@ -424,21 +424,11 @@ class LedgerBridgeKeyring {
         isV4
       ).toString('hex');
 
-      let res: {
-        v: number;
-        s: string;
-        r: string;
-      };
-
-      try {
-        res = await ethApp!.signEIP712Message(hdPath, data);
-      } catch (e) {
-        res = await ethApp!.signEIP712HashedMessage(
-          hdPath,
-          domainSeparatorHex,
-          hashStructMessageHex
-        );
-      }
+      const res = await ethApp!.signEIP712HashedMessage(
+        hdPath,
+        domainSeparatorHex,
+        hashStructMessageHex
+      );
 
       let v = res.v.toString(16);
       if (v.length < 2) {
