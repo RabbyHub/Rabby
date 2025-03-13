@@ -874,7 +874,11 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconPreferMetamask,
-          content: t('page.dashboard.settings.settings.metamaskMode'),
+          content: (
+            <div className="text-[13px]">
+              {t('page.dashboard.settings.settings.metamaskMode')}
+            </div>
+          ),
           onClick: () => {
             history.push('/metamask-mode-dapps');
             matomoRequestEvent({

@@ -64,7 +64,7 @@ export const MetamaskModeDappsGuide = () => {
 
   return (
     <div className="page-metamask-mode-dapps-guide pb-[24px]">
-      <header className="header mb-[18px]">
+      <header className="header mb-[15px]">
         <PageHeader canBack={false} closeable>
           <div className="text-[15px] font-medium leading-[18px] text-r-neutral-title1">
             {t('page.metamaskModeDappsGuide.title')}
@@ -72,7 +72,7 @@ export const MetamaskModeDappsGuide = () => {
         </PageHeader>
       </header>
       <main className="flex-1">
-        <div className="text-[15px] leading-[22px] font-medium text-r-neutral-title1 mb-[20px]">
+        <div className="text-[16px] leading-[22px] font-medium text-r-neutral-title1 mb-[20px]">
           {t('page.metamaskModeDappsGuide.alert')}
         </div>
         <div className="bg-r-neutral-card-1 rounded-[8px] p-[12px]">
