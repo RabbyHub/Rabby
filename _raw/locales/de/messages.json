@@ -1209,8 +1209,8 @@
           "enableTestnets": "Testnets aktivieren",
           "toggleThemeMode": "Themenmodus",
           "themeMode": "Themenmodus",
-          "metamaskMode": "",
-          "customTestnet": "Benutzerdefiniertes Netzwerk hinzufügen"
+          "customTestnet": "Benutzerdefiniertes Netzwerk hinzufügen",
+          "metamaskMode": "Verbinden Sie Rabby, indem Sie sich als MetaMask ausgeben"
         },
         "aboutUs": "Über uns",
         "currentVersion": "Aktuelle Version",

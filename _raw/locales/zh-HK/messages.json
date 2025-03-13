@@ -241,10 +241,9 @@
           "currentLanguage": "當前語言",
           "toggleThemeMode": "主題模式",
           "themeMode": "主題模式",
-          "customTestnet": "",
-          "metamaskMode": ""
+          "customTestnet": "添加自定义网络",
+          "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby"
         },
-        "supportedChains": "",
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "更新版本",
         "updateVersion": {
@@ -256,7 +255,8 @@
         "warning": "警告",
         "requestDeBankTestnetGasToken": "獲取 DeBank Testnet Gas Token",
         "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！",
-        "clearPendingWarningTip": "待處理的交易將來仍有可能成功提交。"
+        "clearPendingWarningTip": "待處理的交易將來仍有可能成功提交。",
+        "supportedChains": "集成鏈"
       },
       "tokenDetail": {
         "blockedTip": "已隱藏的代幣將不會顯示在代幣列表中",

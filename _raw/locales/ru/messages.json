@@ -1211,7 +1211,7 @@
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
           "customTestnet": "Добавить свою сеть",
-          "metamaskMode": ""
+          "metamaskMode": "Подключите Rabby, замаскировав его под MetaMask"
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",

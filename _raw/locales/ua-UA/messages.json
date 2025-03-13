@@ -1211,9 +1211,9 @@
           "currentLanguage": "Поточна мова",
           "enableTestnets": "Увімкнути тестові мережі",
           "toggleThemeMode": "Тема режиму",
-          "metamaskMode": "",
           "customTestnet": "Додати власну мережу",
-          "themeMode": "Тема режиму"
+          "themeMode": "Тема режиму",
+          "metamaskMode": "Підключіть Rabby, замаскувавшись під MetaMask"
         },
         "aboutUs": "Про нас",
         "currentVersion": "Поточна версія",

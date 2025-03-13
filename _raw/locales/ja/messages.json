@@ -1208,9 +1208,9 @@
           "currentLanguage": "現在の言語",
           "enableTestnets": "テストネットを有効にする",
           "themeMode": "テーマモード",
-          "metamaskMode": "",
           "toggleThemeMode": "テーマモード",
-          "customTestnet": "カスタムネットワークを追加"
+          "customTestnet": "カスタムネットワークを追加",
+          "metamaskMode": "MetaMaskとして偽装してRabbyを接続"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",

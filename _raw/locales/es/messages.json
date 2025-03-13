@@ -1208,9 +1208,9 @@
           "currentLanguage": "Idioma Actual",
           "enableTestnets": "Habilitar Testnets",
           "customTestnet": "Agregar red personalizada",
-          "metamaskMode": "",
           "toggleThemeMode": "Modo de tema",
-          "themeMode": "Modo de tema"
+          "themeMode": "Modo de tema",
+          "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",

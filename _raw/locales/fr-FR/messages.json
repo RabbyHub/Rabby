@@ -873,8 +873,8 @@
           "metamaskPreferredDapps": "DApps préférées de MetaMask",
           "themeMode": "Thème",
           "toggleThemeMode": "Thème",
-          "metamaskMode": "",
-          "customTestnet": "Ajouter un réseau personnalisé"
+          "customTestnet": "Ajouter un réseau personnalisé",
+          "metamaskMode": "Connectez Rabby en se faisant passer pour MetaMask"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
