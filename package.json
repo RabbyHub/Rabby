@@ -58,7 +58,7 @@
     "@rabby-wallet/eth-trezor-keyring": "2.6.3",
     "@rabby-wallet/eth-walletconnect-keyring": "2.1.7",
     "@rabby-wallet/eth-watch-keyring": "1.0.0",
-    "@rabby-wallet/gnosis-sdk": "1.4.1",
+    "@rabby-wallet/gnosis-sdk": "1.4.2",
     "@rabby-wallet/page-provider": "0.4.8",
     "@rabby-wallet/rabby-action": "0.1.8",
     "@rabby-wallet/rabby-api": "0.9.13",
