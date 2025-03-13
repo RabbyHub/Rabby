@@ -717,6 +717,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isGasAccountLogin,
     gasAccountCanPay,
     canGotoUseGasAccount,
+    canDepositUseGasAccount,
   } = useGasAccountTxsCheck({
     isReady,
     txs,
@@ -2127,6 +2128,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             gasAccountCost={gasAccountCost}
             gasAccountCanPay={gasAccountCanPay}
             canGotoUseGasAccount={canGotoUseGasAccount}
+            canDepositUseGasAccount={canDepositUseGasAccount}
             isGasAccountLogin={isGasAccountLogin}
             isWalletConnect={
               currentAccountType === KEYRING_TYPE.WalletConnectKeyring

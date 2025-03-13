@@ -14,10 +14,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { Button } from 'antd';
 import { useLoginDepositConfirm } from '@/ui/views/GasAccount/hooks/checkTxs';
-import {
-  GasAccountDepositTipPopup,
-  GasAccountLogInTipPopup,
-} from '@/ui/views/GasAccount/components/GasAccountTxPopups';
+import { GasAccountDepositTipPopup } from '@/ui/views/GasAccount/components/GasAccountTxPopups';
 
 export type GasLessConfig = {
   button_text: string;
@@ -45,6 +42,7 @@ export function GasLessNotEnough({
   const { t } = useTranslation();
 
   const modalConfirm = useLoginDepositConfirm();
+  const [tipPopupVisible, setTipPopupVisible] = useState(false);
 
   return (
     <div className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center">
@@ -61,12 +59,21 @@ export function GasLessNotEnough({
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
           onClick={() => {
-            modalConfirm('deposit');
+            if (miniFooter) {
+              modalConfirm('deposit');
+            } else {
+              setTipPopupVisible(true);
+            }
           }}
         >
           {t('page.signFooterBar.gasAccount.deposit')}
         </Button>
       ) : null}
+
+      <GasAccountDepositTipPopup
+        visible={tipPopupVisible}
+        onClose={() => setTipPopupVisible(false)}
+      />
 
       {canGotoUseGasAccount ? (
         <div
@@ -366,14 +373,14 @@ export function GasAccountTips({
       };
     }
 
-    if (!isGasAccountLogin && !miniFooter) {
-      return {
-        tip: t('page.signFooterBar.gasAccount.loginFirst'),
-        btnText: t('page.signFooterBar.gasAccount.login'),
-        loginGasAccount: true,
-        depositGasAccount: false,
-      };
-    }
+    // if (!isGasAccountLogin && !miniFooter) {
+    //   return {
+    //     tip: t('page.signFooterBar.gasAccount.loginFirst'),
+    //     btnText: t('page.signFooterBar.gasAccount.login'),
+    //     loginGasAccount: true,
+    //     depositGasAccount: false,
+    //   };
+    // }
 
     if (gasAccountCost?.chain_not_support) {
       return {
@@ -450,15 +457,7 @@ export function GasAccountTips({
         </Button>
       ) : null}
       <GasAccountDepositTipPopup
-        visible={
-          !isWalletConnect && isGasAccountLogin ? tipPopupVisible : false
-        }
-        onClose={() => setTipPopupVisible(false)}
-      />
-      <GasAccountLogInTipPopup
-        visible={
-          !isWalletConnect && !isGasAccountLogin ? tipPopupVisible : false
-        }
+        visible={tipPopupVisible}
         onClose={() => setTipPopupVisible(false)}
       />
     </div>
