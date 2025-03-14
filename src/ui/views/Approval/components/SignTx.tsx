@@ -35,7 +35,7 @@ import {
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
 } from 'consts';
-import { addHexPrefix, isHexPrefixed, isHexString } from '@ethereumjs/util';
+import { addHexPrefix, isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
@@ -87,6 +87,7 @@ import {
 } from '@rabby-wallet/rabby-action';
 import { ga4 } from '@/utils/ga4';
 import { EIP7702Warning } from './EIP7702Warning';
+import { isHexPrefixed } from 'ethereumjs-util';
 
 interface BasicCoboArgusInfo {
   address: string;

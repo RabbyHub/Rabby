@@ -1,11 +1,12 @@
 import i18n from '@/i18n';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { getActionTypeText as getTransactionActionTypeText } from '../Actions/utils';
-import { encodeSingle } from '@metamask/eth-sig-util';
+import { encodeSingle } from '@metamask/abi-utils';
 import { bufferToHex } from 'ethereumjs-util';
 import { hexToString } from 'web3-utils';
 import BigNumber from 'bignumber.js';
 import { filterPrimaryType } from '../SignTypedDataExplain/parseSignTypedDataMessage';
+import { bytesToHex } from '@ethereumjs/util';
 
 export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
   const { t } = i18n;
@@ -104,19 +105,19 @@ function parseSignTypedData(typedData: {
       return data;
     } else {
       const encodedBuffer = encodeSingle(dataType, data);
-      let encodedHexValue = `0x${encodedBuffer.toString('hex')}`;
+      let encodedHexValue = bytesToHex(encodedBuffer);
       switch (dataType) {
         case 'string': {
           const encodedLengthSize = 32; // uint256 length
           const lengthBuffer = encodedBuffer.slice(0, encodedLengthSize);
-          const originalArgLength = parseInt(lengthBuffer.toString('hex'), 16);
+          const originalArgLength = parseInt(bytesToHex(lengthBuffer), 16);
           const fullArgWithPadding = encodedBuffer.slice(encodedLengthSize);
           const originalArg = fullArgWithPadding.slice(0, originalArgLength);
-          encodedHexValue = bufferToHex(originalArg);
+          encodedHexValue = bytesToHex(originalArg);
           break;
         }
         case 'address':
-          encodedHexValue = `0x${encodedBuffer.slice(12).toString('hex')}`;
+          encodedHexValue = bytesToHex(encodedBuffer.slice(12));
           break;
         case 'bool':
           if (new BigNumber(encodedHexValue).eq(0)) {

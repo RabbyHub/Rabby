@@ -3,21 +3,15 @@ import {
   toChecksumAddress,
   stripHexPrefix,
   addHexPrefix,
-  publicToAddress,
-  bufferToHex,
 } from '@ethereumjs/util';
 import * as sigUtil from 'eth-sig-util';
-import {
-  FeeMarketEIP1559Transaction,
-  Transaction,
-  TransactionFactory,
-  TypedTransaction,
-} from '@ethereumjs/tx';
+import { TransactionFactory, TypedTransaction } from '@ethereumjs/tx';
 import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
 import { OneKeyBridgeInterface } from './onekey-bridge-interface';
 import { isManifestV3 } from '@/utils/env';
 import browser from 'webextension-polyfill';
+import { bufferToHex, publicToAddress } from 'ethereumjs-util';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
