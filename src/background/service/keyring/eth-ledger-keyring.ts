@@ -2,7 +2,6 @@ import * as sigUtil from 'eth-sig-util';
 import {
   toChecksumAddress,
   addHexPrefix,
-  bufferToHex,
   stripHexPrefix,
 } from '@ethereumjs/util';
 import { RLP, utils } from '@ethereumjs/rlp';
@@ -26,6 +25,7 @@ import {
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
 import { isManifestV3 } from '@/utils/env';
+import { bufferToHex } from 'ethereumjs-util';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0",

@@ -1,4 +1,4 @@
-import { intToHex, isHexString } from '@ethereumjs/util';
+import { BigIntLike, intToHex, isHexString } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
 import {
   CAN_ESTIMATE_L1_FEE_CHAINS,
@@ -21,6 +21,7 @@ import type { WalletControllerType } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import i18n from '@/i18n';
 import { Account } from 'background/service/preference';
+import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
 
 export interface ApprovalRes extends Tx {
   type?: string;
@@ -42,7 +43,7 @@ export interface ApprovalRes extends Tx {
   isGasLess?: boolean;
   isGasAccount?: boolean;
   logId?: string;
-  authorizationList?: (Uint8Array | string)[];
+  authorizationList?: AuthorizationListBytes | AuthorizationList | never;
   sig?: string;
 }
 
