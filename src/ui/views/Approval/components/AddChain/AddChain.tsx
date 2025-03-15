@@ -35,6 +35,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
       rpcUrl: addChainParams.rpcUrls?.[0],
       nativeTokenSymbol: addChainParams.nativeCurrency?.symbol,
       scanLink: addChainParams.blockExplorerUrls?.[0],
+      hasPreconfs: addChainParams.hasPreconfs,
     });
   }, [form, addChainParams]);
 

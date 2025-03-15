@@ -8,4 +8,5 @@ export interface AddEthereumChainParams {
   };
   rpcUrls: string[];
   blockExplorerUrls: string[];
+  hasPreconfs: boolean;
 }
