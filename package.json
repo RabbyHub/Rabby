@@ -70,7 +70,7 @@
     "@rematch/core": "2.2.0",
     "@rematch/select": "3.1.2",
     "@safe-global/protocol-kit": "5.0.3",
-    "@safe-global/sdk-starter-kit": "1.1.1",
+    "@safe-global/sdk-starter-kit": "2.0.0",
     "@scure/bip39": "1.2.1",
     "@sentry/browser": "6.7.2",
     "@sentry/react": "6.7.2",
