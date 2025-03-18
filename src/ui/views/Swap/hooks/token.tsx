@@ -1,6 +1,6 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
@@ -23,6 +23,7 @@ import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
+import { useRecommendSwapToken } from './recommentToken';
 const isTab = getUiType().isTab;
 
 const useTokenInfo = ({
@@ -189,7 +190,12 @@ export const useTokenPair = (userAddress: string) => {
     supportChains: SWAP_SUPPORT_CHAINS,
     onChainInitializedAsync: (firstEnum) => {
       // only init chain if it's not cached before
-      if (!searchObj?.chain && !searchObj.payTokenId && !initialSelectedChain) {
+      if (
+        !searchObj?.chain &&
+        !searchObj.payTokenId &&
+        !searchObj.receiveTokenId &&
+        !initialSelectedChain
+      ) {
         switchChain(firstEnum);
       }
     },
@@ -644,35 +650,48 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     let active = true;
-    if (searchObj.chain && searchObj.payTokenId) {
+    if (searchObj.chain) {
       const target = findChain({
         serverId: searchObj.chain,
       });
       if (target) {
-        setChain(target?.enum);
-        wallet.openapi
-          .getToken(userAddress, target.serverId, searchObj.payTokenId)
-          .then(
-            (token) => {
-              if (active) {
-                if (token) {
-                  setPayToken(token);
-                } else {
+        handleChain(target?.enum);
+
+        if (searchObj.payTokenId) {
+          wallet.openapi
+            .getToken(userAddress, target.serverId, searchObj.payTokenId)
+            .then(
+              (token) => {
+                if (active) {
+                  if (token) {
+                    setPayToken(token);
+                  } else {
+                    switchChain(target.enum);
+                  }
+                }
+              },
+              () => {
+                if (active) {
                   switchChain(target.enum);
                 }
               }
-            },
-            () => {
-              if (active) {
-                switchChain(target.enum);
-              }
-            }
-          );
+            );
+        } else {
+          setPayToken(undefined);
+        }
 
         if (searchObj?.inputAmount && !searchObj?.isMax) {
           handleAmountChange(searchObj?.inputAmount);
         }
+
         if (searchObj?.receiveTokenId) {
+          setReceiveToken({
+            ...getChainDefaultToken(target.enum),
+            id: searchObj.receiveTokenId,
+            logo_url: '',
+            symbol: '',
+            optimized_symbol: '',
+          });
           wallet.openapi
             .getToken(userAddress, target.serverId, searchObj.receiveTokenId)
             .then((token) => {
@@ -728,6 +747,14 @@ export const useTokenPair = (userAddress: string) => {
       clearExpiredTimer();
     };
   }, []);
+
+  useRecommendSwapToken({
+    chain: chain,
+    fromToken: payToken,
+    toToken: receiveToken,
+    changeFromToken: setPayToken,
+    changeToToken: setReceiveToken,
+  });
 
   return {
     bestQuoteDex,
