@@ -92,7 +92,7 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { isAddress } from 'web3-utils';
+import { isAddress } from 'viem';
 import {
   ensureChainListValid,
   findChain,
