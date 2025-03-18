@@ -1329,6 +1329,10 @@ export class KeyringService extends EventEmitter {
       .getState()
       .unencryptedKeyringData?.map((item) => item.type) ?? []) as string[];
   }
+
+  async getVault() {
+    return this.store.getState().vault;
+  }
 }
 
 export default new KeyringService();
