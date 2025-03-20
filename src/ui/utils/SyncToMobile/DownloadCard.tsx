@@ -26,14 +26,14 @@ export const DownloadCard: React.FC<Props> = ({ Icon, title, href }) => {
       onMouseLeave={() => setIsHover(false)}
     >
       <div className={clsx('absolute top-0 right-0')}>
-        <IconQRCode />
+        <IconQRCode className="absolute right-[8px] top-[8px] z-10" />
 
         <div
           className={clsx(
             'absolute right-0 top-0',
             'bg-r-blue-light2',
             'w-[41px] h-[122px]',
-            'transform rotate-[-45deg]-translate-x-[-24%] translate-y-[-38%]'
+            'transform rotate-[-45deg] translate-x-[18%] translate-y-[-38%]'
           )}
         ></div>
       </div>
