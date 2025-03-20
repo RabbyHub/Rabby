@@ -87,6 +87,12 @@ const Unlock = () => {
     wallet.savedUnencryptedKeyringData().then(setHasForgotPassword);
   }, []);
 
+  useEffect(() => {
+    if (UiType.isTab) {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   return (
     <FullscreenContainer>
       <div className="unlock page-has-ant-input relative h-full">

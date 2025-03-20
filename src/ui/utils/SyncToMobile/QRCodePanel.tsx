@@ -88,7 +88,7 @@ export const QRCodePanel: React.FC = () => {
           {t('page.syncToMobile.steps2Description')}
         </p>
         <div className="mt-[16px] flex justify-center items-center relative">
-          <RabbyCircleSVG className="absolute" />
+          <RabbyCircleSVG className="absolute z-10" />
           {data && <EncodeQRCode input={data} />}
         </div>
       </div>

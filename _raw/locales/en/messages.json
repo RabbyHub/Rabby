@@ -2574,7 +2574,8 @@
       "steps2": "2. Scan with Rabby Mobile",
       "steps2Description": " *Your QR code contains sensitive data. Keep it private and never             share it with anyone.",
       "downloadGooglePlay": "Google Play",
-      "downloadAppleStore": "App Store"
+      "downloadAppleStore": "App Store",
+      "clickToShowQr": "Click to show QR Code"
     }
   },
   "component": {

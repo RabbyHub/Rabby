@@ -3,11 +3,22 @@ import { ReactComponent as BackgroundLineSVG } from '@/ui/assets/sync-to-mobile/
 import { DemoPanel } from './DemoPanel';
 import { QRCodePanel } from './QRCodePanel';
 import { useTranslation } from 'react-i18next';
+import { openInTab } from '../webapi';
+import { useWallet } from '../WalletContext';
 
 export interface Props {}
 
 export const SyncToMobile: React.FC<Props> = ({ children }) => {
   const { t } = useTranslation();
+  const wallet = useWallet();
+
+  React.useEffect(() => {
+    wallet.isUnlocked().then((isUnlocked) => {
+      if (!isUnlocked) {
+        openInTab('index.html#/unlock');
+      }
+    });
+  }, []);
 
   React.useEffect(() => {
     document.documentElement.classList.remove('dark');
