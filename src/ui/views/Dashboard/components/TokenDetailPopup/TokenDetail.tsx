@@ -164,7 +164,7 @@ const TokenDetail = ({
     setVisible(false);
     onClose?.();
     history.push(
-      `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&receiveTokenId=${token?.id}`
+      `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
     );
   }, [history, token]);
 
