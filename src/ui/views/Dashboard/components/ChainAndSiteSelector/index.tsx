@@ -11,13 +11,12 @@ import { ReactComponent as RcIconSendToken } from 'ui/assets/dashboard/sendtoken
 import { ReactComponent as RcIconSwap } from 'ui/assets/dashboard/swap.svg';
 import { ReactComponent as RcIconReceive } from 'ui/assets/dashboard/receive.svg';
 import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
-
 import { ReactComponent as RcIconNFT } from 'ui/assets/dashboard/nft.svg';
 import { ReactComponent as RcIconTransactions } from 'ui/assets/dashboard/transactions.svg';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
-
 import { ReactComponent as RcIconMoreSettings } from 'ui/assets/dashboard/more-settings.svg';
+import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import {
   getCurrentConnectSite,
@@ -189,6 +188,7 @@ export default ({
     commingSoonBadge?: boolean;
     disableReason?: string;
     eventKey: string;
+    iconClassName?: string;
   };
 
   const panelItems = {
@@ -279,6 +279,15 @@ export default ({
         setIsShowEcologyModal(true);
       },
     } as IPanelItem,
+    mobile: {
+      icon: RCIconRabbyMobile,
+      eventKey: 'Rabby Mobile',
+      content: t('page.dashboard.home.panel.mobile'),
+      iconClassName: 'icon-rabby-mobile',
+      onClick: () => {
+        openInternalPageInTab('sync');
+      },
+    } as IPanelItem,
   };
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
@@ -292,7 +301,7 @@ export default ({
       'transactions',
       'nft',
       'security',
-      'ecology',
+      'mobile',
       'more',
     ];
   } else {
@@ -304,7 +313,7 @@ export default ({
       'transactions',
       'nft',
       'security',
-      'ecology',
+      'mobile',
       'more',
     ];
   }
@@ -373,13 +382,14 @@ export default ({
                   >
                     <ThemeIcon
                       src={item.icon}
-                      className={[item.iconSpin && 'icon-spin', 'images']
-                        .filter(Boolean)
-                        .join(' ')}
+                      className={clsx([item.iconSpin && 'icon-spin', 'images'])}
                     />
                   </Badge>
                 ) : (
-                  <ThemeIcon src={item.icon} className="images" />
+                  <ThemeIcon
+                    src={item.icon}
+                    className={clsx(['images', item.iconClassName])}
+                  />
                 )}
                 <div>{item.content} </div>
                 {item.commingSoonBadge && (

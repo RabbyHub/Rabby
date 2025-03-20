@@ -78,6 +78,7 @@ import {
 import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
 import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
+import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
 
 declare global {
   interface Window {
@@ -134,6 +135,11 @@ const Main = () => {
         <Route exact path="/welcome">
           <Welcome />
         </Route>
+
+        <Route exact path="/sync">
+          <SyncToMobile />
+        </Route>
+
         <Route exact path="/new-user/guide">
           <Guide />
         </Route>
