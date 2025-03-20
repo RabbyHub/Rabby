@@ -20,29 +20,43 @@ export const DownloadCard: React.FC<Props> = ({ Icon, title, href }) => {
         'w-[160px] h-[100px] rounded-[8px]',
         'bg-r-neutral-card2',
         'relative',
-        'overflow-hidden block'
+        'overflow-hidden',
+        'flex justify-center items-center'
       )}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
-      <div className={clsx('absolute top-0 right-0')}>
-        <IconQRCode className="absolute right-[8px] top-[8px] z-10" />
+      {isHover ? (
+        <div>
+          <QRCodeSVG
+            value={href}
+            size={82}
+            bgColor="#FFFFFF"
+            fgColor="#000000"
+          />
+        </div>
+      ) : (
+        <>
+          <div className={clsx('absolute top-0 right-0')}>
+            <IconQRCode className="absolute right-[8px] top-[8px] z-10" />
 
-        <div
-          className={clsx(
-            'absolute right-0 top-0',
-            'bg-r-blue-light2',
-            'w-[41px] h-[122px]',
-            'transform rotate-[-45deg] translate-x-[18%] translate-y-[-38%]'
-          )}
-        ></div>
-      </div>
-      <div className="flex items-center gap-x-[8px] flex-col justify-center">
-        {Icon}
-        <span className="text-r-neutral-title1 text-[14px] font-medium">
-          {title}
-        </span>
-      </div>
+            <div
+              className={clsx(
+                'absolute right-0 top-0',
+                'bg-r-blue-light2',
+                'w-[41px] h-[122px]',
+                'transform rotate-[-45deg] translate-x-[18%] translate-y-[-38%]'
+              )}
+            ></div>
+          </div>
+          <div className="flex items-center gap-x-[8px] flex-col justify-center">
+            {Icon}
+            <span className="text-r-neutral-title1 text-[14px] font-medium">
+              {title}
+            </span>
+          </div>
+        </>
+      )}
     </a>
   );
 };

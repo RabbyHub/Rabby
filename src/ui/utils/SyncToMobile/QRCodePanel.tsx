@@ -4,6 +4,7 @@ import { EncodeQRCode } from './EncodeQRCode';
 import { useWallet } from '../WalletContext';
 import { ReactComponent as AppleStoreSVG } from '@/ui/assets/sync-to-mobile/apple-store.svg';
 import { ReactComponent as GooglePlaySVG } from '@/ui/assets/sync-to-mobile/google-play.svg';
+import { ReactComponent as RabbyCircleSVG } from '@/ui/assets/sync-to-mobile/rabby-circle.svg';
 import clsx from 'clsx';
 import { DownloadCard } from './DownloadCard';
 
@@ -46,7 +47,12 @@ export const QRCodePanel: React.FC = () => {
       }}
     >
       <div>
-        <h2 className={clsx('text-r-neutral-title-1 text-[20px] font-medium')}>
+        <h2
+          className={clsx(
+            'text-r-neutral-title-1 text-[20px] leading-[24px] font-medium',
+            'text-center'
+          )}
+        >
           {t('page.syncToMobile.steps1')}
         </h2>
         <div className="flex gap-x-[16px] mt-[20px]">
@@ -62,12 +68,29 @@ export const QRCodePanel: React.FC = () => {
           />
         </div>
       </div>
+      <div className="border-t border-rabby-neutral-line border-dashed my-[32px]"></div>
       <div>
-        <h2 className={clsx('text-r-neutral-title-1 text-[20px] font-medium')}>
+        <h2
+          className={clsx(
+            'text-r-neutral-title-1 text-[20px] leading-[24px] font-medium',
+            'text-center'
+          )}
+        >
           {t('page.syncToMobile.steps2')}
         </h2>
-        <p>{t('page.syncToMobile.steps2Description')}</p>
-        {data && <EncodeQRCode input={data} />}
+        <p
+          className={clsx(
+            'text-r-neutral-foot text-[13px] font-normal',
+            'mt-[8px]',
+            'text-center'
+          )}
+        >
+          {t('page.syncToMobile.steps2Description')}
+        </p>
+        <div className="mt-[16px] flex justify-center items-center relative">
+          <RabbyCircleSVG className="absolute" />
+          {data && <EncodeQRCode input={data} />}
+        </div>
       </div>
     </div>
   );
