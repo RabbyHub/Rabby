@@ -10,7 +10,7 @@ import { uniqBy } from 'lodash';
 import { CHAINS_ENUM } from '@/constant';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync, useDebounce } from 'react-use';
-import { formatPrice, useWallet } from '@/ui/utils';
+import { formatPrice, getUiType, useWallet } from '@/ui/utils';
 import { TokenWithChain } from '@/ui/component';
 
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
@@ -21,6 +21,7 @@ import clsx from 'clsx';
 import { findChain, findChainByServerID } from '@/utils/chain';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
   background-color: transparent;
@@ -248,7 +249,7 @@ const BridgeToTokenSelect = ({
             className="h-[30px] max-w-"
             readOnly={type === 'to'}
             placeholder={'0'}
-            autoFocus={type !== 'to'}
+            autoFocus={type !== 'to' && !isTab}
             autoCorrect="false"
             autoComplete="false"
             value={value ?? input}
@@ -432,7 +433,7 @@ const TokenSelector = ({
           allowClear
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
-          autoFocus
+          autoFocus={!isTab}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
         />
