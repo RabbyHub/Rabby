@@ -126,13 +126,11 @@ export const useRecommendSwapToken = (params: {
       const contractAddress = StablecoinMapAggregatedByChain[chainEnum]
         ? Object.values(StablecoinMapAggregatedByChain[chainEnum] || {})
         : undefined;
-      console.log('contractAddress', contractAddress, tokenList);
       if (contractAddress?.length) {
         const stableCoinAddr = findBestStableCoin({
           chain: chainEnum,
           tokenList,
         });
-        console.log('stableCoinAddr', stableCoinAddr);
 
         if (!stableCoinAddr) {
           return undefined;
@@ -167,23 +165,13 @@ export const useRecommendSwapToken = (params: {
           'from'
         );
 
-        console.log('!payToken', {
-          payToken,
-          receiveToken,
-          currentRecommendToken,
-        });
-
         setPayToken(currentRecommendToken);
 
         return;
       }
       if (payToken && !receiveToken && payChain === chainEnum) {
         const currentRecommendToken = recommendToken(payToken, chainEnum, 'to');
-        console.log('!receiveToken', {
-          payToken,
-          receiveToken,
-          currentRecommendToken,
-        });
+
         setReceiveToken(currentRecommendToken);
         return;
       }

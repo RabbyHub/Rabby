@@ -23,7 +23,6 @@ import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
-import { useRecommendSwapToken } from './recommentToken';
 const isTab = getUiType().isTab;
 
 const useTokenInfo = ({
@@ -747,14 +746,6 @@ export const useTokenPair = (userAddress: string) => {
       clearExpiredTimer();
     };
   }, []);
-
-  useRecommendSwapToken({
-    chain: chain,
-    fromToken: payToken,
-    toToken: receiveToken,
-    changeFromToken: setPayToken,
-    changeToToken: setReceiveToken,
-  });
 
   return {
     bestQuoteDex,
