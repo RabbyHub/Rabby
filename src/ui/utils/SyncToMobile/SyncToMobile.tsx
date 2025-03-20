@@ -26,7 +26,7 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
 
   return (
     <section
-      className="h-full overflow-hidden"
+      className="h-full overflow-y-auto"
       style={{
         background: 'linear-gradient(114deg, #708AFF 9.12%, #6177FF 93.25%)',
       }}
