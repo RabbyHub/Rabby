@@ -1,0 +1,74 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { EncodeQRCode } from './EncodeQRCode';
+import { useWallet } from '../WalletContext';
+import { ReactComponent as AppleStoreSVG } from '@/ui/assets/sync-to-mobile/apple-store.svg';
+import { ReactComponent as GooglePlaySVG } from '@/ui/assets/sync-to-mobile/google-play.svg';
+import clsx from 'clsx';
+import { DownloadCard } from './DownloadCard';
+
+const GOOGLE_PLAY_URL =
+  'https://play.google.com/store/apps/details?id=com.debank.rabbymobile';
+const APPLE_STORE_URL =
+  'https://apps.apple.com/us/app/rabby-wallet-crypto-evm/id6474381673';
+
+export const QRCodePanel: React.FC = () => {
+  const { t } = useTranslation();
+  const wallet = useWallet();
+  const [data, setData] = React.useState<string>();
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const vaultStr = await wallet.getVault();
+      const vault = JSON.parse(vaultStr);
+      const whitelist = await wallet.getWhitelist();
+      const highligtedAddresses = await wallet.getHighlightedAddresses();
+      const alianNames = await wallet.getAllAlianName();
+
+      const data = JSON.stringify({
+        vault,
+        whitelist,
+        highligtedAddresses,
+        alianNames,
+      });
+
+      setData(data);
+    };
+
+    fetchData();
+  }, [wallet]);
+
+  return (
+    <div
+      className="w-[400px] h-[608px] bg-r-neutral-bg1 rounded-[16px] p-[32px]"
+      style={{
+        boxShadow: '0px 16px 32px 0px rgba(25, 41, 69, 0.22)',
+      }}
+    >
+      <div>
+        <h2 className={clsx('text-r-neutral-title-1 text-[20px] font-medium')}>
+          {t('page.syncToMobile.steps1')}
+        </h2>
+        <div className="flex gap-x-[16px] mt-[20px]">
+          <DownloadCard
+            Icon={<AppleStoreSVG className="w-[32px] h-[32px]" />}
+            title={t('page.syncToMobile.downloadAppleStore')}
+            href={APPLE_STORE_URL}
+          />
+          <DownloadCard
+            Icon={<GooglePlaySVG className="w-[32px] h-[32px]" />}
+            title={t('page.syncToMobile.downloadGooglePlay')}
+            href={GOOGLE_PLAY_URL}
+          />
+        </div>
+      </div>
+      <div>
+        <h2 className={clsx('text-r-neutral-title-1 text-[20px] font-medium')}>
+          {t('page.syncToMobile.steps2')}
+        </h2>
+        <p>{t('page.syncToMobile.steps2Description')}</p>
+        {data && <EncodeQRCode input={data} />}
+      </div>
+    </div>
+  );
+};
