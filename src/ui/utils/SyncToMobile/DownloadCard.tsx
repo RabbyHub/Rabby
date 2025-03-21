@@ -17,7 +17,7 @@ export const DownloadCard: React.FC<Props> = ({ Icon, title, href }) => {
       target="_blank"
       rel="noreferrer"
       className={clsx(
-        'w-[160px] h-[100px] rounded-[8px]',
+        'w-[160px] h-[80px] rounded-[8px]',
         'bg-r-neutral-card2',
         'relative',
         'overflow-hidden',

@@ -32,14 +32,14 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
         background: 'linear-gradient(114deg, #708AFF 9.12%, #6177FF 93.25%)',
       }}
     >
-      <header className="flex flex-col items-center justify-center mt-[40px] text-center">
-        <h1 className="text-r-neutral-title2 text-[44px] leading-[53px] font-bold">
+      <header className="flex flex-col items-center justify-center mt-[42px] text-center">
+        <h1 className="text-r-neutral-title2 text-[40px] leading-[48px] font-bold">
           {t('page.syncToMobile.title')}
         </h1>
         <p
           className={clsx(
-            'text-r-neutral-title2 text-[20px] leading-[24px] font-medium',
-            'mt-[16px] mb-0'
+            'text-r-neutral-title2 text-[16px] leading-[19px] font-medium',
+            'mt-[12px] mb-0'
           )}
         >
           {t('page.syncToMobile.description')}
@@ -49,7 +49,7 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
         className={clsx(
           'flex justify-center',
           'relative z-0',
-          'mt-[50px] gap-x-[100px]',
+          'mt-[57px] gap-x-[100px]',
           'flex-1'
         )}
       >

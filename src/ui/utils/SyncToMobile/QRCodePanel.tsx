@@ -41,7 +41,10 @@ export const QRCodePanel: React.FC = () => {
 
   return (
     <div
-      className="w-[400px] h-[608px] bg-r-neutral-bg1 rounded-[16px] p-[32px]"
+      className={clsx(
+        'w-[400px] h-[560px] bg-r-neutral-bg1 rounded-[16px]',
+        'py-[24px] px-[32px]'
+      )}
       style={{
         boxShadow: '0px 16px 32px 0px rgba(25, 41, 69, 0.22)',
       }}
@@ -55,7 +58,7 @@ export const QRCodePanel: React.FC = () => {
         >
           {t('page.syncToMobile.steps1')}
         </h2>
-        <div className="flex gap-x-[16px] mt-[20px]">
+        <div className="flex gap-x-[16px] mt-[16px]">
           <DownloadCard
             Icon={<AppleStoreSVG className="w-[32px] h-[32px]" />}
             title={t('page.syncToMobile.downloadAppleStore')}
@@ -68,7 +71,7 @@ export const QRCodePanel: React.FC = () => {
           />
         </div>
       </div>
-      <div className="border-t border-rabby-neutral-line border-dashed my-[32px]"></div>
+      <div className="border-t border-rabby-neutral-line border-dashed my-[24px]"></div>
       <div>
         <h2
           className={clsx(
@@ -80,7 +83,7 @@ export const QRCodePanel: React.FC = () => {
         </h2>
         <p
           className={clsx(
-            'text-r-neutral-foot text-[13px] font-normal',
+            'text-r-neutral-foot text-[13px] leading-[16px] font-normal',
             'mt-[8px]',
             'text-center'
           )}
