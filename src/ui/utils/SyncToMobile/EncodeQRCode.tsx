@@ -10,7 +10,7 @@ export const EncodeQRCode: React.FC<{
 }> = ({ input }) => {
   const { t } = useTranslation();
   const [masked, setMasked] = React.useState(true);
-  const urEncoder = React.useMemo(() => new UREncoder(UR.from(input), 200), [
+  const urEncoder = React.useMemo(() => new UREncoder(UR.from(input), 150), [
     input,
   ]);
   const [data, setData] = React.useState(urEncoder.nextPart());
@@ -45,7 +45,7 @@ export const EncodeQRCode: React.FC<{
   return (
     <div
       className={clsx(
-        'relative w-[240px] h-[240px]',
+        'relative w-[320px] h-[320px]',
         'flex items-center justify-center'
       )}
     >
@@ -73,7 +73,7 @@ export const EncodeQRCode: React.FC<{
           {t('page.syncToMobile.clickToShowQr')}
         </p>
       </div>
-      <QRCode value={isHidden ? '' : data} size={220} />
+      <QRCode value={isHidden ? '' : data} size={300} />
     </div>
   );
 };

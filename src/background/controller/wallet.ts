@@ -5189,7 +5189,19 @@ export class WalletController extends BaseController {
   getUnencryptedKeyringTypes = async () =>
     keyringService.getUnencryptedKeyringTypes();
 
-  getVault = async () => keyringService.getVault();
+  geSyncDataString = async () => {
+    const vault = await keyringService.getSyncVault();
+    const whitelist = await this.getWhitelist();
+    const highligtedAddresses = await this.getHighlightedAddresses();
+    const alianNames = await this.getAllAlianName();
+
+    return JSON.stringify({
+      vault: JSON.parse(vault),
+      whitelist,
+      highligtedAddresses,
+      alianNames,
+    });
+  };
 }
 
 const wallet = new WalletController();

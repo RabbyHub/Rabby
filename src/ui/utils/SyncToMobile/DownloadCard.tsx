@@ -30,7 +30,7 @@ export const DownloadCard: React.FC<Props> = ({ Icon, title, href }) => {
         <div>
           <QRCodeSVG
             value={href}
-            size={82}
+            size={65}
             bgColor="#FFFFFF"
             fgColor="#000000"
           />

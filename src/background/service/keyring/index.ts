@@ -1330,8 +1330,51 @@ export class KeyringService extends EventEmitter {
       .unencryptedKeyringData?.map((item) => item.type) ?? []) as string[];
   }
 
-  async getVault() {
-    return this.store.getState().vault;
+  async getSyncVault() {
+    const serializedKeyrings = await Promise.all(
+      this.keyrings.map((keyring) => {
+        return Promise.all([keyring.type, keyring.serialize()]).then(
+          (serializedKeyringArray) => {
+            // Label the output values on each serialized Keyring:
+            return {
+              type: serializedKeyringArray[0],
+              data: serializedKeyringArray[1],
+            } as KeyringSerializedData;
+          }
+        );
+      })
+    );
+
+    const SYNC_KEYRING_TYPES = [
+      KEYRING_CLASS.MNEMONIC,
+      KEYRING_CLASS.PRIVATE_KEY,
+      KEYRING_CLASS.WATCH,
+      KEYRING_CLASS.HARDWARE.ONEKEY,
+      KEYRING_CLASS.HARDWARE.LEDGER,
+      KEYRING_CLASS.GNOSIS,
+      KEYRING_CLASS.HARDWARE.KEYSTONE,
+    ];
+    const syncKeyringData = serializedKeyrings
+      .map(({ type, data }) => {
+        if (SYNC_KEYRING_TYPES.includes(type as any)) {
+          // maybe empty keyring
+          // TODO: maybe need remove simple keyring if empty
+          if (type === KEYRING_CLASS.PRIVATE_KEY && !data.length) {
+            return undefined;
+          }
+
+          return { type, data };
+        }
+      })
+      .filter(Boolean) as KeyringSerializedData[];
+
+    const encryptedString = await passwordEncrypt({
+      data: syncKeyringData,
+      password: this.password,
+      persisted: false,
+    });
+
+    return encryptedString;
   }
 }
 

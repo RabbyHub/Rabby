@@ -7,6 +7,7 @@ import { ReactComponent as GooglePlaySVG } from '@/ui/assets/sync-to-mobile/goog
 import { ReactComponent as RabbyCircleSVG } from '@/ui/assets/sync-to-mobile/rabby-circle.svg';
 import clsx from 'clsx';
 import { DownloadCard } from './DownloadCard';
+import LZString from 'lz-string';
 
 const GOOGLE_PLAY_URL =
   'https://play.google.com/store/apps/details?id=com.debank.rabbymobile';
@@ -20,20 +21,12 @@ export const QRCodePanel: React.FC = () => {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const vaultStr = await wallet.getVault();
-      const vault = JSON.parse(vaultStr);
-      const whitelist = await wallet.getWhitelist();
-      const highligtedAddresses = await wallet.getHighlightedAddresses();
-      const alianNames = await wallet.getAllAlianName();
+      const data = await wallet.geSyncDataString();
+      const compressed = LZString.compress(data);
 
-      const data = JSON.stringify({
-        vault,
-        whitelist,
-        highligtedAddresses,
-        alianNames,
-      });
-
-      setData(data);
+      console.log('origin', data.length);
+      console.log('compressed', compressed.length);
+      setData(compressed);
     };
 
     fetchData();
@@ -42,7 +35,7 @@ export const QRCodePanel: React.FC = () => {
   return (
     <div
       className={clsx(
-        'w-[400px] h-[560px] bg-r-neutral-bg1 rounded-[16px]',
+        'w-[400px] h-[630px] bg-r-neutral-bg1 rounded-[16px]',
         'py-[24px] px-[32px]'
       )}
       style={{
@@ -91,7 +84,7 @@ export const QRCodePanel: React.FC = () => {
           {t('page.syncToMobile.steps2Description')}
         </p>
         <div className="mt-[16px] flex justify-center items-center relative">
-          <RabbyCircleSVG className="absolute z-10" />
+          {/* <RabbyCircleSVG className="absolute z-10" /> */}
           {data && <EncodeQRCode input={data} />}
         </div>
       </div>

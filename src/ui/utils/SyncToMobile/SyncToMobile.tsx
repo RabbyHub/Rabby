@@ -58,9 +58,6 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
         <DemoPanel />
         <QRCodePanel />
       </main>
-      <footer className="flex items-center justify-center mb-[15px]">
-        <img src="/images/logo-white.svg" className="h-[44px]" />
-      </footer>
     </section>
   );
 };
