@@ -3,7 +3,7 @@ import { ReactComponent as PhoneSVG } from '@/ui/assets/sync-to-mobile/phone.svg
 
 export const DemoPanel: React.FC = () => {
   return (
-    <div className="relative">
+    <div className="relative mt-[-24px]">
       <PhoneSVG className="absolute left-[-75px] top-[-42px]" />
       <div
         className="h-[608px] w-[284px] rounded-[40px] mt-[2px] overflow-hidden"
