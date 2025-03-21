@@ -24,6 +24,20 @@ export const EncodeQRCode: React.FC<{
     };
   }, [urEncoder]);
 
+  React.useEffect(() => {
+    const onBodyBlur = async () => {
+      setMasked(true);
+    };
+
+    window.addEventListener('blur', onBodyBlur, true);
+
+    return () => {
+      window.removeEventListener('blur', onBodyBlur, true);
+    };
+  }, []);
+
+  const isHidden = masked;
+
   if (!data) {
     return null;
   }
@@ -43,7 +57,7 @@ export const EncodeQRCode: React.FC<{
           'flex flex-col items-center justify-center',
           'cursor-pointer',
           'backdrop-blur-md',
-          masked ? 'block' : 'hidden'
+          isHidden ? 'block' : 'hidden'
         )}
         onClick={() => {
           setMasked(false);
@@ -59,7 +73,7 @@ export const EncodeQRCode: React.FC<{
           {t('page.syncToMobile.clickToShowQr')}
         </p>
       </div>
-      <QRCode value={masked ? '' : data} size={220} />
+      <QRCode value={isHidden ? '' : data} size={220} />
     </div>
   );
 };
