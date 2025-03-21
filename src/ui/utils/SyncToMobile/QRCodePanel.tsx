@@ -22,7 +22,7 @@ export const QRCodePanel: React.FC = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       const data = await wallet.geSyncDataString();
-      const compressed = LZString.compress(data);
+      const compressed = LZString.compressToUTF16(data);
 
       console.log('origin', data.length);
       console.log('compressed', compressed.length);
