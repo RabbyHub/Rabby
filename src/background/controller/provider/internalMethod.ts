@@ -9,6 +9,7 @@ import providerController from './controller';
 import { findChainByEnum } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
 import wallet from '../wallet';
+import { metamaskModeService } from '@/background/service/metamaskModeService';
 
 const networkIdMap: {
   [key: string]: string;
@@ -89,8 +90,13 @@ const isDefaultWallet = ({ origin }) => {
   return preferenceService.getIsDefaultWallet(origin);
 };
 
-const getProvider = ({ origin }: { origin: string }) => {
-  return permissionService.getSite(origin)?.rdns;
+const getProviderConfig = ({ origin }: { origin: string }) => {
+  const rdns = permissionService.getSite(origin)?.rdns;
+  const isMetamaskMode = metamaskModeService.checkIsMetamaskMode(origin);
+  return {
+    rdns,
+    isMetamaskMode,
+  };
 };
 
 const resetProvider = ({ origin }: { origin: string }) => {
@@ -106,6 +112,6 @@ export default {
   providerOverwrite,
   hasOtherProvider,
   isDefaultWallet,
-  'rabby:getProvider': getProvider,
+  'rabby:getProviderConfig': getProviderConfig,
   'rabby:resetProvider': resetProvider,
 };
