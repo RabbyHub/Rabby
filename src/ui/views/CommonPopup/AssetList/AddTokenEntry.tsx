@@ -1,6 +1,7 @@
 import React, { useImperativeHandle } from 'react';
 
 import { ReactComponent as RcAddEntryCC } from './icons/add-entry-cc.svg';
+import { ReactComponent as RcIconAdd } from '@/ui/assets/dashboard/portfolio/cc-add.svg';
 import clsx from 'clsx';
 import { AddCustomTokenPopup } from './CustomAssetList/AddCustomTokenPopup';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -52,8 +53,12 @@ const AddTokenEntry = React.forwardRef<AddTokenEntryInst, Props>(
             setIsShowAddModal(true);
           }}
         >
-          <RcAddEntryCC className="text-r-neutral-body w-[14px] h-[14px] mr-[4px]" />
-          <span>{t('page.dashboard.assets.addTokenEntryText')}</span>
+          <div className="text-[13px] leading-[16px] flex items-center gap-x-[4px] justify-center">
+            <span className="text-r-neutral-body">
+              <RcIconAdd className="w-[14px] h-[14px]" />
+            </span>
+            {t('page.dashboard.assets.addTokenEntryText')}
+          </div>
         </div>
 
         <AddCustomTokenPopup
@@ -78,7 +83,11 @@ const AddTokenEntry = React.forwardRef<AddTokenEntryInst, Props>(
         /> */}
 
         <SpecialTokenListPopup
-          label={t('page.dashboard.tokenDetail.customizedButton')}
+          label={
+            tokens?.length > 1
+              ? t('page.dashboard.tokenDetail.customizedButtons')
+              : t('page.dashboard.tokenDetail.customizedButton')
+          }
           buttonText={t('page.dashboard.assets.customButtonText')}
           description={t('page.dashboard.assets.customDescription')}
           onClickButton={() => {

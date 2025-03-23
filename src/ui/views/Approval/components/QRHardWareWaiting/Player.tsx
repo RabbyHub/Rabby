@@ -46,11 +46,16 @@ const Player = ({
       <p
         className={clsx(
           layoutStyle === 'normal' ? 'mt-20' : 'mt-6',
-          'text-13 leading-[18px] mb-0 text-r-neutral-body font-medium text-center whitespace-nowrap'
+          brandName === 'Keystone' ? '' : 'whitespace-nowrap',
+          'text-13 leading-[18px] mb-0 text-r-neutral-body font-medium text-center'
         )}
       >
         <Trans
-          i18nKey="page.signFooterBar.qrcode.qrcodeDesc"
+          i18nKey={
+            brandName === 'Keystone'
+              ? 'page.signFooterBar.keystone.qrcodeDesc'
+              : 'page.signFooterBar.qrcode.qrcodeDesc'
+          }
           values={{
             brand: brandName,
           }}

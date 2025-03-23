@@ -2,8 +2,13 @@ import { Popup, TokenWithChain } from '@/ui/component';
 import React, { forwardRef, useMemo } from 'react';
 import { useSwapHistory } from '../hooks';
 import { SwapItem, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { CHAINS_LIST } from '@debank/common';
-import { formatAmount, formatUsdValue, openInTab, sinceTime } from '@/ui/utils';
+import {
+  formatAmount,
+  formatUsdValue,
+  getUiType,
+  openInTab,
+  sinceTime,
+} from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ImgPending from 'ui/assets/swap/pending.svg';
@@ -18,6 +23,9 @@ import { ellipsis } from '@/ui/utils/address';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
+import { DEX } from '@/constant';
+import { DrawerProps } from 'antd';
+const isTab = getUiType().isTab;
 
 const TokenCost = ({
   payToken,
@@ -80,7 +88,10 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     const isPending = data.status === 'Pending';
     const isCompleted = data?.status === 'Completed';
     const time = data?.finished_at || data?.create_at;
-    const targetDex = data?.dex_id;
+    const targetDex =
+      data?.dex_id === '0xV2'
+        ? '0x'
+        : DEX?.[data?.dex_id]?.name || data?.dex_id || '';
     const txId = data?.tx_id;
     const chainItem = useMemo(
       () =>
@@ -106,7 +117,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
     const gotoScan = React.useCallback(() => {
       if (scanLink && txId) {
-        openInTab(scanLink + txId);
+        openInTab(scanLink + txId, !isTab);
       }
     }, []);
 
@@ -124,7 +135,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     return (
       <div
         className={clsx(
-          'bg-r-neutral-card-2 rounded-[6px] p-12 relative text-12 text-r-neutral-body'
+          'bg-r-neutral-card-1 rounded-[6px] p-12 relative text-12 text-r-neutral-body'
         )}
         ref={ref}
       >
@@ -227,6 +238,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 const HistoryList = () => {
   const { txList, loading, loadingMore, ref } = useSwapHistory();
   const { t } = useTranslation();
+
   if (!loading && (!txList || !txList?.list?.length)) {
     return (
       <div className="w-full h-full flex flex-col items-center">
@@ -243,13 +255,25 @@ const HistoryList = () => {
 
   return (
     <div className="overflow-y-auto max-h-[434px] space-y-[12px] pb-20">
-      {txList?.list?.map((swap, idx) => (
-        <Transaction
-          ref={txList?.list.length - 1 === idx ? ref : undefined}
-          key={`${swap.tx_id}-${swap.chain}`}
-          data={swap}
-        />
-      ))}
+      {txList?.list
+        ?.sort((a, b) => {
+          let aIndex = 0,
+            bIndex = 0;
+          if (a.status === 'Pending') {
+            aIndex = 1;
+          }
+          if (b.status === 'Pending') {
+            bIndex = 1;
+          }
+          return bIndex - aIndex;
+        })
+        ?.map((swap, idx) => (
+          <Transaction
+            ref={txList?.list.length - 1 === idx ? ref : undefined}
+            key={`${swap.tx_id}-${swap.chain}`}
+            data={swap}
+          />
+        ))}
       {((loading && !txList) || loadingMore) && (
         <>
           <SkeletonInput className="w-full h-[168px] rounded-[6px]" active />
@@ -263,9 +287,11 @@ const HistoryList = () => {
 export const SwapTxHistory = ({
   visible,
   onClose,
+  getContainer,
 }: {
   visible: boolean;
   onClose: () => void;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
   return (
@@ -281,6 +307,8 @@ export const SwapTxHistory = ({
       }}
       destroyOnClose
       isSupportDarkMode
+      isNew
+      getContainer={getContainer}
     >
       <HistoryList />
     </Popup>

@@ -1,3 +1,4 @@
+import { ChainWithBalance } from '@rabby-wallet/rabby-api/dist/types';
 import {
   BRAND_ALIAN_TYPE_TEXT,
   KEYRING_CLASS,
@@ -8,6 +9,7 @@ import {
   KeyringWithIcon,
 } from 'consts';
 import { t } from 'i18next';
+import { DisplayChainWithWhiteLogo, findChain } from './chain';
 
 export function generateAliasName({
   keyringType,
@@ -78,4 +80,47 @@ export function pickKeyringThemeIcon(
   return needLightVersion
     ? KEYRING_ICONS_WHITE[keyringClass]
     : KEYRING_ICONS[keyringClass];
+}
+
+const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
+  const chain = findChain({
+    id: item.community_id,
+  });
+
+  return {
+    ...item,
+    logo: chain?.logo || item.logo_url,
+    whiteLogo: chain?.whiteLogo,
+  };
+};
+
+export function normalizeChainList(chain_balances: ChainWithBalance[]) {
+  return chain_balances
+    .filter((item) => item.born_at !== null)
+    .map(formatChain);
+}
+
+export function filterChainWithBalance(chainList: DisplayChainWithWhiteLogo[]) {
+  return chainList.filter((item) => item.usd_value > 0);
+}
+
+export function normalizeAndVaryChainList(chain_balances: ChainWithBalance[]) {
+  const chainList: DisplayChainWithWhiteLogo[] = [];
+  const chainListWithValue: DisplayChainWithWhiteLogo[] = [];
+
+  chain_balances.forEach((item) => {
+    const chain = formatChain(item);
+    if (!item.born_at) return;
+
+    chainList.push(chain);
+
+    if (item.usd_value > 0) {
+      chainListWithValue.push(chain);
+    }
+  });
+
+  return {
+    chainList,
+    chainListWithValue,
+  };
 }

@@ -1,25 +1,35 @@
+import { WindowPostMessageStream } from '@metamask/post-message-stream';
 import Message from './index';
 
 export default class BroadcastChannelMessage extends Message {
-  private _channel: BroadcastChannel;
+  private _channel: WindowPostMessageStream;
 
-  constructor(name?: string) {
+  constructor({ name, target }: { name: string; target: string }) {
     super();
-    if (!name) {
-      throw new Error('the broadcastChannel name is missing');
+    if (!name || !target) {
+      throw new Error('the broadcastChannel name or target is missing');
     }
 
-    this._channel = new BroadcastChannel(name);
+    this._channel = new WindowPostMessageStream({
+      name,
+      target,
+    });
   }
 
   connect = () => {
-    this._channel.onmessage = ({ data: { type, data } }) => {
+    this._channel.on('data', (res) => {
+      if (!res.data) {
+        return;
+      }
+      const {
+        data: { type, data },
+      } = res;
       if (type === 'message') {
         this.emit('message', data);
       } else if (type === 'response') {
         this.onResponse(data);
       }
-    };
+    });
 
     return this;
   };
@@ -27,24 +37,32 @@ export default class BroadcastChannelMessage extends Message {
   listen = (listenCallback) => {
     this.listenCallback = listenCallback;
 
-    this._channel.onmessage = ({ data: { type, data } }) => {
+    this._channel.on('data', (res) => {
+      if (!res.data) {
+        return;
+      }
+      const {
+        data: { type, data },
+      } = res;
       if (type === 'request') {
         this.onRequest(data);
       }
-    };
+    });
 
     return this;
   };
 
   send = (type, data) => {
-    this._channel.postMessage({
-      type,
-      data,
+    this._channel.write({
+      data: {
+        type,
+        data,
+      },
     });
   };
 
   dispose = () => {
     this._dispose();
-    this._channel.close();
+    this._channel.destroy();
   };
 }

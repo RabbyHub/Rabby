@@ -48,9 +48,9 @@ const useAccount = () => {
 
       wallet
         .getAddressCacheBalance(address)
-        .then((d) => setCacheBalance(d!.total_usd_value));
+        .then((d) => setCacheBalance(d?.total_usd_value || 0));
       wallet
-        .getAddressBalance(address)
+        .getInMemoryAddressBalance(address)
         .then((d) => setBalance(d.total_usd_value));
     }
   }, [address]);
@@ -66,7 +66,7 @@ const useAccount = () => {
 const useReceiveTitle = (search: string) => {
   const { t } = useTranslation();
   const qs = useMemo(() => query2obj(search), [search]);
-  const chain = findChainByEnum(qs.chain)?.name || 'Ethereum';
+  const chain = findChainByEnum(qs.chain)?.name || 'EVM chains';
   const token = qs.token || t('global.assets');
 
   return t('page.receive.title', {
@@ -232,7 +232,7 @@ const Receive = () => {
         <div className="qr-card-img">
           {account?.address && <QRCode value={account.address} size={175} />}
         </div>
-        <div className="qr-card-address">{account?.address}</div>
+        <div className="qr-card-address text-13">{account?.address}</div>
         <button
           type="button"
           className="qr-card-btn"

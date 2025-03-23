@@ -16,6 +16,8 @@ import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
@@ -26,6 +28,12 @@ interface ApprovalParams {
   $ctx?: any;
   extra?: Record<string, any>;
   signingTxId?: string;
+  safeMessage?: {
+    safeMessageHash: string;
+    safeAddress: string;
+    message: string;
+    chainId: number;
+  };
 }
 
 const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
@@ -83,6 +91,7 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectError(null);
     await wallet.resendSign();
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
+    emitSignComponentAmounted();
   };
 
   const init = async () => {
@@ -107,12 +116,20 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, sig);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
-              await wallet.gnosisAddSignature(account.address, sig);
-              await wallet.postGnosisTransaction();
+              const sigs = await wallet.getGnosisTransactionSignatures();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, sig);
+              } else {
+                await wallet.gnosisAddSignature(account.address, sig);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {
@@ -146,7 +163,7 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
           preExecSuccess: explain
             ? explain?.calcSuccess && explain?.pre_exec.success
             : true,
-          createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+          createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
           source: params?.$ctx?.ga?.source || '',
           trigger: params?.$ctx?.ga?.trigger || '',
           networkType: chainInfo?.isTestnet
@@ -159,6 +176,14 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
         action: 'Submit',
         label: chainInfo?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
+
+      ga4.fireEvent(
+        `Submit_${chainInfo?.isTestnet ? 'Custom' : 'Integrated'}`,
+        {
+          event_category: 'Transaction',
+        }
+      );
+
       isSignTriggered = true;
     }
     if (isText && !isSignTriggered) {
@@ -169,6 +194,8 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
       });
       isSignTriggered = true;
     }
+
+    emitSignComponentAmounted();
   };
 
   useEffect(() => {

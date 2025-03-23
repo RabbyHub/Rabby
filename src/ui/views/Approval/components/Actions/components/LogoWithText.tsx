@@ -1,3 +1,6 @@
+import { useRabbyDispatch } from '@/ui/store';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import IconUnknown from 'ui/assets/token-default.svg';
@@ -5,17 +8,14 @@ import IconUnknown from 'ui/assets/token-default.svg';
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   .logo {
     width: 16px;
     height: 16px;
     margin-right: 6px;
   }
   .text {
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 18px;
     color: var(--r-neutral-title-1, #192945);
-    margin-right: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -24,12 +24,13 @@ const Wrapper = styled.div`
 
 const LogoWithText = ({
   logo,
-  text,
+  text = '',
   icon,
   logoRadius = '',
   logoSize = 16,
   textStyle = {},
   className,
+  id,
 }: {
   logo?: string;
   text: string | ReactNode;
@@ -38,9 +39,13 @@ const LogoWithText = ({
   logoSize?: number;
   textStyle?: React.CSSProperties;
   className?: string;
+  hoverToken?: TokenItem;
+  id?: string;
 }) => {
+  const dispatch = useRabbyDispatch();
+
   return (
-    <Wrapper className={className}>
+    <Wrapper className={className} id={id}>
       <img
         src={logo || IconUnknown}
         className="logo"

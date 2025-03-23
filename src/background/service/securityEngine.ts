@@ -76,7 +76,8 @@ class SecurityEngineService {
         rules: getRuleConfigFromRules(defaultRules),
       },
     });
-    this.rules = mergeRules(defaultRules, storage.rules);
+    // this.rules = mergeRules(defaultRules, storage.rules);
+    this.rules = defaultRules;
     this.store = storage || this.store;
     this.store.rules = this.rules;
     if (!this.store.userData.contractBlacklist) {

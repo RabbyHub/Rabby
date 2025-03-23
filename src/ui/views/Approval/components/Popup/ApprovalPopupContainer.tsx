@@ -127,17 +127,13 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   }, [setHeight, hdType, status]);
 
   return (
-    <div className={clsx('flex flex-col items-center', 'relative flex-1')}>
-      {sendUrl ? (
-        <div className={clsx('p-10')}>
-          <img src={sendUrl} className={'w-[140px] h-[140px]'} />
-        </div>
-      ) : null}
+    <div className={clsx('flex flex-col items-center', 'flex-1')}>
+      {sendUrl ? <img src={sendUrl} className={'w-[160px] h-[160px]'} /> : null}
       <div
         className={clsx(
           'text-[20px] font-medium leading-[24px]',
           contentColor,
-          hasMoreDescription ? 'mt-[16px]' : 'mt-[24px]',
+          hasMoreDescription ? 'mt-[14px]' : 'mt-[28px]',
           'flex items-center '
         )}
       >
@@ -151,14 +147,14 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         className={clsx(
           contentColor,
           'mt-[12px]',
-          'text-15 font-normal text-center',
+          'text-13 leading-[16px] font-normal text-center',
           'overflow-auto h-[36px] w-full'
         )}
       >
         {description}
       </div>
 
-      <div className="absolute bottom-0">
+      <div className="absolute bottom-0 left-0 right-0 text-center">
         {status === 'SENDING' && <FooterResend onResend={onRetry} />}
         {status === 'WAITING' && <FooterResend onResend={onRetry} />}
         {status === 'FAILED' && (

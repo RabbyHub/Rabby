@@ -93,7 +93,7 @@ export const PreferMetamaskDapps = () => {
         />
       )}
       <footer className="footer">
-        <Button type="primary" onClick={handleAdd}>
+        <Button size="large" block type="primary" onClick={handleAdd}>
           {t('page.preferMetamaskDapps.howToAdd')}
         </Button>
       </footer>

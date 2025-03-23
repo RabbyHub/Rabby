@@ -152,7 +152,7 @@ const RecentConnections = ({
       </PageHeader>
       {list?.length ? (
         <>
-          <div className="mx-[-20px] px-[20px] h-[calc(100%-100px)] overflow-auto">
+          <div className="mx-[-20px] px-[20px] h-[calc(100%-97.5px)] overflow-auto">
             <ConnectionList
               onRemove={handleRemove}
               onClick={handleClick}

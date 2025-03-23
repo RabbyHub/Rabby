@@ -1,6 +1,5 @@
-import { addHexPrefix } from 'ethereumjs-util';
+import { addHexPrefix } from '@ethereumjs/util';
 import EventEmitter from 'events';
-import { t } from 'i18next';
 import { isAddress } from 'web3-utils';
 
 export const keyringType = 'CoboArgus';
@@ -83,7 +82,13 @@ export default class CoboArgusKeyring extends EventEmitter {
         (acct) => acct.toLowerCase() === prefixedAddress.toLowerCase()
       )
     ) {
-      throw new Error(t('page.newAddress.walletConnect.status.duplicate'));
+      const error = new Error(
+        JSON.stringify({
+          address: prefixedAddress,
+          anchor: 'DuplicateAccountError',
+        })
+      );
+      throw error;
     }
 
     this.accounts.push(prefixedAddress.toLowerCase());

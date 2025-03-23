@@ -3,7 +3,7 @@ import {
   recoverTypedSignature,
   SignTypedDataVersion,
 } from '@metamask/eth-sig-util';
-import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
+import { SafeTransactionDataPartial } from '@safe-global/types-kit';
 import semverSatisfies from 'semver/functions/satisfies';
 import { isSameAddress } from './index';
 

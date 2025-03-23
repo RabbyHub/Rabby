@@ -4,10 +4,10 @@ import clsx from 'clsx';
 import React from 'react';
 
 interface Props {
-  isCache: boolean;
+  // isCache: boolean;
   balance: number;
 }
-export const BalanceLabel: React.FC<Props> = ({ isCache, balance }) => {
+export const BalanceLabel: React.FC<Props> = ({ balance }) => {
   const splitBalance = splitNumberByStep((balance || 0).toFixed(2));
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
   const dispatch = useRabbyDispatch();
@@ -19,8 +19,8 @@ export const BalanceLabel: React.FC<Props> = ({ isCache, balance }) => {
   return (
     <div
       className={clsx(
-        'cursor-pointer transition-opacity',
-        isCache && 'opacity-80'
+        'cursor-pointer transition-opacity truncate'
+        // isCache && 'opacity-80'
       )}
       title={splitBalance}
       onClick={handleClick}

@@ -1,0 +1,65 @@
+<svg width="110" height="44" viewBox="0 0 110 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    @keyframes c1 {
+      0% {
+        opacity: 0.8;
+      }
+      15% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0;
+      }
+      65% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0.8;
+      }
+    }
+
+    .c1 {
+      animation: c1 1500ms linear infinite normal forwards;
+    }
+
+    @keyframes c2 {
+      0% {
+        opacity: 0.8;
+      }
+      15% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0;
+      }
+      65% {
+        opacity: 0;
+      }
+      85% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0.8;
+      }
+    }
+
+    .c2 {
+      animation: c2 1500ms linear infinite normal forwards;
+    }
+  </style>
+</defs>
+<path d="M23.5563 13.5362H84.1156C88.7981 13.5362 92.5939 17.3321 92.5939 22.0145C92.5939 26.6969 88.7981 30.4928 84.1156 30.4928H23.5563C21.5495 30.4928 19.9227 28.866 19.9227 26.8592V17.1697C19.9227 15.163 21.5495 13.5362 23.5563 13.5362Z" fill="#242225" stroke="white" stroke-width="0.484475"/>
+<circle class="c0" cx="28.1015" cy="22.0181" r="4.60251" stroke="#BCBAC2" stroke-width="0.484475"/>
+<circle class="c1" opacity="0.8" cx="27.5524" cy="22.0194" r="13.1045" stroke="white" stroke-width="0.385922"/>
+<circle class="c2" opacity="0.8" cx="27.4212" cy="22.0577" r="19.6621" stroke="white" stroke-width="0.385922"/>
+<circle class="c0" cx="83.8043" cy="22.0181" r="4.60251" stroke="#BCBAC2" stroke-width="0.484475"/>
+<circle class="c1" opacity="0.8" cx="83.7031" cy="22.0194" r="13.1045" stroke="white" stroke-width="0.385922"/>
+<circle class="c2" opacity="0.8" cx="83.5874" cy="22.0577" r="19.6621" stroke="white" stroke-width="0.385922"/>
+<path d="M56.171 16.5V20.6567L59.6842 22.2266L56.171 16.5Z" fill="white" fill-opacity="0.602"/>
+<path d="M56.1711 16.5L52.6573 22.2266L56.1711 20.6567V16.5Z" fill="white"/>
+<path d="M56.171 24.9203V27.7447L59.6866 22.8809L56.171 24.9203Z" fill="white" fill-opacity="0.602"/>
+<path d="M56.1711 27.7447V24.9198L52.6573 22.8809L56.1711 27.7447Z" fill="white"/>
+<path d="M56.171 24.2671L59.6842 22.2272L56.171 20.6582V24.2671Z" fill="white" fill-opacity="0.2"/>
+<path d="M52.6573 22.2272L56.1711 24.2671V20.6582L52.6573 22.2272Z" fill="white" fill-opacity="0.602"/>
+</svg>

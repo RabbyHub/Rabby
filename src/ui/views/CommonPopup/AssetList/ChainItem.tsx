@@ -58,3 +58,10 @@ export const ChainItem: React.FC<Props> = ({
     </div>
   );
 };
+
+export function sortChainWithValueDesc(
+  a: ChainItemType | DisplayChainWithWhiteLogo,
+  b: ChainItemType | DisplayChainWithWhiteLogo
+) {
+  return b.usd_value - a.usd_value;
+}

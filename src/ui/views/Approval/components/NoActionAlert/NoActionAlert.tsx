@@ -17,7 +17,7 @@ const NoActionAlertStyled = styled.div`
   font-size: 13px;
   line-height: 18px;
   color: var(--r-neutral-body);
-  width: 358px;
+  width: 360px;
   .icon-alert {
     margin-right: 4px;
     width: 15px;

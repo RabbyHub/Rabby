@@ -78,10 +78,18 @@ const deleteSession = (key: string) => {
   sessionMap.delete(key);
 };
 
-const broadcastEvent = (ev, data?, origin?: string) => {
+const broadcastEvent = (
+  ev,
+  data?,
+  origin?: string,
+  ignorePermission?: boolean
+) => {
   let sessions: { key: string; data: Session }[] = [];
   sessionMap.forEach((session, key) => {
-    if (session && permissionService.hasPermission(session.origin)) {
+    if (
+      session &&
+      (permissionService.hasPermission(session.origin) || ignorePermission)
+    ) {
       sessions.push({
         key,
         data: session,

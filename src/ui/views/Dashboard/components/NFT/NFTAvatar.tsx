@@ -17,7 +17,7 @@ type AvatarProps = {
   type?: NFTItem['content_type'];
   className?: string;
   style?: React.CSSProperties;
-  onPreview?: () => void;
+  onPreview?: (e) => void;
   amount?: number;
   unknown?: string;
 };

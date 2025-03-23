@@ -135,7 +135,7 @@ export const ApprovalContractItem = ({
         <div className="pb-[12px]">
           <Alert
             className={clsx(
-              'mx-[16px]  rounded-[4px] px-[8px] py-[3px]',
+              'mx-[16px] rounded-[4px] px-[8px] py-[3px] leading-[1.2]',
               item.risk_level === 'danger' ? 'bg-[#ec5151]' : 'bg-orange'
             )}
             icon={

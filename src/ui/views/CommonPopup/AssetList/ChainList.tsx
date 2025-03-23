@@ -1,7 +1,7 @@
 import { useCommonPopupView } from '@/ui/utils';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
-import { ChainItem, ChainItemType } from './ChainItem';
+import { ChainItem, ChainItemType, sortChainWithValueDesc } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -65,6 +65,9 @@ export const ChainList = ({
       res.chainsToReveal = [...res.allItems];
       res.chainsToHide = [];
     }
+
+    res.chainsToReveal.sort(sortChainWithValueDesc);
+    res.chainsToHide.sort(sortChainWithValueDesc);
 
     return res;
   }, [chainList, balance]);

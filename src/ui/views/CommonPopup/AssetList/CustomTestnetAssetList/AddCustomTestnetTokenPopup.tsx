@@ -8,7 +8,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input, Spin, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
@@ -76,7 +76,7 @@ const Wraper = styled.div`
 `;
 
 const Footer = styled.div`
-  height: 76px;
+  height: 84px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
   padding: 16px 20px;
@@ -182,9 +182,10 @@ export const AddCustomTestnetTokenPopup = ({
   }, [visible]);
 
   const inputRef = useRef<Input>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (visible) {
-      inputRef.current?.focus();
+      const timer = setTimeout(() => inputRef.current?.focus(), 250);
+      return () => clearTimeout(timer);
     }
   }, [visible]);
 
@@ -366,6 +367,7 @@ export const AddCustomTestnetTokenPopup = ({
             visible: false,
           });
         }}
+        showRPCStatus
         onChange={(value) => {
           setChainSelectorState({
             visible: false,

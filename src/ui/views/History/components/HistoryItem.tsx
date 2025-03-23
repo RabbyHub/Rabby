@@ -203,7 +203,7 @@ function useClientParseTx({
     }
 
     try {
-      const hashDetail = await wallet.requestETHRpc(
+      const hashDetail = await wallet.requestETHRpc<any>(
         {
           method: 'eth_getTransactionByHash',
           params: [data.id],
@@ -246,7 +246,7 @@ export const HistoryItem = ({
   const account = useRabbySelector((state) => state.account.currentAccount);
 
   if (!chainItem) {
-    return null;
+    return <div></div>;
   }
 
   return (

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { isSupported } from '@keystonehq/hw-transport-webusb';
 import { useIsKeystoneUsbAvailable } from '@/ui/utils/keystone';
 import { useCommonPopupView } from 'ui/utils';
 

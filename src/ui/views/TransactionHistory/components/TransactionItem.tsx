@@ -1,16 +1,16 @@
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Tooltip, message } from 'antd';
-import { GasLevel, TokenItem, TxRequest } from 'background/service/openapi';
+import { GasLevel, TxRequest } from 'background/service/openapi';
 import {
   TransactionGroup,
   TransactionHistoryItem,
 } from 'background/service/transactionHistory';
 import clsx from 'clsx';
-import { CANCEL_TX_TYPE, CHAINS } from 'consts';
-import { intToHex } from 'ethereumjs-util';
+import { CANCEL_TX_TYPE } from 'consts';
+import { intToHex } from '@ethereumjs/util';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { SvgPendingSpin } from 'ui/assets';
@@ -25,8 +25,7 @@ import { TransactionWebsite } from './TransactionWebsite';
 import { CancelTxPopup } from './CancelTxPopup';
 import { TransactionPendingTag } from './TransactionPendingTag';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
-import { useGetTx, useLoadTxData } from '../hooks';
-import { PredictTime } from './PredictTime';
+import { useLoadTxData } from '../hooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
@@ -43,6 +42,7 @@ export const TransactionItem = ({
   onQuickCancel,
   onRetry,
   txRequests,
+  onClearPending,
 }: {
   item: TransactionGroup;
   canCancel: boolean;
@@ -50,6 +50,7 @@ export const TransactionItem = ({
   txRequests: Record<string, TxRequest>;
   onQuickCancel?(): void;
   onRetry?(): void;
+  onClearPending?(): void;
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -86,6 +87,9 @@ export const TransactionItem = ({
     if (mode === CANCEL_TX_TYPE.ON_CHAIN_CANCEL) {
       handleOnChainCancel();
     }
+    if (mode === CANCEL_TX_TYPE.REMOVE_LOCAL_PENDING_TX) {
+      handleRemoveLocalPendingTx();
+    }
     setIsShowCancelPopup(false);
   };
   const handleQuickCancel = async () => {
@@ -100,6 +104,23 @@ export const TransactionItem = ({
         });
         onQuickCancel?.();
         message.success(t('page.activities.signedTx.message.cancelSuccess'));
+      } catch (e) {
+        message.error(e.message);
+      }
+    }
+  };
+
+  const handleRemoveLocalPendingTx = async () => {
+    const maxGasTx = findMaxGasTx(item.txs);
+    if (maxGasTx?.reqId) {
+      try {
+        await wallet.removeLocalPendingTx({
+          chainId: maxGasTx.rawTx.chainId,
+          nonce: +maxGasTx.rawTx.nonce,
+          address: maxGasTx.rawTx.from,
+        });
+        message.success(t('page.activities.signedTx.message.deleteSuccess'));
+        onClearPending?.();
       } catch (e) {
         message.error(e.message);
       }
@@ -154,7 +175,10 @@ export const TransactionItem = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket(chain.serverId);
+      : await wallet.gasMarketV2({
+          chain,
+          tx: maxGasTx.rawTx,
+        });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
@@ -191,7 +215,10 @@ export const TransactionItem = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket(chain.serverId);
+      : await wallet.gasMarketV2({
+          chain,
+          tx: originTx.rawTx,
+        });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
@@ -264,6 +291,7 @@ export const TransactionItem = ({
             isSubmitFailed={!!item.isSubmitFailed}
             isWithdrawed={!!maxGasTx?.isWithdrawed}
             explain={item.explain}
+            action={item.action}
             onOpenScan={handleOpenScan}
           />
           {isPending && (
@@ -419,7 +447,6 @@ export const TransactionItem = ({
           </div>
         </ChildrenWrapper>
       )}
-      <PredictTime item={item} txRequests={txRequests} />
       <CancelTxPopup
         visible={isShowCancelPopup}
         onClose={() => {

@@ -11,8 +11,8 @@ const EditWhitelistWrapper = styled.div`
   position: fixed;
   left: 0;
   top: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background: var(--r-neutral-bg-1, #3d4251);
   z-index: 100;
   padding: 0 12px 80px 20px;
@@ -30,7 +30,7 @@ const ListScrollWrapper = styled.div`
 
 const ListFooterWrapper = styled.div`
   height: 80px;
-  padding: 20px 0;
+  padding: 20px;
   display: flex;
   justify-content: center;
   position: fixed;
@@ -131,7 +131,7 @@ const EditWhitelist = ({
 
   return (
     <EditWhitelistWrapper>
-      <PageHeader onBack={handleClickBack}>
+      <PageHeader onBack={handleClickBack} forceShowBack>
         {t('component.Contact.EditWhitelist.title')}
       </PageHeader>
       <p className="text-r-neutral-body text-14 mb-20 text-center">
@@ -163,7 +163,7 @@ const EditWhitelist = ({
         <Button
           type="primary"
           size="large"
-          className="w-[215px] h-[40px] text-15"
+          className="w-[100%] h-[40px] text-15"
           onClick={handleSaveWhitelist}
         >
           {t('component.Contact.EditWhitelist.save', {

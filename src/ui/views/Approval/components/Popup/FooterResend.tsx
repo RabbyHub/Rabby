@@ -13,7 +13,8 @@ export const FooterResend: React.FC<Props> = ({ onResend }) => {
     <div
       className={clsx(
         'text-[15px] underline text-r-neutral-body',
-        'cursor-pointer'
+        'cursor-pointer',
+        'mb-24'
       )}
       onClick={onResend}
     >

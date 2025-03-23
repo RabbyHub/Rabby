@@ -38,12 +38,8 @@ export const UseSeedPhrase = () => {
     [invokeEnterPassphrase, wallet?.getMnemonicKeyRingIdFromPublicKey]
   );
 
-  const { value: timeStores } = useAsync(() =>
-    wallet.getHDKeyRingLastAddAddrTimeStore()
-  );
-
   const seedPhraseList = useMemo(() => {
-    if (accountGroup && value && timeStores) {
+    if (accountGroup && value) {
       const publicKeys = value.map((e) => e.publicKey!);
       const pbMappings = Object.values(accountGroup[0]).reduce((pre, cur) => {
         if (cur.type === KEYRING_TYPE['HdKeyring']) {
@@ -55,16 +51,10 @@ export const UseSeedPhrase = () => {
       return publicKeys
         .map((e) => pbMappings[e])
         .filter((e) => !!e)
-        .map((e, index) => ({ ...e, index: index }))
-        .sort((a, b) => {
-          const aTime = timeStores?.[a.publicKey!] || 0;
-          const bTime = timeStores?.[b.publicKey!] || 0;
-
-          return bTime - aTime;
-        }) as TypeKeyringGroup[];
+        .map((e, index) => ({ ...e, index: index })) as TypeKeyringGroup[];
     }
     return [];
-  }, [accountGroup, value, timeStores]);
+  }, [accountGroup, value]);
 
   return {
     seedPhraseList,

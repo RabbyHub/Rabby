@@ -13,7 +13,7 @@ const RuleResultWrapper = styled.div`
   min-height: 56px;
   padding: 15px 16px;
   padding-right: 24px;
-  background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+  background: var(--r-neutral-card1, #fff);
   border: none;
   border-radius: 8px;
   margin-bottom: 8px;

@@ -13,6 +13,8 @@ import './style.less';
 import { CommonSignal } from '../ConnectStatus/CommonSignal';
 import { useWalletConnectIcon } from '../WalletConnect/useWalletConnectIcon';
 import { findChain } from '@/utils/chain';
+import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
+import clsx from 'clsx';
 
 interface AccountSelectDrawerProps {
   onChange(account: Account): void;
@@ -63,7 +65,7 @@ export const AccountItem = ({
     if (!chain) {
       return;
     }
-    const balanceInWei = await wallet.requestETHRpc(
+    const balanceInWei = await wallet.requestETHRpc<any>(
       {
         method: 'eth_getBalance',
         params: [account.address, 'latest'],
@@ -180,6 +182,7 @@ const AccountSelectDrawer = ({
         {accounts.map((account) => (
           <AccountItem
             account={account}
+            key={`${account.type}-${account.address}`}
             onSelect={handleSelectAccount}
             networkId={networkId}
             checked={
@@ -190,11 +193,32 @@ const AccountSelectDrawer = ({
             }
           />
         ))}
+        {!accounts?.length ? (
+          <div className="flex flex-col items-center justify-center h-full text-r-neutral-foot">
+            <div className="w-[32px] h-[32px] mb-[16px]">
+              <RcIconEmpty />
+            </div>
+            <div className="text-[14px] leading-[24px]">
+              No available address
+            </div>
+          </div>
+        ) : null}
       </div>
       <div className="footer">
-        <Button type="primary" onClick={onCancel}>
+        <Button
+          onClick={onCancel}
+          type="ghost"
+          className={clsx(
+            'text-r-blue-default',
+            'border-blue-light',
+            'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+            'disabled:bg-transparent disabled:opacity-40 disabled:hover:bg-transparent',
+            'before:content-none'
+          )}
+        >
           {t('component.AccountSelectDrawer.btn.cancel')}
         </Button>
+
         <Button
           type="primary"
           onClick={() => checkedAccount && onChange(checkedAccount)}

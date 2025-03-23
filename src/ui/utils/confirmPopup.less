@@ -1,0 +1,42 @@
+.confirm-modal {
+  .confirm-address-item {
+    &:hover{
+      background-color: unset !important;
+      border-color: transparent !important;
+    }
+  }
+  .ant-modal-content {
+    background: var(--r-neutral-bg-1, #FFF);
+  }
+  .ant-modal-body {
+    padding: 20px !important;
+  }
+  .ant-modal-confirm-title {
+    font-size: 17px;
+    line-height: 22px;
+    font-weight: 500;
+  }
+  .ant-modal-confirm-content {
+    padding: 0 !important;
+    background: var(--r-neutral-card-2, #f2f4f7);
+    .searched-account-item {
+      cursor: unset !important;
+    }
+  }
+  .ant-modal-confirm-btns {
+    button {
+      width: 154px;
+    }
+    button:first-child {
+      background: var(--r-neutral-bg-1, #FFF);
+      color: var(--r-blue-default, #7084ff);
+      border: 1px solid var(--r-blue-default, #7084ff);
+      &:hover{
+        background: var(--r-blue-light-1, #eef1ff);
+      }
+      &::before {
+        display: none;
+      }
+    }
+  }
+}

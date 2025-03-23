@@ -5,14 +5,13 @@ import { findChain, findChainByID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
-import { CHAINS } from 'consts';
 import { flatten, maxBy } from 'lodash';
 import React from 'react';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 import IconWarning from 'ui/assets/signature-record/warning.svg';
 
-const Wraper = styled.div`
+const Warper = styled.div`
   margin-bottom: 16px;
 
   .alert-detail {
@@ -44,12 +43,12 @@ const Wraper = styled.div`
   }
 `;
 
-const AlertDetail = ({
+const SkipAlertDetail = ({
   data,
   onSubmitTx,
 }: {
-  data: TransactionGroup;
-  onSubmitTx?: (item: TransactionGroup) => void;
+  data: { nonce: number; chainId: number };
+  onSubmitTx?: (item: { nonce: number; chainId: number }) => void;
 }) => {
   const chain = findChainByID(data.chainId);
   const nonce = data.nonce;
@@ -65,7 +64,7 @@ const AlertDetail = ({
             nonce: data.nonce,
             chainName: chain?.name || 'Unknown',
           }}
-          nonce={nonce}
+          nonce={data.nonce}
           chainName={chainName}
         >
           Nonce #{{ nonce }} skipped on {{ chainName }} chain. This may cause
@@ -106,13 +105,10 @@ export const SkipNonceAlert = ({
     }
   );
 
-  const handleOnChainCancel = async (item: TransactionGroup) => {
-    // todo can cancel ?
-
-    const maxGasTx = findMaxGasTx(item.txs)!;
-    const maxGasPrice = Number(
-      maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
-    );
+  const handleOnChainCancel = async (item: {
+    chainId: number;
+    nonce: number;
+  }) => {
     const chain = findChain({
       id: item.chainId,
     });
@@ -123,41 +119,43 @@ export const SkipNonceAlert = ({
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
         })
-      : await wallet.openapi.gasMarket(chain.serverId);
+      : await wallet.gasMarketV2({
+          chainId: chain.serverId,
+        });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [
         {
-          from: maxGasTx.rawTx.from,
-          to: maxGasTx.rawTx.from,
-          gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
+          from: account?.address,
+          to: account?.address,
+          gasPrice: intToHex(maxGasMarketPrice),
           value: '0x0',
           chainId: item.chainId,
           nonce: intToHex(item.nonce),
           isCancel: true,
-          reqId: maxGasTx.reqId,
+          // reqId: maxGasTx.reqId,
         },
       ],
     });
     window.close();
   };
 
-  if (!pendings.length || !data?.length) {
+  if (!data?.length) {
     return null;
   }
 
   return (
-    <Wraper>
+    <Warper>
       {data?.map((item) => {
         return (
-          <AlertDetail
+          <SkipAlertDetail
             key={item.nonce}
             data={item}
             onSubmitTx={handleOnChainCancel}
           />
         );
       })}
-    </Wraper>
+    </Warper>
   );
 };

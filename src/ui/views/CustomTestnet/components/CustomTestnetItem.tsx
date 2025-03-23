@@ -46,7 +46,15 @@ export const CustomTestnetItem = ({
         onClick?.(item);
       }}
     >
-      <TestnetChainLogo name={item.name} className="flex-shrink-0" />
+      {item.logo ? (
+        <img
+          src={item.logo}
+          alt=""
+          className="flex-shrink-0 w-[28px] h-[28px] rounded-full"
+        />
+      ) : (
+        <TestnetChainLogo name={item.name} className="flex-shrink-0" />
+      )}
       <div className="min-w-0">
         <div className="text-[15px] leading-[18px] mb-[2px] font-medium text-r-neutral-title1">
           {item.name}

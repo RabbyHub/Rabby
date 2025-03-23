@@ -9,9 +9,11 @@ import { useHistory } from 'react-router-dom';
 export const CustomTestnetAssetList = ({
   visible,
   onClose,
+  selectChainId,
 }: {
   visible: boolean;
   onClose?(): void;
+  selectChainId?: string | null;
 }) => {
   const { t } = useTranslation();
 
@@ -50,6 +52,7 @@ export const CustomTestnetAssetList = ({
           className="mt-12"
           visible={visible}
           onEmptyAssets={setIsTestnetEmptyAssets}
+          selectChainId={selectChainId}
         />
       </div>
     </>

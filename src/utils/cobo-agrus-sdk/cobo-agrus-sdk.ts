@@ -135,7 +135,7 @@ export class CoboSafeAccount {
         },
         [tx as any]
       );
-      const hint = await wallet.requestETHRpc(
+      const hint = await wallet.requestETHRpc<any>(
         {
           method: 'eth_call',
           params: [

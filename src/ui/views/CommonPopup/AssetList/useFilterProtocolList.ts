@@ -1,5 +1,6 @@
 import { isSameAddress } from '@/ui/utils';
 import { DisplayedProject } from '@/ui/utils/portfolio/project';
+import { safeBuildRegExp } from '@/utils/string';
 import { useMemo } from 'react';
 
 export const useFilterProtocolList = ({
@@ -20,7 +21,7 @@ export const useFilterProtocolList = ({
             if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
               return isSameAddress(token.id, kw);
             } else {
-              const reg = new RegExp(kw, 'i');
+              const reg = safeBuildRegExp(kw, 'i');
               return (
                 reg.test(token.display_symbol || '') || reg.test(token.symbol)
               );

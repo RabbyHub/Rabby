@@ -2,11 +2,16 @@ import React from 'react';
 import { Modal } from 'antd';
 import cx from 'clsx';
 import { SvgIconCross } from 'ui/assets';
+import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 
 import './index.less';
 
 const closeIcon = (
   <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
+);
+
+export const modalCloseIcon20 = (
+  <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
 );
 
 const CustomModal = (props) => (

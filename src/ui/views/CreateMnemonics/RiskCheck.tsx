@@ -85,7 +85,7 @@ const RiskCheck = () => {
   } = useQuestionsCheck();
 
   return (
-    <div className={clsx('mx-auto pt-[58px]', 'w-[600px]')}>
+    <div className="mx-auto w-[600px]">
       <img src={LogoSVG} alt="Rabby" className="mb-[12px]" />
       <div
         className={clsx(

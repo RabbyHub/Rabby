@@ -25,7 +25,11 @@ const HDPathTypeTips = {
     [HDPathType.Legacy]: t('page.newAddress.hd.ledger.hdPathType.legacy'),
   },
   [KEYRING_CLASS.HARDWARE.TREZOR]: {
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.trezor.hdPathType.ledgerLive'
+    ),
     [HDPathType.BIP44]: t('page.newAddress.hd.trezor.hdPathType.bip44'),
+    [HDPathType.Legacy]: t('page.newAddress.hd.trezor.hdPathType.legacy'),
   },
   [KEYRING_CLASS.HARDWARE.ONEKEY]: {
     [HDPathType.BIP44]: t('page.newAddress.hd.onekey.hdPathType.bip44'),
@@ -70,7 +74,13 @@ const HDPathTypeTipsNoChain = {
     ),
   },
   [KEYRING_CLASS.HARDWARE.TREZOR]: {
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.trezor.hdPathTypeNoChain.ledgerLive'
+    ),
     [HDPathType.BIP44]: t('page.newAddress.hd.trezor.hdPathTypeNoChain.bip44'),
+    [HDPathType.Legacy]: t(
+      'page.newAddress.hd.trezor.hdPathTypeNoChain.legacy'
+    ),
   },
   [KEYRING_CLASS.HARDWARE.ONEKEY]: {
     [HDPathType.BIP44]: t('page.newAddress.hd.onekey.hdPathTypeNoChain.bip44'),
@@ -117,7 +127,6 @@ const HDPathTypeTipsNoChain = {
 };
 
 const hardwareKeyringTypes = [
-  KEYRING_CLASS.HARDWARE.TREZOR,
   KEYRING_CLASS.HARDWARE.ONEKEY,
   KEYRING_CLASS.HARDWARE.KEYSTONE,
   KEYRING_CLASS.HARDWARE.BITBOX02,
@@ -139,7 +148,11 @@ const useHDPathTypeGroup = (brand?: string) => {
       HDPathType.LedgerLive,
       HDPathType.Legacy,
     ],
-    [KEYRING_CLASS.HARDWARE.TREZOR]: [HDPathType.BIP44],
+    [KEYRING_CLASS.HARDWARE.TREZOR]: [
+      HDPathType.BIP44,
+      HDPathType.LedgerLive,
+      HDPathType.Legacy,
+    ],
     [KEYRING_CLASS.HARDWARE.ONEKEY]: [HDPathType.BIP44],
     [KEYRING_CLASS.MNEMONIC]: [
       HDPathType.BIP44,

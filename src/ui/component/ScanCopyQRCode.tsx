@@ -88,11 +88,11 @@ const ScanCopyQRCode: React.FC<Props> = ({
         </div>
       </div>
       {!showURL && (
-        <div className="qrcode mb-0 relative" {...hoverProps}>
+        <div className="qrcode mb-0 relative overflow-hidden" {...hoverProps}>
           {!qrcodeURL ? (
             <div
               className={clsx(
-                'bg-white bg-opacity-70 absolute inset-0',
+                'bg-rabby-neutral-card1 bg-opacity-70 absolute inset-0',
                 'flex items-center justify-center'
               )}
             >
@@ -115,13 +115,25 @@ const ScanCopyQRCode: React.FC<Props> = ({
         </div>
       )}
       {showURL && (
-        <div className="url-container mx-auto w-[336px] mt-0 mb-0">
-          <Input.TextArea
-            className="h-[200px] w-[336px] p-16 block"
-            spellCheck={false}
-            value={qrcodeURL}
-            disabled={true}
-          />
+        <div className="url-container mx-auto w-[336px] mt-0 mb-0 h-[200px] overflow-hidden">
+          {!qrcodeURL ? (
+            <div
+              className={clsx(
+                'bg-r-neutral-card1 absolute inset-0',
+                'flex items-center justify-center'
+              )}
+            >
+              <Spin />
+            </div>
+          ) : (
+            <Input.TextArea
+              className="h-[200px] w-[336px] p-16 block bg-r-neutral-card1 rounded-[8px] text-r-neutral-body"
+              spellCheck={false}
+              value={qrcodeURL}
+              disabled={true}
+              prefixCls="url-container-textarea"
+            />
+          )}
           <ThemeIcon
             src={RcIconRefresh}
             onClick={refreshFun}

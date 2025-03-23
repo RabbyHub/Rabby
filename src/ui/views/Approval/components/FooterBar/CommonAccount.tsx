@@ -4,11 +4,13 @@ import { Signal } from '@/ui/component/Signal';
 
 export interface Props {
   icon: string;
+  grayIcon?: boolean;
   signal?: 'CONNECTED' | 'DISCONNECTED';
   customSignal?: React.ReactNode;
   tip?: React.ReactNode;
   children?: React.ReactNode;
   footer?: React.ReactNode;
+  className?: string;
 }
 
 export const CommonAccount: React.FC<Props> = ({
@@ -18,6 +20,8 @@ export const CommonAccount: React.FC<Props> = ({
   customSignal,
   children,
   footer,
+  grayIcon,
+  className,
 }) => {
   const bgColor = React.useMemo(() => {
     switch (signal) {
@@ -32,13 +36,23 @@ export const CommonAccount: React.FC<Props> = ({
 
   return (
     <section>
-      <div className={clsx('space-x-6 flex items-start', 'relative')}>
+      <div
+        className={clsx('space-x-6 flex items-start', 'relative', className)}
+      >
         <div className="relative">
-          <img src={icon} className="w-[20px] h-[20px]" />
+          <img
+            src={icon}
+            className="w-[20px] h-[20px]"
+            style={{
+              filter: grayIcon
+                ? 'invert(43%) sepia(7%) saturate(335%) hue-rotate(180deg) brightness(92%) contrast(90%)'
+                : 'unset',
+            }}
+          />
           {customSignal}
           {signal && <Signal isBadge color={bgColor} />}
         </div>
-        <div className="text-13 w-full text-r-neutral-foot">{tip}</div>
+        {tip && <div className="text-13 w-full text-r-neutral-foot">{tip}</div>}
         {children}
       </div>
       {footer}

@@ -1,0 +1,12 @@
+diff --git a/node_modules/@debank/common/dist/chain.d.ts b/node_modules/@debank/common/dist/chain.d.ts
+index ae0b2d4..70873af 100644
+--- a/node_modules/@debank/common/dist/chain.d.ts
++++ b/node_modules/@debank/common/dist/chain.d.ts
+@@ -2,6 +2,7 @@ import { CHAINS_ENUM, ChainRaw } from "./chain-data";
+ export declare type Chain = ChainRaw & {
+     logo: string;
+     whiteLogo?: string;
++    needEstimateGas?: boolean;
+ };
+ export { CHAINS_ENUM } from "./chain-data";
+ export declare const MAINNET_CHAINS_LIST: Array<Chain>;

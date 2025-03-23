@@ -3,8 +3,8 @@ import { ChainItem } from './ChainItem';
 import React from 'react';
 
 interface Props {
-  onChecked: (chain: CHAINS_ENUM) => void;
-  checked?: CHAINS_ENUM;
+  onChecked: (chain: CHAINS_ENUM | string) => void;
+  checked?: CHAINS_ENUM | string;
 }
 
 export const ChainList: React.FC<Props> = ({ onChecked, checked }) => {

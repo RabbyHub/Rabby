@@ -19,7 +19,7 @@ import {
 } from '../Popup/ApprovalPopupContainer';
 
 type Valueof<T> = T[keyof T];
-const INIT_SENDING_COUNTER = 10;
+const INIT_SENDING_COUNTER = 60;
 
 const Process = ({
   status,
@@ -142,7 +142,7 @@ const Process = ({
         <>
           {content}
           {mergedStatus === WALLETCONNECT_STATUS_MAP.CONNECTED && (
-            <span>({sendingCounter}s)</span>
+            <span> ({sendingCounter}s)</span>
           )}
         </>
       }

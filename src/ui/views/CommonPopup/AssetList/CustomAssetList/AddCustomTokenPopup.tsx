@@ -12,6 +12,7 @@ import { useForm } from 'antd/lib/form/Form';
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -27,7 +28,6 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import {
   useOperateCustomToken,
   useFindCustomToken,
-  useIsTokenAddedLocally,
 } from '@/ui/hooks/useSearchToken';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
@@ -96,7 +96,7 @@ const Wraper = styled.div`
 `;
 
 const Footer = styled.div`
-  height: 76px;
+  height: 84px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
   padding: 16px 20px;
@@ -196,6 +196,13 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
       if (!token || !chain?.id || !tokenId) {
         return null;
       }
+
+      if (token.is_core) {
+        // message.error();
+        throw new Error(
+          t('page.dashboard.assets.AddMainnetToken.isBuiltInToken')
+        );
+      }
       const portofolioToken = (await addToken(token)) || null;
 
       return {
@@ -231,9 +238,10 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
   }, [visible, resetSearchResult]);
 
   const inputRef = useRef<Input>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (visible) {
-      inputRef.current?.focus();
+      const timer = setTimeout(() => inputRef.current?.focus(), 250);
+      return () => clearTimeout(timer);
     }
   }, [visible]);
 
@@ -414,6 +422,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
         hideTestnetTab
         hideMainnetTab={false}
         visible={chainSelectorState.visible}
+        showRPCStatus
         onCancel={() => {
           setChainSelectorState({
             visible: false,

@@ -1,5 +1,4 @@
 import { createPersistStore } from 'background/utils';
-import { CEX, DEX } from '@/constant';
 
 export type RabbyPointsStore = {
   signatures: Record<string, string>;
