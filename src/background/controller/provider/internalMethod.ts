@@ -4,11 +4,11 @@ import {
   permissionService,
   keyringService,
   preferenceService,
-  contextMenuService,
 } from 'background/service';
 import providerController from './controller';
 import { findChainByEnum } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
+import wallet from '../wallet';
 
 const networkIdMap: {
   [key: string]: string;
@@ -22,7 +22,10 @@ const tabCheckin = ({
   origin,
 }) => {
   session.setProp({ origin, name, icon });
-  contextMenuService.createOrUpdate(origin);
+  const site = permissionService.getSite(origin);
+  if (site) {
+    permissionService.updateConnectSite(origin, { ...site, icon, name }, true);
+  }
 };
 
 const getProviderState = async (req) => {
@@ -74,18 +77,27 @@ const providerOverwrite = ({
 };
 
 const hasOtherProvider = () => {
-  const prev = preferenceService.getHasOtherProvider();
   preferenceService.setHasOtherProvider(true);
   const isRabby = preferenceService.getIsDefaultWallet();
-  if (!prev) {
-    contextMenuService.init();
+  if (wallet.isUnlocked()) {
+    setPopupIcon(isRabby ? 'rabby' : 'metamask');
   }
-  setPopupIcon(isRabby ? 'rabby' : 'metamask');
   return true;
 };
 
 const isDefaultWallet = ({ origin }) => {
   return preferenceService.getIsDefaultWallet(origin);
+};
+
+const getProvider = ({ origin }: { origin: string }) => {
+  return permissionService.getSite(origin)?.rdns;
+};
+
+const resetProvider = ({ origin }: { origin: string }) => {
+  const site = permissionService.getSite(origin);
+  if (site) {
+    permissionService.setSite({ ...site, rdns: undefined });
+  }
 };
 
 export default {
@@ -94,4 +106,6 @@ export default {
   providerOverwrite,
   hasOtherProvider,
   isDefaultWallet,
+  'rabby:getProvider': getProvider,
+  'rabby:resetProvider': resetProvider,
 };

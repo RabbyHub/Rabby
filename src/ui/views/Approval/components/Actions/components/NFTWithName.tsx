@@ -13,11 +13,12 @@ import clsx from 'clsx';
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
+
   .nft-item-avatar {
     margin-right: 6px;
     flex-shrink: 0;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border: none;
     .ant-image {
       img {
@@ -33,11 +34,9 @@ const Wrapper = styled.div`
     font-size: 15px;
     line-height: 18px;
     color: var(--r-neutral-title-1, #192945);
-    flex-shrink: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: flex;
   }
 `;
 
@@ -45,26 +44,35 @@ const NFTWithName = ({
   nft,
   textStyle,
   showTokenLabel = false,
+  id,
+  hasHover,
 }: {
   nft: NFTItem;
   textStyle?: React.CSSProperties;
   showTokenLabel?: boolean;
+  id?: string;
+  hasHover?: boolean;
 }) => {
   const [focusingNFT, setFocusingNFT] = React.useState<NFTItem | null>(null);
   return (
     <>
       <Wrapper>
         <NFTAvatar
-          onPreview={() => setFocusingNFT(nft)}
+          onPreview={(e) => {
+            e.stopPropagation();
+            setFocusingNFT(nft);
+          }}
           className="nft-item-avatar"
           thumbnail
           content={nft?.content}
           type={nft?.content_type}
         />
         <div
+          id={id}
           style={textStyle}
           className={clsx('name', {
             'flex-1': !showTokenLabel,
+            'cursor-pointer hover:underline hover:text-r-blue-default': hasHover,
           })}
           title={nft?.name || '-'}
         >
@@ -88,7 +96,10 @@ const NFTWithName = ({
       {focusingNFT && (
         <ModalPreviewNFTItem
           nft={(focusingNFT as unknown) as TransferingNFTItem}
-          onCancel={() => setFocusingNFT(null)}
+          onCancel={(e) => {
+            e.stopPropagation();
+            setFocusingNFT(null);
+          }}
         />
       )}
     </>

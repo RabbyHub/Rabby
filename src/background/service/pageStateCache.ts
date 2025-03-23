@@ -1,4 +1,4 @@
-import { createPersistStore } from 'background/utils';
+import browser from 'webextension-polyfill';
 
 export interface CacheState {
   path: string;
@@ -16,21 +16,22 @@ class PageStateCacheService {
   store: CacheStore | null = null;
 
   init = async () => {
-    this.store = await createPersistStore<CacheStore>({
-      name: 'pageStateCache',
-      template: {
-        cache: {
-          path: '',
-          params: {},
-          states: {},
-        },
-        hasCache: false,
+    const init: CacheStore = {
+      cache: {
+        path: '',
+        params: {},
+        states: {},
       },
+      hasCache: false,
+    };
+    await browser.storage.session.set({
+      pageStateCache: init,
     });
+    this.store = init;
   };
 
   has = () => {
-    if (!this.store) return false;
+    if (!this.store) return null;
 
     return this.store.hasCache;
   };
@@ -45,10 +46,11 @@ class PageStateCacheService {
     return null;
   };
 
-  set = (cache: CacheState) => {
+  set = async (cache: CacheState) => {
     if (!this.store) return;
     this.store.cache = cache;
     this.store.hasCache = true;
+    this.syncData();
   };
 
   clear = () => {
@@ -60,6 +62,13 @@ class PageStateCacheService {
       states: {},
     };
     this.store.hasCache = false;
+    this.syncData();
+  };
+
+  syncData = async () => {
+    await browser.storage.session.set({
+      pageStateCache: this.store,
+    });
   };
 }
 

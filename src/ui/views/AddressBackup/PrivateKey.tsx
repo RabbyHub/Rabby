@@ -75,11 +75,11 @@ const AddressBackup = () => {
         )}
       </div>
 
-      <div className="footer pb-[24px]">
+      <div className="footer pb-[20px]">
         <Button
           type="primary"
           size="large"
-          className="w-[200px]"
+          className="w-full"
           onClick={() => history.goBack()}
         >
           {t('global.Done')}

@@ -1,6 +1,5 @@
 import { Tooltip } from 'antd';
 import clsx from 'clsx';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
 import React, {
   memo,
   MouseEventHandler,
@@ -15,12 +14,10 @@ import { useRabbySelector } from '@/ui/store';
 
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
-import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
-import { pickKeyringThemeIcon } from '@/utils/account';
-import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export interface AddressItemProps {
   balance: number;
@@ -60,23 +57,11 @@ const AddressItem = memo(
     const alias = _alias || aliasName;
     const titleRef = useRef<HTMLDivElement>(null);
 
-    const brandIcon = useWalletConnectIcon({
+    const addressTypeIcon = useBrandIcon({
       address,
       brandName,
       type,
     });
-
-    const { isDarkTheme } = useThemeMode();
-
-    const addressTypeIcon = useMemo(
-      () =>
-        brandIcon ||
-        pickKeyringThemeIcon(type as any, isDarkTheme) ||
-        KEYRING_ICONS[type] ||
-        pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
-        WALLET_BRAND_CONTENT?.[brandName]?.image,
-      [type, brandName, brandIcon, isDarkTheme]
-    );
 
     return (
       <div

@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { storage } from 'background/webapi';
-import { debounce } from 'debounce';
 import { syncStateToUI } from './broadcastToUI';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 
 const persistStorage = (name: string, obj: object) => {
-  debounce(storage.set(name, obj), 1000);
+  storage.set(name, obj);
 };
 
 interface CreatePersistStoreParams<T> {

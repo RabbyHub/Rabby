@@ -11,15 +11,17 @@ import {
   EVENTS,
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_CATEGORY,
+  KEYRING_CLASS,
 } from 'consts';
 import './style.less';
 import clsx from 'clsx';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { useBrandNameHasWallet } from '@/ui/component/WalletConnect/useBrandNameHasWallet';
-import { getOriginFromUrl } from '@/utils';
+import { getOriginFromUrl, safeJSONParse } from '@/utils';
 import { ConnectedSite } from '@/background/service/permission';
 import { findChainByEnum } from '@/utils/chain';
+import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 
 const WalletConnectName = WALLET_BRAND_CONTENT['WALLETCONNECT']?.name;
 
@@ -40,6 +42,7 @@ const WalletConnectTemplate = () => {
   >();
   const [curStashId, setCurStashId] = useState<number | null>();
   const siteRef = React.useRef<ConnectedSite | null>(null);
+  const { show, contextHolder } = useRepeatImportConfirm();
 
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
@@ -64,11 +67,16 @@ const WalletConnectTemplate = () => {
       });
     },
     onError(err) {
-      if (!err?.message.includes('duplicate')) {
+      if (err.message?.includes?.('DuplicateAccountError')) {
+        const address = safeJSONParse(err.message)?.address;
+        show({
+          address,
+          type: KEYRING_CLASS.WALLETCONNECT,
+        });
+      } else {
         message.error(t(err?.message as any));
+        handleImportByWalletconnect();
       }
-      handleImportByWalletconnect();
-      return;
     },
   });
 
@@ -200,6 +208,7 @@ const WalletConnectTemplate = () => {
 
   return (
     <div className="wallet-connect pb-0">
+      {contextHolder}
       <div className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
         <img
           src={IconBack}

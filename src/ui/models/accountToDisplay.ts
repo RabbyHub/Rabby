@@ -45,6 +45,7 @@ export const accountToDisplay = createModel<RootModel>()({
         store.app.wallet.getAllVisibleAccounts(),
         store.app.wallet.getAllAlianNameByMap(),
       ]);
+
       const result = await Promise.all<IDisplayedAccountWithBalance>(
         displayedKeyrings
           .map((item) => {
@@ -115,7 +116,7 @@ export const accountToDisplay = createModel<RootModel>()({
         (store.accountToDisplay?.accountsList || []).map((item) => {
           return async () => {
             try {
-              const balance = await store.app.wallet.getAddressBalance(
+              const balance = await store.app.wallet.getInMemoryAddressBalance(
                 item.address
               );
               return {

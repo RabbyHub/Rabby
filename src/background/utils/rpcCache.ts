@@ -1,9 +1,4 @@
-import { getChainList, getMainnetChainList } from '@/utils/chain';
-import { isManifestV3 } from '@/utils/env';
-import { CHAINS } from 'consts';
-import browser from 'webextension-polyfill';
-import { ALARMS_RPC_CACHE } from './alarms';
-import { uniqueId } from 'lodash';
+import { getChainList } from '@/utils/chain';
 
 type CacheState = Map<
   string,

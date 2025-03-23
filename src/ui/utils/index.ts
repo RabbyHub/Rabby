@@ -127,6 +127,9 @@ export const ellipsisOverflowedText = (
   return `${cut}...`;
 };
 
+/**
+ * @description compare address is same, ignore case
+ */
 export const isSameAddress = (a: string, b: string) => {
   if (!a || !b) return false;
   return a.toLowerCase() === b.toLowerCase();
@@ -162,9 +165,10 @@ export const isStringOrNumber = (data) => {
 };
 
 export const hasConnectedLedgerDevice = async () => {
-  const devices = await navigator.hid.getDevices();
+  const devices = await navigator.hid?.getDevices();
   return (
-    devices.filter((device) => device.vendorId === ledgerUSBVendorId).length > 0
+    devices?.filter((device) => device.vendorId === ledgerUSBVendorId).length >
+    0
   );
 };
 

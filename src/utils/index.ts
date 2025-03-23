@@ -1,6 +1,7 @@
 import { CHAINS } from '@/constant';
 import { keyBy } from 'lodash';
 import browser from 'webextension-polyfill';
+import { findChain } from './chain';
 
 declare global {
   const langLocales: Record<string, Record<'message', string>>;
@@ -14,12 +15,13 @@ const format = (str, ...args) => {
 
 export { t, format };
 
-const chainsDict = keyBy(CHAINS, 'serverId');
 export const getChain = (chainId?: string) => {
   if (!chainId) {
     return null;
   }
-  return chainsDict[chainId];
+  return findChain({
+    serverId: chainId,
+  });
 };
 
 export const getOriginFromUrl = (url: string) => {
@@ -68,4 +70,64 @@ export const getTxScanLink = (scankLink: string, hash: string) => {
   return scankLink.endsWith('/')
     ? `${scankLink}tx/${hash}`
     : `${scankLink}/tx/${hash}`;
+};
+
+export const safeJSONParse = (str: string) => {
+  try {
+    return JSON.parse(str);
+  } catch (err) {
+    return null;
+  }
+};
+
+type AnyFunction = (...args: any[]) => any;
+
+type ObjectWithFunctions =
+  | {
+      [key: string]: any;
+    }
+  | any[];
+
+type ReplaceFunctionWithZero<T> = T extends any[]
+  ? {
+      [K in keyof T]: T[K] extends AnyFunction
+        ? 0
+        : T[K] extends object
+        ? ReplaceFunctionWithZero<T[K]>
+        : T[K];
+    }
+  : {
+      [K in keyof T]: T[K] extends AnyFunction
+        ? 0
+        : T[K] extends object
+        ? ReplaceFunctionWithZero<T[K]>
+        : T[K];
+    };
+
+export const transformFunctionsToZero = <T extends ObjectWithFunctions>(
+  input: T
+): ReplaceFunctionWithZero<T> => {
+  if (Array.isArray(input)) {
+    return input.map((item) => {
+      if (typeof item === 'function') {
+        return 0;
+      } else if (typeof item === 'object' && item !== null) {
+        return transformFunctionsToZero(item);
+      }
+      return item;
+    }) as ReplaceFunctionWithZero<T>;
+  }
+
+  const result: any = {};
+  for (const key in input) {
+    const value = input[key];
+    if (typeof value === 'function') {
+      result[key] = 0;
+    } else if (typeof value === 'object' && value !== null) {
+      result[key] = transformFunctionsToZero(value);
+    } else {
+      result[key] = value;
+    }
+  }
+  return result as ReplaceFunctionWithZero<T>;
 };

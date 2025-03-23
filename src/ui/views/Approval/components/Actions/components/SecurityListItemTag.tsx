@@ -7,11 +7,16 @@ import styled from 'styled-components';
 export interface Props {
   id: string;
   engineResult: Result;
+  inSubTable?: boolean;
 }
 
 const SecurityLevelTagNoTextStyled = styled(SecurityLevelTagNoText)``;
 
-export const SecurityListItemTag: React.FC<Props> = ({ id, engineResult }) => {
+export const SecurityListItemTag: React.FC<Props> = ({
+  id,
+  engineResult,
+  inSubTable,
+}) => {
   const dispatch = useRabbyDispatch();
   const { rules, processedRules } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
@@ -37,6 +42,7 @@ export const SecurityListItemTag: React.FC<Props> = ({ id, engineResult }) => {
       enable={engineResult.enable}
       level={processedRules.includes(id) ? 'proceed' : engineResult.level}
       onClick={() => handleClickRule(id)}
+      inSubTable={inSubTable}
     />
   );
 };

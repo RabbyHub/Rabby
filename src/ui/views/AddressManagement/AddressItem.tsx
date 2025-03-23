@@ -2,11 +2,8 @@ import { message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
-  KEYRINGS_LOGOS,
   KEYRING_CLASS,
-  KEYRING_ICONS,
   KEYRING_TYPE_TEXT,
-  KeyringWithIcon,
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import React, {
@@ -31,11 +28,9 @@ import IconCheck from 'ui/assets/check.svg';
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import SkeletonInput from 'antd/lib/skeleton/Input';
-import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
-import { pickKeyringThemeIcon } from '@/utils/account';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export interface AddressItemProps {
   balance: number;
@@ -149,31 +144,12 @@ const AddressItem = memo(
       };
     }, []);
 
-    const brandIcon = useWalletConnectIcon({
+    const addressTypeIcon = useBrandIcon({
       address,
       brandName,
       type,
+      forceLight: isCurrentAccount,
     });
-
-    const { isDarkTheme } = useThemeMode();
-
-    const addressTypeIcon = useMemo(
-      () =>
-        isCurrentAccount
-          ? brandIcon ||
-            pickKeyringThemeIcon(type as any, {
-              needLightVersion: true,
-            }) ||
-            WALLET_BRAND_CONTENT?.[brandName]?.image ||
-            KEYRINGS_LOGOS[type]
-          : brandIcon ||
-            pickKeyringThemeIcon(brandName as any, {
-              needLightVersion: isDarkTheme,
-            }) ||
-            WALLET_BRAND_CONTENT?.[brandName]?.image ||
-            KEYRING_ICONS[type],
-      [type, brandName, brandIcon, isDarkTheme]
-    );
 
     return (
       <div className={clsx(className, 'rabby-address-item-container relative')}>
@@ -230,7 +206,7 @@ const AddressItem = memo(
                   BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
                 )}
               >
-                <div className="relative mr-[12px]">
+                <div className="relative mr-[12px] flex-none">
                   <img
                     src={addressTypeIcon}
                     className={
@@ -321,7 +297,7 @@ const AddressItem = memo(
                           />
                         </>
                       ) : (
-                        <span className="ml-[12px] text-12 text-r-neutral-body">
+                        <span className="ml-[12px] text-12 text-r-neutral-body truncate flex-1 block">
                           ${splitNumberByStep(balance?.toFixed(2))}
                         </span>
                       )}
@@ -338,7 +314,7 @@ const AddressItem = memo(
                 </div>
               )}
               {isCurrentAccount && (
-                <div className="rabby-address-item-extra flex items-center justify-center">
+                <div className="rabby-address-item-extra flex items-center justify-center flex-1 overflow-hidden">
                   {isUpdatingBalance ? (
                     <>
                       <SkeletonInput
@@ -350,7 +326,7 @@ const AddressItem = memo(
                       />
                     </>
                   ) : (
-                    <span className="text-15 font-medium text-white">
+                    <span className="text-15 font-medium text-white w-full truncate text-right">
                       ${splitNumberByStep(balance?.toFixed(2))}
                     </span>
                   )}

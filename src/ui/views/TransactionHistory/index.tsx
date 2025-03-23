@@ -91,6 +91,9 @@ const TransactionHistory = () => {
                 )?.nonce === item.nonce
               }
               onComplete={() => handleTxComplete()}
+              onClearPending={() => {
+                init();
+              }}
               txRequests={txRequests}
               // onQuickCancel={init}
             />

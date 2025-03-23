@@ -1,14 +1,13 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import * as Sentry from '@sentry/browser';
-import Common, { Hardfork } from '@ethereumjs/common';
+import { Common, Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
-  bufferToHex,
   isHexString,
   addHexPrefix,
   intToHex,
-} from 'ethereumjs-util';
+  bufferToHex,
+} from '@ethereumjs/util';
 import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import {
@@ -30,6 +29,8 @@ import {
   swapService,
   transactionBroadcastWatchService,
   notificationService,
+  bridgeService,
+  gasAccountService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx, TxPushType } from 'background/service/openapi';
@@ -42,11 +43,18 @@ import {
   KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
   EVENTS,
+  INTERNAL_REQUEST_SESSION,
+  INTERNAL_REQUEST_ORIGIN,
 } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
-import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
+import {
+  validateGasPriceRange,
+  is1559Tx,
+  ApprovalRes,
+  is7702Tx,
+} from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
@@ -54,10 +62,14 @@ import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChain, findChainByEnum, isTestnet } from '@/utils/chain';
 import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
-import { customTestnetService } from '@/background/service/customTestnet';
-import { sendTransaction } from 'viem/actions';
-import { SIGN_TIMEOUT } from '@/constant/timeout';
-// import { customTestnetService } from '@/background/service/customTestnet';
+import {
+  CustomTestnetTokenBase,
+  TestnetChain,
+  customTestnetService,
+} from '@/background/service/customTestnet';
+import { isString } from 'lodash';
+import { broadcastChainChanged } from '../utils';
+import { getOriginFromUrl } from '@/utils';
 
 const reportSignText = (params: {
   method: string;
@@ -82,24 +94,12 @@ const reportSignText = (params: {
   });
 };
 
-interface ApprovalRes extends Tx {
-  type?: string;
-  address?: string;
-  uiRequestComponent?: string;
-  isSend?: boolean;
-  isSpeedUp?: boolean;
-  isCancel?: boolean;
-  isSwap?: boolean;
-  isGnosis?: boolean;
-  account?: Account;
-  extra?: Record<string, any>;
-  traceId?: string;
-  $ctx?: any;
-  signingTxId?: string;
-  pushType?: TxPushType;
-  lowGasDeadline?: number;
-  reqId?: string;
-}
+const convertToHex = (data: Buffer | bigint) => {
+  if (typeof data === 'bigint') {
+    return `0x${data.toString(16)}`;
+  }
+  return bufferToHex(data);
+};
 
 interface Web3WalletPermission {
   // The name of the method corresponding to the permission
@@ -133,8 +133,9 @@ const signTypedDataVlidation = ({
   } catch (e) {
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
-  const currentChain = permissionService.getConnectedSite(session.origin)
-    ?.chain;
+  const currentChain = permissionService.isInternalOrigin(session.origin)
+    ? findChain({ id: jsonData.domain.chainId })?.enum
+    : permissionService.getConnectedSite(session.origin)?.chain;
   if (jsonData.domain.chainId) {
     const chainItem = findChainByEnum(currentChain);
     if (
@@ -158,8 +159,10 @@ class ProviderController extends BaseController {
   ethRpc = (req, forceChainServerId?: string) => {
     const {
       data: { method, params },
-      session: { origin },
+      session: { origin: _origin },
     } = req;
+
+    let origin = _origin;
 
     if (
       !permissionService.hasPermission(origin) &&
@@ -169,6 +172,14 @@ class ProviderController extends BaseController {
     }
 
     const site = permissionService.getSite(origin);
+
+    if (method === 'net_version') {
+      if (!site?.isConnected) {
+        return Promise.resolve('1');
+      }
+      origin = INTERNAL_REQUEST_ORIGIN;
+    }
+
     let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
     if (site) {
       chainServerId =
@@ -258,16 +269,10 @@ class ProviderController extends BaseController {
     if (connectSite) {
       const chain = findChain({ enum: connectSite.chain });
       if (chain) {
-        // rabby:chainChanged event must be sent before chainChanged event
-        sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
-        sessionService.broadcastEvent(
-          'chainChanged',
-          {
-            chain: chain.hex,
-            networkVersion: chain.network,
-          },
-          origin
-        );
+        broadcastChainChanged({
+          origin,
+          chain,
+        });
       }
     }
 
@@ -336,7 +341,7 @@ class ProviderController extends BaseController {
       $ctx?: any;
       params: any;
     };
-    session: Session;
+    session: typeof INTERNAL_REQUEST_SESSION;
     approvalRes: ApprovalRes;
     pushed: boolean;
     result: any;
@@ -359,6 +364,10 @@ class ProviderController extends BaseController {
     const pushType = approvalRes.pushType || 'default';
     const lowGasDeadline = approvalRes.lowGasDeadline;
     const preReqId = approvalRes.reqId;
+    const isGasLess = approvalRes.isGasLess || false;
+    const logId = approvalRes.logId || '';
+    const isGasAccount = approvalRes.isGasAccount || false;
+    const sig = approvalRes.sig;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -377,8 +386,19 @@ class ProviderController extends BaseController {
     delete approvalRes.lowGasDeadline;
     delete approvalRes.reqId;
     delete txParams.isCoboSafe;
+    delete approvalRes.isGasLess;
+    delete approvalRes.logId;
+    delete approvalRes.isGasAccount;
+    delete approvalRes.sig;
 
     let is1559 = is1559Tx(approvalRes);
+    const is7702 = is7702Tx(approvalRes);
+
+    if (is7702) {
+      // todo
+      throw new Error('not support 7702');
+    }
+
     if (
       is1559 &&
       approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas
@@ -440,9 +460,6 @@ class ProviderController extends BaseController {
 
     const chainItem = findChainByEnum(chain);
 
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
-
     const statsData: StatsData = {
       signed: false,
       signedSuccess: false,
@@ -454,7 +471,7 @@ class ProviderController extends BaseController {
       preExecSuccess: cacheExplain
         ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
         : true,
-      createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
       source: options?.data?.$ctx?.ga?.source || '',
       trigger: options?.data?.$ctx?.ga?.trigger || '',
       networkType: chainItem?.isTestnet
@@ -463,13 +480,26 @@ class ProviderController extends BaseController {
       reported: false,
     };
 
+    let signedTx;
     try {
-      const signedTx = await keyringService.signTransaction(
+      signedTx = await keyringService.signTransaction(
         keyring,
         tx,
         txParams.from,
         opts
       );
+    } catch (e) {
+      console.error(e);
+      const errObj =
+        typeof e === 'object'
+          ? { message: e.message }
+          : ({ message: e } as any);
+      errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
+
+      throw errObj;
+    }
+
+    try {
       if (
         currentAccount.type === KEYRING_TYPE.GnosisKeyring ||
         currentAccount.type === KEYRING_TYPE.CoboArgusKeyring
@@ -501,6 +531,7 @@ class ProviderController extends BaseController {
 
         if (hash) {
           swapService.postSwap(chain, hash, other);
+          bridgeService.postBridge(chain, hash, other);
         }
 
         statsData.submit = true;
@@ -508,15 +539,22 @@ class ProviderController extends BaseController {
         if (isSend) {
           pageStateCacheService.clear();
         }
+        const _rawTx = {
+          ...rawTx,
+          ...approvalRes,
+          r: convertToHex(signedTx.r),
+          s: convertToHex(signedTx.s),
+          v: convertToHex(signedTx.v),
+        };
+        if (is1559) {
+          delete _rawTx.gasPrice;
+        } else {
+          delete _rawTx.maxPriorityFeePerGas;
+          delete _rawTx.maxFeePerGas;
+        }
         transactionHistoryService.addTx({
           tx: {
-            rawTx: {
-              ...rawTx,
-              ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-            },
+            rawTx: _rawTx,
             createdAt: Date.now(),
             isCompleted: false,
             hash,
@@ -574,7 +612,7 @@ class ProviderController extends BaseController {
           preExecSuccess: cacheExplain
             ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
             : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
           source: options?.data?.$ctx?.ga?.source || '',
           trigger: options?.data?.$ctx?.ga?.trigger || '',
           networkType: chainItem?.isTestnet
@@ -592,10 +630,11 @@ class ProviderController extends BaseController {
               isSubmitFailed: true,
             },
             explain: cacheExplain,
+            actionData: action,
             origin,
           });
         }
-        const errMsg = e.message || JSON.stringify(e);
+        const errMsg = e.details || e.message || JSON.stringify(e);
         if (notificationService.statsData?.signMethod) {
           statsData.signMethod = notificationService.statsData?.signMethod;
         }
@@ -622,28 +661,6 @@ class ProviderController extends BaseController {
         return signedTx;
       }
 
-      const buildTx = TransactionFactory.fromTxData({
-        ...approvalRes,
-        r: addHexPrefix(signedTx.r),
-        s: addHexPrefix(signedTx.s),
-        v: addHexPrefix(signedTx.v),
-        type: is1559 ? '0x2' : '0x0',
-      });
-
-      // Report address type(not sensitive information) to sentry when tx signature is invalid
-      if (!buildTx.verifySignature()) {
-        if (!buildTx.v) {
-          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
-        } else if (!buildTx.s) {
-          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
-        } else if (!buildTx.r) {
-          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
-        } else {
-          Sentry.captureException(
-            new Error(`invalid signature, ${keyring.type}`)
-          );
-        }
-      }
       signedTransactionSuccess = true;
       statsData.signed = true;
       statsData.signedSuccess = true;
@@ -668,27 +685,54 @@ class ProviderController extends BaseController {
             }
             const tx = TransactionFactory.fromTxData(txData);
             const rawTx = bufferToHex(tx.serialize());
-            hash = await RPCService.requestCustomRPC(
-              chain,
-              'eth_sendRawTransaction',
-              [rawTx]
-            );
+            try {
+              hash = await RPCService.requestCustomRPC(
+                chain,
+                'eth_sendRawTransaction',
+                [rawTx]
+              );
+            } catch (e) {
+              let errMsg = typeof e === 'object' ? e.message : e;
+              if (RPCService.hasCustomRPC(chain)) {
+                const rpc = RPCService.getRPCByChain(chain);
+                const origin = getOriginFromUrl(rpc.url);
+                errMsg = `[From ${origin}] ${errMsg}`;
+              }
+              onTransactionSubmitFailed({
+                ...e,
+                message: errMsg,
+              });
+            }
 
             onTransactionCreated({ hash, reqId, pushType });
+            notificationService.setStatsData(statsData);
           } else {
             const res = await openapiService.submitTx({
               tx: {
                 ...approvalRes,
-                r: bufferToHex(signedTx.r),
-                s: bufferToHex(signedTx.s),
-                v: bufferToHex(signedTx.v),
+                r: convertToHex(signedTx.r),
+                s: convertToHex(signedTx.s),
+                v: convertToHex(signedTx.v),
                 value: approvalRes.value || '0x0',
               },
               push_type: pushType,
               low_gas_deadline: lowGasDeadline,
               req_id: preReqId || '',
               origin,
+              is_gasless: isGasLess,
+              is_gas_account: isGasAccount,
+              log_id: logId,
+              sig,
             });
+            if (res.access_token) {
+              gasAccountService.setGasAccountSig(
+                res.access_token,
+                currentAccount
+              );
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.GAS_ACCOUNT.LOG_IN,
+              });
+            }
             hash = res.req.tx_id || undefined;
             reqId = res.req.id || undefined;
             if (res.req.push_status === 'failed') {
@@ -725,12 +769,25 @@ class ProviderController extends BaseController {
             params: [rawTx as any],
           });
           onTransactionCreated({ hash, reqId, pushType });
+          notificationService.setStatsData(statsData);
         }
 
         return hash;
       } catch (e: any) {
+        const chainData = findChain({
+          enum: chain,
+        })!;
+        let errMsg = e.details || e.message || JSON.stringify(e);
+        if (chainData) {
+          const rpcUrl = RPCService.hasCustomRPC(chain)
+            ? RPCService.getRPCByChain(chain).url
+            : (chainData as TestnetChain).rpcUrl;
+          errMsg = rpcUrl
+            ? `[From ${getOriginFromUrl(rpcUrl)}] ${errMsg}`
+            : errMsg;
+        }
         console.log('submit tx failed', e);
-        onTransactionSubmitFailed(e);
+        onTransactionSubmitFailed(errMsg);
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
@@ -783,19 +840,24 @@ class ProviderController extends BaseController {
   personalSign = async ({ data, approvalRes, session }) => {
     if (!data.params) return;
 
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
-
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
       const keyring = await this._checkAddress(from);
+      // todo
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
         approvalRes?.extra
       );
+
       signTextHistoryService.createHistory({
         address: from,
         text: string,
@@ -828,9 +890,6 @@ class ProviderController extends BaseController {
       }
     }
 
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
-
     return keyringService.signTypedMessage(
       keyring,
       { from, data: _data },
@@ -847,6 +906,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -885,6 +950,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -923,6 +994,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -961,6 +1038,12 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     const currentAccount = preferenceService.getCurrentAccount()!;
+    if (
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isString(approvalRes)
+    ) {
+      return approvalRes;
+    }
     try {
       const result = await this._signTypedData(
         from,
@@ -1007,10 +1090,8 @@ class ProviderController extends BaseController {
       const connected = permissionService.getConnectedSite(session.origin);
 
       if (connected) {
-        if (
-          Number(chainParams.chainId) ===
-          findChain({ enum: connected.chain })?.id
-        ) {
+        // if rabby supported this chain, do not show popup
+        if (findChain({ id: chainParams.chainId })) {
           return true;
         }
       }
@@ -1039,7 +1120,7 @@ class ProviderController extends BaseController {
     if (typeof chainId === 'number') {
       chainId = intToHex(chainId).toLowerCase();
     } else {
-      chainId = chainId.toLowerCase();
+      chainId = `0x${new BigNumber(chainId).toString(16).toLowerCase()}`;
     }
 
     const chain = findChain({
@@ -1062,22 +1143,10 @@ class ProviderController extends BaseController {
       true
     );
 
-    // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      {
-        ...chain,
-      },
-      origin
-    );
-    sessionService.broadcastEvent(
-      'chainChanged',
-      {
-        chain: chain.hex,
-        networkVersion: chain.network,
-      },
-      origin
-    );
+    broadcastChainChanged({
+      origin,
+      chain,
+    });
     return null;
   };
 
@@ -1093,14 +1162,18 @@ class ProviderController extends BaseController {
       const connected = permissionService.getConnectedSite(session.origin);
       if (connected) {
         const { chainId } = data.params[0];
+        // if rabby supported this chain, do not show popup
         if (
-          Number(chainId) ===
           findChain({
-            enum: connected.chain,
-          })?.id
+            id: chainId,
+          })
         ) {
           return true;
         }
+        throw ethErrors.provider.custom({
+          code: 4902,
+          message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
+        });
       }
     },
     { height: 650 },
@@ -1115,13 +1188,16 @@ class ProviderController extends BaseController {
     if (typeof chainId === 'number') {
       chainId = intToHex(chainId).toLowerCase();
     } else {
-      chainId = chainId.toLowerCase();
+      chainId = `0x${new BigNumber(chainId).toString(16).toLowerCase()}`;
     }
 
     const chain = findChain({ hex: chainId });
 
     if (!chain) {
-      throw new Error('This chain is not supported by Rabby yet.');
+      throw ethErrors.provider.custom({
+        code: 4902,
+        message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
+      });
     }
 
     permissionService.updateConnectSite(
@@ -1132,22 +1208,10 @@ class ProviderController extends BaseController {
       true
     );
 
-    // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      {
-        ...chain,
-      },
-      origin
-    );
-    sessionService.broadcastEvent(
-      'chainChanged',
-      {
-        chain: chain.hex,
-        networkVersion: chain.network,
-      },
-      origin
-    );
+    broadcastChainChanged({
+      origin,
+      chain,
+    });
     return null;
   };
 
@@ -1155,13 +1219,25 @@ class ProviderController extends BaseController {
   walletWatchAsset = ({
     approvalRes,
   }: {
-    approvalRes: { id: string; chain: string };
+    approvalRes: { id: string; chain: string } & CustomTestnetTokenBase;
   }) => {
-    const { id, chain } = approvalRes;
-    preferenceService.addCustomizedToken({
-      address: id,
-      chain,
+    const { id, chain, chainId, symbol, decimals } = approvalRes;
+    const chainInfo = findChain({
+      serverId: chain,
     });
+    if (chainInfo?.isTestnet) {
+      customTestnetService.addToken({
+        chainId,
+        symbol,
+        decimals,
+        id,
+      });
+    } else {
+      preferenceService.addCustomizedToken({
+        address: id,
+        chain,
+      });
+    }
   };
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {
@@ -1179,6 +1255,19 @@ class ProviderController extends BaseController {
       result.push({ parentCapability: 'eth_accounts' });
     }
     return result;
+  };
+
+  /**
+   * https://github.com/MetaMask/metamask-improvement-proposals/blob/main/MIPs/mip-2.md
+   */
+  @Reflect.metadata('SAFE', true)
+  walletRevokePermissions = ({ session: { origin }, data: { params } }) => {
+    if (Wallet.isUnlocked() && Wallet.getSite(origin)) {
+      if (params?.[0] && 'eth_accounts' in params[0]) {
+        Wallet.removeConnectedSite(origin);
+      }
+    }
+    return null;
   };
 
   personalEcRecover = ({

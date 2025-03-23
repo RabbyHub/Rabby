@@ -71,7 +71,7 @@ export const OptionsWrapper = styled.div`
 
 export const Footer = styled.div`
   margin-top: auto;
-  height: 76px;
+  height: 84px;
   border-top: 1px solid #e5e9ef;
   padding: 16px 20px;
   display: flex;

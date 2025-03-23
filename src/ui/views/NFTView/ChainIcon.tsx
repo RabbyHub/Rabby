@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import React from 'react';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { keyBy } from 'lodash';
+import { findChain } from '@/utils/chain';
 
 const chainDict = keyBy(CHAINS, 'serverId');
 
@@ -15,7 +16,9 @@ export const ChainIcon = ({ chain, className, style }: ChainIconProps) => {
   if (!chain) {
     return null;
   }
-  const data = chainDict[chain];
+  const data = findChain({
+    serverId: chain,
+  });
   return (
     <img
       src={data?.logo || IconUnknown}
@@ -29,6 +32,6 @@ export const getChainName = (chain: string) => {
   if (!chain) {
     return null;
   }
-  const data = chainDict[chain];
+  const data = findChain({ serverId: chain });
   return data?.name || chain;
 };

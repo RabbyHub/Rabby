@@ -24,9 +24,12 @@ const GRIDPLUS_TYPE = HARDWARE_KEYRING_TYPES.GridPlus.type;
 
 export const GridPlusManager: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
-  const { getCurrentAccounts, createTask, keyringId } = React.useContext(
-    HDManagerStateContext
-  );
+  const {
+    getCurrentAccounts,
+    createTask,
+    keyringId,
+    setSelectedAccounts,
+  } = React.useContext(HDManagerStateContext);
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
     DEFAULT_SETTING_DATA
@@ -48,6 +51,7 @@ export const GridPlusManager: React.FC = () => {
       await changeHDPathTask(data.type);
     }
     await createTask(() => getCurrentAccounts());
+    setSelectedAccounts([]);
     setSetting(data);
     setLoading(false);
   }, []);
@@ -77,6 +81,14 @@ export const GridPlusManager: React.FC = () => {
 
       detectInitialHDPathType(accounts, usedHDPathType);
     } catch (e) {
+      if (
+        e.message.match('Please forget the device and try again') ||
+        e.message.match('Device Locked')
+      ) {
+        wallet
+          .requestKeyring(GRIDPLUS_TYPE, 'forgetDevice', keyringId)
+          .then(() => window.location.reload());
+      }
       console.error(e);
     }
 

@@ -25,7 +25,7 @@ import {
   KeystoneWiredWaiting,
 } from './KeystoneWaiting';
 import clsx from 'clsx';
-import { SIGN_TIMEOUT } from '@/constant/timeout';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -49,10 +49,11 @@ const QRHardWareWaiting = ({ params }) => {
     QRHARDWARE_STATUS.SYNC
   );
   const [brand, setBrand] = useState<string>('');
+  const canSwitchSignature = useCanSwitchSignature(brand);
   const [signMethod, setSignMethod] = useState<SIGNATURE_METHOD>(
     SIGNATURE_METHOD.QRCODE
   );
-  const canSwitchSignature = useCanSwitchSignature(brand);
+  const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const [errorMessage, setErrorMessage] = useState('');
@@ -70,6 +71,15 @@ const QRHardWareWaiting = ({ params }) => {
     stay: boolean;
     approvalId: string;
   }>();
+
+  React.useEffect(() => {
+    if (!defalutSignMethodSetted.current && canSwitchSignature) {
+      setSignMethod(
+        canSwitchSignature ? SIGNATURE_METHOD.USB : SIGNATURE_METHOD.QRCODE
+      );
+      defalutSignMethodSetted.current = true;
+    }
+  }, [canSwitchSignature]);
 
   const chain =
     findChain({
@@ -124,12 +134,20 @@ const QRHardWareWaiting = ({ params }) => {
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, sig);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
-              await wallet.gnosisAddSignature(account.address, sig);
-              await wallet.postGnosisTransaction();
+              const sigs = await wallet.getGnosisTransactionSignatures();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, sig);
+              } else {
+                await wallet.gnosisAddSignature(account.address, sig);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {
@@ -148,10 +166,9 @@ const QRHardWareWaiting = ({ params }) => {
         // rejectApproval(data.errorMsg);
       }
     });
-    // Wait for the keyring to have called the signature method
-    setTimeout(() => {
-      wallet.acquireKeystoneMemStoreData();
-    }, SIGN_TIMEOUT);
+
+    emitSignComponentAmounted();
+    wallet.acquireKeystoneMemStoreData();
   }, []);
 
   React.useEffect(() => {
@@ -205,14 +222,14 @@ const QRHardWareWaiting = ({ params }) => {
 
           const explain = signingTx?.explain;
 
-          stats.report('signTransaction', {
+          wallet.reportStats('signTransaction', {
             type: account.brandName,
             chainId: chainInfo?.serverId || '',
             category: KEYRING_CATEGORY_MAP[account.type],
             preExecSuccess: explain
               ? explain?.calcSuccess && explain?.pre_exec.success
               : true,
-            createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+            createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
             source: params?.$ctx?.ga?.source || '',
             trigger: params?.$ctx?.ga?.trigger || '',
             signMethod,

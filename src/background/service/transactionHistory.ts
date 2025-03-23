@@ -1,4 +1,4 @@
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, isSameAddress } from 'background/utils';
 import maxBy from 'lodash/maxBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { Object as ObjectType } from 'ts-toolbelt';
@@ -9,23 +9,21 @@ import openapiService, {
   testnetOpenapiService,
   TxRequest,
 } from './openapi';
-import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
+import { INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
 import { findChain, findChainByID } from '@/utils/chain';
 import { makeTransactionId } from '@/utils/transaction';
-import {
-  ActionRequireData,
-  ParsedActionData,
-} from '@/ui/views/Approval/components/Actions/utils';
-import { sortBy, max, groupBy } from 'lodash';
+import { sortBy, groupBy } from 'lodash';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import eventBus from '@/eventBus';
 import { customTestnetService } from './customTestnet';
-import { isManifestV3 } from '@/utils/env';
-import browser from 'webextension-polyfill';
-import { ALARMS_RELOAD_TX } from '../utils/alarms';
+import {
+  ActionRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
+import { uninstalledService } from '.';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -51,7 +49,7 @@ export interface TransactionSigningItem {
     { approvalId: string; calcSuccess: boolean }
   >;
   action?: {
-    actionData: ParsedActionData;
+    actionData: ParsedTransactionActionData;
     requiredData: ActionRequireData;
   };
   id: string;
@@ -69,7 +67,7 @@ export interface TransactionGroup {
     { approvalId: string; calcSuccess: boolean }
   >;
   action?: {
-    actionData: ParsedActionData;
+    actionData: ParsedTransactionActionData;
     requiredData: ActionRequireData;
   };
   isFailed: boolean;
@@ -94,6 +92,8 @@ class TxHistory {
   private _txHistoryLimit = 100;
 
   addSigningTx(tx: Tx) {
+    uninstalledService.setTx();
+
     const id = nanoid();
 
     this._signingTxList.push({
@@ -122,7 +122,7 @@ class TxHistory {
       explain?: Partial<TransactionSigningItem['explain']>;
       rawTx?: Partial<TransactionSigningItem['rawTx']>;
       action?: {
-        actionData: ParsedActionData;
+        actionData: ParsedTransactionActionData;
         requiredData: ActionRequireData;
       };
       isSubmitted?: boolean;
@@ -236,9 +236,11 @@ class TxHistory {
     tx,
     explain,
     origin,
+    actionData,
   }: {
     tx: TransactionHistoryItem;
     explain: TransactionGroup['explain'];
+    actionData: TransactionGroup['action'];
     origin: string;
   }) {
     const nonce = Number(tx.rawTx.nonce);
@@ -263,6 +265,10 @@ class TxHistory {
     }
     if (explain) {
       tx.explain = explain;
+    }
+
+    if (actionData) {
+      tx.action = actionData;
     }
 
     if (!this.store.transactions[from]) {
@@ -290,6 +296,7 @@ class TxHistory {
             createdAt: tx.createdAt,
             isPending: true,
             explain: explain,
+            action: actionData,
             isFailed: false,
             isSubmitFailed: true,
           },
@@ -584,6 +591,8 @@ class TxHistory {
           addressList: [address],
         },
       });
+
+      return completed.gas_used;
     } catch (e) {
       if (duration !== false && +duration < 1000 * 15) {
         const timeout = Number(duration) + 1000;
@@ -731,7 +740,7 @@ class TxHistory {
         preExecSuccess: target?.explain
           ? target.explain?.pre_exec.success && target.explain?.calcSuccess
           : true,
-        createBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
+        createdBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
         source: target?.$ctx?.ga?.source || '',
         trigger: target?.$ctx?.ga?.trigger || '',
         networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
@@ -741,7 +750,7 @@ class TxHistory {
   }
 
   clearExpiredTxs(address: string) {
-    // maximum keep 20 transactions in storage each address since chrome storage maximum useage 5MB
+    // maximum keep 20 transactions in storage each address since chrome storage maximum usage 5MB
     const normalizedAddress = address.toLowerCase();
     if (this.store.transactions[normalizedAddress]) {
       const txs = Object.values(this.store.transactions[normalizedAddress]);
@@ -834,13 +843,47 @@ class TxHistory {
     // this.store.cacheExplain = copyExplain;
   }
 
-  clearPendingTransactions(address: string) {
+  clearPendingTransactions(address: string, chainId?: number) {
     const transactions = this.store.transactions[address.toLowerCase()];
     if (!transactions) return;
     this._setStoreTransaction({
       ...this.store.transactions,
       [address.toLowerCase()]: Object.values(transactions)
-        .filter((transaction) => !transaction.isPending)
+        .filter((transaction) => {
+          return chainId
+            ? !(transaction.isPending && +chainId === +transaction.chainId)
+            : !transaction.isPending;
+        })
+        .reduce((res, current) => {
+          return {
+            ...res,
+            [`${current.chainId}-${current.nonce}`]: current,
+          };
+        }, {}),
+    });
+  }
+
+  removeLocalPendingTx({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) {
+    const transactions = this.store.transactions[address.toLowerCase()];
+    if (!transactions) return;
+    this._setStoreTransaction({
+      ...this.store.transactions,
+      [address.toLowerCase()]: Object.values(transactions)
+        .filter((transaction) => {
+          return !(
+            transaction.isPending &&
+            +chainId === +transaction.chainId &&
+            +transaction.nonce === +nonce
+          );
+        })
         .reduce((res, current) => {
           return {
             ...res,
@@ -881,10 +924,17 @@ class TxHistory {
     );
 
     const firstSigningTx = this._signingTxList.find((item) => {
-      return item.rawTx.chainId === chainId && !item.isSubmitted;
+      return (
+        item.rawTx.chainId === chainId &&
+        !item.isSubmitted &&
+        isSameAddress(item.rawTx.from, address)
+      );
     });
     const processingTx = this._signingTxList.find(
-      (item) => item.rawTx.chainId === chainId && item.isSubmitted
+      (item) =>
+        item.rawTx.chainId === chainId &&
+        item.isSubmitted &&
+        isSameAddress(item.rawTx.from, address)
     );
 
     if (!maxNonceTx) return null;
@@ -901,34 +951,6 @@ class TxHistory {
     }
 
     return maxLocalOrProcessingNonce + 1;
-  }
-
-  getSkipedTxs(address: string) {
-    const dict = groupBy(
-      Object.values(this.store.transactions[address.toLowerCase()] || {}),
-      (item) => item.chainId
-    );
-
-    return Object.entries(dict).reduce((res, [key, list]) => {
-      const maxNonce =
-        maxBy(
-          list.filter((item) => {
-            const maxGasTx = findMaxGasTx(item.txs);
-            return !item.isSubmitFailed && !maxGasTx?.isWithdrawed;
-          }),
-          (item) => item.nonce
-        )?.nonce || 0;
-
-      res[key] = sortBy(
-        list.filter(
-          (item) =>
-            item.nonce < maxNonce && findMaxGasTx(item.txs)?.isWithdrawed
-        ),
-        (item) => -item.nonce
-      );
-
-      return res;
-    }, {} as Record<string, TransactionGroup[]>);
   }
 
   quickCancelTx = async ({

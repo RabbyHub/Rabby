@@ -28,7 +28,14 @@ export default (store: typeof import('@/ui/store').default) => {
         dispatch.preference.setField({
           themeMode: payload.partials.themeMode,
         });
+        break;
       }
+      // case 'curvePointsMap': {
+      //   dispatch.account.setField({
+      //     curvePointsMap: payload.partials.curvePointsMap,
+      //   })
+      //   break;
+      // }
     }
   });
 

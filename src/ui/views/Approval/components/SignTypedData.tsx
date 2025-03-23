@@ -3,46 +3,58 @@ import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { Skeleton, message } from 'antd';
+import { Button, Drawer, Modal, Skeleton } from 'antd';
 import { useScroll } from 'react-use';
-import { useSize } from 'ahooks';
+import { useSize, useDebounceFn } from 'ahooks';
+import { cloneDeep } from 'lodash';
 import { underline2Camelcase } from '@/background/utils';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import {
+  ALIAS_ADDRESS,
+  CHAINS,
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
   KEYRING_TYPE,
-  CHAINS,
   REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
-import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  getTimeSpan,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
-import { adjustV } from '@/ui/utils/gnosis';
 import { FooterBar } from './FooterBar/FooterBar';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TypedDataActions';
+import { normalizeTypeData } from './TypedDataActions/utils';
 import {
-  parseAction,
-  fetchRequireData,
-  TypedDataRequireData,
-  TypedDataActionData,
-  formatSecurityEngineCtx,
-  normalizeTypeData,
-  getActionTypeText,
-} from './TypedDataActions/utils';
-import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { isTestnetChainId, findChainByID, findChain } from '@/utils/chain';
+  Level,
+  defaultRules,
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { isTestnetChainId, findChain } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
 import stats from '@/stats';
+import {
+  parseAction,
+  formatSecurityEngineContext,
+  fetchActionRequiredData,
+  ActionRequireData,
+  ParsedTypedDataActionData,
+} from '@rabby-wallet/rabby-action';
+import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
+import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
+import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
+import GnosisDrawer from './TxComponents/GnosisDrawer';
+import { generateTypedData } from '@safe-global/protocol-kit';
+import { ga4 } from '@/utils/ga4';
 
 interface SignTypedDataProps {
   method: string;
@@ -55,6 +67,7 @@ interface SignTypedDataProps {
   isGnosis?: boolean;
   isSend?: boolean;
   account?: Account;
+  $ctx?: any;
 }
 
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
@@ -66,13 +79,14 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
+  const securityEngineCtx = useRef<any>(null);
+  const logId = useRef('');
   const [isLoading, setIsLoading] = useState(true);
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
-  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const dispatch = useRabbyDispatch();
   const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
@@ -80,18 +94,24 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     currentTx: s.securityEngine.currentTx,
     tokenDetail: s.sign.tokenDetail,
   }));
-  const [currentChainId, setCurrentChainId] = useState<
-    number | string | undefined
-  >(undefined);
+  const [currentChainId, setCurrentChainId] = useState<number | undefined>(
+    undefined
+  );
 
-  const [
-    actionRequireData,
-    setActionRequireData,
-  ] = useState<TypedDataRequireData>(null);
+  const [isGnosisAccount, setIsGnosisAccount] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [gnosisFooterBarVisible, setGnosisFooterBarVisible] = useState(false);
+  const [currentGnosisAdmin, setCurrentGnosisAdmin] = useState<Account | null>(
+    null
+  );
+
+  const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
+    null
+  );
   const [
     parsedActionData,
     setParsedActionData,
-  ] = useState<TypedDataActionData | null>(null);
+  ] = useState<ParsedTypedDataActionData | null>(null);
   const [
     cantProcessReason,
     setCantProcessReason,
@@ -133,43 +153,59 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, [engineResults, currentTx]);
 
   const { data, session, method, isGnosis, isSend, account } = params;
-  let parsedMessage = '';
-  let _message = '';
-  try {
-    // signTypeDataV1 [Message, from]
-    if (/^eth_signTypedData(_v1)?$/.test(method)) {
-      _message = data[0].reduce((m, n) => {
-        m[n.name] = n.value;
-        return m;
-      }, {});
-    } else {
-      // [from, Message]
-      _message = parseSignTypedDataMessage(data[1]);
-    }
-
-    parsedMessage = JSON.stringify(_message, null, 4);
-  } catch (err) {
-    console.log('parse message error', parsedMessage);
-  }
+  const [parsedMessage, setParsedMessage] = useState('');
+  const [_message, setMessage] = useState('');
 
   const isSignTypedDataV1 = useMemo(
     () => /^eth_signTypedData(_v1)?$/.test(method),
     [method]
   );
-
-  const signTypedData: null | Record<string, any> = useMemo(() => {
+  const [signTypedData, rawMessage]: (null | Record<
+    string,
+    any
+  >)[] = useMemo(() => {
     if (!isSignTypedDataV1) {
       try {
+        console.log(data[1]);
         const v = JSON.parse(data[1]);
+        const displayData = cloneDeep(v);
         const normalized = normalizeTypeData(v);
-        return normalized;
+        return [normalized, displayData];
       } catch (error) {
         console.error('parse signTypedData error: ', error);
-        return null;
+        return [null, null];
       }
     }
-    return null;
+    return [null, null];
   }, [data, isSignTypedDataV1]);
+
+  useEffect(() => {
+    try {
+      // signTypeDataV1 [Message, from]
+      let message;
+      let displayMessage;
+      if (/^eth_signTypedData(_v1)?$/.test(method)) {
+        message = data[0].reduce((m, n) => {
+          m[n.name] = n.value;
+          return m;
+        }, {});
+      } else {
+        // [from, Message]
+        /**
+         * To avoid bypass, we need to normalize body of typedData before
+         * decode from server, but normalized value may not same as origin
+         * so use displayMessage for UI display
+         * */
+        displayMessage = parseSignTypedDataMessage(data[1]);
+        message = parseSignTypedDataMessage(signTypedData || data[1]);
+      }
+
+      setMessage(message);
+      setParsedMessage(JSON.stringify(displayMessage, null, 4));
+    } catch (err) {
+      console.log('parse message error', err);
+    }
+  }, []);
 
   const chain = useMemo(() => {
     if (!isSignTypedDataV1 && signTypedData) {
@@ -195,6 +231,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           enum: site.chain,
         })?.id;
       }
+    } else if (params.$ctx.chainId) {
+      return params.$ctx.chainId;
     } else {
       return chain?.id;
     }
@@ -210,13 +248,20 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       const currentAccount = isGnosis
         ? account
         : await wallet.getCurrentAccount();
+
+      const _isGnosisAccount =
+        currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
+      setIsGnosisAccount(_isGnosisAccount);
+      if (!isViewGnosisSafe) {
+        wallet.clearGnosisMessage();
+      }
       const chainId = signTypedData?.domain?.chainId;
       if (isTestnetChainId(chainId)) {
         return null;
       }
-      return wallet.openapi.parseTypedData({
-        typedData: signTypedData,
-        address: currentAccount!.address,
+      return wallet.openapi.parseCommon({
+        typed_data: signTypedData,
+        user_addr: currentAccount!.address,
         origin: session.origin,
       });
     }
@@ -240,16 +285,54 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
     }
-    if (currentAccount && currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      setIsWatch(true);
-      setCantProcessReason(
-        <div className="flex items-center gap-6">
-          <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
-          {t('page.signTypedData.safeCantSignText')}
-        </div>
-      );
-    }
   };
+
+  const isViewGnosisSafe = params?.$ctx?.isViewGnosisSafe;
+  const { data: safeInfo } = useGetCurrentSafeInfo({ chainId: currentChainId });
+  const { data: safeMessageHash } = useGetMessageHash({
+    chainId: currentChainId,
+    message: signTypedData,
+  });
+  const { data: currentSafeMessage } = useCheckCurrentSafeMessage(
+    {
+      chainId: currentChainId,
+      safeMessageHash,
+      threshold: safeInfo?.threshold,
+    },
+    {
+      onSuccess(res) {
+        if (res?.isFinished) {
+          const modal = Modal.info({
+            maskClosable: false,
+            closable: false,
+            width: 320,
+            centered: true,
+            className: 'same-safe-message-modal modal-support-darkmode',
+            content: (
+              <div>
+                <div className="text-[16px] leading-[140%] text-r-neutral-title1 font-medium text-center">
+                  {t('page.signText.sameSafeMessageAlert')}
+                </div>
+                <div className="mt-[32px]">
+                  <Button
+                    type="primary"
+                    block
+                    onClick={() => {
+                      modal.destroy();
+                      resolveApproval(res.safeMessage.preparedSignature);
+                    }}
+                    className="text-[15px] h-[40px] rounded-[6px]"
+                  >
+                    {t('global.ok')}
+                  </Button>
+                </div>
+              </div>
+            ),
+          });
+        }
+      },
+    }
+  );
 
   const report = async (
     action:
@@ -272,6 +355,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         ].join('|'),
         transport: 'beacon',
       });
+
+      if (action === 'createSignText') {
+        ga4.fireEvent('Init_SignText', {
+          event_category: 'SignText',
+        });
+      } else if (action === 'startSignText') {
+        ga4.fireEvent('Submit_SignText', {
+          event_category: 'SignText',
+        });
+      }
+
       await wallet.reportStats(action, {
         type: currentAccount.brandName,
         category: getKRCategoryByType(currentAccount.type),
@@ -297,66 +391,15 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       ? account
       : await wallet.getCurrentAccount();
 
+    if (isGnosisAccount) {
+      setDrawerVisible(true);
+      return;
+    }
+
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
     }
 
-    if (isGnosis && params.account) {
-      if (WaitingSignMessageComponent[params.account.type]) {
-        wallet.signTypedData(
-          params.account.type,
-          params.account.address,
-          JSON.parse(params.data[1]),
-          {
-            brandName: params.account.brandName,
-            version: 'V4',
-          }
-        );
-        if (isSend) {
-          wallet.clearPageStateCache();
-        }
-        resolveApproval({
-          uiRequestComponent: WaitingSignMessageComponent[params.account.type],
-          type: params.account.type,
-          address: params.account.address,
-          data: params.data,
-          isGnosis: true,
-          account: params.account,
-        });
-      } else {
-        try {
-          let result = await wallet.signTypedData(
-            params.account.type,
-            params.account.address,
-            JSON.parse(params.data[1]),
-            {
-              version: 'V4',
-            }
-          );
-          result = adjustV('eth_signTypedData', result);
-          report('completeSignText', {
-            success: true,
-          });
-          const sigs = await wallet.getGnosisTransactionSignatures();
-          if (sigs.length > 0) {
-            await wallet.gnosisAddConfirmation(params.account.address, result);
-          } else {
-            await wallet.gnosisAddSignature(params.account.address, result);
-            await wallet.postGnosisTransaction();
-          }
-          if (isSend) {
-            wallet.clearPageStateCache();
-          }
-          resolveApproval(result, false, true);
-        } catch (e) {
-          message.error(e.message);
-          report('completeSignText', {
-            success: false,
-          });
-        }
-      }
-      return;
-    }
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const transport = await TransportWebHID.create();
@@ -399,7 +442,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
   };
 
-  const getRequireData = async (data: TypedDataActionData) => {
+  const getRequireData = async (data: ParsedTypedDataActionData) => {
     const currentAccount = isGnosis
       ? account
       : await wallet.getCurrentAccount();
@@ -410,17 +453,45 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       }
     }
     if (currentAccount) {
-      const requireData = await fetchRequireData(
-        data,
-        currentAccount.address,
-        wallet
-      );
+      let chainServerId: string | undefined;
+      if (data.chainId) {
+        chainServerId = findChain({
+          id: Number(data.chainId),
+        })?.serverId;
+      }
+
+      const requireData = await fetchActionRequiredData({
+        type: 'typed_data',
+        actionData: data,
+        sender: currentAccount.address,
+        chainId: chainServerId || CHAINS.ETH.serverId,
+        walletProvider: {
+          hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+          hasAddress: wallet.hasAddress,
+          getWhitelist: wallet.getWhitelist,
+          isWhitelistEnabled: wallet.isWhitelistEnabled,
+          getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+          findChain,
+          ALIAS_ADDRESS,
+        },
+        apiProvider: isTestnetChainId(data.chainId)
+          ? wallet.testnetOpenapi
+          : wallet.openapi,
+      });
       setActionRequireData(requireData);
-      const ctx = await formatSecurityEngineCtx({
+      const ctx = await formatSecurityEngineContext({
+        type: 'typed_data',
         actionData: data,
         requireData,
-        wallet,
+        chainId: chainServerId || CHAINS.ETH.serverId,
+        isTestnet: isTestnetChainId(data.chainId),
+        provider: {
+          getTimeSpan,
+          hasAddress: wallet.hasAddress,
+        },
+        origin: params.session.origin,
       });
+      securityEngineCtx.current = ctx;
       const result = await executeEngine(ctx);
       setEngineResults(result);
     }
@@ -428,10 +499,26 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const executeSecurityEngine = async () => {
-    const ctx = await formatSecurityEngineCtx({
-      actionData: parsedActionData!,
+    if (!parsedActionData) {
+      return;
+    }
+    let chainServerId: string | undefined;
+    if (parsedActionData.chainId) {
+      chainServerId = findChain({
+        id: Number(parsedActionData.chainId),
+      })?.serverId;
+    }
+    const ctx = await formatSecurityEngineContext({
+      type: 'typed_data',
+      actionData: parsedActionData,
       requireData: actionRequireData,
-      wallet,
+      chainId: chainServerId || CHAINS.ETH.serverId,
+      isTestnet: isTestnetChainId(parsedActionData.chainId),
+      provider: {
+        getTimeSpan,
+        hasAddress: wallet.hasAddress,
+      },
+      origin: params.session.origin,
     });
     const result = await executeEngine(ctx);
     setEngineResults(result);
@@ -468,6 +555,96 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     dispatch.securityEngine.closeRuleDrawer();
   };
 
+  const { run: reportLogId } = useDebounceFn(
+    (rules) => {
+      wallet.openapi.postActionLog({
+        id: logId.current,
+        type: 'typed_data',
+        rules,
+      });
+    },
+    { wait: 1000 }
+  );
+
+  const handleDrawerCancel = () => {
+    setDrawerVisible(false);
+  };
+
+  const handleGnosisConfirm = async (account: Account) => {
+    if (!safeInfo) return;
+    setGnosisFooterBarVisible(true);
+    setCurrentGnosisAdmin(account);
+  };
+
+  const handleGnosisSign = async () => {
+    const account = currentGnosisAdmin;
+    if (!safeInfo || !account || !signTypedData) {
+      return;
+    }
+    if (activeApprovalPopup()) {
+      return;
+    }
+
+    if (!isViewGnosisSafe) {
+      await wallet.buildGnosisMessage({
+        safeAddress: safeInfo.address,
+        account,
+        version: safeInfo.version,
+        networkId: currentChainId + '',
+        message: signTypedData,
+      });
+      await Promise.all(
+        (currentSafeMessage?.safeMessage?.confirmations || []).map((item) => {
+          return wallet.addPureGnosisMessageSignature({
+            signerAddress: item.owner,
+            signature: item.signature,
+          });
+        })
+      );
+    }
+
+    const typedData = generateTypedData({
+      safeAddress: safeInfo.address,
+      safeVersion: safeInfo.version,
+      chainId: BigInt(currentChainId!),
+      data: signTypedData as any,
+    });
+    if (WaitingSignMessageComponent[account.type]) {
+      wallet.signTypedDataWithUI(
+        account.type,
+        account.address,
+        typedData as any,
+        {
+          brandName: account.brandName,
+          version: 'V4',
+        }
+      );
+
+      resolveApproval({
+        uiRequestComponent: WaitingSignMessageComponent[account.type],
+        type: account.type,
+        address: account.address,
+        data: [account.address, JSON.stringify(typedData)],
+        isGnosis: true,
+        account: account,
+        safeMessage: {
+          message: signTypedData,
+          safeAddress: safeInfo.address,
+          chainId: currentChainId,
+          safeMessageHash: safeMessageHash,
+        },
+        extra: {
+          popupProps: {
+            maskStyle: {
+              backgroundColor: 'transparent',
+            },
+          },
+        },
+      });
+    }
+    return;
+  };
+
   useEffect(() => {
     executeSecurityEngine();
   }, [rules]);
@@ -476,9 +653,23 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
     if (!loading) {
       if (typedDataActionData) {
+        logId.current = typedDataActionData.log_id;
         actionType.current = typedDataActionData?.action?.type || '';
-        const parsed = parseAction(typedDataActionData, signTypedData, sender);
+        const parsed = parseAction({
+          type: 'typed_data',
+          data: typedDataActionData.action as any,
+          typedData: signTypedData,
+          sender,
+          balanceChange: typedDataActionData.pre_exec_result?.balance_change,
+          preExecVersion: typedDataActionData.pre_exec_result?.pre_exec_version,
+          gasUsed: typedDataActionData.pre_exec_result?.gas.gas_used,
+        });
         setParsedActionData(parsed);
+        // TODO: move to action
+        if (!parsed.contractId) {
+          parsed.contractId =
+            typedDataActionData.contract_call_data?.contract.id;
+        }
         getRequireData(parsed);
       } else {
         setIsLoading(false);
@@ -499,8 +690,36 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, [scrollInfo, scrollRefSize]);
 
   useEffect(() => {
+    if (logId.current && !isLoading && securityEngineCtx.current) {
+      try {
+        const keys = Object.keys(securityEngineCtx.current);
+        const key: any = keys[0];
+        const notTriggeredRules = defaultRules.filter((rule) => {
+          return (
+            rule.requires.includes(key) &&
+            !engineResults.some((item) => item.id === rule.id)
+          );
+        });
+        reportLogId([
+          ...notTriggeredRules.map((rule) => ({
+            id: rule.id,
+            level: null,
+          })),
+          ...engineResults.map((result) => ({
+            id: result.id,
+            level: result.level,
+          })),
+        ]);
+      } catch (e) {
+        // IGNORE
+      }
+    }
+  }, [isLoading, engineResults]);
+
+  useEffect(() => {
     renderStartAt.current = Date.now();
     init();
+    dispatch.securityEngine.init();
     checkWachMode();
     report('createSignText');
   }, []);
@@ -535,10 +754,73 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             requireData={actionRequireData}
             chain={chain}
             engineResults={engineResults}
-            raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}
+            raw={isSignTypedDataV1 ? data[0] : rawMessage || data[1]}
             message={parsedMessage}
             origin={params.session.origin}
+            originLogo={params.session.icon}
+            typedDataActionData={typedDataActionData}
           />
+        )}
+        {isGnosisAccount && safeInfo && (
+          <Drawer
+            placement="bottom"
+            height="400px"
+            className="gnosis-drawer is-support-darkmode"
+            visible={drawerVisible}
+            onClose={() => setDrawerVisible(false)}
+            maskClosable
+          >
+            <GnosisDrawer
+              safeInfo={safeInfo}
+              onCancel={handleDrawerCancel}
+              onConfirm={handleGnosisConfirm}
+              confirmations={
+                isGnosisAccount
+                  ? currentSafeMessage?.safeMessage?.confirmations || []
+                  : undefined
+              }
+            />
+          </Drawer>
+        )}
+
+        {isGnosisAccount && safeInfo && currentGnosisAdmin && (
+          <Drawer
+            placement="bottom"
+            height="fit-content"
+            className="gnosis-footer-bar is-support-darkmode"
+            visible={gnosisFooterBarVisible}
+            onClose={() => setGnosisFooterBarVisible(false)}
+            maskClosable
+            closable={false}
+            bodyStyle={{
+              padding: 0,
+            }}
+          >
+            <FooterBar
+              origin={params.session.origin}
+              originLogo={params.session.icon}
+              // chain={chain}
+              gnosisAccount={currentGnosisAdmin}
+              onCancel={handleCancel}
+              // securityLevel={securityLevel}
+              // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
+              onSubmit={handleGnosisSign}
+              enableTooltip={
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              }
+              tooltipContent={
+                currentGnosisAdmin?.type ===
+                KEYRING_TYPE.WatchAddressKeyring ? (
+                  <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
+                ) : null
+              }
+              disabledProcess={
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              }
+              // isSubmitting={isSubmittingGnosis}
+              onIgnoreAllRules={handleIgnoreAllRules}
+            />
+          </Drawer>
         )}
         {!isLoading && chain?.isTestnet ? (
           <div
@@ -568,12 +850,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           onSubmit={() => handleAllow()}
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}
-          disabledProcess={
-            isLoading ||
-            (isLedger && !hasConnectedLedgerHID) ||
-            isWatch ||
-            hasUnProcessSecurityResult
-          }
+          disabledProcess={isLoading || isWatch || hasUnProcessSecurityResult}
           isTestnet={chain?.isTestnet}
           onIgnoreAllRules={handleIgnoreAllRules}
         />

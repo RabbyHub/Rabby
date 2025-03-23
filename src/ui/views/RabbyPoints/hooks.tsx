@@ -15,6 +15,17 @@ export const useRabbyPoints = () => {
   const [activitiesCount, refreshActivities] = useRefresh();
   const [topUsersCount, refreshTopUsers] = useRefresh();
 
+  const {
+    value: campaignIsEnded,
+    loading: campaignIsEndedLoading,
+  } = useAsync(async () => {
+    if (account?.address) {
+      const data = await wallet.openapi.getRabbyPointsCampaignIsEndedV2();
+      return data?.campaign_is_ended;
+    }
+    return;
+  }, [account?.address]);
+
   const { value: signature, loading: signatureLoading } = useAsync(async () => {
     if (account?.address) {
       const data = await wallet.getRabbyPointsSignature(account?.address);
@@ -25,7 +36,7 @@ export const useRabbyPoints = () => {
 
   const { value: snapshot, loading: snapshotLoading } = useAsync(async () => {
     if (account?.address) {
-      const data = await wallet.openapi.getRabbyPointsSnapshot({
+      const data = await wallet.openapi.getRabbyPointsSnapshotV2({
         id: account?.address,
       });
       return data;
@@ -38,7 +49,7 @@ export const useRabbyPoints = () => {
     loading: userLoading,
   } = useAsync(async () => {
     if (account?.address) {
-      const data = await wallet.openapi.getRabbyPoints({
+      const data = await wallet.openapi.getRabbyPointsV2({
         id: account?.address,
       });
       return data;
@@ -48,7 +59,7 @@ export const useRabbyPoints = () => {
 
   const { value: topUsers, loading: topUsersLoading } = useAsync(async () => {
     if (account?.address) {
-      const data = await wallet.openapi.getRabbyPointsTopUsers({
+      const data = await wallet.openapi.getRabbyPointsTopUsersV2({
         id: account?.address,
       });
       return data;
@@ -61,7 +72,7 @@ export const useRabbyPoints = () => {
     loading: activitiesLoading,
   } = useAsync(async () => {
     if (account?.address) {
-      const data = await wallet.openapi.getRabbyPointsList({
+      const data = await wallet.openapi.getRabbyPointsListV2({
         id: account?.address,
       });
       return data;
@@ -70,6 +81,8 @@ export const useRabbyPoints = () => {
   }, [account?.address, activitiesCount]);
 
   return {
+    campaignIsEnded,
+    campaignIsEndedLoading,
     signature,
     signatureLoading,
     snapshot,
@@ -92,7 +105,7 @@ export const useRabbyPointsInvitedCodeCheck = (invitedCode?: string) => {
 
   const { value: codeStatus, loading: codeLoading } = useAsync(async () => {
     if (invitedCode && account?.address) {
-      const data = await wallet.openapi.checkRabbyPointsInviteCode({
+      const data = await wallet.openapi.checkRabbyPointsInviteCodeV2({
         code: invitedCode,
       });
       return data;

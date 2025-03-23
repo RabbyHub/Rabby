@@ -1,20 +1,31 @@
-import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
+import {
+  toChecksumAddress,
+  addHexPrefix,
+  bufferToHex,
+  stripHexPrefix,
+} from '@ethereumjs/util';
+import { RLP, utils } from '@ethereumjs/rlp';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import Transport from '@ledgerhq/hw-transport';
-import LedgerEth, { ledgerService } from '@ledgerhq/hw-app-eth';
+import LedgerEth from '@ledgerhq/hw-app-eth';
 import { is1559Tx } from '@/utils/transaction';
 import {
   TransactionFactory,
   FeeMarketEIP1559Transaction,
 } from '@ethereumjs/tx';
-import { EVENTS } from 'consts';
-import { isSameAddress, wait } from '@/background/utils';
-import { SignHelper, LedgerHDPathType } from './helper';
+import { isSameAddress } from '@/background/utils';
+import { LedgerHDPathType } from './helper';
 
 const type = 'Ledger Hardware';
 
 import HDPathType = LedgerHDPathType;
+import Browser from 'webextension-polyfill';
+import {
+  LedgerAction,
+  OffscreenCommunicationTarget,
+} from '@/constant/offscreen-communication';
+import { isManifestV3 } from '@/utils/env';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0",
@@ -27,6 +38,8 @@ const HD_PATH_TYPE = {
   [HD_PATH_BASE['BIP44']]: HDPathType.BIP44,
   [HD_PATH_BASE['LedgerLive']]: HDPathType.LedgerLive,
 };
+
+let ethApp: LedgerEth | null = null;
 
 interface Account {
   address: string;
@@ -51,13 +64,8 @@ class LedgerBridgeKeyring {
   hdPath: any;
   accounts: any;
   transport: null | Transport;
-  app: null | LedgerEth;
   hasHIDPermission: null | boolean;
   usedHDPathTypeList: Record<string, HDPathType> = {};
-
-  signHelper = new SignHelper({
-    errorEventName: EVENTS.LEDGER.REJECTED,
-  });
 
   constructor(opts = {}) {
     this.accountDetails = {};
@@ -67,9 +75,19 @@ class LedgerBridgeKeyring {
     this.paths = {};
     this.hasHIDPermission = null;
     this.transport = null;
-    this.app = null;
     this.usedHDPathTypeList = {};
     this.deserialize(opts);
+
+    if (isManifestV3) {
+      Browser.runtime.onMessage.addListener((request) => {
+        if (
+          request.target === OffscreenCommunicationTarget.extension &&
+          request.event === LedgerAction.ledgerDeviceDisconnect
+        ) {
+          this.cleanUp();
+        }
+      });
+    }
   }
 
   serialize() {
@@ -100,9 +118,7 @@ class LedgerBridgeKeyring {
 
     // Remove accounts that don't have corresponding account details
     this.accounts = this.accounts.filter((account) =>
-      Object.keys(this.accountDetails).includes(
-        ethUtil.toChecksumAddress(account)
-      )
+      Object.keys(this.accountDetails).includes(toChecksumAddress(account))
     );
 
     return Promise.resolve();
@@ -119,7 +135,7 @@ class LedgerBridgeKeyring {
   }
 
   isUnlocked() {
-    return !!this.app;
+    return !!ethApp;
   }
 
   setAccountToUnlock(index) {
@@ -131,10 +147,10 @@ class LedgerBridgeKeyring {
   }
 
   async makeApp(signing = false) {
-    if (!this.app) {
+    if (!ethApp) {
       try {
         this.transport = await TransportWebHID.create();
-        this.app = new LedgerEth(this.transport);
+        ethApp = new LedgerEth(this.transport);
       } catch (e: any) {
         if (!e.message?.includes('The device is already open')) {
           console.error(e);
@@ -144,8 +160,10 @@ class LedgerBridgeKeyring {
   }
 
   async cleanUp() {
-    this.app = null;
-    if (this.transport) this.transport.close();
+    ethApp = null;
+    if (this.transport) {
+      await this.transport.close();
+    }
     this.transport = null;
   }
 
@@ -159,10 +177,19 @@ class LedgerBridgeKeyring {
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
 
     await this.makeApp();
-    const res = await this.app!.getAddress(path, false, true);
-    const { address } = res;
+    let res: { address: string };
+    try {
+      res = await ethApp!.getAddress(path, false, true);
+    } catch (e) {
+      if (e.name === 'DisconnectedDeviceDuringOperation') {
+        await this.cleanUp();
+        return this.unlock(hdPath, force);
+      } else {
+        throw e;
+      }
+    }
 
-    return address;
+    return res?.address;
   }
 
   addAccounts(n = 1) {
@@ -177,7 +204,7 @@ class LedgerBridgeKeyring {
             address = await this.unlock(path);
 
             const hdPathType = this.getHDPathType(path);
-            this.accountDetails[ethUtil.toChecksumAddress(address)] = {
+            this.accountDetails[toChecksumAddress(address)] = {
               hdPath: path,
               hdPathBasePublicKey: await this.getPathBasePublicKey(hdPathType),
               hdPathType,
@@ -222,105 +249,78 @@ class LedgerBridgeKeyring {
     this.accounts = this.accounts.filter(
       (a) => a.toLowerCase() !== address.toLowerCase()
     );
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     delete this.accountDetails[checksummedAddress];
     delete this.paths[checksummedAddress];
   }
 
-  resend() {
-    this.signHelper.resend();
-  }
-
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address, tx) {
-    return this.signHelper.invoke(async () => {
-      // make sure the previous transaction is cleaned up
-      await this._reconnect();
+    // make sure the previous transaction is cleaned up
 
-      // transactions built with older versions of ethereumjs-tx have a
-      // getChainId method that newer versions do not. Older versions are mutable
-      // while newer versions default to being immutable. Expected shape and type
-      // of data for v, r and s differ (Buffer (old) vs BN (new))
-      if (typeof tx.getChainId === 'function') {
-        // In this version of ethereumjs-tx we must add the chainId in hex format
-        // to the initial v value. The chainId must be included in the serialized
-        // transaction which is only communicated to ethereumjs-tx in this
-        // value. In newer versions the chainId is communicated via the 'Common'
-        // object.
-        tx.v = ethUtil.bufferToHex(tx.getChainId());
-        tx.r = '0x00';
-        tx.s = '0x00';
+    // transactions built with older versions of ethereumjs-tx have a
+    // getChainId method that newer versions do not. Older versions are mutable
+    // while newer versions default to being immutable. Expected shape and type
+    // of data for v, r and s differ (Buffer (old) vs BN (new))
+    if (typeof tx.getChainId === 'function') {
+      // In this version of ethereumjs-tx we must add the chainId in hex format
+      // to the initial v value. The chainId must be included in the serialized
+      // transaction which is only communicated to ethereumjs-tx in this
+      // value. In newer versions the chainId is communicated via the 'Common'
+      // object.
+      tx.v = bufferToHex(tx.getChainId());
+      tx.r = '0x00';
+      tx.s = '0x00';
 
-        const rawTxHex = tx.serialize().toString('hex');
+      const rawTxHex = tx.serialize().toString('hex');
 
-        return this._signTransaction(address, rawTxHex, (payload) => {
-          tx.v = Buffer.from(payload.v, 'hex');
-          tx.r = Buffer.from(payload.r, 'hex');
-          tx.s = Buffer.from(payload.s, 'hex');
-          return tx;
+      return this._signTransaction(address, rawTxHex, (payload) => {
+        tx.v = Buffer.from(payload.v, 'hex');
+        tx.r = Buffer.from(payload.r, 'hex');
+        tx.s = Buffer.from(payload.s, 'hex');
+        return tx;
+      });
+    }
+    // For transactions created by newer versions of @ethereumjs/tx
+    // Note: https://github.com/ethereumjs/ethereumjs-monorepo/issues/1188
+    // It is not strictly necessary to do this additional setting of the v
+    // value. We should be able to get the correct v value in serialization
+    // if the above issue is resolved. Until then this must be set before
+    // calling .serialize(). Note we are creating a temporarily mutable object
+    // forfeiting the benefit of immutability until this happens. We do still
+    // return a Transaction that is frozen if the originally provided
+    // transaction was also frozen.
+    const messageToSign = tx.getMessageToSign(false);
+    const rawTxHex = Buffer.isBuffer(messageToSign)
+      ? messageToSign.toString('hex')
+      : stripHexPrefix(utils.bytesToHex(RLP.encode(messageToSign)));
+    return this._signTransaction(address, rawTxHex, (payload) => {
+      // Because tx will be immutable, first get a plain javascript object that
+      // represents the transaction. Using txData here as it aligns with the
+      // nomenclature of ethereumjs/tx.
+      const txData = tx.toJSON();
+      // The fromTxData utility expects v,r and s to be hex prefixed
+      txData.v = addHexPrefix(payload.v);
+      txData.r = addHexPrefix(payload.r);
+      txData.s = addHexPrefix(payload.s);
+      // Adopt the 'common' option from the original transaction and set the
+      // returned object to be frozen if the original is frozen.
+      if (is1559Tx(txData)) {
+        return FeeMarketEIP1559Transaction.fromTxData(txData);
+      } else {
+        return TransactionFactory.fromTxData(txData, {
+          common: tx.common,
+          freeze: Object.isFrozen(tx),
         });
       }
-      // For transactions created by newer versions of @ethereumjs/tx
-      // Note: https://github.com/ethereumjs/ethereumjs-monorepo/issues/1188
-      // It is not strictly necessary to do this additional setting of the v
-      // value. We should be able to get the correct v value in serialization
-      // if the above issue is resolved. Until then this must be set before
-      // calling .serialize(). Note we are creating a temporarily mutable object
-      // forfeiting the benefit of immutability until this happens. We do still
-      // return a Transaction that is frozen if the originally provided
-      // transaction was also frozen.
-      const messageToSign = tx.getMessageToSign(false);
-      const rawTxHex = Buffer.isBuffer(messageToSign)
-        ? messageToSign.toString('hex')
-        : ethUtil.rlp.encode(messageToSign).toString('hex');
-      return this._signTransaction(address, rawTxHex, (payload) => {
-        // Because tx will be immutable, first get a plain javascript object that
-        // represents the transaction. Using txData here as it aligns with the
-        // nomenclature of ethereumjs/tx.
-        const txData = tx.toJSON();
-        // The fromTxData utility expects v,r and s to be hex prefixed
-        txData.v = ethUtil.addHexPrefix(payload.v);
-        txData.r = ethUtil.addHexPrefix(payload.r);
-        txData.s = ethUtil.addHexPrefix(payload.s);
-        // Adopt the 'common' option from the original transaction and set the
-        // returned object to be frozen if the original is frozen.
-        if (is1559Tx(txData)) {
-          return FeeMarketEIP1559Transaction.fromTxData(txData);
-        } else {
-          return TransactionFactory.fromTxData(txData, {
-            common: tx.common,
-            freeze: Object.isFrozen(tx),
-          });
-        }
-      });
     });
-  }
-
-  async _reconnect() {
-    await this.cleanUp();
-
-    let count = 0;
-    // wait connect the WebHID
-    while (!this.app) {
-      await this.makeApp();
-      await wait(() => {
-        if (count++ > 50) {
-          throw new Error('Ledger: Failed to connect to Ledger');
-        }
-      }, 100);
-    }
   }
 
   async _signTransaction(address, rawTxHex, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
     await this.makeApp(true);
     try {
-      const resolution = await ledgerService.resolveTransaction(
-        rawTxHex,
-        {},
-        {}
-      );
-      const res = await this.app!.signTransaction(hdPath, rawTxHex, resolution);
+      const res = await ethApp!.signTransaction(hdPath, rawTxHex);
       const newOrMutatedTx = handleSigning(res);
       const valid = newOrMutatedTx.verifySignature();
       if (valid) {
@@ -332,8 +332,6 @@ class LedgerBridgeKeyring {
       throw new Error(
         err.toString() || 'Ledger: Unknown error while signing transaction'
       );
-    } finally {
-      this.cleanUp();
     }
   }
 
@@ -343,46 +341,40 @@ class LedgerBridgeKeyring {
 
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(withAccount, message) {
-    return this.signHelper.invoke(async () => {
-      await this._reconnect();
-      try {
-        await this.makeApp(true);
-        const hdPath = await this.unlockAccountByAddress(withAccount);
-        const res = await this.app!.signPersonalMessage(
-          hdPath,
-          ethUtil.stripHexPrefix(message)
-        );
-        // let v: string | number = res.v - 27;
-        let v = res.v.toString(16);
-        if (v.length < 2) {
-          v = `0${v}`;
-        }
-        const signature = `0x${res.r}${res.s}${v}`;
-        const addressSignedWith = sigUtil.recoverPersonalSignature({
-          data: message,
-          sig: signature,
-        });
-        if (
-          ethUtil.toChecksumAddress(addressSignedWith) !==
-          ethUtil.toChecksumAddress(withAccount)
-        ) {
-          throw new Error(
-            "Ledger: The signature doesn't match the right address"
-          );
-        }
-        return signature;
-      } catch (e: any) {
-        throw new Error(
-          e.toString() || 'Ledger: Unknown error while signing message'
-        );
-      } finally {
-        this.cleanUp();
+    try {
+      await this.makeApp(true);
+      const hdPath = await this.unlockAccountByAddress(withAccount);
+      const res = await ethApp!.signPersonalMessage(
+        hdPath,
+        stripHexPrefix(message)
+      );
+      // let v: string | number = res.v - 27;
+      let v = res.v.toString(16);
+      if (v.length < 2) {
+        v = `0${v}`;
       }
-    });
+      const signature = `0x${res.r}${res.s}${v}`;
+      const addressSignedWith = sigUtil.recoverPersonalSignature({
+        data: message,
+        sig: signature,
+      });
+      if (
+        toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)
+      ) {
+        throw new Error(
+          "Ledger: The signature doesn't match the right address"
+        );
+      }
+      return signature;
+    } catch (e: any) {
+      throw new Error(
+        e.toString() || 'Ledger: Unknown error while signing message'
+      );
+    }
   }
 
   async unlockAccountByAddress(address) {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     if (!Object.keys(this.accountDetails).includes(checksummedAddress)) {
       throw new Error(
         `Ledger: Account for address '${checksummedAddress}' not found`
@@ -402,14 +394,16 @@ class LedgerBridgeKeyring {
   }
 
   async signTypedData(withAccount, data, options: any = {}) {
-    return this.signHelper.invoke(async () => {
-      await this._reconnect();
-      const isV4 = options.version === 'V4';
-      if (!isV4) {
-        throw new Error(
-          'Ledger: Only version 4 of typed data signing is supported'
-        );
-      }
+    const isV4 = options.version === 'V4';
+    if (!isV4) {
+      throw new Error(
+        'Ledger: Only version 4 of typed data signing is supported'
+      );
+    }
+
+    const hdPath = await this.unlockAccountByAddress(withAccount);
+    try {
+      await this.makeApp(true);
 
       const {
         domain,
@@ -430,68 +424,42 @@ class LedgerBridgeKeyring {
         isV4
       ).toString('hex');
 
-      const hdPath = await this.unlockAccountByAddress(withAccount);
+      let res: {
+        v: number;
+        s: string;
+        r: string;
+      };
+
       try {
-        await this.makeApp(true);
-
-        let res: {
-          v: number;
-          s: string;
-          r: string;
-        };
-
-        // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
-        // try {
-        //   res = await this.app!.signEIP712Message(hdPath, data);
-        // } catch (e) {
-        //   if (
-        //     e instanceof Error &&
-        //     'statusText' in e &&
-        //     (e as any).statusText === 'INS_NOT_SUPPORTED'
-        //   ) {
-        //     res = await this.app!.signEIP712HashedMessage(
-        //       hdPath,
-        //       domainSeparatorHex,
-        //       hashStructMessageHex
-        //     );
-        //   } else {
-        //     throw e;
-        //   }
-        // }
-
-        // eslint-disable-next-line prefer-const
-        res = await this.app!.signEIP712HashedMessage(
+        res = await ethApp!.signEIP712Message(hdPath, data);
+      } catch (e) {
+        res = await ethApp!.signEIP712HashedMessage(
           hdPath,
           domainSeparatorHex,
           hashStructMessageHex
         );
-
-        let v = res.v.toString(16);
-        if (v.length < 2) {
-          v = `0${v}`;
-        }
-        const signature = `0x${res.r}${res.s}${v}`;
-        const addressSignedWith = sigUtil.recoverTypedSignature_v4({
-          data,
-          sig: signature,
-        });
-        if (
-          ethUtil.toChecksumAddress(addressSignedWith) !==
-          ethUtil.toChecksumAddress(withAccount)
-        ) {
-          throw new Error(
-            'Ledger: The signature doesnt match the right address'
-          );
-        }
-        return signature;
-      } catch (e: any) {
-        throw new Error(
-          e.toString() || 'Ledger: Unknown error while signing message'
-        );
-      } finally {
-        this.cleanUp();
       }
-    });
+
+      let v = res.v.toString(16);
+      if (v.length < 2) {
+        v = `0${v}`;
+      }
+      const signature = `0x${res.r}${res.s}${v}`;
+      const addressSignedWith = sigUtil.recoverTypedSignature_v4({
+        data,
+        sig: signature,
+      });
+      if (
+        toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)
+      ) {
+        throw new Error('Ledger: The signature doesnt match the right address');
+      }
+      return signature;
+    } catch (e: any) {
+      throw new Error(
+        e.toString() || 'Ledger: Unknown error while signing message'
+      );
+    }
   }
 
   exportAccount() {
@@ -532,7 +500,7 @@ class LedgerBridgeKeyring {
   }
 
   getIndexFromAddress(address: string) {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     if (!this.accountDetails[checksummedAddress]) {
       throw new Error(`Address ${address} not found`);
     }
@@ -544,7 +512,7 @@ class LedgerBridgeKeyring {
         index = parseInt(res[1], 10);
       }
     } else {
-      const checksummedAddress = ethUtil.toChecksumAddress(address);
+      const checksummedAddress = toChecksumAddress(address);
       const arr = this.accountDetails[checksummedAddress].hdPath.split('/');
       index = Number(arr[arr.length - 1]);
     }
@@ -598,7 +566,7 @@ class LedgerBridgeKeyring {
   }
   private async getPathBasePublicKey(hdPathType: HDPathType) {
     const pathBase = this.getHDPathBase(hdPathType);
-    const res = await this.app!.getAddress(pathBase, false, true);
+    const res = await ethApp!.getAddress(pathBase, false, true);
 
     return res.publicKey;
   }
@@ -612,7 +580,7 @@ class LedgerBridgeKeyring {
   }
 
   private async _fixAccountDetail(address: string) {
-    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const checksummedAddress = toChecksumAddress(address);
     const detail = this.accountDetails[checksummedAddress];
 
     // The detail is already fixed
@@ -624,7 +592,7 @@ class LedgerBridgeKeyring {
     const hdPathType = this.getHDPathType(detail.hdPath);
 
     // Account
-    const res = await this.app!.getAddress(detail.hdPath, false, true);
+    const res = await ethApp!.getAddress(detail.hdPath, false, true);
     const addressInDevice = res.address;
 
     // The address is not the same, so we don't need to fix
@@ -660,7 +628,7 @@ class LedgerBridgeKeyring {
     await this.unlock();
     const addresses = await this.getAccounts();
     const pathBase = this.hdPath;
-    const { publicKey: currentPublicKey } = await this.app!.getAddress(
+    const { publicKey: currentPublicKey } = await ethApp!.getAddress(
       pathBase,
       false,
       true
@@ -671,7 +639,7 @@ class LedgerBridgeKeyring {
       const address = addresses[i];
       await this._fixAccountDetail(address);
 
-      const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+      const detail = this.accountDetails[toChecksumAddress(address)];
 
       if (detail.hdPathBasePublicKey === currentPublicKey) {
         const info = this.getAccountInfo(address);
@@ -690,7 +658,7 @@ class LedgerBridgeKeyring {
       ) {
         const info = this.getAccountInfo(address);
         if (info?.index === 1) {
-          const res = await this.app!.getAddress(detail.hdPath, false, true);
+          const res = await ethApp!.getAddress(detail.hdPath, false, true);
           if (isSameAddress(res.address, address)) {
             accounts.push(info);
           }
@@ -702,7 +670,7 @@ class LedgerBridgeKeyring {
   }
 
   getAccountInfo(address: string) {
-    const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+    const detail = this.accountDetails[toChecksumAddress(address)];
     if (detail) {
       const { hdPath, hdPathType, hdPathBasePublicKey } = detail;
       return {
@@ -742,6 +710,67 @@ class LedgerBridgeKeyring {
     const key = await this.getPathBasePublicKey(HDPathType.Legacy);
     return this.usedHDPathTypeList[key];
   }
+
+  openEthApp = (): Promise<Buffer> => {
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    return this.transport.send(
+      0xe0,
+      0xd8,
+      0x00,
+      0x00,
+      Buffer.from('Ethereum', 'ascii')
+    );
+  };
+
+  quitApp = (): Promise<Buffer> => {
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    return this.transport.send(0xb0, 0xa7, 0x00, 0x00);
+  };
+
+  getAppAndVersion = async (): Promise<{
+    appName: string;
+    version: string;
+  }> => {
+    await this.makeApp();
+
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
+
+    const response = await this.transport.send(0xb0, 0x01, 0x00, 0x00);
+
+    let i = 0;
+    // eslint-disable-next-line no-plusplus
+    const format = response[i++];
+
+    if (format !== 1) {
+      throw new Error('getAppAndVersion: format not supported');
+    }
+
+    // eslint-disable-next-line no-plusplus
+    const nameLength = response[i++];
+    const appName = response.slice(i, (i += nameLength)).toString('ascii');
+    // eslint-disable-next-line no-plusplus
+    const versionLength = response[i++];
+    const version = response.slice(i, (i += versionLength)).toString('ascii');
+
+    return {
+      appName,
+      version,
+    };
+  };
 }
 
 export default LedgerBridgeKeyring;

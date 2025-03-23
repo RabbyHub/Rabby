@@ -3,12 +3,16 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ApproveNFTRequireData, ParsedActionData } from './utils';
+import {
+  ApproveNFTRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
+import { SubTable, SubCol, SubRow } from './components/SubTable';
 
 const Wrapper = styled.div`
   .header {
@@ -48,7 +52,7 @@ const RevokeNFTCollection = ({
   requireData,
   chain,
 }: {
-  data: ParsedActionData['approveNFTCollection'];
+  data: ParsedTransactionActionData['approveNFTCollection'];
   requireData: ApproveNFTRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -56,10 +60,6 @@ const RevokeNFTCollection = ({
   const actionData = data!;
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
 
   return (
     <Wrapper>
@@ -69,43 +69,51 @@ const RevokeNFTCollection = ({
             {t('page.signTx.revokeNFTCollectionApprove.revokeCollection')}
           </Row>
           <Row>
-            {actionData?.collection?.name}
-            <ul className="desc-list">
-              <li>
-                <ViewMore
-                  type="collection"
-                  data={{
-                    collection: actionData.collection,
-                    chain,
-                  }}
-                />
-              </li>
-            </ul>
+            <ViewMore
+              type="collection"
+              data={{
+                collection: actionData.collection,
+                chain,
+              }}
+            >
+              <div className="cursor-pointer group-hover:underline hover:text-r-blue-default">
+                {actionData?.collection?.name}
+              </div>
+            </ViewMore>
           </Row>
         </Col>
         <Col>
-          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.revokeTokenApprove.revokeFrom')}
+          </Row>
           <Row>
-            <div>
-              <Values.Address address={actionData.spender} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              <ProtocolListItem protocol={requireData.protocol} />
-
-              <li>
-                <ViewMore
-                  type="nftSpender"
-                  data={{
-                    ...requireData,
-                    spender: actionData.spender,
-                    chain,
-                    isRevoke: true,
-                  }}
-                />
-              </li>
-            </ul>
+            <ViewMore
+              type="nftSpender"
+              data={{
+                ...requireData,
+                spender: actionData.spender,
+                chain,
+                isRevoke: true,
+              }}
+            >
+              <Values.Address
+                id="revoke-collection-address"
+                hasHover
+                address={actionData.spender}
+                chain={chain}
+              />
+            </ViewMore>
           </Row>
         </Col>
+
+        <SubTable target="revoke-collection-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+        </SubTable>
       </Table>
     </Wrapper>
   );

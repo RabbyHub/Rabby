@@ -4,8 +4,9 @@ import { ReactComponent as StarSVG } from '@/ui/assets/nft-view/star.svg';
 import { ReactComponent as StarredSVG } from '@/ui/assets/nft-view/starred.svg';
 import { NFTItem, CollectionList } from '@rabby-wallet/rabby-api/dist/types';
 import NFTAvatar from '../Dashboard/components/NFT/NFTAvatar';
-import { ChainIcon, getChainName } from './ChainIcon';
+import { ChainIcon } from './ChainIcon';
 import { useTranslation } from 'react-i18next';
+import { findChain } from '@/utils/chain';
 
 export interface Props {
   collection: CollectionList;
@@ -24,7 +25,7 @@ export const CollectionCard: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const chain = collection.nft_list[0].chain;
-  const chainName = getChainName(chain);
+  const chainName = findChain({ serverId: chain })?.name;
   return (
     <div
       className={clsx(

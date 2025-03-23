@@ -5,18 +5,19 @@
 import { EventEmitter } from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import PQueue from 'p-queue';
+import { nanoid } from 'nanoid';
 
 const pQueue = new PQueue({ concurrency: 1000 });
 
 abstract class Message extends EventEmitter {
-  // avaiable id list
+  // available id list
   // max concurrent request limit
   private _requestIdPool = [...Array(1000).keys()];
   protected _EVENT_PRE = 'ETH_WALLET_';
   protected listenCallback: any;
 
   private _waitingMap = new Map<
-    number,
+    string,
     {
       data: any;
       resolve: (arg: any) => any;
@@ -31,7 +32,8 @@ abstract class Message extends EventEmitter {
       if (!this._requestIdPool.length) {
         throw ethErrors.rpc.limitExceeded();
       }
-      const ident = this._requestIdPool.shift()!;
+      this._requestIdPool.shift()!;
+      const ident = nanoid();
 
       return new Promise((resolve, reject) => {
         this._waitingMap.set(ident, {

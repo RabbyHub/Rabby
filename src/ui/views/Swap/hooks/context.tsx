@@ -1,22 +1,24 @@
 import { createContextState } from '@/ui/hooks/contextState';
 
 const [
-  SettingVisibleProvider,
-  useSettingVisible,
-  useSetSettingVisible,
-] = createContextState(false);
-
-const [
   QuoteVisibleProvider,
   useQuoteVisible,
   useSetQuoteVisible,
 ] = createContextState(false);
 
+export const [
+  RabbyFeeProvider,
+  useRabbyFee,
+  useSetRabbyFee,
+] = createContextState({ visible: false } as {
+  visible: boolean;
+  feeDexDesc?: string;
+  dexName?: string;
+});
+
 const [RefreshIdProvider, useRefreshId, useSetRefreshId] = createContextState(
   0
 );
-
-export { SettingVisibleProvider, useSettingVisible, useSetSettingVisible };
 
 export { RefreshIdProvider, useRefreshId, useSetRefreshId };
 

@@ -13,3 +13,13 @@ export function unPrefix(str = '', prefix = '/') {
 export function unSuffix(str = '', suffix = '/') {
   return str.endsWith(suffix) ? str.slice(0, -suffix.length) : str;
 }
+
+function escapeRegExp(str: string) {
+  return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
+export function safeBuildRegExp(
+  ...[str, flags]: ConstructorParameters<typeof RegExp>
+) {
+  return new RegExp(str instanceof RegExp ? str : escapeRegExp(str), flags);
+}

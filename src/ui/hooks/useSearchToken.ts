@@ -13,6 +13,7 @@ import { findChainByServerID } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import useDebounceValue from './useDebounceValue';
 import { useRefState } from './useRefState';
+import { safeBuildRegExp } from '@/utils/string';
 
 function isSearchInputWeb3Address(q: string) {
   return q.length === 42 && q.toLowerCase().startsWith('0x');
@@ -200,7 +201,8 @@ export function useFindCustomToken(input?: {
               wallet,
             }
             // filter out core tokens
-          ).then((res) => res.filter((item) => !item.is_core));
+          );
+          // .then((res) => res.filter((item) => !item.is_core));
         } else {
           // lists.tokenList = await requestOpenApiWithChainId(
           //   (ctx) => ctx.openapi.searchToken(address, q, chainServerId),
@@ -323,7 +325,7 @@ const useSearchToken = (
           list = list.filter((item) => item.amount > 0);
         }
       }
-      const reg = new RegExp(q, 'i');
+      const reg = safeBuildRegExp(q, 'i');
       const matchCustomTokens = customize.filter((token) => {
         return (
           reg.test(token.name) ||

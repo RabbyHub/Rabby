@@ -13,7 +13,7 @@ const DeployContract = () => {
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.deployContract.descriptionTitle')}</Row>
-          <Row>{t('page.signTx.deployContract.description')}</Row>
+          <Row wrap>{t('page.signTx.deployContract.description')}</Row>
         </Col>
       </Table>
     </Wrapper>

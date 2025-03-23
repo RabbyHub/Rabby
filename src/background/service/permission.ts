@@ -16,9 +16,17 @@ export interface ConnectedSite {
   isTop: boolean;
   order?: number;
   isConnected: boolean;
+  /**
+   * @deprecated
+   */
   preferMetamask?: boolean;
   isFavorite?: boolean;
   info?: BasicDappInfo;
+  /**
+   * eip6963 rdns
+   */
+  rdns?: string;
+  isMetamaskMode?: boolean;
 }
 
 export type PermissionStore = {
@@ -240,6 +248,12 @@ class PermissionService {
     );
   };
 
+  getMetamaskModeSites = () => {
+    return (this.lruCache?.values() || []).filter(
+      (item) => item.isMetamaskMode
+    );
+  };
+
   getConnectedSite = (key: string) => {
     const site = this._getSite(key);
     if (site && site.isConnected) {
@@ -293,12 +307,13 @@ class PermissionService {
 
   removeConnectedSite = (origin: string) => {
     if (!this.lruCache) return;
-    const site = this.getConnectedSite(origin);
+    const site = this.getSite(origin);
     if (!site) {
       return;
     }
     this.setSite({
       ...site,
+      rdns: undefined,
       isConnected: false,
     });
     this.sync();

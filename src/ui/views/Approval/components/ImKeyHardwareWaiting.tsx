@@ -28,6 +28,8 @@ import {
 import { useImKeyStatus } from '@/ui/component/ConnectStatus/useImKeyStatus';
 import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
   address: string;
@@ -37,6 +39,12 @@ interface ApprovalParams {
   account?: Account;
   $ctx?: any;
   extra?: Record<string, any>;
+  safeMessage?: {
+    safeMessageHash: string;
+    safeAddress: string;
+    message: string;
+    chainId: number;
+  };
 }
 
 export const ImKeyHardwareWaiting = ({
@@ -44,7 +52,12 @@ export const ImKeyHardwareWaiting = ({
 }: {
   params: ApprovalParams;
 }) => {
-  const { setTitle, setVisible, visible, closePopup } = useCommonPopupView();
+  const {
+    setTitle,
+    setVisible,
+    closePopup,
+    setPopupProps,
+  } = useCommonPopupView();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
   >('SENDING');
@@ -89,6 +102,7 @@ export const ImKeyHardwareWaiting = ({
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
+    emitSignComponentAmounted();
   };
 
   // const handleClickResult = () => {
@@ -126,14 +140,14 @@ export const ImKeyHardwareWaiting = ({
 
         const explain = signingTx?.explain;
 
-        stats.report('signTransaction', {
+        wallet.reportStats('signTransaction', {
           type: account.brandName,
           chainId: chain?.serverId || '',
           category: KEYRING_CATEGORY_MAP[account.type],
           preExecSuccess: explain
             ? explain?.calcSuccess && explain?.pre_exec.success
             : true,
-          createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+          createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
           source: params?.$ctx?.ga?.source || '',
           trigger: params?.$ctx?.ga?.trigger || '',
           networkType: chain?.isTestnet
@@ -168,12 +182,20 @@ export const ImKeyHardwareWaiting = ({
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            if (sigs.length > 0) {
-              await wallet.gnosisAddConfirmation(account.address, sig);
+            const safeMessage = params.safeMessage;
+            if (safeMessage) {
+              await wallet.handleGnosisMessage({
+                signature: data.data,
+                signerAddress: params.account!.address!,
+              });
             } else {
-              await wallet.gnosisAddSignature(account.address, sig);
-              await wallet.postGnosisTransaction();
+              const sigs = await wallet.getGnosisTransactionSignatures();
+              if (sigs.length > 0) {
+                await wallet.gnosisAddConfirmation(account.address, sig);
+              } else {
+                await wallet.gnosisAddSignature(account.address, sig);
+                await wallet.postGnosisTransaction();
+              }
             }
           }
         } catch (e) {
@@ -185,6 +207,10 @@ export const ImKeyHardwareWaiting = ({
           category: 'Transaction',
           action: 'Submit',
           label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+        });
+
+        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+          event_category: 'Transaction',
         });
 
         setSignFinishedData({
@@ -199,6 +225,8 @@ export const ImKeyHardwareWaiting = ({
         setErrorMessage(data.errorMsg);
       }
     });
+
+    emitSignComponentAmounted();
   };
 
   React.useEffect(() => {
@@ -226,6 +254,10 @@ export const ImKeyHardwareWaiting = ({
     init();
     mountedRef.current = true;
   }, []);
+
+  React.useEffect(() => {
+    setPopupProps(params?.extra?.popupProps);
+  }, [params?.extra?.popupProps]);
 
   // React.useEffect(() => {
   //   if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {

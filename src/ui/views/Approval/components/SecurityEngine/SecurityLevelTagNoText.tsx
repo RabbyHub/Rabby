@@ -19,7 +19,6 @@ const Wrapper = styled.div`
   }
   span {
     display: none;
-    margin-right: 2px;
   }
   &.showText {
     padding: 0;
@@ -61,7 +60,7 @@ const SecurityLevelTagWrapper = styled.div`
   display: flex;
   position: absolute;
   top: 50%;
-  margin-top: -12px;
+  margin-top: -10px;
   right: -6px;
   padding: 2px;
   padding-left: 6px;
@@ -74,6 +73,7 @@ const SecurityLevelTagWrapper = styled.div`
     opacity: 0.7;
   }
   &.showText {
+    width: max-content;
     max-width: 170px;
     white-space: nowrap;
   }
@@ -119,8 +119,9 @@ const SecurityLevelTag = ({
   level,
   translucent,
   onClick,
-  right = '-13px',
+  right = '-28px',
   className,
+  inSubTable,
 }: {
   enable: boolean;
   level: Level | 'proceed';
@@ -128,8 +129,13 @@ const SecurityLevelTag = ({
   onClick?(): void;
   right?: string;
   className?: string;
+  // adjust position for sub table
+  inSubTable?: boolean;
 }) => {
   const [isHovering, hoverProps] = useHover();
+  if (inSubTable) {
+    right = `${parseInt(right, 10) - 12}px`;
+  }
 
   return (
     <SecurityLevelTagWrapper

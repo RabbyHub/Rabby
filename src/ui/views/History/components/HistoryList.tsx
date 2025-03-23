@@ -7,7 +7,7 @@ import { useAccount } from '@/ui/store-hooks';
 import { useInfiniteScroll } from 'ahooks';
 import { Virtuoso } from 'react-virtuoso';
 import { Empty, Modal } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { sleep, useWallet } from 'ui/utils';
 import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
 
@@ -41,6 +41,9 @@ export const HistoryList = ({
 
   const fetchData = async (startTime = 0) => {
     const { address } = account!;
+    if (startTime) {
+      await sleep(500);
+    }
     const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
     if (apiLevel >= 1) {
       return {
@@ -156,10 +159,11 @@ export const HistoryList = ({
                 );
               }}
               endReached={loadMore}
+              increaseViewportBy={100}
               components={{
                 Footer: () => {
                   if (loadingMore) {
-                    return <Loading count={4} active />;
+                    return <Loading count={2} active />;
                   }
                   return null;
                 },

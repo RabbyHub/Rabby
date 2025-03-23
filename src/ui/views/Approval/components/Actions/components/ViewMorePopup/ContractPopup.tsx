@@ -13,10 +13,10 @@ interface ContractData {
     name: string;
     logo_url: string;
   } | null;
-  hasInteraction: boolean;
   bornAt: number | null;
   rank: number | null;
   title?: string;
+  hasInteraction: boolean;
 }
 
 export interface Props {
@@ -51,7 +51,7 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
     <div>
       <div className="title">
         {data.title || t('page.signTx.interactContract')}{' '}
-        <Values.Address
+        <Values.AddressWithCopy
           address={data.address}
           chain={data.chain}
           iconWidth="14px"
@@ -59,33 +59,25 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.protocolTitle')}
-          </Row>
+          <Row>{t('page.signTx.protocolTitle')}</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.interacted')}
-          </Row>
+          <Row>{t('page.signTx.interacted')}</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.deployTimeTitle')}
-          </Row>
+          <Row>{t('page.signTx.deployTimeTitle')}</Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.popularity')}
-          </Row>
+          <Row>{t('page.signTx.popularity')}</Row>
           <Row>
             {data.rank
               ? t('page.signTx.contractPopularity', [
@@ -96,15 +88,13 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressNote')}
-          </Row>
+          <Row>{t('page.signTx.addressNote')}</Row>
           <Row>
             <Values.AddressMemo address={data.address} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">{t('page.signTx.myMark')}</Row>
+          <Row>{t('page.signTx.myMark')}</Row>
           <Row>
             <Values.AddressMark
               isContract
