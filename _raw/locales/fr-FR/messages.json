@@ -314,8 +314,8 @@
               "title": "Annulation rapide"
             },
             "removeLocalPendingTx": {
-              "title": "Supprimer la transaction localement",
-              "desc": "Correction du blocage de transaction causé par un long temps d'attente"
+              "title": "",
+              "desc": ""
             }
           },
           "title": "Annuler la transaction",
@@ -336,7 +336,7 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} ignoré sur la chaîne {{chainName}}. Cela peut entraîner de futures transactions en attente. <5></5> <6>Soumettre une tx</6> <7></7> on-chain pour régler le problème",
-          "clearPendingAlert": "La transaction {{chainName}} ({{nonces}}) est en attente depuis plus de 3 minutes. Vous pouvez <5></5> <6>effacer les transactions en attente sur cette chaîne</6> <7></7> et en initier une nouvelle."
+          "clearPendingAlert": ""
         },
         "message": {
           "broadcastSuccess": "Diffusée",
@@ -833,9 +833,9 @@
         "backendServiceUrl": "URL du service backend",
         "cancel": "Annuler",
         "claimRabbyBadge": "Réclamer le badge Rabby !",
-        "clearPending": "Effacer transaction(s) en attente",
-        "clearPendingTip1": "Cela supprimera localement toutes vos transactions en attente et aidera à résoudre les problèmes causés par de longs délais d'attente.",
-        "clearPendingTip2": "Cela n'affectera pas les soldes de votre compte et ne vous obligera pas à ressaisir votre phrase de départ. \nTous vos actifs et informations de compte resteront sécurisés.",
+        "clearPending": "",
+        "clearPendingTip1": "",
+        "clearPendingTip2": "",
         "clearWatchAddressContent": "Êtes-vous certain de vouloir supprimer toutes les adresses du mode observation ?",
         "clearWatchMode": "Effacer le mode observation",
         "currentVersion": "Version actuelle",
@@ -886,7 +886,7 @@
           "title": "Mise à jour disponible"
         },
         "warning": "Avertissement",
-        "clearPendingWarningTip": "Les transactions en attente pourront toujours être soumises avec succès à l'avenir."
+        "clearPendingWarningTip": ""
       },
       "tokenDetail": {
         "blocked": "Bloqué",

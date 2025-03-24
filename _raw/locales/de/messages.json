@@ -562,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "Transaktion lokal löschen",
-              "desc": "Behebung einer durch lange Wartezeit verursachten Transaktionsblockade"
+              "title": "",
+              "desc": ""
             },
             "quickCancel": {
               "desc": "Vor dem Senden abbrechen, keine Gasgebühr",
@@ -596,7 +596,7 @@
           "noCost": "Keine Gas-Kosten"
         },
         "SkipNonceAlert": {
-          "clearPendingAlert": "Die Transaktion auf {{chainName}} ({{nonces}}) ist seit über 3 Minuten ausstehend. Sie können <5></5> <6>ausstehende Transaktionen auf dieser Kette löschen</6> <7></7> und eine neue initiieren.",
+          "clearPendingAlert": "",
           "alert": "Nonce #{{nonce}} auf der {{chainName}}-Kette übersprungen. Dies kann zu ausstehenden Transaktionen führen. <5></5> <6>Reichen Sie eine Transaktion</6> <7></7> auf der Kette ein, um das Problem zu lösen."
         },
         "PredictTime": {
@@ -1172,9 +1172,9 @@
         "reset": "Ursprüngliche Einstellung wiederherstellen",
         "save": "Speichern",
         "pendingTransactionCleared": "Ausstehende Transaktionen gelöscht",
-        "clearPending": "Ausstehende Transaktionen löschen",
-        "clearPendingTip1": "Dadurch werden alle Ihre ausstehenden Transaktionen lokal gelöscht und Probleme gelöst, die durch lange Wartezeiten verursacht werden.",
-        "clearPendingTip2": "Dies wirkt sich nicht auf Ihren Kontostand aus und erfordert keine erneute Eingabe Ihrer Startphrase. \nAlle Ihre Vermögenswerte und Kontoinformationen bleiben sicher.",
+        "clearPending": "",
+        "clearPendingTip1": "",
+        "clearPendingTip2": "",
         "autoLockTime": "Automatische Sperrzeit",
         "claimRabbyBadge": "Rabby Abzeichen beanspruchen!",
         "cancel": "Abbrechen",
@@ -1220,7 +1220,7 @@
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Beobachtungsmodus zurücksetzen",
         "requestDeBankTestnetGasToken": "Testnet Gas Token von DeBank anfordern",
-        "clearPendingWarningTip": "Die ausstehenden Transaktionen können auch in Zukunft noch erfolgreich eingereicht werden."
+        "clearPendingWarningTip": ""
       },
       "tokenDetail": {
         "blockedTip": "Blockierte Token werden nicht in der Tokenliste angezeigt",

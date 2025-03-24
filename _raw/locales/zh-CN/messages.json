@@ -202,9 +202,9 @@
         "backendServiceUrl": "后端服务网址",
         "cancel": "取消",
         "claimRabbyBadge": "领取 Rabby Badge",
-        "clearPending": "清除待完成交易",
-        "clearPendingTip1": "这将在本地删除所有待处理的交易，并帮助解决因待处理时间过长而导致的问题。",
-        "clearPendingTip2": "它不会影响您的帐户余额或要求您重新输入助记词。\n您的所有资产和帐户信息将保持安全。",
+        "clearPending": "",
+        "clearPendingTip1": "",
+        "clearPendingTip2": "",
         "clearWatchAddressContent": "你确定删除所有观察地址吗？",
         "clearWatchMode": "清除观察地址",
         "currentVersion": "当前版本",
@@ -255,7 +255,7 @@
         "warning": "警告",
         "requestDeBankTestnetGasToken": "获取 DeBank Testnet Gas Token",
         "claimFreeGasBadge": "领取 Rabby Free Gas 徽章！",
-        "clearPendingWarningTip": "待处理的交易将来仍有可能成功提交。",
+        "clearPendingWarningTip": "",
         "supportedChains": "集成链"
       },
       "tokenDetail": {
@@ -821,8 +821,8 @@
               "desc": "发起新的链上交易来取消，需要Gasfee"
             },
             "removeLocalPendingTx": {
-              "title": "本地删除交易",
-              "desc": "修复因等待时间过长导致交易阻塞的问题"
+              "title": "",
+              "desc": ""
             }
           },
           "removeLocalPendingTx": {
@@ -832,7 +832,7 @@
         },
         "SkipNonceAlert": {
           "alert": "当前 {{chainName}} 链因快捷取消导致 Nonce#{{nonce}} 被跳过, 导致后续 Pending 交易无法完成, 可 <5></5><6>发起一笔链上交易</6><7></7>来填充",
-          "clearPendingAlert": "{{chainName}} 事务（{{nonces}}）已挂起超过3分钟。您可以在此链上 <5></5> <6>清除挂起的交易</6> <7></7> 并发起新交易。"
+          "clearPendingAlert": ""
         },
         "gas": {
           "noCost": "无 Gas 费用"

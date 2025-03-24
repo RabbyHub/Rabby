@@ -1,15 +1,19 @@
 import { TransactionGroup } from '@/background/service/transactionHistory';
+import { Chain } from '@/types/chain';
 import { useAccount } from '@/ui/store-hooks';
 import { intToHex, useWallet } from '@/ui/utils';
 import { findChain, findChainByID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
-import { useRequest } from 'ahooks';
-import { flatten, maxBy } from 'lodash';
-import React from 'react';
+import { useInterval, useMemoizedFn, useRequest, useSetState } from 'ahooks';
+import { message } from 'antd';
+import dayjs from 'dayjs';
+import { flatten, groupBy, maxBy, sortBy } from 'lodash';
+import React, { useMemo, useState } from 'react';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 import IconWarning from 'ui/assets/signature-record/warning.svg';
+import { CancelTxConfirmPopup } from './CancelTxConfirmPopup';
 
 const Warper = styled.div`
   margin-bottom: 16px;
@@ -84,10 +88,53 @@ const SkipAlertDetail = ({
   );
 };
 
+const ClearPendingAlertDetail = ({
+  data,
+  onClearPending,
+}: {
+  data: TransactionGroup[];
+  onClearPending?: (chain: Chain) => void;
+}) => {
+  const chain = findChainByID(data?.[0].chainId);
+  const chainName = chain?.name || 'Unknown';
+  const nonces = data.map((item) => `#${item.nonce}`).join('、');
+
+  return (
+    <div className="alert-detail">
+      <img src={IconWarning} alt="" />
+      <div className="alert-detail-content">
+        <Trans
+          i18nKey="page.activities.signedTx.SkipNonceAlert.clearPendingAlert"
+          values={{
+            nonces: nonces,
+            chainName: chainName,
+          }}
+          nonces={nonces}
+          chainName={chainName}
+        >
+          Transaction ({chainName} {nonces}) has been pending for over 3
+          minutes. You can{' '}
+          <span
+            className="link"
+            onClick={() => {
+              onClearPending?.(chain!);
+            }}
+          >
+            Clear Pending Locally
+          </span>{' '}
+          and resubmit the transaction.
+        </Trans>
+      </div>
+    </div>
+  );
+};
+
 export const SkipNonceAlert = ({
   pendings,
+  onClearPending,
 }: {
   pendings: TransactionGroup[];
+  onClearPending?: () => void;
 }) => {
   const [account] = useAccount();
   const wallet = useWallet();
@@ -105,43 +152,79 @@ export const SkipNonceAlert = ({
     }
   );
 
-  const handleOnChainCancel = async (item: {
-    chainId: number;
-    nonce: number;
-  }) => {
-    const chain = findChain({
-      id: item.chainId,
-    });
-    if (!chain) {
-      throw new Error('chainServerId not found');
-    }
-    const gasLevels: GasLevel[] = chain.isTestnet
-      ? await wallet.getCustomTestnetGasMarket({
-          chainId: chain.id,
-        })
-      : await wallet.gasMarketV2({
-          chainId: chain.serverId,
-        });
-    const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
-    await wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [
-        {
-          from: account?.address,
-          to: account?.address,
-          gasPrice: intToHex(maxGasMarketPrice),
-          value: '0x0',
-          chainId: item.chainId,
-          nonce: intToHex(item.nonce),
-          isCancel: true,
-          // reqId: maxGasTx.reqId,
-        },
-      ],
-    });
-    window.close();
-  };
+  const [confirmState, setConfirmState] = useSetState<{
+    visible?: boolean;
+    chain?: null | Chain;
+  }>({
+    visible: false,
+    chain: null,
+  });
 
-  if (!data?.length) {
+  const handleOnChainCancel = useMemoizedFn(
+    async (item: { chainId: number; nonce: number }) => {
+      const chain = findChain({
+        id: item.chainId,
+      });
+      if (!chain) {
+        throw new Error('chainServerId not found');
+      }
+      const gasLevels: GasLevel[] = chain.isTestnet
+        ? await wallet.getCustomTestnetGasMarket({
+            chainId: chain.id,
+          })
+        : await wallet.gasMarketV2({
+            chainId: chain.serverId,
+          });
+      const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
+      await wallet.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: account?.address,
+            to: account?.address,
+            gasPrice: intToHex(maxGasMarketPrice),
+            value: '0x0',
+            chainId: item.chainId,
+            nonce: intToHex(item.nonce),
+            isCancel: true,
+            // reqId: maxGasTx.reqId,
+          },
+        ],
+      });
+      window.close();
+    }
+  );
+
+  const handleClearPending = useMemoizedFn(async (chain: Chain) => {
+    if (!chain.id) {
+      return;
+    }
+    await wallet.clearAddressPendingTransactions(account!.address, chain.id);
+    message.success('Clear pending transactions success');
+    onClearPending?.();
+  });
+
+  const [now, setNow] = useState(dayjs());
+
+  useInterval(() => {
+    setNow(dayjs());
+  }, 1000 * 60);
+
+  const needClearPendingTxs = useMemo(() => {
+    return Object.entries(groupBy(pendings, (item) => item.chainId))
+      .map(([key, value]) => {
+        return {
+          chain: key,
+          data: sortBy(value, (item) => +item.nonce),
+          needClear: value.some((item) => {
+            return dayjs(item.createdAt).isBefore(now.subtract(3, 'minute'));
+          }),
+        };
+      })
+      .filter((item) => item.needClear);
+  }, [pendings, now]);
+
+  if (!data?.length && !needClearPendingTxs?.length) {
     return null;
   }
 
@@ -156,6 +239,40 @@ export const SkipNonceAlert = ({
           />
         );
       })}
+      {!data?.length &&
+        needClearPendingTxs?.map((item) => {
+          return (
+            <ClearPendingAlertDetail
+              key={item.chain}
+              data={item.data}
+              onClearPending={(chain) => {
+                setConfirmState({
+                  chain,
+                  visible: true,
+                });
+              }}
+            />
+          );
+        })}
+      <CancelTxConfirmPopup
+        visible={confirmState.visible}
+        onClose={() => {
+          setConfirmState({
+            visible: false,
+            chain: null,
+          });
+        }}
+        onConfirm={() => {
+          if (!confirmState.chain) {
+            return;
+          }
+          handleClearPending(confirmState.chain);
+          setConfirmState({
+            visible: false,
+            chain: null,
+          });
+        }}
+      />
     </Warper>
   );
 };
