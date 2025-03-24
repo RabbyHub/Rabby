@@ -562,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "Excluir transação localmente",
-              "desc": "Corrigir bloqueio de transação causado por longo tempo pendente"
+              "title": "",
+              "desc": ""
             },
             "quickCancel": {
               "title": "Cancelar Rápido",
@@ -597,7 +597,7 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} pulado na cadeia {{chainName}}. Isso pode causar transações pendentes à frente. <5></5> <6>Submeta uma tx</6> na cadeia para resolver<7></7>",
-          "clearPendingAlert": "A transação {{chainName}} ({{nonces}}) está pendente há mais de 3 minutos. Você pode <5></5> <6>limpar transações pendentes nesta cadeia</6> <7></7> e iniciar uma nova."
+          "clearPendingAlert": ""
         },
         "PredictTime": {
           "time": "Previsto para ser embalado em {{time}}",
@@ -1172,9 +1172,9 @@
         "reset": "Restaurar configuração inicial",
         "save": "Salvar",
         "pendingTransactionCleared": "Transações pendentes removidas",
-        "clearPending": "Limpar Pendentes",
-        "clearPendingTip1": "Isso excluirá todas as suas transações pendentes localmente e ajudará a resolver problemas causados ​​por longos períodos de espera.",
-        "clearPendingTip2": "Isso não afetará os saldos de sua conta nem exigirá que você insira novamente sua frase-semente. \nTodos os seus ativos e informações da conta permanecerão seguros.",
+        "clearPending": "",
+        "clearPendingTip1": "",
+        "clearPendingTip2": "",
         "autoLockTime": "Tempo de Bloqueio Automático",
         "claimRabbyBadge": "Reivindique a Medalha Rabby!",
         "cancel": "Cancelar",
@@ -1220,7 +1220,7 @@
         "testnetBackendServiceUrl": "URL do Serviço de Backend de Teste",
         "clearWatchMode": "Limpar Modo de Observação",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gás de Testnet DeBank",
-        "clearPendingWarningTip": "As transações pendentes ainda poderão ser enviadas com sucesso no futuro."
+        "clearPendingWarningTip": ""
       },
       "tokenDetail": {
         "blockedTip": "Tokens bloqueados não serão exibidos na lista de tokens",

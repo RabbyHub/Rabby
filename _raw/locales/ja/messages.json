@@ -562,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "トランザクションをローカルで削除",
-              "desc": "長い保留時間によって引き起こされるトランザクションブロックを修正"
+              "title": "",
+              "desc": ""
             },
             "quickCancel": {
               "tips": "未送信のトランザクションのみ対応",
@@ -596,7 +596,7 @@
           "noCost": "ガス手数料なし"
         },
         "SkipNonceAlert": {
-          "clearPendingAlert": "{{chainName}} トランザクション ({{nonces}}) は3分以上保留されています。このチェーンで保留中のトランザクションを<6>クリア</6>し、新しいものを開始できます。",
+          "clearPendingAlert": "",
           "alert": "Nonce #{{nonce}} は {{chainName}} チェーンでスキップされました。これにより、先に保留中のトランザクションが発生する可能性があります。<5></5> <6>チェーン上でトランザクションを送信</6> <7></7>して解決してください。"
         },
         "PredictTime": {
@@ -1172,9 +1172,9 @@
         "reset": "初期設定に戻す",
         "save": "保存",
         "pendingTransactionCleared": "保留中のトランザクションがクリアされました",
-        "clearPending": "保留中のクリア",
-        "clearPendingTip1": "これにより、保留中のトランザクションがすべてローカルで削除され、長い保留時間によって引き起こされる問題の解決に役立ちます。",
-        "clearPendingTip2": "アカウント残高に影響を与えたり、シードフレーズを再入力する必要はありません。\nすべての資産とアカウント情報は安全に保たれます。",
+        "clearPending": "",
+        "clearPendingTip1": "",
+        "clearPendingTip2": "",
         "autoLockTime": "自動ロック時間",
         "claimRabbyBadge": "Rabby バッジをクレーム！",
         "cancel": "キャンセル",
@@ -1220,7 +1220,7 @@
         "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
         "clearWatchMode": "ウォッチモードをクリア",
         "requestDeBankTestnetGasToken": "DeBankテストネットガストークンをリクエスト",
-        "clearPendingWarningTip": "保留中のトランザクションは、今後も正常に送信される可能性があります。"
+        "clearPendingWarningTip": ""
       },
       "tokenDetail": {
         "blockedTip": "ブロックされたトークンはトークンリストに表示されません",

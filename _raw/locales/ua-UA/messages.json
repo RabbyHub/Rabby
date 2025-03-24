@@ -563,8 +563,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "Delete Transaction Locally",
-              "desc": "Fix transaction block caused by long pending time"
+              "title": "",
+              "desc": ""
             },
             "quickCancel": {
               "title": "Швидке скасування",
@@ -598,7 +598,7 @@
         },
         "SkipNonceAlert": {
           "alert": "Пропущено Nonce #{{nonce}} у ланцюзі {{chainName}}. Це може спричинити очікування транзакцій попереду. <5></5> <6>Надішліть tx</6> <7></7> у ланцюзі для вирішення.",
-          "clearPendingAlert": "{{chainName}} Транзакція ({{nonces}}) очікує вже понад 3 хвилини. Ви можете <5></5> <6>очистити очікуючі транзакції в цьому ланцюзі</6> <7></7> і ініціювати нову."
+          "clearPendingAlert": ""
         },
         "PredictTime": {
           "time": "Очікується, що буде упаковано в {{time}}",
@@ -1175,9 +1175,9 @@
         "reset": "Відновити початкові налаштування",
         "save": "Зберегти",
         "pendingTransactionCleared": "Незавершена транзакція очищена",
-        "clearPending": "Видалити незавершені транзакції",
-        "clearPendingTip1": "This will delete all your pending transactions locally and help resolve issues caused by long pending times.",
-        "clearPendingTip2": "It will not affect your account balances or require you to re-enter your seed phrase. All your assets and account information will remain secure.",
+        "clearPending": "",
+        "clearPendingTip1": "",
+        "clearPendingTip2": "",
         "autoLockTime": "Час автоматичного блокування",
         "claimRabbyBadge": "Отримати Rabby Badge!",
         "cancel": "Скасувати",
@@ -1223,7 +1223,7 @@
         "testnetBackendServiceUrl": "URL-адреса внутрішньої служби Testnet",
         "clearWatchMode": "Очистити режим спостереження",
         "requestDeBankTestnetGasToken": "Запросити тестові токени для DeBank Testnet",
-        "clearPendingWarningTip": "The pending transactions may still be successfully submitted in the future."
+        "clearPendingWarningTip": ""
       },
       "tokenDetail": {
         "blockedTip": "Заблокований токен не буде показано у списку токенів",

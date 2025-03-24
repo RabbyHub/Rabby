@@ -562,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "İşlemi Yerel Olarak Sil",
-              "desc": "Uzun bekleme süresinin neden olduğu işlem bloğunu düzeltin"
+              "title": "",
+              "desc": ""
             },
             "quickCancel": {
               "title": "Hızlı İptal",
@@ -597,7 +597,7 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} {{chainName}} zincirinde atlandı. Bu, bekleyen işlem sayısının artmasına neden olabilir. <5></5> <6>Çözmek için zincire bir tx gönderin</6> <7></7>",
-          "clearPendingAlert": "{{chainName}} İşlemi ({{nonces}}) 3 dakikadan uzun süredir beklemede. Bu zincirde <5></5> <6>beklemede olan işlemleri temizleyebilir</6> <7></7> ve yeni bir işlem başlatabilirsiniz."
+          "clearPendingAlert": ""
         },
         "PredictTime": {
           "noTime": "Paketleme süresi tahmin ediliyor",
@@ -1172,9 +1172,9 @@
         "reset": "Restore initial setting",
         "save": "Kaydet",
         "pendingTransactionCleared": "Bekleyen işlem temizlendi",
-        "clearPending": "Bekleyeni Temizle",
-        "clearPendingTip1": "Bu, bekleyen tüm işlemlerinizi yerel olarak silecek ve uzun bekleme sürelerinden kaynaklanan sorunların çözülmesine yardımcı olacaktır.",
-        "clearPendingTip2": "Hesap bakiyelerinizi etkilemez veya başlangıç ​​ifadenizi yeniden girmenizi gerektirmez. \nTüm varlıklarınız ve hesap bilgileriniz güvende kalacaktır.",
+        "clearPending": "",
+        "clearPendingTip1": "",
+        "clearPendingTip2": "",
         "autoLockTime": "Otomatik kilitlenme süresi",
         "claimRabbyBadge": "Rabby Rozetini Talep Edin!",
         "cancel": "İptal",
@@ -1220,7 +1220,7 @@
         "testnetBackendServiceUrl": "Testnet Backend Servis URL'si",
         "clearWatchMode": "İzleme Modunu Temizle",
         "requestDeBankTestnetGasToken": "DeBank Testnet Gas Tokeni İste",
-        "clearPendingWarningTip": "Bekleyen işlemler gelecekte de başarıyla gönderilebilir."
+        "clearPendingWarningTip": ""
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
