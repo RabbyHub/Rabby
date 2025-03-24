@@ -703,7 +703,10 @@
         "parseError": "Fail to decode contract call",
         "simulation": "Contract call simulation:",
         "notHexData": "Only supported hex data"
-      }
+      },
+      "blockedTransaction": "Blocked Transaction",
+      "blockedTransactionContent": "This transaction interacts with an address that is on the OFAC sanctions list.",
+      "blockedTransactionCancelText": "I Know"
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost",
