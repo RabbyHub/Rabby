@@ -1334,16 +1334,19 @@ export class KeyringService extends EventEmitter {
     const serializedKeyrings = await Promise.all(
       this.keyrings.map((keyring) => {
         return Promise.all([keyring.type, keyring.serialize()]).then(
-          (serializedKeyringArray) => {
+          async (serializedKeyringArray) => {
             // Label the output values on each serialized Keyring:
             return {
-              type: serializedKeyringArray[0],
-              data: serializedKeyringArray[1],
-            } as KeyringSerializedData;
+              type: serializedKeyringArray[0] as string,
+              data: serializedKeyringArray[1] as any,
+              accounts: (await keyring.getAccounts()) as string[],
+            };
           }
         );
       })
     );
+
+    const accounts: string[] = [];
 
     const SYNC_KEYRING_TYPES = [
       KEYRING_CLASS.MNEMONIC,
@@ -1354,7 +1357,7 @@ export class KeyringService extends EventEmitter {
       KEYRING_CLASS.HARDWARE.KEYSTONE,
     ];
     const syncKeyringData = serializedKeyrings
-      .map(({ type, data }) => {
+      .map(({ type, data, accounts: _accounts }) => {
         if (SYNC_KEYRING_TYPES.includes(type as any)) {
           // maybe empty keyring
           // TODO: maybe need remove simple keyring if empty
@@ -1364,12 +1367,17 @@ export class KeyringService extends EventEmitter {
 
           // clean mnemonic keyring
           if (type === KEYRING_CLASS.MNEMONIC) {
+            if (data.isSlip39) {
+              return undefined;
+            }
             data = {
               mnemonic: data.mnemonic,
               accountDetails: data.accountDetails,
               publicKey: data.publicKey,
             };
           }
+
+          accounts.push(..._accounts);
 
           return { type, data };
         }
@@ -1382,7 +1390,7 @@ export class KeyringService extends EventEmitter {
       persisted: false,
     });
 
-    return encryptedString;
+    return { vault: encryptedString, accounts };
   }
 }
 
