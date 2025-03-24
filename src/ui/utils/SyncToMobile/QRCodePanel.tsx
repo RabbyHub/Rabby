@@ -7,7 +7,6 @@ import { ReactComponent as GooglePlaySVG } from '@/ui/assets/sync-to-mobile/goog
 import { ReactComponent as RabbyCircleSVG } from '@/ui/assets/sync-to-mobile/rabby-circle.svg';
 import clsx from 'clsx';
 import { DownloadCard } from './DownloadCard';
-import LZString from 'lz-string';
 
 const GOOGLE_PLAY_URL =
   'https://play.google.com/store/apps/details?id=com.debank.rabbymobile';
@@ -22,11 +21,8 @@ export const QRCodePanel: React.FC = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       const data = await wallet.geSyncDataString();
-      const compressed = LZString.compressToUTF16(data);
 
-      console.log('origin', data.length);
-      console.log('compressed', compressed.length);
-      setData(compressed);
+      setData(data);
     };
 
     fetchData();
