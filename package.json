@@ -99,6 +99,7 @@
     "ethereumjs-util": "7.1.2",
     "ethers": "5.4.2",
     "events": "3.3.0",
+    "fflate": "0.8.2",
     "hdkey": "0.8.0",
     "https-browserify": "1.0.0",
     "human-standard-token-abi": "2.0.0",

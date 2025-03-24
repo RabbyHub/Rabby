@@ -4,15 +4,89 @@ import { UR, UREncoder } from '@ngraveio/bc-ur';
 import { ReactComponent as IconMaskIcon } from '@/ui/assets/create-mnemonics/mask-lock.svg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { gzipSync, strToU8 } from 'fflate';
+import LZString from 'lz-string';
 
 export const EncodeQRCode: React.FC<{
   input: string;
 }> = ({ input }) => {
   const { t } = useTranslation();
   const [masked, setMasked] = React.useState(true);
-  const urEncoder = React.useMemo(() => new UREncoder(UR.from(input), 150), [
-    input,
-  ]);
+
+  React.useMemo(() => {
+    const result = new UREncoder(UR.from(input), 150);
+
+    console.log(
+      'origin size',
+      result.fragments,
+      result.fragmentsLength,
+      result.messageLength
+    );
+
+    return result;
+  }, [input]);
+
+  const urEncoder = React.useMemo(() => {
+    const result = new UREncoder(
+      new UR(Buffer.from(gzipSync(strToU8(input))), 'bytes'),
+      150
+    );
+
+    console.log(
+      'fflate  size',
+      result.fragments,
+      result.fragmentsLength,
+      result.messageLength
+    );
+
+    return result;
+  }, [input]);
+
+  React.useMemo(() => {
+    const result = new UREncoder(UR.from(LZString.compressToUTF16(input)), 150);
+
+    console.log(
+      'LZString compressToUTF16 size',
+      result.fragments,
+      result.fragmentsLength,
+      result.messageLength
+    );
+
+    return result;
+  }, [input]);
+
+  React.useMemo(() => {
+    const result = new UREncoder(
+      new UR(Buffer.from(LZString.compressToUTF16(input)), 'bytes'),
+      150
+    );
+
+    console.log(
+      'LZString Buffer.from(LZString.compressToUTF16 size',
+      result.fragments,
+      result.fragmentsLength,
+      result.messageLength
+    );
+
+    return result;
+  }, [input]);
+
+  React.useMemo(() => {
+    const result = new UREncoder(
+      new UR(Buffer.from(LZString.compressToUint8Array(input)), 'bytes'),
+      150
+    );
+
+    console.log(
+      'LZString compressToUint8Array size',
+      result.fragments,
+      result.fragmentsLength,
+      result.messageLength
+    );
+
+    return result;
+  }, [input]);
+
   const [data, setData] = React.useState(urEncoder.nextPart());
 
   React.useEffect(() => {
