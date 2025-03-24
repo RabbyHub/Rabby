@@ -20,7 +20,7 @@ export const QRCodePanel: React.FC = () => {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const data = await wallet.geSyncDataString();
+      const data = await wallet.getSyncDataString();
 
       setData(data);
     };

@@ -1348,7 +1348,6 @@ export class KeyringService extends EventEmitter {
     const SYNC_KEYRING_TYPES = [
       KEYRING_CLASS.MNEMONIC,
       KEYRING_CLASS.PRIVATE_KEY,
-      KEYRING_CLASS.WATCH,
       KEYRING_CLASS.HARDWARE.ONEKEY,
       KEYRING_CLASS.HARDWARE.LEDGER,
       KEYRING_CLASS.GNOSIS,
@@ -1361,6 +1360,15 @@ export class KeyringService extends EventEmitter {
           // TODO: maybe need remove simple keyring if empty
           if (type === KEYRING_CLASS.PRIVATE_KEY && !data.length) {
             return undefined;
+          }
+
+          // clean mnemonic keyring
+          if (type === KEYRING_CLASS.MNEMONIC) {
+            data = {
+              mnemonic: data.mnemonic,
+              accountDetails: data.accountDetails,
+              publicKey: data.publicKey,
+            };
           }
 
           return { type, data };
