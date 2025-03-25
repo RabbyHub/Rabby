@@ -4769,10 +4769,10 @@
     ethers "5.5.1"
     semver "7.5.4"
 
-"@rabby-wallet/page-provider@0.4.9-0":
-  version "0.4.9-0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.9-0.tgz#918a665c4526808e7c2967dd675ae0410d1ae31b"
-  integrity sha512-Rnf8SJvWTwTFWgNBoIUAZqyttNElnDPz32hhqet79mWiDVjt5hYcrSnWazzD+xZKXBmZUOo/5uKkfb+nLhd3qg==
+"@rabby-wallet/page-provider@0.4.9":
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.9.tgz#3b1f9a45d70c42b2598b9cc7ce08abc6ec1e8439"
+  integrity sha512-xR30KuYRT8qTZfBn5E2j+InTHzX2tvLz+zL3u3T8SN6qCOq2frR4vCJz8aWZBoycUtdIWL0hKUrkNmRE/t2W7g==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@metamask/post-message-stream" "8.1.0"

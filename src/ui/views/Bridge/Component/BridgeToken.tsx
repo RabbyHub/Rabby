@@ -20,11 +20,9 @@ import { tokenAmountBn } from '@/ui/utils/token';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import styled from 'styled-components';
 import BridgeToTokenSelect from './BridgeToTokenSelect';
-import { useSetSettingVisible } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
 import { useAsync } from 'react-use';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const StyledInput = styled(Input)`
   color: var(--r-neutral-title1, #192945);
@@ -257,7 +255,7 @@ export const BridgeToken = ({
           value={chain}
           onChange={changeChain}
           title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
-          excludeChains={excludeChains}
+          // excludeChains={excludeChains}
           supportChains={supportedChains}
           drawerHeight={540}
           showClosableIcon

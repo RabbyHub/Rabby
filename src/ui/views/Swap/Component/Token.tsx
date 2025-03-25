@@ -217,7 +217,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             chainId={chainId}
             type={isFrom ? 'swapFrom' : 'swapTo'}
             placeholder={t('page.swap.search-by-name-address')}
-            excludeTokens={excludeTokens}
+            // excludeTokens={excludeTokens}
             tokenRender={tokenRender}
             supportChains={SWAP_SUPPORT_CHAINS}
             useSwapTokenList={!isFrom}
