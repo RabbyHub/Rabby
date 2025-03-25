@@ -60,7 +60,7 @@ export const QRCodePanel: React.FC = () => {
           />
         </div>
       </div>
-      <div className="border-t border-rabby-neutral-line border-dashed my-[24px]"></div>
+      <div className="border-t border-rabby-neutral-line border-dashed my-[18px]"></div>
       <div>
         <h2
           className={clsx(
