@@ -25,8 +25,9 @@ import { isNil } from 'lodash';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useWallet } from '@/ui/utils';
+import { getUiType, useWallet } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
+const isTab = getUiType().isTab;
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -367,7 +368,7 @@ const TokenSelector = ({
           allowClear
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
-          autoFocus
+          autoFocus={!isTab}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
         />

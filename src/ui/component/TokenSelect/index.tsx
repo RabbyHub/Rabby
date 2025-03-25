@@ -21,7 +21,8 @@ import { CHAINS_ENUM } from '@/constant';
 import useSearchToken from '@/ui/hooks/useSearchToken';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync } from 'react-use';
-import { useWallet } from '@/ui/utils';
+import { getUiType, useWallet } from '@/ui/utils';
+const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
   background-color: transparent;
@@ -328,7 +329,7 @@ const TokenSelect = forwardRef<
               className="h-[30px] max-w-"
               readOnly={type === 'swapTo'}
               placeholder={'0'}
-              autoFocus={type !== 'swapTo'}
+              autoFocus={type !== 'swapTo' && !isTab}
               autoCorrect="false"
               autoComplete="false"
               value={value ?? input}

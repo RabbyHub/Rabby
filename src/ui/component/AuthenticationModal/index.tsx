@@ -11,6 +11,8 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { Popup, Checkbox, Field } from 'ui/component';
 import { WrappedComponentProps, wrapModalPromise } from '../Modal/WrapPromise';
+import { getUiType } from '@/ui/utils';
+const isTab = getUiType().isTab;
 
 const AuthFormItemWrapper = styled.div`
   .ant-form-item-has-error {
@@ -241,7 +243,7 @@ const AuthenticationModal = ({
               }
               type="password"
               size="large"
-              autoFocus
+              autoFocus={!isTab}
               ref={inputRef}
               spellCheck={false}
             />
