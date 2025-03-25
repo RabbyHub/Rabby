@@ -202,9 +202,9 @@
         "backendServiceUrl": "後端服務網址",
         "cancel": "取消",
         "claimRabbyBadge": "領取 Rabby Badge",
-        "clearPending": "清除待完成交易",
-        "clearPendingTip1": "這將在本地刪除所有待處理的交易，並幫助解決因待處理時間過長而導致的問題。",
-        "clearPendingTip2": "這不會改變你帳戶中的結餘，也不會要求你重新輸入助記詞。你的所有資產和帳戶信息都將保持安全。",
+        "clearPending": "清除本地待处理",
+        "clearPendingTip1": "此操作將從您的界面中移除等待中的交易，以幫助解決由網絡上長時間等待造成的問題。",
+        "clearPendingTip2": "它不會影響你的帳戶結餘，也不需要重新輸入你的種子短語。所有資產和帳戶詳情均保持安全。",
         "clearWatchAddressContent": "你確定刪除所有觀察地址嗎？",
         "clearWatchMode": "清除觀察地址",
         "currentVersion": "當前版本",
@@ -233,7 +233,7 @@
         "reset": "恢覆初始設置",
         "save": "保存",
         "settings": {
-          "customRpc": "",
+          "customRpc": "修改 RPC URL",
           "enableWhitelistForSendingAssets": "啟用轉賬白名單",
           "label": "設置",
           "metamaskPreferredDapps": "優先使用MetaMask連接的Dapp",
@@ -255,7 +255,7 @@
         "warning": "警告",
         "requestDeBankTestnetGasToken": "獲取 DeBank Testnet Gas Token",
         "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！",
-        "clearPendingWarningTip": "待處理的交易將來仍有可能成功提交。",
+        "clearPendingWarningTip": "已移除的交易可能仍会在链上确认，除非将其替换。",
         "supportedChains": "集成鏈"
       },
       "tokenDetail": {
@@ -821,8 +821,8 @@
               "desc": "發起新的鏈上交易來取消，需要Gasfee"
             },
             "removeLocalPendingTx": {
-              "title": "本地刪除交易",
-              "desc": "修復因等待時間過長導致交易阻塞的問題"
+              "title": "清除本地掛起",
+              "desc": "移除介面中的待處理交易"
             }
           },
           "removeLocalPendingTx": {
@@ -832,7 +832,7 @@
         },
         "SkipNonceAlert": {
           "alert": "當前 {{chainName}} 鏈因快捷取消導致 Nonce#{{nonce}} 被跳過, 導致後續 Pending 交易無法完成, 可 <5></5><6>發起一筆鏈上交易</6><7></7>來填充",
-          "clearPendingAlert": "{{chainName}} 交易（{{nonces}}）已挂起超過3分鐘。您可以 <5></5> <6>清除此鏈上的待處理交易</6> <7></7> 並發起新的交易。"
+          "clearPendingAlert": "{{chainName}} 交易 ({{nonces}}) 已經等待超過 3 分鐘。您可以 <5></5> <6>在本地清除等待狀態</6> <7></7> 然後重新提交交易。"
         },
         "gas": {
           "noCost": "無 Gas 成本"
@@ -841,6 +841,11 @@
           "time": "預計打包時間為 {{time}}",
           "noTime": "正在預測打包時間",
           "failed": "打包時間預測失敗"
+        },
+        "CancelTxConfirmPopup": {
+          "title": "清除本地待處理",
+          "warning": "已移除的交易仍可能会在鏈上確認，除非它被替換。",
+          "desc": "這將會從你的介面移除待處理交易。然後你可以發起一個新交易。"
         }
       },
       "title": "簽名記錄"
@@ -1763,7 +1768,7 @@
       "swap-from": "賣出",
       "swap-history": "兌換歷史",
       "swap-via-x": "通過 {{name}} 兌換",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "不支援自訂網絡",
       "the-following-swap-rates-are-found": "發現以下兌換報價",
       "sort-with-gas": "排序考慮gas",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易不收取任何費用和滑點",
@@ -1819,7 +1824,7 @@
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持請求的鏈",
-      "title": "",
+      "title": "將自定網絡新增至 Rabby",
       "testnetTip": "請在\"更多\"中打開“開啟測試網”後再發起測試網連接",
       "chainNotSupportYet": "Rabby 尚未支持所请求的链",
       "chainId": "链 ID：",
@@ -1878,17 +1883,17 @@
       "empty": "No dapps"
     },
     "customRpc": {
-      "title": "",
-      "desc": "",
-      "add": "",
-      "empty": "",
+      "title": "修改 RPC URL",
+      "desc": "一旦修改，自定义 RPC 将替换 Rabby 的节点。若要继续使用 Rabby 的节点，请删除自定义 RPC。",
+      "add": "修改 RPC URL",
+      "empty": "無自定義 RPC URL",
       "opened": "已打開",
       "closed": "已關閉",
       "EditRPCModal": {
         "invalidRPCUrl": " RPC URL 無效",
         "invalidChainId": "Chain ID 無效",
         "rpcAuthFailed": "RPC 驗證失敗",
-        "title": "",
+        "title": "修改 RPC URL",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "輸入 RPC URL"
       },
@@ -2548,7 +2553,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "",
+      "title": "管理已允许的 Dapps",
       "desc": "已为以下 Dapps 启用 MetaMask 模式。您可以通过选择 MetaMask 选项连接 Rabby。"
     },
     "forgotPassword": {
@@ -2693,8 +2698,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "",
-        "testnet": ""
+        "mainnet": "整合網絡",
+        "testnet": "自定網絡"
       }
     },
     "ChainSelectorModal": {
