@@ -562,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "",
-              "desc": ""
+              "title": "Limpar Pendências Localmente",
+              "desc": "Remova a transação pendente da interface"
             },
             "quickCancel": {
               "title": "Cancelar Rápido",
@@ -597,12 +597,17 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} pulado na cadeia {{chainName}}. Isso pode causar transações pendentes à frente. <5></5> <6>Submeta uma tx</6> na cadeia para resolver<7></7>",
-          "clearPendingAlert": ""
+          "clearPendingAlert": "Transação {{chainName}} ({{nonces}}) está pendente há mais de 3 minutos. Você pode <5></5> <6>Limpar Pendentes Localmente</6> <7></7> e reenviar a transação."
         },
         "PredictTime": {
           "time": "Previsto para ser embalado em {{time}}",
           "failed": "A previsão de tempo de embalagem falhou",
           "noTime": "O tempo de empacotamento está sendo previsto"
+        },
+        "CancelTxConfirmPopup": {
+          "title": "Limpar Pendente Localmente",
+          "desc": "Isso removerá a transação pendente da sua interface. Você poderá então iniciar uma nova transação.",
+          "warning": "A transação removida ainda pode ser confirmada na cadeia, a menos que ela seja substituída."
         }
       },
       "signedText": {
@@ -887,7 +892,7 @@
       "no-transaction-records": "Nenhum registro de transação",
       "swap-history": "Histórico de Troca",
       "InSufficientTip": "Saldo insuficiente para simulação de transação e estimativa de gás. Cotações originais do agregador são exibidas",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "Não oferecemos suporte para rede personalizada",
       "not-supported": "Não suportada",
       "slippage-adjusted-refresh-quote": "Escorregamento ajustado. Atualizar cotação.",
       "price-expired-refresh-quote": "Preço expirado. Atualizar cotação.",
@@ -1172,9 +1177,9 @@
         "reset": "Restaurar configuração inicial",
         "save": "Salvar",
         "pendingTransactionCleared": "Transações pendentes removidas",
-        "clearPending": "",
-        "clearPendingTip1": "",
-        "clearPendingTip2": "",
+        "clearPending": "Limpar Pendentes Localmente",
+        "clearPendingTip1": "Esta ação remove a transação pendente da sua interface, ajudando a resolver problemas causados por longas durações de pendência na rede.",
+        "clearPendingTip2": "Isso não afeta os saldos da sua conta nem exige a reinserção da sua seed phrase. Todos os ativos e detalhes da conta permanecem seguros.",
         "autoLockTime": "Tempo de Bloqueio Automático",
         "claimRabbyBadge": "Reivindique a Medalha Rabby!",
         "cancel": "Cancelar",
@@ -1220,7 +1225,7 @@
         "testnetBackendServiceUrl": "URL do Serviço de Backend de Teste",
         "clearWatchMode": "Limpar Modo de Observação",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gás de Testnet DeBank",
-        "clearPendingWarningTip": ""
+        "clearPendingWarningTip": "A transação removida ainda pode ser confirmada na blockchain a menos que seja substituída."
       },
       "tokenDetail": {
         "blockedTip": "Tokens bloqueados não serão exibidos na lista de tokens",
@@ -1842,7 +1847,7 @@
     "customRpc": {
       "opened": "Aberto",
       "closed": "Fechado",
-      "empty": "",
+      "empty": "Nenhuma URL RPC personalizada",
       "title": "RPC Personalizado",
       "desc": "Ativar o RPC personalizado substituirá o Rabby como o nó padrão. Para continuar usando o Rabby, desative ou remova o nó RPC personalizado.",
       "add": "Adicionar RPC",
@@ -2510,7 +2515,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "",
+      "title": "Gerenciar Dapps Permitidos",
       "desc": "Modo MetaMask ativado para os seguintes Dapps. Você pode conectar o Rabby selecionando a opção MetaMask."
     },
     "forgotPassword": {

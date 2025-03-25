@@ -314,8 +314,8 @@
               "title": "Annulation rapide"
             },
             "removeLocalPendingTx": {
-              "title": "",
-              "desc": ""
+              "title": "Effacer en attente localement",
+              "desc": "Supprimer la transaction en attente de l'interface"
             }
           },
           "title": "Annuler la transaction",
@@ -336,7 +336,7 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} ignoré sur la chaîne {{chainName}}. Cela peut entraîner de futures transactions en attente. <5></5> <6>Soumettre une tx</6> <7></7> on-chain pour régler le problème",
-          "clearPendingAlert": ""
+          "clearPendingAlert": "La transaction {{chainName}} ({{nonces}}) est en attente depuis plus de 3 minutes. Vous pouvez <5></5> <6>Effacer localement en attente</6> <7></7> et soumettre à nouveau la transaction."
         },
         "message": {
           "broadcastSuccess": "Diffusée",
@@ -346,6 +346,11 @@
         },
         "gas": {
           "noCost": "Pas de frais de gaz"
+        },
+        "CancelTxConfirmPopup": {
+          "desc": "Cela supprimera la transaction en attente de votre interface. Vous pourrez ensuite initier une nouvelle transaction.",
+          "title": "Effacer les actions en attente localement",
+          "warning": "La transaction supprimée peut toujours être confirmée sur la chaîne à moins qu'elle ne soit remplacée."
         }
       },
       "title": "Journal de signatures"
@@ -833,9 +838,9 @@
         "backendServiceUrl": "URL du service backend",
         "cancel": "Annuler",
         "claimRabbyBadge": "Réclamer le badge Rabby !",
-        "clearPending": "",
-        "clearPendingTip1": "",
-        "clearPendingTip2": "",
+        "clearPending": "Effacer en attente localement",
+        "clearPendingTip1": "Cette action supprime la transaction en attente de votre interface, aidant ainsi à résoudre les problèmes causés par des durées d'attente prolongées sur le réseau.",
+        "clearPendingTip2": "Cela n'affecte pas les soldes de votre compte ni ne nécessite une nouvelle saisie de votre phrase de récupération. Tous les actifs et les détails du compte restent sécurisés.",
         "clearWatchAddressContent": "Êtes-vous certain de vouloir supprimer toutes les adresses du mode observation ?",
         "clearWatchMode": "Effacer le mode observation",
         "currentVersion": "Version actuelle",
@@ -886,7 +891,7 @@
           "title": "Mise à jour disponible"
         },
         "warning": "Avertissement",
-        "clearPendingWarningTip": ""
+        "clearPendingWarningTip": "La transaction supprimée peut encore être confirmée sur la blockchain à moins qu'elle ne soit remplacée."
       },
       "tokenDetail": {
         "blocked": "Bloqué",
@@ -2757,7 +2762,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "",
+      "title": "Gérer les Dapps autorisées",
       "desc": "Mode MetaMask activé pour les dApps suivantes. Vous pouvez connecter Rabby en sélectionnant l'option MetaMask."
     },
     "forgotPassword": {
