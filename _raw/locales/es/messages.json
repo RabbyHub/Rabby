@@ -708,7 +708,10 @@
         "placeholder": "Opcional",
         "simulation": "Simulación de llamada de contrato:",
         "notHexData": "Solo se admite datos hexadecimales"
-      }
+      },
+      "blockedTransactionCancelText": "Lo sé",
+      "blockedTransactionContent": "Esta transacción interactúa con una dirección que está en la lista de sanciones de OFAC.",
+      "blockedTransaction": "Transacción Bloqueada"
     },
     "sendTokenComponents": {
       "GasReserved": "Reservados <1>0</1> {{ tokenName }} para costo de gas",
@@ -1048,7 +1051,8 @@
           "nft": "NFT",
           "ecology": "Ecosystem",
           "bridge": "Puente",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -2573,6 +2577,16 @@
       "step1": "Paso 1",
       "alert": "¿No puedes conectarte a una Dapp porque no muestra Rabby Wallet como una opción?",
       "step2": "Paso 2"
+    },
+    "syncToMobile": {
+      "title": "Sincronizar la dirección de Wallet desde la extensión de Rabby al móvil",
+      "steps2": "2. Escanee con Rabby Mobile",
+      "downloadGooglePlay": "Google Play",
+      "description": "Tus datos de dirección permanecen totalmente fuera de línea, cifrados y se transfieren de manera segura a través de un código QR.",
+      "clickToShowQr": "Haga clic para mostrar el código QR",
+      "steps1": "1. Descarga Rabby Mobile",
+      "downloadAppleStore": "App Store",
+      "steps2Description": "*Tu código QR contiene datos sensibles. Manténlo privado y nunca lo compartas con nadie."
     }
   },
   "component": {

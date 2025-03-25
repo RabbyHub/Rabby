@@ -708,7 +708,10 @@
         "parseError": "Ошибка декодирования вызова контракта",
         "simulation": "Симуляция вызова контракта:",
         "notHexData": "Поддерживаются только шестнадцатеричные данные"
-      }
+      },
+      "blockedTransaction": "Заблокированная транзакция",
+      "blockedTransactionCancelText": "Я знаю",
+      "blockedTransactionContent": "Эта транзакция взаимодействует с адресом, который находится в списке санкций OFAC."
     },
     "sendTokenComponents": {
       "GasReserved": "Резерв <1>0</1> {{ tokenName }} для оплаты газа",
@@ -1048,7 +1051,8 @@
           "manageAddress": "Управление адресами",
           "nft": "NFT",
           "bridge": "Мост",
-          "ecology": "Экосистема"
+          "ecology": "Экосистема",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Скоро будет",
         "soon": "Скоро",
@@ -2572,6 +2576,16 @@
       "step1": "Шаг 1",
       "step2": "Шаг 2",
       "alert": "Не удается подключиться к Dapp, потому что Rabby Wallet не отображается в качестве опции?"
+    },
+    "syncToMobile": {
+      "clickToShowQr": "Нажмите, чтобы показать QR-код",
+      "downloadAppleStore": "App Store",
+      "steps1": "1. Загрузите Rabby Mobile",
+      "downloadGooglePlay": "Google Play",
+      "steps2": "2. Сканируйте с помощью Rabby Mobile",
+      "title": "Синхронизировать адрес кошелька из расширения Rabby на мобильный устройство",
+      "description": "Ваши данные адреса остаются полностью оффлайн, зашифрованными и надежно передаются через QR-код.",
+      "steps2Description": "Ваш QR-код содержит конфиденциальные данные. Держите его в тайне и никогда не делитесь им ни с кем."
     }
   },
   "component": {
