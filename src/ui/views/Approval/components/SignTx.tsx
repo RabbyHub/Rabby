@@ -40,7 +40,7 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
-import { useSize, useDebounceFn, useRequest } from 'ahooks';
+import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
@@ -1596,9 +1596,38 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     { wait: 1000 }
   );
 
+  const checkBlockedAddress = useMemoizedFn(async () => {
+    try {
+      const {
+        is_blocked: isBlockedFrom,
+      } = await wallet.openapi.isBlockedAddress(tx.from);
+      const { is_blocked: isBlockedTo } = await wallet.openapi.isBlockedAddress(
+        tx.to
+      );
+      if (isBlockedFrom || isBlockedTo) {
+        Modal.error({
+          title: t('page.sendToken.blockedTransaction'),
+          content: t('page.sendToken.blockedTransactionContent'),
+          okText: t('page.sendToken.blockedTransactionCancelText'),
+          onCancel: async () => {
+            await wallet.clearPageStateCache();
+            rejectApproval('User rejected the request.');
+          },
+          onOk: async () => {
+            await wallet.clearPageStateCache();
+            rejectApproval('User rejected the request.');
+          },
+        });
+      }
+    } catch (e) {
+      // NOTHING
+    }
+  });
+
   const init = async () => {
     dispatch.securityEngine.init();
     dispatch.securityEngine.resetCurrentTx();
+    checkBlockedAddress();
     try {
       const currentAccount =
         isGnosis && account ? account : (await wallet.getCurrentAccount())!;
