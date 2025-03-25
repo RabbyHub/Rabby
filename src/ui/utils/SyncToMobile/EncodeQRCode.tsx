@@ -63,7 +63,7 @@ export const EncodeQRCode: React.FC<{
   return (
     <div
       className={clsx(
-        'relative w-[300px] h-[300px]',
+        'relative w-[320px] h-[320px]',
         'flex items-center justify-center'
       )}
     >
@@ -91,7 +91,7 @@ export const EncodeQRCode: React.FC<{
           {t('page.syncToMobile.clickToShowQr')}
         </p>
       </div>
-      <QRCode value={isHidden ? '' : data} size={290} />
+      <QRCode value={isHidden ? '' : data} size={310} />
     </div>
   );
 };
