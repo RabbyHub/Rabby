@@ -30,6 +30,7 @@ import {
   transactionBroadcastWatchService,
   notificationService,
   bridgeService,
+  gasAccountService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx, TxPushType } from 'background/service/openapi';
@@ -48,7 +49,12 @@ import {
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
-import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
+import {
+  validateGasPriceRange,
+  is1559Tx,
+  ApprovalRes,
+  is7702Tx,
+} from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
@@ -94,28 +100,6 @@ const convertToHex = (data: Buffer | bigint) => {
   }
   return bufferToHex(data);
 };
-
-interface ApprovalRes extends Tx {
-  type?: string;
-  address?: string;
-  uiRequestComponent?: string;
-  isSend?: boolean;
-  isSpeedUp?: boolean;
-  isCancel?: boolean;
-  isSwap?: boolean;
-  isGnosis?: boolean;
-  account?: Account;
-  extra?: Record<string, any>;
-  traceId?: string;
-  $ctx?: any;
-  signingTxId?: string;
-  pushType?: TxPushType;
-  lowGasDeadline?: number;
-  reqId?: string;
-  isGasLess?: boolean;
-  isGasAccount?: boolean;
-  logId?: string;
-}
 
 interface Web3WalletPermission {
   // The name of the method corresponding to the permission
@@ -383,6 +367,7 @@ class ProviderController extends BaseController {
     const isGasLess = approvalRes.isGasLess || false;
     const logId = approvalRes.logId || '';
     const isGasAccount = approvalRes.isGasAccount || false;
+    const sig = approvalRes.sig;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -404,8 +389,16 @@ class ProviderController extends BaseController {
     delete approvalRes.isGasLess;
     delete approvalRes.logId;
     delete approvalRes.isGasAccount;
+    delete approvalRes.sig;
 
     let is1559 = is1559Tx(approvalRes);
+    const is7702 = is7702Tx(approvalRes);
+
+    if (is7702) {
+      // todo
+      throw new Error('not support 7702');
+    }
+
     if (
       is1559 &&
       approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas
@@ -729,7 +722,17 @@ class ProviderController extends BaseController {
               is_gasless: isGasLess,
               is_gas_account: isGasAccount,
               log_id: logId,
+              sig,
             });
+            if (res.access_token) {
+              gasAccountService.setGasAccountSig(
+                res.access_token,
+                currentAccount
+              );
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.GAS_ACCOUNT.LOG_IN,
+              });
+            }
             hash = res.req.tx_id || undefined;
             reqId = res.req.id || undefined;
             if (res.req.push_status === 'failed') {
@@ -776,9 +779,12 @@ class ProviderController extends BaseController {
         })!;
         let errMsg = e.details || e.message || JSON.stringify(e);
         if (chainData) {
-          errMsg = `[From ${getOriginFromUrl(
-            (chainData as TestnetChain).rpcUrl
-          )}] ${errMsg}`;
+          const rpcUrl = RPCService.hasCustomRPC(chain)
+            ? RPCService.getRPCByChain(chain).url
+            : (chainData as TestnetChain).rpcUrl;
+          errMsg = rpcUrl
+            ? `[From ${getOriginFromUrl(rpcUrl)}] ${errMsg}`
+            : errMsg;
         }
         console.log('submit tx failed', e);
         onTransactionSubmitFailed(errMsg);

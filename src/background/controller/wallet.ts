@@ -4803,9 +4803,23 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  signGasAccount = async () => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+  signGasAccount = async (account: Account) => {
+    const currentAccount = await preferenceService.getCurrentAccount();
+    if (!currentAccount) {
+      throw new Error(t('background.error.noCurrentAccount'));
+    }
+
+    const resumeAccount = async () => {
+      await this.changeAccount(currentAccount);
+    };
+
+    if (
+      currentAccount.address !== account.address ||
+      currentAccount.type !== account.type ||
+      currentAccount.brandName !== account.brandName
+    ) {
+      await this.changeAccount(account);
+    }
 
     const { text } = await wallet.openapi.getGasAccountSignText(
       account.address
@@ -4836,6 +4850,8 @@ export class WalletController extends BaseController {
         });
       }
     }
+
+    await resumeAccount();
   };
 
   topUpGasAccount = async ({

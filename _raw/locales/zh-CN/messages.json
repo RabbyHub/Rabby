@@ -157,7 +157,8 @@
         "recentlyConnected": "最近连接",
         "noConnectedDapps": "没有已连接的 Dapps",
         "dapps": "Dapps",
-        "metamaskModeTooltip": "无法在此 Dapp 上连接 Rabby？尝试启用 <1>MetaMask 模式</1>。"
+        "metamaskModeTooltip": "无法在此 Dapp 上连接 Rabby？尝试启用 <1>MetaMask 模式</1>。",
+        "metamaskModeTooltipNew": "Rabby Wallet将在您在Dapp中选择“MetaMask”时连接。您可以在更多 > 通过伪装为MetaMask连接Rabby中进行管理。"
       },
       "contacts": {
         "noData": "没有数据",
@@ -201,9 +202,9 @@
         "backendServiceUrl": "后端服务网址",
         "cancel": "取消",
         "claimRabbyBadge": "领取 Rabby Badge",
-        "clearPending": "清除待完成交易",
-        "clearPendingTip1": "这将在本地删除所有待处理的交易，并帮助解决因待处理时间过长而导致的问题。",
-        "clearPendingTip2": "它不会影响您的帐户余额或要求您重新输入助记词。\n您的所有资产和帐户信息将保持安全。",
+        "clearPending": "清除本地挂起",
+        "clearPendingTip1": "此操作将从您的界面中移除待处理交易，帮助解决网络上长时间待处理引起的问题。",
+        "clearPendingTip2": "它不会影响您的账户余额，也不需要重新输入您的助记词。所有资产和账户信息仍然安全。",
         "clearWatchAddressContent": "你确定删除所有观察地址吗？",
         "clearWatchMode": "清除观察地址",
         "currentVersion": "当前版本",
@@ -232,7 +233,7 @@
         "reset": "恢复初始设置",
         "save": "保存",
         "settings": {
-          "customRpc": "",
+          "customRpc": "修改 RPC URL",
           "enableWhitelistForSendingAssets": "启用转账白名单",
           "label": "设置",
           "metamaskPreferredDapps": "优先使用MetaMask连接的Dapp",
@@ -240,10 +241,9 @@
           "currentLanguage": "当前语言",
           "toggleThemeMode": "主题模式",
           "themeMode": "主题模式",
-          "customTestnet": "",
-          "metamaskMode": "MetaMask 模式"
+          "customTestnet": "添加自定义网络",
+          "metamaskMode": "通过伪装成 MetaMask 连接 Rabby"
         },
-        "supportedChains": "",
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "更新版本",
         "updateVersion": {
@@ -255,7 +255,8 @@
         "warning": "警告",
         "requestDeBankTestnetGasToken": "获取 DeBank Testnet Gas Token",
         "claimFreeGasBadge": "领取 Rabby Free Gas 徽章！",
-        "clearPendingWarningTip": "待处理的交易将来仍有可能成功提交。"
+        "clearPendingWarningTip": "被移除的交易可能仍然会在链上确认，除非它被替换。",
+        "supportedChains": "集成链"
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -390,10 +391,14 @@
         "enableDesc": "如果 Dapp 仅与 MetaMask 一起使用，请启用",
         "desc": "如果无法在 Dapp 上连接 Rabby，请启用 MetaMask 模式并通过选择 MetaMask 选项进行连接。",
         "footerText": "在“更多 > MetaMask 模式”中的 MetaMask 模式中添加更多 Dapps"
+      },
+      "offlineChain": {
+        "chain": "{{chain}} 将很快不再被集成。",
+        "tips": "{{chain}}链将不会在{{date}}集成。您的资产不会受到影响，但不会包含在您的总余额中。如需访问，您可以在“更多”中将其添加为自定义网络。"
       }
     },
     "chainList": {
-      "title": "",
+      "title": "{{count}} chains 集成",
       "mainnet": "主网",
       "testnet": "测试网"
     },
@@ -816,8 +821,8 @@
               "desc": "发起新的链上交易来取消，需要Gasfee"
             },
             "removeLocalPendingTx": {
-              "title": "本地删除交易",
-              "desc": "修复因等待时间过长导致交易阻塞的问题"
+              "title": "清除本地待处理",
+              "desc": "从界面中移除待处理交易"
             }
           },
           "removeLocalPendingTx": {
@@ -827,7 +832,7 @@
         },
         "SkipNonceAlert": {
           "alert": "当前 {{chainName}} 链因快捷取消导致 Nonce#{{nonce}} 被跳过, 导致后续 Pending 交易无法完成, 可 <5></5><6>发起一笔链上交易</6><7></7>来填充",
-          "clearPendingAlert": "{{chainName}} 事务（{{nonces}}）已挂起超过3分钟。您可以在此链上 <5></5> <6>清除挂起的交易</6> <7></7> 并发起新交易。"
+          "clearPendingAlert": "{{chainName}} 交易（{{nonces}}）已挂起超过 3 分钟。您可以<5></5><6>在本地清除挂起</6><7></7>并重新提交交易。"
         },
         "gas": {
           "noCost": "无 Gas 费用"
@@ -836,6 +841,11 @@
           "time": "预计将在 {{time}} 内打包",
           "noTime": "正在预测打包时间",
           "failed": "打包时间预测失败"
+        },
+        "CancelTxConfirmPopup": {
+          "desc": "这将从您的界面中移除待处理的交易。然后，您可以发起新交易。",
+          "warning": "已移除的交易可能仍会在链上确认，除非它被替换。",
+          "title": "清除本地挂起"
         }
       },
       "title": "签名记录"
@@ -1332,7 +1342,9 @@
         "WalletConnectTips": "GasAccount 不支持 WalletConnect",
         "useGasAccount": "使用 GasAccount",
         "gotIt": "知道了",
-        "chainNotSupported": "此链不被GasAccount支持"
+        "chainNotSupported": "此链不被GasAccount支持",
+        "loginTips": "要完成 GasAccount 登录，此交易将被丢弃。您需要在登录后重新进行。",
+        "depositTips": "要完成 GasAccount 存款，此交易将被丢弃。存款完成后，您需要重新发起交易。"
       }
     },
     "signText": {
@@ -1654,7 +1666,14 @@
       "gasAccountForGas": "使用我 GasAccount 中的 USD 支付 gas 费",
       "nativeTokenForGas": "使用 {{tokenName}} 代币在 {{chainName}} 支付 gas 费用",
       "primaryType": "主要类型",
-      "safeServiceNotAvailable": "当前无法提供安全服务，请稍后再试。"
+      "safeServiceNotAvailable": "当前无法提供安全服务，请稍后再试。",
+      "safeTx": {
+        "selfHostConfirm": {
+          "title": "切换到 Rabby 的 Safe Service",
+          "button": "OK",
+          "content": "Safe API 暂不可用。切换到由 Rabby 部署的 Safe 服务以保持您的 Safe 功能正常。<strong>所有 Safe 签署者必须使用 Rabby Wallet 授权交易。</strong>"
+        }
+      }
     },
     "signTypedData": {
       "buyNFT": {
@@ -1749,7 +1768,7 @@
       "swap-from": "卖出",
       "swap-history": "兑换历史",
       "swap-via-x": "通过 {{name}} 兑换",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "不支持自定义网络",
       "the-following-swap-rates-are-found": "发现以下兑换报价",
       "sort-with-gas": "排序考虑gas",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易不收取任何费用和滑点",
@@ -1805,7 +1824,7 @@
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
-      "title": "",
+      "title": "向 Rabby 添加自定义网络",
       "testnetTip": "请在\"更多\"中打开“开启测试网”后再发起测试网连接",
       "chainNotSupportYet": "Rabby尚未支持请求的链",
       "chainId": "链 ID：",
@@ -1864,17 +1883,17 @@
       "empty": "No dapps"
     },
     "customRpc": {
-      "title": "",
-      "desc": "",
-      "add": "",
-      "empty": "",
+      "title": "修改 RPC URL",
+      "desc": "一旦修改，自定义 RPC 将替换 Rabby 的节点。要继续使用 Rabby 的节点，请删除自定义 RPC。",
+      "add": "修改 RPC URL",
+      "empty": "没有自定义 RPC URL",
       "opened": "已打开",
       "closed": "已关闭",
       "EditRPCModal": {
         "invalidRPCUrl": " RPC URL 无效",
         "invalidChainId": "Chain ID 无效",
         "rpcAuthFailed": "RPC 验证失败",
-        "title": "",
+        "title": "修改 RPC URL",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "输入 RPC URL"
       },
@@ -2448,7 +2467,13 @@
       "withdraw": "提取",
       "safeAddressDepositTips": "多签地址不支持存款。",
       "logout": "退出当前 GasAccount",
-      "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。"
+      "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。",
+      "gasAccountList": {
+        "gasAccountBalance": "Gas Balance",
+        "address": "地址"
+      },
+      "switchAccount": "切换 GasAccount",
+      "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。"
     },
     "safeMessageQueue": {
       "loading": "加载消息",
@@ -2572,8 +2597,25 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "MetaMask 模式",
+      "title": "管理已授权的 Dapps",
       "desc": "MetaMask 模式已为以下 Dapps 启用。您可以通过选择 MetaMask 选项连接 Rabby。"
+    },
+    "eip7702": {
+      "alert": "EIP-7702 尚未支持"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "enabled": "伪装已启用。刷新 Dapp 以重新连接。",
+        "disabled": "伪装已禁用。刷新 Dapp。"
+      },
+      "step1": "第 1 步",
+      "noDappFound": "未找到 Dapp",
+      "step1Desc": "允许 Rabby 在当前 Dapp 上伪装成 MetaMask",
+      "alert": "无法连接到 Dapp，因为它未显示 Rabby Wallet 作为选项？",
+      "step2": "步骤 2",
+      "title": "通过伪装成 MetaMask 来连接 Rabby",
+      "step2Desc": "刷新并通过 MetaMask 连接",
+      "manage": "管理 Allowed Dapps"
     }
   },
   "component": {
@@ -2661,8 +2703,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "",
-        "testnet": ""
+        "mainnet": "集成网络",
+        "testnet": "自定义网络"
       }
     },
     "ChainSelectorModal": {

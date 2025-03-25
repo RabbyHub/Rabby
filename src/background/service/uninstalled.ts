@@ -112,7 +112,9 @@ class Uninstalled {
       search += 'l';
     }
     browser.runtime.setUninstallURL(
-      `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}`
+      `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}&v=${
+        browser.runtime.getManifest().version
+      }`
     );
   };
 }

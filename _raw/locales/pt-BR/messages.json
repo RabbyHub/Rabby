@@ -340,7 +340,14 @@
       "maxPriorityFeeDisabledAlert": "Por favor, defina o Gas Price primeiro",
       "label": "Rótulo",
       "primaryType": "Tipo principal",
-      "safeServiceNotAvailable": "O serviço Safe não está disponível no momento, por favor, tente mais tarde."
+      "safeServiceNotAvailable": "O serviço Safe não está disponível no momento, por favor, tente mais tarde.",
+      "safeTx": {
+        "selfHostConfirm": {
+          "button": "OK",
+          "title": "Mude para o Serviço Seguro do Rabby",
+          "content": "A API do Safe está indisponível. Altere para o serviço Safe implantado pelo Rabby para manter seu Safe funcional. <strong>Todos os signatários do Safe devem usar o Rabby Wallet para autorizar transações.<strong>"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "Solicitação de",
@@ -434,7 +441,9 @@
         "chainNotSupported": "Esta cadeia não é suportada pelo GasAccount",
         "useGasAccount": "Use GasAccount",
         "login": "Entrar",
-        "loginFirst": "Por favor, faça login no GasAccount primeiro"
+        "loginFirst": "Por favor, faça login no GasAccount primeiro",
+        "loginTips": "Para concluir o login no GasAccount, esta transação será descartada. Você precisará refazê-la após o login.",
+        "depositTips": "Para concluir o depósito do GasAccount, esta transação será descartada. Você precisará refazê-la após o depósito."
       },
       "keystone": {
         "siging": "Enviando solicitação de assinatura",
@@ -553,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "Excluir transação localmente",
-              "desc": "Corrigir bloqueio de transação causado por longo tempo pendente"
+              "title": "Limpar Pendências Localmente",
+              "desc": "Remova a transação pendente da interface"
             },
             "quickCancel": {
               "title": "Cancelar Rápido",
@@ -588,12 +597,17 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} pulado na cadeia {{chainName}}. Isso pode causar transações pendentes à frente. <5></5> <6>Submeta uma tx</6> na cadeia para resolver<7></7>",
-          "clearPendingAlert": "A transação {{chainName}} ({{nonces}}) está pendente há mais de 3 minutos. Você pode <5></5> <6>limpar transações pendentes nesta cadeia</6> <7></7> e iniciar uma nova."
+          "clearPendingAlert": "Transação {{chainName}} ({{nonces}}) está pendente há mais de 3 minutos. Você pode <5></5> <6>Limpar Pendentes Localmente</6> <7></7> e reenviar a transação."
         },
         "PredictTime": {
           "time": "Previsto para ser embalado em {{time}}",
           "failed": "A previsão de tempo de embalagem falhou",
           "noTime": "O tempo de empacotamento está sendo previsto"
+        },
+        "CancelTxConfirmPopup": {
+          "title": "Limpar Pendente Localmente",
+          "desc": "Isso removerá a transação pendente da sua interface. Você poderá então iniciar uma nova transação.",
+          "warning": "A transação removida ainda pode ser confirmada na cadeia, a menos que ela seja substituída."
         }
       },
       "signedText": {
@@ -878,7 +892,7 @@
       "no-transaction-records": "Nenhum registro de transação",
       "swap-history": "Histórico de Troca",
       "InSufficientTip": "Saldo insuficiente para simulação de transação e estimativa de gás. Cotações originais do agregador são exibidas",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "Não oferecemos suporte para rede personalizada",
       "not-supported": "Não suportada",
       "slippage-adjusted-refresh-quote": "Escorregamento ajustado. Atualizar cotação.",
       "price-expired-refresh-quote": "Preço expirado. Atualizar cotação.",
@@ -1082,7 +1096,8 @@
         "noRecentlyConnectedDapps": "Nenhum Dapp conectado recentemente",
         "dapps": "Dapps",
         "noConnectedDapps": "Nenhum Dapp conectado",
-        "metamaskModeTooltip": "Não consegue conectar Rabby neste Dapp? Tente ativar o <1>Modo MetaMask</1>"
+        "metamaskModeTooltip": "Não consegue conectar Rabby neste Dapp? Tente ativar o <1>Modo MetaMask</1>",
+        "metamaskModeTooltipNew": "A Rabby Wallet se conectará quando você selecionar \"MetaMask\" no Dapp. Você pode gerenciar isso em Mais > Conectar Rabby disfarçando-se como MetaMask"
       },
       "feedback": {
         "directMessage": {
@@ -1162,9 +1177,9 @@
         "reset": "Restaurar configuração inicial",
         "save": "Salvar",
         "pendingTransactionCleared": "Transações pendentes removidas",
-        "clearPending": "Limpar Pendentes",
-        "clearPendingTip1": "Isso excluirá todas as suas transações pendentes localmente e ajudará a resolver problemas causados ​​por longos períodos de espera.",
-        "clearPendingTip2": "Isso não afetará os saldos de sua conta nem exigirá que você insira novamente sua frase-semente. \nTodos os seus ativos e informações da conta permanecerão seguros.",
+        "clearPending": "Limpar Pendentes Localmente",
+        "clearPendingTip1": "Esta ação remove a transação pendente da sua interface, ajudando a resolver problemas causados por longas durações de pendência na rede.",
+        "clearPendingTip2": "Isso não afeta os saldos da sua conta nem exige a reinserção da sua seed phrase. Todos os ativos e detalhes da conta permanecem seguros.",
         "autoLockTime": "Tempo de Bloqueio Automático",
         "claimRabbyBadge": "Reivindique a Medalha Rabby!",
         "cancel": "Cancelar",
@@ -1198,9 +1213,9 @@
           "currentLanguage": "Idioma Atual",
           "enableTestnets": "Ativar Redes de Teste",
           "toggleThemeMode": "Modo de tema",
-          "metamaskMode": "Modo MetaMask",
           "customTestnet": "Adicionar Rede Personalizada",
-          "themeMode": "Modo de Tema"
+          "themeMode": "Modo de Tema",
+          "metamaskMode": "Conectar Rabby disfarçando como MetaMask"
         },
         "aboutUs": "Sobre nós",
         "currentVersion": "Versão Atual",
@@ -1210,7 +1225,7 @@
         "testnetBackendServiceUrl": "URL do Serviço de Backend de Teste",
         "clearWatchMode": "Limpar Modo de Observação",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gás de Testnet DeBank",
-        "clearPendingWarningTip": "As transações pendentes ainda poderão ser enviadas com sucesso no futuro."
+        "clearPendingWarningTip": "A transação removida ainda pode ser confirmada na blockchain a menos que seja substituída."
       },
       "tokenDetail": {
         "blockedTip": "Tokens bloqueados não serão exibidos na lista de tokens",
@@ -1345,6 +1360,10 @@
         "toastSuccess": "Habilitado. Atualize a página para reconectar.",
         "enableDesc": "Habilitar se o Dapp funcionar apenas com MetaMask",
         "desc": "Se você não conseguir conectar o Rabby em um Dapp, ative o Modo MetaMask e conecte selecionando a opção MetaMask."
+      },
+      "offlineChain": {
+        "chain": "{{chain}} em breve não será integrado.",
+        "tips": "A cadeia {{chain}} não será integrada em {{date}}. Seus ativos não serão afetados, mas não serão incluídos no seu saldo total. Para acessá-los, você pode adicioná-la como uma rede personalizada em \"Mais\"."
       }
     },
     "nft": {
@@ -1828,7 +1847,7 @@
     "customRpc": {
       "opened": "Aberto",
       "closed": "Fechado",
-      "empty": "",
+      "empty": "Nenhuma URL RPC personalizada",
       "title": "RPC Personalizado",
       "desc": "Ativar o RPC personalizado substituirá o Rabby como o nó padrão. Para continuar usando o Rabby, desative ou remova o nó RPC personalizado.",
       "add": "Adicionar RPC",
@@ -2371,7 +2390,13 @@
       "risk": "Seu endereço atual foi detectado como arriscado, portanto, este recurso está indisponível.",
       "safeAddressDepositTips": "Endereços multisig não são suportados para depósitos.",
       "noBalance": "Sem saldo",
-      "logout": "Fazer logout da GasAccount atual"
+      "logout": "Fazer logout da GasAccount atual",
+      "gasAccountList": {
+        "address": "Endereço",
+        "gasAccountBalance": "Saldo de Gas"
+      },
+      "switchAccount": "Alternar GasAccount",
+      "withdrawDisabledIAP": "Os saques estão desativados porque seu saldo inclui fundos fiat, que não podem ser sacados. Entre em contato com o suporte para sacar o saldo dos seus tokens."
     },
     "safeMessageQueue": {
       "noData": "Sem mensagens",
@@ -2495,7 +2520,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "Modo MetaMask",
+      "title": "Gerenciar Dapps Permitidos",
       "desc": "Modo MetaMask ativado para os seguintes Dapps. Você pode conectar o Rabby selecionando a opção MetaMask."
     },
     "forgotPassword": {
@@ -2536,6 +2561,23 @@
         "description": "Você está pronto para usar o Rabby Wallet",
         "button": "Concluído"
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 ainda não é suportado"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "disabled": "Disfarce desativado. Atualize o Dapp.",
+        "enabled": "Disguise ativado. Atualize o Dapp para reconectar."
+      },
+      "step2Desc": "Atualizar e conectar via MetaMask",
+      "manage": "Gerenciar Dapps Permitidos",
+      "alert": "Não consegue se conectar a um Dapp porque ele não mostra a Rabby Wallet como uma opção?",
+      "step2": "Etapa 2",
+      "step1": "Etapa 1",
+      "title": "Conectar Rabby disfarçando como MetaMask",
+      "noDappFound": "Nenhum Dapp encontrado",
+      "step1Desc": "Permita que Rabby se disfarce como MetaMask no Dapp atual"
     }
   },
   "component": {
