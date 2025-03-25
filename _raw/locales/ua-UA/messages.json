@@ -563,8 +563,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "Delete Transaction Locally",
-              "desc": "Fix transaction block caused by long pending time"
+              "title": "Очистити очікування локально",
+              "desc": "Видалити транзакцію, що очікує, з інтерфейсу"
             },
             "quickCancel": {
               "title": "Швидке скасування",
@@ -598,12 +598,17 @@
         },
         "SkipNonceAlert": {
           "alert": "Пропущено Nonce #{{nonce}} у ланцюзі {{chainName}}. Це може спричинити очікування транзакцій попереду. <5></5> <6>Надішліть tx</6> <7></7> у ланцюзі для вирішення.",
-          "clearPendingAlert": "{{chainName}} Транзакція ({{nonces}}) очікує вже понад 3 хвилини. Ви можете <5></5> <6>очистити очікуючі транзакції в цьому ланцюзі</6> <7></7> і ініціювати нову."
+          "clearPendingAlert": "Транзакція {{chainName}} ({{nonces}}) очікується понад 3 хвилини. Ви можете <5></5> <6>Очистити очікувані локально</6> <7></7> та повторно відправити транзакцію."
         },
         "PredictTime": {
           "time": "Очікується, що буде упаковано в {{time}}",
           "failed": "Не вдалося передбачити час упаковки",
           "noTime": "Час упаковки прогнозується"
+        },
+        "CancelTxConfirmPopup": {
+          "title": "Очистити локальні очікування",
+          "desc": "Це вилучить незавершену транзакцію з вашого інтерфейсу. Потім ви можете розпочати нову транзакцію.",
+          "warning": "Видалена транзакція все ще може бути підтверджена в ланцюзі, якщо її не замінено."
         }
       },
       "signedText": {
@@ -890,7 +895,7 @@
       "no-transaction-records": "Немає записів про транзакції",
       "swap-history": "Історія свапів",
       "InSufficientTip": "Недостатній баланс для симуляції транзакції та оцінки газу. Відображаються оригінальні котирування агрегатора",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "Користувацька мережа не підтримується",
       "not-supported": "Не підтримується",
       "slippage-adjusted-refresh-quote": "Прослизання скориговано. Оновити пропозицію.",
       "price-expired-refresh-quote": "Термін дії ціни закінчився. Оновити котирування.",
@@ -1175,9 +1180,9 @@
         "reset": "Відновити початкові налаштування",
         "save": "Зберегти",
         "pendingTransactionCleared": "Незавершена транзакція очищена",
-        "clearPending": "Видалити незавершені транзакції",
-        "clearPendingTip1": "This will delete all your pending transactions locally and help resolve issues caused by long pending times.",
-        "clearPendingTip2": "It will not affect your account balances or require you to re-enter your seed phrase. All your assets and account information will remain secure.",
+        "clearPending": "Очистити локально очікуючі",
+        "clearPendingTip1": "Ця дія видаляє транзакцію в очікуванні з вашого інтерфейсу, допомагаючи вирішити проблеми, викликані тривалими періодами очікування в мережі.",
+        "clearPendingTip2": "Це не впливає на баланс ваших облікових записів і не вимагає повторного введення вашої seed phrase. Усі активи та дані облікового запису залишаються в безпеці.",
         "autoLockTime": "Час автоматичного блокування",
         "claimRabbyBadge": "Отримати Rabby Badge!",
         "cancel": "Скасувати",
@@ -1223,7 +1228,7 @@
         "testnetBackendServiceUrl": "URL-адреса внутрішньої служби Testnet",
         "clearWatchMode": "Очистити режим спостереження",
         "requestDeBankTestnetGasToken": "Запросити тестові токени для DeBank Testnet",
-        "clearPendingWarningTip": "The pending transactions may still be successfully submitted in the future."
+        "clearPendingWarningTip": "Вилучена транзакція може все ще бути підтверджена в ланцюжку, якщо її не замінити."
       },
       "tokenDetail": {
         "blockedTip": "Заблокований токен не буде показано у списку токенів",
@@ -1854,7 +1859,7 @@
     "customRpc": {
       "opened": "Відкрито",
       "closed": "Закрито",
-      "empty": "",
+      "empty": "Немає спеціальних RPC URL",
       "title": "Кастомний RPC",
       "desc": "Увімкнення кастомного RPC замінить Rabby як вузол за замовчуванням. Щоб продовжити використання Rabby, будь ласка, вимкніть або видаліть кастомний RPC.",
       "add": "Додати RPC",
@@ -2522,7 +2527,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "",
+      "title": "Керування дозволеними Dapps",
       "desc": "Увімкнено режим MetaMask для наступних Dapps. Ви можете підключити Rabby, вибравши опцію MetaMask."
     },
     "forgotPassword": {
