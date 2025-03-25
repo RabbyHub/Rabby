@@ -31,8 +31,6 @@ class MetamaskModeService {
     this.localSites = permissionService.getMetamaskModeSites().map((item) => {
       return item.origin.replace(/^https?:\/\//, '');
     });
-
-    this.registerEvent();
   };
 
   syncMetamaskModeList = async () => {
@@ -73,47 +71,11 @@ class MetamaskModeService {
     }
   };
 
-  defineMetamaskMode = () => {
-    (function () {
-      (window as any).__rabby__inject__ = {
-        isMetamaskMode: true,
-      };
-      if ((window as any).rabbyWalletRouter?.announceMetamaskMode) {
-        (window as any).rabbyWalletRouter.announceMetamaskMode();
-      }
-    })();
-  };
-
-  handleInject = (tabId: number) => {
-    const sites = new Set([...this.store.sites, ...this.localSites]);
-    browser.tabs.get(tabId).then((tab) => {
-      if (tab.url?.startsWith('http') && sites.has(new URL(tab.url).host))
-        browser.scripting.executeScript({
-          target: {
-            tabId,
-          },
-          func: this.defineMetamaskMode,
-          injectImmediately: true,
-          // Inject as soon as possible
-          // todo ts
-          world: 'MAIN' as any,
-        });
-    });
-  };
-  registerEvent = () => {
-    browser.tabs.onCreated.addListener((tab) => {
-      tab.id && this.handleInject(tab.id);
-    });
-    browser.tabs.onActivated.addListener((tab) => {
-      this.handleInject(tab.tabId);
-    });
-    browser.tabs.onReplaced.addListener((tabId) => {
-      this.handleInject(tabId);
-    });
-    browser.tabs.onUpdated.addListener((tabId) => {
-      this.handleInject(tabId);
-    });
-  };
+  checkIsMetamaskMode(origin: string) {
+    return !![...this.store.sites, ...this.localSites].find(
+      (item) => item === origin.replace(/^https?:\/\//, '')
+    );
+  }
 }
 
 export const metamaskModeService = new MetamaskModeService();
