@@ -167,7 +167,7 @@ class CustomTestnetService {
           jsonrpc: '2.0',
           id: getUniqueId(),
           method: 'eth_chainId',
-          params: []
+          params: [],
         },
         {
           timeout: 6000,
