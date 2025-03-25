@@ -31,7 +31,7 @@ export const QRCodePanel: React.FC = () => {
   return (
     <div
       className={clsx(
-        'w-[400px] h-[630px] bg-r-neutral-bg1 rounded-[16px]',
+        'w-[400px] h-[610px] bg-r-neutral-bg1 rounded-[16px]',
         'py-[24px] px-[32px]'
       )}
       style={{
