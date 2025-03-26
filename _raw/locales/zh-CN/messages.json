@@ -109,7 +109,8 @@
           "nft": "NFT",
           "rabbyPoints": "Rabby Points",
           "ecology": "生态系统",
-          "bridge": "Bridge"
+          "bridge": "Bridge",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -1220,7 +1221,10 @@
         "title": "合约调用",
         "placeholder": "可选",
         "parseError": "合约调用模拟失败"
-      }
+      },
+      "blockedTransactionContent": "该交易涉及的地址在OFAC制裁名单上。",
+      "blockedTransaction": "已阻止的交易",
+      "blockedTransactionCancelText": "我知道"
     },
     "sendTokenComponents": {
       "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费",
@@ -2611,6 +2615,16 @@
       "title": "通过伪装成 MetaMask 来连接 Rabby",
       "step2Desc": "刷新并通过 MetaMask 连接",
       "manage": "管理 Allowed Dapps"
+    },
+    "syncToMobile": {
+      "steps2": "2. 使用 Rabby Mobile 扫描",
+      "clickToShowQr": "点击显示二维码",
+      "description": "您的地址数据始终完全离线、加密，并通过二维码安全传输。",
+      "downloadGooglePlay": "Google Play",
+      "steps2Description": "您的二维码包含敏感数据。请保管好，绝不要与他人分享。",
+      "steps1": "下载 Rabby Mobile",
+      "downloadAppleStore": "App Store",
+      "title": "从 Rabby 扩展同步钱包地址到移动端"
     }
   },
   "component": {

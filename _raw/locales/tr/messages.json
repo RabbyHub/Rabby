@@ -708,7 +708,10 @@
         "parseError": "Sözleşme çağrısı çözümlenemedi",
         "notHexData": "Yalnızca desteklenen onaltılık veri",
         "simulation": "Sözleşme çağrısı simülasyonu:"
-      }
+      },
+      "blockedTransaction": "Engellenmiş İşlem",
+      "blockedTransactionCancelText": "Biliyorum",
+      "blockedTransactionContent": "Bu işlem, OFAC yaptırım listesinde yer alan bir adresle etkileşime giriyor."
     },
     "sendTokenComponents": {
       "GasReserved": "Gas maliyeti için <1>0</1> {{ tokenName }} ayrıldı",
@@ -1048,7 +1051,8 @@
           "nft": "NFT",
           "rabbyPoints": "Rabby Points",
           "ecology": "Ekosistem",
-          "bridge": "Köprü"
+          "bridge": "Köprü",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -2576,6 +2580,16 @@
       "alert": "Bir Dapp'e bağlanamıyor musunuz çünkü Rabby Wallet bir seçenek olarak gözükmüyor mu?",
       "noDappFound": "Dapp bulunamadı",
       "manage": "İzin Verilen Dapp'leri Yönet"
+    },
+    "syncToMobile": {
+      "downloadGooglePlay": "Google Play",
+      "downloadAppleStore": "App Store",
+      "clickToShowQr": "QR Kodunu göstermek için tıklayın",
+      "steps1": "1. Rabby Mobil'i indir",
+      "description": "Adres verileriniz tamamen çevrimdışı kalır, şifrelenir ve güvenli bir şekilde bir QR kodu aracılığıyla aktarılır.",
+      "steps2": "2. Rabby Mobil ile tarayın",
+      "steps2Description": "QR kodunuz hassas veriler içerir. Gizli tutun ve asla kimseyle paylaşmayın.",
+      "title": "Rabby Uzantısından Mobil Cihaza Cüzdan Adresini Senkronize Et"
     }
   },
   "component": {

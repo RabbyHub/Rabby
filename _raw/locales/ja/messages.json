@@ -708,7 +708,10 @@
         "parseError": "コントラクト呼び出しのデコードに失敗しました",
         "simulation": "コントラクト呼び出しシミュレーション：",
         "notHexData": "サポートされているのは16進数データのみです"
-      }
+      },
+      "blockedTransaction": "Blocked Transaction",
+      "blockedTransactionCancelText": "私は知っている",
+      "blockedTransactionContent": "このトランザクションは、OFAC制裁リストに載っているアドレスとやり取りします。"
     },
     "sendTokenComponents": {
       "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました",
@@ -1048,7 +1051,8 @@
           "nft": "NFT",
           "ecology": "エコシステム",
           "rabbyPoints": "Rabby Points",
-          "bridge": "Bridge"
+          "bridge": "Bridge",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -2573,6 +2577,16 @@
       "manage": "許可されたDappsを管理",
       "title": "MetaMaskとして偽装してRabbyを接続する",
       "alert": "Dappに接続できません。Rabby Walletがオプションとして表示されていないためですか？"
+    },
+    "syncToMobile": {
+      "downloadGooglePlay": "Google Play",
+      "steps2Description": "あなたのQRコードには機密データが含まれています。これを秘密にして、決して他人と共有しないでください。",
+      "downloadAppleStore": "App Store",
+      "steps1": "Rabby Mobile をダウンロードする",
+      "description": "あなたのアドレスデータは完全にオフラインで保持され、暗号化され、QRコードを通じて安全に転送されます。",
+      "steps2": "2. Rabby Mobileでスキャン",
+      "title": "Rabby Extensionからモバイルへウォレットアドレスを同期",
+      "clickToShowQr": "クリックしてQRコードを表示"
     }
   },
   "component": {
