@@ -1,16 +1,31 @@
 import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { findChain, isSameTesnetToken, updateChainStore } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
-import { GasLevel, Tx } from 'background/service/openapi';
-import { createPersistStore, withTimeout } from 'background/utils';
+import { GasLevel, ParseTxResponse, Tx } from 'background/service/openapi';
+import {
+  createPersistStore,
+  isSameAddress,
+  withTimeout,
+} from 'background/utils';
 import { BigNumber } from 'bignumber.js';
 import { intToHex } from '@ethereumjs/util';
 import { omitBy, sortBy } from 'lodash';
-import { createClient, defineChain, erc20Abi, http, isAddress } from 'viem';
 import {
+  createClient,
+  createPublicClient,
+  custom,
+  defineChain,
+  erc20Abi,
+  http,
+  isAddress,
+  publicActions,
+} from 'viem';
+import {
+  call,
   estimateGas,
   getBalance,
   getBlock,
+  getCode,
   getGasPrice,
   getTransactionCount,
   getTransactionReceipt,
@@ -21,6 +36,8 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import RPCService, { RPCServiceStore } from './rpc';
 import { storage } from '../webapi';
 import { ga4 } from '@/utils/ga4';
+import { parseStandardTokenTransactionData } from '../utils/tx';
+import { nanoid } from 'nanoid';
 
 const MAX_READ_CONTRACT_TIME = 15_000;
 
@@ -127,6 +144,20 @@ class CustomTestnetService {
     this.fetchLogos().then(() => {
       this.syncChainList();
     });
+
+    setInterval(() => {
+      const chainId = 11155111;
+      const client = this.getClient(chainId);
+      call(client, {
+        data: '0x313ce567',
+        to: '0x3a9d48ab9751398bbfa63ad67599bb04e4bdf98b',
+      }).then(console.log, console.error);
+      // this.getTokenInfo({
+      //   chainId: 11155111,
+      //   tokenId: '0x3a9d48ab9751398bbfa63ad67599bb04e4bdf98b',
+      // })
+      //   .then(console.log, console.error);
+    }, 5000);
   };
   add = async (chain: TestnetChainBase) => {
     return this._update(chain, true);
@@ -167,7 +198,7 @@ class CustomTestnetService {
           jsonrpc: '2.0',
           id: getUniqueId(),
           method: 'eth_chainId',
-          params: []
+          params: [],
         },
         {
           timeout: 6000,
@@ -730,6 +761,186 @@ class CustomTestnetService {
       );
     }
   };
+
+  parseTx = async ({
+    chainId,
+    tx,
+    origin,
+    addr,
+  }: {
+    chainId: number;
+    tx: Tx;
+    origin: string;
+    addr: string;
+  }): Promise<Omit<ParseTxResponse, 'log_id'>> => {
+    const client = this.getClient(+chainId);
+    const chain = findChain({
+      id: +chainId,
+    });
+    if (!client || !chain) {
+      throw new Error(`can not find custom network client: ${chainId}`);
+    }
+    const { data, to } = tx;
+    if (data && !to) {
+      return {
+        action: {
+          type: 'deploy_contract',
+          data: null,
+        },
+      };
+    }
+
+    if (to) {
+      if (isSameAddress(addr, to)) {
+        return {
+          action: {
+            type: 'cancel_tx',
+            data: null,
+          },
+        };
+      }
+      const bytecode = await getCode(client, {
+        address: to as `0x${string}`,
+      });
+
+      console.log(bytecode);
+
+      const isContractAddress =
+        !!bytecode && bytecode !== '0x' && bytecode !== '0x0';
+
+      if (isContractAddress) {
+        const hasValue =
+          tx.value && tx.value !== '0x' && Number(tx.value) !== 0;
+
+        const parsedData = data
+          ? parseStandardTokenTransactionData(data as `0x${string}`)
+          : undefined;
+
+        let token: CustomTestnetTokenBase | null = null;
+        try {
+          token = await this.getTokenInfo({
+            chainId,
+            tokenId: to,
+          });
+        } catch (e) {
+          console.error(e);
+        } finally {
+          console.log('finally xxxxxxxxxxx');
+        }
+        console.log('after getToken');
+
+        if (data && parsedData?.functionName && !hasValue) {
+          if (
+            parsedData?.functionName?.toLowerCase() === 'transfer' &&
+            parsedData.args
+          ) {
+            const _to = parsedData.args[0] as string;
+            if (isSameAddress(addr, _to)) {
+              return {
+                action: {
+                  type: 'cancel_tx',
+                  data: null,
+                },
+              };
+            }
+            const _rawAmount = parsedData.args[1] as string;
+            const _value = new BigNumber(_rawAmount || 0).isNaN()
+              ? new BigNumber(0)
+              : new BigNumber(_rawAmount);
+            return {
+              action: {
+                type: 'send_token',
+                data: {
+                  to: _to || '',
+                  token: token
+                    ? customTestnetTokenToTokenItem({
+                        amount: _value.div(10 ** token.decimals).toNumber(),
+                        symbol: token.symbol,
+                        decimals: token.decimals,
+                        id: token.id,
+                        chainId: token.chainId,
+                        rawAmount: _value.toString(),
+                        logo: '',
+                      })
+                    : // todo
+                      (null as any),
+                },
+              },
+            };
+          } else if (
+            parsedData?.functionName.toLowerCase() === 'approve' &&
+            parsedData.args
+          ) {
+            const spender = parsedData.args[0] as string;
+            const _rawAmount = parsedData.args[1] as string;
+            const _value = new BigNumber(_rawAmount || 0).isNaN()
+              ? new BigNumber(0)
+              : new BigNumber(_rawAmount);
+            return {
+              action: {
+                type: _value.isZero() ? 'revoke_token' : 'approve_token',
+                data: {
+                  spender: spender || '',
+                  token: token
+                    ? customTestnetTokenToTokenItem({
+                        amount: _value.div(10 ** token.decimals).toNumber(),
+                        symbol: token.symbol,
+                        decimals: token.decimals,
+                        id: token.id,
+                        chainId: token.chainId,
+                        rawAmount: _value.toString(),
+                        logo: '',
+                      })
+                    : // todo
+                      (null as any),
+                },
+              },
+            };
+          }
+        } else {
+          console.log('/todo');
+          return {
+            action: {
+              // todo
+              type: '',
+              data: null,
+            },
+            contract_call: {
+              func: parsedData?.functionName || '',
+              contract: {
+                id: to,
+                protocol: {
+                  name: '',
+                  logo_url: '',
+                },
+              },
+            },
+          };
+        }
+      }
+    }
+
+    const _value = new BigNumber(tx.value).isNaN()
+      ? new BigNumber(0)
+      : new BigNumber(tx.value);
+    return {
+      action: {
+        type: 'send_token',
+        data: {
+          to: to || '',
+          token: customTestnetTokenToTokenItem({
+            amount: _value.div(10 ** chain.nativeTokenDecimals).toNumber(),
+            symbol: chain.nativeTokenSymbol,
+            decimals: chain.nativeTokenDecimals,
+            id: chain.nativeTokenAddress,
+            chainId: chain.id,
+            rawAmount: _value.toString(),
+            logo: this.logos?.[chain.id]?.token_logo_url,
+          }),
+        },
+      },
+    };
+  };
 }
 
 export const customTestnetService = new CustomTestnetService();
@@ -750,7 +961,29 @@ const createClientByChain = (chain: TestnetChainBase) => {
         },
       },
     }),
-    transport: http(chain.rpcUrl, { timeout: 30_000 }),
+    transport: custom({
+      async request({ method, params }) {
+        const { data } = await axios.post(chain.rpcUrl, {
+          method,
+          params,
+          jsonrpc: '2.0',
+          id: nanoid(),
+        });
+        if (data.error) {
+          throw data.error;
+        }
+        if (data.result) {
+          return data.result;
+        }
+        return data;
+      },
+    }),
+    // transport: http(chain.rpcUrl, {
+    //   timeout: 30_000,
+    //   onFetchResponse(res) {
+    //     console.log('transport', res);
+    //   },
+    // }),
   });
 };
 

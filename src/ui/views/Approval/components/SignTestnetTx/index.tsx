@@ -2,7 +2,6 @@ import { Account, ChainGas } from 'background/service/preference';
 import React, { ReactNode, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
-import { TestnetActions } from './components/TestnetActions';
 import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
 import {
@@ -39,6 +38,12 @@ import { SignAdvancedSettings } from '../SignAdvancedSettings';
 import clsx from 'clsx';
 import { Modal } from 'antd';
 import { ga4 } from '@/utils/ga4';
+import { TestnetActions } from './Actions';
+import {
+  ActionRequireData,
+  parseAction,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -421,7 +426,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         // use gasPrice set by dapp when it's a speedup or cancel tx
         customGasPrice = parseInt(tx.gasPrice!);
       }
-      await runGetGasUsed();
+      const gasUsed = await runGetGasUsed();
       const recommendNonce = await runGetNonce();
       if (updateNonce) {
         setRealNonce(intToHex(recommendNonce));
@@ -458,6 +463,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         ...tx,
         gasPrice: intToHex(gas.price),
       });
+      await explainTx(gasUsed);
       setIsReady(true);
     } catch (e) {
       console.error(e);
@@ -497,6 +503,61 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       },
     });
   };
+
+  const { data: actionData, runAsync: explainTx } = useRequest(
+    async (_gasUsed?: string) => {
+      const currentAccount =
+        isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+      if (!chain) {
+        return;
+      }
+      const actionData = await wallet.parseCustomNetworkTx({
+        chainId: chain.id,
+        tx: {
+          ...tx,
+          gas: '0x0',
+          value: tx.value || '0x0',
+          to: tx.to || '',
+        },
+        origin: origin || '',
+        addr: currentAccount.address,
+      });
+
+      console.log('actionData', actionData);
+
+      const parsed = parseAction({
+        type: 'transaction',
+        data: actionData.action,
+        balanceChange: {} as any,
+        tx: {
+          ...tx,
+          gas: '0x0',
+
+          value: tx.value || '0x0',
+        },
+        preExecVersion: 'v0',
+        gasUsed: _gasUsed ? Number(_gasUsed) : 0,
+        sender: tx.from,
+      });
+
+      console.log(parsed);
+
+      return parsed;
+    },
+    {
+      manual: true,
+      onFinally() {
+        console.log('finally');
+      },
+      onError(e) {
+        Modal.error({
+          title: 'Error',
+          content: e.message || JSON.stringify(e),
+          className: 'modal-support-darkmode',
+        });
+      },
+    }
+  );
 
   useMount(() => {
     init();
@@ -718,6 +779,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     <>
       <div className="approval-tx overflow-x-hidden">
         <TestnetActions
+          data={actionData || {}}
           isReady={isReady}
           chain={chain}
           raw={{
@@ -729,29 +791,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           originLogo={params.session.icon}
           origin={params.session.origin}
         />
-
-        {isReady && (
-          <Card>
-            <MessageWrapper>
-              <div className="title">
-                <div className="title-text">
-                  {t('page.customTestnet.signTx.title')}
-                </div>
-              </div>
-              <div className="content">
-                {JSON.stringify(
-                  {
-                    ...tx,
-                    nonce: realNonce || tx.nonce,
-                    gas: gasLimit!,
-                  },
-                  null,
-                  2
-                )}
-              </div>
-            </MessageWrapper>
-          </Card>
-        )}
 
         {isReady && (
           <SignAdvancedSettings

@@ -140,7 +140,7 @@
     "ts-toolbelt": "9.6.0",
     "url": "0.11.3",
     "uuid": "9.0.0",
-    "viem": "2.17.3",
+    "viem": "2.23.15",
     "web3-eth-abi": "1.7.0",
     "web3-utils": "1.7.0",
     "webextension-polyfill": "0.7.0"

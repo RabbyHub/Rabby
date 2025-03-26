@@ -4999,6 +4999,8 @@ export class WalletController extends BaseController {
     return res;
   };
 
+  parseCustomNetworkTx = customTestnetService.parseTx;
+
   hasPrivateKeyInWallet = async (address: string) => {
     let pk: any = null;
     try {

@@ -1,6 +1,6 @@
 import { Chain } from '@debank/common';
 import ViewRawModal from '../../TxComponents/ViewRawModal';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,9 @@ import BalanceChange from '../../TxComponents/BalanceChange';
 import LogoWithText from '../../Actions/components/LogoWithText';
 import { MessageWrapper } from '../../TextActions';
 import { SignAdvancedSettings } from '../../SignAdvancedSettings';
+import { TestnetTransactionActionList } from './TransactionActionList';
+import { ParsedTransactionActionData } from '@rabby-wallet/rabby-action';
+import { getActionTypeText } from '../../Actions/utils';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -53,6 +56,7 @@ export const SignTitle = styled.div`
 `;
 
 export const TestnetActions = ({
+  data,
   chain,
   raw,
   onChange,
@@ -61,6 +65,7 @@ export const TestnetActions = ({
   originLogo,
   origin,
 }: {
+  data: ParsedTransactionActionData;
   chain: Chain;
   raw: Record<string, string | number>;
   onChange?(tx: Record<string, any>): void;
@@ -69,14 +74,18 @@ export const TestnetActions = ({
   originLogo?: string;
   origin: string;
 }) => {
+  const actionName = useMemo(() => {
+    return getActionTypeText(data);
+  }, [data]);
+
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
     });
   };
   const { t } = useTranslation();
-  const isUnknown = true;
-  const actionName = t('page.signTx.unknownActionType');
+
+  const isUnknown = data?.contractCall;
 
   if (!isReady) {
     return <Loading />;
@@ -158,8 +167,25 @@ export const TestnetActions = ({
                 />
               </Row>
             </Col>
+
+            {isUnknown ? null : (
+              <TestnetTransactionActionList
+                data={data}
+                chain={chain}
+                raw={raw}
+                onChange={onChange}
+              />
+            )}
           </div>
         </Card>
+        {isUnknown ? (
+          <TestnetTransactionActionList
+            data={data}
+            chain={chain}
+            raw={raw}
+            onChange={onChange}
+          />
+        ) : null}
       </ActionWrapper>
     </div>
   );
