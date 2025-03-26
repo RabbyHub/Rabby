@@ -10,8 +10,11 @@ import { format, getTxScanLink } from '@/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import interval from 'interval-promise';
-import { findChain, findChainByEnum } from '@/utils/chain';
-import { customTestnetService } from './customTestnet';
+import { findChain, findChainByEnum, isTestnetChainId } from '@/utils/chain';
+import { customTestnetService, TestnetChain } from './customTestnet';
+
+const DEFAULT_TX_POLLING_INTERVAL = 5000; // 5 seconds
+const FAST_TX_POLLING_INTERVAL = 200; // 200 milliseconds
 
 class Transaction {
   createdTime = 0;
@@ -143,10 +146,31 @@ class TransactionWatcher {
     });
   };
 
-  // fetch pending txs status every 5s
+  // fetch pending txs status every 200ms or 5s
+  // based on if there are pending transactions in
+  // networks with preconfs
   roll = () => {
-    interval(async () => {
+    let intervalMs = FAST_TX_POLLING_INTERVAL;
+    const poll = async () => {
       const list = Object.keys(this.store.pendingTx);
+      const isPendingPreconf = list.some((tx) => {
+        const chain = findChain({
+          enum: tx.split('_').slice(2).join('_') ?? '',
+        });
+        return (
+          (chain?.isTestnet && (chain as TestnetChain).hasPreconfs) ?? false
+        );
+      });
+
+      // If no pending transaction, interval have to be
+      // fast so when a new preconf tx is sent, the loop
+      // doesn't delay to update
+      if (isPendingPreconf || list.length === 0) {
+        intervalMs = FAST_TX_POLLING_INTERVAL;
+      } else {
+        intervalMs = DEFAULT_TX_POLLING_INTERVAL;
+      }
+
       // order by address, chain, nonce
       const idQueue = list.sort((a, b) => {
         const [aAddress, aNonceStr, aChain] = a.split('_');
@@ -165,8 +189,10 @@ class TransactionWatcher {
         return aNonce > bNonce ? 1 : -1;
       });
 
-      return this._queryList(idQueue);
-    }, 5000);
+      this._queryList(idQueue);
+      setTimeout(poll, intervalMs);
+    };
+    setTimeout(poll, intervalMs);
   };
 
   _queryList = async (ids: string[]) => {
