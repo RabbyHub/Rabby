@@ -58,6 +58,10 @@ Run `npm run build:pro` to build a production package, which will be in the `dis
 
 To start the project, run `npm run build:dev` for development or `npm run build:pro` for production.
 
+### Configure Environment Variables
+
+Create a `.env` file in the root directory and add environment variables in the format `KEY=VALUE`. Access environment variables in the code using `process.env.KEY`.
+
 ## Architecture
 
 ![architecture](./docs/architecture.png)
