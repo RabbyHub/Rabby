@@ -11,7 +11,7 @@ import {
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
-import { ellipsisOverflowedText, useHover } from '@/ui/utils';
+import { ellipsisOverflowedText, useHover, useWallet } from '@/ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
@@ -25,6 +25,7 @@ import { SubCol, SubRow, SubTable } from '../../Actions/components/SubTable';
 import { Divide } from '../../Divide';
 import IconUnknown from 'ui/assets/token-default.svg';
 import { TokenAmountItem } from '../../Actions/components/TokenAmountItem';
+import { useRequest } from 'ahooks';
 
 const Wrapper = styled.div`
   .header {
@@ -197,6 +198,7 @@ export const TestnetTokenApprove = ({
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
+  const wallet = useWallet();
 
   // todo
   const tokenBalance = '0';

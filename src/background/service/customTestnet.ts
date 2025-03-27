@@ -144,20 +144,6 @@ class CustomTestnetService {
     this.fetchLogos().then(() => {
       this.syncChainList();
     });
-
-    setInterval(() => {
-      const chainId = 11155111;
-      const client = this.getClient(chainId);
-      call(client, {
-        data: '0x313ce567',
-        to: '0x3a9d48ab9751398bbfa63ad67599bb04e4bdf98b',
-      }).then(console.log, console.error);
-      // this.getTokenInfo({
-      //   chainId: 11155111,
-      //   tokenId: '0x3a9d48ab9751398bbfa63ad67599bb04e4bdf98b',
-      // })
-      //   .then(console.log, console.error);
-    }, 5000);
   };
   add = async (chain: TestnetChainBase) => {
     return this._update(chain, true);
@@ -961,29 +947,9 @@ const createClientByChain = (chain: TestnetChainBase) => {
         },
       },
     }),
-    transport: custom({
-      async request({ method, params }) {
-        const { data } = await axios.post(chain.rpcUrl, {
-          method,
-          params,
-          jsonrpc: '2.0',
-          id: nanoid(),
-        });
-        if (data.error) {
-          throw data.error;
-        }
-        if (data.result) {
-          return data.result;
-        }
-        return data;
-      },
+    transport: http(chain.rpcUrl, {
+      timeout: 30_000,
     }),
-    // transport: http(chain.rpcUrl, {
-    //   timeout: 30_000,
-    //   onFetchResponse(res) {
-    //     console.log('transport', res);
-    //   },
-    // }),
   });
 };
 

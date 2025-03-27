@@ -463,7 +463,13 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         ...tx,
         gasPrice: intToHex(gas.price),
       });
-      await explainTx(gasUsed);
+      await explainTx({
+        gasUsed,
+        tx: {
+          ...tx,
+          gasPrice: intToHex(gas.price),
+        },
+      });
       setIsReady(true);
     } catch (e) {
       console.error(e);
@@ -505,7 +511,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   };
 
   const { data: actionData, runAsync: explainTx } = useRequest(
-    async (_gasUsed?: string) => {
+    async ({ gasUsed, tx }: { gasUsed?: string; tx: Tx }) => {
       const currentAccount =
         isGnosis && account ? account : (await wallet.getCurrentAccount())!;
       if (!chain) {
@@ -536,7 +542,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           value: tx.value || '0x0',
         },
         preExecVersion: 'v0',
-        gasUsed: _gasUsed ? Number(_gasUsed) : 0,
+        gasUsed: gasUsed ? Number(gasUsed) : 0,
         sender: tx.from,
       });
 
@@ -640,6 +646,28 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
     if (beforeNonce !== afterNonce) {
       setNonceChanged(true);
+    }
+  };
+
+  const handleTxChange = async (obj: Record<string, any>) => {
+    setTx({
+      ...tx,
+      ...obj,
+    });
+    try {
+      setIsReady(false);
+      // trigger explain
+      await explainTx({
+        gasUsed,
+        tx: {
+          ...tx,
+          ...obj,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsReady(true);
     }
   };
 
@@ -790,6 +818,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           isSpeedUp={isSpeedUp}
           originLogo={params.session.icon}
           origin={params.session.origin}
+          onChange={handleTxChange}
         />
 
         {isReady && (
