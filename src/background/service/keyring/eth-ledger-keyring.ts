@@ -296,9 +296,16 @@ class LedgerBridgeKeyring {
     // return a Transaction that is frozen if the originally provided
     // transaction was also frozen.
     const messageToSign = tx.getMessageToSign(false);
-    const rawTxHex = Buffer.isBuffer(messageToSign)
+    let rawTxHex = Buffer.isBuffer(messageToSign)
       ? messageToSign.toString('hex')
       : stripHexPrefix(utils.bytesToHex(RLP.encode(messageToSign)));
+
+    // FIXME: This is a temporary fix for the issue with the Ledger device, waiting for a fix from Ledger
+    if (!Array.isArray(RLP.decode(Buffer.from(rawTxHex, 'hex')))) {
+      console.log('rlpTx not an array');
+      rawTxHex = Buffer.from(messageToSign).toString('hex');
+    }
+
     return this._signTransaction(address, rawTxHex, (payload) => {
       // Because tx will be immutable, first get a plain javascript object that
       // represents the transaction. Using txData here as it aligns with the
