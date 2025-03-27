@@ -562,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "Excluir transação localmente",
-              "desc": "Corrigir bloqueio de transação causado por longo tempo pendente"
+              "title": "Limpar Pendências Localmente",
+              "desc": "Remova a transação pendente da interface"
             },
             "quickCancel": {
               "title": "Cancelar Rápido",
@@ -597,12 +597,17 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} pulado na cadeia {{chainName}}. Isso pode causar transações pendentes à frente. <5></5> <6>Submeta uma tx</6> na cadeia para resolver<7></7>",
-          "clearPendingAlert": "A transação {{chainName}} ({{nonces}}) está pendente há mais de 3 minutos. Você pode <5></5> <6>limpar transações pendentes nesta cadeia</6> <7></7> e iniciar uma nova."
+          "clearPendingAlert": "Transação {{chainName}} ({{nonces}}) está pendente há mais de 3 minutos. Você pode <5></5> <6>Limpar Pendentes Localmente</6> <7></7> e reenviar a transação."
         },
         "PredictTime": {
           "time": "Previsto para ser embalado em {{time}}",
           "failed": "A previsão de tempo de embalagem falhou",
           "noTime": "O tempo de empacotamento está sendo previsto"
+        },
+        "CancelTxConfirmPopup": {
+          "title": "Limpar Pendente Localmente",
+          "desc": "Isso removerá a transação pendente da sua interface. Você poderá então iniciar uma nova transação.",
+          "warning": "A transação removida ainda pode ser confirmada na cadeia, a menos que ela seja substituída."
         }
       },
       "signedText": {
@@ -703,7 +708,10 @@
         "title": "Chamada de contrato",
         "placeholder": "Opcional",
         "parseError": "Falha ao decodificar a chamada do contrato"
-      }
+      },
+      "blockedTransactionContent": "Esta transação interage com um endereço que está na lista de sanções da OFAC.",
+      "blockedTransaction": "Transação Bloqueada",
+      "blockedTransactionCancelText": "Eu sei"
     },
     "sendTokenComponents": {
       "GasReserved": "Reservado <1>0</1> {{ tokenName }} para custo de gás",
@@ -887,7 +895,7 @@
       "no-transaction-records": "Nenhum registro de transação",
       "swap-history": "Histórico de Troca",
       "InSufficientTip": "Saldo insuficiente para simulação de transação e estimativa de gás. Cotações originais do agregador são exibidas",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "Não oferecemos suporte para rede personalizada",
       "not-supported": "Não suportada",
       "slippage-adjusted-refresh-quote": "Escorregamento ajustado. Atualizar cotação.",
       "price-expired-refresh-quote": "Preço expirado. Atualizar cotação.",
@@ -1043,7 +1051,8 @@
           "nft": "NFT",
           "ecology": "Ecossistema",
           "rabbyPoints": "Rabby Points",
-          "bridge": "Ponte"
+          "bridge": "Ponte",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Em breve",
         "soon": "Em breve",
@@ -1172,9 +1181,9 @@
         "reset": "Restaurar configuração inicial",
         "save": "Salvar",
         "pendingTransactionCleared": "Transações pendentes removidas",
-        "clearPending": "Limpar Pendentes",
-        "clearPendingTip1": "Isso excluirá todas as suas transações pendentes localmente e ajudará a resolver problemas causados ​​por longos períodos de espera.",
-        "clearPendingTip2": "Isso não afetará os saldos de sua conta nem exigirá que você insira novamente sua frase-semente. \nTodos os seus ativos e informações da conta permanecerão seguros.",
+        "clearPending": "Limpar Pendentes Localmente",
+        "clearPendingTip1": "Esta ação remove a transação pendente da sua interface, ajudando a resolver problemas causados por longas durações de pendência na rede.",
+        "clearPendingTip2": "Isso não afeta os saldos da sua conta nem exige a reinserção da sua seed phrase. Todos os ativos e detalhes da conta permanecem seguros.",
         "autoLockTime": "Tempo de Bloqueio Automático",
         "claimRabbyBadge": "Reivindique a Medalha Rabby!",
         "cancel": "Cancelar",
@@ -1220,7 +1229,7 @@
         "testnetBackendServiceUrl": "URL do Serviço de Backend de Teste",
         "clearWatchMode": "Limpar Modo de Observação",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gás de Testnet DeBank",
-        "clearPendingWarningTip": "As transações pendentes ainda poderão ser enviadas com sucesso no futuro."
+        "clearPendingWarningTip": "A transação removida ainda pode ser confirmada na blockchain a menos que seja substituída."
       },
       "tokenDetail": {
         "blockedTip": "Tokens bloqueados não serão exibidos na lista de tokens",
@@ -1842,7 +1851,7 @@
     "customRpc": {
       "opened": "Aberto",
       "closed": "Fechado",
-      "empty": "",
+      "empty": "Nenhuma URL RPC personalizada",
       "title": "RPC Personalizado",
       "desc": "Ativar o RPC personalizado substituirá o Rabby como o nó padrão. Para continuar usando o Rabby, desative ou remova o nó RPC personalizado.",
       "add": "Adicionar RPC",
@@ -2510,7 +2519,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "",
+      "title": "Gerenciar Dapps Permitidos",
       "desc": "Modo MetaMask ativado para os seguintes Dapps. Você pode conectar o Rabby selecionando a opção MetaMask."
     },
     "forgotPassword": {
@@ -2568,6 +2577,16 @@
       "title": "Conectar Rabby disfarçando como MetaMask",
       "noDappFound": "Nenhum Dapp encontrado",
       "step1Desc": "Permita que Rabby se disfarce como MetaMask no Dapp atual"
+    },
+    "syncToMobile": {
+      "title": "Sincronizar Endereço da Carteira da Extensão Rabby para o Celular",
+      "downloadAppleStore": "App Store",
+      "downloadGooglePlay": "Google Play",
+      "clickToShowQr": "Clique para exibir o código QR",
+      "steps1": "1. Baixe o Rabby Mobile",
+      "description": "Seus dados de endereço permanecem totalmente offline, criptografados e transferidos com segurança via um código QR.",
+      "steps2Description": "Seu código QR contém dados sensíveis. Mantenha-o privado e nunca o compartilhe com ninguém.",
+      "steps2": "2. Escanear com Rabby Mobile"
     }
   },
   "component": {
