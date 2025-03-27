@@ -108,7 +108,7 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
         visible={visible}
         onClose={onClose}
         closable
-        height={308}
+        height={232}
         isSupportDarkMode
       >
         <OptionsList>
