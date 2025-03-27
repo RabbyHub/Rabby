@@ -45,14 +45,14 @@ Please don't hesitate to reach out if you have any doubts.
 ### Install Dependency
 
 1. Install Node.js version 14 or later.
-2. Install Yarn: `npm install -g yarn`
-3. Run `yarn` to install dependencies.
+2. Install npm: `npm install -g npm`
+3. Run `npm install` to install dependencies.
 
 ### Development
 
-Run `yarn build:dev` to develop with file watching and development logging (you can see requests sent by the dapp in the website console in this mode, and notifications will not close when focus is lost).
+Run `npm run build:dev` to develop with file watching and development logging (you can see requests sent by the dapp in the website console in this mode, and notifications will not close when focus is lost).
 
-Run `yarn build:pro` to build a production package, which will be in the `dist` folder.
+Run `npm run build:pro` to build a production package, which will be in the `dist` folder.
 
 ## Architecture
 
