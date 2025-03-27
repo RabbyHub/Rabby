@@ -54,6 +54,10 @@ Run `npm run build:dev` to develop with file watching and development logging (y
 
 Run `npm run build:pro` to build a production package, which will be in the `dist` folder.
 
+### Start the Project
+
+To start the project, run `npm run build:dev` for development or `npm run build:pro` for production.
+
 ## Architecture
 
 ![architecture](./docs/architecture.png)
