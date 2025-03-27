@@ -165,38 +165,45 @@ export const useQuoteMethods = () => {
       const lastTimeGas: ChainGas | null = await walletController.getLastTimeGasSelection(
         chainInfo.id
       );
-      const gasMarket = await walletController.gasMarketV2({
-        chain: chainInfo,
-        tx: {
-          ...quote.tx,
-          nonce,
-          chainId: chainInfo.id,
-          gas: '0x0',
-        },
-      });
 
-      let gasPrice = 0;
-      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
-        // use cached gasPrice if exist
-        gasPrice = lastTimeGas.gasPrice;
-      } else if (
-        lastTimeGas?.lastTimeSelect &&
-        lastTimeGas?.lastTimeSelect === 'gasLevel'
-      ) {
-        const target = gasMarket.find(
-          (item) => item.level === lastTimeGas?.gasLevel
-        )!;
-        if (target) {
-          gasPrice = target.price;
+      const getGasPrice = async () => {
+        const gasMarket = await walletController.gasMarketV2({
+          chain: chainInfo,
+          tx: {
+            ...quote.tx,
+            nonce,
+            chainId: chainInfo.id,
+            gas: '0x0',
+          },
+        });
+
+        let gasPrice = 0;
+        if (
+          lastTimeGas?.lastTimeSelect === 'gasPrice' &&
+          lastTimeGas.gasPrice
+        ) {
+          // use cached gasPrice if exist
+          gasPrice = lastTimeGas.gasPrice;
+        } else if (
+          lastTimeGas?.lastTimeSelect &&
+          lastTimeGas?.lastTimeSelect === 'gasLevel'
+        ) {
+          const target = gasMarket.find(
+            (item) => item.level === lastTimeGas?.gasLevel
+          )!;
+          if (target) {
+            gasPrice = target.price;
+          } else {
+            gasPrice =
+              gasMarket.find((item) => item.level === 'normal')?.price || 0;
+          }
         } else {
+          // no cache, use the fast level in gasMarket
           gasPrice =
             gasMarket.find((item) => item.level === 'normal')?.price || 0;
         }
-      } else {
-        // no cache, use the fast level in gasMarket
-        gasPrice =
-          gasMarket.find((item) => item.level === 'normal')?.price || 0;
-      }
+        return gasPrice;
+      };
 
       let nextNonce = nonce;
       const pendingTx: Tx[] = [];
@@ -216,8 +223,6 @@ export const useQuoteMethods = () => {
           ...tokenApproveParams,
           nonce: nextNonce,
           value: '0x',
-          gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
-          gas: '0x0',
         };
 
         const tokenApproveGas = await walletOpenapi.estimateGasUsd({
@@ -260,20 +265,21 @@ export const useQuoteMethods = () => {
         );
       }
 
-      const swapTxGas = await walletOpenapi.estimateGasUsd({
-        tx: {
-          ...quote.tx,
-          nonce: nextNonce,
-          chainId: chainInfo.id,
-          value: `0x${new BigNumber(quote.tx.value).toString(16)}`,
-          gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
-          gas: '0x0',
-        } as Tx,
-        origin: INTERNAL_REQUEST_ORIGIN,
-        address: userAddress,
-        updateNonce: true,
-        pending_tx_list: pendingTx,
-      });
+      const [swapTxGas, gasPrice = 0] = await Promise.all([
+        walletOpenapi.estimateGasUsd({
+          tx: {
+            ...quote.tx,
+            nonce: nextNonce,
+            chainId: chainInfo.id,
+            value: `0x${new BigNumber(quote.tx.value).toString(16)}`,
+          } as Tx,
+          origin: INTERNAL_REQUEST_ORIGIN,
+          address: userAddress,
+          updateNonce: true,
+          pending_tx_list: pendingTx,
+        }),
+        getGasPrice(),
+      ]);
 
       const txGasUsed = swapTxGas.gas_used || swapTxGas.safe_gas_used || 0;
 
