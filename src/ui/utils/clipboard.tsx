@@ -1,5 +1,5 @@
+import { toChecksumAddress } from '@ethereumjs/util';
 import { message } from 'antd';
-import { toChecksumAddress } from 'ethereumjs-util';
 import { t } from 'i18next';
 import React from 'react';
 import IconSuccess from 'ui/assets/success.svg';

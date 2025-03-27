@@ -96,8 +96,6 @@
     "crypto-browserify": "3.12.0",
     "dayjs": "1.10.7",
     "eth-rpc-errors": "4.0.3",
-    "eth-sig-util": "3.0.1",
-    "ethereumjs-util": "7.1.2",
     "ethers": "5.7.0",
     "events": "3.3.0",
     "fflate": "0.8.2",

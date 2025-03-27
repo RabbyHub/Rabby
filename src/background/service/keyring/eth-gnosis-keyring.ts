@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { isAddress } from 'viem';
-import { addHexPrefix } from '@ethereumjs/util';
+import { addHexPrefix, toChecksumAddress, bytesToHex } from '@ethereumjs/util';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import {
   SafeTransaction,
@@ -18,7 +18,6 @@ import {
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 import { TypedTransaction } from '@ethereumjs/tx';
 import BigNumber from 'bignumber.js';
-import { bufferToHex, toChecksumAddress } from 'ethereumjs-util';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
@@ -734,7 +733,7 @@ class GnosisKeyring extends EventEmitter {
   }
 
   _normalize(buf) {
-    return sanitizeHex(bufferToHex(buf).toString());
+    return sanitizeHex(bytesToHex(buf).toString());
   }
 }
 

@@ -87,7 +87,6 @@ import {
 } from '@rabby-wallet/rabby-action';
 import { ga4 } from '@/utils/ga4';
 import { EIP7702Warning } from './EIP7702Warning';
-import { isHexPrefixed } from 'ethereumjs-util';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -101,7 +100,7 @@ const normalizeHex = (value: string | number) => {
     return intToHex(Math.floor(value));
   }
   if (typeof value === 'string') {
-    if (!isHexPrefixed(value)) {
+    if (!isHexString(value)) {
       return addHexPrefix(value);
     }
     return value;

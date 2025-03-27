@@ -13,7 +13,7 @@ import { ethErrors } from 'eth-rpc-errors';
 import {
   normalize as normalizeAddress,
   recoverPersonalSignature,
-} from 'eth-sig-util';
+} from '@metamask/eth-sig-util';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   keyringService,
@@ -70,7 +70,6 @@ import {
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
-import { bufferToHex } from 'ethereumjs-util';
 
 const reportSignText = (params: {
   method: string;
@@ -99,7 +98,7 @@ const convertToHex = (data: Buffer | bigint) => {
   if (typeof data === 'bigint') {
     return `0x${data.toString(16)}`;
   }
-  return bufferToHex(data);
+  return bytesToHex(data);
 };
 
 interface Web3WalletPermission {
@@ -1280,7 +1279,7 @@ class ProviderController extends BaseController {
     return recoverPersonalSignature({
       ...extra,
       data,
-      sig,
+      signature: sig,
     });
   };
 
@@ -1297,7 +1296,7 @@ class ProviderController extends BaseController {
     currentAddress = currentAddress?.toLowerCase();
     if (
       !currentAddress ||
-      currentAddress !== normalizeAddress(address).toLowerCase()
+      currentAddress !== normalizeAddress(address)?.toLowerCase()
     ) {
       throw ethErrors.rpc.invalidParams({
         message:

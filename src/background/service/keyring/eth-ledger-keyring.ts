@@ -1,8 +1,14 @@
-import * as sigUtil from 'eth-sig-util';
+import {
+  recoverPersonalSignature,
+  recoverTypedSignature,
+  SignTypedDataVersion,
+  TypedDataUtils,
+} from '@metamask/eth-sig-util';
 import {
   toChecksumAddress,
   addHexPrefix,
   stripHexPrefix,
+  bytesToHex,
 } from '@ethereumjs/util';
 import { RLP, utils } from '@ethereumjs/rlp';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
@@ -25,7 +31,6 @@ import {
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
 import { isManifestV3 } from '@/utils/env';
-import { bufferToHex } from 'ethereumjs-util';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0",
@@ -268,7 +273,7 @@ class LedgerBridgeKeyring {
       // transaction which is only communicated to ethereumjs-tx in this
       // value. In newer versions the chainId is communicated via the 'Common'
       // object.
-      tx.v = bufferToHex(tx.getChainId());
+      tx.v = bytesToHex(tx.getChainId());
       tx.r = '0x00';
       tx.s = '0x00';
 
@@ -354,9 +359,9 @@ class LedgerBridgeKeyring {
         v = `0${v}`;
       }
       const signature = `0x${res.r}${res.s}${v}`;
-      const addressSignedWith = sigUtil.recoverPersonalSignature({
+      const addressSignedWith = recoverPersonalSignature({
         data: message,
-        sig: signature,
+        signature,
       });
       if (
         toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)
@@ -424,18 +429,18 @@ class LedgerBridgeKeyring {
           types,
           primaryType,
           message,
-        } = sigUtil.TypedDataUtils.sanitizeData(data);
-        const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+        } = TypedDataUtils.sanitizeData(data);
+        const domainSeparatorHex = TypedDataUtils.hashStruct(
           'EIP712Domain',
           domain,
           types,
-          isV4
+          SignTypedDataVersion.V4
         ).toString('hex');
-        const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+        const hashStructMessageHex = TypedDataUtils.hashStruct(
           primaryType as string,
           message,
           types,
-          isV4
+          SignTypedDataVersion.V4
         ).toString('hex');
 
         res = await ethApp!.signEIP712HashedMessage(
@@ -450,9 +455,10 @@ class LedgerBridgeKeyring {
         v = `0${v}`;
       }
       const signature = `0x${res.r}${res.s}${v}`;
-      const addressSignedWith = sigUtil.recoverTypedSignature_v4({
+      const addressSignedWith = recoverTypedSignature({
         data,
-        sig: signature,
+        signature,
+        version: SignTypedDataVersion.V4,
       });
       if (
         toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)
