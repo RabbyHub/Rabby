@@ -239,21 +239,20 @@ export const SkipNonceAlert = ({
           />
         );
       })}
-      {!data?.length &&
-        needClearPendingTxs?.map((item) => {
-          return (
-            <ClearPendingAlertDetail
-              key={item.chain}
-              data={item.data}
-              onClearPending={(chain) => {
-                setConfirmState({
-                  chain,
-                  visible: true,
-                });
-              }}
-            />
-          );
-        })}
+      {needClearPendingTxs?.map((item) => {
+        return (
+          <ClearPendingAlertDetail
+            key={item.chain}
+            data={item.data}
+            onClearPending={(chain) => {
+              setConfirmState({
+                chain,
+                visible: true,
+              });
+            }}
+          />
+        );
+      })}
       <CancelTxConfirmPopup
         visible={confirmState.visible}
         onClose={() => {
