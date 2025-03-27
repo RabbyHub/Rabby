@@ -142,7 +142,6 @@
     "uuid": "9.0.0",
     "viem": "2.17.3",
     "web3-eth-abi": "1.7.0",
-    "web3-utils": "4.3.3",
     "webextension-polyfill": "0.7.0"
   },
   "devDependencies": {

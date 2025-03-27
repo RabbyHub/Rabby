@@ -8,7 +8,6 @@ import {
   intToHex,
   bytesToHex,
 } from '@ethereumjs/util';
-import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import {
   normalize as normalizeAddress,
@@ -70,6 +69,7 @@ import {
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
+import { stringToHex } from 'viem';
 
 const reportSignText = (params: {
   method: string;

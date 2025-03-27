@@ -75,7 +75,6 @@ import {
   useCheckAddressType,
   useParseContractAddress,
 } from '@/ui/hooks/useParseAddress';
-import { isHex } from 'web3-utils';
 import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
@@ -94,6 +93,7 @@ import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.sv
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { useRequest } from 'ahooks';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
+import { isHex } from 'viem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;

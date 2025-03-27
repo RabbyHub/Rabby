@@ -2,10 +2,10 @@ import i18n from '@/i18n';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { getActionTypeText as getTransactionActionTypeText } from '../Actions/utils';
 import { encodeSingle } from '@metamask/abi-utils';
-import { hexToString } from 'web3-utils';
 import BigNumber from 'bignumber.js';
 import { filterPrimaryType } from '../SignTypedDataExplain/parseSignTypedDataMessage';
 import { bytesToHex } from '@ethereumjs/util';
+import { hexToString } from 'viem';
 
 export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
   const { t } = i18n;

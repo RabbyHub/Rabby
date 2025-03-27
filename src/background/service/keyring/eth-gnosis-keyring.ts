@@ -1,6 +1,11 @@
 import { EventEmitter } from 'events';
 import { isAddress } from 'viem';
-import { addHexPrefix, toChecksumAddress, bytesToHex } from '@ethereumjs/util';
+import {
+  addHexPrefix,
+  toChecksumAddress,
+  bytesToHex,
+  isHexString,
+} from '@ethereumjs/util';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import {
   SafeTransaction,
@@ -33,15 +38,6 @@ interface DeserializeOption {
   accounts?: string[];
   networkIdMap?: Record<string, string>;
   networkIdsMap?: Record<string, string[]>;
-}
-
-function sanitizeHex(hex: string): string {
-  hex = hex.substring(0, 2) === '0x' ? hex.substring(2) : hex;
-  if (hex === '') {
-    return '';
-  }
-  hex = hex.length % 2 !== 0 ? '0' + hex : hex;
-  return '0x' + hex;
 }
 
 export enum Operation {
@@ -733,7 +729,10 @@ class GnosisKeyring extends EventEmitter {
   }
 
   _normalize(buf) {
-    return sanitizeHex(bytesToHex(buf).toString());
+    if (isHexString(buf)) {
+      return buf;
+    }
+    return bytesToHex(buf);
   }
 }
 
