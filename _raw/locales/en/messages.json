@@ -572,8 +572,8 @@
               "desc": "New transaction to cancel, requires gas"
             },
             "removeLocalPendingTx": {
-              "title": "Delete Transaction Locally",
-              "desc": "Fix transaction block caused by long pending time"
+              "title": "Clear Pending Locally",
+              "desc": "Remove the pending transaction from the interface"
             }
           },
           "removeLocalPendingTx": {
@@ -597,12 +597,17 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve",
-          "clearPendingAlert": "{{chainName}} Transaction ({{nonces}}) has been pending for over 3 minutes. You can <5></5> <6>clear pending transactions on this chain</6> <7></7> and initiate a new one."
+          "clearPendingAlert": "{{chainName}} Transaction ({{nonces}}) has been pending for over 3 minutes. You can <5></5> <6>Clear Pending Locally</6> <7></7> and resubmit the transaction."
         },
         "PredictTime": {
           "time": "Predicted to be packed in {{time}}",
           "noTime": "Packing time is being predicted",
           "failed": "Packing time prediction failed"
+        },
+        "CancelTxConfirmPopup": {
+          "title": "Clear Pending Locally",
+          "desc": "This will remove the pending transaction from your interface. You can then initiate a new transaction.",
+          "warning": "The removed transaction may still be confirmed on-chain unless it is replaced."
         }
       },
       "signedText": {
@@ -703,7 +708,10 @@
         "parseError": "Fail to decode contract call",
         "simulation": "Contract call simulation:",
         "notHexData": "Only supported hex data"
-      }
+      },
+      "blockedTransaction": "Blocked Transaction",
+      "blockedTransactionContent": "This transaction interacts with an address that is on the OFAC sanctions list.",
+      "blockedTransactionCancelText": "I Know"
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost",
@@ -1115,7 +1123,8 @@
           "manageAddress": "Manage Address",
           "nft": "NFT",
           "ecology": "Ecosystem",
-          "bridge": "Bridge"
+          "bridge": "Bridge",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -1244,9 +1253,9 @@
         "reset": "Restore initial setting",
         "save": "Save",
         "pendingTransactionCleared": "Pending transaction cleared",
-        "clearPending": "Clear Pending",
-        "clearPendingTip1": "This will delete all your pending transactions locally and help resolve issues caused by long pending times.",
-        "clearPendingTip2": "It will not affect your account balances or require you to re-enter your seed phrase. All your assets and account information will remain secure.",
+        "clearPending": "Clear Pending Locally",
+        "clearPendingTip1": "This action removes the pending transaction from your interface, helping resolve issues caused by long pending durations on the network.",
+        "clearPendingTip2": "It does not affect your account balances or require re-entering your seed phrase. All assets and account details remain secure.",
         "autoLockTime": "Auto lock time",
         "claimRabbyBadge": "Claim Rabby Badge!",
         "cancel": "Cancel",
@@ -1292,7 +1301,7 @@
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
         "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token",
-        "clearPendingWarningTip": "The pending transactions may still be successfully submitted in the future."
+        "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced."
       },
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
@@ -2565,6 +2574,16 @@
         "enabled": "Disguise enabled. Refresh the Dapp to reconnect.",
         "disabled": "Disguise disabled. Refresh the Dapp."
       }
+    },
+    "syncToMobile": {
+      "title": "Sync Wallet Address from Rabby Extension to Mobile",
+      "description": "Your address data stays fully offline, encrypted, and securely           transferred via a QR code.",
+      "steps1": "1. Download Rabby Mobile",
+      "steps2": "2. Scan with Rabby Mobile",
+      "steps2Description": " *Your QR code contains sensitive data. Keep it private and never             share it with anyone.",
+      "downloadGooglePlay": "Google Play",
+      "downloadAppleStore": "App Store",
+      "clickToShowQr": "Click to show QR Code"
     }
   },
   "component": {

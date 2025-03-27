@@ -1329,6 +1329,69 @@ export class KeyringService extends EventEmitter {
       .getState()
       .unencryptedKeyringData?.map((item) => item.type) ?? []) as string[];
   }
+
+  async getSyncVault() {
+    const serializedKeyrings = await Promise.all(
+      this.keyrings.map((keyring) => {
+        return Promise.all([keyring.type, keyring.serialize()]).then(
+          async (serializedKeyringArray) => {
+            // Label the output values on each serialized Keyring:
+            return {
+              type: serializedKeyringArray[0] as string,
+              data: serializedKeyringArray[1] as any,
+              accounts: (await keyring.getAccounts()) as string[],
+            };
+          }
+        );
+      })
+    );
+
+    const accounts: string[] = [];
+
+    const SYNC_KEYRING_TYPES = [
+      KEYRING_CLASS.MNEMONIC,
+      KEYRING_CLASS.PRIVATE_KEY,
+      KEYRING_CLASS.HARDWARE.ONEKEY,
+      KEYRING_CLASS.HARDWARE.LEDGER,
+      KEYRING_CLASS.GNOSIS,
+      KEYRING_CLASS.HARDWARE.KEYSTONE,
+    ];
+    const syncKeyringData = serializedKeyrings
+      .map(({ type, data, accounts: _accounts }) => {
+        if (SYNC_KEYRING_TYPES.includes(type as any)) {
+          // maybe empty keyring
+          // TODO: maybe need remove simple keyring if empty
+          if (type === KEYRING_CLASS.PRIVATE_KEY && !data.length) {
+            return undefined;
+          }
+
+          // clean mnemonic keyring
+          if (type === KEYRING_CLASS.MNEMONIC) {
+            if (data.isSlip39) {
+              return undefined;
+            }
+            data = {
+              mnemonic: data.mnemonic,
+              accountDetails: data.accountDetails,
+              publicKey: data.publicKey,
+            };
+          }
+
+          accounts.push(..._accounts);
+
+          return { type, data };
+        }
+      })
+      .filter(Boolean) as KeyringSerializedData[];
+
+    const encryptedString = await passwordEncrypt({
+      data: syncKeyringData,
+      password: this.password,
+      persisted: false,
+    });
+
+    return { vault: encryptedString, accounts };
+  }
 }
 
 export default new KeyringService();

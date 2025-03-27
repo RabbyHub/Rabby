@@ -26,7 +26,7 @@
       }
     },
     "chainList": {
-      "title": "",
+      "title": "{{count}} chains Integrated",
       "mainnet": "Ana Ağlar",
       "testnet": "Test Ağları"
     },
@@ -562,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "İşlemi Yerel Olarak Sil",
-              "desc": "Uzun bekleme süresinin neden olduğu işlem bloğunu düzeltin"
+              "title": "Yerel Bekleyenleri Temizle",
+              "desc": "Arayüzden bekleyen işlemi kaldır"
             },
             "quickCancel": {
               "title": "Hızlı İptal",
@@ -597,12 +597,17 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} {{chainName}} zincirinde atlandı. Bu, bekleyen işlem sayısının artmasına neden olabilir. <5></5> <6>Çözmek için zincire bir tx gönderin</6> <7></7>",
-          "clearPendingAlert": "{{chainName}} İşlemi ({{nonces}}) 3 dakikadan uzun süredir beklemede. Bu zincirde <5></5> <6>beklemede olan işlemleri temizleyebilir</6> <7></7> ve yeni bir işlem başlatabilirsiniz."
+          "clearPendingAlert": "{{chainName}} İşlemi ({{nonces}}) 3 dakikadan uzun süredir beklemede. İşlemi <5></5> <6>Yerel Beklemeyi Temizle</6> <7></7> ile silebilir ve yeniden gönderebilirsiniz."
         },
         "PredictTime": {
           "noTime": "Paketleme süresi tahmin ediliyor",
           "time": "{{time}} tarihinde dolması bekleniyor",
           "failed": "Paketleme süresi tahmini başarısız oldu"
+        },
+        "CancelTxConfirmPopup": {
+          "title": "Yerelde Bekleyenleri Temizle",
+          "warning": "Kaldırılan işlem, yerine yenisi geçmedikçe zincir üzerinde hala onaylanabilir.",
+          "desc": "Bu, arayüzünüzden bekleyen işlemi kaldıracaktır. Ardından yeni bir işlem başlatabilirsiniz."
         }
       },
       "signedText": {
@@ -703,7 +708,10 @@
         "parseError": "Sözleşme çağrısı çözümlenemedi",
         "notHexData": "Yalnızca desteklenen onaltılık veri",
         "simulation": "Sözleşme çağrısı simülasyonu:"
-      }
+      },
+      "blockedTransaction": "Engellenmiş İşlem",
+      "blockedTransactionCancelText": "Biliyorum",
+      "blockedTransactionContent": "Bu işlem, OFAC yaptırım listesinde yer alan bir adresle etkileşime giriyor."
     },
     "sendTokenComponents": {
       "GasReserved": "Gas maliyeti için <1>0</1> {{ tokenName }} ayrıldı",
@@ -887,7 +895,7 @@
       "no-transaction-records": "İşlem kaydı yok",
       "swap-history": "Takas geçmişi",
       "InSufficientTip": "İşlem simülasyonu ve gas tahmini yapmak için yetersiz bakiye. Orijinal fiyat toplayıcı teklifleri gösteriliyor",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "Özel ağ desteklenmiyor",
       "not-supported": "Desteklenmiyor",
       "slippage-adjusted-refresh-quote": "Kayma toleransı ayarlandı. Teklifi yenileyin.",
       "price-expired-refresh-quote": "Fiyatın süresi doldu. Teklifi yenileyin.",
@@ -1043,7 +1051,8 @@
           "nft": "NFT",
           "rabbyPoints": "Rabby Points",
           "ecology": "Ekosistem",
-          "bridge": "Köprü"
+          "bridge": "Köprü",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1172,9 +1181,9 @@
         "reset": "Restore initial setting",
         "save": "Kaydet",
         "pendingTransactionCleared": "Bekleyen işlem temizlendi",
-        "clearPending": "Bekleyeni Temizle",
-        "clearPendingTip1": "Bu, bekleyen tüm işlemlerinizi yerel olarak silecek ve uzun bekleme sürelerinden kaynaklanan sorunların çözülmesine yardımcı olacaktır.",
-        "clearPendingTip2": "Hesap bakiyelerinizi etkilemez veya başlangıç ​​ifadenizi yeniden girmenizi gerektirmez. \nTüm varlıklarınız ve hesap bilgileriniz güvende kalacaktır.",
+        "clearPending": "Yerel Bekleyenleri Temizle",
+        "clearPendingTip1": "Bu eylem, bekleyen işlemi arayüzünüzden kaldırarak, ağda uzun bekleme sürelerinden kaynaklanan sorunları çözmenize yardımcı olur.",
+        "clearPendingTip2": "Bu, hesap bakiyelerinizi etkilemez veya seed phrase'inizi yeniden girmenizi gerektirmez. Tüm varlıklar ve hesap detayları güvende kalır.",
         "autoLockTime": "Otomatik kilitlenme süresi",
         "claimRabbyBadge": "Rabby Rozetini Talep Edin!",
         "cancel": "İptal",
@@ -1203,7 +1212,7 @@
         "settings": {
           "label": "Ayarlar",
           "enableWhitelistForSendingAssets": "Varlık Gönderimi İçin Beyaz Listeyi Etkinleştir",
-          "customRpc": "",
+          "customRpc": "RPC URL'yi değiştir",
           "metamaskPreferredDapps": "MetaMask Tercih Edilen Dapp'ler",
           "currentLanguage": "Mevcut Dil",
           "enableTestnets": "Testnetleri Etkinleştir",
@@ -1215,12 +1224,12 @@
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
         "updateAvailable": "Güncelleme Mevcut",
-        "supportedChains": "",
+        "supportedChains": "Entegre Zincirler",
         "followUs": "Bizi Takip Edin",
         "testnetBackendServiceUrl": "Testnet Backend Servis URL'si",
         "clearWatchMode": "İzleme Modunu Temizle",
         "requestDeBankTestnetGasToken": "DeBank Testnet Gas Tokeni İste",
-        "clearPendingWarningTip": "Bekleyen işlemler gelecekte de başarıyla gönderilebilir."
+        "clearPendingWarningTip": "Çıkarılan işlem, başka bir işlem ile değiştirilmedikçe zincirde hâlâ onaylanabilir."
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
@@ -1728,7 +1737,7 @@
       "hasAdded": "Bu token eklendi."
     },
     "switchChain": {
-      "title": "",
+      "title": "Rabby'ye Özel Ağ Ekle",
       "chainNotSupport": "İstenen zincir Rabby tarafından henüz desteklenmiyor",
       "testnetTip": "Testnet'lere bağlanmadan önce \"Daha Fazla\" altında \"Testnet'leri Etkinleştir\" seçeneğini açın",
       "requestsReceived": "1 request received",
@@ -1845,15 +1854,15 @@
     "customRpc": {
       "opened": "Açık",
       "closed": "Kapalı",
-      "empty": "",
-      "title": "",
-      "desc": "",
-      "add": "",
+      "empty": "Özel RPC URL yok",
+      "title": "RPC URL'sini Değiştir",
+      "desc": "Değiştirildiğinde, özel RPC Rabby'nin düğümünü değiştirecektir. Rabby'nin düğümünü kullanmaya devam etmek için özel RPC'yi silin.",
+      "add": "RPC URL'yi Değiştir",
       "EditRPCModal": {
         "invalidRPCUrl": "Geçersiz RPC URL'i",
         "invalidChainId": "Geçersiz Zincir ID'si",
         "rpcAuthFailed": "RPC doğrulaması başarısız",
-        "title": "",
+        "title": "RPC URL'yi Değiştir",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "RPC URL'sini girin"
       },
@@ -2513,7 +2522,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "",
+      "title": "İzin Verilen Dapp'leri Yönet",
       "desc": "MetaMask Modu aşağıdaki Dapp’ler için etkinleştirildi. MetaMask seçeneğini seçerek Rabby bağlanabilirsiniz."
     },
     "forgotPassword": {
@@ -2571,6 +2580,16 @@
       "alert": "Bir Dapp'e bağlanamıyor musunuz çünkü Rabby Wallet bir seçenek olarak gözükmüyor mu?",
       "noDappFound": "Dapp bulunamadı",
       "manage": "İzin Verilen Dapp'leri Yönet"
+    },
+    "syncToMobile": {
+      "downloadGooglePlay": "Google Play",
+      "downloadAppleStore": "App Store",
+      "clickToShowQr": "QR Kodunu göstermek için tıklayın",
+      "steps1": "1. Rabby Mobil'i indir",
+      "description": "Adres verileriniz tamamen çevrimdışı kalır, şifrelenir ve güvenli bir şekilde bir QR kodu aracılığıyla aktarılır.",
+      "steps2": "2. Rabby Mobil ile tarayın",
+      "steps2Description": "QR kodunuz hassas veriler içerir. Gizli tutun ve asla kimseyle paylaşmayın.",
+      "title": "Rabby Uzantısından Mobil Cihaza Cüzdan Adresini Senkronize Et"
     }
   },
   "component": {
@@ -2658,8 +2677,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "",
-        "testnet": ""
+        "mainnet": "Entegre Ağ",
+        "testnet": "Özel Network"
       }
     },
     "ChainSelectorModal": {
