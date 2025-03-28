@@ -30,20 +30,22 @@
     // height: 258px;
     display: flex;
     justify-content: flex-start;
-    padding-top: 10px;
     flex-direction: column;
     background: var(--r-neutral-card-2, #f5f6fa);
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     position: relative;
+    &-body {
+      padding: 4px 3px;
+    }
     .direction-pannel {
       display: flex;
       flex-wrap: wrap;
       .disable-direction,
       .direction {
         position: relative;
-        width: 120px;
-        height: 72px;
+        width: 118px;
+        height: 74px;
         border-radius: 4px;
         display: flex;
         flex-direction: column;
@@ -126,7 +128,7 @@
 
       cursor: pointer;
 
-      color: var(--r-neutral-body, #3e495e);
+      color: var(--r-neutral-title1, #192945);
       font-size: 12px;
       font-weight: 500;
       line-height: 14px;
