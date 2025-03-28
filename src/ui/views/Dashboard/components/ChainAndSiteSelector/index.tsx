@@ -14,8 +14,9 @@ import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
 import { ReactComponent as RcIconNFT } from 'ui/assets/dashboard/nft.svg';
 import { ReactComponent as RcIconTransactions } from 'ui/assets/dashboard/transactions.svg';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
-import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
+import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco-1.svg';
 import { ReactComponent as RcIconMoreSettings } from 'ui/assets/dashboard/more-settings.svg';
+import { ReactComponent as RcIconMoreSmall } from 'ui/assets/dashboard/more-cc.svg';
 import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import {
@@ -302,7 +303,7 @@ export default ({
       'nft',
       'security',
       'mobile',
-      'more',
+      'ecology',
     ];
   } else {
     pickedPanelKeys = [
@@ -314,7 +315,7 @@ export default ({
       'nft',
       'security',
       'mobile',
-      'more',
+      'ecology',
     ];
   }
 
@@ -400,6 +401,28 @@ export default ({
               </div>
             );
           })}
+        </div>
+        <div className="pannel-footer">
+          <div
+            className="direction-more"
+            onClick={() => {
+              const eventKey = 'More';
+              matomoRequestEvent({
+                category: 'Dashboard',
+                action: 'clickEntry',
+                label: eventKey,
+              });
+
+              ga4.fireEvent(`Entry_${eventKey}`, {
+                event_category: 'Dashboard',
+              });
+
+              toggleShowMoreSettings();
+            }}
+          >
+            <RcIconMoreSmall />
+            <div>{t('page.dashboard.home.panel.more')}</div>
+          </div>
         </div>
       </div>
       <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
