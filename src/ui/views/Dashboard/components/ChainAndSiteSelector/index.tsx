@@ -331,76 +331,81 @@ export default ({
         onClick={hideAllList}
       />
       <div className="pannel">
-        <div className="direction-pannel">
-          {pickedPanelKeys.map((panelKey, index) => {
-            const item = panelItems[panelKey] as IPanelItem;
-            if (item.hideForGnosis && isGnosis) return <></>;
-            return item.disabled ? (
-              <Tooltip
-                {...(item.commingSoonBadge && { visible: false })}
-                title={
-                  item.disableReason || t('page.dashboard.home.comingSoon')
-                }
-                overlayClassName="rectangle direction-tooltip"
-                autoAdjustOverflow={false}
-              >
-                <div key={index} className="disable-direction">
-                  <ThemeIcon src={item.icon} className="images" />
-                  <div>{item.content} </div>
-                </div>
-              </Tooltip>
-            ) : (
-              <div
-                key={index}
-                onClick={(evt) => {
-                  matomoRequestEvent({
-                    category: 'Dashboard',
-                    action: 'clickEntry',
-                    label: item.eventKey,
-                  });
+        <div className="pannel-body">
+          <div className="direction-pannel">
+            {pickedPanelKeys.map((panelKey, index) => {
+              const item = panelItems[panelKey] as IPanelItem;
+              if (item.hideForGnosis && isGnosis) return <></>;
+              return item.disabled ? (
+                <Tooltip
+                  {...(item.commingSoonBadge && { visible: false })}
+                  title={
+                    item.disableReason || t('page.dashboard.home.comingSoon')
+                  }
+                  overlayClassName="rectangle direction-tooltip"
+                  autoAdjustOverflow={false}
+                >
+                  <div key={index} className="disable-direction">
+                    <ThemeIcon src={item.icon} className="images" />
+                    <div>{item.content} </div>
+                  </div>
+                </Tooltip>
+              ) : (
+                <div
+                  key={index}
+                  onClick={(evt) => {
+                    matomoRequestEvent({
+                      category: 'Dashboard',
+                      action: 'clickEntry',
+                      label: item.eventKey,
+                    });
 
-                  ga4.fireEvent(`Entry_${item.eventKey}`, {
-                    event_category: 'Dashboard',
-                  });
+                    ga4.fireEvent(`Entry_${item.eventKey}`, {
+                      event_category: 'Dashboard',
+                    });
 
-                  item?.onClick(evt);
-                }}
-                className="direction pointer"
-              >
-                {item.showAlert && (
-                  <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
-                )}
-                {item.badge ? (
-                  <Badge
-                    count={item.badge}
-                    size="small"
-                    className={clsx(
-                      {
-                        alert: item.badgeAlert && !item.badgeClassName,
-                      },
-                      item.badgeClassName
-                    )}
-                  >
+                    item?.onClick(evt);
+                  }}
+                  className="direction pointer"
+                >
+                  {item.showAlert && (
+                    <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
+                  )}
+                  {item.badge ? (
+                    <Badge
+                      count={item.badge}
+                      size="small"
+                      className={clsx(
+                        {
+                          alert: item.badgeAlert && !item.badgeClassName,
+                        },
+                        item.badgeClassName
+                      )}
+                    >
+                      <ThemeIcon
+                        src={item.icon}
+                        className={clsx([
+                          item.iconSpin && 'icon-spin',
+                          'images',
+                        ])}
+                      />
+                    </Badge>
+                  ) : (
                     <ThemeIcon
                       src={item.icon}
-                      className={clsx([item.iconSpin && 'icon-spin', 'images'])}
+                      className={clsx(['images', item.iconClassName])}
                     />
-                  </Badge>
-                ) : (
-                  <ThemeIcon
-                    src={item.icon}
-                    className={clsx(['images', item.iconClassName])}
-                  />
-                )}
-                <div>{item.content} </div>
-                {item.commingSoonBadge && (
-                  <div className="coming-soon-badge">
-                    {t('page.dashboard.home.soon')}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  )}
+                  <div>{item.content} </div>
+                  {item.commingSoonBadge && (
+                    <div className="coming-soon-badge">
+                      {t('page.dashboard.home.soon')}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
         <div className="pannel-footer">
           <div
@@ -425,6 +430,7 @@ export default ({
           </div>
         </div>
       </div>
+
       <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
 
       <CurrentConnection
