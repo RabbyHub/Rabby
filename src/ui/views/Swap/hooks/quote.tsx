@@ -464,6 +464,18 @@ export const useQuoteMethods = () => {
         setQuote: (quote: TDexQuoteData) => void;
       }
     ) => {
+      const chainObj = findChainByEnum(params.chain)!;
+
+      nativeTokenPriceRef.current = pRetry(
+        () =>
+          walletOpenapi.getToken(
+            params.userAddress,
+            chainObj.serverId,
+            chainObj.nativeTokenAddress
+          ),
+        { retries: 1 }
+      );
+
       if (
         isSwapWrapToken(
           params.payToken.id,
@@ -476,17 +488,6 @@ export const useQuoteMethods = () => {
           dexId: DEX_ENUM.WRAPTOKEN,
         });
       }
-      const chainObj = findChainByEnum(params.chain)!;
-
-      nativeTokenPriceRef.current = pRetry(
-        () =>
-          walletOpenapi.getToken(
-            params.userAddress,
-            chainObj.serverId,
-            chainObj.nativeTokenAddress
-          ),
-        { retries: 1 }
-      );
 
       return Promise.all([
         ...(supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[]).map((dexId) =>
