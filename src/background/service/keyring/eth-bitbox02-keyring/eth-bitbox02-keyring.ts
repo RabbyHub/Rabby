@@ -1,7 +1,10 @@
 import 'regenerator-runtime/runtime';
 import EventEmitter from 'events';
-import * as ethUtil from 'ethereumjs-util';
-import { toChecksumAddress } from '@ethereumjs/util';
+import {
+  bytesToHex,
+  publicToAddress,
+  toChecksumAddress,
+} from '@ethereumjs/util';
 import * as sigUtil from '@metamask/eth-sig-util';
 import {
   TypedTransaction,
@@ -10,9 +13,9 @@ import {
   TransactionFactory,
   AccessListEIP2930Transaction,
   Transaction,
+  LegacyTransaction,
 } from '@ethereumjs/tx';
 import { BitBox02BridgeInterface } from './bitbox02-bridge-interface';
-import { bufferToHex } from '@ethereumjs/util';
 
 const hdPathString = "m/44'/60'/0'/0";
 const keyringType = 'BitBox02 Hardware';
@@ -175,11 +178,8 @@ class BitBox02Keyring extends EventEmitter {
 
     let result;
     const txData: JsonTx = {
-      to: tx.to!.toString(),
-      value: `0x${tx.value.toString(16)}`,
-      data: this._normalize(tx.data),
-      nonce: `0x${tx.nonce.toString(16)}`,
-      gasLimit: `0x${tx.gasLimit.toString(16)}`,
+      ...tx.toJSON(),
+      to: tx.to?.toString(),
     };
 
     if (tx instanceof FeeMarketEIP1559Transaction) {
@@ -191,7 +191,7 @@ class BitBox02Keyring extends EventEmitter {
       txData.maxPriorityFeePerGas = `0x${tx.maxPriorityFeePerGas.toString(16)}`;
       txData.maxFeePerGas = `0x${tx.maxFeePerGas.toString(16)}`;
     } else if (
-      tx instanceof Transaction ||
+      tx instanceof LegacyTransaction ||
       tx instanceof AccessListEIP2930Transaction
     ) {
       result = await this.bridge.ethSignTransaction(
@@ -202,9 +202,9 @@ class BitBox02Keyring extends EventEmitter {
       txData.gasPrice = `0x${tx.gasPrice.toString(16)}`;
     }
     txData.chainId = `0x${tx.common.chainId().toString(16)}`;
-    txData.r = bufferToHex(result.r);
-    txData.s = bufferToHex(result.s);
-    txData.v = bufferToHex(result.v);
+    txData.r = bytesToHex(result.r);
+    txData.s = bytesToHex(result.s);
+    txData.v = bytesToHex(result.v);
     const signedTx = TransactionFactory.fromTxData(txData);
     const addressSignedWith = toChecksumAddress(
       signedTx.getSenderAddress().toString()
@@ -283,16 +283,14 @@ class BitBox02Keyring extends EventEmitter {
   /* PRIVATE METHODS */
 
   _normalize(buf: Buffer): string {
-    return bufferToHex(buf);
+    return bytesToHex(buf);
   }
 
   // eslint-disable-next-line no-shadow
   _addressFromIndex(pathBase: string, i: number): string {
     const dkey = this.bridge.hdk.derive(`${pathBase}/${i}`);
-    const address = ethUtil
-      .publicToAddress(dkey.publicKey, true)
-      .toString('hex');
-    return toChecksumAddress(`0x${address}`);
+    const address = bytesToHex(publicToAddress(dkey.publicKey, true));
+    return toChecksumAddress(address);
   }
 
   _pathFromAddress(address: string): string {
