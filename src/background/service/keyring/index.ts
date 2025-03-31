@@ -29,7 +29,12 @@ import GnosisKeyring, {
 } from './eth-gnosis-keyring';
 import preference from '../preference';
 import i18n from '../i18n';
-import { KEYRING_TYPE, EVENTS, KEYRING_CLASS } from 'consts';
+import {
+  KEYRING_TYPE,
+  EVENTS,
+  KEYRING_CLASS,
+  HARDWARE_KEYRING_TYPES,
+} from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
@@ -46,6 +51,7 @@ import {
   passwordClearKey,
 } from 'background/utils/password';
 import uninstalledMetricService from '../uninstalled';
+import { isEmpty } from 'lodash';
 
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
@@ -1365,11 +1371,25 @@ export class KeyringService extends EventEmitter {
             return undefined;
           }
 
+          // only support keystone
+          if (type === KEYRING_CLASS.HARDWARE.KEYSTONE) {
+            const _brandName = Object.values(data.brandsMap)[0];
+            if (_brandName !== HARDWARE_KEYRING_TYPES.Keystone.brandName) {
+              return undefined;
+            }
+          }
+
           // clean mnemonic keyring
           if (type === KEYRING_CLASS.MNEMONIC) {
             if (data.isSlip39) {
               return undefined;
             }
+
+            // empty mnemonic keyring
+            if (isEmpty(data.accountDetails)) {
+              return undefined;
+            }
+
             data = {
               mnemonic: data.mnemonic,
               accountDetails: data.accountDetails,

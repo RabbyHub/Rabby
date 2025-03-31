@@ -564,9 +564,11 @@ export const useTokenPair = (userAddress: string) => {
               return new BigNumber(Number.MIN_SAFE_INTEGER);
             }
             const balanceChangeReceiveTokenAmount =
-              quote?.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
-                (token) => isSameAddress(token.id, receiveToken.id)
-              )?.amount || 0;
+              new BigNumber(quote.data?.toTokenAmount || 0)
+                .div(
+                  10 ** (quote?.data?.toTokenDecimals || receiveToken.decimals)
+                )
+                .toString() || 0;
 
             if (sortIncludeGasFee) {
               return new BigNumber(balanceChangeReceiveTokenAmount)
@@ -602,9 +604,13 @@ export const useTokenPair = (userAddress: string) => {
                 halfBetterRate: '',
                 quoteWarning: undefined,
                 actualReceiveAmount:
-                  preExecResult?.swapPreExecTx.balance_change.receive_token_list.find(
-                    (token) => isSameAddress(token.id, receiveToken.id)
-                  )?.amount || '',
+                  new BigNumber(bestQuote.data?.toTokenAmount || 0)
+                    .div(
+                      10 **
+                        (bestQuote?.data?.toTokenDecimals ||
+                          receiveToken.decimals)
+                    )
+                    .toString() || '',
                 gasUsd: preExecResult?.gasUsd,
               }
         );
