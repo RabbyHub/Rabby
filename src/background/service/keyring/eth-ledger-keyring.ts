@@ -1,9 +1,14 @@
-import * as sigUtil from 'eth-sig-util';
+import {
+  recoverPersonalSignature,
+  recoverTypedSignature,
+  SignTypedDataVersion,
+  TypedDataUtils,
+} from '@metamask/eth-sig-util';
 import {
   toChecksumAddress,
   addHexPrefix,
-  bufferToHex,
   stripHexPrefix,
+  bytesToHex,
 } from '@ethereumjs/util';
 import { RLP, utils } from '@ethereumjs/rlp';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
@@ -268,7 +273,7 @@ class LedgerBridgeKeyring {
       // transaction which is only communicated to ethereumjs-tx in this
       // value. In newer versions the chainId is communicated via the 'Common'
       // object.
-      tx.v = bufferToHex(tx.getChainId());
+      tx.v = bytesToHex(tx.getChainId());
       tx.r = '0x00';
       tx.s = '0x00';
 
@@ -291,9 +296,16 @@ class LedgerBridgeKeyring {
     // return a Transaction that is frozen if the originally provided
     // transaction was also frozen.
     const messageToSign = tx.getMessageToSign(false);
-    const rawTxHex = Buffer.isBuffer(messageToSign)
+    let rawTxHex = Buffer.isBuffer(messageToSign)
       ? messageToSign.toString('hex')
       : stripHexPrefix(utils.bytesToHex(RLP.encode(messageToSign)));
+
+    // FIXME: This is a temporary fix for the issue with the Ledger device, waiting for a fix from Ledger
+    if (!Array.isArray(RLP.decode(Buffer.from(rawTxHex, 'hex')))) {
+      console.log('rlpTx not an array');
+      rawTxHex = Buffer.from(messageToSign).toString('hex');
+    }
+
     return this._signTransaction(address, rawTxHex, (payload) => {
       // Because tx will be immutable, first get a plain javascript object that
       // represents the transaction. Using txData here as it aligns with the
@@ -354,9 +366,9 @@ class LedgerBridgeKeyring {
         v = `0${v}`;
       }
       const signature = `0x${res.r}${res.s}${v}`;
-      const addressSignedWith = sigUtil.recoverPersonalSignature({
+      const addressSignedWith = recoverPersonalSignature({
         data: message,
-        sig: signature,
+        signature,
       });
       if (
         toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)
@@ -424,18 +436,18 @@ class LedgerBridgeKeyring {
           types,
           primaryType,
           message,
-        } = sigUtil.TypedDataUtils.sanitizeData(data);
-        const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+        } = TypedDataUtils.sanitizeData(data);
+        const domainSeparatorHex = TypedDataUtils.hashStruct(
           'EIP712Domain',
           domain,
           types,
-          isV4
+          SignTypedDataVersion.V4
         ).toString('hex');
-        const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+        const hashStructMessageHex = TypedDataUtils.hashStruct(
           primaryType as string,
           message,
           types,
-          isV4
+          SignTypedDataVersion.V4
         ).toString('hex');
 
         res = await ethApp!.signEIP712HashedMessage(
@@ -450,9 +462,10 @@ class LedgerBridgeKeyring {
         v = `0${v}`;
       }
       const signature = `0x${res.r}${res.s}${v}`;
-      const addressSignedWith = sigUtil.recoverTypedSignature_v4({
+      const addressSignedWith = recoverTypedSignature({
         data,
-        sig: signature,
+        signature,
+        version: SignTypedDataVersion.V4,
       });
       if (
         toChecksumAddress(addressSignedWith) !== toChecksumAddress(withAccount)

@@ -1,5 +1,5 @@
-import * as sigUtil from 'eth-sig-util';
-import * as ethUtil from 'ethereumjs-util';
+import { bytesToHex } from '@ethereumjs/util';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 
 /**
  * Signs a typed message as per EIP-712 and returns its sha3 hash
@@ -8,25 +8,25 @@ import * as ethUtil from 'ethereumjs-util';
  * @returns {Buffer} - sha3 hash of the resulting signed message
  */
 export function signHashHex(typedData, useV4 = true): string {
-  const sanitizedData = sigUtil.TypedDataUtils.sanitizeData(typedData);
+  const sanitizedData = TypedDataUtils.sanitizeData(typedData);
   const parts = [Buffer.from('1901', 'hex')];
   parts.push(
-    sigUtil.TypedDataUtils.hashStruct(
+    TypedDataUtils.hashStruct(
       'EIP712Domain',
       sanitizedData.domain,
       sanitizedData.types,
-      useV4
+      useV4 ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3
     )
   );
   if (sanitizedData.primaryType !== 'EIP712Domain') {
     parts.push(
-      sigUtil.TypedDataUtils.hashStruct(
+      TypedDataUtils.hashStruct(
         sanitizedData.primaryType as string,
         sanitizedData.message,
         sanitizedData.types,
-        useV4
+        useV4 ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3
       )
     );
   }
-  return ethUtil.bufferToHex(Buffer.concat(parts));
+  return bytesToHex(Buffer.concat(parts));
 }

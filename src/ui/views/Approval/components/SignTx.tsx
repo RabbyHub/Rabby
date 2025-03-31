@@ -35,7 +35,7 @@ import {
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
 } from 'consts';
-import { addHexPrefix, isHexPrefixed, isHexString } from '@ethereumjs/util';
+import { addHexPrefix, isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
@@ -100,7 +100,7 @@ const normalizeHex = (value: string | number) => {
     return intToHex(Math.floor(value));
   }
   if (typeof value === 'string') {
-    if (!isHexPrefixed(value)) {
+    if (!isHexString(value)) {
       return addHexPrefix(value);
     }
     return value;
