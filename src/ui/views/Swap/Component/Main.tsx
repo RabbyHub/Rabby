@@ -307,11 +307,8 @@ export const Main = () => {
     receiveToken: receiveToken,
   });
 
-  const handleSwap = useMemoizedFn(() => {
-    if (!isTab) {
-      dispatch.swap.setRecentSwapToToken(receiveToken);
-    }
-    if (
+  const canUseMiniTx = useMemo(
+    () =>
       [
         KEYRING_TYPE.SimpleKeyring,
         KEYRING_TYPE.HdKeyring,
@@ -322,8 +319,21 @@ export const Main = () => {
       receiveToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
-      !showLoss
-    ) {
+      !showLoss,
+    [
+      receiveToken,
+      isSlippageHigh,
+      isSlippageLow,
+      showLoss,
+      currentAccount?.type,
+    ]
+  );
+
+  const handleSwap = useMemoizedFn(() => {
+    if (!isTab) {
+      dispatch.swap.setRecentSwapToToken(receiveToken);
+    }
+    if (canUseMiniTx) {
       setIsShowSign(true);
       clearExpiredTimer();
     } else {
@@ -341,31 +351,12 @@ export const Main = () => {
 
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
-      if (
-        [
-          KEYRING_TYPE.SimpleKeyring,
-          KEYRING_TYPE.HdKeyring,
-          KEYRING_CLASS.HARDWARE.LEDGER,
-        ].includes((currentAccount?.type || '') as any) &&
-        !receiveToken?.low_credit_score &&
-        !receiveToken?.is_scam &&
-        receiveToken?.is_verified !== false &&
-        !isSlippageHigh &&
-        !isSlippageLow &&
-        !showLoss
-      ) {
+      if (canUseMiniTx) {
         mutateTxs([]);
         runBuildSwapTxs();
       }
     }
-  }, [
-    swapBtnDisabled,
-    receiveToken,
-    isSlippageHigh,
-    isSlippageLow,
-    showLoss,
-    activeProvider,
-  ]);
+  }, [swapBtnDisabled, canUseMiniTx, activeProvider]);
 
   const history = useHistory();
 
