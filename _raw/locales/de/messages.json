@@ -2580,7 +2580,7 @@
     },
     "syncToMobile": {
       "downloadAppleStore": "App Store",
-      "clickToShowQr": "Klicken, um QR-Code anzuzeigen",
+      "clickToShowQr": "Klicken Sie auf, um die Adresse auszuwählen und QR -Code anzeigen",
       "downloadGooglePlay": "Google Play",
       "description": "Ihre Adressdaten bleiben vollständig offline, verschlüsselt und werden sicher über einen QR-Code übertragen.",
       "title": "Synchronisieren Sie die Wallet-Adresse von der Rabby-Erweiterung mit dem Mobilgerät",

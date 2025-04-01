@@ -8,7 +8,9 @@ import { gzipSync, strToU8 } from 'fflate';
 
 export const EncodeQRCode: React.FC<{
   input: string;
-}> = ({ input }) => {
+  onClick?: () => void;
+  visible?: boolean;
+}> = ({ input, onClick, visible }) => {
   const { t } = useTranslation();
   const [masked, setMasked] = React.useState(true);
 
@@ -47,14 +49,14 @@ export const EncodeQRCode: React.FC<{
       setMasked(true);
     };
 
-    window.addEventListener('blur', onBodyBlur, true);
+    window.addEventListener('visibilitychange', onBodyBlur, true);
 
     return () => {
-      window.removeEventListener('blur', onBodyBlur, true);
+      window.removeEventListener('visibilitychange', onBodyBlur, true);
     };
   }, []);
 
-  const isHidden = masked;
+  const isHidden = !visible || masked;
 
   if (!data) {
     return null;
@@ -79,13 +81,16 @@ export const EncodeQRCode: React.FC<{
         )}
         onClick={() => {
           setMasked(false);
+          onClick?.();
         }}
       >
         <IconMaskIcon className="text-r-neutral-title2" />
         <p
           className={clsx(
-            'mt-[12px] mb-0 text-r-neutral-title2',
-            'leading-[20px] text-[16px] font-medium'
+            'mt-[12px] mb-0 mx-[60px]',
+            'text-r-neutral-title2',
+            'leading-[20px] text-[16px] font-medium',
+            'text-center'
           )}
         >
           {t('page.syncToMobile.clickToShowQr')}

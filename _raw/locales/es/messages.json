@@ -2583,7 +2583,7 @@
       "steps2": "2. Escanee con Rabby Mobile",
       "downloadGooglePlay": "Google Play",
       "description": "Tus datos de dirección permanecen totalmente fuera de línea, cifrados y se transfieren de manera segura a través de un código QR.",
-      "clickToShowQr": "Haga clic para mostrar el código QR",
+      "clickToShowQr": "Haga clic para seleccionar la dirección y mostrar el código QR",
       "steps1": "1. Descarga Rabby Mobile",
       "downloadAppleStore": "App Store",
       "steps2Description": "*Tu código QR contiene datos sensibles. Manténlo privado y nunca lo compartas con nadie."

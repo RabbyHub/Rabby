@@ -2828,7 +2828,7 @@
     "syncToMobile": {
       "steps1": "Téléchargez Rabby Mobile",
       "title": "Synchroniser l'adresse du portefeuille de l'extension Rabby vers le mobile",
-      "clickToShowQr": "Cliquez pour afficher le code QR",
+      "clickToShowQr": "Cliquez pour sélectionner l'adresse et afficher le code QR",
       "steps2Description": "Votre code QR contient des données sensibles. Gardez-le privé et ne le partagez jamais avec quiconque.",
       "downloadGooglePlay": "Google Play",
       "downloadAppleStore": "App Store",

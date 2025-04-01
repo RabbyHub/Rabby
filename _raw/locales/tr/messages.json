@@ -2584,7 +2584,7 @@
     "syncToMobile": {
       "downloadGooglePlay": "Google Play",
       "downloadAppleStore": "App Store",
-      "clickToShowQr": "QR Kodunu göstermek için tıklayın",
+      "clickToShowQr": "Adresi seçmek ve QR kodunu göstermek için tıklayın",
       "steps1": "1. Rabby Mobil'i indir",
       "description": "Adres verileriniz tamamen çevrimdışı kalır, şifrelenir ve güvenli bir şekilde bir QR kodu aracılığıyla aktarılır.",
       "steps2": "2. Rabby Mobil ile tarayın",

@@ -2586,7 +2586,7 @@
       "description": "あなたのアドレスデータは完全にオフラインで保持され、暗号化され、QRコードを通じて安全に転送されます。",
       "steps2": "2. Rabby Mobileでスキャン",
       "title": "Rabby Extensionからモバイルへウォレットアドレスを同期",
-      "clickToShowQr": "クリックしてQRコードを表示"
+      "clickToShowQr": "クリックしてアドレスを選択し、QRコードを表示します"
     }
   },
   "component": {

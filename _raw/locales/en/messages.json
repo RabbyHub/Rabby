@@ -2583,7 +2583,10 @@
       "steps2Description": " *Your QR code contains sensitive data. Keep it private and never             share it with anyone.",
       "downloadGooglePlay": "Google Play",
       "downloadAppleStore": "App Store",
-      "clickToShowQr": "Click to show QR Code"
+      "clickToShowQr": "Click to Select Address  and Show QR Code",
+      "selectAddress": {
+        "title": "Select Addresses to Sync"
+      }
     }
   },
   "component": {

@@ -2582,7 +2582,7 @@
       "title": "Sincronizar Endereço da Carteira da Extensão Rabby para o Celular",
       "downloadAppleStore": "App Store",
       "downloadGooglePlay": "Google Play",
-      "clickToShowQr": "Clique para exibir o código QR",
+      "clickToShowQr": "Clique para selecionar o endereço e mostrar o código QR",
       "steps1": "1. Baixe o Rabby Mobile",
       "description": "Seus dados de endereço permanecem totalmente offline, criptografados e transferidos com segurança via um código QR.",
       "steps2Description": "Seu código QR contém dados sensíveis. Mantenha-o privado e nunca o compartilhe com ninguém.",

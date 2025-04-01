@@ -2578,7 +2578,7 @@
       "alert": "Не удается подключиться к Dapp, потому что Rabby Wallet не отображается в качестве опции?"
     },
     "syncToMobile": {
-      "clickToShowQr": "Нажмите, чтобы показать QR-код",
+      "clickToShowQr": "Нажмите, чтобы выбрать адрес и показать QR -код",
       "downloadAppleStore": "App Store",
       "steps1": "1. Загрузите Rabby Mobile",
       "downloadGooglePlay": "Google Play",

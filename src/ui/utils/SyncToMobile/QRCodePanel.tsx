@@ -7,6 +7,7 @@ import { ReactComponent as GooglePlaySVG } from '@/ui/assets/sync-to-mobile/goog
 import { ReactComponent as RabbyCircleSVG } from '@/ui/assets/sync-to-mobile/rabby-circle.svg';
 import clsx from 'clsx';
 import { DownloadCard } from './DownloadCard';
+import { SelectAddressModal } from './SelectAddressModal';
 
 const GOOGLE_PLAY_URL =
   'https://play.google.com/store/apps/details?id=com.debank.rabbymobile';
@@ -17,6 +18,8 @@ export const QRCodePanel: React.FC = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const [data, setData] = React.useState<string>();
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [qrCodeVisible, setQRCodeVisible] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +30,15 @@ export const QRCodePanel: React.FC = () => {
 
     fetchData();
   }, [wallet]);
+
+  const handleClickQRCode = React.useCallback(() => {
+    setModalVisible(true);
+  }, []);
+
+  const handleModalConfirm = React.useCallback(() => {
+    setModalVisible(false);
+    setQRCodeVisible(true);
+  }, []);
 
   return (
     <div
@@ -81,9 +93,21 @@ export const QRCodePanel: React.FC = () => {
         </p>
         <div className="mt-[16px] flex justify-center items-center relative">
           {/* <RabbyCircleSVG className="absolute z-10" /> */}
-          {data && <EncodeQRCode input={data} />}
+          {data && (
+            <EncodeQRCode
+              visible={qrCodeVisible}
+              input={data}
+              onClick={handleClickQRCode}
+            />
+          )}
         </div>
       </div>
+
+      <SelectAddressModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleModalConfirm}
+      />
     </div>
   );
 };
