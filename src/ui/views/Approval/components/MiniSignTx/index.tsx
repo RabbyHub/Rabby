@@ -1023,7 +1023,8 @@ export const MiniApproval = ({
         // maxHeight: 160,
       }}
       push={false}
-      destroyOnClose
+      forceRender
+      destroyOnClose={false}
       maskStyle={{
         backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
       }}

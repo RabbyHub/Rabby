@@ -324,13 +324,48 @@ export const Main = () => {
       !isSlippageLow &&
       !showLoss
     ) {
-      runBuildSwapTxs();
       setIsShowSign(true);
       clearExpiredTimer();
     } else {
       gotoSwap();
     }
   });
+
+  const swapBtnDisabled =
+    quoteLoading ||
+    !payToken ||
+    !receiveToken ||
+    !amountAvailable ||
+    inSufficient ||
+    !activeProvider;
+
+  useEffect(() => {
+    if (!swapBtnDisabled && activeProvider) {
+      if (
+        [
+          KEYRING_TYPE.SimpleKeyring,
+          KEYRING_TYPE.HdKeyring,
+          KEYRING_CLASS.HARDWARE.LEDGER,
+        ].includes((currentAccount?.type || '') as any) &&
+        !receiveToken?.low_credit_score &&
+        !receiveToken?.is_scam &&
+        receiveToken?.is_verified !== false &&
+        !isSlippageHigh &&
+        !isSlippageLow &&
+        !showLoss
+      ) {
+        mutateTxs([]);
+        runBuildSwapTxs();
+      }
+    }
+  }, [
+    swapBtnDisabled,
+    receiveToken,
+    isSlippageHigh,
+    isSlippageLow,
+    showLoss,
+    activeProvider,
+  ]);
 
   const history = useHistory();
 
@@ -700,14 +735,7 @@ export const Main = () => {
               // runBuildSwapTxs();
               handleSwap();
             }}
-            disabled={
-              quoteLoading ||
-              !payToken ||
-              !receiveToken ||
-              !amountAvailable ||
-              inSufficient ||
-              !activeProvider
-            }
+            disabled={swapBtnDisabled}
           >
             {btnText}
           </Button>
