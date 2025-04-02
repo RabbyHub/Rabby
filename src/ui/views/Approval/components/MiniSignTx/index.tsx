@@ -377,6 +377,7 @@ export const MiniSignTx = ({
             pushType: pushInfo.type,
             ignoreGasCheck: true,
             ignoreGasNotEnoughCheck: true,
+            ignoreSimulationFailed: true,
             sig,
           },
           status: 'idle',
