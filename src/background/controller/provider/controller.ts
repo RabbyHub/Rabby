@@ -1,19 +1,18 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Common, Hardfork } from '@ethereumjs/common';
-import { TransactionFactory } from '@ethereumjs/tx';
+import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
   isHexString,
   addHexPrefix,
   intToHex,
-  bufferToHex,
+  bytesToHex,
 } from '@ethereumjs/util';
-import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import {
   normalize as normalizeAddress,
   recoverPersonalSignature,
-} from 'eth-sig-util';
+} from '@metamask/eth-sig-util';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   keyringService,
@@ -70,6 +69,7 @@ import {
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
+import { stringToHex } from 'viem';
 
 const reportSignText = (params: {
   method: string;
@@ -98,7 +98,7 @@ const convertToHex = (data: Buffer | bigint) => {
   if (typeof data === 'bigint') {
     return `0x${data.toString(16)}`;
   }
-  return bufferToHex(data);
+  return bytesToHex(data);
 };
 
 interface Web3WalletPermission {
@@ -417,7 +417,8 @@ class ProviderController extends BaseController {
     if (is1559) {
       txData.type = '0x2';
     }
-    const tx = TransactionFactory.fromTxData(txData, {
+    txData.gasPrice;
+    const tx = TransactionFactory.fromTxData(txData as FeeMarketEIP1559TxData, {
       common,
     });
     const currentAccount = preferenceService.getCurrentAccount()!;
@@ -684,7 +685,7 @@ class ProviderController extends BaseController {
               txData.type = '0x2';
             }
             const tx = TransactionFactory.fromTxData(txData);
-            const rawTx = bufferToHex(tx.serialize());
+            const rawTx = bytesToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
                 chain,
@@ -761,7 +762,7 @@ class ProviderController extends BaseController {
             txData.type = '0x2';
           }
           const tx = TransactionFactory.fromTxData(txData);
-          const rawTx = bufferToHex(tx.serialize());
+          const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
           hash = await client.request({
@@ -1278,7 +1279,7 @@ class ProviderController extends BaseController {
     return recoverPersonalSignature({
       ...extra,
       data,
-      sig,
+      signature: sig,
     });
   };
 
@@ -1295,7 +1296,7 @@ class ProviderController extends BaseController {
     currentAddress = currentAddress?.toLowerCase();
     if (
       !currentAddress ||
-      currentAddress !== normalizeAddress(address).toLowerCase()
+      currentAddress !== normalizeAddress(address)?.toLowerCase()
     ) {
       throw ethErrors.rpc.invalidParams({
         message:

@@ -3,8 +3,7 @@ import * as bitbox from 'bitbox-api';
 import { BitBox02BridgeInterface } from './bitbox02-bridge-interface';
 import browser from 'webextension-polyfill';
 import * as HDKey from 'hdkey';
-import * as ethUtil from 'ethereumjs-util';
-
+import { toBytes } from '@ethereumjs/util';
 export default class BitBox02Bridge implements BitBox02BridgeInterface {
   isDeviceConnected = false;
 
@@ -68,12 +67,12 @@ export default class BitBox02Bridge implements BitBox02BridgeInterface {
     }
 
     const data: bitbox.EthTransaction = {
-      nonce: ethUtil.toBuffer(tx.nonce),
-      gasPrice: ethUtil.toBuffer(tx.gasPrice),
-      gasLimit: ethUtil.toBuffer(tx.gasLimit),
-      recipient: ethUtil.toBuffer(tx.to),
-      value: ethUtil.toBuffer(tx.value),
-      data: ethUtil.toBuffer(tx.data),
+      nonce: toBytes(tx.nonce),
+      gasPrice: toBytes(tx.gasPrice),
+      gasLimit: toBytes(tx.gasLimit),
+      recipient: toBytes(tx.to),
+      value: toBytes(tx.value),
+      data: toBytes(tx.data),
     };
 
     return this.app.ethSignTransaction(BigInt(chainId), keypath, data);
@@ -89,13 +88,13 @@ export default class BitBox02Bridge implements BitBox02BridgeInterface {
 
     const data: bitbox.Eth1559Transaction = {
       chainId: Number(tx.chainId),
-      nonce: ethUtil.toBuffer(tx.nonce),
-      maxPriorityFeePerGas: ethUtil.toBuffer(tx.maxPriorityFeePerGas),
-      maxFeePerGas: ethUtil.toBuffer(tx.maxFeePerGas),
-      gasLimit: ethUtil.toBuffer(tx.gasLimit),
-      recipient: ethUtil.toBuffer(tx.to),
-      value: ethUtil.toBuffer(tx.value),
-      data: ethUtil.toBuffer(tx.data),
+      nonce: toBytes(tx.nonce),
+      maxPriorityFeePerGas: toBytes(tx.maxPriorityFeePerGas),
+      maxFeePerGas: toBytes(tx.maxFeePerGas),
+      gasLimit: toBytes(tx.gasLimit),
+      recipient: toBytes(tx.to),
+      value: toBytes(tx.value),
+      data: toBytes(tx.data),
     };
 
     return this.app.ethSign1559Transaction(keypath, data);
@@ -110,11 +109,7 @@ export default class BitBox02Bridge implements BitBox02BridgeInterface {
       throw new Error('Device not initialized');
     }
 
-    return this.app.ethSignMessage(
-      BigInt(chainId),
-      keypath,
-      ethUtil.toBuffer(message)
-    );
+    return this.app.ethSignMessage(BigInt(chainId), keypath, toBytes(message));
   };
 
   ethSignTypedMessage: BitBox02BridgeInterface['ethSignTypedMessage'] = async (

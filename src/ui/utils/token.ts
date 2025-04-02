@@ -1,11 +1,11 @@
 import { BigNumber } from 'bignumber.js';
 import { GasLevel, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Contract, providers } from 'ethers';
-import { hexToString } from 'web3-utils';
 import { AbstractPortfolioToken } from './portfolio/types';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM, MINIMUM_GAS_LIMIT } from '@/constant';
+import { hexToString } from 'viem';
 
 export const geTokenDecimals = async (
   id: string,
