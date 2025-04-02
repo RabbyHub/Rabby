@@ -2508,6 +2508,11 @@
           "desc": "Asegúrate de que tu Keystone 3 Pro esté en la página de inicio"
         }
       },
+      "importNgraveZero": {
+        "qrcode": {
+          "desc": "Escanee el código QR en el monedero de hardware NGRAVE ZERO"
+        }
+      },
       "importSafe": {
         "error": {
           "required": "Por favor, ingrese la dirección",
