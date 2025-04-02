@@ -2592,13 +2592,18 @@
     },
     "syncToMobile": {
       "steps2": "2. Сканувати за допомогою Rabby Mobile",
-      "clickToShowQr": "Натисніть, щоб показати QR-код",
+      "clickToShowQr": "Click to Select Address  and Show QR Code",
       "downloadAppleStore": "App Store",
       "steps1": "Завантажте Rabby Mobile",
       "title": "Синхронізуйте адресу гаманця з розширення Rabby на мобільний пристрій",
       "description": "Ваші дані адреси залишаються повністю офлайн, зашифрованими та безпечно передаються через QR-код.",
       "downloadGooglePlay": "Google Play",
-      "steps2Description": "Ваш QR-код містить конфіденційні дані. Тримайте його в таємниці та ніколи не діліться ним із будь-ким."
+      "steps2Description": "Ваш QR-код містить конфіденційні дані. Тримайте його в таємниці та ніколи не діліться ним із будь-ким.",
+      "disableSelectAddress": "Sync not supported for {{type}} address",
+      "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
+      "disableSelectAddressWithSlip39": "Sync not supported for {{type}} address with slip39",
+      "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
+      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync"
     }
   },
   "component": {
