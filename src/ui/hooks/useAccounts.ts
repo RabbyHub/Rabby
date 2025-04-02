@@ -122,5 +122,9 @@ export const useAccounts = () => {
     highlightedAddresses,
     loadingAccounts,
     fetchAllAccounts,
+    allSortedAccountList: [
+      ...(sortedAccountsList?.flat() || []),
+      ...(watchSortedAccountsList || []),
+    ],
   };
 };

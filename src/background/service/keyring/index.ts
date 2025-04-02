@@ -27,7 +27,7 @@ import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
 } from './eth-gnosis-keyring';
-import preference from '../preference';
+import preference, { Account } from '../preference';
 import i18n from '../i18n';
 import {
   KEYRING_TYPE,
@@ -39,7 +39,7 @@ import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
 import contactBook from '../contactBook';
-import { generateAliasName } from '@/utils/account';
+import { filterKeyringData, generateAliasName } from '@/utils/account';
 import * as Sentry from '@sentry/browser';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
@@ -1336,7 +1336,7 @@ export class KeyringService extends EventEmitter {
       .unencryptedKeyringData?.map((item) => item.type) ?? []) as string[];
   }
 
-  async getSyncVault() {
+  async getSyncVault(filteredAccounts: Account[]) {
     const serializedKeyrings = await Promise.all(
       this.keyrings.map((keyring) => {
         return Promise.all([keyring.type, keyring.serialize()]).then(
@@ -1354,42 +1354,18 @@ export class KeyringService extends EventEmitter {
 
     const accounts: string[] = [];
 
-    const SYNC_KEYRING_TYPES = [
-      KEYRING_CLASS.MNEMONIC,
-      KEYRING_CLASS.PRIVATE_KEY,
-      KEYRING_CLASS.HARDWARE.ONEKEY,
-      KEYRING_CLASS.HARDWARE.LEDGER,
-      KEYRING_CLASS.GNOSIS,
-      KEYRING_CLASS.HARDWARE.KEYSTONE,
-    ];
     const syncKeyringData = serializedKeyrings
       .map(({ type, data, accounts: _accounts }) => {
-        if (SYNC_KEYRING_TYPES.includes(type as any)) {
-          // maybe empty keyring
-          // TODO: maybe need remove simple keyring if empty
-          if (type === KEYRING_CLASS.PRIVATE_KEY && !data.length) {
-            return undefined;
-          }
-
-          // only support keystone
-          if (type === KEYRING_CLASS.HARDWARE.KEYSTONE) {
-            const _brandName = Object.values(data.brandsMap)[0];
-            if (_brandName !== HARDWARE_KEYRING_TYPES.Keystone.brandName) {
-              return undefined;
-            }
-          }
-
+        if (
+          filteredAccounts.find((item) =>
+            _accounts.find(
+              (address) =>
+                isSameAddress(address, item.address) && item.type === type
+            )
+          )
+        ) {
           // clean mnemonic keyring
           if (type === KEYRING_CLASS.MNEMONIC) {
-            if (data.isSlip39) {
-              return undefined;
-            }
-
-            // empty mnemonic keyring
-            if (isEmpty(data.accountDetails)) {
-              return undefined;
-            }
-
             data = {
               mnemonic: data.mnemonic,
               accountDetails: data.accountDetails,
@@ -1397,9 +1373,17 @@ export class KeyringService extends EventEmitter {
             };
           }
 
-          accounts.push(..._accounts);
+          const currentAddresses = _accounts.filter((address) =>
+            filteredAccounts.find(
+              (item) =>
+                isSameAddress(address, item.address) && item.type === type
+            )
+          );
+          const currentData = filterKeyringData(data, currentAddresses);
 
-          return { type, data };
+          accounts.push(...currentAddresses);
+
+          return { type, data: currentData };
         }
       })
       .filter(Boolean) as KeyringSerializedData[];

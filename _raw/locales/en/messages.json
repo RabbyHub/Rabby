@@ -2586,7 +2586,12 @@
       "clickToShowQr": "Click to Select Address  and Show QR Code",
       "selectAddress": {
         "title": "Select Addresses to Sync"
-      }
+      },
+      "disableSelectAddress": "Sync not supported for {{type}} address",
+      "disableSelectAddressWithSlip39": "Sync not supported for {{type}} address with slip39",
+      "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
+      "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
+      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync"
     }
   },
   "component": {

@@ -2624,7 +2624,12 @@
       "steps2Description": "您的二维码包含敏感数据。请保管好，绝不要与他人分享。",
       "steps1": "下载 Rabby Mobile",
       "downloadAppleStore": "App Store",
-      "title": "从 Rabby 扩展同步钱包地址到移动端"
+      "title": "从 Rabby 扩展同步钱包地址到移动端",
+      "disableSelectAddress": "不支持{{type}}地址的同步",
+      "disableSelectAddressWithPassphrase": "与密码不支持{{type}}地址的同步",
+      "disableSelectAddressWithSlip39": "不支持{{type}}地址的同步39",
+      "selectedLenAddressesForSync_one": "选择{{len}}同步地址",
+      "selectedLenAddressesForSync_other": "选择{{{len}}地址同步"
     }
   },
   "component": {

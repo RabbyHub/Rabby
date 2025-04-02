@@ -2586,7 +2586,12 @@
       "steps1": "1. Baixe o Rabby Mobile",
       "description": "Seus dados de endereço permanecem totalmente offline, criptografados e transferidos com segurança via um código QR.",
       "steps2Description": "Seu código QR contém dados sensíveis. Mantenha-o privado e nunca o compartilhe com ninguém.",
-      "steps2": "2. Escanear com Rabby Mobile"
+      "steps2": "2. Escanear com Rabby Mobile",
+      "disableSelectAddress": "Sync não suportado para {{type}} endereço",
+      "disableSelectAddressWithPassphrase": "Sync não suportado para {{type}} endereço com a senha",
+      "disableSelectAddressWithSlip39": "Sync não suportado para {{type}} endereço com deslize39",
+      "selectedLenAddressesForSync_one": "Selecionado {{len}} endereço para sincronização",
+      "selectedLenAddressesForSync_other": "Selecionados {{len}} endereços para sincronização"
     }
   },
   "component": {

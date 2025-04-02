@@ -58,10 +58,6 @@ export const EncodeQRCode: React.FC<{
 
   const isHidden = !visible || masked;
 
-  if (!data) {
-    return null;
-  }
-
   return (
     <div
       className={clsx(

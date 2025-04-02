@@ -4,10 +4,10 @@ import { EncodeQRCode } from './EncodeQRCode';
 import { useWallet } from '../WalletContext';
 import { ReactComponent as AppleStoreSVG } from '@/ui/assets/sync-to-mobile/apple-store.svg';
 import { ReactComponent as GooglePlaySVG } from '@/ui/assets/sync-to-mobile/google-play.svg';
-import { ReactComponent as RabbyCircleSVG } from '@/ui/assets/sync-to-mobile/rabby-circle.svg';
 import clsx from 'clsx';
 import { DownloadCard } from './DownloadCard';
 import { SelectAddressModal } from './SelectAddressModal';
+import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 
 const GOOGLE_PLAY_URL =
   'https://play.google.com/store/apps/details?id=com.debank.rabbymobile';
@@ -20,25 +20,24 @@ export const QRCodePanel: React.FC = () => {
   const [data, setData] = React.useState<string>();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [qrCodeVisible, setQRCodeVisible] = React.useState(false);
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      const data = await wallet.getSyncDataString();
-
-      setData(data);
-    };
-
-    fetchData();
-  }, [wallet]);
+  const [len, setLen] = React.useState(0);
 
   const handleClickQRCode = React.useCallback(() => {
     setModalVisible(true);
   }, []);
 
-  const handleModalConfirm = React.useCallback(() => {
-    setModalVisible(false);
-    setQRCodeVisible(true);
-  }, []);
+  const handleModalConfirm = React.useCallback(
+    async (accounts: IDisplayedAccountWithBalance[]) => {
+      setModalVisible(false);
+      setQRCodeVisible(true);
+
+      const data = await wallet.getSyncDataString(accounts);
+      setLen(accounts.length);
+
+      setData(data);
+    },
+    []
+  );
 
   return (
     <div
@@ -72,7 +71,7 @@ export const QRCodePanel: React.FC = () => {
           />
         </div>
       </div>
-      <div className="border-t border-rabby-neutral-line border-dashed my-[18px]"></div>
+      <div className="border-t border-rabby-neutral-line border-dashed my-[10px]"></div>
       <div>
         <h2
           className={clsx(
@@ -91,16 +90,43 @@ export const QRCodePanel: React.FC = () => {
         >
           {t('page.syncToMobile.steps2Description')}
         </p>
-        <div className="mt-[16px] flex justify-center items-center relative">
+        <div className="flex justify-center items-center relative">
           {/* <RabbyCircleSVG className="absolute z-10" /> */}
-          {data && (
-            <EncodeQRCode
-              visible={qrCodeVisible}
-              input={data}
-              onClick={handleClickQRCode}
-            />
-          )}
+          <EncodeQRCode
+            visible={qrCodeVisible}
+            input={data ?? ''}
+            onClick={handleClickQRCode}
+          />
         </div>
+
+        {len > 0 && (
+          <div
+            className={clsx(
+              'text-r-neutral-foot',
+              'text-14 leading-[17px]',
+              'text-center',
+              'mt-[9px]'
+            )}
+          >
+            {len <= 1
+              ? t('page.syncToMobile.selectedLenAddressesForSync_one', {
+                  len,
+                })
+              : t('page.syncToMobile.selectedLenAddressesForSync_other', {
+                  len,
+                })}
+            <span
+              className={clsx(
+                'text-r-blue-default',
+                'cursor-pointer',
+                'px-[4px]'
+              )}
+              onClick={handleClickQRCode}
+            >
+              {t('global.editButton')}
+            </span>
+          </div>
+        )}
       </div>
 
       <SelectAddressModal

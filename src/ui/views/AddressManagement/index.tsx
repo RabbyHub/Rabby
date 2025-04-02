@@ -76,6 +76,7 @@ const AddressManagement = () => {
     highlightedAddresses,
     fetchAllAccounts,
     loadingAccounts,
+    allSortedAccountList,
   } = useAccounts();
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
@@ -89,10 +90,7 @@ const AddressManagement = () => {
     noAnySearchedAccount,
   } = useMemo(() => {
     const result = {
-      accountList: [
-        ...(sortedAccountsList?.flat() || []),
-        ...(watchSortedAccountsList || []),
-      ],
+      accountList: allSortedAccountList,
       filteredAccounts: [] as typeof sortedAccountsList,
       noAnyAccount: false,
       noAnySearchedAccount: false,

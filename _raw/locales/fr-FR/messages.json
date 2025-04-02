@@ -2833,7 +2833,12 @@
       "downloadGooglePlay": "Google Play",
       "downloadAppleStore": "App Store",
       "description": "Vos données d'adresse restent complètement hors ligne, cryptées et transférées en toute sécurité via un code QR.",
-      "steps2": "2. Scanner avec Rabby Mobile"
+      "steps2": "2. Scanner avec Rabby Mobile",
+      "disableSelectAddress": "Synchronisation non pris en charge pour {{type}} adresse",
+      "disableSelectAddressWithPassphrase": "Synchronisation non pris en charge pour l'adresse {{type}} avec une phrase de passe",
+      "disableSelectAddressWithSlip39": "Synchronisation non prise en charge pour l'adresse {{type}} avec SLIP39",
+      "selectedLenAddressesForSync_one": "Adresse {{Len}} sélectionnée pour la synchronisation",
+      "selectedLenAddressesForSync_other": "Adresses sélectionnées {{len}} pour la synchronisation"
     }
   }
 }

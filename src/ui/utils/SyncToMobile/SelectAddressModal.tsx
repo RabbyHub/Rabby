@@ -5,12 +5,46 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { useAccounts } from '@/ui/hooks/useAccounts';
+import { SelectAddressItem } from './SelectAddressItem';
+import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { isSameAccount, SYNC_KEYRING_TYPES } from '@/utils/account';
+import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
 
 interface Props {
   visible: boolean;
   onClose?: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (accounts: IDisplayedAccountWithBalance[]) => void;
 }
+
+export enum BAN_REASONS {
+  IS_SLIP39 = 'IS_SLIP39',
+  HAS_PASSPHRASE = 'HAS_PASSPHRASE',
+  NOT_ALLOWED = 'NOT_ALLOWED',
+}
+
+const checkBanReason = (acc: IDisplayedAccountWithBalance) => {
+  if (!SYNC_KEYRING_TYPES.includes(acc.type as any)) {
+    return BAN_REASONS.NOT_ALLOWED;
+  }
+
+  if (acc.type === KEYRING_CLASS.MNEMONIC) {
+    if (acc.keyring.isSlip39) {
+      return BAN_REASONS.IS_SLIP39;
+    }
+
+    if (acc.keyring.needPassphrase) {
+      return BAN_REASONS.HAS_PASSPHRASE;
+    }
+  }
+
+  if (acc.type === KEYRING_CLASS.HARDWARE.KEYSTONE) {
+    if (acc.brandName !== HARDWARE_KEYRING_TYPES.Keystone.brandName) {
+      return BAN_REASONS.NOT_ALLOWED;
+    }
+  }
+
+  return false;
+};
 
 export const SelectAddressModal: React.FC<Props> = ({
   visible,
@@ -18,29 +52,39 @@ export const SelectAddressModal: React.FC<Props> = ({
   onConfirm,
 }) => {
   const { t } = useTranslation();
-  const [count, setCount] = React.useState(0);
+  const [selected, setSelected] = React.useState<
+    IDisplayedAccountWithBalance[]
+  >([]);
 
-  const {
-    sortedAccountsList,
-    watchSortedAccountsList,
-    fetchAllAccounts,
-  } = useAccounts();
+  const { allSortedAccountList, fetchAllAccounts } = useAccounts();
 
   React.useEffect(() => {
     fetchAllAccounts();
   }, []);
 
-  console.log('sortedAccountsList1', sortedAccountsList);
-  console.log('watchSortedAccountsList2', watchSortedAccountsList);
+  const handleSelectAddress = React.useCallback(
+    (acc: IDisplayedAccountWithBalance) => {
+      setSelected((prev) => {
+        const index = prev.findIndex((e) => isSameAccount(e, acc));
+        if (index > -1) {
+          return prev.filter((_, i) => i !== index);
+        }
+        if (!checkBanReason(acc)) {
+          return [...prev, acc];
+        }
+        return prev;
+      });
+    },
+    []
+  );
 
   return (
     <ModalStyled
       visible={visible}
       onCancel={onClose}
-      onOk={onConfirm}
+      onOk={() => onConfirm?.(selected)}
       width={400}
       destroyOnClose
-      className="h-[600px]"
     >
       <h1
         className={clsx(
@@ -52,12 +96,28 @@ export const SelectAddressModal: React.FC<Props> = ({
       >
         {t('page.syncToMobile.selectAddress.title')}
       </h1>
-      <section>list</section>
+      <section
+        className={clsx(
+          'flex flex-col gap-[8px] px-[16px]',
+          'overflow-y-auto',
+          'flex-1'
+        )}
+      >
+        {allSortedAccountList.map((account) => (
+          <SelectAddressItem
+            checked={selected.some((e) => isSameAccount(e, account))}
+            disabled={checkBanReason(account)}
+            account={account}
+            key={`${account.brandName}-${account.address}`}
+            onClick={handleSelectAddress}
+          />
+        ))}
+      </section>
       <footer
         className={clsx(
           'flex justify-center items-center',
           'gap-x-[8px]',
-          'mt-[24px] py-[16px] px-[20px]',
+          'py-[16px] px-[20px]',
           'bg-r-neutral-bg2',
           'border-t-[0.5px] border-rabby-neutral-line'
         )}
@@ -66,9 +126,10 @@ export const SelectAddressModal: React.FC<Props> = ({
           block
           className="h-[56px] text-[17px] rounded-[8px]"
           type="primary"
-          onClick={onConfirm}
+          disabled={selected?.length === 0}
+          onClick={() => onConfirm?.(selected)}
         >
-          {t('global.confirm')} ({count})
+          {t('global.confirm')} ({selected?.length})
         </Button>
       </footer>
     </ModalStyled>
@@ -78,8 +139,13 @@ export const SelectAddressModal: React.FC<Props> = ({
 const ModalStyled = styled(Modal)`
   .ant-modal-body {
     padding: 0;
+    max-height: 600px;
+    display: flex;
+    flex-direction: column;
   }
   .ant-modal-content {
     border-radius: 16px;
+    display: flex;
+    flex-direction: column;
   }
 `;
