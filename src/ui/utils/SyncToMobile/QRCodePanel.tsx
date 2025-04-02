@@ -39,6 +39,18 @@ export const QRCodePanel: React.FC = () => {
     []
   );
 
+  React.useEffect(() => {
+    const onBodyBlur = async () => {
+      setQRCodeVisible(false);
+    };
+
+    window.addEventListener('visibilitychange', onBodyBlur, true);
+
+    return () => {
+      window.removeEventListener('visibilitychange', onBodyBlur, true);
+    };
+  }, []);
+
   return (
     <div
       className={clsx(
@@ -99,7 +111,7 @@ export const QRCodePanel: React.FC = () => {
           />
         </div>
 
-        {len > 0 && (
+        {qrCodeVisible && len > 0 && (
           <div
             className={clsx(
               'text-r-neutral-foot',

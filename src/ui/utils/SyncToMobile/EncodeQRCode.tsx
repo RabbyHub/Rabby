@@ -12,7 +12,6 @@ export const EncodeQRCode: React.FC<{
   visible?: boolean;
 }> = ({ input, onClick, visible }) => {
   const { t } = useTranslation();
-  const [masked, setMasked] = React.useState(true);
 
   React.useMemo(() => {
     const result = new UREncoder(UR.from(input), 200);
@@ -44,19 +43,7 @@ export const EncodeQRCode: React.FC<{
     };
   }, [urEncoder]);
 
-  React.useEffect(() => {
-    const onBodyBlur = async () => {
-      setMasked(true);
-    };
-
-    window.addEventListener('visibilitychange', onBodyBlur, true);
-
-    return () => {
-      window.removeEventListener('visibilitychange', onBodyBlur, true);
-    };
-  }, []);
-
-  const isHidden = !visible || masked;
+  const isHidden = !visible;
 
   return (
     <div
@@ -76,7 +63,6 @@ export const EncodeQRCode: React.FC<{
           isHidden ? 'block' : 'hidden'
         )}
         onClick={() => {
-          setMasked(false);
           onClick?.();
         }}
       >
