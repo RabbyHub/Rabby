@@ -110,12 +110,14 @@ export const sendTransaction = async ({
   onUseGasAccount,
   ga,
   sig,
+  ignoreSimulationFailed,
 }: {
   tx: Tx;
   chainServerId: string;
   wallet: WalletControllerType;
   ignoreGasCheck?: boolean;
   ignoreGasNotEnoughCheck?: boolean;
+  ignoreSimulationFailed?: boolean;
   onProgress?: (status: ProgressStatus) => void;
   onUseGasAccount?: () => void;
   gasLevel?: GasLevel;
@@ -279,9 +281,16 @@ export const sendTransaction = async ({
   let canUseGasAccount: boolean = false;
 
   // random simulation failed for test
-  if (DEBUG_SIMULATION_FAILED && Math.random() > 0.5) {
+  if (
+    !ignoreSimulationFailed &&
+    DEBUG_SIMULATION_FAILED &&
+    Math.random() > 0.5
+  ) {
     failedCode = FailedCode.SimulationFailed;
-  } else if (!preExecResult?.balance_change?.success) {
+  } else if (
+    !ignoreSimulationFailed &&
+    !preExecResult?.balance_change?.success
+  ) {
     failedCode = FailedCode.SimulationFailed;
   } else if (isGasNotEnough) {
     //  native gas not enough check gasAccount
