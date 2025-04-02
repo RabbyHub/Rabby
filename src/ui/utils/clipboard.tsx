@@ -1,8 +1,8 @@
+import { toChecksumAddress } from '@ethereumjs/util';
 import { message } from 'antd';
 import { t } from 'i18next';
 import React from 'react';
 import IconSuccess from 'ui/assets/success.svg';
-import { toChecksumAddress } from 'web3-utils';
 
 function fallbackCopyTextToClipboard(text: string) {
   const textArea = document.createElement('textarea');
