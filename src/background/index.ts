@@ -311,6 +311,14 @@ browser.runtime.onConnect.addListener((port) => {
               );
             }
             break;
+          case 'fakeTestnetOpenapi':
+            if (walletController.fakeTestnetOpenapi[data.method]) {
+              return walletController.fakeTestnetOpenapi[data.method].apply(
+                null,
+                data.params
+              );
+            }
+            break;
           case 'controller':
           default:
             if (data.method) {

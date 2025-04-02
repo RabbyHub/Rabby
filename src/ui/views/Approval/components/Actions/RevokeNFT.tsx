@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   RevokeNFTRequireData,
@@ -14,6 +13,7 @@ import * as Values from './components/Values';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
+import { Chain } from '@/types/chain';
 
 const Wrapper = styled.div`
   .header {
@@ -61,6 +61,7 @@ const RevokeNFT = ({
   const actionData = data!;
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
+  const isTestnet = chain.isTestnet;
 
   return (
     <Wrapper>
@@ -84,22 +85,31 @@ const RevokeNFT = ({
             {t('page.signTx.revokeTokenApprove.revokeFrom')}
           </Row>
           <Row>
-            <ViewMore
-              type="nftSpender"
-              data={{
-                ...requireData,
-                spender: actionData.spender,
-                chain,
-                isRevoke: true,
-              }}
-            >
+            {isTestnet ? (
               <Values.Address
                 id="revoke-nft-address"
                 hasHover
                 address={actionData.spender}
                 chain={chain}
               />
-            </ViewMore>
+            ) : (
+              <ViewMore
+                type="nftSpender"
+                data={{
+                  ...requireData,
+                  spender: actionData.spender,
+                  chain,
+                  isRevoke: true,
+                }}
+              >
+                <Values.Address
+                  id="revoke-nft-address"
+                  hasHover
+                  address={actionData.spender}
+                  chain={chain}
+                />
+              </ViewMore>
+            )}
           </Row>
         </Col>
 
