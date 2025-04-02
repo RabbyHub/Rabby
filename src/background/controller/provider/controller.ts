@@ -778,7 +778,7 @@ class ProviderController extends BaseController {
           enum: chain,
         })!;
         let errMsg = e.details || e.message || JSON.stringify(e);
-        if (chainData) {
+        if (chainData && chainData.isTestnet) {
           const rpcUrl = RPCService.hasCustomRPC(chain)
             ? RPCService.getRPCByChain(chain).url
             : (chainData as TestnetChain).rpcUrl;
