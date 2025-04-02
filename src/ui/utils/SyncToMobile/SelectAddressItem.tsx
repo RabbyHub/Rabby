@@ -76,6 +76,7 @@ export const SelectAddressItem: React.FC<{
           'py-[11px] px-[16px] rounded-[8px]',
           'border border-transparent border-solid',
           'hover:bg-r-blue-light1 hover:border-rabby-blue-default',
+          checked && 'bg-r-blue-light1 border-rabby-blue-default',
           disabled && 'cursor-not-allowed opacity-50'
         )}
         onClick={handleClickItem}
