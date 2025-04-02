@@ -6,7 +6,12 @@ import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAsync, useAsyncFn, useDebounce } from 'react-use';
-import { QuoteProvider, TDexQuoteData, useQuoteMethods } from './quote';
+import {
+  isSwapWrapToken,
+  QuoteProvider,
+  TDexQuoteData,
+  useQuoteMethods,
+} from './quote';
 import {
   useQuoteVisible,
   useRefreshId,
@@ -384,13 +389,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const [isWrapToken, wrapTokenSymbol] = useMemo(() => {
     if (payToken?.id && receiveToken?.id) {
-      const wrapTokens = [
-        WrapTokenAddressMap[chain],
-        findChainByEnum(chain)!.nativeTokenAddress,
-      ];
-      const res =
-        !!wrapTokens.find((token) => isSameAddress(payToken?.id, token)) &&
-        !!wrapTokens.find((token) => isSameAddress(receiveToken?.id, token));
+      const res = isSwapWrapToken(payToken?.id, receiveToken?.id, chain);
       return [
         res,
         isSameAddress(payToken?.id, WrapTokenAddressMap[chain])
