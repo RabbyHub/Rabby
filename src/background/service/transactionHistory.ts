@@ -649,7 +649,7 @@ class TxHistory {
 
   getList(address: string) {
     const list = Object.values(this._availableTxs[address.toLowerCase()] || {});
-
+    const maxCompletedNonceByChain: Record<string, number> = {};
     const pendings: TransactionGroup[] = [];
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };
@@ -657,23 +657,27 @@ class TxHistory {
       if (checkIsPendingTxGroup(list[i])) {
         pendings.push(list[i]);
       } else {
-        completeds.push(list[i]);
+        const item = list[i];
+        maxCompletedNonceByChain[item.chainId] = Math.max(
+          item.nonce,
+          maxCompletedNonceByChain[item.chainId] || 0
+        );
+        completeds.push(item);
       }
-      // if (list[i].isPending && !list[i].isSubmitFailed) {
-      //   pendings.push(list[i]);
-      // } else {
-      //   completeds.push(list[i]);
-      // }
     }
 
     return {
-      pendings: pendings.sort((a, b) => {
-        if (a.chainId === b.chainId) {
-          return b.nonce - a.nonce;
-        } else {
-          return a.chainId - b.chainId;
-        }
-      }),
+      pendings: pendings
+        .filter(
+          (item) => item.nonce > (maxCompletedNonceByChain[item.chainId] || 0)
+        )
+        .sort((a, b) => {
+          if (a.chainId === b.chainId) {
+            return b.nonce - a.nonce;
+          } else {
+            return a.chainId - b.chainId;
+          }
+        }),
       completeds: completeds.sort((a, b) => {
         return b.createdAt - a.createdAt;
       }),

@@ -56,7 +56,11 @@ export const SelectAddressModal: React.FC<Props> = ({
     IDisplayedAccountWithBalance[]
   >([]);
 
-  const { allSortedAccountList, fetchAllAccounts } = useAccounts();
+  const {
+    sortedAccountsList,
+    watchSortedAccountsList,
+    fetchAllAccounts,
+  } = useAccounts();
 
   React.useEffect(() => {
     fetchAllAccounts();
@@ -103,8 +107,18 @@ export const SelectAddressModal: React.FC<Props> = ({
           'flex-1'
         )}
       >
-        {allSortedAccountList.map((account) => (
+        {sortedAccountsList.flat().map((account) => (
           <SelectAddressItem
+            checked={selected.some((e) => isSameAccount(e, account))}
+            disabled={checkBanReason(account)}
+            account={account}
+            key={`${account.brandName}-${account.address}`}
+            onClick={handleSelectAddress}
+          />
+        ))}
+        {watchSortedAccountsList.flat().map((account, index) => (
+          <SelectAddressItem
+            className={clsx(index === 0 ? 'mt-[16px]' : '')}
             checked={selected.some((e) => isSameAccount(e, account))}
             disabled={checkBanReason(account)}
             account={account}

@@ -1,8 +1,7 @@
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useRabbySelector } from '@/ui/store';
-import { message, Tooltip } from 'antd';
-import React, { useMemo, useRef } from 'react';
+import { Tooltip } from 'antd';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isSameAddress, splitNumberByStep, useAccountInfo } from '@/ui/utils';
 import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from '@/constant';
@@ -19,11 +18,12 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { BAN_REASONS } from './SelectAddressModal';
 
 export const SelectAddressItem: React.FC<{
+  className?: string;
   account: IDisplayedAccountWithBalance;
   disabled?: boolean | BAN_REASONS;
   onClick?(account: IDisplayedAccountWithBalance): void;
   checked?: boolean;
-}> = ({ account, onClick, disabled, checked }) => {
+}> = ({ account, onClick, disabled, checked, className }) => {
   const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
     whitelistEnable: s.whitelist.enabled,
     whiteList: s.whitelist.whitelist,
@@ -46,8 +46,6 @@ export const SelectAddressItem: React.FC<{
 
     onClick?.(account);
   };
-
-  const { isDarkTheme } = useThemeMode();
 
   return (
     <TooltipWithMagnetArrow
@@ -77,7 +75,8 @@ export const SelectAddressItem: React.FC<{
           'border border-transparent border-solid',
           'hover:bg-r-blue-light1 hover:border-rabby-blue-default',
           checked && 'bg-r-blue-light1 border-rabby-blue-default',
-          disabled && 'cursor-not-allowed opacity-50'
+          disabled && 'cursor-not-allowed opacity-50',
+          className
         )}
         onClick={handleClickItem}
       >
@@ -85,9 +84,9 @@ export const SelectAddressItem: React.FC<{
           <ThemeIcon
             className="w-[24px] h-[24px]"
             src={
-              pickKeyringThemeIcon(account.brandName as any, isDarkTheme) ||
+              pickKeyringThemeIcon(account.brandName as any, false) ||
               WALLET_BRAND_CONTENT[account.brandName]?.image ||
-              pickKeyringThemeIcon(account.type as any, isDarkTheme) ||
+              pickKeyringThemeIcon(account.type as any, false) ||
               KEYRING_ICONS[account.type]
             }
           />
