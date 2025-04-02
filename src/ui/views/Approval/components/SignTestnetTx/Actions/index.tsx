@@ -1,35 +1,31 @@
-import { Chain } from '@debank/common';
-import ViewRawModal from '../../TxComponents/ViewRawModal';
-import React, { useMemo } from 'react';
-import styled from 'styled-components';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { useTranslation } from 'react-i18next';
-import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
-import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
-import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
-import { findChain } from '@/utils/chain';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import IconArrowRight, {
-  ReactComponent as RcIconArrowRight,
-} from 'ui/assets/approval/edit-arrow-right.svg';
-import { ActionWrapper } from '../../ActionWrapper';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { Chain } from '@debank/common';
+import {
+  ActionRequireData,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 import clsx from 'clsx';
-import { Table, Col, Row } from '../../Actions/components/Table';
-import Loading from '../../TxComponents/Loading';
-import IconCheck, {
-  ReactComponent as RcIconCheck,
-} from 'src/ui/assets/approval/icon-check.svg';
-import { NoActionAlert } from '../../NoActionAlert/NoActionAlert';
-import { Card } from '../../Card';
-import { OriginInfo } from '../../OriginInfo';
-import { Divide } from '../../Divide';
-import BalanceChange from '../../TxComponents/BalanceChange';
+import { isEmpty } from 'lodash';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
+import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import LogoWithText from '../../Actions/components/LogoWithText';
-import { MessageWrapper } from '../../TextActions';
-import { SignAdvancedSettings } from '../../SignAdvancedSettings';
-import { TestnetTransactionActionList } from './TransactionActionList';
-import { ParsedTransactionActionData } from '@rabby-wallet/rabby-action';
+import { Col, Row } from '../../Actions/components/Table';
+import { TransactionActionList } from '../../Actions/components/TransactionActionList';
 import { getActionTypeText } from '../../Actions/utils';
+import { ActionWrapper } from '../../ActionWrapper';
+import { Card } from '../../Card';
+import { Divide } from '../../Divide';
+import { NoActionAlert } from '../../NoActionAlert/NoActionAlert';
+import { OriginInfo } from '../../OriginInfo';
+import BalanceChange from '../../TxComponents/BalanceChange';
+import Loading from '../../TxComponents/Loading';
+import ViewRawModal from '../../TxComponents/ViewRawModal';
+import { TestnetUnknownAction } from './UnknownAction';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -57,6 +53,7 @@ export const SignTitle = styled.div`
 
 export const TestnetActions = ({
   data,
+  requireData,
   chain,
   raw,
   onChange,
@@ -66,9 +63,10 @@ export const TestnetActions = ({
   origin,
 }: {
   data: ParsedTransactionActionData;
+  requireData: ActionRequireData;
   chain: Chain;
   raw: Record<string, string | number>;
-  onChange?(tx: Record<string, any>): void;
+  onChange(tx: Record<string, any>): void;
   isSpeedUp: boolean;
   isReady?: boolean;
   originLogo?: string;
@@ -85,7 +83,7 @@ export const TestnetActions = ({
   };
   const { t } = useTranslation();
 
-  const isUnknown = data?.contractCall;
+  const isUnknown = data?.contractCall || isEmpty(data);
 
   if (!isReady) {
     return <Loading />;
@@ -169,23 +167,18 @@ export const TestnetActions = ({
             </Col>
 
             {isUnknown ? null : (
-              <TestnetTransactionActionList
+              <TransactionActionList
                 data={data}
+                requireData={requireData}
                 chain={chain}
+                engineResults={[]}
                 raw={raw}
                 onChange={onChange}
               />
             )}
           </div>
         </Card>
-        {isUnknown ? (
-          <TestnetTransactionActionList
-            data={data}
-            chain={chain}
-            raw={raw}
-            onChange={onChange}
-          />
-        ) : null}
+        {isUnknown ? <TestnetUnknownAction chain={chain} raw={raw} /> : null}
       </ActionWrapper>
     </div>
   );

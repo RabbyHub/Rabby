@@ -12,6 +12,7 @@ import {
 } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
+  ALIAS_ADDRESS,
   DEFAULT_GAS_LIMIT_BUFFER,
   DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
@@ -41,6 +42,7 @@ import { ga4 } from '@/utils/ga4';
 import { TestnetActions } from './Actions';
 import {
   ActionRequireData,
+  fetchActionRequiredData,
   parseAction,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
@@ -405,6 +407,8 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           address: currentAccount.address,
         });
 
+        console.log('balace', balance.rawAmount);
+
         setNativeTokenBalance(balance.rawAmount);
       } catch (e) {
         console.error(e);
@@ -510,45 +514,79 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     });
   };
 
-  const { data: actionData, runAsync: explainTx } = useRequest(
+  const { data: explainResult, runAsync: explainTx } = useRequest(
     async ({ gasUsed, tx }: { gasUsed?: string; tx: Tx }) => {
-      const currentAccount =
-        isGnosis && account ? account : (await wallet.getCurrentAccount())!;
-      if (!chain) {
-        return;
+      try {
+        const currentAccount =
+          isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+        if (!chain) {
+          return;
+        }
+        const actionData = await wallet.parseCustomNetworkTx({
+          chainId: chain.id,
+          tx: {
+            ...tx,
+            gas: '0x0',
+            value: tx.value || '0x0',
+            to: tx.to || '',
+          },
+          origin: origin || '',
+          addr: currentAccount.address,
+        });
+
+        if (!actionData) {
+          return;
+        }
+
+        const parsed = parseAction({
+          type: 'transaction',
+          data: actionData.action,
+          balanceChange: {} as any,
+          tx: {
+            ...tx,
+            gas: '0x0',
+
+            value: tx.value || '0x0',
+          },
+          preExecVersion: 'v0',
+          gasUsed: gasUsed ? Number(gasUsed) : 0,
+          sender: tx.from,
+        });
+
+        const requiredData = await fetchActionRequiredData({
+          type: 'transaction',
+          actionData: parsed,
+          contractCall: actionData.contract_call,
+          chainId: chain.serverId,
+          sender: currentAccount.address,
+          walletProvider: {
+            findChain,
+            ALIAS_ADDRESS,
+            hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+            hasAddress: wallet.hasAddress,
+            getWhitelist: wallet.getWhitelist,
+            isWhitelistEnabled: wallet.isWhitelistEnabled,
+            getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+          },
+          tx: {
+            ...tx,
+            gas: '0x0',
+            // nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+            value: tx.value || '0x0',
+          },
+          // todo fake api provider
+          apiProvider: (wallet.fakeTestnetOpenapi as unknown) as any,
+        });
+
+        console.log({ parsed, requiredData });
+
+        return {
+          actionData: parsed,
+          requiredData,
+        };
+      } catch (e) {
+        console.error(e);
       }
-      const actionData = await wallet.parseCustomNetworkTx({
-        chainId: chain.id,
-        tx: {
-          ...tx,
-          gas: '0x0',
-          value: tx.value || '0x0',
-          to: tx.to || '',
-        },
-        origin: origin || '',
-        addr: currentAccount.address,
-      });
-
-      console.log('actionData', actionData);
-
-      const parsed = parseAction({
-        type: 'transaction',
-        data: actionData.action,
-        balanceChange: {} as any,
-        tx: {
-          ...tx,
-          gas: '0x0',
-
-          value: tx.value || '0x0',
-        },
-        preExecVersion: 'v0',
-        gasUsed: gasUsed ? Number(gasUsed) : 0,
-        sender: tx.from,
-      });
-
-      console.log(parsed);
-
-      return parsed;
     },
     {
       manual: true,
@@ -556,6 +594,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         console.log('finally');
       },
       onError(e) {
+        console.log(e);
         Modal.error({
           title: 'Error',
           content: e.message || JSON.stringify(e),
@@ -723,6 +762,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         rawTx: {
           nonce: realNonce || tx.nonce,
         },
+        action: explainResult,
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
@@ -807,7 +847,8 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     <>
       <div className="approval-tx overflow-x-hidden">
         <TestnetActions
-          data={actionData || {}}
+          data={explainResult?.actionData || {}}
+          requireData={explainResult?.requiredData || null}
           isReady={isReady}
           chain={chain}
           raw={{
@@ -838,11 +879,12 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           <div
             className={clsx(
               'w-[186px]',
-              'ml-auto mr-[-20px] mt-[-116px]',
+              'ml-auto',
               'px-[16px] py-[12px] rotate-[-23deg]',
               'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
               'text-r-neutral-title1 text-[20px] leading-[24px]',
-              'opacity-30'
+              'opacity-30',
+              'absolute bottom-[210px] right-[16px] pointer-events-none'
             )}
           >
             Custom Network

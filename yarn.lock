@@ -4121,6 +4121,11 @@
     "@metamask/safe-event-emitter" "^3.0.0"
     "@metamask/utils" "^10.0.0"
 
+"@metamask/metamask-eth-abis@3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@metamask/metamask-eth-abis/-/metamask-eth-abis-3.1.1.tgz#3de904511115c488809ddee25c470332c03db531"
+  integrity sha512-lRUyWN/GrIFQlT0wq/9gB+4wIV2i0N6yAQlJhfLCT6bVfK5GI5IUDxvCyLTDvxQxaLpNgtBFFzbuY1iVj3UWLA==
+
 "@metamask/obs-store@6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@metamask/obs-store/-/obs-store-6.0.2.tgz#1fbc458cc617557a4557f9ab58e6676c474df2b1"
@@ -15642,6 +15647,11 @@ multicast-dns@^6.0.1:
   dependencies:
     dns-packet "^1.3.1"
     thunky "^1.0.2"
+
+multiformats@13.3.2:
+  version "13.3.2"
+  resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-13.3.2.tgz#a77c2a09c490e90c73b3049551604e6e1a4854e0"
+  integrity sha512-qbB0CQDt3QKfiAzZ5ZYjLFOs+zW43vA4uyM8g27PeEuXZybUOFyjrVdP93HPBHMoglibwfkdVwbzfUq8qGcH6g==
 
 multiformats@^9.4.2:
   version "9.9.0"

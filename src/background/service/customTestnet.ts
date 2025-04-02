@@ -14,8 +14,11 @@ import {
   createClient,
   createPublicClient,
   custom,
+  decodeFunctionData,
   defineChain,
   erc20Abi,
+  erc721Abi,
+  getContract,
   http,
   isAddress,
   publicActions,
@@ -38,6 +41,15 @@ import { storage } from '../webapi';
 import { ga4 } from '@/utils/ga4';
 import { parseStandardTokenTransactionData } from '../utils/tx';
 import { nanoid } from 'nanoid';
+import { abiERC1155, abiERC721 } from '@metamask/metamask-eth-abis';
+import {
+  IPFS_DEFAULT_GATEWAY_URL,
+  TOKEN_STANDARD,
+  ERC_INTERFACE_ID,
+} from '@/constant/custom-testnet';
+import { isZeroAddress } from 'ethereumjs-util';
+import { ERC1155ABI } from '@/constant/abi';
+import { getFormattedIpfsUrl } from '../utils/ipfs';
 
 const MAX_READ_CONTRACT_TIME = 15_000;
 
@@ -530,7 +542,9 @@ class CustomTestnetService {
 
     return {
       ...tokenInfo,
-      amount: new BigNumber(balance.toString()).div(10 ** decimals).toNumber(),
+      amount: new BigNumber(balance.toString())
+        .div(new BigNumber(10).pow(decimals))
+        .toNumber(),
       rawAmount: balance.toString(),
       logo:
         !tokenId || tokenId?.replace('custom_', '') === String(chainId)
@@ -748,6 +762,236 @@ class CustomTestnetService {
     }
   };
 
+  getERC721Details = async ({
+    chainId,
+    tokenId,
+  }: {
+    chainId: number;
+    tokenId: string;
+  }) => {
+    const client = this.getClient(+chainId);
+    const chain = findChain({
+      id: +chainId,
+    });
+    if (!client || !chain) {
+      throw new Error(`Invalid chainId: ${chainId}`);
+    }
+
+    const contract = getContract({
+      address: tokenId as `0x${string}`,
+      abi: abiERC721,
+      client,
+    });
+
+    const isErc721 = await contract.read.supportsInterface([
+      ERC_INTERFACE_ID.ERC721_INTERFACE_ID,
+    ]);
+    if (!isErc721) {
+      throw new Error('is not valid erc721');
+    }
+
+    // const [symbol, name] = await Promise.all([
+    //   contract.read.symbol(),
+    //   contract.read.name(),
+    // ]);
+
+    const name = await contract.read.name();
+
+    return {
+      type: TOKEN_STANDARD.ERC721,
+      contract: {
+        contractId: tokenId,
+        chainId,
+        name,
+      },
+    } as const;
+  };
+
+  getERC1155Details = async ({
+    chainId,
+    tokenId,
+  }: {
+    chainId: number;
+    tokenId: string;
+  }) => {
+    const client = this.getClient(+chainId);
+    const chain = findChain({
+      id: +chainId,
+    });
+    if (!client || !chain) {
+      throw new Error(`Invalid chainId: ${chainId}`);
+    }
+
+    const contract = getContract({
+      address: tokenId as `0x${string}`,
+      abi: abiERC1155,
+      client,
+    });
+
+    const isErc1155 = await contract.read.supportsInterface([
+      ERC_INTERFACE_ID.ERC1155_INTERFACE_ID,
+    ]);
+    if (!isErc1155) {
+      throw new Error('is not valid erc1155');
+    }
+    const name = await readContract(client, {
+      address: tokenId as `0x${string}`,
+      abi: [
+        {
+          inputs: [],
+          name: 'name',
+          outputs: [{ name: '_name', type: 'string' }],
+          stateMutability: 'view',
+          type: 'function',
+          payable: false,
+        },
+      ],
+      functionName: 'name',
+      args: [],
+    }).catch(() => '');
+
+    return {
+      type: TOKEN_STANDARD.ERC1155,
+      contract: {
+        contractId: tokenId,
+        chainId,
+        name,
+      },
+    } as const;
+  };
+
+  getTokenStandardAndDetails = async ({
+    chainId,
+    tokenId,
+  }: {
+    chainId: number;
+    tokenId: string;
+  }) => {
+    try {
+      const res = await this.getERC721Details({
+        chainId,
+        tokenId,
+      });
+      return res;
+    } catch (e) {
+      console.error(e);
+    }
+    try {
+      const res = await this.getERC1155Details({
+        chainId,
+        tokenId,
+      });
+      return res;
+    } catch (e) {
+      console.error(e);
+    }
+
+    try {
+      const token = await this.getTokenInfo({
+        chainId,
+        tokenId,
+      });
+      return {
+        type: TOKEN_STANDARD.ERC20,
+        token: token,
+      } as const;
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  getNFT721Metadata = async ({
+    chainId,
+    contractAddress,
+    tokenId,
+  }: {
+    chainId: number;
+    contractAddress: string;
+    tokenId: string | bigint;
+  }): Promise<
+    | {
+        name?: string;
+        image?: string;
+        description?: string;
+      }
+    | undefined
+  > => {
+    const client = this.getClient(chainId);
+
+    try {
+      const tokenURI = await readContract(client, {
+        abi: erc721Abi,
+        address: contractAddress as `0x${string}`,
+        functionName: 'tokenURI',
+        args: [BigInt(tokenId)],
+      }).then((uri) => {
+        return uri.startsWith('ipfs://')
+          ? getFormattedIpfsUrl(IPFS_DEFAULT_GATEWAY_URL, uri, false)
+          : uri;
+      });
+
+      if (tokenURI) {
+        const { data: metaData } = await axios.get(tokenURI);
+        if (metaData?.image?.startsWith('ipfs://')) {
+          metaData.image = getFormattedIpfsUrl(
+            IPFS_DEFAULT_GATEWAY_URL,
+            metaData.image,
+            false
+          );
+        }
+        return metaData;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  getNFT1155Metadata = async ({
+    chainId,
+    contractAddress,
+    tokenId,
+  }: {
+    chainId: number;
+    contractAddress: string;
+    tokenId: string | bigint;
+  }): Promise<
+    | {
+        name?: string;
+        image?: string;
+        description?: string;
+        decimals?: number;
+      }
+    | undefined
+  > => {
+    const client = this.getClient(chainId);
+
+    try {
+      const tokenURI = await readContract(client, {
+        abi: abiERC1155,
+        address: contractAddress as `0x${string}`,
+        functionName: 'uri',
+        args: [BigInt(tokenId)],
+      }).then((uri) => {
+        return uri.startsWith('ipfs://')
+          ? getFormattedIpfsUrl(IPFS_DEFAULT_GATEWAY_URL, uri, false)
+          : uri;
+      });
+      if (tokenURI) {
+        const { data: metaData } = await axios.get(tokenURI);
+        if (metaData?.image?.startsWith('ipfs://')) {
+          metaData.image = getFormattedIpfsUrl(
+            IPFS_DEFAULT_GATEWAY_URL,
+            metaData.image,
+            false
+          );
+        }
+        return metaData;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   parseTx = async ({
     chainId,
     tx,
@@ -758,7 +1002,7 @@ class CustomTestnetService {
     tx: Tx;
     origin: string;
     addr: string;
-  }): Promise<Omit<ParseTxResponse, 'log_id'>> => {
+  }): Promise<Omit<ParseTxResponse, 'log_id'> | undefined | null> => {
     const client = this.getClient(+chainId);
     const chain = findChain({
       id: +chainId,
@@ -767,7 +1011,10 @@ class CustomTestnetService {
       throw new Error(`can not find custom network client: ${chainId}`);
     }
     const { data, to } = tx;
-    if (data && !to) {
+    const hasValue = tx.value && tx.value !== '0x' && Number(tx.value) !== 0;
+    const hasData = data && data !== '0x';
+
+    if (hasData && !to) {
       return {
         action: {
           type: 'deploy_contract',
@@ -776,160 +1023,342 @@ class CustomTestnetService {
       };
     }
 
-    if (to) {
-      if (isSameAddress(addr, to)) {
-        return {
-          action: {
-            type: 'cancel_tx',
-            data: null,
+    if (!to) {
+      // unknown
+      return;
+    }
+
+    const cancelAction = {
+      action: {
+        type: 'cancel_tx',
+        data: null,
+      },
+    };
+
+    if (isSameAddress(addr, to)) {
+      return cancelAction;
+    }
+    const bytecode = await getCode(client, {
+      address: to as `0x${string}`,
+    });
+
+    const isContractAddress =
+      !!bytecode && bytecode !== '0x' && bytecode !== '0x0';
+
+    // if no data and send to CA or send to EOA
+    if ((isContractAddress && !hasData) || !isContractAddress) {
+      const _value = new BigNumber(tx.value).isNaN()
+        ? new BigNumber(0)
+        : new BigNumber(tx.value);
+      return {
+        action: {
+          type: 'send_token',
+          data: {
+            to: to || '',
+            token: customTestnetTokenToTokenItem({
+              amount: _value
+                .div(new BigNumber(10).pow(chain.nativeTokenDecimals))
+                .toNumber(),
+              symbol: chain.nativeTokenSymbol,
+              decimals: chain.nativeTokenDecimals,
+              id: chain.nativeTokenAddress,
+              chainId: chain.id,
+              rawAmount: _value.toString(),
+              logo: this.logos?.[chain.id]?.token_logo_url,
+            }),
           },
-        };
+        },
+      };
+    }
+
+    if (isContractAddress && hasData) {
+      if (hasValue) {
+        // unknown
+        return;
       }
-      const bytecode = await getCode(client, {
-        address: to as `0x${string}`,
+
+      const details = await this.getTokenStandardAndDetails({
+        chainId,
+        tokenId: to,
       });
 
-      console.log(bytecode);
+      if (!details) {
+        // unknown
+        return;
+      }
 
-      const isContractAddress =
-        !!bytecode && bytecode !== '0x' && bytecode !== '0x0';
+      if (details.type === TOKEN_STANDARD.ERC20) {
+        const { token } = details;
+        const parsedData = decodeFunctionData({
+          abi: erc20Abi,
+          data: data as `0x${string}`,
+        });
 
-      if (isContractAddress) {
-        const hasValue =
-          tx.value && tx.value !== '0x' && Number(tx.value) !== 0;
-
-        const parsedData = data
-          ? parseStandardTokenTransactionData(data as `0x${string}`)
-          : undefined;
-
-        let token: CustomTestnetTokenBase | null = null;
-        try {
-          token = await this.getTokenInfo({
-            chainId,
-            tokenId: to,
-          });
-        } catch (e) {
-          console.error(e);
-        } finally {
-          console.log('finally xxxxxxxxxxx');
+        if (!parsedData) {
+          // unknown
+          return;
         }
-        console.log('after getToken');
-
-        if (data && parsedData?.functionName && !hasValue) {
-          if (
-            parsedData?.functionName?.toLowerCase() === 'transfer' &&
-            parsedData.args
-          ) {
-            const _to = parsedData.args[0] as string;
-            if (isSameAddress(addr, _to)) {
-              return {
-                action: {
-                  type: 'cancel_tx',
-                  data: null,
-                },
-              };
-            }
-            const _rawAmount = parsedData.args[1] as string;
-            const _value = new BigNumber(_rawAmount || 0).isNaN()
-              ? new BigNumber(0)
-              : new BigNumber(_rawAmount);
-            return {
-              action: {
-                type: 'send_token',
-                data: {
-                  to: _to || '',
-                  token: token
-                    ? customTestnetTokenToTokenItem({
-                        amount: _value.div(10 ** token.decimals).toNumber(),
-                        symbol: token.symbol,
-                        decimals: token.decimals,
-                        id: token.id,
-                        chainId: token.chainId,
-                        rawAmount: _value.toString(),
-                        logo: '',
-                      })
-                    : // todo
-                      (null as any),
-                },
-              },
-            };
-          } else if (
-            parsedData?.functionName.toLowerCase() === 'approve' &&
-            parsedData.args
-          ) {
-            const spender = parsedData.args[0] as string;
-            const _rawAmount = parsedData.args[1] as string;
-            const _value = new BigNumber(_rawAmount || 0).isNaN()
-              ? new BigNumber(0)
-              : new BigNumber(_rawAmount);
-            return {
-              action: {
-                type: _value.isZero() ? 'revoke_token' : 'approve_token',
-                data: {
-                  spender: spender || '',
-                  token: token
-                    ? customTestnetTokenToTokenItem({
-                        amount: _value.div(10 ** token.decimals).toNumber(),
-                        symbol: token.symbol,
-                        decimals: token.decimals,
-                        id: token.id,
-                        chainId: token.chainId,
-                        rawAmount: _value.toString(),
-                        logo: '',
-                      })
-                    : // todo
-                      (null as any),
-                },
-              },
-            };
+        if (parsedData.functionName === 'transfer') {
+          const [_to, _rawAmount] = parsedData.args;
+          if (!_to || !_rawAmount) {
+            throw new Error('unknown');
           }
-        } else {
-          console.log('/todo');
+          if (isSameAddress(addr, _to)) {
+            return cancelAction;
+          }
+          const _value = new BigNumber(_rawAmount.toString()).isNaN()
+            ? new BigNumber(0)
+            : new BigNumber(_rawAmount.toString());
           return {
             action: {
-              // todo
-              type: '',
-              data: null,
+              type: 'send_token',
+              data: {
+                to: _to || '',
+                token: customTestnetTokenToTokenItem({
+                  amount: _value
+                    .div(new BigNumber(10).pow(token.decimals))
+                    .toNumber(),
+                  symbol: token.symbol,
+                  decimals: token.decimals,
+                  id: token.id,
+                  chainId: token.chainId,
+                  rawAmount: _value.toString(),
+                  logo: '',
+                }),
+              },
             },
-            contract_call: {
-              func: parsedData?.functionName || '',
-              contract: {
-                id: to,
-                protocol: {
-                  name: '',
-                  logo_url: '',
+          };
+        } else if (parsedData?.functionName === 'approve') {
+          const [spender, _rawAmount] = parsedData.args;
+          const _value = new BigNumber((_rawAmount || 0).toString()).isNaN()
+            ? new BigNumber(0)
+            : new BigNumber((_rawAmount || 0).toString());
+          return {
+            action: {
+              type: _value.isZero() ? 'revoke_token' : 'approve_token',
+              data: {
+                spender: spender || '',
+                token: customTestnetTokenToTokenItem({
+                  amount: _value
+                    .div(new BigNumber(10).pow(token.decimals))
+                    .toNumber(),
+                  symbol: token.symbol,
+                  decimals: token.decimals,
+                  id: token.id,
+                  chainId: token.chainId,
+                  rawAmount: _value.toString(),
+                  logo: '',
+                }),
+              },
+            },
+          };
+        } else {
+          // unknown
+          return;
+        }
+      } else if (details.type === TOKEN_STANDARD.ERC721) {
+        const parsedData = decodeFunctionData({
+          abi: erc721Abi,
+          data: data as `0x${string}`,
+        });
+        if (!parsedData) {
+          return;
+        }
+        if (
+          parsedData.functionName === 'safeTransferFrom' ||
+          parsedData.functionName === 'transferFrom'
+        ) {
+          const [_from, _to, _tokenId] = parsedData.args;
+
+          if (isSameAddress(_from, _to)) {
+            return cancelAction;
+          }
+
+          const metadata = await this.getNFT721Metadata({
+            chainId,
+            contractAddress: to,
+            tokenId: _tokenId,
+          }).catch(() => null);
+
+          return {
+            action: {
+              type: 'send_nft',
+              data: {
+                to: _to,
+                nft: {
+                  chain: chain.serverId,
+                  id: nanoid(),
+                  contract_id: to,
+                  inner_id: _tokenId.toString(),
+                  name: metadata?.name ?? '',
+                  contract_name: '',
+                  description: metadata?.description ?? '',
+                  amount: 1,
+                  content_type: 'image_url',
+                  content: metadata?.image ?? '',
+                  detail_url: '',
+                  is_erc1155: false,
+                  is_erc721: true,
                 },
+              },
+            },
+          };
+        }
+        if (parsedData.functionName === 'approve') {
+          const [_to, _tokenId] = parsedData.args;
+          const metadata = await this.getNFT721Metadata({
+            chainId,
+            contractAddress: to,
+            tokenId: _tokenId,
+          }).catch(() => null);
+
+          return {
+            action: {
+              type: isZeroAddress(_to) ? 'revoke_nft' : 'approve_nft',
+              data: {
+                spender: _to,
+                nft: {
+                  chain: chain.serverId,
+                  id: nanoid(),
+                  contract_id: to,
+                  inner_id: _tokenId.toString(),
+                  name: metadata?.name ?? '',
+                  contract_name: details.contract.name,
+                  description: metadata?.description ?? '',
+                  amount: 1,
+                  content_type: 'image_url',
+                  content: metadata?.image ?? '',
+                  detail_url: '',
+                  is_erc1155: false,
+                  is_erc721: true,
+                },
+              },
+            },
+          };
+        }
+        if (parsedData.functionName === 'setApprovalForAll') {
+          const [spender, isApprove] = parsedData.args;
+          return {
+            action: {
+              type: isApprove ? 'approve_collection' : 'revoke_collection',
+              data: {
+                collection: {
+                  create_at: '',
+                  id: to,
+                  is_core: false,
+                  name: details.contract.name,
+                  price: 0,
+                  chain: chain.serverId,
+                  tokens: [],
+                  floor_price: 0,
+                  is_scam: false,
+                  is_suspicious: false,
+                  is_verified: false,
+                },
+                spender,
+              },
+            },
+          };
+        }
+      } else if (details.type === TOKEN_STANDARD.ERC1155) {
+        const parsedData = decodeFunctionData({
+          abi: abiERC1155,
+          data: data as `0x${string}`,
+        });
+        if (!parsedData) {
+          return;
+        }
+        if (parsedData.functionName === 'safeTransferFrom') {
+          const [_from, _to, _tokenId, _amount] = parsedData.args;
+
+          if (isSameAddress(_from, _to)) {
+            return cancelAction;
+          }
+          const metadata = await this.getNFT1155Metadata({
+            chainId,
+            contractAddress: to,
+            tokenId: _tokenId,
+          }).catch(() => null);
+
+          // const amount = new BigNumber(_amount.toString())
+          //   .div(
+          //     metadata?.decimals && Number.isInteger(metadata.decimals)
+          //       ? new BigNumber(10).pow(metadata?.decimals)
+          //       : 1
+          //   )
+          //   .toNumber();
+          return {
+            action: {
+              type: 'send_nft',
+              data: {
+                to: _to,
+                nft: {
+                  chain: chain.serverId,
+                  id: nanoid(),
+                  contract_id: to,
+                  inner_id: _tokenId.toString(),
+                  name: metadata?.name ?? '',
+                  contract_name: '',
+                  description: metadata?.description ?? '',
+                  amount: Number(_amount),
+                  content_type: 'image_url',
+                  content: metadata?.image ?? '',
+                  detail_url: '',
+                  is_erc1155: true,
+                  is_erc721: false,
+                },
+              },
+            },
+          };
+        }
+        if (parsedData.functionName === 'setApprovalForAll') {
+          const [spender, isApprove] = parsedData.args;
+          return {
+            action: {
+              type: isApprove ? 'approve_collection' : 'revoke_collection',
+              data: {
+                collection: {
+                  create_at: '',
+                  id: to,
+                  is_core: false,
+                  name: details.contract.name,
+                  price: 0,
+                  chain: chain.serverId,
+                  tokens: [],
+                  floor_price: 0,
+                  is_scam: false,
+                  is_suspicious: false,
+                  is_verified: false,
+                },
+                spender,
               },
             },
           };
         }
       }
     }
-
-    const _value = new BigNumber(tx.value).isNaN()
-      ? new BigNumber(0)
-      : new BigNumber(tx.value);
-    return {
-      action: {
-        type: 'send_token',
-        data: {
-          to: to || '',
-          token: customTestnetTokenToTokenItem({
-            amount: _value.div(10 ** chain.nativeTokenDecimals).toNumber(),
-            symbol: chain.nativeTokenSymbol,
-            decimals: chain.nativeTokenDecimals,
-            id: chain.nativeTokenAddress,
-            chainId: chain.id,
-            rawAmount: _value.toString(),
-            logo: this.logos?.[chain.id]?.token_logo_url,
-          }),
-        },
-      },
-    };
   };
 }
 
 export const customTestnetService = new CustomTestnetService();
+export const fakeTestnetOpenapi = {
+  getToken: async (id: string, chainId: string, tokenId: string) => {
+    const chain = findChain({
+      serverId: chainId,
+    });
+    if (!chain) {
+      throw new Error(`invalid chain: ${chainId}`);
+    }
+
+    const customToken = await customTestnetService.getToken({
+      chainId: chain.id,
+      address: id,
+      tokenId: tokenId,
+    });
+
+    return customTestnetTokenToTokenItem(customToken);
+  },
+};
 
 const createClientByChain = (chain: TestnetChainBase) => {
   return createClient({

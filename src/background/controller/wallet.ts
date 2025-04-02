@@ -112,7 +112,10 @@ import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { estimateL1Fee } from '@/utils/l2';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring/dist/coinbase-keyring';
-import { customTestnetService } from '../service/customTestnet';
+import {
+  customTestnetService,
+  fakeTestnetOpenapi,
+} from '../service/customTestnet';
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -143,6 +146,7 @@ const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 export class WalletController extends BaseController {
   openapi = openapiService;
   testnetOpenapi = testnetOpenapiService;
+  fakeTestnetOpenapi = fakeTestnetOpenapi;
 
   /* wallet */
   boot = async (password) => {
