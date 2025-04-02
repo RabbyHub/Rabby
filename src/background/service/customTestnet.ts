@@ -1,6 +1,15 @@
+import {
+  ERC_INTERFACE_ID,
+  IPFS_DEFAULT_GATEWAY_URL,
+  TOKEN_STANDARD,
+} from '@/constant/custom-testnet';
 import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { findChain, isSameTesnetToken, updateChainStore } from '@/utils/chain';
+import { ga4 } from '@/utils/ga4';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { CHAINS_ENUM } from '@debank/common';
+import { intToHex } from '@ethereumjs/util';
+import { abiERC1155, abiERC721 } from '@metamask/metamask-eth-abis';
 import { GasLevel, ParseTxResponse, Tx } from 'background/service/openapi';
 import {
   createPersistStore,
@@ -8,12 +17,11 @@ import {
   withTimeout,
 } from 'background/utils';
 import { BigNumber } from 'bignumber.js';
-import { intToHex } from '@ethereumjs/util';
+import { isZeroAddress } from 'ethereumjs-util';
 import { omitBy, sortBy } from 'lodash';
+import { nanoid } from 'nanoid';
 import {
   createClient,
-  createPublicClient,
-  custom,
   decodeFunctionData,
   defineChain,
   erc20Abi,
@@ -21,10 +29,8 @@ import {
   getContract,
   http,
   isAddress,
-  publicActions,
 } from 'viem';
 import {
-  call,
   estimateGas,
   getBalance,
   getBlock,
@@ -35,21 +41,9 @@ import {
   readContract,
 } from 'viem/actions';
 import { http as axios } from '../utils/http';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import RPCService, { RPCServiceStore } from './rpc';
-import { storage } from '../webapi';
-import { ga4 } from '@/utils/ga4';
-import { parseStandardTokenTransactionData } from '../utils/tx';
-import { nanoid } from 'nanoid';
-import { abiERC1155, abiERC721 } from '@metamask/metamask-eth-abis';
-import {
-  IPFS_DEFAULT_GATEWAY_URL,
-  TOKEN_STANDARD,
-  ERC_INTERFACE_ID,
-} from '@/constant/custom-testnet';
-import { isZeroAddress } from 'ethereumjs-util';
-import { ERC1155ABI } from '@/constant/abi';
 import { getFormattedIpfsUrl } from '../utils/ipfs';
+import { storage } from '../webapi';
+import RPCService, { RPCServiceStore } from './rpc';
 
 const MAX_READ_CONTRACT_TIME = 15_000;
 
@@ -1377,7 +1371,8 @@ const createClientByChain = (chain: TestnetChainBase) => {
       },
     }),
     transport: http(chain.rpcUrl, {
-      timeout: 30_000,
+      timeout: 20_000,
+      retryCount: 0,
     }),
   });
 };
