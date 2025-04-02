@@ -140,6 +140,7 @@ const ModalStyled = styled(Modal)`
   .ant-modal-body {
     padding: 0;
     max-height: 600px;
+    height: 600px;
     display: flex;
     flex-direction: column;
   }
