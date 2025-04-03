@@ -14,6 +14,7 @@ import {
 import { Item } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
+import qs from 'qs';
 
 export const ImportWalletList = () => {
   const { t } = useTranslation();
@@ -51,6 +52,7 @@ export const ImportWalletList = () => {
         {
           type: KEYRING_CLASS.HARDWARE.KEYSTONE,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].icon,
+          brand: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].brand,
         },
         {
           type: KEYRING_CLASS.HARDWARE.GRIDPLUS,
@@ -68,7 +70,10 @@ export const ImportWalletList = () => {
     [showMore]
   );
 
-  const gotoImport = (type: typeof tipList[number]['type']) => {
+  const gotoImport = (
+    type: typeof tipList[number]['type'],
+    brand?: typeof tipList[number]['brand']
+  ) => {
     switch (type) {
       case KEYRING_TYPE.SimpleKeyring:
         history.push('/new-user/import/private-key');
@@ -82,7 +87,12 @@ export const ImportWalletList = () => {
       case KEYRING_CLASS.HARDWARE.TREZOR:
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
       case KEYRING_CLASS.HARDWARE.BITBOX02:
-        history.push(`/new-user/import/${type}/set-password`);
+        history.push({
+          pathname: `/new-user/import/${type}/set-password`,
+          search: qs.stringify({
+            brand,
+          }),
+        });
         break;
       case KEYRING_CLASS.GNOSIS:
         history.push('/new-user/import/gnosis-address');
@@ -125,11 +135,11 @@ export const ImportWalletList = () => {
                   if (item.preventClick) {
                     return;
                   }
-                  gotoImport(item.type);
+                  gotoImport(item.type, item.brand);
                 }}
                 className="rounded-[8px] text-[17px] font-medium text-r-neutral-title1"
               >
-                {BRAND_ALIAN_TYPE_TEXT[item.type]}
+                {item.brand || BRAND_ALIAN_TYPE_TEXT[item.type]}
               </Item>
             </Tooltip>
           );
