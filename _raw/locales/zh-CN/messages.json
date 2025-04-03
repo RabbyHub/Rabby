@@ -2618,13 +2618,18 @@
     },
     "syncToMobile": {
       "steps2": "2. 使用 Rabby Mobile 扫描",
-      "clickToShowQr": "点击显示二维码",
+      "clickToShowQr": "单击选择地址并显示QR代码",
       "description": "您的地址数据始终完全离线、加密，并通过二维码安全传输。",
       "downloadGooglePlay": "Google Play",
       "steps2Description": "您的二维码包含敏感数据。请保管好，绝不要与他人分享。",
       "steps1": "下载 Rabby Mobile",
       "downloadAppleStore": "App Store",
-      "title": "从 Rabby 扩展同步钱包地址到移动端"
+      "title": "从 Rabby 扩展同步钱包地址到移动端",
+      "disableSelectAddress": "不支持{{type}}地址的同步",
+      "disableSelectAddressWithPassphrase": "与密码不支持{{type}}地址的同步",
+      "disableSelectAddressWithSlip39": "不支持{{type}}地址的同步39",
+      "selectedLenAddressesForSync_one": "选择{{len}}同步地址",
+      "selectedLenAddressesForSync_other": "选择{{{len}}地址同步"
     }
   },
   "component": {

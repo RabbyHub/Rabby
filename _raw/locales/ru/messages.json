@@ -2578,14 +2578,19 @@
       "alert": "Не удается подключиться к Dapp, потому что Rabby Wallet не отображается в качестве опции?"
     },
     "syncToMobile": {
-      "clickToShowQr": "Нажмите, чтобы показать QR-код",
+      "clickToShowQr": "Нажмите, чтобы выбрать адрес и показать QR -код",
       "downloadAppleStore": "App Store",
       "steps1": "1. Загрузите Rabby Mobile",
       "downloadGooglePlay": "Google Play",
       "steps2": "2. Сканируйте с помощью Rabby Mobile",
       "title": "Синхронизировать адрес кошелька из расширения Rabby на мобильный устройство",
       "description": "Ваши данные адреса остаются полностью оффлайн, зашифрованными и надежно передаются через QR-код.",
-      "steps2Description": "Ваш QR-код содержит конфиденциальные данные. Держите его в тайне и никогда не делитесь им ни с кем."
+      "steps2Description": "Ваш QR-код содержит конфиденциальные данные. Держите его в тайне и никогда не делитесь им ни с кем.",
+      "disableSelectAddress": "Sync не поддерживается для адреса {{type}}",
+      "disableSelectAddressWithPassphrase": "Sync не поддерживается для адреса {{type}} с Passphrase",
+      "disableSelectAddressWithSlip39": "Sync не поддерживается для адреса {{type}} с Slip39",
+      "selectedLenAddressesForSync_one": "Выбранный {{len}} адрес для синхронизации",
+      "selectedLenAddressesForSync_other": "Выбранные {{len}} адреса для синхронизации"
     }
   },
   "component": {
