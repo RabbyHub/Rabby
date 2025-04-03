@@ -179,7 +179,11 @@ export const NewUserImportKeystone = () => {
 
       history.push({
         pathname: '/new-user/success',
-        search: `?hd=${KEYSTONE_TYPE}&brand=${brand}&keyringId=${stashKeyringId}`,
+        search: qs.stringify({
+          hd: KEYSTONE_TYPE,
+          brand,
+          keyringId: stashKeyringId,
+        }),
       });
     } catch (error) {
       console.error(error);
@@ -223,31 +227,28 @@ export const NewUserImportKeystone = () => {
           </h1>
         </header>
         <main>
-          <div className="flex justify-center">
-            <PillsSwitch
-              value={connectType}
-              options={
-                [
+          {isKeystone && (
+            <div className="flex justify-center">
+              <PillsSwitch
+                value={connectType}
+                options={[
                   {
                     key: ConnectType.QRCode,
                     label: 'QR code',
                   },
-                  isKeystone && {
+                  {
                     key: ConnectType.USB,
                     label: 'USB',
                   },
-                ].filter(Boolean) as {
-                  key: ConnectType;
-                  label: string;
-                }[]
-              }
-              onTabChange={setConnectType}
-              className="bg-r-neutral-line p-[2px]"
-              itemClassname="text-[13px] leading-[16px] w-[100px] h-[28px]"
-              itemClassnameActive="bg-r-neutral-card-1"
-              itemClassnameInActive={clsx('text-r-neutral-body')}
-            />
-          </div>
+                ]}
+                onTabChange={setConnectType}
+                className="bg-r-neutral-line p-[2px]"
+                itemClassname="text-[13px] leading-[16px] w-[100px] h-[28px]"
+                itemClassnameActive="bg-r-neutral-card-1"
+                itemClassnameInActive={clsx('text-r-neutral-body')}
+              />
+            </div>
+          )}
           {connectType === ConnectType.QRCode ? (
             <div className="mt-[16px] pb-[30px]">
               <p className="text-r-neutral-foot text-[14px] leading-[17px] text-center mb-[20px]">
