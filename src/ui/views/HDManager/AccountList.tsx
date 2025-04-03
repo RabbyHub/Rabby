@@ -61,6 +61,7 @@ export const AccountList: React.FC<Props> = ({
     updateSelectedAccountAliasName,
     keyring,
     tab,
+    brand,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
   const dispatch = useRabbyDispatch();
@@ -177,7 +178,7 @@ export const AccountList: React.FC<Props> = ({
             .map((key) => HARDWARE_KEYRING_TYPES[key])
             .find((item) => item.type === keyring);
           const alias = generateAliasName({
-            brandName: brandName,
+            brandName: brand || brandName,
             keyringType: keyring,
             addressCount,
           });
