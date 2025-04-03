@@ -85,7 +85,7 @@ export const ImportWalletList = () => {
       case KEYRING_CLASS.HARDWARE.TREZOR:
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
       case KEYRING_CLASS.HARDWARE.BITBOX02:
-        history.push('/new-user/import/${type}/set-password');
+        history.push(`/new-user/import/${type}/set-password`);
         break;
       case KEYRING_CLASS.GNOSIS:
         history.push('/new-user/import/gnosis-address');
@@ -135,7 +135,7 @@ export const ImportWalletList = () => {
                 }}
                 className="rounded-[8px] text-[17px] font-medium text-r-neutral-title1"
               >
-                {BRAND_ALIAN_TYPE_TEXT[item.type]}
+                {item.brand || BRAND_ALIAN_TYPE_TEXT[item.type]}
               </Item>
             </Tooltip>
           );
