@@ -14,6 +14,7 @@ import {
 import { Item } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
+import qs from 'qs';
 
 export const ImportWalletList = () => {
   const { t } = useTranslation();
@@ -81,17 +82,20 @@ export const ImportWalletList = () => {
         history.push('/new-user/import/seed-phrase');
         break;
       case KEYRING_CLASS.HARDWARE.LEDGER:
+      case KEYRING_CLASS.HARDWARE.KEYSTONE:
       case KEYRING_CLASS.HARDWARE.ONEKEY:
       case KEYRING_CLASS.HARDWARE.TREZOR:
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
       case KEYRING_CLASS.HARDWARE.BITBOX02:
-        history.push(`/new-user/import/${type}/set-password`);
+        history.push({
+          pathname: `/new-user/import/${type}/set-password`,
+          search: qs.stringify({
+            brand,
+          }),
+        });
         break;
       case KEYRING_CLASS.GNOSIS:
         history.push('/new-user/import/gnosis-address');
-        break;
-      case KEYRING_CLASS.HARDWARE.KEYSTONE:
-        history.push(`/new-user/import/${type}/set-password?brand=${brand}`);
         break;
       default:
         history.push('/new-user/import/seed-phrase');
