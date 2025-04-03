@@ -1,5 +1,6 @@
-import { HARDWARE_KEYRING_TYPES, NEXT_KEYRING_ICONS } from '@/constant';
-import IconKeystone from '@/ui/assets/walletlogo/keystone-gray.svg';
+import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_TYPES } from '@/constant';
+import KeyStoneSVG from '@/ui/assets/walletlogo/keystone.svg';
+import NgraveSVG from '@/ui/assets/walletlogo/ngrave.svg';
 import { Card } from '@/ui/component/NewUserImport';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import Progress from '@/ui/component/Progress';
@@ -12,7 +13,6 @@ import { URDecoder } from '@ngraveio/bc-ur';
 import * as Sentry from '@sentry/browser';
 import { Button } from 'antd';
 import clsx from 'clsx';
-import { WALLET_BRAND_CONTENT, WALLET_BRAND_TYPES } from 'consts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -20,6 +20,7 @@ import QRCodeReader from 'ui/component/QRCodeReader';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { useMount, useRequest } from 'ahooks';
+import qs from 'qs';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
@@ -27,6 +28,11 @@ enum ConnectType {
   QRCode = 'qrcode',
   USB = 'usb',
 }
+
+const LOGO_MAP = {
+  [WALLET_BRAND_TYPES.KEYSTONE]: KeyStoneSVG,
+  [WALLET_BRAND_TYPES.NGRAVEZERO]: NgraveSVG,
+};
 
 export const NewUserImportKeystone = () => {
   const { store, setStore } = useNewUserGuideStore();
@@ -43,8 +49,8 @@ export const NewUserImportKeystone = () => {
   const [scan, setScan] = useState(false);
   const stashKeyringIdRef = useRef<number | null>(null);
   const { search } = useLocation();
-  const qs = query2obj(search);
-  const brandInfo = WALLET_BRAND_CONTENT.Keystone;
+  const { brand } = query2obj(search);
+  const isKeystone = brand === WALLET_BRAND_TYPES.KEYSTONE;
 
   const [progress, setProgress] = useState(0);
 
@@ -107,7 +113,13 @@ export const NewUserImportKeystone = () => {
     // await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], keyringId);
     history.push({
       pathname: '/new-user/import/select-address',
-      search: `?hd=${KEYSTONE_TYPE}&brand=${WALLET_BRAND_TYPES.KEYSTONE}&keyringId=${keyringId}&isLazyImport=true&isNewUserImport=true`,
+      search: qs.stringify({
+        hd: KEYSTONE_TYPE,
+        brand,
+        keyringId,
+        isLazyImport: true,
+        isNewUserImport: true,
+      }),
     });
   };
 
@@ -120,19 +132,17 @@ export const NewUserImportKeystone = () => {
   };
 
   useEffect(() => {
-    wallet
-      .initQRHardware(WALLET_BRAND_TYPES.KEYSTONE)
-      .then((stashKeyringId) => {
-        stashKeyringIdRef.current = stashKeyringId;
-        wallet
-          .requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId)
-          .then((res) => {
-            if (res) {
-              goToSelectAddress(stashKeyringId);
-            }
-            setScan(true);
-          });
-      });
+    wallet.initQRHardware(brand).then((stashKeyringId) => {
+      stashKeyringIdRef.current = stashKeyringId;
+      wallet
+        .requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId)
+        .then((res) => {
+          if (res) {
+            goToSelectAddress(stashKeyringId);
+          }
+          setScan(true);
+        });
+    });
     return () => {
       wallet.clearPageStateCache();
     };
@@ -148,9 +158,7 @@ export const NewUserImportKeystone = () => {
 
       await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', null);
 
-      const stashKeyringId = await wallet.initQRHardware(
-        WALLET_BRAND_TYPES.KEYSTONE
-      );
+      const stashKeyringId = await wallet.initQRHardware(brand);
 
       await wallet.requestKeyring(
         KEYSTONE_TYPE,
@@ -171,7 +179,7 @@ export const NewUserImportKeystone = () => {
 
       history.push({
         pathname: '/new-user/success',
-        search: `?hd=${KEYSTONE_TYPE}&brand=${WALLET_BRAND_TYPES.KEYSTONE}&keyringId=${stashKeyringId}`,
+        search: `?hd=${KEYSTONE_TYPE}&brand=${brand}&keyringId=${stashKeyringId}`,
       });
     } catch (error) {
       console.error(error);
@@ -208,10 +216,10 @@ export const NewUserImportKeystone = () => {
         <header className="mb-[20px]">
           <img
             className="w-[52px] h-[52px] mb-[16px] block mx-auto"
-            src={IconKeystone}
+            src={LOGO_MAP[brand]}
           />
           <h1 className="text-r-neutral-title1 text-center text-[24px] font-semibold leading-[29px]">
-            {brandInfo.name}
+            {brand}
           </h1>
         </header>
         <main>
@@ -224,11 +232,14 @@ export const NewUserImportKeystone = () => {
                     key: ConnectType.QRCode,
                     label: 'QR code',
                   },
-                  {
+                  isKeystone && {
                     key: ConnectType.USB,
                     label: 'USB',
                   },
-                ] as const
+                ].filter(Boolean) as {
+                  key: ConnectType;
+                  label: string;
+                }[]
               }
               onTabChange={setConnectType}
               className="bg-r-neutral-line p-[2px]"
@@ -240,7 +251,9 @@ export const NewUserImportKeystone = () => {
           {connectType === ConnectType.QRCode ? (
             <div className="mt-[16px] pb-[30px]">
               <p className="text-r-neutral-foot text-[14px] leading-[17px] text-center mb-[20px]">
-                {t('page.newUserImport.importKeystone.qrcode.desc')}
+                {t('page.newUserImport.importKeystone.qrcode.desc', {
+                  brandName: brand,
+                })}
               </p>
               <div>
                 <div

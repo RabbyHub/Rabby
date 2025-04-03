@@ -61,6 +61,7 @@ export const AccountList: React.FC<Props> = ({
     updateSelectedAccountAliasName,
     keyring,
     tab,
+    brand,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
   const dispatch = useRabbyDispatch();

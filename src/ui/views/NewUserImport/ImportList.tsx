@@ -51,6 +51,7 @@ export const ImportWalletList = () => {
         {
           type: KEYRING_CLASS.HARDWARE.KEYSTONE,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].icon,
+          brand: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].brand,
         },
         {
           type: KEYRING_CLASS.HARDWARE.GRIDPLUS,
@@ -68,7 +69,10 @@ export const ImportWalletList = () => {
     [showMore]
   );
 
-  const gotoImport = (type: typeof tipList[number]['type']) => {
+  const gotoImport = (
+    type: typeof tipList[number]['type'],
+    brand?: typeof tipList[number]['brand']
+  ) => {
     switch (type) {
       case KEYRING_TYPE.SimpleKeyring:
         history.push('/new-user/import/private-key');
@@ -77,15 +81,17 @@ export const ImportWalletList = () => {
         history.push('/new-user/import/seed-phrase');
         break;
       case KEYRING_CLASS.HARDWARE.LEDGER:
-      case KEYRING_CLASS.HARDWARE.KEYSTONE:
       case KEYRING_CLASS.HARDWARE.ONEKEY:
       case KEYRING_CLASS.HARDWARE.TREZOR:
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
       case KEYRING_CLASS.HARDWARE.BITBOX02:
-        history.push(`/new-user/import/${type}/set-password`);
+        history.push('/new-user/import/${type}/set-password');
         break;
       case KEYRING_CLASS.GNOSIS:
         history.push('/new-user/import/gnosis-address');
+        break;
+      case KEYRING_CLASS.HARDWARE.KEYSTONE:
+        history.push(`/new-user/import/${type}/set-password?brand=${brand}`);
         break;
       default:
         history.push('/new-user/import/seed-phrase');
@@ -125,7 +131,7 @@ export const ImportWalletList = () => {
                   if (item.preventClick) {
                     return;
                   }
-                  gotoImport(item.type);
+                  gotoImport(item.type, item.brand);
                 }}
                 className="rounded-[8px] text-[17px] font-medium text-r-neutral-title1"
               >
