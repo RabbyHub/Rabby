@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { groupBy } from 'lodash';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

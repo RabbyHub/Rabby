@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Drawer, Button } from 'antd';
-import BN from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
 import AddressViewer from 'ui/component/AddressViewer';
@@ -72,7 +72,7 @@ export const AccountItem = ({
       },
       chain.serverId
     );
-    setNativeTokenBalance(new BN(balanceInWei).div(1e18).toFixed());
+    setNativeTokenBalance(new BigNumber(balanceInWei).div(1e18).toFixed());
   };
 
   useEffect(() => {

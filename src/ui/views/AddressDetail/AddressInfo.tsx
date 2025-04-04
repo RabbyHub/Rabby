@@ -26,7 +26,7 @@ import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 import { SeedPhraseBar } from './SeedPhraseBar';
-import { GnonisSafeInfo } from './GnosisSafeInfo';
+import { GnosisSafeInfo } from './GnosisSafeInfo';
 import { CoboArgusInfo } from './CoboArugsInfo';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -273,7 +273,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       )}
 
       {isGnosis ? (
-        <GnonisSafeInfo address={address} type={type} brandName={brandName} />
+        <GnosisSafeInfo address={address} type={type} brandName={brandName} />
       ) : null}
 
       {isCoboArugs ? <CoboArgusInfo address={address} /> : null}

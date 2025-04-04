@@ -15,7 +15,6 @@ import {
 } from '@/background/service/customTestnet';
 import { Emtpy } from './Empty';
 import { findChain } from '@/utils/chain';
-import { id } from 'ethers/lib/utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { sortBy } from 'lodash';
 

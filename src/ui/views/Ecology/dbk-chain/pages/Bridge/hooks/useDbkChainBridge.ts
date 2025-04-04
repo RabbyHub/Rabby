@@ -9,7 +9,7 @@ import { DbkBridgeHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { message } from 'antd';
 import BigNumber from 'bignumber.js';
-import { getContract, parseEther, WriteContractParameters } from 'viem';
+import { getContract, parseEther } from 'viem';
 import { getWithdrawals } from 'viem/op-stack';
 import { DbkBridgeStatus, dbk } from '../../../utils';
 import { useCreateViemClient } from './useCreateViemClient';
