@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect } from 'react';
-import { BigNumber } from 'bignumber.js';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';

@@ -20,7 +20,6 @@ import {
   hashSafeMessage,
   SigningMethod,
 } from '@safe-global/protocol-kit';
-import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 import { TypedTransaction } from '@ethereumjs/tx';
 import BigNumber from 'bignumber.js';
 
@@ -634,11 +633,13 @@ class GnosisKeyring extends EventEmitter {
 
       return {
         safeAddress: this.safeInstance.safeAddress,
+        // status is inspired in https://github.com/safe-global/safe-core-sdk/blob/4f4a0f63d57bd6d7ecac85e5b68d75d70521432f/packages/sdk-starter-kit/src/extensions/messages/SafeMessageClient.ts#L161
+        // may not be used by the app
         status:
           message.confirmations.length ===
           (await this.safeInstance.getThreshold())
-            ? SafeClientTxStatus.MESSAGE_CONFIRMED
-            : SafeClientTxStatus.MESSAGE_PENDING_SIGNATURES,
+            ? "MESSAGE_CONFIRMED"
+            : "MESSAGE_PENDING_SIGNATURES",
         safeMessageHash: this.currentSafeMessageHash,
         message,
       };
