@@ -244,14 +244,15 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, [params.session.origin]);
 
   const { value: typedDataActionData, loading, error } = useAsync(async () => {
-    if (!isSignTypedDataV1 && signTypedData) {
-      const currentAccount = isGnosis
-        ? account
-        : await wallet.getCurrentAccount();
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
 
-      const _isGnosisAccount =
-        currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
-      setIsGnosisAccount(_isGnosisAccount);
+    const _isGnosisAccount =
+      currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
+    setIsGnosisAccount(_isGnosisAccount);
+
+    if (!isSignTypedDataV1 && signTypedData) {
       if (!isViewGnosisSafe) {
         wallet.clearGnosisMessage();
       }
@@ -578,6 +579,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   const handleGnosisSign = async () => {
     const account = currentGnosisAdmin;
+    const signTypedData = data[1];
     if (!safeInfo || !account || !signTypedData) {
       return;
     }
