@@ -39,7 +39,10 @@ const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
 
 const config = {
   entry: {
-    background: paths.rootResolve('src/background/index.ts'),
+    background: {
+      import: paths.rootResolve('src/background/index.ts'),
+      chunkLoading: IS_MANIFEST_MV3 ? 'import-scripts' : 'jsonp',
+    },
     'content-script': paths.rootResolve('src/content-script/index.ts'),
     pageProvider: paths.rootResolve(
       'node_modules/@rabby-wallet/page-provider/dist/index.js'
