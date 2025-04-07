@@ -4006,10 +4006,12 @@
     "@metamask/superstruct" "^3.1.0"
     "@metamask/utils" "^9.0.0"
 
-"@metamask/browser-passworder@4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@metamask/browser-passworder/-/browser-passworder-4.1.0.tgz#d515db2ffd69ecab813a688e2b7553f2766c5e79"
-  integrity sha512-FBvah1mPte5HudQdkgqAh2+Zc75T9kYxey+dCtHIj9gKohkHDcIA1bTOPLk0bBH+6PnOzYNPG8devvH04GOmPA==
+"@metamask/browser-passworder@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/browser-passworder/-/browser-passworder-6.0.0.tgz#cb1f8fdd67338726dd538fb5641db539b98fc256"
+  integrity sha512-/LhNSOu8ThLtIOLKrHhXS4D0SuseK731tWH+1GxI6FO9j0XQtJvPdMw89EEXwCd8mA5iFUK/cU6kxsszfH7GaQ==
+  dependencies:
+    "@metamask/utils" "^11.0.1"
 
 "@metamask/eth-block-tracker@10.0.0":
   version "10.0.0"
