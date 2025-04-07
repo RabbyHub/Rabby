@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   ApproveNFTRequireData,
@@ -13,6 +12,7 @@ import * as Values from './components/Values';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
 import { SubTable, SubCol, SubRow } from './components/SubTable';
+import { Chain } from '@/types/chain';
 
 const Wrapper = styled.div`
   .header {
@@ -60,6 +60,7 @@ const RevokeNFTCollection = ({
   const actionData = data!;
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
+  const isTestnet = chain.isTestnet;
 
   return (
     <Wrapper>
@@ -69,17 +70,23 @@ const RevokeNFTCollection = ({
             {t('page.signTx.revokeNFTCollectionApprove.revokeCollection')}
           </Row>
           <Row>
-            <ViewMore
-              type="collection"
-              data={{
-                collection: actionData.collection,
-                chain,
-              }}
-            >
+            {isTestnet ? (
               <div className="cursor-pointer group-hover:underline hover:text-r-blue-default">
-                {actionData?.collection?.name}
+                {actionData?.collection?.name ?? '-'}
               </div>
-            </ViewMore>
+            ) : (
+              <ViewMore
+                type="collection"
+                data={{
+                  collection: actionData.collection,
+                  chain,
+                }}
+              >
+                <div className="cursor-pointer group-hover:underline hover:text-r-blue-default">
+                  {actionData?.collection?.name ?? '-'}
+                </div>
+              </ViewMore>
+            )}
           </Row>
         </Col>
         <Col>
@@ -87,22 +94,31 @@ const RevokeNFTCollection = ({
             {t('page.signTx.revokeTokenApprove.revokeFrom')}
           </Row>
           <Row>
-            <ViewMore
-              type="nftSpender"
-              data={{
-                ...requireData,
-                spender: actionData.spender,
-                chain,
-                isRevoke: true,
-              }}
-            >
+            {isTestnet ? (
               <Values.Address
                 id="revoke-collection-address"
                 hasHover
                 address={actionData.spender}
                 chain={chain}
               />
-            </ViewMore>
+            ) : (
+              <ViewMore
+                type="nftSpender"
+                data={{
+                  ...requireData,
+                  spender: actionData.spender,
+                  chain,
+                  isRevoke: true,
+                }}
+              >
+                <Values.Address
+                  id="revoke-collection-address"
+                  hasHover
+                  address={actionData.spender}
+                  chain={chain}
+                />
+              </ViewMore>
+            )}
           </Row>
         </Col>
 

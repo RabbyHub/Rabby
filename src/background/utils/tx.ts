@@ -1,4 +1,6 @@
+import { decodeFunctionData, erc20Abi, erc721Abi } from 'viem';
 import { TransactionHistoryItem } from '../service/transactionHistory';
+import { ERC1155ABI } from '@/constant/abi';
 
 export function formatTxMetaForRpcResult(tx: TransactionHistoryItem) {
   const { hash, rawTx } = tx;
@@ -45,3 +47,31 @@ export function formatTxMetaForRpcResult(tx: TransactionHistoryItem) {
 
   return formattedTxMeta;
 }
+
+/**
+ * Attempts to decode transaction data using ABIs for three different token standards: ERC20, ERC721, ERC1155.
+ * The data will decode correctly if the transaction is an interaction with a contract that matches one of these
+ * contract standards
+ *
+ */
+export const parseStandardTokenTransactionData = (data: `0x${string}`) => {
+  try {
+    return decodeFunctionData({ abi: erc20Abi, data });
+  } catch (e) {
+    // ignore and next try to parse
+  }
+
+  try {
+    return decodeFunctionData({ abi: erc721Abi, data });
+  } catch (e) {
+    // ignore and next try to parse
+  }
+
+  try {
+    return decodeFunctionData({ abi: ERC1155ABI, data });
+  } catch (e) {
+    // ignore and next try to parse
+  }
+
+  return undefined;
+};

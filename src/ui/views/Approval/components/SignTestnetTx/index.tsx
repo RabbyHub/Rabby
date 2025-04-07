@@ -2,7 +2,6 @@ import { Account, ChainGas } from 'background/service/preference';
 import React, { ReactNode, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
-import { TestnetActions } from './components/TestnetActions';
 import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
 import {
@@ -13,6 +12,7 @@ import {
 } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
+  ALIAS_ADDRESS,
   DEFAULT_GAS_LIMIT_BUFFER,
   DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
@@ -39,6 +39,13 @@ import { SignAdvancedSettings } from '../SignAdvancedSettings';
 import clsx from 'clsx';
 import { Modal } from 'antd';
 import { ga4 } from '@/utils/ga4';
+import { TestnetActions } from './Actions';
+import {
+  ActionRequireData,
+  fetchActionRequiredData,
+  parseAction,
+  ParsedTransactionActionData,
+} from '@rabby-wallet/rabby-action';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -400,6 +407,8 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           address: currentAccount.address,
         });
 
+        console.log('balace', balance.rawAmount);
+
         setNativeTokenBalance(balance.rawAmount);
       } catch (e) {
         console.error(e);
@@ -421,7 +430,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         // use gasPrice set by dapp when it's a speedup or cancel tx
         customGasPrice = parseInt(tx.gasPrice!);
       }
-      await runGetGasUsed();
+      const gasUsed = await runGetGasUsed();
       const recommendNonce = await runGetNonce();
       if (updateNonce) {
         setRealNonce(intToHex(recommendNonce));
@@ -457,6 +466,13 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       setTx({
         ...tx,
         gasPrice: intToHex(gas.price),
+      });
+      await explainTx({
+        gasUsed,
+        tx: {
+          ...tx,
+          gasPrice: intToHex(gas.price),
+        },
       });
       setIsReady(true);
     } catch (e) {
@@ -497,6 +513,96 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       },
     });
   };
+
+  const { data: explainResult, runAsync: explainTx } = useRequest(
+    async ({ gasUsed, tx }: { gasUsed?: string; tx: Tx }) => {
+      try {
+        const currentAccount =
+          isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+        if (!chain) {
+          return;
+        }
+        const actionData = await wallet.parseCustomNetworkTx({
+          chainId: chain.id,
+          tx: {
+            ...tx,
+            gas: '0x0',
+            value: tx.value || '0x0',
+            to: tx.to || '',
+          },
+          origin: origin || '',
+          addr: currentAccount.address,
+        });
+
+        if (!actionData) {
+          return;
+        }
+
+        const parsed = parseAction({
+          type: 'transaction',
+          data: actionData.action,
+          balanceChange: {} as any,
+          tx: {
+            ...tx,
+            gas: '0x0',
+
+            value: tx.value || '0x0',
+          },
+          preExecVersion: 'v0',
+          gasUsed: gasUsed ? Number(gasUsed) : 0,
+          sender: tx.from,
+        });
+
+        const requiredData = await fetchActionRequiredData({
+          type: 'transaction',
+          actionData: parsed,
+          contractCall: actionData.contract_call,
+          chainId: chain.serverId,
+          sender: currentAccount.address,
+          walletProvider: {
+            findChain,
+            ALIAS_ADDRESS,
+            hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+            hasAddress: wallet.hasAddress,
+            getWhitelist: wallet.getWhitelist,
+            isWhitelistEnabled: wallet.isWhitelistEnabled,
+            getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+          },
+          tx: {
+            ...tx,
+            gas: '0x0',
+            // nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+            value: tx.value || '0x0',
+          },
+          // todo fake api provider
+          apiProvider: (wallet.fakeTestnetOpenapi as unknown) as any,
+        });
+
+        console.log({ parsed, requiredData });
+
+        return {
+          actionData: parsed,
+          requiredData,
+        };
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    {
+      manual: true,
+      onFinally() {
+        console.log('finally');
+      },
+      onError(e) {
+        console.log(e);
+        Modal.error({
+          title: 'Error',
+          content: e.message || JSON.stringify(e),
+          className: 'modal-support-darkmode',
+        });
+      },
+    }
+  );
 
   useMount(() => {
     init();
@@ -582,6 +688,28 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const handleTxChange = async (obj: Record<string, any>) => {
+    setTx({
+      ...tx,
+      ...obj,
+    });
+    try {
+      setIsReady(false);
+      // trigger explain
+      await explainTx({
+        gasUsed,
+        tx: {
+          ...tx,
+          ...obj,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsReady(true);
+    }
+  };
+
   const handleCancel = () => {
     //  gaEvent('cancel');
     rejectApproval('User rejected the request.');
@@ -634,6 +762,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         rawTx: {
           nonce: realNonce || tx.nonce,
         },
+        action: explainResult,
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
@@ -718,6 +847,8 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     <>
       <div className="approval-tx overflow-x-hidden">
         <TestnetActions
+          data={explainResult?.actionData || {}}
+          requireData={explainResult?.requiredData || null}
           isReady={isReady}
           chain={chain}
           raw={{
@@ -728,30 +859,8 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           isSpeedUp={isSpeedUp}
           originLogo={params.session.icon}
           origin={params.session.origin}
+          onChange={handleTxChange}
         />
-
-        {isReady && (
-          <Card>
-            <MessageWrapper>
-              <div className="title">
-                <div className="title-text">
-                  {t('page.customTestnet.signTx.title')}
-                </div>
-              </div>
-              <div className="content">
-                {JSON.stringify(
-                  {
-                    ...tx,
-                    nonce: realNonce || tx.nonce,
-                    gas: gasLimit!,
-                  },
-                  null,
-                  2
-                )}
-              </div>
-            </MessageWrapper>
-          </Card>
-        )}
 
         {isReady && (
           <SignAdvancedSettings
@@ -770,11 +879,12 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           <div
             className={clsx(
               'w-[186px]',
-              'ml-auto mr-[-20px] mt-[-116px]',
+              'ml-auto',
               'px-[16px] py-[12px] rotate-[-23deg]',
               'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
               'text-r-neutral-title1 text-[20px] leading-[24px]',
-              'opacity-30'
+              'opacity-30',
+              'absolute bottom-[210px] right-[16px] pointer-events-none'
             )}
           >
             Custom Network

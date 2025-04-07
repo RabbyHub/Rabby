@@ -743,4 +743,4 @@ export const ERC1155ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-];
+] as const;

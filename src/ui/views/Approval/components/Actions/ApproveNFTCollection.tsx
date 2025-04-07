@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   ApproveNFTRequireData,
@@ -14,6 +13,7 @@ import { ProtocolListItem } from './components/ProtocolListItem';
 import { SecurityListItem } from './components/SecurityListItem';
 import ViewMore from './components/ViewMore';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
+import { Chain } from '@/types/chain';
 
 const Wrapper = styled.div`
   .header {
@@ -69,6 +69,7 @@ const ApproveNFTCollection = ({
     });
     return map;
   }, [engineResults]);
+  const isTestnet = chain.isTestnet;
 
   return (
     <Wrapper>
@@ -78,17 +79,23 @@ const ApproveNFTCollection = ({
             {t('page.signTx.nftCollectionApprove.approveCollection')}
           </Row>
           <Row>
-            <ViewMore
-              type="collection"
-              data={{
-                collection: actionData.collection,
-                chain,
-              }}
-            >
+            {isTestnet ? (
               <div className="cursor-pointer group-hover:underline hover:text-r-blue-default">
-                {actionData?.collection?.name}
+                {actionData?.collection?.name ?? '-'}
               </div>
-            </ViewMore>
+            ) : (
+              <ViewMore
+                type="collection"
+                data={{
+                  collection: actionData.collection,
+                  chain,
+                }}
+              >
+                <div className="cursor-pointer group-hover:underline hover:text-r-blue-default">
+                  {actionData?.collection?.name ?? '-'}
+                </div>
+              </ViewMore>
+            )}
           </Row>
         </Col>
 
@@ -97,21 +104,30 @@ const ApproveNFTCollection = ({
             {t('page.signTx.tokenApprove.approveTo')}
           </Row>
           <Row>
-            <ViewMore
-              type="nftSpender"
-              data={{
-                ...requireData,
-                spender: actionData.spender,
-                chain,
-              }}
-            >
+            {isTestnet ? (
               <Values.Address
                 id="approve-collection-address"
                 hasHover
                 address={actionData.spender}
                 chain={chain}
               />
-            </ViewMore>
+            ) : (
+              <ViewMore
+                type="nftSpender"
+                data={{
+                  ...requireData,
+                  spender: actionData.spender,
+                  chain,
+                }}
+              >
+                <Values.Address
+                  id="approve-collection-address"
+                  hasHover
+                  address={actionData.spender}
+                  chain={chain}
+                />
+              </ViewMore>
+            )}
           </Row>
         </Col>
         <SubTable target="approve-collection-address">
@@ -121,12 +137,14 @@ const ApproveNFTCollection = ({
               <ProtocolListItem protocol={requireData.protocol} />
             </SubRow>
           </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
-            <SubRow>
-              <Values.Boolean value={requireData.hasInteraction} />
-            </SubRow>
-          </SubCol>
+          {isTestnet ? null : (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
+              <SubRow>
+                <Values.Boolean value={requireData.hasInteraction} />
+              </SubRow>
+            </SubCol>
+          )}
 
           <SecurityListItem
             id="1053"
