@@ -112,18 +112,16 @@ export const TransactionItem = ({
 
   const handleRemoveLocalPendingTx = async () => {
     const maxGasTx = findMaxGasTx(item.txs);
-    if (maxGasTx?.reqId) {
-      try {
-        await wallet.removeLocalPendingTx({
-          chainId: maxGasTx.rawTx.chainId,
-          nonce: +maxGasTx.rawTx.nonce,
-          address: maxGasTx.rawTx.from,
-        });
-        message.success(t('page.activities.signedTx.message.deleteSuccess'));
-        onClearPending?.();
-      } catch (e) {
-        message.error(e.message);
-      }
+    try {
+      await wallet.removeLocalPendingTx({
+        chainId: maxGasTx.rawTx.chainId,
+        nonce: +maxGasTx.rawTx.nonce,
+        address: maxGasTx.rawTx.from,
+      });
+      message.success(t('page.activities.signedTx.message.deleteSuccess'));
+      onClearPending?.();
+    } catch (e) {
+      message.error(e.message);
     }
   };
 

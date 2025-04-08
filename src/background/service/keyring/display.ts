@@ -3,6 +3,10 @@ import { Account } from '../preference';
 class DisplayKeyring {
   type = '';
 
+  // hd keyring
+  isSlip39 = false;
+  needPassphrase = '';
+
   constructor(keyring) {
     this.getAccounts = keyring.getAccounts?.bind(keyring);
     this.activeAccounts = keyring.activeAccounts?.bind(keyring);
@@ -11,6 +15,8 @@ class DisplayKeyring {
     this.unlock = keyring.unlock?.bind(keyring);
     this.getAccountsWithBrand = keyring.getAccountsWithBrand?.bind(keyring);
     this.type = keyring.type;
+    this.isSlip39 = keyring.isSlip39;
+    this.needPassphrase = keyring.needPassphrase;
   }
 
   unlock: () => Promise<void>;

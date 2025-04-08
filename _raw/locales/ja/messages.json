@@ -26,7 +26,7 @@
       }
     },
     "chainList": {
-      "title": "",
+      "title": "{{count}} chains Integrated",
       "mainnet": "メインネット",
       "testnet": "テストネット"
     },
@@ -340,7 +340,14 @@
       "addressSource": "アドレスソース",
       "typedDataMessage": "型付きデータに署名",
       "primaryType": "プライマリタイプ",
-      "safeServiceNotAvailable": "現在、Safeサービスは利用できません。後でもう一度お試しください。"
+      "safeServiceNotAvailable": "現在、Safeサービスは利用できません。後でもう一度お試しください。",
+      "safeTx": {
+        "selfHostConfirm": {
+          "button": "OK",
+          "title": "RabbyのSafe Serviceに切り替える",
+          "content": "Safe API は利用できません。Rabby によってデプロイされた Safe サービスに切り替えて、Safe を機能させ続けてください。<strong>すべての Safe 署名者は Rabby Wallet を使用してトランザクションを承認する必要があります。<strong>"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "リクエスト元",
@@ -434,7 +441,9 @@
         "loginFirst": "GasAccount にまずログインしてください。",
         "notEnough": "GasAccount が不足しています",
         "WalletConnectTips": "GasAccountではWalletConnectはサポートされていません。",
-        "deposit": "入金"
+        "deposit": "入金",
+        "loginTips": "GasAccountログインを完了するために、このトランザクションは破棄されます。ログイン後に再作成する必要があります。",
+        "depositTips": "GasAccountの入金を完了するためには、この取引は破棄されます。入金後に再度作成する必要があります。"
       },
       "keystone": {
         "txRejected": "トランザクションが拒否されました",
@@ -553,8 +562,8 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "トランザクションをローカルで削除",
-              "desc": "長い保留時間によって引き起こされるトランザクションブロックを修正"
+              "title": "未処理のローカルをクリア",
+              "desc": "インターフェースから保留中のトランザクションを削除する"
             },
             "quickCancel": {
               "tips": "未送信のトランザクションのみ対応",
@@ -587,13 +596,18 @@
           "noCost": "ガス手数料なし"
         },
         "SkipNonceAlert": {
-          "clearPendingAlert": "{{chainName}} トランザクション ({{nonces}}) は3分以上保留されています。このチェーンで保留中のトランザクションを<6>クリア</6>し、新しいものを開始できます。",
+          "clearPendingAlert": "{{chainName}} トランザクション ({{nonces}}) は3分以上保留されています。取引を再送信するには、<5></5> <6>ローカルで保留をクリア</6> <7></7> できます。",
           "alert": "Nonce #{{nonce}} は {{chainName}} チェーンでスキップされました。これにより、先に保留中のトランザクションが発生する可能性があります。<5></5> <6>チェーン上でトランザクションを送信</6> <7></7>して解決してください。"
         },
         "PredictTime": {
           "failed": "パッキング時間の予測に失敗しました。",
           "time": "予想されるパック完了時刻: {{time}}",
           "noTime": "パッキング時間が予測されています"
+        },
+        "CancelTxConfirmPopup": {
+          "desc": "これにより、保留中のトランザクションがインターフェースから削除されます。その後、新しいトランザクションを開始できます。",
+          "title": "ローカルで保留をクリア",
+          "warning": "削除されたトランザクションは、置き換えが行われない限り、依然としてオンチェーンで確認される可能性があります。"
         }
       },
       "signedText": {
@@ -694,7 +708,10 @@
         "parseError": "コントラクト呼び出しのデコードに失敗しました",
         "simulation": "コントラクト呼び出しシミュレーション：",
         "notHexData": "サポートされているのは16進数データのみです"
-      }
+      },
+      "blockedTransaction": "Blocked Transaction",
+      "blockedTransactionCancelText": "私は知っている",
+      "blockedTransactionContent": "このトランザクションは、OFAC制裁リストに載っているアドレスとやり取りします。"
     },
     "sendTokenComponents": {
       "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました",
@@ -878,7 +895,7 @@
       "no-transaction-records": "トランザクション履歴はありません",
       "swap-history": "スワップ履歴",
       "InSufficientTip": "トランザクションのシミュレーションとガスの見積もりを行うには、残高が不足しています。元のアグリゲータの引用が表示されます",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "カスタムネットワークはサポートされていません。",
       "not-supported": "サポートされていません",
       "slippage-adjusted-refresh-quote": "スリッページが調整されました。引用を更新してください。",
       "price-expired-refresh-quote": "価格の有効期限が切れました。引用を更新してください。",
@@ -1034,7 +1051,8 @@
           "nft": "NFT",
           "ecology": "エコシステム",
           "rabbyPoints": "Rabby Points",
-          "bridge": "Bridge"
+          "bridge": "Bridge",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1082,7 +1100,8 @@
         "noRecentlyConnectedDapps": "最近接続したDappはありません",
         "dapps": "Dapps",
         "noConnectedDapps": "接続されているDappsはありません",
-        "metamaskModeTooltip": "このDappでRabbyに接続できませんか？<1>MetaMaskモード</1>を有効にしてみてください。"
+        "metamaskModeTooltip": "このDappでRabbyに接続できませんか？<1>MetaMaskモード</1>を有効にしてみてください。",
+        "metamaskModeTooltipNew": "Rabby Walletは、Dappで「MetaMask」を選択すると接続されます。これを管理するには、[その他] > [MetaMaskとして偽装してRabbyを接続]に進んでください。"
       },
       "feedback": {
         "directMessage": {
@@ -1162,9 +1181,9 @@
         "reset": "初期設定に戻す",
         "save": "保存",
         "pendingTransactionCleared": "保留中のトランザクションがクリアされました",
-        "clearPending": "保留中のクリア",
-        "clearPendingTip1": "これにより、保留中のトランザクションがすべてローカルで削除され、長い保留時間によって引き起こされる問題の解決に役立ちます。",
-        "clearPendingTip2": "アカウント残高に影響を与えたり、シードフレーズを再入力する必要はありません。\nすべての資産とアカウント情報は安全に保たれます。",
+        "clearPending": "ローカルで保留中をクリア",
+        "clearPendingTip1": "この操作により、インターフェースから保留中のトランザクションが削除され、ネットワーク上で長時間保留されていることによって引き起こされる問題の解決に役立ちます。",
+        "clearPendingTip2": "これは、アカウント残高に影響を与えたり、シードフレーズを再入力する必要はありません。すべての資産とアカウントの詳細は安全に保たれます。",
         "autoLockTime": "自動ロック時間",
         "claimRabbyBadge": "Rabby バッジをクレーム！",
         "cancel": "キャンセル",
@@ -1193,24 +1212,24 @@
         "settings": {
           "label": "設定",
           "enableWhitelistForSendingAssets": "資産の送信にホワイトリストを有効にする",
-          "customRpc": "",
+          "customRpc": "RPC URLを修正",
           "metamaskPreferredDapps": "MetaMask 優先Dapps",
           "currentLanguage": "現在の言語",
           "enableTestnets": "テストネットを有効にする",
           "themeMode": "テーマモード",
-          "metamaskMode": "MetaMask モード",
           "toggleThemeMode": "テーマモード",
-          "customTestnet": "カスタムネットワークを追加"
+          "customTestnet": "カスタムネットワークを追加",
+          "metamaskMode": "MetaMaskとして偽装してRabbyを接続"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
         "updateAvailable": "アップデートが利用可能",
-        "supportedChains": "",
+        "supportedChains": "統合されたチェーン",
         "followUs": "フォローする",
         "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
         "clearWatchMode": "ウォッチモードをクリア",
         "requestDeBankTestnetGasToken": "DeBankテストネットガストークンをリクエスト",
-        "clearPendingWarningTip": "保留中のトランザクションは、今後も正常に送信される可能性があります。"
+        "clearPendingWarningTip": "削除されたトランザクションは、置き換えられない限り、まだオンチェーンで確認される可能性があります。"
       },
       "tokenDetail": {
         "blockedTip": "ブロックされたトークンはトークンリストに表示されません",
@@ -1345,6 +1364,10 @@
         "desc": "RabbyをDappで接続できない場合は、MetaMaskモードを有効にし、MetaMaskオプションを選択して接続してください。",
         "enableDesc": "MetaMaskでのみ動作するDappの場合は有効にする",
         "toastSuccess": "有効になりました。ページを更新して再接続してください。"
+      },
+      "offlineChain": {
+        "tips": "{{chain}} Chainは{{date}}に統合されません。あなたの資産には影響はありませんが、総残高には含まれません。それらにアクセスするには、「More」でカスタムネットワークとして追加することができます。",
+        "chain": "{{chain}} はまもなく統合されなくなります。"
       }
     },
     "nft": {
@@ -1711,7 +1734,7 @@
       "hasAdded": "このトークンが追加されました。"
     },
     "switchChain": {
-      "title": "",
+      "title": "Rabby にカスタムネットワークを追加",
       "chainNotSupport": "要求されたチェーンはまだRabbyでサポートされていません",
       "testnetTip": "テストネットに接続する前に、「詳細設定」の下にある「テストネットを有効にする」をオンにしてください",
       "unknownChain": "不明なチェーン",
@@ -1828,15 +1851,15 @@
     "customRpc": {
       "opened": "オープン",
       "closed": "クローズ",
-      "empty": "",
-      "title": "",
-      "desc": "",
-      "add": "",
+      "empty": "カスタムRPC URLなし",
+      "title": "RPC URLを修正",
+      "desc": "変更後、カスタムRPCはRabbyのノードを置き換えます。Rabbyのノードを使い続けるには、カスタムRPCを削除してください。",
+      "add": "RPC URL を修正",
       "EditRPCModal": {
         "invalidRPCUrl": "無効なRPC URL",
         "invalidChainId": "無効なチェーンID",
         "rpcAuthFailed": "RPC認証に失敗しました",
-        "title": "",
+        "title": "RPC URLを修正",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "RPC URLを入力してください"
       },
@@ -2371,7 +2394,13 @@
       "gasExceed": "GasAccountの残高は$1000を超えることはできません。",
       "risk": "現在のアドレスがリスキーであると検出されたため、この機能は利用できません。",
       "safeAddressDepositTips": "マルチシグアドレスは入金には対応していません。",
-      "logout": "現在のGasAccountからログアウト"
+      "logout": "現在のGasAccountからログアウト",
+      "gasAccountList": {
+        "address": "アドレス",
+        "gasAccountBalance": "Gas Balance"
+      },
+      "switchAccount": "GasAccount を切り替える",
+      "withdrawDisabledIAP": "引き出しは無効になっています。これは、バランスに法定通貨が含まれており、それらを引き出すことができないためです。トークン残高を引き出すには、サポートにお問い合わせください。"
     },
     "safeMessageQueue": {
       "loading": "メッセージを読み込み中",
@@ -2490,7 +2519,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "MetaMask モード",
+      "title": "許可されたDappsを管理する",
       "desc": "以下 Dapps 已启用 MetaMask モード。MetaMask オプションを選択して Rabby を接続できます。"
     },
     "forgotPassword": {
@@ -2531,6 +2560,38 @@
         "description": "Rabby Wallet を使用する準備が整いました。",
         "title": "パスワードが正常に設定されました"
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 はまだサポートされていません"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "disabled": "偽装が無効になりました。Dappを更新してください。",
+        "enabled": "偽装が有効になりました。Dapp を更新して再接続してください。"
+      },
+      "step1": "ステップ 1",
+      "step2": "ステップ 2",
+      "step2Desc": "MetaMaskを介して更新して接続",
+      "noDappFound": "Dapp が見つかりません",
+      "step1Desc": "Rabbyに現在のDappでMetaMaskとして偽装を許可する",
+      "manage": "許可されたDappsを管理",
+      "title": "MetaMaskとして偽装してRabbyを接続する",
+      "alert": "Dappに接続できません。Rabby Walletがオプションとして表示されていないためですか？"
+    },
+    "syncToMobile": {
+      "downloadGooglePlay": "Google Play",
+      "steps2Description": "あなたのQRコードには機密データが含まれています。これを秘密にして、決して他人と共有しないでください。",
+      "downloadAppleStore": "App Store",
+      "steps1": "Rabby Mobile をダウンロードする",
+      "description": "あなたのアドレスデータは完全にオフラインで保持され、暗号化され、QRコードを通じて安全に転送されます。",
+      "steps2": "2. Rabby Mobileでスキャン",
+      "title": "Rabby Extensionからモバイルへウォレットアドレスを同期",
+      "clickToShowQr": "クリックしてアドレスを選択し、QRコードを表示します",
+      "disableSelectAddress": "{{{type}}アドレスのサポートされていない同期",
+      "disableSelectAddressWithPassphrase": "パスフレーズを使用した{{type}}アドレスのサポートされていない同期",
+      "disableSelectAddressWithSlip39": "Slip39を使用して{{ypyped}}アドレスのサポートされていない同期",
+      "selectedLenAddressesForSync_one": "selected {{len}} syncのアドレス",
+      "selectedLenAddressesForSync_other": "selected {{len}} syncのアドレス"
     }
   },
   "component": {
@@ -2618,8 +2679,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "",
-        "testnet": ""
+        "mainnet": "統合ネットワーク",
+        "testnet": "カスタムネットワーク"
       }
     },
     "ChainSelectorModal": {

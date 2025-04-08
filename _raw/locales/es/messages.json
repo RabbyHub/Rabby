@@ -26,7 +26,7 @@
       }
     },
     "chainList": {
-      "title": "",
+      "title": "{{count}} chains Integrated",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
@@ -340,7 +340,14 @@
       "typedDataMessage": "Firmar Datos Tipados",
       "trustValueTitle": "Confianza en el valor",
       "primaryType": "Tipo principal",
-      "safeServiceNotAvailable": "El servicio Safe no está disponible ahora, por favor intente más tarde."
+      "safeServiceNotAvailable": "El servicio Safe no está disponible ahora, por favor intente más tarde.",
+      "safeTx": {
+        "selfHostConfirm": {
+          "content": "La API de Safe no está disponible. Cambia al servicio de Safe desplegado por Rabby para mantener tu Safe funcional. <strong>Todos los firmantes de Safe deben usar Rabby Wallet para autorizar transacciones.<strong>",
+          "title": "Cambiar al servicio seguro de Rabby",
+          "button": "OK"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "Solicitud de",
@@ -434,7 +441,9 @@
         "useGasAccount": "Usar GasAccount",
         "gotIt": "Entendido",
         "customRPC": "No compatible cuando se utiliza RPC personalizado",
-        "WalletConnectTips": "GasAccount no admite WalletConnect"
+        "WalletConnectTips": "GasAccount no admite WalletConnect",
+        "loginTips": "Para completar el inicio de sesión de GasAccount, esta transacción será descartada. Tendrás que rehacerla después del inicio de sesión.",
+        "depositTips": "Para completar el depósito de GasAccount, esta transacción será descartada. Tendrás que rehacerla después del depósito."
       },
       "keystone": {
         "signWith": "Cambia a {{method}} para firmar",
@@ -558,8 +567,8 @@
               "desc": "Cancelar antes de transmitir, sin comisión de gas"
             },
             "removeLocalPendingTx": {
-              "title": "Eliminar transacción localmente",
-              "desc": "Arreglar el bloqueo de transacciones causado por un largo tiempo de espera"
+              "title": "Borrar pendiente localmente",
+              "desc": "Eliminar la transacción pendiente de la interfaz"
             },
             "onChainCancel": {
               "title": "Cancelación en cadena",
@@ -587,13 +596,18 @@
           "noCost": "Sin costo de Gas"
         },
         "SkipNonceAlert": {
-          "clearPendingAlert": "La transacción de {{chainName}} ({{nonces}}) ha estado pendiente por más de 3 minutos. Puedes <5></5> <6>borrar las transacciones pendientes en esta cadena</6> <7></7> e iniciar una nueva.",
+          "clearPendingAlert": "La transacción de {{chainName}} ({{nonces}}) ha estado pendiente por más de 3 minutos. Puedes <5></5> <6>Borrar pendiente localmente</6> <7></7> y volver a enviar la transacción.",
           "alert": "Nonce #{{nonce}} omitido en la cadena {{chainName}}. Esto puede causar transacciones pendientes. <5></5> <6>Enviar una tx</6> <7></7> en la cadena para resolver."
         },
         "PredictTime": {
           "failed": "Falló la predicción del tiempo de empaquetado",
           "time": "Se prevé que esté completo en {{time}}",
           "noTime": "El tiempo de empaquetado está siendo predicho"
+        },
+        "CancelTxConfirmPopup": {
+          "warning": "La transacción eliminada aún puede confirmarse en la cadena a menos que sea reemplazada.",
+          "title": "Borrar pendiente localmente",
+          "desc": "Esto eliminará la transacción pendiente de su interfaz. Luego puede iniciar una nueva transacción."
         }
       },
       "signedText": {
@@ -694,7 +708,10 @@
         "placeholder": "Opcional",
         "simulation": "Simulación de llamada de contrato:",
         "notHexData": "Solo se admite datos hexadecimales"
-      }
+      },
+      "blockedTransactionCancelText": "Lo sé",
+      "blockedTransactionContent": "Esta transacción interactúa con una dirección que está en la lista de sanciones de OFAC.",
+      "blockedTransaction": "Transacción Bloqueada"
     },
     "sendTokenComponents": {
       "GasReserved": "Reservados <1>0</1> {{ tokenName }} para costo de gas",
@@ -878,7 +895,7 @@
       "no-transaction-records": "No hay registros de transacciones",
       "swap-history": "Historial de Intercambio",
       "InSufficientTip": "Saldo insuficiente para realizar la simulación de transacción y la estimación de gas. Se muestran las cotizaciones originales del agregador.",
-      "testnet-is-not-supported": "",
+      "testnet-is-not-supported": "La red personalizada no es compatible",
       "not-supported": "No es compatible",
       "slippage-adjusted-refresh-quote": "Slippage ajustado. Actualizar cotización.",
       "price-expired-refresh-quote": "Precio expirado. Actualizar cotización.",
@@ -1034,7 +1051,8 @@
           "nft": "NFT",
           "ecology": "Ecosystem",
           "bridge": "Puente",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -1082,7 +1100,8 @@
         "noRecentlyConnectedDapps": "No hay aplicaciones conectadas recientemente",
         "noConnectedDapps": "No connected Dapps",
         "dapps": "Dapps",
-        "metamaskModeTooltip": "¿No puedes conectar Rabby en esta Dapp? Intenta habilitar el <1>Modo MetaMask</1>"
+        "metamaskModeTooltip": "¿No puedes conectar Rabby en esta Dapp? Intenta habilitar el <1>Modo MetaMask</1>",
+        "metamaskModeTooltipNew": "Rabby Wallet se conectará cuando selecciones \"MetaMask\" en el Dapp. Puedes gestionar esto en Más > Conectar Rabby disfrazándose como MetaMask"
       },
       "feedback": {
         "directMessage": {
@@ -1162,9 +1181,9 @@
         "reset": "Restaurar configuración inicial",
         "save": "Guardar",
         "pendingTransactionCleared": "Transacciones pendientes eliminadas",
-        "clearPending": "Limpiar Pendientes",
-        "clearPendingTip1": "Esto eliminará todas sus transacciones pendientes localmente y ayudará a resolver los problemas causados ​​por largos tiempos de espera.",
-        "clearPendingTip2": "No afectará los saldos de su cuenta ni requerirá que vuelva a ingresar su frase inicial. \nTodos sus activos y la información de su cuenta permanecerán seguros.",
+        "clearPending": "Borrar pendiente localmente",
+        "clearPendingTip1": "Esta acción elimina la transacción pendiente de tu interfaz, ayudando a resolver problemas causados por largas duraciones de espera en la red.",
+        "clearPendingTip2": "No afecta los saldos de su cuenta ni requiere volver a ingresar su seed phrase. Todos los activos y los detalles de la cuenta permanecen seguros.",
         "autoLockTime": "Tiempo de Bloqueo Automático",
         "claimRabbyBadge": "¡Reclama la Distinción Rabby!",
         "cancel": "Cancelar",
@@ -1193,24 +1212,24 @@
         "settings": {
           "label": "Configuración",
           "enableWhitelistForSendingAssets": "Habilitar Lista Blanca para Enviar Activos",
-          "customRpc": "",
+          "customRpc": "Modificar URL de RPC",
           "metamaskPreferredDapps": "Dapps Preferidas de MetaMask",
           "currentLanguage": "Idioma Actual",
           "enableTestnets": "Habilitar Testnets",
           "customTestnet": "Agregar red personalizada",
-          "metamaskMode": "Modo MetaMask",
           "toggleThemeMode": "Modo de tema",
-          "themeMode": "Modo de tema"
+          "themeMode": "Modo de tema",
+          "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
         "updateAvailable": "Actualización Disponible",
-        "supportedChains": "",
+        "supportedChains": "Cadenas integradas",
         "followUs": "Síguenos",
         "testnetBackendServiceUrl": "URL de Servicio de Backend de Testnet",
         "clearWatchMode": "Limpiar Modo de Observación",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gas de Testnet DeBank",
-        "clearPendingWarningTip": "Es posible que las transacciones pendientes aún se envíen correctamente en el futuro."
+        "clearPendingWarningTip": "La transacción eliminada aún puede confirmarse en la cadena a menos que sea reemplazada."
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
@@ -1345,6 +1364,10 @@
         "title": "Modo MetaMask",
         "toastSuccess": "Habilitado. Actualiza la página para reconectar.",
         "desc": "Si no puedes conectar Rabby en una Dapp, habilita el Modo MetaMask y conéctate seleccionando la opción MetaMask."
+      },
+      "offlineChain": {
+        "chain": "{{chain}} pronto no estará integrado.",
+        "tips": "La cadena {{chain}} no se integrará el {{date}}. Tus activos no se verán afectados, pero no se incluirán en tu saldo total. Para acceder a ellos, puedes agregarla como una red personalizada en \"Más\"."
       }
     },
     "nft": {
@@ -1711,7 +1734,7 @@
       "hasAdded": "Has añadido este token."
     },
     "switchChain": {
-      "title": "",
+      "title": "Agregar red personalizada a Rabby",
       "chainNotSupport": "La cadena solicitada aún no es compatible con Rabby",
       "testnetTip": "Por favor, active \"Habilitar Testnets\" en \"Más\" antes de conectarse a las testnets",
       "chainId": "ID de cadena:",
@@ -1828,15 +1851,15 @@
     "customRpc": {
       "opened": "Abierto",
       "closed": "Cerrado",
-      "empty": "",
-      "title": "",
-      "desc": "",
-      "add": "",
+      "empty": "No custom RPC URL",
+      "title": "Modificar URL de RPC",
+      "desc": "Una vez modificado, el RPC personalizado reemplazará el nodo de Rabby. Para continuar usando el nodo de Rabby, elimine el RPC personalizado.",
+      "add": "Modificar URL de RPC",
       "EditRPCModal": {
         "invalidRPCUrl": "URL de RPC inválido",
         "invalidChainId": "ID de cadena inválido",
         "rpcAuthFailed": "Autenticación RPC fallida",
-        "title": "",
+        "title": "Modificar URL RPC",
         "rpcUrl": "URL de RPC",
         "rpcUrlPlaceholder": "Ingresa la URL de RPC"
       },
@@ -2371,7 +2394,13 @@
       "title": "GasAccount",
       "risk": "Se ha detectado que su dirección actual es de riesgo, por lo que esta función no está disponible.",
       "gasExceed": "El saldo de GasAccount no puede exceder $1000",
-      "withdraw": "Retirar"
+      "withdraw": "Retirar",
+      "gasAccountList": {
+        "address": "Dirección",
+        "gasAccountBalance": "Gas Balance"
+      },
+      "switchAccount": "Cambiar GasAccount",
+      "withdrawDisabledIAP": "Los retiros están deshabilitados porque tu saldo incluye fondos fiduciarios, los cuales no pueden ser retirados. Contacta con el soporte para retirar el saldo de tus tokens."
     },
     "safeMessageQueue": {
       "noData": "Sin mensajes",
@@ -2490,7 +2519,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "Modo MetaMask",
+      "title": "Administrar Dapps permitidas",
       "desc": "Modo MetaMask habilitado para las siguientes Dapps. Puedes conectar Rabby seleccionando la opción de MetaMask."
     },
     "forgotPassword": {
@@ -2531,6 +2560,38 @@
         "button": "Hecho",
         "title": "Contraseña establecida con éxito"
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 aún no es compatible"
+    },
+    "metamaskModeDappsGuide": {
+      "toast": {
+        "disabled": "Disguise desactivado. Actualiza el Dapp.",
+        "enabled": "Disfraz habilitado. Actualiza la Dapp para reconectar."
+      },
+      "step2Desc": "Actualizar y conectar a través de MetaMask",
+      "noDappFound": "No Dapp encontrado",
+      "manage": "Gestionar Dapps Permitidas",
+      "title": "Conectar Rabby disfrazándose de MetaMask",
+      "step1Desc": "Permitir que Rabby se disfrace de MetaMask en el Dapp actual",
+      "step1": "Paso 1",
+      "alert": "¿No puedes conectarte a una Dapp porque no muestra Rabby Wallet como una opción?",
+      "step2": "Paso 2"
+    },
+    "syncToMobile": {
+      "title": "Sincronizar la dirección de Wallet desde la extensión de Rabby al móvil",
+      "steps2": "2. Escanee con Rabby Mobile",
+      "downloadGooglePlay": "Google Play",
+      "description": "Tus datos de dirección permanecen totalmente fuera de línea, cifrados y se transfieren de manera segura a través de un código QR.",
+      "clickToShowQr": "Haga clic para seleccionar la dirección y mostrar el código QR",
+      "steps1": "1. Descarga Rabby Mobile",
+      "downloadAppleStore": "App Store",
+      "steps2Description": "*Tu código QR contiene datos sensibles. Manténlo privado y nunca lo compartas con nadie.",
+      "disableSelectAddress": "Sincronización no es compatible para la dirección {{type}}",
+      "disableSelectAddressWithPassphrase": "Sincronización no es compatible con la dirección {{type}} con frase",
+      "disableSelectAddressWithSlip39": "Sincronización no es compatible con la dirección {{type}} con slip39",
+      "selectedLenAddressesForSync_one": "Dirección seleccionada {{len}} para sincronización",
+      "selectedLenAddressesForSync_other": "Direcciones seleccionadas {{len}} para sincronización"
     }
   },
   "component": {
@@ -2618,8 +2679,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "",
-        "testnet": ""
+        "mainnet": "Red de Integración",
+        "testnet": "Red de Custom"
       }
     },
     "ChainSelectorModal": {

@@ -6,7 +6,7 @@ import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { Header } from './Header';
 import { useApproval, useWallet } from '@/ui/utils';
-import { isAddress } from 'web3-utils';
+import { isAddress } from 'viem';
 import { SelectAddressPopup } from './SelectAddressPopup';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';

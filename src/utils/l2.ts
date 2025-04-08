@@ -1,5 +1,5 @@
 import { ethers, Contract } from 'ethers';
-import * as optimismContracts from '@eth-optimism/contracts';
+import { getContractFactory, predeploys } from '@eth-optimism/contracts';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 import { CHAINS_ENUM, OP_STACK_ENUMS } from 'consts';
 
@@ -40,9 +40,9 @@ export const opStackL1FeeEstimate = async (
   txParams: any
 ) => {
   const signer = provider.getSigner();
-  const OVMGasPriceOracle = optimismContracts
-    .getContractFactory('OVM_GasPriceOracle')
-    .attach(optimismContracts.predeploys.OVM_GasPriceOracle);
+  const OVMGasPriceOracle = getContractFactory('OVM_GasPriceOracle').attach(
+    predeploys.OVM_GasPriceOracle
+  );
   const abi = JSON.parse(
     OVMGasPriceOracle.interface.format(ethers.utils.FormatTypes.json) as string
   );

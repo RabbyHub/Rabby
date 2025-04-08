@@ -92,7 +92,7 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { isAddress } from 'web3-utils';
+import { isAddress } from 'viem';
 import {
   ensureChainListValid,
   findChain,
@@ -4803,9 +4803,23 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  signGasAccount = async () => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+  signGasAccount = async (account: Account) => {
+    const currentAccount = await preferenceService.getCurrentAccount();
+    if (!currentAccount) {
+      throw new Error(t('background.error.noCurrentAccount'));
+    }
+
+    const resumeAccount = async () => {
+      await this.changeAccount(currentAccount);
+    };
+
+    if (
+      currentAccount.address !== account.address ||
+      currentAccount.type !== account.type ||
+      currentAccount.brandName !== account.brandName
+    ) {
+      await this.changeAccount(account);
+    }
 
     const { text } = await wallet.openapi.getGasAccountSignText(
       account.address
@@ -4836,6 +4850,8 @@ export class WalletController extends BaseController {
         });
       }
     }
+
+    await resumeAccount();
   };
 
   topUpGasAccount = async ({
@@ -5172,6 +5188,34 @@ export class WalletController extends BaseController {
 
   getUnencryptedKeyringTypes = async () =>
     keyringService.getUnencryptedKeyringTypes();
+
+  getSyncDataString = async (filteredAccounts: Account[]) => {
+    const { vault, accounts } = await keyringService.getSyncVault(
+      filteredAccounts
+    );
+    const whitelist = await this.getWhitelist();
+    const highligtedAddresses = await this.getHighlightedAddresses();
+    const alianNames = await this.getAllAlianName();
+
+    const filteredWhitelist = whitelist.filter((item) => {
+      return accounts.some((account) => isSameAddress(account, item));
+    });
+    const filteredHighligtedAddresses = highligtedAddresses.filter((item) => {
+      return accounts.some((account) => isSameAddress(account, item.address));
+    });
+    const filteredAlianNames = alianNames.filter((item) => {
+      return accounts.some(
+        (account) => item.address && isSameAddress(account, item.address)
+      );
+    });
+
+    return JSON.stringify({
+      vault: JSON.parse(vault),
+      whitelist: filteredWhitelist,
+      highligtedAddresses: filteredHighligtedAddresses,
+      alianNames: filteredAlianNames,
+    });
+  };
 }
 
 const wallet = new WalletController();

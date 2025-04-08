@@ -342,7 +342,7 @@ export const useAccountInfo = (
     wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
       setAccount({
         ...res,
-        hdPathTypeLabel: LedgerHDPathTypeLabel[res.hdPathType],
+        hdPathTypeLabel: LedgerHDPathTypeLabel[res?.hdPathType],
       });
     });
   }, []);

@@ -307,11 +307,8 @@ export const Main = () => {
     receiveToken: receiveToken,
   });
 
-  const handleSwap = useMemoizedFn(() => {
-    if (!isTab) {
-      dispatch.swap.setRecentSwapToToken(receiveToken);
-    }
-    if (
+  const canUseMiniTx = useMemo(
+    () =>
       [
         KEYRING_TYPE.SimpleKeyring,
         KEYRING_TYPE.HdKeyring,
@@ -322,15 +319,44 @@ export const Main = () => {
       receiveToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
-      !showLoss
-    ) {
-      runBuildSwapTxs();
+      !showLoss,
+    [
+      receiveToken,
+      isSlippageHigh,
+      isSlippageLow,
+      showLoss,
+      currentAccount?.type,
+    ]
+  );
+
+  const handleSwap = useMemoizedFn(() => {
+    if (!isTab) {
+      dispatch.swap.setRecentSwapToToken(receiveToken);
+    }
+    if (canUseMiniTx) {
       setIsShowSign(true);
       clearExpiredTimer();
     } else {
       gotoSwap();
     }
   });
+
+  const swapBtnDisabled =
+    quoteLoading ||
+    !payToken ||
+    !receiveToken ||
+    !amountAvailable ||
+    inSufficient ||
+    !activeProvider;
+
+  useEffect(() => {
+    if (!swapBtnDisabled && activeProvider) {
+      if (canUseMiniTx) {
+        mutateTxs([]);
+        runBuildSwapTxs();
+      }
+    }
+  }, [swapBtnDisabled, canUseMiniTx, activeProvider]);
 
   const history = useHistory();
 
@@ -700,14 +726,7 @@ export const Main = () => {
               // runBuildSwapTxs();
               handleSwap();
             }}
-            disabled={
-              quoteLoading ||
-              !payToken ||
-              !receiveToken ||
-              !amountAvailable ||
-              inSufficient ||
-              !activeProvider
-            }
+            disabled={swapBtnDisabled}
           >
             {btnText}
           </Button>

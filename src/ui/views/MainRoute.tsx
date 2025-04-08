@@ -71,9 +71,14 @@ import { ReadyToUse } from './NewUserImport/ReadyToUse';
 import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 import { KEYRING_CLASS } from '@/constant';
-import { MetamaskModeDapps } from './MetamaskModeDapps';
+import {
+  MetamaskModeDappsGuide,
+  MetamaskModeDappsList,
+} from './MetamaskModeDapps';
 import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
+import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
+import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
 
 declare global {
   interface Window {
@@ -130,6 +135,11 @@ const Main = () => {
         <Route exact path="/welcome">
           <Welcome />
         </Route>
+
+        <Route exact path="/sync">
+          <SyncToMobile />
+        </Route>
+
         <Route exact path="/new-user/guide">
           <Guide />
         </Route>
@@ -199,6 +209,11 @@ const Main = () => {
         <Route exact path="/no-address">
           <NoAddress />
         </Route>
+
+        <Route exact path="/connect-approval">
+          <ConnectApproval />
+        </Route>
+
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
@@ -348,7 +363,10 @@ const Main = () => {
           <CustomTestnet />
         </PrivateRoute>
         <PrivateRoute exact path="/metamask-mode-dapps">
-          <MetamaskModeDapps />
+          <MetamaskModeDappsGuide />
+        </PrivateRoute>
+        <PrivateRoute exact path="/metamask-mode-dapps/list">
+          <MetamaskModeDappsList />
         </PrivateRoute>
         <PrivateRoute exact path="/nft">
           <NFTView />
