@@ -21,3 +21,4 @@ export { default as HDKeyRingLastAddAddrTimeService } from './HDKeyRingLastAddAd
 export { default as bridgeService } from './bridge';
 export { default as gasAccountService } from './gasAccount';
 export { default as uninstalledService } from './uninstalled';
+export { default as OfflineChainsService } from './offlineChain';

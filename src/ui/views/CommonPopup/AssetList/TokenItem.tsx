@@ -41,7 +41,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           />
         </TooltipWithMagnetArrow>
       </div>
-      <div className="flex flex-col gap-4 overflow-hidden">
+      <div className="flex flex-1 flex-col gap-4 overflow-hidden">
         <span className="text-r-neutral-title-1 text-13 font-medium leading-[15px] truncate">
           {item._amountStr}
         </span>

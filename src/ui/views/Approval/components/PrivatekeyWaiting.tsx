@@ -29,7 +29,6 @@ import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
-import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {

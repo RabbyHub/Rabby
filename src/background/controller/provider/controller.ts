@@ -1,20 +1,18 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import * as Sentry from '@sentry/browser';
-import Common, { Hardfork } from '@ethereumjs/common';
-import { TransactionFactory } from '@ethereumjs/tx';
+import { Common, Hardfork } from '@ethereumjs/common';
+import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
-  bufferToHex,
   isHexString,
   addHexPrefix,
   intToHex,
-} from 'ethereumjs-util';
-import { stringToHex } from 'web3-utils';
+  bytesToHex,
+} from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import {
   normalize as normalizeAddress,
   recoverPersonalSignature,
-} from 'eth-sig-util';
+} from '@metamask/eth-sig-util';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   keyringService,
@@ -31,6 +29,7 @@ import {
   transactionBroadcastWatchService,
   notificationService,
   bridgeService,
+  gasAccountService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx, TxPushType } from 'background/service/openapi';
@@ -49,7 +48,12 @@ import {
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
-import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
+import {
+  validateGasPriceRange,
+  is1559Tx,
+  ApprovalRes,
+  is7702Tx,
+} from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
@@ -59,10 +63,13 @@ import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
 import {
   CustomTestnetTokenBase,
+  TestnetChain,
   customTestnetService,
 } from '@/background/service/customTestnet';
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
+import { getOriginFromUrl } from '@/utils';
+import { stringToHex } from 'viem';
 
 const reportSignText = (params: {
   method: string;
@@ -87,27 +94,12 @@ const reportSignText = (params: {
   });
 };
 
-interface ApprovalRes extends Tx {
-  type?: string;
-  address?: string;
-  uiRequestComponent?: string;
-  isSend?: boolean;
-  isSpeedUp?: boolean;
-  isCancel?: boolean;
-  isSwap?: boolean;
-  isGnosis?: boolean;
-  account?: Account;
-  extra?: Record<string, any>;
-  traceId?: string;
-  $ctx?: any;
-  signingTxId?: string;
-  pushType?: TxPushType;
-  lowGasDeadline?: number;
-  reqId?: string;
-  isGasLess?: boolean;
-  isGasAccount?: boolean;
-  logId?: string;
-}
+const convertToHex = (data: Buffer | bigint) => {
+  if (typeof data === 'bigint') {
+    return `0x${data.toString(16)}`;
+  }
+  return bytesToHex(data);
+};
 
 interface Web3WalletPermission {
   // The name of the method corresponding to the permission
@@ -375,6 +367,7 @@ class ProviderController extends BaseController {
     const isGasLess = approvalRes.isGasLess || false;
     const logId = approvalRes.logId || '';
     const isGasAccount = approvalRes.isGasAccount || false;
+    const sig = approvalRes.sig;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -396,8 +389,16 @@ class ProviderController extends BaseController {
     delete approvalRes.isGasLess;
     delete approvalRes.logId;
     delete approvalRes.isGasAccount;
+    delete approvalRes.sig;
 
     let is1559 = is1559Tx(approvalRes);
+    const is7702 = is7702Tx(approvalRes);
+
+    if (is7702) {
+      // todo
+      throw new Error('not support 7702');
+    }
+
     if (
       is1559 &&
       approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas
@@ -416,7 +417,8 @@ class ProviderController extends BaseController {
     if (is1559) {
       txData.type = '0x2';
     }
-    const tx = TransactionFactory.fromTxData(txData, {
+    txData.gasPrice;
+    const tx = TransactionFactory.fromTxData(txData as FeeMarketEIP1559TxData, {
       common,
     });
     const currentAccount = preferenceService.getCurrentAccount()!;
@@ -488,6 +490,7 @@ class ProviderController extends BaseController {
         opts
       );
     } catch (e) {
+      console.error(e);
       const errObj =
         typeof e === 'object'
           ? { message: e.message }
@@ -540,9 +543,9 @@ class ProviderController extends BaseController {
         const _rawTx = {
           ...rawTx,
           ...approvalRes,
-          r: bufferToHex(signedTx.r),
-          s: bufferToHex(signedTx.s),
-          v: bufferToHex(signedTx.v),
+          r: convertToHex(signedTx.r),
+          s: convertToHex(signedTx.s),
+          v: convertToHex(signedTx.v),
         };
         if (is1559) {
           delete _rawTx.gasPrice;
@@ -628,6 +631,7 @@ class ProviderController extends BaseController {
               isSubmitFailed: true,
             },
             explain: cacheExplain,
+            actionData: action,
             origin,
           });
         }
@@ -658,28 +662,6 @@ class ProviderController extends BaseController {
         return signedTx;
       }
 
-      const buildTx = TransactionFactory.fromTxData({
-        ...approvalRes,
-        r: addHexPrefix(signedTx.r),
-        s: addHexPrefix(signedTx.s),
-        v: addHexPrefix(signedTx.v),
-        type: is1559 ? '0x2' : '0x0',
-      });
-
-      // Report address type(not sensitive information) to sentry when tx signature is invalid
-      if (!buildTx.verifySignature()) {
-        if (!buildTx.v) {
-          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
-        } else if (!buildTx.s) {
-          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
-        } else if (!buildTx.r) {
-          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
-        } else {
-          Sentry.captureException(
-            new Error(`invalid signature, ${keyring.type}`)
-          );
-        }
-      }
       signedTransactionSuccess = true;
       statsData.signed = true;
       statsData.signedSuccess = true;
@@ -703,7 +685,7 @@ class ProviderController extends BaseController {
               txData.type = '0x2';
             }
             const tx = TransactionFactory.fromTxData(txData);
-            const rawTx = bufferToHex(tx.serialize());
+            const rawTx = bytesToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
                 chain,
@@ -713,7 +695,9 @@ class ProviderController extends BaseController {
             } catch (e) {
               let errMsg = typeof e === 'object' ? e.message : e;
               if (RPCService.hasCustomRPC(chain)) {
-                errMsg = `[From Custom RPC] ${errMsg}`;
+                const rpc = RPCService.getRPCByChain(chain);
+                const origin = getOriginFromUrl(rpc.url);
+                errMsg = `[From ${origin}] ${errMsg}`;
               }
               onTransactionSubmitFailed({
                 ...e,
@@ -727,9 +711,9 @@ class ProviderController extends BaseController {
             const res = await openapiService.submitTx({
               tx: {
                 ...approvalRes,
-                r: bufferToHex(signedTx.r),
-                s: bufferToHex(signedTx.s),
-                v: bufferToHex(signedTx.v),
+                r: convertToHex(signedTx.r),
+                s: convertToHex(signedTx.s),
+                v: convertToHex(signedTx.v),
                 value: approvalRes.value || '0x0',
               },
               push_type: pushType,
@@ -739,7 +723,17 @@ class ProviderController extends BaseController {
               is_gasless: isGasLess,
               is_gas_account: isGasAccount,
               log_id: logId,
+              sig,
             });
+            if (res.access_token) {
+              gasAccountService.setGasAccountSig(
+                res.access_token,
+                currentAccount
+              );
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.GAS_ACCOUNT.LOG_IN,
+              });
+            }
             hash = res.req.tx_id || undefined;
             reqId = res.req.id || undefined;
             if (res.req.push_status === 'failed') {
@@ -768,7 +762,7 @@ class ProviderController extends BaseController {
             txData.type = '0x2';
           }
           const tx = TransactionFactory.fromTxData(txData);
-          const rawTx = bufferToHex(tx.serialize());
+          const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
           hash = await client.request({
@@ -781,8 +775,20 @@ class ProviderController extends BaseController {
 
         return hash;
       } catch (e: any) {
+        const chainData = findChain({
+          enum: chain,
+        })!;
+        let errMsg = e.details || e.message || JSON.stringify(e);
+        if (chainData && chainData.isTestnet) {
+          const rpcUrl = RPCService.hasCustomRPC(chain)
+            ? RPCService.getRPCByChain(chain).url
+            : (chainData as TestnetChain).rpcUrl;
+          errMsg = rpcUrl
+            ? `[From ${getOriginFromUrl(rpcUrl)}] ${errMsg}`
+            : errMsg;
+        }
         console.log('submit tx failed', e);
-        onTransactionSubmitFailed(e);
+        onTransactionSubmitFailed(errMsg);
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
@@ -1273,7 +1279,7 @@ class ProviderController extends BaseController {
     return recoverPersonalSignature({
       ...extra,
       data,
-      sig,
+      signature: sig,
     });
   };
 
@@ -1290,7 +1296,7 @@ class ProviderController extends BaseController {
     currentAddress = currentAddress?.toLowerCase();
     if (
       !currentAddress ||
-      currentAddress !== normalizeAddress(address).toLowerCase()
+      currentAddress !== normalizeAddress(address)?.toLowerCase()
     ) {
       throw ethErrors.rpc.invalidParams({
         message:

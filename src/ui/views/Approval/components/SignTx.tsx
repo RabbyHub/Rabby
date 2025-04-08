@@ -35,12 +35,12 @@ import {
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
 } from 'consts';
-import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
+import { addHexPrefix, isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useTranslation } from 'react-i18next';
-import { useAsync, useAsyncFn, useDebounce, useScroll } from 'react-use';
-import { useSize, useDebounceFn, useRequest } from 'ahooks';
+import { useTranslation, Trans } from 'react-i18next';
+import { useScroll } from 'react-use';
+import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
@@ -52,7 +52,6 @@ import {
 import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
@@ -87,6 +86,7 @@ import {
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import { ga4 } from '@/utils/ga4';
+import { EIP7702Warning } from './EIP7702Warning';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -100,7 +100,7 @@ const normalizeHex = (value: string | number) => {
     return intToHex(Math.floor(value));
   }
   if (typeof value === 'string') {
-    if (!isHexPrefixed(value)) {
+    if (!isHexString(value)) {
       return addHexPrefix(value);
     }
     return value;
@@ -143,6 +143,12 @@ export const normalizeTxParams = (tx) => {
       if (!tx.data.startsWith('0x')) {
         copy.data = `0x${tx.data}`;
       }
+    }
+
+    if ('authorizationList' in copy) {
+      copy.authorizationList = copy.authorizationList.map((item) => {
+        return normalizeHex(item);
+      });
     }
   } catch (e) {
     Sentry.captureException(
@@ -468,6 +474,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
+  const [support7702, setSupport7702] = useState(chain.eip['7702']);
   const [isLedger, setIsLedger] = useState(false);
   const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
@@ -570,7 +577,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isViewGnosisSafe,
     reqId,
     safeTxGas,
-  } = normalizeTxParams(params.data[0]);
+    authorizationList,
+  } = useMemo(() => {
+    return normalizeTxParams(params.data[0]);
+  }, [params.data]);
+
+  // is eip7702
+  if (authorizationList) {
+    return <EIP7702Warning />;
+  }
 
   const [pushInfo, setPushInfo] = useState<{
     type: TxPushType;
@@ -693,6 +708,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       },
     ] as Tx[];
   }, [tx, realNonce, gasLimit]);
+  const _currentAccount = useRabbySelector((s) => s.account.currentAccount!);
 
   const {
     gasAccountCost,
@@ -701,11 +717,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isGasAccountLogin,
     gasAccountCanPay,
     canGotoUseGasAccount,
+    canDepositUseGasAccount,
+    sig,
   } = useGasAccountTxsCheck({
     isReady,
     txs,
     noCustomRPC,
     isSupportedAddr,
+    currentAccount: _currentAccount,
   });
 
   useEffect(() => {
@@ -1197,6 +1216,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         isGasLess: gasMethod === 'native' ? useGasLess : false,
         isGasAccount: gasAccountCanPay,
         logId: logId.current,
+        sig,
       });
 
       return;
@@ -1471,41 +1491,48 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         throw e;
       }
     }
-    const pendingTxs = await Safe.getPendingTransactions(
-      currentAccount.address,
-      networkId,
-      safeInfo.nonce
-    );
-    const maxNonceTx = maxBy(pendingTxs.results, (item) => item.nonce);
-    let recommendSafeNonce = maxNonceTx ? maxNonceTx.nonce + 1 : safeInfo.nonce;
+    try {
+      const pendingTxs = await Safe.getPendingTransactions(
+        currentAccount.address,
+        networkId,
+        safeInfo.nonce
+      );
+      const maxNonceTx = maxBy(pendingTxs.results, (item) =>
+        Number(item.nonce)
+      );
+      let recommendSafeNonce = maxNonceTx
+        ? Number(maxNonceTx.nonce) + 1
+        : safeInfo.nonce;
+      setSafeInfo(safeInfo);
+      setRecommendNonce(`0x${recommendSafeNonce.toString(16)}`);
 
-    setSafeInfo(safeInfo);
-    setRecommendNonce(`0x${recommendSafeNonce.toString(16)}`);
-
-    if (
-      tx.nonce !== undefined &&
-      tx.nonce !== null &&
-      Number(tx.nonce || '0') >= safeInfo.nonce &&
-      origin === INTERNAL_REQUEST_ORIGIN
-    ) {
-      recommendSafeNonce = Number(tx.nonce || '0');
-      setRecommendNonce(tx.nonce || '0x0');
-    }
-    if (Number(tx.nonce || 0) < safeInfo.nonce) {
-      setTx({
-        ...tx,
-        nonce: `0x${recommendSafeNonce.toString(16)}`,
-      });
-      setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
-    } else {
-      setRealNonce(`0x${Number(tx.nonce).toString(16)}`);
-    }
-    if (tx.nonce === undefined || tx.nonce === null) {
-      setTx({
-        ...tx,
-        nonce: `0x${recommendSafeNonce.toString(16)}`,
-      });
-      setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
+      if (
+        tx.nonce !== undefined &&
+        tx.nonce !== null &&
+        Number(tx.nonce || '0') >= safeInfo.nonce &&
+        origin === INTERNAL_REQUEST_ORIGIN
+      ) {
+        recommendSafeNonce = Number(tx.nonce || '0');
+        setRecommendNonce(tx.nonce || '0x0');
+      }
+      if (Number(tx.nonce || 0) < safeInfo.nonce) {
+        setTx({
+          ...tx,
+          nonce: `0x${recommendSafeNonce.toString(16)}`,
+        });
+        setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
+      } else {
+        setRealNonce(`0x${Number(tx.nonce).toString(16)}`);
+      }
+      if (tx.nonce === undefined || tx.nonce === null) {
+        setTx({
+          ...tx,
+          nonce: `0x${recommendSafeNonce.toString(16)}`,
+        });
+        setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
+      }
+    } catch (e) {
+      throw new Error(t('page.signTx.safeServiceNotAvailable'));
     }
   };
 
@@ -1569,9 +1596,38 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     { wait: 1000 }
   );
 
+  const checkBlockedAddress = useMemoizedFn(async () => {
+    try {
+      const {
+        is_blocked: isBlockedFrom,
+      } = await wallet.openapi.isBlockedAddress(tx.from);
+      const { is_blocked: isBlockedTo } = await wallet.openapi.isBlockedAddress(
+        tx.to
+      );
+      if (isBlockedFrom || isBlockedTo) {
+        Modal.error({
+          title: t('page.sendToken.blockedTransaction'),
+          content: t('page.sendToken.blockedTransactionContent'),
+          okText: t('page.sendToken.blockedTransactionCancelText'),
+          onCancel: async () => {
+            await wallet.clearPageStateCache();
+            rejectApproval('User rejected the request.');
+          },
+          onOk: async () => {
+            await wallet.clearPageStateCache();
+            rejectApproval('User rejected the request.');
+          },
+        });
+      }
+    } catch (e) {
+      // NOTHING
+    }
+  });
+
   const init = async () => {
     dispatch.securityEngine.init();
     dispatch.securityEngine.resetCurrentTx();
+    checkBlockedAddress();
     try {
       const currentAccount =
         isGnosis && account ? account : (await wallet.getCurrentAccount())!;
@@ -1711,6 +1767,37 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (!isViewGnosisSafe) {
       await wallet.clearGnosisTransaction();
     }
+    // if (SELF_HOST_SAFE_NETWORKS.includes(chainId.toString())) {
+    //   const hasConfirmed = await wallet.hasConfirmSafeSelfHost(
+    //     chainId.toString()
+    //   );
+    //   const sigs = await wallet.getGnosisTransactionSignatures();
+    //   const isNewTx = sigs.length <= 0;
+    //   if (isNewTx && !hasConfirmed) {
+    //     Modal.info({
+    //       closable: false,
+    //       centered: true,
+    //       width: 320,
+    //       className: 'modal-support-darkmode external-link-alert-modal',
+    //       title: t('page.signTx.safeTx.selfHostConfirm.title'),
+
+    //       content: (
+    //         <Trans i18nKey={'page.signTx.safeTx.selfHostConfirm.content'} />
+    //       ),
+    //       okText: t('page.signTx.safeTx.selfHostConfirm.button'),
+    //       okButtonProps: {
+    //         className: 'w-full',
+    //       },
+    //       cancelText: null,
+    //       onOk() {
+    //         wallet.setConfirmSafeSelfHost(chainId.toString());
+    //       },
+    //       onCancel() {
+    //         wallet.setConfirmSafeSelfHost(chainId.toString());
+    //       },
+    //     });
+    //   }
+    // }
   };
 
   const executeSecurityEngine = async () => {
@@ -1745,6 +1832,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           result.level === Level.FORBIDDEN) &&
         !processedRules.includes(result.id)
     );
+
+    const trueDanger = needProcess.some(
+      (item) =>
+        ['1016', '1019', '1020', '1021'].includes(item.id) &&
+        item.level === Level.DANGER
+    );
+    if (trueDanger) {
+      return true;
+    }
     // if (hasForbidden) return true;
     if (needProcess.length > 0) {
       return !hasSafe;
@@ -2072,6 +2168,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             gasAccountCost={gasAccountCost}
             gasAccountCanPay={gasAccountCanPay}
             canGotoUseGasAccount={canGotoUseGasAccount}
+            canDepositUseGasAccount={canDepositUseGasAccount}
             isGasAccountLogin={isGasAccountLogin}
             isWalletConnect={
               currentAccountType === KEYRING_TYPE.WalletConnectKeyring

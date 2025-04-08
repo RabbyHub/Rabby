@@ -13,10 +13,8 @@ import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { Button } from 'antd';
-import {
-  GasAccountDepositTipPopup,
-  GasAccountLogInTipPopup,
-} from '@/ui/views/GasAccount/components/GasAccountTxPopups';
+import { useLoginDepositConfirm } from '@/ui/views/GasAccount/hooks/checkTxs';
+import { GasAccountDepositTipPopup } from '@/ui/views/GasAccount/components/GasAccountTxPopups';
 
 export type GasLessConfig = {
   button_text: string;
@@ -31,24 +29,23 @@ export function GasLessNotEnough({
   gasLessFailedReason,
   onChangeGasAccount,
   canGotoUseGasAccount,
+  canDepositUseGasAccount,
+  miniFooter,
 }: {
   url?: string;
   gasLessFailedReason?: string;
   onChangeGasAccount?: () => void;
   canGotoUseGasAccount?: boolean;
+  canDepositUseGasAccount?: boolean;
+  miniFooter?: boolean;
 }) {
   const { t } = useTranslation();
-  const [
-    hoverGasLessFailedReason,
-    setHoverGasLessFailedReason,
-  ] = React.useState(false);
+
+  const modalConfirm = useLoginDepositConfirm();
+  const [tipPopupVisible, setTipPopupVisible] = useState(false);
 
   return (
-    <div
-      className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center"
-      onMouseEnter={() => setHoverGasLessFailedReason(true)}
-      onMouseLeave={() => setHoverGasLessFailedReason(false)}
-    >
+    <div className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center">
       <RcIconGas
         viewBox="0 0 16 16"
         className="w-16 h-16 mr-4 text-r-neutral-title-1"
@@ -56,6 +53,27 @@ export function GasLessNotEnough({
       <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
         {t('page.signFooterBar.gasless.notEnough')}
       </span>
+
+      {canDepositUseGasAccount ? (
+        <Button
+          type="primary"
+          className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
+          onClick={() => {
+            if (miniFooter) {
+              modalConfirm('deposit');
+            } else {
+              setTipPopupVisible(true);
+            }
+          }}
+        >
+          {t('page.signFooterBar.gasAccount.deposit')}
+        </Button>
+      ) : null}
+
+      <GasAccountDepositTipPopup
+        visible={tipPopupVisible}
+        onClose={() => setTipPopupVisible(false)}
+      />
 
       {canGotoUseGasAccount ? (
         <div
@@ -325,49 +343,87 @@ export function GasAccountTips({
   isGasAccountLogin,
   isWalletConnect,
   noCustomRPC,
+  miniFooter,
 }: {
   gasAccountCost?: GasAccountCheckResult;
   isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
   noCustomRPC?: boolean;
+  miniFooter?: boolean;
 }) {
   const { t } = useTranslation();
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
 
-  const [tip, btnText] = useMemo(() => {
+  const { tip, btnText, loginGasAccount, depositGasAccount } = useMemo(() => {
     if (!noCustomRPC) {
-      return [t('page.signFooterBar.gasAccount.customRPC'), null];
+      return {
+        tip: t('page.signFooterBar.gasAccount.customRPC'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
     }
+
     if (isWalletConnect) {
-      return [t('page.signFooterBar.gasAccount.WalletConnectTips'), null];
+      return {
+        tip: t('page.signFooterBar.gasAccount.WalletConnectTips'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
     }
-    if (!isGasAccountLogin) {
-      return [
-        t('page.signFooterBar.gasAccount.loginFirst'),
-        t('page.signFooterBar.gasAccount.login'),
-      ];
-    }
+
+    // if (!isGasAccountLogin && !miniFooter) {
+    //   return {
+    //     tip: t('page.signFooterBar.gasAccount.loginFirst'),
+    //     btnText: t('page.signFooterBar.gasAccount.login'),
+    //     loginGasAccount: true,
+    //     depositGasAccount: false,
+    //   };
+    // }
+
     if (gasAccountCost?.chain_not_support) {
-      return [t('page.signFooterBar.gasAccount.chainNotSupported'), null];
+      return {
+        tip: t('page.signFooterBar.gasAccount.chainNotSupported'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
     }
+
     if (!gasAccountCost?.balance_is_enough) {
-      return [
-        t('page.signFooterBar.gasAccount.notEnough'),
-        t('page.signFooterBar.gasAccount.deposit'),
-      ];
+      return {
+        tip: t('page.signFooterBar.gasAccount.notEnough'),
+        btnText: t('page.signFooterBar.gasAccount.deposit'),
+        loginGasAccount: false,
+        depositGasAccount: true,
+      };
     }
-    return [null, null];
-  }, [isGasAccountLogin, isWalletConnect, gasAccountCost]);
+
+    return {
+      tip: null,
+      btnText: null,
+      loginGasAccount: false,
+      depositGasAccount: false,
+    };
+  }, [
+    miniFooter,
+    isGasAccountLogin,
+    isWalletConnect,
+    gasAccountCost,
+    noCustomRPC,
+    t,
+  ]);
 
   useEffect(() => {
-    return () => {
-      setTipPopupVisible(false);
-    };
+    return () => setTipPopupVisible(false);
   }, []);
+
+  const modalConfirm = useLoginDepositConfirm();
 
   if (
     !isWalletConnect &&
-    isGasAccountLogin &&
+    // isGasAccountLogin &&
     gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
     noCustomRPC
@@ -389,22 +445,19 @@ export function GasAccountTips({
         <Button
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
-          onClick={() => setTipPopupVisible(true)}
+          onClick={() => {
+            if (depositGasAccount && miniFooter) {
+              modalConfirm('deposit');
+            } else {
+              setTipPopupVisible(true);
+            }
+          }}
         >
           {btnText}
         </Button>
       ) : null}
-
       <GasAccountDepositTipPopup
-        visible={
-          !isWalletConnect && isGasAccountLogin ? tipPopupVisible : false
-        }
-        onClose={() => setTipPopupVisible(false)}
-      />
-      <GasAccountLogInTipPopup
-        visible={
-          !isWalletConnect && !isGasAccountLogin ? tipPopupVisible : false
-        }
+        visible={tipPopupVisible}
         onClose={() => setTipPopupVisible(false)}
       />
     </div>

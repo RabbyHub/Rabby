@@ -33,6 +33,7 @@ import {
 import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import type { Account } from '@/background/service/preference';
 import { IExtractFromPromise } from '@/ui/utils/type';
+import { OfflineChainNotify } from '../OfflineChainNotify';
 
 const BalanceView = ({
   currentAccount,
@@ -468,6 +469,7 @@ const BalanceView = ({
           </div>
         </div>
       </div>
+      <OfflineChainNotify />
     </div>
   );
 };

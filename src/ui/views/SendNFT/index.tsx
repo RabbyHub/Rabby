@@ -4,14 +4,9 @@ import BigNumber from 'bignumber.js';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { Input, Form, message, Button } from 'antd';
-import { isValidAddress } from 'ethereumjs-util';
-import {
-  CHAINS,
-  KEYRING_PURPLE_LOGOS,
-  KEYRING_CLASS,
-  CHAINS_ENUM,
-} from 'consts';
+import { Form, message, Button } from 'antd';
+import { isValidAddress } from '@ethereumjs/util';
+import { KEYRING_PURPLE_LOGOS, KEYRING_CLASS, CHAINS_ENUM } from 'consts';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
 import { NFTItem } from '@/background/service/openapi';
@@ -19,29 +14,19 @@ import { UIContactBookItem } from 'background/service/contactBook';
 import { useWallet, isSameAddress, openInTab } from 'ui/utils';
 import AccountCard from '../Approval/components/AccountCard';
 import { PageHeader, AddressViewer, Copy } from 'ui/component';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
 import NumberInput from '@/ui/component/NFTNumberInput';
 import NFTAvatar from 'ui/views/Dashboard/components/NFT/NFTAvatar';
-import IconWhitelist, {
-  ReactComponent as RcIconWhitelist,
-} from 'ui/assets/dashboard/whitelist.svg';
+import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
 import { ReactComponent as RcIconEdit } from 'ui/assets/edit-purple.svg';
-import IconContact, {
-  ReactComponent as RcIconContact,
-} from 'ui/assets/send-token/contact.svg';
-import IconCheck, {
-  ReactComponent as RcIconCheck,
-} from 'ui/assets/send-token/check.svg';
-import IconTemporaryGrantCheckbox, {
-  ReactComponent as RcIconTemporaryGrantCheckbox,
-} from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import { ReactComponent as RcIconContact } from 'ui/assets/send-token/contact.svg';
+import { ReactComponent as RcIconCheck } from 'ui/assets/send-token/check.svg';
+import { ReactComponent as RcIconTemporaryGrantCheckbox } from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
-import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-2-currentcolor.svg';
 
 import { findChain, findChainByEnum } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';

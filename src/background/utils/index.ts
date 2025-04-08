@@ -1,6 +1,6 @@
-import * as ethUtil from 'ethereumjs-util';
 import pageStateCache from '../service/pageStateCache';
 import { isManifestV3 } from '@/utils/env';
+import { addHexPrefix, bytesToHex, toBytes } from '@ethereumjs/util';
 import browser from 'webextension-polyfill';
 export { default as createPersistStore } from './persistStore';
 
@@ -44,8 +44,8 @@ export function normalizeAddress(input: number | string): string {
   }
 
   if (typeof input === 'number') {
-    const buffer = ethUtil.toBuffer(input);
-    input = ethUtil.bufferToHex(buffer);
+    const buffer = toBytes(input);
+    input = bytesToHex(buffer);
   }
 
   if (typeof input !== 'string') {
@@ -54,7 +54,7 @@ export function normalizeAddress(input: number | string): string {
     throw new Error(msg);
   }
 
-  return ethUtil.addHexPrefix(input);
+  return addHexPrefix(input);
 }
 
 export const setPageStateCacheWhenPopupClose = (data) => {

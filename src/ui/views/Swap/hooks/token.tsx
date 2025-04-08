@@ -1,12 +1,17 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAsync, useAsyncFn, useDebounce } from 'react-use';
-import { QuoteProvider, TDexQuoteData, useQuoteMethods } from './quote';
+import {
+  isSwapWrapToken,
+  QuoteProvider,
+  TDexQuoteData,
+  useQuoteMethods,
+} from './quote';
 import {
   useQuoteVisible,
   useRefreshId,
@@ -189,7 +194,12 @@ export const useTokenPair = (userAddress: string) => {
     supportChains: SWAP_SUPPORT_CHAINS,
     onChainInitializedAsync: (firstEnum) => {
       // only init chain if it's not cached before
-      if (!searchObj?.chain && !searchObj.payTokenId && !initialSelectedChain) {
+      if (
+        !searchObj?.chain &&
+        !searchObj.payTokenId &&
+        !searchObj.receiveTokenId &&
+        !initialSelectedChain
+      ) {
         switchChain(firstEnum);
       }
     },
@@ -379,13 +389,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const [isWrapToken, wrapTokenSymbol] = useMemo(() => {
     if (payToken?.id && receiveToken?.id) {
-      const wrapTokens = [
-        WrapTokenAddressMap[chain],
-        findChainByEnum(chain)!.nativeTokenAddress,
-      ];
-      const res =
-        !!wrapTokens.find((token) => isSameAddress(payToken?.id, token)) &&
-        !!wrapTokens.find((token) => isSameAddress(receiveToken?.id, token));
+      const res = isSwapWrapToken(payToken?.id, receiveToken?.id, chain);
       return [
         res,
         isSameAddress(payToken?.id, WrapTokenAddressMap[chain])
@@ -559,9 +563,11 @@ export const useTokenPair = (userAddress: string) => {
               return new BigNumber(Number.MIN_SAFE_INTEGER);
             }
             const balanceChangeReceiveTokenAmount =
-              quote?.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
-                (token) => isSameAddress(token.id, receiveToken.id)
-              )?.amount || 0;
+              new BigNumber(quote.data?.toTokenAmount || 0)
+                .div(
+                  10 ** (quote?.data?.toTokenDecimals || receiveToken.decimals)
+                )
+                .toString() || 0;
 
             if (sortIncludeGasFee) {
               return new BigNumber(balanceChangeReceiveTokenAmount)
@@ -597,9 +603,13 @@ export const useTokenPair = (userAddress: string) => {
                 halfBetterRate: '',
                 quoteWarning: undefined,
                 actualReceiveAmount:
-                  preExecResult?.swapPreExecTx.balance_change.receive_token_list.find(
-                    (token) => isSameAddress(token.id, receiveToken.id)
-                  )?.amount || '',
+                  new BigNumber(bestQuote.data?.toTokenAmount || 0)
+                    .div(
+                      10 **
+                        (bestQuote?.data?.toTokenDecimals ||
+                          receiveToken.decimals)
+                    )
+                    .toString() || '',
                 gasUsd: preExecResult?.gasUsd,
               }
         );
@@ -644,35 +654,48 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     let active = true;
-    if (searchObj.chain && searchObj.payTokenId) {
+    if (searchObj.chain) {
       const target = findChain({
         serverId: searchObj.chain,
       });
       if (target) {
-        setChain(target?.enum);
-        wallet.openapi
-          .getToken(userAddress, target.serverId, searchObj.payTokenId)
-          .then(
-            (token) => {
-              if (active) {
-                if (token) {
-                  setPayToken(token);
-                } else {
+        handleChain(target?.enum);
+
+        if (searchObj.payTokenId) {
+          wallet.openapi
+            .getToken(userAddress, target.serverId, searchObj.payTokenId)
+            .then(
+              (token) => {
+                if (active) {
+                  if (token) {
+                    setPayToken(token);
+                  } else {
+                    switchChain(target.enum);
+                  }
+                }
+              },
+              () => {
+                if (active) {
                   switchChain(target.enum);
                 }
               }
-            },
-            () => {
-              if (active) {
-                switchChain(target.enum);
-              }
-            }
-          );
+            );
+        } else {
+          setPayToken(undefined);
+        }
 
         if (searchObj?.inputAmount && !searchObj?.isMax) {
           handleAmountChange(searchObj?.inputAmount);
         }
+
         if (searchObj?.receiveTokenId) {
+          setReceiveToken({
+            ...getChainDefaultToken(target.enum),
+            id: searchObj.receiveTokenId,
+            logo_url: '',
+            symbol: '',
+            optimized_symbol: '',
+          });
           wallet.openapi
             .getToken(userAddress, target.serverId, searchObj.receiveTokenId)
             .then((token) => {

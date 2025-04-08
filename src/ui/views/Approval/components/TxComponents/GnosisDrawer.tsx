@@ -135,7 +135,10 @@ const GnosisDrawer = ({
             onSelect={handleSelectAccount}
             checked={
               checkedAccount
-                ? isSameAddress(owner.address, checkedAccount.address)
+                ? isSameAddress(owner.address, checkedAccount.address) &&
+                  !signatures.find((sig) =>
+                    isSameAddress(sig.signer, checkedAccount.address)
+                  )
                 : false
             }
           />
@@ -159,7 +162,12 @@ const GnosisDrawer = ({
         <Button
           type="primary"
           onClick={handleConfirm}
-          disabled={!checkedAccount}
+          disabled={
+            !checkedAccount ||
+            !!signatures.find((sig) =>
+              isSameAddress(sig.signer, checkedAccount.address)
+            )
+          }
           loading={isLoading}
           className="h-[48px]"
         >

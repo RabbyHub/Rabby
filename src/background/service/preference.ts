@@ -8,13 +8,7 @@ import {
   permissionService,
 } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
-import {
-  HARDWARE_KEYRING_TYPES,
-  EVENTS,
-  CHAINS_ENUM,
-  LANGS,
-  DARK_MODE_TYPE,
-} from 'consts';
+import { EVENTS, CHAINS_ENUM, LANGS, DARK_MODE_TYPE } from 'consts';
 import browser from 'webextension-polyfill';
 import semver from 'semver-compare';
 import { syncStateToUI } from '../utils/broadcastToUI';
@@ -121,6 +115,7 @@ export interface PreferenceStore {
   isShowTestnet?: boolean;
   themeMode?: DARK_MODE_TYPE;
   addressSortStore: AddressSortStore;
+  safeSelfHostConfirm?: Record<string, boolean>;
 
   /** @deprecated */
   reserveGasOnSendToken?: boolean;
@@ -186,6 +181,7 @@ class PreferenceService {
         },
         reserveGasOnSendToken: true,
         isHideEcologyNoticeDict: {},
+        safeSelfHostConfirm: {},
       },
     });
 
@@ -275,6 +271,26 @@ class PreferenceService {
     }
     if (!this.store.isHideEcologyNoticeDict) {
       this.store.isHideEcologyNoticeDict = {};
+    }
+    if (!this.store.safeSelfHostConfirm) {
+      this.store.safeSelfHostConfirm = {};
+    }
+  };
+
+  hasConfirmSafeSelfHost = (networkId: string) => {
+    if (this.store.safeSelfHostConfirm?.[networkId]) {
+      return true;
+    }
+    return false;
+  };
+
+  setConfirmSafeSelfHost = (networkId: string) => {
+    if (!this.store.safeSelfHostConfirm) {
+      this.store.safeSelfHostConfirm = {
+        [networkId]: true,
+      };
+    } else {
+      this.store.safeSelfHostConfirm[networkId] = true;
     }
   };
 

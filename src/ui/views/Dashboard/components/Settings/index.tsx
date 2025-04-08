@@ -60,6 +60,7 @@ import { getChainList } from '@/utils/chain';
 import { SvgIconCross } from '@/ui/assets';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { ga4 } from '@/utils/ga4';
+import { EcosystemBanner } from './components/EcosystemBanner';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -874,7 +875,11 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconPreferMetamask,
-          content: t('page.dashboard.settings.settings.metamaskMode'),
+          content: (
+            <div className="text-[13px]">
+              {t('page.dashboard.settings.settings.metamaskMode')}
+            </div>
+          ),
           onClick: () => {
             history.push('/metamask-mode-dapps');
             matomoRequestEvent({
@@ -1228,6 +1233,7 @@ const SettingsInner = ({
     <div className="popup-settings">
       <div className="content">
         {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
+        {/* <EcosystemBanner /> */}
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">

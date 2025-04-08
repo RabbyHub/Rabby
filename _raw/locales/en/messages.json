@@ -214,6 +214,7 @@
         "listAsset": "List asset",
         "receiveAsset": "Receive asset"
       },
+      "safeServiceNotAvailable": "Safe service is not available now, please try latter",
       "unknownAction": "Unknown Signature Type",
       "interactContract": "Interact contract",
       "markAsTrust": "Marked as trusted",
@@ -279,6 +280,13 @@
           "1h": "1h",
           "4h": "4h",
           "24h": "24h"
+        }
+      },
+      "safeTx": {
+        "selfHostConfirm": {
+          "title": "Switch to Rabby's Safe Service",
+          "content": "Safe API is unavailable. Switch to the Safe service deployed by Rabby to keep your Safe functional. <strong>All Safe signers must use Rabby Wallet to authorize transactions.<strong>",
+          "button": "OK"
         }
       },
       "SafeNonceSelector": {
@@ -372,7 +380,9 @@
         "loginFirst": "Please log in to GasAccount first",
         "login": "Log in",
         "gotIt": "Got it",
-        "deposit": "Deposit"
+        "deposit": "Deposit",
+        "depositTips": "To complete the GasAccount deposit, this transaction will be discarded. You’ll need to remake it after the deposit.",
+        "loginTips": "To complete the GasAccount login, this transaction will be discarded. You’ll need to remake it after the login."
       },
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
@@ -562,8 +572,8 @@
               "desc": "New transaction to cancel, requires gas"
             },
             "removeLocalPendingTx": {
-              "title": "Delete Transaction Locally",
-              "desc": "Fix transaction block caused by long pending time"
+              "title": "Clear Pending Locally",
+              "desc": "Remove the pending transaction from the interface"
             }
           },
           "removeLocalPendingTx": {
@@ -587,12 +597,17 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve",
-          "clearPendingAlert": "{{chainName}} Transaction ({{nonces}}) has been pending for over 3 minutes. You can <5></5> <6>clear pending transactions on this chain</6> <7></7> and initiate a new one."
+          "clearPendingAlert": "{{chainName}} Transaction ({{nonces}}) has been pending for over 3 minutes. You can <5></5> <6>Clear Pending Locally</6> <7></7> and resubmit the transaction."
         },
         "PredictTime": {
           "time": "Predicted to be packed in {{time}}",
           "noTime": "Packing time is being predicted",
           "failed": "Packing time prediction failed"
+        },
+        "CancelTxConfirmPopup": {
+          "title": "Clear Pending Locally",
+          "desc": "This will remove the pending transaction from your interface. You can then initiate a new transaction.",
+          "warning": "The removed transaction may still be confirmed on-chain unless it is replaced."
         }
       },
       "signedText": {
@@ -693,7 +708,10 @@
         "parseError": "Fail to decode contract call",
         "simulation": "Contract call simulation:",
         "notHexData": "Only supported hex data"
-      }
+      },
+      "blockedTransaction": "Blocked Transaction",
+      "blockedTransactionContent": "This transaction interacts with an address that is on the OFAC sanctions list.",
+      "blockedTransactionCancelText": "I Know"
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost",
@@ -1105,7 +1123,8 @@
           "manageAddress": "Manage Address",
           "nft": "NFT",
           "ecology": "Ecosystem",
-          "bridge": "Bridge"
+          "bridge": "Bridge",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -1153,7 +1172,8 @@
         "noRecentlyConnectedDapps": "No recently connected Dapps",
         "noConnectedDapps": "No connected Dapps",
         "dapps": "Dapps",
-        "metamaskModeTooltip": "Can’t connect Rabby on this Dapp? Try enabling <1>MetaMask Mode</1>"
+        "metamaskModeTooltip": "Can’t connect Rabby on this Dapp? Try enabling <1>MetaMask Mode</1>",
+        "metamaskModeTooltipNew": "Rabby Wallet will connect when you select \"MetaMask\" on the Dapp. You can manage this in More > Connect Rabby by Disguising as MetaMask"
       },
       "feedback": {
         "directMessage": {
@@ -1233,9 +1253,9 @@
         "reset": "Restore initial setting",
         "save": "Save",
         "pendingTransactionCleared": "Pending transaction cleared",
-        "clearPending": "Clear Pending",
-        "clearPendingTip1": "This will delete all your pending transactions locally and help resolve issues caused by long pending times.",
-        "clearPendingTip2": "It will not affect your account balances or require you to re-enter your seed phrase. All your assets and account information will remain secure.",
+        "clearPending": "Clear Pending Locally",
+        "clearPendingTip1": "This action removes the pending transaction from your interface, helping resolve issues caused by long pending durations on the network.",
+        "clearPendingTip2": "It does not affect your account balances or require re-entering your seed phrase. All assets and account details remain secure.",
         "autoLockTime": "Auto lock time",
         "claimRabbyBadge": "Claim Rabby Badge!",
         "cancel": "Cancel",
@@ -1271,7 +1291,7 @@
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
           "customTestnet": "Add Custom Network",
-          "metamaskMode": "MetaMask Mode"
+          "metamaskMode": "Connect Rabby by Disguising as MetaMask"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1281,7 +1301,7 @@
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
         "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token",
-        "clearPendingWarningTip": "The pending transactions may still be successfully submitted in the future."
+        "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced."
       },
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
@@ -1402,7 +1422,7 @@
         "ledgerIsDisconnected": "Your ledger is not connected"
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Safe address does not support {{chain}}"
+        "notDeployed": "Your Safe address is not deployed on this chain"
       },
       "echologyPopup": {
         "title": "Ecosystem"
@@ -1413,6 +1433,10 @@
         "footerText": "Add more Dapps to MetaMask Mode in More > MetaMask Mode",
         "enableDesc": "Enable if Dapp only works with MetaMask",
         "toastSuccess": "Enabled. Refresh the page to reconnect."
+      },
+      "offlineChain": {
+        "chain": "{{chain}} will soon not be integrated.",
+        "tips": "{{chain}} Chain will not be integrated on {{date}}. Your assets won’t be affected but won’t be included in your total balance. To access them, you may add it as a custom network in “More”."
       }
     },
     "nft": {
@@ -1857,7 +1881,7 @@
       "otherWalletBtn": "Connect with Another Wallet",
       "SelectWallet": {
         "title": "Select a Wallet to Connect",
-        "desc": "Choose from the wallets you have installed"
+        "desc": "Select from the wallets you have installed"
       }
     },
     "addressDetail": {
@@ -2310,6 +2334,8 @@
       "safeAddressDepositTips": "Multisig addresses are not supported for deposits.",
       "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
+      "switchAccount": "Switch GasAccount",
+      "withdrawDisabledIAP": "Withdrawals are disabled because your balance includes fiat funds, which cannot be withdrawn. Contact support to withdraw your token balance",
       "history": {
         "noHistory": "No history"
       },
@@ -2320,8 +2346,12 @@
         "gotIt": "Got it"
       },
       "loginConfirmModal": {
-        "title": "Log in with Current Address",
+        "title": "Select an address to log in",
         "desc": "Once confirmed, you can only deposit it at this address"
+      },
+      "gasAccountList": {
+        "address": "Address",
+        "gasAccountBalance": "Gas Balance"
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",
@@ -2465,7 +2495,7 @@
       },
       "importKeystone": {
         "qrcode": {
-          "desc": "Scan the QR code on the Keystone hardware wallet"
+          "desc": "Scan the QR code on the {{brandName}} hardware wallet"
         },
         "usb": {
           "desc": "Ensure your Keystone 3 Pro is on the homepage",
@@ -2486,7 +2516,7 @@
       }
     },
     "metamaskModeDapps": {
-      "title": "MetaMask Mode",
+      "title": "Manage Allowed Dapps",
       "desc": "MetaMask Mode enabled for the following Dapps. You can connect Rabby by selecting the MetaMask option."
     },
     "forgotPassword": {
@@ -2527,6 +2557,41 @@
         "description": "You're all set to use Rabby Wallet",
         "button": "Done"
       }
+    },
+    "eip7702": {
+      "alert": "EIP-7702 is not supported yet"
+    },
+    "metamaskModeDappsGuide": {
+      "title": "Connect Rabby by Disguising as MetaMask",
+      "alert": "Can't connect to a Dapp because it doesn't show Rabby Wallet as an option?",
+      "step1": "Step 1",
+      "step1Desc": "Allow Rabby to disguise as MetaMask on the current Dapp",
+      "step2": "Step 2",
+      "step2Desc": "Refresh and connect via MetaMask",
+      "manage": "Manage Allowed Dapps",
+      "noDappFound": "No Dapp found",
+      "toast": {
+        "enabled": "Disguise enabled. Refresh the Dapp to reconnect.",
+        "disabled": "Disguise disabled. Refresh the Dapp."
+      }
+    },
+    "syncToMobile": {
+      "title": "Sync Wallet Address from Rabby Extension to Mobile",
+      "description": "Your address data stays fully offline, encrypted, and securely           transferred via a QR code.",
+      "steps1": "1. Download Rabby Mobile",
+      "steps2": "2. Scan with Rabby Mobile",
+      "steps2Description": " *Your QR code contains sensitive data. Keep it private and never             share it with anyone.",
+      "downloadGooglePlay": "Google Play",
+      "downloadAppleStore": "App Store",
+      "clickToShowQr": "Click to Select Address  and Show QR Code",
+      "selectAddress": {
+        "title": "Select Addresses to Sync"
+      },
+      "disableSelectAddress": "Sync not supported for {{type}} address",
+      "disableSelectAddressWithSlip39": "Sync not supported for {{type}} address with slip39",
+      "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
+      "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
+      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync"
     }
   },
   "component": {

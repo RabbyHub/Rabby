@@ -13,17 +13,16 @@ import dayjs from 'dayjs';
 import { groupBy } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { numberToHex, toChecksumAddress } from 'web3-utils';
 
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
 import { useAccount } from '@/ui/store-hooks';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { findChain, findChainByID } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
-import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
+import { SafeTransactionDataPartial } from '@safe-global/types-kit';
 import { useRequest } from 'ahooks';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
-import { intToHex } from 'ethereumjs-util';
+import { intToHex, toChecksumAddress } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 import IconUser from 'ui/assets/address-management.svg';
@@ -39,6 +38,7 @@ import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getProtocol } from '@rabby-wallet/rabby-action';
 import { ReplacePopup } from './ReplacePopup';
+import { numberToHex } from 'viem';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -323,7 +323,7 @@ const GnosisTransactionItem = ({
         to: data.to,
         data: data.data || '0x',
         value: `0x${Number(data.value).toString(16)}`,
-        nonce: intToHex(data.nonce),
+        nonce: intToHex(Number(data.nonce)),
         gasPrice: '0x0',
         gas: '0x0',
       },
@@ -342,7 +342,7 @@ const GnosisTransactionItem = ({
       to: data.to,
       data: data.data || '0x',
       value: `0x${Number(data.value).toString(16)}`,
-      nonce: intToHex(data.nonce),
+      nonce: intToHex(Number(data.nonce)),
       safeTxGas: data.safeTxGas,
       gasPrice: Number(data.gasPrice),
       baseGas: data.baseGas,
@@ -398,8 +398,8 @@ const GnosisTransactionItem = ({
         from: toChecksumAddress(data.safe),
         to: toChecksumAddress(data.safe),
         data: '0x',
-        value: '0x',
-        nonce: intToHex(data.nonce),
+        value: '0x0',
+        nonce: intToHex(Number(data.nonce)),
         safeTxGas: 0,
         gasPrice: '0',
         baseGas: 0,
@@ -422,7 +422,7 @@ const GnosisTransactionItem = ({
         className={clsx('queue-item', {
           canExec:
             data.confirmations.length >= safeInfo.threshold &&
-            data.nonce === safeInfo.nonce,
+            +data.nonce === +safeInfo.nonce,
         })}
       >
         <div className="queue-item__time">
@@ -452,7 +452,7 @@ const GnosisTransactionItem = ({
           <Tooltip
             overlayClassName="rectangle"
             title={
-              data.nonce !== safeInfo.nonce ? (
+              +data.nonce !== +safeInfo.nonce ? (
                 <Trans
                   i18nKey="page.safeQueue.LowerNonceError"
                   values={{ nonce: safeInfo.nonce }}
@@ -468,7 +468,7 @@ const GnosisTransactionItem = ({
                 onClick={() => onSubmit(data)}
                 disabled={
                   data.confirmations.length < safeInfo.threshold ||
-                  data.nonce !== safeInfo.nonce
+                  +data.nonce !== +safeInfo.nonce
                 }
               >
                 {t('page.safeQueue.submitBtn')}
@@ -539,15 +539,15 @@ export const GnosisTransactionQueueList = (props: {
         txs.map(async (safeTx) => {
           const tx: SafeTransactionDataPartial = {
             data: safeTx.data || '0x',
-            gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
+            gasPrice: safeTx.gasPrice || '0',
             gasToken: safeTx.gasToken,
             refundReceiver: safeTx.refundReceiver,
             to: safeTx.to,
-            value: numberToHex(safeTx.value),
-            safeTxGas: safeTx.safeTxGas,
+            value: numberToHex(Number(safeTx.value)),
+            safeTxGas: safeTx.safeTxGas.toString(),
             nonce: safeTx.nonce,
             operation: safeTx.operation,
-            baseGas: safeTx.baseGas,
+            baseGas: safeTx.baseGas.toString(),
           };
           return wallet.validateGnosisTransaction(
             {
@@ -568,15 +568,15 @@ export const GnosisTransactionQueueList = (props: {
           if (!txHashValidation[index]) return false;
           const tx: SafeTransactionDataPartial = {
             data: safeTx.data || '0x',
-            gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
+            gasPrice: safeTx.gasPrice || '0',
             gasToken: safeTx.gasToken,
             refundReceiver: safeTx.refundReceiver,
             to: safeTx.to,
-            value: numberToHex(safeTx.value),
-            safeTxGas: safeTx.safeTxGas,
+            value: numberToHex(Number(safeTx.value)),
+            safeTxGas: safeTx.safeTxGas.toString(),
             nonce: safeTx.nonce,
             operation: safeTx.operation,
-            baseGas: safeTx.baseGas,
+            baseGas: safeTx.baseGas.toString(),
           };
 
           return safeTx.confirmations.every((confirm) =>
@@ -624,8 +624,8 @@ export const GnosisTransactionQueueList = (props: {
         from: toChecksumAddress(data.safe),
         to: data.to,
         data: data.data || '0x',
-        value: numberToHex(data.value),
-        nonce: intToHex(data.nonce),
+        value: numberToHex(Number(data.value)),
+        nonce: intToHex(Number(data.nonce)),
         safeTxGas: data.safeTxGas,
         gasPrice: Number(data.gasPrice),
         baseGas: data.baseGas,

@@ -1,7 +1,6 @@
 import { Account, ChainGas } from 'background/service/preference';
 import React, { ReactNode, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { findChain } from '@/utils/chain';
 import { TestnetActions } from './components/TestnetActions';
 import BigNumber from 'bignumber.js';
@@ -26,9 +25,8 @@ import {
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { normalizeTxParams } from '../SignTx';
-import { isHexString, toChecksumAddress } from 'ethereumjs-util';
+import { isHexString, toChecksumAddress } from '@ethereumjs/util';
 import { WaitingSignComponent } from '../map';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import i18n from '@/i18n';
@@ -39,7 +37,6 @@ import { MessageWrapper } from '../TextActions';
 import { Card } from '../Card';
 import { SignAdvancedSettings } from '../SignAdvancedSettings';
 import clsx from 'clsx';
-import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { Modal } from 'antd';
 import { ga4 } from '@/utils/ga4';
 
