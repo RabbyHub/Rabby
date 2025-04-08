@@ -13,7 +13,6 @@ import dayjs from 'dayjs';
 import { groupBy } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { numberToHex, toChecksumAddress } from 'web3-utils';
 
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
 import { useAccount } from '@/ui/store-hooks';
@@ -23,7 +22,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@safe-global/types-kit';
 import { useRequest } from 'ahooks';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
-import { intToHex } from '@ethereumjs/util';
+import { intToHex, toChecksumAddress } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 import IconUser from 'ui/assets/address-management.svg';
@@ -39,6 +38,7 @@ import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getProtocol } from '@rabby-wallet/rabby-action';
 import { ReplacePopup } from './ReplacePopup';
+import { numberToHex } from 'viem';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -543,7 +543,7 @@ export const GnosisTransactionQueueList = (props: {
             gasToken: safeTx.gasToken,
             refundReceiver: safeTx.refundReceiver,
             to: safeTx.to,
-            value: numberToHex(safeTx.value),
+            value: numberToHex(Number(safeTx.value)),
             safeTxGas: safeTx.safeTxGas.toString(),
             nonce: safeTx.nonce,
             operation: safeTx.operation,
@@ -572,7 +572,7 @@ export const GnosisTransactionQueueList = (props: {
             gasToken: safeTx.gasToken,
             refundReceiver: safeTx.refundReceiver,
             to: safeTx.to,
-            value: numberToHex(safeTx.value),
+            value: numberToHex(Number(safeTx.value)),
             safeTxGas: safeTx.safeTxGas.toString(),
             nonce: safeTx.nonce,
             operation: safeTx.operation,
@@ -624,7 +624,7 @@ export const GnosisTransactionQueueList = (props: {
         from: toChecksumAddress(data.safe),
         to: data.to,
         data: data.data || '0x',
-        value: numberToHex(data.value),
+        value: numberToHex(Number(data.value)),
         nonce: intToHex(Number(data.nonce)),
         safeTxGas: data.safeTxGas,
         gasPrice: Number(data.gasPrice),

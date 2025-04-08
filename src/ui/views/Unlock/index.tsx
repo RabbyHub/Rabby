@@ -22,10 +22,11 @@ const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
     font-size: 13px;
     line-height: 16px;
-    margin-top: 12px;
+    margin-top: 16px;
     margin-bottom: 24px;
     min-height: 0px;
     color: var(--r-red-default);
+    font-weight: 500;
   }
 `;
 
@@ -40,6 +41,7 @@ const Unlock = () => {
   const isUnlockingRef = useRef(false);
   const [hasForgotPassword, setHasForgotPassword] = React.useState(false);
   const location = useLocation();
+  const [inputError, setInputError] = React.useState('');
   const query = useMemo(() => {
     return qs.parse(location.search, {
       ignoreQueryPrefix: true,
@@ -67,12 +69,8 @@ const Unlock = () => {
     },
     onError(err) {
       console.log('error', err);
-      form.setFields([
-        {
-          name: 'password',
-          errors: [err?.message || t('page.unlock.password.error')],
-        },
-      ]);
+      setInputError(err?.message || t('page.unlock.password.error'));
+      form.validateFields(['password']);
     },
   });
 
@@ -87,9 +85,15 @@ const Unlock = () => {
     wallet.savedUnencryptedKeyringData().then(setHasForgotPassword);
   }, []);
 
+  useEffect(() => {
+    if (UiType.isTab) {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   return (
     <FullscreenContainer>
-      <div className="unlock page-has-ant-input relative h-full">
+      <div className="unlock page-has-ant-input relative h-full min-h-[550px]">
         <BackgroundSVG className="absolute inset-0 z-[-1]" />
         <div className="pt-80">
           <RabbySVG className="m-auto" />
@@ -123,6 +127,30 @@ const Unlock = () => {
                 required: true,
                 message: t('page.unlock.password.required'),
               },
+              {
+                validator: (_, value) => {
+                  if (inputError) {
+                    return Promise.reject(
+                      <div>
+                        <span>{inputError}</span>
+                        <button
+                          className={clsx(
+                            'text-r-blue-default font-medium',
+                            'underline',
+                            'ml-[8px]'
+                          )}
+                          onClick={() =>
+                            openInternalPageInTab('forgot-password')
+                          }
+                        >
+                          {t('page.unlock.btnForgotPassword')}
+                        </button>
+                      </div>
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
             ]}
           >
             <Input
@@ -137,39 +165,43 @@ const Unlock = () => {
               type="password"
               ref={inputEl}
               spellCheck={false}
+              onChange={() => {
+                setInputError('');
+              }}
             />
           </InputFormStyled>
-          <Form.Item className="mx-20">
-            <Button
-              block
-              className={clsx(
-                'w-full py-18 h-auto rounded-[8px] border-none',
-                'text-[17px] leading-[20px]',
-                'font-medium'
-              )}
-              htmlType="submit"
-              type="primary"
-              size="large"
-            >
-              {t('page.unlock.btn.unlock')}
-            </Button>
-          </Form.Item>
-        </Form>
 
-        <footer className="absolute bottom-32 left-0 right-0 text-center">
-          {hasForgotPassword && (
-            <button
-              className={clsx(
-                'text-r-neutral-foot',
-                'text-13 font-normal',
-                'hover:underline'
-              )}
-              onClick={() => openInternalPageInTab('forgot-password')}
-            >
-              {t('page.unlock.btnForgotPassword')}
-            </button>
-          )}
-        </footer>
+          <footer className="absolute bottom-32 left-0 right-0 text-center">
+            <Form.Item className="mx-20 mb-20">
+              <Button
+                block
+                className={clsx(
+                  'w-full py-18 h-auto rounded-[8px] border-none',
+                  'text-[17px] leading-[20px]',
+                  'font-medium'
+                )}
+                htmlType="submit"
+                type="primary"
+                size="large"
+              >
+                {t('page.unlock.btn.unlock')}
+              </Button>
+            </Form.Item>
+
+            {hasForgotPassword && (
+              <button
+                className={clsx(
+                  'text-r-neutral-body',
+                  'text-13 leading-[16px] font-medium',
+                  'hover:underline'
+                )}
+                onClick={() => openInternalPageInTab('forgot-password')}
+              >
+                {t('page.unlock.btnForgotPassword')}
+              </button>
+            )}
+          </footer>
+        </Form>
       </div>
     </FullscreenContainer>
   );

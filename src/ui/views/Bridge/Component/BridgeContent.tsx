@@ -1,6 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useRabbySelector } from '@/ui/store';
-import { useBridge } from '../hooks/token';
+import { tokenPriceImpact, useBridge } from '../hooks/token';
 import { Alert, Button, message, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
@@ -224,7 +230,7 @@ export const BridgeContent = () => {
       selectedBridgeQuote?.bridge_id
     ) {
       try {
-        setFetchingBridgeQuote(true);
+        // setFetchingBridgeQuote(true);
         const { tx } = await pRetry(
           () =>
             wallet.openapi.getBridgeQuoteTxV2({
@@ -301,7 +307,7 @@ export const BridgeContent = () => {
         });
         console.error(error);
       } finally {
-        setFetchingBridgeQuote(false);
+        // setFetchingBridgeQuote(false);
       }
     }
   });
@@ -316,20 +322,45 @@ export const BridgeContent = () => {
 
   const currentAccount = useCurrentAccount();
 
-  const handleBridge = useMemoizedFn(async () => {
-    if (
+  const showLoss = useMemo(() => {
+    const impact = tokenPriceImpact(
+      fromToken,
+      toToken,
+      amount,
+      selectedBridgeQuote?.to_token_amount
+    );
+    return !!impact?.showLoss;
+  }, [fromToken, amount, selectedBridgeQuote?.to_token_amount, toToken]);
+
+  const runBuildSwapTxsRef = useRef<ReturnType<typeof runBuildSwapTxs>>();
+
+  const canUseMiniTx = useMemo(
+    () =>
       !toToken?.low_credit_score &&
       !toToken?.is_scam &&
       toToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
+      !showLoss &&
       [
         KEYRING_TYPE.SimpleKeyring,
         KEYRING_TYPE.HdKeyring,
         KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any)
-    ) {
-      await runBuildSwapTxs();
+      ].includes((currentAccount?.type || '') as any),
+    [toToken, isSlippageHigh, isSlippageLow, currentAccount?.type, showLoss]
+  );
+
+  const handleBridge = useMemoizedFn(async () => {
+    if (canUseMiniTx) {
+      try {
+        setFetchingBridgeQuote(true);
+        await runBuildSwapTxsRef.current;
+      } catch (error) {
+        console.error('runBuildSwapTxsRef', error);
+      } finally {
+        setFetchingBridgeQuote(false);
+      }
+
       setIsShowSign(true);
       clearExpiredTimer();
     } else {
@@ -377,6 +408,13 @@ export const BridgeContent = () => {
     !selectedBridgeQuote ||
     quoteLoading ||
     !quoteList?.length;
+
+  useEffect(() => {
+    if (!btnDisabled && selectedBridgeQuote) {
+      mutateTxs([]);
+      runBuildSwapTxsRef.current = runBuildSwapTxs();
+    }
+  }, [canUseMiniTx, btnDisabled, selectedBridgeQuote]);
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);
 

@@ -11,13 +11,13 @@ import { ReactComponent as RcIconSendToken } from 'ui/assets/dashboard/sendtoken
 import { ReactComponent as RcIconSwap } from 'ui/assets/dashboard/swap.svg';
 import { ReactComponent as RcIconReceive } from 'ui/assets/dashboard/receive.svg';
 import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
-
 import { ReactComponent as RcIconNFT } from 'ui/assets/dashboard/nft.svg';
 import { ReactComponent as RcIconTransactions } from 'ui/assets/dashboard/transactions.svg';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
-import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
-
+import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco-1.svg';
 import { ReactComponent as RcIconMoreSettings } from 'ui/assets/dashboard/more-settings.svg';
+import { ReactComponent as RcIconMoreSmall } from 'ui/assets/dashboard/more-cc.svg';
+import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import {
   getCurrentConnectSite,
@@ -189,6 +189,7 @@ export default ({
     commingSoonBadge?: boolean;
     disableReason?: string;
     eventKey: string;
+    iconClassName?: string;
   };
 
   const panelItems = {
@@ -279,6 +280,15 @@ export default ({
         setIsShowEcologyModal(true);
       },
     } as IPanelItem,
+    mobile: {
+      icon: RCIconRabbyMobile,
+      eventKey: 'Rabby Mobile',
+      content: t('page.dashboard.home.panel.mobile'),
+      iconClassName: 'icon-rabby-mobile',
+      onClick: () => {
+        openInternalPageInTab('sync');
+      },
+    } as IPanelItem,
   };
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
@@ -292,8 +302,8 @@ export default ({
       'transactions',
       'nft',
       'security',
+      'mobile',
       'ecology',
-      'more',
     ];
   } else {
     pickedPanelKeys = [
@@ -304,8 +314,8 @@ export default ({
       'transactions',
       'nft',
       'security',
+      'mobile',
       'ecology',
-      'more',
     ];
   }
 
@@ -321,77 +331,106 @@ export default ({
         onClick={hideAllList}
       />
       <div className="pannel">
-        <div className="direction-pannel">
-          {pickedPanelKeys.map((panelKey, index) => {
-            const item = panelItems[panelKey] as IPanelItem;
-            if (item.hideForGnosis && isGnosis) return <></>;
-            return item.disabled ? (
-              <Tooltip
-                {...(item.commingSoonBadge && { visible: false })}
-                title={
-                  item.disableReason || t('page.dashboard.home.comingSoon')
-                }
-                overlayClassName="rectangle direction-tooltip"
-                autoAdjustOverflow={false}
-              >
-                <div key={index} className="disable-direction">
-                  <ThemeIcon src={item.icon} className="images" />
-                  <div>{item.content} </div>
-                </div>
-              </Tooltip>
-            ) : (
-              <div
-                key={index}
-                onClick={(evt) => {
-                  matomoRequestEvent({
-                    category: 'Dashboard',
-                    action: 'clickEntry',
-                    label: item.eventKey,
-                  });
+        <div className="pannel-body">
+          <div className="direction-pannel">
+            {pickedPanelKeys.map((panelKey, index) => {
+              const item = panelItems[panelKey] as IPanelItem;
+              if (item.hideForGnosis && isGnosis) return <></>;
+              return item.disabled ? (
+                <Tooltip
+                  {...(item.commingSoonBadge && { visible: false })}
+                  title={
+                    item.disableReason || t('page.dashboard.home.comingSoon')
+                  }
+                  overlayClassName="rectangle direction-tooltip"
+                  autoAdjustOverflow={false}
+                >
+                  <div key={index} className="disable-direction">
+                    <ThemeIcon src={item.icon} className="images" />
+                    <div>{item.content} </div>
+                  </div>
+                </Tooltip>
+              ) : (
+                <div
+                  key={index}
+                  onClick={(evt) => {
+                    matomoRequestEvent({
+                      category: 'Dashboard',
+                      action: 'clickEntry',
+                      label: item.eventKey,
+                    });
 
-                  ga4.fireEvent(`Entry_${item.eventKey}`, {
-                    event_category: 'Dashboard',
-                  });
+                    ga4.fireEvent(`Entry_${item.eventKey}`, {
+                      event_category: 'Dashboard',
+                    });
 
-                  item?.onClick(evt);
-                }}
-                className="direction pointer"
-              >
-                {item.showAlert && (
-                  <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
-                )}
-                {item.badge ? (
-                  <Badge
-                    count={item.badge}
-                    size="small"
-                    className={clsx(
-                      {
-                        alert: item.badgeAlert && !item.badgeClassName,
-                      },
-                      item.badgeClassName
-                    )}
-                  >
+                    item?.onClick(evt);
+                  }}
+                  className="direction pointer"
+                >
+                  {item.showAlert && (
+                    <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
+                  )}
+                  {item.badge ? (
+                    <Badge
+                      count={item.badge}
+                      size="small"
+                      className={clsx(
+                        {
+                          alert: item.badgeAlert && !item.badgeClassName,
+                        },
+                        item.badgeClassName
+                      )}
+                    >
+                      <ThemeIcon
+                        src={item.icon}
+                        className={clsx([
+                          item.iconSpin && 'icon-spin',
+                          'images',
+                        ])}
+                      />
+                    </Badge>
+                  ) : (
                     <ThemeIcon
                       src={item.icon}
-                      className={[item.iconSpin && 'icon-spin', 'images']
-                        .filter(Boolean)
-                        .join(' ')}
+                      className={clsx(['images', item.iconClassName])}
                     />
-                  </Badge>
-                ) : (
-                  <ThemeIcon src={item.icon} className="images" />
-                )}
-                <div>{item.content} </div>
-                {item.commingSoonBadge && (
-                  <div className="coming-soon-badge">
-                    {t('page.dashboard.home.soon')}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  )}
+                  <div>{item.content} </div>
+                  {item.commingSoonBadge && (
+                    <div className="coming-soon-badge">
+                      {t('page.dashboard.home.soon')}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div className="pannel-footer">
+          <div
+            className="direction-more"
+            onClick={() => {
+              const eventKey = 'More';
+              matomoRequestEvent({
+                category: 'Dashboard',
+                action: 'clickEntry',
+                label: eventKey,
+              });
+
+              ga4.fireEvent(`Entry_${eventKey}`, {
+                event_category: 'Dashboard',
+              });
+
+              toggleShowMoreSettings();
+            }}
+          >
+            <RcIconMoreSmall />
+            <div>{t('page.dashboard.home.panel.more')}</div>
+          </div>
         </div>
       </div>
+
       <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
 
       <CurrentConnection

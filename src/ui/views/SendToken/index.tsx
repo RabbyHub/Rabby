@@ -7,8 +7,17 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, useDebounce } from 'react-use';
-import { Input, Form, Skeleton, message, Button, InputProps } from 'antd';
+import {
+  Input,
+  Form,
+  Skeleton,
+  message,
+  Button,
+  InputProps,
+  Modal,
+} from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
+import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
 
 import {
@@ -66,7 +75,6 @@ import {
   useCheckAddressType,
   useParseContractAddress,
 } from '@/ui/hooks/useParseAddress';
-import { isHex } from 'web3-utils';
 import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
@@ -82,14 +90,10 @@ import {
   SendReserveGasPopup,
 } from '../Swap/Component/ReserveGasPopup';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
-import { useThemeMode } from '@/ui/hooks/usePreference';
-import {
-  useCurrentAccount,
-  useSubscribeCurrentAccountChanged,
-} from '@/ui/hooks/backgroundState/useAccount';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { useRequest } from 'ahooks';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
+import { isHex } from 'viem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -277,12 +281,6 @@ const SendTokenMessageForContract = React.forwardRef<
     </div>
   );
 });
-
-// interface CustomTestnetTokenItem extends CustomTestnetToken {
-//   chain: string;
-//   raw_amount: string;
-//   raw_amount_hex_str?: string;
-// }
 
 function findInstanceLevel(gasList: GasLevel[]) {
   return gasList.reduce((prev, current) =>
@@ -774,6 +772,30 @@ const SendToken = () => {
     setShowEditContactModal(true);
   };
 
+  const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
+    if (!to) return;
+    try {
+      const { is_blocked } = await wallet.openapi.isBlockedAddress(to);
+      if (is_blocked) {
+        Modal.error({
+          title: t('page.sendToken.blockedTransaction'),
+          content: t('page.sendToken.blockedTransactionContent'),
+          okText: t('page.sendToken.blockedTransactionCancelText'),
+          onCancel: async () => {
+            await wallet.clearPageStateCache();
+            handleClickBack();
+          },
+          onOk: async () => {
+            await wallet.clearPageStateCache();
+            handleClickBack();
+          },
+        });
+      }
+    } catch (e) {
+      // NOTHING
+    }
+  });
+
   const handleFormValuesChange = useCallback(
     async (
       changedValues,
@@ -786,6 +808,7 @@ const SendToken = () => {
       const { token, isInitFromCache } = opts || {};
       if (changedValues && changedValues.to) {
         setTemporaryGrant(false);
+        handleReceiveAddressChanged(changedValues.to);
       }
 
       if ((!isInitFromCache && changedValues?.to) || (!changedValues && to)) {
@@ -851,6 +874,7 @@ const SendToken = () => {
       contactInfo,
       currentToken,
       form,
+      handleReceiveAddressChanged,
       persistPageStateCache,
       setShowGasReserved,
       showGasReserved,

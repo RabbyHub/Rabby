@@ -101,6 +101,7 @@ export const OfflineChainNotify = () => {
 
         return (
           <div
+            key={e.id}
             className={clsx(
               'hidden last:flex',
               'w-full h-auto min-h-[32px] bg-rabby-orange-light',

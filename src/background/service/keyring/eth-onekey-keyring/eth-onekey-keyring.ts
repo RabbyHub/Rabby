@@ -3,16 +3,11 @@ import {
   toChecksumAddress,
   stripHexPrefix,
   addHexPrefix,
+  bytesToHex,
   publicToAddress,
-  bufferToHex,
 } from '@ethereumjs/util';
-import * as sigUtil from 'eth-sig-util';
-import {
-  FeeMarketEIP1559Transaction,
-  Transaction,
-  TransactionFactory,
-  TypedTransaction,
-} from '@ethereumjs/tx';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
+import { TransactionFactory, TypedTransaction } from '@ethereumjs/tx';
 import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
 import { OneKeyBridgeInterface } from './onekey-bridge-interface';
@@ -504,18 +499,18 @@ class OneKeyKeyring extends EventEmitter {
         types,
         primaryType,
         message,
-      } = sigUtil.TypedDataUtils.sanitizeData(typedData);
-      const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+      } = TypedDataUtils.sanitizeData(typedData);
+      const domainSeparatorHex = TypedDataUtils.hashStruct(
         'EIP712Domain',
         domain,
         types,
-        isV4
+        isV4 ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3
       ).toString('hex');
-      const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+      const hashStructMessageHex = TypedDataUtils.hashStruct(
         primaryType as string,
         message,
         types,
-        isV4
+        isV4 ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3
       ).toString('hex');
       this.unlock()
         .then((status) => {
@@ -611,13 +606,13 @@ class OneKeyKeyring extends EventEmitter {
   /* PRIVATE METHODS */
 
   _normalize(buf: Buffer): string {
-    return bufferToHex(buf);
+    return bytesToHex(buf);
   }
 
   // eslint-disable-next-line no-shadow
   _addressFromIndex(pathBase: string, i: number): string {
     const dkey = this.hdk.derive(`${pathBase}/${i}`);
-    const address = bufferToHex(publicToAddress(dkey.publicKey, true));
+    const address = bytesToHex(publicToAddress(dkey.publicKey, true));
     return toChecksumAddress(address);
   }
 

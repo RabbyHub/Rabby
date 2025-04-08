@@ -59,10 +59,14 @@ export const Quotes = ({
           if (!quote.preExecResult) {
             return new BigNumber(Number.MIN_SAFE_INTEGER);
           }
-          const receiveTokenAmount =
-            quote?.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
-              (item) => isSameAddress(item.id, other.receiveToken.id)
-            )?.amount || 0;
+          const receiveTokenAmount = new BigNumber(
+            quote?.data?.toTokenAmount || 0
+          )
+            .div(
+              10 **
+                (quote?.data?.toTokenDecimals || other.receiveToken.decimals)
+            )
+            .toString();
           if (sortIncludeGasFee) {
             return new BigNumber(receiveTokenAmount)
               .times(price)
@@ -79,11 +83,13 @@ export const Quotes = ({
 
   const [bestQuoteAmount, bestQuoteGasUsd] = useMemo(() => {
     const bestQuote = sortedList?.[0];
-    const receiveTokenAmount = bestQuote?.preExecResult
-      ? bestQuote.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
-          (item) => isSameAddress(item.id, other.receiveToken.id)
-        )?.amount || 0
-      : 0;
+    const receiveTokenAmount =
+      new BigNumber(bestQuote?.data?.toTokenAmount || 0)
+        .div(
+          10 **
+            (bestQuote?.data?.toTokenDecimals || other.receiveToken.decimals)
+        )
+        .toString() || '0';
 
     return [
       inSufficient
@@ -119,9 +125,12 @@ export const Quotes = ({
             name={dex?.name}
             isBestQuote
             bestQuoteAmount={`${
-              dex?.preExecResult?.swapPreExecTx.balance_change.receive_token_list.find(
-                (token) => isSameAddress(token.id, other.receiveToken.id)
-              )?.amount || '0'
+              new BigNumber(dex?.data?.toTokenAmount || 0)
+                .div(
+                  10 **
+                    (dex?.data?.toTokenDecimals || other.receiveToken.decimals)
+                )
+                .toString() || '0'
             }`}
             bestQuoteGasUsd={bestQuoteGasUsd}
             isLoading={dex.loading}
