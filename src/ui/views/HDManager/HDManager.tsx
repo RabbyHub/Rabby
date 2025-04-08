@@ -182,6 +182,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
       keyringId={idRef.current}
       keyring={keyring}
       isLazyImport={isLazyImport}
+      brand={brand}
     >
       <div className="HDManager relative">
         <main>

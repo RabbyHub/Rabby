@@ -238,6 +238,7 @@ export const HDManagerStateProvider: React.FC<StateProviderProps> = ({
   keyringId,
   keyring,
   isLazyImport,
+  brand,
 }) => {
   return (
     <HDManagerStateContext.Provider
@@ -249,6 +250,7 @@ export const HDManagerStateProvider: React.FC<StateProviderProps> = ({
         keyringId,
         keyring,
         isLazyImport,
+        brand,
       }}
     >
       {children}
