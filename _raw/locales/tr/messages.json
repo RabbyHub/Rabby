@@ -2511,11 +2511,6 @@
           "tip1": "Keystone cihazınızı takın"
         }
       },
-      "importNgraveZero": {
-        "qrcode": {
-          "desc": "NGRAVE ZERO donanım cüzdanındaki QR kodunu tarayın"
-        }
-      },
       "importSafe": {
         "error": {
           "required": "Lütfen adres girin",

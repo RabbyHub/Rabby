@@ -10,7 +10,6 @@ import { KEYRING_CLASS } from '@/constant';
 
 interface Props extends AccountListProps {
   setting: SettingData;
-  brand?: string;
 }
 const MAX_STEP_COUNT = 5;
 const MAX_STEP_COUNT_TREZOR = 50;

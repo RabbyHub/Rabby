@@ -2520,11 +2520,6 @@
           "tip1": "Підключіть ваш Keystone пристрій"
         }
       },
-      "importNgraveZero": {
-        "qrcode": {
-          "desc": "Скануйте QR-код на апаратному гаманці NGRAVE ZERO"
-        }
-      },
       "importSafe": {
         "error": {
           "required": "Будь ласка, введіть адресу",

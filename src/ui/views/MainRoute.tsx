@@ -77,7 +77,6 @@ import {
 } from './MetamaskModeDapps';
 import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
-import { NewUserImportNgraveZero } from './NewUserImport/ImportNgraveZero';
 import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
 import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
 
@@ -173,10 +172,6 @@ const Main = () => {
           path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.KEYSTONE}`}
         >
           <NewUserImportKeystone />
-        </Route>
-
-        <Route exact path={'/new-user/import/hardware/ngravezero'}>
-          <NewUserImportNgraveZero />
         </Route>
 
         <Route exact path="/new-user/import/hardware/:type">

@@ -69,7 +69,6 @@ export const MainContainer: React.FC<Props> = ({
           setting={setting}
           loading={loading}
           preventLoading={preventLoading}
-          brand={HDName}
         />
       </Tabs.TabPane>
       <Tabs.TabPane
