@@ -2495,7 +2495,7 @@
       },
       "importKeystone": {
         "qrcode": {
-          "desc": "Scan the QR code on the Keystone hardware wallet"
+          "desc": "Scan the QR code on the {{brandName}} hardware wallet"
         },
         "usb": {
           "desc": "Ensure your Keystone 3 Pro is on the homepage",

@@ -1809,7 +1809,7 @@
     chai "^4.3.4"
     ethers "^5.6.8"
 
-"@ethereumjs/common@4.4.0", "@ethereumjs/common@^4.4.0":
+"@ethereumjs/common@4.4.0", "@ethereumjs/common@^4.1.0", "@ethereumjs/common@^4.4.0":
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/@ethereumjs/common/-/common-4.4.0.tgz#fba41612f527a815bf304e98653d6b5fc5d6d4de"
   integrity sha512-Fy5hMqF6GsE6DpYTyqdDIJPJgUtDn4dL120zKw+Pswuo+iLyBsEYuSyzMw6NVzD2vDzcBG9fE4+qX4X2bPc97w==
@@ -1847,7 +1847,7 @@
   dependencies:
     "@ethereumjs/util" "^9.0.2"
 
-"@ethereumjs/rlp@5.0.2", "@ethereumjs/rlp@^5.0.2":
+"@ethereumjs/rlp@5.0.2", "@ethereumjs/rlp@^5.0.1", "@ethereumjs/rlp@^5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@ethereumjs/rlp/-/rlp-5.0.2.tgz#c89bd82f2f3bec248ab2d517ae25f5bbc4aac842"
   integrity sha512-DziebCdg4JpGlEqEdGgXmjqcFoJi+JGulUXwEjsZGAscAQ7MyD/7LE/GVCP29vEQxKc7AAwjT3A2ywHp2xfoCA==
@@ -1885,6 +1885,16 @@
     "@ethereumjs/util" "^8.0.6"
     ethereum-cryptography "^2.0.0"
 
+"@ethereumjs/tx@5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@ethereumjs/tx/-/tx-5.1.0.tgz#c61a9048ec09fff360b18188224aae90c370e57f"
+  integrity sha512-VUhw2+4yXArJZRWhPjmZFrN4WUjUo0qUZUszVpW2KzsGlqCFf67kwJcH9Rca5eS0CRHjr2qHJLpvYOjNuaXVdA==
+  dependencies:
+    "@ethereumjs/common" "^4.1.0"
+    "@ethereumjs/rlp" "^5.0.1"
+    "@ethereumjs/util" "^9.0.1"
+    ethereum-cryptography "^2.1.2"
+
 "@ethereumjs/tx@5.4.0", "@ethereumjs/tx@^5.4.0":
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/@ethereumjs/tx/-/tx-5.4.0.tgz#6f47894cc3e2d4e63d87c62b41ed7e8180a1de58"
@@ -1903,7 +1913,7 @@
     "@ethereumjs/common" "^2.5.0"
     ethereumjs-util "^7.1.2"
 
-"@ethereumjs/tx@^4.0.2", "@ethereumjs/tx@^4.1.2", "@ethereumjs/tx@^4.2.0":
+"@ethereumjs/tx@^4.1.2", "@ethereumjs/tx@^4.2.0":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@ethereumjs/tx/-/tx-4.2.0.tgz#5988ae15daf5a3b3c815493bc6b495e76009e853"
   integrity sha512-1nc6VO4jtFd172BbSnTnDQVr9IYBFl1y4xPzZdtkrkKIncBCkdbgfdRV+MiTkJYAtTxvV12GRZLqBFT1PNK6Yw==
@@ -1932,7 +1942,7 @@
     "@ethereumjs/rlp" "^4.0.1"
     ethereum-cryptography "^1.1.2"
 
-"@ethereumjs/util@9.1.0", "@ethereumjs/util@^9.1.0":
+"@ethereumjs/util@9.1.0", "@ethereumjs/util@^9.0.1", "@ethereumjs/util@^9.1.0":
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/@ethereumjs/util/-/util-9.1.0.tgz#75e3898a3116d21c135fa9e29886565609129bce"
   integrity sha512-XBEKsYqLGXLah9PNJbgdkigthkG7TAGvlD/sH12beMXEyHDyigfcbdvHhmLyDWgDyOJn4QwiQUaF7yeuhnjdog==
@@ -3735,12 +3745,13 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@keystonehq/base-eth-keyring@^0.14.1":
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/@keystonehq/base-eth-keyring/-/base-eth-keyring-0.14.1.tgz#b838524678e5d3e70c0f1e9e1089baece6ef5f87"
-  integrity sha512-rhsbN7YlwWEcaUcwapApZe4EC/xQFJVnU0CpzLN0r9b2nqyEp8q9oz42jPr8W6vXHD72bezAZKMvqU/6rCecQQ==
+"@keystonehq/base-eth-keyring@workspace:^":
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/@keystonehq/base-eth-keyring/-/base-eth-keyring-0.15.1.tgz#360b6df8dfdc87a3021256fe1173d9d7516ad1ae"
+  integrity sha512-YaHTT5tJwTR4OUpn5nc3v4pZxNSqXZH3TON736fwTEZ+iIofzFTIW4NRBQ/0rQ/S2Y785T92D+imZH/fTVhUpw==
   dependencies:
-    "@ethereumjs/tx" "^4.0.2"
+    "@ethereumjs/rlp" "^4.0.1"
+    "@ethereumjs/tx" "5.1.0"
     "@ethereumjs/util" "^8.0.0"
     "@keystonehq/bc-ur-registry-eth" "^0.19.1"
     hdkey "^2.0.1"
@@ -3832,13 +3843,15 @@
     "@keystonehq/hw-transport-error" "^0.0.2"
     buffer "^6.0.3"
 
-"@keystonehq/metamask-airgapped-keyring@0.14.1":
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/@keystonehq/metamask-airgapped-keyring/-/metamask-airgapped-keyring-0.14.1.tgz#1b797f7ad40fc908e411f201694fb31ebaa564d6"
-  integrity sha512-ffBa+LMkZUMj0KKW/YYoncxuUqsnBPn9xss1kHEgvva5GviylMcosbVyV2AAbtnRii1VK6wTSWzAzUdR8giq3A==
+"@keystonehq/metamask-airgapped-keyring@0.15.1":
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/@keystonehq/metamask-airgapped-keyring/-/metamask-airgapped-keyring-0.15.1.tgz#124e2d72417808d3d2694495c15927c1c6ab6033"
+  integrity sha512-gSND3x/OLpc2+8V5TgzA5wuu2hl2zivUrmpkppPYSWxtN/BLZdoiXdPnRGNlu+FSZ5+QrMBudhxSYTPyhk7syQ==
   dependencies:
-    "@ethereumjs/tx" "^4.0.2"
-    "@keystonehq/base-eth-keyring" "^0.14.1"
+    "@ethereumjs/rlp" "^4.0.1"
+    "@ethereumjs/tx" "5.1.0"
+    "@ethereumjs/util" "9.1.0"
+    "@keystonehq/base-eth-keyring" "workspace:^"
     "@keystonehq/bc-ur-registry-eth" "^0.19.1"
     "@metamask/obs-store" "^9.0.0"
     rlp "^2.2.6"
