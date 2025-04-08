@@ -45,14 +45,22 @@ Please don't hesitate to reach out if you have any doubts.
 ### Install Dependency
 
 1. Install Node.js version 14 or later.
-2. Install Yarn: `npm install -g yarn`
-3. Run `yarn` to install dependencies.
+2. Install npm: `npm install -g npm`
+3. Run `npm install` to install dependencies.
 
 ### Development
 
-Run `yarn build:dev` to develop with file watching and development logging (you can see requests sent by the dapp in the website console in this mode, and notifications will not close when focus is lost).
+Run `npm run build:dev` to develop with file watching and development logging (you can see requests sent by the dapp in the website console in this mode, and notifications will not close when focus is lost).
 
-Run `yarn build:pro` to build a production package, which will be in the `dist` folder.
+Run `npm run build:pro` to build a production package, which will be in the `dist` folder.
+
+### Start the Project
+
+To start the project, run `npm run build:dev` for development or `npm run build:pro` for production.
+
+### Configure Environment Variables
+
+Create a `.env` file in the root directory and add environment variables in the format `KEY=VALUE`. Access environment variables in the code using `process.env.KEY`.
 
 ## Architecture
 
