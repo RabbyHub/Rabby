@@ -454,6 +454,7 @@ export function supportedChainToChain(item: SupportedChain): Chain {
     frax: 'FRAX',
     aze: 'AZE',
     karak: 'KARAK',
+    xdc: 'XDC',
   };
   return {
     id: item.community_id,

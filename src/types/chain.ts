@@ -125,6 +125,7 @@ export enum CHAINS_ENUM {
   TIOTX = 'TIOTX',
   TPLS = 'TPLS',
   HETH = 'HETH',
+  XDC = 'XDC',
   BKLAY = 'BKLAY',
   CSGB = 'CSGB',
   TKAVA = 'TKAVA',
