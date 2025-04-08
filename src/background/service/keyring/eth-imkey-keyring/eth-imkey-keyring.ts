@@ -2,10 +2,11 @@ import EventEmitter from 'events';
 import {
   FeeMarketEIP1559Transaction,
   FeeMarketEIP1559TxData,
+  LegacyTransaction,
   Transaction,
   TypedTransaction,
 } from '@ethereumjs/tx';
-import { addHexPrefix, bufferToHex, toChecksumAddress } from '@ethereumjs/util';
+import { addHexPrefix, bytesToHex, toChecksumAddress } from '@ethereumjs/util';
 import { RLP, utils } from '@ethereumjs/rlp';
 import { is1559Tx } from '@/utils/transaction';
 import { ImKeyBridgeInterface } from './imkey-bridge-interface';
@@ -251,14 +252,14 @@ export class EthImKeyKeyring extends EventEmitter {
     const accountDetail = this.accountDetails[checksummedAddress];
 
     const txChainId = getChainId(transaction.common);
-    const dataHex = transaction.data.toString('hex');
+    const dataHex = bytesToHex(transaction.data);
 
     const txJSON = transaction.toJSON();
     const is1559 = is1559Tx(txJSON as any);
 
     const txData = is1559
       ? {
-          data: dataHex === '' ? '' : `0x${dataHex}`,
+          data: dataHex,
           gasLimit: convertToHex(transaction.gasLimit),
           type: convertToHex(transaction.type.toString()),
           maxFeePerGas: convertToHex(
@@ -276,12 +277,12 @@ export class EthImKeyKeyring extends EventEmitter {
       : {
           to: transaction.to!.toString(),
           value: convertToHex(transaction.value),
-          data: dataHex === '' ? '' : `0x${dataHex}`,
+          data: dataHex,
           nonce: convertToHex(transaction.nonce),
           gasLimit: convertToHex(transaction.gasLimit),
           gasPrice:
-            typeof (transaction as Transaction).gasPrice !== 'undefined'
-              ? convertToHex((transaction as Transaction).gasPrice)
+            typeof (transaction as LegacyTransaction).gasPrice !== 'undefined'
+              ? convertToHex((transaction as LegacyTransaction).gasPrice)
               : convertToHex(
                   (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
                 ),
@@ -310,7 +311,7 @@ export class EthImKeyKeyring extends EventEmitter {
       txJSON.s = addHexPrefix(utils.bytesToHex(decoded.data[8]));
       txJSON.v = addHexPrefix(utils.bytesToHex(decoded.data[6]));
       // txJSON.hash = txHash;
-      return Transaction.fromTxData(txJSON);
+      return LegacyTransaction.fromTxData(txJSON);
     }
   }
 

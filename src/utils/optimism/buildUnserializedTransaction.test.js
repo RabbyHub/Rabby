@@ -1,4 +1,4 @@
-import { BN } from 'ethereumjs-util';
+import BigNumber from 'bignumber.js';
 import buildUnserializedTransaction from './buildUnserializedTransaction';
 
 describe('buildUnserializedTransaction', () => {
@@ -6,10 +6,10 @@ describe('buildUnserializedTransaction', () => {
     const unserializedTransaction = buildUnserializedTransaction({
       txParams: {
         nonce: '0x0',
-        gasPrice: `0x${new BN('100').toString(16)}`,
-        gas: `0x${new BN('21000').toString(16)}`,
+        gasPrice: `0x${new BigNumber('100').toString(16)}`,
+        gas: `0x${new BigNumber('21000').toString(16)}`,
         to: '0x0000000000000000000000000000000000000000',
-        value: `0x${new BN('10000000000000').toString(16)}`,
+        value: `0x${new BigNumber('10000000000000').toString(16)}`,
         data: '0x0',
       },
     });

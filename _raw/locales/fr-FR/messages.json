@@ -735,7 +735,8 @@
           "transactions": "Transactions",
           "ecology": "Écosystème",
           "bridge": "Bridger",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "mobile": "Rabby Mobile"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -1542,7 +1543,10 @@
         "currentIsUTF8": "Actuellement sur : UTF-8. Données originales : ",
         "placeholder": "Facultatif",
         "title": "Message"
-      }
+      },
+      "blockedTransaction": "Transaction Bloquée",
+      "blockedTransactionCancelText": "Je sais",
+      "blockedTransactionContent": "Cette transaction interagit avec une adresse qui figure sur la liste des sanctions de l'OFAC."
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} réservé pour le coût du gaz",
@@ -2825,6 +2829,21 @@
       "title": "Connecter Rabby en se faisant passer pour MetaMask",
       "manage": "Gérer les Dapps autorisées",
       "step2": "Étape 2"
+    },
+    "syncToMobile": {
+      "steps1": "Téléchargez Rabby Mobile",
+      "title": "Synchroniser l'adresse du portefeuille de l'extension Rabby vers le mobile",
+      "clickToShowQr": "Cliquez pour sélectionner l'adresse et afficher le code QR",
+      "steps2Description": "Votre code QR contient des données sensibles. Gardez-le privé et ne le partagez jamais avec quiconque.",
+      "downloadGooglePlay": "Google Play",
+      "downloadAppleStore": "App Store",
+      "description": "Vos données d'adresse restent complètement hors ligne, cryptées et transférées en toute sécurité via un code QR.",
+      "steps2": "2. Scanner avec Rabby Mobile",
+      "disableSelectAddress": "Synchronisation non pris en charge pour {{type}} adresse",
+      "disableSelectAddressWithPassphrase": "Synchronisation non pris en charge pour l'adresse {{type}} avec une phrase de passe",
+      "disableSelectAddressWithSlip39": "Synchronisation non prise en charge pour l'adresse {{type}} avec SLIP39",
+      "selectedLenAddressesForSync_one": "Adresse {{Len}} sélectionnée pour la synchronisation",
+      "selectedLenAddressesForSync_other": "Adresses sélectionnées {{len}} pour la synchronisation"
     }
   }
 }

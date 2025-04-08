@@ -14,6 +14,7 @@ import {
 import { Item } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
+import qs from 'qs';
 
 export const ImportWalletList = () => {
   const { t } = useTranslation();
@@ -51,7 +52,7 @@ export const ImportWalletList = () => {
         {
           type: KEYRING_CLASS.HARDWARE.KEYSTONE,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].icon,
-          isKeystone: true,
+          brand: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].brand,
         },
         {
           type: KEYRING_CLASS.HARDWARE.GRIDPLUS,
@@ -66,9 +67,9 @@ export const ImportWalletList = () => {
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.GNOSIS].icon,
         },
         {
-          type: KEYRING_CLASS.HARDWARE.NGRAVEZERO,
+          type: KEYRING_CLASS.HARDWARE.KEYSTONE,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.NGRAVEZERO].icon,
-          isNgraveZero: true,
+          brand: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.NGRAVEZERO].brand,
         },
       ].slice(0, !showMore ? 3 : undefined),
     [showMore]
@@ -76,13 +77,8 @@ export const ImportWalletList = () => {
 
   const gotoImport = (
     type: typeof tipList[number]['type'],
-    isNgraveZero: boolean
+    brand?: typeof tipList[number]['brand']
   ) => {
-    if (isNgraveZero) {
-      history.push('/new-user/import/ngravezero/set-password');
-      return;
-    }
-
     switch (type) {
       case KEYRING_TYPE.SimpleKeyring:
         history.push('/new-user/import/private-key');
@@ -96,7 +92,12 @@ export const ImportWalletList = () => {
       case KEYRING_CLASS.HARDWARE.TREZOR:
       case KEYRING_CLASS.HARDWARE.GRIDPLUS:
       case KEYRING_CLASS.HARDWARE.BITBOX02:
-        history.push(`/new-user/import/${type}/set-password`);
+        history.push({
+          pathname: `/new-user/import/${type}/set-password`,
+          search: qs.stringify({
+            brand,
+          }),
+        });
         break;
       case KEYRING_CLASS.GNOSIS:
         history.push('/new-user/import/gnosis-address');
@@ -139,15 +140,11 @@ export const ImportWalletList = () => {
                   if (item.preventClick) {
                     return;
                   }
-                  gotoImport(item.type, item.isNgraveZero == true);
+                  gotoImport(item.type, item.brand);
                 }}
                 className="rounded-[8px] text-[17px] font-medium text-r-neutral-title1"
               >
-                {item.isKeystone == true
-                  ? 'Keystone'
-                  : item.isNgraveZero == true
-                  ? 'NGRAVE ZERO'
-                  : BRAND_ALIAN_TYPE_TEXT[item.type]}
+                {item.brand || BRAND_ALIAN_TYPE_TEXT[item.type]}
               </Item>
             </Tooltip>
           );

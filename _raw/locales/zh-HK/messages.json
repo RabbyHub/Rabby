@@ -109,7 +109,8 @@
           "nft": "NFT",
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
-          "ecology": "生態系統"
+          "ecology": "生態系統",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -1220,7 +1221,10 @@
         "title": "合約調用",
         "placeholder": "可選",
         "parseError": "合約調用模擬失敗"
-      }
+      },
+      "blockedTransactionCancelText": "我知道",
+      "blockedTransactionContent": "此交易与一个在 OFAC 制裁名单上的地址进行交互。",
+      "blockedTransaction": "封鎖交易"
     },
     "sendTokenComponents": {
       "GasReserved": "預留 <1>0</1> {{ tokenName }} 用於 礦工費",
@@ -2616,6 +2620,21 @@
       "step2": "步驟 2",
       "manage": "管理已授權的 Dapps",
       "alert": "無法連接到 Dapp，因為它沒有顯示 Rabby Wallet 作為選項？"
+    },
+    "syncToMobile": {
+      "downloadGooglePlay": "Google Play",
+      "downloadAppleStore": "App Store",
+      "description": "您的地址數據會完全離線保存，加密，並通過QR碼安全傳輸。",
+      "title": "從 Rabby 擴展同步錢包地址至手機",
+      "steps2Description": "你的 QR 碼包含敏感數據。請保密並切勿與其他人分享。",
+      "clickToShowQr": "單擊選擇地址並顯示QR代碼",
+      "steps1": "下載 Rabby Mobile",
+      "steps2": "2. 使用 Rabby Mobile 掃描",
+      "disableSelectAddress": "不支持{{type}}地址的同步",
+      "disableSelectAddressWithPassphrase": "與密碼不支持{{type}}地址的同步",
+      "disableSelectAddressWithSlip39": "不支持{{type}}地址的同步39",
+      "selectedLenAddressesForSync_one": "選擇{{len}}同步地址",
+      "selectedLenAddressesForSync_other": "選擇{{{len}}地址同步"
     }
   },
   "component": {

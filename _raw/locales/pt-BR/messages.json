@@ -708,7 +708,10 @@
         "title": "Chamada de contrato",
         "placeholder": "Opcional",
         "parseError": "Falha ao decodificar a chamada do contrato"
-      }
+      },
+      "blockedTransactionContent": "Esta transação interage com um endereço que está na lista de sanções da OFAC.",
+      "blockedTransaction": "Transação Bloqueada",
+      "blockedTransactionCancelText": "Eu sei"
     },
     "sendTokenComponents": {
       "GasReserved": "Reservado <1>0</1> {{ tokenName }} para custo de gás",
@@ -1048,7 +1051,8 @@
           "nft": "NFT",
           "ecology": "Ecossistema",
           "rabbyPoints": "Rabby Points",
-          "bridge": "Ponte"
+          "bridge": "Ponte",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Em breve",
         "soon": "Em breve",
@@ -2578,6 +2582,21 @@
       "title": "Conectar Rabby disfarçando como MetaMask",
       "noDappFound": "Nenhum Dapp encontrado",
       "step1Desc": "Permita que Rabby se disfarce como MetaMask no Dapp atual"
+    },
+    "syncToMobile": {
+      "title": "Sincronizar Endereço da Carteira da Extensão Rabby para o Celular",
+      "downloadAppleStore": "App Store",
+      "downloadGooglePlay": "Google Play",
+      "clickToShowQr": "Clique para selecionar o endereço e mostrar o código QR",
+      "steps1": "1. Baixe o Rabby Mobile",
+      "description": "Seus dados de endereço permanecem totalmente offline, criptografados e transferidos com segurança via um código QR.",
+      "steps2Description": "Seu código QR contém dados sensíveis. Mantenha-o privado e nunca o compartilhe com ninguém.",
+      "steps2": "2. Escanear com Rabby Mobile",
+      "disableSelectAddress": "Sync não suportado para {{type}} endereço",
+      "disableSelectAddressWithPassphrase": "Sync não suportado para {{type}} endereço com a senha",
+      "disableSelectAddressWithSlip39": "Sync não suportado para {{type}} endereço com deslize39",
+      "selectedLenAddressesForSync_one": "Selecionado {{len}} endereço para sincronização",
+      "selectedLenAddressesForSync_other": "Selecionados {{len}} endereços para sincronização"
     }
   },
   "component": {

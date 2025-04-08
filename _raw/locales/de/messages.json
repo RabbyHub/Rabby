@@ -708,7 +708,10 @@
         "parseError": "Interaktion konnte nicht dekodiert werden",
         "simulation": "Simulation Contract-Interaktion:",
         "notHexData": "Nur Hex-Daten werden unterstützt"
-      }
+      },
+      "blockedTransaction": "Blockierte Transaktion",
+      "blockedTransactionCancelText": "Ich weiß",
+      "blockedTransactionContent": "Diese Transaktion interagiert mit einer Adresse, die auf der OFAC-Sanktionsliste steht."
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} für Gaskosten reserviert",
@@ -1048,7 +1051,8 @@
           "nft": "NFT",
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
-          "ecology": "Ökosystem"
+          "ecology": "Ökosystem",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -2578,6 +2582,21 @@
       "step2": "Schritt 2",
       "alert": "Kann keine Verbindung zu einer Dapp herstellen, weil Rabby Wallet nicht als Option angezeigt wird?",
       "title": "Verbinden Sie Rabby, indem Sie sich als MetaMask ausgeben"
+    },
+    "syncToMobile": {
+      "downloadAppleStore": "App Store",
+      "clickToShowQr": "Klicken Sie auf, um die Adresse auszuwählen und QR -Code anzeigen",
+      "downloadGooglePlay": "Google Play",
+      "description": "Ihre Adressdaten bleiben vollständig offline, verschlüsselt und werden sicher über einen QR-Code übertragen.",
+      "title": "Synchronisieren Sie die Wallet-Adresse von der Rabby-Erweiterung mit dem Mobilgerät",
+      "steps1": "1. Rabby Mobile herunterladen",
+      "steps2": "2. Mit Rabby Mobile scannen",
+      "steps2Description": "Ihr QR-Code enthält sensible Daten. Bewahren Sie ihn privat auf und geben Sie ihn niemals an Dritte weiter.",
+      "disableSelectAddress": "Synchronisation nicht unterstützt für {{Typ}} Adresse",
+      "disableSelectAddressWithPassphrase": "Synchronisation nicht unterstützt für {{Typ}} Adresse mit Passphrase",
+      "disableSelectAddressWithSlip39": "Synchronisation nicht unterstützt für {{Typ}} Adresse mit Slip39",
+      "selectedLenAddressesForSync_one": "Ausgewählte {{len}} Adresse für die Synchronisierung",
+      "selectedLenAddressesForSync_other": "Ausgewählte {{len}} Adressen für die Synchronisierung"
     }
   },
   "component": {

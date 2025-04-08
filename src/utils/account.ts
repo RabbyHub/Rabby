@@ -10,6 +10,9 @@ import {
 } from 'consts';
 import { t } from 'i18next';
 import { DisplayChainWithWhiteLogo, findChain } from './chain';
+import { isAddress } from 'viem';
+import { isSameAddress } from '@/background/utils';
+import { isObject, isPlainObject } from 'lodash';
 
 export function generateAliasName({
   keyringType,
@@ -124,3 +127,62 @@ export function normalizeAndVaryChainList(chain_balances: ChainWithBalance[]) {
     chainListWithValue,
   };
 }
+
+export const SYNC_KEYRING_TYPES = [
+  KEYRING_CLASS.MNEMONIC,
+  KEYRING_CLASS.PRIVATE_KEY,
+  KEYRING_CLASS.HARDWARE.ONEKEY,
+  KEYRING_CLASS.HARDWARE.LEDGER,
+  KEYRING_CLASS.GNOSIS,
+  KEYRING_CLASS.HARDWARE.KEYSTONE,
+  KEYRING_CLASS.WATCH,
+];
+
+interface Account {
+  type: string;
+  address: string;
+  brandName: string;
+}
+
+export const isSameAccount = (a: Account, b: Account) => {
+  return (
+    a.address === b.address && a.brandName === b.brandName && a.type === b.type
+  );
+};
+
+export const filterKeyringData = (
+  data: string[] | object,
+  addresses: string[]
+) => {
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  const keys = Object.keys(data);
+
+  for (const key of keys) {
+    const value = data[key];
+
+    if (Array.isArray(value)) {
+      if (isAddress(value[0])) {
+        data[key] = value.filter((item) =>
+          addresses.some((address) => isSameAddress(item, address))
+        );
+      }
+    } else if (isObject(value)) {
+      const subKeys = Object.keys(value);
+
+      if (isAddress(subKeys[0])) {
+        const filteredSubKeys = subKeys.filter((item) =>
+          addresses.some((address) => isSameAddress(item, address))
+        );
+        data[key] = filteredSubKeys.reduce((acc, subKey) => {
+          acc[subKey] = value[subKey];
+          return acc;
+        }, {} as Record<string, any>);
+      }
+    }
+  }
+
+  return data;
+};

@@ -17,7 +17,7 @@ export const NewUserSetPassword = () => {
   const { type } = useParams<{ type: string }>();
 
   const { search } = useLocation();
-  const { isCreated = false } = React.useMemo(() => query2obj(search), [
+  const { isCreated = false, brand } = React.useMemo(() => query2obj(search), [
     search,
   ]);
 
@@ -177,7 +177,12 @@ export const NewUserSetPassword = () => {
       setStore({
         password,
       });
-      history.push(`/new-user/import/hardware/${type}`);
+      history.push({
+        pathname: `/new-user/import/hardware/${type}`,
+        search: qs.stringify({
+          brand,
+        }),
+      });
     }
     return;
   });

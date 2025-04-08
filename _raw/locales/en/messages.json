@@ -1123,7 +1123,8 @@
           "manageAddress": "Manage Address",
           "nft": "NFT",
           "ecology": "Ecosystem",
-          "bridge": "Bridge"
+          "bridge": "Bridge",
+          "mobile": "Rabby Mobile"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -2494,7 +2495,7 @@
       },
       "importKeystone": {
         "qrcode": {
-          "desc": "Scan the QR code on the Keystone hardware wallet"
+          "desc": "Scan the QR code on the {{brandName}} hardware wallet"
         },
         "usb": {
           "desc": "Ensure your Keystone 3 Pro is on the homepage",
@@ -2578,6 +2579,24 @@
         "enabled": "Disguise enabled. Refresh the Dapp to reconnect.",
         "disabled": "Disguise disabled. Refresh the Dapp."
       }
+    },
+    "syncToMobile": {
+      "title": "Sync Wallet Address from Rabby Extension to Mobile",
+      "description": "Your address data stays fully offline, encrypted, and securely           transferred via a QR code.",
+      "steps1": "1. Download Rabby Mobile",
+      "steps2": "2. Scan with Rabby Mobile",
+      "steps2Description": " *Your QR code contains sensitive data. Keep it private and never             share it with anyone.",
+      "downloadGooglePlay": "Google Play",
+      "downloadAppleStore": "App Store",
+      "clickToShowQr": "Click to Select Address  and Show QR Code",
+      "selectAddress": {
+        "title": "Select Addresses to Sync"
+      },
+      "disableSelectAddress": "Sync not supported for {{type}} address",
+      "disableSelectAddressWithSlip39": "Sync not supported for {{type}} address with slip39",
+      "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
+      "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
+      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync"
     }
   },
   "component": {
