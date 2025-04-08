@@ -19,7 +19,10 @@
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "test": "jest",
     "pub": "node build/release.js",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "install:npm": "npm install",
+    "start:dev": "npm run build:dev",
+    "start:pro": "npm run build:pro"
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "3.8.0-beta.3",
