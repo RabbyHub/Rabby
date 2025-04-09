@@ -292,7 +292,6 @@ export const BridgeToken = ({
               token={token}
               onTokenChange={onChangeToken}
               chainId={chainObj?.serverId}
-              type={'to'}
               placeholder={t('page.swap.search-by-name-address')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               getContainer={getContainer}

@@ -32,7 +32,7 @@
       padding: 9.25px;
       border-radius: 6px;
       border: 1px solid var(--r-neutral-line, #d3d8e0);
-      background: transparent !important;
+      background: var(--r-neutral-card1, #fff) !important;
       transition: border-color 0.3s;
       .ant-input {
         &::placeholder {
@@ -74,11 +74,14 @@
     flex: 1;
     overflow-y: auto;
     margin: 0;
+    padding-bottom: 20px;
     li {
       display: flex;
       cursor: pointer;
-      padding: 0 20px;
+      padding: 0 16px;
       & > div {
+        @token-icon-margin: 6px;
+        @symbol-click-pl: 4px;
         &:nth-child(1) {
           width: 160px;
           display: flex;
@@ -95,7 +98,7 @@
             font-size: 12px;
             line-height: 15px;
             color: var(--r-neutral-body, #3e495e);
-            margin-left: 12px;
+            margin-left: calc(@token-icon-margin + @symbol-click-pl);
             max-width: 100%;
           }
         }
@@ -115,13 +118,45 @@
           font-weight: 500;
           flex: 1;
         }
+
+        .symbol_click,
+        .token_usd_value {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 15px;
+          font-style: normal;
+          font-weight: 510;
+          line-height: normal;
+          color: var(--r-neutral-body, #3e495e);
+          margin-left: @token-icon-margin;
+          max-width: 100%;
+          padding: 2px @symbol-click-pl;
+          border-radius: 4px;
+          width: min-content;
+        }
+
+        .token_usd_value {
+          margin-left: 0px;
+        }
+        .symbol_click:hover {
+          background: var(--r-blue-light2, #dee3fc);
+          color: var(--r-blue-default, #7084ff);
+
+          text-decoration-line: underline;
+          text-decoration-style: solid;
+          text-decoration-skip-ink: none;
+          text-decoration-thickness: auto;
+          text-underline-offset: auto;
+          text-underline-position: from-font;
+        }
       }
     }
     li.token-list__header {
       position: sticky;
       top: 0;
       z-index: 1;
-      background-color: var(--r-neutral-bg-1, #fff);
+      background-color: var(--r-neutral-bg-2, #f7f8fa);
       cursor: initial;
       font-size: 12px;
       line-height: 14px;
@@ -148,13 +183,17 @@
       }
     }
     .token-list__item {
-      height: 44px;
+      height: 60px;
       align-items: center;
       border: 1px solid transparent;
+      box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
+      background: var(--r-neutral-card1, #fff);
+      border-radius: 8px;
+      margin: 0 20px;
+      margin-top: 8px;
       &:hover {
-        border-radius: 6px;
-        border-color: var(--r-blue-default, #7084ff);
-        background: var(--r-blue-light-1, #eef1ff);
+        border: 1px solid var(--r-blue-default, #7084ff);
+        background: var(--r-blue-light1, #eef1ff);
       }
     }
     &.empty {
@@ -194,7 +233,7 @@
       font-size: 13px;
       font-weight: 500;
       color: var(--r-neutral-body, #d3d8e0);
-      background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+      background: var(--r-neutral-card1, #fff);
     }
 
     img.filter-item__chain-logo {
