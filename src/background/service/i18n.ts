@@ -1,4 +1,28 @@
 import i18n from 'i18next';
+import browser from 'webextension-polyfill';
+import { LANGS } from '@/constant';
+
+export const getFirstPreferredLangCode = async () => {
+  let userPreferredLocaleCodes: string[];
+
+  try {
+    userPreferredLocaleCodes = await browser.i18n.getAcceptLanguages();
+    console.log('userPreferredLocaleCodes', userPreferredLocaleCodes);
+  } catch (e) {
+    userPreferredLocaleCodes = [];
+  }
+  if (!userPreferredLocaleCodes) {
+    userPreferredLocaleCodes = [];
+  }
+  const firstPreferredLangCode = LANGS.find((item) => {
+    return userPreferredLocaleCodes.find(
+      (code) =>
+        code.toLowerCase() === item.code.toLowerCase() ||
+        item.code.toLowerCase() === code.toLowerCase().split('-')[0]
+    );
+  })?.code;
+  return firstPreferredLangCode || 'en';
+};
 
 export const fetchLocale = async (locale) => {
   const res = await fetch(`./locales/${locale}/messages.json`);
@@ -7,12 +31,6 @@ export const fetchLocale = async (locale) => {
     { message: string; description: string }
   > = await res.json();
   return data;
-  // return Object.keys(data).reduce((res, key) => {
-  //   return {
-  //     ...res,
-  //     [key.replace(/__/g, ' ')]: data[key].message,
-  //   };
-  // }, {});
 };
 
 i18n.init({

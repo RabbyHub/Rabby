@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash/cloneDeep';
+import * as Sentry from '@sentry/browser';
 import eventBus from '@/eventBus';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import {
@@ -16,6 +17,7 @@ import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 import dayjs from 'dayjs';
 import type { IExtractFromPromise } from '@/ui/utils/type';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
+import { getFirstPreferredLangCode } from './i18n';
 
 const version = process.env.release || '0';
 
@@ -141,7 +143,14 @@ class PreferenceService {
   currentCoboSafeAddress?: Account | null;
 
   init = async () => {
-    const defaultLang = 'en';
+    let defaultLang = 'en';
+    try {
+      defaultLang = await getFirstPreferredLangCode();
+    } catch (e) {
+      Sentry.captureException(
+        `i18n getFirstPreferredLangCode error: ${JSON.stringify(e)}`
+      );
+    }
     this.store = await createPersistStore<PreferenceStore>({
       name: 'preference',
       template: {
