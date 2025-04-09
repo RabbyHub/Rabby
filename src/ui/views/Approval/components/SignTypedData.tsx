@@ -189,6 +189,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           m[n.name] = n.value;
           return m;
         }, {});
+        displayMessage = message;
       } else {
         // [from, Message]
         /**
