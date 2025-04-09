@@ -30,7 +30,6 @@ import { useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
-import { TokenCharts } from '@/ui/component/TokenChart';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -212,8 +211,6 @@ const TokenDetail = ({
           </div>
         </div>
       </div>
-
-      <TokenCharts token={token} />
 
       <div className={clsx('token-detail-body token-txs-history', 'pt-[0px]')}>
         <div className="token-detail-stickyarea">
