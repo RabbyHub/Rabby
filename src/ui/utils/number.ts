@@ -121,7 +121,7 @@ export const formatNumber = (
   return n.toFormat(decimal, roundingMode, format);
 };
 
-export const formatPrice = (price: string | number) => {
+export const formatPrice = (price: string | number, len = 4) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   if (price >= 1) {
@@ -132,7 +132,7 @@ export const formatPrice = (price: string | number) => {
   if (price < 0.0001) {
     return formatLittleNumber(new BigNumber(price).toFixed(), 6);
   }
-  return formatNumber(price, 4);
+  return formatNumber(price, len);
 };
 
 export const intToHex = (n: number) => {

@@ -40,40 +40,21 @@ export const BlockedButton: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div
-      className={clsx('flex rounded', {
-        'py-[9px] px-8 bg-orange bg-opacity-20 justify-between mb-10': selected,
-        'float-right justify-end': !selected,
-      })}
-    >
-      <div
-        className={clsx(
-          'text-orange ml-4 text-13',
-          selected ? 'block' : 'hidden'
-        )}
-      >
-        {t('page.dashboard.tokenDetail.blockedTip')}
-      </div>
-      <label
-        className={clsx('flex items-center gap-x-6 cursor-pointer', {
-          'mr-4 mt-2': !selected,
-        })}
-      >
-        <SwitchStyled
-          size="small"
-          checked={selected}
-          onChange={(val) => {
-            if (val) {
-              onOpen();
-            } else {
-              onClose();
-            }
-          }}
-        />
-        <span className="text-r-neutral-foot text-12">
-          {t('page.dashboard.tokenDetail.blocked')}
-        </span>
-      </label>
-    </div>
+    <label className={clsx('flex items-center gap-x-6 cursor-pointer')}>
+      <span className="text-r-neutral-foot text-12">
+        {t('page.dashboard.tokenDetail.blocked')}
+      </span>
+      <SwitchStyled
+        size="small"
+        checked={selected}
+        onChange={(val) => {
+          if (val) {
+            onOpen();
+          } else {
+            onClose();
+          }
+        }}
+      />
+    </label>
   );
 };
