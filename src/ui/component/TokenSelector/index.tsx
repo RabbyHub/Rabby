@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Input, Drawer, Skeleton, Tooltip, DrawerProps } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
-import { TokenItem } from 'background/service/openapi';
+import { TokenItem, TokenItemWithEntity } from 'background/service/openapi';
 import {
   formatPrice,
   formatTokenAmount,
@@ -21,12 +21,16 @@ import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
 import { ReactComponent as RcIconChainFilterCloseCC } from 'ui/assets/chain-select/chain-filter-close-cc.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { isNil } from 'lodash';
-import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { getUiType, useWallet } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
+import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
+import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
+import { ExternalTokenRow } from './ExternalToken';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { TokenDetailInTokenSelectProviderContext } from './context';
+
 const isTab = getUiType().isTab;
 
 export const isSwapTokenType = (s: string) =>
@@ -48,7 +52,7 @@ export interface TokenSelectorProps {
     }
   );
   onRemoveChainFilter?(ctx: SearchCallbackCtx);
-  type?: 'default' | 'swapFrom' | 'swapTo' | 'bridgeFrom';
+  type?: 'default' | 'swapFrom' | 'swapTo' | 'bridgeFrom' | 'bridgeTo';
   placeholder?: string;
   chainId: string;
   disabledTips?: React.ReactNode;
@@ -98,6 +102,9 @@ const TokenSelector = ({
       },
     };
   }, [chainServerId, visible]);
+
+  const [tokenDetailOpen, setTokenDetailOpen] = useState(false);
+  const [tokenDetail, setTokenDetail] = useState<TokenItemWithEntity>();
 
   useDebounce(
     () => {
@@ -171,9 +178,13 @@ const TokenSelector = ({
   }, [query]);
 
   const isSwapOrBridge = useMemo(
-    () => ['bridgeFrom', 'swapFrom', 'swapTo'].includes(type),
+    () => ['bridgeFrom', 'bridgeTo', 'swapFrom', 'swapTo'].includes(type),
     [type]
   );
+
+  const showChainFilter = useMemo(() => {
+    return !['swapTo', 'bridgeFrom', 'bridgeTo'].includes(type);
+  }, [type]);
 
   const swapAndBridgeNoDataTip = useMemo(() => {
     if (isSwapOrBridge) {
@@ -261,61 +272,46 @@ const TokenSelector = ({
     }
   }, [type, query, isSwapType, displayList, query, chainServerId]);
 
-  const swapAndBridgeHeader = React.useMemo(() => {
-    if (isSwapOrBridge) {
+  const CommonHeader = React.useMemo(() => {
+    if (type === 'swapTo') {
+      return null;
+    }
+    if (type === 'bridgeTo') {
       return (
-        <li
-          className={clsx(
-            'token-list__header h-auto mb-0',
-            type === 'swapFrom' && 'mt-14'
-          )}
-        >
-          <div>
-            {type === 'swapTo'
-              ? t('component.TokenSelector.common')
-              : t('component.TokenSelector.bridge.token')}
-          </div>
+        <li className={clsx('token-list__header')}>
+          <div>{t('component.TokenSelector.bridge.token')}</div>
           <div />
-          <div>{t('component.TokenSelector.bridge.value')}</div>
+          <div className="flex items-center justify-end relative">
+            <span>{t('component.TokenSelector.bridge.liquidity')}</span>
+            <TooltipWithMagnetArrow
+              placement="top"
+              className="rectangle w-[max-content]"
+              title={t('component.TokenSelector.bridge.liquidityTips')}
+            >
+              <RcIconInfoCC className="w-12 h-12 ml-2" viewBox="0 0 14 14" />
+            </TooltipWithMagnetArrow>
+          </div>
         </li>
       );
     }
     return (
-      <li className="token-list__header">
-        <div>
-          {/* ASSET / AMOUNT */}
-          {t('component.TokenSelector.listTableHead.assetAmount.title')}
-        </div>
-        <div>
-          {/* PRICE */}
-          {t('component.TokenSelector.listTableHead.price.title')}
-        </div>
-        <div>
-          {/* USD VALUE */}
-          {t('component.TokenSelector.listTableHead.usdValue.title')}
-        </div>
+      <li
+        className={clsx('token-list__header', type === 'swapFrom' && 'mt-14')}
+      >
+        <div>{t('component.TokenSelector.bridge.token')}</div>
+        <div />
+        <div>{t('component.TokenSelector.bridge.value')}</div>
       </li>
     );
   }, [isSwapOrBridge, type, t]);
 
-  const SwapToTokenRecenterHeader = React.useMemo(
-    () => (
-      <li className="token-list__header h-auto mb-0">
-        <div>{t('component.TokenSelector.recent')}</div>
-        <div />
-        <div />
-      </li>
-    ),
-    [t]
-  );
-
-  const swapAndBridgeItemRender = React.useCallback(
+  const commonItemRender = React.useCallback(
     (token: TokenItem, _type: typeof type, updateToken?: boolean) => {
       if (!visible && updateToken) {
         return null;
       }
       return (
-        <SwapAndBridgeTokenItem
+        <CommonTokenItem
           key={`${token.chain}-${token.id}`}
           disabledTips={disabledTips}
           onConfirm={onConfirm}
@@ -323,6 +319,10 @@ const TokenSelector = ({
           type={_type}
           supportChains={supportChains}
           updateToken={updateToken}
+          openTokenDetail={() => {
+            setTokenDetail(token);
+            setTokenDetailOpen(true);
+          }}
         />
       );
     },
@@ -342,262 +342,146 @@ const TokenSelector = ({
     return [];
   }, [chainServerId, recentToTokens, type, query, excludeTokens]);
 
+  const handleInTokenDetails = useCallback(
+    (token: TokenItemWithEntity) => {
+      onConfirm(token);
+    },
+    [onConfirm]
+  );
+
   return (
-    <Drawer
-      className="token-selector custom-popup is-support-darkmode"
-      height={drawerHeight}
-      placement="bottom"
-      visible={visible}
-      onClose={onCancel}
-      closeIcon={
-        <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
-      }
-      getContainer={getContainer}
+    <TokenDetailInTokenSelectProviderContext.Provider
+      value={handleInTokenDetails}
     >
-      {/* Select a token */}
-      <div className="header">{t('component.TokenSelector.header.title')}</div>
-      <div className="input-wrapper">
-        <Input
-          className={clsx({ active: isInputActive })}
-          size="large"
-          prefix={<img src={IconSearch} />}
-          // Search by Name / Address
-          placeholder={
-            placeholder ?? t('component.TokenSelector.searchInput.placeholder')
-          }
-          allowClear
-          value={query}
-          onChange={(e) => handleQueryChange(e.target.value)}
-          autoFocus={!isTab}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-        />
-      </div>
-      <div className="filters-wrapper">
-        {chainItem && !['swapTo', 'bridgeFrom'].includes(type) && (
-          <>
-            <div className="filter-item__chain px-10">
-              <img
-                className="filter-item__chain-logo"
-                src={chainItem.logo}
-                alt={chainItem.name}
-              />
-              <span className="ml-[4px]">{chainItem.name}</span>
-              <div
-                className="py-4 cursor-pointer"
-                onClick={() => {
-                  onRemoveChainFilter?.({ chainServerId, chainItem });
-                  onSearch({
-                    chainItem: null,
-                    chainServerId: '',
-                    keyword: query,
-                  });
-                }}
-              >
-                <RcIconChainFilterCloseCC
-                  viewBox="0 0 16 16"
-                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body hover:text-r-red-default"
+      <Drawer
+        className="token-selector custom-popup is-support-darkmode is-new"
+        height={drawerHeight}
+        placement="bottom"
+        visible={visible}
+        onClose={onCancel}
+        closeIcon={
+          <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
+        }
+        getContainer={getContainer}
+      >
+        {/* Select a token */}
+        <div className="header">
+          {t('component.TokenSelector.header.title')}
+        </div>
+        <div className="input-wrapper">
+          <Input
+            className={clsx({ active: isInputActive }, 'bg-r-neutral-card2')}
+            size="large"
+            prefix={<img src={IconSearch} />}
+            // Search by Name / Address
+            placeholder={
+              placeholder ??
+              t('component.TokenSelector.searchInput.placeholder')
+            }
+            allowClear
+            value={query}
+            onChange={(e) => handleQueryChange(e.target.value)}
+            autoFocus={!isTab}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+        </div>
+        <div className="filters-wrapper">
+          {chainItem && showChainFilter && (
+            <>
+              <div className="filter-item__chain px-10">
+                <img
+                  className="filter-item__chain-logo"
+                  src={chainItem.logo}
+                  alt={chainItem.name}
                 />
+                <span className="ml-[4px]">{chainItem.name}</span>
+                <div
+                  className="py-4 cursor-pointer"
+                  onClick={() => {
+                    onRemoveChainFilter?.({ chainServerId, chainItem });
+                    onSearch({
+                      chainItem: null,
+                      chainServerId: '',
+                      keyword: query,
+                    });
+                  }}
+                >
+                  <RcIconChainFilterCloseCC
+                    viewBox="0 0 16 16"
+                    className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body hover:text-r-red-default"
+                  />
+                </div>
               </div>
-            </div>
-          </>
+            </>
+          )}
+        </div>
+
+        {!isTestnet ? (
+          <ul className={clsx('token-list', { empty: isEmpty })}>
+            {recentDisplayToTokens.length ? (
+              <div className="mb-10">
+                <div className={clsx('flex flex-wrap gap-12', 'py-8 px-20')}>
+                  {recentDisplayToTokens.map((token) => (
+                    <div
+                      key={token.id}
+                      className={clsx(
+                        'flex items-center justify-center gap-6',
+                        'cursor-pointer py-8 px-12 rounded-[8px]',
+                        'bg-r-neutral-card1 hover:bg-r-blue-light-2',
+                        'text-15 text-r-neutral-title1 font-medium'
+                      )}
+                      onClick={() => onConfirm(token)}
+                    >
+                      <TokenWithChain
+                        token={token}
+                        width="20px"
+                        height="20px"
+                        chainClassName="-top-4 -right-4"
+                      />
+
+                      <span>{getTokenSymbol(token)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {CommonHeader}
+            {isEmpty
+              ? NoDataUI
+              : displayList.map((token) => {
+                  return commonItemRender(token, type);
+                })}
+          </ul>
+        ) : (
+          <ul className={clsx('token-list', { empty: isEmpty })}>
+            <li className="token-list__header">
+              <div>Token</div>
+              <div>Value</div>
+            </li>
+            {isEmpty
+              ? NoDataUI
+              : displayList.map((token) => {
+                  return commonItemRender(token, type);
+                })}
+          </ul>
         )}
-      </div>
-
-      {!isTestnet ? (
-        <ul className={clsx('token-list', { empty: isEmpty })}>
-          {recentDisplayToTokens.length ? (
-            <div className="mb-10">
-              {SwapToTokenRecenterHeader}
-              <div className={clsx('flex flex-wrap gap-12', 'py-8 px-20')}>
-                {recentDisplayToTokens.map((token) => (
-                  <div
-                    key={token.id}
-                    className={clsx(
-                      'flex items-center justify-center gap-6',
-                      'cursor-pointer py-8 px-12 rounded-[8px]',
-                      'bg-r-neutral-card2 hover:bg-r-blue-light-2',
-                      'text-15 text-r-neutral-title1 font-medium'
-                    )}
-                    onClick={() => onConfirm(token)}
-                  >
-                    <TokenWithChain
-                      token={token}
-                      width="20px"
-                      height="20px"
-                      chainClassName="-top-4 -right-4"
-                    />
-
-                    <span>{getTokenSymbol(token)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {swapAndBridgeHeader}
-          {isEmpty
-            ? NoDataUI
-            : displayList.map((token) => {
-                if (isSwapOrBridge) {
-                  return swapAndBridgeItemRender(token, type);
-                }
-                const chainItem = findChain({ serverId: token.chain });
-                const disabled =
-                  !!supportChains?.length &&
-                  chainItem &&
-                  !supportChains.includes(chainItem.enum);
-
-                return (
-                  <Tooltip
-                    key={`${token.chain}-${token.id}`}
-                    trigger={['click', 'hover']}
-                    mouseEnterDelay={3}
-                    overlayClassName={clsx('rectangle left-[20px]')}
-                    placement="top"
-                    title={disabledTips}
-                    visible={disabled ? undefined : false}
-                  >
-                    <li
-                      className={clsx(
-                        'token-list__item h-[52px]',
-                        disabled && 'opacity-50'
-                      )}
-                      onClick={() => !disabled && onConfirm(token)}
-                    >
-                      <div>
-                        <TokenWithChain
-                          token={token}
-                          width="24px"
-                          height="24px"
-                          hideConer
-                        />
-                        <div className="flex flex-col gap-4">
-                          <span
-                            className="symbol text-13 text-r-neutral-title-1 font-medium"
-                            title={token.amount.toString()}
-                          >
-                            {formatTokenAmount(token.amount)}
-                          </span>
-                          <span
-                            className="symbol"
-                            title={getTokenSymbol(token)}
-                          >
-                            {getTokenSymbol(token)}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-4">
-                        <div>{formatUsdValue(token.price)}</div>
-                        <div>
-                          {isNil(token.price_24h_change) ? null : (
-                            <div
-                              className={clsx('font-normal', {
-                                'text-green': token.price_24h_change > 0,
-                                'text-red-forbidden':
-                                  token.price_24h_change < 0,
-                              })}
-                            >
-                              {token.price_24h_change > 0 ? '+' : ''}
-                              {(token.price_24h_change * 100).toFixed(2)}%
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col text-right items-end">
-                        <div
-                          title={formatUsdValue(
-                            new BigNumber(token.price || 0)
-                              .times(token.amount)
-                              .toFixed()
-                          )}
-                          className={clsx(
-                            'max-w-full text-13 text-r-neutral-title-1',
-                            'truncate'
-                          )}
-                        >
-                          {formatUsdValue(
-                            new BigNumber(token.price || 0)
-                              .times(token.amount)
-                              .toFixed()
-                          )}
-                        </div>
-                      </div>
-                    </li>
-                  </Tooltip>
-                );
-              })}
-        </ul>
-      ) : (
-        <ul className={clsx('token-list', { empty: isEmpty })}>
-          <li className="token-list__header">
-            <div>ASSET</div>
-            <div>Amount</div>
-          </li>
-          {isEmpty
-            ? NoDataUI
-            : displayList.map((token) => {
-                const chainItem = findChain({ serverId: token.chain });
-                const disabled =
-                  !!supportChains?.length &&
-                  chainItem &&
-                  !supportChains.includes(chainItem.enum);
-
-                return (
-                  <Tooltip
-                    key={`${token.chain}-${token.id}`}
-                    trigger={['click', 'hover']}
-                    mouseEnterDelay={3}
-                    overlayClassName={clsx('rectangle left-[20px]')}
-                    placement="top"
-                    title={disabledTips}
-                    visible={disabled ? undefined : false}
-                  >
-                    <li
-                      className={clsx(
-                        'token-list__item h-[52px]',
-                        disabled && 'opacity-50'
-                      )}
-                      onClick={() => !disabled && onConfirm(token)}
-                    >
-                      <div className="flex items-center gap-[12px]">
-                        <TokenWithChain
-                          token={token}
-                          width="24px"
-                          height="24px"
-                          hideConer
-                        />
-                        <div
-                          className="text-r-neutral-title1 text-[13px] leading-[15px] font-medium"
-                          title={getTokenSymbol(token)}
-                        >
-                          {getTokenSymbol(token)}
-                        </div>
-                      </div>
-
-                      <div
-                        title={formatTokenAmount(token.amount)}
-                        className={clsx(
-                          'max-w-full text-r-neutral-title1 text-[13px] leading-[15px] font-medium',
-                          'truncate text-right ml-auto w-[150px]'
-                        )}
-                      >
-                        {formatTokenAmount(token.amount)}
-                      </div>
-                    </li>
-                  </Tooltip>
-                );
-              })}
-        </ul>
-      )}
-    </Drawer>
+      </Drawer>
+      <TokenDetailPopup
+        variant="add"
+        visible={tokenDetailOpen}
+        onClose={() => {
+          setTokenDetailOpen(false);
+        }}
+        token={tokenDetail}
+      />
+    </TokenDetailInTokenSelectProviderContext.Provider>
   );
 };
 
 const DefaultLoading = ({ type }: { type: TokenSelectorProps['type'] }) => (
-  <div className="flex justify-between items-center py-10 pl-[20px] pr-[17px]">
+  <div className="flex justify-between items-center py-10 pl-[20px] pr-[17px] bg-r-neutral-card1 mx-16 rounded mt-8">
     <div className="gap-x-12 flex">
       <Skeleton.Input
         active
@@ -614,18 +498,7 @@ const DefaultLoading = ({ type }: { type: TokenSelectorProps['type'] }) => (
         />
       </div>
     </div>
-    <div>
-      {!([
-        'bridgeFrom',
-        'swapFrom',
-        'swapTo',
-      ] as TokenSelectorProps['type'][]).includes(type) && (
-        <Skeleton.Input
-          active
-          className="bg-r-neutral-bg-1 rounded-[2px] w-[72px] h-[20px]"
-        />
-      )}
-    </div>
+    <div></div>
     <div>
       <Skeleton.Input
         active
@@ -635,14 +508,17 @@ const DefaultLoading = ({ type }: { type: TokenSelectorProps['type'] }) => (
   </div>
 );
 
-function SwapAndBridgeTokenItem(props: {
-  token: TokenItem;
+function CommonTokenItem(props: {
+  token: TokenItem & {
+    trade_volume_level?: 'low' | 'high';
+  };
   disabledTips?: React.ReactNode;
   disabled?: boolean;
   onConfirm: (token: TokenItem) => void;
   updateToken?: boolean;
   supportChains?: CHAINS_ENUM[];
   type: TokenSelectorProps['type'];
+  openTokenDetail: () => void;
 }) {
   const {
     token,
@@ -651,22 +527,35 @@ function SwapAndBridgeTokenItem(props: {
     onConfirm,
     updateToken,
     type,
+    openTokenDetail,
   } = props;
+
+  const { t } = useTranslation();
 
   const wallet = useWallet();
 
   const currentAccount = useCurrentAccount();
 
   const chainItem = useMemo(() => findChain({ serverId: token.chain }), [
-    token,
+    token?.chain,
   ]);
 
   const isSwapTo = type === 'swapTo';
+  const isBridgeTo = type === 'bridgeTo';
 
   const currentChainName = useMemo(() => chainItem?.name, [chainItem]);
 
+  const onClickTokenSymbol: React.MouseEventHandler<HTMLSpanElement> = useCallback(
+    (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      openTokenDetail();
+    },
+    [token, openTokenDetail]
+  );
+
   const disabled = useMemo(() => {
-    if (type === 'swapTo') {
+    if (isSwapTo || isBridgeTo) {
       return false;
     }
     return (
@@ -675,7 +564,7 @@ function SwapAndBridgeTokenItem(props: {
         !supportChains.includes(chainItem.enum)) ||
       new BigNumber(token?.raw_amount_hex_str || token.amount || 0).lte(0)
     );
-  }, []);
+  }, [isSwapTo, isBridgeTo, supportChains, chainItem, token]);
 
   const { value, loading, error } = useAsync(async () => {
     if (updateToken && currentAccount?.address) {
@@ -689,6 +578,32 @@ function SwapAndBridgeTokenItem(props: {
     return token;
   }, [currentAccount?.address, updateToken, token?.chain, token?.id]);
 
+  const handleTokenPress = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+    onConfirm(value || token);
+  }, [disabled, value || token]);
+  if (type === 'swapTo') {
+    return (
+      <Tooltip
+        trigger={['click', 'hover']}
+        mouseEnterDelay={3}
+        overlayClassName={clsx('rectangle')}
+        placement="top"
+        title={disabledTips}
+        visible={disabled ? undefined : false}
+        align={{ targetOffset: [0, -30] }}
+      >
+        <ExternalTokenRow
+          data={token}
+          onTokenPress={handleTokenPress}
+          onClickTokenSymbol={onClickTokenSymbol}
+        />
+      </Tooltip>
+    );
+  }
+
   return (
     <Tooltip
       trigger={['click', 'hover']}
@@ -700,18 +615,18 @@ function SwapAndBridgeTokenItem(props: {
       align={{ targetOffset: [0, -30] }}
     >
       <li
-        className={clsx('token-list__item h-[56px]', disabled && 'opacity-50')}
-        onClick={() => !disabled && onConfirm(value || token)}
+        className={clsx('token-list__item', disabled && 'opacity-50')}
+        onClick={handleTokenPress}
       >
         <div>
           <TokenWithChain
             token={value || token}
-            width="28px"
-            height="28px"
+            width="32px"
+            height="32px"
             hideConer
           />
-          <div className="flex flex-col gap-1">
-            <span className="symbol text-14 text-r-neutral-title-1 font-medium">
+          <div className="flex flex-col">
+            <span className="symbol_click" onClick={onClickTokenSymbol}>
               {getTokenSymbol(token)}
             </span>
             <span className="symbol text-13 font-normal text-r-neutral-foot">
@@ -725,16 +640,48 @@ function SwapAndBridgeTokenItem(props: {
         <div className="flex flex-col"></div>
 
         <div className="flex flex-col text-right items-end">
-          <div className={clsx('text-14 text-r-neutral-title-1 font-medium')}>
-            {formatTokenAmount(value?.amount || 0)}
-          </div>
-          <div className="text-13 font-normal text-r-neutral-foot">
-            {formatUsdValue(
-              new BigNumber(value?.price || 0)
-                .times(value?.amount || 0)
-                .toFixed()
-            )}
-          </div>
+          {isBridgeTo ? (
+            <div
+              className={clsx(
+                'flex items-center justify-center gap-4',
+                'py-2 px-8 rounded-full',
+                'text-13 font-normal',
+                token.trade_volume_level === 'high'
+                  ? 'bg-r-green-light'
+                  : 'bg-r-orange-light',
+                token.trade_volume_level === 'high'
+                  ? 'text-r-green-default'
+                  : 'text-r-orange-default'
+              )}
+            >
+              <div
+                className={clsx(
+                  'w-[3px] h-[3px] rounded-full',
+                  token.trade_volume_level === 'high'
+                    ? 'bg-r-green-default'
+                    : 'bg-r-orange-default'
+                )}
+              />
+              <span>
+                {token?.trade_volume_level === 'high'
+                  ? t('component.TokenSelector.bridge.high')
+                  : t('component.TokenSelector.bridge.low')}
+              </span>
+            </div>
+          ) : (
+            <>
+              <div className={clsx('token_usd_value')}>
+                {formatUsdValue(
+                  new BigNumber(value?.price || 0)
+                    .times(value?.amount || 0)
+                    .toFixed()
+                )}
+              </div>
+              <div className="text-13 font-normal text-r-neutral-foot">
+                {formatTokenAmount(value?.amount || 0)}
+              </div>
+            </>
+          )}
         </div>
       </li>
     </Tooltip>

@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { last } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { Copy, TokenWithChain } from 'ui/component';
 import {
@@ -30,6 +30,7 @@ import { useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
+import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -45,6 +46,7 @@ interface TokenDetailProps {
   isAdded?: boolean;
   canClickToken?: boolean;
   hideOperationButtons?: boolean;
+  handleInTokenSelect?: () => void;
 }
 
 const TokenDetail = ({
@@ -142,13 +144,24 @@ const TokenDetail = ({
   const { setVisible } = useCommonPopupView();
 
   const history = useHistory();
+  const location = useLocation();
+
+  const handleInTokenSelect = useGetHandleTokenSelectInTokenDetails();
+
+  const isInSwap = location.pathname === '/dex-swap';
+  const isInSend = location.pathname === '/send-token';
+
   const goToSend = useCallback(() => {
     setVisible(false);
     onClose?.();
-    history.push(
-      `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
-    );
-  }, [history, token]);
+    if (isInSend && handleInTokenSelect) {
+      handleInTokenSelect(token);
+    } else {
+      history.push(
+        `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
+      );
+    }
+  }, [history, token, isInSend, handleInTokenSelect]);
 
   const goToReceive = useCallback(() => {
     setVisible(false);
@@ -163,10 +176,17 @@ const TokenDetail = ({
   const goToSwap = useCallback(() => {
     setVisible(false);
     onClose?.();
-    history.push(
-      `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
-    );
-  }, [history, token]);
+    if (isInSwap && handleInTokenSelect) {
+      handleInTokenSelect(token);
+    } else {
+      history.push(
+        `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`,
+        {
+          closeTokenSelect: true,
+        }
+      );
+    }
+  }, [history, token, isInSwap, handleInTokenSelect]);
 
   const isHiddenButton =
     // Customized and not added
