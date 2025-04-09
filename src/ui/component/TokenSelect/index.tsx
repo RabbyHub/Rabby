@@ -7,7 +7,7 @@ import React, {
   useImperativeHandle,
 } from 'react';
 import { DrawerProps, Input, Skeleton } from 'antd';
-import { TokenItem } from 'background/service/openapi';
+import { TokenItem, TokenItemWithEntity } from 'background/service/openapi';
 import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
@@ -207,6 +207,19 @@ const TokenSelect = forwardRef<
       isSwapType || type === 'bridgeFrom' ? false : true
     );
 
+    const isSwapTo = type === 'swapTo';
+
+    const {
+      value: remoteSwapToSearchTokens,
+      loading: remoteSwapToSearchTokensLoading,
+    } = useAsync(
+      () =>
+        queryConds?.keyword && isSwapTo
+          ? wallet.openapi.searchTokensV2({ q: queryConds?.keyword })
+          : Promise.resolve([] as TokenItemWithEntity[]),
+      [queryConds?.keyword, isSwapTo]
+    );
+
     const availableToken = useMemo(() => {
       const allTokens = queryConds.chainServerId
         ? allDisplayTokens.filter(
@@ -215,25 +228,36 @@ const TokenSelect = forwardRef<
         : allDisplayTokens;
       return uniqBy(
         queryConds.keyword
-          ? searchedTokenByQuery.map(abstractTokenToTokenItem)
+          ? isSwapTo
+            ? remoteSwapToSearchTokens?.filter(
+                (e) => e.chain === queryConds.chainServerId
+              )
+            : searchedTokenByQuery.map(abstractTokenToTokenItem)
           : allTokens,
         (token) => {
           return `${token.chain}-${token.id}`;
         }
       ).filter((e) => !excludeTokens.includes(e.id));
-    }, [allDisplayTokens, searchedTokenByQuery, excludeTokens, queryConds]);
+    }, [
+      allDisplayTokens,
+      searchedTokenByQuery,
+      excludeTokens,
+      queryConds,
+      isSwapTo,
+      remoteSwapToSearchTokens,
+    ]);
 
     const displaySortedTokenList = useSortToken(availableToken);
 
     const displayTokenList = useMemo(() => {
-      if (type === 'swapTo') {
+      if (isSwapTo) {
         return availableToken;
       }
       return displaySortedTokenList;
-    }, [availableToken, displaySortedTokenList, type]);
+    }, [availableToken, displaySortedTokenList, isSwapTo]);
 
     const isListLoading = queryConds.keyword
-      ? isSearchLoading
+      ? isSearchLoading || remoteSwapToSearchTokensLoading
       : useSwapTokenList
       ? swapTokenListLoading
       : isLoadingAllTokens;

@@ -2597,6 +2597,33 @@
       "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
       "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
       "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync"
+    },
+    "search": {
+      "sectionHeader": {
+        "token": "Tokens",
+        "Defi": "DeFi",
+        "NFT": "NFT",
+        "AllChains": "All Chains"
+      },
+      "header": {
+        "placeHolder": "Search",
+        "searchPlaceHolder": "Search Token Name / Address"
+      },
+      "tokenItem": {
+        "gasToken": "Gas Token",
+        "FDV": "FDV",
+        "listBy": "List by {{name}}",
+        "Issuedby": "Issued by",
+        "verifyDangerTips": "This is a scam token",
+        "scamWarningTips": "This is a low-quality token and may be a scam"
+      },
+      "searchWeb": {
+        "noResult": "No Results for",
+        "noResults": "No Results",
+        "title": "All Results",
+        "searching": "Results for",
+        "searchTips": "Search the web"
+      }
     }
   },
   "component": {
