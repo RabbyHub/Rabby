@@ -39,7 +39,7 @@ import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useHistory } from 'react-router-dom';
-import { LowCreditModal, useLowCreditState } from './LowCreditModal';
+import { LowCreditModal } from './LowCreditModal';
 import { SwapTokenItem } from './Token';
 import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
@@ -60,7 +60,7 @@ const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
 };
 
 export const Main = () => {
-  const { userAddress, unlimitedAllowance } = useRabbySelector((state) => ({
+  const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
     unlimitedAllowance: state.swap.unlimitedAllowance || false,
   }));
@@ -360,18 +360,28 @@ export const Main = () => {
 
   const history = useHistory();
 
-  const lowCreditInit = useRef(false);
+  useEffect(() => {
+    setLowCreditToken(receiveToken);
+  }, [receiveToken]);
 
   useEffect(() => {
     if (
-      receiveToken &&
-      receiveToken?.low_credit_score &&
-      !lowCreditInit.current
+      receiveToken?.chain &&
+      receiveToken?.id &&
+      receiveToken?.low_credit_score
     ) {
-      setLowCreditToken(receiveToken);
       setLowCreditVisible(true);
     }
-  }, [receiveToken]);
+  }, [receiveToken?.id, receiveToken?.chain, receiveToken?.low_credit_score]);
+
+  useEffect(() => {
+    if (
+      lowCreditVisible &&
+      (!receiveToken?.id || !receiveToken?.low_credit_score)
+    ) {
+      setLowCreditVisible(false);
+    }
+  }, [lowCreditVisible, receiveToken?.id, receiveToken?.low_credit_score]);
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -586,10 +596,6 @@ export const Main = () => {
                 setPayToken(undefined);
               }
               setReceiveToken(token);
-              if (token?.low_credit_score) {
-                setLowCreditToken(token);
-                setLowCreditVisible(true);
-              }
             }}
             chainId={findChainByEnum(chain)!.serverId || CHAINS[chain].serverId}
             type={'to'}
@@ -793,7 +799,6 @@ export const Main = () => {
           visible={lowCreditVisible}
           onCancel={() => {
             setLowCreditVisible(false);
-            lowCreditInit.current = true;
           }}
         />
       </div>
