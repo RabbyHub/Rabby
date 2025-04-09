@@ -60,7 +60,7 @@ export const TestnetChainList = ({
   return (
     <div
       className={clsx(
-        'bg-r-neutral-card-2 rounded-[6px] p-[12px]',
+        'bg-r-neutral-card-1 rounded-[8px] p-[12px]',
         'flex gap-12 flex-wrap'
       )}
     >

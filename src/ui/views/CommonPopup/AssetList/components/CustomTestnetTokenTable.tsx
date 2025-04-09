@@ -50,12 +50,12 @@ export const CustomTestnetTokenTable: React.FC<Props> = ({
       {EmptyComponent && !list?.length ? (
         EmptyComponent
       ) : (
-        <Table>
+        <Table className="!w-full -mx-0">
           <THeader>
             <THeadCell className="w-[160px]">ASSET</THeadCell>
             <THeadCell className="ml-auto text-right">Amount</THeadCell>
           </THeader>
-          <TBody className="mt-8">
+          <TBody className="mt-0">
             {list?.map((item) => {
               return (
                 <CustomTestnetTokenItem
