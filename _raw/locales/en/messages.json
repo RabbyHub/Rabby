@@ -2595,6 +2595,10 @@
     }
   },
   "component": {
+    "TokenChart": {
+      "price": "Price",
+      "holding": "Holding Value"
+    },
     "AccountSearchInput": {
       "noMatchAddress": "No match address",
       "AddressItem": {
