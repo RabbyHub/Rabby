@@ -2591,7 +2591,10 @@
       "disableSelectAddressWithPassphrase": "Sincronización no es compatible con la dirección {{type}} con frase",
       "disableSelectAddressWithSlip39": "Sincronización no es compatible con la dirección {{type}} con slip39",
       "selectedLenAddressesForSync_one": "Dirección seleccionada {{len}} para sincronización",
-      "selectedLenAddressesForSync_other": "Direcciones seleccionadas {{len}} para sincronización"
+      "selectedLenAddressesForSync_other": "Direcciones seleccionadas {{len}} para sincronización",
+      "selectAddress": {
+        "title": "Seleccionar direcciones para sincronizar"
+      }
     }
   },
   "component": {

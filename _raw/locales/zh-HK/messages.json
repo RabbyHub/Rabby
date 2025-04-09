@@ -2629,7 +2629,10 @@
       "disableSelectAddressWithPassphrase": "與密碼不支持{{type}}地址的同步",
       "disableSelectAddressWithSlip39": "不支持{{type}}地址的同步39",
       "selectedLenAddressesForSync_one": "選擇{{len}}同步地址",
-      "selectedLenAddressesForSync_other": "選擇{{{len}}地址同步"
+      "selectedLenAddressesForSync_other": "選擇{{{len}}地址同步",
+      "selectAddress": {
+        "title": "選擇要同步的地址"
+      }
     }
   },
   "component": {
