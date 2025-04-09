@@ -1316,10 +1316,10 @@
         "send": "Send",
         "receive": "Receive",
         "noTransactions": "No Transactions",
-        "customizedButton": "custom token",
-        "customizedButtons": "custom tokens",
-        "blockedButton": "blocked token",
-        "blockedButtons": "blocked tokens"
+        "customizedButton": "custom",
+        "customizedButtons": "custom",
+        "blockedButton": "blocked",
+        "blockedButtons": "blocked"
       },
       "assets": {
         "usdValue": "USD VALUE",

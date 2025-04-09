@@ -43,6 +43,7 @@ export function SpecialTokenListPopup({
       visible={visible}
       closable
       push={false}
+      isNew
       onClose={onClose}
       title={`${len} ${label}`}
       isSupportDarkMode
@@ -119,8 +120,8 @@ export const TokenButton: React.FC<Props> = ({
       <button
         onClick={() => setVisible(true)}
         className={clsx(
-          'rounded-[2px] py-6 px-8',
-          'text-12 bg-r-neutral-card-2 text-r-neutral-foot',
+          'rounded-[8px] py-8 px-12',
+          'text-12 bg-r-neutral-card-1 text-r-neutral-foot',
           'flex items-center',
           'gap-2',
           'hover:opacity-60'
