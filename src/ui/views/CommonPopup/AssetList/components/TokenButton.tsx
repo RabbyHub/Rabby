@@ -18,6 +18,7 @@ interface TokenButtonPopupProps {
   onClickLink?: () => void;
   linkText?: string;
   buttonText?: string;
+  modalTitle?: string;
   description?: string;
   hiddenSubTitle?: boolean;
 }
@@ -49,7 +50,7 @@ export function SpecialTokenListPopup({
       isSupportDarkMode
     >
       {!hiddenSubTitle && (
-        <div className="text-r-neutral-foot text-13 mb-[30px] text-center -m-8">
+        <div className="text-r-neutral-foot text-13 mb-[20px] text-center -m-8">
           {t('page.dashboard.assets.tokenButton.subTitle')}
         </div>
       )}
@@ -90,6 +91,7 @@ export const TokenButton: React.FC<Props> = ({
   tokens,
   onClickLink,
   linkText,
+  modalTitle,
   onClickButton,
   buttonText,
   description,
@@ -120,11 +122,11 @@ export const TokenButton: React.FC<Props> = ({
       <button
         onClick={() => setVisible(true)}
         className={clsx(
-          'rounded-[8px] py-8 px-12',
+          'rounded-[8px] py-8 px-12 border border-transparent',
           'text-12 bg-r-neutral-card-1 text-r-neutral-foot',
           'flex items-center',
           'gap-2',
-          'hover:opacity-60'
+          'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10'
         )}
       >
         <span>{len}</span>
@@ -135,7 +137,7 @@ export const TokenButton: React.FC<Props> = ({
       <SpecialTokenListPopup
         visible={visible}
         onClose={() => setVisible(false)}
-        label={label}
+        label={modalTitle || label}
         tokens={tokens}
         onClickLink={handleClickLink}
         linkText={linkText}

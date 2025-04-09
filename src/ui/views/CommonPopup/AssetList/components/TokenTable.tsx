@@ -43,7 +43,7 @@ export const TokenTable: React.FC<Props> = ({
       {EmptyComponent && !list?.length ? (
         EmptyComponent
       ) : (
-        <Table className="!w-full -mx-0">
+        <Table className="!w-full !mx-0">
           <THeader>
             <THeadCell className="w-[160px]">
               {t('page.dashboard.assets.table.assetAmount')}

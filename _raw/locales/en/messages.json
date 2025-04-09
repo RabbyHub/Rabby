@@ -1316,8 +1316,12 @@
         "send": "Send",
         "receive": "Receive",
         "noTransactions": "No Transactions",
-        "customizedButton": "custom",
-        "customizedButtons": "custom",
+        "customizedButton": "customized",
+        "customizedButtons": "customized",
+        "customizedListTitle": "custom token",
+        "customizedListTitles": "custom tokens",
+        "blockedListTitle": "blocked token",
+        "blockedListTitles": "blocked tokens",
         "blockedButton": "blocked",
         "blockedButtons": "blocked"
       },
@@ -1329,7 +1333,7 @@
           "fractionTips": "Calculate based on the price of the linked ERC20 token."
         },
         "tokenButton": {
-          "subTitle": "Tokens on this list will not be added to the total balance"
+          "subTitle": "Tokens on this list will not be added to the total balance."
         },
         "table": {
           "assetAmount": "Asset / Amount",
