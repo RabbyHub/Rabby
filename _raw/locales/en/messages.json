@@ -1319,6 +1319,18 @@
         "customizedButton": "custom token",
         "customizedButtons": "custom tokens",
         "blockedButton": "blocked token",
+        "TokenName": "Token Name",
+        "Chain": "Chain",
+        "ContractAddress": "Contract Address",
+        "myBalance": "My Balance",
+        "BridgeIssue": "Bridged token by a third party",
+        "OriginIssue": "Natively issued on this blockchain",
+        "BridgeProvider": "Bridge Provider",
+        "IssuerWebsite": "Issuer’s Website",
+        "OriginalToken": "Original Token",
+        "ListedBy": "Listed by",
+        "SupportedExchanges": "Supported Exchanges",
+        "fdvTips": "The market cap if the max supply was in circulation.Fully Diluted Valuation (FDV) = Price x Max Supply. If Max Supply is null, FDV = Price x Total Supply. If neither Max Supply nor Total Supply is defined or infinite, FDV is not displayed.",
         "blockedButtons": "blocked tokens"
       },
       "assets": {
