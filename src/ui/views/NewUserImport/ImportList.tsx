@@ -66,6 +66,11 @@ export const ImportWalletList = () => {
           type: KEYRING_CLASS.GNOSIS,
           logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.GNOSIS].icon,
         },
+        {
+          type: KEYRING_CLASS.HARDWARE.KEYSTONE,
+          logo: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.NGRAVEZERO].icon,
+          brand: WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.NGRAVEZERO].brand,
+        },
       ].slice(0, !showMore ? 3 : undefined),
     [showMore]
   );
@@ -120,11 +125,11 @@ export const ImportWalletList = () => {
           return (
             <Tooltip
               title={item.tipI18nKey ? t(item.tipI18nKey) : undefined}
-              key={item.type}
+              key={item.type + index}
               overlayClassName="rectangle"
             >
               <Item
-                key={item.type}
+                key={item.type + index}
                 bgColor="var(--r-neutral-card2, #F2F4F7)"
                 px={16}
                 py={20}
