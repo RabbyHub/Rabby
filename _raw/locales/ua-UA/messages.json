@@ -2603,7 +2603,10 @@
       "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
       "disableSelectAddressWithSlip39": "Sync not supported for {{type}} address with slip39",
       "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
-      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync"
+      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync",
+      "selectAddress": {
+        "title": "Виберіть адреси для синхронізації"
+      }
     }
   },
   "component": {

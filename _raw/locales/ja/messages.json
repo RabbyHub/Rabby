@@ -2591,7 +2591,10 @@
       "disableSelectAddressWithPassphrase": "パスフレーズを使用した{{type}}アドレスのサポートされていない同期",
       "disableSelectAddressWithSlip39": "Slip39を使用して{{ypyped}}アドレスのサポートされていない同期",
       "selectedLenAddressesForSync_one": "selected {{len}} syncのアドレス",
-      "selectedLenAddressesForSync_other": "selected {{len}} syncのアドレス"
+      "selectedLenAddressesForSync_other": "selected {{len}} syncのアドレス",
+      "selectAddress": {
+        "title": "アドレスを選択して同期する"
+      }
     }
   },
   "component": {
