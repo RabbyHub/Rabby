@@ -1,13 +1,21 @@
 import { PageHeader } from '@/ui/component';
 import { Chain } from '@debank/common';
 import { Form, Input, Skeleton } from 'antd';
-import React, { useMemo, useRef } from 'react';
+import React, { ComponentProps, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
-import { CustomTestnetItem } from './CustomTestnetItem';
+import {
+  CustomTestnetItem,
+  TestnetChainWithRpcList,
+} from './CustomTestnetItem';
 import clsx from 'clsx';
-import { useDebounce, useInfiniteScroll, useRequest } from 'ahooks';
+import {
+  useDebounce,
+  useInfiniteScroll,
+  useMemoizedFn,
+  useRequest,
+} from 'ahooks';
 import { intToHex, useWallet } from '@/ui/utils';
 import {
   TestnetChain,
@@ -18,6 +26,7 @@ import { findChain } from '@/utils/chain';
 import { id } from 'ethers/lib/utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { sortBy } from 'lodash';
+import { useRPCData } from '../hooks/useRPCData';
 
 const Wraper = styled.div`
   position: absolute;
@@ -97,7 +106,11 @@ export const AddFromChainList = ({
     }
   );
 
-  const { loading, data, loadingMore } = useInfiniteScroll(
+  const { loading, data, loadingMore } = useInfiniteScroll<{
+    list: TestnetChainWithRpcList[];
+    start: number;
+    total: number;
+  }>(
     async (data) => {
       const res = await wallet.openapi.searchChainList({
         start: data?.start || 0,
@@ -107,14 +120,17 @@ export const AddFromChainList = ({
 
       return {
         list: res.chain_list.map((item) => {
-          const res = createTestnetChain({
+          const r = createTestnetChain({
             name: item.name,
             id: item.chain_id,
             nativeTokenSymbol: item.native_currency.symbol,
             rpcUrl: item.rpc || '',
             scanLink: item.explorer || '',
           });
-          return res;
+          return {
+            ...r,
+            rpcList: item.rpc_list,
+          };
         }),
         start: res.page.start + res.page.limit,
         total: res.page.total,
@@ -141,7 +157,10 @@ export const AddFromChainList = ({
             rpcUrl: item.rpc || '',
             scanLink: item.explorer || '',
           });
-          return res;
+          return {
+            ...res,
+            rpcList: item.rpc_list,
+          };
         }),
         'name'
       );
@@ -246,11 +265,37 @@ const CustomTestnetList = ({
 }: {
   loading?: boolean;
   loadingMore?: boolean;
-  list: TestnetChain[];
+  list: TestnetChainWithRpcList[];
   onSelect?: (chain: TestnetChain) => void;
   className?: string;
 }) => {
   const { t } = useTranslation();
+  const { runAsync } = useRPCData();
+  const loadingItemRef = useRef<{ chainId: number | null }>({
+    chainId: null,
+  });
+  const [loadingChainId, setLoadingChainId] = useState<number | null>(null);
+  const handleClick = useMemoizedFn(
+    async (testnetChain: TestnetChainWithRpcList) => {
+      loadingItemRef.current = {
+        chainId: testnetChain.id,
+      };
+      setLoadingChainId(testnetChain.id);
+      const sortedRpcList = await runAsync(testnetChain.rpcList || []).catch(
+        () => null
+      );
+      if (loadingItemRef.current.chainId === testnetChain.id) {
+        loadingItemRef.current = {
+          chainId: null,
+        };
+        setLoadingChainId(null);
+        onSelect?.({
+          ...testnetChain,
+          rpcUrl: sortedRpcList?.[0]?.url || testnetChain.rpcUrl,
+        });
+      }
+    }
+  );
   return (
     <div className="rounded-[6px] bg-r-neutral-card2">
       {list?.map((item) => {
@@ -278,8 +323,9 @@ const CustomTestnetList = ({
           <CustomTestnetItem
             item={item}
             key={item.id}
-            onClick={onSelect}
+            onClick={handleClick}
             className="relative chain-list-item"
+            loading={loadingChainId === item.id}
           />
         );
       })}

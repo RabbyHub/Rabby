@@ -1,17 +1,14 @@
-import { Chain } from '@debank/common';
-import { Form, Input } from 'antd';
+import { TestnetChain } from '@/background/service/customTestnet';
+import { ReactComponent as RcIconDelete } from '@/ui/assets/custom-testnet/cc-delete.svg';
+import { ReactComponent as RcIconEdit } from '@/ui/assets/custom-testnet/icon-edit.svg';
+import { Spin } from '@/ui/component';
+import { TestnetChainLogo } from '@/ui/component/TestnetChainLogo';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import clsx from 'clsx';
 import React from 'react';
-import styled from 'styled-components';
-import { ReactComponent as RcIconEdit } from '@/ui/assets/custom-testnet/icon-edit.svg';
-import { ReactComponent as RcIconDelete } from '@/ui/assets/custom-testnet/cc-delete.svg';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import {
-  TestnetChain,
-  TestnetChainBase,
-} from '@/background/service/customTestnet';
-import { TestnetChainLogo } from '@/ui/component/TestnetChainLogo';
 import { useTranslation } from 'react-i18next';
+
+export type TestnetChainWithRpcList = TestnetChain & { rpcList?: string[] };
 
 export const CustomTestnetItem = ({
   className,
@@ -21,14 +18,16 @@ export const CustomTestnetItem = ({
   onClick,
   editable,
   disabled,
+  loading,
 }: {
   className?: string;
-  item: TestnetChain;
-  onEdit?: (item: TestnetChain) => void;
-  onRemove?: (item: TestnetChain) => void;
-  onClick?: (item: TestnetChain) => void;
+  item: TestnetChainWithRpcList;
+  onEdit?: (item: TestnetChainWithRpcList) => void;
+  onRemove?: (item: TestnetChainWithRpcList) => void;
+  onClick?: (item: TestnetChainWithRpcList) => void;
   editable?: boolean;
   disabled?: boolean;
+  loading?: boolean;
 }) => {
   const { t } = useTranslation();
   return (
@@ -88,6 +87,11 @@ export const CustomTestnetItem = ({
               }}
             />
           </div>
+        </div>
+      ) : null}
+      {loading ? (
+        <div className="ml-auto">
+          <Spin size="small" className="mr-auto" />
         </div>
       ) : null}
     </div>
