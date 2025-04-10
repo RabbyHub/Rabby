@@ -378,6 +378,7 @@ const ListSiteAndCex = ({
         <div className="flex flex-1 flex-col py-12 px-20 gap-12 overflow-y-auto">
           {siteArr?.map((item, index) => (
             <div
+              key={index}
               className="w-full flex flex-row items-center justify-between px-16 py-16 
               rounded-[6px]
               border border-transparent 

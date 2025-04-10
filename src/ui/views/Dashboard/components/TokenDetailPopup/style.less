@@ -102,6 +102,10 @@
     display: flex;
     padding: 20px 20px 100px;
     position: relative;
+
+    .border-orange-default {
+      border: 0.5px solid var(--r-orange-default, #FFB020);
+    }
   }
 
   // @stickyarea-height: @header-inner-height + @header-py-offset * 2;
@@ -174,7 +178,7 @@
     // border-radius: 6px;
     padding: 0 12px;
     &:not(:last-child) {
-      border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+      border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     }
     &:first-child {
       border-top-left-radius: 8px;

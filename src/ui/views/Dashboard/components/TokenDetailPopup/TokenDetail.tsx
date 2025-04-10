@@ -183,9 +183,9 @@ const TokenDetail = ({
   const gotoBridge = useCallback(() => {
     setVisible(false);
     onClose?.();
-    history.push(
-      `/bridge?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
-    );
+    // if (isBridge && handleInTokenSelect) {
+    //   handleInTokenSelect(token);
+    // }
   }, [history, token]);
 
   const goToSwap = useCallback(() => {
