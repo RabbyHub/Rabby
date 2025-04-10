@@ -76,6 +76,8 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
     amountSum,
   ]);
 
+  const unHold = !amountSum;
+
   const { data: realTimeData, loading: curveLoading } = use24hCurveData({
     tokenId: _token.id,
     serverId: _token.chain,
@@ -183,9 +185,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
   }, [token.amount]);
 
   const color = useMemo(() => {
-    return isUp
-      ? 'var(--r-green-default, #2ABB7F);'
-      : 'var(--r-red-default, #E34935)';
+    return isUp ? '#2ABB7F' : 'var(--r-red-default, #E34935)';
   }, [isUp]);
 
   const [curveHoverPoint, setHoverCurvePoint] = useState<
@@ -222,38 +222,40 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
 
   return (
     <Wrapper className={className}>
-      <div
-        className={clsx(
-          'flex items-center gap-16 h-32 relative pt-8',
-          'text-r-neutral-foot text-13 font-medium',
-          pl
-        )}
-      >
-        {tokenLoading && (
-          <Skeleton.Input active style={{ width: 150, height: 32 }} />
-        )}
+      {!unHold && (
+        <div
+          className={clsx(
+            'flex items-center gap-16 h-32 relative pt-8',
+            'text-r-neutral-foot text-13 font-medium',
+            pl
+          )}
+        >
+          {tokenLoading && (
+            <Skeleton.Input active style={{ width: 150, height: 32 }} />
+          )}
 
-        {!tokenLoading &&
-          headerTab.map((e) => (
-            <div
-              key={e.key}
-              className={clsx(
-                'pb-6 cursor-pointer',
-                'hover:text-r-blue-default',
-                'border-b-[2px] border-solid ',
-                priceType === e.key
-                  ? 'text-r-blue-default border-rabby-blue-default'
-                  : 'border-transparent'
-              )}
-              onClick={() => {
-                setPriceType(e.key);
-              }}
-            >
-              {e.label}
-            </div>
-          ))}
-        <div className="absolute w-full h-[0.5px] -bottom-2 left-0 bg-rabby-neutral-line" />
-      </div>
+          {!tokenLoading &&
+            headerTab.map((e) => (
+              <div
+                key={e.key}
+                className={clsx(
+                  'pb-6 cursor-pointer',
+                  'hover:text-r-blue-default',
+                  'border-b-[2px] border-solid ',
+                  priceType === e.key
+                    ? 'text-r-blue-default border-rabby-blue-default'
+                    : 'border-transparent'
+                )}
+                onClick={() => {
+                  setPriceType(e.key);
+                }}
+              >
+                {e.label}
+              </div>
+            ))}
+          <div className="absolute w-full h-[0.5px] -bottom-2 left-0 bg-rabby-neutral-line" />
+        </div>
+      )}
 
       <div className={clsx('flex gap-6 items-end mb-6 mt-12', pl)}>
         {curveLoading ? (
@@ -271,14 +273,14 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
                   : 'text-r-green-default'
               )}
             >
-              {displayItem?.isLoss ? '-' : '+'}
+              {unHold ? '' : displayItem?.isLoss ? '-' : '+'}
               {displayItem.changePercent}
               {curveHoverPoint ? `(${curveHoverPoint?.change})` : ''}
             </div>
           </>
         )}
       </div>
-      <div className="h-80 mx-16">
+      <div className="h-80">
         <CurveWrapper ref={divRef}>
           {curveIsLoading ? (
             <Skeleton.Input active style={{ width: 360, height: 80 }} />

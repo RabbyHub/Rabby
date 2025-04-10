@@ -10,7 +10,7 @@
     }
 
     .ant-drawer-content {
-      background: var(--r-neutral-bg2, #FFF);
+      background: var(--r-neutral-bg2, #F2F4F7);
     }
   }
 
@@ -24,7 +24,7 @@
     box-sizing: border-box;
     border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
     position: sticky;
-    background: var(--r-neutral-bg-2, #FFF);
+    background: var(--r-neutral-bg2, #F2F4F7);
     border-radius: 16px 16px 0 0;
     top: 0;
     left: 0;
@@ -96,9 +96,11 @@
 
   &-body {
     flex: 1;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    
     display: flex;
-    padding: 20px 20px 40px;
+    padding: 20px 20px 100px;
     position: relative;
   }
 

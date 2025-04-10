@@ -256,7 +256,9 @@ const ListSiteAndCex = ({
   siteArr,
   title,
   noSiteString,
+  popupHeight,
 }: {
+  popupHeight: number;
   title: string;
   noSiteString: string;
   siteArr?:
@@ -356,7 +358,7 @@ const ListSiteAndCex = ({
         closable={true}
         onClose={() => setDetailVisible(false)}
         placement="bottom"
-        height={498}
+        height={popupHeight}
         push={false}
         title={
           <div className="text-r-neutral-title-1 text-20 font-medium">
@@ -403,9 +405,11 @@ const ListSiteAndCex = ({
 const TokenChainAndContract = ({
   token,
   tokenEntity,
+  popupHeight,
   entityLoading,
 }: {
   token: TokenItem;
+  popupHeight: number;
   entityLoading: boolean;
   tokenEntity?: TokenEntityDetail;
 }) => {
@@ -431,6 +435,7 @@ const TokenChainAndContract = ({
         />
       ) : (
         <ListSiteAndCex
+          popupHeight={popupHeight}
           siteArr={tokenEntity?.listed_sites}
           title={t('page.dashboard.tokenDetail.ListedBy')}
           noSiteString={t('page.dashboard.tokenDetail.NoListedBy')}
@@ -446,6 +451,7 @@ const TokenChainAndContract = ({
           siteArr={tokenEntity?.cex_list}
           title={t('page.dashboard.tokenDetail.SupportedExchanges')}
           noSiteString={t('page.dashboard.tokenDetail.NoSupportedExchanges')}
+          popupHeight={popupHeight}
         ></ListSiteAndCex>
       )}
       <ChainAndName token={token} tokenEntity={tokenEntity}></ChainAndName>

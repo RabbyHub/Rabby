@@ -14,21 +14,25 @@ export const ScamTokenTips = ({ token }: Props) => {
   const isNotVerified = token.is_verified === false;
 
   if (isNotVerified) {
-    <div className="flex flex-row bg-r-red-light rounded-[8px] px-12 py-16 items-center justify-center border-[0.5px] border-r-red-default gap-6">
-      <img src={IconDanger} className="w-14 h-14 mr-[3px]" />
-      <div className="text-r-red-default text-13">
-        {t('page.dashboard.tokenDetail.verifyScamTips')}
+    return (
+      <div className="flex flex-row bg-r-red-light rounded-[8px] px-12 py-8 items-center justify-center border-[0.5px] border-rabby-red-default">
+        <img src={IconDanger} className="w-14 h-14 mr-[4px]" />
+        <div className="text-r-red-default text-13">
+          {t('page.dashboard.tokenDetail.verifyScamTips')}
+        </div>
       </div>
-    </div>;
+    );
   }
 
   if (isScam) {
-    <div className="flex flex-row bg-r-orange-light rounded-[8px] px-12 py-16 items-center justify-center border-[0.5px] border-r-orange-default gap-6">
-      <img src={IconAlertInfo} className="w-14 h-14 mr-[3px]" />
-      <div className="text-r-orange-default text-13">
-        {t('page.dashboard.tokenDetail.maybeScamTips')}
+    return (
+      <div className="flex flex-row bg-r-orange-light rounded-[8px] px-12 py-8 items-center justify-center border-[0.5px] border-rabby-orange-DBK">
+        <img src={IconAlertInfo} className="w-14 h-14 mr-[4px]" />
+        <div className="text-r-orange-default text-13">
+          {t('page.dashboard.tokenDetail.maybeScamTips')}
+        </div>
       </div>
-    </div>;
+    );
   }
 
   return null;

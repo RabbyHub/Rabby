@@ -28,6 +28,10 @@ export const TokenDetailPopup = ({
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const [isAdded, setIsAdded] = React.useState(false);
+
+  const isInSwap = location.pathname === '/dex-swap';
+  const isInSend = location.pathname === '/send-token';
+
   const handleAddToken = React.useCallback((tokenWithAmount) => {
     if (!tokenWithAmount) return;
 
@@ -79,11 +83,13 @@ export const TokenDetailPopup = ({
     checkIsAdded();
   }, [checkIsAdded]);
 
+  const popupHeight = isInSend || isInSwap ? 540 : 494;
+
   return (
     <Popup
       visible={visible}
       closable={true}
-      height={494}
+      height={popupHeight}
       onClose={onClose}
       className="token-detail-popup"
       push={false}
@@ -91,6 +97,7 @@ export const TokenDetailPopup = ({
       {visible && token && (
         <TokenDetail
           token={token}
+          popupHeight={popupHeight}
           addToken={handleAddToken}
           removeToken={handleRemoveToken}
           variant={variant}
