@@ -159,9 +159,6 @@ const TokenDetail = ({
 
   const { setVisible } = useCommonPopupView();
 
-  const isInSwap = location.pathname === '/dex-swap';
-  const isInSend = location.pathname === '/send-token';
-
   const history = useHistory();
   const location = useLocation();
 
