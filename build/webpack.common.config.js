@@ -41,7 +41,7 @@ const config = {
   entry: {
     background: {
       import: paths.rootResolve('src/background/index.ts'),
-      chunkLoading: IS_MANIFEST_MV3 ? 'import-scripts' : 'jsonp',
+      asyncChunks: false,
     },
     'content-script': paths.rootResolve('src/content-script/index.ts'),
     pageProvider: paths.rootResolve(
