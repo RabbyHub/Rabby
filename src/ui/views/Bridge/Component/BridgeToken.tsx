@@ -254,7 +254,6 @@ export const BridgeToken = ({
           hideTestnetTab
           value={chain}
           onChange={changeChain}
-          title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
           // excludeChains={excludeChains}
           supportChains={supportedChains}
           drawerHeight={540}

@@ -48,12 +48,11 @@
     // height: 494px !important;
   }
   header {
-    padding-top: 8px;
-    padding-bottom: 24px;
+    padding-bottom: 16px;
     position: sticky;
     top: 0;
     z-index: 1;
-    background: var(--r-neutral-bg-1, #3d4251);
+    background: var(--r-neutral-bg2, #f2f4f7);
 
     .ant-input-affix-wrapper {
       border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
@@ -72,8 +71,12 @@
       border-color: var(--r-blue-default);
     }
   }
+
+  .ant-drawer-close {
+    padding-top: 14px;
+  }
   .ant-drawer-header {
-    padding: 12px 20px;
+    padding: 12px 14px;
     background: linear-gradient(
       180deg,
       #eff1ff 0%,
@@ -304,29 +307,29 @@
 
 .select-chain {
   &-list {
-    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
-    border-radius: 6px;
+    background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+    border-radius: 8px;
     & + & {
-      margin-top: 24px;
+      margin-top: 16px;
     }
   }
   &-item {
     display: flex;
     align-items: center;
-    padding: 14px 16px;
+    padding: 0 16px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
     position: relative;
     border: 1px solid transparent;
-    height: 56px;
+    height: 60px;
 
     &::after {
       content: '';
       position: absolute;
       bottom: -1px;
-      left: 16px;
-      right: 16px;
-      border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+      left: -1px;
+      right: -1px;
+      border-bottom: 0.5px solid var(--r-neutral-line, #e0e5ec);
     }
 
     .chain-icon-comp {
