@@ -57,6 +57,7 @@ interface TokenDetailProps {
   canClickToken?: boolean;
   hideOperationButtons?: boolean;
   handleInTokenSelect?: () => void;
+  popupHeight: number;
 }
 
 const TokenDetail = ({
@@ -67,6 +68,7 @@ const TokenDetail = ({
   isAdded,
   onClose,
   canClickToken = true,
+  popupHeight,
   hideOperationButtons = false,
 }: TokenDetailProps) => {
   const wallet = useWallet();
@@ -157,6 +159,9 @@ const TokenDetail = ({
 
   const { setVisible } = useCommonPopupView();
 
+  const isInSwap = location.pathname === '/dex-swap';
+  const isInSend = location.pathname === '/send-token';
+
   const history = useHistory();
   const location = useLocation();
 
@@ -226,6 +231,27 @@ const TokenDetail = ({
             }}
           >
             {t('page.dashboard.tokenDetail.AddToMyTokenList')}
+          </Button>
+        </div>
+      );
+    }
+
+    if (isInSwap || isInSend) {
+      return (
+        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
+          <Button
+            type="primary"
+            size="large"
+            onClick={isInSwap ? goToSwap : goToSend}
+            disabled={!tokenSupportSwap}
+            className="w-[360px] h-[40px] leading-[18px]"
+            style={{
+              width: 360,
+              height: 40,
+              lineHeight: '18px',
+            }}
+          >
+            {t('global.confirm')}
           </Button>
         </div>
       );
@@ -329,10 +355,10 @@ const TokenDetail = ({
           ></BlockedTopTips>
         )}
         <TokenCharts token={token}></TokenCharts>
-        <div className="mx-5 mt-3 flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
+        <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content overflow-hidden flex flex-col gap-8 px-16 py-12">
             <div className="flex flex-row justify-between w-full">
-              <div className="balance-title">
+              <div className="balance-title text-r-neutral-body text-13">
                 {t('page.dashboard.tokenDetail.myBalance')}
               </div>
               {variant === 'add' ? (
@@ -368,7 +394,7 @@ const TokenDetail = ({
                     {splitNumberByStep(
                       (tokenWithAmount.amount || 0)?.toFixed(8)
                     )}{' '}
-                    {getTokenSymbol(token)}
+                    {ellipsisOverflowedText(getTokenSymbol(token), 8)}
                   </div>
                 </TooltipWithMagnetArrow>
               </div>
@@ -393,6 +419,7 @@ const TokenDetail = ({
           entityLoading={entityLoading}
           token={token}
           tokenEntity={tokenEntity}
+          popupHeight={popupHeight}
         ></TokenChainAndContract>
         <div className="token-txs-history flex flex-col">
           {data?.list.map((item) => (
@@ -408,7 +435,7 @@ const TokenDetail = ({
           ))}
           {(loadingMore || loading) && <Loading count={5} active />}
           {isEmpty && (
-            <div className="token-txs-history__empty mt-60 bg-r-neutral-card-1 rounded-[8px] pb-[40px]">
+            <div className="token-txs-history__empty bg-r-neutral-card-1 rounded-[8px] pb-[30px] pb-[30px]">
               <img className="no-data" src="./images/nodata-tx.png" />
               <p className="text-14 text-gray-content mt-12">
                 {t('page.dashboard.tokenDetail.noTransactions')}

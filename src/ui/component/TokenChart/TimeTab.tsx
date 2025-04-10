@@ -9,22 +9,22 @@ export type TabKey = typeof TIME_TAB_LIST[number]['key'];
 
 export const TIME_TAB_LIST = [
   {
-    label: '24h',
+    label: '1D',
     key: '24h' as const,
     value: [0, dayjs()],
   },
   {
-    label: '1 Week',
+    label: '1W',
     key: '1W' as const,
     value: [dayjs().add(-7, 'd'), dayjs()],
   },
   {
-    label: '1 Month',
+    label: '1M',
     key: '1M' as const,
     value: [dayjs().add(-1, 'month'), dayjs()],
   },
   {
-    label: '1 Year',
+    label: '1Y',
     key: '1Y' as const,
     value: [dayjs().add(-1, 'year'), dayjs()],
   },
