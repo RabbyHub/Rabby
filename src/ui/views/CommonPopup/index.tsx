@@ -30,7 +30,7 @@ const ComponentConfig = {
     closeable: false,
     titleSize: '16px',
     padding: '12px 20px',
-    isNew: false,
+    isNew: true,
   },
   Default: {
     title: undefined,
