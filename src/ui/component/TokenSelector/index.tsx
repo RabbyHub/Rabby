@@ -295,9 +295,7 @@ const TokenSelector = ({
       );
     }
     return (
-      <li
-        className={clsx('token-list__header', type === 'swapFrom' && 'mt-14')}
-      >
+      <li className={clsx('token-list__header')}>
         <div>{t('component.TokenSelector.bridge.token')}</div>
         <div />
         <div>{t('component.TokenSelector.bridge.value')}</div>
@@ -558,6 +556,14 @@ function CommonTokenItem(props: {
     if (isSwapTo || isBridgeTo) {
       return false;
     }
+
+    if (type === 'default') {
+      return (
+        !!supportChains?.length &&
+        !!chainItem &&
+        !supportChains.includes(chainItem.enum)
+      );
+    }
     return (
       (!!supportChains?.length &&
         !!chainItem &&
@@ -615,7 +621,7 @@ function CommonTokenItem(props: {
       align={{ targetOffset: [0, -30] }}
     >
       <li
-        className={clsx('token-list__item', disabled && 'opacity-50')}
+        className={clsx('token-list__item', disabled && 'token-disabled')}
         onClick={handleTokenPress}
       >
         <div>

@@ -91,7 +91,7 @@
           }
 
           .symbol {
-            flex: 1;
+            // flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -110,7 +110,7 @@
           color: var(--r-neutral-body, #3e495e);
         }
         &:nth-child(3) {
-          width: 100px;
+          // width: 100px;
           text-align: right;
           font-size: 13px;
           line-height: 15px;
@@ -134,21 +134,22 @@
           padding: 2px @symbol-click-pl;
           border-radius: 4px;
           width: min-content;
+          text-decoration-style: solid;
+          text-decoration-skip-ink: none;
+          text-decoration-thickness: auto;
+          text-underline-offset: auto;
+          text-underline-position: from-font;
         }
 
         .token_usd_value {
           margin-left: 0px;
+          padding-right: 0px;
         }
         .symbol_click:hover {
           background: var(--r-blue-light2, #dee3fc);
           color: var(--r-blue-default, #7084ff);
 
           text-decoration-line: underline;
-          text-decoration-style: solid;
-          text-decoration-skip-ink: none;
-          text-decoration-thickness: auto;
-          text-underline-offset: auto;
-          text-underline-position: from-font;
         }
       }
     }
@@ -161,9 +162,10 @@
       font-size: 12px;
       line-height: 14px;
       color: var(--r-neutral-foot, #6a7587);
-      height: 35px;
       align-items: center;
-      margin-bottom: 8px;
+      padding: 0 36px;
+      padding-bottom: 8px;
+      padding-top: 16px;
       &::after {
         .part-border(360px);
         background-color: transparent;
@@ -191,9 +193,17 @@
       border-radius: 8px;
       margin: 0 20px;
       margin-top: 8px;
-      &:hover {
+      &.token-disabled {
+        opacity: 0.5;
+      }
+      &:not(.token-disabled):hover {
         border: 1px solid var(--r-blue-default, #7084ff);
         background: var(--r-blue-light1, #eef1ff);
+
+        .symbol_click {
+          text-decoration-line: underline;
+          color: var(--r-blue-default, #7084ff);
+        }
       }
     }
     &.empty {

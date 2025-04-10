@@ -163,7 +163,7 @@ const ExternalTokenRow = memo(
       <div
         className={clsx(
           'token-list__item h-auto py-[15px] cursor-pointer',
-          disabled && 'opacity-50'
+          disabled && 'token-disabled'
         )}
         onClick={onPressToken}
       >
@@ -218,7 +218,7 @@ const ExternalTokenRow = memo(
               </div>
               {isGasToken ? (
                 <span className="symbol text-13 ml-[6px]">
-                  <span className="bg-r-blue-light1 py-2 px-6 rounded text-[11px] font-medium text-r-blue-default w-auto inline-block">
+                  <span className="bg-r-blue-light2 py-2 px-6 rounded text-[11px] font-medium text-r-blue-default w-auto inline-block">
                     {t('page.search.tokenItem.gasToken')}
                   </span>
                 </span>
