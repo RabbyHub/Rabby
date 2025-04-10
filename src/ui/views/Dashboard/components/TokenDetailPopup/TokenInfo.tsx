@@ -223,7 +223,7 @@ const ChainAndName = ({
           <div className="flex flex-row items-center gap-4">
             <span className="text-r-neutral-body text-[13px]">{'FDV'}</span>
             <TooltipWithMagnetArrow
-              className="rectangle w-[max-content] right-[20px]"
+              className="rectangle w-[max-content] left-38"
               title={t('page.dashboard.tokenDetail.fdvTips')}
             >
               <img src={IconHelp} className="w-14" />
@@ -259,7 +259,7 @@ const ListSiteAndCex = ({
   const { t } = useTranslation();
   const [detailVisible, setDetailVisible] = React.useState(false);
 
-  const SiteCoponentsRender = useMemoizedFn(
+  const SiteComponentsRender = useMemoizedFn(
     (
       siteArr: TokenEntityDetail['listed_sites'] | TokenEntityDetail['cex_list']
     ) => {
@@ -269,7 +269,7 @@ const ListSiteAndCex = ({
           <div className="flex flex-row items-center gap-6">
             {newArr.map((item, index) => (
               <Tooltip
-                className="rectangle right-[220px]"
+                className="rectangle right-100"
                 title={
                   <div className="flex flex-row items-center gap-4">
                     <div className="text-r-neutral-title-2 text-13">
@@ -324,7 +324,7 @@ const ListSiteAndCex = ({
       >
         <div className="text-r-neutral-body text-13">{title}</div>
         <div className="flex flex-row items-center gap-6">
-          {SiteCoponentsRender(siteArr || [])}
+          {SiteComponentsRender(siteArr || [])}
           <IconArrowRight
             width={14}
             height={14}
@@ -339,7 +339,8 @@ const ListSiteAndCex = ({
         closable={true}
         onClose={() => setDetailVisible(false)}
         placement="bottom"
-        height={490}
+        height={498}
+        push={false}
         title={
           <div className="text-r-neutral-title-1 text-20 font-medium">
             {/* <ThemeIcon
@@ -350,7 +351,6 @@ const ListSiteAndCex = ({
             {title}
           </div>
         }
-        isSupportDarkMode
         destroyOnClose
       >
         <div className="flex flex-1 flex-col py-12 px-20 gap-12 overflow-y-auto">

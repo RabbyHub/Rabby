@@ -36,9 +36,9 @@ import { useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
-import { TokenPriceChart } from './TokenPriceChart';
 import TokenChainAndContract from './TokenInfo';
 import { TokenCharts } from '@/ui/component/TokenChart';
+import { BlockedTopTips } from './BlockedTopTips';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -224,6 +224,11 @@ const TokenDetail = ({
         ref={ref}
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
+        <BlockedTopTips
+          isAdded={isAdded}
+          onOpen={() => addToken(tokenWithAmount)}
+          onClose={() => removeToken(tokenWithAmount)}
+        ></BlockedTopTips>
         <TokenCharts token={token}></TokenCharts>
         <div className="mx-5 mt-3 flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
           <div className="balance-content overflow-hidden flex flex-col gap-8 px-12 py-16">
