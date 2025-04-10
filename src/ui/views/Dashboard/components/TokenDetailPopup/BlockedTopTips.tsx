@@ -23,7 +23,7 @@ const SwitchStyled = styled(Switch)`
   }
 
   &.ant-switch-small.ant-switch-checked .ant-switch-handle {
-    left: 15px;
+    left: 16px;
   }
 `;
 

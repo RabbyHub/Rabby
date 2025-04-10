@@ -55,7 +55,7 @@ const BridgeOrNative = ({
 
   return tokenEntity ? (
     <>
-      <div className="mx-5 mt-3 flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px] gap-12 py-12">
+      <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px] gap-12 py-12">
         {tokenEntity?.domain_id ? (
           <>
             {isVerified && (
@@ -131,7 +131,7 @@ const BridgeOrNative = ({
             )}
           </>
         ) : (
-          <div className="text-r-neutral-foot text-13 flex flex-row items-center justify-center gap-6 w-full">
+          <div className="text-r-neutral-foot text-13 flex flex-row items-center justify-center w-full">
             <img src={IconNoFind} className="w-14 mr-4" />
             {t('page.dashboard.tokenDetail.noIssuer')}
           </div>
@@ -178,7 +178,7 @@ const ChainAndName = ({
   });
 
   return (
-    <div className="mx-5 mt-3 flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
+    <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
       <div className="flex flex-row justify-between w-full px-16 py-12">
         <span className="text-r-neutral-body text-[13px] font-normal">
           {t('page.dashboard.tokenDetail.TokenName')}
@@ -318,8 +318,8 @@ const ListSiteAndCex = ({
 
   if (!siteArr?.length) {
     return (
-      <div className="mx-5 mt-3 flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px] gap-12 py-12">
-        <div className="text-r-neutral-foot text-13 flex flex-row items-center justify-center gap-6 w-full">
+      <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px] gap-12 py-12">
+        <div className="text-r-neutral-foot text-13 flex flex-row items-center justify-center w-full">
           <img src={IconNoFind} className="w-14 mr-4" />
           {noSiteString}
         </div>
