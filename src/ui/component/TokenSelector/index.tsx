@@ -206,7 +206,7 @@ const TokenSelector = ({
 
   const NoDataUI = useMemo(
     () =>
-      isLoading ? (
+      isLoading && isEmpty ? (
         <div>
           {Array(isSwapType ? 8 : 10)
             .fill(1)
@@ -251,6 +251,7 @@ const TokenSelector = ({
         </div>
       ),
     [
+      isEmpty,
       isLoading,
       isSwapType,
       t,

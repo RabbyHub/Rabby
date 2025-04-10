@@ -530,7 +530,6 @@ export const Main = () => {
               'text-[13px] font-medium border-0',
               'before:border-transparent hover:before:border-rabby-blue-default'
             )}
-            title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
             drawerHeight={540}
             showClosableIcon
             getContainer={getContainer}
