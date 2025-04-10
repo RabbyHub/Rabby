@@ -13,7 +13,7 @@ export interface Props {
 
 const SwitchStyled = styled(Switch)`
   &.ant-switch-checked {
-    background-color: #ec5151;
+    background-color: #2abb7f;
   }
 
   &.ant-switch-small {
@@ -42,14 +42,16 @@ export const BlockedButton: React.FC<Props> = ({
   const { t } = useTranslation();
   return (
     <label className={clsx('flex items-center gap-x-6 cursor-pointer')}>
-      <TooltipWithMagnetArrow
-        overlayClassName="rectangle"
-        title={t('page.dashboard.tokenDetail.blockedTips')}
-      >
-        <span className="text-r-neutral-foot text-12">
-          {t('page.dashboard.tokenDetail.blocked')}
-        </span>
-      </TooltipWithMagnetArrow>
+      <div className="relative">
+        <TooltipWithMagnetArrow
+          overlayClassName="rectangle w-[max-content]"
+          title={t('page.dashboard.tokenDetail.blockedTips')}
+        >
+          <span className="text-r-neutral-foot text-12">
+            {t('page.dashboard.tokenDetail.blocked')}
+          </span>
+        </TooltipWithMagnetArrow>
+      </div>
       <SwitchStyled
         size="small"
         checked={selected}
