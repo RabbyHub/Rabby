@@ -129,6 +129,7 @@ const TokenSelect = forwardRef<
       chainServerId: chainId,
     });
     const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
+    const [initLoading, setInitLoading] = useState(true);
     const [updateNonce, setUpdateNonce] = useState(0);
     const currentAccount = useRabbySelector(
       (state) => state.account.currentAccount
@@ -138,6 +139,10 @@ const TokenSelect = forwardRef<
     useImperativeHandle(ref, () => ({
       openTokenModal: setTokenSelectorVisible,
     }));
+
+    useEffect(() => {
+      setInitLoading(!tokenSelectorVisible);
+    }, [tokenSelectorVisible]);
 
     const handleCurrentTokenChange = (token: TokenItem) => {
       onChange && onChange('');
@@ -256,11 +261,12 @@ const TokenSelect = forwardRef<
       return displaySortedTokenList;
     }, [availableToken, displaySortedTokenList, isSwapTo]);
 
-    const isListLoading = queryConds.keyword
-      ? isSearchLoading || remoteSwapToSearchTokensLoading
-      : useSwapTokenList
-      ? swapTokenListLoading
-      : isLoadingAllTokens;
+    const isListLoading =
+      !!(queryConds.keyword
+        ? isSearchLoading || remoteSwapToSearchTokensLoading
+        : useSwapTokenList
+        ? swapTokenListLoading
+        : isLoadingAllTokens) || initLoading;
 
     const handleSearchTokens = React.useCallback(async (ctx) => {
       setQueryConds({
