@@ -195,9 +195,9 @@ const TokenDetail = ({
   const gotoBridge = useCallback(() => {
     setVisible(false);
     onClose?.();
-    // if (isBridge && handleInTokenSelect) {
-    //   handleInTokenSelect(token);
-    // }
+    if (isBridge && handleInTokenSelect) {
+      handleInTokenSelect(token);
+    }
   }, [history, token]);
 
   const goToSwap = useCallback(() => {
