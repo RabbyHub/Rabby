@@ -316,15 +316,17 @@ const TokenDetail = ({
                 fallback={IconUnknown}
                 preview={false}
               />
-              <TooltipWithMagnetArrow
-                title={getChain(token?.chain)?.name}
-                className="rectangle w-[max-content]"
-              >
-                <img
-                  className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
-                  src={getChain(token?.chain)?.logo || IconUnknown}
-                />
-              </TooltipWithMagnetArrow>
+              {getChain(token?.chain) && (
+                <TooltipWithMagnetArrow
+                  title={getChain(token?.chain)?.name || ''}
+                  className="rectangle w-[max-content]"
+                >
+                  <img
+                    className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                    src={getChain(token?.chain)?.logo || IconUnknown}
+                  />
+                </TooltipWithMagnetArrow>
+              )}
             </div>
 
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
