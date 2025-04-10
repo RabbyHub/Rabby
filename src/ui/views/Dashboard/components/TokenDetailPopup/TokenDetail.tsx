@@ -316,7 +316,7 @@ const TokenDetail = ({
                 fallback={IconUnknown}
                 preview={false}
               />
-              {getChain(token?.chain) && (
+              {getChain(token?.chain) ? (
                 <TooltipWithMagnetArrow
                   title={getChain(token?.chain)?.name || ''}
                   className="rectangle w-[max-content]"
@@ -326,7 +326,7 @@ const TokenDetail = ({
                     src={getChain(token?.chain)?.logo || IconUnknown}
                   />
                 </TooltipWithMagnetArrow>
-              )}
+              ) : null}
             </div>
 
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
