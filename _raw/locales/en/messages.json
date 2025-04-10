@@ -1304,6 +1304,13 @@
         "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced."
       },
       "tokenDetail": {
+        "noIssuer": "No issuer information available",
+        "NoListedBy": "No listing information available",
+        "NoSupportedExchanges": "No supported exchanges available",
+        "customizedHasAddedTips": "The token is not listed by Rabby. You've added it to the token list manually.",
+        "AddToMyTokenList": "Add to my token list",
+        "maybeScamTips":"This is a low-quality token and may be a scam",
+        "verifyScamTips":"This is a scam token",
         "blockedTip": "Blocked token will not be shown in token list",
         "blocked": "Blocked",
         "selectedCustom": "The token is not listed by Rabby. You've added it to the token list manually.",

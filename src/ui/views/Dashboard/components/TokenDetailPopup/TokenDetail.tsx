@@ -39,6 +39,7 @@ import { findChain } from '@/utils/chain';
 import TokenChainAndContract from './TokenInfo';
 import { TokenCharts } from '@/ui/component/TokenChart';
 import { BlockedTopTips } from './BlockedTopTips';
+import { ScamTokenTips } from './ScamTokenTips';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -68,6 +69,7 @@ const TokenDetail = ({
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
+  const [entityLoading, setEntityLoading] = React.useState(true);
   const { currentAccount } = useRabbySelector((s) => s.account);
   const [tokenWithAmount, setTokenWithAmount] = React.useState<TokenItem>(
     token
@@ -97,9 +99,15 @@ const TokenDetail = ({
   }, [token]);
 
   const getTokenEntity = React.useCallback(async () => {
-    const info = await wallet.openapi.getTokenEntity(token.id, token.chain);
-    if (info) {
-      setTokenEntity(info);
+    try {
+      const info = await wallet.openapi.getTokenEntity(token.id, token.chain);
+      if (info) {
+        setTokenEntity(info);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setEntityLoading(false);
     }
   }, [token]);
 
@@ -143,20 +151,8 @@ const TokenDetail = ({
     }
   );
 
-  const handleClickLink = (token: TokenItem) => {
-    const serverId = token.chain;
-    const chain = findChain({
-      serverId: serverId,
-    });
-    if (!chain) return;
-    const link = getAddressScanLink(chain.scanLink, token.id);
-    const needClose = getUITypeName() !== 'notification';
-    openInTab(link, needClose);
-  };
-
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
 
-  const isShowAddress = /^0x.{40}$/.test(token.id);
   const { setVisible } = useCommonPopupView();
 
   const history = useHistory();
@@ -186,9 +182,88 @@ const TokenDetail = ({
     );
   }, [history, token]);
 
-  const isHiddenButton =
-    // Customized and not added
-    variant === 'add' && !token.is_core && !isAdded;
+  const isCustomizedNotAdded = useMemo(() => {
+    return !token.is_core && !isAdded && variant === 'add';
+  }, [token, variant, isAdded]);
+
+  const BottomBtn = useMemo(() => {
+    if (hideOperationButtons) {
+      return null;
+    }
+
+    if (isCustomizedNotAdded) {
+      return (
+        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => addToken(tokenWithAmount)}
+            className="w-[360px] h-[40px] leading-[18px]"
+            style={{
+              width: 360,
+              height: 40,
+              lineHeight: '18px',
+            }}
+          >
+            {t('page.dashboard.tokenDetail.AddToMyTokenList')}
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
+        <TooltipWithMagnetArrow
+          overlayClassName="rectangle w-[max-content]"
+          placement="top"
+          arrowPointAtCenter
+          title={t('page.dashboard.tokenDetail.notSupported')}
+          visible={tokenSupportSwap ? false : undefined}
+        >
+          <Button
+            type="primary"
+            size="large"
+            onClick={goToSwap}
+            disabled={!tokenSupportSwap}
+            className="w-[114px] h-[40px] leading-[18px]"
+            style={{
+              width: 114,
+              height: 40,
+              lineHeight: '18px',
+            }}
+          >
+            {t('page.dashboard.tokenDetail.swap')}
+          </Button>
+        </TooltipWithMagnetArrow>
+
+        <Button
+          type="primary"
+          ghost
+          size="large"
+          className="w-[114px] h-[40px] leading-[18px] rabby-btn-ghost"
+          onClick={goToSend}
+        >
+          {t('page.dashboard.tokenDetail.send')}
+        </Button>
+        <Button
+          type="primary"
+          ghost
+          size="large"
+          className="w-[114px] h-[40px] leading-[18px] rabby-btn-ghost"
+          onClick={goToReceive}
+        >
+          {t('page.dashboard.tokenDetail.receive')}
+        </Button>
+      </div>
+    );
+  }, [
+    addToken,
+    goToReceive,
+    goToSend,
+    goToSwap,
+    hideOperationButtons,
+    isCustomizedNotAdded,
+  ]);
 
   return (
     <div className="token-detail">
@@ -214,7 +289,7 @@ const TokenDetail = ({
             </div>
 
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
-              {ellipsisOverflowedText(getTokenSymbol(token), 8)}
+              {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
           </div>
         </div>
@@ -224,14 +299,18 @@ const TokenDetail = ({
         ref={ref}
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
-        <BlockedTopTips
-          isAdded={isAdded}
-          onOpen={() => addToken(tokenWithAmount)}
-          onClose={() => removeToken(tokenWithAmount)}
-        ></BlockedTopTips>
+        <ScamTokenTips token={token}></ScamTokenTips>
+        {variant === 'add' && (
+          <BlockedTopTips
+            token={token}
+            isAdded={isAdded}
+            onOpen={() => addToken(tokenWithAmount)}
+            onClose={() => removeToken(tokenWithAmount)}
+          ></BlockedTopTips>
+        )}
         <TokenCharts token={token}></TokenCharts>
         <div className="mx-5 mt-3 flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
-          <div className="balance-content overflow-hidden flex flex-col gap-8 px-12 py-16">
+          <div className="balance-content overflow-hidden flex flex-col gap-8 px-16 py-12">
             <div className="flex flex-row justify-between w-full">
               <div className="balance-title">
                 {t('page.dashboard.tokenDetail.myBalance')}
@@ -243,13 +322,12 @@ const TokenDetail = ({
                     onOpen={() => addToken(tokenWithAmount)}
                     onClose={() => removeToken(tokenWithAmount)}
                   />
-                ) : (
-                  <CustomizedSwitch
-                    selected={isAdded}
-                    onOpen={() => addToken(tokenWithAmount)}
-                    onClose={() => removeToken(tokenWithAmount)}
-                  />
-                )
+                ) : // <CustomizedSwitch
+                //   selected={isAdded}
+                //   onOpen={() => addToken(tokenWithAmount)}
+                //   onClose={() => removeToken(tokenWithAmount)}
+                // />
+                null
               ) : null}
             </div>
             <div className="flex flex-row justify-between w-full">
@@ -292,6 +370,7 @@ const TokenDetail = ({
           </div>
         </div>
         <TokenChainAndContract
+          entityLoading={entityLoading}
           token={token}
           tokenEntity={tokenEntity}
         ></TokenChainAndContract>
@@ -309,7 +388,7 @@ const TokenDetail = ({
           ))}
           {(loadingMore || loading) && <Loading count={5} active />}
           {isEmpty && (
-            <div className="token-txs-history__empty mt-60">
+            <div className="token-txs-history__empty mt-60 bg-r-neutral-card-1 rounded-[8px] pb-[40px]">
               <img className="no-data" src="./images/nodata-tx.png" />
               <p className="text-14 text-gray-content mt-12">
                 {t('page.dashboard.tokenDetail.noTransactions')}
@@ -318,51 +397,7 @@ const TokenDetail = ({
           )}
         </div>
       </div>
-      {!isHiddenButton && !hideOperationButtons && (
-        <div className="flex flex-row justify-between J_buttons_area relative height-[80px] px-20 py-16 ">
-          <TooltipWithMagnetArrow
-            overlayClassName="rectangle w-[max-content]"
-            placement="top"
-            arrowPointAtCenter
-            title={t('page.dashboard.tokenDetail.notSupported')}
-            visible={tokenSupportSwap ? false : undefined}
-          >
-            <Button
-              type="primary"
-              size="large"
-              onClick={goToSwap}
-              disabled={!tokenSupportSwap}
-              className="w-[114px] h-[36px] leading-[16px]"
-              style={{
-                width: 114,
-                height: 36,
-                lineHeight: '16px',
-              }}
-            >
-              {t('page.dashboard.tokenDetail.swap')}
-            </Button>
-          </TooltipWithMagnetArrow>
-
-          <Button
-            type="primary"
-            ghost
-            size="large"
-            className="w-[114px] h-[36px] leading-[16px] rabby-btn-ghost"
-            onClick={goToSend}
-          >
-            {t('page.dashboard.tokenDetail.send')}
-          </Button>
-          <Button
-            type="primary"
-            ghost
-            size="large"
-            className="w-[114px] h-[36px] leading-[16px] rabby-btn-ghost"
-            onClick={goToReceive}
-          >
-            {t('page.dashboard.tokenDetail.receive')}
-          </Button>
-        </div>
-      )}
+      {BottomBtn}
     </div>
   );
 };
