@@ -142,10 +142,10 @@ const ChainSelectorModal = ({
   hideTestnetTab = false,
   hideMainnetTab = false,
   showRPCStatus = false,
-  height = 494,
+  height = 540,
   zIndex,
   excludeChains,
-  showClosableIcon = false,
+  showClosableIcon = true,
   getContainer,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
