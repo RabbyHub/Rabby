@@ -27,7 +27,7 @@
   .input-wrapper {
     width: 100%;
     padding: 0 16px;
-    margin: 0 auto @token-selector-px;
+    margin: 0 auto 12px;
     .ant-input-affix-wrapper-lg {
       padding: 9.25px;
       border-radius: 6px;
@@ -128,7 +128,7 @@
           font-style: normal;
           font-weight: 510;
           line-height: normal;
-          color: var(--r-neutral-body, #3e495e);
+          color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
           margin-left: @token-icon-margin;
           max-width: 100%;
           padding: 2px @symbol-click-pl;
@@ -165,7 +165,6 @@
       align-items: center;
       padding: 0 36px;
       padding-bottom: 8px;
-      padding-top: 16px;
       &::after {
         .part-border(360px);
         background-color: transparent;
@@ -192,9 +191,10 @@
       background: var(--r-neutral-card1, #fff);
       border-radius: 8px;
       margin: 0 20px;
-      margin-top: 8px;
+      margin-bottom: 8px;
       &.token-disabled {
         opacity: 0.5;
+        cursor: default;
       }
       &:not(.token-disabled):hover {
         border: 1px solid var(--r-blue-default, #7084ff);
@@ -231,6 +231,7 @@
 
   .filters-wrapper {
     padding: 0 @token-selector-px;
+    margin-bottom: 12px;
 
     .filter-item__chain {
       cursor: default;
