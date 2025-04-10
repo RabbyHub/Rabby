@@ -185,7 +185,7 @@ export const useTokens = (
       } else {
         dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
       }
-      setLoading(false);
+
       // setTokens(filterDisplayToken(_tokens, blocked));
     }
 
@@ -304,9 +304,10 @@ export const useTokens = (
         ...formattedCustomTokenList,
       ]);
     }
-    setLoading(false);
 
     loadHistory(_data, currentAbort);
+
+    setLoading(false);
 
     log('<<==Tokens-end==>>', userAddr);
   };
@@ -424,6 +425,8 @@ export const useTokens = (
     } else {
       dispatch.account.setTokenList(sortWalletTokens(_data));
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
