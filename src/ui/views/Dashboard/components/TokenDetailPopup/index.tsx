@@ -33,6 +33,7 @@ export const TokenDetailPopup = ({
   const location = useLocation();
   const isInSwap = location.pathname === '/dex-swap';
   const isInSend = location.pathname === '/send-token';
+  const isBridge = location.pathname === '/bridge';
 
   const handleAddToken = React.useCallback((tokenWithAmount) => {
     if (!tokenWithAmount) return;
@@ -85,7 +86,7 @@ export const TokenDetailPopup = ({
     checkIsAdded();
   }, [checkIsAdded]);
 
-  const popupHeight = isInSend || isInSwap ? 540 : 494;
+  const popupHeight = isInSend || isInSwap || isBridge ? 540 : 494;
 
   return (
     <Popup
