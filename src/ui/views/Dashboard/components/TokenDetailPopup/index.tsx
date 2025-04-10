@@ -8,6 +8,7 @@ import { Token } from '@/background/service/preference';
 import { useRabbyDispatch } from 'ui/store';
 import { DisplayedToken } from 'ui/utils/portfolio/project';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
+import { useLocation } from 'react-router-dom';
 
 interface TokenDetailProps {
   visible?: boolean;
@@ -29,6 +30,7 @@ export const TokenDetailPopup = ({
   const dispatch = useRabbyDispatch();
   const [isAdded, setIsAdded] = React.useState(false);
 
+  const location = useLocation();
   const isInSwap = location.pathname === '/dex-swap';
   const isInSend = location.pathname === '/send-token';
 
