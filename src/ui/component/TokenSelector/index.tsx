@@ -384,42 +384,40 @@ const TokenSelector = ({
             onBlur={handleInputBlur}
           />
         </div>
-        <div className="filters-wrapper">
-          {chainItem && showChainFilter && (
-            <>
-              <div className="filter-item__chain px-10">
-                <img
-                  className="filter-item__chain-logo"
-                  src={chainItem.logo}
-                  alt={chainItem.name}
+        {chainItem && showChainFilter && (
+          <div className="filters-wrapper">
+            <div className="filter-item__chain px-10">
+              <img
+                className="filter-item__chain-logo"
+                src={chainItem.logo}
+                alt={chainItem.name}
+              />
+              <span className="ml-[4px]">{chainItem.name}</span>
+              <div
+                className="py-4 cursor-pointer"
+                onClick={() => {
+                  onRemoveChainFilter?.({ chainServerId, chainItem });
+                  onSearch({
+                    chainItem: null,
+                    chainServerId: '',
+                    keyword: query,
+                  });
+                }}
+              >
+                <RcIconChainFilterCloseCC
+                  viewBox="0 0 16 16"
+                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body hover:text-r-red-default"
                 />
-                <span className="ml-[4px]">{chainItem.name}</span>
-                <div
-                  className="py-4 cursor-pointer"
-                  onClick={() => {
-                    onRemoveChainFilter?.({ chainServerId, chainItem });
-                    onSearch({
-                      chainItem: null,
-                      chainServerId: '',
-                      keyword: query,
-                    });
-                  }}
-                >
-                  <RcIconChainFilterCloseCC
-                    viewBox="0 0 16 16"
-                    className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body hover:text-r-red-default"
-                  />
-                </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
 
         {!isTestnet ? (
           <ul className={clsx('token-list', { empty: isEmpty })}>
             {recentDisplayToTokens.length ? (
-              <div className="mb-10">
-                <div className={clsx('flex flex-wrap gap-12', 'py-8 px-20')}>
+              <div className="mb-12">
+                <div className={clsx('flex flex-wrap gap-12', 'px-20')}>
                   {recentDisplayToTokens.map((token) => (
                     <div
                       key={token.id}
