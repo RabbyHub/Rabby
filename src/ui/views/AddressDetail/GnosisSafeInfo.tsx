@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { isSameAddress, useWallet } from 'ui/utils';
 import './style.less';
-import { CHAINS } from '@/constant';
 import { useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { useAsync } from 'react-use';
@@ -37,7 +36,7 @@ const GnosisAdminItem = ({
   );
 };
 
-export const GnonisSafeInfo = ({
+export const GnosisSafeInfo = ({
   address,
   type,
   brandName,

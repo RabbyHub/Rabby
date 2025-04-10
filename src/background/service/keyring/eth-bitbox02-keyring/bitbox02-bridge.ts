@@ -4,6 +4,7 @@ import { BitBox02BridgeInterface } from './bitbox02-bridge-interface';
 import browser from 'webextension-polyfill';
 import * as HDKey from 'hdkey';
 import { toBytes } from '@ethereumjs/util';
+
 export default class BitBox02Bridge implements BitBox02BridgeInterface {
   isDeviceConnected = false;
 

@@ -2,7 +2,6 @@ import { TransactionHistoryItem } from '@/background/service/transactionHistory'
 import { CHAINS_LIST } from '@debank/common';
 import { useRequest } from 'ahooks';
 import { Spin } from 'antd';
-import BigNumber from 'bignumber.js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
