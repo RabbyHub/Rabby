@@ -19,7 +19,7 @@ import { useRequest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from 'recharts';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { Skeleton } from 'antd';
 
 const CurveWrapper = styled.div`
@@ -41,6 +41,13 @@ type TokenChartsProps = {
   token: TokenItem;
   className?: string;
 };
+
+const CurveGlobalStyle = createGlobalStyle`
+  :root {
+    --color-curve-token-green: #2abb7f;
+    --color-curve-token-red: #e34935;
+  }
+`;
 
 export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
   const { t } = useTranslation();
@@ -184,8 +191,12 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
     ];
   }, [token.amount]);
 
+  // const color = useMemo(() => {
+  //   return isUp ? '#2ABB7F' : 'var(--r-red-default, #E34935)';
+  // }, [isUp]);
+
   const color = useMemo(() => {
-    return isUp ? '#2ABB7F' : 'var(--r-red-default, #E34935)';
+    return `var(--color-curve-token-${!isUp ? 'red' : 'green'})`;
   }, [isUp]);
 
   const [curveHoverPoint, setHoverCurvePoint] = useState<
@@ -282,6 +293,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
       </div>
       <div className="h-80">
         <CurveWrapper ref={divRef}>
+          <CurveGlobalStyle />
           {curveIsLoading ? (
             <Skeleton.Input active style={{ width: 360, height: 80 }} />
           ) : isEmpty ? null : (
@@ -303,7 +315,13 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
               onMouseLeave={() => handleHoverCurve(undefined)}
             >
               <defs>
-                <linearGradient id="curveThumbnail" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient
+                  id="curveTokenThumbnail"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
                   <stop offset="0%" stopColor={color} stopOpacity={0.19} />
                   <stop offset="100%" stopColor={color} stopOpacity={0} />
                 </linearGradient>
@@ -342,7 +360,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
                 stroke={color}
                 strokeOpacity={1}
                 strokeWidth={2}
-                fill="url(#curveThumbnail)"
+                fill="url(#curveTokenThumbnail)"
                 animationDuration={0}
                 fillOpacity={0.8}
               />

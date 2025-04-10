@@ -395,22 +395,26 @@ const TokenDetail = ({
                   </TooltipWithMagnetArrow>
                 </div>
               </div>
-              <div className="relative">
-                <TooltipWithMagnetArrow
-                  title={`≈ $${(
-                    tokenWithAmount.amount * token.price || 0
-                  ).toString()}`}
-                  className="rectangle w-[max-content]"
-                  placement="bottom"
-                >
-                  <div className="balance-value-usd truncate">
-                    ≈ $
-                    {splitNumberByStep(
-                      (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
-                    )}
-                  </div>
-                </TooltipWithMagnetArrow>
-              </div>
+              {tokenWithAmount.amount ? (
+                <div className="relative">
+                  <TooltipWithMagnetArrow
+                    title={`≈ $${(
+                      tokenWithAmount.amount * token.price || 0
+                    ).toString()}`}
+                    className="rectangle w-[max-content]"
+                    placement="bottom"
+                  >
+                    <div className="balance-value-usd truncate">
+                      ≈ $
+                      {splitNumberByStep(
+                        (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
+                      )}
+                    </div>
+                  </TooltipWithMagnetArrow>
+                </div>
+              ) : (
+                <div></div>
+              )}
             </div>
           </div>
         </div>
