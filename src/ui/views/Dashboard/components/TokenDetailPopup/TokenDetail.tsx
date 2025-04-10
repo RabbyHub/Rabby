@@ -159,6 +159,7 @@ const TokenDetail = ({
 
   const isSwap = location.pathname === '/dex-swap';
   const isSend = location.pathname === '/send-token';
+  const isBridge = location.pathname === '/bridge';
 
   const history = useHistory();
   const goToSend = useCallback(() => {
@@ -179,6 +180,14 @@ const TokenDetail = ({
     );
   }, [history, token]);
 
+  const gotoBridge = useCallback(() => {
+    setVisible(false);
+    onClose?.();
+    history.push(
+      `/bridge?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
+    );
+  }, [history, token]);
+
   const goToSwap = useCallback(() => {
     setVisible(false);
     onClose?.();
@@ -196,13 +205,13 @@ const TokenDetail = ({
       return null;
     }
 
-    if (isSwap || isSend) {
+    if (isSwap || isSend || isBridge) {
       return (
         <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
           <Button
             type="primary"
             size="large"
-            onClick={isSwap ? goToSwap : goToSend}
+            onClick={isBridge ? gotoBridge : isSwap ? goToSwap : goToSend}
             disabled={!tokenSupportSwap}
             className="w-[360px] h-[40px] leading-[18px]"
             style={{
@@ -289,6 +298,10 @@ const TokenDetail = ({
     goToSwap,
     hideOperationButtons,
     isCustomizedNotAdded,
+    isSwap,
+    isBridge,
+    gotoBridge,
+    isSend,
   ]);
 
   return (
@@ -356,7 +369,7 @@ const TokenDetail = ({
                 null
               ) : null}
             </div>
-            <div className="flex flex-row justify-between w-full">
+            <div className="flex flex-row justify-between w-full items-center">
               <div className="flex flex-row gap-8 items-center">
                 <TokenWithChain
                   token={token}
@@ -365,33 +378,37 @@ const TokenDetail = ({
                   width="24px"
                   height="24px"
                 ></TokenWithChain>
+                <div className="relative">
+                  <TooltipWithMagnetArrow
+                    className="rectangle w-[max-content]"
+                    title={(tokenWithAmount.amount || 0).toString()}
+                    placement="bottom"
+                  >
+                    <div className="balance-value truncate">
+                      {splitNumberByStep(
+                        (tokenWithAmount.amount || 0)?.toFixed(8)
+                      )}{' '}
+                      {ellipsisOverflowedText(getTokenSymbol(token), 8)}
+                    </div>
+                  </TooltipWithMagnetArrow>
+                </div>
+              </div>
+              <div className="relative">
                 <TooltipWithMagnetArrow
+                  title={`≈ $${(
+                    tokenWithAmount.amount * token.price || 0
+                  ).toString()}`}
                   className="rectangle w-[max-content]"
-                  title={(tokenWithAmount.amount || 0).toString()}
                   placement="bottom"
                 >
-                  <div className="balance-value truncate">
+                  <div className="balance-value-usd truncate">
+                    ≈ $
                     {splitNumberByStep(
-                      (tokenWithAmount.amount || 0)?.toFixed(8)
-                    )}{' '}
-                    {ellipsisOverflowedText(getTokenSymbol(token), 8)}
+                      (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
+                    )}
                   </div>
                 </TooltipWithMagnetArrow>
               </div>
-              <TooltipWithMagnetArrow
-                title={`≈ $${(
-                  tokenWithAmount.amount * token.price || 0
-                ).toString()}`}
-                className="rectangle w-[max-content]"
-                placement="bottom"
-              >
-                <div className="balance-value-usd truncate">
-                  ≈ $
-                  {splitNumberByStep(
-                    (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
-                  )}
-                </div>
-              </TooltipWithMagnetArrow>
             </div>
           </div>
         </div>
@@ -415,7 +432,7 @@ const TokenDetail = ({
           ))}
           {(loadingMore || loading) && <Loading count={5} active />}
           {isEmpty && (
-            <div className="token-txs-history__empty bg-r-neutral-card-1 rounded-[8px] pb-[30px] pb-[30px]">
+            <div className="token-txs-history__empty bg-r-neutral-card-1 rounded-[8px] pt-[30px] pb-[30px]">
               <img className="no-data" src="./images/nodata-tx.png" />
               <p className="text-14 text-gray-content mt-12">
                 {t('page.dashboard.tokenDetail.noTransactions')}

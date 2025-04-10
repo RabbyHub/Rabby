@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import IconHelp from 'ui/assets/pending/icon-help.svg';
+import { ReactComponent as RcIconHelp } from 'ui/assets/pending/icon-help-cc.svg';
 import IconBridged from 'ui/assets/tokenDetail/IconBridged.svg';
 import IconNative from 'ui/assets/tokenDetail/IconNative.svg';
 import IconNoFind from 'ui/assets/tokenDetail/IconNoFind.svg';
@@ -233,10 +233,9 @@ const ChainAndName = ({
               title={t('page.dashboard.tokenDetail.fdvTips')}
             >
               <ThemeIcon
-                src={IconHelp}
+                src={RcIconHelp}
                 className="w-14 cursor-pointer text-r-neutral-foot"
               ></ThemeIcon>
-              <img src={IconHelp} className="w-14" />
             </TooltipWithMagnetArrow>
           </div>
         </div>
@@ -337,7 +336,7 @@ const ListSiteAndCex = ({
     <>
       <div
         className="flex flex-row bg-r-neutral-card-1 rounded-[8px] 
-      px-12 py-14 items-center justify-between 
+      px-16 py-14 items-center justify-between 
       border border-transparent
       hover:bg-blue-light hover:bg-opacity-[0.1] hover:border-rabby-blue-default
       cursor-pointer"
