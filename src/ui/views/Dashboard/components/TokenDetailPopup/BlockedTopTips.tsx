@@ -1,15 +1,7 @@
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Switch } from 'antd';
-import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-
-export interface Props {
-  selected?: boolean;
-  onOpen(): void;
-  onClose(): void;
-}
 
 const SwitchStyled = styled(Switch)`
   &.ant-switch-checked {
@@ -34,25 +26,21 @@ const SwitchStyled = styled(Switch)`
   }
 `;
 
-export const BlockedButton: React.FC<Props> = ({
-  selected,
-  onOpen,
-  onClose,
-}) => {
+interface Props {
+  isAdded?: boolean;
+  onOpen(): void;
+  onClose(): void;
+}
+export const BlockedTopTips = ({ onOpen, onClose, isAdded }: Props) => {
   const { t } = useTranslation();
-  return (
-    <label className={clsx('flex items-center gap-x-6 cursor-pointer')}>
-      <TooltipWithMagnetArrow
-        overlayClassName="rectangle"
-        title={t('page.dashboard.tokenDetail.blockedTips')}
-      >
-        <span className="text-r-neutral-foot text-12">
-          {t('page.dashboard.tokenDetail.blocked')}
-        </span>
-      </TooltipWithMagnetArrow>
+  return isAdded ? (
+    <div className="flex flex-row bg-r-neutral-card-1 rounded-[8px] px-12 py-16 items-center justify-between">
+      <div className="text-r-neutral-body text-13">
+        {t('page.dashboard.tokenDetail.blockedTips')}
+      </div>
       <SwitchStyled
         size="small"
-        checked={selected}
+        checked={isAdded}
         onChange={(val) => {
           if (val) {
             onOpen();
@@ -61,6 +49,6 @@ export const BlockedButton: React.FC<Props> = ({
           }
         }}
       />
-    </label>
-  );
+    </div>
+  ) : null;
 };
