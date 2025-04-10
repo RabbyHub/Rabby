@@ -157,8 +157,8 @@ const TokenDetail = ({
 
   const { setVisible } = useCommonPopupView();
 
-  const isInSwap = location.pathname === '/dex-swap';
-  const isInSend = location.pathname === '/send-token';
+  const isSwap = location.pathname === '/dex-swap';
+  const isSend = location.pathname === '/send-token';
 
   const history = useHistory();
   const goToSend = useCallback(() => {
@@ -196,6 +196,27 @@ const TokenDetail = ({
       return null;
     }
 
+    if (isSwap || isSend) {
+      return (
+        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
+          <Button
+            type="primary"
+            size="large"
+            onClick={isSwap ? goToSwap : goToSend}
+            disabled={!tokenSupportSwap}
+            className="w-[360px] h-[40px] leading-[18px]"
+            style={{
+              width: 360,
+              height: 40,
+              lineHeight: '18px',
+            }}
+          >
+            {t('global.confirm')}
+          </Button>
+        </div>
+      );
+    }
+
     if (isCustomizedNotAdded) {
       return (
         <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
@@ -211,27 +232,6 @@ const TokenDetail = ({
             }}
           >
             {t('page.dashboard.tokenDetail.AddToMyTokenList')}
-          </Button>
-        </div>
-      );
-    }
-
-    if (isInSwap || isInSend) {
-      return (
-        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-          <Button
-            type="primary"
-            size="large"
-            onClick={isInSwap ? goToSwap : goToSend}
-            disabled={!tokenSupportSwap}
-            className="w-[360px] h-[40px] leading-[18px]"
-            style={{
-              width: 360,
-              height: 40,
-              lineHeight: '18px',
-            }}
-          >
-            {t('global.confirm')}
           </Button>
         </div>
       );

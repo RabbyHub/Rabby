@@ -209,7 +209,7 @@ const ChainAndName = ({
             </span>
             <ThemeIcon
               src={RcIconExternal}
-              className="w-14 cursor-pointer"
+              className="w-14 cursor-pointer text-r-neutral-foot"
               onClick={() => {
                 handleClickLink(token);
               }}
@@ -232,6 +232,10 @@ const ChainAndName = ({
               overlayClassName="rectangle w-[max-content]"
               title={t('page.dashboard.tokenDetail.fdvTips')}
             >
+              <ThemeIcon
+                src={IconHelp}
+                className="w-14 cursor-pointer text-r-neutral-foot"
+              ></ThemeIcon>
               <img src={IconHelp} className="w-14" />
             </TooltipWithMagnetArrow>
           </div>
