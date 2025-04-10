@@ -123,7 +123,7 @@ export const TokenButton: React.FC<Props> = ({
         onClick={() => setVisible(true)}
         className={clsx(
           'rounded-[8px] py-8 px-12 border border-transparent',
-          'text-12 bg-r-neutral-card-1 text-r-neutral-foot',
+          'text-12 bg-r-neutral-card-1 text-r-neutral-body',
           'flex items-center',
           'gap-2',
           'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10'
