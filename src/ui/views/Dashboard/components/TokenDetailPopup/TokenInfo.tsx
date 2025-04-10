@@ -217,7 +217,7 @@ const ChainAndName = ({
             <Copy
               data={token.id}
               variant="address"
-              className="w-14 cursor-pointer"
+              className="w-14 cursor-pointer text-r-neutral-foot"
             />
           </div>
         </div>

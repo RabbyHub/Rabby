@@ -506,20 +506,24 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
                         </div>
                       </TooltipWithMagnetArrow>
                     </div>
-                    <TooltipWithMagnetArrow
-                      title={`≈ $${(
-                        token.amount * token.price || 0
-                      ).toString()}`}
-                      className="rectangle w-[max-content]"
-                      placement="bottom"
-                    >
-                      <div className="balance-value-usd truncate text-r-neutral-body text-15 font-normal">
-                        ≈ $
-                        {splitNumberByStep(
-                          (token.amount * token.price || 0)?.toFixed(2)
-                        )}
-                      </div>
-                    </TooltipWithMagnetArrow>
+                    {token.amount ? (
+                      <TooltipWithMagnetArrow
+                        title={`≈ $${(
+                          token.amount * token.price || 0
+                        ).toString()}`}
+                        className="rectangle w-[max-content]"
+                        placement="bottom"
+                      >
+                        <div className="balance-value-usd truncate text-r-neutral-body text-15 font-normal">
+                          ≈ $
+                          {splitNumberByStep(
+                            (token.amount * token.price || 0)?.toFixed(2)
+                          )}
+                        </div>
+                      </TooltipWithMagnetArrow>
+                    ) : (
+                      <div></div>
+                    )}
                   </div>
                 </div>
               </div>

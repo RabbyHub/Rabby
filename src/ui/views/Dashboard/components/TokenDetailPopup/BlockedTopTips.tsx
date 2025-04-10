@@ -42,7 +42,13 @@ export const BlockedTopTips = ({ onOpen, onClose, isAdded, token }: Props) => {
 
   return isAdded ? (
     <div className="flex flex-row bg-r-neutral-card-1 rounded-[8px] px-16 py-12 items-center justify-between gap-20">
-      <div className="text-r-neutral-body text-13">
+      <div
+        className="text-r-neutral-body text-13"
+        style={{
+          lineHeight: 'normal',
+          fontWeight: 500,
+        }}
+      >
         {!token.is_core
           ? t('page.dashboard.tokenDetail.customizedHasAddedTips')
           : t('page.dashboard.tokenDetail.blockedTips')}

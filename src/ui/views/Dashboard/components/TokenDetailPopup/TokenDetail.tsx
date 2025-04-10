@@ -335,7 +335,7 @@ const TokenDetail = ({
                 fallback={IconUnknown}
                 preview={false}
               />
-              {getChain(token?.chain) && (
+              {getChain(token?.chain) ? (
                 <TooltipWithMagnetArrow
                   title={getChain(token?.chain)?.name || ''}
                   className="rectangle w-[max-content]"
@@ -345,7 +345,7 @@ const TokenDetail = ({
                     src={getChain(token?.chain)?.logo || IconUnknown}
                   />
                 </TooltipWithMagnetArrow>
-              )}
+              ) : null}
             </div>
 
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
@@ -414,22 +414,26 @@ const TokenDetail = ({
                   </TooltipWithMagnetArrow>
                 </div>
               </div>
-              <div className="relative">
-                <TooltipWithMagnetArrow
-                  title={`≈ $${(
-                    tokenWithAmount.amount * token.price || 0
-                  ).toString()}`}
-                  className="rectangle w-[max-content]"
-                  placement="bottom"
-                >
-                  <div className="balance-value-usd truncate">
-                    ≈ $
-                    {splitNumberByStep(
-                      (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
-                    )}
-                  </div>
-                </TooltipWithMagnetArrow>
-              </div>
+              {tokenWithAmount.amount ? (
+                <div className="relative">
+                  <TooltipWithMagnetArrow
+                    title={`≈ $${(
+                      tokenWithAmount.amount * token.price || 0
+                    ).toString()}`}
+                    className="rectangle w-[max-content]"
+                    placement="bottom"
+                  >
+                    <div className="balance-value-usd truncate">
+                      ≈ $
+                      {splitNumberByStep(
+                        (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
+                      )}
+                    </div>
+                  </TooltipWithMagnetArrow>
+                </div>
+              ) : (
+                <div></div>
+              )}
             </div>
           </div>
         </div>
