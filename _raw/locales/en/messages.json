@@ -508,7 +508,8 @@
       },
       "contractCall": {
         "operationDecoded": "Operation is decoded from message"
-      }
+      },
+      "safeCantSignTypedData": "This is a Safe address, and it only support sign EIP-712 typed data or string"
     },
     "activities": {
       "title": "Signature Record",
