@@ -29,6 +29,7 @@ export const TokenDetailPopup = ({
   variant,
   canClickToken = true,
   hideOperationButtons = false,
+  tipsFromTokenSelect,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -113,6 +114,7 @@ export const TokenDetailPopup = ({
           onClose={onClose}
           canClickToken={canClickToken}
           hideOperationButtons={hideOperationButtons}
+          tipsFromTokenSelect={tipsFromTokenSelect}
         />
       )}
     </Popup>
