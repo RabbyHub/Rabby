@@ -30,7 +30,6 @@ const TemplateDict = {
 };
 
 const PoolItemWrapper = styled.div`
-  margin-bottom: 8px;
   &:nth-last-child(1) {
     margin-bottom: 0;
   }
@@ -49,9 +48,9 @@ const PoolItem = ({ item }: { item: AbstractPortfolio }) => {
 };
 
 const ProtocolItemWrapper = styled.div`
-  background: var(--r-neutral-card-2, #f2f4f7);
-  margin-bottom: 12px;
-  border-radius: 6px;
+  background: var(--r-neutral-card-1, #f2f4f7);
+  margin-bottom: 8px;
+  border-radius: 8px;
 
   .title {
     display: flex;
@@ -120,7 +119,7 @@ const ProtocolItem = ({
         <div
           className={clsx(
             'flex items-center justify-start',
-            'title border border-solid border-transparent rounded-[6px]',
+            'title border border-solid bg-r-neutral-card1 border-transparent rounded-[8px] h-[48px] pr-14',
             'hover:border-blue-light'
           )}
           onClick={onClickTitle}
@@ -168,7 +167,7 @@ interface Props {
 }
 
 const ProtocolListWrapper = styled.div`
-  margin-top: 30px;
+  margin-top: 20px;
 `;
 
 const ProtocolList = ({ list, isSearch }: Props) => {

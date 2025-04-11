@@ -92,6 +92,22 @@ const wallet = new Proxy(
             }
           );
           break;
+        case 'fakeTestnetOpenapi':
+          return new Proxy(
+            {},
+            {
+              get(obj, key) {
+                return function (...params: any) {
+                  return portMessageChannel.request({
+                    type: 'fakeTestnetOpenapi',
+                    method: key,
+                    params,
+                  });
+                };
+              },
+            }
+          );
+          break;
         default:
           return function (...params: any) {
             return portMessageChannel.request({
@@ -171,3 +187,23 @@ const bootstrap = () => {
 };
 
 bootstrap();
+
+const checkSwAlive = () => {
+  console.log('[checkSwAlive]', new Date());
+  Promise.race([
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 3000)
+    ),
+    browser.runtime.sendMessage({
+      type: 'ping',
+    }),
+  ])
+    .then(() => {
+      console.log('[checkSwAlive] sw is alive');
+    })
+    .catch(() => {
+      console.log('[checkSwAlive] sw is inactive');
+      Sentry.captureMessage('sw is inactive');
+    });
+};
+checkSwAlive();

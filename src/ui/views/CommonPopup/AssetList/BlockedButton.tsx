@@ -18,16 +18,16 @@ export const BlockedButton: React.FC<Props> = ({ onClickLink, isTestnet }) => {
 
   return (
     <TokenButton
-      label={
+      label={t('page.dashboard.tokenDetail.blockedButton')}
+      modalTitle={
         list?.length > 1
-          ? t('page.dashboard.tokenDetail.blockedButtons')
-          : t('page.dashboard.tokenDetail.blockedButton')
+          ? t('page.dashboard.tokenDetail.blockedListTitles')
+          : t('page.dashboard.tokenDetail.blockedListTitle')
       }
       tokens={list}
       linkText={t('page.dashboard.assets.blockLinkText')}
       description={t('page.dashboard.assets.blockDescription')}
       onClickLink={onClickLink}
-      hiddenSubTitle
     />
   );
 };

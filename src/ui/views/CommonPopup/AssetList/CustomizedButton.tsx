@@ -21,10 +21,11 @@ export const CustomizedButton: React.FC<Props> = ({
 
   return (
     <TokenButton
-      label={
+      label={t('page.dashboard.tokenDetail.customizedButton')}
+      modalTitle={
         list?.length > 1
-          ? t('page.dashboard.tokenDetail.customizedButtons')
-          : t('page.dashboard.tokenDetail.customizedButton')
+          ? t('page.dashboard.tokenDetail.customizedListTitles')
+          : t('page.dashboard.tokenDetail.customizedListTitle')
       }
       buttonText={t('page.dashboard.assets.customButtonText')}
       description={t('page.dashboard.assets.customDescription')}
