@@ -186,7 +186,6 @@ export const useTokens = (
         dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
       }
       setLoading(false);
-
       // setTokens(filterDisplayToken(_tokens, blocked));
     }
 
@@ -305,6 +304,7 @@ export const useTokens = (
         ...formattedCustomTokenList,
       ]);
     }
+    setLoading(false);
 
     loadHistory(_data, currentAbort);
 
