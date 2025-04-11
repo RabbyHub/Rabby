@@ -2591,7 +2591,10 @@
       "disableSelectAddressWithPassphrase": "Sync não suportado para {{type}} endereço com a senha",
       "disableSelectAddressWithSlip39": "Sync não suportado para {{type}} endereço com deslize39",
       "selectedLenAddressesForSync_one": "Selecionado {{len}} endereço para sincronização",
-      "selectedLenAddressesForSync_other": "Selecionados {{len}} endereços para sincronização"
+      "selectedLenAddressesForSync_other": "Selecionados {{len}} endereços para sincronização",
+      "selectAddress": {
+        "title": "Selecionar Endereços para Sincronizar"
+      }
     }
   },
   "component": {

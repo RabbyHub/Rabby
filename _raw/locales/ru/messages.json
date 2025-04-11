@@ -2590,7 +2590,10 @@
       "disableSelectAddressWithPassphrase": "Sync не поддерживается для адреса {{type}} с Passphrase",
       "disableSelectAddressWithSlip39": "Sync не поддерживается для адреса {{type}} с Slip39",
       "selectedLenAddressesForSync_one": "Выбранный {{len}} адрес для синхронизации",
-      "selectedLenAddressesForSync_other": "Выбранные {{len}} адреса для синхронизации"
+      "selectedLenAddressesForSync_other": "Выбранные {{len}} адреса для синхронизации",
+      "selectAddress": {
+        "title": "Выберите адреса для синхронизации"
+      }
     }
   },
   "component": {

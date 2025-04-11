@@ -2594,7 +2594,10 @@
       "disableSelectAddressWithPassphrase": "Passfrase ile {{type}} adresi için desteklenmiyor senkronizasyon",
       "disableSelectAddressWithSlip39": "Slip39 ile {{type}} adresi için desteklenmiyor",
       "selectedLenAddressesForSync_one": "Sync için seçilen {{len}} adresi",
-      "selectedLenAddressesForSync_other": "Sync için seçilen {{len}} adresleri"
+      "selectedLenAddressesForSync_other": "Sync için seçilen {{len}} adresleri",
+      "selectAddress": {
+        "title": "Adresleri Senkronize Etmek İçin Seçin"
+      }
     }
   },
   "component": {
