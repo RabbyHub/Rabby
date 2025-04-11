@@ -276,7 +276,7 @@ export const ImportOrCreatedSuccess = () => {
           ) : (
             <span>
               {t('page.newUserImport.successful.addMoreFrom', {
-                name: BRAND_ALIAN_TYPE_TEXT[hd] || hd,
+                name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
               })}
             </span>
           )}
