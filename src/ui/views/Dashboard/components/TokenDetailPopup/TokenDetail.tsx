@@ -226,7 +226,7 @@ const TokenDetail = ({
             overlayClassName="rectangle w-[max-content]"
             placement="top"
             arrowPointAtCenter
-            title={t('page.dashboard.tokenDetail.notSupported')}
+            title={tipsFromTokenSelect || ''}
             visible={!tipsFromTokenSelect ? false : undefined}
           >
             <Button
