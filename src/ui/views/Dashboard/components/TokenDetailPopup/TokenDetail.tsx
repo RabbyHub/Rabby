@@ -95,7 +95,7 @@ const TokenDetail = ({
   const ref = useRef<HTMLDivElement | null>(null);
 
   const getTokenAmount = React.useCallback(async () => {
-    if (token.amount !== undefined) return;
+    // if (token.amount !== undefined) return;
     const info = await wallet.openapi.getToken(
       currentAccount!.address,
       token.chain,
@@ -104,6 +104,8 @@ const TokenDetail = ({
     if (info) {
       setTokenWithAmount({
         ...token,
+        is_scam: info.is_scam,
+        is_verified: info.is_verified,
         amount: info.amount,
       });
     }
