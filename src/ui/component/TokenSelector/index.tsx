@@ -579,7 +579,7 @@ function CommonTokenItem(props: {
     ) {
       return t('component.TokenSelector.chainNotSupport');
     }
-    return;
+    return disabledTips;
   }, [disabledTips]);
 
   const { value, loading, error } = useAsync(async () => {
