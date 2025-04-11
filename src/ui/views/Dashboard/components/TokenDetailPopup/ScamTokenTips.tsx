@@ -13,7 +13,6 @@ export const ScamTokenTips = ({ token }: Props) => {
   const isScam = token.is_scam || token.low_credit_score;
   const isNotVerified = token.is_verified === false;
 
-  console.log('isScam', isScam, token);
   if (isNotVerified) {
     return (
       <div className="flex flex-row bg-r-red-light rounded-[8px] px-12 py-8 items-center justify-center border-[0.5px] border-rabby-red-default">
