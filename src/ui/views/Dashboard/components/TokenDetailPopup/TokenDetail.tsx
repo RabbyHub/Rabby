@@ -78,9 +78,18 @@ const TokenDetail = ({
   );
   const [tokenEntity, setTokenEntity] = React.useState<TokenEntityDetail>();
 
+  const bridgeSupportedChains = useRabbySelector(
+    (s) => s.bridge.supportedChains
+  );
+
   const tokenSupportSwap = useMemo(() => {
     const tokenChain = getChain(token?.chain)?.enum;
     return !!tokenChain && SWAP_SUPPORT_CHAINS.includes(tokenChain as any);
+  }, [token]);
+
+  const tokenSupportBridge = useMemo(() => {
+    const tokenChain = getChain(token?.chain)?.enum;
+    return !!tokenChain && bridgeSupportedChains.includes(tokenChain as any);
   }, [token]);
 
   const ref = useRef<HTMLDivElement | null>(null);
@@ -200,6 +209,13 @@ const TokenDetail = ({
     return !token.is_core && !isAdded && variant === 'add';
   }, [token, variant, isAdded]);
 
+  const tokenConfirmDisabled = useMemo(() => {
+    if (isBridge || isSwap) {
+      return isSwap ? tokenSupportSwap : tokenSupportBridge;
+    }
+    return false;
+  }, [isBridge, isSwap, tokenSupportSwap, tokenSupportBridge]);
+
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
       return null;
@@ -208,20 +224,28 @@ const TokenDetail = ({
     if (isSwap || isSend || isBridge) {
       return (
         <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-          <Button
-            type="primary"
-            size="large"
-            onClick={isBridge ? gotoBridge : isSwap ? goToSwap : goToSend}
-            disabled={!tokenSupportSwap}
-            className="w-[360px] h-[40px] leading-[18px]"
-            style={{
-              width: 360,
-              height: 40,
-              lineHeight: '18px',
-            }}
+          <TooltipWithMagnetArrow
+            overlayClassName="rectangle w-[max-content]"
+            placement="top"
+            arrowPointAtCenter
+            title={t('page.dashboard.tokenDetail.notSupported')}
+            visible={!tokenConfirmDisabled ? false : undefined}
           >
-            {t('global.confirm')}
-          </Button>
+            <Button
+              type="primary"
+              size="large"
+              onClick={isBridge ? gotoBridge : isSwap ? goToSwap : goToSend}
+              disabled={tokenConfirmDisabled}
+              className="w-[360px] h-[40px] leading-[18px]"
+              style={{
+                width: 360,
+                height: 40,
+                lineHeight: '18px',
+              }}
+            >
+              {t('global.confirm')}
+            </Button>
+          </TooltipWithMagnetArrow>
         </div>
       );
     }
