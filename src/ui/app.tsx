@@ -92,6 +92,22 @@ const wallet = new Proxy(
             }
           );
           break;
+        case 'fakeTestnetOpenapi':
+          return new Proxy(
+            {},
+            {
+              get(obj, key) {
+                return function (...params: any) {
+                  return portMessageChannel.request({
+                    type: 'fakeTestnetOpenapi',
+                    method: key,
+                    params,
+                  });
+                };
+              },
+            }
+          );
+          break;
         default:
           return function (...params: any) {
             return portMessageChannel.request({

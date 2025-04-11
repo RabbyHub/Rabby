@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   ApproveNFTRequireData,
@@ -15,6 +14,7 @@ import { SecurityListItem } from './components/SecurityListItem';
 import ViewMore from './components/ViewMore';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { SubTable, SubCol, SubRow } from './components/SubTable';
+import { Chain } from '@/types/chain';
 
 const Wrapper = styled.div`
   .header {
@@ -71,6 +71,8 @@ const ApproveNFT = ({
     return map;
   }, [engineResults]);
 
+  const isTestnet = chain.isTestnet;
+
   return (
     <Wrapper>
       <Table>
@@ -94,21 +96,30 @@ const ApproveNFT = ({
             {t('page.signTx.tokenApprove.approveTo')}
           </Row>
           <Row>
-            <ViewMore
-              type="nftSpender"
-              data={{
-                ...requireData,
-                spender: actionData.spender,
-                chain,
-              }}
-            >
+            {isTestnet ? (
               <Values.Address
                 id="approve-nft-address"
                 hasHover
                 address={actionData.spender}
                 chain={chain}
               />
-            </ViewMore>
+            ) : (
+              <ViewMore
+                type="nftSpender"
+                data={{
+                  ...requireData,
+                  spender: actionData.spender,
+                  chain,
+                }}
+              >
+                <Values.Address
+                  id="approve-nft-address"
+                  hasHover
+                  address={actionData.spender}
+                  chain={chain}
+                />
+              </ViewMore>
+            )}
           </Row>
         </Col>
         <SubTable target="approve-nft-address">
@@ -118,12 +129,14 @@ const ApproveNFT = ({
               <ProtocolListItem protocol={requireData.protocol} />
             </SubRow>
           </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
-            <SubRow>
-              <Values.Boolean value={requireData.hasInteraction} />
-            </SubRow>
-          </SubCol>
+          {isTestnet ? null : (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
+              <SubRow>
+                <Values.Boolean value={requireData.hasInteraction} />
+              </SubRow>
+            </SubCol>
+          )}
 
           <SecurityListItem
             id="1043"
