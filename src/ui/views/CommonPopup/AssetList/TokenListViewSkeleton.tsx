@@ -3,11 +3,11 @@ import React from 'react';
 
 const TokenItemSkeleton: React.FC = () => {
   return (
-    <div className="flex justify-between items-center py-10">
-      <div className="gap-x-12 flex">
+    <div className="flex justify-between bg-r-neutral-card-1 rounded-[8px] items-center py-10 pl-12 pr-16 h-[60px]">
+      <div className="gap-x-12 flex items-center">
         <Skeleton.Input
           active
-          className="rounded-full w-[24px] h-[24px] bg-r-neutral-card-2"
+          className="rounded-full w-[32px] h-[32px] bg-r-neutral-card-2"
         />
         <div className="gap-y-2 flex flex-col">
           <Skeleton.Input
@@ -38,7 +38,7 @@ const TokenItemSkeleton: React.FC = () => {
 
 export const TokenListSkeleton = () => {
   return (
-    <div className="mt-20">
+    <div className="mt-20 gap-8 flex flex-col">
       {Array.from({ length: 6 }).map((_, index) => (
         <TokenItemSkeleton key={index} />
       ))}
