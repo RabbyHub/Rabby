@@ -508,7 +508,8 @@
       },
       "contractCall": {
         "operationDecoded": "Operation is decoded from message"
-      }
+      },
+      "safeCantSignTypedData": "This is a Safe address, and it only support sign EIP-712 typed data or string"
     },
     "activities": {
       "title": "Signature Record",
@@ -1316,10 +1317,14 @@
         "send": "Send",
         "receive": "Receive",
         "noTransactions": "No Transactions",
-        "customizedButton": "custom token",
-        "customizedButtons": "custom tokens",
-        "blockedButton": "blocked token",
-        "blockedButtons": "blocked tokens"
+        "customizedButton": "customized",
+        "customizedButtons": "customized",
+        "customizedListTitle": "custom token",
+        "customizedListTitles": "custom tokens",
+        "blockedListTitle": "blocked token",
+        "blockedListTitles": "blocked tokens",
+        "blockedButton": "blocked",
+        "blockedButtons": "blocked"
       },
       "assets": {
         "usdValue": "USD VALUE",
@@ -1329,7 +1334,7 @@
           "fractionTips": "Calculate based on the price of the linked ERC20 token."
         },
         "tokenButton": {
-          "subTitle": "Tokens on this list will not be added to the total balance"
+          "subTitle": "Tokens on this list will not be added to the total balance."
         },
         "table": {
           "assetAmount": "Asset / Amount",
@@ -2495,7 +2500,7 @@
       },
       "importKeystone": {
         "qrcode": {
-          "desc": "Scan the QR code on the Keystone hardware wallet"
+          "desc": "Scan the QR code on the {{brandName}} hardware wallet"
         },
         "usb": {
           "desc": "Ensure your Keystone 3 Pro is on the homepage",
@@ -2583,7 +2588,15 @@
       "steps2Description": " *Your QR code contains sensitive data. Keep it private and never             share it with anyone.",
       "downloadGooglePlay": "Google Play",
       "downloadAppleStore": "App Store",
-      "clickToShowQr": "Click to show QR Code"
+      "clickToShowQr": "Click to Select Address  and Show QR Code",
+      "selectAddress": {
+        "title": "Select Addresses to Sync"
+      },
+      "disableSelectAddress": "Sync not supported for {{type}} address",
+      "disableSelectAddressWithSlip39": "Sync not supported for {{type}} address with slip39",
+      "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
+      "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
+      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync"
     }
   },
   "component": {

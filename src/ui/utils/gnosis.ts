@@ -1,7 +1,7 @@
-import { recoverPersonalSignature } from 'eth-sig-util';
 import {
   recoverTypedSignature,
   SignTypedDataVersion,
+  recoverPersonalSignature,
 } from '@metamask/eth-sig-util';
 import { SafeTransactionDataPartial } from '@safe-global/types-kit';
 import semverSatisfies from 'semver/functions/satisfies';
@@ -57,7 +57,7 @@ export const validateETHSign = (
   return isSameAddress(
     recoverPersonalSignature({
       data: txHash,
-      sig: str,
+      signature: str,
     }),
     owner
   );

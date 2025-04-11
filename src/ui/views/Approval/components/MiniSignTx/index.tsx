@@ -377,6 +377,7 @@ export const MiniSignTx = ({
             pushType: pushInfo.type,
             ignoreGasCheck: true,
             ignoreGasNotEnoughCheck: true,
+            ignoreSimulationFailed: true,
             sig,
           },
           status: 'idle',
@@ -1023,7 +1024,8 @@ export const MiniApproval = ({
         // maxHeight: 160,
       }}
       push={false}
-      destroyOnClose
+      forceRender
+      destroyOnClose={false}
       maskStyle={{
         backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
       }}

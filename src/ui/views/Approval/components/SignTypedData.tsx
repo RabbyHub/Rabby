@@ -55,6 +55,7 @@ import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage'
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
 import { ga4 } from '@/utils/ga4';
+import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 
 interface SignTypedDataProps {
   method: string;
@@ -189,6 +190,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           m[n.name] = n.value;
           return m;
         }, {});
+        displayMessage = message;
       } else {
         // [from, Message]
         /**
@@ -244,17 +246,19 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, [params.session.origin]);
 
   const { value: typedDataActionData, loading, error } = useAsync(async () => {
-    if (!isSignTypedDataV1 && signTypedData) {
-      const currentAccount = isGnosis
-        ? account
-        : await wallet.getCurrentAccount();
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
 
-      const _isGnosisAccount =
-        currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
-      setIsGnosisAccount(_isGnosisAccount);
+    const _isGnosisAccount =
+      currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
+    setIsGnosisAccount(_isGnosisAccount);
+    if (_isGnosisAccount) {
       if (!isViewGnosisSafe) {
         wallet.clearGnosisMessage();
       }
+    }
+    if (!isSignTypedDataV1 && signTypedData) {
       const chainId = signTypedData?.domain?.chainId;
       if (isTestnetChainId(chainId)) {
         return null;
@@ -285,13 +289,26 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
     }
+    if (
+      currentAccount &&
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
+      isSignTypedDataV1
+    ) {
+      setIsWatch(true);
+      setCantProcessReason(
+        <div className="flex items-center gap-6">
+          <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
+          {t('page.signTypedData.safeCantSignTypedData')}
+        </div>
+      );
+    }
   };
 
   const isViewGnosisSafe = params?.$ctx?.isViewGnosisSafe;
   const { data: safeInfo } = useGetCurrentSafeInfo({ chainId: currentChainId });
   const { data: safeMessageHash } = useGetMessageHash({
     chainId: currentChainId,
-    message: signTypedData,
+    message: rawMessage,
   });
   const { data: currentSafeMessage } = useCheckCurrentSafeMessage(
     {
@@ -578,6 +595,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   const handleGnosisSign = async () => {
     const account = currentGnosisAdmin;
+    const signTypedData = rawMessage;
     if (!safeInfo || !account || !signTypedData) {
       return;
     }
@@ -609,6 +627,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       chainId: BigInt(currentChainId!),
       data: signTypedData as any,
     });
+
     if (WaitingSignMessageComponent[account.type]) {
       wallet.signTypedDataWithUI(
         account.type,

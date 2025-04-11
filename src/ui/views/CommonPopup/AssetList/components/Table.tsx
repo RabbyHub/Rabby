@@ -45,7 +45,7 @@ export const TRow: React.FC<React.HTMLProps<HTMLTableRowElement>> = (attrs) => {
   return (
     <div
       {...attrs}
-      className={clsx('flex items-center px-20', attrs.className)}
+      className={clsx('flex items-center px-12', attrs.className)}
     />
   );
 };

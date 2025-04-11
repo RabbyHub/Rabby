@@ -8,9 +8,10 @@ import { gzipSync, strToU8 } from 'fflate';
 
 export const EncodeQRCode: React.FC<{
   input: string;
-}> = ({ input }) => {
+  onClick?: () => void;
+  visible?: boolean;
+}> = ({ input, onClick, visible }) => {
   const { t } = useTranslation();
-  const [masked, setMasked] = React.useState(true);
 
   React.useMemo(() => {
     const result = new UREncoder(UR.from(input), 200);
@@ -42,23 +43,7 @@ export const EncodeQRCode: React.FC<{
     };
   }, [urEncoder]);
 
-  React.useEffect(() => {
-    const onBodyBlur = async () => {
-      setMasked(true);
-    };
-
-    window.addEventListener('blur', onBodyBlur, true);
-
-    return () => {
-      window.removeEventListener('blur', onBodyBlur, true);
-    };
-  }, []);
-
-  const isHidden = masked;
-
-  if (!data) {
-    return null;
-  }
+  const isHidden = !visible;
 
   return (
     <div
@@ -78,14 +63,16 @@ export const EncodeQRCode: React.FC<{
           isHidden ? 'block' : 'hidden'
         )}
         onClick={() => {
-          setMasked(false);
+          onClick?.();
         }}
       >
         <IconMaskIcon className="text-r-neutral-title2" />
         <p
           className={clsx(
-            'mt-[12px] mb-0 text-r-neutral-title2',
-            'leading-[20px] text-[16px] font-medium'
+            'mt-[12px] mb-0 mx-[60px]',
+            'text-r-neutral-title2',
+            'leading-[20px] text-[16px] font-medium',
+            'text-center'
           )}
         >
           {t('page.syncToMobile.clickToShowQr')}

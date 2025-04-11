@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { openInTab } from '../webapi';
 import { useWallet } from '../WalletContext';
 import clsx from 'clsx';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useRabbySelector } from '@/ui/store';
 
 export interface Props {}
 
@@ -21,9 +23,13 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
     });
   }, []);
 
+  const themeMode = useRabbySelector((state) => state.preference.themeMode);
+
   React.useEffect(() => {
-    document.documentElement.classList.remove('dark');
-  }, []);
+    setTimeout(() => {
+      document.documentElement.classList.remove('dark');
+    }, 0);
+  }, [themeMode]);
 
   return (
     <section

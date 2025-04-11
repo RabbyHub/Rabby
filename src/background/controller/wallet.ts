@@ -92,7 +92,7 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { isAddress } from 'web3-utils';
+import { isAddress } from 'viem';
 import {
   ensureChainListValid,
   findChain,
@@ -5195,8 +5195,10 @@ export class WalletController extends BaseController {
   getUnencryptedKeyringTypes = async () =>
     keyringService.getUnencryptedKeyringTypes();
 
-  getSyncDataString = async () => {
-    const { vault, accounts } = await keyringService.getSyncVault();
+  getSyncDataString = async (filteredAccounts: Account[]) => {
+    const { vault, accounts } = await keyringService.getSyncVault(
+      filteredAccounts
+    );
     const whitelist = await this.getWhitelist();
     const highligtedAddresses = await this.getHighlightedAddresses();
     const alianNames = await this.getAllAlianName();

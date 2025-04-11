@@ -17,7 +17,11 @@ export const FooterButton: React.FC<Props> = ({ onClick, text }) => {
   return (
     <div>
       <Button
-        className={clsx('w-[180px] h-[40px]', 'active:before:bg-[#00000033]')}
+        className={clsx(
+          'w-[180px] h-[40px]',
+          'active:before:bg-[#00000033]',
+          'mb-[20px]'
+        )}
         type="primary"
         onClick={handleClick}
         loading={loading}
