@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { QuoteLogo } from './QuoteLogo';
 import ImgLock from '@/ui/assets/swap/lock.svg';
@@ -8,18 +8,12 @@ import { ReactComponent as RCIconDuration } from '@/ui/assets/bridge/duration.sv
 import clsx from 'clsx';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { TokenItem } from '@/background/service/openapi';
-import { formatTokenAmount } from '@debank/common';
-import { formatUsdValue } from '@/ui/utils';
+import { formatTokenAmount, formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
-import {
-  SelectedBridgeQuote,
-  useSetQuoteVisible,
-  useSetSettingVisible,
-} from '../hooks';
+import { SelectedBridgeQuote, useSetQuoteVisible } from '../hooks';
 import { Tooltip } from 'antd';
 import { useRabbySelector } from '@/ui/store';
 import styled from 'styled-components';
-import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 
 const ItemWrapper = styled.div`
   position: relative;
