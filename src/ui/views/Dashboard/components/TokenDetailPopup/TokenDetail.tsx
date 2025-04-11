@@ -56,6 +56,7 @@ interface TokenDetailProps {
   canClickToken?: boolean;
   hideOperationButtons?: boolean;
   popupHeight: number;
+  tipsFromTokenSelect?: string;
 }
 
 const TokenDetail = ({
@@ -68,6 +69,7 @@ const TokenDetail = ({
   canClickToken = true,
   popupHeight,
   hideOperationButtons = false,
+  tipsFromTokenSelect,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -211,12 +213,6 @@ const TokenDetail = ({
     return !token.is_core && !isAdded && variant === 'add';
   }, [token, variant, isAdded]);
 
-  const tokenConfirmDisabled = useMemo(() => {
-    if (isBridge || isSwap) {
-      return isSwap ? tokenSupportSwap : tokenSupportBridge;
-    }
-    return false;
-  }, [isBridge, isSwap, tokenSupportSwap, tokenSupportBridge]);
 
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
@@ -231,13 +227,13 @@ const TokenDetail = ({
             placement="top"
             arrowPointAtCenter
             title={t('page.dashboard.tokenDetail.notSupported')}
-            visible={!tokenConfirmDisabled ? false : undefined}
+            visible={!tipsFromTokenSelect ? false : undefined}
           >
             <Button
               type="primary"
               size="large"
               onClick={isBridge ? gotoBridge : isSwap ? goToSwap : goToSend}
-              disabled={tokenConfirmDisabled}
+              disabled={Boolean(tipsFromTokenSelect)}
               className="w-[360px] h-[40px] leading-[18px]"
               style={{
                 width: 360,
@@ -328,6 +324,7 @@ const TokenDetail = ({
     isBridge,
     gotoBridge,
     isSend,
+    tipsFromTokenSelect,
   ]);
 
   const chain = useMemo(() => getChain(token?.chain), [token?.chain]);
