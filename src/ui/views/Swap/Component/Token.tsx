@@ -115,7 +115,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
         valueLoading
           ? formatUsdValue(0)
           : formatUsdValue(
-              new BigNumber(value || 0).times(token.price).toString(10)
+              new BigNumber(value || 0).times(token.price || 0).toString(10)
             ),
       ];
     }

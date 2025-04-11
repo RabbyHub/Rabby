@@ -1,6 +1,6 @@
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TokenItemWithEntity } from '@rabby-wallet/rabby-api/dist/types';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, SVGProps, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import TokenWithChain, { IconWithChain } from '../TokenWithChain';
 import { formatPrice, formatUsdValue } from '@/ui/utils';
@@ -131,9 +131,9 @@ const ExternalTokenRow = memo(
         return (
           <div
             className={clsx(
-              'flex justify-between items-center mt-10',
+              'flex justify-between items-center mt-10 relative',
               'px-8 py-6 mx-16 rounded-[6px]',
-              'border-[0.5px] border-solid border-rabby-neutral-line',
+              'border-[0.5px] border-solid border-transparent',
               'text-12 font-medium text-r-neutral-foot'
             )}
           >
@@ -145,6 +145,7 @@ const ExternalTokenRow = memo(
                 {data.identity?.domain_id}
               </span>
             </div>
+            <BoxWrapper className="absolute bottom-0 left-0 h-33 w-full" />
           </div>
         );
       }
@@ -258,6 +259,25 @@ const ExternalTokenRow = memo(
     );
   }
 );
+
+const BoxWrapper = (props: SVGProps<SVGSVGElement>) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="330"
+      height="34"
+      viewBox="0 0 330 34"
+      fill="none"
+      {...props}
+    >
+      <path
+        d="M16.6651 1.26647L13 6.82609H7C3.68629 6.82609 1 9.51238 1 12.8261V27C1 30.3137 3.68629 33 6.99999 33H323C326.314 33 329 30.3137 329 27V12.8261C329 9.51238 326.314 6.82609 323 6.82609H22L18.3349 1.26647C17.9397 0.667001 17.0603 0.667001 16.6651 1.26647Z"
+        stroke="#E0E5EC"
+        stroke-width="0.5"
+      />
+    </svg>
+  );
+};
 
 export const RiskTokenTips = ({ isDanger }: { isDanger?: boolean }) => {
   const { t } = useTranslation();
