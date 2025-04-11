@@ -83,7 +83,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
     amountSum,
   ]);
 
-  const unHold = !amountSum;
+  const unHold = !tokenLoading && !amountSum;
 
   const { data: realTimeData, loading: curveLoading } = use24hCurveData({
     tokenId: _token.id,
@@ -295,7 +295,10 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
         <CurveWrapper ref={divRef}>
           <CurveGlobalStyle />
           {curveIsLoading ? (
-            <Skeleton.Input active style={{ width: 360, height: 80 }} />
+            <Skeleton.Input
+              active
+              style={{ width: 328, height: 80, marginLeft: 16 }}
+            />
           ) : isEmpty ? null : (
             <AreaChart
               data={data?.list}

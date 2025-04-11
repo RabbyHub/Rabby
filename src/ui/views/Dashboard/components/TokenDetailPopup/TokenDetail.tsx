@@ -304,6 +304,8 @@ const TokenDetail = ({
     isSend,
   ]);
 
+  const chain = useMemo(() => getChain(token?.chain), [token?.chain]);
+
   return (
     <div className="token-detail">
       <div className={clsx('token-detail-header', 'border-b-0 pb-24')}>
@@ -316,14 +318,14 @@ const TokenDetail = ({
                 fallback={IconUnknown}
                 preview={false}
               />
-              {getChain(token?.chain) ? (
+              {chain?.logo ? (
                 <TooltipWithMagnetArrow
-                  title={getChain(token?.chain)?.name || ''}
+                  title={chain?.name || ''}
                   className="rectangle w-[max-content]"
                 >
                   <img
                     className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
-                    src={getChain(token?.chain)?.logo || IconUnknown}
+                    src={chain?.logo}
                   />
                 </TooltipWithMagnetArrow>
               ) : null}
@@ -351,7 +353,7 @@ const TokenDetail = ({
         )}
         <TokenCharts token={token}></TokenCharts>
         <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
-          <div className="balance-content overflow-hidden flex flex-col gap-8 px-16 py-12">
+          <div className="balance-content flex flex-col gap-8 px-16 py-12">
             <div className="flex flex-row justify-between w-full">
               <div className="balance-title text-r-neutral-body text-13">
                 {t('page.dashboard.tokenDetail.myBalance')}
@@ -373,15 +375,16 @@ const TokenDetail = ({
             </div>
             <div className="flex flex-row justify-between w-full items-center">
               <div className="flex flex-row gap-8 items-center">
-                <TokenWithChain
-                  token={token}
-                  hideConer
-                  hideChainIcon={true}
-                  width="24px"
-                  height="24px"
-                ></TokenWithChain>
+                <Image
+                  className="w-24 h-24 rounded-full"
+                  src={token.logo_url || IconUnknown}
+                  fallback={IconUnknown}
+                  preview={false}
+                />
                 <div className="relative">
                   <TooltipWithMagnetArrow
+                    destroyTooltipOnHide
+                    viewportOffset={[50, 0, 0, 0]}
                     className="rectangle w-[max-content]"
                     title={(tokenWithAmount.amount || 0).toString()}
                     placement="bottom"
@@ -398,11 +401,16 @@ const TokenDetail = ({
               {tokenWithAmount.amount ? (
                 <div className="relative">
                   <TooltipWithMagnetArrow
+                    viewportOffset={[50, 0, 0, 0]}
+                    destroyTooltipOnHide
                     title={`≈ $${(
                       tokenWithAmount.amount * token.price || 0
                     ).toString()}`}
-                    className="rectangle w-[max-content]"
                     placement="bottom"
+                    className={clsx(
+                      'rectangle w-[max-content]',
+                      !tokenWithAmount.amount && ''
+                    )}
                   >
                     <div className="balance-value-usd truncate">
                       ≈ $

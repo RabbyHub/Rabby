@@ -137,15 +137,7 @@ export const CustomTestnetTokenDetail = ({
               <div className="balance-title text-r-neutral-body text-13">
                 {t('page.dashboard.tokenDetail.myBalance')}
               </div>
-              <div>
-                {isNativeToken ? null : (
-                  <CustomizedSwitch
-                    selected={isAdded}
-                    onOpen={() => addToken(token)}
-                    onClose={() => removeToken(token)}
-                  />
-                )}
-              </div>
+              <div></div>
             </div>
             <div className="flex flex-row justify-between w-full">
               <div className="flex flex-row gap-8 items-center">
@@ -246,46 +238,64 @@ export const CustomTestnetTokenDetail = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-        <Tooltip
-          overlayClassName="rectangle token_swap__tooltip"
-          placement="topLeft"
-          title={t('page.dashboard.tokenDetail.notSupported')}
-        >
+      {!isNativeToken ? (
+        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
           <Button
             type="primary"
             size="large"
-            disabled
-            className="w-[114px] h-[40px] leading-[18px]"
+            onClick={() => addToken(token)}
+            className="w-[360px] h-[40px] leading-[18px]"
             style={{
-              width: 114,
+              width: 360,
               height: 40,
-              lineHeight: '16px',
+              lineHeight: '18px',
             }}
           >
-            {t('page.dashboard.tokenDetail.swap')}
+            {t('page.dashboard.tokenDetail.AddToMyTokenList')}
           </Button>
-        </Tooltip>
+        </div>
+      ) : (
+        <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
+          <Tooltip
+            overlayClassName="rectangle token_swap__tooltip"
+            placement="topLeft"
+            title={t('page.dashboard.tokenDetail.notSupported')}
+          >
+            <Button
+              type="primary"
+              size="large"
+              disabled
+              className="w-[114px] h-[40px] leading-[18px]"
+              style={{
+                width: 114,
+                height: 40,
+                lineHeight: '16px',
+              }}
+            >
+              {t('page.dashboard.tokenDetail.swap')}
+            </Button>
+          </Tooltip>
 
-        <Button
-          type="primary"
-          ghost
-          size="large"
-          className="w-[114px] h-[40px] leading-[18px] rabby-btn-ghost"
-          onClick={goToSend}
-        >
-          {t('page.dashboard.tokenDetail.send')}
-        </Button>
-        <Button
-          type="primary"
-          ghost
-          size="large"
-          className="w-[114px] h-[40px] leading-[18px] rabby-btn-ghost"
-          onClick={goToReceive}
-        >
-          {t('page.dashboard.tokenDetail.receive')}
-        </Button>
-      </div>
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[114px] h-[40px] leading-[18px] rabby-btn-ghost"
+            onClick={goToSend}
+          >
+            {t('page.dashboard.tokenDetail.send')}
+          </Button>
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[114px] h-[40px] leading-[18px] rabby-btn-ghost"
+            onClick={goToReceive}
+          >
+            {t('page.dashboard.tokenDetail.receive')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

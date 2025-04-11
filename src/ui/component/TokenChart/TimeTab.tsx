@@ -60,7 +60,7 @@ export const TimeTab = ({
           }}
           className={clsx(
             'flex-1 flex items-center justify-center h-24 rounded-[6px] cursor-pointer',
-            'text-12 font-medium',
+            'text-12 font-medium token-detail-time-tab',
             activeKey === e.key && 'bg-r-neutral-card2',
             activeKey === e.key
               ? 'text-r-neutral-title-1'
