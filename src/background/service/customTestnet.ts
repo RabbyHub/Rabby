@@ -1094,7 +1094,7 @@ class CustomTestnetService {
         }
         if (parsedData.functionName === 'transfer') {
           const [_to, _rawAmount] = parsedData.args;
-          if (!_to || !_rawAmount) {
+          if (!_to) {
             throw new Error('unknown');
           }
           if (isSameAddress(addr, _to)) {
