@@ -195,7 +195,7 @@ export const customTestnetTokenToTokenItem = (
     decimals: token.decimals,
     display_symbol: token.symbol,
     is_core: false,
-    is_verified: false,
+    is_verified: true,
     is_wallet: false,
     is_scam: false,
     is_suspicious: false,

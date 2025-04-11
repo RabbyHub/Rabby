@@ -284,7 +284,11 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
                   : 'text-r-green-default'
               )}
             >
-              {unHold ? '' : displayItem?.isLoss ? '-' : '+'}
+              {unHold || !data?.list.length
+                ? ''
+                : displayItem?.isLoss
+                ? '-'
+                : '+'}
               {displayItem.changePercent}
               {curveHoverPoint ? `(${curveHoverPoint?.change})` : ''}
             </div>
