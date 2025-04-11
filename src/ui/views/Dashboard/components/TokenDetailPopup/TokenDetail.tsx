@@ -366,7 +366,7 @@ const TokenDetail = ({
         ref={ref}
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
-        <ScamTokenTips token={token}></ScamTokenTips>
+        <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
         {variant === 'add' && (
           <BlockedTopTips
             token={token}

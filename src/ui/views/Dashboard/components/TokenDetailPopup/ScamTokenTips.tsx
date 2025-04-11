@@ -10,7 +10,7 @@ interface Props {
 }
 export const ScamTokenTips = ({ token }: Props) => {
   const { t } = useTranslation();
-  const isScam = token.is_scam || token.low_credit_score;
+  const isScam = token.is_scam;
   const isNotVerified = token.is_verified === false;
 
   if (isNotVerified) {
