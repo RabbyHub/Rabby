@@ -304,6 +304,22 @@ const TokenSelector = ({
     );
   }, [isSwapOrBridge, type, t]);
 
+  const isSwapTo = type === 'swapTo';
+  const isBridgeTo = type === 'bridgeTo';
+
+  const tokenDetailsTips = useMemo(() => {
+    if (isSwapTo || isBridgeTo || !tokenDetail) {
+      return;
+    }
+    const chainItem = findChainByServerID(tokenDetail?.chain);
+    const isDisabled =
+      !!supportChains?.length &&
+      ((!!chainItem && !supportChains.includes(chainItem.enum)) || !chainItem);
+    return isDisabled
+      ? t('component.TokenSelector.chainNotSupport')
+      : undefined;
+  }, [tokenDetail, supportChains]);
+
   const commonItemRender = React.useCallback(
     (token: TokenItem, _type: typeof type, updateToken?: boolean) => {
       if (!visible && updateToken) {
@@ -312,7 +328,6 @@ const TokenSelector = ({
       return (
         <CommonTokenItem
           key={`${token.chain}-${token.id}`}
-          disabledTips={disabledTips}
           onConfirm={onConfirm}
           token={token}
           type={_type}
@@ -325,7 +340,7 @@ const TokenSelector = ({
         />
       );
     },
-    [disabledTips, onConfirm, supportChains, visible]
+    [onConfirm, supportChains, visible]
   );
 
   const recentToTokens = useRabbySelector((s) => s.swap.recentToTokens || []);
@@ -472,6 +487,7 @@ const TokenSelector = ({
           setTokenDetailOpen(false);
         }}
         token={tokenDetail}
+        tipsFromTokenSelect={tokenDetailsTips}
       />
     </TokenDetailInTokenSelectProviderContext.Provider>
   );
@@ -556,31 +572,11 @@ function CommonTokenItem(props: {
       return false;
     }
 
-    if (type === 'default') {
-      return (
-        !!supportChains?.length &&
-        !!chainItem &&
-        !supportChains.includes(chainItem.enum)
-      );
-    }
     return (
-      (!!supportChains?.length &&
-        !!chainItem &&
-        !supportChains.includes(chainItem.enum)) ||
-      new BigNumber(token?.raw_amount_hex_str || token.amount || 0).lte(0)
+      !!supportChains?.length &&
+      ((!!chainItem && !supportChains.includes(chainItem.enum)) || !chainItem)
     );
-  }, [isSwapTo, isBridgeTo, supportChains, chainItem, token]);
-
-  const tips = useMemo(() => {
-    if (
-      supportChains?.length &&
-      chainItem &&
-      !supportChains.includes(chainItem.enum)
-    ) {
-      return t('component.TokenSelector.chainNotSupport');
-    }
-    return disabledTips;
-  }, [disabledTips]);
+  }, [isSwapTo, isBridgeTo, supportChains, chainItem]);
 
   const { value, loading, error } = useAsync(async () => {
     if (updateToken && currentAccount?.address) {
@@ -593,6 +589,10 @@ function CommonTokenItem(props: {
     }
     return token;
   }, [currentAccount?.address, updateToken, token?.chain, token?.id]);
+
+  const tips = useMemo(() => {
+    return disabled ? t('component.TokenSelector.chainNotSupport') : undefined;
+  }, [value, token, supportChains]);
 
   const handleTokenPress = useCallback(() => {
     if (disabled) {

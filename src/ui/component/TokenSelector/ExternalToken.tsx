@@ -175,10 +175,12 @@ const ExternalTokenRow = memo(
                 <span className="symbol_click" onClick={onClickTokenSymbol}>
                   {getTokenSymbol(data)}
                 </span>
-                <Divider
-                  type="vertical"
-                  className="ml-2 mr-6 relative top-1 border-rabby-neutral-line"
-                />
+                {siteList.length > 0 && (
+                  <Divider
+                    type="vertical"
+                    className="ml-2 mr-6 relative top-1 border-rabby-neutral-line"
+                  />
+                )}
                 <div className="flex items-center gap-4 relative">
                   {siteList.slice(0, 5).map((item, idx) => (
                     <TooltipWithMagnetArrow
@@ -213,7 +215,7 @@ const ExternalTokenRow = memo(
                       overlayClassName="rectangle w-[max-content]"
                     >
                       <span className="text-r-neutral-foot text-[11px] font-medium whitespace-nowrap">
-                        + {siteList.length - 5}
+                        +{siteList.length - 5}
                       </span>
                     </TooltipWithMagnetArrow>
                   ) : null}
@@ -268,7 +270,7 @@ export const RiskTokenTips = ({ isDanger }: { isDanger?: boolean }) => {
   return (
     <div
       className={clsx(
-        'flex justify-center items-center gap-2 ',
+        'flex justify-center items-center gap-2 relative',
         'mt-10 py-6 mx-16 rounded-[6px]',
         'text-12 font-medium',
         isDanger
@@ -278,6 +280,23 @@ export const RiskTokenTips = ({ isDanger }: { isDanger?: boolean }) => {
     >
       <Icon className="w-12 h-12" viewBox="0 0 14 14" />
       <span className="text-sm font-medium">{tip}</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="13"
+        height="10"
+        viewBox="0 0 13 10"
+        fill="none"
+        className="absolute top-[-8px] left-[10px]"
+      >
+        <path
+          d="M1.07057 8.43532L5.97265 1.27075C6.38142 0.673304 7.26988 0.694675 7.64946 1.31108L12.0613 8.47565C12.4716 9.14191 11.9923 10 11.2098 10H1.89588C1.09172 10 0.616476 9.099 1.07057 8.43532Z"
+          fill={
+            isDanger
+              ? 'var(--r-red-light, #fff2f0)'
+              : 'var(--r-orange-light, #fff5e2)'
+          }
+        />
+      </svg>
     </div>
   );
 };

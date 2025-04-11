@@ -19,6 +19,7 @@ interface TokenDetailProps {
   variant?: 'add';
   canClickToken?: boolean;
   hideOperationButtons?: boolean;
+  tipsFromTokenSelect?: string;
 }
 export const TokenDetailPopup = ({
   token,
