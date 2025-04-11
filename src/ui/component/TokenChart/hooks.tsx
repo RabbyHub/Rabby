@@ -20,6 +20,10 @@ export const use24hCurveData = ({
   const wallet = useWallet();
   const { data, loading } = useRequest(
     async () => {
+      if (!serverId || !tokenId) {
+        return;
+      }
+
       const _data = await wallet.openapi.getTokenPriceCurve({
         chain_id: serverId,
         id: tokenId,
@@ -158,6 +162,10 @@ export const useDateCurveData = ({
 
   return useRequest(
     async () => {
+      if (!serverId || !tokenId) {
+        return;
+      }
+
       const _data = await wallet.openapi.getTokenDatePrice({
         chain_id: serverId,
         id: tokenId,

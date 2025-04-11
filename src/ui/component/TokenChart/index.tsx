@@ -61,6 +61,10 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
 
   const { data: fetchedToken, loading: tokenLoading } = useRequest(
     async () => {
+      if (!_token.chain || !_token.id) {
+        return;
+      }
+
       return wallet.openapi.getToken(
         currentAccount!.address,
         _token.chain,
