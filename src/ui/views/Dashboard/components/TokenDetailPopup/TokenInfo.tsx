@@ -1,17 +1,17 @@
 import React, { useCallback } from 'react';
-import { ReactComponent as RcIconHelp } from 'ui/assets/pending/icon-help-cc.svg';
+import { ReactComponent as RcIconHelp } from 'ui/assets/tokenDetail/IconHelp.svg';
+import { ReactComponent as IconCopy } from 'ui/assets/tokenDetail/IconCopy.svg';
 import IconBridged from 'ui/assets/tokenDetail/IconBridged.svg';
 import IconNative from 'ui/assets/tokenDetail/IconNative.svg';
 import IconNoFind from 'ui/assets/tokenDetail/IconNoFind.svg';
 // import { ellipsisAddress } from '@/utils/address';
 import { findChain, findChainByServerID } from '@/utils/chain';
 import { useMemoizedFn } from 'ahooks';
-import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
-import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
+import { ReactComponent as IconArrowRight } from 'ui/assets/tokenDetail/IconBack.svg';
 import { Popup } from '@/ui/component';
 import { PopupProps } from '@/ui/component/Popup';
 import IconUnknown from 'ui/assets/token-default.svg';
-import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
+import { ReactComponent as RcIconExternal } from 'ui/assets/tokenDetail/IconJump.svg';
 import { useTranslation } from 'react-i18next';
 // import { formatUsdValueKMB } from '@/screens/Home/utils/price';
 import { Copy, TokenWithChain } from 'ui/component';
@@ -31,6 +31,7 @@ import { TokenDetailPopup } from '.';
 import styled from 'styled-components';
 import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const Divide = styled.div`
   height: 1px;
@@ -96,7 +97,10 @@ const BridgeOrNative = ({
               rounded-[6px] px-12 py-6"
               >
                 {tokenEntity?.domain_id}
-                <ThemeIcon src={RcIconExternal} className="w-14" />
+                <ThemeIcon
+                  src={RcIconExternal}
+                  className="w-14 text-r-neutral-foot"
+                />
               </div>
             </div>
             {isBridgeDomain && tokenEntity.origin_token && (
@@ -125,7 +129,10 @@ const BridgeOrNative = ({
                     height="16px"
                   ></TokenWithChain>
                   {getTokenSymbol(tokenEntity.origin_token)}
-                  <ThemeIcon src={RcIconExternal} className="w-14" />
+                  <ThemeIcon
+                    src={RcIconExternal}
+                    className="w-14 text-r-neutral-foot"
+                  />
                 </div>
               </div>
             )}
@@ -214,11 +221,18 @@ const ChainAndName = ({
                 handleClickLink(token);
               }}
             />
-            <Copy
+            <ThemeIcon
+              src={IconCopy}
+              className="w-14 cursor-pointer text-r-neutral-foot"
+              onClick={() => {
+                copyAddress(token.id);
+              }}
+            ></ThemeIcon>
+            {/* <Copy
               data={token.id}
               variant="address"
-              className="w-14 cursor-pointer text-r-neutral-foot"
-            />
+              className="w-14 cursor-pointer text-r-neutral-foot font-medium"
+            /> */}
           </div>
         </div>
       )}
@@ -229,7 +243,7 @@ const ChainAndName = ({
           </span>
           <div className="relative">
             <TooltipWithMagnetArrow
-              overlayClassName="rectangle w-[max-content]"
+              className="rectangle w-[max-content]"
               title={t('page.dashboard.tokenDetail.fdvTips')}
             >
               <ThemeIcon
@@ -283,7 +297,7 @@ const ListSiteAndCex = ({
             {newArr.map((item, index) => (
               <div key={index} className="relative">
                 <TooltipWithMagnetArrow
-                  overlayClassName="rectangle"
+                  className="rectangle"
                   title={
                     <div className="flex flex-row items-center gap-4">
                       <div className="text-r-neutral-title-2 text-13">
@@ -291,7 +305,7 @@ const ListSiteAndCex = ({
                       </div>
                       <ThemeIcon
                         src={RcIconExternal}
-                        className="w-14 cursor-pointer"
+                        className="w-14 cursor-pointer text-r-neutral-title2"
                         onClick={() => {
                           openInTab(item.url || item.site_url);
                         }}
@@ -300,11 +314,13 @@ const ListSiteAndCex = ({
                     </div>
                   }
                 >
-                  <img
-                    key={index}
-                    src={item.logo_url}
-                    className="w-20 h-20 rounded-full"
-                  ></img>
+                  <div>
+                    <img
+                      key={index}
+                      src={item.logo_url}
+                      className="w-20 h-20 rounded-full"
+                    ></img>
+                  </div>
                 </TooltipWithMagnetArrow>
               </div>
             ))}
@@ -347,11 +363,11 @@ const ListSiteAndCex = ({
         <div className="text-r-neutral-body text-13 font-normal">{title}</div>
         <div className="flex flex-row items-center gap-6">
           {SiteComponentsRender(siteArr || [])}
-          <IconArrowRight
-            width={20}
-            height={20}
-            viewBox="0 0 12 12"
-          ></IconArrowRight>
+
+          <ThemeIcon
+            src={IconArrowRight}
+            className="w-14 cursor-pointer text-r-neutral-foot"
+          ></ThemeIcon>
         </div>
       </div>
       <Popup
@@ -397,7 +413,10 @@ const ListSiteAndCex = ({
                 ></img>
                 {item.name}
               </div>
-              <ThemeIcon src={RcIconExternal} className="w-14" />
+              <ThemeIcon
+                src={RcIconExternal}
+                className="w-14 text-r-neutral-foot"
+              />
             </div>
           ))}
         </div>
