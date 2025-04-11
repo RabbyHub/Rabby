@@ -3,12 +3,15 @@ import { Popup } from '@/ui/component';
 import React from 'react';
 import TokenDetail from './TokenDetail';
 import './style.less';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { Token } from '@/background/service/preference';
 import { useRabbyDispatch } from 'ui/store';
 import { DisplayedToken } from 'ui/utils/portfolio/project';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { useLocation } from 'react-router-dom';
+
+const isTab = getUiType().isTab;
+const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 interface TokenDetailProps {
   visible?: boolean;
@@ -98,6 +101,7 @@ export const TokenDetailPopup = ({
       onClose={onClose}
       className="token-detail-popup"
       push={false}
+      getContainer={getContainer}
     >
       {visible && token && (
         <TokenDetail

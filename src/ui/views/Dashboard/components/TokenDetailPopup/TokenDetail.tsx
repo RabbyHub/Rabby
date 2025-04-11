@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { last } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { Copy, TokenWithChain } from 'ui/component';
 import IconUnknown from '@/ui/assets/token-default.svg';
@@ -40,6 +40,7 @@ import TokenChainAndContract from './TokenInfo';
 import { TokenCharts } from '@/ui/component/TokenChart';
 import { BlockedTopTips } from './BlockedTopTips';
 import { ScamTokenTips } from './ScamTokenTips';
+import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -170,18 +171,29 @@ const TokenDetail = ({
 
   const { setVisible } = useCommonPopupView();
 
+  const history = useHistory();
+  const location = useLocation();
+
   const isSwap = location.pathname === '/dex-swap';
   const isSend = location.pathname === '/send-token';
   const isBridge = location.pathname === '/bridge';
 
-  const history = useHistory();
+  const handleInTokenSelect = useGetHandleTokenSelectInTokenDetails();
+
+  const isInSwap = location.pathname === '/dex-swap';
+  const isInSend = location.pathname === '/send-token';
+
   const goToSend = useCallback(() => {
     setVisible(false);
     onClose?.();
-    history.push(
-      `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
-    );
-  }, [history, token]);
+    if (isInSend && handleInTokenSelect) {
+      handleInTokenSelect(token);
+    } else {
+      history.push(
+        `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
+      );
+    }
+  }, [history, token, isInSend, handleInTokenSelect]);
 
   const goToReceive = useCallback(() => {
     setVisible(false);
@@ -196,18 +208,25 @@ const TokenDetail = ({
   const gotoBridge = useCallback(() => {
     setVisible(false);
     onClose?.();
-    // if (isBridge && handleInTokenSelect) {
-    //   handleInTokenSelect(token);
-    // }
+    if (isBridge && handleInTokenSelect) {
+      handleInTokenSelect(token);
+    }
   }, [history, token]);
 
   const goToSwap = useCallback(() => {
     setVisible(false);
     onClose?.();
-    history.push(
-      `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
-    );
-  }, [history, token]);
+    if (isInSwap && handleInTokenSelect) {
+      handleInTokenSelect(token);
+    } else {
+      history.push(
+        `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`,
+        {
+          closeTokenSelect: true,
+        }
+      );
+    }
+  }, [history, token, isInSwap, handleInTokenSelect]);
 
   const isCustomizedNotAdded = useMemo(() => {
     return !token.is_core && !isAdded && variant === 'add';

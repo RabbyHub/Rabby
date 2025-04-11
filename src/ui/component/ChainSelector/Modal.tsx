@@ -142,10 +142,10 @@ const ChainSelectorModal = ({
   hideTestnetTab = false,
   hideMainnetTab = false,
   showRPCStatus = false,
-  height = 494,
+  height = 540,
   zIndex,
   excludeChains,
-  showClosableIcon = false,
+  showClosableIcon = true,
   getContainer,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
@@ -209,7 +209,7 @@ const ChainSelectorModal = ({
   return (
     <>
       <Drawer
-        title={title}
+        title={title || t('page.bridge.select-chain')}
         width="400px"
         height={height}
         closable={showClosableIcon}
@@ -217,7 +217,7 @@ const ChainSelectorModal = ({
         visible={visible}
         onClose={handleCancel}
         className={clsx(
-          'custom-popup is-support-darkmode',
+          'custom-popup is-support-darkmode is-new',
           'chain-selector__modal',
           // isLoading && 'disable-body-scroll',
           connection && 'connection',
@@ -230,7 +230,7 @@ const ChainSelectorModal = ({
         }
         getContainer={getContainer}
       >
-        <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
+        <header>
           {isShowTestnet && !hideMainnetTab && (
             <NetSwitchTabs
               value={selectedTab}

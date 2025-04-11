@@ -203,7 +203,7 @@ export const ChainSelectorLargeModal = ({
       destroyOnClose
     >
       <Warper>
-        <header className={title ? 'pt-[0px]' : 'pt-[20px]'}>
+        <header>
           <div className="modal-title">{title}</div>
           {isShowTestnet && (
             <NetSwitchTabs
