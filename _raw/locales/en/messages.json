@@ -2746,7 +2746,8 @@
       "noMatchSuggestion": "Try to search contract address on {{ chainName }}",
       "hot": "Hot",
       "common": "Common",
-      "recent": "Recent"
+      "recent": "Recent",
+      "chainNotSupport": "This chain is not supported"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
