@@ -258,7 +258,9 @@ const TokenSelect = forwardRef<
       if (isSwapTo) {
         return availableToken;
       }
-      return displaySortedTokenList;
+      return displaySortedTokenList?.length
+        ? displaySortedTokenList
+        : availableToken;
     }, [availableToken, displaySortedTokenList, isSwapTo]);
 
     const isListLoading =

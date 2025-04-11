@@ -175,7 +175,10 @@ const ExternalTokenRow = memo(
                 <span className="symbol_click" onClick={onClickTokenSymbol}>
                   {getTokenSymbol(data)}
                 </span>
-                <Divider type="vertical" />
+                <Divider
+                  type="vertical"
+                  className="ml-2 mr-6 relative top-1 border-rabby-neutral-line"
+                />
                 <div className="flex items-center gap-4 relative">
                   {siteList.slice(0, 5).map((item, idx) => (
                     <TooltipWithMagnetArrow

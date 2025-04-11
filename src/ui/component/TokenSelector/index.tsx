@@ -206,7 +206,7 @@ const TokenSelector = ({
 
   const NoDataUI = useMemo(
     () =>
-      isLoading && isEmpty ? (
+      isLoading ? (
         <div>
           {Array(isSwapType ? 8 : 10)
             .fill(1)
@@ -571,6 +571,17 @@ function CommonTokenItem(props: {
     );
   }, [isSwapTo, isBridgeTo, supportChains, chainItem, token]);
 
+  const tips = useMemo(() => {
+    if (
+      supportChains?.length &&
+      chainItem &&
+      !supportChains.includes(chainItem.enum)
+    ) {
+      return t('component.TokenSelector.chainNotSupport');
+    }
+    return;
+  }, [disabledTips]);
+
   const { value, loading, error } = useAsync(async () => {
     if (updateToken && currentAccount?.address) {
       const data = await wallet.openapi.getToken(
@@ -596,7 +607,7 @@ function CommonTokenItem(props: {
         mouseEnterDelay={3}
         overlayClassName={clsx('rectangle')}
         placement="top"
-        title={disabledTips}
+        title={tips}
         visible={disabled ? undefined : false}
         align={{ targetOffset: [0, -30] }}
       >
@@ -615,7 +626,7 @@ function CommonTokenItem(props: {
       mouseEnterDelay={3}
       overlayClassName={clsx('rectangle')}
       placement="top"
-      title={disabledTips}
+      title={tips}
       visible={disabled ? undefined : false}
       align={{ targetOffset: [0, -30] }}
     >
