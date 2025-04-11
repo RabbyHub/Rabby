@@ -8,7 +8,7 @@ import { findChain } from '@/utils/chain';
 import { Button, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { Image } from 'antd';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
@@ -90,6 +90,11 @@ export const CustomTestnetTokenDetail = ({
       `/receive?rbisource=tokendetail&chain=${chain?.enum}&token=${token?.symbol}`
     );
   }, [history, token]);
+
+  const customizeHasNotAdd = useMemo(() => !isNativeToken && !isAdded, [
+    isNativeToken,
+    isAdded,
+  ]);
 
   return (
     <div className="custom-testnet-token-detail" ref={ref}>
@@ -238,7 +243,7 @@ export const CustomTestnetTokenDetail = ({
           </div>
         </div>
       </div>
-      {!isNativeToken ? (
+      {customizeHasNotAdd ? (
         <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
           <Button
             type="primary"
