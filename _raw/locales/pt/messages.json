@@ -508,7 +508,8 @@
         "operationDecoded": "A operação é decodificada da mensagem"
       },
       "safeCantSignText": "Este é um endereço Safe, e não pode ser usado para assinar texto.",
-      "signTypeDataOnChain": "Assinar Dados Tipados {{chain}}"
+      "signTypeDataOnChain": "Assinar Dados Tipados {{chain}}",
+      "safeCantSignTypedData": "Este é um endereço Safe, e suporta apenas assinar dados tipados EIP-712 ou strings."
     },
     "activities": {
       "signedTx": {
@@ -1319,7 +1320,31 @@
         "receive": "Receber",
         "swap": "Trocar",
         "blockedButtons": "tokens bloqueados",
-        "notSelectedCustom": "O token não está listado pelo Rabby. Ele será adicionado à lista de tokens se você ativar."
+        "notSelectedCustom": "O token não está listado pelo Rabby. Ele será adicionado à lista de tokens se você ativar.",
+        "OriginalToken": "Token Original",
+        "blockedTips": "Tokens bloqueados não serão exibidos na lista de tokens",
+        "verifyScamTips": "Este é um token de golpe",
+        "SupportedExchanges": "Exchanges Suportados",
+        "blockedListTitle": "token bloqueado",
+        "Chain": "Cadeia",
+        "TokenName": "Nome do Token",
+        "blockedListTitles": "tokens bloqueados",
+        "OriginIssue": "Nativamente emitido nesta blockchain",
+        "myBalance": "Meu Saldo",
+        "ListedBy": "Listados por",
+        "IssuerWebsite": "Website do Emissor",
+        "BridgeProvider": "Provedor de Bridge",
+        "AddToMyTokenList": "Adicionar à minha lista de tokens",
+        "maybeScamTips": "Este é um token de baixa qualidade e pode ser um golpe",
+        "ContractAddress": "Endereço do Contrato",
+        "NoListedBy": "Nenhuma informação de listagem disponível",
+        "noIssuer": "Nenhuma informação do emissor disponível",
+        "BridgeIssue": "Token interligado por um terceiro",
+        "customizedHasAddedTips": "O token não está listado pelo Rabby. Você o adicionou manualmente à lista de tokens.",
+        "customizedListTitle": "token personalizado",
+        "fdvTips": "O valor de mercado se a oferta máxima estivesse em circulação. Avaliação Total Dilutada (FDV) = Preço x Oferta Máxima. Se a Oferta Máxima for nula, FDV = Preço x Oferta Total. Se nem a Oferta Máxima nem a Oferta Total estiverem definidas ou forem infinitas, o FDV não é exibido.",
+        "NoSupportedExchanges": "Nenhuma exchange suportada disponível",
+        "customizedListTitles": "tokens personalizados"
       },
       "assets": {
         "portfolio": {
@@ -2592,6 +2617,33 @@
       "description": "Seus dados de endereço permanecem totalmente offline, criptografados e transferidos com segurança via um código QR.",
       "disableSelectAddressWithSlip39": "A sincronização não é suportada para endereços {{type}} com slip39",
       "steps2Description": "*Seu código QR contém dados sensíveis. Mantenha-o em privado e nunca o compartilhe com ninguém."
+    },
+    "search": {
+      "sectionHeader": {
+        "token": "Tokens",
+        "Defi": "DeFi",
+        "NFT": "NFT",
+        "AllChains": "Todas as Chains"
+      },
+      "header": {
+        "searchPlaceHolder": "Pesquisar Nome / Endereço do Token",
+        "placeHolder": "Buscar"
+      },
+      "tokenItem": {
+        "Issuedby": "Emitido por",
+        "verifyDangerTips": "Este é um token fraudulento",
+        "listBy": "Liste por {{name}}",
+        "FDV": "FDV",
+        "scamWarningTips": "Este é um token de baixa qualidade e pode ser uma fraude.",
+        "gasToken": "Token de Gas"
+      },
+      "searchWeb": {
+        "title": "Todos os Resultados",
+        "searchTips": "Pesquisar na web",
+        "noResults": "Sem Resultados",
+        "noResult": "Nenhum resultado para",
+        "searching": "Resultados para"
+      }
     }
   },
   "component": {
@@ -2719,7 +2771,8 @@
       "noTokens": "Nenhum Token",
       "noMatch": "Sem correspondência",
       "noMatchSuggestion": "Tente procurar o endereço do contrato na {{ chainName }}",
-      "hot": "Quente"
+      "hot": "Quente",
+      "chainNotSupport": "Esta cadeia não é suportada"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2755,6 +2808,10 @@
       "button": "Continuar",
       "title": "Você está saindo da Rabby Wallet",
       "content": "Você está prestes a visitar um site externo. A Rabby Wallet não é responsável pelo conteúdo ou pela segurança deste site."
+    },
+    "TokenChart": {
+      "holding": "Mantendo Valor",
+      "price": "Preço"
     }
   },
   "global": {

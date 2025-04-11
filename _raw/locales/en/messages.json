@@ -1305,6 +1305,13 @@
         "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced."
       },
       "tokenDetail": {
+        "noIssuer": "No issuer information available",
+        "NoListedBy": "No listing information available",
+        "NoSupportedExchanges": "No supported exchanges available",
+        "customizedHasAddedTips": "The token is not listed by Rabby. You've added it to the token list manually.",
+        "AddToMyTokenList": "Add to my token list",
+        "maybeScamTips":"This is a low-quality token and may be a scam",
+        "verifyScamTips":"This is a scam token",
         "blockedTip": "Blocked token will not be shown in token list",
         "blocked": "Blocked",
         "selectedCustom": "The token is not listed by Rabby. You've added it to the token list manually.",
@@ -1317,6 +1324,19 @@
         "send": "Send",
         "receive": "Receive",
         "noTransactions": "No Transactions",
+        "TokenName": "Token Name",
+        "Chain": "Chain",
+        "ContractAddress": "Contract Address",
+        "myBalance": "My Balance",
+        "BridgeIssue": "Bridged token by a third party",
+        "OriginIssue": "Natively issued on this blockchain",
+        "BridgeProvider": "Bridge Provider",
+        "IssuerWebsite": "Issuer’s Website",
+        "OriginalToken": "Original Token",
+        "ListedBy": "Listed by",
+        "SupportedExchanges": "Supported Exchanges",
+        "fdvTips": "The market cap if the max supply was in circulation.Fully Diluted Valuation (FDV) = Price x Max Supply. If Max Supply is null, FDV = Price x Total Supply. If neither Max Supply nor Total Supply is defined or infinite, FDV is not displayed.",
+        "blockedTips": "Blocked token will not be shown in token list",
         "customizedButton": "customized",
         "customizedButtons": "customized",
         "customizedListTitle": "custom token",
@@ -2627,6 +2647,10 @@
     }
   },
   "component": {
+    "TokenChart": {
+      "price": "Price",
+      "holding": "Holding Value"
+    },
     "AccountSearchInput": {
       "noMatchAddress": "No match address",
       "AddressItem": {

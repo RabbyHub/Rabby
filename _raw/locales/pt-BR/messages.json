@@ -508,7 +508,8 @@
       },
       "contractCall": {
         "operationDecoded": "Operação decodificada da mensagem"
-      }
+      },
+      "safeCantSignTypedData": "Este é um endereço Safe e ele suporta apenas assinar dados tipados EIP-712 ou strings."
     },
     "activities": {
       "title": "Registro de Assinatura",
@@ -1247,7 +1248,31 @@
         "customizedButton": "personalizado",
         "blockedButton": "bloqueado",
         "customizedButtons": "tokens personalizados",
-        "blockedButtons": "tokens bloqueados"
+        "blockedButtons": "tokens bloqueados",
+        "blockedListTitle": "token bloqueado",
+        "ListedBy": "Listados por",
+        "BridgeIssue": "Token bridged por um terceiro",
+        "customizedListTitles": "tokens personalizados",
+        "NoSupportedExchanges": "Nenhuma exchange suportada disponível",
+        "OriginalToken": "Token Original",
+        "blockedListTitles": "tokens bloqueados",
+        "verifyScamTips": "Isto é um token de golpe",
+        "ContractAddress": "Endereço do Contrato",
+        "AddToMyTokenList": "Adicionar à minha lista de tokens",
+        "TokenName": "Nome do Token",
+        "noIssuer": "Nenhuma informação do emissor disponível",
+        "Chain": " cadeia",
+        "customizedListTitle": "token personalizado",
+        "IssuerWebsite": "Website do Emissor",
+        "blockedTips": "Tokens bloqueados não serão exibidos na lista de tokens.",
+        "SupportedExchanges": "Exchanges Suportados",
+        "maybeScamTips": "Este é um token de baixa qualidade e pode ser uma fraude.",
+        "NoListedBy": "Nenhuma informação de listagem disponível",
+        "customizedHasAddedTips": "O token não está listado pelo Rabby. Você o adicionou manualmente à lista de tokens.",
+        "OriginIssue": "Nativamente emitido nesta blockchain",
+        "fdvTips": "A capitalização de mercado se o fornecimento máximo estivesse em circulação. Avaliação Totalmente Dilucionada (FDV) = Preço x Fornecimento Máximo. Se o Fornecimento Máximo for nulo, FDV = Preço x Fornecimento Total. Se nem o Fornecimento Máximo nem o Fornecimento Total forem definidos ou forem infinitos, o FDV não é exibido.",
+        "myBalance": "Meu Saldo",
+        "BridgeProvider": "Provedor de Bridge"
       },
       "assets": {
         "usdValue": "VALOR EM USD",
@@ -2595,6 +2620,33 @@
       "selectAddress": {
         "title": "Selecionar Endereços para Sincronizar"
       }
+    },
+    "search": {
+      "sectionHeader": {
+        "NFT": "NFT",
+        "Defi": "DeFi",
+        "token": "Tokens",
+        "AllChains": "Todas as Chains"
+      },
+      "header": {
+        "placeHolder": "Buscar",
+        "searchPlaceHolder": "Pesquisar nome / endereço do token"
+      },
+      "tokenItem": {
+        "FDV": "FDV",
+        "Issuedby": "Emitido por",
+        "gasToken": "Token de Gas",
+        "listBy": "Lista por {{name}}",
+        "verifyDangerTips": "Este é um token de golpe",
+        "scamWarningTips": "Este é um token de baixa qualidade e pode ser um golpe."
+      },
+      "searchWeb": {
+        "searching": "Resultados para",
+        "noResults": "Nenhum Resultado",
+        "noResult": "Sem resultados para",
+        "title": "Todos os Resultados",
+        "searchTips": "Buscar na web"
+      }
     }
   },
   "component": {
@@ -2722,7 +2774,8 @@
       },
       "hot": "Quente",
       "common": "Comum",
-      "recent": "Recente"
+      "recent": "Recente",
+      "chainNotSupport": "Esta cadeia não é suportada"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2759,6 +2812,10 @@
       "button": "Continuar",
       "title": "Você está saindo da Rabby Wallet",
       "content": "Você está prestes a visitar um site externo. O Rabby Wallet não é responsável pelo conteúdo ou pela segurança deste site."
+    },
+    "TokenChart": {
+      "price": "Preço",
+      "holding": "Mantendo Valor"
     }
   },
   "global": {

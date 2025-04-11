@@ -8,6 +8,7 @@ import { Token } from '@/background/service/preference';
 import { useRabbyDispatch } from 'ui/store';
 import { DisplayedToken } from 'ui/utils/portfolio/project';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
+import { useLocation } from 'react-router-dom';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -28,10 +29,17 @@ export const TokenDetailPopup = ({
   variant,
   canClickToken = true,
   hideOperationButtons = false,
+  tipsFromTokenSelect,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const [isAdded, setIsAdded] = React.useState(false);
+
+  const location = useLocation();
+  const isInSwap = location.pathname === '/dex-swap';
+  const isInSend = location.pathname === '/send-token';
+  const isBridge = location.pathname === '/bridge';
+
   const handleAddToken = React.useCallback((tokenWithAmount) => {
     if (!tokenWithAmount) return;
 
@@ -83,11 +91,13 @@ export const TokenDetailPopup = ({
     checkIsAdded();
   }, [checkIsAdded]);
 
+  const popupHeight = isInSend || isInSwap || isBridge ? 540 : 494;
+
   return (
     <Popup
       visible={visible}
       closable={true}
-      height={494}
+      height={popupHeight}
       onClose={onClose}
       className="token-detail-popup"
       push={false}
@@ -96,6 +106,7 @@ export const TokenDetailPopup = ({
       {visible && token && (
         <TokenDetail
           token={token}
+          popupHeight={popupHeight}
           addToken={handleAddToken}
           removeToken={handleRemoveToken}
           variant={variant}
@@ -103,6 +114,7 @@ export const TokenDetailPopup = ({
           onClose={onClose}
           canClickToken={canClickToken}
           hideOperationButtons={hideOperationButtons}
+          tipsFromTokenSelect={tipsFromTokenSelect}
         />
       )}
     </Popup>

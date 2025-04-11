@@ -275,7 +275,31 @@
         "customizedButton": "個已添加",
         "blockedButton": "個已隱藏",
         "blockedButtons": "被封鎖的代幣",
-        "customizedButtons": "自定义代币"
+        "customizedButtons": "自定义代币",
+        "IssuerWebsite": "發行者的網站",
+        "Chain": "鏈",
+        "ListedBy": "列出由",
+        "verifyScamTips": "這是一個詐騙代幣",
+        "AddToMyTokenList": "加入我的代幣列表",
+        "OriginIssue": "本区块链原生发行",
+        "blockedListTitles": "被封锁的 tokens",
+        "SupportedExchanges": "支持的交易所",
+        "OriginalToken": "原始代币",
+        "ContractAddress": "合約地址",
+        "NoSupportedExchanges": "沒有可用的支持交易所",
+        "noIssuer": "無發行者資訊可用",
+        "BridgeProvider": "橋接提供者",
+        "customizedListTitle": "自定代幣",
+        "TokenName": "代幣名稱",
+        "blockedTips": "被封锁的代币將不會顯示在代幣列表中",
+        "NoListedBy": "沒有可用的列表信息",
+        "BridgeIssue": "第三方桥接的 token",
+        "customizedHasAddedTips": "該代幣未在 Rabby 上列出。您已手動將其添加到代幣列表中。",
+        "customizedListTitles": "自定义代币",
+        "blockedListTitle": "被封锁的代币",
+        "maybeScamTips": "這是一個低質量的代幣，可能是一個詐騙。",
+        "myBalance": "我的餘額",
+        "fdvTips": "市場市值如果最大供應量在流通中。完全稀釋估值 (FDV) = 價格 x 最大供應量。如果最大供應量為零，FDV = 價格 x 總供應量。如果最大供應量和總供應量都未定義或為無限，則不顯示 FDV。"
       },
       "assets": {
         "usdValue": "美元價值",
@@ -1717,7 +1741,8 @@
       },
       "verifyAddress": {
         "title": "驗證地址"
-      }
+      },
+      "safeCantSignTypedData": "這是一個 Safe 地址，只支持簽署 EIP-712 類型的數據或字符串。"
     },
     "swap": {
       "Completed": "已完成",
@@ -2633,6 +2658,33 @@
       "selectAddress": {
         "title": "選擇要同步的地址"
       }
+    },
+    "search": {
+      "sectionHeader": {
+        "NFT": "NFT",
+        "Defi": "DeFi",
+        "token": "代幣",
+        "AllChains": "所有鏈"
+      },
+      "header": {
+        "placeHolder": "搜尋",
+        "searchPlaceHolder": "搜索代币名称 / 地址"
+      },
+      "tokenItem": {
+        "Issuedby": "由…發出",
+        "FDV": "FDV",
+        "listBy": "由 {{name}} 列表",
+        "gasToken": "Gas Token",
+        "scamWarningTips": "這是一個低質量的代幣，可能是一個詐騙。",
+        "verifyDangerTips": "這是一個詐騙代幣"
+      },
+      "searchWeb": {
+        "searching": "結果為",
+        "noResults": "無結果",
+        "title": "所有結果",
+        "searchTips": "搜尋網頁",
+        "noResult": "找不到结果 для"
+      }
     }
   },
   "component": {
@@ -2760,7 +2812,8 @@
       },
       "hot": "熱門",
       "recent": "最近",
-      "common": "常用"
+      "common": "常用",
+      "chainNotSupport": "此链不受支持"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2796,6 +2849,10 @@
       "button": "繼續",
       "content": "您即將訪問一個外部網站。Rabby Wallet 對該網站的內容或安全性不承擔責任。",
       "title": "您即將離開 Rabby Wallet"
+    },
+    "TokenChart": {
+      "holding": "持有價值",
+      "price": "價格"
     }
   },
   "background": {

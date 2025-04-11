@@ -508,7 +508,8 @@
       },
       "contractCall": {
         "operationDecoded": "İşlem mesajdan çözüldü"
-      }
+      },
+      "safeCantSignTypedData": "Bu bir Safe adresidir ve yalnızca EIP-712 tipinde verileri veya stringleri imzalamayı destekler."
     },
     "activities": {
       "title": "İmza Kaydı",
@@ -1247,7 +1248,31 @@
         "customizedButton": "özelleştirilmiş",
         "blockedButton": "engellendi",
         "customizedButtons": "özel tokenler",
-        "blockedButtons": "engellenmiş token'lar"
+        "blockedButtons": "engellenmiş token'lar",
+        "blockedListTitles": "engellenen tokenlar",
+        "ListedBy": "Listeleyen",
+        "OriginalToken": "Orijinal Token",
+        "BridgeProvider": "Köprü Sağlayıcı",
+        "NoListedBy": "Liste bilgisi mevcut değil",
+        "verifyScamTips": "Bu bir dolandırıcılık token'ıdır.",
+        "ContractAddress": "Sözleşme Adresi",
+        "customizedListTitles": "özel tokenler",
+        "TokenName": "Token Adı",
+        "Chain": "Zincir",
+        "AddToMyTokenList": "Token listeme ekle",
+        "myBalance": "Bakiyem",
+        "noIssuer": "Verici bilgisi mevcut değil",
+        "OriginIssue": "Bu blockchain üzerinde yerel olarak ihraç edilmiştir.",
+        "blockedTips": "Engellenen token, token listesinde gösterilmeyecek.",
+        "NoSupportedExchanges": "Desteklenen borsa yok",
+        "customizedListTitle": "özel token",
+        "maybeScamTips": "Bu düşük kaliteli bir token ve dolandırıcılık olabilir.",
+        "BridgeIssue": "Üçüncü taraf tarafından köprülenmiş token",
+        "SupportedExchanges": "Desteklenen Borsalar",
+        "customizedHasAddedTips": "Token Rabby tarafından listelenmemiştir. Bunu token listesine manuel olarak eklediniz.",
+        "IssuerWebsite": "Yayımcının Web Sitesi",
+        "blockedListTitle": "blokajlı token",
+        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez."
       },
       "assets": {
         "usdValue": "USD DEĞERİ",
@@ -2598,6 +2623,33 @@
       "selectAddress": {
         "title": "Adresleri Senkronize Etmek İçin Seçin"
       }
+    },
+    "search": {
+      "sectionHeader": {
+        "AllChains": "Tüm Zincirler",
+        "token": "Jetonlar",
+        "NFT": "NFT",
+        "Defi": "DeFi"
+      },
+      "header": {
+        "placeHolder": "Araştırma",
+        "searchPlaceHolder": "Token Adı / Adres Ara"
+      },
+      "tokenItem": {
+        "FDV": "FDV",
+        "gasToken": "Gaz Token",
+        "scamWarningTips": "Bu düşük kaliteli bir token ve bir dolandırıcılık olabilir.",
+        "verifyDangerTips": "Bu bir dolandırıcılık tokenıdır.",
+        "listBy": "List by {{name}}",
+        "Issuedby": "Tarafından verildi"
+      },
+      "searchWeb": {
+        "noResult": "Sonuç Yok için",
+        "searchTips": "Web'de ara",
+        "title": "Tüm Sonuçlar",
+        "noResults": "Sonuç Yok",
+        "searching": "Sonuçlar için"
+      }
     }
   },
   "component": {
@@ -2725,7 +2777,8 @@
       },
       "hot": "Sıcak",
       "common": "Genel",
-      "recent": "Son zamanlar"
+      "recent": "Son zamanlar",
+      "chainNotSupport": "Bu zincir desteklenmiyor."
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2761,6 +2814,10 @@
       "button": "Devam Et",
       "title": "Rabby Wallet'ten Ayrılıyorsunuz",
       "content": "Harici bir web sitesini ziyaret etmek üzeresiniz. Rabby Wallet, bu sitenin içeriğinden veya güvenliğinden sorumlu değildir."
+    },
+    "TokenChart": {
+      "holding": "Değer Tutma",
+      "price": "Fiyat"
     }
   },
   "global": {

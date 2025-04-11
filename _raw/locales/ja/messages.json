@@ -508,7 +508,8 @@
       },
       "contractCall": {
         "operationDecoded": "操作はメッセージからデコードされました"
-      }
+      },
+      "safeCantSignTypedData": "これはSafeアドレスであり、EIP-712タイプのデータまたは文字列の署名のみをサポートしています。"
     },
     "activities": {
       "title": "署名レコード",
@@ -1247,7 +1248,31 @@
         "customizedButton": "カスタマイズ",
         "blockedButton": "ブロック",
         "customizedButtons": "カスタムトークン",
-        "blockedButtons": "ブロックされたトークン"
+        "blockedButtons": "ブロックされたトークン",
+        "SupportedExchanges": "サポートされている取引所",
+        "customizedListTitle": "カスタムトークン",
+        "Chain": "チェーン",
+        "customizedListTitles": "カスタムトークン",
+        "AddToMyTokenList": "トークンリストに追加",
+        "noIssuer": "発行者情報は利用できません",
+        "IssuerWebsite": "発行者のウェブサイト",
+        "NoSupportedExchanges": "サポートされている取引所はありません",
+        "NoListedBy": "リスティング情報は利用できません。",
+        "OriginalToken": "オリジナルトークン",
+        "customizedHasAddedTips": "トークンはRabbyによってリストされていません。手動でトークンリストに追加しました。",
+        "BridgeProvider": "ブリッジプロバイダー",
+        "blockedListTitles": "ブロックされたトークン",
+        "BridgeIssue": "第三者によってブリッジされたトークン",
+        "OriginIssue": "このブロックチェーン上でネイティブに発行されています",
+        "maybeScamTips": "これは低品質のトークンであり、詐欺である可能性があります。",
+        "myBalance": "私の残高",
+        "blockedListTitle": "ブロックされたトークン",
+        "verifyScamTips": "これは詐欺トークンです",
+        "ContractAddress": "コントラクトアドレス",
+        "blockedTips": "ブロックされたトークンはトークンリストに表示されません。",
+        "TokenName": "トークン名",
+        "ListedBy": "リストされたのは",
+        "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。"
       },
       "assets": {
         "usdValue": "USD 価値",
@@ -2595,6 +2620,33 @@
       "selectAddress": {
         "title": "アドレスを選択して同期する"
       }
+    },
+    "search": {
+      "sectionHeader": {
+        "NFT": "NFT",
+        "Defi": "DeFi",
+        "token": "トークン",
+        "AllChains": "すべてのチェーン"
+      },
+      "header": {
+        "placeHolder": "検索",
+        "searchPlaceHolder": "トークン名 / アドレスを検索"
+      },
+      "tokenItem": {
+        "gasToken": "ガストークン",
+        "Issuedby": "発行元",
+        "FDV": "FDV",
+        "listBy": "{{name}}によるリスト",
+        "verifyDangerTips": "これは詐欺トークンです",
+        "scamWarningTips": "これは低品質のトークンであり、詐欺の可能性があります。"
+      },
+      "searchWeb": {
+        "noResults": "結果がありません",
+        "searchTips": "ウェブを検索する",
+        "title": "すべての結果",
+        "searching": "結果は",
+        "noResult": "結果はありません"
+      }
     }
   },
   "component": {
@@ -2722,7 +2774,8 @@
       },
       "hot": "ホット",
       "recent": "最近",
-      "common": "一般"
+      "common": "一般",
+      "chainNotSupport": "このチェーンはサポートされていません"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2758,6 +2811,10 @@
       "title": "Rabby Wallet を離れようとしています",
       "button": "続行",
       "content": "外部のウェブサイトを訪れようとしています。Rabby Walletはこのサイトの内容やセキュリティに責任を負いません。"
+    },
+    "TokenChart": {
+      "price": "価格",
+      "holding": "ホールディングバリュー"
     }
   },
   "global": {
