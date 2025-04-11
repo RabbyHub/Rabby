@@ -1,11 +1,10 @@
 import i18n from '@/i18n';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { getActionTypeText as getTransactionActionTypeText } from '../Actions/utils';
-import { encodeSingle } from '@metamask/abi-utils';
+import { decodeSingle, encodeSingle } from '@metamask/abi-utils';
 import BigNumber from 'bignumber.js';
 import { filterPrimaryType } from '../SignTypedDataExplain/parseSignTypedDataMessage';
 import { bytesToHex } from '@ethereumjs/util';
-import { hexToString } from 'viem';
 
 export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
   const { t } = i18n;
@@ -106,15 +105,6 @@ function parseSignTypedData(typedData: {
       const encodedBuffer = encodeSingle(dataType, data);
       let encodedHexValue = bytesToHex(encodedBuffer);
       switch (dataType) {
-        case 'string': {
-          const encodedLengthSize = 32; // uint256 length
-          const lengthBuffer = encodedBuffer.slice(0, encodedLengthSize);
-          const originalArgLength = parseInt(bytesToHex(lengthBuffer), 16);
-          const fullArgWithPadding = encodedBuffer.slice(encodedLengthSize);
-          const originalArg = fullArgWithPadding.slice(0, originalArgLength);
-          encodedHexValue = bytesToHex(originalArg);
-          break;
-        }
         case 'address':
           encodedHexValue = bytesToHex(encodedBuffer.slice(12));
           break;
@@ -137,7 +127,7 @@ function parseSignTypedData(typedData: {
         return new BigNumber(encodedHexValue).toFixed();
       }
       if (dataType === 'string') {
-        return hexToString(encodedHexValue);
+        return decodeSingle('string', encodedBuffer);
       }
 
       return encodedHexValue;

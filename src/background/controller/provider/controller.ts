@@ -417,7 +417,6 @@ class ProviderController extends BaseController {
     if (is1559) {
       txData.type = '0x2';
     }
-    txData.gasPrice;
     const tx = TransactionFactory.fromTxData(txData as FeeMarketEIP1559TxData, {
       common,
     });
