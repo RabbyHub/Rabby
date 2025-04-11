@@ -254,7 +254,6 @@ export const BridgeToken = ({
           hideTestnetTab
           value={chain}
           onChange={changeChain}
-          title={<div className="mt-8">{t('page.bridge.select-chain')}</div>}
           // excludeChains={excludeChains}
           supportChains={supportedChains}
           drawerHeight={540}
@@ -292,7 +291,6 @@ export const BridgeToken = ({
               token={token}
               onTokenChange={onChangeToken}
               chainId={chainObj?.serverId}
-              type={'to'}
               placeholder={t('page.swap.search-by-name-address')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               getContainer={getContainer}

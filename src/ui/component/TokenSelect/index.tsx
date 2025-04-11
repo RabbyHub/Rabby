@@ -7,7 +7,7 @@ import React, {
   useImperativeHandle,
 } from 'react';
 import { DrawerProps, Input, Skeleton } from 'antd';
-import { TokenItem } from 'background/service/openapi';
+import { TokenItem, TokenItemWithEntity } from 'background/service/openapi';
 import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
@@ -129,6 +129,7 @@ const TokenSelect = forwardRef<
       chainServerId: chainId,
     });
     const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
+    const [initLoading, setInitLoading] = useState(true);
     const [updateNonce, setUpdateNonce] = useState(0);
     const currentAccount = useRabbySelector(
       (state) => state.account.currentAccount
@@ -138,6 +139,10 @@ const TokenSelect = forwardRef<
     useImperativeHandle(ref, () => ({
       openTokenModal: setTokenSelectorVisible,
     }));
+
+    useEffect(() => {
+      setInitLoading(!tokenSelectorVisible);
+    }, [tokenSelectorVisible]);
 
     const handleCurrentTokenChange = (token: TokenItem) => {
       onChange && onChange('');
@@ -207,6 +212,19 @@ const TokenSelect = forwardRef<
       isSwapType || type === 'bridgeFrom' ? false : true
     );
 
+    const isSwapTo = type === 'swapTo';
+
+    const {
+      value: remoteSwapToSearchTokens,
+      loading: remoteSwapToSearchTokensLoading,
+    } = useAsync(
+      () =>
+        queryConds?.keyword && isSwapTo
+          ? wallet.openapi.searchTokensV2({ q: queryConds?.keyword })
+          : Promise.resolve([] as TokenItemWithEntity[]),
+      [queryConds?.keyword, isSwapTo]
+    );
+
     const availableToken = useMemo(() => {
       const allTokens = queryConds.chainServerId
         ? allDisplayTokens.filter(
@@ -215,28 +233,42 @@ const TokenSelect = forwardRef<
         : allDisplayTokens;
       return uniqBy(
         queryConds.keyword
-          ? searchedTokenByQuery.map(abstractTokenToTokenItem)
+          ? isSwapTo
+            ? remoteSwapToSearchTokens?.filter(
+                (e) => e.chain === queryConds.chainServerId
+              )
+            : searchedTokenByQuery.map(abstractTokenToTokenItem)
           : allTokens,
         (token) => {
           return `${token.chain}-${token.id}`;
         }
       ).filter((e) => !excludeTokens.includes(e.id));
-    }, [allDisplayTokens, searchedTokenByQuery, excludeTokens, queryConds]);
+    }, [
+      allDisplayTokens,
+      searchedTokenByQuery,
+      excludeTokens,
+      queryConds,
+      isSwapTo,
+      remoteSwapToSearchTokens,
+    ]);
 
     const displaySortedTokenList = useSortToken(availableToken);
 
     const displayTokenList = useMemo(() => {
-      if (type === 'swapTo') {
+      if (isSwapTo) {
         return availableToken;
       }
-      return displaySortedTokenList;
-    }, [availableToken, displaySortedTokenList, type]);
+      return displaySortedTokenList?.length
+        ? displaySortedTokenList
+        : availableToken;
+    }, [availableToken, displaySortedTokenList, isSwapTo]);
 
-    const isListLoading = queryConds.keyword
-      ? isSearchLoading
-      : useSwapTokenList
-      ? swapTokenListLoading
-      : isLoadingAllTokens;
+    const isListLoading =
+      !!(queryConds.keyword
+        ? isSearchLoading || remoteSwapToSearchTokensLoading
+        : useSwapTokenList
+        ? swapTokenListLoading
+        : isLoadingAllTokens) || initLoading;
 
     const handleSearchTokens = React.useCallback(async (ctx) => {
       setQueryConds({
