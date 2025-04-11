@@ -77,6 +77,7 @@ export const useTokens = (
   const userAddrRef = useRef('');
   const chainIdRef = useRef<string | undefined>(undefined);
   // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
+  const callCountRef = useRef(0);
 
   useEffect(() => {
     if (updateNonce === 0) return;
@@ -128,6 +129,14 @@ export const useTokens = (
   }, [timeAt, isLoading]);
 
   const loadProcess = async () => {
+    callCountRef.current++;
+    const callCount = callCountRef.current;
+    const abortedFn = () => {
+      if (callCount === callCountRef.current) {
+        setLoading(false);
+      }
+    };
+
     if (!userAddr || isTestnet) {
       return;
     }
@@ -159,9 +168,15 @@ export const useTokens = (
       }
     });
 
-    if (currentAbort.signal.aborted || !snapshot) {
+    if (!snapshot) {
       log('--Terminate-tokens-snapshot-', userAddr);
       setLoading(false);
+      return;
+    }
+
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-tokens-snapshot-', userAddr);
+      abortedFn();
       return;
     }
 
@@ -196,9 +211,14 @@ export const useTokens = (
       isTestnet
     );
 
-    if (currentAbort.signal.aborted || !tokenRes) {
-      log('--Terminate-tokens-', userAddr);
+    if (!tokenRes) {
+      log('--Terminate-tokens- no tokenRes', userAddr);
       setLoading(false);
+    }
+
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-tokens-', userAddr);
+      abortedFn();
       return;
     }
 
@@ -329,7 +349,6 @@ export const useTokens = (
     // setTokenChangeLoading(true);
 
     if (currentAbort.signal.aborted || !_data?.netWorth) {
-      setLoading(false);
       return;
     }
 
@@ -341,7 +360,6 @@ export const useTokens = (
     );
 
     if (currentAbort.signal.aborted) {
-      setLoading(false);
       return;
     }
 
@@ -377,7 +395,6 @@ export const useTokens = (
     setData(_data);
 
     if (currentAbort.signal.aborted) {
-      setLoading(false);
       return;
     }
 
@@ -397,7 +414,6 @@ export const useTokens = (
     );
 
     if (currentAbort.signal.aborted || !priceDicts) {
-      setLoading(false);
       return;
     }
 
@@ -414,7 +430,6 @@ export const useTokens = (
     }) as DisplayedProject;
 
     if (currentAbort.signal.aborted) {
-      setLoading(false);
       return;
     }
 
