@@ -213,7 +213,6 @@ const TokenDetail = ({
     return !token.is_core && !isAdded && variant === 'add';
   }, [token, variant, isAdded]);
 
-
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
       return null;
