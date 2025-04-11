@@ -248,7 +248,7 @@ const ChainAndName = ({
             >
               <ThemeIcon
                 src={RcIconHelp}
-                className="w-14 cursor-pointer text-r-neutral-foot"
+                className="w-14 text-r-neutral-foot"
               ></ThemeIcon>
             </TooltipWithMagnetArrow>
           </div>

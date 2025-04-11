@@ -58,6 +58,7 @@ interface TokenDetailProps {
   hideOperationButtons?: boolean;
   handleInTokenSelect?: () => void;
   popupHeight: number;
+  tipsFromTokenSelect?: string;
 }
 
 const TokenDetail = ({
@@ -70,6 +71,7 @@ const TokenDetail = ({
   canClickToken = true,
   popupHeight,
   hideOperationButtons = false,
+  tipsFromTokenSelect,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -97,7 +99,7 @@ const TokenDetail = ({
   const ref = useRef<HTMLDivElement | null>(null);
 
   const getTokenAmount = React.useCallback(async () => {
-    if (token.amount !== undefined) return;
+    // if (token.amount !== undefined) return;
     const info = await wallet.openapi.getToken(
       currentAccount!.address,
       token.chain,
@@ -106,6 +108,8 @@ const TokenDetail = ({
     if (info) {
       setTokenWithAmount({
         ...token,
+        is_scam: info.is_scam,
+        is_verified: info.is_verified,
         amount: info.amount,
       });
     }
@@ -228,13 +232,6 @@ const TokenDetail = ({
     return !token.is_core && !isAdded && variant === 'add';
   }, [token, variant, isAdded]);
 
-  const tokenConfirmDisabled = useMemo(() => {
-    if (isBridge || isSwap) {
-      return isSwap ? tokenSupportSwap : tokenSupportBridge;
-    }
-    return false;
-  }, [isBridge, isSwap, tokenSupportSwap, tokenSupportBridge]);
-
   const BottomBtn = useMemo(() => {
     if (hideOperationButtons) {
       return null;
@@ -247,14 +244,14 @@ const TokenDetail = ({
             overlayClassName="rectangle w-[max-content]"
             placement="top"
             arrowPointAtCenter
-            title={t('page.dashboard.tokenDetail.notSupported')}
-            visible={!tokenConfirmDisabled ? false : undefined}
+            title={tipsFromTokenSelect || ''}
+            visible={!tipsFromTokenSelect ? false : undefined}
           >
             <Button
               type="primary"
               size="large"
               onClick={isBridge ? gotoBridge : isSwap ? goToSwap : goToSend}
-              disabled={tokenConfirmDisabled}
+              disabled={Boolean(tipsFromTokenSelect)}
               className="w-[360px] h-[40px] leading-[18px]"
               style={{
                 width: 360,
@@ -345,6 +342,7 @@ const TokenDetail = ({
     isBridge,
     gotoBridge,
     isSend,
+    tipsFromTokenSelect,
   ]);
 
   const chain = useMemo(() => getChain(token?.chain), [token?.chain]);
@@ -385,7 +383,7 @@ const TokenDetail = ({
         ref={ref}
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
-        <ScamTokenTips token={token}></ScamTokenTips>
+        <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
         {variant === 'add' && (
           <BlockedTopTips
             token={token}
