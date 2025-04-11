@@ -508,7 +508,8 @@
         "operationDecoded": "작업은 메시지에서 디코드됩니다."
       },
       "signTypeDataOnChain": "{{chain}} 타이핑 데이터 서명",
-      "safeCantSignText": "이것은 Safe 주소이며, 텍스트를 서명하는 데 사용할 수 없습니다."
+      "safeCantSignText": "이것은 Safe 주소이며, 텍스트를 서명하는 데 사용할 수 없습니다.",
+      "safeCantSignTypedData": "이것은 Safe 주소이며, EIP-712 형식 데이터 또는 문자열 서명만 지원합니다."
     },
     "activities": {
       "signedTx": {
@@ -1319,7 +1320,31 @@
         "notSelectedCustom": "토큰은 Rabby에 의해 상장되지 않았습니다. 스위치를 켜면 토큰 목록에 추가됩니다.",
         "scamTx": "스팸 tx",
         "blockedButtons": "차단된 토큰",
-        "selectedCustom": "토큰이 Rabby에 등록되지 않았습니다. 수동으로 토큰 목록에 추가했습니다."
+        "selectedCustom": "토큰이 Rabby에 등록되지 않았습니다. 수동으로 토큰 목록에 추가했습니다.",
+        "NoListedBy": "상장 정보가 없습니다",
+        "customizedListTitles": "사용자 정의 토큰",
+        "IssuerWebsite": "발행자의 웹사이트",
+        "blockedListTitles": "차단된 토큰",
+        "AddToMyTokenList": "내 토큰 목록에 추가",
+        "OriginalToken": "원본 토큰",
+        "myBalance": "내 잔액",
+        "TokenName": "토큰 이름",
+        "SupportedExchanges": "지원되는 거래소",
+        "NoSupportedExchanges": "사용 가능한 지원 거래소가 없습니다",
+        "BridgeIssue": "타사에 의해 브리징된 토큰",
+        "customizedListTitle": "사용자 정의 토큰",
+        "blockedTips": "차단된 토큰은 토큰 목록에 표시되지 않습니다.",
+        "blockedListTitle": "차단된 토큰",
+        "ContractAddress": "계약 주소",
+        "Chain": "체인",
+        "OriginIssue": "이 블록체인에서 네이티브로 발행됨",
+        "noIssuer": "발급자 정보가 없습니다",
+        "customizedHasAddedTips": "토큰이 Rabby에 등록되어 있지 않습니다. 수동으로 토큰 목록에 추가했습니다.",
+        "maybeScamTips": "이것은 저품질 토큰이며 사기일 수 있습니다.",
+        "fdvTips": "시장에서 유통되고 있는 최대 공급량 기준의 시가총액. 완전 희석 가치(FDV) = 가격 x 최대 공급량. 만약 최대 공급량이 null이면, FDV = 가격 x 총 공급량. 만약 최대 공급량이나 총 공급량이 정의되지 않았거나 무한대인 경우, FDV는 표시되지 않습니다.",
+        "ListedBy": "제목: Listed by",
+        "verifyScamTips": "이것은 사기 토큰입니다.",
+        "BridgeProvider": "브리지 제공자"
       },
       "assets": {
         "portfolio": {
@@ -2592,6 +2617,33 @@
       "selectedLenAddressesForSync_other": "선택된 {{len}} 주소를 동기화합니다.",
       "steps2Description": "*귀하의 QR 코드에는 민감한 데이터가 포함되어 있습니다. 개인 정보를 유지하고 누구와도 공유하지 마십시오.",
       "steps2": "2. Rabby Mobile로 스캔하세요"
+    },
+    "search": {
+      "sectionHeader": {
+        "Defi": "DeFi",
+        "token": "토큰",
+        "NFT": "NFT",
+        "AllChains": "모든 체인"
+      },
+      "header": {
+        "placeHolder": "검색",
+        "searchPlaceHolder": "토큰 이름 / 주소 검색"
+      },
+      "tokenItem": {
+        "Issuedby": "발행자",
+        "verifyDangerTips": "이건 사기 토큰입니다",
+        "gasToken": "가스 토큰",
+        "FDV": "FDV",
+        "scamWarningTips": "이것은 저품질 토큰이며 사기일 수 있습니다.",
+        "listBy": "{{name}}로 목록 보기"
+      },
+      "searchWeb": {
+        "title": "모든 결과",
+        "searching": "결과는",
+        "noResults": "결과 없음",
+        "searchTips": "웹 검색하기",
+        "noResult": "결과가 없습니다 для"
+      }
     }
   },
   "component": {
@@ -2719,7 +2771,8 @@
       "common": "일반",
       "noMatch": "일치하지 않음",
       "hot": "뜨거운",
-      "noMatchSuggestion": "{{ chainName }}에서 계약 주소를 검색해 보세요."
+      "noMatchSuggestion": "{{ chainName }}에서 계약 주소를 검색해 보세요.",
+      "chainNotSupport": "이 체인은 지원되지 않습니다."
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2755,6 +2808,10 @@
       "title": "당신은 Rabby Wallet을 떠나고 있습니다.",
       "button": "계속",
       "content": "외부 웹사이트를 방문하려고 합니다. Rabby Wallet은 이 사이트의 내용이나 보안에 대해 책임을 지지 않습니다."
+    },
+    "TokenChart": {
+      "price": "가격",
+      "holding": "가치 보유"
     }
   },
   "global": {

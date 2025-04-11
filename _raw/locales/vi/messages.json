@@ -508,7 +508,8 @@
         "operationDecoded": "Hoạt động được giải mã từ thông điệp"
       },
       "safeCantSignText": "Đây là một địa chỉ Safe, và nó không thể được sử dụng để ký văn bản.",
-      "signTypeDataOnChain": "Ký tên Dữ liệu đã điền {{chain}}"
+      "signTypeDataOnChain": "Ký tên Dữ liệu đã điền {{chain}}",
+      "safeCantSignTypedData": "Đây là một địa chỉ Safe, và nó chỉ hỗ trợ ký dữ liệu kiểu EIP-712 hoặc chuỗi."
     },
     "activities": {
       "signedTx": {
@@ -1319,7 +1320,31 @@
         "notSelectedCustom": "Token chưa được liệt kê bởi Rabby. Nó sẽ được thêm vào danh sách token nếu bạn bật lên.",
         "selectedCustom": "Token này không được liệt kê bởi Rabby. Bạn đã thêm nó vào danh sách token một cách thủ công.",
         "notSupported": "Token trên chuỗi này không được hỗ trợ.",
-        "customized": "Tùy chỉnh"
+        "customized": "Tùy chỉnh",
+        "Chain": "Chuỗi",
+        "BridgeProvider": "Nhà cung cấp cầu",
+        "IssuerWebsite": "Trang web của nhà phát hành",
+        "blockedListTitle": "token bị chặn",
+        "OriginalToken": "Token Gốc",
+        "myBalance": "Số Dư Của Tôi",
+        "TokenName": "Tên Token",
+        "blockedListTitles": "token bị chặn",
+        "ListedBy": "Được liệt kê bởi",
+        "OriginIssue": "Được phát hành một cách tự nhiên trên blockchain này",
+        "customizedListTitle": "token tùy chỉnh",
+        "NoSupportedExchanges": "Không có sàn giao dịch nào được hỗ trợ.",
+        "verifyScamTips": "Đây là một mã thông báo lừa đảo",
+        "customizedListTitles": "token tùy chỉnh",
+        "ContractAddress": "Địa chỉ hợp đồng",
+        "noIssuer": "Không có thông tin người phát hành nào có sẵn",
+        "NoListedBy": "Không có thông tin niêm yết nào có sẵn",
+        "BridgeIssue": "Token được cầu nối bởi bên thứ ba",
+        "SupportedExchanges": "Sàn giao dịch được hỗ trợ",
+        "blockedTips": "Token bị chặn sẽ không được hiển thị trong danh sách token.",
+        "customizedHasAddedTips": "Token không được liệt kê bởi Rabby. Bạn đã thêm nó vào danh sách token thủ công.",
+        "AddToMyTokenList": "Thêm vào danh sách token của tôi",
+        "maybeScamTips": "Đây là một token chất lượng thấp và có thể là một trò lừa đảo.",
+        "fdvTips": "Vốn hóa thị trường nếu số cung tối đa được lưu hành. Định giá hoàn toàn pha loãng (FDV) = Giá x Số cung tối đa. Nếu Số cung tối đa là null, FDV = Giá x Tổng cung. Nếu cả Số cung tối đa và Tổng cung đều không được xác định hoặc vô hạn, FDV sẽ không được hiển thị."
       },
       "assets": {
         "portfolio": {
@@ -2592,6 +2617,33 @@
       "selectedLenAddressesForSync_one": "Đã chọn {{len}} địa chỉ để đồng bộ",
       "description": "Dữ liệu địa chỉ của bạn luôn ở chế độ ngoại tuyến, được mã hóa và được chuyển giao một cách an toàn qua mã QR.",
       "steps2Description": "*Mã QR của bạn chứa dữ liệu nhạy cảm. Hãy giữ nó riêng tư và không bao giờ chia sẻ với ai.*"
+    },
+    "search": {
+      "sectionHeader": {
+        "AllChains": "Tất cả Các Chuỗi",
+        "Defi": "DeFi",
+        "token": "Token",
+        "NFT": "NFT"
+      },
+      "header": {
+        "placeHolder": "Tìm kiếm",
+        "searchPlaceHolder": "Tìm kiếm Tên / Địa chỉ Token"
+      },
+      "tokenItem": {
+        "listBy": "Danh sách bởi {{name}}",
+        "verifyDangerTips": "Đây là một mã thông báo lừa đảo.",
+        "Issuedby": "Phát hành bởi",
+        "gasToken": "Token Gas",
+        "FDV": "FDV",
+        "scamWarningTips": "Đây là một token chất lượng thấp và có thể là một trò lừa đảo."
+      },
+      "searchWeb": {
+        "searchTips": "Tìm kiếm trên web",
+        "searching": "Kết quả cho",
+        "noResults": "Không có kết quả",
+        "title": "Tất cả Kết quả",
+        "noResult": "Không có kết quả cho"
+      }
     }
   },
   "component": {
@@ -2719,7 +2771,8 @@
       "hot": "Nóng",
       "common": "Thông thường",
       "noMatchSuggestion": "Hãy cố gắng tìm địa chỉ hợp đồng trên {{ chainName }}",
-      "noMatch": "Không khớp"
+      "noMatch": "Không khớp",
+      "chainNotSupport": "Chuỗi này không được hỗ trợ"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2755,6 +2808,10 @@
       "button": "Tiếp tục",
       "title": "Bạn đang rời khỏi Rabby Wallet",
       "content": "Bạn sắp truy cập một trang web bên ngoài. Rabby Wallet không chịu trách nhiệm về nội dung hoặc tính bảo mật của trang này."
+    },
+    "TokenChart": {
+      "price": "Giá",
+      "holding": "Giá trị nắm giữ"
     }
   },
   "global": {

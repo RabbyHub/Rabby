@@ -509,7 +509,8 @@
       },
       "contractCall": {
         "operationDecoded": "Операція декодована з повідомлення"
-      }
+      },
+      "safeCantSignTypedData": "Це адреса Safe, і вона підтримує лише підписування типізованих даних EIP-712 або рядків."
     },
     "activities": {
       "title": "Ваші підписи",
@@ -1250,7 +1251,31 @@
         "customizedButton": "налаштована",
         "blockedButton": "заблоковано",
         "customizedButtons": "кастомні токени",
-        "blockedButtons": "заблоковані токени"
+        "blockedButtons": "заблоковані токени",
+        "ContractAddress": "Адрес контракту",
+        "customizedListTitle": "кастомний токен",
+        "NoListedBy": "Немає інформації про список",
+        "blockedListTitle": "заблокований токен",
+        "customizedListTitles": "кастомні токени",
+        "verifyScamTips": "Це токен-шахрайство",
+        "SupportedExchanges": "Підтримувані біржі",
+        "OriginalToken": "Оригінальний токен",
+        "blockedListTitles": "заблоковані токени",
+        "customizedHasAddedTips": "Токен не внесений до списку Rabby. Ви додали його до списку токенів вручну.",
+        "blockedTips": "Заблоковані токени не будуть відображатися в списку токенів.",
+        "TokenName": "Назва токена",
+        "myBalance": "Мій баланс",
+        "IssuerWebsite": "Веб-сайт емітента",
+        "Chain": "Цепочка",
+        "NoSupportedExchanges": "Немає доступних підтримуваних бірж",
+        "maybeScamTips": "Це токен низької якості і може бути шахрайством",
+        "noIssuer": "Немає інформації про емітента",
+        "OriginIssue": "Нативно випущено на цьому блокчейні",
+        "BridgeIssue": "Токен, що перебуває в мості, від третьої сторони",
+        "BridgeProvider": "Постачальник моста",
+        "ListedBy": "Перелік від",
+        "fdvTips": "Капіталізація ринку, якщо максимальна пропозиція була в обігу. Повна розведена оцінка (FDV) = Ціна x Максимальна пропозиція. Якщо максимальна пропозиція є null, FDV = Ціна x Загальна пропозиція. Якщо жодна з максимальних або загальних пропозицій не визначена або є безкінечною, FDV не відображається.",
+        "AddToMyTokenList": "Додати до мого списку токенів"
       },
       "assets": {
         "usdValue": "ВАРТІСТЬ У USD",
@@ -2607,6 +2632,33 @@
       "selectAddress": {
         "title": "Виберіть адреси для синхронізації"
       }
+    },
+    "search": {
+      "sectionHeader": {
+        "Defi": "DeFi",
+        "NFT": "NFT",
+        "AllChains": "Усі ланцюги",
+        "token": "Токени"
+      },
+      "header": {
+        "placeHolder": "Пошук",
+        "searchPlaceHolder": "Шукати назву токена / адресу"
+      },
+      "tokenItem": {
+        "FDV": "FDV",
+        "Issuedby": "Випущено від",
+        "gasToken": "Токен Gas",
+        "listBy": "Список за {{name}}",
+        "scamWarningTips": "Це токен низької якості і може бути шахрайством.",
+        "verifyDangerTips": "Це токен-шахрайство"
+      },
+      "searchWeb": {
+        "title": "Всі результати",
+        "noResults": "Немає результатів",
+        "searchTips": "Шукати в мережі",
+        "noResult": "Немає результатів для",
+        "searching": "Результати для"
+      }
     }
   },
   "component": {
@@ -2734,7 +2786,8 @@
       },
       "common": "Загальне",
       "hot": "Гаряче",
-      "recent": "Останні"
+      "recent": "Останні",
+      "chainNotSupport": "Цей ланцюг не підтримується"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2770,6 +2823,10 @@
       "button": "Продовжити",
       "title": "Ви залишаєте Rabby Wallet",
       "content": "Ви збираєтесь відвідати зовнішній вебсайт. Rabby Wallet не несе відповідальності за вміст або безпеку цього сайту."
+    },
+    "TokenChart": {
+      "holding": "Тримання вартості",
+      "price": "Ціна"
     }
   },
   "global": {

@@ -508,7 +508,8 @@
       },
       "contractCall": {
         "operationDecoded": "Der Vorgang wird aus der Nachricht decodiert"
-      }
+      },
+      "safeCantSignTypedData": "Dies ist eine Safe-Adresse, und sie unterstützt nur das Signieren von EIP-712-typisierten Daten oder Strings."
     },
     "activities": {
       "title": "Signaturverlauf",
@@ -1247,7 +1248,31 @@
         "customizedButton": "benutzerdefiniert",
         "blockedButton": "blockiert",
         "customizedButtons": "benutzerdefinierte Token",
-        "blockedButtons": "blockierte Tokens"
+        "blockedButtons": "blockierte Tokens",
+        "NoListedBy": "Keine Listungsinformationen verfügbar",
+        "AddToMyTokenList": "Füge meiner Token-Liste hinzu",
+        "OriginalToken": "Original Token",
+        "blockedListTitles": "blockierte Tokens",
+        "myBalance": "Mein Saldo",
+        "SupportedExchanges": "Unterstützte Börsen",
+        "NoSupportedExchanges": "Keine unterstützten Börsen verfügbar",
+        "TokenName": "Token-Name",
+        "customizedListTitle": "benutzerdefinierter Token",
+        "blockedListTitle": "blockierte Token",
+        "verifyScamTips": "Das ist ein Betrugstoken",
+        "IssuerWebsite": "Herausgeber-Website",
+        "blockedTips": "Blockierte Token werden nicht in der Tokenliste angezeigt.",
+        "noIssuer": "Keine Herausgeberinformationen verfügbar",
+        "ListedBy": "Aufgeführt von",
+        "ContractAddress": "Vertragsadresse",
+        "customizedListTitles": "benutzerdefinierte Tokens",
+        "OriginIssue": "Nativ auf dieser Blockchain ausgegeben",
+        "BridgeProvider": "Bridge-Anbieter",
+        "customizedHasAddedTips": "Das Token ist nicht von Rabby gelistet. Sie haben es manuell zur Tokenliste hinzugefügt.",
+        "maybeScamTips": "Dies ist ein Token von geringer Qualität und könnte ein Betrug sein.",
+        "Chain": "Kette",
+        "BridgeIssue": "Token, die von einem Dritten überbrückt wurden",
+        "fdvTips": "Die Marktkapitalisierung, wenn das maximale Angebot im Umlauf ist. Vollständig verwässerte Bewertung (FDV) = Preis x maximales Angebot. Wenn das maximale Angebot null ist, FDV = Preis x Gesamtes Angebot. Wenn weder das maximale Angebot noch das gesamte Angebot definiert oder unendlich sind, wird die FDV nicht angezeigt."
       },
       "assets": {
         "usdValue": "USD WERT",
@@ -2595,6 +2620,33 @@
       "selectAddress": {
         "title": "Adressen zum Synchronisieren auswählen"
       }
+    },
+    "search": {
+      "sectionHeader": {
+        "Defi": "DeFi",
+        "NFT": "NFT",
+        "token": "Tokens",
+        "AllChains": "Alle Chains"
+      },
+      "header": {
+        "placeHolder": "Suche",
+        "searchPlaceHolder": "Token-Name / Adresse suchen"
+      },
+      "tokenItem": {
+        "listBy": "Liste von {{name}}",
+        "FDV": "FDV",
+        "scamWarningTips": "Das ist ein Token von geringer Qualität und könnte ein Betrug sein.",
+        "gasToken": "Gas-Token",
+        "verifyDangerTips": "Dies ist ein Betrugstoken",
+        "Issuedby": "Ausgestellt von"
+      },
+      "searchWeb": {
+        "title": "Alle Ergebnisse",
+        "searching": "Ergebnisse für",
+        "noResults": "Keine Ergebnisse",
+        "noResult": "Keine Ergebnisse für",
+        "searchTips": "Durchsuchen Sie das Web"
+      }
     }
   },
   "component": {
@@ -2722,7 +2774,8 @@
       },
       "common": "Allgemein",
       "recent": "Neueste",
-      "hot": "Heiß"
+      "hot": "Heiß",
+      "chainNotSupport": "Diese Kette wird nicht unterstützt"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2758,6 +2811,10 @@
       "button": "Fortfahren",
       "title": "Sie verlassen Rabby Wallet",
       "content": "Sie sind dabei, eine externe Website zu besuchen. Rabby Wallet ist nicht verantwortlich für den Inhalt oder die Sicherheit dieser Seite."
+    },
+    "TokenChart": {
+      "price": "Preis",
+      "holding": "Wert halten"
     }
   },
   "global": {

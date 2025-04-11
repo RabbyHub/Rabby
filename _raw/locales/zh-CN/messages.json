@@ -275,7 +275,31 @@
         "customizedButton": "个已添加",
         "blockedButton": "个已隐藏",
         "customizedButtons": "自定义代币",
-        "blockedButtons": "被阻止的代币"
+        "blockedButtons": "被阻止的代币",
+        "NoListedBy": "没有可用的列表信息",
+        "OriginalToken": "原始代币",
+        "myBalance": "我的余额",
+        "Chain": "链",
+        "customizedListTitle": "自定义代币",
+        "SupportedExchanges": "支持的交易所",
+        "OriginIssue": "原生发行在这个区块链上",
+        "BridgeProvider": "桥接服务提供商",
+        "customizedListTitles": "自定义代币",
+        "AddToMyTokenList": "添加到我的代币列表",
+        "blockedListTitle": "被阻止的 token",
+        "TokenName": "代币名称",
+        "maybeScamTips": "这是一个低质量的代币，可能是一个诈骗。",
+        "blockedListTitles": "被阻止的代币",
+        "customizedHasAddedTips": "该代币未在 Rabby 上列出。您已手动将其添加到代币列表中。",
+        "ContractAddress": "合约地址",
+        "blockedTips": "被阻止的令牌将不会显示在令牌列表中",
+        "IssuerWebsite": "发行者的网站",
+        "verifyScamTips": "这是一个诈骗代币",
+        "NoSupportedExchanges": "没有可用的支持交易所",
+        "noIssuer": "没有可用的发行方信息",
+        "BridgeIssue": "第三方桥接的 token",
+        "ListedBy": "列出 by",
+        "fdvTips": "如果最大供应量在流通中，市场总值请参考以下公式。完全稀释估值（FDV）= 价格 x 最大供应量。如果最大供应量为零，则 FDV = 价格 x 总供应量。如果最大供应量和总供应量都没有定义或为无限，则不显示 FDV。"
       },
       "assets": {
         "usdValue": "美元价值",
@@ -1717,7 +1741,8 @@
       },
       "verifyAddress": {
         "title": "验证地址"
-      }
+      },
+      "safeCantSignTypedData": "这是一个 Safe 地址，只支持签名 EIP-712 类型数据或字符串。"
     },
     "swap": {
       "Completed": "已完成",
@@ -2633,6 +2658,33 @@
       "selectAddress": {
         "title": "选择要同步的地址"
       }
+    },
+    "search": {
+      "sectionHeader": {
+        "NFT": "NFT",
+        "token": "代币",
+        "AllChains": "所有链",
+        "Defi": "DeFi"
+      },
+      "header": {
+        "placeHolder": "搜索",
+        "searchPlaceHolder": "搜索 Token 名称 / 地址"
+      },
+      "tokenItem": {
+        "Issuedby": "由...发行",
+        "listBy": "由 {{name}} 列出",
+        "FDV": "FDV",
+        "verifyDangerTips": "这是一个骗局代币",
+        "scamWarningTips": "这是一个低质量的代币，可能是一个骗局。",
+        "gasToken": "Gas Token"
+      },
+      "searchWeb": {
+        "noResults": "没有结果",
+        "searchTips": "在网页上搜索",
+        "searching": "结果为",
+        "noResult": "没有结果สำหรับ",
+        "title": "所有结果"
+      }
     }
   },
   "component": {
@@ -2760,7 +2812,8 @@
       },
       "recent": "最近",
       "hot": "热门",
-      "common": "常用"
+      "common": "常用",
+      "chainNotSupport": "此链不受支持"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2796,6 +2849,10 @@
       "button": "继续",
       "content": "您即将访问一个外部网站。Rabby Wallet 不对该网站的内容或安全性负责。",
       "title": "您将离开 Rabby 钱包"
+    },
+    "TokenChart": {
+      "price": "价格",
+      "holding": "持有价值"
     }
   },
   "background": {

@@ -158,7 +158,8 @@
       },
       "hot": "Chaud",
       "common": "Commun",
-      "recent": "Récent"
+      "recent": "Récent",
+      "chainNotSupport": "Cette chaîne n'est pas prise en charge"
     },
     "Uploader": {
       "placeholder": "Sélectionner un fichier JSON"
@@ -195,6 +196,10 @@
       "button": "Continuer",
       "title": "Vous quittez Rabby Wallet",
       "content": "Vous êtes sur le point de visiter un site web externe. Rabby Wallet n'est pas responsable du contenu ou de la sécurité de ce site."
+    },
+    "TokenChart": {
+      "holding": "Valeur de détention",
+      "price": "Prix"
     }
   },
   "constant": {
@@ -910,7 +915,31 @@
         "swap": "Échanger",
         "txFailed": "Échoué",
         "blockedButtons": "jetons bloqués",
-        "customizedButtons": "jetons personnalisés"
+        "customizedButtons": "jetons personnalisés",
+        "Chain": "Chaîne",
+        "SupportedExchanges": "Échanges pris en charge",
+        "verifyScamTips": "C'est un token de scam",
+        "customizedListTitle": "token personnalisé",
+        "BridgeIssue": "Jeton bridge par un tiers",
+        "NoSupportedExchanges": "Aucuns échanges pris en charge disponibles",
+        "AddToMyTokenList": "Ajouter à ma liste de tokens",
+        "blockedTips": "Le token bloqué ne sera pas affiché dans la liste des tokens.",
+        "blockedListTitle": "jeton bloqué",
+        "noIssuer": "Aucune information sur l'émetteur disponible",
+        "customizedListTitles": "tokens personnalisés",
+        "myBalance": "Mon solde",
+        "OriginalToken": "Token original",
+        "NoListedBy": "Aucune information de liste disponible",
+        "OriginIssue": "Émis nativement sur cette blockchain",
+        "ListedBy": "Répertorié par",
+        "customizedHasAddedTips": "Le jeton n'est pas listé par Rabby. Vous l'avez ajouté à la liste des jetons manuellement.",
+        "ContractAddress": "Adresse du contrat",
+        "maybeScamTips": "Ceci est un token de faible qualité et peut être une arnaque.",
+        "TokenName": "Nom du Token",
+        "blockedListTitles": "tokens bloqués",
+        "IssuerWebsite": "Site de l'émetteur",
+        "BridgeProvider": "Fournisseur de pont",
+        "fdvTips": "La capitalisation boursière si l'offre maximale était en circulation. Évaluation totalement diluée (FDV) = Prix x Offre maximale. Si l'offre maximale est nulle, FDV = Prix x Offre totale. Si ni l'offre maximale ni l'offre totale ne sont définies ou sont infinies, le FDV n'est pas affiché."
       },
       "GnosisWrongChainAlertBar": {
         "warning": "L'adresse Safe ne prend pas en charge {{chain}}",
@@ -2039,7 +2068,8 @@
       },
       "verifyAddress": {
         "title": "Vérifier l'adresse"
-      }
+      },
+      "safeCantSignTypedData": "Ceci est une adresse Safe, et elle ne prend en charge que la signature des données typées EIP-712 ou des chaînes."
     },
     "swap": {
       "Completed": "Complété",
@@ -2841,6 +2871,33 @@
       "selectedLenAddressesForSync_other": "Adresses sélectionnées {{len}} pour la synchronisation",
       "selectAddress": {
         "title": "Sélectionner les adresses à synchroniser"
+      }
+    },
+    "search": {
+      "sectionHeader": {
+        "Defi": "DeFi",
+        "NFT": "NFT",
+        "token": "Jetons",
+        "AllChains": "Toutes les chaînes"
+      },
+      "header": {
+        "placeHolder": "Recherche",
+        "searchPlaceHolder": "Rechercher le nom / l'adresse du Token"
+      },
+      "tokenItem": {
+        "Issuedby": "Émis par",
+        "listBy": "Liste par {{name}}",
+        "gasToken": "Jeton de Gaz",
+        "FDV": "FDV",
+        "verifyDangerTips": "Ceci est un token de scam",
+        "scamWarningTips": "C'est un jeton de mauvaise qualité et cela pourrait être une arnaque."
+      },
+      "searchWeb": {
+        "searchTips": "Rechercher sur le web",
+        "noResult": "Aucun résultat pour",
+        "searching": "Résultats pour",
+        "noResults": "Aucun résultat",
+        "title": "Tous les résultats"
       }
     }
   }

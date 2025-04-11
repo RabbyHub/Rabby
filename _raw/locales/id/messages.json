@@ -508,7 +508,8 @@
         "operationDecoded": "Operasi di-decode dari pesan"
       },
       "signTypeDataOnChain": "Tanda Tangani {{chain}} Data Terketik",
-      "safeCantSignText": "Ini adalah alamat Safe, dan tidak dapat digunakan untuk menandatangani teks."
+      "safeCantSignText": "Ini adalah alamat Safe, dan tidak dapat digunakan untuk menandatangani teks.",
+      "safeCantSignTypedData": "Ini adalah alamat Safe, dan hanya mendukung tanda tangan data bertipe EIP-712 atau string."
     },
     "activities": {
       "signedTx": {
@@ -1319,7 +1320,31 @@
         "customizedButton": "token kustom",
         "scamTx": "Scam tx",
         "customizedButtons": "token kustom",
-        "notSelectedCustom": "Token tidak terdaftar oleh Rabby. Itu akan ditambahkan ke daftar token jika Anda menghidupkannya."
+        "notSelectedCustom": "Token tidak terdaftar oleh Rabby. Itu akan ditambahkan ke daftar token jika Anda menghidupkannya.",
+        "blockedListTitle": "token yang diblokir",
+        "ListedBy": "D daftar oleh",
+        "noIssuer": "Tidak ada informasi penerbit yang tersedia",
+        "TokenName": "Nama Token",
+        "AddToMyTokenList": "Tambahkan ke daftar token saya",
+        "BridgeProvider": "Penyedia Jembatan",
+        "verifyScamTips": "Ini adalah token penipuan",
+        "customizedListTitle": "token kustom",
+        "IssuerWebsite": "Website Penerbit",
+        "OriginIssue": "Diterbitkan secara asli di blockchain ini",
+        "customizedListTitles": "token kustom",
+        "SupportedExchanges": "Bursa yang Didukung",
+        "blockedListTitles": "token yang diblokir",
+        "NoListedBy": "Tidak ada informasi daftar yang tersedia",
+        "BridgeIssue": "Token yang dijembatani oleh pihak ketiga",
+        "maybeScamTips": "Ini adalah token berkualitas rendah dan mungkin merupakan penipuan",
+        "blockedTips": "Token yang diblokir tidak akan ditampilkan dalam daftar token",
+        "NoSupportedExchanges": "Tidak ada bursa yang didukung tersedia",
+        "customizedHasAddedTips": "Token tersebut tidak terdaftar di Rabby. Anda telah menambahkannya ke daftar token secara manual.",
+        "OriginalToken": "Token Asli",
+        "Chain": "Rantai",
+        "ContractAddress": "Alamat Kontrak",
+        "myBalance": "Saldo Saya",
+        "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan."
       },
       "assets": {
         "portfolio": {
@@ -2592,6 +2617,33 @@
       "steps2Description": "*QR code Anda berisi data sensitif. Jaga kerahasiaannya dan jangan pernah membagikannya kepada siapa pun.",
       "selectedLenAddressesForSync_other": "Dipilih {{len}} alamat untuk disinkronkan",
       "disableSelectAddressWithPassphrase": "Sinkronisasi tidak didukung untuk alamat {{type}} dengan frasa sandi"
+    },
+    "search": {
+      "sectionHeader": {
+        "NFT": "NFT",
+        "Defi": "DeFi",
+        "token": "Token",
+        "AllChains": "Semua Rantai"
+      },
+      "header": {
+        "placeHolder": "Cari",
+        "searchPlaceHolder": "Cari Nama Token / Alamat"
+      },
+      "tokenItem": {
+        "gasToken": "Gas Token",
+        "verifyDangerTips": "Ini adalah token penipuan",
+        "Issuedby": "Diterbitkan oleh",
+        "FDV": "FDV",
+        "listBy": "Daftar oleh {{name}}",
+        "scamWarningTips": "Ini adalah token berkualitas rendah dan mungkin merupakan penipuan"
+      },
+      "searchWeb": {
+        "searching": "Hasil untuk",
+        "searchTips": "Cari di web",
+        "noResults": "Tidak Ada Hasil",
+        "title": "Semua Hasil",
+        "noResult": "Tidak ada hasil untuk"
+      }
     }
   },
   "component": {
@@ -2719,7 +2771,8 @@
       "hot": "Panas",
       "noTokens": "Tidak Ada Token",
       "noMatchSuggestion": "Coba untuk mencari alamat kontrak di {{ chainName }}",
-      "common": "Umum"
+      "common": "Umum",
+      "chainNotSupport": "Rantai ini tidak didukung"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -2755,6 +2808,10 @@
       "button": "Lanjutkan",
       "title": "Anda Sedang Meninggalkan Rabby Wallet",
       "content": "Anda akan mengunjungi situs web eksternal. Rabby Wallet tidak bertanggung jawab atas konten atau keamanan situs ini."
+    },
+    "TokenChart": {
+      "price": "Harga",
+      "holding": "Memiliki Nilai"
     }
   },
   "global": {
