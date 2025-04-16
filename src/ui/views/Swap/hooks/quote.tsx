@@ -233,6 +233,13 @@ export const useQuoteMethods = () => {
           pending_tx_list: pendingTx,
         });
 
+        if (
+          !tokenApproveGas?.gas_used === null &&
+          tokenApproveGas?.safe_gas_used === null
+        ) {
+          throw new Error('pre_exec_tx error');
+        }
+
         const txGasUsed =
           tokenApproveGas.gas_used || tokenApproveGas.safe_gas_used || 0;
 
@@ -280,6 +287,10 @@ export const useQuoteMethods = () => {
         }),
         getGasPrice(),
       ]);
+
+      if (!swapTxGas?.gas_used === null && swapTxGas?.safe_gas_used === null) {
+        throw new Error('pre_exec_tx error');
+      }
 
       const txGasUsed = swapTxGas.gas_used || swapTxGas.safe_gas_used || 0;
 
