@@ -86,6 +86,7 @@ export const BridgeContent = () => {
     clearExpiredTimer,
     maxNativeTokenGasPrice,
     setMaxNativeTokenGasPrice,
+    inSufficientCanGetQuote,
   } = useBridge();
 
   const amountAvailable = useMemo(() => Number(amount) > 0, [amount]);
@@ -393,7 +394,7 @@ export const BridgeContent = () => {
   });
 
   const noQuote =
-    !inSufficient &&
+    inSufficientCanGetQuote &&
     !!fromToken &&
     !!toToken &&
     Number(amount) > 0 &&
@@ -480,11 +481,11 @@ export const BridgeContent = () => {
             getContainer={getContainer}
           />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <BridgeSwitchBtn onClick={switchToken} />
+            <BridgeSwitchBtn onClick={switchToken} loading={quoteLoading} />
           </div>
         </div>
 
-        {inSufficient || (noQuote && !recommendFromToken) ? (
+        {!inSufficientCanGetQuote || (noQuote && !recommendFromToken) ? (
           <Alert
             className={clsx(
               'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
@@ -506,7 +507,7 @@ export const BridgeContent = () => {
                   'text-rabby-red-default'
                 )}
               >
-                {inSufficient
+                {!inSufficientCanGetQuote
                   ? t('page.bridge.insufficient-balance')
                   : t('page.bridge.no-quote-found')}
               </span>

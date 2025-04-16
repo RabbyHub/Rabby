@@ -72,6 +72,7 @@ interface SwapTokenItemProps {
   valueLoading?: boolean;
   currentQuote?: QuoteProvider;
   getContainer?: DrawerProps['getContainer'];
+  skeletonLoading?: boolean;
 }
 
 export const SwapTokenItem = (props: SwapTokenItemProps) => {
@@ -89,6 +90,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     valueLoading,
     currentQuote,
     getContainer,
+    skeletonLoading,
   } = props;
 
   const openTokenModalRef = useRef<{
@@ -226,7 +228,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           />
         </div>
 
-        {valueLoading ? (
+        {valueLoading && skeletonLoading ? (
           <SkeletonInput
             active
             className="rounded-[4px]"
@@ -245,7 +247,8 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             readOnly={!isFrom}
             className={clsx(
               !isFrom && 'cursor-pointer',
-              isFrom && inSufficient && 'text-r-red-default'
+              isFrom && inSufficient && 'text-r-red-default',
+              valueLoading && 'opacity-50'
             )}
           />
         )}
@@ -257,7 +260,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           <span className="text-13 text-rabby-neutral-foot">{balance}</span>
         </div>
         <div className="text-13 text-rabby-neutral-foot flex items-center gap-2 relative">
-          {valueLoading ? (
+          {valueLoading && skeletonLoading ? (
             <SkeletonInput
               active
               className="rounded-[4px]"
@@ -267,7 +270,9 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
               }}
             />
           ) : (
-            <span>{usdValue}</span>
+            <span className={clsx(valueLoading && 'opacity-50')}>
+              {usdValue}
+            </span>
           )}
         </div>
       </div>

@@ -16,6 +16,8 @@ import { useBridgeSlippage } from './slippage';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 
+export const enableInsufficientQuote = true;
+
 export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
   shouldApproveToken?: boolean;
   shouldTwoStepApprove?: boolean;
@@ -154,6 +156,10 @@ export const useBridge = () => {
     [fromToken, amount]
   );
 
+  const inSufficientCanGetQuote = enableInsufficientQuote
+    ? true
+    : !inSufficient;
+
   const getRecommendToChain = async (chain: CHAINS_ENUM) => {
     const useRemoteRecommendChain = async () => {
       const data = await wallet.openapi.getRecommendBridgeToChain({
@@ -268,7 +274,24 @@ export const useBridge = () => {
   useEffect(() => {
     setQuotesList([]);
     setRecommendFromToken(undefined);
-  }, [fromToken?.id, toToken?.id, fromChain, toChain, amount, inSufficient]);
+    setSelectedBridgeQuote(undefined);
+  }, [fromToken?.id, toToken?.id, fromChain, toChain]);
+
+  useEffect(() => {
+    if (!inSufficientCanGetQuote) {
+      setQuotesList([]);
+      setRecommendFromToken(undefined);
+      setSelectedBridgeQuote(undefined);
+    }
+  }, [inSufficientCanGetQuote, setSelectedBridgeQuote]);
+
+  useEffect(() => {
+    if (!enableInsufficientQuote || !amount || Number(amount) === 0) {
+      setQuotesList([]);
+      setRecommendFromToken(undefined);
+      setSelectedBridgeQuote(undefined);
+    }
+  }, [amount, setSelectedBridgeQuote]);
 
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
@@ -281,7 +304,7 @@ export const useBridge = () => {
   ] = useAsyncFn(async () => {
     fetchIdRef.current += 1;
     if (
-      !inSufficient &&
+      inSufficientCanGetQuote &&
       userAddress &&
       fromToken?.id &&
       toToken?.id &&
@@ -489,9 +512,8 @@ export const useBridge = () => {
         }
       }
     }
-    setSelectedBridgeQuote(undefined);
   }, [
-    inSufficient,
+    inSufficientCanGetQuote,
     aggregatorsList,
     refreshId,
     userAddress,
@@ -507,7 +529,7 @@ export const useBridge = () => {
 
   useEffect(() => {
     if (
-      !inSufficient &&
+      inSufficientCanGetQuote &&
       userAddress &&
       fromToken?.id &&
       toToken?.id &&
@@ -520,9 +542,10 @@ export const useBridge = () => {
       setPending(true);
     } else {
       setPending(false);
+      setSelectedBridgeQuote(undefined);
     }
   }, [
-    inSufficient,
+    inSufficientCanGetQuote,
     userAddress,
     fromToken?.id,
     toToken?.id,
@@ -702,6 +725,7 @@ export const useBridge = () => {
     fillRecommendFromToken,
 
     inSufficient,
+    inSufficientCanGetQuote,
     amount,
     handleAmountChange,
     showLoss,

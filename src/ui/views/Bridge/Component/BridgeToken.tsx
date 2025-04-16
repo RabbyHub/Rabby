@@ -70,6 +70,7 @@ export const BridgeToken = ({
   inSufficient,
   handleSetGasPrice,
   getContainer,
+  skeletonLoading,
 }: {
   type?: 'from' | 'to';
   token?: TokenItem;
@@ -88,6 +89,7 @@ export const BridgeToken = ({
   fromTokenId?: string;
   noQuote?: boolean;
   getContainer?: DrawerProps['getContainer'];
+  skeletonLoading?: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -264,7 +266,7 @@ export const BridgeToken = ({
 
       <div className={clsx('p-16 pb-[18px]')}>
         <div className={clsx('flex justify-between items-center')}>
-          {valueLoading ? (
+          {valueLoading && skeletonLoading ? (
             <SkeletonInput
               active
               className="rounded-[4px]"
@@ -275,7 +277,10 @@ export const BridgeToken = ({
             />
           ) : (
             <StyledInput
-              className={clsx(inSufficient && 'text-rabby-red-default')}
+              className={clsx(
+                inSufficient && 'text-rabby-red-default',
+                valueLoading && 'opacity-50'
+              )}
               placeholder={showNoQuote ? t('page.bridge.no-quote') : '0'}
               value={value}
               onChange={inputChange}
@@ -318,7 +323,7 @@ export const BridgeToken = ({
           )}
         >
           <div className="flex items-center gap-2">
-            {valueLoading ? (
+            {valueLoading && skeletonLoading ? (
               <SkeletonInput
                 active
                 className="rounded-[4px]"
@@ -328,13 +333,15 @@ export const BridgeToken = ({
                 }}
               />
             ) : (
-              <span>{useValue}</span>
+              <span className={clsx(valueLoading && 'opacity-50')}>
+                {useValue}
+              </span>
             )}
           </div>
           <div className="flex items-center gap-4 relative">
             <div className="flex items-center gap-4">
               <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
-              <span>
+              <span className={clsx(valueLoading && 'opacity-50')}>
                 {token
                   ? formatTokenAmount(tokenAmountBn(token).toString(10)) || '0'
                   : 0}

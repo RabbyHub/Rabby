@@ -30,6 +30,8 @@ import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
 const isTab = getUiType().isTab;
 
+export const enableInsufficientQuote = true;
+
 const useTokenInfo = ({
   userAddress,
   chain,
@@ -408,6 +410,10 @@ export const useTokenPair = (userAddress: string) => {
     [payToken, inputAmount]
   );
 
+  const inSufficientCanGetQuote = enableInsufficientQuote
+    ? true
+    : !inSufficient;
+
   useEffect(() => {
     if (isWrapToken) {
       setFeeRate('0');
@@ -422,7 +428,24 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     setQuotesList([]);
-  }, [payToken?.id, receiveToken?.id, chain, inputAmount, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, inputAmount]);
+
+  useEffect(() => {
+    setActiveProvider(undefined);
+  }, [payToken?.id, receiveToken?.id, chain]);
+
+  useEffect(() => {
+    if (!enableInsufficientQuote || !inputAmount || Number(inputAmount) === 0) {
+      setActiveProvider(undefined);
+    }
+  }, [inputAmount]);
+
+  useEffect(() => {
+    if (!inSufficientCanGetQuote) {
+      setQuotesList([]);
+      setActiveProvider(undefined);
+    }
+  }, [inSufficientCanGetQuote]);
 
   const setQuote = useCallback(
     (id: number) => (quote: TDexQuoteData) => {
@@ -468,13 +491,13 @@ export const useTokenPair = (userAddress: string) => {
       chain &&
       Number(inputAmount) > 0 &&
       feeRate &&
-      !inSufficient &&
+      inSufficientCanGetQuote &&
       !isDraggingSlider
     ) {
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
-      setActiveProvider(undefined);
+      // setActiveProvider(undefined);
       return getAllQuotes({
         userAddress,
         payToken,
@@ -493,7 +516,7 @@ export const useTokenPair = (userAddress: string) => {
     }
   }, [
     setActiveProvider,
-    inSufficient,
+    inSufficientCanGetQuote,
     setQuotesList,
     setQuote,
     refreshId,
@@ -516,7 +539,7 @@ export const useTokenPair = (userAddress: string) => {
       chain &&
       Number(inputAmount) > 0 &&
       feeRate &&
-      !inSufficient
+      inSufficientCanGetQuote
     ) {
       setPending(true);
     } else {
@@ -529,7 +552,7 @@ export const useTokenPair = (userAddress: string) => {
     chain,
     inputAmount,
     feeRate,
-    inSufficient,
+    inSufficientCanGetQuote,
     slippageObj?.slippage,
   ]);
 
@@ -650,7 +673,13 @@ export const useTokenPair = (userAddress: string) => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-  }, [payToken?.id, receiveToken?.id, chain, inputAmount, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, inputAmount]);
+
+  useEffect(() => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+    }
+  }, [inSufficientCanGetQuote]);
 
   useEffect(() => {
     let active = true;
@@ -777,6 +806,7 @@ export const useTokenPair = (userAddress: string) => {
     isWrapToken,
     wrapTokenSymbol,
     inSufficient,
+    inSufficientCanGetQuote,
 
     feeRate,
 
