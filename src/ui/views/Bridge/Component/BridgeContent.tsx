@@ -36,6 +36,7 @@ import { BridgeSwitchBtn } from './BridgeSwitchButton';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { Header } from './BridgeHeader';
 import { obj2query } from '@/ui/utils/url';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
@@ -567,53 +568,59 @@ export const BridgeContent = () => {
             isTab ? 'rounded-b-[16px]' : ''
           )}
         >
-          <Button
-            loading={fetchingBridgeQuote}
-            type="primary"
-            block
-            size="large"
-            className="h-[48px] text-white text-[16px] font-medium"
-            onClick={() => {
-              if (fetchingBridgeQuote) return;
-              if (!selectedBridgeQuote) {
-                refresh((e) => e + 1);
-
-                return;
-              }
-              if (selectedBridgeQuote?.shouldTwoStepApprove) {
-                return Modal.confirm({
-                  width: 360,
-                  closable: true,
-                  centered: true,
-                  className: twoStepApproveCn,
-                  title: null,
-                  content: (
-                    <>
-                      <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                        Sign 2 transactions to change allowance
-                      </div>
-                      <div className="text-13 leading-[17px]  text-r-neutral-body">
-                        Token USDT requires 2 transactions to change allowance.
-                        First you would need to reset allowance to zero, and
-                        only then set new allowance value.
-                      </div>
-                    </>
-                  ),
-                  okText: 'Proceed with two step approve',
-
-                  onOk() {
-                    // gotoBridge();
-                    handleBridge();
-                  },
-                });
-              }
-              // gotoBridge();
-              handleBridge();
-            }}
-            disabled={btnDisabled}
+          <TooltipWithMagnetArrow
+            overlayClassName="rectangle w-[max-content]"
+            title={t('page.swap.insufficient-balance')}
+            visible={inSufficient && selectedBridgeQuote ? undefined : false}
           >
-            {btnText}
-          </Button>
+            <Button
+              loading={fetchingBridgeQuote}
+              type="primary"
+              block
+              size="large"
+              className="h-[48px] text-white text-[16px] font-medium"
+              onClick={() => {
+                if (fetchingBridgeQuote) return;
+                if (!selectedBridgeQuote) {
+                  refresh((e) => e + 1);
+
+                  return;
+                }
+                if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                  return Modal.confirm({
+                    width: 360,
+                    closable: true,
+                    centered: true,
+                    className: twoStepApproveCn,
+                    title: null,
+                    content: (
+                      <>
+                        <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                          Sign 2 transactions to change allowance
+                        </div>
+                        <div className="text-13 leading-[17px]  text-r-neutral-body">
+                          Token USDT requires 2 transactions to change
+                          allowance. First you would need to reset allowance to
+                          zero, and only then set new allowance value.
+                        </div>
+                      </>
+                    ),
+                    okText: 'Proceed with two step approve',
+
+                    onOk() {
+                      // gotoBridge();
+                      handleBridge();
+                    },
+                  });
+                }
+                // gotoBridge();
+                handleBridge();
+              }}
+              disabled={btnDisabled}
+            >
+              {btnText}
+            </Button>
+          </TooltipWithMagnetArrow>
         </div>
         {fromToken && toToken ? (
           <QuoteList
