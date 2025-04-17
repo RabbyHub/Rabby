@@ -338,9 +338,11 @@ export const DexQuoteItem = (
 
   const isErrorQuote = useMemo(
     () =>
-      !isSdkDataPass ||
-      !quote?.toTokenAmount ||
-      !!(quote?.toTokenAmount && !preExecResult && !inSufficient),
+      inSufficient
+        ? false
+        : !isSdkDataPass ||
+          !quote?.toTokenAmount ||
+          !!(quote?.toTokenAmount && !preExecResult && !inSufficient),
     [isSdkDataPass, quote, preExecResult, inSufficient]
   );
 
@@ -448,7 +450,8 @@ export const DexQuoteItem = (
                 <div
                   className={clsx(
                     'inline-flex items-center gap-4 px-4',
-                    gasFeeTooHight && 'bg-r-red-light'
+                    gasFeeTooHight && 'bg-r-red-light',
+                    !preExecResult && 'hidden'
                   )}
                 >
                   <RcIconGasCC
