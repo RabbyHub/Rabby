@@ -86,7 +86,6 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
       overlayClassName="rectangle w-[max-content]"
       placement="top"
       title={'Insufficient balance'}
-      trigger={['click']}
       visible={props.inSufficient && !props.onlyShow ? undefined : false}
       align={{ offset: [0, 30] }}
       arrowPointAtCenter

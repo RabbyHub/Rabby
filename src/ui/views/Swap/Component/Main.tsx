@@ -705,7 +705,7 @@ export const Main = () => {
           <TooltipWithMagnetArrow
             overlayClassName="rectangle w-[max-content]"
             title={t('page.swap.insufficient-balance')}
-            visible={inSufficient ? undefined : false}
+            visible={inSufficient && activeProvider ? undefined : false}
           >
             <Button
               type="primary"
