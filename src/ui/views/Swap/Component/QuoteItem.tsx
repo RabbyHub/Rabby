@@ -384,7 +384,6 @@ export const DexQuoteItem = (
           ? t('page.swap.Gas-fee-too-high')
           : t('page.swap.insufficient-balance')
       }
-      trigger={['click']}
       visible={tooltipVisible}
       align={{ offset: [0, 30] }}
       arrowPointAtCenter
