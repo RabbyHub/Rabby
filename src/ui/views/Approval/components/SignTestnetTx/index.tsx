@@ -316,7 +316,12 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
               .times(buffer)
               .toFixed(0);
           }
-
+          if (tx.gas || tx.gasLimit) {
+            recommendGasLimit = Math.max(
+              Number(tx.gas || tx.gasLimit),
+              Number(recommendGasLimit)
+            ).toString();
+          }
           setGasLimit(
             `0x${new BigNumber(recommendGasLimit).integerValue().toString(16)}`
           );
@@ -324,9 +329,11 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         return `0x${new BigNumber(estimateGas).integerValue().toString(16)}`;
       } catch (e) {
         console.error(e);
-        const fallback = intToHex(2000000);
+        const fallbackNumber = 2000000;
+        const fallback = intToHex(fallbackNumber);
         if (!gasLimit) {
-          setGasLimit(fallback);
+          const dappSetGasLimit = Number(tx.gas || tx.gasLimit || 0);
+          setGasLimit(intToHex(Math.max(dappSetGasLimit, fallbackNumber)));
         }
         return fallback;
       }

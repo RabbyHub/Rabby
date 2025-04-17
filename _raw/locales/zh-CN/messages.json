@@ -2671,7 +2671,7 @@
         "searchPlaceHolder": "搜索 Token 名称 / 地址"
       },
       "tokenItem": {
-        "Issuedby": "由...发行",
+        "Issuedby": "发行方",
         "listBy": "由 {{name}} 列出",
         "FDV": "FDV",
         "verifyDangerTips": "这是一个骗局代币",

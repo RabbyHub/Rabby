@@ -413,7 +413,7 @@ const TokenSelector = ({
               >
                 <RcIconChainFilterCloseCC
                   viewBox="0 0 16 16"
-                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-body hover:text-r-red-default"
+                  className="filter-item__chain-close w-[16px] h-[16px] ml-[2px] text-r-neutral-foot hover:text-r-red-default"
                 />
               </div>
             </div>
@@ -636,7 +636,7 @@ function CommonTokenItem(props: {
             <span className="symbol_click" onClick={onClickTokenSymbol}>
               {getTokenSymbol(token)}
             </span>
-            <span className="symbol text-13 font-normal text-r-neutral-foot">
+            <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
               {isSwapTo
                 ? `$${formatPrice(token.price || 0)}`
                 : currentChainName}
@@ -684,7 +684,7 @@ function CommonTokenItem(props: {
                     .toFixed()
                 )}
               </div>
-              <div className="text-13 font-normal text-r-neutral-foot">
+              <div className="text-13 font-normal text-r-neutral-foot mb-2">
                 {formatTokenAmount(value?.amount || 0)}
               </div>
             </>

@@ -192,7 +192,7 @@ const checkSwAlive = () => {
   console.log('[checkSwAlive]', new Date());
   Promise.race([
     new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('timeout')), 3000)
+      setTimeout(() => reject(new Error('timeout')), 5000)
     ),
     browser.runtime.sendMessage({
       type: 'ping',
@@ -201,9 +201,21 @@ const checkSwAlive = () => {
     .then(() => {
       console.log('[checkSwAlive] sw is alive');
     })
-    .catch(() => {
-      console.log('[checkSwAlive] sw is inactive');
-      Sentry.captureMessage('sw is inactive');
+    .catch((e) => {
+      if (e.message === 'timeout') {
+        console.log('[checkSwAlive] sw is inactive', e);
+        Sentry.captureException(
+          'sw is inactive' +
+            (browser.runtime.lastError ? ':' + browser.runtime.lastError : '')
+        );
+      } else {
+        console.log('[checkSwAlive] sw is dead');
+        Sentry.captureMessage(
+          'sw is dead:' +
+            e.message +
+            (browser.runtime.lastError ? ':' + browser.runtime.lastError : '')
+        );
+      }
     });
 };
 checkSwAlive();
