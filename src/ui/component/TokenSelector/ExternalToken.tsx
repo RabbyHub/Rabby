@@ -145,7 +145,7 @@ const ExternalTokenRow = memo(
                 {data.identity?.domain_id}
               </span>
             </div>
-            <BoxWrapper className="absolute bottom-0 left-0 h-33 w-full" />
+            <BoxWrapper className="absolute bottom-0 left-0 w-full" />
           </div>
         );
       }
@@ -163,7 +163,7 @@ const ExternalTokenRow = memo(
     return (
       <div
         className={clsx(
-          'token-list__item h-auto cursor-pointer',
+          'token-list__item h-auto py-[15px] cursor-pointer',
           disabled && 'token-disabled'
         )}
         onClick={onPressToken}
@@ -223,13 +223,13 @@ const ExternalTokenRow = memo(
                 </div>
               </div>
               {isGasToken ? (
-                <span className="symbol text-13 ml-[6px]">
+                <span className="symbol text-13 ml-[10px]">
                   <span className="bg-r-blue-light2 py-2 px-6 rounded text-[11px] font-medium text-r-blue-default w-auto inline-block">
                     {t('page.search.tokenItem.gasToken')}
                   </span>
                 </span>
               ) : (
-                <span className="symbol text-13 font-normal text-r-neutral-foot">
+                <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
                   {t('page.search.tokenItem.FDV')}{' '}
                   {data.identity?.fdv
                     ? formatUsdValue(data.identity?.fdv)
@@ -248,7 +248,9 @@ const ExternalTokenRow = memo(
                 data.price || 0
               )}
             </span>
-            <span className={clsx('text-sm text-13 font-normal', percentColor)}>
+            <span
+              className={clsx('text-sm text-13 font-normal mb-2', percentColor)}
+            >
               {formatPercentage(data.price_24h_change || 0)}
             </span>
           </div>
