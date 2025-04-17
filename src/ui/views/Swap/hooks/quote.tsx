@@ -337,12 +337,36 @@ export const useQuoteMethods = () => {
 
         let preExecResult;
         if (data) {
+          const { isSdkDataPass } = verifySdk({
+            chain,
+            dexId,
+            slippage,
+            data: {
+              ...data,
+              fromToken: payToken.id,
+              fromTokenAmount: new BigNumber(payAmount)
+                .times(10 ** payToken.decimals)
+                .toFixed(0, 1),
+              toToken: receiveToken?.id,
+            },
+            payToken,
+            receiveToken,
+          });
+
           if (inSufficient) {
             const quote: TDexQuoteData = {
               data,
               name: dexId,
               isDex: true,
-              preExecResult: null,
+              preExecResult: {
+                gasUsd: '0',
+                gasPrice: 0,
+                gasUsed: 0,
+                gasUsdValue: '0',
+                isSdkPass: isSdkDataPass,
+                shouldApproveToken: false,
+                shouldTwoStepApprove: false,
+              },
             };
             setQuote?.(quote);
             return quote;
@@ -365,21 +389,7 @@ export const useQuoteMethods = () => {
                 retries: 1,
               }
             );
-            const { isSdkDataPass } = verifySdk({
-              chain,
-              dexId,
-              slippage,
-              data: {
-                ...data,
-                fromToken: payToken.id,
-                fromTokenAmount: new BigNumber(payAmount)
-                  .times(10 ** payToken.decimals)
-                  .toFixed(0, 1),
-                toToken: receiveToken?.id,
-              },
-              payToken,
-              receiveToken,
-            });
+
             preExecResult.isSdkPass = isSdkDataPass;
           } catch (error) {
             const quote: TDexQuoteData = {

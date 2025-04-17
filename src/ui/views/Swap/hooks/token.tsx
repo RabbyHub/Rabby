@@ -612,8 +612,7 @@ export const useTokenPair = (userAddress: string) => {
         setBestQuoteDex(bestQuote.name);
 
         setActiveProvider((preItem) =>
-          !inSufficient &&
-          (!bestQuote.preExecResult || !bestQuote.preExecResult.isSdkPass)
+          !bestQuote.preExecResult || !bestQuote.preExecResult.isSdkPass
             ? undefined
             : preItem?.manualClick
             ? preItem
