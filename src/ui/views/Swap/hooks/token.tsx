@@ -497,7 +497,6 @@ export const useTokenPair = (userAddress: string) => {
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
-      // setActiveProvider(undefined);
       return getAllQuotes({
         userAddress,
         payToken,
@@ -509,8 +508,11 @@ export const useTokenPair = (userAddress: string) => {
         setQuote: setQuote(currentFetchId),
         inSufficient,
       }).finally(() => {
-        setPending(false);
-        setShowMoreVisible(true);
+        if (currentFetchId === fetchIdRef.current) {
+          setActiveProvider(undefined);
+          setPending(false);
+          setShowMoreVisible(true);
+        }
       });
     } else {
       setActiveProvider(undefined);
