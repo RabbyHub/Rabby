@@ -569,7 +569,10 @@ export const useTokenPair = (userAddress: string) => {
     if (
       !quoteLoading &&
       receiveToken &&
-      quoteList.every((q, idx) => !q.loading)
+      payToken &&
+      quoteList.every((q, idx) => !q.loading) &&
+      receiveToken?.id === quoteList[0]?.data?.toToken &&
+      payToken?.id === quoteList[0]?.data?.fromToken
     ) {
       const sortIncludeGasFee = true;
       const sortedList = [
@@ -639,7 +642,7 @@ export const useTokenPair = (userAddress: string) => {
         );
       }
     }
-  }, [quoteList, quoteLoading, receiveToken, inSufficient, visible]);
+  }, [quoteList, quoteLoading, receiveToken, inSufficient, visible, payToken]);
 
   if (quotesError) {
     console.error('quotesError', quotesError);
