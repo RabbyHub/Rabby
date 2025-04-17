@@ -339,7 +339,15 @@ export const BridgeToken = ({
             )}
           </div>
           <div className="flex items-center gap-4 relative">
-            <div className="flex items-center gap-4">
+            <div
+              className={clsx(
+                'flex items-center gap-4',
+
+                isFromToken && inSufficient
+                  ? 'text-rabby-red-default'
+                  : 'text-r-neutral-foot'
+              )}
+            >
               <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
               <span className={clsx(valueLoading && 'opacity-50')}>
                 {token
