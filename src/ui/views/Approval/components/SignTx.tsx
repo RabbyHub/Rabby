@@ -324,6 +324,7 @@ interface SignTxProps<TData extends any[] = any[]> {
 const SignTx = ({ params, origin }: SignTxProps) => {
   const { isGnosis, account } = params;
   const renderStartAt = useRef(0);
+  const reportedRenderDuration = useRef(false);
   const securityEngineCtx = useRef<any>(null);
   const logId = useRef('');
   const actionType = useRef('');
@@ -1855,7 +1856,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, []);
 
   useEffect(() => {
-    if (isReady) {
+    if (isReady && !reportedRenderDuration.current) {
       if (scrollRef.current && scrollRef.current.scrollTop > 0) {
         scrollRef.current && (scrollRef.current.scrollTop = 0);
       }
@@ -1866,6 +1867,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         chain: chain?.serverId || '',
         duration,
       });
+      reportedRenderDuration.current = true;
     }
   }, [isReady]);
 

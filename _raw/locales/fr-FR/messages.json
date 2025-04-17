@@ -741,7 +741,7 @@
           "ecology": "Écosystème",
           "bridge": "Bridger",
           "rabbyPoints": "Rabby Points",
-          "mobile": "Rabby Mobile"
+          "mobile": "Mobile Sync"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",

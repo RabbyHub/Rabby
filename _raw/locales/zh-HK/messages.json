@@ -110,7 +110,7 @@
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
           "ecology": "生態系統",
-          "mobile": "Rabby Mobile"
+          "mobile": "Mobile Sync"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -2671,7 +2671,7 @@
         "searchPlaceHolder": "搜索代币名称 / 地址"
       },
       "tokenItem": {
-        "Issuedby": "由…發出",
+        "Issuedby": "發行方",
         "FDV": "FDV",
         "listBy": "由 {{name}} 列表",
         "gasToken": "Gas Token",
