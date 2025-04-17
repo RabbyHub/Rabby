@@ -507,6 +507,7 @@ export const useTokenPair = (userAddress: string) => {
         payAmount: inputAmount,
         fee: feeRate,
         setQuote: setQuote(currentFetchId),
+        inSufficient,
       }).finally(() => {
         setPending(false);
         setShowMoreVisible(true);
