@@ -255,9 +255,17 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 text-rabby-neutral-foot">
+        <div
+          className={clsx(
+            'flex items-center gap-4 ',
+
+            isFrom && inSufficient
+              ? 'text-r-red-default'
+              : 'text-rabby-neutral-foot'
+          )}
+        >
           <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
-          <span className="text-13 text-rabby-neutral-foot">{balance}</span>
+          <span className="text-13">{balance}</span>
         </div>
         <div className="text-13 text-rabby-neutral-foot flex items-center gap-2 relative">
           {valueLoading && skeletonLoading ? (

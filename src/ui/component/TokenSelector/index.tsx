@@ -274,9 +274,6 @@ const TokenSelector = ({
   }, [type, query, isSwapType, displayList, query, chainServerId]);
 
   const CommonHeader = React.useMemo(() => {
-    if (type === 'swapTo') {
-      return null;
-    }
     if (type === 'bridgeTo') {
       return (
         <li className={clsx('token-list__header')}>
@@ -295,13 +292,7 @@ const TokenSelector = ({
         </li>
       );
     }
-    return (
-      <li className={clsx('token-list__header')}>
-        <div>{t('component.TokenSelector.bridge.token')}</div>
-        <div />
-        <div>{t('component.TokenSelector.bridge.value')}</div>
-      </li>
-    );
+    return null;
   }, [isSwapOrBridge, type, t]);
 
   const isSwapTo = type === 'swapTo';

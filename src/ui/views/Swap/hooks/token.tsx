@@ -507,6 +507,7 @@ export const useTokenPair = (userAddress: string) => {
         payAmount: inputAmount,
         fee: feeRate,
         setQuote: setQuote(currentFetchId),
+        inSufficient,
       }).finally(() => {
         setPending(false);
         setShowMoreVisible(true);
@@ -611,7 +612,8 @@ export const useTokenPair = (userAddress: string) => {
         setBestQuoteDex(bestQuote.name);
 
         setActiveProvider((preItem) =>
-          !bestQuote.preExecResult || !bestQuote.preExecResult.isSdkPass
+          !inSufficient &&
+          (!bestQuote.preExecResult || !bestQuote.preExecResult.isSdkPass)
             ? undefined
             : preItem?.manualClick
             ? preItem
