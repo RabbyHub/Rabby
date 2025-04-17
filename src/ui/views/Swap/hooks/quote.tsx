@@ -162,12 +162,35 @@ export const useQuoteMethods = () => {
         from: userAddress,
         chainId: chainInfo.id,
       });
-      const lastTimeGas: ChainGas | null = await walletController.getLastTimeGasSelection(
-        chainInfo.id
-      );
 
-      const getGasPrice = async () => {
-        const gasMarket = await walletController.gasMarketV2({
+      const getGasUsed = async () => {
+        if (isSwapWrapToken(payToken.id, receiveToken.id, chain)) {
+          const data = await walletOpenapi.estimateGasUsd({
+            tx: {
+              ...quote.tx,
+              nonce: nonce,
+              chainId: chainInfo.id,
+              value: `0x${new BigNumber(quote.tx.value).toString(16)}`,
+            } as Tx,
+            origin: INTERNAL_REQUEST_ORIGIN,
+            address: userAddress,
+            updateNonce: true,
+            pending_tx_list: [],
+          });
+          return data.gas_used || data.safe_gas_used || 0;
+        }
+        return quote.gasUsed || 0;
+      };
+
+      const [
+        lastTimeGas,
+        gasMarket,
+        [tokenApproved, shouldTwoStepApprove],
+        nativeToken,
+        gasUsed,
+      ] = await Promise.all([
+        walletController.getLastTimeGasSelection(chainInfo.id),
+        walletController.gasMarketV2({
           chain: chainInfo,
           tx: {
             ...quote.tx,
@@ -175,8 +198,19 @@ export const useQuoteMethods = () => {
             chainId: chainInfo.id,
             gas: '0x0',
           },
-        });
+        }),
+        getTokenApproveStatus({
+          payToken,
+          receiveToken,
+          payAmount,
+          chain,
+          dexId,
+        }),
+        nativeTokenPriceRef.current!,
+        getGasUsed(),
+      ]);
 
+      const getGasPrice = () => {
         let gasPrice = 0;
         if (
           lastTimeGas?.lastTimeSelect === 'gasPrice' &&
@@ -205,87 +239,7 @@ export const useQuoteMethods = () => {
         return gasPrice;
       };
 
-      let nextNonce = nonce;
-      const pendingTx: Tx[] = [];
-      let gasUsed = 0;
-
-      const approveToken = async (amount: string) => {
-        const tokenApproveParams = await walletController.generateApproveTokenTx(
-          {
-            from: userAddress,
-            to: payToken.id,
-            chainId: chainInfo.id,
-            spender: getSpender(dexId, chain),
-            amount,
-          }
-        );
-        const tokenApproveTx = {
-          ...tokenApproveParams,
-          nonce: nextNonce,
-          value: '0x',
-        };
-
-        const tokenApproveGas = await walletOpenapi.estimateGasUsd({
-          tx: tokenApproveTx,
-          origin: INTERNAL_REQUEST_ORIGIN,
-          address: userAddress,
-          updateNonce: true,
-          pending_tx_list: pendingTx,
-        });
-
-        const txGasUsed =
-          tokenApproveGas.gas_used || tokenApproveGas.safe_gas_used || 0;
-
-        gasUsed += txGasUsed;
-
-        pendingTx.push({
-          ...tokenApproveTx,
-          gas: `0x${new BigNumber(txGasUsed).times(4).toString(16)}`,
-        });
-        nextNonce = `0x${new BigNumber(nextNonce).plus(1).toString(16)}`;
-      };
-
-      const [tokenApproved, shouldTwoStepApprove] = await getTokenApproveStatus(
-        {
-          payToken,
-          receiveToken,
-          payAmount,
-          chain,
-          dexId,
-        }
-      );
-
-      if (shouldTwoStepApprove) {
-        await approveToken('0');
-      }
-
-      if (!tokenApproved) {
-        await approveToken(
-          new BigNumber(payAmount).times(10 ** payToken.decimals).toFixed(0, 1)
-        );
-      }
-
-      const [swapTxGas, gasPrice = 0] = await Promise.all([
-        walletOpenapi.estimateGasUsd({
-          tx: {
-            ...quote.tx,
-            nonce: nextNonce,
-            chainId: chainInfo.id,
-            value: `0x${new BigNumber(quote.tx.value).toString(16)}`,
-          } as Tx,
-          origin: INTERNAL_REQUEST_ORIGIN,
-          address: userAddress,
-          updateNonce: true,
-          pending_tx_list: pendingTx,
-        }),
-        getGasPrice(),
-      ]);
-
-      const txGasUsed = swapTxGas.gas_used || swapTxGas.safe_gas_used || 0;
-
-      gasUsed += txGasUsed;
-
-      const nativeToken = await nativeTokenPriceRef.current!;
+      const gasPrice = getGasPrice();
 
       const gasUsdValue = new BigNumber(gasUsed)
         .times(gasPrice)
@@ -296,7 +250,6 @@ export const useQuoteMethods = () => {
       return {
         shouldApproveToken: !tokenApproved,
         shouldTwoStepApprove,
-        swapPreExecTx: swapTxGas,
         gasPrice,
         gasUsed,
         gasUsdValue,
@@ -322,8 +275,10 @@ export const useQuoteMethods = () => {
       chain,
       dexId,
       setQuote,
+      inSufficient,
     }: getDexQuoteParams & {
       setQuote?: (quote: TDexQuoteData) => void;
+      inSufficient: boolean;
     }): Promise<TDexQuoteData> => {
       const isOpenOcean = dexId === DEX_ENUM.OPENOCEAN;
       try {
@@ -365,6 +320,7 @@ export const useQuoteMethods = () => {
               fee: true,
               chainServerId: findChainByEnum(chain)!.serverId,
               nativeTokenAddress: findChainByEnum(chain)!.nativeTokenAddress,
+              insufficient: inSufficient,
             },
             walletOpenapi
           );
@@ -381,6 +337,41 @@ export const useQuoteMethods = () => {
 
         let preExecResult;
         if (data) {
+          const { isSdkDataPass } = verifySdk({
+            chain,
+            dexId,
+            slippage,
+            data: {
+              ...data,
+              fromToken: payToken.id,
+              fromTokenAmount: new BigNumber(payAmount)
+                .times(10 ** payToken.decimals)
+                .toFixed(0, 1),
+              toToken: receiveToken?.id,
+            },
+            payToken,
+            receiveToken,
+          });
+
+          if (inSufficient) {
+            const quote: TDexQuoteData = {
+              data,
+              name: dexId,
+              isDex: true,
+              preExecResult: {
+                gasUsd: '0',
+                gasPrice: 0,
+                gasUsed: 0,
+                gasUsdValue: '0',
+                isSdkPass: isSdkDataPass,
+                shouldApproveToken: false,
+                shouldTwoStepApprove: false,
+              },
+            };
+            setQuote?.(quote);
+            return quote;
+          }
+
           try {
             preExecResult = await pRetry(
               () =>
@@ -392,26 +383,13 @@ export const useQuoteMethods = () => {
                   payAmount,
                   quote: data,
                   dexId: dexId as DEX_ENUM,
+                  inSufficient,
                 }),
               {
                 retries: 1,
               }
             );
-            const { isSdkDataPass } = verifySdk({
-              chain,
-              dexId,
-              slippage,
-              data: {
-                ...data,
-                fromToken: payToken.id,
-                fromTokenAmount: new BigNumber(payAmount)
-                  .times(10 ** payToken.decimals)
-                  .toFixed(0, 1),
-                toToken: receiveToken?.id,
-              },
-              payToken,
-              receiveToken,
-            });
+
             preExecResult.isSdkPass = isSdkDataPass;
           } catch (error) {
             const quote: TDexQuoteData = {
@@ -570,6 +548,7 @@ interface getDexQuoteParams {
   payAmount: string;
   chain: CHAINS_ENUM;
   dexId: DEX_ENUM;
+  inSufficient: boolean;
 }
 
 export type TDexQuoteData = {

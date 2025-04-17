@@ -72,6 +72,7 @@ interface SwapTokenItemProps {
   valueLoading?: boolean;
   currentQuote?: QuoteProvider;
   getContainer?: DrawerProps['getContainer'];
+  skeletonLoading?: boolean;
 }
 
 export const SwapTokenItem = (props: SwapTokenItemProps) => {
@@ -89,6 +90,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     valueLoading,
     currentQuote,
     getContainer,
+    skeletonLoading,
   } = props;
 
   const openTokenModalRef = useRef<{
@@ -226,7 +228,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           />
         </div>
 
-        {valueLoading ? (
+        {valueLoading && skeletonLoading ? (
           <SkeletonInput
             active
             className="rounded-[4px]"
@@ -245,19 +247,28 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             readOnly={!isFrom}
             className={clsx(
               !isFrom && 'cursor-pointer',
-              isFrom && inSufficient && 'text-r-red-default'
+              isFrom && inSufficient && 'text-r-red-default',
+              valueLoading && 'opacity-50'
             )}
           />
         )}
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 text-rabby-neutral-foot">
+        <div
+          className={clsx(
+            'flex items-center gap-4 ',
+
+            isFrom && inSufficient
+              ? 'text-r-red-default'
+              : 'text-rabby-neutral-foot'
+          )}
+        >
           <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
-          <span className="text-13 text-rabby-neutral-foot">{balance}</span>
+          <span className="text-13">{balance}</span>
         </div>
         <div className="text-13 text-rabby-neutral-foot flex items-center gap-2 relative">
-          {valueLoading ? (
+          {valueLoading && skeletonLoading ? (
             <SkeletonInput
               active
               className="rounded-[4px]"
@@ -267,7 +278,9 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
               }}
             />
           ) : (
-            <span>{usdValue}</span>
+            <span className={clsx(valueLoading && 'opacity-50')}>
+              {usdValue}
+            </span>
           )}
         </div>
       </div>

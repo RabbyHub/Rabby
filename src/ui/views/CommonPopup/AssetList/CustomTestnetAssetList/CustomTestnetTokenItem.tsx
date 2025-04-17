@@ -67,7 +67,10 @@ export const CustomTestnetTokenItem: React.FC<Props> = ({
   return (
     <TRow
       onClick={onClick}
-      style={style}
+      style={{
+        ...style,
+        boxShadow: '0px 4px 16px 0px rgba(0, 0, 0, 0.04)',
+      }}
       className={clsx(
         'cursor-pointer',
         'rounded-[8px] border border-transparent bg-r-neutral-card1 h-[60px] mt-8 pl-12 pr-16',

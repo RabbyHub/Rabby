@@ -48,6 +48,7 @@ import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
 import { SWAP_SLIPPAGE } from '../../Bridge/Component/BridgeSlippage';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
@@ -119,6 +120,7 @@ export const Main = () => {
     setLowCreditToken,
     setLowCreditVisible,
     showMoreVisible,
+    inSufficientCanGetQuote,
   } = useTokenPair(userAddress);
 
   const refresh = useSetRefreshId();
@@ -421,7 +423,7 @@ export const Main = () => {
   const noQuoteOrigin = useMemo(
     () =>
       Number(inputAmount) > 0 &&
-      !inSufficient &&
+      inSufficientCanGetQuote &&
       amountAvailable &&
       !quoteLoading &&
       !!payToken &&
@@ -429,7 +431,7 @@ export const Main = () => {
       !activeProvider,
     [
       inputAmount,
-      inSufficient,
+      inSufficientCanGetQuote,
       amountAvailable,
       quoteLoading,
       payToken,
@@ -451,7 +453,7 @@ export const Main = () => {
       if (
         !isWrapToken &&
         Number(inputAmount) > 0 &&
-        !inSufficient &&
+        inSufficientCanGetQuote &&
         amountAvailable &&
         !quoteLoading &&
         !!payToken &&
@@ -467,7 +469,7 @@ export const Main = () => {
       showMoreVisible,
       isWrapToken,
       inputAmount,
-      inSufficient,
+      inSufficientCanGetQuote,
       amountAvailable,
       payToken,
       receiveToken,
@@ -568,14 +570,22 @@ export const Main = () => {
           />
 
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <BridgeSwitchBtn onClick={exchangeToken} />
+            <BridgeSwitchBtn
+              onClick={exchangeToken}
+              loading={
+                quoteLoading &&
+                amountAvailable &&
+                inSufficientCanGetQuote &&
+                !activeProvider?.manualClick
+              }
+            />
           </div>
 
           <SwapTokenItem
             valueLoading={
               quoteLoading &&
               amountAvailable &&
-              !inSufficient &&
+              inSufficientCanGetQuote &&
               !activeProvider?.manualClick
             }
             value={
@@ -604,7 +614,7 @@ export const Main = () => {
           />
         </div>
 
-        {inSufficient || noQuote ? (
+        {!inSufficientCanGetQuote || noQuote ? (
           <Alert
             className={clsx(
               'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
@@ -626,7 +636,7 @@ export const Main = () => {
                   'text-rabby-red-default'
                 )}
               >
-                {inSufficient
+                {!inSufficientCanGetQuote
                   ? t('page.swap.insufficient-balance')
                   : t('page.swap.no-quote-found')}
               </span>
@@ -636,7 +646,7 @@ export const Main = () => {
 
         {showMoreVisible &&
           Number(inputAmount) > 0 &&
-          !inSufficient &&
+          inSufficientCanGetQuote &&
           !!amountAvailable &&
           !!payToken &&
           !!receiveToken && (
@@ -692,49 +702,55 @@ export const Main = () => {
             isTab ? 'rounded-b-[16px]' : ''
           )}
         >
-          <Button
-            type="primary"
-            block
-            size="large"
-            className="h-[48px] text-white text-[16px] font-medium"
-            loading={isSubmitLoading}
-            onClick={() => {
-              if (!activeProvider) {
-                refresh((e) => e + 1);
-                return;
-              }
-              if (activeProvider?.shouldTwoStepApprove) {
-                return Modal.confirm({
-                  width: 360,
-                  closable: true,
-                  centered: true,
-                  className: twoStepApproveCn,
-                  title: null,
-                  content: (
-                    <>
-                      <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                        {t('page.swap.two-step-approve')}
-                      </div>
-                      <div className="text-13 leading-[17px]  text-r-neutral-body">
-                        {t('page.swap.two-step-approve-details')}
-                      </div>
-                    </>
-                  ),
-                  okText: t('page.swap.process-with-two-step-approve'),
-                  onOk() {
-                    // gotoSwap();
-                    handleSwap();
-                  },
-                });
-              }
-              // gotoSwap();
-              // runBuildSwapTxs();
-              handleSwap();
-            }}
-            disabled={swapBtnDisabled}
+          <TooltipWithMagnetArrow
+            overlayClassName="rectangle w-[max-content]"
+            title={t('page.swap.insufficient-balance')}
+            visible={inSufficient && activeProvider ? undefined : false}
           >
-            {btnText}
-          </Button>
+            <Button
+              type="primary"
+              block
+              size="large"
+              className="h-[48px] text-white text-[16px] font-medium"
+              loading={isSubmitLoading}
+              onClick={() => {
+                if (!activeProvider) {
+                  refresh((e) => e + 1);
+                  return;
+                }
+                if (activeProvider?.shouldTwoStepApprove) {
+                  return Modal.confirm({
+                    width: 360,
+                    closable: true,
+                    centered: true,
+                    className: twoStepApproveCn,
+                    title: null,
+                    content: (
+                      <>
+                        <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                          {t('page.swap.two-step-approve')}
+                        </div>
+                        <div className="text-13 leading-[17px]  text-r-neutral-body">
+                          {t('page.swap.two-step-approve-details')}
+                        </div>
+                      </>
+                    ),
+                    okText: t('page.swap.process-with-two-step-approve'),
+                    onOk() {
+                      // gotoSwap();
+                      handleSwap();
+                    },
+                  });
+                }
+                // gotoSwap();
+                // runBuildSwapTxs();
+                handleSwap();
+              }}
+              disabled={swapBtnDisabled}
+            >
+              {btnText}
+            </Button>
+          </TooltipWithMagnetArrow>
         </div>
 
         {payToken && receiveToken && chain ? (

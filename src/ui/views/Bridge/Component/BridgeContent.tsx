@@ -36,6 +36,7 @@ import { BridgeSwitchBtn } from './BridgeSwitchButton';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { Header } from './BridgeHeader';
 import { obj2query } from '@/ui/utils/url';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
@@ -86,6 +87,7 @@ export const BridgeContent = () => {
     clearExpiredTimer,
     maxNativeTokenGasPrice,
     setMaxNativeTokenGasPrice,
+    inSufficientCanGetQuote,
   } = useBridge();
 
   const amountAvailable = useMemo(() => Number(amount) > 0, [amount]);
@@ -393,7 +395,7 @@ export const BridgeContent = () => {
   });
 
   const noQuote =
-    !inSufficient &&
+    inSufficientCanGetQuote &&
     !!fromToken &&
     !!toToken &&
     Number(amount) > 0 &&
@@ -480,11 +482,11 @@ export const BridgeContent = () => {
             getContainer={getContainer}
           />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <BridgeSwitchBtn onClick={switchToken} />
+            <BridgeSwitchBtn onClick={switchToken} loading={quoteLoading} />
           </div>
         </div>
 
-        {inSufficient || (noQuote && !recommendFromToken) ? (
+        {!inSufficientCanGetQuote || (noQuote && !recommendFromToken) ? (
           <Alert
             className={clsx(
               'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
@@ -506,7 +508,7 @@ export const BridgeContent = () => {
                   'text-rabby-red-default'
                 )}
               >
-                {inSufficient
+                {!inSufficientCanGetQuote
                   ? t('page.bridge.insufficient-balance')
                   : t('page.bridge.no-quote-found')}
               </span>
@@ -566,53 +568,59 @@ export const BridgeContent = () => {
             isTab ? 'rounded-b-[16px]' : ''
           )}
         >
-          <Button
-            loading={fetchingBridgeQuote}
-            type="primary"
-            block
-            size="large"
-            className="h-[48px] text-white text-[16px] font-medium"
-            onClick={() => {
-              if (fetchingBridgeQuote) return;
-              if (!selectedBridgeQuote) {
-                refresh((e) => e + 1);
-
-                return;
-              }
-              if (selectedBridgeQuote?.shouldTwoStepApprove) {
-                return Modal.confirm({
-                  width: 360,
-                  closable: true,
-                  centered: true,
-                  className: twoStepApproveCn,
-                  title: null,
-                  content: (
-                    <>
-                      <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                        Sign 2 transactions to change allowance
-                      </div>
-                      <div className="text-13 leading-[17px]  text-r-neutral-body">
-                        Token USDT requires 2 transactions to change allowance.
-                        First you would need to reset allowance to zero, and
-                        only then set new allowance value.
-                      </div>
-                    </>
-                  ),
-                  okText: 'Proceed with two step approve',
-
-                  onOk() {
-                    // gotoBridge();
-                    handleBridge();
-                  },
-                });
-              }
-              // gotoBridge();
-              handleBridge();
-            }}
-            disabled={btnDisabled}
+          <TooltipWithMagnetArrow
+            overlayClassName="rectangle w-[max-content]"
+            title={t('page.swap.insufficient-balance')}
+            visible={inSufficient && selectedBridgeQuote ? undefined : false}
           >
-            {btnText}
-          </Button>
+            <Button
+              loading={fetchingBridgeQuote}
+              type="primary"
+              block
+              size="large"
+              className="h-[48px] text-white text-[16px] font-medium"
+              onClick={() => {
+                if (fetchingBridgeQuote) return;
+                if (!selectedBridgeQuote) {
+                  refresh((e) => e + 1);
+
+                  return;
+                }
+                if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                  return Modal.confirm({
+                    width: 360,
+                    closable: true,
+                    centered: true,
+                    className: twoStepApproveCn,
+                    title: null,
+                    content: (
+                      <>
+                        <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                          Sign 2 transactions to change allowance
+                        </div>
+                        <div className="text-13 leading-[17px]  text-r-neutral-body">
+                          Token USDT requires 2 transactions to change
+                          allowance. First you would need to reset allowance to
+                          zero, and only then set new allowance value.
+                        </div>
+                      </>
+                    ),
+                    okText: 'Proceed with two step approve',
+
+                    onOk() {
+                      // gotoBridge();
+                      handleBridge();
+                    },
+                  });
+                }
+                // gotoBridge();
+                handleBridge();
+              }}
+              disabled={btnDisabled}
+            >
+              {btnText}
+            </Button>
+          </TooltipWithMagnetArrow>
         </div>
         {fromToken && toToken ? (
           <QuoteList

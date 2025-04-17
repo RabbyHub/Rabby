@@ -384,7 +384,6 @@ export const DexQuoteItem = (
           ? t('page.swap.Gas-fee-too-high')
           : t('page.swap.insufficient-balance')
       }
-      trigger={['click']}
       visible={tooltipVisible}
       align={{ offset: [0, 30] }}
       arrowPointAtCenter
@@ -448,7 +447,8 @@ export const DexQuoteItem = (
                 <div
                   className={clsx(
                     'inline-flex items-center gap-4 px-4',
-                    gasFeeTooHight && 'bg-r-red-light'
+                    gasFeeTooHight && 'bg-r-red-light',
+                    inSufficient && 'hidden'
                   )}
                 >
                   <RcIconGasCC
