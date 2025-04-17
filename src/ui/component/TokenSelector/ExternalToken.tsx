@@ -163,7 +163,7 @@ const ExternalTokenRow = memo(
     return (
       <div
         className={clsx(
-          'token-list__item h-auto py-[15px] cursor-pointer',
+          'token-list__item h-auto cursor-pointer',
           disabled && 'token-disabled'
         )}
         onClick={onPressToken}
