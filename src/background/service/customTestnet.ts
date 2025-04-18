@@ -703,7 +703,7 @@ class CustomTestnetService {
         })
       )
     );
-    return sortBy(
+    const result = sortBy(
       res.filter((item): item is CustomTestnetToken => !!item),
       (item) => {
         return !item.id;
@@ -712,6 +712,21 @@ class CustomTestnetService {
         return -item.amount;
       }
     );
+    if (result.length <= 0 && q && isAddress(q) && chainId !== undefined) {
+      const res = await this.getTokenStandardAndDetails({
+        chainId,
+        tokenId: q,
+      });
+      if (res?.type === TOKEN_STANDARD.ERC20) {
+        const token = await this.getToken({
+          chainId,
+          address,
+          tokenId: q,
+        });
+        return [token];
+      }
+    }
+    return result;
   };
 
   // todo
