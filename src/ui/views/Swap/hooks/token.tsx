@@ -28,6 +28,7 @@ import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
+import { RequestRateLimiter } from './rateLimit';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -494,9 +495,13 @@ export const useTokenPair = (userAddress: string) => {
       inSufficientCanGetQuote &&
       !isDraggingSlider
     ) {
+      const reachLimit = rateLimitRef.current?.checkRateLimit();
+      setRateLimit(reachLimit);
+
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
+      console.log('trigger fetch', Date.now());
       return getAllQuotes({
         userAddress,
         payToken,
@@ -559,11 +564,15 @@ export const useTokenPair = (userAddress: string) => {
     slippageObj?.slippage,
   ]);
 
+  const rateLimitRef = useRef(new RequestRateLimiter(1000 * 30, 5));
+
+  const [rateLimit, setRateLimit] = useState(false);
+
   useDebounce(
     () => {
       getQuotes();
     },
-    1000,
+    rateLimit ? 5000 : 1000,
     [getQuotes]
   );
 
