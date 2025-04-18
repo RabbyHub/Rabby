@@ -579,10 +579,7 @@ export const useTokenPair = (userAddress: string) => {
     if (
       !quoteLoading &&
       receiveToken &&
-      payToken &&
-      quoteList.every((q, idx) => !q.loading) &&
-      receiveToken?.id === quoteList[0]?.data?.toToken &&
-      payToken?.id === quoteList[0]?.data?.fromToken
+      quoteList.every((q, idx) => !q.loading)
     ) {
       const sortIncludeGasFee = true;
       const sortedList = [
@@ -618,6 +615,7 @@ export const useTokenPair = (userAddress: string) => {
         }) || []),
       ];
 
+      setActiveProvider(undefined);
       if (sortedList?.[0]) {
         const bestQuote = sortedList[0];
         const { preExecResult } = bestQuote;
@@ -650,8 +648,6 @@ export const useTokenPair = (userAddress: string) => {
                 gasUsd: preExecResult?.gasUsd,
               }
         );
-      } else {
-        setActiveProvider(undefined);
       }
     }
   }, [
@@ -661,8 +657,6 @@ export const useTokenPair = (userAddress: string) => {
     receiveToken?.chain,
     inSufficient,
     visible,
-    payToken?.id,
-    payToken?.chain,
   ]);
 
   if (quotesError) {
