@@ -580,7 +580,7 @@ export const useTokenPair = (userAddress: string) => {
     () => {
       getQuotes();
     },
-    500,
+    800,
     [getQuotes]
   );
 
