@@ -114,11 +114,9 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
       const amount = tokenAmountBn(token);
       return [
         formatTokenAmount(amount.toString(10)),
-        valueLoading
-          ? formatUsdValue(0)
-          : formatUsdValue(
-              new BigNumber(value || 0).times(token.price || 0).toString(10)
-            ),
+        formatUsdValue(
+          new BigNumber(value || 0).times(token.price || 0).toString(10)
+        ),
       ];
     }
     return [0, formatUsdValue(0)];

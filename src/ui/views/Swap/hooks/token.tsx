@@ -572,7 +572,7 @@ export const useTokenPair = (userAddress: string) => {
     () => {
       getQuotes();
     },
-    rateLimit ? 5000 : 1000,
+    rateLimit ? 5000 : 500,
     [getQuotes]
   );
 
