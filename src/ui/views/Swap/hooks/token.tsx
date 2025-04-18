@@ -514,7 +514,6 @@ export const useTokenPair = (userAddress: string) => {
         inSufficient,
       }).finally(() => {
         if (currentFetchId === fetchIdRef.current) {
-          setActiveProvider(undefined);
           setPending(false);
           setShowMoreVisible(true);
         }
@@ -651,9 +650,20 @@ export const useTokenPair = (userAddress: string) => {
                 gasUsd: preExecResult?.gasUsd,
               }
         );
+      } else {
+        setActiveProvider(undefined);
       }
     }
-  }, [quoteList, quoteLoading, receiveToken, inSufficient, visible, payToken]);
+  }, [
+    quoteList,
+    quoteLoading,
+    receiveToken?.id,
+    receiveToken?.chain,
+    inSufficient,
+    visible,
+    payToken?.id,
+    payToken?.chain,
+  ]);
 
   if (quotesError) {
     console.error('quotesError', quotesError);
