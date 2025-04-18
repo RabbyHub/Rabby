@@ -568,11 +568,9 @@ export const useTokenPair = (userAddress: string) => {
   useEffect(() => {
     if (
       !quoteLoading &&
+      !pending &&
       receiveToken &&
-      payToken &&
-      quoteList.every((q, idx) => !q.loading) &&
-      receiveToken?.id === quoteList[0]?.data?.toToken &&
-      payToken?.id === quoteList[0]?.data?.fromToken
+      quoteList.every((q, idx) => !q.loading)
     ) {
       const sortIncludeGasFee = true;
       const sortedList = [
@@ -607,7 +605,7 @@ export const useTokenPair = (userAddress: string) => {
           return getNumber(b).minus(getNumber(a)).toNumber();
         }) || []),
       ];
-
+      setActiveProvider(undefined);
       if (sortedList?.[0]) {
         const bestQuote = sortedList[0];
         const { preExecResult } = bestQuote;
@@ -642,7 +640,15 @@ export const useTokenPair = (userAddress: string) => {
         );
       }
     }
-  }, [quoteList, quoteLoading, receiveToken, inSufficient, visible, payToken]);
+  }, [
+    quoteList,
+    quoteLoading,
+    receiveToken?.id,
+    receiveToken?.chain,
+    inSufficient,
+    visible,
+    pending,
+  ]);
 
   if (quotesError) {
     console.error('quotesError', quotesError);
