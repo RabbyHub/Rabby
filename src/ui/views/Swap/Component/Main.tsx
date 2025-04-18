@@ -121,6 +121,9 @@ export const Main = () => {
     setLowCreditVisible,
     showMoreVisible,
     inSufficientCanGetQuote,
+
+    disabledOp,
+    realQuoteLoading,
   } = useTokenPair(userAddress);
 
   const refresh = useSetRefreshId();
@@ -520,7 +523,7 @@ export const Main = () => {
       <div
         className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
       >
-        <div className="mb-8 mx-20">
+        <div className={clsx('mb-8 mx-20', disabledOp && 'cursor-not-allowed')}>
           <ChainSelectorInForm
             swap
             value={chain}
@@ -530,7 +533,8 @@ export const Main = () => {
             hideTestnetTab={true}
             chainRenderClassName={clsx(
               'text-[13px] font-medium border-0',
-              'before:border-transparent hover:before:border-rabby-blue-default'
+              'before:border-transparent hover:before:border-rabby-blue-default',
+              disabledOp && 'pointer-events-none'
             )}
             drawerHeight={540}
             showClosableIcon
@@ -542,6 +546,7 @@ export const Main = () => {
           className={clsx('relative bg-r-neutral-card-1 rounded-[8px] mx-20')}
         >
           <SwapTokenItem
+            disabled={disabledOp}
             inSufficient={inSufficient}
             slider={slider}
             onChangeSlider={onChangeSlider}
@@ -569,11 +574,23 @@ export const Main = () => {
             )}
           />
 
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div
+            className={clsx(
+              'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2',
+              disabledOp && 'cursor-not-allowed'
+            )}
+          >
             <BridgeSwitchBtn
               onClick={exchangeToken}
+              // loading={
+              //   quoteLoading &&
+              //   amountAvailable &&
+              //   inSufficientCanGetQuote &&
+              //   !activeProvider?.manualClick
+              // }
+              className={clsx(disabledOp && 'pointer-events-none')}
               loading={
-                quoteLoading &&
+                realQuoteLoading &&
                 amountAvailable &&
                 inSufficientCanGetQuote &&
                 !activeProvider?.manualClick
@@ -582,6 +599,7 @@ export const Main = () => {
           </div>
 
           <SwapTokenItem
+            disabled={disabledOp}
             valueLoading={
               quoteLoading &&
               amountAvailable &&

@@ -73,6 +73,7 @@ interface SwapTokenItemProps {
   currentQuote?: QuoteProvider;
   getContainer?: DrawerProps['getContainer'];
   skeletonLoading?: boolean;
+  disabled: boolean;
 }
 
 export const SwapTokenItem = (props: SwapTokenItemProps) => {
@@ -91,6 +92,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     currentQuote,
     getContainer,
     skeletonLoading,
+    disabled,
   } = props;
 
   const openTokenModalRef = useRef<{
@@ -104,10 +106,10 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
   const isFrom = type === 'from';
 
   const handleTokenModalOpen = useCallback(() => {
-    if (!isFrom) {
+    if (!isFrom && !disabled) {
       openTokenModalRef?.current?.openTokenModal?.(true);
     }
-  }, [isFrom]);
+  }, [isFrom, disabled]);
 
   const [balance, usdValue] = useMemo(() => {
     if (token) {
@@ -149,16 +151,20 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      onValueChange?.(e.target.value);
+      if (!disabled) {
+        onValueChange?.(e.target.value);
+      }
     },
-    [onValueChange]
+    [onValueChange, disabled]
   );
 
   const onAfterChangeSlider = useCallback(
     (value: number) => {
-      onChangeSlider?.(value, true);
+      if (!disabled) {
+        onChangeSlider?.(value, true);
+      }
     },
-    [onChangeSlider]
+    [onChangeSlider, disabled]
   );
 
   useLayoutEffect(() => {
@@ -172,7 +178,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
       <div
         className={clsx(
           'flex items-center justify-between',
-          !isFrom && 'cursor-pointer'
+          !isFrom && !disabled && 'cursor-pointer'
         )}
         onClick={handleTokenModalOpen}
       >
@@ -180,11 +186,20 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           {isFrom ? t('page.swap.from') : t('page.swap.to')}
         </span>
         {isFrom && (
-          <div className="flex items-center gap-10 relative pr-[40px]">
+          <div
+            className={clsx(
+              'flex items-center gap-10 relative pr-[40px]',
+              disabled && 'cursor-not-allowed'
+            )}
+          >
             <SwapSlider
-              className="w-[125px]"
+              className={clsx('w-[125px]', disabled && 'pointer-events-none')}
               value={slider}
-              onChange={onChangeSlider}
+              onChange={(v) => {
+                if (!disabled) {
+                  onChangeSlider?.(v);
+                }
+              }}
               onAfterChange={onAfterChangeSlider}
               min={0}
               max={100}
@@ -201,7 +216,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
       <div
         className={clsx(
           'flex items-center justify-between pt-8 pb-12 h-[60px]',
-          !isFrom && 'cursor-pointer'
+          !isFrom && !disabled && 'cursor-pointer'
         )}
         onClick={handleTokenModalOpen}
       >
@@ -209,21 +224,24 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
           onClick={(e) => {
             e.stopPropagation();
           }}
+          className={clsx(disabled && 'cursor-not-allowed')}
         >
-          <TokenSelect
-            ref={openTokenModalRef}
-            token={token}
-            onTokenChange={onTokenSelect}
-            chainId={chainId}
-            type={isFrom ? 'swapFrom' : 'swapTo'}
-            placeholder={t('page.swap.search-by-name-address')}
-            // excludeTokens={excludeTokens}
-            tokenRender={tokenRender}
-            supportChains={SWAP_SUPPORT_CHAINS}
-            useSwapTokenList={!isFrom}
-            disabledTips={t('page.swap.insufficient-balance')}
-            getContainer={getContainer}
-          />
+          <div className={clsx(disabled && 'pointer-events-none')}>
+            <TokenSelect
+              ref={openTokenModalRef}
+              token={token}
+              onTokenChange={onTokenSelect}
+              chainId={chainId}
+              type={isFrom ? 'swapFrom' : 'swapTo'}
+              placeholder={t('page.swap.search-by-name-address')}
+              // excludeTokens={excludeTokens}
+              tokenRender={tokenRender}
+              supportChains={SWAP_SUPPORT_CHAINS}
+              useSwapTokenList={!isFrom}
+              disabledTips={t('page.swap.insufficient-balance')}
+              getContainer={getContainer}
+            />
+          </div>
         </div>
 
         {valueLoading && skeletonLoading ? (
@@ -246,7 +264,8 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             className={clsx(
               !isFrom && 'cursor-pointer',
               isFrom && inSufficient && 'text-r-red-default',
-              valueLoading && 'opacity-50'
+              valueLoading && 'opacity-50',
+              disabled && 'cursor-not-allowed'
             )}
           />
         )}
