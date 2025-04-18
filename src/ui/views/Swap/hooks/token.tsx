@@ -28,7 +28,6 @@ import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
-import { RequestRateLimiter } from './rateLimit';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -268,12 +267,16 @@ export const useTokenPair = (userAddress: string) => {
 
   const expiredTimer = useRef<NodeJS.Timeout>();
 
+  const [disabledOp, setDisabledOp] = useState(false);
+
   const exchangeToken = useCallback(() => {
-    setPayToken(receiveToken);
-    setReceiveToken(payToken);
-    setPayAmount('');
-    setSlider(0);
-  }, [setPayToken, receiveToken, setReceiveToken, payToken]);
+    if (!disabledOp) {
+      setPayToken(receiveToken);
+      setReceiveToken(payToken);
+      setPayAmount('');
+      setSlider(0);
+    }
+  }, [setPayToken, receiveToken, setReceiveToken, payToken, disabledOp]);
 
   const payTokenIsNativeToken = useMemo(() => {
     if (payToken) {
@@ -495,8 +498,13 @@ export const useTokenPair = (userAddress: string) => {
       inSufficientCanGetQuote &&
       !isDraggingSlider
     ) {
-      const reachLimit = rateLimitRef.current?.checkRateLimit();
-      setRateLimit(reachLimit);
+      setDisabledOp(true);
+      if (disabledOpTimer.current) {
+        clearTimeout(disabledOpTimer.current);
+      }
+      disabledOpTimer.current = setTimeout(() => {
+        setDisabledOp(false);
+      }, 3000);
 
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
@@ -516,6 +524,10 @@ export const useTokenPair = (userAddress: string) => {
         if (currentFetchId === fetchIdRef.current) {
           setPending(false);
           setShowMoreVisible(true);
+          if (disabledOpTimer.current) {
+            clearTimeout(disabledOpTimer.current);
+          }
+          setDisabledOp(false);
         }
       });
     } else {
@@ -563,21 +575,19 @@ export const useTokenPair = (userAddress: string) => {
     slippageObj?.slippage,
   ]);
 
-  const rateLimitRef = useRef(new RequestRateLimiter(1000 * 30, 5));
-
-  const [rateLimit, setRateLimit] = useState(false);
-
+  const disabledOpTimer = useRef<NodeJS.Timeout>();
   useDebounce(
     () => {
       getQuotes();
     },
-    rateLimit ? 5000 : 500,
+    500,
     [getQuotes]
   );
 
   useEffect(() => {
     if (
       !quoteLoading &&
+      !pending &&
       receiveToken &&
       quoteList.every((q, idx) => !q.loading)
     ) {
@@ -651,6 +661,7 @@ export const useTokenPair = (userAddress: string) => {
       }
     }
   }, [
+    pending,
     quoteList,
     quoteLoading,
     receiveToken?.id,
@@ -849,6 +860,10 @@ export const useTokenPair = (userAddress: string) => {
     setLowCreditToken,
     setLowCreditVisible,
     showMoreVisible,
+
+    disabledOp,
+
+    realQuoteLoading: quoteLoading,
 
     ...slippageObj,
   };
