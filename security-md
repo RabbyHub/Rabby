@@ -1,0 +1,20 @@
+# Security Policy
+
+## Supported Versions
+
+We release security updates for the following versions:
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.x     | :white_check_mark: |
+| < 1.0   | :x:                |
+
+## Reporting a Vulnerability
+
+If you discover a security vulnerability, please follow the steps below:
+
+1. **Do not post the vulnerability publicly.**
+2. Email us at [security@example.com](mailto:security@example.com) with the details.
+3. Provide any relevant information, such as affected versions, reproduction steps, and potential fixes.
+
+We aim to respond to all vulnerabilities within **48 hours** and to release a fix within **7 days** if necessary.
