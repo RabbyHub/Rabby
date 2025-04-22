@@ -41,6 +41,7 @@ import { TokenCharts } from '@/ui/component/TokenChart';
 import { BlockedTopTips } from './BlockedTopTips';
 import { ScamTokenTips } from './ScamTokenTips';
 import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
+import { useExternalSwapBridgeDapps } from '@/ui/component/ExternalSwapBridgeDappPopup/hooks';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -85,10 +86,19 @@ const TokenDetail = ({
     (s) => s.bridge.supportedChains
   );
 
-  const tokenSupportSwap = useMemo(() => {
-    const tokenChain = getChain(token?.chain)?.enum;
-    return !!tokenChain && SWAP_SUPPORT_CHAINS.includes(tokenChain as any);
-  }, [token]);
+  const tokenChain = useMemo(() => {
+    return getChain(token?.chain);
+  }, [token?.chain]);
+
+  const {
+    isSupportedChain,
+    data: externalSwapDapps,
+  } = useExternalSwapBridgeDapps(tokenChain!.enum, 'swap');
+
+  const tokenSupportSwap = useMemo(
+    () => isSupportedChain || externalSwapDapps.length > 0,
+    [isSupportedChain, externalSwapDapps]
+  );
 
   const tokenSupportBridge = useMemo(() => {
     const tokenChain = getChain(token?.chain)?.enum;
@@ -292,7 +302,7 @@ const TokenDetail = ({
           overlayClassName="rectangle w-[max-content]"
           placement="top"
           arrowPointAtCenter
-          title={t('page.dashboard.tokenDetail.notSupported')}
+          title={t('component.externalSwapBrideDappPopup.chainNotSupported')}
           visible={tokenSupportSwap ? false : undefined}
         >
           <Button
@@ -343,6 +353,7 @@ const TokenDetail = ({
     gotoBridge,
     isSend,
     tipsFromTokenSelect,
+    tokenSupportSwap,
   ]);
 
   const chain = useMemo(() => getChain(token?.chain), [token?.chain]);
