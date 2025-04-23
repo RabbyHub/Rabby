@@ -615,8 +615,18 @@ export const BridgeContent = () => {
         >
           <TooltipWithMagnetArrow
             overlayClassName="rectangle w-[max-content]"
-            title={t('page.swap.insufficient-balance')}
-            visible={inSufficient && selectedBridgeQuote ? undefined : false}
+            title={
+              !isSupportedChain && externalDapps.length < 1
+                ? t('component.externalSwapBrideDappPopup.chainNotSupported')
+                : t('page.swap.insufficient-balance')
+            }
+            visible={
+              !isSupportedChain && externalDapps.length < 1
+                ? undefined
+                : inSufficient && selectedBridgeQuote
+                ? undefined
+                : false
+            }
           >
             <Button
               loading={fetchingBridgeQuote}

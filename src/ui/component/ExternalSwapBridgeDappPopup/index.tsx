@@ -82,7 +82,7 @@ const Item = ({ name, url, logo }: SwapBridgeExternalDappInfo) => {
       onClick={openDapp}
     >
       <img src={logo} alt={name} className="w-[32px] h-[32px] rounded-full" />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap- ml-8">
         <div className="text-[15px] font-medium text-r-neutral-title-1">
           {name}
         </div>

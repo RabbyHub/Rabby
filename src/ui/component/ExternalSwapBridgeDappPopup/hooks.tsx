@@ -10,40 +10,19 @@ type SwapBridgeDapps = {
   chain_ids: string[];
   dapp: {
     id: string;
-    domain_id: string;
-    is_ethereum?: boolean;
-    is_push_tx: boolean;
-    is_call_rpc: boolean;
-    is_website: boolean;
-    is_fake: any;
-    version: string;
-    check_at?: number;
-    check_success?: boolean;
-    check_desc_text: {
-      title?: string;
-      words?: string;
-      desc?: string;
-    };
-    is_dapp_predict: number;
+    logo_url: string;
     name: string;
-    logo_url: any;
-    auto_name: string;
-    auto_logo_url?: string;
-    is_verified: any;
-    credit_score: number;
-    credit_rank_at: number;
-    path?: string;
   };
 };
 
 const fetchBridgeDapps = async () => {
-  const res = await fetch('http://static.debank.com/bridge_dapp_chains.json');
+  const res = await fetch('https://static.debank.com/bridge_dapp_chains.json');
   const data: SwapBridgeDapps[] = await res.json();
   return data;
 };
 
 const fetchSwapDapps = async () => {
-  const res = await fetch('http://static.debank.com/swap_dapp_chains.json');
+  const res = await fetch('https://static.debank.com/swap_dapp_chains.json');
   const data: SwapBridgeDapps[] = await res.json();
   return data;
 };
@@ -102,15 +81,13 @@ export const useExternalSwapBridgeDapps = (
       }
 
       return filterData?.map(({ dapp }) => ({
-        name:
-          dapp.name || dapp.auto_name || dapp.check_desc_text?.title || dapp.id,
-        logo: dapp.logo_url || dapp.auto_logo_url,
-        domain: dapp.domain_id,
-        url: dapp?.path || dapp.id,
+        name: dapp.name,
+        logo: dapp.logo_url,
+        url: dapp?.id,
       }));
     }
     return [];
-  }, [isSupportedChain, value, chain]);
+  }, [isSupportedChain, value, chain, type]);
 
   return {
     data,
