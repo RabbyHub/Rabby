@@ -94,6 +94,8 @@ const MultiSwap = ({
     return !isSameAddress(actionData.receiver || '', sender);
   }, [actionData, sender]);
 
+  const hasRequiredData = requireData && Object.keys(requireData).length > 0;
+
   return (
     <Wrapper>
       <Table>
@@ -162,57 +164,61 @@ const MultiSwap = ({
             </SubTable>
           </>
         )}
-        <Col>
-          <Row isTitle itemsCenter>
-            {t('page.signTx.interactContract')}
-          </Row>
-          <Row>
-            <ViewMore
-              type="contract"
-              data={{
-                ...requireData,
-                address: requireData.id,
-                chain,
-                title: t('page.signTypedData.buyNFT.listOn'),
-              }}
-            >
-              <Values.Address
-                id="multi-swap-address"
-                hasHover
-                address={requireData.id}
-                chain={chain}
+        {hasRequiredData && (
+          <>
+            <Col>
+              <Row isTitle itemsCenter>
+                {t('page.signTx.interactContract')}
+              </Row>
+              <Row>
+                <ViewMore
+                  type="contract"
+                  data={{
+                    ...requireData,
+                    address: requireData.id,
+                    chain,
+                    title: t('page.signTypedData.buyNFT.listOn'),
+                  }}
+                >
+                  <Values.Address
+                    id="multi-swap-address"
+                    hasHover
+                    address={requireData.id}
+                    chain={chain}
+                  />
+                </ViewMore>
+              </Row>
+            </Col>
+            <SubTable target="multi-swap-address">
+              <SubCol>
+                <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+                <SubRow>
+                  <ProtocolListItem protocol={requireData.protocol} />
+                </SubRow>
+              </SubCol>
+              <SubCol>
+                <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
+                <SubRow>
+                  <Values.Boolean value={requireData.hasInteraction} />
+                </SubRow>
+              </SubCol>
+
+              {isInWhitelist && (
+                <SubCol>
+                  <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+                  <SubRow>{t('page.signTx.trusted')}</SubRow>
+                </SubCol>
+              )}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText={t('page.signTx.markAsBlock')}
+                title={t('page.signTx.myMark')}
               />
-            </ViewMore>
-          </Row>
-        </Col>
-        <SubTable target="multi-swap-address">
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
-            <SubRow>
-              <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.interacted')}</SubRow>
-            <SubRow>
-              <Values.Boolean value={requireData.hasInteraction} />
-            </SubRow>
-          </SubCol>
-
-          {isInWhitelist && (
-            <SubCol>
-              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
-              <SubRow>{t('page.signTx.trusted')}</SubRow>
-            </SubCol>
-          )}
-
-          <SecurityListItem
-            id="1135"
-            engineResult={engineResultMap['1135']}
-            forbiddenText={t('page.signTx.markAsBlock')}
-            title={t('page.signTx.myMark')}
-          />
-        </SubTable>
+            </SubTable>
+          </>
+        )}
       </Table>
     </Wrapper>
   );
