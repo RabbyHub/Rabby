@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconWarning } from '@/ui/assets/warning.svg';
 import { getUiType, openInTab } from '@/ui/utils';
-import { ReactComponent as RcIconLink } from '@/ui/assets/rabby-points/link.svg';
+import { ReactComponent as RcIconLink } from '@/ui/assets/link-cc.svg';
 
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 
@@ -41,15 +41,15 @@ export const ExternalSwapBridgeDappTips = ({
         'flex flex-col gap-2 justify-center'
       )}
     >
-      <div className="text-r-neutral-title-1 text-[14px] font-medium">
+      <div className="inline-flex items-center h-[17px] text-r-neutral-title-1 text-[14px] font-medium">
         {t('component.externalSwapBrideDappPopup.noQuotesForChain')}
       </div>
-      <div className="text-[13px] text-r-neutral-foot">
+      <div className="inline-flex items-center h-[16px] text-[13px] text-r-neutral-foot">
         {t('component.externalSwapBrideDappPopup.thirdPartyDappToProceed')}
       </div>
       <RcIconWarning
         viewBox="0 0 16 16"
-        className="absolute top-[11px] left-[12px] w-16 h-16"
+        className="absolute top-[13px] left-[12px] w-16 h-16"
       />
     </div>
   );
@@ -82,15 +82,17 @@ const Item = ({ name, url, logo }: SwapBridgeExternalDappInfo) => {
       onClick={openDapp}
     >
       <img src={logo} alt={name} className="w-[32px] h-[32px] rounded-full" />
-      <div className="flex flex-col gap- ml-8">
-        <div className="text-[15px] font-medium text-r-neutral-title-1">
+      <div className="flex flex-col ml-8 gap-2">
+        <div className="inline-flex items-center h-[18px] text-[15px] font-medium text-r-neutral-title-1 ">
           {name}
         </div>
-        <div className="text-[12px] text-r-neutral-foot">{cleanURL(url)}</div>
+        <div className="inline-flex items-center h-[14px] text-[13px] text-r-neutral-foot">
+          {cleanURL(url)}
+        </div>
       </div>
       <RcIconLink
         className="ml-auto"
-        viewBox="0 0 14 15"
+        viewBox="0 0 16 16"
         width={16}
         height={16}
       />
