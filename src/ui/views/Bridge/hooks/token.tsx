@@ -1,6 +1,6 @@
 import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { BridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -62,9 +62,30 @@ const useToken = (type: 'from' | 'to') => {
   );
   const wallet = useWallet();
 
-  const [chain, setChain] = useState<CHAINS_ENUM>();
+  const lastSelectedToken = useRabbySelector((s) =>
+    type === 'from' ? s.bridge.selectedFromToken : s.bridge.selectedToToken
+  );
 
-  const [token, setToken] = useState<TokenItem>();
+  const dispatch = useRabbyDispatch();
+
+  const lastChainEnum = useMemo(
+    () =>
+      lastSelectedToken
+        ? findChainByServerID(lastSelectedToken?.chain)?.enum
+        : undefined,
+    [lastSelectedToken?.chain]
+  );
+  const [chain, setChain] = useState<CHAINS_ENUM | undefined>(lastChainEnum);
+
+  const [token, setToken] = useState<TokenItem | undefined>(lastSelectedToken);
+
+  useEffect(() => {
+    if (type === 'from') {
+      dispatch.bridge.setSelectedFromToken(token);
+    } else {
+      dispatch.bridge.setSelectedToToken(token);
+    }
+  }, [token]);
 
   const switchChain: (
     changeChain?: CHAINS_ENUM,
@@ -111,6 +132,7 @@ export const useBridge = () => {
   const userAddress = useRabbySelector(
     (s) => s.account.currentAccount?.address
   );
+
   const refreshId = useRefreshId();
 
   const setRefreshId = useSetRefreshId();
@@ -224,10 +246,10 @@ export const useBridge = () => {
   useAsyncInitializeChainList({
     supportChains: supportedChains,
     onChainInitializedAsync: (firstEnum) => {
-      if (!(searchObj?.fromChain && searchObj?.fromTokenId)) {
+      if (!(searchObj?.fromChain && searchObj?.fromTokenId) && !fromToken) {
         switchFromChain(firstEnum);
       }
-      if (!(searchObj?.toTokenId && searchObj.toChain)) {
+      if (!(searchObj?.toTokenId && searchObj.toChain) && !toToken) {
         getRecommendToChain(firstEnum);
       }
     },

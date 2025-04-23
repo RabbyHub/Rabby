@@ -71,6 +71,7 @@ export const BridgeToken = ({
   handleSetGasPrice,
   getContainer,
   skeletonLoading,
+  disabled,
 }: {
   type?: 'from' | 'to';
   token?: TokenItem;
@@ -90,6 +91,7 @@ export const BridgeToken = ({
   noQuote?: boolean;
   getContainer?: DrawerProps['getContainer'];
   skeletonLoading?: boolean;
+  disabled?: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -204,6 +206,9 @@ export const BridgeToken = ({
   );
 
   const handleMax = React.useCallback(() => {
+    if (disabled) {
+      return;
+    }
     if (token) {
       isMaxRef.current = true;
       if (isFromToken && fromTokenIsNativeToken && gasList) {
@@ -237,6 +242,7 @@ export const BridgeToken = ({
     isFromToken,
     fromTokenIsNativeToken,
     gasList,
+    disabled,
   ]);
 
   return (
@@ -257,7 +263,7 @@ export const BridgeToken = ({
           value={chain}
           onChange={changeChain}
           // excludeChains={excludeChains}
-          supportChains={supportedChains}
+          // supportChains={supportedChains}
           drawerHeight={540}
           showClosableIcon
           getContainer={getContainer}
@@ -310,7 +316,7 @@ export const BridgeToken = ({
               placeholder={t('page.swap.search-by-name-address')}
               disabledTips={t('page.bridge.insufficient-balance')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
-              supportChains={supportedChains}
+              // supportChains={supportedChains}
               getContainer={getContainer}
             />
           )}
@@ -361,7 +367,10 @@ export const BridgeToken = ({
               //   className="rectangle w-[max-content]"
               //   title={t('page.bridge.max-tips')}
               // >
-              <MaxButton className="ml-0" onClick={handleMax}>
+              <MaxButton
+                className={clsx('ml-0', disabled && 'pointer-events-none')}
+                onClick={handleMax}
+              >
                 {t('page.swap.max')}
               </MaxButton>
               // </TooltipWithMagnetArrow>

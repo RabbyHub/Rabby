@@ -73,6 +73,7 @@ interface SwapTokenItemProps {
   currentQuote?: QuoteProvider;
   getContainer?: DrawerProps['getContainer'];
   skeletonLoading?: boolean;
+  disabled?: boolean;
 }
 
 export const SwapTokenItem = (props: SwapTokenItemProps) => {
@@ -91,6 +92,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
     currentQuote,
     getContainer,
     skeletonLoading,
+    disabled,
   } = props;
 
   const openTokenModalRef = useRef<{
@@ -151,23 +153,27 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   const onInputChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      onValueChange?.(e.target.value);
+      if (!disabled) {
+        onValueChange?.(e.target.value);
+      }
     },
     [onValueChange]
   );
 
   const onAfterChangeSlider = useCallback(
     (value: number) => {
-      onChangeSlider?.(value, true);
+      if (!disabled) {
+        onChangeSlider?.(value, true);
+      }
     },
     [onChangeSlider]
   );
 
   useLayoutEffect(() => {
-    if (token?.id && isFrom) {
+    if (token?.id && isFrom && !disabled) {
       inputRef.current?.focus();
     }
-  }, [token?.id]);
+  }, [token?.id, disabled]);
 
   return (
     <div className="p-16 pb-20 h-[132px]">
@@ -191,7 +197,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
               min={0}
               max={100}
               tooltipVisible={false}
-              disabled={!token}
+              disabled={!token || disabled}
             />
             <span className="absolute top-1/2 -right-12 transform -translate-y-1/2 w-[38px] text-13 text-r-blue-default font-medium">
               {slider}%
@@ -221,7 +227,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             placeholder={t('page.swap.search-by-name-address')}
             // excludeTokens={excludeTokens}
             tokenRender={tokenRender}
-            supportChains={SWAP_SUPPORT_CHAINS}
+            // supportChains={SWAP_SUPPORT_CHAINS}
             useSwapTokenList={!isFrom}
             disabledTips={t('page.swap.insufficient-balance')}
             getContainer={getContainer}
@@ -248,7 +254,8 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             className={clsx(
               !isFrom && 'cursor-pointer',
               isFrom && inSufficient && 'text-r-red-default',
-              valueLoading && 'opacity-50'
+              valueLoading && 'opacity-50',
+              disabled && 'pointer-events-none'
             )}
           />
         )}

@@ -24,12 +24,7 @@ import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss, useDebounce } from 'react-use';
-import {
-  DEX_WITH_WRAP,
-  KEYRING_CLASS,
-  KEYRING_TYPE,
-  SWAP_SUPPORT_CHAINS,
-} from '@/constant';
+import { DEX_WITH_WRAP, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
@@ -49,6 +44,12 @@ import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
 import { SWAP_SLIPPAGE } from '../../Bridge/Component/BridgeSlippage';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useExternalSwapBridgeDapps } from '@/ui/component/ExternalSwapBridgeDappPopup/hooks';
+import {
+  ExternalSwapBridgeDappTips,
+  SwapBridgeDappPopup,
+} from '@/ui/component/ExternalSwapBridgeDappPopup';
+
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
@@ -123,6 +124,12 @@ export const Main = () => {
     inSufficientCanGetQuote,
   } = useTokenPair(userAddress);
 
+  const {
+    isSupportedChain,
+    data: externalDapps,
+    loading: externalDappsLoading,
+  } = useExternalSwapBridgeDapps(chain, 'swap');
+
   const refresh = useSetRefreshId();
 
   const originPreferMEVGuarded = useRabbySelector(
@@ -157,6 +164,9 @@ export const Main = () => {
   const amountAvailable = useMemo(() => Number(inputAmount) > 0, [inputAmount]);
 
   const btnText = useMemo(() => {
+    if (!isSupportedChain && externalDapps?.length > 0) {
+      return t('component.externalSwapBrideDappPopup.viewDappOptions');
+    }
     if (activeProvider?.shouldApproveToken) {
       return t('page.swap.approve-swap');
     }
@@ -166,7 +176,12 @@ export const Main = () => {
     }
 
     return t('page.swap.title');
-  }, [activeProvider?.shouldApproveToken, quoteLoading]);
+  }, [
+    activeProvider?.shouldApproveToken,
+    quoteLoading,
+    isSupportedChain,
+    externalDapps,
+  ]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -331,9 +346,15 @@ export const Main = () => {
     ]
   );
 
+  const [swapDappOpen, setSwapDappOpen] = useState(false);
+
   const handleSwap = useMemoizedFn(() => {
     if (!isTab) {
       dispatch.swap.setRecentSwapToToken(receiveToken);
+    }
+    if (!isSupportedChain) {
+      setSwapDappOpen(true);
+      return;
     }
     if (canUseMiniTx) {
       setIsShowSign(true);
@@ -343,13 +364,16 @@ export const Main = () => {
     }
   });
 
-  const swapBtnDisabled =
-    quoteLoading ||
-    !payToken ||
-    !receiveToken ||
-    !amountAvailable ||
-    inSufficient ||
-    !activeProvider;
+  const swapBtnDisabled = isSupportedChain
+    ? quoteLoading ||
+      !payToken ||
+      !receiveToken ||
+      !amountAvailable ||
+      inSufficient ||
+      !activeProvider
+    : externalDapps.length
+    ? false
+    : true;
 
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
@@ -526,7 +550,7 @@ export const Main = () => {
             value={chain}
             onChange={switchChain}
             disabledTips={getDisabledTips}
-            supportChains={SWAP_SUPPORT_CHAINS}
+            // supportChains={SWAP_SUPPORT_CHAINS}
             hideTestnetTab={true}
             chainRenderClassName={clsx(
               'text-[13px] font-medium border-0',
@@ -560,6 +584,7 @@ export const Main = () => {
             type={'from'}
             excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
             getContainer={getContainer}
+            disabled={!isSupportedChain}
           />
 
           <div
@@ -613,6 +638,22 @@ export const Main = () => {
             getContainer={getContainer}
           />
         </div>
+
+        {!isSupportedChain ? (
+          <div className="mt-16 mx-20">
+            <ExternalSwapBridgeDappTips
+              dappsAvailable={externalDapps.length > 0}
+            />
+            <SwapBridgeDappPopup
+              visible={swapDappOpen}
+              onClose={() => {
+                setSwapDappOpen(false);
+              }}
+              dappList={externalDapps}
+              loading={externalDappsLoading}
+            />
+          </div>
+        ) : null}
 
         {!inSufficientCanGetQuote || noQuote ? (
           <Alert
@@ -704,8 +745,18 @@ export const Main = () => {
         >
           <TooltipWithMagnetArrow
             overlayClassName="rectangle w-[max-content]"
-            title={t('page.swap.insufficient-balance')}
-            visible={inSufficient && activeProvider ? undefined : false}
+            title={
+              !isSupportedChain && externalDapps.length < 1
+                ? t('component.externalSwapBrideDappPopup.chainNotSupported')
+                : t('page.swap.insufficient-balance')
+            }
+            visible={
+              !isSupportedChain && externalDapps.length < 1
+                ? undefined
+                : inSufficient && activeProvider
+                ? undefined
+                : false
+            }
           >
             <Button
               type="primary"
@@ -714,6 +765,10 @@ export const Main = () => {
               className="h-[48px] text-white text-[16px] font-medium"
               loading={isSubmitLoading}
               onClick={() => {
+                if (!isSupportedChain && externalDapps.length > 0) {
+                  setSwapDappOpen(true);
+                  return;
+                }
                 if (!activeProvider) {
                   refresh((e) => e + 1);
                   return;

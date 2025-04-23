@@ -2647,6 +2647,15 @@
     }
   },
   "component": {
+    "externalSwapBrideDappPopup": {
+      "noQuotesForChain": "No quotes available for this chain yet",
+      "thirdPartyDappToProceed": "Please use a third-party Dapp to proceed",
+      "viewDappOptions": "View Dapp Options",
+      "selectADapp": "Select a Dapp",
+      "noDapp": "No Dapps available",
+      "help": "Please contact the official team of this chain for support",
+      "chainNotSupported": "Not supported on this chain"
+    },
     "TokenChart": {
       "price": "Price",
       "holding": "Holding Value"
