@@ -42,9 +42,12 @@ export const ChainItem: React.FC<Props> = ({
         />
       </TooltipWithMagnetArrow>
       <span
-        className={clsx('text-13 font-medium text-r-neutral-title-1', {
-          'opacity-30': inactive,
-        })}
+        className={clsx(
+          'text-13 font-medium text-r-neutral-title-1 hover:text-r-blue-default',
+          {
+            'opacity-30': inactive,
+          }
+        )}
       >
         ${currentBalance}
       </span>

@@ -82,7 +82,7 @@ export const TestnetChainList = ({
               src={item.logo}
               alt={item.name}
             />
-            <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
+            <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium hover:text-r-blue-default">
               {item.name}
             </div>
           </div>
