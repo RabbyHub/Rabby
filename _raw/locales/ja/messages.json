@@ -2815,6 +2815,15 @@
     "TokenChart": {
       "price": "価格",
       "holding": "ホールディングバリュー"
+    },
+    "externalSwapBrideDappPopup": {
+      "selectADapp": "Dappを選択してください",
+      "chainNotSupported": "このチェーンではサポートされていません",
+      "noQuotesForChain": "このチェーンにはまだ利用可能な引用がありません",
+      "help": "このチェーンの公式チームにサポートをお問い合わせください",
+      "noDapp": "利用できるDappsはありません",
+      "thirdPartyDappToProceed": "サードパーティのDappを使用して進めてください",
+      "viewDappOptions": "Dappオプションを見る"
     }
   },
   "global": {

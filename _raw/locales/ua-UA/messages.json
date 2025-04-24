@@ -2827,6 +2827,15 @@
     "TokenChart": {
       "holding": "Тримання вартості",
       "price": "Ціна"
+    },
+    "externalSwapBrideDappPopup": {
+      "noDapp": "Немає доступних Dapps",
+      "selectADapp": "Виберіть Dapp",
+      "help": "Будь ласка, зв'яжіться з офіційною командою цієї ланцюга для отримання підтримки.",
+      "thirdPartyDappToProceed": "Будь ласка, використайте сторонній Dapp для продовження.",
+      "chainNotSupported": "Не підтримується в цій мережі",
+      "viewDappOptions": "Переглянути параметри Dapp",
+      "noQuotesForChain": "Цієї ланцюга поки що немає доступних котирувань"
     }
   },
   "global": {

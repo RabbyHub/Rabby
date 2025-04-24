@@ -2812,6 +2812,15 @@
     "TokenChart": {
       "price": "가격",
       "holding": "가치 보유"
+    },
+    "externalSwapBrideDappPopup": {
+      "thirdPartyDappToProceed": "타사 Dapp을 사용하여 계속 진행해 주십시오.",
+      "viewDappOptions": "Dapp 옵션 보기",
+      "noDapp": "사용 가능한 Dapp이 없습니다",
+      "selectADapp": "Dapp를 선택하세요",
+      "help": "이 체인의 공식 팀에 지원을 요청하세요.",
+      "chainNotSupported": "이 체인에서는 지원되지 않습니다",
+      "noQuotesForChain": "이 체인에 대한 견적이 아직 없습니다."
     }
   },
   "global": {

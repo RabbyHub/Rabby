@@ -200,6 +200,15 @@
     "TokenChart": {
       "holding": "Valeur de détention",
       "price": "Prix"
+    },
+    "externalSwapBrideDappPopup": {
+      "viewDappOptions": "Voir les options Dapp",
+      "noDapp": "Aucun Dapps disponible",
+      "chainNotSupported": "Non pris en charge sur cette chaîne",
+      "noQuotesForChain": "Aucune cotation disponible pour cette chaîne pour l'instant",
+      "thirdPartyDappToProceed": "Veuillez utiliser une Dapp tierce pour continuer.",
+      "selectADapp": "Sélectionnez un Dapp",
+      "help": "Veuillez contacter l'équipe officielle de cette chaîne pour obtenir de l'aide."
     }
   },
   "constant": {

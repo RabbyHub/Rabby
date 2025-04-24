@@ -2853,6 +2853,15 @@
     "TokenChart": {
       "holding": "持有價值",
       "price": "價格"
+    },
+    "externalSwapBrideDappPopup": {
+      "noDapp": "沒有可用的 Dapps",
+      "chainNotSupported": "不支持此链",
+      "thirdPartyDappToProceed": "請使用第三方 Dapp 進行操作",
+      "noQuotesForChain": "此链尚无可用报价",
+      "help": "請聯絡該鏈的官方團隊以獲取支援",
+      "viewDappOptions": "查看 Dapp 选项",
+      "selectADapp": "選擇一個 Dapp"
     }
   },
   "background": {
