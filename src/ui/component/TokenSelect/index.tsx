@@ -22,6 +22,7 @@ import useSearchToken from '@/ui/hooks/useSearchToken';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync } from 'react-use';
 import { getUiType, useWallet } from '@/ui/utils';
+import { isAddress } from 'viem/utils';
 const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
@@ -234,9 +235,13 @@ const TokenSelect = forwardRef<
       return uniqBy(
         queryConds.keyword
           ? isSwapTo
-            ? remoteSwapToSearchTokens?.filter(
-                (e) => e.chain === queryConds.chainServerId
-              )
+            ? remoteSwapToSearchTokens
+                ?.filter((e) => e.chain === queryConds.chainServerId)
+                .filter((e) =>
+                  isAddress(queryConds.keyword, { strict: false })
+                    ? true
+                    : !!e.is_core
+                )
             : searchedTokenByQuery.map(abstractTokenToTokenItem)
           : allTokens,
         (token) => {
