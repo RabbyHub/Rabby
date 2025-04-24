@@ -76,6 +76,7 @@ Sentry.init({
     'Failed to fetch',
     'TransportOpenUserCancelled',
     'Non-Error promise rejection captured with keys: message, stack',
+    'Non-Error promise rejection captured with keys: message',
   ],
 });
 

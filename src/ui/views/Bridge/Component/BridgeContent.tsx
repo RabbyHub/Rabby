@@ -20,7 +20,7 @@ import {
 } from '../hooks';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { findChain, findChainByEnum } from '@/utils/chain';
+import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 
 import pRetry from 'p-retry';
@@ -28,7 +28,7 @@ import stats from '@/stats';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useHistory } from 'react-router-dom';
 import { BridgeToken } from './BridgeToken';
 import { BridgeShowMore, RecommendFromToken } from './BridgeShowMore';
@@ -37,6 +37,12 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { Header } from './BridgeHeader';
 import { obj2query } from '@/ui/utils/url';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useExternalSwapBridgeDapps } from '@/ui/component/ExternalSwapBridgeDappPopup/hooks';
+import {
+  ExternalSwapBridgeDappTips,
+  SwapBridgeDappPopup,
+} from '@/ui/component/ExternalSwapBridgeDappPopup';
+
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
@@ -90,6 +96,23 @@ export const BridgeContent = () => {
     inSufficientCanGetQuote,
   } = useBridge();
 
+  const chains = useMemo(
+    () => [toChain, fromChain].filter((e) => !!e) as CHAINS_ENUM[],
+    [toChain, fromChain]
+  );
+
+  const {
+    isSupportedChain,
+    data: externalDapps,
+    loading: externalDappsLoading,
+  } = useExternalSwapBridgeDapps(chains, 'bridge');
+  const [externalDappOpen, setExternalDappOpen] = useState(false);
+
+  const showExternalDappTips = useMemo(
+    () => !isSupportedChain && !!fromChain && !!toChain,
+    [isSupportedChain, fromChain, toChain]
+  );
+
   const amountAvailable = useMemo(() => Number(amount) > 0, [amount]);
 
   const visible = useQuoteVisible();
@@ -101,11 +124,18 @@ export const BridgeContent = () => {
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
+    if (showExternalDappTips && externalDapps.length > 0) {
+      return t('component.externalSwapBrideDappPopup.viewDappOptions');
+    }
     if (selectedBridgeQuote?.shouldApproveToken) {
       return t('page.bridge.approve-and-bridge');
     }
     return t('page.bridge.title');
-  }, [selectedBridgeQuote?.shouldApproveToken]);
+  }, [
+    selectedBridgeQuote?.shouldApproveToken,
+    showExternalDappTips,
+    externalDapps,
+  ]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -464,6 +494,7 @@ export const BridgeContent = () => {
             inSufficient={inSufficient}
             handleSetGasPrice={setMaxNativeTokenGasPrice}
             getContainer={getContainer}
+            disabled={!isSupportedChain}
           />
           <BridgeToken
             type="to"
@@ -485,6 +516,21 @@ export const BridgeContent = () => {
             <BridgeSwitchBtn onClick={switchToken} loading={quoteLoading} />
           </div>
         </div>
+        {!isSupportedChain && fromChain && toChain ? (
+          <div className="mt-16 mx-20">
+            <ExternalSwapBridgeDappTips
+              dappsAvailable={externalDapps?.length > 0}
+            />
+            <SwapBridgeDappPopup
+              visible={externalDappOpen}
+              onClose={() => {
+                setExternalDappOpen(false);
+              }}
+              dappList={externalDapps}
+              loading={externalDappsLoading}
+            />
+          </div>
+        ) : null}
 
         {!inSufficientCanGetQuote || (noQuote && !recommendFromToken) ? (
           <Alert
@@ -570,8 +616,18 @@ export const BridgeContent = () => {
         >
           <TooltipWithMagnetArrow
             overlayClassName="rectangle w-[max-content]"
-            title={t('page.swap.insufficient-balance')}
-            visible={inSufficient && selectedBridgeQuote ? undefined : false}
+            title={
+              !isSupportedChain && externalDapps.length < 1
+                ? t('component.externalSwapBrideDappPopup.chainNotSupported')
+                : t('page.swap.insufficient-balance')
+            }
+            visible={
+              !isSupportedChain && externalDapps.length < 1
+                ? undefined
+                : inSufficient && selectedBridgeQuote
+                ? undefined
+                : false
+            }
           >
             <Button
               loading={fetchingBridgeQuote}
@@ -580,6 +636,10 @@ export const BridgeContent = () => {
               size="large"
               className="h-[48px] text-white text-[16px] font-medium"
               onClick={() => {
+                if (showExternalDappTips && externalDapps.length > 0) {
+                  setExternalDappOpen(true);
+                  return;
+                }
                 if (fetchingBridgeQuote) return;
                 if (!selectedBridgeQuote) {
                   refresh((e) => e + 1);
@@ -616,7 +676,11 @@ export const BridgeContent = () => {
                 // gotoBridge();
                 handleBridge();
               }}
-              disabled={btnDisabled}
+              disabled={
+                !isSupportedChain && externalDapps.length > 0
+                  ? false
+                  : btnDisabled
+              }
             >
               {btnText}
             </Button>

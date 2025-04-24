@@ -2812,6 +2812,15 @@
     "TokenChart": {
       "holding": "Mantendo Valor",
       "price": "Preço"
+    },
+    "externalSwapBrideDappPopup": {
+      "viewDappOptions": "Ver Opções de Dapp",
+      "noDapp": "Nenhum Dapp disponível",
+      "noQuotesForChain": "Ainda não há cotações disponíveis para esta cadeia",
+      "help": "Por favor, contate a equipe oficial desta cadeia para suporte.",
+      "thirdPartyDappToProceed": "Por favor, utilize um Dapp de terceiros para prosseguir.",
+      "selectADapp": "Selecione um Dapp",
+      "chainNotSupported": "Não suportado nesta cadeia"
     }
   },
   "global": {

@@ -2814,6 +2814,15 @@
     "TokenChart": {
       "price": "Цена",
       "holding": "Хранение стоимости"
+    },
+    "externalSwapBrideDappPopup": {
+      "selectADapp": "Выберите Dapp",
+      "noQuotesForChain": "На данный момент нет доступных котировок для этой цепочки",
+      "chainNotSupported": "Не поддерживается на этой цепочке",
+      "noDapp": "Нет доступных Dapps",
+      "viewDappOptions": "Просмотреть Dapp Опции",
+      "thirdPartyDappToProceed": "Пожалуйста, используйте стороннее Dapp для продолжения",
+      "help": "Пожалуйста, свяжитесь с официальной командой этой цепочки для получения поддержки."
     }
   },
   "global": {

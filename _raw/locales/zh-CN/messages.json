@@ -2853,6 +2853,15 @@
     "TokenChart": {
       "price": "价格",
       "holding": "持有价值"
+    },
+    "externalSwapBrideDappPopup": {
+      "viewDappOptions": "查看 Dapp 选项",
+      "help": "请联系该链的官方团队以获取支持",
+      "noDapp": "没有可用的 Dapps",
+      "noQuotesForChain": "当前该链尚无可用报价",
+      "selectADapp": "选择一个 Dapp",
+      "chainNotSupported": "在此链上不支持",
+      "thirdPartyDappToProceed": "请使用第三方 Dapp 继续操作"
     }
   },
   "background": {

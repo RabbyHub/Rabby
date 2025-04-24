@@ -2818,6 +2818,15 @@
     "TokenChart": {
       "holding": "Değer Tutma",
       "price": "Fiyat"
+    },
+    "externalSwapBrideDappPopup": {
+      "selectADapp": "Bir Dapp Seçin",
+      "chainNotSupported": "Bu zincirde desteklenmiyor",
+      "noDapp": "Mevcut Dapp yok",
+      "thirdPartyDappToProceed": "Lütfen devam etmek için üçüncü taraf bir Dapp kullanın.",
+      "noQuotesForChain": "Bu zincir için henüz herhangi bir alıntı mevcut değil.",
+      "help": "Lütfen destek için bu zincirin resmi ekibiyle iletişime geçin.",
+      "viewDappOptions": "Dapp Seçeneklerini Görüntüle"
     }
   },
   "global": {

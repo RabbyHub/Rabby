@@ -2812,6 +2812,15 @@
     "TokenChart": {
       "price": "Giá",
       "holding": "Giá trị nắm giữ"
+    },
+    "externalSwapBrideDappPopup": {
+      "noQuotesForChain": "Chưa có báo giá nào cho chuỗi này.",
+      "chainNotSupported": "Không được hỗ trợ trên chuỗi này",
+      "selectADapp": "Chọn một Dapp",
+      "noDapp": "Không có Dapp nào khả dụng",
+      "viewDappOptions": "Xem tùy chọn Dapp",
+      "thirdPartyDappToProceed": "Vui lòng sử dụng một Dapp bên thứ ba để tiếp tục.",
+      "help": "Vui lòng liên hệ với đội ngũ chính thức của chuỗi này để được hỗ trợ"
     }
   },
   "global": {
