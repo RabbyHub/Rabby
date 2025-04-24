@@ -245,6 +245,13 @@ export const BridgeToken = ({
     disabled,
   ]);
 
+  useEffect(() => {
+    if (isFromToken && disabled) {
+      onInputChange?.('');
+      handleSetGasPrice?.();
+    }
+  }, [isFromToken, disabled, onInputChange, handleSetGasPrice]);
+
   return (
     <div className={clsx('h-[156px] bg-r-neutral-card1 rounded-[8px]')}>
       <div
