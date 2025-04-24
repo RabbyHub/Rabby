@@ -67,7 +67,7 @@ function cleanURL(url: string) {
 
 const Item = ({ name, url, logo }: SwapBridgeExternalDappInfo) => {
   const openDapp = () => {
-    openInTab(url + '?utm_source=rabby');
+    openInTab(url + '?utm_source=rabby', isTab ? false : true);
   };
   return (
     <div
