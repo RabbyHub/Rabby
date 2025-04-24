@@ -290,7 +290,7 @@ export const BridgeToken = ({
               placeholder={showNoQuote ? t('page.bridge.no-quote') : '0'}
               value={value}
               onChange={inputChange}
-              readOnly={!isFromToken}
+              readOnly={disabled || !isFromToken}
               ref={inputRef as any}
             />
           )}

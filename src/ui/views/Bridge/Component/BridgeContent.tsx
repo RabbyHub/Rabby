@@ -494,6 +494,7 @@ export const BridgeContent = () => {
             inSufficient={inSufficient}
             handleSetGasPrice={setMaxNativeTokenGasPrice}
             getContainer={getContainer}
+            disabled={!isSupportedChain}
           />
           <BridgeToken
             type="to"
