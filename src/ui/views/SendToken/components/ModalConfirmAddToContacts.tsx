@@ -176,31 +176,33 @@ function ModalConfirmAddToContacts({
         <div
           className={clsx(
             'text-r-neutral-title-1',
-            'font-medium text-[14px] flex justify-start items-center'
+            'font-medium text-[14px] break-all whitespace-pre-wrap'
           )}
         >
-          {addrToAdd}
-          <ThemeIcon
-            onClick={() => {
-              copyTextToClipboard(addrToAdd).then(() => {
-                message.success({
-                  icon: <i />,
-                  content: (
-                    <div>
-                      <div className="flex gap-4 mb-4">
-                        <img src={IconSuccess} alt="" />
-                        {t('global.copied')}
+          <span className="break-all inline-block">
+            {addrToAdd}
+            <ThemeIcon
+              onClick={() => {
+                copyTextToClipboard(addrToAdd).then(() => {
+                  message.success({
+                    icon: <i />,
+                    content: (
+                      <div>
+                        <div className="flex gap-4 mb-4">
+                          <img src={IconSuccess} alt="" />
+                          {t('global.copied')}
+                        </div>
+                        <div className="text-white">{addrToAdd}</div>
                       </div>
-                      <div className="text-white">{addrToAdd}</div>
-                    </div>
-                  ),
-                  duration: 0.5,
+                    ),
+                    duration: 0.5,
+                  });
                 });
-              });
-            }}
-            src={RcIconCopy}
-            className="ml-[4px] w-[14px] h-[14px] cursor-pointer"
-          />
+              }}
+              src={RcIconCopy}
+              className="inline-block w-[14px] h-[14px] cursor-pointer ml-2 mb-2"
+            />
+          </span>
         </div>
         <div
           className={clsx(
