@@ -53,7 +53,7 @@ export const BalanceChangeWrapper: React.FC<Props> = ({
     return false;
   }, [data]);
 
-  return notShowBalanceChange ? null : (
+  return notShowBalanceChange || !balanceChange ? null : (
     <>
       <Divide />
       <BalanceChange version={preExecVersion} data={balanceChange} />
