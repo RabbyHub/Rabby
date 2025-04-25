@@ -4824,10 +4824,10 @@
     ethers "5.5.1"
     semver "7.5.4"
 
-"@rabby-wallet/page-provider@0.4.9":
-  version "0.4.9"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.9.tgz#3b1f9a45d70c42b2598b9cc7ce08abc6ec1e8439"
-  integrity sha512-xR30KuYRT8qTZfBn5E2j+InTHzX2tvLz+zL3u3T8SN6qCOq2frR4vCJz8aWZBoycUtdIWL0hKUrkNmRE/t2W7g==
+"@rabby-wallet/page-provider@0.4.10":
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.4.10.tgz#b6285b44f066e34560dd85c4695b137ff1a51d3f"
+  integrity sha512-w5tbcw60QJ8+frLGN6+2CU2cafR/FeSfJh3RSm8etKHinpj1ZzpCHvqnzXPcA05pBRUXvmqcN9VvgfMahClumw==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@metamask/post-message-stream" "8.1.0"
