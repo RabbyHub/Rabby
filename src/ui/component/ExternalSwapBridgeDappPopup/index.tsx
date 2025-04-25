@@ -19,21 +19,6 @@ export const ExternalSwapBridgeDappTips = ({
   dappsAvailable?: boolean;
 }) => {
   const { t } = useTranslation();
-  if (!dappsAvailable) {
-    return (
-      <div
-        className={clsx(
-          'relative h-[44px] rounded-[8px] bg-r-neutral-card-1 pl-[12px]',
-          'flex gap-[6px] items-center'
-        )}
-      >
-        <RcIconWarning viewBox="0 0 16 16" className="w-16 h-16" />
-        <div className="text-r-neutral-title-1 text-[14px] font-medium">
-          {t('component.externalSwapBrideDappPopup.noQuotesForChain')}
-        </div>
-      </div>
-    );
-  }
   return (
     <div
       className={clsx(
