@@ -205,6 +205,7 @@ export const BridgeContent = () => {
               to_token_amount: selectedBridgeQuote.to_token_amount,
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
+              slippage: new BigNumber(slippage).div(100).toNumber(),
             },
           },
           {
@@ -316,6 +317,7 @@ export const BridgeContent = () => {
               to_token_amount: selectedBridgeQuote.to_token_amount,
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
+              slippage: new BigNumber(slippage).div(100).toNumber(),
             },
           },
           {
