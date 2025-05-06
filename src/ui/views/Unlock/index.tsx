@@ -133,18 +133,20 @@ const Unlock = () => {
                     return Promise.reject(
                       <div>
                         <span>{inputError}</span>
-                        <button
-                          className={clsx(
-                            'text-r-blue-default font-medium',
-                            'underline',
-                            'ml-[8px]'
-                          )}
-                          onClick={() =>
-                            openInternalPageInTab('forgot-password')
-                          }
-                        >
-                          {t('page.unlock.btnForgotPassword')}
-                        </button>
+                        {hasForgotPassword && (
+                          <button
+                            className={clsx(
+                              'text-r-blue-default font-medium',
+                              'underline',
+                              'ml-[8px]'
+                            )}
+                            onClick={() =>
+                              openInternalPageInTab('forgot-password')
+                            }
+                          >
+                            {t('page.unlock.btnForgotPassword')}
+                          </button>
+                        )}
                       </div>
                     );
                   }
