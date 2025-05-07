@@ -2654,7 +2654,10 @@
       "selectADapp": "Select a Dapp",
       "noDapp": "No Dapps available",
       "help": "Please contact the official team of this chain for support",
-      "chainNotSupported": "Not supported on this chain"
+      "chainNotSupported": "Not supported on this chain",
+      "noDapps": "No Dapp available on this chain",
+      "swapOnDapp": "Swap on Dapp",
+      "bridgeOnDapp": "Bridge on Dapp"
     },
     "TokenChart": {
       "price": "Price",

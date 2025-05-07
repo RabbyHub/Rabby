@@ -16,6 +16,7 @@ export type BridgeRecord = {
   to_token_amount: string | number;
   tx: Partial<Tx>;
   rabby_fee: number;
+  slippage: number;
 };
 
 export type BridgeServiceStore = {
