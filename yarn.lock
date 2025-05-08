@@ -4807,10 +4807,10 @@
     events "^3.3.0"
     web3-utils "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.2.tgz#10e39e762070b52fdf76492a9cb248f3d9fa029d"
-  integrity sha512-awwDfTyjvmAmu/HGEGqqRzU+bPgNHiO16r1iWmeAPk5EPvRuY7jjEmkW1CMOooT3LDAxGeQdLON2CJRcBzuXgw==
+"@rabby-wallet/gnosis-sdk@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.3.tgz#9a72284cdf2610dd9cd923bc6081023b3d08fd4b"
+  integrity sha512-CseQnvVxyBYnDVGmWIAUh/7ppKADkZIOeLJObtocjHj30aCddyaSkYGFWfxVy214y4/p4S/yH3F1R/DUoThg/A==
   dependencies:
     "@ethersproject/bignumber" "5.5.0"
     "@ethersproject/bytes" "5.5.0"
