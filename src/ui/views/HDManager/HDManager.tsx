@@ -162,7 +162,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
         (item) => item.type === keyring
       );
       // 硬件钱包根据 keyring type 补全 brand
-      if (hardwareKeyring) {
+      if (!finalBrand && hardwareKeyring) {
         finalBrand = hardwareKeyring.brandName;
       }
       history.push(
