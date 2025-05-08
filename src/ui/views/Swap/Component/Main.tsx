@@ -164,8 +164,8 @@ export const Main = () => {
   const amountAvailable = useMemo(() => Number(inputAmount) > 0, [inputAmount]);
 
   const btnText = useMemo(() => {
-    if (!isSupportedChain && externalDapps?.length > 0) {
-      return t('component.externalSwapBrideDappPopup.viewDappOptions');
+    if (!isSupportedChain) {
+      return t('component.externalSwapBrideDappPopup.swapOnDapp');
     }
     if (activeProvider?.shouldApproveToken) {
       return t('page.swap.approve-swap');
@@ -747,7 +747,7 @@ export const Main = () => {
             overlayClassName="rectangle w-[max-content]"
             title={
               !isSupportedChain && externalDapps.length < 1
-                ? t('component.externalSwapBrideDappPopup.chainNotSupported')
+                ? t('component.externalSwapBrideDappPopup.noDapps')
                 : t('page.swap.insufficient-balance')
             }
             visible={

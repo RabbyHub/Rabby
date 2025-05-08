@@ -124,8 +124,8 @@ export const BridgeContent = () => {
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
-    if (showExternalDappTips && externalDapps.length > 0) {
-      return t('component.externalSwapBrideDappPopup.viewDappOptions');
+    if (showExternalDappTips) {
+      return t('component.externalSwapBrideDappPopup.bridgeOnDapp');
     }
     if (selectedBridgeQuote?.shouldApproveToken) {
       return t('page.bridge.approve-and-bridge');
@@ -205,6 +205,7 @@ export const BridgeContent = () => {
               to_token_amount: selectedBridgeQuote.to_token_amount,
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
+              slippage: new BigNumber(slippage).div(100).toNumber(),
             },
           },
           {
@@ -316,6 +317,7 @@ export const BridgeContent = () => {
               to_token_amount: selectedBridgeQuote.to_token_amount,
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
+              slippage: new BigNumber(slippage).div(100).toNumber(),
             },
           },
           {
@@ -618,7 +620,7 @@ export const BridgeContent = () => {
             overlayClassName="rectangle w-[max-content]"
             title={
               !isSupportedChain && externalDapps.length < 1
-                ? t('component.externalSwapBrideDappPopup.chainNotSupported')
+                ? t('component.externalSwapBrideDappPopup.noDapps')
                 : t('page.swap.insufficient-balance')
             }
             visible={
