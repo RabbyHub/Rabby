@@ -157,8 +157,16 @@ export const HDManager: React.FC<StateProviderProps> = ({
 
   const handleCloseWin = useMemoizedFn(async () => {
     if (isNewUserImport && !noRedirect) {
+      let finalBrand = brand;
+      const hardwareKeyring = Object.values(HARDWARE_KEYRING_TYPES).find(
+        (item) => item.type === keyring
+      );
+      // 硬件钱包根据 keyring type 补全 brand
+      if (!finalBrand && hardwareKeyring) {
+        finalBrand = hardwareKeyring.brandName;
+      }
       history.push(
-        `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${brand}`
+        `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${finalBrand}`
       );
       return;
     }
