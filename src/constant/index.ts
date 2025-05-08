@@ -1423,6 +1423,7 @@ export const GNOSIS_SUPPORT_CHAINS = [
   'WORLD',
   CHAINS_ENUM.BLAST,
   'SONIC',
+  'BERA',
 ];
 
 export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
