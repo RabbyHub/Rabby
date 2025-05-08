@@ -424,7 +424,6 @@ export const useTokenPair = (userAddress: string) => {
   }, [slippageObj.autoSlippage, isWrapToken, isStableCoin]);
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
-  const visible = useQuoteVisible();
 
   useEffect(() => {
     setQuotesList([]);
@@ -646,7 +645,7 @@ export const useTokenPair = (userAddress: string) => {
     receiveToken?.id,
     receiveToken?.chain,
     inSufficient,
-    visible,
+
     pending,
   ]);
 
