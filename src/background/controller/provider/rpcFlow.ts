@@ -5,7 +5,7 @@ import {
   permissionService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
-import { CHAINS, EVENTS } from 'consts';
+import { CHAINS, CHAINS_ENUM, EVENTS } from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
@@ -127,20 +127,11 @@ const flowContext = flow
         ctx.request.requestedApproval = true;
         connectOrigins.add(origin);
         try {
-          const isUnlock = keyringService.memStore.getState().isUnlocked;
-          const { defaultChain } = await notificationService.requestApproval(
-            {
-              params: { origin, name, icon, $ctx: data.$ctx },
-              approvalComponent: 'Connect',
-            },
-            { height: isUnlock ? 800 : 628 }
-          );
-          connectOrigins.delete(origin);
           permissionService.addConnectedSiteV2({
             origin,
             name,
             icon,
-            defaultChain,
+            defaultChain: CHAINS_ENUM.ETH,
           });
         } catch (e) {
           connectOrigins.delete(origin);
