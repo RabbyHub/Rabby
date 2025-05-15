@@ -907,7 +907,7 @@ const GasSelectorHeader = ({
                       {gasCostUsdStr}
                     </span>
                   )}
-                  {L2_ENUMS.includes(chain.enum) &&
+                  {chain.needEstimateGas &&
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                       <span className="relative ml-6">
                         <TooltipWithMagnetArrow
