@@ -86,7 +86,7 @@ const BridgeOrNative = ({
               </div>
               <div
                 onClick={() => {
-                  openInTab(`https://www.${tokenEntity?.domain_id}`);
+                  openInTab(`https://${tokenEntity?.domain_id}`);
                 }}
                 className="
               text-r-neutral-title-1 text-13 font-medium
