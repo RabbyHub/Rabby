@@ -6,7 +6,7 @@ import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import IconDapps from 'ui/assets/dapps.svg';
@@ -15,6 +15,9 @@ import IconMetamaskMode from 'ui/assets/metamask-mode-circle.svg';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
+import { findChain } from '@/utils/chain';
+import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
+import { useMemoizedFn } from 'ahooks';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -36,11 +39,16 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   );
 
   const getCurrentSite = useCallback(async () => {
-    const tab = await getCurrentTab();
-    if (!tab.id || !tab.url) return;
-    const domain = getOriginFromUrl(tab.url);
-    const current = await wallet.getCurrentSite(tab.id, domain);
-    setSite(current);
+    // const tab = await getCurrentTab();
+    // if (!tab.id || !tab.url) return;
+    // const domain = getOriginFromUrl(tab.url);
+    // const current = await wallet.getCurrentSite(tab.id, domain);
+    // setSite(current);
+    const site = await wallet.getSite('https://app.uniswap.org');
+    console.log('???', site);
+    if (site) {
+      setSite(site);
+    }
   }, []);
 
   const handleRemove = async (origin: string) => {
@@ -78,33 +86,72 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     getCurrentSite();
   }, []);
 
+  const chain = useMemo(() => {
+    if (!site || site.isMetamaskMode || !site.isConnected) {
+      return null;
+    }
+    return findChain({
+      enum: site.chain || CHAINS_ENUM.ETH,
+    });
+  }, [site]);
+
+  const handleClickChain = useMemoizedFn(() => {
+    setVisible(true);
+    matomoRequestEvent({
+      category: 'Front Page Click',
+      action: 'Click',
+      label: 'Change Chain',
+    });
+
+    ga4.fireEvent('Click_ChangeChain', {
+      event_category: 'Front Page Click',
+    });
+  });
+
   return (
     <div className={clsx('current-connection-block h-[52px]')}>
       {site ? (
         <div className="site mr-[18px]">
-          <div className="relative">
-            <FallbackSiteLogo
-              url={site.icon}
-              origin={site.origin}
-              width="28px"
-              className="site-icon"
-            ></FallbackSiteLogo>
-            {site.isMetamaskMode ? (
-              <TooltipWithMagnetArrow
-                placement="top"
-                overlayClassName={clsx('rectangle max-w-[360px] w-[360px]')}
-                align={{
-                  offset: [0, 4],
-                }}
-                title={t(
-                  'page.dashboard.recentConnection.metamaskModeTooltipNew'
-                )}
-              >
-                <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
-                  <img src={IconMetamaskMode} alt="metamask mode"></img>
+          <div
+            className={clsx(
+              'site-icon-container',
+              site?.isConnected && !site?.isMetamaskMode ? 'is-support' : ''
+            )}
+            onClick={handleClickChain}
+          >
+            <div className="relative">
+              <FallbackSiteLogo
+                url={site.icon}
+                origin={site.origin}
+                width="28px"
+                className="site-icon"
+              ></FallbackSiteLogo>
+              {site.isMetamaskMode ? (
+                <TooltipWithMagnetArrow
+                  placement="top"
+                  overlayClassName={clsx('rectangle max-w-[360px] w-[360px]')}
+                  align={{
+                    offset: [0, 4],
+                  }}
+                  title={t(
+                    'page.dashboard.recentConnection.metamaskModeTooltipNew'
+                  )}
+                >
+                  <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                    <img src={IconMetamaskMode} alt="metamask mode"></img>
+                  </div>
+                </TooltipWithMagnetArrow>
+              ) : null}
+              {chain ? (
+                <div className="absolute bottom-[-3px] right-[-3px]">
+                  <img
+                    src={chain.logo}
+                    alt="chain logo"
+                    className="rounded-full w-[16px] h-[16px] border-[#fff] border-[0.5px] border-solid"
+                  />
                 </div>
-              </TooltipWithMagnetArrow>
-            ) : null}
+              ) : null}
+            </div>
           </div>
           <div className="site-content">
             <div className="site-name" title={site?.origin}>
@@ -135,23 +182,15 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           </div>
         </div>
       )}
-      <ChainSelector
-        className={clsx(!site && 'disabled')}
+
+      <ChainSelectorModal
         value={site?.chain || CHAINS_ENUM.ETH}
         onChange={handleChangeDefaultChain}
-        showModal={visible}
-        onAfterOpen={() => {
-          matomoRequestEvent({
-            category: 'Front Page Click',
-            action: 'Click',
-            label: 'Change Chain',
-          });
-
-          ga4.fireEvent('Click_ChangeChain', {
-            event_category: 'Front Page Click',
-          });
+        showRPCStatus={true}
+        visible={visible}
+        onCancel={() => {
+          setVisible(false);
         }}
-        showRPCStatus
       />
     </div>
   );

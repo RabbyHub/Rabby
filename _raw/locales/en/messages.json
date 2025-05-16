@@ -2824,6 +2824,9 @@
       "title": "You're Leaving Rabby Wallet",
       "content": "You're about to visit an external website. Rabby Wallet is not responsible for the content or security of this site.",
       "button": "Continue"
+    },
+    "AccountSelectorModal": {
+      "title": "Select address"
     }
   },
   "global": {

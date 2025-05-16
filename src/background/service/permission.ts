@@ -5,6 +5,7 @@ import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { max } from 'lodash';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { BasicDappInfo } from './openapi';
+import { Account } from './preference';
 
 export interface ConnectedSite {
   origin: string;
@@ -27,6 +28,8 @@ export interface ConnectedSite {
    */
   rdns?: string;
   isMetamaskMode?: boolean;
+
+  account?: Account;
 }
 
 export type PermissionStore = {
