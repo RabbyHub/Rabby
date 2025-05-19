@@ -43,7 +43,7 @@ const Approval: React.FC<{
 
   if (!approval) return <></>;
   const { data } = approval;
-  const { approvalComponent, params, origin } = data;
+  const { approvalComponent, params, origin, account } = data;
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
 
   return (
@@ -53,6 +53,7 @@ const Approval: React.FC<{
           <CurrentApprovalComponent
             params={params}
             origin={origin}
+            account={account}
             // requestDefer={requestDefer}
           />
         </ApprovalUtilsProvider>

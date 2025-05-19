@@ -130,7 +130,10 @@ const flowContext = flow
         connectOrigins.add(origin);
         try {
           const isUnlock = keyringService.memStore.getState().isUnlocked;
-          const { defaultChain } = await notificationService.requestApproval(
+          const {
+            defaultChain,
+            defaultAccount,
+          } = await notificationService.requestApproval(
             {
               params: { origin, name, icon, $ctx: data.$ctx },
               approvalComponent: 'Connect',
@@ -143,6 +146,8 @@ const flowContext = flow
             name,
             icon,
             defaultChain,
+            defaultAccount:
+              defaultAccount || preferenceService.getCurrentAccount(),
           });
         } catch (e) {
           connectOrigins.delete(origin);
@@ -219,6 +224,7 @@ const flowContext = flow
             data: ctx.request.data.params,
             session: { origin, name, icon },
           },
+          account: ctx.request.account,
           origin,
         },
         { height: windowHeight }
@@ -388,7 +394,7 @@ function reportStatsData() {
 }
 
 export default (request: ProviderRequest) => {
-  const { origin } = request;
+  const origin = request.session?.origin || request.origin;
   let account: Account | undefined = undefined;
   if (origin) {
     if (origin === INTERNAL_REQUEST_ORIGIN) {

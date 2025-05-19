@@ -1,136 +1,69 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { Button, Drawer, DrawerProps, Input } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import { Drawer, DrawerProps, Input } from 'antd';
+import React, { ReactNode, useEffect, useMemo } from 'react';
 
-import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
-import { Chain } from 'background/service/openapi';
+import { useRabbyDispatch } from '@/ui/store';
 import clsx from 'clsx';
-import { CHAINS_ENUM } from 'consts';
+import { KEYRING_TYPE } from 'consts';
 import IconSearch from 'ui/assets/search.svg';
 
-import { useWallet } from '@/ui/utils';
-import {
-  findChain,
-  findChainByEnum,
-  varyAndSortChainItems,
-} from '@/utils/chain';
-import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-import Empty from '../Empty';
-import NetSwitchTabs, {
-  NetSwitchTabsKey,
-  useSwitchNetTab,
-} from '../PillsSwitch/NetSwitchTabs';
-import {
-  SelectChainList,
-  SelectChainListProps,
-} from './components/SelectChainList';
-import { LoadingBalances } from './LoadingBalances';
-import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { Account } from '@/background/service/preference';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { isSameAccount } from '@/utils/account';
+import { flatten } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
+import styled from 'styled-components';
+import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
+import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
+import { AccountItem } from './AccountItem';
+
+const Warper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .header.header {
+    padding-bottom: 16px;
+    background: var(--r-neutral-bg2, #f2f4f7);
+    flex-shrink: 0;
+    .ant-input-affix-wrapper {
+      border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+      background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+      border-radius: 6px;
+      height: 44px;
+      border-width: 1px;
+
+      input::placeholder {
+        color: var(--r-neutral-foot, #6a7587);
+      }
+    }
+
+    .ant-input-affix-wrapper:focus,
+    .ant-input-affix-wrapper-focused {
+      border-color: var(--r-blue-default);
+    }
+  }
+`;
 
 interface ChainSelectorModalProps {
   visible: boolean;
-  value?: CHAINS_ENUM;
+  value?: Account | null;
   onCancel(): void;
-  onChange(val: CHAINS_ENUM): void;
+  onChange(val: Account): void;
   connection?: boolean;
   title?: ReactNode;
   className?: string;
-  supportChains?: SelectChainListProps['supportChains'];
-  disabledTips?: SelectChainListProps['disabledTips'];
-  hideTestnetTab?: boolean;
-  hideMainnetTab?: boolean;
-  showRPCStatus?: boolean;
   height?: number;
   zIndex?: number;
-  excludeChains?: CHAINS_ENUM[];
   showClosableIcon?: boolean;
   getContainer?: DrawerProps['getContainer'];
 }
-
-const useChainSeletorList = ({
-  supportChains,
-  netTabKey,
-}: {
-  supportChains?: Chain['enum'][];
-  netTabKey?: NetSwitchTabsKey;
-}) => {
-  const [search, setSearch] = useState('');
-  const { pinned, chainBalances } = useRabbySelector((state) => {
-    return {
-      pinned: (state.preference.pinnedChain?.filter((item) =>
-        findChain({ enum: item })
-      ) || []) as CHAINS_ENUM[],
-      chainBalances:
-        netTabKey === 'testnet' ? {} : state.account.matteredChainBalances,
-      isShowTestnet: state.preference.isShowTestnet,
-    };
-  });
-
-  const dispatch = useRabbyDispatch();
-
-  const handleStarChange = (chain: CHAINS_ENUM, value) => {
-    if (value) {
-      dispatch.preference.addPinnedChain(chain);
-    } else {
-      dispatch.preference.removePinnedChain(chain);
-    }
-  };
-  const handleSort = (chains: Chain[]) => {
-    dispatch.preference.updatePinnedChainList(chains.map((item) => item.enum));
-  };
-  const { mainnetList, testnetList } = useRabbySelector((state) => {
-    return {
-      mainnetList: state.chains.mainnetList,
-      testnetList: state.chains.testnetList,
-    };
-  });
-  const { allSearched, matteredList, unmatteredList } = useMemo(() => {
-    const searchKw = search?.trim().toLowerCase();
-    const result = varyAndSortChainItems({
-      supportChains,
-      searchKeyword: searchKw,
-      matteredChainBalances: chainBalances,
-      pinned,
-      netTabKey,
-      mainnetList,
-      testnetList,
-    });
-
-    return {
-      allSearched: result.allSearched,
-      matteredList: searchKw ? [] : result.matteredList,
-      unmatteredList: searchKw ? [] : result.unmatteredList,
-    };
-  }, [
-    mainnetList,
-    testnetList,
-    search,
-    pinned,
-    supportChains,
-    chainBalances,
-    netTabKey,
-  ]);
-
-  useEffect(() => {
-    dispatch.preference.getPreference('pinnedChain');
-  }, [dispatch]);
-
-  return {
-    matteredList,
-    unmatteredList: search?.trim() ? allSearched : unmatteredList,
-    allSearched,
-    handleStarChange,
-    handleSort,
-    search,
-    setSearch,
-    pinned,
-  };
-};
 
 export const AccountSelectorModal = ({
   title,
@@ -138,16 +71,9 @@ export const AccountSelectorModal = ({
   onCancel,
   onChange,
   value,
-  connection = false,
   className,
-  supportChains,
-  disabledTips,
-  hideTestnetTab = false,
-  hideMainnetTab = false,
-  showRPCStatus = false,
   height = 540,
   zIndex,
-  excludeChains,
   showClosableIcon = true,
   getContainer,
 }: ChainSelectorModalProps) => {
@@ -155,59 +81,7 @@ export const AccountSelectorModal = ({
     onCancel();
   };
 
-  const handleChange = (val: CHAINS_ENUM) => {
-    onChange(val);
-  };
-
-  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab({
-    hideTestnetTab,
-  });
-
   const { t } = useTranslation();
-
-  const history = useHistory();
-
-  const {
-    matteredList: _matteredList,
-    unmatteredList: _unmatteredList,
-    handleStarChange,
-    handleSort,
-    search,
-    setSearch,
-    pinned,
-  } = useChainSeletorList({
-    supportChains,
-    netTabKey: !hideMainnetTab ? selectedTab : 'testnet',
-  });
-
-  const [matteredList, unmatteredList] = useMemo(() => {
-    if (excludeChains?.length) {
-      return [_matteredList, _unmatteredList].map((chains) =>
-        chains.filter((e) => !excludeChains.includes(e.enum))
-      );
-    }
-    return [_matteredList, _unmatteredList];
-  }, [excludeChains, _matteredList, _unmatteredList]);
-
-  useEffect(() => {
-    if (!value || !visible) return;
-
-    const chainItem = findChainByEnum(value);
-    onTabChange(chainItem?.isTestnet ? 'testnet' : 'mainnet');
-  }, [value, visible, onTabChange]);
-
-  const rDispatch = useRabbyDispatch();
-  const isLoading = useRabbyGetter(
-    (s) => s.account.isLoadingMateeredChainBalances
-  );
-
-  useEffect(() => {
-    if (!visible) {
-      setSearch('');
-    } else {
-      rDispatch.account.getMatteredChainBalance();
-    }
-  }, [visible, rDispatch, setSearch]);
 
   const {
     sortedAccountsList,
@@ -290,7 +164,10 @@ export const AccountSelectorModal = ({
     result.noAnySearchedAccount =
       result.filteredAccounts.length <= 0 && !loadingAccounts;
 
-    return result;
+    return {
+      ...result,
+      filteredAccounts: flatten(result.filteredAccounts),
+    };
   }, [
     allSortedAccountList,
     addressSortStore.sortType,
@@ -303,6 +180,14 @@ export const AccountSelectorModal = ({
     fetchAllAccounts();
   }, [fetchAllAccounts]);
 
+  const dispatch = useRabbyDispatch();
+
+  useEffect(() => {
+    if (!visible) {
+      setSearchKeyword('');
+    }
+  }, [visible]);
+
   return (
     <>
       <Drawer
@@ -313,86 +198,116 @@ export const AccountSelectorModal = ({
         placement={'bottom'}
         visible={visible}
         onClose={handleCancel}
-        className={clsx(
-          'custom-popup is-support-darkmode is-new',
-          'chain-selector__modal',
-          // isLoading && 'disable-body-scroll',
-          connection && 'connection',
-          className
-        )}
+        className={clsx('custom-popup is-support-darkmode is-new', className)}
         zIndex={zIndex}
         destroyOnClose
         closeIcon={
           <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
         }
         getContainer={getContainer}
+        bodyStyle={{
+          paddingBottom: 0,
+        }}
       >
-        <header>
-          {matteredList.length === 0 &&
-          unmatteredList.length === 0 &&
-          !search ? null : (
+        <Warper>
+          <header className="header">
             <Input
               prefix={<img src={IconSearch} />}
-              // Search chain
-              placeholder={t('component.ChainSelectorModal.searchPlaceholder')}
-              onChange={(e) => setSearch(e.target.value)}
-              value={search}
+              placeholder={t(
+                'component.AccountSelectorModal.searchPlaceholder'
+              )}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              value={searchKeyword}
               allowClear
             />
-          )}
-        </header>
-        {isLoading ? (
-          <div className="chain-selector__modal-content">
-            <LoadingBalances loading={isLoading} />
-          </div>
-        ) : (
-          <div className="chain-selector__modal-content">
-            <SelectChainList
-              supportChains={supportChains}
-              data={matteredList}
-              sortable={false /* !supportChains */}
-              pinned={pinned as CHAINS_ENUM[]}
-              onStarChange={handleStarChange}
-              onSort={handleSort}
-              onChange={handleChange}
-              value={value}
-              disabledTips={disabledTips}
-              showRPCStatus={showRPCStatus}
-            ></SelectChainList>
-            <SelectChainList
-              supportChains={supportChains}
-              data={unmatteredList}
-              value={value}
-              pinned={pinned as CHAINS_ENUM[]}
-              onStarChange={handleStarChange}
-              onChange={handleChange}
-              disabledTips={disabledTips}
-              showRPCStatus={showRPCStatus}
-            ></SelectChainList>
+          </header>
+          <Virtuoso
+            style={{
+              height: '100%',
+              flex: 1,
+            }}
+            data={filteredAccounts}
+            itemContent={(index, item) => {
+              const current = item;
+              const prev = filteredAccounts[index - 1];
+              const next = filteredAccounts[index + 1];
+              const isGroupFirst =
+                !prev ||
+                (prev?.type !== KEYRING_TYPE.WatchAddressKeyring &&
+                  current?.type === KEYRING_TYPE.WatchAddressKeyring);
+              const isGroupLast =
+                !next ||
+                (current?.type !== KEYRING_TYPE.WatchAddressKeyring &&
+                  next?.type === KEYRING_TYPE.WatchAddressKeyring);
 
-            {matteredList.length === 0 && unmatteredList.length === 0 ? (
-              <div className="select-chain-list pt-[70px] bg-transparent">
-                <Empty>
-                  {/* No chains */}
-                  {t('component.ChainSelectorModal.noChains')}
-                </Empty>
-                {selectedTab === 'testnet' ? (
-                  <div className="text-center mt-[50px]">
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        history.push('/custom-testnet');
-                      }}
-                      className="w-[200px] h-[44px]"
-                    >
-                      {t('component.ChainSelectorModal.addTestnet')}
-                    </Button>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
-        )}
+              const isFavorite = highlightedAddresses.some(
+                (highlighted) =>
+                  item.address === highlighted.address &&
+                  item.brandName === highlighted.brandName
+              );
+
+              return (
+                <div
+                  style={{
+                    borderBottom: '0.5px solid var(--r-neutral-line, #E0E5EC)',
+                    background: 'var(--r-neutral-card1, #FFF)',
+                    ...(isGroupFirst
+                      ? {
+                          borderTopLeftRadius: 8,
+                          borderTopRightRadius: 8,
+                        }
+                      : {}),
+                    ...(isGroupLast
+                      ? {
+                          borderBottomLeftRadius: 8,
+                          borderBottomRightRadius: 8,
+                          marginBottom: 16,
+                          borderBottom: 'none',
+                        }
+                      : {}),
+                  }}
+                >
+                  <AccountItem
+                    className="group"
+                    balance={item.balance}
+                    address={item.address}
+                    type={item.type}
+                    brandName={item.brandName}
+                    onClick={() => {
+                      onChange?.(item);
+                    }}
+                    isSelected={!!value && isSameAccount(item, value)}
+                    extra={
+                      <div
+                        className={clsx(
+                          'cursor-pointer border-none px-0',
+                          isFavorite
+                            ? 'is-active'
+                            : 'opacity-0 group-hover:opacity-100'
+                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          dispatch.addressManagement.toggleHighlightedAddressAsync(
+                            {
+                              address: item.address,
+                              brandName: item.brandName,
+                            }
+                          );
+                        }}
+                      >
+                        <ThemeIcon
+                          className="w-[13px] h-[13px]"
+                          src={isFavorite ? RcIconPinnedFill : RcIconPinned}
+                        />
+                      </div>
+                    }
+                  />
+                </div>
+              );
+            }}
+            increaseViewportBy={100}
+          ></Virtuoso>
+        </Warper>
       </Drawer>
     </>
   );

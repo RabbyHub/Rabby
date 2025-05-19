@@ -269,7 +269,7 @@ class ProviderController extends BaseController {
 
     const _account = req.account;
     const account = _account ? [_account.address.toLowerCase()] : [];
-    sessionService.broadcastEvent('accountsChanged', account);
+    sessionService.broadcastEvent('accountsChanged', account, origin);
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
       const chain = findChain({ enum: connectSite.chain });

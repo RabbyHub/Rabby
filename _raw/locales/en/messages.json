@@ -2826,7 +2826,8 @@
       "button": "Continue"
     },
     "AccountSelectorModal": {
-      "title": "Select address"
+      "title": "Select address",
+      "searchPlaceholder": "Search address"
     }
   },
   "global": {

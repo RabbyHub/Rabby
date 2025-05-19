@@ -63,7 +63,14 @@ interface SignTextProps {
   $ctx?: any;
 }
 
-const SignText = ({ params }: { params: SignTextProps }) => {
+const SignText = ({
+  params,
+  account,
+}: {
+  params: SignTextProps;
+  account: Account;
+}) => {
+  const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
   const [, resolveApproval, rejectApproval] = useApproval();
@@ -98,7 +105,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     currentTx: s.securityEngine.currentTx,
   }));
   const [chainId, setChainId] = useState<number | undefined>(undefined);
-  const [isGnosisAccount, setIsGnosisAccount] = useState(false);
+  const isGnosisAccount = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [gnosisFooterBarVisible, setGnosisFooterBarVisible] = useState(false);
   const [currentGnosisAdmin, setCurrentGnosisAdmin] = useState<Account | null>(
@@ -141,10 +148,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   }, [engineResults, currentTx]);
 
   const { value: textActionData, loading, error } = useAsync(async () => {
-    const currentAccount = await wallet.getCurrentAccount();
-    const _isGnosisAccount =
-      currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
-    setIsGnosisAccount(_isGnosisAccount);
     if (!isViewGnosisSafe) {
       wallet.clearGnosisMessage();
     }
@@ -180,9 +183,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       | 'completeSignText',
     extra?: Record<string, any>
   ) => {
-    const currentAccount = isGnosis
-      ? params.account
-      : await wallet.getCurrentAccount<Account>();
     if (!currentAccount) {
       return;
     }
@@ -223,10 +223,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = async () => {
+    console.log({ isGnosisAccount, currentAccount });
     if (activeApprovalPopup()) {
       return;
     }
-    const currentAccount = await wallet.getCurrentAccount();
 
     if (isGnosisAccount) {
       setDrawerVisible(true);
@@ -307,7 +307,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   };
 
   const checkWachMode = async () => {
-    const currentAccount = await wallet.getCurrentAccount();
     const accountType =
       isGnosis && params.account ? params.account.type : currentAccount?.type;
     setIsLedger(accountType === KEYRING_CLASS.HARDWARE.LEDGER);
@@ -319,16 +318,21 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     }
   };
 
-  const { data: safeInfo } = useGetCurrentSafeInfo({ chainId: chainId });
+  const { data: safeInfo } = useGetCurrentSafeInfo({
+    chainId: chainId,
+    account: currentAccount,
+  });
   const { data: safeMessageHash } = useGetMessageHash({
     chainId,
     message: signText,
+    account: currentAccount,
   });
   const { data: currentSafeMessage } = useCheckCurrentSafeMessage(
     {
       chainId,
       safeMessageHash,
       threshold: safeInfo?.threshold,
+      account: currentAccount,
     },
     {
       onSuccess(res) {
@@ -372,7 +376,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   ) => {
     logId.current = textActionData.log_id;
     dispatch.securityEngine.init();
-    const currentAccount = await wallet.getCurrentAccount();
     if (
       currentAccount?.type &&
       REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)
@@ -634,6 +637,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             // chain={chain}
             gnosisAccount={currentGnosisAdmin}
             onCancel={handleCancel}
+            account={currentGnosisAdmin}
             // securityLevel={securityLevel}
             // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             onSubmit={handleGnosisSign}
@@ -662,6 +666,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           origin={params.session.origin}
           originLogo={params.session.icon}
           gnosisAccount={isGnosis ? params.account : undefined}
+          account={currentAccount}
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}
           onCancel={handleCancel}

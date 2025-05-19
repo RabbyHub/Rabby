@@ -18,6 +18,9 @@ import './style.less';
 import { findChain } from '@/utils/chain';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
 import { useMemoizedFn } from 'ahooks';
+import { AccountSelector } from '@/ui/component/AccountSelector';
+import { Account } from '@/background/service/preference';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -39,16 +42,11 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   );
 
   const getCurrentSite = useCallback(async () => {
-    // const tab = await getCurrentTab();
-    // if (!tab.id || !tab.url) return;
-    // const domain = getOriginFromUrl(tab.url);
-    // const current = await wallet.getCurrentSite(tab.id, domain);
-    // setSite(current);
-    const site = await wallet.getSite('https://app.uniswap.org');
-    console.log('???', site);
-    if (site) {
-      setSite(site);
-    }
+    const tab = await getCurrentTab();
+    if (!tab.id || !tab.url) return;
+    const domain = getOriginFromUrl(tab.url);
+    const current = await wallet.getCurrentSite(tab.id, domain);
+    setSite(current);
   }, []);
 
   const handleRemove = async (origin: string) => {
@@ -82,6 +80,25 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     }
   };
 
+  const currentAccount = useCurrentAccount();
+
+  const currentSiteAccount =
+    site?.isConnected && site.account ? site.account : currentAccount;
+
+  const handleSiteAccountChange = useMemoizedFn(async (account) => {
+    if (!site) {
+      return;
+    }
+    const _site = {
+      ...site!,
+      account,
+    };
+    setSite(_site);
+    setVisible(false);
+    console.log(account);
+    wallet.setSiteAccount({ origin: _site.origin, account });
+  });
+
   useEffect(() => {
     getCurrentSite();
   }, []);
@@ -96,6 +113,9 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   }, [site]);
 
   const handleClickChain = useMemoizedFn(() => {
+    if (!site?.isConnected) {
+      return;
+    }
     setVisible(true);
     matomoRequestEvent({
       category: 'Front Page Click',
@@ -182,8 +202,16 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           </div>
         </div>
       )}
-
+      {site ? (
+        <AccountSelector
+          className={clsx('ml-auto')}
+          disabled={!site?.isConnected}
+          value={currentSiteAccount}
+          onChange={handleSiteAccountChange}
+        />
+      ) : null}
       <ChainSelectorModal
+        account={currentSiteAccount}
         value={site?.chain || CHAINS_ENUM.ETH}
         onChange={handleChangeDefaultChain}
         showRPCStatus={true}

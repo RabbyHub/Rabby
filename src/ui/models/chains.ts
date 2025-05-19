@@ -23,7 +23,7 @@ type IState = {
   currentConnection: ConnectedSite | null | undefined;
 
   gnosisPendingCount: number;
-
+  // todo fix gnosis
   gnosisNetworkIds: string[];
   mainnetList: Chain[];
   testnetList: TestnetChain[];

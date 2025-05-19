@@ -146,7 +146,9 @@ interface Account {
 
 export const isSameAccount = (a: Account, b: Account) => {
   return (
-    a.address === b.address && a.brandName === b.brandName && a.type === b.type
+    a.address.toLowerCase() === b.address.toLowerCase() &&
+    a.brandName === b.brandName &&
+    a.type === b.type
   );
 };
 

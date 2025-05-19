@@ -479,9 +479,9 @@ class PreferenceService {
   setCurrentAccount = (account: Account | null) => {
     this.store.currentAccount = account;
     if (account) {
-      sessionService.broadcastEvent('accountsChanged', [
-        account.address.toLowerCase(),
-      ]);
+      // sessionService.broadcastEvent('accountsChanged', [
+      //   account.address.toLowerCase(),
+      // ]);
       syncStateToUI(BROADCAST_TO_UI_EVENTS.accountsChanged, account);
     }
   };

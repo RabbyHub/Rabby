@@ -8,7 +8,7 @@ import ChainIcon from '../ChainIcon';
 import './style.less';
 import clsx from 'clsx';
 import { findChainByEnum } from '@/utils/chain';
-import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
+import { Account } from '@/background/service/preference';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -21,6 +21,7 @@ interface ChainSelectorProps {
   onAfterOpen?: () => void;
   showRPCStatus?: boolean;
   modalHeight?: number;
+  account?: Account | null;
 }
 
 const ChainSelector = ({
@@ -33,6 +34,7 @@ const ChainSelector = ({
   onAfterOpen,
   showRPCStatus = false,
   modalHeight,
+  account,
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
   const [isHovering, hoverProps] = useHover();
@@ -91,6 +93,7 @@ const ChainSelector = ({
         connection={connection}
         showRPCStatus={showRPCStatus}
         height={modalHeight}
+        account={account}
       />
     </>
   );

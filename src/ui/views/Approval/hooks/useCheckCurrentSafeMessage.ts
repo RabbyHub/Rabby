@@ -1,3 +1,4 @@
+import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from '@/constant';
 import { useWallet } from '@/ui/utils';
 import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
@@ -10,10 +11,12 @@ export const useCheckCurrentSafeMessage = (
     chainId,
     safeMessageHash,
     threshold,
+    account: currentAccount,
   }: {
     chainId?: number;
     safeMessageHash?: string;
     threshold?: number;
+    account: Account;
   },
   options?: Options<
     | { safeMessage: SafeMessage; threshold: number; isFinished: boolean }
@@ -25,7 +28,6 @@ export const useCheckCurrentSafeMessage = (
   const { t } = useTranslation();
   return useRequest(
     async () => {
-      const currentAccount = (await wallet.getCurrentAccount())!;
       if (
         !threshold ||
         !chainId ||
@@ -52,7 +54,7 @@ export const useCheckCurrentSafeMessage = (
       };
     },
     {
-      refreshDeps: [chainId, threshold, safeMessageHash],
+      refreshDeps: [chainId, threshold, safeMessageHash, currentAccount],
       ...options,
     }
   );

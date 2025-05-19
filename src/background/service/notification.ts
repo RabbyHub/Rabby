@@ -14,7 +14,7 @@ import {
   IS_WINDOWS,
 } from 'consts';
 import transactionHistoryService from './transactionHistory';
-import preferenceService from './preference';
+import preferenceService, { Account } from './preference';
 import stats from '@/stats';
 import { findChain } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
@@ -28,6 +28,7 @@ export interface Approval {
   signingTxId?: string;
   data: {
     params?: import('react').ComponentProps<IApprovalComponent>['params'];
+    account: Account;
     origin?: string;
     approvalComponent: keyof IApprovalComponents;
     requestDefer?: Promise<any>;
@@ -146,6 +147,10 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
+          // todo remove this
+          if (process.env.NODE_ENV === 'development') {
+            return;
+          }
           this.rejectApproval();
         }
       }

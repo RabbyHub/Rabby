@@ -6,7 +6,7 @@ import {
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isEqual, sortBy, truncate, uniq } from 'lodash';
+import { groupBy, isEqual, pick, sortBy, truncate, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -83,7 +83,7 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
-import { generateAliasName } from '@/utils/account';
+import { generateAliasName, isSameAccount } from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
@@ -1888,17 +1888,51 @@ export class WalletController extends BaseController {
       return null;
     }
   };
-  setSite = (data: ConnectedSite) => {
+  setSite = (
+    data: ConnectedSite,
+    options?: {
+      shouldBroadcastEvent?: false;
+    }
+  ) => {
     const chainItem = findChain({ enum: data.chain });
     if (!chainItem) {
       throw new Error(`[wallet::setSite] Chain ${data.chain} is not supported`);
     }
-
+    if (data.isConnected && !data.account) {
+      data.account = preferenceService.getCurrentAccount();
+    }
     permissionService.setSite(data);
     broadcastChainChanged({
       origin: data.origin,
       chain: chainItem,
     });
+  };
+
+  setSiteAccount = ({
+    origin,
+    account,
+  }: {
+    origin: string;
+    account?: Account | null;
+  }) => {
+    const site = permissionService.getConnectedSite(origin);
+    if (!site) {
+      return;
+    }
+    const _account = account || preferenceService.getCurrentAccount();
+
+    site.account = _account
+      ? pick(_account, 'address', 'type', 'brandName')
+      : undefined;
+    permissionService.setSite(site);
+
+    if (site?.isConnected) {
+      sessionService.broadcastEvent(
+        'accountsChanged',
+        site?.account?.address ? [site.account.address.toLowerCase()] : [],
+        site.origin
+      );
+    }
   };
 
   updateSiteBasicInfo = async (origin: string | string[]) => {
@@ -1929,7 +1963,7 @@ export class WalletController extends BaseController {
             ...local,
             info,
           };
-          wallet.setSite(item);
+          permissionService.setSite(item);
           return item;
         }
       })
@@ -3138,8 +3172,20 @@ export class WalletController extends BaseController {
       current.type === type &&
       current.brandName === brand
     ) {
-      this.resetCurrentAccount();
+      await this.resetCurrentAccount();
     }
+    const sites = permissionService.getConnectedSites();
+    sites.forEach((item) => {
+      if (
+        item.account &&
+        isSameAccount(item.account, { address, type, brandName: brand || type })
+      ) {
+        this.setSiteAccount({
+          origin: item.origin,
+          account: preferenceService.getCurrentAccount(),
+        });
+      }
+    });
   };
 
   resetCurrentAccount = async () => {

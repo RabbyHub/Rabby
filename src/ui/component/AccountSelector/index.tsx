@@ -1,25 +1,21 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { CHAINS_ENUM } from 'consts';
-import { useHover, useWallet } from 'ui/utils';
 import { ReactComponent as ArrowDownSVG } from '@/ui/assets/dashboard/arrow-down.svg';
-import ChainSelectorModal from './Modal';
-import ChainIcon from '../ChainIcon';
+import React, { ReactNode, useState } from 'react';
+import { useAlias, useWallet } from 'ui/utils';
 
-import './style.less';
-import clsx from 'clsx';
-import { findChainByEnum } from '@/utils/chain';
-import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
 import { Account } from '@/background/service/preference';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
+import clsx from 'clsx';
 import { AccountSelectorModal } from './AccountSelectorModal';
+import './style.less';
 
 interface Props {
-  value?: Account;
-  onChange(value: Account): void;
+  value?: Account | null;
+  onChange?(value: Account): void;
   className?: string;
   title?: ReactNode;
   onAfterOpen?: () => void;
-  showRPCStatus?: boolean;
   modalHeight?: number;
+  disabled?: boolean;
 }
 
 export const AccountSelector = ({
@@ -28,15 +24,16 @@ export const AccountSelector = ({
   onChange,
   className = '',
   onAfterOpen,
-  showRPCStatus = false,
   modalHeight,
+  disabled,
 }: Props) => {
   const [showSelectorModal, setShowSelectorModal] = useState(false);
-  const [isHovering, hoverProps] = useHover();
-  const [customRPC, setCustomRPC] = useState('');
   const wallet = useWallet();
 
   const handleClickSelector = () => {
+    if (disabled) {
+      return;
+    }
     setShowSelectorModal(true);
     onAfterOpen?.();
   };
@@ -46,20 +43,28 @@ export const AccountSelector = ({
   };
 
   const handleChange = (value: Account) => {
-    onChange(value);
+    onChange?.(value);
     setShowSelectorModal(false);
   };
 
   return (
     <>
       <div
-        className={clsx('chain-selector', className, isHovering && 'hover')}
+        className={clsx(
+          'global-account-selector',
+          disabled ? 'is-disabled' : '',
+          className
+        )}
         onClick={handleClickSelector}
-        {...hoverProps}
       >
-        <div className="mr-6"></div>
-        <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis"></span>
-        <ArrowDownSVG className={clsx('icon')} />
+        {value ? (
+          <CurrentAccount account={value} />
+        ) : (
+          <div className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+            Select Address
+          </div>
+        )}
+        <ArrowDownSVG className={clsx('ml-[2px] w-[14px] h-[14px]')} />
       </div>
       <AccountSelectorModal
         title={title}
@@ -67,9 +72,30 @@ export const AccountSelector = ({
         visible={showSelectorModal}
         onChange={handleChange}
         onCancel={handleCancel}
-        showRPCStatus={showRPCStatus}
         height={modalHeight}
       />
+    </>
+  );
+};
+
+const CurrentAccount = ({ account }: { account: Account }) => {
+  const addressTypeIcon = useBrandIcon({
+    address: account.address,
+    brandName: account.brandName,
+    type: account.type,
+    forceLight: false,
+  });
+
+  const [alias] = useAlias(account.address);
+
+  return (
+    <>
+      <div className="mr-6">
+        <img src={addressTypeIcon} className="brand-icon" alt="" />
+      </div>
+      <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+        {alias}
+      </span>
     </>
   );
 };

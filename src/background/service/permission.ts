@@ -29,7 +29,7 @@ export interface ConnectedSite {
   rdns?: string;
   isMetamaskMode?: boolean;
 
-  account?: Account;
+  account?: Account | null;
 }
 
 export type PermissionStore = {
@@ -143,12 +143,14 @@ class PermissionService {
     name,
     icon,
     defaultChain,
+    defaultAccount,
     isSigned = false,
   }: {
     origin: string;
     name: string;
     icon: string;
     defaultChain: CHAINS_ENUM;
+    defaultAccount: Account;
     isSigned?: boolean;
   }) => {
     if (!this.lruCache) return;
@@ -163,6 +165,7 @@ class PermissionService {
       isSigned,
       isTop: false,
       chain: defaultChain,
+      account: defaultAccount,
       isConnected: true,
     });
     this.sync();
@@ -318,6 +321,7 @@ class PermissionService {
       ...site,
       rdns: undefined,
       isConnected: false,
+      account: undefined,
     });
     this.sync();
   };
