@@ -1,5 +1,5 @@
 import { ReactComponent as ArrowDownSVG } from '@/ui/assets/dashboard/arrow-down.svg';
-import React, { ReactNode, useState } from 'react';
+import React, { CSSProperties, forwardRef, ReactNode, useState } from 'react';
 import { useAlias, useWallet } from 'ui/utils';
 
 import { Account } from '@/background/service/preference';
@@ -16,67 +16,76 @@ interface Props {
   onAfterOpen?: () => void;
   modalHeight?: number;
   disabled?: boolean;
+  style?: CSSProperties;
 }
 
-export const AccountSelector = ({
-  title,
-  value,
-  onChange,
-  className = '',
-  onAfterOpen,
-  modalHeight,
-  disabled,
-}: Props) => {
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
-  const wallet = useWallet();
+export const AccountSelector = forwardRef<HTMLDivElement, Props>(
+  (
+    {
+      title,
+      value,
+      onChange,
+      className = '',
+      onAfterOpen,
+      modalHeight,
+      disabled,
+      style,
+    },
+    ref
+  ) => {
+    const [showSelectorModal, setShowSelectorModal] = useState(false);
+    const wallet = useWallet();
 
-  const handleClickSelector = () => {
-    if (disabled) {
-      return;
-    }
-    setShowSelectorModal(true);
-    onAfterOpen?.();
-  };
+    const handleClickSelector = () => {
+      if (disabled) {
+        return;
+      }
+      setShowSelectorModal(true);
+      onAfterOpen?.();
+    };
 
-  const handleCancel = () => {
-    setShowSelectorModal(false);
-  };
+    const handleCancel = () => {
+      setShowSelectorModal(false);
+    };
 
-  const handleChange = (value: Account) => {
-    onChange?.(value);
-    setShowSelectorModal(false);
-  };
+    const handleChange = (value: Account) => {
+      onChange?.(value);
+      setShowSelectorModal(false);
+    };
 
-  return (
-    <>
-      <div
-        className={clsx(
-          'global-account-selector',
-          disabled ? 'is-disabled' : '',
-          className
-        )}
-        onClick={handleClickSelector}
-      >
-        {value ? (
-          <CurrentAccount account={value} />
-        ) : (
-          <div className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
-            Select Address
-          </div>
-        )}
-        <ArrowDownSVG className={clsx('ml-[2px] w-[14px] h-[14px]')} />
-      </div>
-      <AccountSelectorModal
-        title={title}
-        value={value}
-        visible={showSelectorModal}
-        onChange={handleChange}
-        onCancel={handleCancel}
-        height={modalHeight}
-      />
-    </>
-  );
-};
+    return (
+      <>
+        <div
+          className={clsx(
+            'global-account-selector',
+            disabled ? 'is-disabled' : '',
+            className
+          )}
+          onClick={handleClickSelector}
+          style={style}
+          ref={ref}
+        >
+          {value ? (
+            <CurrentAccount account={value} />
+          ) : (
+            <div className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+              Select Address
+            </div>
+          )}
+          <ArrowDownSVG className={clsx('ml-[2px] w-[14px] h-[14px]')} />
+        </div>
+        <AccountSelectorModal
+          title={title}
+          value={value}
+          visible={showSelectorModal}
+          onChange={handleChange}
+          onCancel={handleCancel}
+          height={modalHeight}
+        />
+      </>
+    );
+  }
+);
 
 const CurrentAccount = ({ account }: { account: Account }) => {
   const addressTypeIcon = useBrandIcon({

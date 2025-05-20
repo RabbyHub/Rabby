@@ -69,9 +69,11 @@ const Dashboard = () => {
     ...s.transactions,
   }));
 
-  const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
-    ...s.appVersion,
-  }));
+  const { firstNotice, isNewUser, updateContent, version } = useRabbySelector(
+    (s) => ({
+      ...s.appVersion,
+    })
+  );
 
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -438,7 +440,7 @@ const Dashboard = () => {
         {showGnosisAlert && <GnosisWrongChainAlertBar />}
       </div>
       <Modal
-        visible={firstNotice && updateContent}
+        visible={!isNewUser && firstNotice && updateContent}
         title={t('page.dashboard.home.whatsNew')}
         className="first-notice"
         onCancel={() => {

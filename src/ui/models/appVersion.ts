@@ -3,10 +3,14 @@ import { RootModel } from '.';
 
 import { getUpdateContent } from 'changeLogs/index';
 
+console.log('r', process.env.release);
+
 type IState = {
   firstNotice: boolean;
   updateContent: string;
   version: string;
+  isNewUser?: boolean;
+  hasShowedGuide?: boolean;
 };
 
 /**
@@ -18,6 +22,8 @@ export const appVersion = createModel<RootModel>()({
     firstNotice: false,
     updateContent: '',
     version: '',
+    isNewUser: true,
+    hasShowedGuide: true,
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -33,6 +39,10 @@ export const appVersion = createModel<RootModel>()({
   effects: (dispatch) => ({
     async checkIfFirstLoginAsync(_: void, store) {
       const firstOpen = await store.app.wallet.getIsFirstOpen();
+      const isNewUser = await store.app.wallet.getIsNewUser();
+      const hasShowedGuide = await store.app.wallet.getPreference(
+        'hasShowedGuide'
+      );
       let updateContent = await getUpdateContent();
 
       const locale = store.preference?.locale || 'en';
@@ -58,6 +68,8 @@ export const appVersion = createModel<RootModel>()({
       }
 
       dispatch.appVersion.setField({
+        isNewUser,
+        hasShowedGuide,
         version,
         updateContent,
         ...(firstOpen &&
@@ -70,6 +82,10 @@ export const appVersion = createModel<RootModel>()({
     async afterFirstLogin(_: void, store) {
       store.app.wallet.updateIsFirstOpen();
       dispatch.appVersion.setField({ firstNotice: false });
+    },
+    async closeGuide(_: void, store) {
+      store.app.wallet.updateHasShowedGuide();
+      dispatch.appVersion.setField({ hasShowedGuide: true });
     },
   }),
 });

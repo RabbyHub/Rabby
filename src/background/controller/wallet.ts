@@ -4010,6 +4010,8 @@ export class WalletController extends BaseController {
     return preferenceService.getPreference(key);
   };
 
+  updateHasShowedGuide = preferenceService.updateHasShowedGuide;
+
   setIsDefaultWallet = (val: boolean) => {
     preferenceService.setIsDefaultWallet(val);
     const hasOtherProvider = preferenceService.getHasOtherProvider();
@@ -4249,6 +4251,9 @@ export class WalletController extends BaseController {
   };
   getIsFirstOpen = () => {
     return preferenceService.getIsFirstOpen();
+  };
+  getIsNewUser = () => {
+    return preferenceService.getIsNewUser();
   };
   updateIsFirstOpen = () => {
     return preferenceService.updateIsFirstOpen();

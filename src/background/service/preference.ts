@@ -93,6 +93,8 @@ export interface PreferenceStore {
   initAlianNames: boolean;
   gasCache: GasCache;
   currentVersion: string;
+  prevVersion?: string;
+  hasShowedGuide?: boolean;
   firstOpen: boolean;
   pinnedChain: string[];
   /**
@@ -171,6 +173,8 @@ class PreferenceService {
         initAlianNames: false,
         gasCache: {},
         currentVersion: '0',
+        prevVersion: '0',
+        hasShowedGuide: false,
         firstOpen: false,
         pinnedChain: [],
         addedToken: {},
@@ -284,6 +288,19 @@ class PreferenceService {
     if (!this.store.safeSelfHostConfirm) {
       this.store.safeSelfHostConfirm = {};
     }
+
+    if (
+      !this.store.currentVersion ||
+      semver(version, this.store.currentVersion) > 0
+    ) {
+      this.store.firstOpen = true;
+    }
+
+    if (this.store.currentVersion !== version) {
+      this.store.prevVersion = this.store.currentVersion;
+    }
+
+    this.store.currentVersion = version;
   };
 
   hasConfirmSafeSelfHost = (networkId: string) => {
@@ -680,15 +697,17 @@ class PreferenceService {
     }
   };
   getIsFirstOpen = () => {
-    if (
-      !this.store.currentVersion ||
-      semver(version, this.store.currentVersion) > 0
-    ) {
-      this.store.currentVersion = version;
-      this.store.firstOpen = true;
-    }
     return this.store.firstOpen;
   };
+
+  getIsNewUser = () => {
+    return !this.store.prevVersion || this.store.prevVersion === '0';
+  };
+
+  updateHasShowedGuide = () => {
+    this.store.hasShowedGuide = true;
+  };
+
   updateIsFirstOpen = () => {
     this.store.firstOpen = false;
   };
