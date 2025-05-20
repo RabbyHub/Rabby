@@ -70,7 +70,8 @@ export const AccountItem = ({
         method: 'eth_getBalance',
         params: [account.address, 'latest'],
       },
-      chain.serverId
+      chain.serverId,
+      account
     );
     setNativeTokenBalance(new BN(balanceInWei).div(1e18).toFixed());
   };

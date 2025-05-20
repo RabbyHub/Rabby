@@ -198,24 +198,34 @@ export class WalletController extends BaseController {
 
   requestETHRpc = <T = any>(
     data: { method: string; params: any },
-    chainId: string
+    chainId: string,
+    account?: Account
   ): Promise<IExtractFromPromise<T>> => {
     return providerController.ethRpc(
       {
         data,
         session: INTERNAL_REQUEST_SESSION,
+        account,
       },
       chainId
     );
   };
 
-  sendRequest = <T = any>(data: ProviderRequest['data'], isBuild = false) => {
+  sendRequest = <T = any>(
+    data: ProviderRequest['data'],
+    options?: {
+      isBuild?: boolean;
+      account?: Account;
+    }
+  ) => {
+    const { isBuild = false, account } = options || {};
     if (isBuild) {
       return Promise.resolve<T>(data as T);
     }
     return provider<T>({
       data,
       session: INTERNAL_REQUEST_SESSION,
+      account,
     });
   };
 
@@ -673,7 +683,9 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        true
+        {
+          isBuild: true,
+        }
       );
       txs.push(res.params[0]);
       unTriggerTxCounter.decrease();
@@ -903,7 +915,9 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        true
+        {
+          isBuild: true,
+        }
       );
       txs.push(res.params[0]);
       unTriggerTxCounter.decrease();
@@ -1030,7 +1044,9 @@ export class WalletController extends BaseController {
         method: 'eth_sendTransaction',
         params: [tx],
       },
-      isBuild
+      {
+        isBuild,
+      }
     );
   };
 
@@ -1102,7 +1118,9 @@ export class WalletController extends BaseController {
         method: 'eth_sendTransaction',
         params: [tx],
       },
-      isBuild
+      {
+        isBuild,
+      }
     );
   };
 
@@ -1328,7 +1346,9 @@ export class WalletController extends BaseController {
               },
             ],
           },
-          isBuild
+          {
+            isBuild,
+          }
         );
       } else {
         return await this.sendRequest(
@@ -1365,7 +1385,9 @@ export class WalletController extends BaseController {
               },
             ],
           },
-          isBuild
+          {
+            isBuild,
+          }
         );
       }
     } else if (abi === 'ERC1155') {
@@ -1396,7 +1418,9 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        isBuild
+        {
+          isBuild,
+        }
       );
     } else {
       throw new Error(t('background.error.unknownAbi'));
