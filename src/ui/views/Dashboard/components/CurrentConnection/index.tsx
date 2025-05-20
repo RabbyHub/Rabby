@@ -5,7 +5,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, KEYRING_TYPE } from 'consts';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -23,6 +23,8 @@ import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { CurrentConnectionGuide } from './CurrentConnectionGuide';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import GnosisWrongChainAlertBar from '../GnosisWrongChainAlertBar';
+import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -148,6 +150,37 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     site?.isConnected &&
     !hasShowedGuide;
 
+  const { data: gnosisNetworks, loading } = useGnosisNetworks({
+    address:
+      currentSiteAccount?.address &&
+      currentSiteAccount?.type === KEYRING_TYPE.GnosisKeyring
+        ? currentSiteAccount.address
+        : '',
+  });
+
+  const isShowGnosisAlert = useMemo(() => {
+    return (
+      currentSiteAccount?.type === KEYRING_TYPE.GnosisKeyring &&
+      site?.isConnected &&
+      (!gnosisNetworks?.length ||
+        (!gnosisNetworks?.find((id) => {
+          return (
+            +id ===
+            findChain({
+              enum: site.chain || CHAINS_ENUM.ETH,
+            })?.id
+          );
+        }) &&
+          !loading))
+    );
+  }, [
+    currentSiteAccount,
+    site?.isConnected,
+    site?.chain,
+    gnosisNetworks,
+    loading,
+  ]);
+
   return (
     <>
       <div className={clsx('current-connection-block h-[52px]')}>
@@ -257,6 +290,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           }}
         />
       </div>
+      {isShowGnosisAlert ? <GnosisWrongChainAlertBar /> : null}
     </>
   );
 });

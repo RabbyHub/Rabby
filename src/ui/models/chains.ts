@@ -23,8 +23,6 @@ type IState = {
   currentConnection: ConnectedSite | null | undefined;
 
   gnosisPendingCount: number;
-  // todo fix gnosis
-  gnosisNetworkIds: string[];
   mainnetList: Chain[];
   testnetList: TestnetChain[];
 };
@@ -33,7 +31,6 @@ export const chains = createModel<RootModel>()({
   name: 'chains',
   state: <IState>{
     currentConnection: null,
-    gnosisNetworkIds: [] as string[],
     mainnetList: getChainList('mainnet'),
     testnetList: getChainList('testnet'),
   },
@@ -48,30 +45,7 @@ export const chains = createModel<RootModel>()({
       );
     },
   },
-  selectors(slice) {
-    return {
-      isCurrentAccountGnosis() {
-        return (rootState: RabbyRootState) => {
-          return (
-            rootState.account.currentAccount?.type === KEYRING_CLASS.GNOSIS
-          );
-        };
-      },
-      isShowGnosisWrongChainAlert() {
-        return slice((state) => {
-          if (!state.currentConnection) {
-            return false;
-          }
 
-          const chainItem = findChainByEnum(state.currentConnection.chain);
-
-          return (
-            !!chainItem && !state.gnosisNetworkIds.includes(chainItem.network)
-          );
-        });
-      },
-    };
-  },
   effects: (dispatch) => ({
     init(_: void, store) {
       store.app.wallet.getCustomTestnetLogos();

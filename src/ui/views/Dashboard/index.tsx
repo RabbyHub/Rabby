@@ -33,11 +33,7 @@ import {
   useRabbySelector,
 } from 'ui/store';
 import { useWallet } from 'ui/utils';
-import {
-  BalanceView,
-  ChainAndSiteSelector,
-  GnosisWrongChainAlertBar,
-} from './components';
+import { BalanceView, ChainAndSiteSelector } from './components';
 import './style.less';
 
 import PendingApproval from './components/PendingApproval';
@@ -88,7 +84,6 @@ const Dashboard = () => {
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
 
-  const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
   const gnosisPendingCount = useRabbySelector(
     (s) => s.chains.gnosisPendingCount
   );
@@ -112,30 +107,6 @@ const Dashboard = () => {
   useEffect(() => {
     getCurrentAccount();
   }, []);
-
-  useGnosisNetworks(
-    {
-      address:
-        currentAccount?.address &&
-        currentAccount?.type === KEYRING_TYPE.GnosisKeyring
-          ? currentAccount.address
-          : '',
-    },
-    {
-      onBefore() {
-        dispatch.chains.setField({
-          gnosisNetworkIds: [],
-        });
-      },
-      onSuccess(res) {
-        if (res) {
-          dispatch.chains.setField({
-            gnosisNetworkIds: res,
-          });
-        }
-      },
-    }
-  );
 
   useGnosisPendingCount(
     {
@@ -298,14 +269,10 @@ const Dashboard = () => {
     setTopAnimate('fadeInTop');
   };
 
-  const showGnosisWrongChainAlert = useRabbyGetter(
-    (s) => s.chains.isShowGnosisWrongChainAlert
-  );
   const opacity60 =
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
     currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
     currentAccount?.type === KEYRING_CLASS.WATCH;
-  const showGnosisAlert = isGnosis && showGnosisWrongChainAlert && !showChain;
 
   const switchAddress = () => {
     matomoRequestEvent({
@@ -437,7 +404,6 @@ const Dashboard = () => {
           higherBottom={isGnosis}
           setDashboardReload={() => setDashboardReload(true)}
         />
-        {showGnosisAlert && <GnosisWrongChainAlertBar />}
       </div>
       <Modal
         visible={!isNewUser && firstNotice && updateContent}
