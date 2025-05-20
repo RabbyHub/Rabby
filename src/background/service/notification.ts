@@ -147,10 +147,6 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
-          // todo remove this
-          if (process.env.NODE_ENV === 'development') {
-            return;
-          }
           this.rejectApproval();
         }
       }
