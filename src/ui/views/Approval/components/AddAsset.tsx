@@ -30,7 +30,7 @@ import { CopyChecked } from 'ui/component/CopyChecked';
 import { getTokenSymbol } from 'ui/utils/token';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { ellipsis } from 'ui/utils/address';
-import { Token } from 'background/service/preference';
+import { Account, Token } from 'background/service/preference';
 import { ReactComponent as RcIconExternalCC } from 'ui/assets/open-external-cc.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import IconWarning from 'ui/assets/icon-subtract.svg';
@@ -47,20 +47,23 @@ import TokenChainAndContract from '../../Dashboard/components/TokenDetailPopup/T
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 interface AddAssetProps {
-  data: {
-    type: string;
-    options: {
-      address: string;
-      symbol: string;
-      decimals: number;
-      image: string;
+  params: {
+    data: {
+      type: string;
+      options: {
+        address: string;
+        symbol: string;
+        decimals: number;
+        image: string;
+      };
+    };
+    session: {
+      origin: string;
+      icon: string;
+      name: string;
     };
   };
-  session: {
-    origin: string;
-    icon: string;
-    name: string;
-  };
+  account: Account;
 }
 
 const AddAssetWrapper = styled.div`
@@ -193,7 +196,7 @@ interface TokenHistoryItem extends TxHistoryItem {
   tokenDict: TxHistoryResult['token_dict'];
 }
 
-const AddAsset = ({ params }: { params: AddAssetProps }) => {
+const AddAsset = ({ params, account }: AddAssetProps) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -312,7 +315,6 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   };
 
   const init = async () => {
-    const account = await wallet.getCurrentAccount();
     const site = await wallet.getConnectedSite(params.session.origin);
     const chain = findChain({
       enum: site?.chain,
@@ -365,7 +367,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   };
 
   const getTokenHistory = async (token: TokenItem) => {
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = account;
     if (!currentAccount) return;
     const history = await wallet.openapi.listTxHisotry({
       id: currentAccount.address,

@@ -7,6 +7,7 @@ import IconInfo from 'ui/assets/infoicon.svg';
 import { FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
 import AccountCard from './AccountCard';
+import { Account } from '@/background/service/preference';
 
 interface ConnectProps {
   params: {
@@ -16,9 +17,10 @@ interface ConnectProps {
       name: string;
     };
   };
+  account: Account;
 }
 
-const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
+const GetEncryptionPublicKey = ({ params, account }: ConnectProps) => {
   const { t } = useTranslation();
   const [canProcess, setCanProcess] = useState(true);
   const { icon, origin } = params.session;
@@ -31,7 +33,6 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
 
   const handleAllow = async () => {
     try {
-      const account = await wallet.getCurrentAccount();
       const data = await wallet.getEncryptionPublicKey({
         type: account!.type,
         address: account!.address,
@@ -45,7 +46,6 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
   };
 
   const init = async () => {
-    const account = await wallet.getCurrentAccount();
     setCanProcess(
       !!account &&
         [KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(
@@ -60,7 +60,7 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
 
   return (
     <div className="approval-public-key">
-      <AccountCard></AccountCard>
+      <AccountCard account={account}></AccountCard>
       <div className="content">
         <div className="site">
           <FallbackSiteLogo
