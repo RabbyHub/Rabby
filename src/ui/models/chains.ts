@@ -2,26 +2,20 @@ import { createModel } from '@rematch/core';
 
 import { ConnectedSite } from '@/background/service/permission';
 
-import { RootModel } from '.';
-import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
-import { RabbyRootState } from '../store';
+import { TestnetChain } from '@/background/service/customTestnet';
+import { CHAINS_ENUM } from '@/constant';
 import {
-  findChainByEnum,
   getChainList,
-  getMainnetChainList,
   getMainnetListFromLocal,
-  getTestnetChainList,
   updateChainStore,
   varyAndSortChainItems,
 } from '@/utils/chain';
-import type { AccountState } from './account';
 import { Chain } from '@debank/common';
-import { TestnetChain } from '@/background/service/customTestnet';
-import { sleep } from '../utils';
+import { RootModel } from '.';
+import type { AccountState } from './account';
 
 type IState = {
   currentConnection: ConnectedSite | null | undefined;
-
   gnosisPendingCount: number;
   mainnetList: Chain[];
   testnetList: TestnetChain[];

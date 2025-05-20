@@ -33,7 +33,11 @@ import {
   useRabbySelector,
 } from 'ui/store';
 import { useWallet } from 'ui/utils';
-import { BalanceView, ChainAndSiteSelector } from './components';
+import {
+  BalanceView,
+  ChainAndSiteSelector,
+  GnosisWrongChainAlertBar,
+} from './components';
 import './style.less';
 
 import PendingApproval from './components/PendingApproval';
@@ -83,7 +87,7 @@ const Dashboard = () => {
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
-
+  const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const gnosisPendingCount = useRabbySelector(
     (s) => s.chains.gnosisPendingCount
   );
@@ -293,11 +297,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div
-        className={clsx('dashboard', {
-          'metamask-active': showGnosisWrongChainAlert && isGnosis,
-        })}
-      >
+      <div className={clsx('dashboard')}>
         <div className={clsx('main', showChain && 'show-chain-bg')}>
           {currentAccount && (
             <div
