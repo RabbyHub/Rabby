@@ -776,6 +776,7 @@ export const SignTestnetTx = ({
         nonce: realNonce || tx.nonce,
         gas: gasLimit,
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
+        $account: currentAccount,
         type: currentAccount.type,
         address: currentAccount.address,
         // traceId: txDetail?.trace_id,
@@ -851,6 +852,7 @@ export const SignTestnetTx = ({
     <>
       <div className="approval-tx overflow-x-hidden">
         <TestnetActions
+          account={currentAccount}
           data={explainResult?.actionData || {}}
           requireData={explainResult?.requiredData || null}
           isReady={isReady}

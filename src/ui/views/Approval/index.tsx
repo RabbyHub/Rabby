@@ -30,7 +30,7 @@ const Approval: React.FC<{
     }
     setApproval(approval);
     document.title = 'Rabby Wallet Notification';
-    const account = await wallet.getCurrentAccount();
+    const account = data.account || (await wallet.getCurrentAccount());
     if (!account) {
       rejectApproval();
       return;

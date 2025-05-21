@@ -260,7 +260,8 @@ class NotificationService extends Events {
         );
       }
     }
-    const currentAccount = preferenceService.getCurrentAccount();
+    const currentAccount =
+      data.account || preferenceService.getCurrentAccount();
     const reportExplain = (signingTxId?: string) => {
       const signingTx = signingTxId
         ? transactionHistoryService.getSigningTx(signingTxId)

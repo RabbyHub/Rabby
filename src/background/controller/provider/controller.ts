@@ -1,4 +1,3 @@
-import { account } from '@/ui/models/account';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Common, Hardfork } from '@ethereumjs/common';
 import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
@@ -359,8 +358,9 @@ class ProviderController extends BaseController {
       },
       session: { origin },
       approvalRes,
-      account: currentAccount,
+      account,
     } = cloneDeep(options);
+    const currentAccount = approvalRes.$account || account;
     const keyring = await this._checkAddress(txParams.from, options);
     const isSend = !!txParams.isSend;
     const isSpeedUp = !!txParams.isSpeedUp;
@@ -397,6 +397,7 @@ class ProviderController extends BaseController {
     delete approvalRes.logId;
     delete approvalRes.isGasAccount;
     delete approvalRes.sig;
+    delete approvalRes.$account;
 
     let is1559 = is1559Tx(approvalRes);
     const is7702 = is7702Tx(approvalRes);

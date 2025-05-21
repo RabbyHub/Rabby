@@ -170,6 +170,7 @@ export const TxTypeComponent = ({
   txDetail,
   origin,
   originLogo,
+  account,
 }: {
   actionRequireData: ActionRequireData;
   actionData: ParsedTransactionActionData;
@@ -182,11 +183,13 @@ export const TxTypeComponent = ({
   engineResults: Result[];
   origin?: string;
   originLogo?: string;
+  account: Account;
 }) => {
   if (!isReady) return <Loading />;
   if (actionData && actionRequireData) {
     return (
       <Actions
+        account={account}
         data={actionData}
         requireData={actionRequireData}
         chain={chain}
@@ -998,6 +1001,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
         account: account,
+        $account: account,
         extra: {
           popupProps: {
             maskStyle: {
@@ -1204,6 +1208,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         extra: {
           brandName: currentAccount.brandName,
         },
+        $account: currentAccount,
         $ctx: params.$ctx,
         signingTxId: approval.signingTxId,
         pushType: pushInfo.type,
@@ -1951,6 +1956,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           <>
             {txDetail && (
               <TxTypeComponent
+                account={currentAccount}
                 isReady={isReady}
                 actionData={actionData}
                 actionRequireData={actionRequireData}
@@ -1971,6 +1977,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
             {isGnosisAccount && isReady && (
               <SafeNonceSelector
+                account={currentAccount}
                 disabled={isViewGnosisSafe}
                 isReady={isReady}
                 chainId={chainId}
@@ -1989,6 +1996,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         swapPreferMEVGuarded &&
         isReady ? (
           <BroadcastMode
+            account={currentAccount}
             chain={chain.enum}
             value={pushInfo}
             isCancel={isCancel}

@@ -136,6 +136,7 @@ const flowContext = flow
           } = await notificationService.requestApproval(
             {
               params: { origin, name, icon, $ctx: data.$ctx },
+              account: ctx.request.account,
               approvalComponent: 'Connect',
             },
             { height: isUnlock ? 800 : 628 }
@@ -306,11 +307,16 @@ const flowContext = flow
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
     const requestDefer = requestDeferFn();
-    async function requestApprovalLoop({ uiRequestComponent, ...rest }) {
+    async function requestApprovalLoop({
+      uiRequestComponent,
+      $account,
+      ...rest
+    }) {
       ctx.request.requestedApproval = true;
       const res = await notificationService.requestApproval({
         approvalComponent: uiRequestComponent,
         params: rest,
+        account: $account,
         origin,
         approvalType,
         isUnshift: true,

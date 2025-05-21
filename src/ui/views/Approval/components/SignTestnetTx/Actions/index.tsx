@@ -26,6 +26,7 @@ import BalanceChange from '../../TxComponents/BalanceChange';
 import Loading from '../../TxComponents/Loading';
 import ViewRawModal from '../../TxComponents/ViewRawModal';
 import { TestnetUnknownAction } from './UnknownAction';
+import { Account } from '@/background/service/preference';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -61,6 +62,7 @@ export const TestnetActions = ({
   isReady,
   originLogo,
   origin,
+  account,
 }: {
   data: ParsedTransactionActionData;
   requireData: ActionRequireData;
@@ -71,6 +73,7 @@ export const TestnetActions = ({
   isReady?: boolean;
   originLogo?: string;
   origin: string;
+  account: Account;
 }) => {
   const actionName = useMemo(() => {
     return getActionTypeText(data);
@@ -128,6 +131,7 @@ export const TestnetActions = ({
                   overlayClassName="rectangle w-[max-content] decode-tooltip"
                   title={
                     <NoActionAlert
+                      account={account}
                       data={{
                         origin,
                         text: '',

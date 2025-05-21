@@ -428,6 +428,7 @@ const SignTypedData = ({
     ) {
       resolveApproval({
         uiRequestComponent: WaitingSignMessageComponent[currentAccount?.type],
+        $account: currentAccount,
         type: currentAccount.type,
         address: currentAccount.address,
         extra: {
@@ -636,6 +637,7 @@ const SignTypedData = ({
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
         account: account,
+        $account: account,
         safeMessage: {
           message: signTypedData,
           safeAddress: safeInfo.address,
@@ -759,6 +761,7 @@ const SignTypedData = ({
         )}
         {!isLoading && (
           <Actions
+            account={currentAccount}
             data={parsedActionData}
             requireData={actionRequireData}
             chain={chain}

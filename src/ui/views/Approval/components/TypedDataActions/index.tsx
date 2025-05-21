@@ -46,6 +46,7 @@ import { TransactionActionList } from '../Actions/components/TransactionActionLi
 import { noop } from '@/ui/utils';
 import { BalanceChangeWrapper } from '../TxComponents/BalanceChangeWrapper';
 import { ParseCommonResponse } from '@rabby-wallet/rabby-api/dist/types';
+import { Account } from '@/background/service/preference';
 
 const Actions = ({
   data,
@@ -57,6 +58,7 @@ const Actions = ({
   origin,
   originLogo,
   typedDataActionData,
+  account,
 }: {
   data: ParsedTypedDataActionData | null;
   requireData: ActionRequireData;
@@ -67,6 +69,7 @@ const Actions = ({
   origin: string;
   originLogo?: string;
   typedDataActionData?: ParseCommonResponse | null;
+  account: Account;
 }) => {
   const { t } = useTranslation();
 
@@ -116,6 +119,7 @@ const Actions = ({
                   overlayClassName="rectangle w-[max-content] decode-tooltip"
                   title={
                     <NoActionAlert
+                      account={account}
                       data={{
                         origin,
                         text: message,
