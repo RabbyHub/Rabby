@@ -8,9 +8,26 @@ export interface RPCItem {
   enable: boolean;
 }
 
+export type RPCDefaultItem = {
+  chainId: string;
+  rpcUrl: string[];
+  txPushRpc: boolean;
+};
+
 export type RPCServiceStore = {
   customRPC: Record<string, RPCItem>;
+  defaultRPC?: Record<string, RPCDefaultItem>;
 };
+
+export const BE_SUPPORTED_METHODS: string[] = [
+  // 'eth_call',
+  // 'eth_blockNumber',
+  // 'eth_getBalance',
+  // 'eth_getCode',
+  // 'eth_getStorageAt',
+  // 'eth_getTransactionCount',
+  // 'eth_chainId',
+];
 
 const MAX = 4_294_967_295;
 let idCounter = Math.floor(Math.random() * MAX);
@@ -20,9 +37,15 @@ function getUniqueId(): number {
   return idCounter;
 }
 
+const fetchDefaultRpc = async () => {
+  const { data } = await http.get('https://api.rabby.io/v1/chainrpc');
+  return data.stats as RPCDefaultItem[];
+};
+
 class RPCService {
   store: RPCServiceStore = {
     customRPC: {},
+    defaultRPC: {},
   };
   rpcStatus: Record<
     string,
@@ -36,6 +59,7 @@ class RPCService {
       name: 'rpc',
       template: {
         customRPC: {},
+        defaultRPC: {},
       },
     });
     this.store = storage || this.store;
@@ -54,6 +78,40 @@ class RPCService {
         this.store.customRPC = { ...this.store.customRPC };
       }
     }
+
+    this.syncDefaultRPC();
+  };
+
+  syncDefaultRPC = async () => {
+    try {
+      const data = await fetchDefaultRpc();
+      const defaultRPC: Record<string, RPCDefaultItem> = data.reduce(
+        (acc, item) => {
+          acc[item.chainId] = item;
+          return acc;
+        },
+        {} as Record<string, RPCDefaultItem>
+      );
+      this.store.defaultRPC = defaultRPC;
+    } catch (error) {
+      console.error('Failed to fetch default RPC:', error);
+    }
+  };
+
+  requestDefaultRPC = async (
+    chainServerId: string,
+    method: string,
+    params: any[]
+  ) => {
+    const host = this?.store?.defaultRPC?.[chainServerId]?.rpcUrl?.[0];
+    if (!host) {
+      throw new Error(`No available rpc for ${chainServerId}`);
+    }
+    return this.request(host, method, params);
+  };
+
+  getDefaultRPC = (chainServerId: string) => {
+    return this.store.defaultRPC?.[chainServerId];
   };
 
   hasCustomRPC = (chain: CHAINS_ENUM) => {

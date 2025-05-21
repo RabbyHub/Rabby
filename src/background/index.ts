@@ -56,7 +56,7 @@ import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
-import { ALARMS_USER_ENABLE } from './utils/alarms';
+import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -129,9 +129,15 @@ async function restoreAppState() {
       when: Date.now(),
       periodInMinutes: 60,
     });
+    browser.alarms.create(ALARMS_SYNC_DEFAULT_RPC, {
+      when: Date.now(),
+      periodInMinutes: 60,
+    });
   } else {
+    RPCService.syncDefaultRPC();
     setInterval(() => {
       startEnableUser();
+      RPCService.syncDefaultRPC();
     }, 1 * 60 * 60 * 1000);
   }
 
@@ -475,6 +481,10 @@ if (isManifestV3) {
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === ALARMS_USER_ENABLE) {
       startEnableUser();
+    }
+    if (alarm.name === ALARMS_SYNC_DEFAULT_RPC) {
+      RPCService.syncDefaultRPC();
+      console.log('ALARMS_SYNC_DEFAULT_RPC');
     }
   });
 }

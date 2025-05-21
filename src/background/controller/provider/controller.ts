@@ -70,6 +70,7 @@ import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
 import { stringToHex } from 'viem';
+import { BE_SUPPORTED_METHODS } from '@/background/service/rpc';
 
 const reportSignText = (params: {
   method: string;
@@ -225,21 +226,25 @@ class ProviderController extends BaseController {
         });
         return promise;
       } else {
-        const promise = openapiService
-          .ethRpc(chainServerId, {
-            origin: encodeURIComponent(origin),
-            method,
-            params,
-          })
-          .then((result) => {
-            RpcCache.set(currentAddress, {
+        const isBESupported = BE_SUPPORTED_METHODS.some(
+          (e) => e.toLowerCase() === method.toLowerCase()
+        );
+        const promise = (isBESupported
+          ? openapiService.ethRpc(chainServerId, {
+              origin: encodeURIComponent(origin),
               method,
               params,
-              result,
-              chainId: chainServerId,
-            });
-            return result;
+            })
+          : RPCService.requestDefaultRPC(chainServerId, method, params)
+        ).then((result) => {
+          RpcCache.set(currentAddress, {
+            method,
+            params,
+            result,
+            chainId: chainServerId,
           });
+          return result;
+        });
         RpcCache.set(currentAddress, {
           method,
           params,
@@ -707,6 +712,40 @@ class ProviderController extends BaseController {
             onTransactionCreated({ hash, reqId, pushType });
             notificationService.setStatsData(statsData);
           } else {
+            const chainServerId = findChain({ enum: chain })!.serverId;
+            const defaultRPC = RPCService.getDefaultRPC(chainServerId);
+            if (defaultRPC?.txPushRpc && !isGasLess && !isGasAccount) {
+              const txData: any = {
+                ...approvalRes,
+                gasLimit: approvalRes.gas,
+                r: addHexPrefix(signedTx.r),
+                s: addHexPrefix(signedTx.s),
+                v: addHexPrefix(signedTx.v),
+              };
+              if (is1559) {
+                txData.type = '0x2';
+              }
+              const tx = TransactionFactory.fromTxData(txData);
+              const rawTx = bytesToHex(tx.serialize());
+              try {
+                hash = await RPCService.requestDefaultRPC(
+                  chainServerId,
+                  'eth_sendRawTransaction',
+                  [rawTx]
+                );
+              } catch (e) {
+                let errMsg = typeof e === 'object' ? e.message : e;
+                if (RPCService.hasCustomRPC(chain)) {
+                  const rpc = RPCService.getRPCByChain(chain);
+                  const origin = getOriginFromUrl(rpc.url);
+                  errMsg = `[From ${origin}] ${errMsg}`;
+                }
+                onTransactionSubmitFailed({
+                  ...e,
+                  message: errMsg,
+                });
+              }
+            }
             const res = await openapiService.submitTx({
               tx: {
                 ...approvalRes,
@@ -723,6 +762,8 @@ class ProviderController extends BaseController {
               is_gas_account: isGasAccount,
               log_id: logId,
               sig,
+              // TODO: txPushToRPC param
+              txPushToRPC: defaultRPC?.txPushRpc,
             });
             if (res.access_token) {
               gasAccountService.setGasAccountSig(
