@@ -115,6 +115,10 @@ const SubRowWrapper = styled.div`
   color: var(--r-neutral-body, #3e495e);
   font-weight: 500;
 
+  &:has(.security-level-tag) {
+    padding-right: 8px;
+  }
+
   &.title {
     font-weight: 400;
     white-space: nowrap;
