@@ -4861,10 +4861,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-security-engine@2.0.7":
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-2.0.7.tgz#0d90e7ebdec46bd03a498d27b04f02a30e33cb39"
-  integrity sha512-cv400257wR43+6EiDaqQNS8fzamRNnuNvFfTw3UvgC2TnD9JPhdplqDcN4e8imqs6UW5NDoy3VAbvyajzbzvIw==
+"@rabby-wallet/rabby-security-engine@2.0.10":
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-2.0.10.tgz#2a7fcaf51811d53d7c05eb629da2eea9cbb7697b"
+  integrity sha512-NKsvL3HyF3GquxFPabMM0UDldek97NKwQqhRF6bNZQ8ME/8beQCtqiKHJW/QgZGZYPrEYFwSnSmcAUaWP8RbMQ==
 
 "@rabby-wallet/rabby-sign@0.4.0":
   version "0.4.0"
@@ -4876,10 +4876,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@0.0.54":
-  version "0.0.54"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.54.tgz#3543d111c4535e74ec6681c23fb655a90c6bfa8d"
-  integrity sha512-qYOcpxosg8QOUumqQMDJyZlbQMQkUkuRwKB+k7IBE7D9sCirFnoUm8iicWNZAiwyisZuLdwoMFh3+n8gsf6MAA==
+"@rabby-wallet/rabby-swap@0.0.56":
+  version "0.0.56"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.56.tgz#be285259b1d403dcedc5c1f9f940040aef5e6851"
+  integrity sha512-0/erCFQpMk901B5AiZ2dqs10j5ctFUiAiDe8kIHpLiTGEOBG9ooU1igmD5tK1w5a654c+AaH2UNr6YZwVT51Ww==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
