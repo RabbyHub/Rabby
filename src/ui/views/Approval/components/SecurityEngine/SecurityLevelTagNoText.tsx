@@ -140,6 +140,7 @@ const SecurityLevelTag = ({
   return (
     <SecurityLevelTagWrapper
       className={clsx(
+        'security-level-tag',
         enable ? level : '',
         {
           'cursor-pointer': onClick,
