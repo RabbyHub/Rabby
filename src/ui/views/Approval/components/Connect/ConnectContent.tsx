@@ -25,6 +25,8 @@ import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import RuleResult from './RuleResult';
 import UserListDrawer from './UserListDrawer';
+import { AccountSelector } from '@/ui/component/AccountSelector';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 interface ConnectProps {
   params: any;
@@ -137,6 +139,12 @@ const Footer = styled.div`
       margin-right: 6px;
     }
   }
+  .account-selector {
+    border: none !important;
+    background-color: transparent !important;
+    height: unset !important;
+    padding: 0;
+  }
 `;
 
 const RuleDesc = [
@@ -199,6 +207,8 @@ export const ConnectContent = (props: ConnectProps) => {
   const {
     params: { icon, origin, name, $ctx },
   } = props;
+  const currentAccount = useCurrentAccount();
+  const [selectedAccount, setSelectedAccount] = useState(currentAccount);
   const { state } = useLocation<{
     showChainsModal?: boolean;
   }>();
@@ -464,7 +474,6 @@ export const ConnectContent = (props: ConnectProps) => {
   };
 
   const init = async () => {
-    const account = await wallet.getCurrentAccount();
     const site = await wallet.getSite(origin);
     setCurrentSite(site);
     let level: 'very_low' | 'low' | 'medium' | 'high' = 'low';
@@ -499,18 +508,22 @@ export const ConnectContent = (props: ConnectProps) => {
     });
     queue.add(async () => {
       try {
-        const recommendChains = await wallet.openapi.getRecommendChains(
-          account!.address,
-          origin
-        );
-        let targetChain: Chain | null | undefined;
-        for (let i = 0; i < recommendChains.length; i++) {
-          targetChain = findChain({
-            serverId: recommendChains[i].id,
-          });
-          if (targetChain) break;
+        if (selectedAccount) {
+          const recommendChains = await wallet.openapi.getRecommendChains(
+            selectedAccount.address,
+            origin
+          );
+          let targetChain: Chain | null | undefined;
+          for (let i = 0; i < recommendChains.length; i++) {
+            targetChain = findChain({
+              serverId: recommendChains[i].id,
+            });
+            if (targetChain) break;
+          }
+          defaultChain = targetChain ? targetChain.enum : CHAINS_ENUM.ETH;
+        } else {
+          defaultChain = CHAINS_ENUM.ETH;
         }
-        defaultChain = targetChain ? targetChain.enum : CHAINS_ENUM.ETH;
       } catch (e) {
         console.log(e);
       }
@@ -559,6 +572,7 @@ export const ConnectContent = (props: ConnectProps) => {
   const handleAllow = async () => {
     resolveApproval({
       defaultChain,
+      defaultAccount: selectedAccount,
     });
   };
 
@@ -633,6 +647,7 @@ export const ConnectContent = (props: ConnectProps) => {
               connection
               showModal={showModal}
               modalHeight={540}
+              account={selectedAccount}
             />
           </div>
           <div className="connect-card">
@@ -692,6 +707,18 @@ export const ConnectContent = (props: ConnectProps) => {
         </div>
         <div>
           <Footer>
+            <div className="flex items-center justify-between mb-[24px]">
+              <div className="text-[14px] leading-[17px] text-r-neutral-body">
+                Connect Address
+              </div>
+              <AccountSelector
+                className="account-selector"
+                value={selectedAccount}
+                onChange={(account) => {
+                  setSelectedAccount(account);
+                }}
+              />
+            </div>
             <div className="action-buttons flex flex-col mt-4 items-center">
               <Button
                 type="primary"
@@ -756,45 +783,6 @@ export const ConnectContent = (props: ConnectProps) => {
                 )}
               </Button>
             </div>
-            {/* {$ctx?.providers?.length ? (
-                <div className="border-t-rabby-neutral-line border-t-[1px] border-dotted mt-[20px] pt-[20px]">
-                  <div
-                    className={clsx(
-                      'bg-r-neutral-card-2 p-[14px] h-[48px]  text-center rounded-[6px]',
-                      'text-[16px] leading-[19px] font-medium cursor-pointer text-r-neutral-body',
-                      'border-[1px] border-transparent',
-                      'hover:border-rabby-blue-default hover:bg-r-blue-light1',
-                      'flex items-center justify-center'
-                    )}
-                    onClick={() => {
-                      setIsShowSelectWallet(true);
-                      matomoRequestEvent({
-                        category: 'Wallet Conflict',
-                        action: 'OtherWallet_Click',
-                      });
-
-                      ga4.fireEvent('OtherWallet_Click', {
-                        event_category: 'Wallet Conflict',
-                      });
-                    }}
-                  >
-                    <span className="mr-8">
-                      {t('page.connect.otherWalletBtn')}
-                    </span>
-                    {$ctx?.providers.length > 0 && (
-                      <div className="flex gap-8">
-                        {$ctx?.providers.slice(0, 3).map((item) => (
-                          <img
-                            className="w-16"
-                            src={item.icon}
-                            key={item.uuid}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : null} */}
           </Footer>
         </div>
         <RuleDrawer

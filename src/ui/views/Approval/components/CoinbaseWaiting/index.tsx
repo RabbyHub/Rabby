@@ -25,6 +25,7 @@ interface ApprovalParams {
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  $account: Account;
   $ctx?: any;
   extra?: Record<string, any>;
   signingTxId?: string;
@@ -36,7 +37,13 @@ interface ApprovalParams {
   };
 }
 
-const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
+const CoinbaseWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
   const [connectStatus, setConnectStatus] = useState(
@@ -64,9 +71,7 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
   const { t } = useTranslation();
 
   const initWalletConnect = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const status = await wallet.getWalletConnectStatus(
       account.address,
       account.brandName
@@ -96,9 +101,7 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const init = async () => {
     const approval = await getApproval();
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
 
     setCurrentAccount(account);
 

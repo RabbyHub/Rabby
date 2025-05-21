@@ -13,6 +13,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
 import { findChainByEnum } from '@/utils/chain';
+import { Account } from '@/background/service/preference';
 
 const GlobalStyle = createGlobalStyle`
   .broadcast-mode-popup {
@@ -174,6 +175,7 @@ interface BroadcastModeProps {
   isSpeedUp?: boolean;
   isCancel?: boolean;
   isGasTopUp?: boolean;
+  account: Account;
 }
 export const BroadcastMode = ({
   value,
@@ -184,10 +186,10 @@ export const BroadcastMode = ({
   isSpeedUp,
   isCancel,
   isGasTopUp,
+  account,
 }: BroadcastModeProps) => {
   const [drawerVisible, setDrawerVisible] = React.useState(false);
   const { t } = useTranslation();
-  const [account] = useAccount();
   const wallet = useWallet();
   const { data: supportedPushType } = useRequest(
     () =>

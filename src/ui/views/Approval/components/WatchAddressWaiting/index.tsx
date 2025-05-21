@@ -37,7 +37,13 @@ interface ApprovalParams {
   };
 }
 
-const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
+const WatchAddressWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
   const [connectStatus, setConnectStatus] = useState(
@@ -66,9 +72,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const { t } = useTranslation();
 
   const initWalletConnect = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const status = await wallet.getWalletConnectStatus(
       account.address,
       account.brandName
@@ -100,9 +104,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const handleRetry = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     setConnectError(null);
     wallet.resendSign();
@@ -116,9 +118,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const init = async () => {
     const approval = await getApproval();
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
 
     setCurrentAccount(account);
 

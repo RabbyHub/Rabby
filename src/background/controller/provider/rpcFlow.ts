@@ -3,9 +3,10 @@ import {
   keyringService,
   notificationService,
   permissionService,
+  preferenceService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
-import { CHAINS, EVENTS } from 'consts';
+import { CHAINS, EVENTS, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
@@ -16,6 +17,7 @@ import { addHexPrefix, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
+import { Account } from '@/background/service/preference';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -128,9 +130,13 @@ const flowContext = flow
         connectOrigins.add(origin);
         try {
           const isUnlock = keyringService.memStore.getState().isUnlocked;
-          const { defaultChain } = await notificationService.requestApproval(
+          const {
+            defaultChain,
+            defaultAccount,
+          } = await notificationService.requestApproval(
             {
               params: { origin, name, icon, $ctx: data.$ctx },
+              account: ctx.request.account,
               approvalComponent: 'Connect',
             },
             { height: isUnlock ? 800 : 628 }
@@ -141,6 +147,8 @@ const flowContext = flow
             name,
             icon,
             defaultChain,
+            defaultAccount:
+              defaultAccount || preferenceService.getCurrentAccount(),
           });
         } catch (e) {
           connectOrigins.delete(origin);
@@ -217,6 +225,7 @@ const flowContext = flow
             data: ctx.request.data.params,
             session: { origin, name, icon },
           },
+          account: ctx.request.account,
           origin,
         },
         { height: windowHeight }
@@ -298,11 +307,16 @@ const flowContext = flow
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
     const requestDefer = requestDeferFn();
-    async function requestApprovalLoop({ uiRequestComponent, ...rest }) {
+    async function requestApprovalLoop({
+      uiRequestComponent,
+      $account,
+      ...rest
+    }) {
       ctx.request.requestedApproval = true;
       const res = await notificationService.requestApproval({
         approvalComponent: uiRequestComponent,
         params: rest,
+        account: $account,
         origin,
         approvalType,
         isUnshift: true,
@@ -386,7 +400,26 @@ function reportStatsData() {
 }
 
 export default (request: ProviderRequest) => {
-  const ctx: any = { request: { ...request, requestedApproval: false } };
+  const origin = request.session?.origin || request.origin;
+  let account: Account | undefined = undefined;
+  if (origin) {
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      account =
+        request.account || preferenceService.getCurrentAccount() || undefined;
+    } else {
+      const site = permissionService.getConnectedSite(origin);
+      if (site?.isConnected) {
+        account =
+          site.account || preferenceService.getCurrentAccount() || undefined;
+      }
+    }
+  }
+
+  console.log('account', account);
+
+  const ctx: any = {
+    request: { ...request, account, requestedApproval: false },
+  };
   notificationService.setStatsData();
   return flowContext(ctx).finally(() => {
     reportStatsData();
