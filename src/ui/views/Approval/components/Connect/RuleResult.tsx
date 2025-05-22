@@ -6,12 +6,13 @@ import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
 import SecurityLevelTag from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';
+import clsx from 'clsx';
 
 const RuleResultWrapper = styled.div`
   display: flex;
   align-items: center;
   min-height: 56px;
-  padding: 15px 16px;
+  padding: 18px 16px;
   padding-right: 24px;
   border: none;
   position: relative;
@@ -124,8 +125,17 @@ const RuleResult = ({
   };
 
   return (
-    <RuleResultWrapper className={className}>
-      <div className="rule-desc flex items-center">{ruleDesc()}</div>
+    <RuleResultWrapper
+      className={clsx(className, rule.id === '1004' ? 'items-start' : '')}
+    >
+      <div
+        className={clsx(
+          'rule-desc flex items-center',
+          rule.id === '1004' ? 'leading-[20px]' : ''
+        )}
+      >
+        {ruleDesc()}
+      </div>
       <div className="rule-value">
         {rule.id === '1004' && (
           <div className="collect-list">
