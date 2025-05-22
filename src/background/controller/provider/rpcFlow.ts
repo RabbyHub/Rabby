@@ -150,7 +150,9 @@ const flowContext = flow
             defaultAccount:
               defaultAccount || preferenceService.getCurrentAccount(),
           });
+          ctx.request.account = defaultAccount;
         } catch (e) {
+          console.error(e);
           connectOrigins.delete(origin);
           throw e;
         }
@@ -283,6 +285,7 @@ const flowContext = flow
             })
             .then(resolve)
             .catch((e: any) => {
+              console.error(e);
               const payload = {
                 method: EVENTS.SIGN_FINISHED,
                 params: {
@@ -299,6 +302,7 @@ const flowContext = flow
               if (isSignApproval(approvalType)) {
                 eventBus.emit(EVENTS.broadcastToUI, payload);
               }
+              reject(e);
             })
         );
       });
