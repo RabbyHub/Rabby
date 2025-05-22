@@ -233,7 +233,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
             </div>
             <div className="site-content">
               <div className="site-name" title={site?.origin}>
-                {site?.origin}
+                {site?.origin?.replace(/^https?:\/\//, '')}
               </div>
               <div
                 className={clsx(
