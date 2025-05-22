@@ -86,8 +86,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   const currentAccount = useCurrentAccount();
 
-  const currentSiteAccount =
-    site?.isConnected && site.account ? site.account : currentAccount;
+  const currentSiteAccount = site?.account ? site.account : currentAccount;
 
   const handleSiteAccountChange = useMemoizedFn(async (account) => {
     if (!site) {
@@ -183,9 +182,14 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   return (
     <>
-      <div className={clsx('current-connection-block h-[52px]')}>
+      <div
+        className={clsx(
+          'current-connection-block h-[52px]',
+          site?.isConnected ? 'site-group' : ''
+        )}
+      >
         {site ? (
-          <div className="site mr-[18px]">
+          <div className={clsx('site mr-[18px]')}>
             <div
               className={clsx(
                 'site-icon-container',

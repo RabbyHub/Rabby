@@ -40,11 +40,13 @@ const ConnectWrapper = styled.div`
   flex-direction: column;
   background-color: var(--r-neutral-bg2, #f2f4f7);
   .approval-connect {
-    padding: 26px 20px;
+    padding: 11px 20px 20px 26px;
+    flex: 1;
+    overflow: auto;
     .approval-title {
       font-weight: 500;
-      font-size: 17px;
-      line-height: 20px;
+      font-size: 18px;
+      line-height: 21px;
       color: var(--r-neutral-title-1, #192945);
     }
     .chain-selector {
@@ -69,19 +71,18 @@ const ConnectWrapper = styled.div`
       }
     }
     .connect-card {
-      background: var(--r-neutral-card1, #fff);
-      border-radius: 8px;
-      padding: 20px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
+      border-bottom: 0.5px solid var(--r-neutral-line, #e0e5ec);
       .connect-origin {
-        margin-top: 12px;
-        margin-bottom: 14px;
+        margin-top: 8px;
+        margin-bottom: 0;
         font-weight: 500;
         font-size: 22px;
-        line-height: 26px;
+        line-height: 24px;
         text-align: center;
         color: var(--r-neutral-title-1, #192945);
         word-wrap: break-word;
@@ -91,8 +92,6 @@ const ConnectWrapper = styled.div`
   }
   .rule-list {
     flex: 1;
-    overflow: auto;
-    padding: 0 20px;
   }
 `;
 
@@ -111,7 +110,7 @@ const Footer = styled.div`
       margin-bottom: 12px;
     }
     &:nth-last-child(1) {
-      margin-top: 20px;
+      margin-top: 16px;
     }
   }
   .security-tip {
@@ -476,6 +475,9 @@ export const ConnectContent = (props: ConnectProps) => {
   const init = async () => {
     const site = await wallet.getSite(origin);
     setCurrentSite(site);
+    if (site?.account) {
+      setSelectedAccount(site.account);
+    }
     let level: 'very_low' | 'low' | 'medium' | 'high' = 'low';
     let collectList: { name: string; logo_url: string }[] = [];
     let defaultChain = CHAINS_ENUM.ETH;
@@ -631,85 +633,87 @@ export const ConnectContent = (props: ConnectProps) => {
     <Spin spinning={isLoading}>
       <ConnectWrapper>
         <div className="approval-connect">
-          <div className="flex justify-between items-center mb-20">
+          <div className="flex justify-between items-center mb-[11px]">
             <div className="approval-title">{t('page.connect.title')}</div>
             <ChainSelector
-              title={
-                <div>
-                  <div className="chain-selector-tips">
-                    {t('page.connect.selectChainToConnect')}
-                  </div>
-                  <div className="chain-selector-site">{origin}</div>
-                </div>
-              }
               value={defaultChain}
               onChange={handleChainChange}
               connection
               showModal={showModal}
-              modalHeight={540}
+              modalHeight={'calc(100% - 60px)'}
               account={selectedAccount}
             />
           </div>
-          <div className="connect-card">
-            <div className="relative">
-              <FallbackSiteLogo url={icon} origin={origin} width="40px" />
-              {currentSite?.isMetamaskMode ? (
-                <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
-                  <img src={IconMetamask} className="w-[20px] h-[20px]" />
-                </div>
-              ) : null}
+          <div className="rounded-[8px] bg-r-neutral-card1">
+            <div className="connect-card">
+              <div className="relative">
+                <FallbackSiteLogo
+                  url={icon}
+                  origin={origin}
+                  width="44px"
+                  height="44px"
+                />
+                {currentSite?.isMetamaskMode ? (
+                  <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                    <img src={IconMetamask} className="w-[20px] h-[20px]" />
+                  </div>
+                ) : null}
+              </div>
+              <p className="connect-origin">{origin}</p>
             </div>
-            <p className="connect-origin">{origin}</p>
+            <div className="rule-list">
+              {RuleDesc.map((rule) => {
+                if (rule.id === '1006') {
+                  return (
+                    <RuleResult
+                      rule={{
+                        id: '1006',
+                        desc: t('page.connect.markRuleText'),
+                        result: userListResult || null,
+                      }}
+                      onSelect={handleSelectRule}
+                      collectList={collectList}
+                      popularLevel={originPopularLevel}
+                      userListResult={userListResult}
+                      ignored={processedRules.includes(rule.id)}
+                      hasSafe={hasSafe}
+                      hasForbidden={hasForbidden}
+                      onEditUserList={handleEditUserDataList}
+                    />
+                  );
+                } else {
+                  if (
+                    sortRules.find((item) => item.id === rule.id) ||
+                    rule.fixed
+                  ) {
+                    return (
+                      <RuleResult
+                        rule={sortRules.find((item) => item.id === rule.id)!}
+                        key={rule.id}
+                        onSelect={handleSelectRule}
+                        collectList={collectList}
+                        popularLevel={originPopularLevel}
+                        userListResult={userListResult}
+                        ignored={processedRules.includes(rule.id)}
+                        hasSafe={hasSafe}
+                        hasForbidden={hasForbidden}
+                        onEditUserList={handleEditUserDataList}
+                      />
+                    );
+                  } else {
+                    return null;
+                  }
+                }
+              })}
+            </div>
           </div>
         </div>
 
-        <div className="rule-list">
-          {RuleDesc.map((rule) => {
-            if (rule.id === '1006') {
-              return (
-                <RuleResult
-                  rule={{
-                    id: '1006',
-                    desc: t('page.connect.markRuleText'),
-                    result: userListResult || null,
-                  }}
-                  onSelect={handleSelectRule}
-                  collectList={collectList}
-                  popularLevel={originPopularLevel}
-                  userListResult={userListResult}
-                  ignored={processedRules.includes(rule.id)}
-                  hasSafe={hasSafe}
-                  hasForbidden={hasForbidden}
-                  onEditUserList={handleEditUserDataList}
-                />
-              );
-            } else {
-              if (sortRules.find((item) => item.id === rule.id) || rule.fixed) {
-                return (
-                  <RuleResult
-                    rule={sortRules.find((item) => item.id === rule.id)!}
-                    key={rule.id}
-                    onSelect={handleSelectRule}
-                    collectList={collectList}
-                    popularLevel={originPopularLevel}
-                    userListResult={userListResult}
-                    ignored={processedRules.includes(rule.id)}
-                    hasSafe={hasSafe}
-                    hasForbidden={hasForbidden}
-                    onEditUserList={handleEditUserDataList}
-                  />
-                );
-              } else {
-                return null;
-              }
-            }
-          })}
-        </div>
         <div>
           <Footer>
-            <div className="flex items-center justify-between mb-[24px]">
+            <div className="flex items-center justify-between mb-[20px]">
               <div className="text-[14px] leading-[17px] text-r-neutral-body">
-                Connect Address
+                {t('page.connect.connectAddress')}
               </div>
               <AccountSelector
                 className="account-selector"
@@ -717,9 +721,10 @@ export const ConnectContent = (props: ConnectProps) => {
                 onChange={(account) => {
                   setSelectedAccount(account);
                 }}
+                modalHeight={'calc(100% - 60px)'}
               />
             </div>
-            <div className="action-buttons flex flex-col mt-4 items-center">
+            <div className="action-buttons flex flex-col items-center">
               <Button
                 type="primary"
                 size="large"

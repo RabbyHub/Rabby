@@ -13,10 +13,7 @@ const RuleResultWrapper = styled.div`
   min-height: 56px;
   padding: 15px 16px;
   padding-right: 24px;
-  background: var(--r-neutral-card1, #fff);
   border: none;
-  border-radius: 8px;
-  margin-bottom: 8px;
   position: relative;
 
   .rule-desc {
@@ -59,6 +56,7 @@ const RuleResult = ({
   userListResult,
   onSelect,
   onEditUserList,
+  className,
 }: {
   rule: { id: string; desc: string; result: Result | null };
   collectList: { name: string; logo_url: string }[];
@@ -69,6 +67,7 @@ const RuleResult = ({
   userListResult?: Result;
   onSelect(rule: { id: string; desc: string; result: Result | null }): void;
   onEditUserList(): void;
+  className?: string;
 }) => {
   const { t } = useTranslation();
   const handleClick = () => {
@@ -125,7 +124,7 @@ const RuleResult = ({
   };
 
   return (
-    <RuleResultWrapper>
+    <RuleResultWrapper className={className}>
       <div className="rule-desc flex items-center">{ruleDesc()}</div>
       <div className="rule-value">
         {rule.id === '1004' && (

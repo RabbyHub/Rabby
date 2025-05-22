@@ -1462,6 +1462,10 @@
       "offlineChain": {
         "chain": "{{chain}} will soon not be integrated.",
         "tips": "{{chain}} Chain will not be integrated on {{date}}. Your assets won’t be affected but won’t be included in your total balance. To access them, you may add it as a custom network in “More”."
+      },
+      "recentConnectionGuide": {
+        "title": "Switch address for Dapp connection",
+        "button": "Got it"
       }
     },
     "nft": {
@@ -1907,7 +1911,8 @@
       "SelectWallet": {
         "title": "Select a Wallet to Connect",
         "desc": "Select from the wallets you have installed"
-      }
+      },
+      "connectAddress": "Connect Address"
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",

@@ -49,6 +49,14 @@ const Warper = styled.div`
       border-color: var(--r-blue-default);
     }
   }
+
+  .virtuoso-list {
+    height: 100%;
+    flex: 1;
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
+  }
 `;
 
 interface ChainSelectorModalProps {
@@ -59,7 +67,7 @@ interface ChainSelectorModalProps {
   connection?: boolean;
   title?: ReactNode;
   className?: string;
-  height?: number;
+  height?: number | string;
   zIndex?: number;
   showClosableIcon?: boolean;
   getContainer?: DrawerProps['getContainer'];
@@ -222,10 +230,7 @@ export const AccountSelectorModal = ({
             />
           </header>
           <Virtuoso
-            style={{
-              height: '100%',
-              flex: 1,
-            }}
+            className="virtuoso-list"
             data={filteredAccounts}
             itemContent={(index, item) => {
               const current = item;
@@ -246,63 +251,69 @@ export const AccountSelectorModal = ({
                   item.brandName === highlighted.brandName
               );
 
+              const isLast = !next;
+
               return (
-                <div
-                  style={{
-                    borderBottom: '0.5px solid var(--r-neutral-line, #E0E5EC)',
-                    background: 'var(--r-neutral-card1, #FFF)',
-                    ...(isGroupFirst
-                      ? {
-                          borderTopLeftRadius: 8,
-                          borderTopRightRadius: 8,
-                        }
-                      : {}),
-                    ...(isGroupLast
-                      ? {
-                          borderBottomLeftRadius: 8,
-                          borderBottomRightRadius: 8,
-                          marginBottom: 16,
-                          borderBottom: 'none',
-                        }
-                      : {}),
-                  }}
-                >
-                  <AccountItem
-                    className="group"
-                    balance={item.balance}
-                    address={item.address}
-                    type={item.type}
-                    brandName={item.brandName}
-                    onClick={() => {
-                      onChange?.(item);
+                <>
+                  <div
+                    style={{
+                      borderBottom:
+                        '0.5px solid var(--r-neutral-line, #E0E5EC)',
+                      background: 'var(--r-neutral-card1, #FFF)',
+                      ...(isGroupFirst
+                        ? {
+                            borderTopLeftRadius: 8,
+                            borderTopRightRadius: 8,
+                          }
+                        : {}),
+                      ...(isGroupLast
+                        ? {
+                            borderBottomLeftRadius: 8,
+                            borderBottomRightRadius: 8,
+                            marginBottom: 16,
+                            borderBottom: 'none',
+                          }
+                        : {}),
                     }}
-                    isSelected={!!value && isSameAccount(item, value)}
-                    extra={
-                      <div
-                        className={clsx(
-                          'cursor-pointer border-none px-0',
-                          isFavorite
-                            ? 'is-active'
-                            : 'opacity-0 group-hover:opacity-100'
-                        )}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          dispatch.addressManagement.toggleHighlightedAddressAsync(
-                            {
-                              address: item.address,
-                              brandName: item.brandName,
-                            }
-                          );
-                        }}
-                      >
-                        <ThemeIcon
-                          className="w-[13px] h-[13px]"
-                          src={isFavorite ? RcIconPinnedFill : RcIconPinned}
-                        />
-                      </div>
-                    }
-                  />
-                </div>
+                  >
+                    <AccountItem
+                      className="group"
+                      balance={item.balance}
+                      address={item.address}
+                      type={item.type}
+                      brandName={item.brandName}
+                      onClick={() => {
+                        onChange?.(item);
+                      }}
+                      isSelected={!!value && isSameAccount(item, value)}
+                      extra={
+                        <div
+                          className={clsx(
+                            'cursor-pointer border-none px-0',
+                            isFavorite
+                              ? 'is-active'
+                              : 'opacity-0 group-hover:opacity-100'
+                          )}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch.addressManagement.toggleHighlightedAddressAsync(
+                              {
+                                address: item.address,
+                                brandName: item.brandName,
+                              }
+                            );
+                          }}
+                        >
+                          <ThemeIcon
+                            className="w-[13px] h-[13px]"
+                            src={isFavorite ? RcIconPinnedFill : RcIconPinned}
+                          />
+                        </div>
+                      }
+                    />
+                  </div>
+                  {isLast ? <div className="h-[8px]"></div> : null}
+                </>
               );
             }}
             increaseViewportBy={100}
