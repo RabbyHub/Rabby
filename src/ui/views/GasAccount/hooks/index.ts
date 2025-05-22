@@ -63,63 +63,43 @@ export const useGasAccountInfo = () => {
 
 export const useGasAccountMethods = () => {
   const wallet = useWallet();
-  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
   const dispatch = useRabbyDispatch();
 
   const { sig, accountId } = useGasAccountSign();
   const { refresh } = useGasAccountRefresh();
 
-  const handleNoSignLogin = useCallback(
-    async (account: Account) => {
-      if (account) {
-        const currentUseAccount = currentAccount;
-        const shouldSwitchAccount =
-          currentUseAccount?.address !== account.address ||
-          currentUseAccount?.type !== account.type ||
-          currentUseAccount?.brandName !== account.brandName;
+  const handleNoSignLogin = useCallback(async (account: Account) => {
+    if (account) {
+      try {
+        const { text } = await wallet.openapi.getGasAccountSignText(
+          account.address
+        );
 
-        const resume = async () => {
-          if (currentUseAccount && shouldSwitchAccount) {
-            await dispatch.account.changeAccountAsync(currentUseAccount);
+        const { txHash: signature } = await sendPersonalMessage({
+          data: [text, account.address],
+          wallet,
+          account,
+        });
+
+        const result = await pRetry(
+          async () =>
+            wallet.openapi.loginGasAccount({
+              sig: signature,
+              account_id: account.address,
+            }),
+          {
+            retries: 2,
           }
-        };
-        try {
-          const { text } = await wallet.openapi.getGasAccountSignText(
-            account.address
-          );
-
-          if (shouldSwitchAccount) {
-            await dispatch.account.changeAccountAsync(account);
-          }
-
-          const { txHash: signature } = await sendPersonalMessage({
-            data: [text, account.address],
-            wallet,
-          });
-
-          const result = await pRetry(
-            async () =>
-              wallet.openapi.loginGasAccount({
-                sig: signature,
-                account_id: account.address,
-              }),
-            {
-              retries: 2,
-            }
-          );
-          if (result?.success) {
-            dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
-            refresh();
-          }
-          await resume();
-        } catch (e) {
-          message.error('Login in error, Please retry');
-          await resume();
+        );
+        if (result?.success) {
+          dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+          refresh();
         }
+      } catch (e) {
+        message.error('Login in error, Please retry');
       }
-    },
-    [currentAccount]
-  );
+    }
+  }, []);
 
   const login = useCallback(
     async (account: Account) => {
@@ -133,7 +113,7 @@ export const useGasAccountMethods = () => {
         window.close();
       }
     },
-    [currentAccount, handleNoSignLogin]
+    [handleNoSignLogin]
   );
 
   const logout = useCallback(async () => {
