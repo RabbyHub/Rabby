@@ -109,7 +109,7 @@ export const AccountItem = memo(
       <div
         className={clsx(
           className,
-          'relative flex items-center px-[15px] py-[11px] gap-[8px] bg-r-neutral-card-1 cursor-pointer',
+          'relative flex items-center px-[15px] py-[11px] gap-[8px] cursor-pointer',
           'border-[1px] border-solid border-transparent rounded-[8px]',
           'hover:border-rabby-blue-default hover:bg-r-blue-light1'
         )}
