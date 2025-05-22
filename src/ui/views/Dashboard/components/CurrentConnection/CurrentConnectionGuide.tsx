@@ -40,6 +40,7 @@ interface Props {
 }
 export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
   const triggerRef = useRef<HTMLElement>(null);
+  const { t } = useTranslation();
 
   const calculatePosition = () => {
     if (!triggerRef.current) return {};
@@ -62,7 +63,6 @@ export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
       width: rect.width + 16,
       height: rect.height + 16,
       borderRadius: 12,
-      background: '#D9D9D9',
       padding: 8,
     };
 
@@ -106,7 +106,7 @@ export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
           >
             <img src={IconLightBulb} alt="light bulb icon" />
             <div className="text-r-neutral-title-1 text-[12px] leading-[17px] font-medium">
-              Switch address connected to this Dapp
+              {t('page.dashboard.recentConnectionGuide.title')}
             </div>
             <Button
               className="ml-auto h-[28px] py-0 shadow-none"
@@ -115,7 +115,7 @@ export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
                 onClose?.();
               }}
             >
-              Got it
+              {t('page.dashboard.recentConnectionGuide.button')}
             </Button>
             <div
               className="text-r-blue-light-1 absolute bottom-[-14px]"
@@ -125,19 +125,13 @@ export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
             </div>
           </div>
           <div
-            className="z-10"
+            className="z-10 bg-r-neutral-card2"
             style={position?.triggerWarperPosition}
             onClick={() => {
               onClose?.();
             }}
           >
-            <div className="pointer-events-none">
-              {cloneElement(children, {
-                style: {
-                  borderColor: '#dfe5ed',
-                },
-              })}
-            </div>
+            <div className="pointer-events-none">{children}</div>
           </div>
         </div>
       </div>

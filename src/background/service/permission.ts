@@ -321,7 +321,6 @@ class PermissionService {
       ...site,
       rdns: undefined,
       isConnected: false,
-      account: undefined,
     });
     this.sync();
   };

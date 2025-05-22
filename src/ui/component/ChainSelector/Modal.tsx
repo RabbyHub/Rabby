@@ -43,7 +43,7 @@ interface ChainSelectorModalProps {
   hideTestnetTab?: boolean;
   hideMainnetTab?: boolean;
   showRPCStatus?: boolean;
-  height?: number;
+  height?: number | string;
   zIndex?: number;
   excludeChains?: CHAINS_ENUM[];
   showClosableIcon?: boolean;

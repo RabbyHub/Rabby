@@ -19,6 +19,21 @@
     }
   }
 
+  &.site-group:hover {
+    .site-icon-container.is-support {
+      cursor: pointer;
+      border: 1px solid var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light1, #eef1ff);
+    }
+    .global-account-selector:not(.is-disabled) {
+      border: 1px solid var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light1, #eef1ff);
+    }
+    .site-status-icon {
+      color: var(--r-red-default, #e34935) !important;
+    }
+  }
+
   .site {
     display: flex;
     align-items: center;

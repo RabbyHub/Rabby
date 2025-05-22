@@ -3198,7 +3198,7 @@ export class WalletController extends BaseController {
     ) {
       await this.resetCurrentAccount();
     }
-    const sites = permissionService.getConnectedSites();
+    const sites = permissionService.getSites();
     sites.forEach((item) => {
       if (
         item.account &&

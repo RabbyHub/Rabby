@@ -20,7 +20,7 @@ interface ChainSelectorProps {
   title?: ReactNode;
   onAfterOpen?: () => void;
   showRPCStatus?: boolean;
-  modalHeight?: number;
+  modalHeight?: number | string;
   account?: Account | null;
 }
 

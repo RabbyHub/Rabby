@@ -14,7 +14,7 @@ interface Props {
   className?: string;
   title?: ReactNode;
   onAfterOpen?: () => void;
-  modalHeight?: number;
+  modalHeight?: number | string;
   disabled?: boolean;
   style?: CSSProperties;
 }
