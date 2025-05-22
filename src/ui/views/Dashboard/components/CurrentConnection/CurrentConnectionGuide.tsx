@@ -99,12 +99,16 @@ export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
         <div className="absolute top-0 left-0 w-full h-full z-10">
           <div
             className={clsx(
-              'bg-r-blue-light1 rounded-[8px] py-[16px] pl-[10px] pr-[16px]',
-              'flex items-center gap-[5px]'
+              'bg-r-blue-light1 rounded-[8px] py-[16px] px-[10px]',
+              'flex items-center gap-[3px]'
             )}
             style={position?.popoverPosition}
           >
-            <img src={IconLightBulb} alt="light bulb icon" />
+            <img
+              src={IconLightBulb}
+              className="w-[23px] h-[23px]"
+              alt="light bulb icon"
+            />
             <div className="text-r-neutral-title-1 text-[12px] leading-[17px] font-medium">
               {t('page.dashboard.recentConnectionGuide.title')}
             </div>

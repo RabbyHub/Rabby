@@ -1939,7 +1939,7 @@ export class WalletController extends BaseController {
     origin: string;
     account?: Account | null;
   }) => {
-    const site = permissionService.getConnectedSite(origin);
+    const site = permissionService.getSite(origin);
     if (!site) {
       return;
     }
