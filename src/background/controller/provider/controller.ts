@@ -360,7 +360,7 @@ class ProviderController extends BaseController {
       approvalRes,
       account,
     } = cloneDeep(options);
-    const currentAccount = approvalRes.$account || account;
+    const currentAccount = account;
     const keyring = await this._checkAddress(txParams.from, options);
     const isSend = !!txParams.isSend;
     const isSpeedUp = !!txParams.isSpeedUp;
