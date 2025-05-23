@@ -223,7 +223,6 @@ const SignText = ({
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = async () => {
-    console.log({ isGnosisAccount, currentAccount });
     if (activeApprovalPopup()) {
       return;
     }

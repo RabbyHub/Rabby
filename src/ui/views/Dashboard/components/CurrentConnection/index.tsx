@@ -98,7 +98,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     };
     setSite(_site);
     setVisible(false);
-    console.log(account);
     wallet.setSiteAccount({ origin: _site.origin, account });
   });
 
