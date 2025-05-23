@@ -27,6 +27,7 @@ export const NFTPopup: React.FC<Props> = ({ data }) => {
       <div className="title flex">
         <span className="mr-16 text-15 text-r-neutral-body">NFT</span>
         <NFTWithName
+          className="overflow-hidden pr-[20px]"
           nft={data.nft}
           textStyle={{
             fontSize: '15px',

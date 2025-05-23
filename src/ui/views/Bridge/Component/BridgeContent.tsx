@@ -23,7 +23,7 @@ import { useCss } from 'react-use';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 
-import pRetry from 'p-retry';
+import pRetry, { AbortError } from 'p-retry';
 import stats from '@/stats';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
@@ -154,20 +154,24 @@ export const BridgeContent = () => {
         setFetchingBridgeQuote(true);
         const { tx } = await pRetry(
           () =>
-            wallet.openapi.getBridgeQuoteTxV2({
-              aggregator_id: selectedBridgeQuote.aggregator.id,
-              bridge_id: selectedBridgeQuote.bridge_id,
-              from_token_id: fromToken.id,
-              user_addr: userAddress,
-              from_chain_id: fromToken.chain,
-              from_token_raw_amount: new BigNumber(amount)
-                .times(10 ** fromToken.decimals)
-                .toFixed(0, 1)
-                .toString(),
-              to_chain_id: toToken.chain,
-              to_token_id: toToken.id,
-              slippage: new BigNumber(slippageState).div(100).toString(10),
-            }),
+            wallet.openapi
+              .getBridgeQuoteTxV2({
+                aggregator_id: selectedBridgeQuote.aggregator.id,
+                bridge_id: selectedBridgeQuote.bridge_id,
+                from_token_id: fromToken.id,
+                user_addr: userAddress,
+                from_chain_id: fromToken.chain,
+                from_token_raw_amount: new BigNumber(amount)
+                  .times(10 ** fromToken.decimals)
+                  .toFixed(0, 1)
+                  .toString(),
+                to_chain_id: toToken.chain,
+                to_token_id: toToken.id,
+                slippage: new BigNumber(slippageState).div(100).toString(10),
+              })
+              .catch((e) => {
+                throw new AbortError(e?.message || String(e));
+              }),
           { retries: 1 }
         );
         stats.report('bridgeQuoteResult', {
@@ -266,20 +270,24 @@ export const BridgeContent = () => {
         // setFetchingBridgeQuote(true);
         const { tx } = await pRetry(
           () =>
-            wallet.openapi.getBridgeQuoteTxV2({
-              aggregator_id: selectedBridgeQuote.aggregator.id,
-              bridge_id: selectedBridgeQuote.bridge_id,
-              from_chain_id: fromToken.chain,
-              from_token_id: fromToken.id,
-              user_addr: userAddress,
-              from_token_raw_amount: new BigNumber(amount)
-                .times(10 ** fromToken.decimals)
-                .toFixed(0, 1)
-                .toString(),
-              to_chain_id: toToken.chain,
-              to_token_id: toToken.id,
-              slippage: new BigNumber(slippageState).div(100).toString(10),
-            }),
+            wallet.openapi
+              .getBridgeQuoteTxV2({
+                aggregator_id: selectedBridgeQuote.aggregator.id,
+                bridge_id: selectedBridgeQuote.bridge_id,
+                from_chain_id: fromToken.chain,
+                from_token_id: fromToken.id,
+                user_addr: userAddress,
+                from_token_raw_amount: new BigNumber(amount)
+                  .times(10 ** fromToken.decimals)
+                  .toFixed(0, 1)
+                  .toString(),
+                to_chain_id: toToken.chain,
+                to_token_id: toToken.id,
+                slippage: new BigNumber(slippageState).div(100).toString(10),
+              })
+              .catch((e) => {
+                throw new AbortError(e?.message || String(e));
+              }),
           { retries: 1 }
         );
         stats.report('bridgeQuoteResult', {

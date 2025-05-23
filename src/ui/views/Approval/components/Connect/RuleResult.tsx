@@ -17,6 +17,12 @@ const RuleResultWrapper = styled.div`
   border: none;
   position: relative;
 
+  &:has(.security-level-tag) {
+    .rule-value {
+      padding-right: 8px;
+    }
+  }
+
   .rule-desc {
     font-weight: 400;
     font-size: 13px;

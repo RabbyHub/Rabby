@@ -43,7 +43,6 @@ import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import GasSelectorHeader, {
   GasSelectorResponse,
 } from '../TxComponents/GasSelectorHeader';
-import { sendTransaction } from '@/ui/utils/sendTransaction';
 import clsx from 'clsx';
 import { Ledger } from '../../../CommonPopup/Ledger';
 import { Popup } from '@/ui/component';
