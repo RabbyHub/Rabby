@@ -37,6 +37,7 @@ interface ApprovalParams {
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  $account: Account;
   $ctx?: any;
   extra?: Record<string, any>;
   type: string;
@@ -48,7 +49,13 @@ interface ApprovalParams {
   };
 }
 
-export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
+export const PrivatekeyWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const wallet = useWallet();
   const {
     setTitle,
@@ -121,9 +128,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [type, isDarkTheme]);
 
   const init = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
 
     const approval = await getApproval();
 

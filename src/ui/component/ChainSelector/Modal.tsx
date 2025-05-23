@@ -28,6 +28,7 @@ import {
 } from './components/SelectChainList';
 import { LoadingBalances } from './LoadingBalances';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { Account } from '@/background/service/preference';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -42,11 +43,12 @@ interface ChainSelectorModalProps {
   hideTestnetTab?: boolean;
   hideMainnetTab?: boolean;
   showRPCStatus?: boolean;
-  height?: number;
+  height?: number | string;
   zIndex?: number;
   excludeChains?: CHAINS_ENUM[];
   showClosableIcon?: boolean;
   getContainer?: DrawerProps['getContainer'];
+  account?: Account | null;
 }
 
 const useChainSeletorList = ({
@@ -147,6 +149,7 @@ const ChainSelectorModal = ({
   excludeChains,
   showClosableIcon = true,
   getContainer,
+  account,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -202,9 +205,11 @@ const ChainSelectorModal = ({
     if (!visible) {
       setSearch('');
     } else {
-      rDispatch.account.getMatteredChainBalance();
+      rDispatch.account.getMatteredChainBalance({
+        currentAccountAddress: account?.address,
+      });
     }
-  }, [visible, rDispatch, setSearch]);
+  }, [visible, rDispatch, setSearch, account?.address]);
 
   return (
     <>

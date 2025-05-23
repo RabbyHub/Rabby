@@ -4,6 +4,7 @@ import { useLedgerStatus } from '../component/ConnectStatus/useLedgerStatus';
 import { useCommonPopupView, useWallet } from './WalletContext';
 import { useCurrentAccount } from '../hooks/backgroundState/useAccount';
 import { useImKeyStatus } from '../component/ConnectStatus/useImKeyStatus';
+import { Account } from '@/background/service/preference';
 
 /**
  * some devices require a connection to the device to sign transactions
@@ -14,13 +15,12 @@ export const useDeviceConnect = () => {
   const imKeyStatus = useImKeyStatus();
   const { activePopup, setAccount } = useCommonPopupView();
   const wallet = useWallet();
-  const currentAccount = useCurrentAccount();
 
   /**
    * @returns {boolean} true if connected, false if not connected and popup is shown
    */
   const connect = React.useCallback(
-    async (data: any) => {
+    async (data: any, currentAccount: Account) => {
       if (!data) {
         return true;
       }

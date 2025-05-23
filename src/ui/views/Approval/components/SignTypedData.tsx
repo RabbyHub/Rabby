@@ -71,7 +71,14 @@ interface SignTypedDataProps {
   $ctx?: any;
 }
 
-const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
+const SignTypedData = ({
+  params,
+  account,
+}: {
+  params: SignTypedDataProps;
+  account: Account;
+}) => {
+  const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
   const [, resolveApproval, rejectApproval] = useApproval();
@@ -99,7 +106,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     undefined
   );
 
-  const [isGnosisAccount, setIsGnosisAccount] = useState(false);
+  const isGnosisAccount = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [gnosisFooterBarVisible, setGnosisFooterBarVisible] = useState(false);
   const [currentGnosisAdmin, setCurrentGnosisAdmin] = useState<Account | null>(
@@ -153,7 +160,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
   }, [engineResults, currentTx]);
 
-  const { data, session, method, isGnosis, isSend, account } = params;
+  const { data, session, method, isGnosis } = params;
   const [parsedMessage, setParsedMessage] = useState('');
   const [_message, setMessage] = useState('');
 
@@ -246,14 +253,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, [params.session.origin]);
 
   const { value: typedDataActionData, loading, error } = useAsync(async () => {
-    const currentAccount = isGnosis
-      ? account
-      : await wallet.getCurrentAccount();
-
-    const _isGnosisAccount =
-      currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
-    setIsGnosisAccount(_isGnosisAccount);
-    if (_isGnosisAccount) {
+    if (isGnosisAccount) {
       if (!isViewGnosisSafe) {
         wallet.clearGnosisMessage();
       }
@@ -277,9 +277,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }
 
   const checkWachMode = async () => {
-    const currentAccount = isGnosis
-      ? account
-      : await wallet.getCurrentAccount();
     if (
       currentAccount &&
       currentAccount.type === KEYRING_TYPE.WatchAddressKeyring
@@ -305,16 +302,21 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const isViewGnosisSafe = params?.$ctx?.isViewGnosisSafe;
-  const { data: safeInfo } = useGetCurrentSafeInfo({ chainId: currentChainId });
+  const { data: safeInfo } = useGetCurrentSafeInfo({
+    chainId: currentChainId,
+    account: currentAccount,
+  });
   const { data: safeMessageHash } = useGetMessageHash({
     chainId: currentChainId,
     message: rawMessage,
+    account: currentAccount,
   });
   const { data: currentSafeMessage } = useCheckCurrentSafeMessage(
     {
       chainId: currentChainId,
       safeMessageHash,
       threshold: safeInfo?.threshold,
+      account: currentAccount,
     },
     {
       onSuccess(res) {
@@ -359,9 +361,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       | 'completeSignText',
     extra?: Record<string, any>
   ) => {
-    const currentAccount = isGnosis
-      ? account
-      : await wallet.getCurrentAccount();
     if (currentAccount) {
       matomoRequestEvent({
         category: 'SignText',
@@ -404,9 +403,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     if (activeApprovalPopup()) {
       return;
     }
-    const currentAccount = isGnosis
-      ? account
-      : await wallet.getCurrentAccount();
 
     if (isGnosisAccount) {
       setDrawerVisible(true);
@@ -432,6 +428,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     ) {
       resolveApproval({
         uiRequestComponent: WaitingSignMessageComponent[currentAccount?.type],
+        $account: currentAccount,
         type: currentAccount.type,
         address: currentAccount.address,
         extra: {
@@ -447,9 +444,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const init = async () => {
-    const currentAccount = isGnosis
-      ? account
-      : await wallet.getCurrentAccount();
     if (
       currentAccount?.type &&
       REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)
@@ -460,9 +454,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const getRequireData = async (data: ParsedTypedDataActionData) => {
-    const currentAccount = isGnosis
-      ? account
-      : await wallet.getCurrentAccount();
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
       const site = await wallet.getConnectedSite(params.session.origin);
       if (site) {
@@ -646,6 +637,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
         account: account,
+        $account: account,
         safeMessage: {
           message: signTypedData,
           safeAddress: safeInfo.address,
@@ -769,6 +761,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         )}
         {!isLoading && (
           <Actions
+            account={currentAccount}
             data={parsedActionData}
             requireData={actionRequireData}
             chain={chain}
@@ -820,6 +813,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               originLogo={params.session.icon}
               // chain={chain}
               gnosisAccount={currentGnosisAdmin}
+              account={currentGnosisAdmin}
               onCancel={handleCancel}
               // securityLevel={securityLevel}
               // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
@@ -863,6 +857,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           originLogo={params.session.icon}
           chain={chain}
           gnosisAccount={isGnosis ? account : undefined}
+          account={currentAccount}
           onCancel={handleCancel}
           securityLevel={securityLevel}
           hasUnProcessSecurityResult={hasUnProcessSecurityResult}

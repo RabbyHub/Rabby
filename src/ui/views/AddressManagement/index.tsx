@@ -28,6 +28,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 import dayjs from 'dayjs';
 import { useAccounts } from '@/ui/hooks/useAccounts';
+import { CurrentDappAddress } from './CurrentDappAddress';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -427,7 +428,6 @@ const AddressManagement = () => {
           />
         </div>
       </PageHeader>
-
       {currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
         <>
           <div className="address-wrap-with-padding px-[20px]">
@@ -481,7 +481,8 @@ const AddressManagement = () => {
           </div>
         </>
       )}
-      <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-16">
+      <CurrentDappAddress />
+      <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-[12px]">
         <SortInput
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}

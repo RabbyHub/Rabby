@@ -10,12 +10,27 @@
   align-items: center;
   background: var(--r-neutral-card-2, #f5f6fa);
   border-radius: 6px;
-  padding: 10px 8px 10px 12px;
+  padding: 8px 12px 8px 8px;
 
   &-tooltip {
     max-width: 360px !important;
     .ant-tooltip-arrow {
       left: 24px !important;
+    }
+  }
+
+  &.site-group:hover {
+    .site-icon-container.is-support {
+      cursor: pointer;
+      border: 1px solid var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light1, #eef1ff);
+    }
+    .global-account-selector:not(.is-disabled) {
+      border: 1px solid var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light1, #eef1ff);
+    }
+    .site-status-icon {
+      color: var(--r-red-default, #e34935) !important;
     }
   }
 
@@ -50,8 +65,20 @@
       flex-shrink: 0;
       width: 28px;
       height: 28px;
-      border-radius: 4px;
+      border-radius: 28px;
     }
+    &-icon-container {
+      padding: 3px;
+      border-radius: 1000px;
+      border: 1px solid transparent;
+
+      &.is-support:hover {
+        cursor: pointer;
+        border: 1px solid var(--r-blue-default, #7084ff);
+        background: var(--r-blue-light1, #eef1ff);
+      }
+    }
+
     &-content {
       flex: 1;
       overflow: hidden;

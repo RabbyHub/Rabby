@@ -478,6 +478,7 @@ export const sendTransaction = async ({
 
   // submit tx
   let hash = '';
+  const account = await wallet.getCurrentAccount();
   try {
     hash = await wallet.ethSendTransaction({
       data: {
@@ -499,6 +500,7 @@ export const sendTransaction = async ({
       },
       pushed: false,
       result: undefined,
+      account: account!,
     });
     await handleSendAfter();
   } catch (e) {

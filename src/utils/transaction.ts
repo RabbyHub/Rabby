@@ -33,6 +33,7 @@ export interface ApprovalRes extends Tx {
   isSwap?: boolean;
   isGnosis?: boolean;
   account?: Account;
+  $account?: Account;
   extra?: Record<string, any>;
   traceId?: string;
   $ctx?: any;

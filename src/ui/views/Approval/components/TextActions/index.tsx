@@ -20,6 +20,7 @@ import { OriginInfo } from '../OriginInfo';
 import { Divide } from '../Divide';
 import { ParsedTextActionData } from '@rabby-wallet/rabby-action';
 import { findChain } from '@/utils/chain';
+import { Account } from '@/background/service/preference';
 
 const { TabPane } = Tabs;
 
@@ -86,6 +87,7 @@ const Actions = ({
   origin,
   originLogo,
   chainId,
+  account,
 }: {
   data: ParsedTextActionData | null;
   engineResults: Result[];
@@ -94,6 +96,7 @@ const Actions = ({
   origin: string;
   originLogo?: string;
   chainId?: number;
+  account: Account;
 }) => {
   const actionName = useMemo(() => {
     return getActionTypeText(data);
@@ -156,6 +159,7 @@ const Actions = ({
                   overlayClassName="rectangle w-[max-content] decode-tooltip"
                   title={
                     <NoActionAlert
+                      account={account}
                       data={{
                         origin,
                         text: message,

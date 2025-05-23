@@ -4,6 +4,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import eventBus from '@/eventBus';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
+import { Account } from '@/background/service/preference';
 
 // fail code
 export enum FailedCode {
@@ -70,14 +71,17 @@ export const sendPersonalMessage = async ({
   wallet,
   onProgress,
   ga,
+  account,
 }: {
   data: string[];
   wallet: WalletControllerType;
   onProgress?: (status: ProgressStatus) => void;
   ga?: Record<string, any>;
+  account?: Account;
 }) => {
   onProgress?.('building');
-  const { address, ...currentAccount } = (await wallet.getCurrentAccount())!;
+  const { address, ...currentAccount } =
+    account || (await wallet.getCurrentAccount())!;
 
   report({
     action: 'createSignText',
@@ -116,9 +120,14 @@ export const sendPersonalMessage = async ({
           signTextMethod: 'personalSign',
         },
       },
+      account: {
+        address,
+        ...currentAccount,
+      },
     });
     await handleSendAfter();
   } catch (e) {
+    console.error(e);
     await handleSendAfter();
     const err = new Error(e.message);
     err.name = FailedCode.SubmitTxFailed;

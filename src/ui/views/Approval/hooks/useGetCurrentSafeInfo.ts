@@ -1,16 +1,23 @@
+import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from '@/constant';
+import { account } from '@/ui/models/account';
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { useRequest } from 'ahooks';
 import { Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-export const useGetCurrentSafeInfo = ({ chainId }: { chainId?: number }) => {
+export const useGetCurrentSafeInfo = ({
+  chainId,
+  account: currentAccount,
+}: {
+  chainId?: number;
+  account: Account;
+}) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   return useRequest(
     async () => {
-      const currentAccount = (await wallet.getCurrentAccount())!;
       if (!chainId || currentAccount.type !== KEYRING_TYPE.GnosisKeyring) {
         return;
       }
@@ -39,7 +46,7 @@ export const useGetCurrentSafeInfo = ({ chainId }: { chainId?: number }) => {
       }
     },
     {
-      refreshDeps: [chainId],
+      refreshDeps: [chainId, account],
       onError(e) {
         Modal.error({
           className: 'modal-support-darkmode',

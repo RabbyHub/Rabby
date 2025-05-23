@@ -1,3 +1,5 @@
+import { Account } from '@/background/service/preference';
+
 type InternalMethods = keyof typeof import('./internalMethod')['default'];
 
 export type ProviderRequest<
@@ -13,6 +15,7 @@ export type ProviderRequest<
     origin: string;
     icon: string;
   } | null;
+  account?: Account;
   origin?: string;
   requestedApproval?: boolean;
 };

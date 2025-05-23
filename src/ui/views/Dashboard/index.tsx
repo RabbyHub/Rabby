@@ -85,8 +85,7 @@ const Dashboard = () => {
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
-
-  const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
+  const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const gnosisPendingCount = useRabbySelector(
     (s) => s.chains.gnosisPendingCount
   );
@@ -110,30 +109,6 @@ const Dashboard = () => {
   useEffect(() => {
     getCurrentAccount();
   }, []);
-
-  useGnosisNetworks(
-    {
-      address:
-        currentAccount?.address &&
-        currentAccount?.type === KEYRING_TYPE.GnosisKeyring
-          ? currentAccount.address
-          : '',
-    },
-    {
-      onBefore() {
-        dispatch.chains.setField({
-          gnosisNetworkIds: [],
-        });
-      },
-      onSuccess(res) {
-        if (res) {
-          dispatch.chains.setField({
-            gnosisNetworkIds: res,
-          });
-        }
-      },
-    }
-  );
 
   useGnosisPendingCount(
     {
@@ -296,14 +271,10 @@ const Dashboard = () => {
     setTopAnimate('fadeInTop');
   };
 
-  const showGnosisWrongChainAlert = useRabbyGetter(
-    (s) => s.chains.isShowGnosisWrongChainAlert
-  );
   const opacity60 =
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
     currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
     currentAccount?.type === KEYRING_CLASS.WATCH;
-  const showGnosisAlert = isGnosis && showGnosisWrongChainAlert && !showChain;
 
   const switchAddress = () => {
     matomoRequestEvent({
@@ -324,11 +295,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div
-        className={clsx('dashboard', {
-          'metamask-active': showGnosisWrongChainAlert && isGnosis,
-        })}
-      >
+      <div className={clsx('dashboard')}>
         <div className={clsx('main', showChain && 'show-chain-bg')}>
           {currentAccount && (
             <div
@@ -435,7 +402,6 @@ const Dashboard = () => {
           higherBottom={isGnosis}
           setDashboardReload={() => setDashboardReload(true)}
         />
-        {showGnosisAlert && <GnosisWrongChainAlertBar />}
       </div>
       <Modal
         visible={firstNotice && updateContent}

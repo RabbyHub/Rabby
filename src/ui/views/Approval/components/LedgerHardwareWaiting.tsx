@@ -41,7 +41,13 @@ interface ApprovalParams {
   };
 }
 
-const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
+const LedgerHardwareWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const {
     setTitle,
     setVisible,
@@ -87,7 +93,6 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       return;
     }
     if (sessionStatus === 'DISCONNECTED') return;
-    const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.resendSign();
     if (showToast) {
@@ -102,9 +107,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   // };
 
   const init = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
 
     const isSignText = params.isGnosis

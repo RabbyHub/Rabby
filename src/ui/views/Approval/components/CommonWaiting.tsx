@@ -41,7 +41,13 @@ interface ApprovalParams {
   };
 }
 
-export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
+export const CommonWaiting = ({
+  params,
+  account: $account,
+}: {
+  params: ApprovalParams;
+  account: Account;
+}) => {
   const wallet = useWallet();
   const {
     setTitle,
@@ -79,7 +85,6 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
     }
-    const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.resendSign();
     message.success(t('page.signFooterBar.ledger.resent'));
@@ -106,9 +111,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [brandName]);
 
   const init = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
 
     const isSignText = params.isGnosis
@@ -212,9 +215,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
 
   React.useEffect(() => {
     (async () => {
-      const account = params.isGnosis
-        ? params.account!
-        : (await wallet.syncGetCurrentAccount())!;
+      const account = params.isGnosis ? params.account! : $account;
       setTitle(
         <div className="flex justify-center items-center">
           <img src={brandContent?.icon} className="w-20 mr-8" />
