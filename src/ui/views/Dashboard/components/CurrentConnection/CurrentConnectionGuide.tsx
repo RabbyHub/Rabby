@@ -105,6 +105,9 @@ export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
                 'flex items-center gap-[3px]'
               )}
               style={position?.popoverPosition}
+              onClick={() => {
+                onClose?.();
+              }}
             >
               <img
                 src={IconLightBulb}
@@ -117,9 +120,6 @@ export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
               <Button
                 className="ml-auto h-[28px] py-0 shadow-none"
                 type="primary"
-                onClick={() => {
-                  onClose?.();
-                }}
               >
                 {t('page.dashboard.recentConnectionGuide.button')}
               </Button>
