@@ -1105,7 +1105,10 @@
       "enterThePassphrase": "Enter the Passphrase",
       "enterPassphraseTitle": "Enter Passphrase to Sign",
       "passphraseError": "Passphrase invalid",
-      "addNewAddress": "Add New Address"
+      "addNewAddress": "Add New Address",
+      "CurrentDappAddress": {
+        "desc": "Switch Dapp Address"
+      }
     },
     "dashboard": {
       "home": {

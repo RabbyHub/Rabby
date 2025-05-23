@@ -419,8 +419,6 @@ export default (request: ProviderRequest) => {
     }
   }
 
-  console.log('account', account);
-
   const ctx: any = {
     request: { ...request, account, requestedApproval: false },
   };
