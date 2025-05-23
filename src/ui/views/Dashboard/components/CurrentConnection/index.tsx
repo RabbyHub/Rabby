@@ -133,7 +133,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   const {
     firstNotice,
-    isNewUser,
     updateContent,
     hasShowedGuide,
     version,
@@ -144,10 +143,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   const dispatch = useRabbyDispatch();
 
   const isShowGuide =
-    !isNewUser &&
-    !(firstNotice && updateContent) &&
-    site?.isConnected &&
-    !hasShowedGuide;
+    !(firstNotice && updateContent) && site?.isConnected && !hasShowedGuide;
 
   const { data: gnosisNetworks, loading } = useGnosisNetworks({
     address:
