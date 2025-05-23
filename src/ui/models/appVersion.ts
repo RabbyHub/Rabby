@@ -3,8 +3,6 @@ import { RootModel } from '.';
 
 import { getUpdateContent } from 'changeLogs/index';
 
-console.log('r', process.env.release);
-
 type IState = {
   firstNotice: boolean;
   updateContent: string;
