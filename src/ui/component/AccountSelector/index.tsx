@@ -1,4 +1,4 @@
-import { ReactComponent as ArrowDownSVG } from '@/ui/assets/dashboard/arrow-down.svg';
+import { ReactComponent as RcArrowDownSVG } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import React, { CSSProperties, forwardRef, ReactNode, useState } from 'react';
 import { useAlias, useWallet } from 'ui/utils';
 
@@ -72,7 +72,9 @@ export const AccountSelector = forwardRef<HTMLDivElement, Props>(
               Select Address
             </div>
           )}
-          <ArrowDownSVG className={clsx('ml-[2px] w-[14px] h-[14px]')} />
+          <RcArrowDownSVG
+            className={clsx('ml-[2px] w-[14px] h-[14px] text-r-neutral-foot')}
+          />
         </div>
         <AccountSelectorModal
           title={title}
