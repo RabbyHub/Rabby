@@ -98,47 +98,45 @@ export const CurrentConnectionGuide = memo(({ children, onClose }: Props) => {
               onClose?.();
             }}
           ></div>
-          <div className="absolute top-0 left-0 w-full h-full z-10">
-            <div
-              className={clsx(
-                'bg-r-blue-light1 rounded-[8px] py-[16px] px-[10px]',
-                'flex items-center gap-[3px]'
-              )}
-              style={position?.popoverPosition}
+          <div
+            className={clsx(
+              'bg-r-blue-light1 rounded-[8px] py-[16px] px-[10px]',
+              'flex items-center gap-[3px]'
+            )}
+            style={position?.popoverPosition}
+          >
+            <img
+              src={IconLightBulb}
+              className="w-[23px] h-[23px]"
+              alt="light bulb icon"
+            />
+            <div className="text-r-neutral-title-1 text-[12px] leading-[17px] font-medium">
+              {t('page.dashboard.recentConnectionGuide.title')}
+            </div>
+            <Button
+              className="ml-auto h-[28px] py-0 shadow-none"
+              type="primary"
               onClick={() => {
                 onClose?.();
               }}
             >
-              <img
-                src={IconLightBulb}
-                className="w-[23px] h-[23px]"
-                alt="light bulb icon"
-              />
-              <div className="text-r-neutral-title-1 text-[12px] leading-[17px] font-medium">
-                {t('page.dashboard.recentConnectionGuide.title')}
-              </div>
-              <Button
-                className="ml-auto h-[28px] py-0 shadow-none"
-                type="primary"
-              >
-                {t('page.dashboard.recentConnectionGuide.button')}
-              </Button>
-              <div
-                className="text-r-blue-light-1 absolute bottom-[-14px]"
-                style={position.trianglePosition}
-              >
-                <RcIconTriangle className="w-[20px] h-[20px]" />
-              </div>
-            </div>
+              {t('page.dashboard.recentConnectionGuide.button')}
+            </Button>
             <div
-              className="z-10 bg-r-neutral-card2"
-              style={position?.triggerWarperPosition}
-              onClick={() => {
-                onClose?.();
-              }}
+              className="text-r-blue-light-1 absolute bottom-[-14px]"
+              style={position.trianglePosition}
             >
-              <div className="pointer-events-none">{children}</div>
+              <RcIconTriangle className="w-[20px] h-[20px]" />
             </div>
+          </div>
+          <div
+            className="z-10 bg-r-neutral-card2"
+            style={position?.triggerWarperPosition}
+            onClick={() => {
+              onClose?.();
+            }}
+          >
+            <div className="pointer-events-none">{children}</div>
           </div>
         </div>,
         document.body
