@@ -46,6 +46,10 @@ const RowWrapper = styled.div`
   align-items: flex-start;
   flex: 1;
 
+  &:has(.security-level-tag) {
+    padding-right: 8px;
+  }
+
   &.wrap {
     white-space: normal;
     text-align: left;
