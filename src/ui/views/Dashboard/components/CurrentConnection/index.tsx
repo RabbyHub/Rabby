@@ -106,7 +106,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   }, []);
 
   const chain = useMemo(() => {
-    if (!site || site.isMetamaskMode || !site.isConnected) {
+    if (!site || !site.isConnected) {
       return null;
     }
     return findChain({
@@ -134,6 +134,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     firstNotice,
     updateContent,
     hasShowedGuide,
+    hasShowedChainGuide,
     version,
   } = useRabbySelector((s) => ({
     ...s.appVersion,
@@ -143,6 +144,12 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   const isShowGuide =
     !(firstNotice && updateContent) && site?.isConnected && !hasShowedGuide;
+
+  const isShowChainGuide =
+    !(firstNotice && updateContent) &&
+    site?.isConnected &&
+    hasShowedGuide &&
+    !hasShowedChainGuide;
 
   const { data: gnosisNetworks, loading } = useGnosisNetworks({
     address:
@@ -185,47 +192,94 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
       >
         {site ? (
           <div className={clsx('site mr-[18px]')}>
-            <div
-              className={clsx(
-                'site-icon-container',
-                site?.isConnected && !site?.isMetamaskMode ? 'is-support' : ''
-              )}
-              onClick={handleClickChain}
-            >
-              <div className="relative">
-                <FallbackSiteLogo
-                  url={site.icon}
-                  origin={site.origin}
-                  width="28px"
-                  className="site-icon"
-                ></FallbackSiteLogo>
-                {site.isMetamaskMode ? (
-                  <TooltipWithMagnetArrow
-                    placement="top"
-                    overlayClassName={clsx('rectangle max-w-[360px] w-[360px]')}
-                    align={{
-                      offset: [0, 4],
-                    }}
-                    title={t(
-                      'page.dashboard.recentConnection.metamaskModeTooltipNew'
-                    )}
-                  >
-                    <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
-                      <img src={IconMetamaskMode} alt="metamask mode"></img>
+            {isShowChainGuide ? (
+              <CurrentConnectionGuide
+                tips={t('page.dashboard.recentConnectionChainGuide.title')}
+                onClose={() => {
+                  dispatch.appVersion.closeChainGuide();
+                }}
+              >
+                <div className="relative">
+                  <FallbackSiteLogo
+                    url={site.icon}
+                    origin={site.origin}
+                    width="28px"
+                    className="site-icon"
+                  ></FallbackSiteLogo>
+                  {site.isMetamaskMode ? (
+                    <TooltipWithMagnetArrow
+                      placement="top"
+                      overlayClassName={clsx(
+                        'rectangle max-w-[360px] w-[360px]'
+                      )}
+                      align={{
+                        offset: [0, 4],
+                      }}
+                      title={t(
+                        'page.dashboard.recentConnection.metamaskModeTooltipNew'
+                      )}
+                    >
+                      <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                        <img src={IconMetamaskMode} alt="metamask mode"></img>
+                      </div>
+                    </TooltipWithMagnetArrow>
+                  ) : null}
+                  {chain ? (
+                    <div className="absolute bottom-[-3px] right-[-3px]">
+                      <img
+                        src={chain.logo}
+                        alt="chain logo"
+                        className="rounded-full w-[16px] h-[16px] border-[#fff] border-[0.5px] border-solid"
+                      />
                     </div>
-                  </TooltipWithMagnetArrow>
-                ) : null}
-                {chain ? (
-                  <div className="absolute bottom-[-3px] right-[-3px]">
-                    <img
-                      src={chain.logo}
-                      alt="chain logo"
-                      className="rounded-full w-[16px] h-[16px] border-[#fff] border-[0.5px] border-solid"
-                    />
-                  </div>
-                ) : null}
+                  ) : null}
+                </div>
+              </CurrentConnectionGuide>
+            ) : (
+              <div
+                className={clsx(
+                  'site-icon-container',
+                  site?.isConnected ? 'is-support' : ''
+                )}
+                onClick={handleClickChain}
+              >
+                <div className="relative">
+                  <FallbackSiteLogo
+                    url={site.icon}
+                    origin={site.origin}
+                    width="28px"
+                    className="site-icon"
+                  ></FallbackSiteLogo>
+                  {site.isMetamaskMode ? (
+                    <TooltipWithMagnetArrow
+                      placement="top"
+                      overlayClassName={clsx(
+                        'rectangle max-w-[360px] w-[360px]'
+                      )}
+                      align={{
+                        offset: [0, 4],
+                      }}
+                      title={t(
+                        'page.dashboard.recentConnection.metamaskModeTooltipNew'
+                      )}
+                    >
+                      <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                        <img src={IconMetamaskMode} alt="metamask mode"></img>
+                      </div>
+                    </TooltipWithMagnetArrow>
+                  ) : null}
+                  {chain ? (
+                    <div className="absolute bottom-[-3px] right-[-3px]">
+                      <img
+                        src={chain.logo}
+                        alt="chain logo"
+                        className="rounded-full w-[16px] h-[16px] border-[#fff] border-[0.5px] border-solid"
+                      />
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            </div>
+            )}
             <div className="site-content">
               <div className="site-name" title={site?.origin}>
                 {site?.origin?.replace(/^https?:\/\//, '')}

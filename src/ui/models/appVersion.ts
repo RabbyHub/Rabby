@@ -9,6 +9,7 @@ type IState = {
   version: string;
   isNewUser?: boolean;
   hasShowedGuide?: boolean;
+  hasShowedChainGuide?: boolean;
 };
 
 /**
@@ -22,6 +23,7 @@ export const appVersion = createModel<RootModel>()({
     version: '',
     isNewUser: true,
     hasShowedGuide: true,
+    hasShowedChainGuide: true,
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -40,6 +42,9 @@ export const appVersion = createModel<RootModel>()({
       const isNewUser = await store.app.wallet.getIsNewUser();
       const hasShowedGuide = await store.app.wallet.getPreference(
         'hasShowedGuide'
+      );
+      const hasShowedChainGuide = await store.app.wallet.getPreference(
+        'hasShowedChainGuide'
       );
       let updateContent = await getUpdateContent();
 
@@ -68,6 +73,7 @@ export const appVersion = createModel<RootModel>()({
       dispatch.appVersion.setField({
         isNewUser,
         hasShowedGuide,
+        hasShowedChainGuide,
         version,
         updateContent,
         ...(firstOpen &&
@@ -84,6 +90,11 @@ export const appVersion = createModel<RootModel>()({
     async closeGuide(_: void, store) {
       store.app.wallet.updateHasShowedGuide();
       dispatch.appVersion.setField({ hasShowedGuide: true });
+    },
+
+    async closeChainGuide(_: void, store) {
+      store.app.wallet.updateHasShowedChainGuide();
+      dispatch.appVersion.setField({ hasShowedChainGuide: true });
     },
   }),
 });
