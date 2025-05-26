@@ -1105,7 +1105,10 @@
       "delete-title_other": "Xóa {{count}} địa chỉ {{brand}}",
       "seed-phrase-delete-title": "Xóa cụm từ hạt giống?",
       "delete-all-addresses-but-keep-the-seed-phrase": "Xóa tất cả các địa chỉ, nhưng giữ lại cụm từ khôi phục",
-      "delete-seed-phrase": "Xóa cụm từ hạt giống"
+      "delete-seed-phrase": "Xóa cụm từ hạt giống",
+      "CurrentDappAddress": {
+        "desc": "Đổi địa chỉ Dapp\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1462,6 +1465,10 @@
       "offlineChain": {
         "chain": "{{chain}} sẽ sớm không được tích hợp.",
         "tips": "{{chain}} Chain sẽ không được tích hợp vào ngày {{date}}. Tài sản của bạn sẽ không bị ảnh hưởng nhưng sẽ không được bao gồm trong tổng số dư của bạn. Để truy cập vào chúng, bạn có thể thêm nó như một mạng tùy chỉnh trong “More”."
+      },
+      "recentConnectionGuide": {
+        "title": "Thay đổi địa chỉ để kết nối DApp tại đây\n",
+        "button": "Rõ ràng\n"
       }
     },
     "nft": {
@@ -1907,7 +1914,8 @@
       "popularLevelLow": "Thấp",
       "trusted": "Đáng tin cậy",
       "markRuleText": "Dấu của tôi",
-      "removedFromAll": "Đã loại bỏ khỏi tất cả danh sách"
+      "removedFromAll": "Đã loại bỏ khỏi tất cả danh sách",
+      "connectAddress": "Kết nối địa chỉ\n"
     },
     "addressDetail": {
       "backup-private-key": "Sao lưu Private Key",
@@ -2820,7 +2828,14 @@
       "noDapp": "Không có Dapp nào khả dụng",
       "viewDappOptions": "Xem tùy chọn Dapp",
       "thirdPartyDappToProceed": "Vui lòng sử dụng một Dapp bên thứ ba để tiếp tục.",
-      "help": "Vui lòng liên hệ với đội ngũ chính thức của chuỗi này để được hỗ trợ"
+      "help": "Vui lòng liên hệ với đội ngũ chính thức của chuỗi này để được hỗ trợ",
+      "noDapps": "Không có Dapp nào khả dụng trên chuỗi này\n",
+      "bridgeOnDapp": "Trên Dapp\n",
+      "swapOnDapp": "Trên Dapp trao đổi\n"
+    },
+    "AccountSelectorModal": {
+      "searchPlaceholder": "Tìm địa chỉ\n",
+      "title": "Chọn địa chỉ\n"
     }
   },
   "global": {

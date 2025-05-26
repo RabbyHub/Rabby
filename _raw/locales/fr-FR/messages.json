@@ -208,7 +208,14 @@
       "noQuotesForChain": "Aucune cotation disponible pour cette chaîne pour l'instant",
       "thirdPartyDappToProceed": "Veuillez utiliser une Dapp tierce pour continuer.",
       "selectADapp": "Sélectionnez un Dapp",
-      "help": "Veuillez contacter l'équipe officielle de cette chaîne pour obtenir de l'aide."
+      "help": "Veuillez contacter l'équipe officielle de cette chaîne pour obtenir de l'aide.",
+      "bridgeOnDapp": "Pont sur Dapp",
+      "noDapps": "Aucune Dapp disponible sur cette chaîne",
+      "swapOnDapp": "Échange sur Dapp\n"
+    },
+    "AccountSelectorModal": {
+      "searchPlaceholder": "Rechercher l'adresse",
+      "title": "Sélectionner l'adresse"
     }
   },
   "constant": {
@@ -577,7 +584,8 @@
         "title": "Sélectionnez un portefeuille à connecter",
         "desc": "Choisissez parmi les portefeuilles que vous avez installés"
       },
-      "otherWalletBtn": "Connect with Another Wallet"
+      "otherWalletBtn": "Connect with Another Wallet",
+      "connectAddress": "Connect Address"
     },
     "createPassword": {
       "agree": "J'ai lu et j'accepte les<1/> <2>Conditions d'utilisation</2>",
@@ -967,6 +975,10 @@
       "offlineChain": {
         "chain": "{{chain}} sera bientôt non intégré.",
         "tips": "La chaîne {{chain}} ne sera pas intégrée le {{date}}. Vos actifs ne seront pas affectés mais ne seront pas inclus dans votre solde total. Pour y accéder, vous pouvez l'ajouter comme réseau personnalisé dans \"More\"."
+      },
+      "recentConnectionGuide": {
+        "title": "Ici, changez d'adresse pour la connexion Dapp.",
+        "button": "Compris"
       }
     },
     "ethSign": {
@@ -1055,7 +1067,10 @@
       "sort-by-address-note": "Trier par note d'adresse",
       "sort-by-address-type": "Trier par type d'adresse",
       "sort-by-balance": "Trier par solde",
-      "addNewAddress": "Ajouter une nouvelle adresse"
+      "addNewAddress": "Ajouter une nouvelle adresse",
+      "CurrentDappAddress": {
+        "desc": "Changer l'adresse Dapp"
+      }
     },
     "newAddress": {
       "addContacts": {

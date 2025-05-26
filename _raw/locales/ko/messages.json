@@ -1105,7 +1105,10 @@
       "seed-phrase": "시드 문구",
       "delete-seed-phrase-title_other": "시드 문구와 {{count}} 개의 주소를 삭제합니다.",
       "backup-seed-phrase": "백업 시드 구문",
-      "cancel": "취소"
+      "cancel": "취소",
+      "CurrentDappAddress": {
+        "desc": "Dapp 주소 전환\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1462,6 +1465,10 @@
       "offlineChain": {
         "chain": "{{chain}}는 곧 통합되지 않을 것입니다.",
         "tips": "{{chain}} 체인은 {{date}}에 통합되지 않습니다. 귀하의 자산에는 영향이 없지만 총 잔액에 포함되지 않을 것입니다. 자산에 접근하려면 \"더보기\"에서 사용자 지정 네트워크로 추가할 수 있습니다."
+      },
+      "recentConnectionGuide": {
+        "title": "여기서 Dapp 연결을 위한 주소를 전환하세요\n",
+        "button": "확인했습니다\n"
       }
     },
     "nft": {
@@ -1907,7 +1914,8 @@
       "onYourWhitelist": "당신의 화이트리스트에",
       "addedToWhitelist": "화이트리스트에 추가됨",
       "removedFromAll": "모든 목록에서 제거됨",
-      "title": "Dapp에 연결하기"
+      "title": "Dapp에 연결하기",
+      "connectAddress": "연결 주소\n"
     },
     "addressDetail": {
       "address-detail": "주소 세부정보",
@@ -2820,7 +2828,14 @@
       "selectADapp": "Dapp를 선택하세요",
       "help": "이 체인의 공식 팀에 지원을 요청하세요.",
       "chainNotSupported": "이 체인에서는 지원되지 않습니다",
-      "noQuotesForChain": "이 체인에 대한 견적이 아직 없습니다."
+      "noQuotesForChain": "이 체인에 대한 견적이 아직 없습니다.",
+      "swapOnDapp": "Dapp에서 스왑\n",
+      "bridgeOnDapp": "Dapp 브리지\n",
+      "noDapps": "이 체인에는 사용 가능한 Dapp이 없습니다.\n"
+    },
+    "AccountSelectorModal": {
+      "title": "주소 선택\n",
+      "searchPlaceholder": "주소 검색\n"
     }
   },
   "global": {

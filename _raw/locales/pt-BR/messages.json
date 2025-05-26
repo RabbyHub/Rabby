@@ -1033,7 +1033,10 @@
       "sort-by-address-type": "Classificar por tipo de endereço",
       "enterPassphraseTitle": "Digite a frase secreta para assinar",
       "passphraseError": "Senha inválida",
-      "enterThePassphrase": "Digite a Passphrase"
+      "enterThePassphrase": "Digite a Passphrase",
+      "CurrentDappAddress": {
+        "desc": "Alterar o endereço do DApp\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1393,6 +1396,10 @@
       "offlineChain": {
         "chain": "{{chain}} em breve não será integrado.",
         "tips": "A cadeia {{chain}} não será integrada em {{date}}. Seus ativos não serão afetados, mas não serão incluídos no seu saldo total. Para acessá-los, você pode adicioná-la como uma rede personalizada em \"Mais\"."
+      },
+      "recentConnectionGuide": {
+        "title": "Alterar o endereço para conexão com o Dapp aqui\n",
+        "button": "Entendido\n"
       }
     },
     "nft": {
@@ -1838,7 +1845,8 @@
         "desc": "Escolha entre as carteiras que você instalou",
         "title": "Selecione uma Carteira para Conectar"
       },
-      "otherWalletBtn": "Conectar com Outra Wallet"
+      "otherWalletBtn": "Conectar com Outra Wallet",
+      "connectAddress": "Conectar endereço\n"
     },
     "addressDetail": {
       "add-to-whitelist": "Adicionar à Lista Branca",
@@ -2824,7 +2832,14 @@
       "noQuotesForChain": "Ainda não há cotações disponíveis para esta cadeia.",
       "help": "Por favor, entre em contato com a equipe oficial desta cadeia para suporte.",
       "viewDappOptions": "Ver Opções de Dapp",
-      "noDapp": "Nenhum Dapp disponível"
+      "noDapp": "Nenhum Dapp disponível",
+      "bridgeOnDapp": "Ponte em Dapp\n",
+      "noDapps": "Nenhum aplicativo descentralizado disponível nesta cadeia.\n",
+      "swapOnDapp": "Troca em Dapp\n"
+    },
+    "AccountSelectorModal": {
+      "searchPlaceholder": "Pesquisar endereço\n",
+      "title": "Selecionar endereço\n"
     }
   },
   "global": {

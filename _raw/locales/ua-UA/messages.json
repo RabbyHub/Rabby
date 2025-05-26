@@ -1036,7 +1036,10 @@
       "enterPassphraseTitle": "Введіть парольну фразу, щоб підписати",
       "addNewAddress": "Додати нову адресу",
       "sort-by-address-note": "Сортувати за адресною приміткою",
-      "sort-by-address-type": "Сортувати за типом адреси"
+      "sort-by-address-type": "Сортувати за типом адреси",
+      "CurrentDappAddress": {
+        "desc": "Змінити адресу Dapp\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1397,6 +1400,10 @@
       "offlineChain": {
         "chain": "{{chain}} згодом не буде інтегровано.",
         "tips": "{{chain}} Chain не буде інтегровано на {{date}}. Ваші активи не будуть порушені, але не будуть включені в ваш загальний баланс. Щоб отримати до них доступ, ви можете додати його як користувацьку мережу в \"Більше\"."
+      },
+      "recentConnectionGuide": {
+        "title": "Тут змініть адресу для підключення до Dapp\n",
+        "button": "Отримано\n"
       }
     },
     "nft": {
@@ -1850,7 +1857,8 @@
         "desc": "Виберіть з гаманців, які ви встановили",
         "title": "Виберіть гаманець для підключення"
       },
-      "otherWalletBtn": "Підключитися до іншого гаманця"
+      "otherWalletBtn": "Підключитися до іншого гаманця",
+      "connectAddress": "Підключити адресу\n"
     },
     "addressDetail": {
       "add-to-whitelist": "Додати до білого списку",
@@ -2835,7 +2843,14 @@
       "thirdPartyDappToProceed": "Будь ласка, використайте сторонній Dapp для продовження.",
       "chainNotSupported": "Не підтримується в цій мережі",
       "viewDappOptions": "Переглянути параметри Dapp",
-      "noQuotesForChain": "Цієї ланцюга поки що немає доступних котирувань"
+      "noQuotesForChain": "Цієї ланцюга поки що немає доступних котирувань",
+      "swapOnDapp": "На Dapp міняти\n",
+      "bridgeOnDapp": "Міст на Dapp\n",
+      "noDapps": "На цій ланцюжку немає доступних додатків Dapp\n"
+    },
+    "AccountSelectorModal": {
+      "title": "Виберіть адресу\n",
+      "searchPlaceholder": "Пошук адреси\n"
     }
   },
   "global": {
