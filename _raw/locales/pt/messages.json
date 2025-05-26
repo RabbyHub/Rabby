@@ -1105,7 +1105,10 @@
       "enterPassphraseTitle": "Digite a Senha para Assinar",
       "hd-path": "HD caminho:",
       "seed-phrase": "Frase Semente",
-      "sort-by-address-type": "Classificar por tipo de endereço"
+      "sort-by-address-type": "Classificar por tipo de endereço",
+      "CurrentDappAddress": {
+        "desc": "Alterar o endereço do Dapp\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1462,6 +1465,10 @@
       "offlineChain": {
         "chain": "{{chain}} em breve não será integrado.",
         "tips": "A cadeia {{chain}} não será integrada em {{date}}. Seus ativos não serão afetados, mas não estarão incluídos no seu saldo total. Para acessá-los, você pode adicioná-los como uma rede personalizada em \"Mais\"."
+      },
+      "recentConnectionGuide": {
+        "button": "Entendido\n",
+        "title": "Alterar o endereço para a ligação à aplicação aqui\n"
       }
     },
     "nft": {
@@ -1907,7 +1914,8 @@
       "popularLevelMedium": "Média",
       "markAsTrustToast": "Marcar como \"Confiável\"",
       "popularLevelVeryLow": "Muito Baixo",
-      "markRemovedToast": "Marca removida"
+      "markRemovedToast": "Marca removida",
+      "connectAddress": "Ligar Porta\n"
     },
     "addressDetail": {
       "add-to-whitelist": "Adicionar à Lista Branca",
@@ -2820,7 +2828,14 @@
       "help": "Por favor, contate a equipe oficial desta cadeia para suporte.",
       "thirdPartyDappToProceed": "Por favor, utilize um Dapp de terceiros para prosseguir.",
       "selectADapp": "Selecione um Dapp",
-      "chainNotSupported": "Não suportado nesta cadeia"
+      "chainNotSupported": "Não suportado nesta cadeia",
+      "swapOnDapp": "Trocas em aplicativos descentralizados\n",
+      "bridgeOnDapp": "Ponte no Dapp\n",
+      "noDapps": "Nenhum aplicativo descentralizado disponível nesta cadeia.\n"
+    },
+    "AccountSelectorModal": {
+      "title": "Selecionar endereço\n",
+      "searchPlaceholder": "Pesquisar endereço\n"
     }
   },
   "global": {

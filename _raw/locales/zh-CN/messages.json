@@ -420,6 +420,10 @@
       "offlineChain": {
         "chain": "{{chain}} 将很快不再被集成。",
         "tips": "{{chain}}链将不会在{{date}}集成。您的资产不会受到影响，但不会包含在您的总余额中。如需访问，您可以在“更多”中将其添加为自定义网络。"
+      },
+      "recentConnectionGuide": {
+        "button": "明白了\n",
+        "title": "此处切换用于 Dapp 连接的地址\n"
       }
     },
     "chainList": {
@@ -1037,7 +1041,8 @@
         "title": "选择一个钱包进行连接",
         "desc": "从您已安装的钱包中选择"
       },
-      "otherWalletBtn": "连接其他钱包"
+      "otherWalletBtn": "连接其他钱包",
+      "connectAddress": "连接地址\n"
     },
     "gasTopUp": {
       "Amount": "数量",
@@ -1103,7 +1108,10 @@
       "enterThePassphrase": "输入密码",
       "enterPassphraseTitle": "输入密码以签名",
       "passphraseError": "密码无效",
-      "addNewAddress": "添加新地址"
+      "addNewAddress": "添加新地址",
+      "CurrentDappAddress": {
+        "desc": "切换 Dapp 地址\n"
+      }
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -2861,7 +2869,14 @@
       "noQuotesForChain": "当前该链尚无可用报价",
       "selectADapp": "选择一个 Dapp",
       "chainNotSupported": "在此链上不支持",
-      "thirdPartyDappToProceed": "请使用第三方 Dapp 继续操作"
+      "thirdPartyDappToProceed": "请使用第三方 Dapp 继续操作",
+      "bridgeOnDapp": "桥接 Dapp\n",
+      "noDapps": "该链上无可用 Dapp\n",
+      "swapOnDapp": "在 Dapp 上兑换\n"
+    },
+    "AccountSelectorModal": {
+      "title": "选择地址\n",
+      "searchPlaceholder": "搜索地址\n"
     }
   },
   "background": {

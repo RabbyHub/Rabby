@@ -198,10 +198,16 @@ interface SignTxProps<TData extends any[] = any[]> {
     $ctx?: any;
   };
   origin?: string;
+  account: Account;
 }
 
-export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
-  const { isGnosis, account } = params;
+export const SignTestnetTx = ({
+  params,
+  origin,
+  account: $account,
+}: SignTxProps) => {
+  const { isGnosis } = params;
+  const currentAccount = params.isGnosis ? params.account! : $account;
 
   const {
     data = '0x',
@@ -275,7 +281,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
   const { data: recommendNonce, runAsync: runGetNonce } = useRequest(
     async () => {
-      const currentAccount = (await wallet.getCurrentAccount())!;
       return wallet.getCustomTestnetNonce({
         address: currentAccount.address,
         chainId: chainId,
@@ -289,7 +294,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   const { data: gasUsed, runAsync: runGetGasUsed } = useRequest(
     async () => {
       try {
-        const currentAccount = (await wallet.getCurrentAccount())!;
         let estimateGas = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
           chainId: chainId,
@@ -374,7 +378,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
   const init = async () => {
     try {
-      const currentAccount = (await wallet.getCurrentAccount())!;
       setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
       setIsHardware(
         !!Object.values(HARDWARE_KEYRING_TYPES).find(
@@ -524,8 +527,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   const { data: explainResult, runAsync: explainTx } = useRequest(
     async ({ gasUsed, tx }: { gasUsed?: string; tx: Tx }) => {
       try {
-        const currentAccount =
-          isGnosis && account ? account : (await wallet.getCurrentAccount())!;
         if (!chain) {
           return;
         }
@@ -621,8 +622,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
   const checkCanProcess = async () => {
     const session = params.session;
-    const currentAccount =
-      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     const site = await wallet.getConnectedSite(session.origin);
 
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
@@ -734,8 +733,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       return;
     }
 
-    const currentAccount = (await wallet.getCurrentAccount())!;
-
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
     }
@@ -779,6 +776,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         nonce: realNonce || tx.nonce,
         gas: gasLimit,
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
+        $account: currentAccount,
         type: currentAccount.type,
         address: currentAccount.address,
         // traceId: txDetail?.trace_id,
@@ -854,6 +852,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     <>
       <div className="approval-tx overflow-x-hidden">
         <TestnetActions
+          account={currentAccount}
           data={explainResult?.actionData || {}}
           requireData={explainResult?.requiredData || null}
           isReady={isReady}
@@ -970,6 +969,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           !canProcess ||
           !!checkErrors.find((item) => item.level === 'forbidden')
         }
+        account={currentAccount}
       />
     </>
   );

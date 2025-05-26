@@ -1105,7 +1105,10 @@
       "sort-by-balance": "Urutkan berdasarkan saldo",
       "enterThePassphrase": "Masukkan Passphrase",
       "sort-address": "Urut Alamat",
-      "passphraseError": "Passphrase tidak valid"
+      "passphraseError": "Passphrase tidak valid",
+      "CurrentDappAddress": {
+        "desc": "Ganti Alamat Dapp"
+      }
     },
     "dashboard": {
       "home": {
@@ -1462,6 +1465,10 @@
       "offlineChain": {
         "chain": "{{chain}} segera tidak akan terintegrasi.",
         "tips": "{{chain}} Chain tidak akan diintegrasikan pada {{date}}. Aset Anda tidak akan terpengaruh tetapi tidak akan termasuk dalam total saldo Anda. Untuk mengaksesnya, Anda dapat menambahkannya sebagai jaringan kustom di \"More\"."
+      },
+      "recentConnectionGuide": {
+        "button": "Dapatkan",
+        "title": "Ganti alamat untuk koneksi Dapp di sini"
       }
     },
     "nft": {
@@ -1907,7 +1914,8 @@
       "onYourWhitelist": "Di whitelist Anda",
       "ignoreAll": "Abaikan semua",
       "otherWalletBtn": "Sambungkan dengan Dompet Lain",
-      "manageWhiteBlackList": "Kelola whitelist/blacklist"
+      "manageWhiteBlackList": "Kelola whitelist/blacklist",
+      "connectAddress": "Sambungkan Alamat"
     },
     "addressDetail": {
       "manage-seed-phrase": "Kelola Seed Phrase",
@@ -2820,7 +2828,14 @@
       "noQuotesForChain": "Belum ada kutipan tersedia untuk rantai ini.",
       "thirdPartyDappToProceed": "Silakan gunakan Dapp pihak ketiga untuk melanjutkan",
       "chainNotSupported": "Tidak didukung di rantai ini",
-      "selectADapp": "Pilih Dapp"
+      "selectADapp": "Pilih Dapp",
+      "bridgeOnDapp": "Bridge di Dapp",
+      "noDapps": "Tidak ada Dapp yang tersedia di rantai ini",
+      "swapOnDapp": "Tukar di Dapp\n"
+    },
+    "AccountSelectorModal": {
+      "title": "Pilih alamat",
+      "searchPlaceholder": "Cari alamat"
     }
   },
   "global": {

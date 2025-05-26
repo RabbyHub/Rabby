@@ -6,6 +6,7 @@ import { useAccount } from '@/ui/store-hooks';
 import { useWallet } from '@/ui/utils';
 import { NoActionBody } from './NoActionBody';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { Account } from '@/background/service/preference';
 
 const NoActionAlertStyled = styled.div`
   display: flex;
@@ -38,13 +39,16 @@ type SupportSelector = {
 
 interface Props {
   data: SupportOrigin | SupportSelector;
+  account: Account;
 }
 
-export const NoActionAlert: React.FC<Props> = ({ data }) => {
+export const NoActionAlert: React.FC<Props> = ({
+  data,
+  account: currentAccount,
+}) => {
   const { t } = useTranslation();
   const [isRequested, setIsRequested] = React.useState<boolean>(false);
   const wallet = useWallet();
-  const [currentAccount] = useAccount();
   const [requestedCount, setRequestedCount] = React.useState<number>(1);
   const [isRequesting, setIsRequesting] = React.useState<boolean>(false);
 

@@ -24,6 +24,7 @@ import { Col, Row } from './components/Table';
 import { TransactionActionList } from './components/TransactionActionList';
 import { getActionTypeText } from './utils';
 import { BalanceChangeWrapper } from '../TxComponents/BalanceChangeWrapper';
+import { Account } from '@/background/service/preference';
 
 const Actions = ({
   data,
@@ -36,6 +37,7 @@ const Actions = ({
   isSpeedUp,
   origin,
   originLogo,
+  account,
 }: {
   data: ParsedTransactionActionData;
   requireData: ActionRequireData;
@@ -47,6 +49,7 @@ const Actions = ({
   isSpeedUp: boolean;
   origin?: string;
   originLogo?: string;
+  account: Account;
 }) => {
   const actionName = useMemo(() => {
     return getActionTypeText(data);
@@ -120,6 +123,7 @@ const Actions = ({
                   overlayClassName="rectangle w-[max-content] decode-tooltip"
                   title={
                     <NoActionAlert
+                      account={account}
                       data={{
                         chainId: chain.serverId,
                         contractAddress:

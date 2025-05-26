@@ -1105,7 +1105,10 @@
       "enterThePassphrase": "Enter the Passphrase",
       "enterPassphraseTitle": "Enter Passphrase to Sign",
       "passphraseError": "Passphrase invalid",
-      "addNewAddress": "Add New Address"
+      "addNewAddress": "Add New Address",
+      "CurrentDappAddress": {
+        "desc": "Switch Dapp Address"
+      }
     },
     "dashboard": {
       "home": {
@@ -1462,6 +1465,10 @@
       "offlineChain": {
         "chain": "{{chain}} will soon not be integrated.",
         "tips": "{{chain}} Chain will not be integrated on {{date}}. Your assets won’t be affected but won’t be included in your total balance. To access them, you may add it as a custom network in “More”."
+      },
+      "recentConnectionGuide": {
+        "title": "Switch address for Dapp connection here",
+        "button": "Got it"
       }
     },
     "nft": {
@@ -1907,7 +1914,8 @@
       "SelectWallet": {
         "title": "Select a Wallet to Connect",
         "desc": "Select from the wallets you have installed"
-      }
+      },
+      "connectAddress": "Connect Address"
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -2824,6 +2832,10 @@
       "title": "You're Leaving Rabby Wallet",
       "content": "You're about to visit an external website. Rabby Wallet is not responsible for the content or security of this site.",
       "button": "Continue"
+    },
+    "AccountSelectorModal": {
+      "title": "Select address",
+      "searchPlaceholder": "Search address"
     }
   },
   "global": {
