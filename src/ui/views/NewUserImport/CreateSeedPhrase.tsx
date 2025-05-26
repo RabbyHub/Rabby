@@ -2,12 +2,13 @@ import React from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { Card } from '@/ui/component/NewUserImport';
-import { ReactComponent as RcIconChecked } from '@/ui/assets/new-user-import/check.svg';
+import { ReactComponent as IconDotCC } from '@/ui/assets/new-user-import/dot-cc.svg';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from '@/ui/utils';
 import { useAsync } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
+import { ReactComponent as RcIconTips } from '@/ui/assets/new-user-import/tips.svg';
 
 export const CreateSeedPhrase = () => {
   const { t } = useTranslation();
@@ -50,25 +51,20 @@ export const CreateSeedPhrase = () => {
       }}
       title={t('page.newUserImport.createNewAddress.title')}
     >
-      <div className="mt-[36px] mb-20 text-[16px] font-medium text-r-neutral-title1 text-center">
+      <RcIconTips className="w-[54px] h-[49px] mx-auto mt-[24px]" />
+      <div className="mt-[22px] mb-[26px] text-[16px] font-medium text-center text-rabby-blue-main">
         {t('page.newUserImport.createNewAddress.desc')}
       </div>
-      <div className="flex flex-col gap-12">
+      <div className="flex flex-col gap-16">
         {tipList.map((item, index) => (
-          <div
-            key={item}
-            className={clsx(
-              'flex justify-start gap-8',
-              'px-12 py-16 h-[68px] rounded-[8px]',
-              'border-[0.5px] border-solid border-rabby-neutral-line',
-              'text-13 font-medium text-r-neutral-title1'
-            )}
-          >
-            <RcIconChecked
-              className="relative top-[2px] min-w-[16px] w-[16px] h-[16px]"
-              viewBox="0 0 16 16"
+          <div key={item} className={clsx('flex justify-start gap-8', 'px-12')}>
+            <IconDotCC
+              className="mt-6 text-rabby-blue-main flex-shrink-0"
+              viewBox="0 0 8 8"
             />
-            <span>{item}</span>
+            <span className="text-15 text-r-neutral-title1 font-normal">
+              {item}
+            </span>
           </div>
         ))}
       </div>
@@ -79,7 +75,7 @@ export const CreateSeedPhrase = () => {
         type="primary"
         className={clsx(
           'mt-[76px] h-[56px] shadow-none rounded-[8px]',
-          'text-[17px] font-medium'
+          'text-[17px] font-medium bg-r-blue-main'
         )}
       >
         {t('page.newUserImport.createNewAddress.showSeedPhrase')}
