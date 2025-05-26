@@ -163,7 +163,7 @@ const AddressItem = memo(
         )}
         <div
           className={clsx({
-            'bg-blue-light hover:bg-blue-light rounded-[6px] overflow-hidden': isCurrentAccount,
+            'bg-blue-light hover:bg-blue-light rounded-[8px] overflow-hidden': isCurrentAccount,
           })}
         >
           <div
