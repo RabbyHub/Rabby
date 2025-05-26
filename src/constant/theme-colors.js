@@ -2,6 +2,7 @@ const themeColors = {
   light: {
     /* -------------------- base define -------------------- */
     'blue-default': 'rgba(112, 132, 255, 1)',
+    'blue-main': 'rgba(82, 96, 209, 1)',
     'blue-light1': 'rgba(238, 241, 255, 1)',
     'blue-light-1': 'rgba(238, 241, 255, 1)',
     'blue-light2': 'rgba(222, 227, 252, 1)',
@@ -54,6 +55,7 @@ const themeColors = {
   dark: {
     /* -------------------- base define -------------------- */
     'blue-default': 'rgba(112, 132, 255, 1)',
+    'blue-main': 'rgba(82, 96, 209, 1)',
     'blue-light1': 'rgba(66, 73, 98, 1)',
     'blue-light-1': 'rgba(66, 73, 98, 1)',
     'blue-light2': 'rgba(66, 73, 98, 1)',
