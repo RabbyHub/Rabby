@@ -2,6 +2,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { http } from '../utils/http';
+// import { openapiService } from '.';
 
 export interface RPCItem {
   url: string;
@@ -20,14 +21,29 @@ export type RPCServiceStore = {
 };
 
 export const BE_SUPPORTED_METHODS: string[] = [
-  // 'eth_call',
-  // 'eth_blockNumber',
-  // 'eth_getBalance',
-  // 'eth_getCode',
-  // 'eth_getStorageAt',
-  // 'eth_getTransactionCount',
-  // 'eth_chainId',
+  'eth_call',
+  'eth_blockNumber',
+  'eth_getBalance',
+  'eth_getCode',
+  'eth_getStorageAt',
+  'eth_getTransactionCount',
+  'eth_chainId',
 ];
+
+// async function callWithFallbackRpcs<T>(
+//   rpcUrls: string[],
+//   fn: (rpc: string) => Promise<T>
+// ): Promise<T> {
+//   for (const url of rpcUrls) {
+//     try {
+//       const result = await fn(url);
+//       return result;
+//     } catch (err) {
+//       console.warn(`RPC failed: ${url}`, err);
+//     }
+//   }
+//   throw new Error('all RPC calls failed');
+// }
 
 const MAX = 4_294_967_295;
 let idCounter = Math.floor(Math.random() * MAX);
@@ -98,16 +114,23 @@ class RPCService {
     }
   };
 
+  supportedRpcMethodByBE = (method?: string) => {
+    return BE_SUPPORTED_METHODS.some((e) => e === method);
+  };
+
   requestDefaultRPC = async (
     chainServerId: string,
     method: string,
     params: any[]
   ) => {
-    const host = this?.store?.defaultRPC?.[chainServerId]?.rpcUrl?.[0];
-    if (!host) {
+    const hostList = this?.store?.defaultRPC?.[chainServerId]?.rpcUrl || [];
+    if (!hostList.length) {
       throw new Error(`No available rpc for ${chainServerId}`);
     }
-    return this.request(host, method, params);
+    // return callWithFallbackRpcs(hostList, (rpc) =>
+    //   this.request(rpc, method, params)
+    // );
+    return this.request(hostList[0], method, params);
   };
 
   getDefaultRPC = (chainServerId: string) => {
