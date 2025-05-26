@@ -85,7 +85,7 @@ export const CurrentDappAddress = memo(() => {
       <div
         className={clsx(
           'flex items-center gap-[20px]',
-          'p-[10px] rounded-[8px] border-[1px] border-transparent border-solid bg-r-neutral-card-1',
+          'p-[11px] rounded-[8px] border-[1px] border-transparent border-solid bg-r-neutral-card-1',
           'hover:bg-r-blue-light1 hover:border-rabby-blue-default'
         )}
         onClick={() => {
@@ -97,7 +97,7 @@ export const CurrentDappAddress = memo(() => {
             <FallbackSiteLogo
               url={site.icon}
               origin={site.origin}
-              width="24px"
+              width="16px"
               className="rounded-full"
             ></FallbackSiteLogo>
             {chain ? (
@@ -105,12 +105,12 @@ export const CurrentDappAddress = memo(() => {
                 <img
                   src={chain.logo}
                   alt="chain logo"
-                  className="rounded-full w-[12px] h-[12px] border-[#fff] border-[0.5px] border-solid"
+                  className="rounded-full w-[10px] h-[10px]"
                 />
               </div>
             ) : null}
           </div>
-          <div className="text-[14px] leading-[17px] text-r-neutral-title-1 font-medium">
+          <div className="text-[13px] leading-[16px] text-r-neutral-title-1">
             {t('page.manageAddress.CurrentDappAddress.desc')}
           </div>
         </div>
@@ -143,9 +143,9 @@ const CurrentAccount = ({
   const [alias] = useAlias(currentSiteAccount.address);
 
   return (
-    <div className="flex items-center gap-[6px] ml-auto">
-      <img src={addressTypeIcon} className="w-[18px] h-[18px]" alt="" />
-      <div className="truncate text-[14px] leading-[17px] text-r-neutral-title-1 font-medium">
+    <div className="flex items-center gap-[4px] ml-auto">
+      <img src={addressTypeIcon} className="w-[16px] h-[16px]" alt="" />
+      <div className="truncate text-[13px] leading-[16px] text-r-neutral-title-1">
         {alias}
       </div>
       <RcArrowDownSVG
