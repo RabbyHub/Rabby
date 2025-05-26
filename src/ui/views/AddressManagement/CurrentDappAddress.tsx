@@ -110,7 +110,7 @@ export const CurrentDappAddress = memo(() => {
               </div>
             ) : null}
           </div>
-          <div className="text-[13px] leading-[16px] text-r-neutral-title-1">
+          <div className="text-[13px] leading-[16px] text-r-neutral-body">
             {t('page.manageAddress.CurrentDappAddress.desc')}
           </div>
         </div>
@@ -145,7 +145,7 @@ const CurrentAccount = ({
   return (
     <div className="flex items-center gap-[4px] ml-auto">
       <img src={addressTypeIcon} className="w-[16px] h-[16px]" alt="" />
-      <div className="truncate text-[13px] leading-[16px] text-r-neutral-title-1">
+      <div className="truncate text-[13px] leading-[16px] text-r-neutral-body">
         {alias}
       </div>
       <RcArrowDownSVG
