@@ -2450,8 +2450,8 @@
         "importAddress": "I already have an address"
       },
       "createNewAddress": {
-        "title": "Create New Seed Phrase",
-        "desc": "Before you start, please read and keep the following security tips in mind.",
+        "title": "Before You Start",
+        "desc": "Please read and keep the following security tips in mind",
         "tip1": "If I lose or share my seed phrase, my assets will be lost forever.",
         "tip2": "The seed phrase is only stored on my computer, and Rabby has no access to it. ",
         "tip3": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me. ",
