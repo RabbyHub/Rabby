@@ -927,6 +927,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         content: e.message || JSON.stringify(e),
         className: 'modal-support-darkmode',
       });
+      Sentry.captureException(e);
     }
   };
 
@@ -1087,6 +1088,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         title: 'Error',
         content,
       });
+      Sentry.captureException(e);
       return;
     }
 
@@ -1140,6 +1142,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         title: 'Error',
         content: e.message || JSON.stringify(e),
       });
+      Sentry.captureException(e);
       return;
     }
 
@@ -1753,6 +1756,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         title: 'Error',
         content: e.message || JSON.stringify(e),
       });
+      Sentry.captureException(e);
     }
   };
 
