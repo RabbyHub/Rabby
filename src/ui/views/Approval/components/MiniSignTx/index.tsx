@@ -452,6 +452,7 @@ export const MiniSignTx = ({
             wallet,
             tx,
             gasLimit: item.gasLimit,
+            account: currentAccount!,
           }),
         };
       })
@@ -721,6 +722,7 @@ export const MiniSignTx = ({
           wallet,
           tx,
           gasLimit,
+          account: currentAccount,
         });
 
         tx.gas = gasLimit;
@@ -902,6 +904,7 @@ export const MiniSignTx = ({
                       tx: item.tx,
                       wallet,
                       gasLimit: item.gasLimit,
+                      account: currentAccount!,
                     })
                   )
                 );

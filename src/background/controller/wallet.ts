@@ -1128,9 +1128,10 @@ export class WalletController extends BaseController {
     txMeta: Record<string, any> & {
       txParams: any;
     },
-    chain = CHAINS_ENUM.OP
+    chain = CHAINS_ENUM.OP,
+    _account?: Account
   ) => {
-    const account = await preferenceService.getCurrentAccount();
+    const account = _account || (await preferenceService.getCurrentAccount());
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     buildinProvider.currentProvider.currentAccount = account.address;
     buildinProvider.currentProvider.currentAccountType = account.type;

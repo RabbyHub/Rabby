@@ -227,6 +227,7 @@ export const sendTransaction = async ({
     wallet,
     tx,
     gasLimit,
+    account: { ...currentAccount, address },
   });
 
   // check gas errors
