@@ -94,7 +94,6 @@ export interface PreferenceStore {
   gasCache: GasCache;
   currentVersion: string;
   prevVersion?: string;
-  hasShowedGuide?: boolean;
   firstOpen: boolean;
   pinnedChain: string[];
   /**
@@ -124,6 +123,8 @@ export interface PreferenceStore {
   /** @deprecated */
   reserveGasOnSendToken?: boolean;
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
+
+  isEnabledDappAccount?: boolean;
 }
 
 export interface AddressSortStore {
@@ -174,7 +175,6 @@ class PreferenceService {
         gasCache: {},
         currentVersion: '0',
         prevVersion: '0',
-        hasShowedGuide: false,
         firstOpen: false,
         pinnedChain: [],
         addedToken: {},
@@ -195,6 +195,7 @@ class PreferenceService {
         reserveGasOnSendToken: true,
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
+        isEnabledDappAccount: false,
       },
     });
 
@@ -496,9 +497,11 @@ class PreferenceService {
   setCurrentAccount = (account: Account | null) => {
     this.store.currentAccount = account;
     if (account) {
-      // sessionService.broadcastEvent('accountsChanged', [
-      //   account.address.toLowerCase(),
-      // ]);
+      if (!this.store.isEnabledDappAccount) {
+        sessionService.broadcastEvent('accountsChanged', [
+          account.address.toLowerCase(),
+        ]);
+      }
       syncStateToUI(BROADCAST_TO_UI_EVENTS.accountsChanged, account);
     }
   };
@@ -702,10 +705,6 @@ class PreferenceService {
 
   getIsNewUser = () => {
     return !this.store.prevVersion || this.store.prevVersion === '0';
-  };
-
-  updateHasShowedGuide = () => {
-    this.store.hasShowedGuide = true;
   };
 
   updateIsFirstOpen = () => {

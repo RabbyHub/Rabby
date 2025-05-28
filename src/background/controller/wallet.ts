@@ -1735,6 +1735,31 @@ export class WalletController extends BaseController {
   setReserveGasOnSendToken = (val: boolean) =>
     preferenceService.setPreferencePartials({ reserveGasOnSendToken: val });
 
+  enableDappAccount = (enabled: boolean) => {
+    preferenceService.setPreferencePartials({ isEnabledDappAccount: enabled });
+    const currentAccount = preferenceService.getCurrentAccount();
+    const sites = permissionService.getSites();
+    sites.forEach((site) => {
+      if (enabled) {
+        if (site.isConnected) {
+          permissionService.setSite({
+            ...site,
+            account: currentAccount,
+          });
+        }
+      } else {
+        permissionService.setSite({
+          ...site,
+          account: undefined,
+        });
+      }
+    });
+    sessionService.broadcastEvent(
+      'accountsChanged',
+      currentAccount?.address ? [currentAccount?.address] : []
+    );
+  };
+
   getLastTimeSendToken = (address: string) =>
     preferenceService.getLastTimeSendToken(address);
   setLastTimeSendToken = (address: string, token: TokenItem) =>
@@ -4034,8 +4059,6 @@ export class WalletController extends BaseController {
   getPreference = (key?: string) => {
     return preferenceService.getPreference(key);
   };
-
-  updateHasShowedGuide = preferenceService.updateHasShowedGuide;
 
   setIsDefaultWallet = (val: boolean) => {
     preferenceService.setIsDefaultWallet(val);

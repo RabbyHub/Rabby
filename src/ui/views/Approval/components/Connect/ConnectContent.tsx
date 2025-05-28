@@ -27,6 +27,7 @@ import RuleResult from './RuleResult';
 import UserListDrawer from './UserListDrawer';
 import { AccountSelector } from '@/ui/component/AccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useRabbyGetter, useRabbySelector } from '@/ui/store';
 
 interface ConnectProps {
   params: any;
@@ -239,6 +240,10 @@ export const ConnectContent = (props: ConnectProps) => {
   } | null>(null);
 
   const [currentSite, setCurrentSite] = useState<ConnectedSite>();
+
+  const isEnabledDappAccount = useRabbySelector((s) => {
+    return s.preference.isEnabledDappAccount;
+  });
 
   const userListResult = useMemo(() => {
     const originBlacklist = engineResults.find(
@@ -476,7 +481,7 @@ export const ConnectContent = (props: ConnectProps) => {
   const init = async () => {
     const site = await wallet.getSite(origin);
     setCurrentSite(site);
-    if (site?.account) {
+    if (isEnabledDappAccount && site?.account) {
       setSelectedAccount(site.account);
     }
     let level: 'very_low' | 'low' | 'medium' | 'high' = 'low';
