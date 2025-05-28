@@ -1469,9 +1469,6 @@
       "recentConnectionGuide": {
         "title": "Switch address for Dapp connection here",
         "button": "Got it"
-      },
-      "recentConnectionChainGuide": {
-        "title": "Switch Chain for Dapp connection here"
       }
     },
     "nft": {

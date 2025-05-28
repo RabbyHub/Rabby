@@ -4037,8 +4037,6 @@ export class WalletController extends BaseController {
 
   updateHasShowedGuide = preferenceService.updateHasShowedGuide;
 
-  updateHasShowedChainGuide = preferenceService.updateHasShowedChainGuide;
-
   setIsDefaultWallet = (val: boolean) => {
     preferenceService.setIsDefaultWallet(val);
     const hasOtherProvider = preferenceService.getHasOtherProvider();

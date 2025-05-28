@@ -95,7 +95,6 @@ export interface PreferenceStore {
   currentVersion: string;
   prevVersion?: string;
   hasShowedGuide?: boolean;
-  hasShowedChainGuide?: boolean;
   firstOpen: boolean;
   pinnedChain: string[];
   /**
@@ -176,7 +175,6 @@ class PreferenceService {
         currentVersion: '0',
         prevVersion: '0',
         hasShowedGuide: false,
-        hasShowedChainGuide: false,
         firstOpen: false,
         pinnedChain: [],
         addedToken: {},
@@ -708,10 +706,6 @@ class PreferenceService {
 
   updateHasShowedGuide = () => {
     this.store.hasShowedGuide = true;
-  };
-
-  updateHasShowedChainGuide = () => {
-    this.store.hasShowedChainGuide = true;
   };
 
   updateIsFirstOpen = () => {
