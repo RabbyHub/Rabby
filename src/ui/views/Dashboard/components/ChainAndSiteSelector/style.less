@@ -1,5 +1,5 @@
 .recent-connections {
-  background-color: var(--r-neutral-bg-1, #fff);
+  background-color: var(--r-neutral-bg-1, #FFF);
   position: relative;
   flex: 1;
   padding: 14px 20px;
@@ -30,22 +30,21 @@
     // height: 258px;
     display: flex;
     justify-content: flex-start;
+    padding: 10px 8px;
+    padding-right: 7px;
     flex-direction: column;
     background: var(--r-neutral-card-2, #f5f6fa);
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     position: relative;
-    &-body {
-      padding: 4px 3px;
-    }
     .direction-pannel {
       display: flex;
       flex-wrap: wrap;
       .disable-direction,
       .direction {
         position: relative;
-        width: 118px;
-        height: 74px;
+        width: 115px;
+        height: 76px;
         border-radius: 4px;
         display: flex;
         flex-direction: column;
@@ -107,35 +106,6 @@
         font-size: 12px;
         line-height: 14px;
         font-weight: 400;
-      }
-    }
-    &-footer {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-    }
-    .direction-more {
-      width: 80px;
-      height: 20px;
-      border-radius: 6px 0px 0px 0px;
-      background: var(--r-neutral-line, #e0e5ec);
-
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-
-      cursor: pointer;
-
-      color: var(--r-neutral-title1, #192945);
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 14px;
-
-      &:hover {
-        background: var(--r-blue-light2, #dee3fc);
-        color: var(--r-blue-default, #7084ff);
       }
     }
   }

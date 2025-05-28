@@ -1233,7 +1233,7 @@ const SettingsInner = ({
     <div className="popup-settings">
       <div className="content">
         {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
-        {/* <EcosystemBanner /> */}
+        <EcosystemBanner />
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">
