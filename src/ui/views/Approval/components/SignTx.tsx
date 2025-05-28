@@ -1755,9 +1755,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }
       setInited(true);
     } catch (e) {
-      Sentry.captureException(
-        new Error(`SignTx init error: ${JSON.stringify(e)}`)
-      );
       Modal.error({
         className: 'modal-support-darkmode',
         title: 'Error',
