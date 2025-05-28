@@ -2469,13 +2469,13 @@
         "form": {
           "password": {
             "label": "Password",
-            "placeholder": "8 characters min",
+            "placeholder": "Password (8 characters min)",
             "required": "Please input Password",
             "min": "Password must be at least 8 characters long"
           },
           "confirmPassword": {
             "label": "Confirm Password",
-            "placeholder": "Password",
+            "placeholder": "Confirm Password",
             "required": "Please Confirm Password",
             "notMatch": "Passwords do not match"
           }
@@ -2491,10 +2491,14 @@
         "addMoreFrom": "Add more addresses from {{name}}"
       },
       "readyToUse": {
-        "title": "Rabby Wallet is Ready to Use",
-        "desc": "Pin Rabby Wallet to your toolbar for easy access.",
+        "title": "Your Rabby Wallet is Ready !",
+        "desc": "Find Rabby Wallet and Pin it",
         "pin": "Pin Rabby Wallet",
-        "extensionTip": "Click <1/> and then <3/>"
+        "extensionTip": "Click <1/> and then <3/>",
+        "guides": {
+          "step1": "Click the browser extension icon",
+          "step2": "Pin Rabby Wallet"
+        }
       },
       "importSeedPhrase": {
         "title": "Import Seed Phrase"
