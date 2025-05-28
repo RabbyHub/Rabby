@@ -1223,7 +1223,8 @@
           "customTestnet": "Agregar red personalizada",
           "toggleThemeMode": "Modo de tema",
           "themeMode": "Modo de tema",
-          "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask"
+          "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask",
+          "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
@@ -1233,7 +1234,12 @@
         "testnetBackendServiceUrl": "URL de Servicio de Backend de Testnet",
         "clearWatchMode": "Limpiar Modo de Observación",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gas de Testnet DeBank",
-        "clearPendingWarningTip": "La transacción eliminada aún puede confirmarse en la cadena a menos que sea reemplazada."
+        "clearPendingWarningTip": "La transacción eliminada aún puede confirmarse en la cadena a menos que sea reemplazada.",
+        "DappAccount": {
+          "button": "Habilitar\n",
+          "title": "Cambiar la dirección del Dapp de forma independiente\n",
+          "desc": "Una vez habilitado, puede elegir qué dirección conectar a cada DApp de forma independiente. Cambiar su dirección principal no afectará la dirección conectada a cada DApp.\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",

@@ -31,6 +31,10 @@ Sentry.init({
     'Non-Error promise rejection captured with keys: message, stack',
     'Failed to fetch',
     'Non-Error promise rejection captured with keys: message',
+    /Non-Error promise rejection captured/,
+    /\[From .*\]/, // error from custom rpc
+    /AxiosError/,
+    /WebSocket connection failed/,
   ],
 });
 

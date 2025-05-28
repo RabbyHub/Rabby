@@ -902,7 +902,8 @@
           "themeMode": "Thème",
           "toggleThemeMode": "Thème",
           "customTestnet": "Ajouter un réseau personnalisé",
-          "metamaskMode": "Connectez Rabby en se faisant passer pour MetaMask"
+          "metamaskMode": "Connectez Rabby en se faisant passer pour MetaMask",
+          "enableDappAccount": "Changer indépendamment l'adresse du DApp\n"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -914,7 +915,12 @@
           "title": "Mise à jour disponible"
         },
         "warning": "Avertissement",
-        "clearPendingWarningTip": "La transaction supprimée peut encore être confirmée sur la blockchain à moins qu'elle ne soit remplacée."
+        "clearPendingWarningTip": "La transaction supprimée peut encore être confirmée sur la blockchain à moins qu'elle ne soit remplacée.",
+        "DappAccount": {
+          "title": "Changer l'adresse Dapp indépendamment\n",
+          "button": "Activer\n",
+          "desc": "Une fois activé, vous pouvez choisir l'adresse à connecter à chaque Dapp indépendamment. Le changement de votre adresse principale n'affectera pas l'adresse connectée à chaque Dapp.\n"
+        }
       },
       "tokenDetail": {
         "blocked": "Bloqué",

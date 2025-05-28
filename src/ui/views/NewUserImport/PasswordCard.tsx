@@ -7,9 +7,9 @@ import { sum } from 'lodash';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { ReactComponent as RcIconCheckCC } from 'ui/assets/icon-checked-cc.svg';
+import { ReactComponent as RcIconCheckCC } from 'ui/assets/IconCheckedSquare.svg';
 import { ReactComponent as RcIconSuccessCC } from 'ui/assets/icon-checked-success-cc.svg';
-import { ReactComponent as RcIconUnCheckCC } from 'ui/assets/icon-unchecked-cc.svg';
+import { ReactComponent as RcIconUnCheckCC } from 'ui/assets/IconUncheckSquare.svg';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -137,10 +137,10 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
         >
           <div className="flex-1 mt-[18px]">
             <hgroup className="mb-[24px]">
-              <h1 className="text-r-neutral-title1 text-center font-semibold text-[24px] leading-[29px] mb-[8px]">
+              <h1 className="text-r-neutral-title1 text-center font-semibold text-[28px] leading-[29px] mb-[9px]">
                 {t('page.newUserImport.PasswordCard.title')}
               </h1>
-              <p className="text-center text-r-neutral-foot text-[14px] leading-[17px]">
+              <p className="text-center text-rabby-blue-main font-semibold text-[16px] leading-[20px] mx-28">
                 {t('page.newUserImport.PasswordCard.desc')}
               </p>
             </hgroup>
@@ -148,7 +148,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
             <Form.Item
               name="password"
               validateTrigger={['onChange', 'onSubmit']}
-              label={t('page.newUserImport.PasswordCard.form.password.label')}
+              label={''}
               rules={[
                 {
                   required: true,
@@ -169,6 +169,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                 placeholder={t(
                   'page.newUserImport.PasswordCard.form.password.placeholder'
                 )}
+                className="text-[24px]"
                 type="password"
                 autoFocus
                 spellCheck={false}
@@ -182,9 +183,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
             <Form.Item
               name="confirmPassword"
               validateTrigger={['onChange', 'onSubmit']}
-              label={t(
-                'page.newUserImport.PasswordCard.form.confirmPassword.label'
-              )}
+              label={''}
               dependencies={['password']}
               rules={[
                 {
@@ -214,6 +213,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                 placeholder={t(
                   'page.newUserImport.PasswordCard.form.confirmPassword.placeholder'
                 )}
+                className="text-[24px]"
                 type="password"
                 spellCheck={false}
                 suffix={
@@ -240,12 +240,12 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                     }}
                   >
                     {agreeTerm ? (
-                      <div className={'text-r-blue-default'}>
-                        <RcIconCheckCC />
+                      <div className={'text-rabby-blue-main'}>
+                        <RcIconCheckCC className="w-[18px] h-[18px]" />
                       </div>
                     ) : (
                       <div className={'text-r-neutral-foot'}>
-                        <RcIconUnCheckCC />
+                        <RcIconUnCheckCC className="w-[18px] h-[18px]" />
                       </div>
                     )}
                     <div className="text-[13px] text-r-neutral-body leading-[16px]">
@@ -255,7 +255,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                       >
                         I agree to the{' '}
                         <span
-                          className="text-r-blue-default font-medium cursor-pointer"
+                          className="text-rabby-blue-main font-medium cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation();
                             gotoTermsOfUse();
@@ -265,7 +265,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                         </span>
                         and
                         <span
-                          className="text-r-blue-default font-medium cursor-pointer"
+                          className="text-rabby-blue-main font-medium cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation();
                             gotoPrivacy();

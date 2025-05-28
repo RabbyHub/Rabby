@@ -1223,7 +1223,8 @@
           "customTestnet": "Özel Ağ Ekle",
           "themeMode": "Tema Modu",
           "toggleThemeMode": "Tema Modu",
-          "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla"
+          "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla",
+          "enableDappAccount": "Dapp Adreslerini Bağımsız Olarak Değiştirin\n"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -1233,7 +1234,12 @@
         "testnetBackendServiceUrl": "Testnet Backend Servis URL'si",
         "clearWatchMode": "İzleme Modunu Temizle",
         "requestDeBankTestnetGasToken": "DeBank Testnet Gas Tokeni İste",
-        "clearPendingWarningTip": "Çıkarılan işlem, başka bir işlem ile değiştirilmedikçe zincirde hâlâ onaylanabilir."
+        "clearPendingWarningTip": "Çıkarılan işlem, başka bir işlem ile değiştirilmedikçe zincirde hâlâ onaylanabilir.",
+        "DappAccount": {
+          "button": "Etkinleştir\n",
+          "title": "Dapp Adreslerini Bağımsız Olarak Değiştir\n",
+          "desc": "Etkinleştirildikten sonra, her bir Dapp'e bağımsız olarak hangi adresi bağlayacağınızı seçebilirsiniz. Ana adresinizi değiştirmek, her Dapp'e bağlı adresi etkilemez.\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",

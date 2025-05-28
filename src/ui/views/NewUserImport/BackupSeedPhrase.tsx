@@ -7,10 +7,8 @@ import { useTranslation } from 'react-i18next';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import IconSuccess from '@/ui/assets/success.svg';
-import { ReactComponent as RcIconCopy } from '@/ui/assets/component/icon-copy-cc.svg';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
-import { useWallet } from '@/ui/utils';
-import { useAsync } from 'react-use';
+import { ReactComponent as RcIconCopy } from 'ui/assets/component/copy.svg';
 
 export const BackupSeedPhrase = () => {
   const { t } = useTranslation();
@@ -56,10 +54,10 @@ export const BackupSeedPhrase = () => {
       }}
       step={1}
     >
-      <div className="mt-[18px] mb-8 text-[24px] font-medium text-r-neutral-title1 text-center">
+      <div className="mt-[18px] mb-[9px] text-[28px] font-medium text-r-neutral-title1 text-center">
         {t('page.newAddress.seedPhrase.backup')}
       </div>
-      <div className="text-14 text-r-neutral-foot text-center mb-16">
+      <div className="text-16 text-rabby-blue-main font-semibold text-center mb-20 mx-[30px]">
         {t('page.newAddress.seedPhrase.backupTips')}
       </div>
 
@@ -68,22 +66,24 @@ export const BackupSeedPhrase = () => {
           focusable={false}
           closable={false}
           words={mnemonics.split(' ')}
-          className="bg-transparent border-[0.5px] border-rabby-neutral-line"
+          className="bg-transparent"
         />
       )}
 
       <div
         className={clsx(
-          'mx-auto mt-16 mb-[40px]',
-          'w-[165px] h-[36px] cursor-pointer',
-          'flex justify-center items-center gap-4',
-          'text-13 font-medium text-r-neutral-body',
-          'bg-rabby-neutral-card-2 rounded-[8px]',
-          'hover:bg-r-blue-light-1 hover:text-rabby-blue-default'
+          'mx-auto mt-[24px] mb-[47px]',
+          'cursor-pointer',
+          'flex justify-center items-center gap-8',
+          'text-14 font-medium text-rabby-blue-main',
+          'hover:text-rabby-blue-default'
         )}
         onClick={onCopyMnemonics}
       >
-        <RcIconCopy viewBox="0 0 16 16" className="w-14 h-14" />
+        <RcIconCopy
+          viewBox="0 0 20 20"
+          className="w-20 h-20 text-rabby-blue-main"
+        />
         <span>{t('page.newAddress.seedPhrase.copy')}</span>
       </div>
 
@@ -93,7 +93,7 @@ export const BackupSeedPhrase = () => {
         type="primary"
         className={clsx(
           'h-[56px] shadow-none rounded-[8px]',
-          'text-[17px] font-medium'
+          'text-[17px] font-medium bg-r-blue-main'
         )}
       >
         {t('page.newAddress.seedPhrase.saved')}

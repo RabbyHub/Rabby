@@ -77,6 +77,10 @@ Sentry.init({
     'TransportOpenUserCancelled',
     'Non-Error promise rejection captured with keys: message, stack',
     'Non-Error promise rejection captured with keys: message',
+    /Non-Error promise rejection captured with keys/,
+    /\[From .*\]/, // error from custom rpc
+    /AxiosError/,
+    /WebSocket connection failed/,
   ],
 });
 

@@ -1271,7 +1271,8 @@
           "customRpc": "Sửa đổi RPC URL",
           "enableWhitelistForSendingAssets": "Kích hoạt Danh sách Trắng Để Gửi Tài sản",
           "metamaskPreferredDapps": "MetaMask Dapps Ưa Thích",
-          "themeMode": "Chế độ chủ đề"
+          "themeMode": "Chế độ chủ đề",
+          "enableDappAccount": "Thay đổi địa chỉ Dapp độc lập\n"
         },
         "1Hour": "1 giờ",
         "7Days": "7 ngày",
@@ -1305,7 +1306,12 @@
         "requestDeBankTestnetGasToken": "Yêu cầu Token Gas DeBank Testnet",
         "clearWatchMode": "Xóa chế độ xem",
         "updateAvailable": "Cập nhật có sẵn",
-        "clearPendingWarningTip": "Giao dịch đã xóa có thể vẫn được xác nhận trên chuỗi trừ khi nó bị thay thế."
+        "clearPendingWarningTip": "Giao dịch đã xóa có thể vẫn được xác nhận trên chuỗi trừ khi nó bị thay thế.",
+        "DappAccount": {
+          "button": "Bật\n",
+          "title": "Thay đổi địa chỉ DApp độc lập\n",
+          "desc": "Bật tính năng này, bạn có thể chọn địa chỉ kết nối với từng ứng dụng phi tập trung (Dapp) một cách độc lập. Thay đổi địa chỉ chính của bạn sẽ không ảnh hưởng đến địa chỉ đã kết nối với từng Dapp.\n"
+        }
       },
       "tokenDetail": {
         "txFailed": "Thất bại",

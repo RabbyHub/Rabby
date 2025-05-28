@@ -1226,7 +1226,8 @@
           "toggleThemeMode": "Тема режиму",
           "customTestnet": "Додати власну мережу",
           "themeMode": "Тема режиму",
-          "metamaskMode": "Підключіть Rabby, замаскувавшись під MetaMask"
+          "metamaskMode": "Підключіть Rabby, замаскувавшись під MetaMask",
+          "enableDappAccount": "Незалежно змінюйте адресу Dapp\n"
         },
         "aboutUs": "Про нас",
         "currentVersion": "Поточна версія",
@@ -1236,7 +1237,12 @@
         "testnetBackendServiceUrl": "URL-адреса внутрішньої служби Testnet",
         "clearWatchMode": "Очистити режим спостереження",
         "requestDeBankTestnetGasToken": "Запросити тестові токени для DeBank Testnet",
-        "clearPendingWarningTip": "Вилучена транзакція може все ще бути підтверджена в ланцюжку, якщо її не замінити."
+        "clearPendingWarningTip": "Вилучена транзакція може все ще бути підтверджена в ланцюжку, якщо її не замінити.",
+        "DappAccount": {
+          "button": "Увімкнути\n",
+          "title": "Перемикайте адресу Dapp незалежно\n",
+          "desc": "Увімкнувши, ви можете самостійно вибрати адресу підключення до кожного Dapp. Зміна основної адреси не вплине на адресу, підключену до кожного Dapp.\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Заблокований токен не буде показано у списку токенів",

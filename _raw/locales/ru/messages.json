@@ -1224,7 +1224,8 @@
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
           "customTestnet": "Добавить свою сеть",
-          "metamaskMode": "Подключите Rabby, замаскировав его под MetaMask"
+          "metamaskMode": "Подключите Rabby, замаскировав его под MetaMask",
+          "enableDappAccount": "Независимо переключать адреса Dapp\n"
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",
@@ -1234,7 +1235,12 @@
         "testnetBackendServiceUrl": "URL сервиса для тестовых сетей",
         "clearWatchMode": "Очистить Режим Просмотра",
         "requestDeBankTestnetGasToken": "Запросить тестовые токены газа DeBank",
-        "clearPendingWarningTip": "Удаленная транзакция может все еще быть подтверждена в цепочке, если она не будет заменена."
+        "clearPendingWarningTip": "Удаленная транзакция может все еще быть подтверждена в цепочке, если она не будет заменена.",
+        "DappAccount": {
+          "title": "Независимо переключайте адреса DApp\n",
+          "button": "Включить\n",
+          "desc": "Включив, вы можете выбрать адрес для подключения к каждому Dapp независимо.  Изменение основного адреса не повлияет на адрес, подключенный к каждому Dapp.\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Заблокированный токен не будет отображаться в списке токенов",
