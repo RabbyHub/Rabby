@@ -481,7 +481,6 @@ const AddressManagement = () => {
           </div>
         </>
       )}
-      <CurrentDappAddress />
       <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-[12px]">
         <SortInput
           value={searchKeyword}
