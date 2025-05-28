@@ -28,7 +28,6 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 import dayjs from 'dayjs';
 import { useAccounts } from '@/ui/hooks/useAccounts';
-import { CurrentDappAddress } from './CurrentDappAddress';
 
 function NoAddressUI() {
   const { t } = useTranslation();
