@@ -254,6 +254,7 @@ const DappAccountModal = ({
         closeable
         onClose={handleCancel}
         className="text-[16px] leading-[19px] mb-[20px]"
+        closeCn={'top-[-1px]'}
       >
         {t('page.dashboard.settings.DappAccount.title')}
       </PageHeader>
@@ -267,7 +268,7 @@ const DappAccountModal = ({
         <Button
           type="primary"
           block
-          className="h-[48px] rounded-[8px]"
+          className="h-[48px] rounded-[8px] text-[16px]"
           onClick={handleSubmit}
         >
           {t('page.dashboard.settings.DappAccount.button')}
