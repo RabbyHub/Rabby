@@ -215,7 +215,7 @@ const DappAccountModal = ({
   onCancel,
 }: {
   visible: boolean;
-  onFinish(host: string): void;
+  onFinish(): void;
   onCancel(): void;
 }) => {
   const { useForm } = Form;
@@ -227,6 +227,7 @@ const DappAccountModal = ({
   const handleSubmit = async () => {
     setIsVisible(false);
     dispatch.preference.enableDappAccount(true);
+    onFinish?.();
   };
 
   const handleCancel = () => {
@@ -250,8 +251,8 @@ const DappAccountModal = ({
       })}
     >
       <PageHeader
-        forceShowBack
-        onBack={handleCancel}
+        closeable
+        onClose={handleCancel}
         className="text-[16px] leading-[19px] mb-[20px]"
       >
         {t('page.dashboard.settings.DappAccount.title')}
@@ -657,6 +658,8 @@ const SettingsInner = ({
       setIsShowDappAccountModal(true);
     }
   });
+
+  console.log({ isEnabledDappAccount, isShowDappAccountModal });
 
   const handleWhitelistEnableChange = async (value: boolean) => {
     await AuthenticationModalPromise({
@@ -1393,7 +1396,7 @@ const SettingsInner = ({
       />
       <DappAccountModal
         visible={isShowDappAccountModal}
-        onFinish={(host) => {
+        onFinish={() => {
           setIsShowDappAccountModal(false);
         }}
         onCancel={() => setIsShowDappAccountModal(false)}

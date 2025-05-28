@@ -179,52 +179,74 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
       <>
         <div className={clsx('current-connection-block h-[52px] px-[12px]')}>
           {site ? (
-            <div className="site mr-[18px]">
-              <div className="relative">
-                <FallbackSiteLogo
-                  url={site.icon}
-                  origin={site.origin}
-                  width="28px"
-                  className="site-icon"
-                ></FallbackSiteLogo>
-                {site.isMetamaskMode ? (
-                  <TooltipWithMagnetArrow
-                    placement="top"
-                    overlayClassName={clsx('rectangle max-w-[360px] w-[360px]')}
-                    align={{
-                      offset: [0, 4],
-                    }}
-                    title={t(
-                      'page.dashboard.recentConnection.metamaskModeTooltipNew'
+            <>
+              <div className="site mr-[18px]">
+                <div className="relative">
+                  <FallbackSiteLogo
+                    url={site.icon}
+                    origin={site.origin}
+                    width="28px"
+                    className="site-icon"
+                  ></FallbackSiteLogo>
+                  {site.isMetamaskMode ? (
+                    <TooltipWithMagnetArrow
+                      placement="top"
+                      overlayClassName={clsx(
+                        'rectangle max-w-[360px] w-[360px]'
+                      )}
+                      align={{
+                        offset: [0, 4],
+                      }}
+                      title={t(
+                        'page.dashboard.recentConnection.metamaskModeTooltipNew'
+                      )}
+                    >
+                      <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                        <img src={IconMetamaskMode} alt="metamask mode"></img>
+                      </div>
+                    </TooltipWithMagnetArrow>
+                  ) : null}
+                </div>
+                <div className="site-content">
+                  <div className="site-name" title={site?.origin}>
+                    {site?.origin?.replace(/^https?:\/\//, '')}
+                  </div>
+                  <div
+                    className={clsx(
+                      'site-status text-[12px]',
+                      site?.isConnected && 'active'
                     )}
                   >
-                    <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
-                      <img src={IconMetamaskMode} alt="metamask mode"></img>
-                    </div>
-                  </TooltipWithMagnetArrow>
-                ) : null}
-              </div>
-              <div className="site-content">
-                <div className="site-name" title={site?.origin}>
-                  {site?.origin?.replace(/^https?:\/\//, '')}
-                </div>
-                <div
-                  className={clsx(
-                    'site-status text-[12px]',
-                    site?.isConnected && 'active'
-                  )}
-                >
-                  {site?.isConnected
-                    ? t('page.dashboard.recentConnection.connected')
-                    : t('page.dashboard.recentConnection.notConnected')}
-                  <RCIconDisconnectCC
-                    viewBox="0 0 14 14"
-                    className="site-status-icon w-12 h-12 ml-4 text-r-neutral-foot hover:text-rabby-red-default"
-                    onClick={() => handleRemove(site!.origin)}
-                  />
+                    {site?.isConnected
+                      ? t('page.dashboard.recentConnection.connected')
+                      : t('page.dashboard.recentConnection.notConnected')}
+                    <RCIconDisconnectCC
+                      viewBox="0 0 14 14"
+                      className="site-status-icon w-12 h-12 ml-4 text-r-neutral-foot hover:text-rabby-red-default"
+                      onClick={() => handleRemove(site!.origin)}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+              <ChainSelector
+                className={clsx(!site && 'disabled')}
+                value={site?.chain || CHAINS_ENUM.ETH}
+                onChange={handleChangeDefaultChain}
+                showModal={visible}
+                onAfterOpen={() => {
+                  matomoRequestEvent({
+                    category: 'Front Page Click',
+                    action: 'Click',
+                    label: 'Change Chain',
+                  });
+
+                  ga4.fireEvent('Click_ChangeChain', {
+                    event_category: 'Front Page Click',
+                  });
+                }}
+                showRPCStatus
+              />
+            </>
           ) : (
             <div className="site is-empty">
               <img src={IconDapps} className="site-icon ml-6" alt="" />
@@ -233,24 +255,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
               </div>
             </div>
           )}
-          <ChainSelector
-            className={clsx(!site && 'disabled')}
-            value={site?.chain || CHAINS_ENUM.ETH}
-            onChange={handleChangeDefaultChain}
-            showModal={visible}
-            onAfterOpen={() => {
-              matomoRequestEvent({
-                category: 'Front Page Click',
-                action: 'Click',
-                label: 'Change Chain',
-              });
-
-              ga4.fireEvent('Click_ChangeChain', {
-                event_category: 'Front Page Click',
-              });
-            }}
-            showRPCStatus
-          />
         </div>
         {isShowGnosisAlert ? <GnosisWrongChainAlertBar /> : null}
       </>
