@@ -1271,7 +1271,8 @@
           "enableWhitelistForSendingAssets": "자산 전송을 위한 화이트리스트 활성화",
           "currentLanguage": "현재 언어",
           "label": "설정",
-          "customTestnet": "커스텀 네트워크 추가"
+          "customTestnet": "커스텀 네트워크 추가",
+          "enableDappAccount": "Dapp 주소를 독립적으로 전환\n"
         },
         "save": "저장",
         "inputOpenapiHost": "openapi 호스트를 입력하세요",
@@ -1305,7 +1306,12 @@
         "clearWatchMode": "클리어 워치 모드",
         "clearPendingWarningTip": "제거된 트랜잭션은 교체되지 않는 한 체인에서 여전히 확인될 수 있습니다.",
         "requestDeBankTestnetGasToken": "DeBank 테스트넷 가스 토큰 요청",
-        "enableWhitelist": "화이트리스트 활성화"
+        "enableWhitelist": "화이트리스트 활성화",
+        "DappAccount": {
+          "button": "啟用\n",
+          "title": "Dapp 주소를 독립적으로 전환하세요\n",
+          "desc": "啟用後，您可以獨立選擇連接到每個 Dapp 的地址。切換您的主要地址不會影響連接到每個 Dapp 的地址。\n"
+        }
       },
       "tokenDetail": {
         "customized": "맞춤형",

@@ -1271,7 +1271,8 @@
           "enableTestnets": "Aktifkan Testnets",
           "themeMode": "Mode Tema",
           "customTestnet": "Tambahkan Jaringan Kustom",
-          "metamaskMode": "Sambungkan Rabby dengan Menyamar sebagai MetaMask"
+          "metamaskMode": "Sambungkan Rabby dengan Menyamar sebagai MetaMask",
+          "enableDappAccount": "Ganti Alamat Dapp Secara Independen\n"
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",
@@ -1305,7 +1306,12 @@
         "clearWatchMode": "Hapus Mode Tonton",
         "aboutUs": "Tentang kami",
         "clearPendingWarningTip": "Transaksi yang dihapus mungkin masih dikonfirmasi di on-chain kecuali jika digantikan.",
-        "inputOpenapiHost": "Silakan masukkan host openapi"
+        "inputOpenapiHost": "Silakan masukkan host openapi",
+        "DappAccount": {
+          "title": "Ganti Alamat Dapp Secara Terpisah\n",
+          "desc": "Diaktifkan, Anda dapat memilih alamat mana yang akan dihubungkan ke setiap Dapp secara terpisah. Mengganti alamat utama Anda tidak akan memengaruhi alamat yang terhubung ke setiap Dapp.\n",
+          "button": "Aktifkan\n"
+        }
       },
       "tokenDetail": {
         "txFailed": "Gagal",
