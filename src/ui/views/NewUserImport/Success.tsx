@@ -118,8 +118,8 @@ const AccountItem = ({ account }: { account: Account }) => {
           </>
         ) : (
           <RcIconPen
-            className="w-16 h-16 cursor-pointer ml-6"
-            viewBox="0 0 16 16"
+            className="w-[18px] h-[19px] cursor-pointer ml-6"
+            viewBox="0 0 18 19"
             onClick={() => {
               setEdit(true);
               setLocalName(name || '');
@@ -174,11 +174,19 @@ export const ImportOrCreatedSuccess = () => {
     documentVisibility,
   ]);
 
+  const isNewUserImport = React.useMemo(() => {
+    return accounts?.length === 1;
+  }, [accounts]);
+
   const getStarted = React.useCallback(() => {
-    history.push({
-      pathname: '/new-user/ready',
-    });
-  }, []);
+    if (isNewUserImport) {
+      history.push({
+        pathname: '/new-user/ready',
+      });
+    } else {
+      window.close();
+    }
+  }, [isNewUserImport]);
 
   const addMoreAddr = () => {
     const oBrand = brand !== 'null' ? brand : undefined;
@@ -263,7 +271,9 @@ export const ImportOrCreatedSuccess = () => {
           'text-[17px] font-medium'
         )}
       >
-        {t('page.newUserImport.successful.start')}
+        {isNewUserImport
+          ? t('page.newUserImport.successful.start')
+          : t('global.Done')}
       </Button>
 
       {!!hd && (
