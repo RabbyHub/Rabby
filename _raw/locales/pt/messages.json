@@ -1271,7 +1271,8 @@
           "currentLanguage": "Idioma atual",
           "customRpc": "Modificar URL RPC",
           "enableWhitelistForSendingAssets": "Ativar Lista Branca Para Envio de Ativos",
-          "enableTestnets": "Ativar Testnets"
+          "enableTestnets": "Ativar Testnets",
+          "enableDappAccount": "Alterar Endereço do Dapp Independentemente\n"
         },
         "cancel": "Cancelar",
         "7Days": "7 dias",
@@ -1305,7 +1306,12 @@
         "clearWatchAddressContent": "Você se certifique de excluir todos os endereços do Modo de Observação?",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gás da Testnet DeBank",
         "clearPendingWarningTip": "A transação removida pode ainda ser confirmada on-chain, a menos que seja substituída.",
-        "aboutUs": "Sobre nós"
+        "aboutUs": "Sobre nós",
+        "DappAccount": {
+          "title": "Alternar o endereço do Dapp Independentemente\n",
+          "button": "Ativar\n",
+          "desc": "Uma vez ativado, pode escolher qual endereço conectar a cada Dapp individualmente. Alterar seu endereço principal não afetará o endereço conectado a cada Dapp.\n"
+        }
       },
       "tokenDetail": {
         "txFailed": "Falha",

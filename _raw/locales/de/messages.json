@@ -1223,7 +1223,8 @@
           "toggleThemeMode": "Themenmodus",
           "themeMode": "Themenmodus",
           "customTestnet": "Benutzerdefiniertes Netzwerk hinzufügen",
-          "metamaskMode": "Verbinden Sie Rabby, indem Sie sich als MetaMask ausgeben"
+          "metamaskMode": "Verbinden Sie Rabby, indem Sie sich als MetaMask ausgeben",
+          "enableDappAccount": "DApps-Adressen unabhängig wechseln\n"
         },
         "aboutUs": "Über uns",
         "currentVersion": "Aktuelle Version",
@@ -1233,7 +1234,12 @@
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Beobachtungsmodus zurücksetzen",
         "requestDeBankTestnetGasToken": "Testnet Gas Token von DeBank anfordern",
-        "clearPendingWarningTip": "Die entfernte Transaktion kann möglicherweise dennoch on-chain bestätigt werden, es sei denn, sie wird ersetzt."
+        "clearPendingWarningTip": "Die entfernte Transaktion kann möglicherweise dennoch on-chain bestätigt werden, es sei denn, sie wird ersetzt.",
+        "DappAccount": {
+          "button": "Aktivieren\n",
+          "title": "DApp-Adressen unabhängig wechseln\n",
+          "desc": "Sobald aktiviert, können Sie unabhängig für jedes DApp die gewünschte Adresse auswählen.  Eine Änderung Ihrer Haupt-Adresse wirkt sich nicht auf die Adresse aus, die für jedes DApp verbunden ist.\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Blockierte Token werden nicht in der Tokenliste angezeigt",

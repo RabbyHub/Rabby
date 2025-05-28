@@ -23,6 +23,7 @@ import { ReactComponent as RcIconPreferMetamask } from 'ui/assets/dashboard/icon
 import { ReactComponent as RcIconAutoLock } from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
 import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings/lock.svg';
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
+import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
@@ -48,6 +49,7 @@ import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
+import IconIntro from 'ui/assets/dashboard/dapp-account-intro.png';
 
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -61,6 +63,7 @@ import { SvgIconCross } from '@/ui/assets';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { ga4 } from '@/utils/ga4';
 import { EcosystemBanner } from './components/EcosystemBanner';
+import { useMemoizedFn } from 'ahooks';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -202,6 +205,75 @@ const OpenApiModal = ({
           </Button>
         </div>
       </Form>
+    </div>
+  );
+};
+
+const DappAccountModal = ({
+  visible,
+  onFinish,
+  onCancel,
+}: {
+  visible: boolean;
+  onFinish(): void;
+  onCancel(): void;
+}) => {
+  const { useForm } = Form;
+  const [isVisible, setIsVisible] = useState(false);
+  const [form] = useForm<{ host: string }>();
+  const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+
+  const handleSubmit = async () => {
+    setIsVisible(false);
+    dispatch.preference.enableDappAccount(true);
+    onFinish?.();
+  };
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onCancel();
+    }, 500);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(visible);
+    }, 100);
+  }, [visible]);
+
+  return (
+    <div
+      className={clsx('dapp-account-modal flex flex-col', {
+        show: isVisible,
+        hidden: !visible,
+      })}
+    >
+      <PageHeader
+        closeable
+        onClose={handleCancel}
+        className="text-[16px] leading-[19px] mb-[20px]"
+        closeCn={'top-[-1px]'}
+      >
+        {t('page.dashboard.settings.DappAccount.title')}
+      </PageHeader>
+      <div className="flex-1">
+        <div className="text-r-neutral-body text-[13px] leading-[18px] text-center mb-[20px]">
+          {t('page.dashboard.settings.DappAccount.desc')}
+        </div>
+        <img src={IconIntro} alt="" />
+      </div>
+      <footer>
+        <Button
+          type="primary"
+          block
+          className="h-[48px] rounded-[8px] text-[16px]"
+          onClick={handleSubmit}
+        >
+          {t('page.dashboard.settings.DappAccount.button')}
+        </Button>
+      </footer>
     </div>
   );
 };
@@ -521,9 +593,14 @@ const SettingsInner = ({
   const [whitelistEnable, setWhitelistEnable] = useState(true);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
 
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
+  );
+
+  const isEnabledDappAccount = useRabbySelector(
+    (state) => state.preference.isEnabledDappAccount
   );
   const locale = useRabbySelector((state) => state.preference.locale);
 
@@ -562,6 +639,28 @@ const SettingsInner = ({
     reportSettings('Whitelist');
     handleWhitelistEnableChange(checked);
   };
+
+  const handleEnableDappAccount = useMemoizedFn(() => {
+    matomoRequestEvent({
+      category: 'Setting',
+      action: 'clickToUse',
+      label: 'DappAccount',
+    });
+
+    ga4.fireEvent('Dapp_Account', {
+      event_category: 'Click More',
+    });
+
+    reportSettings('DappAccount');
+
+    if (isEnabledDappAccount) {
+      dispatch.preference.enableDappAccount(false);
+    } else {
+      setIsShowDappAccountModal(true);
+    }
+  });
+
+  console.log({ isEnabledDappAccount, isShowDappAccountModal });
 
   const handleWhitelistEnableChange = async (value: boolean) => {
     await AuthenticationModalPromise({
@@ -768,6 +867,17 @@ const SettingsInner = ({
             <Switch
               checked={whitelistEnable}
               onChange={handleSwitchWhitelistEnable}
+            />
+          ),
+        },
+
+        {
+          leftIcon: RcIconDappSwitchAddress,
+          content: t('page.dashboard.settings.settings.enableDappAccount'),
+          rightIcon: (
+            <Switch
+              checked={isEnabledDappAccount}
+              onChange={handleEnableDappAccount}
             />
           ),
         },
@@ -1233,7 +1343,7 @@ const SettingsInner = ({
     <div className="popup-settings">
       <div className="content">
         {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
-        {/* <EcosystemBanner /> */}
+        <EcosystemBanner />
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">
@@ -1284,6 +1394,13 @@ const SettingsInner = ({
         onCancel={() => {
           setContactsVisible(false);
         }}
+      />
+      <DappAccountModal
+        visible={isShowDappAccountModal}
+        onFinish={() => {
+          setIsShowDappAccountModal(false);
+        }}
+        onCancel={() => setIsShowDappAccountModal(false)}
       />
       <OpenApiModal
         visible={showOpenApiModal}

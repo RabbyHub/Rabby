@@ -1295,7 +1295,8 @@
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
           "customTestnet": "Add Custom Network",
-          "metamaskMode": "Connect Rabby by Disguising as MetaMask"
+          "metamaskMode": "Connect Rabby by Disguising as MetaMask",
+          "enableDappAccount": "Switch Dapp Address Independently"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1305,7 +1306,12 @@
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
         "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token",
-        "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced."
+        "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced.",
+        "DappAccount": {
+          "title": "Switch Dapp Address Independently",
+          "desc": "Once enabled, you can choose which address to connect to each Dapp independently. Switching your main address won't affect the address connected to each Dapp.",
+          "button": "Enable"
+        }
       },
       "tokenDetail": {
         "noIssuer": "No issuer information available",

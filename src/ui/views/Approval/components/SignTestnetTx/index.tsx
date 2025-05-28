@@ -46,6 +46,7 @@ import {
   parseAction,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
+import * as Sentry from '@sentry/browser';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -499,6 +500,7 @@ export const SignTestnetTx = ({
           },
         });
       }
+      Sentry.captureException(e);
     }
   };
 
@@ -608,6 +610,7 @@ export const SignTestnetTx = ({
           content: e.message || JSON.stringify(e),
           className: 'modal-support-darkmode',
         });
+        Sentry.captureException(e);
       },
     }
   );

@@ -30,6 +30,7 @@ interface PreferenceState {
   themeMode: DARK_MODE_TYPE;
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
+  isEnabledDappAccount?: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -56,6 +57,7 @@ export const preference = createModel<RootModel>()({
     themeMode: DARK_MODE_TYPE.system,
     reserveGasOnSendToken: false,
     isHideEcologyNoticeDict: {},
+    isEnabledDappAccount: false,
   } as PreferenceState,
 
   reducers: {
@@ -241,6 +243,11 @@ export const preference = createModel<RootModel>()({
     ) {
       await store.app.wallet.setAddressSortStoreValue(key, value);
       dispatch.preference.getPreference('addressSortStore');
+    },
+
+    async enableDappAccount(v: boolean, store) {
+      await store.app.wallet.enableDappAccount(v);
+      dispatch.preference.getPreference('isEnabledDappAccount');
     },
 
     // async setOpenapiHost(value: string, store) {

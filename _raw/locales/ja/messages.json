@@ -1223,7 +1223,8 @@
           "themeMode": "テーマモード",
           "toggleThemeMode": "テーマモード",
           "customTestnet": "カスタムネットワークを追加",
-          "metamaskMode": "MetaMaskとして偽装してRabbyを接続"
+          "metamaskMode": "MetaMaskとして偽装してRabbyを接続",
+          "enableDappAccount": "Dapp アドレスを個別に切り替える\n"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
@@ -1233,7 +1234,12 @@
         "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
         "clearWatchMode": "ウォッチモードをクリア",
         "requestDeBankTestnetGasToken": "DeBankテストネットガストークンをリクエスト",
-        "clearPendingWarningTip": "削除されたトランザクションは、置き換えられない限り、まだオンチェーンで確認される可能性があります。"
+        "clearPendingWarningTip": "削除されたトランザクションは、置き換えられない限り、まだオンチェーンで確認される可能性があります。",
+        "DappAccount": {
+          "title": "Dappアドレスを個別に切り替える\n",
+          "button": "有効化\n",
+          "desc": "有効化後、各Dappに接続するアドレスを選択できます。メインアドレスの変更は、各Dappに接続されているアドレスに影響しません。\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "ブロックされたトークンはトークンリストに表示されません",

@@ -141,14 +141,21 @@ const flowContext = flow
             },
             { height: isUnlock ? 800 : 628 }
           );
+          const isEnabledDappAccount = preferenceService.getPreference(
+            'isEnabledDappAccount'
+          );
+          if (!isEnabledDappAccount) {
+            preferenceService.setCurrentAccount(defaultAccount);
+          }
           connectOrigins.delete(origin);
           permissionService.addConnectedSiteV2({
             origin,
             name,
             icon,
             defaultChain,
-            defaultAccount:
-              defaultAccount || preferenceService.getCurrentAccount(),
+            defaultAccount: isEnabledDappAccount
+              ? defaultAccount || preferenceService.getCurrentAccount()
+              : undefined,
           });
           ctx.request.account = defaultAccount;
         } catch (e) {
@@ -406,17 +413,21 @@ function reportStatsData() {
 export default (request: ProviderRequest) => {
   const origin = request.session?.origin || request.origin;
   let account: Account | undefined = undefined;
-  if (origin) {
-    if (origin === INTERNAL_REQUEST_ORIGIN) {
-      account =
-        request.account || preferenceService.getCurrentAccount() || undefined;
-    } else {
-      const site = permissionService.getConnectedSite(origin);
-      if (site?.isConnected) {
+  if (preferenceService.getPreference('isEnabledDappAccount')) {
+    if (origin) {
+      if (origin === INTERNAL_REQUEST_ORIGIN) {
         account =
-          site.account || preferenceService.getCurrentAccount() || undefined;
+          request.account || preferenceService.getCurrentAccount() || undefined;
+      } else {
+        const site = permissionService.getConnectedSite(origin);
+        if (site?.isConnected) {
+          account =
+            site.account || preferenceService.getCurrentAccount() || undefined;
+        }
       }
     }
+  } else {
+    account = preferenceService.getCurrentAccount() || undefined;
   }
 
   const ctx: any = {

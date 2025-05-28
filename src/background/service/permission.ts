@@ -150,7 +150,7 @@ class PermissionService {
     name: string;
     icon: string;
     defaultChain: CHAINS_ENUM;
-    defaultAccount: Account;
+    defaultAccount?: Account;
     isSigned?: boolean;
   }) => {
     if (!this.lruCache) return;

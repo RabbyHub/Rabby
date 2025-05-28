@@ -243,7 +243,8 @@
           "toggleThemeMode": "主題模式",
           "themeMode": "主題模式",
           "customTestnet": "添加自定义网络",
-          "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby"
+          "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby",
+          "enableDappAccount": "獨立切換 Dapp 地址\n"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "更新版本",
@@ -257,7 +258,12 @@
         "requestDeBankTestnetGasToken": "獲取 DeBank Testnet Gas Token",
         "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！",
         "clearPendingWarningTip": "已移除的交易可能仍会在链上确认，除非将其替换。",
-        "supportedChains": "集成鏈"
+        "supportedChains": "集成鏈",
+        "DappAccount": {
+          "button": "啟用\n",
+          "title": "獨立切換 Dapp 地址\n",
+          "desc": "啟用後，您可以獨立選擇連接至每個 Dapp 的地址。更改您的主要地址不會影響每個 Dapp 的連接地址。\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "已隱藏的代幣將不會顯示在代幣列表中",

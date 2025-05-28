@@ -298,6 +298,7 @@ export const explainGas = async ({
   tx,
   wallet,
   gasLimit,
+  account,
 }: {
   gasUsed: number | string;
   gasPrice: number | string;
@@ -306,6 +307,7 @@ export const explainGas = async ({
   tx: Tx;
   wallet: WalletControllerType;
   gasLimit: string | undefined;
+  account: Account;
 }) => {
   let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
@@ -318,7 +320,8 @@ export const explainGas = async ({
       {
         txParams: tx,
       },
-      chain.enum
+      chain.enum,
+      account
     );
     gasCostTokenAmount = new BigNumber(res).div(1e18).plus(gasCostTokenAmount);
     maxGasCostAmount = new BigNumber(res).div(1e18).plus(maxGasCostAmount);

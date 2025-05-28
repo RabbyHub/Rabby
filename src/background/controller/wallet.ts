@@ -1128,9 +1128,10 @@ export class WalletController extends BaseController {
     txMeta: Record<string, any> & {
       txParams: any;
     },
-    chain = CHAINS_ENUM.OP
+    chain = CHAINS_ENUM.OP,
+    _account?: Account
   ) => {
-    const account = await preferenceService.getCurrentAccount();
+    const account = _account || (await preferenceService.getCurrentAccount());
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     buildinProvider.currentProvider.currentAccount = account.address;
     buildinProvider.currentProvider.currentAccountType = account.type;
@@ -1733,6 +1734,31 @@ export class WalletController extends BaseController {
   isReserveGasOnSendToken = () => preferenceService.isReserveGasOnSendToken();
   setReserveGasOnSendToken = (val: boolean) =>
     preferenceService.setPreferencePartials({ reserveGasOnSendToken: val });
+
+  enableDappAccount = (enabled: boolean) => {
+    preferenceService.setPreferencePartials({ isEnabledDappAccount: enabled });
+    const currentAccount = preferenceService.getCurrentAccount();
+    const sites = permissionService.getSites();
+    sites.forEach((site) => {
+      if (enabled) {
+        if (site.isConnected) {
+          permissionService.setSite({
+            ...site,
+            account: currentAccount,
+          });
+        }
+      } else {
+        permissionService.setSite({
+          ...site,
+          account: undefined,
+        });
+      }
+    });
+    sessionService.broadcastEvent(
+      'accountsChanged',
+      currentAccount?.address ? [currentAccount?.address] : []
+    );
+  };
 
   getLastTimeSendToken = (address: string) =>
     preferenceService.getLastTimeSendToken(address);
@@ -4033,8 +4059,6 @@ export class WalletController extends BaseController {
   getPreference = (key?: string) => {
     return preferenceService.getPreference(key);
   };
-
-  updateHasShowedGuide = preferenceService.updateHasShowedGuide;
 
   setIsDefaultWallet = (val: boolean) => {
     preferenceService.setIsDefaultWallet(val);

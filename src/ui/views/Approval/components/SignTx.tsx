@@ -215,6 +215,7 @@ const useExplainGas = ({
   wallet,
   gasLimit,
   isReady,
+  account,
 }: {
   gasUsed: number | string;
   gasPrice: number | string;
@@ -224,6 +225,7 @@ const useExplainGas = ({
   wallet: ReturnType<typeof useWallet>;
   gasLimit: string | undefined;
   isReady: boolean;
+  account: Account;
 }) => {
   const [result, setResult] = useState({
     gasCostUsd: new BigNumber(0),
@@ -242,6 +244,7 @@ const useExplainGas = ({
         wallet,
         tx,
         gasLimit,
+        account,
       }).then((data) => {
         setResult(data);
         setIsLoading(false);
@@ -659,6 +662,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     wallet,
     gasLimit,
     isReady,
+    account: currentAccount,
   });
 
   const checkErrors = useCheckGasAndNonce({
@@ -927,6 +931,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         content: e.message || JSON.stringify(e),
         className: 'modal-support-darkmode',
       });
+      Sentry.captureException(e);
     }
   };
 
@@ -1087,6 +1092,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         title: 'Error',
         content,
       });
+      Sentry.captureException(e);
       return;
     }
 
@@ -1140,6 +1146,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         title: 'Error',
         content: e.message || JSON.stringify(e),
       });
+      Sentry.captureException(e);
       return;
     }
 
@@ -1748,14 +1755,12 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }
       setInited(true);
     } catch (e) {
-      Sentry.captureException(
-        new Error(`SignTx init error: ${JSON.stringify(e)}`)
-      );
       Modal.error({
         className: 'modal-support-darkmode',
         title: 'Error',
         content: e.message || JSON.stringify(e),
       });
+      Sentry.captureException(e);
     }
   };
 
@@ -2133,7 +2138,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                   gasCostUsd: gasExplainResponse.gasCostUsd,
                   gasCostAmount: gasExplainResponse.gasCostAmount,
                 }}
-                gasCalcMethod={(price) => {
+                gasCalcMethod={async (price) => {
+                  if (!isReady) {
+                    return {
+                      gasCostUsd: new BigNumber(0),
+                      gasCostAmount: new BigNumber(0),
+                    };
+                  }
                   return explainGas({
                     gasUsed,
                     gasPrice: price,
@@ -2142,6 +2153,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                     tx,
                     wallet,
                     gasLimit,
+                    account: currentAccount,
                   });
                 }}
                 recommendGasLimit={recommendGasLimit}

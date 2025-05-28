@@ -21,7 +21,6 @@ import { useMemoizedFn } from 'ahooks';
 import { AccountSelector } from '@/ui/component/AccountSelector';
 import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { CurrentConnectionGuide } from './CurrentConnectionGuide';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import GnosisWrongChainAlertBar from '../GnosisWrongChainAlertBar';
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
@@ -39,7 +38,10 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false, trigger } = state ?? {};
-  const [isShowMetamaskModePopup, setIsShowMetamaskModePopup] = useState(false);
+
+  const isEnabledDappAccount = useRabbySelector((s) => {
+    return s.preference.isEnabledDappAccount;
+  });
 
   const [visible, setVisible] = useState(
     trigger === 'current-connection' && showChainsModal
@@ -86,19 +88,28 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   const currentAccount = useCurrentAccount();
 
-  const currentSiteAccount = site?.account ? site.account : currentAccount;
+  const currentSiteAccount = useMemo(() => {
+    if (!isEnabledDappAccount) {
+      return currentAccount;
+    }
+    return site?.account ? site.account : currentAccount;
+  }, [site?.account, currentAccount, isEnabledDappAccount]);
 
   const handleSiteAccountChange = useMemoizedFn(async (account) => {
     if (!site) {
       return;
     }
-    const _site = {
-      ...site!,
-      account,
-    };
-    setSite(_site);
-    setVisible(false);
-    wallet.setSiteAccount({ origin: _site.origin, account });
+    if (!isEnabledDappAccount) {
+      await dispatch.account.changeAccountAsync(account);
+    } else {
+      const _site = {
+        ...site!,
+        account,
+      };
+      setSite(_site);
+      setVisible(false);
+      await wallet.setSiteAccount({ origin: _site.origin, account });
+    }
   });
 
   useEffect(() => {
@@ -106,7 +117,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   }, []);
 
   const chain = useMemo(() => {
-    if (!site || site.isMetamaskMode || !site.isConnected) {
+    if (!site || !site.isConnected) {
       return null;
     }
     return findChain({
@@ -130,19 +141,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     });
   });
 
-  const {
-    firstNotice,
-    updateContent,
-    hasShowedGuide,
-    version,
-  } = useRabbySelector((s) => ({
-    ...s.appVersion,
-  }));
-
   const dispatch = useRabbyDispatch();
-
-  const isShowGuide =
-    !(firstNotice && updateContent) && site?.isConnected && !hasShowedGuide;
 
   const { data: gnosisNetworks, loading } = useGnosisNetworks({
     address:
@@ -175,6 +174,93 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     loading,
   ]);
 
+  if (!isEnabledDappAccount) {
+    return (
+      <>
+        <div className={clsx('current-connection-block h-[52px] px-[12px]')}>
+          {site ? (
+            <>
+              <div className="site mr-[18px]">
+                <div className="relative">
+                  <FallbackSiteLogo
+                    url={site.icon}
+                    origin={site.origin}
+                    width="28px"
+                    className="site-icon"
+                  ></FallbackSiteLogo>
+                  {site.isMetamaskMode ? (
+                    <TooltipWithMagnetArrow
+                      placement="top"
+                      overlayClassName={clsx(
+                        'rectangle max-w-[360px] w-[360px]'
+                      )}
+                      align={{
+                        offset: [0, 4],
+                      }}
+                      title={t(
+                        'page.dashboard.recentConnection.metamaskModeTooltipNew'
+                      )}
+                    >
+                      <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                        <img src={IconMetamaskMode} alt="metamask mode"></img>
+                      </div>
+                    </TooltipWithMagnetArrow>
+                  ) : null}
+                </div>
+                <div className="site-content">
+                  <div className="site-name" title={site?.origin}>
+                    {site?.origin?.replace(/^https?:\/\//, '')}
+                  </div>
+                  <div
+                    className={clsx(
+                      'site-status text-[12px]',
+                      site?.isConnected && 'active'
+                    )}
+                  >
+                    {site?.isConnected
+                      ? t('page.dashboard.recentConnection.connected')
+                      : t('page.dashboard.recentConnection.notConnected')}
+                    <RCIconDisconnectCC
+                      viewBox="0 0 14 14"
+                      className="site-status-icon w-12 h-12 ml-4 text-r-neutral-foot hover:text-rabby-red-default"
+                      onClick={() => handleRemove(site!.origin)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <ChainSelector
+                className={clsx(!site && 'disabled')}
+                value={site?.chain || CHAINS_ENUM.ETH}
+                onChange={handleChangeDefaultChain}
+                showModal={visible}
+                onAfterOpen={() => {
+                  matomoRequestEvent({
+                    category: 'Front Page Click',
+                    action: 'Click',
+                    label: 'Change Chain',
+                  });
+
+                  ga4.fireEvent('Click_ChangeChain', {
+                    event_category: 'Front Page Click',
+                  });
+                }}
+                showRPCStatus
+              />
+            </>
+          ) : (
+            <div className="site is-empty">
+              <img src={IconDapps} className="site-icon ml-6" alt="" />
+              <div className="site-content">
+                {t('page.dashboard.recentConnection.noDappFound')}
+              </div>
+            </div>
+          )}
+        </div>
+        {isShowGnosisAlert ? <GnosisWrongChainAlertBar /> : null}
+      </>
+    );
+  }
+
   return (
     <>
       <div
@@ -188,7 +274,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
             <div
               className={clsx(
                 'site-icon-container',
-                site?.isConnected && !site?.isMetamaskMode ? 'is-support' : ''
+                site?.isConnected ? 'is-support' : ''
               )}
               onClick={handleClickChain}
             >
@@ -256,27 +342,12 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           </div>
         )}
         {site ? (
-          isShowGuide ? (
-            <CurrentConnectionGuide
-              onClose={() => {
-                dispatch.appVersion.closeGuide();
-              }}
-            >
-              <AccountSelector
-                className="ml-auto"
-                disabled={!site?.isConnected}
-                value={currentSiteAccount}
-                onChange={handleSiteAccountChange}
-              />
-            </CurrentConnectionGuide>
-          ) : (
-            <AccountSelector
-              className="ml-auto"
-              disabled={!site?.isConnected}
-              value={currentSiteAccount}
-              onChange={handleSiteAccountChange}
-            />
-          )
+          <AccountSelector
+            className="ml-auto"
+            disabled={!site?.isConnected}
+            value={currentSiteAccount}
+            onChange={handleSiteAccountChange}
+          />
         ) : null}
         <ChainSelectorModal
           account={currentSiteAccount}

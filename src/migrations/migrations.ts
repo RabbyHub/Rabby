@@ -7,3 +7,4 @@ export { default as customizedTokenMigration } from './customizedTokenMigration'
 export { default as localeMigration } from './localeMigration';
 export { default as metamaskModeSiteMigration } from './metamaskModeSiteMigration';
 export { default as siteAccountMigration } from './siteAccountMigration';
+export { default as siteAccountMigrationEmpty } from './siteAccountMigrationEmpty';
