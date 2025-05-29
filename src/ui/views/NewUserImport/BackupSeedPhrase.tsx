@@ -8,7 +8,8 @@ import WordsMatrix from '@/ui/component/WordsMatrix';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import IconSuccess from '@/ui/assets/success.svg';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
-import { ReactComponent as RcIconCopy } from 'ui/assets/component/copy.svg';
+import { IconCopyCC } from 'ui/assets/component/IconCopyCC';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export const BackupSeedPhrase = () => {
   const { t } = useTranslation();
@@ -38,6 +39,8 @@ export const BackupSeedPhrase = () => {
 
     history.push('/new-user/import/seed-phrase/set-password?isCreated=true');
   };
+
+  const { isDarkTheme } = useThemeMode();
 
   return (
     <Card
@@ -80,8 +83,8 @@ export const BackupSeedPhrase = () => {
         )}
         onClick={onCopyMnemonics}
       >
-        <RcIconCopy
-          viewBox="0 0 20 20"
+        <IconCopyCC
+          strokeColor={isDarkTheme ? '#1C1F2BFF' : 'white'}
           className="w-20 h-20 text-rabby-blue-main"
         />
         <span>{t('page.newAddress.seedPhrase.copy')}</span>
