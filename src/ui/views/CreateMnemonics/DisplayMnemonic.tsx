@@ -3,7 +3,7 @@ import WordsMatrix from '@/ui/component/WordsMatrix';
 import clsx from 'clsx';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { useWallet } from 'ui/utils';
-import { ReactComponent as RcIconCopy } from 'ui/assets/component/copy.svg';
+import { IconCopyCC } from 'ui/assets/component/IconCopyCC';
 import IconSuccess from 'ui/assets/success.svg';
 import { Button, message } from 'antd';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
@@ -11,6 +11,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/ui/component/NewUserImport';
 import { useHistory } from 'react-router-dom';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const DisplayMnemonic = () => {
   const dispatch = useRabbyDispatch();
@@ -33,6 +34,8 @@ const DisplayMnemonic = () => {
       });
     });
   }, [mnemonics]);
+
+  const { isDarkTheme } = useThemeMode();
 
   const onSubmit = React.useCallback(async () => {
     await wallet.createKeyringWithMnemonics(mnemonics);
@@ -90,9 +93,9 @@ const DisplayMnemonic = () => {
         )}
         onClick={onCopyMnemonics}
       >
-        <RcIconCopy
-          viewBox="0 0 20 20"
+        <IconCopyCC
           className="w-20 h-20 text-rabby-blue-main"
+          strokeColor={isDarkTheme ? '#1C1F2BFF' : 'white'}
         />
         <span>{t('page.newAddress.seedPhrase.copy')}</span>
       </div>
