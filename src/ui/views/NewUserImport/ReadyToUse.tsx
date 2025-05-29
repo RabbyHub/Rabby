@@ -96,13 +96,13 @@ export const ReadyToUse = () => {
 
       <div
         className={clsx(
-          'fixed top-[23px] right-[80px]',
+          'fixed top-[40px] right-[150px]',
           'w-[242px] h-[300px]',
           'py-12 px-12',
           'bg-r-neutral-card-1 rounded-[12px]'
         )}
       >
-        <RcIconTriangle className="absolute top-[-12px] right-[22px]" />
+        <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
         <div ref={userGuideRef} className="flex flex-col gap-[11px]">
           <div className="flex flex-col">
             <div className="flex items-center">
