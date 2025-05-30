@@ -2,15 +2,48 @@ import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { http } from '../utils/http';
+// import { openapiService } from '.';
 
 export interface RPCItem {
   url: string;
   enable: boolean;
 }
 
+export type RPCDefaultItem = {
+  chainId: string;
+  rpcUrl: string[];
+  txPushRpc: boolean;
+};
+
 export type RPCServiceStore = {
   customRPC: Record<string, RPCItem>;
+  defaultRPC?: Record<string, RPCDefaultItem>;
 };
+
+export const BE_SUPPORTED_METHODS: string[] = [
+  'eth_call',
+  'eth_blockNumber',
+  'eth_getBalance',
+  'eth_getCode',
+  'eth_getStorageAt',
+  'eth_getTransactionCount',
+  'eth_chainId',
+];
+
+// async function callWithFallbackRpcs<T>(
+//   rpcUrls: string[],
+//   fn: (rpc: string) => Promise<T>
+// ): Promise<T> {
+//   for (const url of rpcUrls) {
+//     try {
+//       const result = await fn(url);
+//       return result;
+//     } catch (err) {
+//       console.warn(`RPC failed: ${url}`, err);
+//     }
+//   }
+//   throw new Error('all RPC calls failed');
+// }
 
 const MAX = 4_294_967_295;
 let idCounter = Math.floor(Math.random() * MAX);
@@ -20,9 +53,15 @@ function getUniqueId(): number {
   return idCounter;
 }
 
+const fetchDefaultRpc = async () => {
+  const { data } = await http.get('https://api.rabby.io/v1/chainrpc');
+  return data.stats as RPCDefaultItem[];
+};
+
 class RPCService {
   store: RPCServiceStore = {
     customRPC: {},
+    defaultRPC: {},
   };
   rpcStatus: Record<
     string,
@@ -36,6 +75,7 @@ class RPCService {
       name: 'rpc',
       template: {
         customRPC: {},
+        defaultRPC: {},
       },
     });
     this.store = storage || this.store;
@@ -54,6 +94,47 @@ class RPCService {
         this.store.customRPC = { ...this.store.customRPC };
       }
     }
+
+    this.syncDefaultRPC();
+  };
+
+  syncDefaultRPC = async () => {
+    try {
+      const data = await fetchDefaultRpc();
+      const defaultRPC: Record<string, RPCDefaultItem> = data.reduce(
+        (acc, item) => {
+          acc[item.chainId] = item;
+          return acc;
+        },
+        {} as Record<string, RPCDefaultItem>
+      );
+      this.store.defaultRPC = defaultRPC;
+    } catch (error) {
+      console.error('Failed to fetch default RPC:', error);
+    }
+  };
+
+  supportedRpcMethodByBE = (method?: string) => {
+    return BE_SUPPORTED_METHODS.some((e) => e === method);
+  };
+
+  requestDefaultRPC = async (
+    chainServerId: string,
+    method: string,
+    params: any[]
+  ) => {
+    const hostList = this?.store?.defaultRPC?.[chainServerId]?.rpcUrl || [];
+    if (!hostList.length) {
+      throw new Error(`No available rpc for ${chainServerId}`);
+    }
+    // return callWithFallbackRpcs(hostList, (rpc) =>
+    //   this.request(rpc, method, params)
+    // );
+    return this.request(hostList[0], method, params);
+  };
+
+  getDefaultRPC = (chainServerId: string) => {
+    return this.store.defaultRPC?.[chainServerId];
   };
 
   hasCustomRPC = (chain: CHAINS_ENUM) => {
