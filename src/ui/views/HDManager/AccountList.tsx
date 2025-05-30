@@ -123,11 +123,6 @@ export const AccountList: React.FC<Props> = ({
 
         // update current account list
         await createTask(() => getCurrentAccounts());
-        if (!isHideToast) {
-          message.success({
-            content: t('page.newAddress.hd.tooltip.added'),
-          });
-        }
       } else {
         await createTask(() =>
           wallet.removeAddress(
@@ -140,11 +135,6 @@ export const AccountList: React.FC<Props> = ({
           )
         );
         removeCurrentAccount(account.address);
-        if (!isHideToast) {
-          message.success({
-            content: t('page.newAddress.hd.tooltip.removed'),
-          });
-        }
       }
 
       return;

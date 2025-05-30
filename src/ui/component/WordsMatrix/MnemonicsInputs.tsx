@@ -19,21 +19,19 @@ import { Trans, useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 
-import { ReactComponent as RcIconMnemonicsShow } from '@/ui/assets/import/mnemonics-show.svg';
-import { ReactComponent as RcIconMnemonicsHide } from '@/ui/assets/import/mnemonics-hide.svg';
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/import/arrow-cc.svg';
 import { ReactComponent as RcIconSwipeCC } from '@/ui/assets/import/swipe-cc.svg';
 
-const ITEM_H = 208 / 4;
+const ITEM_H = 40;
 const ROW_COUNT = 3;
 const DEFAULT_MEMONICS_COUNT = 12;
 
 const NumberFlag = styled.div`
-  color: var(--r-neutral-title-1, #192945);
-  font-weight: 500;
-  font-size: 15px;
-  height: 18px;
-  line-height: 1;
+  color: var(--r-neutral-body);
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 12px;
+  height: 12px;
 `;
 
 const useClearClipboardToast = () => {
@@ -65,14 +63,17 @@ const MatrixWrapper = styled.div.withConfig<{
 
   &.new-user-import {
     background-color: transparent;
-    gap: 9px;
+    gap: 8px;
     .matrix-word-item {
       border-radius: 8px;
-      width: calc(calc(100% - 18px) / 3);
-      border: 1px solid var(--r-neutral-line, #e0e5ec) !important;
+      width: calc(calc(100% - 16px) / 3);
+      border: 1.5px solid var(--r-neutral-line, #e0e5ec) !important;
+      background-color: rgba(217, 217, 217, 0.2);
 
       .mnemonics-input {
         text-align: center;
+        font-size: 18px;
+        color: var(--rabby-light-neutral-body, #3e495eff);
         &:hover {
           border-color: var(--r-blue-default, #7084ff);
         }
@@ -89,10 +90,11 @@ const MatrixWrapper = styled.div.withConfig<{
       }
 
       ${styid(NumberFlag)} {
-        top: 8px;
+        top: 6px;
         left: 8px;
         color: var(--r-neutral-body, #3e495e);
-        font-size: 13px;
+        font-size: 10px;
+        line-height: 12px;
         font-style: normal;
         font-weight: 400;
       }
@@ -424,7 +426,7 @@ function MnemonicsInputs({
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
-      <HeadToolbar className="mb-[8px] text-r-neutral-body">
+      <HeadToolbar className="mb-[20px] text-r-neutral-body">
         <Dropdown
           trigger={['click']}
           overlay={
@@ -566,14 +568,10 @@ function MnemonicsInputs({
             clearAll();
           }}
         >
-          {newUserImport ? (
-            <RcIconSwipeCC
-              viewBox="0 0 16 16"
-              className="w-16 h-16 text-r-neutral-foot"
-            />
-          ) : (
-            <ThemeIcon src={RcIconClearAll} svgSize={16} />
-          )}
+          <RcIconClearAll
+            viewBox="0 0 16 16"
+            className="w-16 h-16 text-rabby-blue-main"
+          />
           {!newUserImport && (
             <span className="ml-[6px]">
               {t('page.newAddress.seedPhrase.clearAll')}
