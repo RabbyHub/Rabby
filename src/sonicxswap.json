@@ -1,0 +1,7 @@
+{
+  "name": "Sonicxswap",
+  "description": "Sonicxswap is a decentralized exchange (DEX) and launchpad operating on the Sonic blockchain.",
+  "url": "https://www.sonicxswap.com/",
+  "icon": "https://drive.google.com/file/d/1m7vcqAZukZ96SJIhn6H5_1HTlFg-uVLz/view?usp=drive_link",
+  "chains": ["Sonic"]
+}
