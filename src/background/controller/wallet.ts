@@ -2472,19 +2472,26 @@ export class WalletController extends BaseController {
   };
 
   execGnosisTransaction = async (account: Account) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (keyring.currentTransaction && keyring.safeInstance) {
-      buildinProvider.currentProvider.currentAccount = account.address;
-      buildinProvider.currentProvider.currentAccountType = account.type;
-      buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-      await keyring.execTransaction({
-        safeAddress: keyring.safeInstance.safeAddress,
-        transaction: keyring.currentTransaction,
-        networkId: keyring.safeInstance.network,
-        provider: new ethers.providers.Web3Provider(
-          buildinProvider.currentProvider
-        ),
-      });
+    try {
+      const keyring: GnosisKeyring = this._getKeyringByType(
+        KEYRING_CLASS.GNOSIS
+      );
+      if (keyring.currentTransaction && keyring.safeInstance) {
+        const currentProvider = new EthereumProvider();
+        currentProvider.currentAccount = account.address;
+        currentProvider.currentAccountType = account.type;
+        currentProvider.currentAccountBrand = account.brandName;
+        currentProvider.chainId = keyring.safeInstance.network;
+        await keyring.execTransaction({
+          safeAddress: keyring.safeInstance.safeAddress,
+          transaction: keyring.currentTransaction,
+          networkId: keyring.safeInstance.network,
+          provider: new ethers.providers.Web3Provider(currentProvider),
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
     }
   };
 

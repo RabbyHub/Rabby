@@ -427,7 +427,12 @@ export default (request: ProviderRequest) => {
       }
     }
   } else {
-    account = preferenceService.getCurrentAccount() || undefined;
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      account =
+        request.account || preferenceService.getCurrentAccount() || undefined;
+    } else {
+      account = preferenceService.getCurrentAccount() || undefined;
+    }
   }
 
   const ctx: any = {
