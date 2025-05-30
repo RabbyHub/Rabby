@@ -28,6 +28,7 @@ import UserListDrawer from './UserListDrawer';
 import { AccountSelector } from '@/ui/component/AccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyGetter, useRabbySelector } from '@/ui/store';
+import { Account } from '@/background/service/preference';
 
 interface ConnectProps {
   params: any;
@@ -208,8 +209,7 @@ export const ConnectContent = (props: ConnectProps) => {
   const {
     params: { icon, origin, name, $ctx },
   } = props;
-  const currentAccount = useCurrentAccount();
-  const [selectedAccount, setSelectedAccount] = useState(currentAccount);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { state } = useLocation<{
     showChainsModal?: boolean;
   }>();
@@ -481,8 +481,11 @@ export const ConnectContent = (props: ConnectProps) => {
   const init = async () => {
     const site = await wallet.getSite(origin);
     setCurrentSite(site);
+    const currentAccount = await wallet.getCurrentAccount();
     if (isEnabledDappAccount && site?.account) {
       setSelectedAccount(site.account);
+    } else {
+      setSelectedAccount(currentAccount);
     }
     let level: 'very_low' | 'low' | 'medium' | 'high' = 'low';
     let collectList: { name: string; logo_url: string }[] = [];
