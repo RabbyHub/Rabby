@@ -157,7 +157,8 @@ const flowContext = flow
               ? defaultAccount || preferenceService.getCurrentAccount()
               : undefined,
           });
-          ctx.request.account = defaultAccount;
+          ctx.request.account =
+            defaultAccount || preferenceService.getCurrentAccount();
         } catch (e) {
           console.error(e);
           connectOrigins.delete(origin);
