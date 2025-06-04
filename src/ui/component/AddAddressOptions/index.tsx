@@ -52,6 +52,8 @@ import { useWallet } from '@/ui/utils';
 import { Modal, Tooltip } from 'antd';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { useHadSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
+import { PageContainer } from 'ui/component/PageContainer';
+import { Avatar, Box, Card, Flex, Text } from '@radix-ui/themes';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
@@ -405,103 +407,129 @@ const AddAddressOptions = () => {
   if (preventMount) return null;
 
   return (
-    <div className="rabby-container pb-[12px]" ref={rootRef}>
-      {[createImportAddrList, centerList].map((items, index) => (
-        <div
-          className="bg-r-neutral-card-1 rounded-[6px] mb-[12px]"
-          key={index}
-        >
-          {items.map((e) => {
+    <PageContainer>
+      <Flex
+        direction={{ sm: 'column', lg: 'row' }}
+        gap={{ sm: '12px', lg: '24px' }}
+        className="rabby-container pb-[12px]"
+        ref={rootRef}
+      >
+        {[createImportAddrList, centerList].map((items, index) => (
+          <div
+            className="bg-r-neutral-card-1 rounded-[6px] mb-[12px] space-y-4"
+            key={index}
+          >
+            {items.map((e) => {
+              return (
+                <Card
+                  key={e.brand}
+                  onClick={e.onClick}
+                  className="cursor-pointer"
+                >
+                  <Flex gap="3" align="center">
+                    <Avatar
+                      size="3"
+                      src={e.leftIcon}
+                      radius="full"
+                      fallback="T"
+                    />
+                    <Box>
+                      <Text as="div" size="2" weight="bold">
+                        {e.content}
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Card>
+                // <Item
+                //   key={e.brand}
+                //   bgColor="transparent"
+                //   leftIcon={e.leftIcon}
+                //   onClick={e.onClick}
+                // >
+                //   <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
+                //     {e.content}
+                //   </div>
+                // </Item>
+              );
+            })}
+          </div>
+        ))}
+
+        <div className="bg-r-neutral-card-1 rounded-[6px] mb-[12px]">
+          {renderList.map((item) => {
+            const isSelected = selectedWalletType === item.key;
+            return (
+              <div key={item.key} className={clsx(isSelected && 'pb-[16px]')}>
+                <Item
+                  hoverBorder={false}
+                  bgColor="transparent"
+                  leftIcon={item.icon}
+                  className={clsx('bg-transparent', item.key)}
+                  rightIconClassName={clsx(
+                    'ml-[8px] transition-transform',
+                    isSelected ? '-rotate-90' : 'rotate-90'
+                  )}
+                  onClick={() => {
+                    setSelectedWalletType((v) =>
+                      v === item.key ? '' : item.key
+                    );
+                  }}
+                >
+                  <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
+                    {item.title}
+                  </div>
+                  <div className="ml-auto relative w-[52px] h-[20px]">
+                    {item.values.slice(0, 3).map((wallet, i) => (
+                      <ThemeIcon
+                        key={wallet.image}
+                        src={wallet.leftIcon || wallet.image}
+                        className="absolute top-0 w-[20px] h-[20px] select-none"
+                        onDragStart={() => false}
+                        style={{
+                          left: 0 + 16 * i,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </Item>
+                <div
+                  className={clsx(
+                    'mx-[16px] bg-r-neutral-card-2 rounded-[6px] transition-all overflow-hidden',
+                    !isSelected ? 'max-h-0' : 'max-h-[500px]'
+                  )}
+                >
+                  <div className="py-[8px] grid grid-cols-3 gap-x-0">
+                    {item.values.map((v) => (
+                      <AddressItem key={v.brand} data={v} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="bg-r-neutral-card-1 rounded-[6px]">
+          {bottomList.map((e) => {
             return (
               <Item
-                key={e.brand}
                 bgColor="transparent"
+                key={e.brand}
                 leftIcon={e.leftIcon}
                 onClick={e.onClick}
               >
-                <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
-                  {e.content}
+                <div className="flex flex-col pl-[12px]">
+                  <div className="text-13 leading-[15px] text-r-neutral-title-1 font-medium">
+                    {e.content}
+                  </div>
+                  <div className="text-12 text-r-neutral-body">{e.subText}</div>
                 </div>
               </Item>
             );
           })}
         </div>
-      ))}
-
-      <div className="bg-r-neutral-card-1 rounded-[6px] mb-[12px]">
-        {renderList.map((item) => {
-          const isSelected = selectedWalletType === item.key;
-          return (
-            <div key={item.key} className={clsx(isSelected && 'pb-[16px]')}>
-              <Item
-                hoverBorder={false}
-                bgColor="transparent"
-                leftIcon={item.icon}
-                className={clsx('bg-transparent', item.key)}
-                rightIconClassName={clsx(
-                  'ml-[8px] transition-transform',
-                  isSelected ? '-rotate-90' : 'rotate-90'
-                )}
-                onClick={() => {
-                  setSelectedWalletType((v) =>
-                    v === item.key ? '' : item.key
-                  );
-                }}
-              >
-                <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
-                  {item.title}
-                </div>
-                <div className="ml-auto relative w-[52px] h-[20px]">
-                  {item.values.slice(0, 3).map((wallet, i) => (
-                    <ThemeIcon
-                      key={wallet.image}
-                      src={wallet.leftIcon || wallet.image}
-                      className="absolute top-0 w-[20px] h-[20px] select-none"
-                      onDragStart={() => false}
-                      style={{
-                        left: 0 + 16 * i,
-                      }}
-                    />
-                  ))}
-                </div>
-              </Item>
-              <div
-                className={clsx(
-                  'mx-[16px] bg-r-neutral-card-2 rounded-[6px] transition-all overflow-hidden',
-                  !isSelected ? 'max-h-0' : 'max-h-[500px]'
-                )}
-              >
-                <div className="py-[8px] grid grid-cols-3 gap-x-0">
-                  {item.values.map((v) => (
-                    <AddressItem key={v.brand} data={v} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="bg-r-neutral-card-1 rounded-[6px]">
-        {bottomList.map((e) => {
-          return (
-            <Item
-              bgColor="transparent"
-              key={e.brand}
-              leftIcon={e.leftIcon}
-              onClick={e.onClick}
-            >
-              <div className="flex flex-col pl-[12px]">
-                <div className="text-13 leading-[15px] text-r-neutral-title-1 font-medium">
-                  {e.content}
-                </div>
-                <div className="text-12 text-r-neutral-body">{e.subText}</div>
-              </div>
-            </Item>
-          );
-        })}
-      </div>
-    </div>
+      </Flex>
+    </PageContainer>
   );
 };
 

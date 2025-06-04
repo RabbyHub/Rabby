@@ -1,7 +1,9 @@
 import browser from 'webextension-polyfill';
 
-import './style/index.less';
+// import './style/index.less';
 import './app';
+import '@radix-ui/themes/styles.css';
+import './style/globals.css';
 
 // in mv2, we need to import the app.tsx file delay to avoid ui render problem
 // setTimeout(() => {

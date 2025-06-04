@@ -23,13 +23,22 @@ import { ReactComponent as RcIconMnemonicsShow } from '@/ui/assets/import/mnemon
 import { ReactComponent as RcIconMnemonicsHide } from '@/ui/assets/import/mnemonics-hide.svg';
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/import/arrow-cc.svg';
 import { ReactComponent as RcIconSwipeCC } from '@/ui/assets/import/swipe-cc.svg';
+import {
+  Button,
+  DropdownMenu,
+  Flex,
+  IconButton,
+  Text,
+  Tooltip,
+} from '@radix-ui/themes';
+import { LucideBrush, LucideX } from 'lucide-react';
 
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
 const DEFAULT_MEMONICS_COUNT = 12;
 
 const NumberFlag = styled.div`
-  color: var(--r-neutral-title-1, #192945);
+  //color: var(--r-neutral-title-1, #192945);
   font-weight: 500;
   font-size: 15px;
   height: 18px;
@@ -69,7 +78,7 @@ const MatrixWrapper = styled.div.withConfig<{
     .matrix-word-item {
       border-radius: 8px;
       width: calc(calc(100% - 18px) / 3);
-      border: 1px solid var(--r-neutral-line, #e0e5ec) !important;
+      //border: 1px solid var(--r-neutral-line, #e0e5ec) !important;
 
       .mnemonics-input {
         text-align: center;
@@ -91,7 +100,7 @@ const MatrixWrapper = styled.div.withConfig<{
       ${styid(NumberFlag)} {
         top: 8px;
         left: 8px;
-        color: var(--r-neutral-body, #3e495e);
+        //color: var(--r-neutral-body, #3e495e);
         font-size: 13px;
         font-style: normal;
         font-weight: 400;
@@ -171,7 +180,7 @@ const MatrixWrapper = styled.div.withConfig<{
   /* for MnemonicsInputs :start */
   .mnemonics-input {
     background-color: transparent;
-    color: var(--r-neutral-title-1, #192945);
+    //color: var(--r-neutral-title-1, #192945);
     height: 100%;
     display: inline-block;
     line-height: ${ITEM_H}px;
@@ -422,17 +431,63 @@ function MnemonicsInputs({
 
   const clearClipboardToast = useClearClipboardToast();
 
+  const hasAtLeastOneSeedPhrase =
+    inputTexts.filter((it) => it.trim().length > 0).length > 0;
+
   return (
-    <div className={clsx(!!errMsgs.length && 'with-error')}>
-      <HeadToolbar className="mb-[8px] text-r-neutral-body">
-        <Dropdown
-          trigger={['click']}
-          overlay={
-            <Menu className="mnemonics-input-menu py-8px rounded-[4px]">
+    <Flex direction={'column'} gap={'6'}>
+      <Flex direction={'row'} align={'center'} justify={'center'}>
+        {!hasAtLeastOneSeedPhrase && (
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <Button size={'2'} variant="soft">
+                <div className="left flex items-center cursor-pointer">
+                  <span>
+                    {!isSlip39 ? (
+                      <Trans
+                        t={t}
+                        i18nKey={
+                          needPassphrase
+                            ? 'page.newAddress.seedPhrase.wordPhraseAndPassphrase'
+                            : 'page.newAddress.seedPhrase.wordPhrase'
+                        }
+                        values={{ count: mnemonicsCount }}
+                      >
+                        I have a <span>{{ mnemonicsCount }}</span>-word phrase
+                        and Passphrase
+                      </Trans>
+                    ) : (
+                      <Trans
+                        t={t}
+                        i18nKey={
+                          needPassphrase
+                            ? 'page.newAddress.seedPhrase.slip39SeedPhraseWithPassphrase'
+                            : 'page.newAddress.seedPhrase.slip39SeedPhrase'
+                        }
+                        values={{ SLIP39: 'SLIP 39' }}
+                      >
+                        <span />
+                      </Trans>
+                    )}
+                  </span>
+
+                  {/*{newUserImport ? (
+                  <RcIconArrowCC
+                    className="ml-[2px] text-r-neutral-body w-16 h-16"
+                    viewBox="0 0 16 16"
+                  />
+                ) : (
+                  <img className="ml-[2px]" src={IconCaretDown} />
+                )}*/}
+                </div>
+                <DropdownMenu.TriggerIcon />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
               {MNEMONICS_COUNTS.map((count) => {
                 return (
-                  <Menu.Item
-                    className="h-[38px] py-0 px-[8px] text-r-neutral-body hover:bg-transparent"
+                  <DropdownMenu.Item
+                    // className="h-[38px] py-0 px-[8px] text-r-neutral-body hover:bg-transparent"
                     key={`countSelector-${count}`}
                     onClick={() => {
                       setMnemonicsCount(count);
@@ -453,13 +508,17 @@ function MnemonicsInputs({
                         -word phrase
                       </Trans>
                     </div>
-                  </Menu.Item>
+                  </DropdownMenu.Item>
                 );
               })}
+
+              {/* TODO: UNCOMMENT THIS ONCE THE WALLET IS STABLE AND USED */}
+              {/*<DropdownMenu.Separator />
+
               {NEED_PASSPHRASE_MNEMONICS_COUNTS.map((count) => {
                 return (
-                  <Menu.Item
-                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                  <DropdownMenu.Item
+                    // className="h-[38px] py-0 px-[8px] hover:bg-transparent"
                     key={`countSelector-need-passphrase-${count}`}
                     style={{ color: 'var(--r-neutral-body)' }}
                     onClick={() => {
@@ -481,14 +540,16 @@ function MnemonicsInputs({
                         -word phrase and Passphrase
                       </Trans>
                     </div>
-                  </Menu.Item>
+                  </DropdownMenu.Item>
                 );
               })}
 
+              <DropdownMenu.Separator />
+
               {SLIP39_MNEMONICS_COUNTS.map(({ passphrase }) => {
                 return (
-                  <Menu.Item
-                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                  <DropdownMenu.Item
+                    // className="h-[38px] py-0 px-[8px] hover:bg-transparent"
                     key={`countSelector-need-passphrase-${passphrase}`}
                     style={{ color: 'var(--r-neutral-body)' }}
                     onClick={() => {
@@ -511,125 +572,254 @@ function MnemonicsInputs({
                         ></b>
                       </Trans>
                     </div>
-                  </Menu.Item>
+                  </DropdownMenu.Item>
                 );
-              })}
-            </Menu>
-          }
-        >
-          <div className="left flex items-center cursor-pointer">
-            <span>
-              {!isSlip39 ? (
-                <Trans
-                  t={t}
-                  i18nKey={
-                    needPassphrase
-                      ? 'page.newAddress.seedPhrase.wordPhraseAndPassphrase'
-                      : 'page.newAddress.seedPhrase.wordPhrase'
-                  }
-                  values={{ count: mnemonicsCount }}
-                >
-                  I have a <span>{{ mnemonicsCount }}</span>-word phrase and
-                  Passphrase
-                </Trans>
-              ) : (
-                <Trans
-                  t={t}
-                  i18nKey={
-                    needPassphrase
-                      ? 'page.newAddress.seedPhrase.slip39SeedPhraseWithPassphrase'
-                      : 'page.newAddress.seedPhrase.slip39SeedPhrase'
-                  }
-                  values={{ SLIP39: 'SLIP 39' }}
-                >
-                  <span />
-                </Trans>
-              )}
-            </span>
+              })}*/}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        )}
 
+        {hasAtLeastOneSeedPhrase && (
+          <Button
+            size={'2'}
+            type={'button'}
+            variant={'soft'}
+            onClick={() => {
+              clearAll();
+            }}
+          >
+            <LucideX size={16} strokeWidth={4} />{' '}
+            {t('page.newAddress.seedPhrase.clearAll')}
+            {/*{newUserImport ? (*/}
+            {/*  <RcIconSwipeCC*/}
+            {/*    viewBox="0 0 16 16"*/}
+            {/*    className="w-16 h-16 text-r-neutral-foot"*/}
+            {/*  />*/}
+            {/*) : (*/}
+            {/*  <ThemeIcon src={RcIconClearAll} svgSize={16} />*/}
+            {/*)}*/}
+            {!newUserImport && (
+              <span className="ml-[6px]">
+                {t('page.newAddress.seedPhrase.clearAll')}
+              </span>
+            )}
+          </Button>
+        )}
+      </Flex>
+
+      <div className={clsx(!!errMsgs.length && 'with-error')}>
+        {/*<HeadToolbar className="mb-[8px] text-r-neutral-body">
+          <Dropdown
+            trigger={['click']}
+            overlay={
+              <Menu className="mnemonics-input-menu py-8px rounded-[4px]">
+                {MNEMONICS_COUNTS.map((count) => {
+                  return (
+                    <Menu.Item
+                      className="h-[38px] py-0 px-[8px] text-r-neutral-body hover:bg-transparent"
+                      key={`countSelector-${count}`}
+                      onClick={() => {
+                        setMnemonicsCount(count);
+                        setNeedPassphrase(false);
+                        onSlip39Change(false);
+                      }}
+                    >
+                      <div className="text-wrapper">
+                        <Trans
+                          t={t}
+                          i18nKey="page.newAddress.seedPhrase.wordPhrase"
+                          values={{ count }}
+                        >
+                          I have a
+                          <b
+                            style={{ color: 'var(--r-blue-default, #7084ff)' }}
+                          >
+                            {{ count }}
+                          </b>
+                          -word phrase
+                        </Trans>
+                      </div>
+                    </Menu.Item>
+                  );
+                })}
+                {NEED_PASSPHRASE_MNEMONICS_COUNTS.map((count) => {
+                  return (
+                    <Menu.Item
+                      className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                      key={`countSelector-need-passphrase-${count}`}
+                      style={{ color: 'var(--r-neutral-body)' }}
+                      onClick={() => {
+                        setMnemonicsCount(count);
+                        setNeedPassphrase(true);
+                        onSlip39Change(false);
+                      }}
+                    >
+                      <div className="text-wrapper">
+                        <Trans
+                          t={t}
+                          i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
+                          values={{ count }}
+                        >
+                          I have a
+                          <b
+                            style={{ color: 'var(--r-blue-default, #7084ff)' }}
+                          >
+                            {{ count }}
+                          </b>
+                          -word phrase and Passphrase
+                        </Trans>
+                      </div>
+                    </Menu.Item>
+                  );
+                })}
+
+                {SLIP39_MNEMONICS_COUNTS.map(({ passphrase }) => {
+                  return (
+                    <Menu.Item
+                      className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                      key={`countSelector-need-passphrase-${passphrase}`}
+                      style={{ color: 'var(--r-neutral-body)' }}
+                      onClick={() => {
+                        onSlip39Change(true);
+                        setNeedPassphrase(passphrase);
+                      }}
+                    >
+                      <div className="text-wrapper">
+                        <Trans
+                          t={t}
+                          i18nKey={
+                            passphrase
+                              ? 'page.newAddress.seedPhrase.slip39SeedPhraseWithPassphrase'
+                              : 'page.newAddress.seedPhrase.slip39SeedPhrase'
+                          }
+                          values={{ SLIP39: 'SLIP 39' }}
+                        >
+                          <b
+                            style={{ color: 'var(--r-blue-default, #7084ff)' }}
+                          ></b>
+                        </Trans>
+                      </div>
+                    </Menu.Item>
+                  );
+                })}
+              </Menu>
+            }
+          >
+            <div className="left flex items-center cursor-pointer">
+              <span>
+                {!isSlip39 ? (
+                  <Trans
+                    t={t}
+                    i18nKey={
+                      needPassphrase
+                        ? 'page.newAddress.seedPhrase.wordPhraseAndPassphrase'
+                        : 'page.newAddress.seedPhrase.wordPhrase'
+                    }
+                    values={{ count: mnemonicsCount }}
+                  >
+                    I have a <span>{{ mnemonicsCount }}</span>-word phrase and
+                    Passphrase
+                  </Trans>
+                ) : (
+                  <Trans
+                    t={t}
+                    i18nKey={
+                      needPassphrase
+                        ? 'page.newAddress.seedPhrase.slip39SeedPhraseWithPassphrase'
+                        : 'page.newAddress.seedPhrase.slip39SeedPhrase'
+                    }
+                    values={{ SLIP39: 'SLIP 39' }}
+                  >
+                    <span />
+                  </Trans>
+                )}
+              </span>
+
+              {newUserImport ? (
+                <RcIconArrowCC
+                  className="ml-[2px] text-r-neutral-body w-16 h-16"
+                  viewBox="0 0 16 16"
+                />
+              ) : (
+                <img className="ml-[2px]" src={IconCaretDown} />
+              )}
+            </div>
+          </Dropdown>
+          <div
+            className={clsx(
+              'right flex items-center cursor-pointer',
+              newUserImport && 'min-w-max p-4 hover:bg-r-neutral-card2 rounded'
+            )}
+            onClick={() => {
+              clearAll();
+            }}
+          >
             {newUserImport ? (
-              <RcIconArrowCC
-                className="ml-[2px] text-r-neutral-body w-16 h-16"
+              <RcIconSwipeCC
                 viewBox="0 0 16 16"
+                className="w-16 h-16 text-r-neutral-foot"
               />
             ) : (
-              <img className="ml-[2px]" src={IconCaretDown} />
+              <ThemeIcon src={RcIconClearAll} svgSize={16} />
+            )}
+            {!newUserImport && (
+              <span className="ml-[6px]">
+                {t('page.newAddress.seedPhrase.clearAll')}
+              </span>
             )}
           </div>
-        </Dropdown>
-        <div
+        </HeadToolbar>*/}
+        <MatrixWrapper
           className={clsx(
-            'right flex items-center cursor-pointer',
-            newUserImport && 'min-w-max p-4 hover:bg-r-neutral-card2 rounded'
+            'rounded-[6px] text-center',
+            !newUserImport && 'border border-rabby-neutral-line border-solid',
+            isSlip39 && 'hidden',
+            newUserImport && 'new-user-import',
+            className
           )}
-          onClick={() => {
-            clearAll();
-          }}
+          rowCount={rowCount}
+          totalCount={mnemonicsCount}
         >
-          {newUserImport ? (
-            <RcIconSwipeCC
-              viewBox="0 0 16 16"
-              className="w-16 h-16 text-r-neutral-foot"
-            />
-          ) : (
-            <ThemeIcon src={RcIconClearAll} svgSize={16} />
-          )}
-          {!newUserImport && (
-            <span className="ml-[6px]">
-              {t('page.newAddress.seedPhrase.clearAll')}
-            </span>
-          )}
-        </div>
-      </HeadToolbar>
-      <MatrixWrapper
-        className={clsx(
-          'rounded-[6px] text-center',
-          !newUserImport && 'border border-rabby-neutral-line border-solid',
-          isSlip39 && 'hidden',
-          newUserImport && 'new-user-import',
-          className
-        )}
-        rowCount={rowCount}
-        totalCount={mnemonicsCount}
-      >
-        {wordPlaceHolders.map((_, idx) => {
-          const word = inputTexts[idx] || '';
-          const number = idx + 1;
+          {wordPlaceHolders.map((_, idx) => {
+            const word = inputTexts[idx] || '';
+            const number = idx + 1;
 
-          const isCurrentFocusing = focusing.index === idx;
-          const isCurrentVisible = focusing.visible && focusing.index === idx;
+            const isCurrentFocusing = focusing.index === idx;
+            const isCurrentVisible = focusing.visible && focusing.index === idx;
 
-          return (
-            <div
-              key={`word-item-${word}-${idx}`}
-              className={clsx('matrix-word-item is-mnemonics-input', {
-                invalid: invalidWords.includes(idx),
-              })}
-              onClick={() => {
-                setFocusing({ index: idx, visible: isCurrentVisible });
-                setMnemonics(word);
-              }}
-              onMouseEnter={() => handleMouseEnter(idx)}
-              onMouseLeave={() => handleMouseLeave(idx)}
-            >
-              <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content] top-[-20px]"
-                title={word}
-                placement="top"
-                visible={
-                  !!(
-                    word &&
-                    (focusing.index === idx ||
-                      (hovering.index === idx && hovering.isHovering))
-                  )
-                }
+            return (
+              <div
+                key={`word-item-${word}-${idx}`}
+                className={clsx('matrix-word-item is-mnemonics-input', {
+                  invalid: invalidWords.includes(idx),
+                })}
+                onClick={() => {
+                  setFocusing({ index: idx, visible: isCurrentVisible });
+                  setMnemonics(word);
+                }}
+                onMouseEnter={() => handleMouseEnter(idx)}
+                onMouseLeave={() => handleMouseLeave(idx)}
               >
+                {/*<TooltipWithMagnetArrow
+                  overlayClassName="rectangle w-[max-content] top-[-20px]"
+                  title={word}
+                  placement="top"
+                  visible={
+                    !!(
+                      word &&
+                      (focusing.index === idx ||
+                        (hovering.index === idx && hovering.isHovering))
+                    )
+                  }
+                >
+                </TooltipWithMagnetArrow>*/}
+                {/*<Tooltip content={word}>*/}
                 <DebouncedInput
                   debounce={150}
                   key={`word-input-${ver}-${word}-${idx}`}
                   className={clsx(
-                    'mnemonics-input  pr-10',
-                    newUserImport ? 'pl-[10px]' : 'pl-[46px]',
+                    // 'mnemonics-input  pr-10',
+                    // newUserImport ? 'pl-[10px]' : 'pl-[46px]',
                     isCurrentFocusing && 'ant-input-focused',
                     {
                       'opacity-50':
@@ -663,46 +853,48 @@ function MnemonicsInputs({
                     onWordUpdated(idx, newVal);
                   }}
                 />
-              </TooltipWithMagnetArrow>
-              <NumberFlag
-                className={clsx({
-                  'opacity-50': focusing.index !== -1 && focusing.index !== idx,
-                })}
-              >
-                {number}.
-              </NumberFlag>
-            </div>
-          );
-        })}
-      </MatrixWrapper>
+                {/*</Tooltip>*/}
+                <NumberFlag
+                  className={clsx({
+                    'opacity-50':
+                      focusing.index !== -1 && focusing.index !== idx,
+                  })}
+                >
+                  {number}.
+                </NumberFlag>
+              </div>
+            );
+          })}
+        </MatrixWrapper>
 
-      {isSlip39 && (
-        <SLIP39MnemonicsInputs
-          sli39values={sli39values}
-          onSli39valuesChange={onSli39valuesChange}
-          onChange={onChange}
-          error={!!errMsgs?.[0]}
-          groupNumber={slip39GroupNumber}
-          errorIndexes={errorIndexes}
-        />
-      )}
-      {errMsgs?.[0] || invalidWords.length > 0 ? (
-        <div
-          className={
-            'ant-form-item-explain ant-form-item-explain-error text-r-red-default mt-[12px] pt-[0] min-h-0 text-[13px]'
-          }
-        >
-          {invalidWords.length > 0 && (
-            <div role="alert" className="mb-8">
-              {t('page.newAddress.seedPhrase.inputInvalidCount', {
-                count: invalidWords.length,
-              })}
-            </div>
-          )}
-          {errMsgs?.[0] && <div role="alert">{errMsgs[0]}</div>}
-        </div>
-      ) : null}
-    </div>
+        {isSlip39 && (
+          <SLIP39MnemonicsInputs
+            sli39values={sli39values}
+            onSli39valuesChange={onSli39valuesChange}
+            onChange={onChange}
+            error={!!errMsgs?.[0]}
+            groupNumber={slip39GroupNumber}
+            errorIndexes={errorIndexes}
+          />
+        )}
+        {errMsgs?.[0] || invalidWords.length > 0 ? (
+          <div
+            className={
+              'ant-form-item-explain ant-form-item-explain-error text-r-red-default mt-[12px] pt-[0] min-h-0 text-[13px]'
+            }
+          >
+            {invalidWords.length > 0 && (
+              <div role="alert" className="mb-8">
+                {t('page.newAddress.seedPhrase.inputInvalidCount', {
+                  count: invalidWords.length,
+                })}
+              </div>
+            )}
+            {errMsgs?.[0] && <div role="alert">{errMsgs[0]}</div>}
+          </div>
+        ) : null}
+      </div>
+    </Flex>
   );
 }
 

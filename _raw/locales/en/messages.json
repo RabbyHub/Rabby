@@ -1812,8 +1812,8 @@
         "placeholder": "Enter the Password to Unlock",
         "error": "incorrect password"
       },
-      "title": "Rabby Wallet",
-      "description": "The game-changing wallet for Ethereum and all EVM chains",
+      "title": "WalletPro",
+      "description": "The wallet made for humans",
       "btnForgotPassword": "Forgot Password?"
     },
     "addToken": {
@@ -2430,8 +2430,9 @@
     },
     "newUserImport": {
       "guide": {
-        "title": "Welcome to Rabby Wallet",
-        "desc": "The game-changing wallet for Ethereum and all EVM chains",
+        "title": "Welcome to Wallet Pro",
+        "descRabby": "The game-changing wallet for Ethereum and all EVM chains",
+        "desc": "The EVM wallet for humans",
         "createNewAddress": "Create a new address",
         "importAddress": "I already have an address"
       },
@@ -2451,7 +2452,7 @@
         "pasteCleared": "Pasted and clipboard cleared"
       },
       "PasswordCard": {
-        "title": "Set Password",
+        "title": "Set a Password",
         "form": {
           "password": {
             "label": "Password",
@@ -2464,6 +2465,10 @@
             "placeholder": "Password",
             "required": "Please Confirm Password",
             "notMatch": "Passwords do not match"
+          },
+          "submit": {
+            "label": "Create Wallet",
+            "loading": "Creating Wallet..."
           }
         },
         "agree": "I agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>",
@@ -2477,10 +2482,12 @@
         "addMoreFrom": "Add more addresses from {{name}}"
       },
       "readyToUse": {
-        "title": "Rabby Wallet is Ready to Use",
-        "desc": "Pin Rabby Wallet to your toolbar for easy access.",
-        "pin": "Pin Rabby Wallet",
-        "extensionTip": "Click <1/> and then <3/>"
+        "title": "WalletPro is Ready to Use",
+        "desc": "Pin to your toolbar for easy access.",
+        "pin": "Pin Wallet",
+        "toPin": "To Pin Wallet",
+        "extensionTip": "Click <1/> and then <3/>",
+        "extensionTipExtended": "Click <1/> at the top right and then <3/>"
       },
       "importSeedPhrase": {
         "title": "Import Seed Phrase"

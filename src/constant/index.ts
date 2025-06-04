@@ -210,6 +210,8 @@ export { default as LANGS } from '../../_raw/locales/index.json';
 
 export { CHAINS, CHAINS_ENUM };
 
+export const MINIMUM_PASSWORD_LENGTH = 8;
+
 interface PortfolioChain extends Chain {
   isSupportHistory: boolean;
 }

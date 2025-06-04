@@ -21,7 +21,8 @@
       "changeLogs": ["./changeLogs"]
     },
     "types": ["chrome", "node", "react", "react-dom", "jest"],
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "plugins": [

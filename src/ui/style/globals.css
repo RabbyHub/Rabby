@@ -1,0 +1,36 @@
+/*@import 'tailwindcss/base';*/
+/*@import 'tailwindcss/components';*/
+/*@import 'tailwindcss/utilities';*/
+
+/*@tailwind base;*/
+@tailwind components;
+@tailwind utilities;
+
+.radix-themes {
+    --cursor-button: pointer;
+    --cursor-checkbox: pointer;
+    --cursor-disabled: default;
+    --cursor-link: pointer;
+    --cursor-menu-item: pointer;
+    --cursor-radio: pointer;
+    --cursor-slider-thumb: grab;
+    --cursor-slider-thumb-active: grabbing;
+    --cursor-switch: pointer;
+}
+
+body {
+    margin: 0;
+}
+
+.rt-ScrollAreaRoot {
+    max-width: 100%;
+}
+
+/*
+The div of the scrollarea-viewport
+This is necessary so that the pages do not overflow into the horizontal dimension.
+ */
+.rt-ScrollAreaViewport>div {
+    width: 100%;
+    max-width: 100%;
+}

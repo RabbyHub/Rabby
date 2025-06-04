@@ -54,6 +54,9 @@ import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHom
 import { GasAccountDashBoardHeader } from '../GasAccount/components/DashBoardHeader';
 import { useGnosisPendingCount } from '@/ui/hooks/useGnosisPendingCount';
 import { ga4 } from '@/utils/ga4';
+import { Avatar, Box, Button, Card, Flex, Text } from '@radix-ui/themes';
+import { PageBody, PageContainer } from 'ui/component/PageContainer';
+import { LucidePlus } from 'lucide-react';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -323,7 +326,51 @@ const Dashboard = () => {
   const { t } = useTranslation();
 
   return (
-    <>
+    <PageContainer>
+      <Card size="2">
+        <Flex gap="4" align="center">
+          <Avatar size="4" radius="full" fallback="T" color="indigo" />
+          <Box>
+            <Text as="div" weight="bold">
+              Teodros Girmay
+            </Text>
+            <Text as="div" color="gray">
+              Engineering
+            </Text>
+          </Box>
+        </Flex>
+      </Card>
+
+      <PageBody>
+        <Flex
+          wrap={'wrap'}
+          align={'start'}
+          direction={'column'}
+          gap={'3'}
+          py={'3'}
+          overflow={'auto'}
+        >
+          <Flex align={'center'} justify={'between'} width={'100%'}>
+            {/* <QRCode /> */}
+            <Button asChild variant={'soft'}>
+              <Button onClick={() => history.push('/networks')}>
+                <LucidePlus size={16} strokeWidth={3} />
+                <Text>Add Network</Text>
+              </Button>
+            </Button>
+            {/* <SignedOut>
+                <SignInButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn> */}
+            <Flex align={'center'} gap={'3'}>
+              <ProfileDropdown />
+            </Flex>
+          </Flex>
+        </Flex>
+      </PageBody>
+
       <div
         className={clsx('dashboard', {
           'metamask-active': showGnosisWrongChainAlert && isGnosis,
@@ -558,7 +605,7 @@ const Dashboard = () => {
           count={pendingApprovalCount}
         />
       )}
-    </>
+    </PageContainer>
   );
 };
 

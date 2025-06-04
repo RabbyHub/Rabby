@@ -9,11 +9,19 @@ const configs = {
 };
 
 const config = (env) => {
+  const baseConfig = {
+    resolve: {
+      alias: {
+        'react/jsx-runtime': require.resolve('react/jsx-runtime')
+      }
+    }
+  };
+
   if (env.config) {
-    return webpackMerge.merge(commonConfig, configs[env.config]);
+    return webpackMerge.merge(commonConfig, configs[env.config], baseConfig);
   }
 
-  return commonConfig;
+  return webpackMerge.merge(commonConfig, baseConfig);
 };
 
 module.exports = config;

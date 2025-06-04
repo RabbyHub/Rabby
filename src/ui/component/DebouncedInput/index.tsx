@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Input, InputProps } from 'antd';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { TextField } from '@radix-ui/themes';
 
 /**
  * @description same as antd's Input, but with debounce
@@ -18,7 +19,7 @@ const DebouncedInput = React.forwardRef(
     },
     ref
   ) => {
-    const inputRef = React.useRef<Input>(null);
+    const inputRef = React.useRef<HTMLInputElement>(null);
     React.useImperativeHandle(ref, () => ({
       focus: () => {
         inputRef.current?.focus();
@@ -41,14 +42,28 @@ const DebouncedInput = React.forwardRef(
     }, [debouncedValue]);
 
     return (
-      <Input
-        {...props}
-        ref={inputRef}
-        value={value}
-        onChange={(evt) => {
-          _setValue(evt.target.value || '');
-        }}
-      />
+      <>
+        {/* @ts-expect-error "This is not an error, it is a type error about the InputField used" */}
+        <TextField.Root
+          {...props}
+          type={'password'}
+          ref={inputRef}
+          size="3"
+          style={{ height: '100%', width: '100%' }}
+          value={value}
+          onChange={(evt) => {
+            _setValue(evt.target.value || '');
+          }}
+        />
+        {/*<Input
+          {...props}
+          ref={inputRef}
+          value={value}
+          onChange={(evt) => {
+            _setValue(evt.target.value || '');
+          }}
+        />*/}
+      </>
     );
   }
 );

@@ -9,6 +9,7 @@ const IGNORE_MODULES = [
   'nanoid',
   'uuid',
   '@ethereumjs',
+  '@radix-ui'
 ].join('|');
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:

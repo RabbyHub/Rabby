@@ -10,8 +10,7 @@ import { useCss, useToggle } from 'react-use';
 import ReactMarkdown from 'react-markdown';
 import TermOfUse from '@/constant/term-of-use.md';
 import remarkGfm from 'remark-gfm';
-
-const MINIMUM_PASSWORD_LENGTH = 8;
+import { MINIMUM_PASSWORD_LENGTH } from '@/constant';
 
 const CreatePassword = () => {
   const history = useHistory();

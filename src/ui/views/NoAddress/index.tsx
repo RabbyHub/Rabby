@@ -1,6 +1,6 @@
 import React from 'react';
 import { AddAddressOptions, BlueHeader } from 'ui/component';
-import './style.less';
+// import './style.less';
 import { useTranslation } from 'react-i18next';
 
 const NoAddress = () => {

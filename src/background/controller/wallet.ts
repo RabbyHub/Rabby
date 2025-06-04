@@ -1848,8 +1848,8 @@ export class WalletController extends BaseController {
   getSavedChains = () => preferenceService.getSavedChains();
   saveChain = (id: string) => preferenceService.saveChain(id);
   updateChain = (list: string[]) => preferenceService.updateChain(list);
-  /* connectedSites */
 
+  /* connectedSites */
   getConnectedSite = permissionService.getConnectedSite;
   getSite = permissionService.getSite;
   getConnectedSites = permissionService.getConnectedSites;

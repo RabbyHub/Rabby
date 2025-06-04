@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useCallback, useEffect } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import {
   HashRouter as Router,
   Route,
@@ -19,6 +19,10 @@ import { useMemoizedFn } from 'ahooks';
 import { useThemeModeOnMain } from '../hooks/usePreference';
 import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
 import { ForgotPassword } from './ForgotPassword/ForgotPassword';
+import { Theme } from '@radix-ui/themes';
+import '@radix-ui/themes/styles.css';
+import '../style/globals.css';
+
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 const isTab = getUiType().isTab;
 
@@ -102,11 +106,19 @@ const Main = () => {
 
 const App = ({ wallet }: { wallet: any }) => {
   return (
-    <WalletProvider wallet={wallet}>
-      <Router>
-        <Main />
-      </Router>
-    </WalletProvider>
+    <Theme
+      accentColor="gray"
+      appearance={'dark'}
+      grayColor="sand"
+      radius="large"
+      scaling="95%"
+    >
+      <WalletProvider wallet={wallet}>
+        <Router>
+          <Main />
+        </Router>
+      </WalletProvider>
+    </Theme>
   );
 };
 
