@@ -176,7 +176,7 @@ export const ImportOrCreatedSuccess = () => {
 
   const isNewUserImport = React.useMemo(() => {
     return accounts?.length === 1;
-  }, [accounts]);
+  }, [!!accounts?.length]);
 
   const getStarted = React.useCallback(() => {
     if (isNewUserImport) {
