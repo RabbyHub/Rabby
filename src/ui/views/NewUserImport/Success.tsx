@@ -10,7 +10,7 @@ import { ReactComponent as RcIconPen } from '@/ui/assets/new-user-import/pen.svg
 import { ReactComponent as RcIconConfirm } from '@/ui/assets/new-user-import/confirm-check.svg';
 import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/external-cc.svg';
 
-import { useAlias, useWallet } from '@/ui/utils';
+import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
 import { useRabbyDispatch } from '@/ui/store';
@@ -170,13 +170,35 @@ export const ImportOrCreatedSuccess = () => {
 
   const documentVisibility = useDocumentVisibility();
 
-  const { value: accounts } = useAsync(wallet.getAllVisibleAccountsArray, [
-    documentVisibility,
-  ]);
+  const { value: accounts } = useAsync(async () => {
+    if (documentVisibility === 'visible') {
+      const accounts = await wallet.getAllVisibleAccountsArray();
+      if (hd !== KEYRING_CLASS.MNEMONIC) {
+        return accounts;
+      }
+      const addresses = await wallet.requestKeyring(
+        KEYRING_TYPE.HdKeyring,
+        'getAccounts',
+        Number(keyringId) ?? null
+      );
+      if (!addresses.length) {
+        return accounts;
+      }
+      return accounts.filter((account) =>
+        addresses.some((addr) => isSameAddress(addr, account.address))
+      );
+    }
+    return [];
+  }, [documentVisibility, keyringId]);
+
+  const { value: allAccounts } = useAsync(
+    wallet.getAllVisibleAccountsArray,
+    []
+  );
 
   const isNewUserImport = React.useMemo(() => {
-    return accounts?.length === 1;
-  }, [!!accounts?.length]);
+    return allAccounts?.length === 1;
+  }, [!!allAccounts?.length]);
 
   const getStarted = React.useCallback(() => {
     if (isNewUserImport) {
