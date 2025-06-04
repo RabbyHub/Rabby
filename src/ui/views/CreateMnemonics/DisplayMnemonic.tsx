@@ -70,7 +70,7 @@ const DisplayMnemonic = () => {
       <div className="mt-[18px] mb-[9px] text-[28px] font-medium text-r-neutral-title1 text-center">
         {t('page.newAddress.seedPhrase.backup')}
       </div>
-      <div className="text-16 text-rabby-blue-main font-semibold text-center mb-20 mx-[30px]">
+      <div className="text-[16px] text-rabby-blue-main font-semibold text-center mb-20 mx-[10px]">
         {t('page.newAddress.seedPhrase.backupTips')}
       </div>
 

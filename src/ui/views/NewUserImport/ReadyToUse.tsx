@@ -10,6 +10,7 @@ import LongArrowPng from '@/ui/assets/new-user-import/long-arrow.png';
 import { ReactComponent as UserGuide1Icon } from '@/ui/assets/new-user-import/guide1.svg';
 import { ReactComponent as UserGuide2Icon } from '@/ui/assets/new-user-import/guide2.svg';
 import { Button } from 'antd';
+import { debounce } from 'lodash';
 
 export const ReadyToUse = () => {
   const { t } = useTranslation();
@@ -23,7 +24,7 @@ export const ReadyToUse = () => {
     height: number;
   } | null>(null);
 
-  useEffect(() => {
+  const caculateArrowPosition = React.useCallback(() => {
     if (homePreviewRef.current && userGuideRef.current) {
       const homePreviewRect = homePreviewRef.current.getBoundingClientRect();
       const userGuideRect = userGuideRef.current.getBoundingClientRect();
@@ -51,6 +52,20 @@ export const ReadyToUse = () => {
       });
     }
   }, []);
+
+  const debouncedCalculateArrowPosition = React.useMemo(
+    () => debounce(caculateArrowPosition, 200),
+    [caculateArrowPosition]
+  );
+
+  useEffect(() => {
+    caculateArrowPosition();
+    window.addEventListener('resize', debouncedCalculateArrowPosition);
+    return () => {
+      window.removeEventListener('resize', debouncedCalculateArrowPosition);
+      debouncedCalculateArrowPosition.cancel();
+    };
+  }, [caculateArrowPosition, debouncedCalculateArrowPosition]);
 
   return (
     <Card className="mx-[22px]">

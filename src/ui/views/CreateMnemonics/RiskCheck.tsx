@@ -24,10 +24,6 @@ function useQuestionsCheck() {
         index: 3 as const,
         content: t('page.newAddress.seedPhrase.importQuestion3'),
       },
-      {
-        index: 4 as const,
-        content: t('page.newAddress.seedPhrase.importQuestion4'),
-      },
     ];
   }, []);
 

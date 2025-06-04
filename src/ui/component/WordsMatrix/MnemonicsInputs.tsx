@@ -65,14 +65,15 @@ const MatrixWrapper = styled.div.withConfig<{
     background-color: transparent;
     gap: 8px;
     .matrix-word-item {
-      border-radius: 8px;
       width: calc(calc(100% - 16px) / 3);
-      border: 1.5px solid var(--r-neutral-line, #e0e5ec) !important;
-      background-color: rgba(217, 217, 217, 0.2);
+      border-color: transparent;
 
       .mnemonics-input {
+        background-color: rgba(217, 217, 217, 0.2);
+        border-radius: 8px;
+        border: 1.5px solid var(--r-neutral-line, #e0e5ec);
         text-align: center;
-        font-size: 18px;
+        font-size: 22px;
         color: var(--rabby-light-neutral-body, #3e495eff);
         &:hover {
           border-color: var(--r-blue-default, #7084ff);
@@ -182,7 +183,9 @@ const MatrixWrapper = styled.div.withConfig<{
 
     &:focus,
     &.ant-input-focused {
-      border-color: var(--r-blue-default, #7084ff);
+      border-color: var(--r-blue-main, #5260d1);
+      border-width: 1.5px;
+      border-right-width: 1.5px !important;
       background-color: var(--r-neutral-bg-1, #fff);
       box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
     }
@@ -190,6 +193,7 @@ const MatrixWrapper = styled.div.withConfig<{
   .matrix-word-item.invalid {
     .mnemonics-input {
       opacity: 1;
+      border-width: 1.5px;
       border-color: var(--r-red-default, #e34935);
     }
     ${styid(NumberFlag)} {
@@ -562,15 +566,16 @@ function MnemonicsInputs({
         <div
           className={clsx(
             'right flex items-center cursor-pointer',
-            newUserImport && 'min-w-max p-4 hover:bg-r-neutral-card2 rounded'
+            newUserImport &&
+              'min-w-max pb-[2px] hover:bg-r-blue-disable rounded-[1px]'
           )}
           onClick={() => {
             clearAll();
           }}
         >
           <RcIconClearAll
-            viewBox="0 0 16 16"
-            className="w-16 h-16 text-rabby-blue-main"
+            viewBox="0 0 18 18"
+            className="w-[18px] h-[18px] text-rabby-blue-main"
           />
           {!newUserImport && (
             <span className="ml-[6px]">
@@ -687,7 +692,7 @@ function MnemonicsInputs({
       {errMsgs?.[0] || invalidWords.length > 0 ? (
         <div
           className={
-            'ant-form-item-explain ant-form-item-explain-error text-r-red-default mt-[12px] pt-[0] min-h-0 text-[13px]'
+            'ant-form-item-explain ant-form-item-explain-error text-r-red-default mt-[14px] pt-[0] min-h-0 text-[13px]'
           }
         >
           {invalidWords.length > 0 && (

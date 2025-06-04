@@ -1529,9 +1529,9 @@
           "answer": "Yes, it will be stored locally on your browser and only accessible to you."
         },
         "importError": "[CreateMnemonics] unexpected step {{0}}",
-        "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
-        "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
-        "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
+        "importQuestion1": "If I lose or share my seed phrase, I’ll lose access to my assets permanently",
+        "importQuestion2": "My seed phrase is only stored on my device. Rabby can’t access it",
+        "importQuestion3": "If I uninstall Rabby without backing up my seed phrase, it cannot be recovered by Rabby",
         "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.",
         "riskTips": "Before you start, please read and keep the following security tips in mind.",
         "showSeedPhrase": "Show Seed Phrase",
@@ -2452,9 +2452,9 @@
       "createNewAddress": {
         "title": "Before You Start",
         "desc": "Please read and keep the following security tips in mind",
-        "tip1": "If I lose or share my seed phrase, my assets will be lost forever.",
-        "tip2": "The seed phrase is only stored on my computer, and Rabby has no access to it. ",
-        "tip3": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me. ",
+        "tip1": "If I lose or share my seed phrase, I’ll lose access to my assets permanently",
+        "tip2": "My seed phrase is only stored on my device. Rabby can’t access it",
+        "tip3": "If I uninstall Rabby without backing up my seed phrase, it cannot be recovered by Rabby",
         "showSeedPhrase": "Show Seed Phrase"
       },
       "importList": {
