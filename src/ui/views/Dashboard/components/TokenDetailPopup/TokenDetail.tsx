@@ -42,6 +42,8 @@ import { BlockedTopTips } from './BlockedTopTips';
 import { ScamTokenTips } from './ScamTokenTips';
 import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
 import { useExternalSwapBridgeDapps } from '@/ui/component/ExternalSwapBridgeDappPopup/hooks';
+import { Account } from '@/background/service/preference';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -59,6 +61,7 @@ interface TokenDetailProps {
   hideOperationButtons?: boolean;
   popupHeight: number;
   tipsFromTokenSelect?: string;
+  account?: Account;
 }
 
 const TokenDetail = ({
@@ -72,15 +75,17 @@ const TokenDetail = ({
   popupHeight,
   hideOperationButtons = false,
   tipsFromTokenSelect,
+  account,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [entityLoading, setEntityLoading] = React.useState(true);
-  const { currentAccount } = useRabbySelector((s) => s.account);
   const [tokenWithAmount, setTokenWithAmount] = React.useState<TokenItem>(
     token
   );
   const [tokenEntity, setTokenEntity] = React.useState<TokenEntityDetail>();
+  const _currentAccount = useCurrentAccount();
+  const currentAccount = account || _currentAccount;
 
   const bridgeSupportedChains = useRabbySelector(
     (s) => s.bridge.supportedChains

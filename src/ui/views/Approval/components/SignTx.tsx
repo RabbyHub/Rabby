@@ -2245,6 +2245,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         canClickToken={false}
         hideOperationButtons
         variant="add"
+        account={currentAccount}
       />
     </>
   );
