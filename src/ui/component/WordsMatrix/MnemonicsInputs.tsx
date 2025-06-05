@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled, { css } from 'styled-components';
 import { Dropdown, Input, Menu, message } from 'antd';
 import { wordlist } from '@scure/bip39/wordlists/english';
@@ -346,6 +346,10 @@ function MnemonicsInputs({
     [onChange, mnemonicsCount]
   );
 
+  const hasInputValue = useMemo(() => {
+    return value?.length > 0;
+  }, [inputTexts]);
+
   React.useEffect(() => {
     setFocusing({
       index: 0,
@@ -564,26 +568,28 @@ function MnemonicsInputs({
             )}
           </div>
         </Dropdown>
-        <div
-          className={clsx(
-            'right flex items-center cursor-pointer',
-            newUserImport &&
-              'min-w-max pb-[2px] hover:bg-r-blue-disable rounded-[1px]'
-          )}
-          onClick={() => {
-            clearAll();
-          }}
-        >
-          <RcIconClearAll
-            viewBox="0 0 18 18"
-            className="w-[18px] h-[18px] text-rabby-blue-default"
-          />
-          {!newUserImport && (
-            <span className="ml-[6px]">
-              {t('page.newAddress.seedPhrase.clearAll')}
-            </span>
-          )}
-        </div>
+        {hasInputValue && (
+          <div
+            className={clsx(
+              'right flex items-center cursor-pointer',
+              newUserImport &&
+                'min-w-max pb-[2px] hover:bg-r-blue-disable rounded-[1px]'
+            )}
+            onClick={() => {
+              clearAll();
+            }}
+          >
+            <RcIconClearAll
+              viewBox="0 0 18 18"
+              className="w-[18px] h-[18px] text-rabby-blue-default"
+            />
+            {!newUserImport && (
+              <span className="ml-[6px]">
+                {t('page.newAddress.seedPhrase.clearAll')}
+              </span>
+            )}
+          </div>
+        )}
       </HeadToolbar>
       <MatrixWrapper
         className={clsx(
