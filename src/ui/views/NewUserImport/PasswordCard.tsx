@@ -151,7 +151,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
               <h1 className="text-r-neutral-title1 text-center font-semibold text-[28px] leading-[29px] mb-[9px]">
                 {t('page.newUserImport.PasswordCard.title')}
               </h1>
-              <p className="text-center text-rabby-blue-default font-semibold text-[16px] leading-[20px] mx-28">
+              <p className="text-center text-rabby-blue-default font-normal text-[16px] leading-[20px] mx-28">
                 {t('page.newUserImport.PasswordCard.desc')}
               </p>
             </hgroup>

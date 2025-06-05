@@ -52,7 +52,7 @@ export const CreateSeedPhrase = () => {
       title={t('page.newUserImport.createNewAddress.title')}
     >
       <RcIconTips className="w-[54px] h-[49px] mx-auto mt-[24px]" />
-      <div className="mt-[22px] mb-[26px] text-[16px] font-medium text-center text-rabby-blue-default">
+      <div className="mt-[22px] mb-[26px] text-[16px] font-normal text-center text-rabby-blue-default">
         {t('page.newUserImport.createNewAddress.desc')}
       </div>
       <div className="flex flex-col gap-16">
