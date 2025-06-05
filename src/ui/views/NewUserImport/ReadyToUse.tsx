@@ -3,7 +3,7 @@ import { Card } from '@/ui/component/NewUserImport';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconTriangle } from '@/ui/assets/new-user-import/triangle.svg';
-import HomePreview from '@/ui/assets/new-user-import/home-overview.png';
+import HomePreview from '@/ui/assets/new-user-import/home-preview.png';
 import UserGuide1 from '@/ui/assets/new-user-import/guide-1.png';
 import UserGuide2 from '@/ui/assets/new-user-import/guide-2.png';
 import LongArrowPng from '@/ui/assets/new-user-import/long-arrow.png';
