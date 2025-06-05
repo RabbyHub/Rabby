@@ -93,6 +93,7 @@ const FallbackImage = ({
               width,
               height,
               visibility: loadSuccess ? 'visible' : 'hidden',
+              position: loadSuccess ? 'static' : 'absolute',
               ...style,
             }}
             onLoad={handleImageLoadSuccess}

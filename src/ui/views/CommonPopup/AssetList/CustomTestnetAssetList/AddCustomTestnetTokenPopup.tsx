@@ -123,11 +123,13 @@ export const AddCustomTestnetTokenPopup = ({
           errors: [],
         },
       ]);
-      return wallet.getCustomTestnetToken({
+      const t = await wallet.getCustomTestnetToken({
         address: currentAccount!.address,
         chainId: chain.id,
         tokenId,
       });
+      setChecked(true);
+      return t;
     },
     {
       refreshDeps: [chain?.id, tokenId],
