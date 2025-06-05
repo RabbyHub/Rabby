@@ -60,7 +60,7 @@ export const BackupSeedPhrase = () => {
       <div className="mt-[18px] mb-[9px] text-[28px] font-medium text-r-neutral-title1 text-center">
         {t('page.newAddress.seedPhrase.backup')}
       </div>
-      <div className="text-[16px] text-rabby-blue-main font-semibold text-center mb-20 mx-[10px]">
+      <div className="text-[16px] text-rabby-blue-default font-semibold text-center mb-20 mx-[10px]">
         {t('page.newAddress.seedPhrase.backupTips')}
       </div>
 
@@ -78,14 +78,14 @@ export const BackupSeedPhrase = () => {
           'mx-auto mt-[24px] mb-[47px]',
           'cursor-pointer',
           'flex justify-center items-center gap-8',
-          'text-14 font-medium text-rabby-blue-main',
+          'text-14 font-medium text-rabby-blue-default',
           'hover:text-rabby-blue-default'
         )}
         onClick={onCopyMnemonics}
       >
         <IconCopyCC
           strokeColor={isDarkTheme ? '#1C1F2BFF' : 'white'}
-          className="w-20 h-20 text-rabby-blue-main"
+          className="w-20 h-20 text-rabby-blue-default"
         />
         <span>{t('page.newAddress.seedPhrase.copy')}</span>
       </div>
@@ -96,7 +96,7 @@ export const BackupSeedPhrase = () => {
         type="primary"
         className={clsx(
           'h-[56px] shadow-none rounded-[8px]',
-          'text-[17px] font-medium bg-r-blue-main'
+          'text-[17px] font-medium bg-r-blue-default'
         )}
       >
         {t('page.newAddress.seedPhrase.saved')}

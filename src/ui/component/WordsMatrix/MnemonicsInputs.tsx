@@ -184,7 +184,7 @@ const MatrixWrapper = styled.div.withConfig<{
 
     &:focus,
     &.ant-input-focused {
-      border-color: var(--r-blue-main, #5260d1);
+      border-color: var(--r-blue-default, #7084ff);
       border-width: 1.5px;
       border-right-width: 1.5px !important;
       background-color: var(--r-neutral-bg-1, #fff);
@@ -576,7 +576,7 @@ function MnemonicsInputs({
         >
           <RcIconClearAll
             viewBox="0 0 18 18"
-            className="w-[18px] h-[18px] text-rabby-blue-main"
+            className="w-[18px] h-[18px] text-rabby-blue-default"
           />
           {!newUserImport && (
             <span className="ml-[6px]">

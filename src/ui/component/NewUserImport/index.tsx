@@ -66,7 +66,7 @@ const StyledCard = styled.div`
 const Step = ({ step }: { step: 1 | 2 }) => {
   return (
     <div className="flex items-center justify-center gap-4">
-      <IconDotCC className="text-rabby-blue-main" viewBox="0 0 8 8" />
+      <IconDotCC className="text-rabby-blue-default" viewBox="0 0 8 8" />
       <div
         className={clsx(
           'w-[16px] h-[1px]',
@@ -75,7 +75,7 @@ const Step = ({ step }: { step: 1 | 2 }) => {
       />
       <IconDotCC
         className={clsx(
-          step === 2 ? 'text-rabby-blue-main' : 'text-rabby-blue-light2'
+          step === 2 ? 'text-rabby-blue-default' : 'text-rabby-blue-light2'
         )}
         viewBox="0 0 8 8"
       />

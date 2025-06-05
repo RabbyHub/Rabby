@@ -87,7 +87,7 @@ export const ReadyToUse = () => {
         <div className="mt-[48px] mb-[11px] text-[28px] text-center w-[400px] font-semibold text-r-neutral-title1">
           {t('page.newUserImport.readyToUse.title')}
         </div>
-        <div className="max-w-[320px] text-[18px] font-semibold text-rabby-blue-main text-center">
+        <div className="max-w-[320px] text-[18px] font-semibold text-rabby-blue-default text-center">
           {t('page.newUserImport.readyToUse.desc')}
         </div>
         <img
