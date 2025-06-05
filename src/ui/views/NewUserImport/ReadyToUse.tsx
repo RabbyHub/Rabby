@@ -3,7 +3,7 @@ import { Card } from '@/ui/component/NewUserImport';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconTriangle } from '@/ui/assets/new-user-import/triangle.svg';
-import HomePreview from '@/ui/assets/new-user-import/home-overview.png';
+import HomePreview from '@/ui/assets/new-user-import/home-preview.png';
 import UserGuide1 from '@/ui/assets/new-user-import/guide-1.png';
 import UserGuide2 from '@/ui/assets/new-user-import/guide-2.png';
 import LongArrowPng from '@/ui/assets/new-user-import/long-arrow.png';
@@ -87,7 +87,7 @@ export const ReadyToUse = () => {
         <div className="mt-[48px] mb-[11px] text-[28px] text-center w-[400px] font-semibold text-r-neutral-title1">
           {t('page.newUserImport.readyToUse.title')}
         </div>
-        <div className="max-w-[320px] text-[18px] font-semibold text-rabby-blue-main text-center">
+        <div className="max-w-[320px] text-[18px] font-semibold text-rabby-blue-default text-center">
           {t('page.newUserImport.readyToUse.desc')}
         </div>
         <img

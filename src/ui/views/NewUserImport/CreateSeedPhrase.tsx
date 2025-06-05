@@ -52,14 +52,14 @@ export const CreateSeedPhrase = () => {
       title={t('page.newUserImport.createNewAddress.title')}
     >
       <RcIconTips className="w-[54px] h-[49px] mx-auto mt-[24px]" />
-      <div className="mt-[22px] mb-[26px] text-[16px] font-medium text-center text-rabby-blue-main">
+      <div className="mt-[22px] mb-[26px] text-[16px] font-medium text-center text-rabby-blue-default">
         {t('page.newUserImport.createNewAddress.desc')}
       </div>
       <div className="flex flex-col gap-16">
         {tipList.map((item, index) => (
           <div key={item} className={clsx('flex justify-start gap-8', 'px-12')}>
             <IconDotCC
-              className="mt-6 text-rabby-blue-main flex-shrink-0"
+              className="mt-6 text-rabby-blue-default flex-shrink-0"
               viewBox="0 0 8 8"
             />
             <span className="text-15 text-r-neutral-title1 font-normal">
@@ -75,7 +75,7 @@ export const CreateSeedPhrase = () => {
         type="primary"
         className={clsx(
           'mt-[76px] h-[56px] shadow-none rounded-[8px]',
-          'text-[17px] font-medium bg-r-blue-main'
+          'text-[17px] font-medium bg-r-blue-default'
         )}
       >
         {t('page.newUserImport.createNewAddress.showSeedPhrase')}
