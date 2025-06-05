@@ -347,7 +347,7 @@ function MnemonicsInputs({
   );
 
   const hasInputValue = useMemo(() => {
-    return value?.length > 0;
+    return value?.trim?.()?.length > 0;
   }, [inputTexts]);
 
   React.useEffect(() => {
