@@ -238,6 +238,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
           <Form.Item shouldUpdate noStyle>
             {(form) => {
               const isDisabled =
+                !form.getFieldValue('confirmPassword') ||
                 form.isFieldsValidating([['password'], ['confirmPassword']]) ||
                 sum(form.getFieldsError().map((item) => item.errors.length)) >
                   0 ||
