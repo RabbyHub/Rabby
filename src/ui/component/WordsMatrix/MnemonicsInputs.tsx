@@ -87,6 +87,7 @@ const MatrixWrapper = styled.div.withConfig<{
       &:not(.invalid) {
         .mnemonics-input:hover {
           border-color: var(--r-blue-default, #7084ff);
+          border-right-width: 1.5px !important;
         }
       }
 
