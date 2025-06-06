@@ -37,7 +37,7 @@ class Transaction {
       // Ensure interval is between 2000 and 5000 ms
       intervalDuration = Math.max(
         MIN_DURATION,
-        Math.min(DEFAULT_DURATION, MAX_DURATION)
+        Math.min(intervalDuration, MAX_DURATION)
       );
     }
     this.intervalDuration = intervalDuration;
