@@ -163,6 +163,8 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
               errors: [t('page.dashboard.assets.AddMainnetToken.notFound')],
             },
           ]);
+        } else {
+          setChecked(true);
         }
       });
     },
@@ -359,7 +361,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
                     >
                       <div className="relative h-[24px]">
                         <img
-                          src={IconUnknown}
+                          src={token?.logo_url || IconUnknown}
                           alt=""
                           className="w-[24px] h-[24px] rounded-full"
                         />
