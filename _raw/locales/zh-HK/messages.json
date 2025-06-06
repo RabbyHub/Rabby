@@ -514,7 +514,10 @@
         "invalidContent": "內容無效",
         "inputInvalidCount_one": "1 個輸入不符合種子詞組規範，請檢查。",
         "inputInvalidCount_other": "{{count}} 個輸入不符合種子詞組規範，請檢查。",
-        "passphrase": "通行密碼"
+        "passphrase": "通行密碼",
+        "importQuestion2": "我的种子短语只存储在我的设备上。Rabby 无法访问它。",
+        "importQuestion1": "如果我丟失或分享我的 seed phrase，我將永久失去對我的資產的訪問權限。",
+        "importQuestion3": "如果我在没有备份我的 seed phrase 的情况下卸载 Rabby，Rabby 将无法恢复它。"
       },
       "metamask": {
         "step1": "從 MetaMask 導出助記詞或私鑰  <br/><1>查看操作指南<1/></1>",
@@ -2488,7 +2491,12 @@
         "createNewAddress": "創建一個新地址"
       },
       "createNewAddress": {
-        "showSeedPhrase": "顯示 Seed Phrase"
+        "showSeedPhrase": "顯示 Seed Phrase",
+        "desc": "請閱讀並記住以下安全提示",
+        "title": "在開始之前",
+        "tip2": "我的種子詞僅儲存在我的設備上。Rabby 無法訪問它。",
+        "tip3": "如果我在未备份我的种子短语的情况下卸载 Rabby，它将无法通过 Rabby 恢复。",
+        "tip1": "如果我丢失或分享我的 seed phrase，我将永久失去对我的资产的访问权限。"
       },
       "importList": {
         "title": "選擇導入方法"
@@ -2502,12 +2510,14 @@
           "password": {
             "required": "請輸入密碼",
             "label": "密碼",
-            "min": "密碼必須至少8個字符長"
+            "min": "密碼必須至少8個字符長",
+            "placeholder": "密碼（至少 8 個字符）"
           },
           "confirmPassword": {
             "label": "確認密碼",
             "required": "請確認密碼",
-            "notMatch": "密碼不匹配"
+            "notMatch": "密碼不匹配",
+            "placeholder": "確認密碼"
           }
         },
         "title": "設置密碼",
@@ -2522,7 +2532,14 @@
         "addMoreAddr": "從這个 Seed Phrase 新增更多地址"
       },
       "readyToUse": {
-        "pin": "將 Rabby 錢包釘選"
+        "pin": "將 Rabby 錢包釘選",
+        "guides": {
+          "step2": "將 Rabby Wallet 釘選至頂部",
+          "step1": "點擊瀏覽器擴展圖標"
+        },
+        "extensionTip": "点击 <1/> 然后 <3/>",
+        "desc": "尋找 Rabby Wallet 並將其固定",
+        "title": "您的 Rabby Wallet 已準備好！"
       },
       "importSeedPhrase": {
         "title": "導入種子片語"

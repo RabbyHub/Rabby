@@ -515,7 +515,10 @@
         "invalidContent": "内容无效",
         "inputInvalidCount_one": "1 个输入不符合种子短语规范，请检查。",
         "inputInvalidCount_other": "{{count}} 个输入不符合种子短语规范，请检查。",
-        "passphrase": "密码"
+        "passphrase": "密码",
+        "importQuestion1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
+        "importQuestion3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，将无法通过 Rabby 恢复。",
+        "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看操作指南<1/></1>",
@@ -2527,7 +2530,12 @@
         "desc": "颠覆性的以太坊及所有 EVM 链的钱包"
       },
       "createNewAddress": {
-        "showSeedPhrase": "显示 Seed Phrase"
+        "showSeedPhrase": "显示 Seed Phrase",
+        "title": "在开始之前",
+        "desc": "请阅读并牢记以下安全提示",
+        "tip2": "我的种子短语仅存储在我的设备上。Rabby 无法访问它。",
+        "tip1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
+        "tip3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，则无法通过 Rabby 恢复。"
       },
       "importList": {
         "title": "选择导入方式"
@@ -2541,12 +2549,14 @@
           "password": {
             "label": "密码",
             "required": "请输入密码",
-            "min": "密码长度必须至少为 8 个字符"
+            "min": "密码长度必须至少为 8 个字符",
+            "placeholder": "密码（最少8个字符）"
           },
           "confirmPassword": {
             "label": "确认密码",
             "required": "请确认密码",
-            "notMatch": "密码不匹配"
+            "notMatch": "密码不匹配",
+            "placeholder": "确认密码"
           }
         },
         "title": "设置密码",
@@ -2561,7 +2571,14 @@
         "addMoreFrom": "从 {{name}} 添加更多地址"
       },
       "readyToUse": {
-        "pin": "固定 Rabby 钱包"
+        "pin": "固定 Rabby 钱包",
+        "guides": {
+          "step2": "固定 Rabby Wallet",
+          "step1": "点击浏览器扩展图标"
+        },
+        "desc": "找到 Rabby Wallet 并将其固定",
+        "extensionTip": "点击 <1/> 然后 <3/>",
+        "title": "您的 Rabby Wallet 已准备就绪！"
       },
       "importSeedPhrase": {
         "title": "导入助记词"
