@@ -505,9 +505,9 @@ export const useTokenPair = (userAddress: string) => {
         try {
           const suggestSlippage = await wallet.openapi.suggestSlippage({
             chain_id: findChainByEnum(chain)!.serverId,
-            slippage:
-              new BigNumber(slippageObj.slippage || '0.1').div(100).toFixed() +
-              '',
+            slippage: new BigNumber(slippageObj.slippage || '0.1')
+              .div(100)
+              .toFixed(),
             from_token_id: payToken.id,
             to_token_id: receiveToken.id,
             from_token_amount: inputAmount,
@@ -519,7 +519,7 @@ export const useTokenPair = (userAddress: string) => {
           slippage = suggestSlippage.suggest_slippage
             ? new BigNumber(suggestSlippage.suggest_slippage)
                 .times(100)
-                .toFixed() + ''
+                .toFixed()
             : slippageObj.slippage || '0.1';
           if (currentFetchId === fetchIdRef.current) {
             setAutoSuggestSlippage(slippage);
