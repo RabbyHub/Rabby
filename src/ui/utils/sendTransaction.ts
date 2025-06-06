@@ -16,6 +16,7 @@ import {
   explainGas,
   getNativeTokenBalance,
   getPendingTxs,
+  is7702Tx,
 } from '@/utils/transaction';
 import { GasLevel, Tx, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
@@ -351,7 +352,8 @@ export const sendTransaction = async ({
       nonce: recommendNonce || '0x1',
       value: tx.value || '0x0',
       to: tx.to || '',
-    },
+      type: is7702Tx(tx) ? 4 : support1559 ? 2 : 1,
+    } as any,
     origin: origin || '',
     addr: address,
   });

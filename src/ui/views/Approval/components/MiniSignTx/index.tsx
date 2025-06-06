@@ -12,6 +12,7 @@ import {
   explainGas,
   getNativeTokenBalance,
   getPendingTxs,
+  is7702Tx,
 } from '@/utils/transaction';
 import { GasLevel, Tx, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -735,7 +736,8 @@ export const MiniSignTx = ({
             nonce: tx.nonce || '0x1',
             value: tx.value || '0x0',
             to: tx.to || '',
-          },
+            type: is7702Tx(tx) ? 4 : support1559 ? 2 : 1,
+          } as any,
           origin: origin || '',
           addr: currentAccount.address,
         });

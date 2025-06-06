@@ -756,14 +756,16 @@
       },
       "tab-switch": {
         "contract": "By Contracts",
-        "assets": "By Assets"
+        "assets": "By Assets",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
             "loadingText": "Loading...",
             "noDataText": "No Approvals",
-            "noMatchText": "No Match"
+            "noMatchText": "No Match",
+            "7702": "No EIP-7702 Delegation"
           }
         },
         "ApprovalContractItem": {
@@ -778,7 +780,9 @@
             "modalContent": "Approvals from the same Permit2 contract would be packaged together under the same signature.",
             "modalTitle_one": "A total of <2>{{count}}</2> signature is required",
             "modalTitle_other": "A total of <2>{{count}}</2> signatures is required"
-          }
+          },
+          "notSupport7702Title": "Not Supported for Current Address Type",
+          "notSupport7702Content": "Currently only supports revoking EIP-7702 delegation for private key & seed phrase addresses."
         },
         "ViewMore": {
           "text": "View more"
@@ -815,6 +819,12 @@
               "tipApprovedAmount": "Approved Amount",
               "tipMyBalance": "My Balance"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "currentAddress": "Current Address",
+            "delegatedAddress": "Delegated Address"
           }
         }
       },

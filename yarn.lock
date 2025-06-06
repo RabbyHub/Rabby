@@ -3995,7 +3995,7 @@
     bignumber.js "^9.1.2"
     rxjs "^7.8.1"
 
-"@metamask/abi-utils@3.0.0":
+"@metamask/abi-utils@3.0.0", "@metamask/abi-utils@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@metamask/abi-utils/-/abi-utils-3.0.0.tgz#2eab9cb895922b94305364d9111b6dde724f6f9b"
   integrity sha512-a/l0DiSIr7+CBYVpHygUa3ztSlYLFCQMsklLna+t6qmNY9+eIO5TedNxhyIyvaJ+4cN7TLy0NQFbp9FV3X2ktg==
@@ -4079,18 +4079,6 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
-"@metamask/eth-sig-util@5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@metamask/eth-sig-util/-/eth-sig-util-5.1.0.tgz#a47f62800ee1917fef976ba67544a0ccd7d1bd6b"
-  integrity sha512-mlgziIHYlA9pi/XZerChqg4NocdOgBPB9NmxgXWQO2U2hH8RGOJQrz6j/AIKkYxgCMIE2PY000+joOwXfzeTDQ==
-  dependencies:
-    "@ethereumjs/util" "^8.0.6"
-    bn.js "^4.12.0"
-    ethereum-cryptography "^2.0.0"
-    ethjs-util "^0.1.6"
-    tweetnacl "^1.0.3"
-    tweetnacl-util "^0.15.1"
-
 "@metamask/eth-sig-util@7.0.1", "@metamask/eth-sig-util@^7.0.0":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@metamask/eth-sig-util/-/eth-sig-util-7.0.1.tgz#ad3227d6120f15f9293478de7dd9685a5c329586"
@@ -4102,6 +4090,19 @@
     ethereum-cryptography "^2.1.2"
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
+
+"@metamask/eth-sig-util@8.2.0":
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@metamask/eth-sig-util/-/eth-sig-util-8.2.0.tgz#f114ca5b2a1a997b467933c902e7ec44123eb8fb"
+  integrity sha512-LZDglIh4gYGw9Myp+2aIwKrj6lIJpMC4e0m7wKJU+BxLLBFcrTgKrjdjstXGVWvuYG3kutlh9J+uNBRPJqffWQ==
+  dependencies:
+    "@ethereumjs/rlp" "^4.0.1"
+    "@ethereumjs/util" "^8.1.0"
+    "@metamask/abi-utils" "^3.0.0"
+    "@metamask/utils" "^11.0.1"
+    "@scure/base" "~1.1.3"
+    ethereum-cryptography "^2.1.2"
+    tweetnacl "^1.0.3"
 
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.0"
@@ -4741,29 +4742,13 @@
     gridplus-sdk "3.2.0"
     rlp "^3.0.0"
 
-"@rabby-wallet/eth-simple-keyring@5.0.2":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.0.2.tgz#54865192c6e3eddc9ca4454c406d1638496b2998"
-  integrity sha512-vQjBOdXe4l1EJj1J4/x4FLa81N0y+tyzmWUWIwgvRCGaPxflEZBoADf7ICI1WuApKRQdwVZG5mtnr1wM0/kRyQ==
+"@rabby-wallet/eth-simple-keyring@5.1.0-beta.1", "@rabby-wallet/eth-simple-keyring@^5.0.1":
+  version "5.1.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.1.0-beta.1.tgz#5007debf747f7d73d621ddc03d4036cb0306c992"
+  integrity sha512-59+YPSkoms1tVYzN0Q6UXn+7QUjDpVRLApD5Worp3etBFfv0iZ02zBUvHGXmssWvd6+bpqqbJdlmE5X10vjRYw==
   dependencies:
     "@ethereumjs/util" "^9.0.0"
-    "@metamask/eth-sig-util" "5.1.0"
-    "@metamask/utils" "^8.1.0"
-    chai "^4.3.4"
-    eth-sig-util "^3.0.1"
-    ethereum-cryptography "^2.1.2"
-    ethereumjs-tx "^2.1.2"
-    ethereumjs-util "^7.0.9"
-    ethereumjs-wallet "^1.0.2"
-    randombytes "^2.1.0"
-
-"@rabby-wallet/eth-simple-keyring@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.0.1.tgz#aecdc8f82703741570d6759f8599909b5ccb6850"
-  integrity sha512-5KYpR5gI5Hlo4E6uXKY3Iv+rleij0kelsESX07kgPEqInBHkvYiYmxFauY1Uz7gUotnejI9mgv5ijmsOC+q70w==
-  dependencies:
-    "@ethereumjs/util" "^9.0.0"
-    "@metamask/eth-sig-util" "5.1.0"
+    "@metamask/eth-sig-util" "8.2.0"
     "@metamask/utils" "^8.1.0"
     chai "^4.3.4"
     eth-sig-util "^3.0.1"
@@ -8646,7 +8631,7 @@ bn.js@4.11.8:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
   integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
 
-bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.0, bn.js@^4.11.1, bn.js@^4.11.8, bn.js@^4.11.9, bn.js@^4.12.0:
+bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.0, bn.js@^4.11.1, bn.js@^4.11.8, bn.js@^4.11.9:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.0.tgz#775b3f278efbb9718eec7361f483fb36fbbfea88"
   integrity sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==

@@ -1,5 +1,5 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { Common, Hardfork } from '@ethereumjs/common';
+import { AuthorizationListItem, Common, Hardfork } from '@ethereumjs/common';
 import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
@@ -69,9 +69,14 @@ import {
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
-import { stringToHex } from 'viem';
+import { numberToHex, stringToHex, toHex } from 'viem';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
+import { add0x } from '@/ui/utils/address';
+import {
+  EIP7702RevokeMiniGasLimit,
+  removeLeadingZeroes,
+} from '@/background/utils/7702';
 
 const reportSignText = (params: {
   method: string;
@@ -376,6 +381,10 @@ class ProviderController extends BaseController {
     const isGasAccount = approvalRes.isGasAccount || false;
     const sig = approvalRes.sig;
 
+    const eip7702Revoke = options?.data?.$ctx?.eip7702Revoke || false;
+    const eip7702RevokeAuthorization =
+      options?.data?.$ctx?.eip7702RevokeAuthorization || [];
+
     let signedTransactionSuccess = false;
     delete txParams.isSend;
     delete txParams.isSwap;
@@ -402,14 +411,16 @@ class ProviderController extends BaseController {
     let is1559 = is1559Tx(approvalRes);
     const is7702 = is7702Tx(approvalRes);
 
-    if (is7702) {
+    if (is7702 && !(eip7702Revoke || isSpeedUp)) {
       // todo
       throw new Error('not support 7702');
     }
 
     if (
       is1559 &&
-      approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas
+      approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas &&
+      !eip7702Revoke &&
+      !is7702
     ) {
       // fallback to legacy transaction if maxFeePerGas is equal to maxPriorityFeePerGas
       approvalRes.gasPrice = approvalRes.maxFeePerGas;
@@ -418,13 +429,66 @@ class ProviderController extends BaseController {
       is1559 = false;
     }
     const common = Common.custom(
-      { chainId: approvalRes.chainId },
-      { hardfork: Hardfork.London }
+      {
+        chainId: approvalRes.chainId,
+      },
+      { hardfork: Hardfork.Prague, eips: [7702] }
     );
+
     const txData = { ...approvalRes, gasLimit: approvalRes.gas };
+
     if (is1559) {
       txData.type = '0x2';
     }
+
+    if (
+      (is7702 && isSpeedUp) ||
+      (eip7702Revoke && eip7702RevokeAuthorization?.length)
+    ) {
+      txData.type = '0x4';
+
+      if (!isSpeedUp) {
+        const authorizationList = [] as AuthorizationListItem[];
+
+        for (const authorization of eip7702RevokeAuthorization) {
+          const signature: string = await keyringService.signEip7702Authorization(
+            keyring,
+            {
+              from: txParams.from,
+              authorization: authorization,
+            }
+          );
+          const r = signature.slice(0, 66) as `0x${string}`;
+          const s = add0x(signature.slice(66, 130));
+          const v = parseInt(signature.slice(130, 132), 16);
+          const yParity = toHex(v - 27 === 0 ? 0 : 1);
+          authorizationList.push({
+            chainId: toHex(authorization[0]),
+            address: authorization[1],
+            nonce: toHex(authorization[2]),
+            r: removeLeadingZeroes(r),
+            s: removeLeadingZeroes(s),
+            yParity: removeLeadingZeroes(yParity),
+          } as any);
+        }
+        txData.authorizationList = authorizationList;
+        approvalRes.authorizationList = authorizationList;
+      }
+
+      // bsc use gasPrice
+      if (!txData.maxFeePerGas || !txData.maxPriorityFeePerGas) {
+        txData.maxFeePerGas = txData.maxFeePerGas || txData.gasPrice;
+        txData.maxPriorityFeePerGas =
+          txData.maxPriorityFeePerGas || txData.gasPrice;
+        delete txData.gasPrice;
+      }
+      // txData.gasLimit = new BigNumber(txData?.gasLimit || 0).gte(
+      //   EIP7702RevokeMiniGasLimit
+      // )
+      //   ? txData.gasLimit
+      //   : numberToHex(EIP7702RevokeMiniGasLimit);
+    }
+
     const tx = TransactionFactory.fromTxData(txData as FeeMarketEIP1559TxData, {
       common,
     });
@@ -690,7 +754,29 @@ class ProviderController extends BaseController {
             if (is1559) {
               txData.type = '0x2';
             }
-            const tx = TransactionFactory.fromTxData(txData);
+
+            if (approvalRes.authorizationList) {
+              txData.type = '0x4';
+              if (!txData.maxFeePerGas || !txData.maxPriorityFeePerGas) {
+                txData.maxFeePerGas = txData.maxFeePerGas || txData.gasPrice;
+                txData.maxPriorityFeePerGas =
+                  txData.maxPriorityFeePerGas || txData.gasPrice;
+                delete txData.gasPrice;
+
+                console.log(
+                  'EIP-7702 Revoke tx use gasPrice, not maxFeePerGas',
+                  txData
+                );
+              }
+              // txData.gasLimit = new BigNumber(txData?.gasLimit || 0).gte(
+              //   EIP7702RevokeMiniGasLimit
+              // )
+              //   ? txData.gasLimit
+              //   : numberToHex(EIP7702RevokeMiniGasLimit);
+            }
+
+            const tx = TransactionFactory.fromTxData(txData, { common });
+
             const rawTx = bytesToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
@@ -767,7 +853,7 @@ class ProviderController extends BaseController {
           if (is1559) {
             txData.type = '0x2';
           }
-          const tx = TransactionFactory.fromTxData(txData);
+          const tx = TransactionFactory.fromTxData(txData, { common });
           const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
