@@ -1484,7 +1484,10 @@
         "slip39SeedPhrasePlaceholder_two": "{{count}}nci tohum ifadesi payınızı buraya girin",
         "slip39SeedPhrasePlaceholder_few": "{{count}}. tohum cümlesi paylarınızı buraya girin",
         "passphrase": "Parola cümlesi",
-        "inputInvalidCount_one": "1 giriş Seed Phrase normlarına uymuyor, lütfen kontrol edin."
+        "inputInvalidCount_one": "1 giriş Seed Phrase normlarına uymuyor, lütfen kontrol edin.",
+        "importQuestion3": "Eğer Rabby'yi seed ifademi yedeklemeden kaldırırsam, Rabby tarafından kurtarılamaz.",
+        "importQuestion1": "Eğer kurtarma kelimelerimi kaybeder veya paylaşırsam, varlıklarıma kalıcı olarak erişimimi kaybedeceğim.",
+        "importQuestion2": "Kıdemli kelime ifadem yalnızca cihazımda saklanıyor. Rabby buna erişemez."
       },
       "metamask": {
         "step1": "MetaMask'tan seed phrase'i veya özel anahtarı dışa aktarın <1>Rehber <2/></1>",
@@ -2453,7 +2456,12 @@
         "desc": "Ethereum ve tüm EVM zincirleri için çığır açan cüzdan"
       },
       "createNewAddress": {
-        "showSeedPhrase": "Tohum İfadesini Göster"
+        "showSeedPhrase": "Tohum İfadesini Göster",
+        "title": "Başlamadan Önce",
+        "tip2": "Kök ifadem yalnızca cihazımda saklanır. Rabby buna erişemez.",
+        "desc": "Lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
+        "tip3": "Eğer seed phrase’imı yedeklemeden Rabby'yi kaldırırsam, Rabby tarafından kurtarılamaz.",
+        "tip1": "Eğer tohum cümlemi kaybeder veya paylaşırsam, varlıklarıma kalıcı olarak erişimimi kaybedeceğim."
       },
       "importList": {
         "title": "İçe Aktarma Yöntemini Seç"
@@ -2467,12 +2475,14 @@
           "password": {
             "label": "Parola",
             "min": "Parola en az 8 karakter uzunluğunda olmalıdır。",
-            "required": "Lütfen Şifreyi Giriniz"
+            "required": "Lütfen Şifreyi Giriniz",
+            "placeholder": "Şifre (en az 8 karakter)"
           },
           "confirmPassword": {
             "notMatch": "Parolalar eşleşmiyor",
             "required": "Lütfen Parolayı Onaylayın",
-            "label": "Şifreyi Onayla"
+            "label": "Şifreyi Onayla",
+            "placeholder": "Şifreyi Onayla"
           }
         },
         "title": "Parola Belirle",
@@ -2487,7 +2497,14 @@
         "create": "Başarıyla Oluşturuldu"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet'i Sabitle"
+        "pin": "Rabby Wallet'i Sabitle",
+        "guides": {
+          "step1": "Tarayıcı uzantısı simgesine tıklayın",
+          "step2": "Pin Rabby Wallet"
+        },
+        "desc": "Rabby Cüzdanını Bul ve Sabitle",
+        "extensionTip": "Tıkla <1/> ve ardından <3/>",
+        "title": "Cüzdanınız hazır!"
       },
       "importSeedPhrase": {
         "title": "Seed Phrase İçe Aktar"
