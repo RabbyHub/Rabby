@@ -8,14 +8,15 @@ import IconCloseSvg from 'ui/assets/close-icon.svg';
 
 import MnemonicsInputs from './MnemonicsInputs';
 
-const ITEM_H = 208 / 4;
+const ITEM_H = 40;
 const ROW_COUNT = 3;
 
 const NumberFlag = styled.div`
-  color: var(--r-neutral-foot);
+  color: var(--r-neutral-body);
   font-weight: 400;
-  font-size: 12px;
-  height: 14px;
+  font-size: 10px;
+  line-height: 12px;
+  height: 12px;
 `;
 
 const CloseIcon = styled.img.attrs({
@@ -42,9 +43,10 @@ const MatrixWrapper = styled.div.withConfig<{
     return !['rowCount'].includes(prop) && defaultValidatorFn(prop);
   },
 })`
-  display: flex;
-  flex-wrap: wrap;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 
   .matrix-word-item {
     box-sizing: border-box;
@@ -52,30 +54,15 @@ const MatrixWrapper = styled.div.withConfig<{
     text-align: center;
     display: block;
 
-    font-size: 15px;
+    font-size: 16px;
+    line-height: 18px;
     font-weight: 500;
     color: var(--r-neutral-title-1);
     position: relative;
+    background-color: rgba(217, 217, 217, 0.2);
 
-    border-right: 1px solid var(--r-neutral-line);
-    border-bottom: 1px solid var(--r-neutral-line);
-    border-right: 0.5px solid var(--r-neutral-line);
-    border-bottom: 0.5px solid var(--r-neutral-line);
-
-    ${(props) => {
-      const rowCount = props.rowCount || ROW_COUNT;
-      return css`
-        width: ${(1 / rowCount) * 100}%;
-
-        &:nth-child(${rowCount}n) {
-          border-right: 0;
-        }
-
-        &:nth-last-child(-n + ${rowCount}) {
-          border-bottom: 0;
-        }
-      `;
-    }}
+    border: 1.5px solid var(--r-neutral-line);
+    border-radius: 12px;
   }
 
   ${styid(FocusingBox)}, ${styid(ErrorBox)} {
@@ -89,12 +76,12 @@ const MatrixWrapper = styled.div.withConfig<{
   .text {
     height: 100%;
     display: inline-block;
-    line-height: ${ITEM_H}px;
+    line-height: ${ITEM_H - 3}px;
   }
 
   ${styid(NumberFlag)} {
     position: absolute;
-    top: 8px;
+    top: 6px;
     left: 8px;
   }
 

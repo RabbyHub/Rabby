@@ -1307,9 +1307,6 @@
         "createdSuccessfully": "Créé avec succès",
         "fillInTheBackupSeedPhraseInOrder": "Remplir la seed phrase dans l'ordre",
         "importError": "[CreateMnemonics] étape inattendue {{0}}",
-        "importQuestion1": "Si je perds ma seed phrase, mes actifs seront perdus à jamais.",
-        "importQuestion2": "Si je partage ma seed phrase avec d'autres personnes, mes actifs seront volés.",
-        "importQuestion3": "La seed phrase n'est stockée que sur mon ordinateur et Rabby n'y a pas accès.",
         "importQuestion4": "Si je désinstalle Rabby sans sauvegarder la seed phrase, Rabby ne pourra pas la récupérer pour moi.",
         "importTips": "Vous pouvez coller l'intégralité de votre seed phrase dans le 1er champ",
         "isItSafeToImportItInRabby": {
@@ -2721,12 +2718,7 @@
         "desc": "Le portefeuille révolutionnaire pour Ethereum et toutes les chaînes EVM"
       },
       "createNewAddress": {
-        "title": "Créer une nouvelle Seed Phrase",
-        "showSeedPhrase": "Afficher la phrase secrète",
-        "tip1": "Si je perds ou partage ma seed phrase, mes actifs seront perdus pour toujours.",
-        "desc": "Avant de commencer, veuillez lire et garder à l'esprit les conseils de sécurité suivants.",
-        "tip2": "La phrase de récupération est uniquement stockée sur mon ordinateur, et Rabby n'y a pas accès.",
-        "tip3": "Si je désinstalle Rabby sans sauvegarder la phrase de récupération, Rabby ne pourra pas la récupérer pour moi."
+        "showSeedPhrase": "Afficher la phrase secrète"
       },
       "importList": {
         "title": "Sélectionner la méthode d'importation"
@@ -2739,15 +2731,13 @@
         "form": {
           "password": {
             "label": "Mot de passe",
-            "placeholder": "8 caractères minimum",
             "min": "Le mot de passe doit comporter au moins 8 caractères",
             "required": "Veuillez saisir le mot de passe"
           },
           "confirmPassword": {
             "notMatch": "Les mots de passe ne correspondent pas",
             "label": "Confirmer le mot de passe",
-            "required": "Veuillez confirmer le mot de passe",
-            "placeholder": "Mot de passe"
+            "required": "Veuillez confirmer le mot de passe"
           }
         },
         "title": "Définir le mot de passe",
@@ -2762,10 +2752,7 @@
         "addMoreAddr": "Ajoutez plus d'adresses à partir de cette Seed Phrase"
       },
       "readyToUse": {
-        "pin": "Épingler Rabby Wallet",
-        "desc": "Épinglez Rabby Wallet à votre barre d'outils pour un accès facile.",
-        "title": "Rabby Wallet est prêt à être utilisé",
-        "extensionTip": "Cliquez sur <1/> puis sur <3/>"
+        "pin": "Épingler Rabby Wallet"
       },
       "importSeedPhrase": {
         "title": "Importer Seed Phrase"

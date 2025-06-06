@@ -48,6 +48,7 @@ export const NewUserSetPassword = () => {
       let stashKeyringId: number | null = null;
 
       if (!isCreated) {
+        await wallet.boot(password);
         const {
           keyringId,
           isExistedKR,
@@ -67,29 +68,25 @@ export const NewUserSetPassword = () => {
           stashKeyringId: stashKeyringId as number,
         });
 
-        // const accounts = await dispatch.importMnemonics.getAccounts({
-        //   start: 0,
-        //   end: 1,
-        // });
+        const accounts = await dispatch.importMnemonics.getAccounts({
+          start: 0,
+          end: 1,
+        });
 
-        // await dispatch.importMnemonics.setSelectedAccounts([
-        //   accounts[0].address,
-        // ]);
-        // await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+        await dispatch.importMnemonics.setSelectedAccounts([
+          accounts[0].address,
+        ]);
+        await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
 
         setStore({
           password,
         });
 
         history.push({
-          pathname: '/new-user/import/select-address',
-          search: qs.stringify({
-            hd: KEYRING_CLASS.MNEMONIC,
-            keyringId: String(stashKeyringId || ''),
-            isLazyImport: true,
-            isNewUserImport: true,
-            needSetPassword: true,
-          }),
+          pathname: '/new-user/success',
+          search: `?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${String(
+            stashKeyringId || ''
+          )}&isCreated=${false}`,
         });
       } else {
         await wallet.boot(password);

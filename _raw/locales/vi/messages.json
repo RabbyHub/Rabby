@@ -1518,13 +1518,10 @@
         "showSeedPhrase": "Hiện Seed Phrase",
         "importError": "[CreateMnemonics] bước không mong đợi {{0}}",
         "copy": "Sao chép cụm từ hạt giống",
-        "importQuestion2": "Nếu tôi chia sẻ cụm từ hạt giống của mình với người khác, tài sản của tôi sẽ bị đánh cắp.",
         "backup": "Sao lưu cụm từ khôi phục",
         "importTips": "Bạn có thể dán toàn bộ cụm từ khôi phục bí mật của bạn vào trường đầu tiên.",
-        "importQuestion1": "Nếu tôi mất cụm từ khôi phục, tài sản của tôi sẽ bị mất vĩnh viễn.",
         "riskTips": "Trước khi bạn bắt đầu, vui lòng đọc và ghi nhớ các mẹo bảo mật sau đây.",
         "backupTips": "Đảm bảo không ai khác đang nhìn vào màn hình của bạn khi bạn sao lưu cụm từ hạt giống.",
-        "importQuestion3": "Cụm từ hạt giống chỉ được lưu trữ trên máy tính của tôi, và Rabby không có quyền truy cập vào nó.",
         "clearAll": "Xóa Tất Cả",
         "passphrase": "Mật khẩu phụ",
         "verifySeedPhrase": "Xác minh cụm từ hạt giống",
@@ -2450,12 +2447,7 @@
         "desc": "Ví dụ ví cách mạng cho Ethereum và tất cả các chuỗi EVM"
       },
       "createNewAddress": {
-        "desc": "Trước khi bắt đầu, vui lòng đọc và ghi nhớ những mẹo bảo mật sau đây.",
-        "title": "Tạo Cụm Từ Gốc Mới",
-        "tip1": "Nếu tôi làm mất hoặc chia sẻ cụm từ hạt giống của mình, tài sản của tôi sẽ bị mất mãi mãi.",
-        "showSeedPhrase": "Hiển thị cụm từ hạt giống",
-        "tip2": "Câu nói hạt giống chỉ được lưu trữ trên máy tính của tôi, và Rabby không có quyền truy cập vào nó.",
-        "tip3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục, Rabby sẽ không thể lấy lại cho tôi."
+        "showSeedPhrase": "Hiển thị cụm từ hạt giống"
       },
       "importList": {
         "title": "Chọn Phương Thức Nhập"
@@ -2468,15 +2460,13 @@
         "form": {
           "password": {
             "label": "Mật khẩu",
-            "placeholder": "Tối thiểu 8 ký tự",
             "min": "Mật khẩu phải có ít nhất 8 ký tự.",
             "required": "Vui lòng nhập Mật khẩu"
           },
           "confirmPassword": {
             "notMatch": "Mật khẩu không khớp",
             "label": "Xác nhận Mật khẩu",
-            "required": "Vui lòng xác nhận mật khẩu",
-            "placeholder": "Mật khẩu"
+            "required": "Vui lòng xác nhận mật khẩu"
           }
         },
         "title": "Đặt Mật Khẩu",
@@ -2491,10 +2481,7 @@
         "addMoreAddr": "Thêm nhiều địa chỉ từ cụm từ hạt giống này"
       },
       "readyToUse": {
-        "desc": "Ghim Ví Rabby vào thanh công cụ của bạn để truy cập dễ dàng.",
-        "pin": "Ghim Rabby Wallet",
-        "title": "Rabby Wallet đã sẵn sàng để sử dụng",
-        "extensionTip": "Click <1/> và sau đó <3/>"
+        "pin": "Ghim Rabby Wallet"
       },
       "importSeedPhrase": {
         "title": "Nhập cụm từ khôi phục"
