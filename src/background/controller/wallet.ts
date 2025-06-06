@@ -92,7 +92,7 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { isAddress } from 'viem';
+import { fromHex, isAddress, zeroAddress } from 'viem';
 import {
   ensureChainListValid,
   findChain,
@@ -4410,6 +4410,72 @@ export class WalletController extends BaseController {
         }
       }),
     ];
+
+    const waitAbort = new Promise<void>((resolve) => {
+      const onAbort = () => {
+        queue.clear();
+        resolve();
+
+        abortRevoke.signal.removeEventListener('abort', onAbort);
+      };
+      abortRevoke.signal.addEventListener('abort', onAbort);
+    });
+
+    try {
+      await Promise.race([queue.addAll(revokeList), waitAbort]);
+    } catch (error) {
+      console.log('revoke error', error);
+    }
+  };
+
+  revokeEIP7702 = async ({ chainList }: { chainList: CHAINS_ENUM[] }) => {
+    const queue = new PQueue({
+      autoStart: true,
+      concurrency: 1,
+      timeout: undefined,
+    });
+
+    const abortRevoke = new AbortController();
+
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+
+    const revokeList: (() => Promise<void>)[] = chainList.map(
+      (chain) => async () => {
+        try {
+          const chainId = findChain({
+            enum: chain,
+          })?.id;
+          if (!chainId) throw new Error(t('background.error.invalidChainId'));
+
+          const _nonce = await this.getRecommendNonce({
+            from: account.address,
+            chainId,
+          });
+
+          const nonce = fromHex(_nonce as `0x${string}`, 'number') + 1;
+
+          const tx: any = {
+            from: account.address,
+            to: account.address,
+            chainId: chainId,
+            type: 4,
+          };
+          await this.sendRequest({
+            $ctx: {
+              eip7702Revoke: true,
+              eip7702RevokeAuthorization: [[chainId, zeroAddress, nonce]],
+            },
+            method: 'eth_sendTransaction',
+            params: [tx],
+          });
+        } catch (error) {
+          abortRevoke.abort();
+          if (!appIsProd) console.error(error);
+          console.error(`batch revoke ${chain} 7702 error`);
+        }
+      }
+    );
 
     const waitAbort = new Promise<void>((resolve) => {
       const onAbort = () => {
