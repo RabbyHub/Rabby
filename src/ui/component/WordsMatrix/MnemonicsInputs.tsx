@@ -611,7 +611,7 @@ function MnemonicsInputs({
 
           return (
             <div
-              key={`word-item-${word}-${idx}`}
+              key={`word-item-${idx}`}
               className={clsx('matrix-word-item is-mnemonics-input', {
                 invalid: invalidWords.includes(idx),
               })}
@@ -625,6 +625,7 @@ function MnemonicsInputs({
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content] top-[-20px]"
                 title={word}
+                disableLeft
                 placement="top"
                 visible={
                   !!(
