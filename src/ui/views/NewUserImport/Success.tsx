@@ -173,7 +173,7 @@ export const ImportOrCreatedSuccess = () => {
   const { value: accounts } = useAsync(async () => {
     if (documentVisibility === 'visible') {
       const accounts = await wallet.getAllVisibleAccountsArray();
-      if (!keyringId) {
+      if (hd !== KEYRING_CLASS.MNEMONIC) {
         return accounts;
       }
       const addresses = await wallet.requestKeyring(
