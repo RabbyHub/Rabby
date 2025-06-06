@@ -4,7 +4,7 @@ import React from 'react';
 import TokenDetail from './TokenDetail';
 import './style.less';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
-import { Token } from '@/background/service/preference';
+import { Account, Token } from '@/background/service/preference';
 import { useRabbyDispatch } from 'ui/store';
 import { DisplayedToken } from 'ui/utils/portfolio/project';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
@@ -21,6 +21,7 @@ interface TokenDetailProps {
   canClickToken?: boolean;
   hideOperationButtons?: boolean;
   tipsFromTokenSelect?: string;
+  account?: Account;
 }
 export const TokenDetailPopup = ({
   token,
@@ -30,6 +31,7 @@ export const TokenDetailPopup = ({
   canClickToken = true,
   hideOperationButtons = false,
   tipsFromTokenSelect,
+  account,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -105,6 +107,7 @@ export const TokenDetailPopup = ({
     >
       {visible && token && (
         <TokenDetail
+          account={account}
           token={token}
           popupHeight={popupHeight}
           addToken={handleAddToken}
