@@ -1484,7 +1484,10 @@
         "slip39SeedPhrasePlaceholder_two": "Insira suas {{count}}ª partes da seed phrase aqui",
         "slip39SeedPhrasePlaceholder_few": "Insira aqui suas {{count}}ª partes da frase de recuperação",
         "passphrase": "Passphrase",
-        "inputInvalidCount_other": "{{count}} inputs não estão em conformidade com as normas da Seed Phrase, por favor, verifique."
+        "inputInvalidCount_other": "{{count}} inputs não estão em conformidade com as normas da Seed Phrase, por favor, verifique.",
+        "importQuestion1": "Se eu perder ou compartilhar minha frase semente, perderei o acesso aos meus ativos permanentemente.",
+        "importQuestion2": "Minha frase-semente é armazenada apenas no meu dispositivo. Rabby não pode acessar.",
+        "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby."
       },
       "metamask": {
         "step1": "Exporte a frase de recuperação ou chave privada do MetaMask <1>Guia <2/></1>",
@@ -2450,7 +2453,12 @@
         "desc": "A carteira revolucionária para Ethereum e todas as cadeias EVM"
       },
       "createNewAddress": {
-        "showSeedPhrase": "Mostrar Seed Phrase"
+        "showSeedPhrase": "Mostrar Seed Phrase",
+        "title": "Antes de Começar",
+        "tip1": "Se eu perder ou compartilhar minha frase-semente, perderei o acesso aos meus ativos permanentemente.",
+        "tip3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, ela não pode ser recuperada pelo Rabby.",
+        "tip2": "Minha frase-semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
+        "desc": "Por favor, leia e mantenha as seguintes dicas de segurança em mente."
       },
       "importList": {
         "title": "Selecione o Método de Importação"
@@ -2464,12 +2472,14 @@
           "password": {
             "label": "Senha",
             "required": "Por favor, insira a senha",
-            "min": "A senha deve ter pelo menos 8 caracteres"
+            "min": "A senha deve ter pelo menos 8 caracteres",
+            "placeholder": "Senha (mínimo de 8 caracteres)"
           },
           "confirmPassword": {
             "label": "Confirmar Password",
             "notMatch": "As senhas não coincidem",
-            "required": "Por favor, confirme a senha"
+            "required": "Por favor, confirme a senha",
+            "placeholder": "Confirme a Senha"
           }
         },
         "title": "Definir Senha",
@@ -2484,7 +2494,14 @@
         "create": "Criado com sucesso"
       },
       "readyToUse": {
-        "pin": "Fixar Rabby Wallet"
+        "pin": "Fixar Rabby Wallet",
+        "guides": {
+          "step2": "Fixar a Carteira Rabby",
+          "step1": "Clique no ícone da extensão do navegador"
+        },
+        "desc": "Encontre a Rabby Wallet e fixe-a",
+        "title": "Sua carteira Rabby está pronta!",
+        "extensionTip": "Clique <1/> e depois <3/>"
       },
       "importSeedPhrase": {
         "title": "Importar Seed Phrase"

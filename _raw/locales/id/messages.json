@@ -1542,7 +1542,10 @@
         "pastedAndClear": "Ditempelkan dan clipboard dibersihkan",
         "verificationFailed": "Verifikasi gagal",
         "passphrase": "Frasa sandi",
-        "inputInvalidCount_other": "{{count}} input tidak sesuai dengan norma Seed Phrase, silakan periksa."
+        "inputInvalidCount_other": "{{count}} input tidak sesuai dengan norma Seed Phrase, silakan periksa.",
+        "importQuestion2": "Frasa seed saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
+        "importQuestion3": "Jika saya mencopot pemasangan Rabby tanpa mencadangkan frase benih saya, itu tidak dapat dipulihkan oleh Rabby.",
+        "importQuestion1": "Jika saya kehilangan atau membagikan seed phrase saya, saya akan kehilangan akses ke aset saya secara permanen."
       },
       "metamask": {
         "tips": "Tips:",
@@ -2447,7 +2450,12 @@
         "desc": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM"
       },
       "createNewAddress": {
-        "showSeedPhrase": "Tampilkan Frasa Seed"
+        "showSeedPhrase": "Tampilkan Frasa Seed",
+        "title": "Sebelum Anda Mulai",
+        "tip2": "Frase benih saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
+        "desc": "Silakan baca dan ingat tips keamanan berikut ini",
+        "tip1": "Jika saya kehilangan atau membagikan frase pemulihan saya, saya akan kehilangan akses ke aset saya secara permanen.",
+        "tip3": "Jika saya menghapus Rabby tanpa mencadangkan frasa benih saya, itu tidak dapat dipulihkan oleh Rabby"
       },
       "importList": {
         "title": "Pilih Metode Impor"
@@ -2461,12 +2469,14 @@
           "password": {
             "label": "Kata Sandi",
             "required": "Silakan masukkan Kata Sandi",
-            "min": "Kata sandi harus terdiri dari setidaknya 8 karakter."
+            "min": "Kata sandi harus terdiri dari setidaknya 8 karakter.",
+            "placeholder": "Kata Sandi (min 8 karakter)"
           },
           "confirmPassword": {
             "label": "Konfirmasi Kata Sandi",
             "required": "Silakan Konfirmasi Kata Sandi",
-            "notMatch": "Kata sandi tidak cocok"
+            "notMatch": "Kata sandi tidak cocok",
+            "placeholder": "Konfirmasi Kata Sandi"
           }
         },
         "title": "Atur Kata Sandi",
@@ -2481,7 +2491,14 @@
         "import": "Diimpor Berhasil"
       },
       "readyToUse": {
-        "pin": "Pin Dompet Rabby"
+        "pin": "Pin Dompet Rabby",
+        "guides": {
+          "step1": "Klik ikon ekstensi browser",
+          "step2": "Pin Dompet Rabby"
+        },
+        "desc": "Temukan Rabby Wallet dan Pin itu",
+        "title": "Dompet Rabby Anda Sudah Siap!",
+        "extensionTip": "Klik <1/> dan kemudian <3/>"
       },
       "importSeedPhrase": {
         "title": "Impor Kata Sandi Seed"

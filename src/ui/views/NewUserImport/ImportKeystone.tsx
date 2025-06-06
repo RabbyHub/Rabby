@@ -103,23 +103,17 @@ export const NewUserImportKeystone = () => {
     if (!keyringId) {
       return;
     }
-    // await wallet.requestKeyring(
-    //   KEYSTONE_TYPE,
-    //   'setHDPathType',
-    //   keyringId,
-    //   HDPathType.BIP44
-    // );
-    // await wallet.boot(store.password);
-    // await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], keyringId);
+    await wallet.requestKeyring(
+      KEYSTONE_TYPE,
+      'setHDPathType',
+      keyringId,
+      HDPathType.BIP44
+    );
+    await wallet.boot(store.password);
+    await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], keyringId);
     history.push({
-      pathname: '/new-user/import/select-address',
-      search: qs.stringify({
-        hd: KEYSTONE_TYPE,
-        brand,
-        keyringId,
-        isLazyImport: true,
-        isNewUserImport: true,
-      }),
+      pathname: '/new-user/success',
+      search: `?hd=${KEYSTONE_TYPE}&brand=${WALLET_BRAND_TYPES.KEYSTONE}&keyringId=${keyringId}`,
     });
   };
 

@@ -1484,7 +1484,10 @@
         "inputInvalidCount_other": "{{count}} 件の入力がシードフレーズの規範に適合していません。確認してください。",
         "inputInvalidCount_one": "1入力がシードフレーズの基準に合致していません。ご確認ください。",
         "wordPhraseAndPassphrase": "私はPassphrase付きの<1>{{count}}</1>単語のフレーズを持っています。",
-        "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズシェアを入力してください。"
+        "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズシェアを入力してください。",
+        "importQuestion2": "私のシードフレーズは私のデバイスのみに保存されています。Rabbyはそれにアクセスできません。",
+        "importQuestion1": "もし私がシードフレーズを失ったり共有したりすると、資産へのアクセスを永久に失うことになります。",
+        "importQuestion3": "Rabbyをアンインストールしてシードフレーズをバックアップしなかった場合、Rabbyでは回復できません。"
       },
       "metamask": {
         "step1": "MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
@@ -2450,7 +2453,12 @@
         "desc": "EthereumおよびすべてのEVMチェーンに対応する画期的なウォレット"
       },
       "createNewAddress": {
-        "showSeedPhrase": "シードフレーズを表示"
+        "showSeedPhrase": "シードフレーズを表示",
+        "desc": "次のセキュリティのヒントをお読みいただき、覚えておいてください。",
+        "tip1": "シードフレーズを失ったり共有したりすると、資産に恒久的にアクセスできなくなります。",
+        "tip2": "私のシードフレーズは私のデバイスにのみ保存されています。Rabbyはアクセスできません。",
+        "tip3": "Rabbyをアンインストールし、シードフレーズをバックアップしなかった場合、それはRabbyによって復元できません。",
+        "title": "始める前に"
       },
       "importList": {
         "title": "インポート方法を選択"
@@ -2464,12 +2472,14 @@
           "password": {
             "label": "パスワード",
             "required": "パスワードを入力してください",
-            "min": "パスワードは8文字以上である必要があります。"
+            "min": "パスワードは8文字以上である必要があります。",
+            "placeholder": "パスワード（8文字以上）"
           },
           "confirmPassword": {
             "label": "パスワードを確認",
             "notMatch": "パスワードが一致しません。",
-            "required": "パスワードを確認してください"
+            "required": "パスワードを確認してください",
+            "placeholder": "パスワードを確認してください"
           }
         },
         "title": "パスワードを設定",
@@ -2484,7 +2494,14 @@
         "import": "インポートしました"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet をピン留め"
+        "pin": "Rabby Wallet をピン留め",
+        "guides": {
+          "step1": "ブラウザー拡張アイコンをクリックしてください",
+          "step2": "Rabby Walletをピン留めする"
+        },
+        "title": "あなたのRabbyウォレットの準備ができました！",
+        "extensionTip": "クリック<1/>、次に<3/>",
+        "desc": "Rabby Walletを見つけてピン留めしてください。"
       },
       "importSeedPhrase": {
         "title": "シードフレーズをインポート"

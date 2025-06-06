@@ -1484,7 +1484,10 @@
         "passphrase": "Passphrase",
         "invalidContent": "Contenido no válido",
         "inputInvalidCount_one": "1 entrada no cumple con las normas de la Seed Phrase, por favor revise.",
-        "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.\n"
+        "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.\n",
+        "importQuestion2": "Mi frase semilla solo se almacena en mi dispositivo. Rabby no puede acceder a ella.",
+        "importQuestion3": "Si desinstalo Rabby sin hacer una copia de seguridad de mi frase semilla, no se podrá recuperar mediante Rabby.",
+        "importQuestion1": "Si pierdo o comparto mi frase semilla, perderé el acceso a mis activos de forma permanente."
       },
       "metamask": {
         "step1": "Exporta la frase de semilla o la clave privada desde MetaMask <br/><1>Guía <1/></1>",
@@ -2450,7 +2453,12 @@
         "title": "Bienvenido a Rabby Wallet"
       },
       "createNewAddress": {
-        "showSeedPhrase": "Mostrar Seed Phrase"
+        "showSeedPhrase": "Mostrar Seed Phrase",
+        "title": "Antes de empezar",
+        "desc": "Por favor, lee y ten en cuenta los siguientes consejos de seguridad.",
+        "tip2": "Mi frase semilla se almacena únicamente en mi dispositivo. Rabby no puede acceder a ella.",
+        "tip1": "Si pierdo o comparto mi frase semilla, perderé el acceso a mis activos de forma permanente.",
+        "tip3": "Si desinstalo Rabby sin hacer una copia de seguridad de mi frase semilla, no se puede recuperar mediante Rabby."
       },
       "importList": {
         "title": "Seleccionar método de importación"
@@ -2464,12 +2472,14 @@
           "password": {
             "label": "Contraseña",
             "min": "La contraseña debe tener al menos 8 caracteres de longitud",
-            "required": "Por favor, ingresa la contraseña"
+            "required": "Por favor, ingresa la contraseña",
+            "placeholder": "Contraseña (mínimo 8 caracteres)"
           },
           "confirmPassword": {
             "label": "Confirmar Password",
             "notMatch": "Las contraseñas no coinciden",
-            "required": "Por favor, confirma la contraseña"
+            "required": "Por favor, confirma la contraseña",
+            "placeholder": "Confirmar contraseña"
           }
         },
         "agree": "Estoy de acuerdo con los<1/> <2>Términos de uso</2> y la <4>Política de privacidad</4>",
@@ -2484,7 +2494,14 @@
         "addMoreFrom": "Agregar más direcciones de {{name}}"
       },
       "readyToUse": {
-        "pin": "Fijar Rabby Wallet"
+        "pin": "Fijar Rabby Wallet",
+        "guides": {
+          "step2": "Anclar Rabby Wallet",
+          "step1": "Haz clic en el ícono de la extensión del navegador."
+        },
+        "desc": "Encuentra Rabby Wallet y fíjalo",
+        "extensionTip": "Haz clic en <1/> y luego en <3/>",
+        "title": "¡Tu billetera Rabby está lista!"
       },
       "importSeedPhrase": {
         "title": "Importar Seed Phrase"
