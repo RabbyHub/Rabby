@@ -1459,9 +1459,6 @@
           "answer": "Sí, se almacenará localmente en tu navegador y solo será accesible para ti."
         },
         "importError": "[CreateMnemonics] paso inesperado {{0}}",
-        "importQuestion1": "Si pierdo mi frase de semilla, mis activos se perderán para siempre.",
-        "importQuestion2": "Si comparto mi frase de semilla con otros, mis activos serán robados.",
-        "importQuestion3": "La frase de semilla solo se almacena en mi computadora, y Rabby no tiene acceso a ella.",
         "importQuestion4": "Si desinstalo Rabby sin hacer una copia de respaldo de la frase de semilla, Rabby no podrá recuperarla para mí.",
         "riskTips": "Antes de comenzar, por favor lee y ten en cuenta los siguientes consejos de seguridad.",
         "showSeedPhrase": "Mostrar Frase de Semilla",
@@ -2453,12 +2450,7 @@
         "title": "Bienvenido a Rabby Wallet"
       },
       "createNewAddress": {
-        "title": "Crear nueva Seed Phrase",
-        "showSeedPhrase": "Mostrar Seed Phrase",
-        "desc": "Antes de comenzar, por favor lee y ten en cuenta los siguientes consejos de seguridad.",
-        "tip3": "Si desinstalo Rabby sin hacer una copia de seguridad de la frase semilla, Rabby no podrá recuperarla por mí.",
-        "tip2": "La frase semilla solo se almacena en mi computadora, y Rabby no tiene acceso a ella.",
-        "tip1": "Si pierdo o comparto mi frase semilla, mis activos se perderán para siempre."
+        "showSeedPhrase": "Mostrar Seed Phrase"
       },
       "importList": {
         "title": "Seleccionar método de importación"
@@ -2472,12 +2464,10 @@
           "password": {
             "label": "Contraseña",
             "min": "La contraseña debe tener al menos 8 caracteres de longitud",
-            "required": "Por favor, ingresa la contraseña",
-            "placeholder": "8 caracteres mín."
+            "required": "Por favor, ingresa la contraseña"
           },
           "confirmPassword": {
             "label": "Confirmar Password",
-            "placeholder": "Contraseña",
             "notMatch": "Las contraseñas no coinciden",
             "required": "Por favor, confirma la contraseña"
           }
@@ -2494,10 +2484,7 @@
         "addMoreFrom": "Agregar más direcciones de {{name}}"
       },
       "readyToUse": {
-        "title": "Rabby Wallet está listo para usar",
-        "extensionTip": "Haz clic en <1/> y luego en <3/>",
-        "pin": "Fijar Rabby Wallet",
-        "desc": "Fija Rabby Wallet en tu barra de herramientas para acceder fácilmente."
+        "pin": "Fijar Rabby Wallet"
       },
       "importSeedPhrase": {
         "title": "Importar Seed Phrase"

@@ -1519,10 +1519,7 @@
         "importTips": "1번째 필드에 전체 비밀 복구 구문을 붙여넣을 수 있습니다.",
         "importError": "[CreateMnemonics] 예상치 못한 단계 {{0}}",
         "riskTips": "시작하기 전에 다음의 보안 팁을 읽고 기억해 주시기 바랍니다.",
-        "importQuestion1": "내 시드 문구를 잃어버리면, 내 자산은 영원히 잃게 됩니다.",
-        "importQuestion3": "시드 문구는 내 컴퓨터에만 저장되며, Rabby는 이에 접근할 수 없습니다.",
         "showSeedPhrase": "Seed Phrase 보이기",
-        "importQuestion2": "내가 내 시드 구문을 다른 사람과 공유하면 내 자산이 도난당할 것이다.",
         "importQuestion4": "Rabby를 백업하지 않고 제거하면, Rabby는 저를 위해 시드 문구를 복구할 수 없습니다.",
         "createdSuccessfully": "생성 성공",
         "invalidContent": "유효하지 않은 콘텐츠",
@@ -2450,12 +2447,7 @@
         "desc": "이더리움 및 모든 EVM 체인을 위한 게임 체인저 지갑"
       },
       "createNewAddress": {
-        "title": "새로운 시드 프레이즈 생성",
-        "tip2": "시드 문구는 내 컴퓨터에만 저장되며, Rabby는 그것에 접근할 수 없습니다.",
-        "tip3": "Rabby를 백업 없이 제거하면 Rabby가 나를 위해 그것을 복구할 수 없습니다.",
-        "desc": "시작하기 전에 다음 보안 팁을 읽고 기억해 주세요.",
-        "showSeedPhrase": "시드 구문 보기",
-        "tip1": "내가 시드 구문을 잃어버리거나 공유하면, 내 자산은 영원히 잃게 될 것이다."
+        "showSeedPhrase": "시드 구문 보기"
       },
       "importList": {
         "title": "가져오기 방법 선택"
@@ -2468,14 +2460,12 @@
         "form": {
           "password": {
             "required": "비밀번호를 입력하십시오",
-            "placeholder": "8자 이상",
             "min": "비밀번호는 최소 8자 이상이어야 합니다.",
             "label": "비밀번호"
           },
           "confirmPassword": {
             "label": "비밀번호 확인",
             "notMatch": "비밀번호가 일치하지 않습니다",
-            "placeholder": "비밀번호",
             "required": "비밀번호를 확인해 주세요"
           }
         },
@@ -2491,10 +2481,7 @@
         "import": "성공적으로 가져왔습니다"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet 핀 고정",
-        "extensionTip": "클릭 <1/> 그런 다음 <3/>",
-        "title": "Rabby Wallet은 사용 준비가 되어 있습니다.",
-        "desc": "Rabby Wallet을 툴바에 고정하여 쉽게 접근하세요."
+        "pin": "Rabby Wallet 핀 고정"
       },
       "importSeedPhrase": {
         "title": "시드 문구 가져오기"

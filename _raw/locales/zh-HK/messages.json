@@ -488,9 +488,6 @@
           "answer": "是的，它將存儲在你本地的瀏覽器上，並且只有你可以訪問。"
         },
         "importError": "[CreateMnemonics] 意外步驟 {{0}}",
-        "importQuestion1": "如果我丟失了助記詞，我的資產將永遠丟失。",
-        "importQuestion2": "如果我與他人分享我的助記詞，我的資產就會被盜。",
-        "importQuestion3": "助記詞僅存儲在我的計算機上，Rabby 無權訪問它。",
         "importQuestion4": "如果我在未備份助記詞的情況下卸載 Rabby，Rabby 無法為我找回助記詞。",
         "riskTips": "在開始之前，請閱讀並牢記以下安全提示",
         "showSeedPhrase": "創建助記詞",
@@ -2491,12 +2488,7 @@
         "createNewAddress": "創建一個新地址"
       },
       "createNewAddress": {
-        "showSeedPhrase": "顯示 Seed Phrase",
-        "title": "創建新的 Seed Phrase",
-        "desc": "在您开始之前，请阅读并牢记以下安全提示。",
-        "tip1": "如果我遗失或分享了我的种子短语，我的资产将永远丢失。",
-        "tip3": "如果我在没有备份 seed phrase 的情况下卸载 Rabby，Rabby 无法为我找回。",
-        "tip2": "種子短語僅存儲在我電腦上，Rabby 無法訪問。"
+        "showSeedPhrase": "顯示 Seed Phrase"
       },
       "importList": {
         "title": "選擇導入方法"
@@ -2510,11 +2502,9 @@
           "password": {
             "required": "請輸入密碼",
             "label": "密碼",
-            "min": "密碼必須至少8個字符長",
-            "placeholder": "8 個字元起"
+            "min": "密碼必須至少8個字符長"
           },
           "confirmPassword": {
-            "placeholder": "密碼",
             "label": "確認密碼",
             "required": "請確認密碼",
             "notMatch": "密碼不匹配"
@@ -2532,10 +2522,7 @@
         "addMoreAddr": "從這个 Seed Phrase 新增更多地址"
       },
       "readyToUse": {
-        "extensionTip": "按 <1/> 然后 <3/>",
-        "pin": "將 Rabby 錢包釘選",
-        "desc": "將 Rabby Wallet 固定到工具欄以便輕鬆訪問。",
-        "title": "Rabby Wallet 已準備好使用"
+        "pin": "將 Rabby 錢包釘選"
       },
       "importSeedPhrase": {
         "title": "導入種子片語"

@@ -1525,18 +1525,15 @@
         "backupTips": "Pastikan tidak ada orang lain yang melihat layar Anda saat Anda mencadangkan frase biji.",
         "importError": "[CreateMnemonics] langkah tak terduga {{0}}",
         "wordPhrase": "Saya memiliki frasa <1>{{count}}</1> kata",
-        "importQuestion1": "Jika saya kehilangan frase seed saya, aset saya akan hilang selamanya.",
         "verifySeedPhrase": "Verifikasi Seed Phrase",
         "inputInvalidCount_one": "1 input tidak sesuai dengan norma Seed Phrase, silakan periksa.",
         "slip39SeedPhrasePlaceholder_two": "Masukkan {{count}}nd seed phrase shares di sini",
         "slip39SeedPhrasePlaceholder_one": "Masukkan {{count}} saham frase benih Anda di sini",
         "slip39SeedPhrase": "Saya memiliki frase biji <0>{{SLIP39}}</0>",
         "pleaseSelectWords": "Silakan pilih kata-kata",
-        "importQuestion3": "Frasa biji hanya disimpan di komputer saya, dan Rabby tidak memiliki akses ke sana.",
         "slip39SeedPhraseWithPassphrase": "Saya memiliki <0>{{SLIP39}}</0> Frasa Bijak dengan Frasa Sandi",
         "copy": "Salin frasa benih",
         "clearAll": "Hapus Semua",
-        "importQuestion2": "Jika saya membagikan frasa benih saya kepada orang lain, aset saya akan dicuri.",
         "wordPhraseAndPassphrase": "Saya memiliki frasa <1>{{count}}</1>-kata dengan Passphrase",
         "riskTips": "Sebelum Anda mulai, harap baca dan ingat tips keamanan berikut.",
         "createdSuccessfully": "Dibuat Berhasil",
@@ -2450,12 +2447,7 @@
         "desc": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM"
       },
       "createNewAddress": {
-        "tip1": "Jika saya kehilangan atau membagikan frase seed saya, aset saya akan hilang selamanya.",
-        "showSeedPhrase": "Tampilkan Frasa Seed",
-        "title": "Buat Frasa Benih Baru",
-        "tip2": "Frasa benih hanya disimpan di komputer saya, dan Rabby tidak memiliki akses ke sana.",
-        "tip3": "Jika saya mencopot pemasangan Rabby tanpa menyimpan frasa pemulihan, Rabby tidak dapat mengembalikannya untuk saya.",
-        "desc": "Sebelum Anda mulai, harap baca dan ingat tips keamanan berikut."
+        "showSeedPhrase": "Tampilkan Frasa Seed"
       },
       "importList": {
         "title": "Pilih Metode Impor"
@@ -2468,13 +2460,11 @@
         "form": {
           "password": {
             "label": "Kata Sandi",
-            "placeholder": "8 karakter min",
             "required": "Silakan masukkan Kata Sandi",
             "min": "Kata sandi harus terdiri dari setidaknya 8 karakter."
           },
           "confirmPassword": {
             "label": "Konfirmasi Kata Sandi",
-            "placeholder": "Kata Sandi",
             "required": "Silakan Konfirmasi Kata Sandi",
             "notMatch": "Kata sandi tidak cocok"
           }
@@ -2491,10 +2481,7 @@
         "import": "Diimpor Berhasil"
       },
       "readyToUse": {
-        "pin": "Pin Dompet Rabby",
-        "desc": "Simpan Rabby Wallet di bilah alat Anda untuk akses mudah.",
-        "extensionTip": "Klik <1/> dan kemudian <3/>",
-        "title": "Rabby Wallet Siap Digunakan"
+        "pin": "Pin Dompet Rabby"
       },
       "importSeedPhrase": {
         "title": "Impor Kata Sandi Seed"

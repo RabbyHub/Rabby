@@ -1459,9 +1459,6 @@
           "answer": "Evet, yalnızca tarayıcınızda yerel olarak saklanır ve sadece sizin tarafınızdan erişilebilir."
         },
         "importError": "[CreateMnemonics] beklenmeyen adım {{0}}",
-        "importQuestion1": "Seed Phrase'imi kaybedersem, varlıklarım sonsuza dek kaybolur.",
-        "importQuestion2": "Seed Phrase'imi başkalarıyla paylaşırsam, varlıklarım çalınır.",
-        "importQuestion3": "Seed Phrase sadece bilgisayarımda saklanır ve Rabby'in buna erişimi yoktur.",
         "importQuestion4": "Seed Phrase yedeğini almadan Rabby'yi kaldırırsam, Rabby bunu benim için geri alamaz.",
         "riskTips": "Başlamadan önce, lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
         "showSeedPhrase": "Seed Phrase'i Göster",
@@ -2456,12 +2453,7 @@
         "desc": "Ethereum ve tüm EVM zincirleri için çığır açan cüzdan"
       },
       "createNewAddress": {
-        "title": "Yeni Seed Phrase Oluştur",
-        "desc": "Başlamadan önce, lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
-        "tip2": "Tohum cümlesi yalnızca bilgisayarımda saklanır ve Rabby buna erişemez.",
-        "showSeedPhrase": "Tohum İfadesini Göster",
-        "tip3": "Rabby'yi yedekleme cümlesini yedeklemeden kaldırırsam, Rabby bunu benim için kurtaramaz.",
-        "tip1": "Eğer seed cümlemi kaybedersem veya paylaşırsam, varlıklarım sonsuza kadar kaybolur."
+        "showSeedPhrase": "Tohum İfadesini Göster"
       },
       "importList": {
         "title": "İçe Aktarma Yöntemini Seç"
@@ -2474,12 +2466,10 @@
         "form": {
           "password": {
             "label": "Parola",
-            "placeholder": "8 karakter minimum",
             "min": "Parola en az 8 karakter uzunluğunda olmalıdır。",
             "required": "Lütfen Şifreyi Giriniz"
           },
           "confirmPassword": {
-            "placeholder": "Şifre",
             "notMatch": "Parolalar eşleşmiyor",
             "required": "Lütfen Parolayı Onaylayın",
             "label": "Şifreyi Onayla"
@@ -2497,10 +2487,7 @@
         "create": "Başarıyla Oluşturuldu"
       },
       "readyToUse": {
-        "extensionTip": "<1/> ve ardından <3/> tıklayın",
-        "pin": "Rabby Wallet'i Sabitle",
-        "desc": "Rabby Wallet'i kolay erişim için araç çubuğunuza sabitleyin.",
-        "title": "Rabby Cüzdanı Kullanıma Hazırdır"
+        "pin": "Rabby Wallet'i Sabitle"
       },
       "importSeedPhrase": {
         "title": "Seed Phrase İçe Aktar"

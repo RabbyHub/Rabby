@@ -884,6 +884,7 @@ const SignTypedData = ({
         canClickToken={false}
         hideOperationButtons
         variant="add"
+        account={currentAccount}
       />
     </>
   );

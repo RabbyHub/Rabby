@@ -64,6 +64,7 @@ export const BridgeShowMore = ({
   switchPreferMEV,
   recommendValue,
   openFeePopup,
+  autoSuggestSlippage,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -95,6 +96,7 @@ export const BridgeShowMore = ({
   switchPreferMEV?: (b: boolean) => void;
   recommendValue?: number;
   openFeePopup: () => void;
+  autoSuggestSlippage?: string;
 }) => {
   const { t } = useTranslation();
 
@@ -265,6 +267,7 @@ export const BridgeShowMore = ({
         </ListItem>
 
         <BridgeSlippage
+          autoSuggestSlippage={autoSuggestSlippage}
           value={slippage}
           displaySlippage={displaySlippage}
           onChange={onSlippageChange}

@@ -489,9 +489,6 @@
           "answer": "是的，它将存储在你本地的浏览器上，并且只有你可以访问。"
         },
         "importError": "[CreateMnemonics] 意外步骤 {{0}}",
-        "importQuestion1": "如果我丢失了助记词，我的资产将永远丢失。",
-        "importQuestion2": "如果我与他人分享我的助记词，我的资产就会被盗。",
-        "importQuestion3": "助记词仅存储在我的计算机上，Rabby 无权访问它。",
         "importQuestion4": "如果我在未备份助记词的情况下卸载 Rabby，Rabby 无法为我找回助记词。",
         "riskTips": "在开始之前，请阅读并牢记以下安全提示",
         "showSeedPhrase": "创建助记词",
@@ -2530,12 +2527,7 @@
         "desc": "颠覆性的以太坊及所有 EVM 链的钱包"
       },
       "createNewAddress": {
-        "tip1": "如果我丢失或泄露种子短语，我的资产将永远丢失。",
-        "showSeedPhrase": "显示 Seed Phrase",
-        "title": "创建新的 Seed Phrase",
-        "tip3": "如果我在未备份种子短语的情况下卸载 Rabby，Rabby 无法为我找回。",
-        "desc": "在开始之前，请阅读并牢记以下安全提示。",
-        "tip2": "助记词仅存储在我的电脑上，Rabby 无法访问。"
+        "showSeedPhrase": "显示 Seed Phrase"
       },
       "importList": {
         "title": "选择导入方式"
@@ -2548,14 +2540,12 @@
         "form": {
           "password": {
             "label": "密码",
-            "placeholder": "至少 8 个字符",
             "required": "请输入密码",
             "min": "密码长度必须至少为 8 个字符"
           },
           "confirmPassword": {
             "label": "确认密码",
             "required": "请确认密码",
-            "placeholder": "密码",
             "notMatch": "密码不匹配"
           }
         },
@@ -2571,10 +2561,7 @@
         "addMoreFrom": "从 {{name}} 添加更多地址"
       },
       "readyToUse": {
-        "title": "Rabby 钱包已准备就绪",
-        "pin": "固定 Rabby 钱包",
-        "extensionTip": "点击 <1/> 然后 <3/>",
-        "desc": "将 Rabby Wallet 固定到工具栏以便于访问。"
+        "pin": "固定 Rabby 钱包"
       },
       "importSeedPhrase": {
         "title": "导入助记词"
