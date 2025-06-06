@@ -122,6 +122,9 @@ export const Main = () => {
     setLowCreditVisible,
     showMoreVisible,
     inSufficientCanGetQuote,
+
+    autoSuggestSlippage,
+    setAutoSuggestSlippage,
   } = useTokenPair(userAddress);
 
   const {
@@ -693,6 +696,7 @@ export const Main = () => {
           !!receiveToken && (
             <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
               <BridgeShowMore
+                autoSuggestSlippage={autoSuggestSlippage}
                 openFeePopup={openFeePopup}
                 open={showMoreOpen}
                 setOpen={setShowMoreOpen}
