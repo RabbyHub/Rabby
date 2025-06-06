@@ -1484,7 +1484,10 @@
         "inputInvalidCount_other": "{{count}} Eingaben entsprechen nicht den Seed Phrase-Normen, bitte überprüfen.",
         "slip39SeedPhrase": "Ich habe eine <0>{{SLIP39}}</0>-Seed Phrase",
         "slip39SeedPhrasePlaceholder_other": "Geben Sie hier Ihren {{count}}ten Seed-Phrase-Anteil ein",
-        "slip39SeedPhrasePlaceholder_few": "Geben Sie hier Ihre {{count}}te Seed-Phrase-Teile ein"
+        "slip39SeedPhrasePlaceholder_few": "Geben Sie hier Ihre {{count}}te Seed-Phrase-Teile ein",
+        "importQuestion2": "Mein Seed-Phrase wird nur auf meinem Gerät gespeichert. Rabby kann nicht darauf zugreifen.",
+        "importQuestion1": "Wenn ich meinen Seed-Phrase verliere oder teile, verliere ich den Zugriff auf meine Vermögenswerte dauerhaft.",
+        "importQuestion3": "Wenn ich Rabby deinstalliere, ohne meinen Seed-Phrase zu sichern, kann er von Rabby nicht wiederhergestellt werden."
       },
       "metamask": {
         "step1": "Seed Phrase oder Private Key aus MetaMask exportieren <br /> <1>Klicken Sie hier, um das Tutorial anzuzeigen <1/></1>",
@@ -2450,7 +2453,12 @@
         "desc": "Die bahnbrechende Wallet für Ethereum und alle EVM Chains"
       },
       "createNewAddress": {
-        "showSeedPhrase": "Seed Phrase anzeigen"
+        "showSeedPhrase": "Seed Phrase anzeigen",
+        "title": "Bevor Sie beginnen",
+        "desc": "Bitte lesen Sie die folgenden Sicherheitstipps und behalten Sie sie im Hinterkopf.",
+        "tip1": "Wenn ich meinen Seed-Phrase verliere oder teile, verliere ich dauerhaft den Zugang zu meinen Vermögenswerten.",
+        "tip2": "Mein Seed-Phrase wird nur auf meinem Gerät gespeichert. Rabby kann darauf nicht zugreifen.",
+        "tip3": "Wenn ich Rabby deinstalliere, ohne meine seed phrase zu sichern, kann sie von Rabby nicht wiederhergestellt werden."
       },
       "importList": {
         "title": "Import-Methode auswählen"
@@ -2464,12 +2472,14 @@
           "password": {
             "min": "Das Passwort muss mindestens 8 Zeichen lang sein。",
             "label": "Passwort",
-            "required": "Bitte Passwort eingeben"
+            "required": "Bitte Passwort eingeben",
+            "placeholder": "Passwort (min. 8 Zeichen)"
           },
           "confirmPassword": {
             "notMatch": "Passwörter stimmen nicht überein",
             "required": "Bitte Passwort bestätigen",
-            "label": "Passwort bestätigen"
+            "label": "Passwort bestätigen",
+            "placeholder": "Passwort bestätigen"
           }
         },
         "title": "Passwort festlegen",
@@ -2484,7 +2494,14 @@
         "addMoreFrom": "Fügen Sie weitere Adressen von {{name}} hinzu"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet anheften"
+        "pin": "Rabby Wallet anheften",
+        "guides": {
+          "step2": "Pin Rabby Wallet",
+          "step1": "Klicken Sie auf das Browsererweiterungssymbol"
+        },
+        "extensionTip": "Klicke <1/> und dann <3/>",
+        "title": "Ihr Rabby Wallet ist bereit!",
+        "desc": "Finde Rabby Wallet und pinne es."
       },
       "importSeedPhrase": {
         "title": "Seed Phrase importieren"
