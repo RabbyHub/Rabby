@@ -5,16 +5,22 @@ import {
 } from 'background/service';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import { notification } from 'background/webapi';
-import { CHAINS, CHAINS_ENUM, EVENTS_IN_BG } from 'consts';
-import { format, getTxScanLink } from '@/utils';
+import { CHAINS_ENUM, EVENTS_IN_BG } from 'consts';
+import { getTxScanLink } from '@/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import interval from 'interval-promise';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { customTestnetService } from './customTestnet';
+import { Chain } from '@debank/common';
+
+const DEFAULT_DURATION = 5000; // default 5 seconds
+const MIN_DURATION = 2000; // minimum 2 seconds
+const MAX_DURATION = 5000; // maximum 5 seconds
 
 class Transaction {
   createdTime = 0;
+  intervalDuration = DEFAULT_DURATION;
 
   constructor(
     public nonce: string,
@@ -22,6 +28,19 @@ class Transaction {
     public chain: CHAINS_ENUM
   ) {
     this.createdTime = +new Date();
+    const chainItem = findChain({ enum: chain });
+    let intervalDuration = DEFAULT_DURATION;
+    if (chainItem && (chainItem as Chain).blockInterval) {
+      intervalDuration = Math.ceil(
+        ((chainItem as Chain).blockInterval || 0) * 1000
+      );
+      // Ensure interval is between 2000 and 5000 ms
+      intervalDuration = Math.max(
+        MIN_DURATION,
+        Math.min(intervalDuration, MAX_DURATION)
+      );
+    }
+    this.intervalDuration = intervalDuration;
   }
 }
 
@@ -31,7 +50,6 @@ interface TransactionWatcherStore {
 
 class TransactionWatcher {
   store!: TransactionWatcherStore;
-  timers = {};
 
   init = async () => {
     this.store = await createPersistStore<TransactionWatcherStore>({
@@ -50,18 +68,7 @@ class TransactionWatcher {
       ...this.store.pendingTx,
       [id]: new Transaction(nonce, hash, chain),
     };
-
-    const chainItem = findChainByEnum(chain);
-    if (!chainItem) {
-      throw new Error(`[transactionWatcher::addTx] chain ${chain} not found`);
-    }
-
-    const url = getTxScanLink(chainItem.scanLink, hash);
-    // notification.create(
-    //   url,
-    //   i18n.t('background.transactionWatcher.submitted'),
-    //   i18n.t('background.transactionWatcher.more')
-    // );
+    this.rollTx(id);
   };
 
   checkStatus = async (id: string) => {
@@ -145,47 +152,70 @@ class TransactionWatcher {
 
   // fetch pending txs status every 5s
   roll = () => {
-    interval(async () => {
-      const list = Object.keys(this.store.pendingTx);
-      // order by address, chain, nonce
-      const idQueue = list.sort((a, b) => {
-        const [aAddress, aNonceStr, aChain] = a.split('_');
-        const [bAddress, bNonceStr, bChain] = b.split('_');
+    const list = Object.keys(this.store.pendingTx);
+    // order by address, chain, nonce
+    const idQueue = list.sort((a, b) => {
+      const [aAddress, aNonceStr, aChain] = a.split('_');
+      const [bAddress, bNonceStr, bChain] = b.split('_');
 
-        const aNonce = Number(aNonceStr);
-        const bNonce = Number(bNonceStr);
+      const aNonce = Number(aNonceStr);
+      const bNonce = Number(bNonceStr);
 
-        if (aAddress !== bAddress) {
-          return aAddress > bAddress ? 1 : -1;
-        }
+      if (aAddress !== bAddress) {
+        return aAddress > bAddress ? 1 : -1;
+      }
 
-        if (aChain !== bChain) {
-          return aChain > bChain ? 1 : -1;
-        }
-        return aNonce > bNonce ? 1 : -1;
-      });
-
-      return this._queryList(idQueue);
-    }, 5000);
+      if (aChain !== bChain) {
+        return aChain > bChain ? 1 : -1;
+      }
+      return aNonce > bNonce ? 1 : -1;
+    });
+    idQueue.forEach((id) => {
+      this.rollTx(id);
+    });
   };
 
-  _queryList = async (ids: string[]) => {
-    for (const id of ids) {
-      try {
-        const txReceipt = await this.checkStatus(id);
-
-        if (txReceipt) {
-          this.notify(id, txReceipt);
-          this._removeTx(id);
-        }
-      } catch (error) {
-        console.error(error);
+  rollTx = (id: string) => {
+    const tx = this.store.pendingTx[id];
+    interval(async (times, stop) => {
+      if (!this.store.pendingTx[id]) {
+        stop();
+        return;
       }
+      const receipt = await this.queryTx(id);
+      if (receipt) {
+        stop();
+        return;
+      } else if (times > 10) {
+        stop();
+        this.store.pendingTx = {
+          ...this.store.pendingTx,
+          [id]: {
+            ...tx,
+            intervalDuration: Math.min(2 * tx.intervalDuration, 60000), // double the interval duration after 10 attempts
+          },
+        };
+        this.rollTx(id);
+      }
+    }, tx.intervalDuration || DEFAULT_DURATION);
+  };
+
+  queryTx = async (id: string) => {
+    try {
+      const txReceipt = await this.checkStatus(id);
+
+      if (txReceipt) {
+        this.notify(id, txReceipt);
+        this._removeTx(id);
+        return txReceipt;
+      }
+      return null;
+    } catch (error) {
+      console.error(error);
     }
   };
 
   _removeTx = (id: string) => {
-    delete this.timers[id];
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [k, v]) => {
         if (k !== id && v) {

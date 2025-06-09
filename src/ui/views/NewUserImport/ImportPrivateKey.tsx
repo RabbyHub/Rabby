@@ -15,7 +15,10 @@ const Container = styled.div`
   .ant-input {
     border-radius: 8px;
     border: 1px solid var(--r-neutral-line, #e0e5ec);
-
+    font-size: 16px;
+    &:not(:placeholder-shown) {
+      font-size: 24px;
+    }
     &::placeholder {
       color: var(--r-neutral-foot, #6a7587);
       font-weight: 400;
@@ -25,10 +28,15 @@ const Container = styled.div`
   .ant-input:focus,
   .ant-input-focused {
     border-color: var(--r-blue-default, #7084ff);
+    border-width: 1.5px;
+    border-right-width: 1.5px !important;
   }
 
   .ant-form-item-has-error .ant-input {
-    border: 1px solid var(--r-red-default, #e34935);
+    border: 1.5px solid var(--r-red-default, #e34935);
+  }
+  .ant-form-item-explain.ant-form-item-explain-error {
+    font-size: 14px !important;
   }
 `;
 

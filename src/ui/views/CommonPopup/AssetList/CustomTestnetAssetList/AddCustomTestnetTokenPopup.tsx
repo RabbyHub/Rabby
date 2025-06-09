@@ -123,11 +123,13 @@ export const AddCustomTestnetTokenPopup = ({
           errors: [],
         },
       ]);
-      return wallet.getCustomTestnetToken({
+      const t = await wallet.getCustomTestnetToken({
         address: currentAccount!.address,
         chainId: chain.id,
         tokenId,
       });
+      setChecked(true);
+      return t;
     },
     {
       refreshDeps: [chain?.id, tokenId],
@@ -289,14 +291,9 @@ export const AddCustomTestnetTokenPopup = ({
                 {token && !error ? (
                   <Form.Item label="Found Token">
                     <div
-                      onClick={() => {
-                        setChecked((v) => !v);
-                      }}
                       className={clsx(
-                        'flex items-center gap-[12px] rounded-[6px] cursor-pointer',
-                        'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]',
-                        'border-[1px] border-transparent',
-                        checked && 'border-rabby-blue-default'
+                        'flex items-center gap-[12px] rounded-[6px]',
+                        'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]'
                       )}
                     >
                       <div className="relative h-[24px]">
@@ -319,15 +316,6 @@ export const AddCustomTestnetTokenPopup = ({
                       <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
                         {formatAmount(token.amount || 0)} {token.symbol}
                       </div>
-                      {checked ? (
-                        <div className="ml-auto text-r-blue-default">
-                          <RcIconChecked />
-                        </div>
-                      ) : (
-                        <div className="ml-auto text-r-neutral-body">
-                          <RcIconCheck />
-                        </div>
-                      )}
                     </div>
                   </Form.Item>
                 ) : null}

@@ -1516,13 +1516,10 @@
           "answer": "Sim, será armazenado localmente no seu navegador e somente acessível a você."
         },
         "showSeedPhrase": "Mostrar Frase Semente",
-        "importQuestion1": "Se eu perder minha frase-semente, meus ativos estarão perdidos para sempre.",
         "importError": "[CreateMnemonics] passo inesperado {{0}}",
         "importTips": "Você pode colar toda a sua frase secreta de recuperação no 1º campo.",
         "backup": "Backup Seed Phrase",
         "riskTips": "Antes de começar, por favor, leia e mantenha em mente as seguintes dicas de segurança.",
-        "importQuestion3": "A frase-semente é armazenada apenas no meu computador, e a Rabby não tem acesso a ela.",
-        "importQuestion2": "Se eu compartilhar minha frase-semente com outros, meus ativos serão roubados.",
         "importQuestion4": "Se eu desinstalar o Rabby sem fazer backup da frase-semente, o Rabby não pode recuperá-la para mim.",
         "clearAll": "Limpar tudo",
         "copy": "Copiar frase semente",
@@ -1545,7 +1542,10 @@
         "wordPhrase": "Eu tenho uma frase de <1>{{count}}</1> palavras",
         "inputInvalidCount_one": "1 entrada não conforma os padrões da Seed Phrase, por favor verifique.",
         "inputInvalidCount_other": "{{count}} entradas não estão em conformidade com as normas da Seed Phrase, por favor verifique.",
-        "wordPhraseAndPassphrase": "Eu tenho uma frase de <1>{{count}}</1> palavras com Passphrase."
+        "wordPhraseAndPassphrase": "Eu tenho uma frase de <1>{{count}}</1> palavras com Passphrase.",
+        "importQuestion1": "Se eu perder ou compartilhar minha seed phrase, perderei o acesso aos meus ativos permanentemente.",
+        "importQuestion2": "Minha frase semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
+        "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby."
       },
       "metamask": {
         "step": "Passo",
@@ -2450,12 +2450,12 @@
         "desc": "A carteira que muda o jogo para Ethereum e todas as cadeias EVM"
       },
       "createNewAddress": {
-        "title": "Criar nova frase-semente",
-        "tip2": "A frase-semente é armazenada apenas no meu computador, e o Rabby não tem acesso a ela.",
-        "tip1": "Se eu perder ou compartilhar minha seed phrase, meus ativos serão perdidos para sempre.",
         "showSeedPhrase": "Mostrar Frase Semente",
-        "tip3": "Se eu desinstalar o Rabby sem fazer backup da frase-semente, o Rabby não poderá recuperá-la para mim.",
-        "desc": "Antes de começar, por favor, leia e mantenha as seguintes dicas de segurança em mente."
+        "desc": "Por favor, leia e mantenha as seguintes dicas de segurança em mente",
+        "tip2": "Minha frase semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
+        "tip1": "Se eu perder ou compartilhar minha seed phrase, perderei acesso aos meus ativos permanentemente.",
+        "tip3": "Se eu desinstalar o Rabby sem fazer backup da minha frase semente, ela não pode ser recuperada pelo Rabby.",
+        "title": "Antes de Começar"
       },
       "importList": {
         "title": "Selecionar Método de Importação"
@@ -2468,15 +2468,15 @@
         "form": {
           "password": {
             "label": "Senha",
-            "placeholder": "mínimo de 8 caracteres",
             "min": "A senha deve ter pelo menos 8 caracteres.",
-            "required": "Por favor, insira a senha"
+            "required": "Por favor, insira a senha",
+            "placeholder": "Senha (mínimo de 8 caracteres)"
           },
           "confirmPassword": {
-            "placeholder": "Senha",
             "required": "Por favor, confirme a senha",
             "label": "Confirme a Senha",
-            "notMatch": "As senhas não coincidem"
+            "notMatch": "As senhas não coincidem",
+            "placeholder": "Confirmar Senha"
           }
         },
         "agree": "Eu concordo com os<1/> <2>Termos de Uso</2> e <4>Política de Privacidade</4>",
@@ -2492,9 +2492,13 @@
       },
       "readyToUse": {
         "pin": "Fixar Rabby Wallet",
-        "extensionTip": "Clique <1/> e depois <3/>",
-        "desc": "Fixar a Carteira Rabby na sua barra de ferramentas para acesso fácil.",
-        "title": "Rabby Wallet está pronto para uso"
+        "guides": {
+          "step2": "Fixar Rabby Wallet",
+          "step1": "Clique no ícone da extensão do navegador"
+        },
+        "title": "Sua carteira Rabby está pronta!",
+        "desc": "Encontre Rabby Wallet e fixe-o",
+        "extensionTip": "Clique <1/> e depois <3/>"
       },
       "importSeedPhrase": {
         "title": "Importar Frase Semente"

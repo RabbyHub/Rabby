@@ -10,7 +10,7 @@ import { ReactComponent as RcIconPen } from '@/ui/assets/new-user-import/pen.svg
 import { ReactComponent as RcIconConfirm } from '@/ui/assets/new-user-import/confirm-check.svg';
 import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/external-cc.svg';
 
-import { useAlias, useWallet } from '@/ui/utils';
+import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
 import { useRabbyDispatch } from '@/ui/store';
@@ -118,8 +118,8 @@ const AccountItem = ({ account }: { account: Account }) => {
           </>
         ) : (
           <RcIconPen
-            className="w-16 h-16 cursor-pointer ml-6"
-            viewBox="0 0 16 16"
+            className="w-[18px] h-[19px] cursor-pointer ml-6"
+            viewBox="0 0 18 19"
             onClick={() => {
               setEdit(true);
               setLocalName(name || '');
@@ -170,15 +170,45 @@ export const ImportOrCreatedSuccess = () => {
 
   const documentVisibility = useDocumentVisibility();
 
-  const { value: accounts } = useAsync(wallet.getAllVisibleAccountsArray, [
-    documentVisibility,
-  ]);
+  const { value: accounts } = useAsync(async () => {
+    if (documentVisibility === 'visible') {
+      const accounts = await wallet.getAllVisibleAccountsArray();
+      if (hd !== KEYRING_CLASS.MNEMONIC) {
+        return accounts;
+      }
+      const addresses = await wallet.requestKeyring(
+        KEYRING_TYPE.HdKeyring,
+        'getAccounts',
+        Number(keyringId) ?? null
+      );
+      if (!addresses.length) {
+        return accounts;
+      }
+      return accounts.filter((account) =>
+        addresses.some((addr) => isSameAddress(addr, account.address))
+      );
+    }
+    return [];
+  }, [documentVisibility, keyringId]);
+
+  const { value: allAccounts } = useAsync(
+    wallet.getAllVisibleAccountsArray,
+    []
+  );
+
+  const isNewUserImport = React.useMemo(() => {
+    return allAccounts?.length === 1;
+  }, [!!allAccounts?.length]);
 
   const getStarted = React.useCallback(() => {
-    history.push({
-      pathname: '/new-user/ready',
-    });
-  }, []);
+    if (isNewUserImport) {
+      history.push({
+        pathname: '/new-user/ready',
+      });
+    } else {
+      window.close();
+    }
+  }, [isNewUserImport]);
 
   const addMoreAddr = () => {
     const oBrand = brand !== 'null' ? brand : undefined;
@@ -263,7 +293,9 @@ export const ImportOrCreatedSuccess = () => {
           'text-[17px] font-medium'
         )}
       >
-        {t('page.newUserImport.successful.start')}
+        {isNewUserImport
+          ? t('page.newUserImport.successful.start')
+          : t('global.Done')}
       </Button>
 
       {!!hd && (
