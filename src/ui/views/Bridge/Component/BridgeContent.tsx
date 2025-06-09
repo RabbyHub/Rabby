@@ -379,7 +379,7 @@ export const BridgeContent = () => {
   const canUseMiniTx = useMemo(
     () =>
       !toToken?.low_credit_score &&
-      !toToken?.is_scam &&
+      !toToken?.is_suspicious &&
       toToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&

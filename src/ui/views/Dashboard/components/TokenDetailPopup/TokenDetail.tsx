@@ -122,7 +122,7 @@ const TokenDetail = ({
     if (info) {
       setTokenWithAmount({
         ...token,
-        is_scam: info.is_scam,
+        is_suspicious: info.is_suspicious,
         is_verified: info.is_verified,
         amount: info.amount,
       });
