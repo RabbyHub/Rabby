@@ -1760,6 +1760,10 @@ export class WalletController extends BaseController {
     );
   };
 
+  updateGa4EventTime = (timestamp: number) => {
+    preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
+  };
+
   getLastTimeSendToken = (address: string) =>
     preferenceService.getLastTimeSendToken(address);
   setLastTimeSendToken = (address: string, token: TokenItem) =>

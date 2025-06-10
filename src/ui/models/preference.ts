@@ -8,6 +8,7 @@ import {
 } from 'background/service/preference';
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import { changeLanguage } from '@/i18n';
+import { ga4 } from '@/utils/ga4';
 
 interface PreferenceState {
   externalLinkAck: boolean;
@@ -222,6 +223,12 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setThemeMode(themeMode);
       dispatch.preference.getPreference('themeMode');
+      ga4.fireEvent(
+        `ThemeMode_${themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'}`,
+        {
+          event_category: 'Settings Snapshot',
+        }
+      );
     },
 
     async setIsReserveGasOnSendToken(value: boolean, store) {
@@ -248,6 +255,9 @@ export const preference = createModel<RootModel>()({
     async enableDappAccount(v: boolean, store) {
       await store.app.wallet.enableDappAccount(v);
       dispatch.preference.getPreference('isEnabledDappAccount');
+      ga4.fireEvent(`DappAccount_${v ? 'On' : 'Off'}`, {
+        event_category: 'Settings Snapshot',
+      });
     },
 
     // async setOpenapiHost(value: string, store) {
