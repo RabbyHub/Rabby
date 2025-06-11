@@ -837,8 +837,6 @@ const getCellClassNameForAsset = (
       assetApprovalSpender: ctx.record,
     }) > -1;
 
-  console.log('isSelected', isSelected);
-
   return clsx(isSelected && 'is-selected-row-cell');
 };
 
