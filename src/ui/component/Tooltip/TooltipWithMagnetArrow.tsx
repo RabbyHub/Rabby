@@ -48,6 +48,7 @@ export const TooltipWithMagnetArrow = React.forwardRef<
   TooltipProps & {
     viewportOffset?: [number, number, number, number];
     inApproval?: boolean;
+    disableLeft?: boolean;
   }
 >(({ viewportOffset, inApproval, ...props }, ref) => {
   const [left, setLeft] = React.useState(0);
@@ -99,7 +100,7 @@ export const TooltipWithMagnetArrow = React.forwardRef<
       }
       {...props}
       getPopupContainer={getPopupContainer}
-      left={left}
+      left={props.disableLeft ? 0 : left}
       ref={(node) => {
         tooltipRef.current = node;
         if (ref) {
