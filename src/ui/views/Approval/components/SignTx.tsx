@@ -785,6 +785,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           wallet,
           address,
         }),
+        delegate_call: isGnosisAccount ? !!params?.data?.[0]?.operation : false,
       })
       .then(async (res) => {
         let estimateGas = 0;
