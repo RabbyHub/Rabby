@@ -660,8 +660,6 @@ const SettingsInner = ({
     }
   });
 
-  console.log({ isEnabledDappAccount, isShowDappAccountModal });
-
   const handleWhitelistEnableChange = async (value: boolean) => {
     await AuthenticationModalPromise({
       confirmText: t('global.confirm'),
@@ -672,8 +670,13 @@ const SettingsInner = ({
       description: value
         ? t('page.dashboard.settings.enableWhitelistTip')
         : t('page.dashboard.settings.disableWhitelistTip'),
-      validationHandler: async (password: string) =>
-        await wallet.toggleWhitelist(password, value),
+      validationHandler: async (password: string) => {
+        await wallet.toggleWhitelist(password, value);
+
+        ga4.fireEvent(`Whitelist_${value ? 'On' : 'Off'}`, {
+          event_category: 'Settings Snapshot',
+        });
+      },
       onFinished() {
         setWhitelistEnable(value);
       },
