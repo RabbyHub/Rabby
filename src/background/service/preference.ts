@@ -107,6 +107,7 @@ export interface PreferenceStore {
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
   sendEnableTime?: number;
+  ga4EventTime?: number;
   customizedToken?: Token[];
   blockedToken?: Token[];
   collectionStarred?: Token[];
@@ -196,6 +197,7 @@ class PreferenceService {
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
         isEnabledDappAccount: false,
+        ga4EventTime: 0,
       },
     });
 
@@ -302,6 +304,10 @@ class PreferenceService {
     }
 
     this.store.currentVersion = version;
+
+    if (this.store.ga4EventTime) {
+      this.store.ga4EventTime = 0;
+    }
   };
 
   hasConfirmSafeSelfHost = (networkId: string) => {
