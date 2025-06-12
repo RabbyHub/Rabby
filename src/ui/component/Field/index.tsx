@@ -8,6 +8,7 @@ interface FieldProps {
   rightIcon: ReactNode;
   onClick?(): void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const Field = ({
@@ -16,12 +17,13 @@ const Field = ({
   rightIcon,
   onClick,
   className,
+  style,
 }: FieldProps) => {
   return (
     <div
       className={cx('field', className)}
       onClick={onClick}
-      style={{ cursor: onClick ? 'pointer' : 'initial' }}
+      style={{ cursor: onClick ? 'pointer' : 'initial', ...style }}
     >
       {leftIcon && <div className="left-icon">{leftIcon}</div>}
       <div className="field-slot">{children}</div>
