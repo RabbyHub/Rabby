@@ -16,7 +16,10 @@ export const useConfirmRevokeModal = (props: {
 
   const show = React.useCallback(() => {
     const modal = Modal.info({
-      title: t('page.approvals.revokeModal.confirmTitle'),
+      title:
+        props.accountType === KEYRING_CLASS.HARDWARE.LEDGER
+          ? t('page.approvals.revokeModal.ledgerConfirmTitle')
+          : t('page.approvals.revokeModal.confirmTitle'),
       className: 'confirm-revoke-modal',
       closable: true,
       centered: true,

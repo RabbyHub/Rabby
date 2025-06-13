@@ -829,7 +829,7 @@
       },
       "revokeModal": {
         "confirmRevokePrivateKey": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with 1 click.",
-        "confirmRevokeLedger": "Using a Ledger address, you can batch revoke {{count}} approvals with 1 click.",
+        "confirmRevokeLedger": "Batch revoke {{count}} approvals in one task list",
         "batchRevoke": "Batch Revoke",
         "revokeOneByOne": "Revoke One by One",
         "revoked": "Revoked:",
@@ -841,6 +841,7 @@
         "pause": "Pause",
         "resume": "Continue",
         "done": "Done",
+        "ledgerConfirmTitle": "Batch Revoke with Ledger",
         "confirmTitle": "Batch Revoke with One Click",
         "cancelTitle": "Cancel Remaining Revokes",
         "confirm": "Confirm",
