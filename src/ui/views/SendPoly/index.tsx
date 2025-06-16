@@ -1,44 +1,68 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import { getUiType, openInternalPageInTab } from '@/ui/utils';
+import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore, useRabbySelector } from '@/ui/store';
+import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { EmptyWhitelistHolder } from './components/EmptyWhitelistHolder';
+import { EnterAddress } from './components/EnterAddress';
+import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
+import { padWatchAccount } from './util';
+import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
+import { Account } from '@/background/service/preference';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
-import { EnterAddress } from './components/EnterAddress';
-import { useAccounts } from '@/ui/hooks/useAccounts';
 
 const isTab = getUiType().isTab;
+const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const SendPoly = () => {
   const history = useHistory();
   const [inputingAddress, setInputingAddress] = useState(false);
+  const [showSelectorModal, setShowSelectorModal] = useState(false);
 
-  const {
-    fetchAllAccounts,
-    loadingAccounts,
-    accountsList,
-    allSortedAccountList,
-  } = useAccounts();
+  const dispatch = useRabbyDispatch();
 
-  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-    whitelistEnabled: s.whitelist.enabled,
-  }));
-
-  console.log(
-    'CUSTOM_LOGGER:=>: whitelist',
-    accountsList,
-    whitelistEnabled,
-    whitelist
+  const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
+    (s) => ({
+      currentAccount: s.account.currentAccount,
+      accountsList: s.accountToDisplay.accountsList,
+      whitelist: s.whitelist.whitelist,
+      whitelistEnabled: s.whitelist.enabled,
+    })
   );
+
+  const importWhitelistAccounts = useMemo(() => {
+    if (!whitelistEnabled) {
+      return accountsList;
+    }
+    return [...accountsList].filter((a) =>
+      whitelist?.some((w) => isSameAddress(w, a.address))
+    );
+  }, [accountsList, whitelist]);
+
+  const unimportedWhitelistAccounts = useMemo(() => {
+    return whitelist
+      ?.filter(
+        (w) => !importWhitelistAccounts.some((a) => isSameAddress(w, a.address))
+      )
+      .map(padWatchAccount);
+  }, [importWhitelistAccounts, whitelist]);
+
+  const allAccounts = useMemo(() => {
+    return [...importWhitelistAccounts, ...unimportedWhitelistAccounts];
+  }, [importWhitelistAccounts, unimportedWhitelistAccounts]);
+
+  const fetchData = async () => {
+    dispatch.accountToDisplay.getAllAccountsToDisplay();
+    dispatch.whitelist.getWhitelistEnabled();
+    dispatch.whitelist.getWhitelist();
+  };
 
   const handleClickBack = useCallback(() => {
     if (inputingAddress) {
@@ -53,9 +77,17 @@ const SendPoly = () => {
     }
   }, [history, inputingAddress]);
 
+  const handleChange = (value: Account) => {
+    console.log('CUSTOM_LOGGER:=>: value', value);
+  };
+
+  const handleCancel = () => {
+    setShowSelectorModal(false);
+  };
+
   useEffect(() => {
-    fetchAllAccounts();
-  }, [fetchAllAccounts]);
+    fetchData();
+  }, []);
 
   return (
     <FullscreenContainer className="h-[700px]">
@@ -107,20 +139,45 @@ const SendPoly = () => {
                 <div className="text-[15px] text-r-neutral-title1">
                   Whitelist
                 </div>
-                <div className="text-r-neutral-body">
+                <div
+                  className="text-r-neutral-body cursor-pointer"
+                  onClick={() => {
+                    console.log('CUSTOM_LOGGER:=>: RcIconAddWhitelist');
+                  }}
+                >
                   <RcIconAddWhitelist width={20} height={20} />
                 </div>
               </div>
               <div>
-                <EmptyWhitelistHolder />
+                {allAccounts.length > 0 ? (
+                  allAccounts.map((item) => (
+                    <div
+                      key={`${item.address}-${item.type}`}
+                      className="bg-r-neutral-card1 rounded-[8px] mb-[8px]"
+                    >
+                      <AccountItem
+                        className="group"
+                        balance={item.balance}
+                        address={item.address}
+                        type={item.type}
+                        brandName={item.brandName}
+                        onClick={() => {
+                          // onChange?.(item);
+                        }}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <EmptyWhitelistHolder />
+                )}
               </div>
             </div>
             {/* Imported Addresses Entry */}
             <div>
               <div
-                className="flex justify-center items-center pt-[32px] pb-[8px] gap-[4px]"
+                className="flex justify-center items-center pt-[32px] pb-[8px] gap-[4px] cursor-pointer"
                 onClick={() => {
-                  console.log('popup imported address list');
+                  setShowSelectorModal(true);
                 }}
               >
                 <div className="text-[15px] text-r-neutral-body">
@@ -132,6 +189,14 @@ const SendPoly = () => {
           </div>
         )}
       </div>
+      <AccountSelectorModal
+        title="Select Imported address"
+        visible={showSelectorModal}
+        onChange={handleChange}
+        onCancel={handleCancel}
+        getContainer={getContainer}
+        height="calc(100% - 60px)"
+      />
     </FullscreenContainer>
   );
 };
