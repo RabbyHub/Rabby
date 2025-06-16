@@ -135,25 +135,27 @@ const SendPoly = () => {
             </div>
             {/* WhiteList or Imported Addresses List */}
             <div>
-              <div className="flex justify-between items-center pt-[17px] pb-[8px]">
-                <div className="text-[15px] text-r-neutral-title1">
-                  Whitelist
+              {whitelistEnabled && (
+                <div className="flex justify-between items-center pt-[17px]">
+                  <div className="text-[15px] text-r-neutral-title1">
+                    Whitelist
+                  </div>
+                  <div
+                    className="text-r-neutral-body cursor-pointer"
+                    onClick={() => {
+                      console.log('CUSTOM_LOGGER:=>: RcIconAddWhitelist');
+                    }}
+                  >
+                    <RcIconAddWhitelist width={20} height={20} />
+                  </div>
                 </div>
-                <div
-                  className="text-r-neutral-body cursor-pointer"
-                  onClick={() => {
-                    console.log('CUSTOM_LOGGER:=>: RcIconAddWhitelist');
-                  }}
-                >
-                  <RcIconAddWhitelist width={20} height={20} />
-                </div>
-              </div>
+              )}
               <div>
                 {allAccounts.length > 0 ? (
                   allAccounts.map((item) => (
                     <div
                       key={`${item.address}-${item.type}`}
-                      className="bg-r-neutral-card1 rounded-[8px] mb-[8px]"
+                      className="bg-r-neutral-card1 rounded-[8px] mt-[8px]"
                     >
                       <AccountItem
                         className="group"
@@ -173,19 +175,21 @@ const SendPoly = () => {
               </div>
             </div>
             {/* Imported Addresses Entry */}
-            <div>
-              <div
-                className="flex justify-center items-center pt-[32px] pb-[8px] gap-[4px] cursor-pointer"
-                onClick={() => {
-                  setShowSelectorModal(true);
-                }}
-              >
-                <div className="text-[15px] text-r-neutral-body">
-                  Send to Imported Address
+            {whitelistEnabled && (
+              <div>
+                <div
+                  className="flex justify-center items-center pt-[32px] pb-[8px] gap-[4px] cursor-pointer"
+                  onClick={() => {
+                    setShowSelectorModal(true);
+                  }}
+                >
+                  <div className="text-[15px] text-r-neutral-body">
+                    Send to Imported Address
+                  </div>
+                  <RcIconRight width={16} height={16} />
                 </div>
-                <RcIconRight width={16} height={16} />
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
