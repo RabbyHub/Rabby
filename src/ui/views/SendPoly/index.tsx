@@ -18,6 +18,7 @@ import { AccountList } from './components/AccountList';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
+import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -26,12 +27,12 @@ const SendPoly = () => {
   const history = useHistory();
   const [inputingAddress, setInputingAddress] = useState(false);
   const [showSelectorModal, setShowSelectorModal] = useState(false);
+  const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(true);
 
   const dispatch = useRabbyDispatch();
 
   const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
     (s) => ({
-      currentAccount: s.account.currentAccount,
       accountsList: s.accountToDisplay.accountsList,
       whitelist: s.whitelist.whitelist,
       whitelistEnabled: s.whitelist.enabled,
@@ -208,6 +209,15 @@ const SendPoly = () => {
         onCancel={handleCancel}
         getContainer={getContainer}
         height="calc(100% - 60px)"
+      />
+      <AddressRiskAlert
+        address={'0xF977814e90dA44bFA03b6295A0616a897441aceC'}
+        visible={showAddressRiskAlert}
+        getContainer={getContainer}
+        height="calc(100% - 60px)"
+        onCancel={() => {
+          setShowAddressRiskAlert(false);
+        }}
       />
     </FullscreenContainer>
   );
