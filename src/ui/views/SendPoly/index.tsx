@@ -27,7 +27,7 @@ const SendPoly = () => {
   const history = useHistory();
   const [inputingAddress, setInputingAddress] = useState(false);
   const [showSelectorModal, setShowSelectorModal] = useState(false);
-  const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(true);
+  const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
 
   const dispatch = useRabbyDispatch();
 
@@ -145,7 +145,7 @@ const SendPoly = () => {
                   <div
                     className="text-r-neutral-body cursor-pointer"
                     onClick={() => {
-                      console.log('CUSTOM_LOGGER:=>: RcIconAddWhitelist');
+                      history.push('/whitelist-input');
                     }}
                   >
                     <RcIconAddWhitelist width={20} height={20} />
@@ -173,7 +173,11 @@ const SendPoly = () => {
                       </div>
                     ))
                   ) : (
-                    <EmptyWhitelistHolder />
+                    <EmptyWhitelistHolder
+                      onAddWhitelist={() => {
+                        history.push('/whitelist-input');
+                      }}
+                    />
                   )
                 ) : (
                   <AccountList

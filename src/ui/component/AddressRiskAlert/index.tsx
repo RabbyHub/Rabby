@@ -78,7 +78,8 @@ export const AddressRiskAlert = ({
   const { t } = useTranslation();
 
   const [checkedRisk, setCheckedRisk] = useState(false);
-  const riskInfos = useAddressRisks(address);
+  // disable detect risk when unvisible
+  const riskInfos = useAddressRisks(visible ? address : '');
   const addressSplit = useMemo(() => {
     if (!address) {
       return [];
