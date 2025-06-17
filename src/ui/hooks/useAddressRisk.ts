@@ -52,7 +52,7 @@ export const useAddressRisks = (address: string) => {
         ? { type: RiskType.CONTRACT_ADDRESS, value: 'CONTRACT_ADDRESS' }
         : null,
       hasNoSend ? { type: RiskType.NEVER_SEND, value: 'NEVER_SEND' } : null,
-    ].filter((i) => !!i);
+    ].filter((i) => !!i) as { type: RiskType; value: string }[];
   }, [addressDesc, hasNoSend]);
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
