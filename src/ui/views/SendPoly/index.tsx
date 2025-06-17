@@ -12,6 +12,7 @@ import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { padWatchAccount } from './util';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
 import { Account } from '@/background/service/preference';
+import { AccountList } from './components/AccountList';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
@@ -151,26 +152,33 @@ const SendPoly = () => {
                 </div>
               )}
               <div>
-                {allAccounts.length > 0 ? (
-                  allAccounts.map((item) => (
-                    <div
-                      key={`${item.address}-${item.type}`}
-                      className="bg-r-neutral-card1 rounded-[8px] mt-[8px]"
-                    >
-                      <AccountItem
-                        className="group"
-                        balance={item.balance}
-                        address={item.address}
-                        type={item.type}
-                        brandName={item.brandName}
-                        onClick={() => {
-                          // onChange?.(item);
-                        }}
-                      />
-                    </div>
-                  ))
+                {whitelistEnabled ? (
+                  allAccounts.length > 0 ? (
+                    allAccounts.map((item) => (
+                      <div
+                        key={`${item.address}-${item.type}`}
+                        className="bg-r-neutral-card1 rounded-[8px] mt-[8px]"
+                      >
+                        <AccountItem
+                          className="group"
+                          balance={item.balance}
+                          address={item.address}
+                          type={item.type}
+                          brandName={item.brandName}
+                          onClick={() => {
+                            // onChange?.(item);
+                          }}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <EmptyWhitelistHolder />
+                  )
                 ) : (
-                  <EmptyWhitelistHolder />
+                  <AccountList
+                    onChange={handleChange}
+                    containerClassName="mt-[20px]"
+                  />
                 )}
               </div>
             </div>
