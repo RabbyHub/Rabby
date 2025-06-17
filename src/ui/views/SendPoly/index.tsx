@@ -215,6 +215,9 @@ const SendPoly = () => {
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
+        onConfirm={() => {
+          console.log('CUSTOM_LOGGER:=>: onConfirm');
+        }}
         onCancel={() => {
           setShowAddressRiskAlert(false);
         }}
