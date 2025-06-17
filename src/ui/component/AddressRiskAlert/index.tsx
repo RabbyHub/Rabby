@@ -1,9 +1,8 @@
-import { Drawer, DrawerProps } from 'antd';
-import React, { ReactNode, useEffect, useMemo } from 'react';
-
+import { Button, Drawer, DrawerProps } from 'antd';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
 import { padWatchAccount } from '@/ui/views/SendPoly/util';
@@ -14,12 +13,17 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useAddressRisks } from '@/ui/hooks/useAddressRisk';
 import { RiskRow } from './RiskRow';
 
+import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { ReactComponent as RcIconCheckedCC } from 'ui/assets/address/checked-square-cc.svg';
+import { ReactComponent as RcIconCheckCC } from 'ui/assets/address/check-square-cc.svg';
+
 interface AddressRiskAlertProps {
   visible: boolean;
   showClosableIcon?: boolean;
   title?: ReactNode;
   address: string;
   onCancel(): void;
+  onConfirm?(): void;
   className?: string;
   height?: number | string;
   zIndex?: number;
@@ -59,6 +63,7 @@ export const AddressRiskAlert = ({
   title,
   visible,
   address,
+  onConfirm,
   onCancel,
   className,
   height = 540,
@@ -72,6 +77,7 @@ export const AddressRiskAlert = ({
 
   const { t } = useTranslation();
 
+  const [checkedRisk, setCheckedRisk] = useState(false);
   const riskInfos = useAddressRisks(address);
   const addressSplit = useMemo(() => {
     if (!address) {
@@ -120,7 +126,7 @@ export const AddressRiskAlert = ({
         paddingBottom: 0,
       }}
     >
-      <div>
+      <div className="flex flex-col h-full">
         <header
           className={`
               header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]
@@ -142,7 +148,7 @@ export const AddressRiskAlert = ({
             aliasName={targetAccount.alianName}
           />
         </header>
-        <div className="mt-[32px]">
+        <div className="mt-[32px] flex-1">
           <div className="text-r-neutral-foot text-[12px] font-medium text-center">
             Risk Warining
           </div>
@@ -151,6 +157,41 @@ export const AddressRiskAlert = ({
               <RiskRow key={item.type} desc={item.value} />
             ))}
           </main>
+        </div>
+        <div className="footer pb-[23px]">
+          <div className="relative pb-[16px]">
+            <div className="absolute left-[-20px] right-[-20px] h-[1px] bg-r-neutral-line" />
+          </div>
+          {riskInfos.risks.length > 0 && (
+            <div
+              className="whitelist-alert pb-[16px]"
+              onClick={() => setCheckedRisk((pre) => !pre)}
+            >
+              <div className="cursor-pointer flex items-center justify-center gap-[6px]">
+                {checkedRisk ? (
+                  <RcIconCheckedCC className="text-r-blue-default" />
+                ) : (
+                  <RcIconCheckCC className="text-r-neutral-foot" />
+                )}
+                <span className="text-center text-r-neutral-foot text-[13px] font-medium ">
+                  I understand the risks and want to continue
+                </span>
+              </div>
+            </div>
+          )}
+          <div className="btn-wrapper w-[100%] flex justify-center">
+            <Button
+              disabled={
+                riskInfos.loading || (!!riskInfos.risks.length && !checkedRisk)
+              }
+              type="primary"
+              onClick={onConfirm}
+              size="large"
+              className="w-[100%] h-[48px] text-[16px]"
+            >
+              {t('global.confirm')}
+            </Button>
+          </div>
         </div>
       </div>
     </Drawer>
