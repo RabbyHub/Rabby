@@ -2,7 +2,7 @@ import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain } from '@/utils/chain';
-import { DrawerProps, Input } from 'antd';
+import { DrawerProps, Input, Skeleton } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import uniqBy from 'lodash/uniqBy';
@@ -30,6 +30,7 @@ import styled from 'styled-components';
 interface TokenAmountInputProps {
   token: TokenItem;
   value?: string;
+  isLoading?: boolean;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
   chainId: string;
@@ -88,6 +89,7 @@ const TokenAmountInput = ({
   balanceNumText,
   handleClickMaxButton,
   insufficientError,
+  isLoading,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const [updateNonce, setUpdateNonce] = useState(0);
@@ -253,23 +255,29 @@ const TokenAmountInput = ({
           </div>
         </div>
         <div className="flex gap-[6px] items-center">
-          <div
-            className={clsx(
-              'flex items-center gap-4',
-              insufficientError
-                ? 'text-rabby-red-default'
-                : 'text-r-neutral-foot'
-            )}
-          >
-            <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
-            <span
-              className={clsx('truncate max-w-[90px] text-[13px] font-normal')}
-              title={balanceNumText}
+          {isLoading ? (
+            <Skeleton.Input active style={{ width: 100 }} />
+          ) : (
+            <div
+              className={clsx(
+                'flex items-center gap-4',
+                insufficientError
+                  ? 'text-rabby-red-default'
+                  : 'text-r-neutral-foot'
+              )}
             >
-              {balanceNumText}
-            </span>
-          </div>
-          {token.amount > 0 && (
+              <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
+              <span
+                className={clsx(
+                  'truncate max-w-[90px] text-[13px] font-normal'
+                )}
+                title={balanceNumText}
+              >
+                {balanceNumText}
+              </span>
+            </div>
+          )}
+          {token.amount > 0 && !isLoading && (
             <MaxButton onClick={handleClickMaxButton}>
               {t('page.sendToken.max')}
             </MaxButton>

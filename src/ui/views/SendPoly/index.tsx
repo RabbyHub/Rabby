@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
+import { isValidAddress } from '@ethereumjs/util';
 
+import { KEYRING_CLASS } from '@/constant';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
@@ -11,25 +13,25 @@ import { EnterAddress } from './components/EnterAddress';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { padWatchAccount } from './util';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
-import { Account } from '@/background/service/preference';
 import { AccountList } from './components/AccountList';
+import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
-import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const SendPoly = () => {
   const history = useHistory();
+  const dispatch = useRabbyDispatch();
+
   const [inputingAddress, setInputingAddress] = useState(false);
   const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
-
-  const dispatch = useRabbyDispatch();
+  const [selectedAddress, setSelectedAddress] = useState('');
 
   const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
     (s) => ({
@@ -79,8 +81,31 @@ const SendPoly = () => {
     }
   }, [history, inputingAddress]);
 
-  const handleChange = (value: Account) => {
-    console.log('CUSTOM_LOGGER:=>: value', value);
+  const handleGotoSendToken = (address: string) => {
+    const query = new URLSearchParams(history.location.search);
+    query.set('to', address);
+    history.push(`/send-token?${query.toString()}`);
+  };
+
+  const handleChange = (address: string) => {
+    if (!isValidAddress(address)) {
+      return;
+    }
+    const inWhitelist =
+      whitelistEnabled &&
+      whitelist.some((item) => isSameAddress(address, item));
+    const isMyCoreWallet = accountsList
+      ?.filter(
+        (acc) =>
+          acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
+      )
+      ?.some((item) => isSameAddress(item.address, address));
+    if (inWhitelist || isMyCoreWallet) {
+      handleGotoSendToken(address);
+    } else {
+      setSelectedAddress(address);
+      setShowAddressRiskAlert(true);
+    }
   };
 
   const handleCancel = () => {
@@ -121,7 +146,7 @@ const SendPoly = () => {
           Send to
         </PageHeader>
         {inputingAddress ? (
-          <EnterAddress />
+          <EnterAddress onNext={handleChange} />
         ) : (
           <div>
             {/* Enter Address */}
@@ -167,7 +192,7 @@ const SendPoly = () => {
                           type={item.type}
                           brandName={item.brandName}
                           onClick={() => {
-                            // onChange?.(item);
+                            handleChange(item.address);
                           }}
                         />
                       </div>
@@ -181,7 +206,7 @@ const SendPoly = () => {
                   )
                 ) : (
                   <AccountList
-                    onChange={handleChange}
+                    onChange={(acc) => handleChange(acc.address)}
                     containerClassName="mt-[20px]"
                   />
                 )}
@@ -209,20 +234,23 @@ const SendPoly = () => {
       <AccountSelectorModal
         title="Select Imported address"
         visible={showSelectorModal}
-        onChange={handleChange}
+        onChange={(acc) => handleChange(acc.address)}
         onCancel={handleCancel}
         getContainer={getContainer}
         height="calc(100% - 60px)"
       />
       <AddressRiskAlert
-        address={'0xF977814e90dA44bFA03b6295A0616a897441aceC'}
+        address={selectedAddress}
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
         onConfirm={() => {
-          console.log('CUSTOM_LOGGER:=>: onConfirm');
+          handleGotoSendToken(selectedAddress);
+          setSelectedAddress('');
+          setShowAddressRiskAlert(false);
         }}
         onCancel={() => {
+          setSelectedAddress('');
           setShowAddressRiskAlert(false);
         }}
       />

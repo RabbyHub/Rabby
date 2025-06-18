@@ -124,11 +124,6 @@ export const useAddressRisks = (address: string) => {
                 if (hasSended || hasError) {
                   return;
                 }
-                console.log(
-                  'CUSTOM_LOGGER:=>: hasTransferAllChain',
-                  acc.address.slice(-4),
-                  address.slice(-4)
-                );
                 const res = await wallet.openapi.hasTransferAllChain(
                   acc.address,
                   address
@@ -150,7 +145,6 @@ export const useAddressRisks = (address: string) => {
         });
 
         await Promise.race([checkTransferPromise, timeoutPromise]);
-        console.log('CUSTOM_LOGGER:=>: hasSended', hasSended, hasError);
         if (!hasSended && !hasError) {
           setHasNoSend(true);
         }

@@ -4,7 +4,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { Trans, useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, useDebounce } from 'react-use';
 import {
@@ -90,6 +90,7 @@ import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSele
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
+import { ellipsis } from '@/ui/utils/address';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -414,8 +415,24 @@ const SendToken = () => {
     whitelistEnabled: s.whitelist.enabled,
   }));
 
-  const toAddress = '0xe4ef35384A3cc4D0B15385cc9fc74Bd239dC8411';
+  const { search } = useLocation();
+  const toAddress = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('to') || '';
+  }, [search]);
+  useEffect(() => {
+    if (!toAddress) {
+      const query = new URLSearchParams(search);
+      query.delete('to');
+      history.replace(
+        `/send-poly${query.toString() ? `?${query.toString()}` : ''}`
+      );
+      return;
+    }
+  }, [toAddress, history, search]);
+
   const { isImported, targetAccount, addressDesc } = useAddressInfo(toAddress);
+
   const {
     getAddressNote,
     isAddrOnContactBook,
@@ -1504,6 +1521,11 @@ const SendToken = () => {
                   balance={targetAccount?.balance || 0}
                   address={targetAccount?.address || ''}
                   type={targetAccount?.type || ''}
+                  alias={
+                    targetAccount?.address
+                      ? ellipsis(targetAccount?.address)
+                      : ''
+                  }
                   brandName={targetAccount?.brandName || ''}
                   onClick={() => {
                     history.push(`/send-poly${history.location.search}`);
@@ -1535,11 +1557,7 @@ const SendToken = () => {
             <div className="section">
               <div className="section-title flex justify-between items-center">
                 <div className="token-balance whitespace-pre-wrap">
-                  {isLoading ? (
-                    <Skeleton.Input active style={{ width: 100 }} />
-                  ) : (
-                    t('page.sendToken.sectionBalance.title')
-                  )}
+                  {t('page.sendToken.sectionBalance.title')}
                 </div>
               </div>
               <Form.Item name="amount">
@@ -1554,6 +1572,7 @@ const SendToken = () => {
                     balanceNumText={balanceNumText}
                     insufficientError={!!balanceError}
                     handleClickMaxButton={handleClickMaxButton}
+                    isLoading={isLoading}
                     getContainer={getContainer}
                   />
                 )}
