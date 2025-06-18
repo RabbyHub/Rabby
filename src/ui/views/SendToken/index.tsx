@@ -22,7 +22,6 @@ import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
 
 import {
   CHAINS_ENUM,
-  KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
   MINIMUM_GAS_LIMIT,
   CAN_ESTIMATE_L1_FEE_CHAINS,
@@ -37,12 +36,10 @@ import {
   useWallet,
 } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
-import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
+import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
-import ContactEditModal from 'ui/component/Contact/EditModal';
-import ContactListModal from 'ui/component/Contact/ListModal';
 import { ReactComponent as RcIconCheck } from 'ui/assets/send-token/check.svg';
 import { ReactComponent as RcIconTemporaryGrantCheckbox } from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
@@ -58,8 +55,6 @@ import {
   findChainByID,
   makeTokenFromChain,
 } from '@/utils/chain';
-import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
-import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
 import { useContactAccounts } from '@/ui/hooks/useContact';
@@ -75,8 +70,6 @@ import {
   checkIfTokenBalanceEnough,
   customTestnetTokenToTokenItem,
 } from '@/ui/utils/token';
-import { copyAddress } from '@/ui/utils/clipboard';
-import { MaxButton } from './components/MaxButton';
 import {
   GasLevelType,
   SendReserveGasPopup,
@@ -303,7 +296,6 @@ const SendToken = () => {
 
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
   const { t } = useTranslation();
-  const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
   const { useForm } = Form;
   const history = useHistory();
   const dispatch = useRabbyDispatch();
@@ -363,15 +355,9 @@ const SendToken = () => {
     [wallet, history, form, currentToken, safeInfo]
   );
   const [inited, setInited] = useState(false);
-  // const [gasList, setGasList] = useState<GasLevel[]>([]);
-  const [sendAlianName, setSendAlianName] = useState<string | null>(null);
-  const [showEditContactModal, setShowEditContactModal] = useState(false);
-  const [showListContactModal, setShowListContactModal] = useState(false);
-  const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState<string | null>(null);
-  const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
 
   const [
     { showGasReserved, clickedMax, isEstimatingGas },
@@ -391,7 +377,6 @@ const SendToken = () => {
   const cancelClickedMax = useCallback(() => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   }, []);
-  const [showContactInfo, setShowContactInfo] = useState(false);
   const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
 
   const [reserveGasOpen, setReserveGasOpen] = useState(false);
@@ -773,40 +758,6 @@ const SendToken = () => {
     }
   );
 
-  const handleConfirmContact = (account: UIContactBookItem) => {
-    setShowListContactModal(false);
-    setShowEditContactModal(false);
-    setContactInfo(account);
-    const values = form.getFieldsValue();
-    const to = account ? account.address : '';
-    if (!account) return;
-    form.setFieldsValue({
-      ...values,
-      to,
-    });
-    handleFormValuesChange(null, {
-      ...values,
-      to,
-    });
-  };
-
-  const handleCancelContact = () => {
-    setShowListContactModal(false);
-  };
-
-  const handleCancelEditContact = () => {
-    setShowEditContactModal(false);
-  };
-
-  const handleListContact = () => {
-    setShowListContactModal(true);
-  };
-
-  const handleEditContact = () => {
-    if (editBtnDisabled) return;
-    setShowEditContactModal(true);
-  };
-
   const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
     if (!to) return;
     try {
@@ -854,11 +805,9 @@ const SendToken = () => {
 
       const targetToken = token || currentToken;
       if (!to || !isValidAddress(to)) {
-        setEditBtnDisabled(true);
         setShowWhitelistAlert(false);
       } else {
         setShowWhitelistAlert(true);
-        setEditBtnDisabled(false);
       }
       let resultAmount = amount;
       if (!/^\d*(\.\d*)?$/.test(amount)) {
@@ -900,7 +849,6 @@ const SendToken = () => {
       const alianName = await wallet.getAlianName(to.toLowerCase());
       if (alianName) {
         setContactInfo({ address: to, name: alianName });
-        setShowContactInfo(true);
       } else if (contactInfo) {
         setContactInfo(null);
       }
@@ -1074,7 +1022,6 @@ const SendToken = () => {
       const gasTokenAmount = new BigNumber(gasLevel.price)
         .times(gasLimit)
         .div(1e18);
-      setTokenAmountForGas(gasTokenAmount.toFixed());
       if (updateTokenAmount) {
         const values = form.getFieldsValue();
         const diffValue = new BigNumber(currentToken.raw_amount_hex_str || 0)
@@ -1221,10 +1168,6 @@ const SendToken = () => {
     }
   }, [couldReserveGas, handleMaxInfoChanged]);
 
-  const handleCopyContactAddress = () => {
-    copyAddress(currentToken.id);
-  };
-
   const handleClickBack = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
@@ -1348,11 +1291,6 @@ const SendToken = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inited]);
 
-  const getAlianName = async () => {
-    const alianName = await wallet.getAlianName(currentAccount?.address || '');
-    setSendAlianName(alianName || '');
-  };
-
   const handleClickAllowTransferTo = () => {
     if (!whitelistEnabled || temporaryGrant || toAddressInWhitelist) return;
 
@@ -1407,13 +1345,6 @@ const SendToken = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (currentAccount) {
-      getAlianName();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAccount]);
 
   const { balanceNumText } = useMemo(() => {
     const balanceNum = new BigNumber(currentToken.raw_amount_hex_str || 0).div(
@@ -1630,21 +1561,6 @@ const SendToken = () => {
             </div>
           </div>
         </Form>
-        <ContactEditModal
-          visible={showEditContactModal}
-          address={form.getFieldValue('to')}
-          onOk={handleConfirmContact}
-          onCancel={handleCancelEditContact}
-          isEdit={!!contactInfo}
-          getContainer={getContainer}
-        />
-        <ContactListModal
-          visible={showListContactModal}
-          onCancel={handleCancelContact}
-          onOk={handleConfirmContact}
-          getContainer={getContainer}
-        />
-
         <SendReserveGasPopup
           selectedItem={selectedGasLevel?.level as GasLevelType}
           chain={chain}
