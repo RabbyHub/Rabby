@@ -4,8 +4,15 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { isValidAddress } from '@ethereumjs/util';
 import { isSameAddress, useWallet } from '../utils';
 import { padWatchAccount } from '../views/SendPoly/util';
+import { KEYRING_CLASS } from '@/constant';
 
-export const useAddressInfo = (address: string) => {
+export const useAddressInfo = (
+  address: string,
+  options?: {
+    disableDesc?: boolean;
+  }
+) => {
+  const { disableDesc } = options || {};
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
@@ -18,13 +25,19 @@ export const useAddressInfo = (address: string) => {
     accountsList: s.accountToDisplay.accountsList,
   }));
 
-  const { isImported, targetAccount } = useMemo(() => {
+  const { isImported, targetAccount, isMyImported } = useMemo(() => {
     if (!address) {
       return {};
     }
     const isImported = accountsList.some((acc) =>
       isSameAddress(acc.address, address)
     );
+    const isMyImported = accountsList
+      .filter(
+        (acc) =>
+          acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
+      )
+      .some((acc) => isSameAddress(acc.address, address));
     const targetAccount =
       accountsList.find((acc) => isSameAddress(acc.address, address)) ||
       padWatchAccount(address);
@@ -32,6 +45,7 @@ export const useAddressInfo = (address: string) => {
     return {
       isImported,
       targetAccount,
+      isMyImported,
     };
   }, []);
 
@@ -43,7 +57,7 @@ export const useAddressInfo = (address: string) => {
   }, []);
 
   useEffect(() => {
-    if (!isValidAddress(address)) {
+    if (disableDesc && !isValidAddress(address)) {
       return;
     }
     setLoadingAddrDesc(true);
@@ -62,6 +76,7 @@ export const useAddressInfo = (address: string) => {
   return {
     addressDesc,
     isImported,
+    isMyImported,
     targetAccount,
     loading: loadingAddrDesc,
   };

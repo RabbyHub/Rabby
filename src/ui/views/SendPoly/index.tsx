@@ -20,6 +20,7 @@ import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
+import { ellipsisAddress } from '@/ui/utils/address';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -189,6 +190,7 @@ const SendPoly = () => {
                           className="group"
                           balance={item.balance}
                           address={item.address}
+                          alias={ellipsisAddress(item.address)}
                           type={item.type}
                           brandName={item.brandName}
                           onClick={() => {

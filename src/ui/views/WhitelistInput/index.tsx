@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
+import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { connectStore, useRabbyDispatch } from '@/ui/store';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
@@ -13,11 +13,14 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
-import { Button, Input, Switch, Select } from 'antd';
+import { Button, Input, Switch, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
 import { isValidAddress } from '@ethereumjs/util';
+import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
+import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
+import IconSuccess from 'ui/assets/success.svg';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -30,7 +33,8 @@ const SectionHeader = styled.div`
 
 const WhitelistInput = () => {
   const history = useHistory();
-
+  const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
   // main state
   const [inputAddress, setInputAddress] = useState('');
   const [inputAlias, setInputAlias] = useState('');
@@ -38,6 +42,7 @@ const WhitelistInput = () => {
   const [selectedExchange, setSelectedExchange] = useState<IExchange | null>(
     null
   );
+  const { isMyImported } = useAddressInfo(inputAddress, { disableDesc: true });
 
   // other state
   const [isValidAddr, setIsValidAddr] = useState(true);
@@ -54,6 +59,28 @@ const WhitelistInput = () => {
     }
   }, [history]);
 
+  const detectAddress = useCallback(
+    async (address: string) => {
+      if (!isValidAddress(address)) {
+        return;
+      }
+      wallet.openapi.addrDesc(address).then((result) => {
+        if (result.desc.cex?.id && result.desc.cex?.is_deposit) {
+          setIsCex(true);
+          setSelectedExchange({
+            id: result.desc.cex.id,
+            name: result.desc.cex.name,
+            logo: result.desc.cex?.logo_url || '',
+          });
+        }
+      });
+      wallet.getAlianName(address).then((name) => {
+        setInputAlias(name || '');
+      });
+    },
+    [wallet]
+  );
+
   const handleInputChangeAddress = (v) => {
     if (!isValidAddress(v)) {
       setIsValidAddr(false);
@@ -61,19 +88,57 @@ const WhitelistInput = () => {
     }
     setIsValidAddr(true);
     setInputAddress(v);
+    detectAddress(v);
   };
 
-  const handleSubmit = () => {
-    if (!isValidAddr) {
+  const confrimToWhitelist = async (address: string) => {
+    if (!isValidAddress(address)) {
+      return;
+    }
+    AuthenticationModalPromise({
+      title: t('page.addressDetail.add-to-whitelist'),
+      cancelText: t('global.Cancel'),
+      wallet,
+      validationHandler: async (password) => {
+        await wallet.addWhitelist(password, address);
+      },
+      onFinished: async () => {
+        dispatch.whitelist.getWhitelist();
+        if (inputAlias) {
+          await wallet.updateAlianName(inputAddress, inputAlias);
+        }
+        if (isCex && selectedExchange) {
+          // TODO
+          console.log('add cexinfo');
+        }
+        setShowAddressRiskAlert(false);
+        history.goBack();
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          content: 'Add successfully',
+          duration: 0.5,
+        });
+      },
+      onCancel() {
+        // do nothing
+      },
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!isValidAddress(inputAddress)) {
       setIsValidAddr(false);
       return;
     }
-    console.log('CUSTOM_LOGGER:=>: handleSubmit', {
-      inputAddress,
-      inputAlias,
-      isCex,
-      selectedExchange,
-    });
+    try {
+      if (isMyImported) {
+        confrimToWhitelist(inputAddress);
+      } else {
+        setShowAddressRiskAlert(true);
+      }
+    } catch (e) {
+      console.error('Failed to add whitelist:', e);
+    }
   };
 
   return (
@@ -117,6 +182,7 @@ const WhitelistInput = () => {
                 size="large"
                 spellCheck={false}
                 rows={4}
+                value={inputAddress}
                 onChange={(v) => handleInputChangeAddress(v.target.value)}
                 className="rounded-[8px] leading-normal"
               />
@@ -138,7 +204,7 @@ const WhitelistInput = () => {
                 placeholder="Name Your Address"
                 allowClear
                 size="large"
-                autoFocus
+                value={inputAlias}
                 onChange={(v) => setInputAlias(v.target.value)}
                 className="border-bright-on-active rounded-[8px] leading-normal"
               />
@@ -201,12 +267,12 @@ const WhitelistInput = () => {
         </div>
       </div>
       <AddressRiskAlert
-        address={'0xF977814e90dA44bFA03b6295A0616a897441aceC'}
+        address={inputAddress}
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
         onConfirm={() => {
-          console.log('CUSTOM_LOGGER:=>: onConfirm');
+          confrimToWhitelist(inputAddress);
         }}
         onCancel={() => {
           setShowAddressRiskAlert(false);
