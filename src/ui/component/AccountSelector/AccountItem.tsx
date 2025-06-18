@@ -2,6 +2,7 @@ import { Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_CLASS,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
 } from 'consts';
@@ -10,6 +11,7 @@ import React, {
   MouseEventHandler,
   ReactNode,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -20,7 +22,7 @@ import { CopyChecked } from '@/ui/component/CopyChecked';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import IconCheck from 'ui/assets/check-3.svg';
 import { AddressViewer } from 'ui/component';
-import { splitNumberByStep, useAlias } from 'ui/utils';
+import { splitNumberByStep, useAlias, useCexId } from 'ui/utils';
 
 export interface AddressItemProps {
   balance: number;
@@ -69,6 +71,7 @@ export const AccountItem = memo(
 
     const [isEdit, setIsEdit] = useState(false);
     const [_alias] = useAlias(address);
+    const [cexInfo] = useCexId(address);
     const alias = _alias || aliasName;
     const titleRef = useRef<HTMLDivElement>(null);
 
@@ -92,6 +95,12 @@ export const AccountItem = memo(
       type,
       forceLight: false,
     });
+    const cexLogo = useMemo(() => {
+      if (type === KEYRING_CLASS.WATCH) {
+        return cexInfo?.logo;
+      }
+      return undefined;
+    }, [cexInfo]);
 
     return (
       <div
@@ -113,7 +122,10 @@ export const AccountItem = memo(
           )}
         >
           <div className="relative flex-none">
-            <img src={addressTypeIcon} className={'w-[28px] h-[28px]'} />
+            <img
+              src={cexLogo || addressTypeIcon}
+              className={'w-[28px] h-[28px]'}
+            />
             <CommonSignal
               type={type}
               brandName={brandName}
