@@ -150,9 +150,11 @@ export const AddressRiskAlert = ({
           />
         </header>
         <div className="mt-[32px] flex-1">
-          <div className="text-r-neutral-foot text-[12px] font-medium text-center">
-            Risk Warining
-          </div>
+          {riskInfos.risks.length > 0 && (
+            <div className="text-r-neutral-foot text-[12px] font-medium text-center">
+              Risk Warining
+            </div>
+          )}
           <main className="flex flex-col gap-[8px] mt-[8px]">
             {riskInfos.risks.map((item) => (
               <RiskRow key={item.type} desc={item.value} />

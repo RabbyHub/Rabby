@@ -3,6 +3,7 @@ import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
 import { useWallet } from 'ui/utils';
+import { debounce } from 'lodash';
 
 export const EnterAddress = ({
   onNext,
@@ -46,28 +47,34 @@ export const EnterAddress = ({
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleKeyDown]);
-  const handleValuesChange = async ({ address }: { address: string }) => {
-    setTags([]);
-    if (!isValidAddress(address)) {
-      setIsValidAddr(false);
-      try {
-        const result = await wallet.openapi.getEnsAddressByName(address);
-        if (result && result.addr) {
-          setEnsResult(result);
+
+  const handleValuesChange = useMemo(
+    () =>
+      debounce(async ({ address }: { address: string }) => {
+        setTags([]);
+        if (!isValidAddress(address)) {
+          setIsValidAddr(false);
+          try {
+            const result = await wallet.openapi.getEnsAddressByName(address);
+            if (result && result.addr) {
+              setEnsResult(result);
+            }
+          } catch (e) {
+            setEnsResult(null);
+          }
+        } else {
+          setIsValidAddr(true);
+          setEnsResult(null);
         }
-      } catch (e) {
-        setEnsResult(null);
-      }
-    } else {
-      setIsValidAddr(true);
-      setEnsResult(null);
-    }
-  };
+      }, 300),
+    [wallet]
+  );
+
   const handleNextClick = () => {
     const address = form.getFieldValue('address');
-    console.log('next =>>>>>', address);
     onNext(address);
   };
+
   return (
     <Form
       autoComplete="off"
