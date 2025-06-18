@@ -84,11 +84,11 @@ const WhitelistInput = () => {
   const handleInputChangeAddress = (v) => {
     if (!isValidAddress(v)) {
       setIsValidAddr(false);
-      return;
+    } else {
+      setIsValidAddr(true);
+      detectAddress(v);
     }
-    setIsValidAddr(true);
     setInputAddress(v);
-    detectAddress(v);
   };
 
   const confrimToWhitelist = async (address: string) => {
@@ -104,13 +104,11 @@ const WhitelistInput = () => {
       },
       onFinished: async () => {
         dispatch.whitelist.getWhitelist();
-        if (inputAlias) {
-          await wallet.updateAlianName(inputAddress, inputAlias);
-        }
-        if (isCex && selectedExchange) {
-          // TODO
-          console.log('add cexinfo');
-        }
+        await wallet.updateAlianName(
+          address,
+          inputAlias || '',
+          isCex && selectedExchange?.id ? selectedExchange?.id : ''
+        );
         setShowAddressRiskAlert(false);
         history.goBack();
         message.success({
