@@ -14,14 +14,13 @@
   }
   .section {
     padding: 12px;
-    background-color: var(--r-neutral-card-1, #fff);
     border-radius: 6px;
     margin-bottom: 16px;
     .section-title {
       display: flex;
-      font-size: 12px;
-      line-height: 14px;
-      color: var(--r-neutral-body, #3e495e);
+      font-size: 15px;
+      line-height: 18px;
+      color: var(--r-neutral-title-1);
       margin-bottom: 8px;
       .token-balance {
         display: flex;
@@ -31,16 +30,18 @@
 
     .token-amount-input {
       margin-bottom: 0;
-      padding: 8px;
-      padding-right: 12px;
+      padding: 16px;
+      padding-bottom: 12px;
       .left {
         padding: 4px;
         padding-right: 12px;
-        border-radius: 4px;
+        border-radius: 8px;
         border-left: none;
+        background: var(--r-neutral-card-2, #f2f4f7);
+        
       }
       .left:hover {
-        background: var(--r-neutral-card-2, #f2f4f7);
+        background: var(--r-blue-light1,#eef1ff)
       }
     }
     .token-price {
@@ -165,15 +166,17 @@
     color: #161819;
     display: flex;
     margin-bottom: 6px;
+    width: fit-content;
+
     .left {
       display: flex;
       align-items: center;
       position: relative;
       cursor: pointer;
-      padding-right: 12px;
+      width: fit-content;
       .token-input__symbol {
-        width: 50px;
-        margin-left: 8px;
+        max-width: 50px;
+        margin-left: 6px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
