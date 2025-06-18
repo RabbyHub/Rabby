@@ -28,12 +28,7 @@ import {
   CAN_ESTIMATE_L1_FEE_CHAINS,
   CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
 } from 'consts';
-import {
-  useRabbyDispatch,
-  useRabbySelector,
-  connectStore,
-  useRabbyGetter,
-} from 'ui/store';
+import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
 import {
   getUiType,
@@ -43,18 +38,15 @@ import {
 } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
-import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
-import { PageHeader, AddressViewer } from 'ui/component';
+import { PageHeader } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
-import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
-import { ReactComponent as RcIconContact } from 'ui/assets/send-token/contact.svg';
-import { ReactComponent as RcIconEdit } from 'ui/assets/edit-purple.svg';
-import { ReactComponent as RcIconCopyCC } from 'ui/assets/icon-copy-cc.svg';
 import { ReactComponent as RcIconCheck } from 'ui/assets/send-token/check.svg';
 import { ReactComponent as RcIconTemporaryGrantCheckbox } from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
+import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/swap/switch-cc.svg';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -94,6 +86,10 @@ import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { useRequest } from 'ahooks';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { isHex } from 'viem';
+import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
+import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
+import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
+import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -299,7 +295,9 @@ type FormSendToken = {
 const SendToken = () => {
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-
+  const { balance: currentAccountBalance } = useCurrentBalance(
+    currentAccount?.address
+  );
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
 
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
@@ -316,6 +314,8 @@ const SendToken = () => {
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
     null
   );
+  const [showSelectorModal, setShowSelectorModal] = useState(false);
+
   const [currentToken, setCurrentToken] = useState<TokenItem>({
     id: 'eth',
     chain: 'eth',
@@ -414,6 +414,8 @@ const SendToken = () => {
     whitelistEnabled: s.whitelist.enabled,
   }));
 
+  const toAddress = '0xe4ef35384A3cc4D0B15385cc9fc74Bd239dC8411';
+  const { isImported, targetAccount, addressDesc } = useAddressInfo(toAddress);
   const {
     getAddressNote,
     isAddrOnContactBook,
@@ -510,6 +512,22 @@ const SendToken = () => {
       isShowMessageDataForContract: isNativeToken && addressType === 'CONTRACT',
     };
   }, [isNativeToken, addressType]);
+
+  const handleFromAddressChange = useCallback(
+    async (value: Account) => {
+      await dispatch.account.changeAccountAsync(value);
+      setCurrentAccount(value);
+
+      if (value.type === KEYRING_CLASS.GNOSIS) {
+        setIsGnosisSafe(true);
+      }
+      setShowSelectorModal(false);
+    },
+    [dispatch.account]
+  );
+  const handleFromAddressCancel = useCallback(() => {
+    setShowSelectorModal(false);
+  }, []);
 
   const getParams = React.useCallback(
     ({
@@ -805,6 +823,7 @@ const SendToken = () => {
         isInitFromCache?: boolean;
       }
     ) => {
+      // TODO: 忽略to输入的影响
       const { token, isInitFromCache } = opts || {};
       if (changedValues && changedValues.to) {
         setTemporaryGrant(false);
@@ -1006,7 +1025,6 @@ const SendToken = () => {
       setEstimatedGas(0);
       await persistPageStateCache({ currentToken: token });
       setBalanceError(null);
-      setBalanceWarn(null);
       setIsLoading(true);
       loadCurrentToken(token.id, token.chain, account.address);
     },
@@ -1125,8 +1143,6 @@ const SendToken = () => {
           }
         } catch (e) {
           if (!isGnosisSafe) {
-            // // Gas fee reservation required
-            // setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
             setShowGasReserved(false);
           }
         } finally {
@@ -1187,81 +1203,6 @@ const SendToken = () => {
       handleMaxInfoChanged();
     }
   }, [couldReserveGas, handleMaxInfoChanged]);
-
-  const handleChainChanged = useCallback(
-    async (val: CHAINS_ENUM) => {
-      setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
-      const gasList = await loadGasList();
-      if (gasList && Array.isArray(gasList)) {
-        setSelectedGasLevel(
-          gasList.find(
-            (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
-          ) || findInstanceLevel(gasList)
-        );
-      }
-
-      const account = (await wallet.syncGetCurrentAccount())!;
-      const chain = findChain({
-        enum: val,
-      });
-      if (!chain) {
-        return;
-      }
-      setChain(val);
-      setCurrentToken({
-        id: chain.nativeTokenAddress,
-        decimals: chain.nativeTokenDecimals,
-        logo_url: chain.nativeTokenLogo,
-        symbol: chain.nativeTokenSymbol,
-        display_symbol: chain.nativeTokenSymbol,
-        optimized_symbol: chain.nativeTokenSymbol,
-        is_core: true,
-        is_verified: true,
-        is_wallet: true,
-        amount: 0,
-        price: 0,
-        name: chain.nativeTokenSymbol,
-        chain: chain.serverId,
-        time_at: 0,
-      });
-
-      let nextToken: TokenItem | null = null;
-      try {
-        nextToken = await loadCurrentToken(
-          chain.nativeTokenAddress,
-          chain.serverId,
-          account.address
-        );
-      } catch (error) {
-        console.error(error);
-      }
-
-      const values = form.getFieldsValue();
-      form.setFieldsValue({
-        ...values,
-        amount: '',
-      });
-      setShowGasReserved(false);
-      handleFormValuesChange(
-        { amount: '' },
-        {
-          ...values,
-          amount: '',
-        },
-        {
-          ...(nextToken && { token: nextToken }),
-        }
-      );
-    },
-    [
-      form,
-      handleFormValuesChange,
-      loadCurrentToken,
-      setShowGasReserved,
-      loadGasList,
-      wallet,
-    ]
-  );
 
   const handleCopyContactAddress = () => {
     copyAddress(currentToken.id);
@@ -1534,107 +1475,46 @@ const SendToken = () => {
         >
           <div className="flex-1 overflow-auto">
             <div className="section relative">
-              <div className={clsx('section-title')}>
-                {t('page.sendToken.sectionChain.title')}
-              </div>
-              <ChainSelectorInForm
-                value={chain}
-                onChange={handleChainChanged}
-                disabledTips={'Not supported'}
-                supportChains={undefined}
-                readonly={!!safeInfo}
-                getContainer={getContainer}
-              />
               <div className={clsx('section-title mt-[10px]')}>
                 {t('page.sendToken.sectionFrom.title')}
               </div>
-              <AccountCard
-                icons={{
-                  mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
-                  privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
-                  watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
+              <AccountItem
+                balance={currentAccountBalance || 0}
+                address={currentAccount?.address || ''}
+                type={currentAccount?.type || ''}
+                brandName={currentAccount?.brandName || ''}
+                onClick={() => {
+                  setShowSelectorModal(true);
                 }}
-                alianName={sendAlianName}
-                isHideAmount={chainItem?.isTestnet}
+                className="w-full bg-r-neutral-card1 rounded-[8px]"
+                rightIcon={
+                  <div className="text-r-neutral-foot">
+                    <RcIconDownCC width={14} height={14} />
+                  </div>
+                }
               />
-              <div className="section-title">
+              {/* TODO: 链去掉了，没考虑测试网？？ */}
+              <div className="section-title mt-[20px]">
                 <span className="section-title__to">
                   {t('page.sendToken.sectionTo.title')}
                 </span>
-                <div className="flex flex-1 justify-end items-center">
-                  {showContactInfo && !!contactInfo && (
-                    <div
-                      className={clsx('contact-info', {
-                        disabled: editBtnDisabled,
-                      })}
-                      onClick={handleEditContact}
-                    >
-                      {contactInfo && (
-                        <>
-                          <ThemeIcon
-                            src={RcIconEdit}
-                            className="icon icon-edit"
-                          />
-                          <span
-                            title={contactInfo.name}
-                            className="inline-block align-middle truncate max-w-[240px]"
-                          >
-                            {contactInfo.name}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  )}
-                  <ThemeIcon
-                    className="icon icon-contact"
-                    src={whitelistEnabled ? RcIconWhitelist : RcIconContact}
-                    onClick={handleListContact}
-                  />
-                </div>
               </div>
               <div className="to-address">
-                <Form.Item
-                  name="to"
-                  rules={[
-                    {
-                      required: true,
-                      message: t(
-                        'page.sendToken.sectionTo.addrValidator__empty'
-                      ),
-                    },
-                    {
-                      validator(_, value) {
-                        if (!value) return Promise.resolve();
-                        if (value && isValidAddress(value)) {
-                          // setAmountFocus(true);
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error(
-                            t('page.sendToken.sectionTo.addrValidator__invalid')
-                          )
-                        );
-                      },
-                    },
-                  ]}
-                >
-                  <AccountSearchInput
-                    placeholder={t(
-                      'page.sendToken.sectionTo.searchInputPlaceholder'
-                    )}
-                    autoComplete="off"
-                    autoFocus
-                    spellCheck={false}
-                    onSelectedAccount={(account) => {
-                      const nextVals = {
-                        ...form.getFieldsValue(),
-                        to: account.address,
-                      };
-                      handleFormValuesChange({ to: nextVals.to }, nextVals);
-                      form.setFieldsValue(nextVals);
-                    }}
-                  />
-                </Form.Item>
+                <AccountItem
+                  balance={targetAccount?.balance || 0}
+                  address={targetAccount?.address || ''}
+                  type={targetAccount?.type || ''}
+                  brandName={targetAccount?.brandName || ''}
+                  onClick={() => {
+                    history.push(`/send-poly${history.location.search}`);
+                  }}
+                  className="w-full bg-r-neutral-card1 rounded-[8px]"
+                  rightIcon={
+                    <div className="text-r-neutral-foot">
+                      <RcIconSwitchCC width={14} height={14} />
+                    </div>
+                  }
+                />
                 {toAddressIsValid && !toAddressInContactBook && (
                   <div className="tip-no-contact font-normal text-[12px] text-r-neutral-body pt-[12px]">
                     <Trans i18nKey="page.sendToken.addressNotInContract" t={t}>
@@ -1658,94 +1538,26 @@ const SendToken = () => {
                   {isLoading ? (
                     <Skeleton.Input active style={{ width: 100 }} />
                   ) : (
-                    <>
-                      {t('page.sendToken.sectionBalance.title')}:{' '}
-                      <span
-                        className="truncate max-w-[90px]"
-                        title={balanceNumText}
-                      >
-                        {balanceNumText}
-                      </span>
-                    </>
-                  )}
-                  {currentToken.amount > 0 && (
-                    <MaxButton onClick={handleClickMaxButton}>
-                      {t('page.sendToken.max')}
-                    </MaxButton>
+                    t('page.sendToken.sectionBalance.title')
                   )}
                 </div>
-                {/* {showGasReserved &&
-                (selectedGasLevel ? (
-                  <GasReserved
-                    token={currentToken}
-                    amount={tokenAmountForGas}
-                    // onClickAmount={handleClickGasReserved}
-                  />
-                ) : (
-                  <Skeleton.Input active style={{ width: 180 }} />
-                ))} */}
-                {/* {showGasReserved && !selectedGasLevel && (
-                <Skeleton.Input active style={{ width: 120 }} />
-              )} */}
-                {!clickedMax && (balanceError || balanceWarn) ? (
-                  <div className="balance-error">
-                    {balanceError || balanceWarn}
-                  </div>
-                ) : null}
               </div>
               <Form.Item name="amount">
                 {currentAccount && chainItem && (
                   <TokenAmountInput
+                    className="bg-r-neutral-card1 rounded-[8px]"
                     token={currentToken}
                     onChange={handleAmountChange}
                     onTokenChange={handleCurrentTokenChange}
                     chainId={chainItem.serverId}
                     excludeTokens={[]}
-                    inlinePrize
+                    balanceNumText={balanceNumText}
+                    insufficientError={!!balanceError}
+                    handleClickMaxButton={handleClickMaxButton}
                     getContainer={getContainer}
                   />
                 )}
               </Form.Item>
-              <div className="token-info">
-                {!isNativeToken ? (
-                  <div className="section-field">
-                    <span>
-                      {t('page.sendToken.tokenInfoFieldLabel.contract')}
-                    </span>
-                    <span className="flex">
-                      <AddressViewer
-                        address={currentToken.id}
-                        showArrow={false}
-                      />
-                      <RcIconCopyCC
-                        viewBox="0 0 14 14"
-                        className="icon icon-copy text-r-neutral-foot"
-                        onClick={handleCopyContactAddress}
-                      />
-                    </span>
-                  </div>
-                ) : (
-                  ''
-                )}
-                <div className="section-field">
-                  <span>{t('page.sendToken.tokenInfoFieldLabel.chain')}</span>
-                  <span>
-                    {
-                      findChain({
-                        serverId: currentToken?.chain,
-                      })?.name
-                    }
-                  </span>
-                </div>
-                {!chainItem?.isTestnet ? (
-                  <div className="section-field">
-                    <span>{t('page.sendToken.tokenInfoPrice')}</span>
-                    <span>
-                      ${splitNumberByStep((currentToken.price || 0).toFixed(2))}
-                    </span>
-                  </div>
-                ) : null}
-              </div>
             </div>
             <SendTokenMessageForEoa
               active={isShowMessageDataForToken}
@@ -1826,6 +1638,14 @@ const SendToken = () => {
           rawHexBalance={currentToken.raw_amount_hex_str}
           onClose={() => handleReserveGasClose()}
           getContainer={getContainer}
+        />
+        <AccountSelectorModal
+          title="Select From Address"
+          visible={showSelectorModal}
+          onChange={handleFromAddressChange}
+          onCancel={handleFromAddressCancel}
+          getContainer={getContainer}
+          height="calc(100% - 60px)"
         />
       </div>
     </FullscreenContainer>

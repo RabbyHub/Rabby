@@ -37,6 +37,7 @@ export interface AddressItemProps {
   alias?: string;
   onClick: MouseEventHandler<HTMLDivElement>;
   isSelected?: boolean;
+  rightIcon?: ReactNode;
 }
 
 export const AccountItem = memo(
@@ -51,6 +52,7 @@ export const AccountItem = memo(
     alias: aliasName,
     isSelected,
     extra,
+    rightIcon,
   }: AddressItemProps) => {
     const { t } = useTranslation();
     const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
@@ -184,9 +186,9 @@ export const AccountItem = memo(
             </span>
           </div>
         </div>
-        {isSelected ? (
+        {rightIcon || isSelected ? (
           <div className="flex justify-center items-center ml-auto">
-            <img src={IconCheck} className="w-[20px] h-[20px]" />
+            {rightIcon || <img src={IconCheck} className="w-[20px] h-[20px]" />}
           </div>
         ) : null}
       </div>
