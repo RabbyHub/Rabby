@@ -10,21 +10,17 @@ import React, {
   MouseEventHandler,
   ReactNode,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { CopyChecked } from '@/ui/component/CopyChecked';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import IconCheck from 'ui/assets/check-3.svg';
 import { AddressViewer } from 'ui/component';
-import { isSameAddress, splitNumberByStep, useAlias } from 'ui/utils';
+import { splitNumberByStep, useAlias } from 'ui/utils';
 
 export interface AddressItemProps {
   balance: number;
@@ -54,15 +50,6 @@ export const AccountItem = memo(
     extra,
     rightIcon,
   }: AddressItemProps) => {
-    const { t } = useTranslation();
-    const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
-      whitelistEnable: s.whitelist.enabled,
-      whiteList: s.whitelist.whitelist,
-    }));
-
-    const isInWhiteList = useMemo(() => {
-      return whiteList.some((e) => isSameAddress(e, address));
-    }, [whiteList, address]);
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
         return KEYRING_TYPE_TEXT[type];
@@ -84,7 +71,6 @@ export const AccountItem = memo(
     const [_alias] = useAlias(address);
     const alias = _alias || aliasName;
     const titleRef = useRef<HTMLDivElement>(null);
-    const dispatch = useRabbyDispatch();
 
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
@@ -153,18 +139,6 @@ export const AccountItem = memo(
                   >
                     {alias}
                   </div>
-                  {whitelistEnable && isInWhiteList && (
-                    <Tooltip
-                      overlayClassName="rectangle"
-                      placement="top"
-                      title={t('page.manageAddress.whitelisted-address')}
-                    >
-                      <ThemeIcon
-                        src={RcIconWhitelist}
-                        className={clsx('w-14 h-14')}
-                      />
-                    </Tooltip>
-                  )}
                   {extra}
                 </>
               }
