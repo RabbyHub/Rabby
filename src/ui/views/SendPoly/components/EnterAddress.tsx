@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
 import { useWallet } from 'ui/utils';
 
-export const EnterAddress = () => {
+export const EnterAddress = ({
+  onNext,
+}: {
+  onNext: (address: string) => void;
+}) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const [form] = Form.useForm();
@@ -62,6 +66,7 @@ export const EnterAddress = () => {
   const handleNextClick = () => {
     const address = form.getFieldValue('address');
     console.log('next =>>>>>', address);
+    onNext(address);
   };
   return (
     <Form
