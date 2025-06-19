@@ -1,8 +1,6 @@
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
-import { appIsDev } from '@/utils/env';
 
-const TX_COUNT_LIMIT = appIsDev ? 1 : 3; // Minimum number of transactions before showing the rate guide
 const STAR_COUNT = 5;
 type RateModalState = {
   visible: boolean;

@@ -758,7 +758,10 @@ const SettingsInner = ({
     }
   };
 
-  const { mockExposureRateGuide } = useMakeMockDataForRateGuideExposure();
+  const {
+    mockExposureRateGuide,
+    resetExposureRateGuide,
+  } = useMakeMockDataForRateGuideExposure();
   const renderData = {
     features: {
       label: t('page.dashboard.settings.features.label'),
@@ -1106,8 +1109,35 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconSettingsCodeCC,
-          content: <span>Mock Exposure Rate Guidance</span>,
-          onClick: mockExposureRateGuide,
+          content: (
+            <div className="flex-shrink-0">Mock Exposure Rate Guidance</div>
+          ),
+          rightIcon: (
+            <div className="flex items-center justify-end gap-8">
+              <Button
+                type="link"
+                danger
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  mockExposureRateGuide();
+                  message.success('Mock exposure rate guide data');
+                }}
+              >
+                Mock
+              </Button>
+              <Button
+                type="primary"
+                ghost
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  resetExposureRateGuide();
+                  message.success('Reset exposure rate guide mock data');
+                }}
+              >
+                Reset
+              </Button>
+            </div>
+          ),
         },
         {
           leftIcon: RcIconSettingsGitForkCC,

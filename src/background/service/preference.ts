@@ -148,6 +148,8 @@ const defaultAddressSortStore: AddressSortStore = {
   sortType: 'usd',
 };
 
+export type PreferenceServiceCls = PreferenceService;
+
 class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
@@ -906,6 +908,12 @@ class PreferenceService {
   };
   setIsHideEcologyNoticeDict = (v: Record<string | number, boolean>) => {
     this.store.isHideEcologyNoticeDict = v;
+  };
+
+  getRateGuideLastExposure = () => {
+    return (
+      this.store.rateGuideLastExposure || getDefaultRateGuideLastExposure()
+    );
   };
 
   setRateGuideLastExposure = (exposure: Partial<RateGuideLastExposure>) => {

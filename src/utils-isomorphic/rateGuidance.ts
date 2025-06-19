@@ -1,3 +1,7 @@
+import { appIsDev } from '@/utils/env';
+
+export const RATE_GUIDE_TX_COUNT_LIMIT = appIsDev ? 1 : 3; // Minimum number of transactions before showing the rate guide
+
 export const LAST_EXPOSURE_VERSIONED_KEY = 'lastExposure_20250619_1' as const;
 export type RateGuideLastExposure = {
   txCount: number;

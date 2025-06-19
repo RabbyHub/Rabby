@@ -30,8 +30,17 @@ export function useMakeMockDataForRateGuideExposure() {
     });
   }, [rDispatch.preference]);
 
+  const resetExposureRateGuide = useCallback(() => {
+    rDispatch.preference.setRateGuideLastExposure(
+      getDefaultRateGuideLastExposure({
+        userViewedRate: false,
+      })
+    );
+  }, [rDispatch.preference]);
+
   return {
     mockExposureRateGuide,
+    resetExposureRateGuide,
   };
 }
 
