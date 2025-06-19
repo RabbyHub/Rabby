@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Input, Drawer, Skeleton, Tooltip, DrawerProps } from 'antd';
+import { Input, Drawer, Skeleton, Tooltip, DrawerProps, Modal } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
@@ -339,7 +339,24 @@ const TokenSelector = ({
           key={`${token.chain}-${token.id}`}
           onConfirm={(token) => {
             if (disable) {
-              console.log('CUSTOM_LOGGER:=>: reason', reason);
+              Modal.confirm({
+                width: 340,
+                closable: true,
+                closeIcon: <></>,
+                centered: true,
+                className: 'token-selector-disable-item-tips',
+                title: null,
+                content: reason,
+                okText: 'Proceed',
+                cancelText: 'Cancel',
+                cancelButtonProps: {
+                  type: 'ghost',
+                  className: 'text-r-blue-default border-r-blue-default',
+                },
+                onOk() {
+                  onConfirm(token);
+                },
+              });
               return;
             }
             onConfirm(token);
