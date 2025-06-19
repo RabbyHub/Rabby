@@ -26,6 +26,7 @@ import {
   MINIMUM_GAS_LIMIT,
   CAN_ESTIMATE_L1_FEE_CHAINS,
   CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
+  KEYRING_TYPE,
 } from 'consts';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
@@ -85,6 +86,7 @@ import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { ellipsis } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
+import { MiniApproval } from '../Approval/components/MiniSignTx';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -701,6 +703,20 @@ const SendToken = () => {
     }
   }, [clickedMax, loadGasList]);
 
+  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
+  const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
+
+  const canUseMiniTx = useMemo(() => {
+    return (
+      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
+        (currentAccount?.type || '') as any
+      ) &&
+      !currentToken?.low_credit_score &&
+      !currentToken?.is_suspicious &&
+      currentToken?.is_verified !== false
+    );
+  }, [currentAccount?.type, currentToken]);
+
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
       amount,
@@ -786,6 +802,12 @@ const SendToken = () => {
           ].join('|'),
         });
 
+        if (canUseMiniTx) {
+          setMiniSignTx(params as Tx);
+          setIsShowMiniSign(true);
+          return;
+        }
+
         const promise = wallet.sendRequest({
           method: 'eth_sendTransaction',
           params: [params],
@@ -814,6 +836,17 @@ const SendToken = () => {
       manual: true,
     }
   );
+
+  const handleMiniSignResolve = useCallback(() => {
+    setTimeout(() => {
+      setIsShowMiniSign(false);
+      setMiniSignTx(null);
+      if (!isTab) {
+        history.replace('/');
+      }
+      form.setFieldsValue({ amount: '' });
+    }, 500);
+  }, [form, history]);
 
   const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
     if (!to) return;
@@ -1607,6 +1640,27 @@ const SendToken = () => {
           onCancel={handleFromAddressCancel}
           getContainer={getContainer}
           height="calc(100% - 60px)"
+        />
+        <MiniApproval
+          txs={miniSignTx ? [miniSignTx] : []}
+          visible={isShowMiniSign}
+          ga={{
+            category: 'Send',
+            source: 'sendToken',
+            trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
+          }}
+          onClose={() => {
+            setIsShowMiniSign(false);
+            setTimeout(() => {
+              setMiniSignTx(null);
+            }, 500);
+          }}
+          onReject={() => {
+            setIsShowMiniSign(false);
+            setMiniSignTx(null);
+          }}
+          onResolve={handleMiniSignResolve}
+          getContainer={getContainer}
         />
       </div>
     </FullscreenContainer>
