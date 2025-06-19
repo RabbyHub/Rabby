@@ -415,15 +415,16 @@ const SendToken = () => {
       );
       return;
     }
-  }, [toAddress, history, search]);
+    const values = form.getFieldsValue();
+    form.setFieldsValue({
+      ...values,
+      to: toAddress,
+    });
+  }, [toAddress, history, search, form]);
 
-  const { isImported, targetAccount, addressDesc } = useAddressInfo(toAddress);
+  const { targetAccount, addressDesc } = useAddressInfo(toAddress);
   useInitCheck(addressDesc);
-  const {
-    getAddressNote,
-    isAddrOnContactBook,
-    fetchContactAccounts,
-  } = useContactAccounts();
+  const { isAddrOnContactBook } = useContactAccounts();
 
   const {
     toAddressIsValid,
@@ -590,7 +591,6 @@ const SendToken = () => {
 
   const getParams = React.useCallback(
     ({
-      to,
       amount,
       messageDataForSendToEoa,
       messageDataForContractCall,
@@ -617,7 +617,7 @@ const SendToken = () => {
           ] as any[],
         } as const,
         [
-          to || '0x0000000000000000000000000000000000000000',
+          toAddress || '0x0000000000000000000000000000000000000000',
           sendValue.toFixed(0),
         ] as any[],
       ] as const;
@@ -633,7 +633,7 @@ const SendToken = () => {
         params.nonce = safeInfo.nonce;
       }
       if (isNativeToken) {
-        params.to = to;
+        params.to = toAddress;
         delete params.data;
 
         if (isShowMessageDataForToken && messageDataForSendToEoa) {
@@ -658,7 +658,8 @@ const SendToken = () => {
       isNativeToken,
       isShowMessageDataForContract,
       isShowMessageDataForToken,
-      safeInfo,
+      safeInfo?.nonce,
+      toAddress,
     ]
   );
 
@@ -702,7 +703,6 @@ const SendToken = () => {
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
-      to,
       amount,
       messageDataForSendToEoa,
       messageDataForContractCall,
@@ -711,7 +711,7 @@ const SendToken = () => {
         serverId: currentToken.chain,
       })!;
       const params = getParams({
-        to,
+        to: toAddress,
         amount,
         messageDataForSendToEoa,
         messageDataForContractCall,
@@ -727,7 +727,7 @@ const SendToken = () => {
           const code = await wallet.requestETHRpc<any>(
             {
               method: 'eth_getCode',
-              params: [to, 'latest'],
+              params: [toAddress, 'latest'],
             },
             chain.serverId
           );
@@ -842,26 +842,28 @@ const SendToken = () => {
   const handleFormValuesChange = useCallback(
     async (
       changedValues,
-      { to, amount, ...restForm }: FormSendToken,
+      { amount, ...restForm }: FormSendToken,
       opts?: {
         token?: TokenItem;
         isInitFromCache?: boolean;
       }
     ) => {
-      // TODO: 忽略to输入的影响
       const { token, isInitFromCache } = opts || {};
       if (changedValues && changedValues.to) {
         setTemporaryGrant(false);
         handleReceiveAddressChanged(changedValues.to);
       }
 
-      if ((!isInitFromCache && changedValues?.to) || (!changedValues && to)) {
+      if (
+        (!isInitFromCache && changedValues?.to) ||
+        (!changedValues && toAddress)
+      ) {
         restForm.messageDataForSendToEoa = '';
         restForm.messageDataForContractCall = '';
       }
 
       const targetToken = token || currentToken;
-      if (!to || !isValidAddress(to)) {
+      if (!toAddress || !isValidAddress(toAddress)) {
         setShowWhitelistAlert(false);
       } else {
         setShowWhitelistAlert(true);
@@ -891,7 +893,7 @@ const SendToken = () => {
       }
       const nextFormValues = {
         ...restForm,
-        to,
+        to: toAddress,
         amount: resultAmount,
       };
 
@@ -903,9 +905,9 @@ const SendToken = () => {
       form.setFieldsValue(nextFormValues);
       setFormSnapshot(nextFormValues);
       setCacheAmount(resultAmount);
-      const alianName = await wallet.getAlianName(to.toLowerCase());
+      const alianName = await wallet.getAlianName(toAddress.toLowerCase());
       if (alianName) {
-        setContactInfo({ address: to, name: alianName });
+        setContactInfo({ address: toAddress, name: alianName });
       } else if (contactInfo) {
         setContactInfo(null);
       }
@@ -920,6 +922,7 @@ const SendToken = () => {
       setShowGasReserved,
       showGasReserved,
       t,
+      toAddress,
       wallet,
     ]
   );
@@ -958,8 +961,6 @@ const SendToken = () => {
         return doReturn();
       }
 
-      const to = form.getFieldValue('to');
-
       let _gasUsed: string = intToHex(DEFAULT_GAS_USED);
       try {
         _gasUsed = await wallet.requestETHRpc<string>(
@@ -968,7 +969,10 @@ const SendToken = () => {
             params: [
               {
                 from: currentAddress,
-                to: to && isValidAddress(to) ? to : zeroAddress(),
+                to:
+                  toAddress && isValidAddress(toAddress)
+                    ? toAddress
+                    : zeroAddress(),
                 gasPrice: intToHex(0),
                 value: intToHex(0),
               },
@@ -987,7 +991,7 @@ const SendToken = () => {
 
       return doReturn(Number(gasUsed));
     },
-    [wallet, currentAccount, chainItem, form, currentToken]
+    [chainItem, currentToken, currentAccount?.address, wallet, toAddress]
   );
 
   const loadCurrentToken = useCallback(
@@ -1116,7 +1120,6 @@ const SendToken = () => {
         currentToken.raw_amount_hex_str || 0
       ).div(10 ** currentToken.decimals);
       let amount = tokenBalance.toFixed();
-      const to = form.getFieldValue('to');
 
       const {
         gasLevel = selectedGasLevel ||
@@ -1144,7 +1147,10 @@ const SendToken = () => {
                 txParams: {
                   chainId: chainItem.id,
                   from: currentAccount.address,
-                  to: to && isValidAddress(to) ? to : zeroAddress(),
+                  to:
+                    toAddress && isValidAddress(toAddress)
+                      ? toAddress
+                      : zeroAddress(),
                   value: currentToken.raw_amount_hex_str,
                   gas: intToHex(DEFAULT_GAS_USED),
                   gasPrice: `0x${new BigNumber(gasLevel.price).toString(16)}`,
@@ -1180,22 +1186,23 @@ const SendToken = () => {
       handleFormValuesChange(null, newValues);
     },
     [
-      chain,
-      chainItem,
       currentAccount,
+      isLoading,
+      isEstimatingGas,
       currentToken,
-      estimateGasOnChain,
       selectedGasLevel,
       loadGasList,
+      couldReserveGas,
       form,
       handleFormValuesChange,
-      handleGasChange,
-      couldReserveGas,
-      isGnosisSafe,
-      isLoading,
       setShowGasReserved,
-      isEstimatingGas,
+      estimateGasOnChain,
+      chainItem,
+      handleGasChange,
+      chain,
       wallet,
+      toAddress,
+      isGnosisSafe,
     ]
   );
   const handleGasLevelChanged = useCallback(
@@ -1351,10 +1358,9 @@ const SendToken = () => {
   const handleClickAllowTransferTo = () => {
     if (!whitelistEnabled || temporaryGrant || toAddressInWhitelist) return;
 
-    const toAddr = form.getFieldValue('to');
     confirmAllowTransferToPromise({
       wallet,
-      toAddr,
+      toAddr: toAddress,
       showAddToWhitelist: !!toAddressInContactBook,
       // Enter the Password to Confirm
       title: t('page.sendToken.modalConfirmAllowTransferTo.title'),
@@ -1365,31 +1371,6 @@ const SendToken = () => {
       onFinished(result) {
         dispatch.whitelist.getWhitelist();
         setTemporaryGrant(true);
-      },
-      getContainer,
-    });
-  };
-
-  const handleClickAddContact = () => {
-    if (toAddressInContactBook) return;
-
-    const toAddr = form.getFieldValue('to');
-    confirmAddToContactsModalPromise({
-      wallet,
-      initAddressNote: getAddressNote(toAddr),
-      addrToAdd: toAddr,
-      title: t('page.sendToken.modalConfirmAddToContacts.title'),
-      confirmText: t('page.sendToken.modalConfirmAddToContacts.confirmText'),
-      async onFinished(result) {
-        await dispatch.contactBook.getContactBookAsync();
-        // trigger fetch contactInfo
-        const values = form.getFieldsValue();
-        handleFormValuesChange(null, { ...values });
-        await Promise.allSettled([
-          fetchContactAccounts(),
-          // trigger get balance of address
-          wallet.getInMemoryAddressBalance(result.contactAddrAdded, true),
-        ]);
       },
       getContainer,
     });
@@ -1474,7 +1455,7 @@ const SendToken = () => {
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
           initialValues={{
-            to: '',
+            to: toAddress,
             amount: '',
           }}
         >
@@ -1525,21 +1506,6 @@ const SendToken = () => {
                     </div>
                   }
                 />
-                {toAddressIsValid && !toAddressInContactBook && (
-                  <div className="tip-no-contact font-normal text-[12px] text-r-neutral-body pt-[12px]">
-                    <Trans i18nKey="page.sendToken.addressNotInContract" t={t}>
-                      Not on address list.{' '}
-                      <span
-                        onClick={handleClickAddContact}
-                        className={clsx(
-                          'ml-[2px] underline cursor-pointer text-r-blue-default'
-                        )}
-                      >
-                        Add to contacts
-                      </span>
-                    </Trans>
-                  </div>
-                )}
               </div>
             </div>
             <div className="section">
