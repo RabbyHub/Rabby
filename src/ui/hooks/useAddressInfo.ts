@@ -21,8 +21,9 @@ export const useAddressInfo = (
   const dispatch = useRabbyDispatch();
 
   const wallet = useWallet();
-  const { accountsList } = useRabbySelector((s) => ({
+  const { accountsList, exchanges } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
+    exchanges: s.exchange.exchanges,
   }));
 
   const { isImported, targetAccount, isMyImported } = useMemo(() => {
@@ -57,21 +58,37 @@ export const useAddressInfo = (
   }, []);
 
   useEffect(() => {
-    if (disableDesc && !isValidAddress(address)) {
-      return;
-    }
-    setLoadingAddrDesc(true);
-    wallet.openapi
-      .addrDesc(address)
-      .then((res) => {
-        if (res) {
-          setAddressDesc(res.desc);
+    (async () => {
+      if (disableDesc && !isValidAddress(address)) {
+        return;
+      }
+      setLoadingAddrDesc(true);
+      try {
+        const addrDescRes = await wallet.openapi.addrDesc(address);
+        const cexId = await wallet.getCexId(address);
+        if (addrDescRes) {
+          if (cexId) {
+            const localCexInfo = exchanges.find(
+              (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+            );
+            if (localCexInfo) {
+              addrDescRes.desc.cex = {
+                id: localCexInfo?.id || '',
+                name: localCexInfo?.name || '',
+                logo_url: localCexInfo?.logo || '',
+                is_deposit: true,
+              };
+            }
+          }
+          setAddressDesc(addrDescRes.desc);
         }
-      })
-      .finally(() => {
+      } catch (error) {
+        /* empty */
+      } finally {
         setLoadingAddrDesc(false);
-      });
-  }, [address, dispatch]);
+      }
+    })();
+  }, [address, dispatch, exchanges]);
 
   return {
     addressDesc,

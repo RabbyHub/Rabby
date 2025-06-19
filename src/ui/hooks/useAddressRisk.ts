@@ -56,8 +56,9 @@ export const useAddressRisks = (address: string) => {
   }, [addressDesc, hasNoSend]);
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
-  const { accountsList } = useRabbySelector((s) => ({
+  const { accountsList, exchanges } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
+    exchanges: s.exchange.exchanges,
   }));
   const myTop10AccountList = useMemo(
     () =>
@@ -81,20 +82,36 @@ export const useAddressRisks = (address: string) => {
   const riskGetRef = useRef(false);
 
   useEffect(() => {
-    if (!isValidAddress(address)) {
-      return;
-    }
-    setLoadingAddrDesc(true);
-    wallet.openapi
-      .addrDesc(address)
-      .then((res) => {
-        if (res) {
-          setAddressDesc(res.desc);
+    (async () => {
+      if (!isValidAddress(address)) {
+        return;
+      }
+      setLoadingAddrDesc(true);
+      try {
+        const addrDescRes = await wallet.openapi.addrDesc(address);
+        const cexId = await wallet.getCexId(address);
+        if (addrDescRes) {
+          if (cexId) {
+            const localCexInfo = exchanges.find(
+              (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+            );
+            if (localCexInfo) {
+              addrDescRes.desc.cex = {
+                id: localCexInfo?.id || '',
+                name: localCexInfo?.name || '',
+                logo_url: localCexInfo?.logo || '',
+                is_deposit: true,
+              };
+            }
+          }
+          setAddressDesc(addrDescRes.desc);
         }
-      })
-      .finally(() => {
+      } catch (error) {
+        /* empty */
+      } finally {
         setLoadingAddrDesc(false);
-      });
+      }
+    })();
   }, [address, dispatch]);
 
   useEffect(() => {
