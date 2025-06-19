@@ -62,6 +62,8 @@ export const openInternalPageInTab = (
 export const TRUSTED_URLS = {
   chromeStoreUrl:
     'https://chromewebstore.google.com/detail/rabby-wallet/acmacodkjbdgmoleebolmdjonilkdbch',
+  chromeStoreMyReviewUrl:
+    'https://chromewebstore.google.com/detail/rabby-wallet/acmacodkjbdgmoleebolmdjonilkdbch/reviews/my-review',
 };
 export const openTrustedExternalWebsiteInTab = async (
   type: keyof typeof TRUSTED_URLS,

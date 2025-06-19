@@ -128,7 +128,7 @@ export default function RateModal({
               className="w-[100%] flex flex-row justify-center items-center"
               block
               onClick={() => {
-                openTrustedExternalWebsiteInTab('chromeStoreUrl');
+                openTrustedExternalWebsiteInTab('chromeStoreMyReviewUrl');
                 disableExposureRateGuide();
               }}
             >
