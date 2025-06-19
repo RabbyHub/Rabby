@@ -43,6 +43,12 @@ interface TokenAmountInputProps {
   getContainer?: DrawerProps['getContainer'];
   balanceNumText?: string;
   handleClickMaxButton?: () => void;
+  disableItemCheck?: (
+    token: TokenItem
+  ) => {
+    disable: boolean;
+    reason: string;
+  };
 }
 
 const StyledInput = styled(Input)`
@@ -90,6 +96,7 @@ const TokenAmountInput = ({
   handleClickMaxButton,
   insufficientError,
   isLoading,
+  disableItemCheck,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const [updateNonce, setUpdateNonce] = useState(0);
@@ -292,6 +299,7 @@ const TokenAmountInput = ({
         onSearch={handleSearchTokens}
         isLoading={isListLoading}
         type={type}
+        disableItemCheck={disableItemCheck}
         placeholder={placeholder}
         chainId={''}
         getContainer={getContainer}

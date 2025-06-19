@@ -124,7 +124,7 @@ export const AccountItem = memo(
           <div className="relative flex-none">
             <img
               src={cexLogo || addressTypeIcon}
-              className={'w-[28px] h-[28px]'}
+              className={'w-[28px] h-[28px] rounded-full'}
             />
             <CommonSignal
               type={type}
