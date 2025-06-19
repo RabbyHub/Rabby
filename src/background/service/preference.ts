@@ -18,6 +18,11 @@ import dayjs from 'dayjs';
 import type { IExtractFromPromise } from '@/ui/utils/type';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { getFirstPreferredLangCode } from './i18n';
+import {
+  getDefaultRateGuideLastExposure,
+  LAST_EXPOSURE_VERSIONED_KEY,
+  RateGuideLastExposure,
+} from '@/utils-isomorphic/rateGuidance';
 
 const version = process.env.release || '0';
 
@@ -58,6 +63,7 @@ export type IHighlightedAddress = {
 export type CurvePointCollection = IExtractFromPromise<
   ReturnType<OpenApiService['getNetCurve']>
 >;
+
 export interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
@@ -126,6 +132,8 @@ export interface PreferenceStore {
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
 
   isEnabledDappAccount?: boolean;
+
+  rateGuideLastExposure?: RateGuideLastExposure;
 }
 
 export interface AddressSortStore {
@@ -198,6 +206,7 @@ class PreferenceService {
         safeSelfHostConfirm: {},
         isEnabledDappAccount: false,
         ga4EventTime: 0,
+        rateGuideLastExposure: getDefaultRateGuideLastExposure(),
       },
     });
 
@@ -897,6 +906,19 @@ class PreferenceService {
   };
   setIsHideEcologyNoticeDict = (v: Record<string | number, boolean>) => {
     this.store.isHideEcologyNoticeDict = v;
+  };
+
+  setRateGuideLastExposure = (exposure: Partial<RateGuideLastExposure>) => {
+    this.store.rateGuideLastExposure = {
+      txCount: 0,
+      ...this.store.rateGuideLastExposure,
+      ...exposure,
+      [LAST_EXPOSURE_VERSIONED_KEY]: {
+        time: -1,
+        ...this.store.rateGuideLastExposure?.[LAST_EXPOSURE_VERSIONED_KEY],
+        ...exposure[LAST_EXPOSURE_VERSIONED_KEY],
+      },
+    };
   };
 }
 

@@ -45,6 +45,7 @@ import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboa
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
+import { ReactComponent as RcIconSettingsCodeCC } from 'ui/assets/dashboard/settings/code-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
@@ -64,6 +65,8 @@ import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { ga4 } from '@/utils/ga4';
 import { EcosystemBanner } from './components/EcosystemBanner';
 import { useMemoizedFn } from 'ahooks';
+import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
+import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -755,6 +758,7 @@ const SettingsInner = ({
     }
   };
 
+  const { mockExposureRateGuide } = useMakeMockDataForRateGuideExposure();
   const renderData = {
     features: {
       label: t('page.dashboard.settings.features.label'),
@@ -1101,6 +1105,11 @@ const SettingsInner = ({
           onClick: handleClickClearWatchMode,
         },
         {
+          leftIcon: RcIconSettingsCodeCC,
+          content: <span>Mock Exposure Rate Guidance</span>,
+          onClick: mockExposureRateGuide,
+        },
+        {
           leftIcon: RcIconSettingsGitForkCC,
           content: <span>Git Build Hash</span>,
           rightIcon: (
@@ -1347,6 +1356,7 @@ const SettingsInner = ({
       <div className="content">
         {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
         <EcosystemBanner />
+        <RateModalTriggerOnSettings className="mb-[16px]" />
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">

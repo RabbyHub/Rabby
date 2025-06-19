@@ -5332,6 +5332,12 @@ export class WalletController extends BaseController {
       alianNames: filteredAlianNames,
     });
   };
+
+  setRateGuideLastExposure: typeof preferenceService.setRateGuideLastExposure = async (
+    ...args
+  ) => {
+    return preferenceService.setRateGuideLastExposure(...args);
+  };
 }
 
 const wallet = new WalletController();

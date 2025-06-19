@@ -9,6 +9,12 @@ import {
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import { changeLanguage } from '@/i18n';
 import { ga4 } from '@/utils/ga4';
+import {
+  getDefaultRateGuideLastExposure,
+  LAST_EXPOSURE_VERSIONED_KEY,
+  RateGuideLastExposure,
+  userCouldRated,
+} from '@/utils-isomorphic/rateGuidance';
 
 interface PreferenceState {
   externalLinkAck: boolean;
@@ -32,6 +38,7 @@ interface PreferenceState {
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
   isEnabledDappAccount?: boolean;
+  rateGuideLastExposure?: RateGuideLastExposure;
 }
 
 export const preference = createModel<RootModel>()({
@@ -59,6 +66,7 @@ export const preference = createModel<RootModel>()({
     reserveGasOnSendToken: false,
     isHideEcologyNoticeDict: {},
     isEnabledDappAccount: false,
+    rateGuideLastExposure: getDefaultRateGuideLastExposure(),
   } as PreferenceState,
 
   reducers: {
@@ -78,6 +86,18 @@ export const preference = createModel<RootModel>()({
       /** @deprecated */
       isReserveGasOnSendToken() {
         return slice((preference) => preference.reserveGasOnSendToken);
+      },
+      rateGuideLastExposureTimestamp() {
+        return slice((preference) => {
+          const lastExposure =
+            preference.rateGuideLastExposure?.[LAST_EXPOSURE_VERSIONED_KEY];
+          return lastExposure?.time;
+        });
+      },
+      userViewedRate() {
+        return slice((preference) =>
+          userCouldRated(preference.rateGuideLastExposure)
+        );
       },
     };
   },
@@ -267,5 +287,24 @@ export const preference = createModel<RootModel>()({
     //   await store.app.wallet.setIsShowTestnet(value);
     //   dispatch.preference.getPreference('isShowTestnet');
     // },
+
+    async setRateGuideLastExposure(
+      lastExposure: Partial<RateGuideLastExposure>,
+      store
+    ) {
+      await store.app.wallet.setRateGuideLastExposure(lastExposure);
+
+      dispatch.preference.setField({
+        rateGuideLastExposure: {
+          ...getDefaultRateGuideLastExposure(),
+          ...lastExposure,
+          [LAST_EXPOSURE_VERSIONED_KEY]: {
+            time: -1,
+            userViewedRate: false,
+            ...lastExposure[LAST_EXPOSURE_VERSIONED_KEY],
+          },
+        },
+      });
+    },
   }),
 });
