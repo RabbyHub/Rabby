@@ -30,6 +30,14 @@ const SectionHeader = styled.div`
   font-weight: 500;
   color: var(--r-neutral-title1);
 `;
+const StyledInputWrapper = styled.div`
+  border-radius: 8px;
+  overflow: hidden;
+  .ant-input-clear-icon {
+    top: unset !important;
+    bottom: 8px !important;
+  }
+`;
 
 const WhitelistInput = () => {
   const history = useHistory();
@@ -171,7 +179,7 @@ const WhitelistInput = () => {
         <main className="flex-1 flex flex-col gap-[20px]">
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>Address</SectionHeader>
-            <div className="rounded-[8px] overflow-hidden">
+            <StyledInputWrapper>
               <Input.TextArea
                 maxLength={44}
                 placeholder="Enter address"
@@ -184,7 +192,7 @@ const WhitelistInput = () => {
                 onChange={(v) => handleInputChangeAddress(v.target.value)}
                 className="rounded-[8px] leading-normal"
               />
-            </div>
+            </StyledInputWrapper>
             {!isValidAddr && (
               <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center">
                 <div className="text-r-red-default">
