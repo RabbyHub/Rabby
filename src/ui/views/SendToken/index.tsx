@@ -503,6 +503,62 @@ const SendToken = () => {
     [chain]
   );
 
+  const disableItemCheck = useCallback(
+    (token: TokenItem) => {
+      if (!addressDesc) {
+        return {
+          disable: false,
+          reason: '',
+        };
+      }
+
+      const toCexId = addressDesc?.cex?.id;
+      if (toCexId) {
+        const noSupportToken = token.cex_ids?.every?.(
+          (id) => id.toLocaleLowerCase() !== toCexId.toLocaleLowerCase()
+        );
+        if (!token?.cex_ids?.length || noSupportToken) {
+          return {
+            disable: true,
+            reason: t('page.sendToken.noSupprotTokenForDex'),
+          };
+        }
+      } else {
+        const safeChains = Object.entries(addressDesc?.contract || {})
+          .filter(([, contract]) => {
+            return contract.multisig;
+          })
+          .map(([chain]) => chain?.toLocaleLowerCase());
+        if (
+          safeChains.length > 0 &&
+          !safeChains.includes(token?.chain?.toLocaleLowerCase())
+        ) {
+          return {
+            disable: true,
+            reason: t('page.sendToken.noSupprotTokenForSafe'),
+          };
+        }
+        const contactChains = Object.entries(
+          addressDesc?.contract || {}
+        ).map(([chain]) => chain?.toLocaleLowerCase());
+        if (
+          contactChains.length > 0 &&
+          !contactChains.includes(token?.chain?.toLocaleLowerCase())
+        ) {
+          return {
+            disable: true,
+            reason: t('page.sendToken.noSupportTokenForChain'),
+          };
+        }
+      }
+      return {
+        disable: false,
+        reason: '',
+      };
+    },
+    [addressDesc, t]
+  );
+
   const { addressType } = useCheckAddressType(formSnapshot.to, chainItem);
 
   const {
@@ -1500,6 +1556,7 @@ const SendToken = () => {
                     onTokenChange={handleCurrentTokenChange}
                     chainId={chainItem.serverId}
                     excludeTokens={[]}
+                    disableItemCheck={disableItemCheck}
                     balanceNumText={balanceNumText}
                     insufficientError={!!balanceError}
                     handleClickMaxButton={handleClickMaxButton}
