@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore, useRabbyDispatch } from '@/ui/store';
+import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
@@ -57,6 +57,9 @@ const WhitelistInput = () => {
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [showCexListModal, setShowCexListModal] = useState(false);
   const { t } = useTranslation();
+  const { exchanges } = useRabbySelector((s) => ({
+    exchanges: s.exchange.exchanges,
+  }));
 
   const handleClickBack = useCallback(() => {
     const from = (history.location.state as any)?.from;
@@ -72,16 +75,27 @@ const WhitelistInput = () => {
       if (!isValidAddress(address)) {
         return;
       }
-      wallet.openapi.addrDesc(address).then((result) => {
-        if (result.desc.cex?.id && result.desc.cex?.is_deposit) {
-          setIsCex(true);
-          setSelectedExchange({
-            id: result.desc.cex.id,
-            name: result.desc.cex.name,
-            logo: result.desc.cex?.logo_url || '',
-          });
-        }
-      });
+      const cexId = await wallet.getCexId(address);
+      const localCexInfo = exchanges.find(
+        (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+      );
+      if (cexId && localCexInfo) {
+        setIsCex(true);
+        setSelectedExchange({
+          ...localCexInfo,
+        });
+      } else {
+        wallet.openapi.addrDesc(address).then((result) => {
+          if (result.desc.cex?.id && result.desc.cex?.is_deposit) {
+            setIsCex(true);
+            setSelectedExchange({
+              id: result.desc.cex.id,
+              name: result.desc.cex.name,
+              logo: result.desc.cex?.logo_url || '',
+            });
+          }
+        });
+      }
       wallet.getAlianName(address).then((name) => {
         setInputAlias(name || '');
       });

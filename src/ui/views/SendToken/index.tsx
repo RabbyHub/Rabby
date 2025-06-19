@@ -84,6 +84,7 @@ import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { ellipsis } from '@/ui/utils/address';
+import { useInitCheck } from './useInitCheck';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -417,7 +418,7 @@ const SendToken = () => {
   }, [toAddress, history, search]);
 
   const { isImported, targetAccount, addressDesc } = useAddressInfo(toAddress);
-
+  useInitCheck(addressDesc);
   const {
     getAddressNote,
     isAddrOnContactBook,
