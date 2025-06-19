@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, useDebounce } from 'react-use';
@@ -28,21 +28,14 @@ import {
   CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
   KEYRING_TYPE,
 } from 'consts';
-import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
+import { useRabbyDispatch, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
-import {
-  getUiType,
-  isSameAddress,
-  openInternalPageInTab,
-  useWallet,
-} from 'ui/utils';
+import { getUiType, openInternalPageInTab, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
-import { ReactComponent as RcIconCheck } from 'ui/assets/send-token/check.svg';
-import { ReactComponent as RcIconTemporaryGrantCheckbox } from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/swap/switch-cc.svg';
 
@@ -56,9 +49,6 @@ import {
   findChainByID,
   makeTokenFromChain,
 } from '@/utils/chain';
-import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
-import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
-import { useContactAccounts } from '@/ui/hooks/useContact';
 import {
   useCheckAddressType,
   useParseContractAddress,
@@ -66,7 +56,6 @@ import {
 import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import {
   checkIfTokenBalanceEnough,
   customTestnetTokenToTokenItem,
@@ -380,7 +369,6 @@ const SendToken = () => {
   const cancelClickedMax = useCallback(() => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   }, []);
-  const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
 
   const [reserveGasOpen, setReserveGasOpen] = useState(false);
   const handleReserveGasClose = useCallback(() => {
@@ -392,16 +380,10 @@ const SendToken = () => {
   );
 
   const [estimatedGas, setEstimatedGas] = useState(0);
-  const [temporaryGrant, setTemporaryGrant] = useState(false);
   const [gasPriceMap, setGasPriceMap] = useState<
     Record<string, { list: GasLevel[]; expireAt: number }>
   >({});
   const [isGnosisSafe, setIsGnosisSafe] = useState(false);
-
-  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-    whitelistEnabled: s.whitelist.enabled,
-  }));
 
   const { search } = useLocation();
   const toAddress = useMemo(() => {
@@ -426,60 +408,12 @@ const SendToken = () => {
 
   const { targetAccount, addressDesc } = useAddressInfo(toAddress);
   useInitCheck(addressDesc);
-  const { isAddrOnContactBook } = useContactAccounts();
-
-  const {
-    toAddressIsValid,
-    toAddressInWhitelist,
-    toAddressInContactBook,
-  } = useMemo(() => {
-    return {
-      toAddressIsValid: !!formSnapshot.to && isValidAddress(formSnapshot.to),
-      toAddressInWhitelist: !!whitelist.find((item) =>
-        isSameAddress(item, formSnapshot.to)
-      ),
-      toAddressInContactBook: isAddrOnContactBook(formSnapshot.to),
-    };
-  }, [whitelist, isAddrOnContactBook, formSnapshot]);
-
-  const whitelistAlertContent = useMemo(() => {
-    if (!whitelistEnabled) {
-      return {
-        content: t('page.sendToken.whitelistAlert__disabled'),
-        success: true,
-      };
-    }
-    if (toAddressInWhitelist) {
-      return {
-        content: t('page.sendToken.whitelistAlert__whitelisted'),
-        success: true,
-      };
-    }
-    if (temporaryGrant) {
-      return {
-        content: t('page.sendToken.whitelistAlert__temporaryGranted'),
-        success: true,
-      };
-    }
-    return {
-      success: false,
-      content: (
-        <>
-          <Trans t={t} i18nKey="page.sendToken.whitelistAlert__notWhitelisted">
-            The address is not whitelisted.
-            <br /> I agree to grant temporary permission to transfer.
-          </Trans>
-        </>
-      ),
-    };
-  }, [t, temporaryGrant, toAddressInWhitelist, whitelistEnabled]);
 
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).gte(0) &&
-    !isLoading &&
-    (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
+    !isLoading;
   const isNativeToken =
     !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
 
@@ -883,7 +817,6 @@ const SendToken = () => {
     ) => {
       const { token, isInitFromCache } = opts || {};
       if (changedValues && changedValues.to) {
-        setTemporaryGrant(false);
         handleReceiveAddressChanged(changedValues.to);
       }
 
@@ -896,11 +829,7 @@ const SendToken = () => {
       }
 
       const targetToken = token || currentToken;
-      if (!toAddress || !isValidAddress(toAddress)) {
-        setShowWhitelistAlert(false);
-      } else {
-        setShowWhitelistAlert(true);
-      }
+
       let resultAmount = amount;
       if (!/^\d*(\.\d*)?$/.test(amount)) {
         resultAmount = cacheAmount;
@@ -1388,27 +1317,6 @@ const SendToken = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inited]);
 
-  const handleClickAllowTransferTo = () => {
-    if (!whitelistEnabled || temporaryGrant || toAddressInWhitelist) return;
-
-    confirmAllowTransferToPromise({
-      wallet,
-      toAddr: toAddress,
-      showAddToWhitelist: !!toAddressInContactBook,
-      // Enter the Password to Confirm
-      title: t('page.sendToken.modalConfirmAllowTransferTo.title'),
-      // Cancel
-      cancelText: t('page.sendToken.modalConfirmAllowTransferTo.cancelText'),
-      // Confirm
-      confirmText: t('page.sendToken.modalConfirmAllowTransferTo.confirmText'),
-      onFinished(result) {
-        dispatch.whitelist.getWhitelist();
-        setTemporaryGrant(true);
-      },
-      getContainer,
-    });
-  };
-
   useEffect(() => {
     init();
     return () => {
@@ -1581,31 +1489,6 @@ const SendToken = () => {
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
-            {showWhitelistAlert && (
-              <div
-                className={clsx(
-                  'whitelist-alert',
-                  !whitelistEnabled || whitelistAlertContent.success
-                    ? 'granted'
-                    : 'cursor-pointer'
-                )}
-                onClick={handleClickAllowTransferTo}
-              >
-                <p className="whitelist-alert__content text-center">
-                  {whitelistEnabled && (
-                    <ThemeIcon
-                      src={
-                        whitelistAlertContent.success
-                          ? RcIconCheck
-                          : RcIconTemporaryGrantCheckbox
-                      }
-                      className="icon icon-check inline-block relative -top-1"
-                    />
-                  )}
-                  {whitelistAlertContent.content}
-                </p>
-              </div>
-            )}
             <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
               <Button
                 disabled={!canSubmit}
