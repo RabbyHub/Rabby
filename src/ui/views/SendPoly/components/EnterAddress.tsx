@@ -4,6 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
 import { useWallet } from 'ui/utils';
 import { debounce } from 'lodash';
+import styled from 'styled-components';
+
+const StyledInputWrapper = styled.div`
+  border-radius: 8px;
+  overflow: hidden;
+  .ant-input-clear-icon {
+    top: unset !important;
+    bottom: 8px !important;
+  }
+`;
 
 export const EnterAddress = ({
   onNext,
@@ -94,16 +104,18 @@ export const EnterAddress = ({
             },
           ]}
         >
-          <Input.TextArea
-            maxLength={44}
-            placeholder="Enter address / ENS"
-            allowClear
-            autoFocus
-            size="large"
-            spellCheck={false}
-            rows={4}
-            className="border-bright-on-active rounded-[8px] leading-normal"
-          />
+          <StyledInputWrapper>
+            <Input.TextArea
+              maxLength={44}
+              placeholder="Enter address / ENS"
+              allowClear
+              autoFocus
+              size="large"
+              spellCheck={false}
+              rows={4}
+              className="border-bright-on-active rounded-[8px] leading-normal"
+            />
+          </StyledInputWrapper>
         </Form.Item>
         {tags.length > 0 && (
           <ul className="mt-[13px]">
