@@ -5,6 +5,7 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { isValidAddress } from '@ethereumjs/util';
 import { isSameAddress, useWallet } from '../utils';
 import { KEYRING_CLASS } from 'consts';
+import { IExchange } from '../component/CexSelect';
 
 const queue = new PQueue({ intervalCap: 5, concurrency: 5, interval: 1000 });
 
@@ -25,7 +26,10 @@ export const enum RiskType {
   CEX_NO_DEPOSIT = 4,
 }
 
-export const useAddressRisks = (address: string) => {
+export const useAddressRisks = (
+  address: string,
+  editCex?: IExchange | null
+) => {
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
@@ -103,6 +107,14 @@ export const useAddressRisks = (address: string) => {
                 is_deposit: true,
               };
             }
+            if (editCex) {
+              addrDescRes.desc.cex = {
+                id: editCex?.id || '',
+                name: editCex?.name || '',
+                logo_url: editCex?.logo || '',
+                is_deposit: true,
+              };
+            }
           }
           setAddressDesc(addrDescRes.desc);
         }
@@ -112,7 +124,7 @@ export const useAddressRisks = (address: string) => {
         setLoadingAddrDesc(false);
       }
     })();
-  }, [address, dispatch]);
+  }, [address, dispatch, editCex]);
 
   useEffect(() => {
     if (

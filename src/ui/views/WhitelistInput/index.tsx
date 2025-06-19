@@ -290,6 +290,8 @@ const WhitelistInput = () => {
         address={inputAddress}
         visible={showAddressRiskAlert}
         getContainer={getContainer}
+        editAlias={inputAlias}
+        editCex={isCex ? selectedExchange : null}
         height="calc(100% - 60px)"
         onConfirm={() => {
           confrimToWhitelist(inputAddress);
@@ -302,6 +304,9 @@ const WhitelistInput = () => {
         visible={showCexListModal}
         onCancel={() => {
           setShowCexListModal(false);
+          if (isCex && !selectedExchange) {
+            setIsCex(false);
+          }
         }}
         onSelect={(cex) => {
           setSelectedExchange(cex);

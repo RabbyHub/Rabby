@@ -17,6 +17,7 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import { ReactComponent as RcIconCheckedCC } from 'ui/assets/address/checked-square-cc.svg';
 import { ReactComponent as RcIconCheckCC } from 'ui/assets/address/check-square-cc.svg';
 import { ellipsisAddress } from '@/ui/utils/address';
+import { IExchange } from '../CexSelect';
 
 interface AddressRiskAlertProps {
   visible: boolean;
@@ -29,6 +30,8 @@ interface AddressRiskAlertProps {
   height?: number | string;
   zIndex?: number;
   getContainer?: DrawerProps['getContainer'];
+  editAlias?: string;
+  editCex?: IExchange | null;
 }
 
 const AddressTyepCard = ({
@@ -108,6 +111,8 @@ export const AddressRiskAlert = ({
   zIndex,
   showClosableIcon = true,
   getContainer,
+  editAlias,
+  editCex,
 }: AddressRiskAlertProps) => {
   const handleCancel = () => {
     onCancel();
@@ -117,7 +122,7 @@ export const AddressRiskAlert = ({
 
   const [checkedRisk, setCheckedRisk] = useState(false);
   // disable detect risk when unvisible
-  const riskInfos = useAddressRisks(visible ? address : '');
+  const riskInfos = useAddressRisks(visible ? address : '', editCex);
   const addressSplit = useMemo(() => {
     if (!address) {
       return [];
@@ -184,14 +189,18 @@ export const AddressRiskAlert = ({
           <AddressTyepCard
             type={targetAccount.type}
             cexInfo={{
-              id: riskInfos.addressDesc?.cex?.id,
-              name: riskInfos.addressDesc?.cex?.name,
-              logo: riskInfos.addressDesc?.cex?.logo_url,
-              isDeposit: riskInfos.addressDesc?.cex?.is_deposit,
+              id: editCex?.id || riskInfos.addressDesc?.cex?.id,
+              name: editCex?.name || riskInfos.addressDesc?.cex?.name,
+              logo: editCex?.logo || riskInfos.addressDesc?.cex?.logo_url,
+              isDeposit: editCex?.id
+                ? true
+                : riskInfos.addressDesc?.cex?.is_deposit,
             }}
             brandName={targetAccount.brandName}
             aliasName={
-              targetAccount.alianName || ellipsisAddress(targetAccount.address)
+              editAlias ||
+              targetAccount.alianName ||
+              ellipsisAddress(targetAccount.address)
             }
           />
         </header>
