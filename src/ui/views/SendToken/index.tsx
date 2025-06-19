@@ -1487,7 +1487,9 @@ const SendToken = () => {
               </div>
               <div className="to-address">
                 <AccountItem
-                  balance={targetAccount?.balance || 0}
+                  balance={
+                    targetAccount?.balance || addressDesc?.usd_value || 0
+                  }
                   address={targetAccount?.address || ''}
                   type={targetAccount?.type || ''}
                   alias={

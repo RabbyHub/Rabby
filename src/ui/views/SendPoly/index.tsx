@@ -1,7 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { isValidAddress } from '@ethereumjs/util';
+import PQueue from 'p-queue';
 
 import { KEYRING_CLASS } from '@/constant';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
@@ -15,6 +22,7 @@ import { padWatchAccount } from './util';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
 import { AccountList } from './components/AccountList';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
+import { useWallet } from '@/ui/utils/WalletContext';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
@@ -25,14 +33,21 @@ import { ellipsisAddress } from '@/ui/utils/address';
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
+const unimportedBalancesCache: Record<string, number> = {};
+const queue = new PQueue({ interval: 1000, intervalCap: 5 }); // 每秒最多5个
+
 const SendPoly = () => {
   const history = useHistory();
   const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
 
   const [inputingAddress, setInputingAddress] = useState(false);
   const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
+  const [unimportedBalances, setUnimportedBalances] = useState<
+    Record<string, number>
+  >({});
 
   const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
     (s) => ({
@@ -60,8 +75,18 @@ const SendPoly = () => {
   }, [importWhitelistAccounts, whitelist]);
 
   const allAccounts = useMemo(() => {
-    return [...importWhitelistAccounts, ...unimportedWhitelistAccounts];
-  }, [importWhitelistAccounts, unimportedWhitelistAccounts]);
+    return [
+      ...importWhitelistAccounts,
+      ...unimportedWhitelistAccounts.map((acc) => ({
+        ...acc,
+        balance: unimportedBalances[acc.address],
+      })),
+    ];
+  }, [
+    importWhitelistAccounts,
+    unimportedWhitelistAccounts,
+    unimportedBalances,
+  ]);
 
   const fetchData = async () => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
@@ -117,11 +142,65 @@ const SendPoly = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    if (
+      !unimportedWhitelistAccounts ||
+      unimportedWhitelistAccounts.length === 0
+    ) {
+      return;
+    }
+    const fetchBalances = async () => {
+      queue.clear();
+      await Promise.all(
+        unimportedWhitelistAccounts.map((acc) =>
+          queue.add(async () => {
+            if (cancelled) {
+              return;
+            }
+            if (unimportedBalancesCache[acc.address] !== undefined) {
+              // 已有缓存，直接set
+              setUnimportedBalances((prev) => ({
+                ...prev,
+                [acc.address]: unimportedBalancesCache[acc.address],
+              }));
+              return;
+            }
+            try {
+              const res = await wallet.getInMemoryAddressBalance(acc.address);
+              const balance = res?.total_usd_value || 0;
+              unimportedBalancesCache[acc.address] = balance;
+              if (!cancelled) {
+                setUnimportedBalances((prev) => ({
+                  ...prev,
+                  [acc.address]: balance,
+                }));
+              }
+            } catch (e) {
+              unimportedBalancesCache[acc.address] = 0;
+              if (!cancelled) {
+                setUnimportedBalances((prev) => ({
+                  ...prev,
+                  [acc.address]: 0,
+                }));
+              }
+            }
+          })
+        )
+      );
+    };
+    fetchBalances();
+    return () => {
+      cancelled = true;
+      queue.clear();
+    };
+  }, [unimportedWhitelistAccounts, wallet]);
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
         className={clsx(
-          'send-token',
+          'send-token overflow-y-scroll pb-[59px]',
           isTab
             ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
@@ -188,7 +267,11 @@ const SendPoly = () => {
                       >
                         <AccountItem
                           className="group"
-                          balance={item.balance}
+                          balance={
+                            item.balance ||
+                            unimportedBalances[item.address] ||
+                            0
+                          }
                           address={item.address}
                           alias={ellipsisAddress(item.address)}
                           type={item.type}
