@@ -22,6 +22,7 @@ import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
 import { newUserGuide } from './newUserGuide';
 import { exchange } from './exchange';
+import { rateGuidance } from './rateGuidance';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -46,6 +47,7 @@ export interface RootModel extends Models<RootModel> {
   gasAccount: typeof gasAccount;
   newUserGuide: typeof newUserGuide;
   exchange: typeof exchange;
+  rateGuidance: typeof rateGuidance;
 }
 
 export const models: RootModel = {
@@ -71,6 +73,7 @@ export const models: RootModel = {
   gasAccount,
   newUserGuide,
   exchange,
+  rateGuidance,
 };
 
 export type RabbyDispatch = RematchDispatch<RootModel>;

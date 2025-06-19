@@ -36,6 +36,12 @@ export default (store: typeof import('@/ui/store').default) => {
       //   })
       //   break;
       // }
+      case 'rateGuideLastExposure': {
+        dispatch.preference.setField({
+          rateGuideLastExposure: payload.partials.rateGuideLastExposure,
+        });
+        break;
+      }
     }
   });
 
