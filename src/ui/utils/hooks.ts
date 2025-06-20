@@ -237,6 +237,34 @@ export const useAlias = (address: string) => {
   return [name, updateAlias] as const;
 };
 
+export const useCexId = (address: string) => {
+  const wallet = useWallet();
+  const { exchanges } = useRabbySelector((s) => ({
+    exchanges: s.exchange.exchanges,
+  }));
+  const [cexId, setCexId] = useState<string>();
+  useEffect(() => {
+    if (address) {
+      wallet.getCexId(address).then(setCexId);
+    }
+  }, [address]);
+
+  const updateCexId = useCallback(
+    async (cexId: string) => {
+      await wallet.updateCexId(address, cexId);
+      setCexId(cexId);
+    },
+    [address, wallet]
+  );
+
+  return [
+    exchanges.find(
+      (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+    ),
+    updateCexId,
+  ] as const;
+};
+
 export const useBalance = (address: string) => {
   const [cacheBalance, setCacheBalance] = useState<number>();
   const [balance, setBalance] = useState<number>();

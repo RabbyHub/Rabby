@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Input, Drawer, Skeleton, Tooltip, DrawerProps } from 'antd';
+import { Input, Drawer, Skeleton, Tooltip, DrawerProps, Modal } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
@@ -60,6 +60,12 @@ export interface TokenSelectorProps {
   drawerHeight?: number | string;
   excludeTokens?: TokenItem['id'][];
   getContainer?: DrawerProps['getContainer'];
+  disableItemCheck?: (
+    token: TokenItem
+  ) => {
+    disable: boolean;
+    reason: string;
+  };
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
@@ -84,6 +90,7 @@ const TokenSelector = ({
   drawerHeight = '540px',
   excludeTokens = defaultExcludeTokens,
   getContainer,
+  disableItemCheck,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -312,14 +319,49 @@ const TokenSelector = ({
   }, [tokenDetail, supportChains]);
 
   const commonItemRender = React.useCallback(
-    (token: TokenItem, _type: typeof type, updateToken?: boolean) => {
+    (
+      token: TokenItem,
+      _type: typeof type,
+      updateToken?: boolean,
+      checkItem?: (
+        token: TokenItem
+      ) => {
+        disable: boolean;
+        reason: string;
+      }
+    ) => {
       if (!visible && updateToken) {
         return null;
       }
+      const { disable, reason } = checkItem?.(token) || {};
       return (
         <CommonTokenItem
           key={`${token.chain}-${token.id}`}
-          onConfirm={onConfirm}
+          onConfirm={(token) => {
+            if (disable) {
+              Modal.confirm({
+                width: 340,
+                closable: true,
+                closeIcon: <></>,
+                centered: true,
+                className: 'token-selector-disable-item-tips',
+                title: null,
+                content: reason,
+                okText: t('global.proceedButton'),
+                cancelText: t('global.cancelButton'),
+                cancelButtonProps: {
+                  type: 'ghost',
+                  className: 'text-r-blue-default border-r-blue-default',
+                },
+                onOk() {
+                  onConfirm(token);
+                },
+              });
+              return;
+            }
+            onConfirm(token);
+          }}
+          disabled={disable}
           token={token}
           type={_type}
           supportChains={supportChains}
@@ -454,7 +496,12 @@ const TokenSelector = ({
             {isEmpty
               ? NoDataUI
               : displayList.map((token) => {
-                  return commonItemRender(token, type);
+                  return commonItemRender(
+                    token,
+                    type,
+                    undefined,
+                    disableItemCheck
+                  );
                 })}
           </ul>
         ) : (
@@ -528,6 +575,7 @@ function CommonTokenItem(props: {
     token,
     disabledTips,
     supportChains,
+    disabled: disabledFromProps,
     onConfirm,
     updateToken,
     type,
@@ -622,7 +670,10 @@ function CommonTokenItem(props: {
       align={{ targetOffset: [0, -30] }}
     >
       <li
-        className={clsx('token-list__item', disabled && 'token-disabled')}
+        className={clsx(
+          'token-list__item',
+          (disabledFromProps || disabled) && 'token-disabled'
+        )}
         onClick={handleTokenPress}
       >
         <div>
