@@ -1,4 +1,4 @@
-import { Button, Drawer, DrawerProps } from 'antd';
+import { Button, Drawer, DrawerProps, Skeleton } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -182,45 +182,65 @@ export const AddressRiskAlert = ({
               flex flex-col items-center gap-[8px]
            `}
         >
-          <div className="text-[16px] w-full text-center">
-            <span className="text-r-neutral-title1 font-medium">
-              {addressSplit[0]}
-            </span>
-            <span className="text-r-neutral-foot">{addressSplit[1]}</span>
-            <span className="text-r-neutral-title1 font-medium">
-              {addressSplit[2]}
-            </span>
-          </div>
-          <AddressTyepCard
-            type={targetAccount.type}
-            cexInfo={{
-              id: editCex?.id || riskInfos.addressDesc?.cex?.id,
-              name: editCex?.name || riskInfos.addressDesc?.cex?.name,
-              logo: editCex?.logo || riskInfos.addressDesc?.cex?.logo_url,
-              isDeposit: editCex?.id
-                ? true
-                : riskInfos.addressDesc?.cex?.is_deposit,
-            }}
-            brandName={targetAccount.brandName}
-            aliasName={
-              editAlias ||
-              targetAccount.alianName ||
-              ellipsisAddress(targetAccount.address)
-            }
-          />
-        </header>
-        <div className="mt-[32px] flex-1">
-          {riskInfos.risks.length > 0 && (
-            <div className="text-r-neutral-foot text-[12px] font-medium text-center">
-              {t('page.sendPoly.riskAlert.riskWarning')}
+          {riskInfos.loadingAddrDesc ? (
+            <Skeleton.Input className="w-full h-[44px] rounded-[8px]" active />
+          ) : (
+            <div className="text-[16px] w-full text-center">
+              <span className="text-r-neutral-title1 font-medium">
+                {addressSplit[0]}
+              </span>
+              <span className="text-r-neutral-foot">{addressSplit[1]}</span>
+              <span className="text-r-neutral-title1 font-medium">
+                {addressSplit[2]}
+              </span>
             </div>
           )}
-          <main className="flex flex-col gap-[8px] mt-[8px]">
-            {riskInfos.risks.map((item) => (
-              <RiskRow key={item.type} desc={item.value} />
-            ))}
-          </main>
-        </div>
+          {riskInfos.loadingAddrDesc ? (
+            <Skeleton.Input
+              className="w-[100px] h-[32px] rounded-[8px] mt-[3px]"
+              active
+            />
+          ) : (
+            <AddressTyepCard
+              type={targetAccount.type}
+              cexInfo={{
+                id: editCex?.id || riskInfos.addressDesc?.cex?.id,
+                name: editCex?.name || riskInfos.addressDesc?.cex?.name,
+                logo: editCex?.logo || riskInfos.addressDesc?.cex?.logo_url,
+                isDeposit: editCex?.id
+                  ? true
+                  : riskInfos.addressDesc?.cex?.is_deposit,
+              }}
+              brandName={targetAccount.brandName}
+              aliasName={
+                editAlias ||
+                targetAccount.alianName ||
+                ellipsisAddress(targetAccount.address)
+              }
+            />
+          )}
+        </header>
+        {riskInfos.loadingHasTransfer ? (
+          <div className="flex-1">
+            <div className="flex gap-[8px] mt-[30px] items-center bg-r-neutral-card1 rounded-[8px] py-[14px] px-[16px]">
+              <Skeleton.Avatar className="w-[16px] h-[16px] rounded-full" />
+              <Skeleton.Input className="w-[158px] rounded-[4px]" active />
+            </div>
+          </div>
+        ) : (
+          <div className="mt-[32px] flex-1">
+            {riskInfos.risks.length > 0 && (
+              <div className="text-r-neutral-foot text-[12px] font-medium text-center">
+                {t('page.sendPoly.riskAlert.riskWarning')}
+              </div>
+            )}
+            <main className="flex flex-col gap-[8px] mt-[8px]">
+              {riskInfos.risks.map((item) => (
+                <RiskRow key={item.type} desc={item.value} />
+              ))}
+            </main>
+          </div>
+        )}
         <div className="footer pb-[23px]">
           <div className="relative pb-[16px]">
             <div className="absolute left-[-20px] right-[-20px] h-[1px] bg-r-neutral-line" />
