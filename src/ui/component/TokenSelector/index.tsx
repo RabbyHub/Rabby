@@ -347,8 +347,8 @@ const TokenSelector = ({
                 className: 'token-selector-disable-item-tips',
                 title: null,
                 content: reason,
-                okText: 'Proceed',
-                cancelText: 'Cancel',
+                okText: t('global.proceedButton'),
+                cancelText: t('global.cancelButton'),
                 cancelButtonProps: {
                   type: 'ghost',
                   className: 'text-r-blue-default border-r-blue-default',

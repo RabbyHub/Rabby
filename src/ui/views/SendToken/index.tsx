@@ -1260,7 +1260,7 @@ const SendToken = () => {
           getContainer={getContainer}
         />
         <AccountSelectorModal
-          title="Select From Address"
+          title={t('page.sendToken.selectFromAddress')}
           visible={showSelectorModal}
           onChange={handleFromAddressChange}
           onCancel={handleFromAddressCancel}

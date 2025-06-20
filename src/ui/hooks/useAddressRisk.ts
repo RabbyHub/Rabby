@@ -6,6 +6,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import { isSameAddress, useWallet } from '../utils';
 import { KEYRING_CLASS } from 'consts';
 import { IExchange } from '../component/CexSelect';
+import { useTranslation } from 'react-i18next';
 
 const queue = new PQueue({ intervalCap: 5, concurrency: 5, interval: 1000 });
 
@@ -33,6 +34,7 @@ export const useAddressRisks = (
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
+  const { t } = useTranslation();
   const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
   const [hasNoSend, setHasNoSend] = useState(false);
   const [loadingHasTransfer, setLoadingHasTransfer] = useState(true);
@@ -47,15 +49,29 @@ export const useAddressRisks = (
     );
     return [
       addressDesc?.cex?.id && !addressDesc.cex.is_deposit
-        ? { type: RiskType.CEX_NO_DEPOSIT, value: 'CEX_NO_DEPOSIT' }
+        ? {
+            type: RiskType.CEX_NO_DEPOSIT,
+            value: t('page.sendPoly.riskAlert.riskType.risks.dexNoDeposite'),
+          }
         : null,
       addressDesc?.is_danger || addressDesc?.is_scam
-        ? { type: RiskType.SCAM_ADDRESS, value: 'SCAM_ADDRESS' }
+        ? {
+            type: RiskType.SCAM_ADDRESS,
+            value: t('page.sendPoly.riskAlert.riskType.risks.scamAddress'),
+          }
         : null,
       isContract && !isSafeAddress
-        ? { type: RiskType.CONTRACT_ADDRESS, value: 'CONTRACT_ADDRESS' }
+        ? {
+            type: RiskType.CONTRACT_ADDRESS,
+            value: t('page.sendPoly.riskAlert.riskType.risks.contractAddress'),
+          }
         : null,
-      hasNoSend ? { type: RiskType.NEVER_SEND, value: 'NEVER_SEND' } : null,
+      hasNoSend
+        ? {
+            type: RiskType.NEVER_SEND,
+            value: t('page.sendPoly.riskAlert.riskType.risks.noSend'),
+          }
+        : null,
     ].filter((i) => !!i) as { type: RiskType; value: string }[];
   }, [addressDesc, hasNoSend]);
   const dispatch = useRabbyDispatch();
