@@ -77,7 +77,7 @@ const WhitelistInput = () => {
     if (from) {
       history.replace(from);
     } else {
-      history.replace('/');
+      history.goBack();
     }
   }, [history]);
 

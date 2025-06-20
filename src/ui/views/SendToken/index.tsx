@@ -952,7 +952,7 @@ const SendToken = () => {
     if (from) {
       history.replace(from);
     } else {
-      history.replace('/');
+      history.goBack();
     }
   };
 
