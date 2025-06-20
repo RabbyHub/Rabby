@@ -137,12 +137,14 @@ export const AccountItem = memo(
                 />
               </div>
             )}
-            <CommonSignal
-              type={type}
-              brandName={brandName}
-              address={address}
-              className={'bottom-0 right-0'}
-            />
+            {!showWhitelistIcon && (
+              <CommonSignal
+                type={type}
+                brandName={brandName}
+                address={address}
+                className={'bottom-0 right-0'}
+              />
+            )}
           </div>
         </Tooltip>
 
