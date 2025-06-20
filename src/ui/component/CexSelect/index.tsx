@@ -75,7 +75,11 @@ export const CexListSelectModal = ({
           }}
         >
           <div className="flex items-center gap-[8px]">
-            <img src={cex.logo} alt="" className="w-[24px] h-[24px]" />
+            <img
+              src={cex.logo}
+              alt=""
+              className="w-[24px] h-[24px] rounded-full overflow-hidden"
+            />
             <div className="text-[15px] font-medium text-r-neutral-title1">
               {cex.name}
             </div>

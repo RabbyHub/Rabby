@@ -23,6 +23,7 @@ import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import IconCheck from 'ui/assets/check-3.svg';
 import { AddressViewer } from 'ui/component';
 import { splitNumberByStep, useAlias, useCexId } from 'ui/utils';
+import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/lock.svg';
 
 export interface AddressItemProps {
   balance: number;
@@ -36,6 +37,7 @@ export interface AddressItemProps {
   onClick: MouseEventHandler<HTMLDivElement>;
   isSelected?: boolean;
   rightIcon?: ReactNode;
+  showWhitelistIcon?: boolean;
 }
 
 export const AccountItem = memo(
@@ -51,6 +53,7 @@ export const AccountItem = memo(
     isSelected,
     extra,
     rightIcon,
+    showWhitelistIcon,
   }: AddressItemProps) => {
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
@@ -126,6 +129,14 @@ export const AccountItem = memo(
               src={cexLogo || addressTypeIcon}
               className={'w-[28px] h-[28px] rounded-full'}
             />
+            {showWhitelistIcon && (
+              <div className="absolute w-[16px] h-[16px] bottom-[-3px] right-[-3px] text-r-blue-default">
+                <RcWhitelistIconCC
+                  viewBox="0 0 16 16"
+                  className="w-[16px] h-[16px]"
+                />
+              </div>
+            )}
             <CommonSignal
               type={type}
               brandName={brandName}

@@ -200,7 +200,7 @@ const SendPoly = () => {
     <FullscreenContainer className="h-[700px]">
       <div
         className={clsx(
-          'send-token overflow-y-scroll pb-[59px]',
+          'send-token overflow-y-scroll',
           isTab
             ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
@@ -228,17 +228,17 @@ const SendPoly = () => {
         {inputingAddress ? (
           <EnterAddress onNext={handleChange} />
         ) : (
-          <div>
+          <div className="pb-[59px]">
             {/* Enter Address */}
             <div
               className={`
             border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
-            text-r-neutral-line text-[15px]
+            text-r-neutral-foot text-[15px] 
              h-[52px] leading-[52px] px-[15px] justify-center items-center
             `}
               onClick={() => setInputingAddress(true)}
             >
-              Enter address / ENS
+              Enter address
             </div>
             {/* WhiteList or Imported Addresses List */}
             <div>
@@ -272,6 +272,7 @@ const SendPoly = () => {
                             unimportedBalances[item.address] ||
                             0
                           }
+                          showWhitelistIcon
                           address={item.address}
                           alias={ellipsisAddress(item.address)}
                           type={item.type}
