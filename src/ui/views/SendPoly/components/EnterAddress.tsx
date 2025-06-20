@@ -22,7 +22,7 @@ export const EnterAddress = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [form] = Form.useForm();
+  const [inputAddress, setInputAddress] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
     name: string;
@@ -31,9 +31,7 @@ export const EnterAddress = ({
   const [isValidAddr, setIsValidAddr] = useState(false);
 
   const handleConfirmENS = (result: string) => {
-    form.setFieldsValue({
-      address: result,
-    });
+    setInputAddress(result);
     setIsValidAddr(true);
     setTags([`ENS: ${ensResult!.name}`]);
     setEnsResult(null);
@@ -81,16 +79,18 @@ export const EnterAddress = ({
   );
 
   const handleNextClick = () => {
-    const address = form.getFieldValue('address');
-    onNext(address);
+    const address = ensResult?.addr || inputAddress;
+    if (address && isValidAddress(address)) {
+      onNext(address);
+    } else {
+      setIsValidAddr(false);
+    }
   };
 
   return (
     <Form
       autoComplete="off"
-      onValuesChange={handleValuesChange}
       onFinish={handleNextClick}
-      form={form}
       className="flex flex-1 flex-col"
     >
       <div className="relative flex-1 overflow-auto">
@@ -110,6 +110,11 @@ export const EnterAddress = ({
               placeholder="Enter address / ENS"
               allowClear
               autoFocus
+              value={inputAddress}
+              onChange={(e) => {
+                setInputAddress(e.target.value);
+                handleValuesChange({ address: e.target.value });
+              }}
               size="large"
               spellCheck={false}
               rows={4}
@@ -131,7 +136,7 @@ export const EnterAddress = ({
         )}
         {ensResult && (
           <div
-            className="mt-[12px] p-[12px] bg-r-neutral-card1 rounded-[8px]"
+            className="mt-[12px] p-[12px] bg-r-neutral-card1 rounded-[8px] cursor-pointer"
             onClick={() => handleConfirmENS(ensResult.addr)}
           >
             <div className="flex items-center gap-[8px] break-all">
@@ -143,7 +148,7 @@ export const EnterAddress = ({
       <div className={'footer'}>
         <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
           <Button
-            disabled={!isValidAddr}
+            disabled={!isValidAddr && !ensResult?.addr}
             type="primary"
             htmlType="submit"
             size="large"
