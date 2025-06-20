@@ -59,6 +59,25 @@ export const openInternalPageInTab = (
   }
 };
 
+export const TRUSTED_URLS = {
+  chromeStoreUrl:
+    'https://chromewebstore.google.com/detail/rabby-wallet/acmacodkjbdgmoleebolmdjonilkdbch',
+  chromeStoreMyReviewUrl:
+    'https://chromewebstore.google.com/detail/rabby-wallet/acmacodkjbdgmoleebolmdjonilkdbch/reviews/my-review',
+};
+export const openTrustedExternalWebsiteInTab = async (
+  type: keyof typeof TRUSTED_URLS,
+  needClose = false
+) => {
+  const url = TRUSTED_URLS[type];
+
+  await browser.tabs.create({
+    active: true,
+    url,
+  });
+  if (needClose) window.close();
+};
+
 export const openExternalWebsiteInTab = async (
   url?: string,
   needClose = true

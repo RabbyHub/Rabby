@@ -57,6 +57,7 @@ import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { ALARMS_USER_ENABLE } from './utils/alarms';
+import { subscribeTxCompleted } from './subscriptions/rateGuidance';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -156,6 +157,7 @@ async function restoreAppState() {
     };
   }
   await sendReadyMessageToTabs();
+  subscribeTxCompleted({ preferenceService });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {
