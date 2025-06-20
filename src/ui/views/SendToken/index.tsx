@@ -36,8 +36,8 @@ import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
-import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
-import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/swap/switch-cc.svg';
+import { ReactComponent as RcIconDownCC } from '@/ui/assets/send-token/down.svg';
+import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -1378,7 +1378,7 @@ const SendToken = () => {
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0"
                 onClick={() => {
                   openInternalPageInTab(`send-token${history.location.search}`);
                 }}
@@ -1402,7 +1402,7 @@ const SendToken = () => {
         >
           <div className="flex-1 overflow-auto">
             <div className="section relative">
-              <div className={clsx('section-title mt-[10px]')}>
+              <div className={clsx('section-title mt-[8px]')}>
                 {t('page.sendToken.sectionFrom.title')}
               </div>
               <AccountItem
@@ -1416,7 +1416,7 @@ const SendToken = () => {
                 className="w-full bg-r-neutral-card1 rounded-[8px]"
                 rightIcon={
                   <div className="text-r-neutral-foot">
-                    <RcIconDownCC width={14} height={14} />
+                    <RcIconDownCC width={20} height={20} />
                   </div>
                 }
               />
@@ -1445,7 +1445,7 @@ const SendToken = () => {
                   className="w-full bg-r-neutral-card1 rounded-[8px]"
                   rightIcon={
                     <div className="text-r-neutral-foot">
-                      <RcIconSwitchCC width={14} height={14} />
+                      <RcIconSwitchCC width={20} height={20} />
                     </div>
                   }
                 />
@@ -1521,6 +1521,7 @@ const SendToken = () => {
           visible={showSelectorModal}
           onChange={handleFromAddressChange}
           onCancel={handleFromAddressCancel}
+          value={currentAccount}
           getContainer={getContainer}
           height="calc(100% - 60px)"
         />

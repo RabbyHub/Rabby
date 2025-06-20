@@ -1,5 +1,5 @@
 import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import PQueue from 'p-queue';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { isValidAddress } from '@ethereumjs/util';
@@ -84,6 +84,16 @@ export const useAddressRisks = (
   }, []);
 
   const riskGetRef = useRef(false);
+
+  useLayoutEffect(() => {
+    if (address) {
+      riskGetRef.current = false;
+      setAddressDesc(undefined);
+      setLoadingAddrDesc(true);
+      setHasNoSend(false);
+      setLoadingHasTransfer(true);
+    }
+  }, [address]);
 
   useEffect(() => {
     (async () => {

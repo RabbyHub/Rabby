@@ -312,7 +312,7 @@ const Dashboard = () => {
                   placement="bottomLeft"
                   overlayClassName="switch-popover"
                 >
-                  <div className="relative mr-[4px]">
+                  <div className="relative">
                     <img
                       className={clsx(
                         'icon w-[20px] h-[20px]',
