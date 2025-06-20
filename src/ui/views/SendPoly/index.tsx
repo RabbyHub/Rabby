@@ -1,14 +1,10 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
 
 import { KEYRING_CLASS } from '@/constant';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
@@ -24,18 +20,40 @@ import { AccountList } from './components/AccountList';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { useWallet } from '@/ui/utils/WalletContext';
 import { ellipsisAddress } from '@/ui/utils/address';
-import styled from 'styled-components';
+import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
+import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 
 const OuterInput = styled.div`
   border: 1px solid var(--rabby-light-neutral-line);
   &:hover {
     border: 1px solid var(--r-blue-default, #7084ff);
     cursor: text;
+  }
+`;
+
+const WhitelistItemWrapper = styled.div`
+  background-color: var(--r-neutral-card1);
+  position: relative;
+  border-radius: 8px;
+  margin-top: 8px;
+  .icon-delete-container {
+    display: flex;
+    opacity: 0;
+    &:hover {
+      g {
+        stroke: #ec5151;
+      }
+    }
+  }
+  &:hover {
+    .icon-delete-container {
+      opacity: 1;
+    }
   }
 `;
 
@@ -49,6 +67,7 @@ const SendPoly = () => {
   const history = useHistory();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   const [inputingAddress, setInputingAddress] = useState(false);
   const [showSelectorModal, setShowSelectorModal] = useState(false);
@@ -145,6 +164,29 @@ const SendPoly = () => {
 
   const handleCancel = () => {
     setShowSelectorModal(false);
+  };
+  const handleDeleteWhitelist = (address: string) => {
+    AuthenticationModalPromise({
+      title: t('page.addressDetail.remove-from-whitelist'),
+      cancelText: t('global.Cancel'),
+      wallet,
+      validationHandler: async (password) => {
+        await wallet.removeWhitelist(password, address);
+        const isImported = importWhitelistAccounts.some((a) =>
+          isSameAddress(a.address, address)
+        );
+        if (!isImported) {
+          wallet.removeContactInfo(address);
+        }
+      },
+      onFinished() {
+        dispatch.whitelist.getWhitelist();
+        dispatch.contactBook.getContactBookAsync();
+      },
+      onCancel() {
+        // do nothing
+      },
+    });
   };
 
   useEffect(() => {
@@ -276,10 +318,15 @@ const SendPoly = () => {
                 {whitelistEnabled ? (
                   allAccounts.length > 0 ? (
                     allAccounts.map((item) => (
-                      <div
+                      <WhitelistItemWrapper
                         key={`${item.address}-${item.type}`}
-                        className="bg-r-neutral-card1 rounded-[8px] mt-[8px]"
                       >
+                        <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center">
+                          <RcIconDeleteAddress
+                            className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
+                            onClick={() => handleDeleteWhitelist(item.address)}
+                          />
+                        </div>
                         <AccountItem
                           className="group"
                           balance={
@@ -296,7 +343,7 @@ const SendPoly = () => {
                             handleChange(item.address);
                           }}
                         />
-                      </div>
+                      </WhitelistItemWrapper>
                     ))
                   ) : (
                     <EmptyWhitelistHolder

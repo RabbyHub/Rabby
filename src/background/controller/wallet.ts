@@ -3249,6 +3249,10 @@ export class WalletController extends BaseController {
     });
   };
 
+  removeContactInfo = (address: string) => {
+    contactBookService.removeAlias(address);
+  };
+
   resetCurrentAccount = async () => {
     const [account] = await this.getAccounts();
     if (account) {
