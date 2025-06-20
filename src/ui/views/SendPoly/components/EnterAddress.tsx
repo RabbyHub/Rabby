@@ -125,7 +125,7 @@ export const EnterAddress = ({
           <StyledInputWrapper onClick={(e) => e.stopPropagation()}>
             <Input.TextArea
               maxLength={44}
-              placeholder="Enter address / ENS"
+              placeholder={t('page.sendPoly.enterAddressOrENS')}
               allowClear
               autoFocus
               value={inputAddress}

@@ -715,7 +715,57 @@
       "blockedTransactionCancelText": "I Know",
       "noSupprotTokenForDex": "This token may not be supported by this exchange. Check before proceeding to avoid loss",
       "noSupprotTokenForSafe": "The Safe address you're sending tokens to isn't deployed on this chain. Check before proceeding to avoid loss.",
-      "noSupportTokenForChain": "Recipient address is a contract address on a different chain. Check before proceeding to avoid loss"
+      "noSupportTokenForChain": "Recipient address is a contract address on a different chain. Check before proceeding to avoid loss",
+      "selectFromAddress": "Select From Address"
+    },
+    "sendPoly": {
+      "title": "Send to",
+      "enterAddress": "Enter address",
+      "enterAddressOrENS": "Enter address / ENS",
+      "selectExchangeSource": "Select Exchange Source",
+      "emptyWhitelist": {
+        "title": "Add Whitelist Address",
+        "desc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
+        "addNow": "Add Now"
+      },
+      "whitelist": {
+        "title": "Whitelist",
+        "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
+        "addWhitelist": "Add to whitelist",
+        "removeFromWhitelist": "Remove from whitelist"
+      },
+      "sendToImportedAddress": "Send to Imported Address",
+      "selectImportedAddress": "Select Imported address",
+      "addWhitelist": {
+        "title": "Add Whitelist Address",
+        "desc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time"
+      },
+      "riskAlert": {
+        "title": "Send to this Address",
+        "riskWarning": "Risk Warining",
+        "understandRisks": "I understand the risks and want to continue",
+        "cexDepositAddress": "{{cexName}} Deposit Address",
+        "cexAddress": "{{cexName}} Address",
+        "riskType": {
+        "risks": {
+          "noSend": "No transfers to this address in 180 days",
+          "dexNoDeposite": "Not a CEX deposit address, funds may be lost",
+          "contractAddress": "Contract address detected, funds may be lost",
+          "scamAddress": "Scam address flagged by Rabby"
+          }
+        }
+      }
+    },
+    "whitelist": {
+      "title": "Add Whitelist Address",
+      "address": "Address",
+      "name": "Name",
+      "exchangeAddress": "Exchange Address",
+      "nameYourAddress": "Name Your Address",
+      "addSuccess": "Add successfully",
+      "invalidAddress": "This address is invalid",
+      "enterAddress": "Enter address",
+      "riskTitle": "Add Whitelist Address"
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost",

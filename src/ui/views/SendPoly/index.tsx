@@ -274,7 +274,7 @@ const SendPoly = () => {
             )
           }
         >
-          Send to
+          {t('page.sendPoly.title')}
         </PageHeader>
         {inputingAddress ? (
           <EnterAddress
@@ -295,14 +295,14 @@ const SendPoly = () => {
             `}
               onClick={() => setInputingAddress(true)}
             >
-              Enter address
+              {t('page.sendPoly.enterAddress')}
             </OuterInput>
             {/* WhiteList or Imported Addresses List */}
             <div>
               {whitelistEnabled && (
                 <div className="flex justify-between items-center pt-[17px]">
                   <div className="text-[15px] text-r-neutral-title1">
-                    Whitelist
+                    {t('page.sendPoly.whitelist.title')}
                   </div>
                   <div
                     className="text-r-neutral-body cursor-pointer"
@@ -370,7 +370,7 @@ const SendPoly = () => {
                   }}
                 >
                   <div className="text-[15px] text-r-neutral-body">
-                    Send to Imported Address
+                    {t('page.sendPoly.sendToImportedAddress')}
                   </div>
                   <RcIconRight width={16} height={16} />
                 </div>
@@ -380,7 +380,7 @@ const SendPoly = () => {
         )}
       </div>
       <AccountSelectorModal
-        title="Select Imported address"
+        title={t('page.sendPoly.selectImportedAddress')}
         visible={showSelectorModal}
         onChange={(acc) => handleChange(acc.address)}
         onCancel={handleCancel}

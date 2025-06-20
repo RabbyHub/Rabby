@@ -146,7 +146,7 @@ const WhitelistInput = () => {
         history.goBack();
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: 'Add successfully',
+          content: t('page.whitelist.addSuccess'),
           duration: 0.5,
         });
       },
@@ -199,15 +199,15 @@ const WhitelistInput = () => {
             )
           }
         >
-          Add Whitelist Address
+          {t('page.whitelist.title')}
         </PageHeader>
         <main className="flex-1 flex flex-col gap-[20px]">
           <div className="flex flex-col gap-[8px]">
-            <SectionHeader>Address</SectionHeader>
+            <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
             <StyledInputWrapper>
               <Input.TextArea
                 maxLength={44}
-                placeholder="Enter address"
+                placeholder={t('page.whitelist.enterAddress')}
                 allowClear
                 autoFocus
                 size="large"
@@ -223,16 +223,16 @@ const WhitelistInput = () => {
                 <div className="text-r-red-default">
                   <RcIconWarningCC />
                 </div>
-                <div>This address is invalid</div>
+                <div>{t('page.whitelist.invalidAddress')}</div>
               </div>
             )}
           </div>
           <div className="flex flex-col gap-[8px]">
-            <SectionHeader>Name</SectionHeader>
+            <SectionHeader>{t('page.whitelist.name')}</SectionHeader>
             <div className="rounded-[8px] overflow-hidden">
               <Input
                 maxLength={20}
-                placeholder="Name Your Address"
+                placeholder={t('page.whitelist.nameYourAddress')}
                 allowClear
                 size="large"
                 value={inputAlias}
@@ -243,7 +243,9 @@ const WhitelistInput = () => {
           </div>
           <div className="flex flex-col gap-[10px]">
             <div className="flex justify-between items-center">
-              <SectionHeader>Exchange Address</SectionHeader>
+              <SectionHeader>
+                {t('page.whitelist.exchangeAddress')}
+              </SectionHeader>
               <Switch
                 checked={isCex}
                 onChange={(v) => {
@@ -302,6 +304,7 @@ const WhitelistInput = () => {
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         editAlias={inputAlias}
+        title={t('page.whitelist.riskTitle')}
         editCex={isCex ? selectedExchange : null}
         height="calc(100% - 60px)"
         onConfirm={() => {

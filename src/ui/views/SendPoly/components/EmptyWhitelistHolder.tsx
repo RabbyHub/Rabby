@@ -1,11 +1,13 @@
 import React from 'react';
 import { ReactComponent as RcEmptyWhitelistLogo } from '@/ui/assets/address/EmptyWhiteListLogo.svg';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
   onAddWhitelist?: () => void;
 }
 
 export const EmptyWhitelistHolder = ({ onAddWhitelist }: IProps) => {
+  const { t } = useTranslation();
   const handleAddWhitelist = () => {
     onAddWhitelist?.();
   };
@@ -17,11 +19,10 @@ export const EmptyWhitelistHolder = ({ onAddWhitelist }: IProps) => {
       </div>
       <div>
         <div className="text-r-neutral-title1 text-[20px] font-medium mt-[16px] text-center">
-          Add Whitelist Address
+          {t('page.sendPoly.emptyWhitelist.title')}
         </div>
         <div className="text-[15px] text-r-neutral-foot mt-[8px] text-center">
-          Add trusted addresses to whitelist for fast transfers---no
-          confirmation needed next time
+          {t('page.sendPoly.emptyWhitelist.desc')}
         </div>
       </div>
       <div
@@ -32,7 +33,7 @@ export const EmptyWhitelistHolder = ({ onAddWhitelist }: IProps) => {
         `}
         onClick={handleAddWhitelist}
       >
-        Add Now
+        {t('page.sendPoly.emptyWhitelist.addNow')}
       </div>
     </div>
   );

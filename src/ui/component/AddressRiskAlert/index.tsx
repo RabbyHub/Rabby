@@ -51,6 +51,7 @@ const AddressTyepCard = ({
   };
 }) => {
   const { isDarkTheme } = useThemeMode();
+  const { t } = useTranslation();
 
   const showCexInfo = useMemo(() => {
     return cexInfo.id && cexInfo.isDeposit && type === KEYRING_CLASS.WATCH;
@@ -92,8 +93,12 @@ const AddressTyepCard = ({
           `}
         >
           {showCexInfo
-            ? `${cexInfo.name} Deposit Address`
-            : `${brandName} Address`}
+            ? t('page.sendPoly.riskAlert.cexDepositAddress', {
+                cexName: cexInfo.name,
+              })
+            : t('page.sendPoly.riskAlert.cexAddress', {
+                cexName: brandName,
+              })}
         </div>
       )}
     </div>
@@ -152,7 +157,7 @@ export const AddressRiskAlert = ({
 
   return (
     <Drawer
-      title={title || 'Send to this Address'}
+      title={title || t('page.sendPoly.riskAlert.title')}
       width="400px"
       height={height}
       closable={showClosableIcon}
@@ -207,7 +212,7 @@ export const AddressRiskAlert = ({
         <div className="mt-[32px] flex-1">
           {riskInfos.risks.length > 0 && (
             <div className="text-r-neutral-foot text-[12px] font-medium text-center">
-              Risk Warining
+              {t('page.sendPoly.riskAlert.riskWarning')}
             </div>
           )}
           <main className="flex flex-col gap-[8px] mt-[8px]">
@@ -232,7 +237,7 @@ export const AddressRiskAlert = ({
                   <RcIconCheckCC className="text-r-neutral-foot" />
                 )}
                 <span className="text-center text-r-neutral-foot text-[13px] font-medium ">
-                  I understand the risks and want to continue
+                  {t('page.sendPoly.riskAlert.understandRisks')}
                 </span>
               </div>
             </div>

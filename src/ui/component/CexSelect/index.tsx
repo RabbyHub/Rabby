@@ -1,6 +1,7 @@
 import { Drawer, DrawerProps } from 'antd';
 import React, { ReactNode } from 'react';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 import { useRabbySelector } from '@/ui/store';
 
@@ -37,13 +38,14 @@ export const CexListSelectModal = ({
   const handleCancel = () => {
     onCancel();
   };
+  const { t } = useTranslation();
   const { exchanges } = useRabbySelector((s) => ({
     exchanges: s.exchange.exchanges,
   }));
 
   return (
     <Drawer
-      title={title || 'Select Exchange Source'}
+      title={title || t('page.sendPoly.selectExchangeSource')}
       width="400px"
       height={height}
       closable={showClosableIcon}
