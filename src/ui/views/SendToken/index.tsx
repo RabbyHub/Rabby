@@ -7,15 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, useDebounce } from 'react-use';
-import {
-  Input,
-  Form,
-  Skeleton,
-  message,
-  Button,
-  InputProps,
-  Modal,
-} from 'antd';
+import { Form, message, Button, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
@@ -49,13 +41,7 @@ import {
   findChainByID,
   makeTokenFromChain,
 } from '@/utils/chain';
-import {
-  useCheckAddressType,
-  useParseContractAddress,
-} from '@/ui/hooks/useParseAddress';
 import { Chain } from '@debank/common';
-import IconAlertInfo from './alert-info.svg';
-import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
 import {
   checkIfTokenBalanceEnough,
   customTestnetTokenToTokenItem,
@@ -68,7 +54,6 @@ import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.sv
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { useRequest } from 'ahooks';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import { isHex } from 'viem';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
@@ -82,188 +67,6 @@ const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
-type SendTokenMessageForEoAProps = {
-  active: boolean;
-  formData: FormSendToken;
-} & InputProps;
-const SendTokenMessageForEoa = React.forwardRef<
-  typeof Input,
-  SendTokenMessageForEoAProps
->(({ active, formData }, ref) => {
-  const { t } = useTranslation();
-
-  const { messageDataForSendToEoa = '' } = formData;
-
-  const { withInputData, currentIsHex, currentData, hexData } = useMemo(() => {
-    return formatTxInputDataOnERC20(messageDataForSendToEoa);
-  }, [messageDataForSendToEoa]);
-
-  return (
-    <div className={clsx('section', !active && 'hidden')}>
-      <div className="section-title flex justify-between items-center">
-        {/* Message */}
-        {t('page.sendToken.sectionMsgDataForEOA.title')}
-      </div>
-
-      <div className="messagedata-input-wrapper">
-        <Form.Item name="messageDataForSendToEoa">
-          <Input.TextArea
-            ref={ref as any}
-            placeholder={t('page.sendToken.sectionMsgDataForEOA.placeholder')}
-            autoSize={{ minRows: 1 }}
-            className="min-h-[40px] max-h-[84px] padding-12px overflow-y-auto"
-          />
-        </Form.Item>
-      </div>
-
-      {withInputData && (
-        <div className="messagedata-parsed-input text-[12px]">
-          {currentIsHex ? (
-            <>
-              <span className="text-r-neutral-body">
-                {/* The current input is Original Data. UTF-8 is: */}
-                {t('page.sendToken.sectionMsgDataForEOA.currentIsOriginal')}
-              </span>
-              <p className="mt-3 mb-0 break-all text-r-neutral-foot">
-                {currentData}
-              </p>
-            </>
-          ) : (
-            <>
-              <span className="text-r-neutral-body">
-                {/* The current input is UTF-8. Original Data is: */}
-                {t('page.sendToken.sectionMsgDataForEOA.currentIsUTF8')}
-              </span>
-              <p className="mt-3 mb-0 break-all text-r-neutral-foot">
-                {hexData}
-              </p>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
-});
-
-type SendTokenMessageForContractProps = {
-  active: boolean;
-  formData: FormSendToken;
-  userAddress?: string;
-  chain?: Chain | null;
-} & InputProps;
-const SendTokenMessageForContract = React.forwardRef<
-  typeof Input,
-  SendTokenMessageForContractProps
->(({ active, formData, userAddress, chain }, ref) => {
-  const { t } = useTranslation();
-
-  const { messageDataForContractCall: maybeHex = '' } = formData;
-
-  const { currentIsHex, hexData } = useMemo(() => {
-    const result = { currentIsHex: false, hexData: '' };
-
-    if (!maybeHex) return result;
-
-    result.currentIsHex = maybeHex.startsWith('0x') && isHex(maybeHex);
-    result.hexData = maybeHex;
-
-    return result;
-  }, [maybeHex]);
-
-  const {
-    explain,
-    isLoadingExplain,
-    loadingExplainError,
-    contractCallPlainText,
-  } = useParseContractAddress({
-    userAddress,
-    contractAddress: formData.to,
-    chain: chain || null,
-    inputDataHex: hexData,
-  });
-
-  const parseContractError = loadingExplainError || !explain?.abi;
-
-  return (
-    <div className={clsx('section', !active && 'hidden')}>
-      <div className="section-title flex justify-between items-center">
-        {/* Message */}
-        {t('page.sendToken.sectionMsgDataForContract.title')}
-      </div>
-
-      <div className="messagedata-input-wrapper">
-        <Form.Item name="messageDataForContractCall">
-          <Input.TextArea
-            ref={ref as any}
-            placeholder={t(
-              'page.sendToken.sectionMsgDataForContract.placeholder'
-            )}
-            autoSize={{ minRows: 1 }}
-            className="min-h-[40px] max-h-[84px] padding-12px overflow-y-auto text-[12px] text-[#192945]"
-          />
-        </Form.Item>
-      </div>
-
-      {!!maybeHex && (
-        <div className="messagedata-parsed-input text-[12px]">
-          {!currentIsHex ? (
-            <>
-              <span className="mt-16 text-r-red-default">
-                {/* Only supported hex data */}
-                {t('page.sendToken.sectionMsgDataForContract.notHexData')}
-              </span>
-            </>
-          ) : (
-            <>
-              {!parseContractError && (
-                <span className="mt-16 mb-8 text-r-neutral-body">
-                  {/* Contract call simulation: */}
-                  {t('page.sendToken.sectionMsgDataForContract.simulation')}
-                </span>
-              )}
-              {isLoadingExplain ? (
-                <Skeleton.Button
-                  active
-                  className="block min-w-[50px] w-[50%] h-[24px] mt-3"
-                />
-              ) : (
-                <>
-                  {parseContractError && (
-                    <span className="flex items-center text-r-red-default">
-                      <img src={IconAlertInfo} className="w-14 h-14 mr-[3px]" />
-                      <span>
-                        {/* Fail to decode contract call */}
-                        {t(
-                          'page.sendToken.sectionMsgDataForContract.parseError'
-                        )}
-                      </span>
-                    </span>
-                  )}
-                  {!loadingExplainError && contractCallPlainText && (
-                    <p className="mt-3 mb-0 break-all text-r-neutral-foot">
-                      {contractCallPlainText}
-                    </p>
-                  )}
-                </>
-              )}
-            </>
-          )}
-          {/* {explain ? (
-              <PreExecTransactionExplain
-                className="mt-3"
-                explain={explain}
-                // onView={handleView}
-                isViewLoading={isLoadingExplain}
-              />
-            ) : (
-              <Skeleton.Button active style={{ width: '100%', height: 25 }} />
-            )} */}
-        </div>
-      )}
-    </div>
-  );
-});
-
 function findInstanceLevel(gasList: GasLevel[]) {
   return gasList.reduce((prev, current) =>
     prev.price >= current.price ? prev : current
@@ -275,8 +78,6 @@ const DEFAULT_GAS_USED = 21000;
 type FormSendToken = {
   to: string;
   amount: string;
-  messageDataForSendToEoa: string;
-  messageDataForContractCall: string;
 };
 const SendToken = () => {
   const wallet = useWallet();
@@ -497,18 +298,6 @@ const SendToken = () => {
     [addressDesc, t]
   );
 
-  const { addressType } = useCheckAddressType(formSnapshot.to, chainItem);
-
-  const {
-    isShowMessageDataForToken,
-    isShowMessageDataForContract,
-  } = useMemo(() => {
-    return {
-      isShowMessageDataForToken: isNativeToken && addressType === 'EOA',
-      isShowMessageDataForContract: isNativeToken && addressType === 'CONTRACT',
-    };
-  }, [isNativeToken, addressType]);
-
   const handleFromAddressChange = useCallback(
     async (value: Account) => {
       await dispatch.account.changeAccountAsync(value);
@@ -526,11 +315,7 @@ const SendToken = () => {
   }, []);
 
   const getParams = React.useCallback(
-    ({
-      amount,
-      messageDataForSendToEoa,
-      messageDataForContractCall,
-    }: FormSendToken) => {
+    ({ amount }: FormSendToken) => {
       const chain = findChain({
         serverId: currentToken.chain,
       })!;
@@ -572,15 +357,6 @@ const SendToken = () => {
         params.to = toAddress;
         delete params.data;
 
-        if (isShowMessageDataForToken && messageDataForSendToEoa) {
-          const encodedValue = formatTxInputDataOnERC20(messageDataForSendToEoa)
-            .hexData;
-
-          params.data = encodedValue;
-        } else if (isShowMessageDataForContract && messageDataForContractCall) {
-          params.data = messageDataForContractCall;
-        }
-
         params.value = `0x${sendValue.toString(16)}`;
       }
 
@@ -592,8 +368,6 @@ const SendToken = () => {
       currentToken.decimals,
       currentToken.id,
       isNativeToken,
-      isShowMessageDataForContract,
-      isShowMessageDataForToken,
       safeInfo?.nonce,
       toAddress,
     ]
@@ -652,19 +426,13 @@ const SendToken = () => {
   }, [currentAccount?.type, currentToken]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
-    async ({
-      amount,
-      messageDataForSendToEoa,
-      messageDataForContractCall,
-    }: FormSendToken) => {
+    async ({ amount }: FormSendToken) => {
       const chain = findChain({
         serverId: currentToken.chain,
       })!;
       const params = getParams({
         to: toAddress,
         amount,
-        messageDataForSendToEoa,
-        messageDataForContractCall,
       });
 
       if (isNativeToken) {
@@ -706,13 +474,6 @@ const SendToken = () => {
           if (couldSpecifyIntrinsicGas) {
             params.gas = intToHex(DEFAULT_GAS_USED);
           }
-        }
-
-        if (
-          isShowMessageDataForToken &&
-          (messageDataForContractCall || messageDataForSendToEoa)
-        ) {
-          delete params.gas;
         }
         if (clickedMax && selectedGasLevel?.price) {
           params.gasPrice = selectedGasLevel?.price;
@@ -818,14 +579,6 @@ const SendToken = () => {
       const { token, isInitFromCache } = opts || {};
       if (changedValues && changedValues.to) {
         handleReceiveAddressChanged(changedValues.to);
-      }
-
-      if (
-        (!isInitFromCache && changedValues?.to) ||
-        (!changedValues && toAddress)
-      ) {
-        restForm.messageDataForSendToEoa = '';
-        restForm.messageDataForContractCall = '';
       }
 
       const targetToken = token || currentToken;
@@ -1476,16 +1229,6 @@ const SendToken = () => {
                 )}
               </Form.Item>
             </div>
-            <SendTokenMessageForEoa
-              active={isShowMessageDataForToken}
-              formData={formSnapshot}
-            />
-            <SendTokenMessageForContract
-              active={isShowMessageDataForContract}
-              formData={formSnapshot}
-              chain={findChainByEnum(chain)}
-              userAddress={currentAccount?.address}
-            />
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
