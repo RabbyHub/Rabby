@@ -23,12 +23,21 @@ import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSele
 import { AccountList } from './components/AccountList';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { useWallet } from '@/ui/utils/WalletContext';
+import { ellipsisAddress } from '@/ui/utils/address';
+import styled from 'styled-components';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
-import { ellipsisAddress } from '@/ui/utils/address';
+
+const OuterInput = styled.div`
+  border: 1px solid var(--rabby-light-neutral-line);
+  &:hover {
+    border: 1px solid var(--r-blue-default, #7084ff);
+    cursor: text;
+  }
+`;
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -230,16 +239,17 @@ const SendPoly = () => {
         ) : (
           <div className="pb-[59px]">
             {/* Enter Address */}
-            <div
+            <OuterInput
               className={`
             border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
             text-r-neutral-foot text-[15px] 
              h-[52px] leading-[52px] px-[15px] justify-center items-center
+             hover:cursor-text hover:border-r-blue-default
             `}
               onClick={() => setInputingAddress(true)}
             >
               Enter address
-            </div>
+            </OuterInput>
             {/* WhiteList or Imported Addresses List */}
             <div>
               {whitelistEnabled && (
