@@ -3,13 +3,19 @@ import * as Sentry from '@sentry/browser';
 
 import { getDefaultRateModalState } from '@/ui/models/rateGuidance';
 import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
-import { coerceInteger, useWallet } from '@/ui/utils';
+import {
+  coerceInteger,
+  openTrustedExternalWebsiteInTab,
+  useWallet,
+} from '@/ui/utils';
 import {
   getDefaultRateGuideLastExposure,
   userCouldRated,
 } from '@/utils-isomorphic/rateGuidance';
 import { __DEV__, appIsDev } from '@/utils/env';
 import { ensurePrefix } from '@/utils/string';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ga4 } from '@/utils/ga4';
 
 const TX_COUNT_LIMIT = appIsDev ? 1 : 3; // Minimum number of transactions before showing the rate guide
 const STAR_COUNT = 5;
@@ -175,6 +181,12 @@ export function useRateModal() {
           text: feedbackContent,
           usage: 'rating',
         });
+        matomoRequestEvent({
+          category: 'Rate Rabby',
+          action: 'Rate_SubmitAdvice',
+          label: [rateModalState.userStar].join('|'),
+        });
+        ga4.fireEvent('Rate_SubmitAdvice', { event_category: 'Rate Rabby' });
       } catch (error) {
         Sentry.captureException(error, {
           extra: {
@@ -188,6 +200,16 @@ export function useRateModal() {
     [rateModalState]
   );
 
+  const openAppRateUrl = useCallback(() => {
+    matomoRequestEvent({
+      category: 'Rate Rabby',
+      action: 'Rate_JumpWebStore',
+      label: [rateModalState.userStar].join('|'),
+    });
+    ga4.fireEvent('Rate_JumpWebStore', { event_category: 'Rate Rabby' });
+    openTrustedExternalWebsiteInTab('chromeStoreMyReviewUrl');
+  }, []);
+
   return {
     rateModalShown: rateModalState.visible,
 
@@ -200,5 +222,7 @@ export function useRateModal() {
       rateModalState.userFeedback.length > FEEDBACK_LEN_LIMIT - 1,
     onChangeFeedback,
     submitFeedback,
+
+    openAppRateUrl,
   };
 }

@@ -12,10 +12,6 @@ import ClickableStar from './ClickableStar';
 
 import { ReactComponent as RabbyLogo } from './icons/rabby-logo.svg';
 import { ReactComponent as ChromeLogo } from './icons/chrome.svg';
-import {
-  openExternalWebsiteInTab,
-  openTrustedExternalWebsiteInTab,
-} from '@/ui/utils';
 import clsx from 'clsx';
 
 const DASHED_LINE_STYLE = {
@@ -43,6 +39,8 @@ export default function RateModal({
     onChangeFeedback,
     submitFeedback,
     feedbackOverLimit,
+
+    openAppRateUrl,
   } = useRateModal();
 
   const closeModal = useCallback(() => {
@@ -128,7 +126,7 @@ export default function RateModal({
               className="w-[100%] flex flex-row justify-center items-center"
               block
               onClick={() => {
-                openTrustedExternalWebsiteInTab('chromeStoreMyReviewUrl');
+                openAppRateUrl();
                 disableExposureRateGuide();
               }}
             >

@@ -25,6 +25,7 @@ import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
 import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
+import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -821,6 +822,13 @@ const SettingsInner = ({
           },
         },
         {
+          leftIcon: RcIconEcosystemCC,
+          content: t('page.dashboard.settings.features.ecosystem'),
+          onClick: () => {
+            setIsShowEcologyModal(true);
+          },
+        },
+        {
           leftIcon: RcIconPoints,
           content: t('page.dashboard.settings.features.rabbyPoints'),
           onClick: () => {
@@ -1381,11 +1389,16 @@ const SettingsInner = ({
     dispatch.openapi.getTestnetHost();
   }, []);
 
+  const [isShowEcology, setIsShowEcologyModal] = React.useState(false);
+
   return (
     <div className="popup-settings">
       <div className="content">
         {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
-        <EcosystemBanner />
+        <EcosystemBanner
+          isVisible={isShowEcology}
+          onClose={() => setIsShowEcologyModal(false)}
+        />
         <RateModalTriggerOnSettings className="mb-[16px]" />
         {Object.values(renderData).map((group, idxl1) => {
           return (
