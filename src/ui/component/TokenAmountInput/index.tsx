@@ -53,7 +53,7 @@ interface TokenAmountInputProps {
 
 const StyledInput = styled(Input)`
   color: var(--r-neutral-title1, #192945);
-  font-size: 24px;
+  font-size: 24px !important;
   font-style: normal;
   font-weight: 500;
   line-height: normal;

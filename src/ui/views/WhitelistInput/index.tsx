@@ -33,9 +33,20 @@ const SectionHeader = styled.div`
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
   overflow: hidden;
+  .ant-input {
+    font-size: 15px;
+    &:hover,
+    &:focus {
+      border-color: var(--r-blue-default) !important;
+    }
+  }
   .ant-input-clear-icon {
     top: unset !important;
     bottom: 8px !important;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 `;
 
@@ -271,11 +282,11 @@ const WhitelistInput = () => {
             )}
           </div>
         </main>
-        <div className={'footer'}>
+        <div className={'footer bg-r-neutral-bg2'}>
           <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
             <Button
               onClick={handleSubmit}
-              disabled={!isValidAddr}
+              disabled={!isValidAddr || !inputAddress}
               type="primary"
               htmlType="submit"
               size="large"

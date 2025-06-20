@@ -9,16 +9,25 @@ import styled from 'styled-components';
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
   overflow: hidden;
+  .ant-input {
+    font-size: 15px;
+  }
   .ant-input-clear-icon {
     top: unset !important;
     bottom: 8px !important;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 `;
 
 export const EnterAddress = ({
   onNext,
+  onCancel,
 }: {
   onNext: (address: string) => void;
+  onCancel: () => void;
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -66,6 +75,8 @@ export const EnterAddress = ({
             const result = await wallet.openapi.getEnsAddressByName(address);
             if (result && result.addr) {
               setEnsResult(result);
+            } else {
+              setEnsResult(null);
             }
           } catch (e) {
             setEnsResult(null);
@@ -93,7 +104,14 @@ export const EnterAddress = ({
       onFinish={handleNextClick}
       className="flex flex-1 flex-col"
     >
-      <div className="relative flex-1 overflow-auto">
+      <div
+        className="relative flex-1 overflow-auto"
+        onClick={() => {
+          if (!inputAddress) {
+            onCancel();
+          }
+        }}
+      >
         <Form.Item
           name="address"
           className="rounded-[8px] overflow-hidden"
@@ -104,7 +122,7 @@ export const EnterAddress = ({
             },
           ]}
         >
-          <StyledInputWrapper>
+          <StyledInputWrapper onClick={(e) => e.stopPropagation()}>
             <Input.TextArea
               maxLength={44}
               placeholder="Enter address / ENS"

@@ -222,7 +222,7 @@ const SendPoly = () => {
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer"
+                className="text-r-neutral-title1 absolute right-0 cursor-pointer"
                 onClick={() => {
                   openInternalPageInTab(`send-poly${history.location.search}`);
                 }}
@@ -235,7 +235,12 @@ const SendPoly = () => {
           Send to
         </PageHeader>
         {inputingAddress ? (
-          <EnterAddress onNext={handleChange} />
+          <EnterAddress
+            onCancel={() => {
+              setInputingAddress(false);
+            }}
+            onNext={handleChange}
+          />
         ) : (
           <div className="pb-[59px]">
             {/* Enter Address */}
