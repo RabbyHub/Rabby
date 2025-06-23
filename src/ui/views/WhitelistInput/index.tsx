@@ -143,10 +143,14 @@ const WhitelistInput = () => {
     AuthenticationModalPromise({
       title: t('page.whitelist.confirmPassword'),
       wallet,
-      confrimClassName: 'w-full',
+      cancelText: t('global.Cancel'),
       validationHandler: async (password) => {
         await wallet.addWhitelist(password, address);
       },
+      getContainer,
+      btnClassName:
+        'pt-[16px] border-t-[0.5px] border-r-neutral-line border-t-r-neutral-line',
+      onCancel: () => {},
       onFinished: async () => {
         dispatch.whitelist.getWhitelist();
         await wallet.updateAlianName(

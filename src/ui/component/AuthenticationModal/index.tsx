@@ -43,6 +43,7 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   checklist?: string[];
   placeholder?: string;
   getContainer?: DrawerProps['getContainer'];
+  btnClassName?: string;
 }
 
 const Description = styled.div`
@@ -135,6 +136,7 @@ const AuthenticationModal = ({
   placeholder,
   getContainer,
   confrimClassName,
+  btnClassName,
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -254,6 +256,7 @@ const AuthenticationModal = ({
         <div
           className={clsx(
             'flex pt-6 popup-footer px-20',
+            btnClassName,
             cancelText ? 'justify-between' : 'justify-center'
           )}
         >
