@@ -6,6 +6,7 @@ type RateModalState = {
   visible: boolean;
   userStar: number;
   userFeedback: string;
+  isSubmitting?: boolean;
 };
 
 export function getDefaultRateModalState() {
@@ -14,6 +15,7 @@ export function getDefaultRateModalState() {
     userStar: STAR_COUNT,
 
     userFeedback: '',
+    isSubmitting: false,
   };
 }
 
