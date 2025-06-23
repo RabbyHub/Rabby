@@ -58,6 +58,30 @@ const WhitelistItemWrapper = styled.div`
   }
 `;
 
+const AnimatedInputWrapper = styled.div`
+  transition: max-height 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* overflow: hidden; */
+  will-change: max-height, opacity, transform;
+  &.collapsed {
+    height: 52px;
+    max-height: 52px;
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  &.expanded {
+    max-height: 1000px;
+    opacity: 1;
+    flex: 1;
+    padding-top: 15px;
+    padding-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    transform: scaleY(1.05);
+  }
+`;
+
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
@@ -271,27 +295,33 @@ const SendPoly = () => {
         >
           {t('page.sendPoly.title')}
         </PageHeader>
-        {inputingAddress ? (
-          <EnterAddress
-            onCancel={() => {
-              setInputingAddress(false);
-            }}
-            onNext={handleChange}
-          />
-        ) : (
-          <div className="pb-[59px] h-full">
-            {/* Enter Address */}
+        <AnimatedInputWrapper
+          className={inputingAddress ? 'expanded' : 'collapsed'}
+        >
+          {inputingAddress ? (
+            <EnterAddress
+              onCancel={() => {
+                setInputingAddress(false);
+              }}
+              onNext={handleChange}
+            />
+          ) : (
             <OuterInput
               className={`
-            border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
-            text-r-neutral-foot text-[15px] 
-             h-[52px] leading-[52px] px-[15px] justify-center items-center
-             hover:cursor-text hover:border-r-blue-default
-            `}
+        border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
+        text-r-neutral-foot text-[15px] 
+         h-[52px] leading-[52px] px-[15px] justify-center items-center
+         hover:cursor-text hover:border-r-blue-default
+        `}
               onClick={() => setInputingAddress(true)}
             >
               {t('page.sendPoly.enterAddress')}
             </OuterInput>
+          )}
+        </AnimatedInputWrapper>
+
+        {!inputingAddress && (
+          <div className="pb-[59px] h-full">
             {/* WhiteList or Imported Addresses List */}
             <div className={!whitelistEnabled ? 'h-full' : ''}>
               {whitelistEnabled && (
