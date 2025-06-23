@@ -319,7 +319,7 @@ const WhitelistInput = () => {
                   <img
                     src={selectedExchange.logo}
                     alt=""
-                    className="w-[24px] h-[24px]"
+                    className="w-[24px] h-[24px] rounded-full"
                   />
                   <div className="text-[15px] font-medium text-r-neutral-title1">
                     {selectedExchange.name}
