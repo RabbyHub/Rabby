@@ -80,28 +80,35 @@ type FormSendToken = {
   amount: string;
 };
 const SendToken = () => {
+  const { useForm } = Form;
+  const { t } = useTranslation();
+  const history = useHistory();
+  const dispatch = useRabbyDispatch();
+  const rbisource = useRbiSource();
+  const { search } = useLocation();
   const wallet = useWallet();
+
+  // UI States
+  const [showSelectorModal, setShowSelectorModal] = useState(false);
+  const [reserveGasOpen, setReserveGasOpen] = useState(false);
+
+  // Core States
+  const [form] = useForm<FormSendToken>();
+
+  const toAddress = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('to') || '';
+  }, [search]);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const { balance: currentAccountBalance } = useCurrentBalance(
     currentAccount?.address
   );
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
-
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
-  const { t } = useTranslation();
-  const { useForm } = Form;
-  const history = useHistory();
-  const dispatch = useRabbyDispatch();
-
-  const rbisource = useRbiSource();
-
-  const [form] = useForm<FormSendToken>();
   const [formSnapshot, setFormSnapshot] = useState(form.getFieldsValue());
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
     null
   );
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
-
   const [currentToken, setCurrentToken] = useState<TokenItem>({
     id: 'eth',
     chain: 'eth',
@@ -119,11 +126,16 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
-
   const [safeInfo, setSafeInfo] = useState<{
     chainId: number;
     nonce: number;
   } | null>(null);
+
+  const [inited, setInited] = useState(false);
+  const [cacheAmount, setCacheAmount] = useState('0');
+  const [isLoading, setIsLoading] = useState(true);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
+
   const persistPageStateCache = useCallback(
     async (nextStateCache?: {
       values?: FormSendToken;
@@ -147,10 +159,6 @@ const SendToken = () => {
     },
     [wallet, history, form, currentToken, safeInfo]
   );
-  const [inited, setInited] = useState(false);
-  const [cacheAmount, setCacheAmount] = useState('0');
-  const [isLoading, setIsLoading] = useState(true);
-  const [balanceError, setBalanceError] = useState<string | null>(null);
 
   const [
     { showGasReserved, clickedMax, isEstimatingGas },
@@ -161,6 +169,7 @@ const SendToken = () => {
     clickedMax: false,
     isEstimatingGas: false,
   });
+
   const setShowGasReserved = useCallback((show: boolean) => {
     setSendMaxInfo((prev) => ({
       ...prev,
@@ -171,7 +180,6 @@ const SendToken = () => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   }, []);
 
-  const [reserveGasOpen, setReserveGasOpen] = useState(false);
   const handleReserveGasClose = useCallback(() => {
     setReserveGasOpen(false);
   }, []);
@@ -186,11 +194,6 @@ const SendToken = () => {
   >({});
   const [isGnosisSafe, setIsGnosisSafe] = useState(false);
 
-  const { search } = useLocation();
-  const toAddress = useMemo(() => {
-    const query = new URLSearchParams(search);
-    return query.get('to') || '';
-  }, [search]);
   useEffect(() => {
     if (!toAddress) {
       const query = new URLSearchParams(search);
@@ -1064,11 +1067,11 @@ const SendToken = () => {
   };
 
   useEffect(() => {
-    if (inited) {
+    if (inited && currentAccount?.address) {
       initByCache();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inited]);
+  }, [inited, currentAccount?.address]);
 
   useEffect(() => {
     init();
