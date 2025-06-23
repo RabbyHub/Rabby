@@ -279,7 +279,7 @@ const SendPoly = () => {
             onNext={handleChange}
           />
         ) : (
-          <div className="pb-[59px]">
+          <div className="pb-[59px] h-full">
             {/* Enter Address */}
             <OuterInput
               className={`
@@ -293,7 +293,7 @@ const SendPoly = () => {
               {t('page.sendPoly.enterAddress')}
             </OuterInput>
             {/* WhiteList or Imported Addresses List */}
-            <div>
+            <div className={!whitelistEnabled ? 'h-full' : ''}>
               {whitelistEnabled && (
                 <div className="flex justify-between items-center pt-[17px]">
                   <div className="text-[15px] text-r-neutral-title1">
@@ -309,7 +309,7 @@ const SendPoly = () => {
                   </div>
                 </div>
               )}
-              <div>
+              <div className="h-full">
                 {whitelistEnabled ? (
                   allAccounts.length > 0 ? (
                     allAccounts.map((item) => (
