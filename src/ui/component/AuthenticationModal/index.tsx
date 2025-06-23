@@ -37,6 +37,7 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   validationHandler?(password: string): Promise<void>;
   confirmText?: string;
   cancelText?: string;
+  confrimClassName?: string;
   title?: string;
   description?: string;
   checklist?: string[];
@@ -133,6 +134,7 @@ const AuthenticationModal = ({
   title = 'Enter Password',
   placeholder,
   getContainer,
+  confrimClassName,
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -270,7 +272,11 @@ const AuthenticationModal = ({
             type="primary"
             size="large"
             htmlType="submit"
-            className={clsx(cancelText ? 'w-[172px]' : 'w-[200px]')}
+            className={
+              confrimClassName
+                ? confrimClassName
+                : clsx(cancelText ? 'w-[172px]' : 'w-[200px]')
+            }
             disabled={checklist.length > 0 ? !isAllChecked : false}
           >
             {confirmText}

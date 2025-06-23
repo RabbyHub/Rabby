@@ -765,7 +765,13 @@
       "addSuccess": "Add successfully",
       "invalidAddress": "This address is invalid",
       "enterAddress": "Enter address",
-      "riskTitle": "Add Whitelist Address"
+      "riskTitle": "Add Whitelist Address",
+      "confirmPassword": "Confirm Password",
+      "tips": {
+        "removed": "Whitelist address deleted",
+        "added": "Address added to whitelist",
+        "repeated": "The current address is already on the whitelist."
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost",
