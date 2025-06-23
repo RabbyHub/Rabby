@@ -5,6 +5,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { message } from 'antd';
 
 import { KEYRING_CLASS } from '@/constant';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
@@ -20,13 +21,13 @@ import { AccountList } from './components/AccountList';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { useWallet } from '@/ui/utils/WalletContext';
 import { ellipsisAddress } from '@/ui/utils/address';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
+import IconSuccess from 'ui/assets/success.svg';
 
 const OuterInput = styled.div`
   border: 1px solid var(--rabby-light-neutral-line);
@@ -130,6 +131,8 @@ const SendPoly = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
+    } else if (history.length > 2) {
+      history.goBack();
     } else {
       history.replace('/');
     }
@@ -165,27 +168,19 @@ const SendPoly = () => {
   const handleCancel = () => {
     setShowSelectorModal(false);
   };
-  const handleDeleteWhitelist = (address: string) => {
-    AuthenticationModalPromise({
-      title: t('page.addressDetail.remove-from-whitelist'),
-      cancelText: t('global.Cancel'),
-      wallet,
-      validationHandler: async (password) => {
-        await wallet.removeWhitelist(password, address);
-        const isImported = importWhitelistAccounts.some((a) =>
-          isSameAddress(a.address, address)
-        );
-        if (!isImported) {
-          wallet.removeContactInfo(address);
-        }
-      },
-      onFinished() {
-        dispatch.whitelist.getWhitelist();
-        dispatch.contactBook.getContactBookAsync();
-      },
-      onCancel() {
-        // do nothing
-      },
+  const handleDeleteWhitelist = async (address: string) => {
+    await wallet.removeWhitelist(address);
+    const isImported = importWhitelistAccounts.some((a) =>
+      isSameAddress(a.address, address)
+    );
+    if (!isImported) {
+      await wallet.removeContactInfo(address);
+    }
+    dispatch.whitelist.getWhitelist();
+    dispatch.contactBook.getContactBookAsync();
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('page.whitelist.tips.removed'),
     });
   };
 

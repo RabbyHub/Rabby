@@ -3,7 +3,12 @@ import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
+import {
+  getUiType,
+  isSameAddress,
+  openInternalPageInTab,
+  useWallet,
+} from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
@@ -129,9 +134,9 @@ const WhitelistInput = () => {
       return;
     }
     AuthenticationModalPromise({
-      title: t('page.addressDetail.add-to-whitelist'),
-      cancelText: t('global.Cancel'),
+      title: t('page.whitelist.confirmPassword'),
       wallet,
+      confrimClassName: 'w-full',
       validationHandler: async (password) => {
         await wallet.addWhitelist(password, address);
       },
@@ -146,12 +151,8 @@ const WhitelistInput = () => {
         history.goBack();
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: t('page.whitelist.addSuccess'),
-          duration: 0.5,
+          content: t('page.whitelist.tips.added'),
         });
-      },
-      onCancel() {
-        // do nothing
       },
     });
   };
@@ -162,6 +163,13 @@ const WhitelistInput = () => {
       return;
     }
     try {
+      const whitelist = await wallet.getWhitelist();
+      if (whitelist.some((a) => isSameAddress(a, inputAddress))) {
+        message.error({
+          content: t('page.whitelist.tips.repeated'),
+        });
+        return;
+      }
       if (isMyImported) {
         confrimToWhitelist(inputAddress);
       } else {
@@ -189,7 +197,7 @@ const WhitelistInput = () => {
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0 "
                 onClick={() => {
                   openInternalPageInTab(`send-poly${history.location.search}`);
                 }}
@@ -285,7 +293,7 @@ const WhitelistInput = () => {
           </div>
         </main>
         <div className={'footer bg-r-neutral-bg2'}>
-          <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
+          <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
             <Button
               onClick={handleSubmit}
               disabled={!isValidAddr || !inputAddress}

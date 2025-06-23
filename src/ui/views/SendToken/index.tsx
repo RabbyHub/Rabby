@@ -954,8 +954,10 @@ const SendToken = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
-    } else {
+    } else if (history.length > 2) {
       history.goBack();
+    } else {
+      history.replace(`/send-poly${history.location.search}`);
     }
   };
 
@@ -1235,7 +1237,7 @@ const SendToken = () => {
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
-            <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
+            <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
               <Button
                 disabled={!canSubmit}
                 type="primary"

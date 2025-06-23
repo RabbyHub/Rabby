@@ -253,7 +253,7 @@ const TokenAmountInput = ({
       </div>
       <div className="flex flex-col justify-between gap-[13px] items-end">
         <div className="left" onClick={handleSelectToken}>
-          <TokenWithChain token={token} hideConer />
+          <TokenWithChain width="24px" height="24px" token={token} hideConer />
           <span className="token-input__symbol" title={getTokenSymbol(token)}>
             {getTokenSymbol(token)}
           </span>
@@ -261,7 +261,7 @@ const TokenAmountInput = ({
             <RcIconDownCC width={16} height={16} />
           </div>
         </div>
-        <div className="flex gap-[6px] items-center">
+        <div className="flex items-center">
           {isLoading ? (
             <Skeleton.Input active style={{ width: 100 }} />
           ) : (
