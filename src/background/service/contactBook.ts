@@ -5,6 +5,7 @@ export interface ContactBookItem {
   address: string;
   isAlias: boolean;
   isContact: boolean;
+  cexId?: string;
 }
 
 export interface UIContactBookItem {
@@ -57,21 +58,33 @@ class ContactBook {
       .filter((item) => item?.isAlias);
   };
 
-  updateAlias = (data: { address: string; name: string }) => {
+  updateAlias = (data: { address: string; name: string; cexId?: string }) => {
     const key = data.address.toLowerCase();
     if (this.store[key]) {
-      this.store[key] = Object.assign({}, this.store[key], {
+      const updateData: Partial<ContactBookItem> = {
         name: data.name,
         address: key,
         isAlias: true,
-      });
+      };
+      if (data.cexId !== undefined) {
+        updateData.cexId = data.cexId;
+      }
+      this.store[key] = Object.assign({}, this.store[key], updateData);
     } else {
       this.store[key] = {
         name: data.name,
         address: key,
         isAlias: true,
         isContact: false,
+        ...(data.cexId !== undefined ? { cexId: data.cexId } : {}),
       };
+    }
+  };
+
+  updateCexId = (address: string, cexId: string) => {
+    const key = address.toLowerCase();
+    if (this.store[key]) {
+      this.store[key] = Object.assign({}, this.store[key], { cexId });
     }
   };
 
@@ -97,13 +110,18 @@ class ContactBook {
     return this.cache[address.toLowerCase()];
   };
 
-  updateCacheAlias = (data: { address: string; name: string }) => {
+  updateCacheAlias = (data: {
+    address: string;
+    name: string;
+    cexId?: string;
+  }) => {
     const key = data.address.toLowerCase();
     this.cache[key] = {
       name: data.name,
       address: data.address.toLowerCase(),
       isAlias: true,
       isContact: false,
+      ...(data.cexId !== undefined ? { cexId: data.cexId } : {}),
     };
   };
 

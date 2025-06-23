@@ -2,7 +2,7 @@ import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain } from '@/utils/chain';
-import { DrawerProps, Input } from 'antd';
+import { DrawerProps, Input, Skeleton } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import uniqBy from 'lodash/uniqBy';
@@ -21,22 +21,64 @@ import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
 import './style.less';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
-import { ReactComponent as RcIconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
+import { MaxButton } from '@/ui/views/SendToken/components/MaxButton';
+import { useTranslation } from 'react-i18next';
+import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
+import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
+import styled from 'styled-components';
 
 interface TokenAmountInputProps {
   token: TokenItem;
   value?: string;
+  isLoading?: boolean;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
   chainId: string;
   amountFocus?: boolean;
-  inlinePrize?: boolean;
   excludeTokens?: TokenItem['id'][];
   className?: string;
   type?: TokenSelectorProps['type'];
+  insufficientError?: boolean;
   placeholder?: string;
   getContainer?: DrawerProps['getContainer'];
+  balanceNumText?: string;
+  handleClickMaxButton?: () => void;
+  disableItemCheck?: (
+    token: TokenItem
+  ) => {
+    disable: boolean;
+    reason: string;
+  };
 }
+
+const StyledInput = styled(Input)`
+  color: var(--r-neutral-title1, #192945);
+  font-size: 24px !important;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  background: transparent !important;
+  padding-left: 0;
+  & > .ant-input {
+    color: var(--r-neutral-title1, #192945);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border-width: 0px !important;
+    border-color: transparent;
+  }
+
+  &::placeholder {
+    color: var(--r-neutral-foot, #6a7587);
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+`;
 
 const TokenAmountInput = ({
   token,
@@ -45,12 +87,16 @@ const TokenAmountInput = ({
   onTokenChange,
   chainId,
   amountFocus,
-  inlinePrize,
   excludeTokens = [],
   className,
   type = 'default',
   placeholder,
   getContainer,
+  balanceNumText,
+  handleClickMaxButton,
+  insufficientError,
+  isLoading,
+  disableItemCheck,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const [updateNonce, setUpdateNonce] = useState(0);
@@ -60,6 +106,7 @@ const TokenAmountInput = ({
   );
   const [keyword, setKeyword] = useState('');
   const [chainServerId, setChainServerId] = useState(chainId);
+  const { t } = useTranslation();
 
   const chainItem = useMemo(
     () =>
@@ -177,46 +224,72 @@ const TokenAmountInput = ({
 
   return (
     <div className={clsx('token-amount-input', className)}>
-      <div className="left" onClick={handleSelectToken}>
-        <TokenWithChain token={token} hideConer />
-        <span className="token-input__symbol" title={getTokenSymbol(token)}>
-          {getTokenSymbol(token)}
-        </span>
-        <RcIconRcArrowDownTriangle
-          viewBox="0 0 24 24"
-          className="w-18 h-18 text-r-neutral-foot"
-        />
-      </div>
-      <div
-        className={clsx(
-          'right relative flex flex-col items-end overflow-hidden',
-          !valueNum && 'items-center'
-        )}
-      >
-        <Input
+      <div className="right relative flex flex-col justify-between pt-[5px] overflow-hidden">
+        <StyledInput
           ref={tokenInputRef}
           placeholder="0"
-          className={clsx(!valueNum && 'h-[100%]')}
+          className={clsx(
+            !valueNum && 'h-[29px]',
+            insufficientError && 'text-rabby-red-default'
+          )}
           value={value}
+          size="large"
           onChange={handleChange}
           title={value}
         />
-        {inlinePrize && (
-          <div
-            className={
-              'text-r-neutral-foot text-12 text-right max-w-full truncate'
-            }
-            title={splitNumberByStep(
-              ((valueNum || 0) * token.price || 0).toFixed(2)
-            )}
-          >
-            {valueNum
-              ? `≈$${splitNumberByStep(
-                  ((valueNum || 0) * token.price || 0).toFixed(2)
-                )}`
-              : ''}
+
+        <div
+          className="text-r-neutral-foot font-normal text-[13px] max-w-full truncate"
+          title={splitNumberByStep(
+            ((valueNum || 0) * token.price || 0).toFixed(2)
+          )}
+        >
+          {valueNum
+            ? `$${splitNumberByStep(
+                ((valueNum || 0) * token.price || 0).toFixed(2)
+              )}`
+            : '$0.00'}
+        </div>
+      </div>
+      <div className="flex flex-col justify-between gap-[13px] items-end">
+        <div className="left" onClick={handleSelectToken}>
+          <TokenWithChain token={token} hideConer />
+          <span className="token-input__symbol" title={getTokenSymbol(token)}>
+            {getTokenSymbol(token)}
+          </span>
+          <div className="text-r-neutral-foot ml-[6px]">
+            <RcIconDownCC width={16} height={16} />
           </div>
-        )}
+        </div>
+        <div className="flex gap-[6px] items-center">
+          {isLoading ? (
+            <Skeleton.Input active style={{ width: 100 }} />
+          ) : (
+            <div
+              className={clsx(
+                'flex items-center gap-4',
+                insufficientError
+                  ? 'text-rabby-red-default'
+                  : 'text-r-neutral-foot'
+              )}
+            >
+              <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
+              <span
+                className={clsx(
+                  'truncate max-w-[90px] text-[13px] font-normal'
+                )}
+                title={balanceNumText}
+              >
+                {balanceNumText}
+              </span>
+            </div>
+          )}
+          {token.amount > 0 && !isLoading && (
+            <MaxButton onClick={handleClickMaxButton}>
+              {t('page.sendToken.max')}
+            </MaxButton>
+          )}
+        </div>
       </div>
       <TokenSelector
         visible={tokenSelectorVisible}
@@ -226,8 +299,9 @@ const TokenAmountInput = ({
         onSearch={handleSearchTokens}
         isLoading={isListLoading}
         type={type}
+        disableItemCheck={disableItemCheck}
         placeholder={placeholder}
-        chainId={chainServerId}
+        chainId={''}
         getContainer={getContainer}
       />
     </div>

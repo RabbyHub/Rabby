@@ -13,41 +13,28 @@
     align-items: center;
     position: relative;
     cursor: pointer;
-    padding-right: 12px;
+    width: fit-content;
+    &:hover {
+      background: var(--r-blue-light1,#eef1ff)
+    }
     .token-input__symbol {
-      width: 50px;
-      margin-left: 8px;
+      max-width: 50px;
+      margin-left: 6px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      &:hover {
-        color: var(--r-blue-default, #7084ff);
-      }
     }
     .icon-arrow-down {
       width: 12px;
       height: 12px;
-    }
-    &::after {
-      content: '';
-      background: var(--r-neutral-line, rgba(255, 255, 255, 0.10));
-      width: 0.5px;
-      height: 32px;
-      position: absolute;
-      right: 0;
-      top: 50%;
-      margin-top: -16px;
     }
   }
   .right {
     flex: 1;
     display: flex;
     justify-content: flex-end;
-    align-items: center;
-    padding-left: 12px;
     .ant-input {
       padding: 0;
-      text-align: right;
       font-weight: 500;
       font-size: 20px;
       line-height: 23px;

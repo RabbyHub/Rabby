@@ -204,7 +204,7 @@ export default ({
       icon: RcIconSendToken,
       eventKey: 'Send',
       content: t('page.dashboard.home.panel.send'),
-      onClick: () => history.push('/send-token?rbisource=dashboard'),
+      onClick: () => history.push('/send-poly?rbisource=dashboard'),
     } as IPanelItem,
     bridge: {
       icon: RcIconBridge,

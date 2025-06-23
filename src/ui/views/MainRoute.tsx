@@ -81,6 +81,8 @@ import { ConnectApproval } from './Approval/components/Connect/SelectWalletAppro
 import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
 import dayjs from 'dayjs';
 import { PreferenceStore } from '@/background/service/preference';
+import SendPoly from './SendPoly';
+import WhitelistInput from './WhitelistInput';
 
 declare global {
   interface Window {
@@ -357,8 +359,14 @@ const Main = () => {
         <PrivateRoute exact path="/send-token">
           <SendToken />
         </PrivateRoute>
+        <PrivateRoute exact path="/send-poly">
+          <SendPoly />
+        </PrivateRoute>
         <PrivateRoute exact path="/send-nft">
           <SendNFT />
+        </PrivateRoute>
+        <PrivateRoute exact path="/whitelist-input">
+          <WhitelistInput />
         </PrivateRoute>
         <PrivateRoute exact path="/receive">
           <Receive />
