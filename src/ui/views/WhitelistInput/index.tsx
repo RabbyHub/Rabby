@@ -26,6 +26,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import IconSuccess from 'ui/assets/success.svg';
+import { IconClearCC } from '@/ui/assets/component/IconClear';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -40,6 +41,7 @@ const StyledInputWrapper = styled.div`
   overflow: hidden;
   .ant-input {
     font-size: 15px;
+    background: var(--r-neutral-card1);
     &:hover,
     &:focus {
       border-color: var(--r-blue-default) !important;
@@ -76,6 +78,8 @@ const WhitelistInput = () => {
   const { exchanges } = useRabbySelector((s) => ({
     exchanges: s.exchange.exchanges,
   }));
+  const [isFoucsAddress, setIsFoucsAddress] = useState(false);
+  const [isFoucsAlias, setIsFoucsAlias] = useState(false);
 
   const handleClickBack = useCallback(() => {
     const from = (history.location.state as any)?.from;
@@ -121,7 +125,10 @@ const WhitelistInput = () => {
 
   const handleInputChangeAddress = (v) => {
     if (!isValidAddress(v)) {
+      setInputAlias('');
       setIsValidAddr(false);
+      setIsCex(false);
+      setSelectedExchange(null);
     } else {
       setIsValidAddr(true);
       detectAddress(v);
@@ -212,19 +219,33 @@ const WhitelistInput = () => {
         <main className="flex-1 flex flex-col gap-[20px]">
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
-            <StyledInputWrapper>
+            <StyledInputWrapper className="relative">
               <Input.TextArea
                 maxLength={44}
                 placeholder={t('page.whitelist.enterAddress')}
-                allowClear
+                allowClear={false}
                 autoFocus
                 size="large"
                 spellCheck={false}
                 rows={4}
+                onFocus={() => setIsFoucsAddress(true)}
+                onBlur={() => setIsFoucsAddress(false)}
                 value={inputAddress}
                 onChange={(v) => handleInputChangeAddress(v.target.value)}
                 className="rounded-[8px] leading-normal"
               />
+              <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
+                <IconClearCC
+                  onClick={() => {
+                    handleInputChangeAddress('');
+                  }}
+                  className={clsx(
+                    isFoucsAddress && inputAddress.length > 0
+                      ? 'opacity-100 cursor-pointer'
+                      : 'opacity-0 cursor-text'
+                  )}
+                />
+              </div>
             </StyledInputWrapper>
             {!isValidAddr && (
               <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center">
@@ -237,16 +258,31 @@ const WhitelistInput = () => {
           </div>
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>{t('page.whitelist.name')}</SectionHeader>
-            <div className="rounded-[8px] overflow-hidden">
+            <div className="relative rounded-[8px] overflow-hidden">
               <Input
                 maxLength={20}
                 placeholder={t('page.whitelist.nameYourAddress')}
-                allowClear
+                allowClear={false}
                 size="large"
+                style={{ height: 52 }}
                 value={inputAlias}
+                onFocus={() => setIsFoucsAlias(true)}
+                onBlur={() => setIsFoucsAlias(false)}
                 onChange={(v) => setInputAlias(v.target.value)}
-                className="border-bright-on-active rounded-[8px] leading-normal"
+                className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal"
               />
+              <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
+                <IconClearCC
+                  onClick={() => {
+                    setInputAlias('');
+                  }}
+                  className={clsx(
+                    isFoucsAlias && inputAlias.length > 0
+                      ? 'opacity-100 cursor-pointer'
+                      : 'opacity-0 cursor-text'
+                  )}
+                />
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-[10px]">
