@@ -10,7 +10,6 @@ import {
 } from '@/ui/utils';
 import {
   getDefaultRateGuideLastExposure,
-  userCouldRated,
 } from '@/utils-isomorphic/rateGuidance';
 import { __DEV__, appIsDev } from '@/utils/env';
 import { ensurePrefix } from '@/utils/string';
@@ -153,7 +152,6 @@ export function useRateModal() {
     [rDispatch.rateGuidance, rateModalState]
   );
 
-  const isSubmitting = useRabbySelector((s) => !!s.rateGuidance.isSubmitting);
   const submitFeedback = useCallback(
     async (params: { totalBalanceText: string }) => {
       if (rateModalState.userStar > 3) return;
@@ -225,7 +223,7 @@ export function useRateModal() {
     feedbackOverLimit:
       rateModalState.userFeedback.length > FEEDBACK_LEN_LIMIT - 1,
     onChangeFeedback,
-    isSubmitting,
+    isSubmitting: rateModalState.isSubmitting,
     submitFeedback,
 
     openAppRateUrl,
