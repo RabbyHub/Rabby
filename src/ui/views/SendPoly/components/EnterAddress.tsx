@@ -5,6 +5,8 @@ import { isValidAddress } from '@ethereumjs/util';
 import { useWallet } from 'ui/utils';
 import { debounce } from 'lodash';
 import styled from 'styled-components';
+import { IconClearCC } from '@/ui/assets/component/IconClear';
+import clsx from 'clsx';
 
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
@@ -38,6 +40,7 @@ export const EnterAddress = ({
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [isValidAddr, setIsValidAddr] = useState(false);
+  const [isFoucsAddress, setIsFoucsAddress] = useState(false);
 
   const handleConfirmENS = (result: string) => {
     setInputAddress(result);
@@ -122,12 +125,17 @@ export const EnterAddress = ({
             },
           ]}
         >
-          <StyledInputWrapper onClick={(e) => e.stopPropagation()}>
+          <StyledInputWrapper
+            onClick={(e) => e.stopPropagation()}
+            className="relative"
+          >
             <Input.TextArea
               maxLength={44}
               placeholder={t('page.sendPoly.enterAddressOrENS')}
-              allowClear
+              allowClear={false}
               autoFocus
+              onFocus={() => setIsFoucsAddress(true)}
+              onBlur={() => setIsFoucsAddress(false)}
               value={inputAddress}
               onChange={(e) => {
                 setInputAddress(e.target.value);
@@ -136,8 +144,21 @@ export const EnterAddress = ({
               size="large"
               spellCheck={false}
               rows={4}
-              className="border-bright-on-active rounded-[8px] leading-normal"
+              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal"
             />
+            <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
+              <IconClearCC
+                onClick={() => {
+                  setInputAddress('');
+                  handleValuesChange({ address: '' });
+                }}
+                className={clsx(
+                  isFoucsAddress && inputAddress.length > 0
+                    ? 'opacity-100 cursor-pointer'
+                    : 'opacity-0 cursor-text'
+                )}
+              />
+            </div>
           </StyledInputWrapper>
         </Form.Item>
         {tags.length > 0 && (
