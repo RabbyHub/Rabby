@@ -33,12 +33,11 @@ export default function RateModal({
     toggleShowRateModal,
 
     userStar,
-    selectStar,
 
     userFeedback,
     onChangeFeedback,
+    isSubmitting,
     submitFeedback,
-    feedbackOverLimit,
 
     openAppRateUrl,
   } = useRateModal();
@@ -194,6 +193,7 @@ export default function RateModal({
           <footer className="flex w-[100%] p-[16px] border-t-[0.5px] border-rabby-neutral-line border-solid pb-[16px]">
             <Button
               disabled={disableSubmit}
+              loading={isSubmitting}
               type="primary"
               size="large"
               className="w-[100%] flex flex-row justify-center items-center"

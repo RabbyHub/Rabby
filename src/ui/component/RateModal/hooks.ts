@@ -153,6 +153,7 @@ export function useRateModal() {
     [rDispatch.rateGuidance, rateModalState]
   );
 
+  const isSubmitting = useRabbySelector((s) => !!s.rateGuidance.isSubmitting);
   const submitFeedback = useCallback(
     async (params: { totalBalanceText: string }) => {
       if (rateModalState.userStar > 3) return;
@@ -177,6 +178,7 @@ export function useRateModal() {
        **/
 
       try {
+        rDispatch.rateGuidance.setField({ isSubmitting: true });
         await wallet.openapi.submitFeedback({
           text: feedbackContent,
           usage: 'rating',
@@ -195,9 +197,11 @@ export function useRateModal() {
           },
         });
         console.error('Failed to submit feedback:', error);
+      } finally {
+        rDispatch.rateGuidance.setField({ isSubmitting: false });
       }
     },
-    [rateModalState]
+    [rateModalState, rDispatch]
   );
 
   const openAppRateUrl = useCallback(() => {
@@ -221,6 +225,7 @@ export function useRateModal() {
     feedbackOverLimit:
       rateModalState.userFeedback.length > FEEDBACK_LEN_LIMIT - 1,
     onChangeFeedback,
+    isSubmitting,
     submitFeedback,
 
     openAppRateUrl,
