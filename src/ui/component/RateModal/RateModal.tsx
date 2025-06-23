@@ -37,7 +37,7 @@ export default function RateModal({
     userFeedback,
     onChangeFeedback,
     isSubmitting,
-    submitFeedback,
+    pushRateDetails,
 
     openAppRateUrl,
   } = useRateModal();
@@ -126,7 +126,9 @@ export default function RateModal({
               block
               onClick={() => {
                 openAppRateUrl();
-                disableExposureRateGuide();
+                pushRateDetails({ totalBalanceText }).finally(() => {
+                  closeModal();
+                });
               }}
             >
               <ChromeLogo width={18} height={18} className="mr-[8px]" />
@@ -199,7 +201,7 @@ export default function RateModal({
               className="w-[100%] flex flex-row justify-center items-center"
               block
               onClick={() => {
-                submitFeedback({ totalBalanceText })
+                pushRateDetails({ totalBalanceText })
                   .then(() => {
                     message.success(
                       t('page.dashboard.settings.rateModal.feedbackSuccess')
