@@ -91,6 +91,7 @@ const SendToken = () => {
   // UI States
   const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [reserveGasOpen, setReserveGasOpen] = useState(false);
+  const [, setRefreshId] = useState(0);
 
   // Core States
   const [form] = useForm<FormSendToken>();
@@ -543,6 +544,7 @@ const SendToken = () => {
         history.replace('/');
       }
       form.setFieldsValue({ amount: '' });
+      setRefreshId((e) => e + 1);
     }, 500);
   }, [form, history]);
 
@@ -1282,12 +1284,14 @@ const SendToken = () => {
             trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
           }}
           onClose={() => {
+            setRefreshId((e) => e + 1);
             setIsShowMiniSign(false);
             setTimeout(() => {
               setMiniSignTx(null);
             }, 500);
           }}
           onReject={() => {
+            setRefreshId((e) => e + 1);
             setIsShowMiniSign(false);
             setMiniSignTx(null);
           }}
