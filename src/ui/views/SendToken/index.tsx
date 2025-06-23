@@ -418,6 +418,10 @@ const SendToken = () => {
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
 
+  const miniSignTxs = useMemo(() => {
+    return miniSignTx ? [miniSignTx] : [];
+  }, [miniSignTx]);
+
   const canUseMiniTx = useMemo(() => {
     return (
       [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
@@ -1276,7 +1280,7 @@ const SendToken = () => {
           height="calc(100% - 60px)"
         />
         <MiniApproval
-          txs={miniSignTx ? [miniSignTx] : []}
+          txs={miniSignTxs}
           visible={isShowMiniSign}
           ga={{
             category: 'Send',
