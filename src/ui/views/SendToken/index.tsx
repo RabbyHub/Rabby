@@ -20,9 +20,14 @@ import {
   CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
   KEYRING_TYPE,
 } from 'consts';
-import { useRabbyDispatch, connectStore } from 'ui/store';
+import { useRabbyDispatch, connectStore, useRabbySelector } from 'ui/store';
 import { Account } from 'background/service/preference';
-import { getUiType, openInternalPageInTab, useWallet } from 'ui/utils';
+import {
+  getUiType,
+  isSameAddress,
+  openInternalPageInTab,
+  useWallet,
+} from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
@@ -87,6 +92,10 @@ const SendToken = () => {
   const rbisource = useRbiSource();
   const { search } = useLocation();
   const wallet = useWallet();
+  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+    whitelistEnabled: s.whitelist.enabled,
+  }));
 
   // UI States
   const [showSelectorModal, setShowSelectorModal] = useState(false);
@@ -1201,6 +1210,14 @@ const SendToken = () => {
                     targetAccount?.address
                       ? ellipsis(targetAccount?.address)
                       : ''
+                  }
+                  showWhitelistIcon={
+                    whitelistEnabled &&
+                    whitelist?.some(
+                      (w) =>
+                        targetAccount?.address &&
+                        isSameAddress(w, targetAccount?.address)
+                    )
                   }
                   brandName={targetAccount?.brandName || ''}
                   onClick={() => {

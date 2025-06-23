@@ -5,8 +5,10 @@ import { isValidAddress } from '@ethereumjs/util';
 import { useWallet } from 'ui/utils';
 import { debounce } from 'lodash';
 import styled from 'styled-components';
-import { IconClearCC } from '@/ui/assets/component/IconClear';
 import clsx from 'clsx';
+
+import { IconClearCC } from '@/ui/assets/component/IconClear';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
@@ -39,7 +41,7 @@ export const EnterAddress = ({
     name: string;
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
-  const [isValidAddr, setIsValidAddr] = useState(false);
+  const [isValidAddr, setIsValidAddr] = useState(true);
   const [isFoucsAddress, setIsFoucsAddress] = useState(false);
 
   const handleConfirmENS = (result: string) => {
@@ -73,16 +75,18 @@ export const EnterAddress = ({
       debounce(async ({ address }: { address: string }) => {
         setTags([]);
         if (!isValidAddress(address)) {
-          setIsValidAddr(false);
           try {
             const result = await wallet.openapi.getEnsAddressByName(address);
             if (result && result.addr) {
               setEnsResult(result);
+              setIsValidAddr(true);
             } else {
               setEnsResult(null);
+              setIsValidAddr(false);
             }
           } catch (e) {
             setEnsResult(null);
+            setIsValidAddr(false);
           }
         } else {
           setIsValidAddr(true);
@@ -160,6 +164,14 @@ export const EnterAddress = ({
               />
             </div>
           </StyledInputWrapper>
+          {!isValidAddr && (
+            <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center mt-[8px]">
+              <div className="text-r-red-default">
+                <RcIconWarningCC />
+              </div>
+              <div>{t('page.whitelist.invalidAddress')}</div>
+            </div>
+          )}
         </Form.Item>
         {tags.length > 0 && (
           <ul className="mt-[13px]">

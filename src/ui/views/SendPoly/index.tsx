@@ -36,6 +36,20 @@ const OuterInput = styled.div`
     cursor: text;
   }
 `;
+export const EnterAddressButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto 0;
+  gap: 4px;
+  cursor: pointer;
+  padding: 12px 18px;
+  width: fit-content;
+  &:hover {
+    background-color: var(--r-neutral-line);
+    border-radius: 8px;
+  }
+`;
 
 const WhitelistItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
@@ -388,8 +402,7 @@ const SendPoly = () => {
             {/* Imported Addresses Entry */}
             {whitelistEnabled && (
               <div>
-                <div
-                  className="flex justify-center items-center pt-[32px] pb-[8px] gap-[4px] cursor-pointer"
+                <EnterAddressButton
                   onClick={() => {
                     setShowSelectorModal(true);
                   }}
@@ -398,7 +411,7 @@ const SendPoly = () => {
                     {t('page.sendPoly.sendToImportedAddress')}
                   </div>
                   <RcIconRight width={16} height={16} />
-                </div>
+                </EnterAddressButton>
               </div>
             )}
           </div>

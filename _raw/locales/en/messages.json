@@ -725,7 +725,7 @@
       "selectExchangeSource": "Select Exchange Source",
       "emptyWhitelist": {
         "title": "Add Whitelist Address",
-        "desc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
+        "desc": "Add trusted addresses to whitelist for fast transfers - no confirmation needed next time",
         "addNow": "Add Now"
       },
       "whitelist": {

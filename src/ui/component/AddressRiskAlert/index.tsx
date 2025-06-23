@@ -66,7 +66,7 @@ const AddressTyepCard = ({
       <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] py-[8px] flex items-center gap-[6px]">
         {showCexInfo ? (
           <img
-            className="icon icon-account-type w-[20px] h-[20px]"
+            className="icon icon-account-type w-[20px] h-[20px] rounded-full"
             src={cexInfo.logo}
           />
         ) : (
