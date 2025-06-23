@@ -8,9 +8,7 @@ import {
   openTrustedExternalWebsiteInTab,
   useWallet,
 } from '@/ui/utils';
-import {
-  getDefaultRateGuideLastExposure,
-} from '@/utils-isomorphic/rateGuidance';
+import { getDefaultRateGuideLastExposure } from '@/utils-isomorphic/rateGuidance';
 import { __DEV__, appIsDev } from '@/utils/env';
 import { ensurePrefix } from '@/utils/string';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -152,15 +150,14 @@ export function useRateModal() {
     [rDispatch.rateGuidance, rateModalState]
   );
 
-  const submitFeedback = useCallback(
+  const pushRateDetails = useCallback(
     async (params: { totalBalanceText: string }) => {
-      if (rateModalState.userStar > 3) return;
+      const needFeedbackText = rateModalState.userStar <= 3;
 
       const feedbackText = rateModalState.userFeedback.trim();
 
       const feedbackContent = [
-        `Comment: ${feedbackText}`,
-        '  ',
+        ...(!needFeedbackText ? [] : [`Comment: ${feedbackText}`, '  ']),
         `Rate: ${makeStarText(rateModalState.userStar, 5)} (${
           rateModalState.userStar
         }) `,
@@ -224,7 +221,7 @@ export function useRateModal() {
       rateModalState.userFeedback.length > FEEDBACK_LEN_LIMIT - 1,
     onChangeFeedback,
     isSubmitting: rateModalState.isSubmitting,
-    submitFeedback,
+    pushRateDetails,
 
     openAppRateUrl,
   };
