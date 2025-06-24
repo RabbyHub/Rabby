@@ -100,11 +100,24 @@ export const useAddressInfo = (
     })();
   }, [address, dispatch, exchanges]);
 
+  const tmpCexInfo = useMemo(() => {
+    // 导入的地址不需要强制展示交易所信息
+    if (isImported || !addressDesc?.cex?.id) {
+      return undefined;
+    }
+    return {
+      id: addressDesc?.cex?.id,
+      name: addressDesc?.cex?.name,
+      logo: addressDesc?.cex?.logo_url,
+    };
+  }, [isImported, addressDesc]);
+
   return {
     addressDesc,
     isImported,
     isMyImported,
     targetAccount,
     loading: loadingAddrDesc,
+    tmpCexInfo,
   };
 };

@@ -24,6 +24,7 @@ import IconCheck from 'ui/assets/check-3.svg';
 import { AddressViewer } from 'ui/component';
 import { splitNumberByStep, useAlias, useCexId } from 'ui/utils';
 import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/lock.svg';
+import { Exchange } from '@/ui/models/exchange';
 
 export interface AddressItemProps {
   balance: number;
@@ -38,6 +39,7 @@ export interface AddressItemProps {
   isSelected?: boolean;
   rightIcon?: ReactNode;
   showWhitelistIcon?: boolean;
+  tmpCexInfo?: Exchange;
 }
 
 export const AccountItem = memo(
@@ -54,6 +56,7 @@ export const AccountItem = memo(
     extra,
     rightIcon,
     showWhitelistIcon,
+    tmpCexInfo,
   }: AddressItemProps) => {
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
@@ -74,9 +77,16 @@ export const AccountItem = memo(
 
     const [isEdit, setIsEdit] = useState(false);
     const [_alias] = useAlias(address);
-    const [cexInfo] = useCexId(address);
+    const [_cexInfo] = useCexId(address);
     const alias = _alias || aliasName;
     const titleRef = useRef<HTMLDivElement>(null);
+
+    const cexInfo = useMemo(() => {
+      if (tmpCexInfo && !showWhitelistIcon) {
+        return tmpCexInfo;
+      }
+      return _cexInfo;
+    }, [tmpCexInfo, _cexInfo, showWhitelistIcon]);
 
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
