@@ -4,6 +4,7 @@ export const RATE_GUIDE_TX_COUNT_LIMIT = appIsDev ? 1 : 3; // Minimum number of 
 
 export const LAST_EXPOSURE_VERSIONED_KEY = 'lastExposure_20250619_1' as const;
 export type RateGuideLastExposure = {
+  __UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__?: boolean; // Force disable the rate guide on next launch
   txCount: number;
   latestTxHashes?: string[]; // Array of latest transaction hashes
   [LAST_EXPOSURE_VERSIONED_KEY]?:
@@ -24,6 +25,7 @@ export const getDefaultRateGuideLastExposure = (
     userViewedRate: false,
   }
 ): RateGuideLastExposure => ({
+  __UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__: false,
   txCount: 0,
   latestTxHashes: [],
   [LAST_EXPOSURE_VERSIONED_KEY]: {
