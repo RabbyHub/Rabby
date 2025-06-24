@@ -1193,7 +1193,6 @@ const SendToken = () => {
                   </div>
                 }
               />
-              {/* TODO: 链去掉了，没考虑测试网？？ */}
               <div className="section-title mt-[20px]">
                 <span className="section-title__to">
                   {t('page.sendToken.sectionTo.title')}

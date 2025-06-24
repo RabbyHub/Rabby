@@ -237,6 +237,7 @@ const TokenAmountInput = ({
             !valueNum && 'h-[29px]',
             insufficientError && 'text-rabby-red-default'
           )}
+          autoFocus
           value={value}
           size="large"
           onChange={handleChange}
