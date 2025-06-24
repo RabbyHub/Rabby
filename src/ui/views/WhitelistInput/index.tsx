@@ -1,6 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
+import { Button, Input, Switch, message } from 'antd';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { isValidAddress } from '@ethereumjs/util';
 
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import {
@@ -11,20 +15,15 @@ import {
 } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
+import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
+import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
+import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
-
-import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
-import { Button, Input, Switch, message } from 'antd';
-import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
-import { isValidAddress } from '@ethereumjs/util';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
-import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import IconSuccess from 'ui/assets/success.svg';
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 
@@ -38,6 +37,7 @@ const SectionHeader = styled.div`
   font-weight: 500;
   color: var(--r-neutral-title1);
 `;
+
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
   overflow: hidden;
@@ -80,8 +80,8 @@ const WhitelistInput = () => {
   const { exchanges } = useRabbySelector((s) => ({
     exchanges: s.exchange.exchanges,
   }));
-  const [isFoucsAddress, setIsFoucsAddress] = useState(false);
-  const [isFoucsAlias, setIsFoucsAlias] = useState(false);
+  const [isFocusAddress, setIsFocusAddress] = useState(false);
+  const [isFocusAlias, setIsFocusAlias] = useState(false);
 
   const handleClickBack = useCallback(() => {
     const from = (history.location.state as any)?.from;
@@ -138,7 +138,7 @@ const WhitelistInput = () => {
     setInputAddress(v);
   };
 
-  const confrimToWhitelist = async (address: string) => {
+  const confirmToWhitelist = async (address: string) => {
     if (!isValidAddress(address)) {
       return;
     }
@@ -185,7 +185,7 @@ const WhitelistInput = () => {
         return;
       }
       if (isMyImported) {
-        confrimToWhitelist(inputAddress);
+        confirmToWhitelist(inputAddress);
       } else {
         setShowAddressRiskAlert(true);
       }
@@ -235,8 +235,8 @@ const WhitelistInput = () => {
                 size="large"
                 spellCheck={false}
                 rows={4}
-                onFocus={() => setIsFoucsAddress(true)}
-                onBlur={() => setIsFoucsAddress(false)}
+                onFocus={() => setIsFocusAddress(true)}
+                onBlur={() => setIsFocusAddress(false)}
                 value={inputAddress}
                 onChange={(v) => handleInputChangeAddress(v.target.value)}
                 className="rounded-[8px] leading-normal"
@@ -247,7 +247,7 @@ const WhitelistInput = () => {
                     handleInputChangeAddress('');
                   }}
                   className={clsx(
-                    isFoucsAddress && inputAddress.length > 0
+                    isFocusAddress && inputAddress.length > 0
                       ? 'opacity-100 cursor-pointer'
                       : 'opacity-0 cursor-text'
                   )}
@@ -273,8 +273,8 @@ const WhitelistInput = () => {
                 size="large"
                 style={{ height: 52 }}
                 value={inputAlias}
-                onFocus={() => setIsFoucsAlias(true)}
-                onBlur={() => setIsFoucsAlias(false)}
+                onFocus={() => setIsFocusAlias(true)}
+                onBlur={() => setIsFocusAlias(false)}
                 onChange={(v) => setInputAlias(v.target.value)}
                 className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal"
               />
@@ -284,7 +284,7 @@ const WhitelistInput = () => {
                     setInputAlias('');
                   }}
                   className={clsx(
-                    isFoucsAlias && inputAlias.length > 0
+                    isFocusAlias && inputAlias.length > 0
                       ? 'opacity-100 cursor-pointer'
                       : 'opacity-0 cursor-text'
                   )}
@@ -359,7 +359,7 @@ const WhitelistInput = () => {
         editCex={isCex ? selectedExchange : null}
         height="calc(100% - 60px)"
         onConfirm={() => {
-          confrimToWhitelist(inputAddress);
+          confirmToWhitelist(inputAddress);
         }}
         onCancel={() => {
           setShowAddressRiskAlert(false);
