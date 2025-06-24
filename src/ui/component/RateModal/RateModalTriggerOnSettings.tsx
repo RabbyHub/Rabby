@@ -78,7 +78,7 @@ export default function RateModalTriggerOnSettings({
           })
         }
       >
-        <RcIconCloseCC className="text-r-blue-light-1 w-[20px] h-[20px]" />
+        <RcIconCloseCC className="text-r-neutral-foot w-[20px] h-[20px]" />
       </div>
       <div
         className="flex items-center justify-center mt-[8px] group"
