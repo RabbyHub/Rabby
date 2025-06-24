@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { t } from 'i18next';
 import _abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
+  openapiService,
   permissionService,
   preferenceService,
   sessionService,
@@ -74,3 +75,27 @@ export const broadcastChainChanged = ({
     });
   }
 };
+
+export const getRpcTxReceipt = (chainServerId: string, hash: string) => {
+  return openapiService
+    .ethRpc(chainServerId, {
+      method: 'eth_getTransactionReceipt',
+      params: [hash],
+    })
+    .then((res) => {
+      return {
+        hash: res.transactionHash,
+        code: 0,
+        status: parseInt(res.status, 16),
+        gas_used: parseInt(res.gasUsed, 16),
+      };
+    })
+    .catch((e) => {
+      return {
+        hash: hash,
+        code: -1,
+        status: 0,
+        gas_used: 0,
+      };
+    });
+}

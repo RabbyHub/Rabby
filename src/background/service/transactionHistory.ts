@@ -24,6 +24,7 @@ import {
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import { uninstalledService } from '.';
+import { getRpcTxReceipt } from '../controller/utils';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -551,16 +552,11 @@ class TxHistory {
             });
           } else {
             // Use standard RPC to get transaction receipt
-            return openapiService.ethRpc(chain.serverId, {
-              method: 'eth_getTransactionReceipt',
-              params: [tx.hash!],
-            });
+            return getRpcTxReceipt(chain.serverId, tx.hash!);
           }
         })
       );
-      const completed = results.find(
-        (result) => result && result.status && result.status === '0x1'
-      );
+      const completed = results.find((result) => result.code === 0);
       if (!completed) {
         if (duration !== false && +duration < 1000 * 15) {
           const timeout = Number(duration) + 1000;
@@ -571,13 +567,10 @@ class TxHistory {
         }
         return;
       }
-      const completedTx = txs.find(
-        (tx) => tx.hash === completed.transactionHash
-      )!;
-      const gasUsed = completed.gasUsed ? parseInt(completed.gasUsed, 16) : 0;
+      const completedTx = txs.find((tx) => tx.hash === completed.hash)!;
       this.updateSingleTx({
         ...completedTx,
-        gasUsed,
+        gasUsed: completed.gas_used,
       });
       // TOFIX
       this.completeTx({
@@ -585,7 +578,7 @@ class TxHistory {
         chainId,
         nonce,
         hash: completedTx.hash,
-        success: completed.status === '0x1',
+        success: completed.status === 1,
         reqId: completedTx.reqId,
       });
       eventBus.emit(EVENTS.broadcastToUI, {
@@ -595,7 +588,7 @@ class TxHistory {
         },
       });
 
-      return gasUsed;
+      return completed.gas_used;
     } catch (e) {
       if (duration !== false && +duration < 1000 * 15) {
         const timeout = Number(duration) + 1000;
