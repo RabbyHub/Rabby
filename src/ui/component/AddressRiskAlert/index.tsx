@@ -126,14 +126,14 @@ export const AddressRiskAlert = ({
   editCex,
   type,
 }: AddressRiskAlertProps) => {
-  const handleCancel = () => {
-    onCancel();
-  };
-
   const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+  const { accountsList } = useRabbySelector((s) => ({
+    accountsList: s.accountToDisplay.accountsList,
+  }));
 
   const [checkedRisk, setCheckedRisk] = useState(false);
-  // disable detect risk when unvisible
+  // disable detect risk when invisible
   const riskInfos = useAddressRisks(visible ? address : '', editCex);
   const addressSplit = useMemo(() => {
     if (!address) {
@@ -145,11 +145,6 @@ export const AddressRiskAlert = ({
 
     return [prefix, middle, suffix];
   }, [address]);
-
-  const dispatch = useRabbyDispatch();
-  const { accountsList } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-  }));
 
   const targetAccount = useMemo(() => {
     const targetTypeAccount = accountsList.find(
@@ -179,7 +174,7 @@ export const AddressRiskAlert = ({
       closable={showClosableIcon}
       placement={'bottom'}
       visible={visible}
-      onClose={handleCancel}
+      onClose={onCancel}
       className={clsx('custom-popup is-support-darkmode is-new', className)}
       zIndex={zIndex}
       destroyOnClose
