@@ -573,6 +573,7 @@ const SwitchLangModal = ({
 
 type SettingItem = {
   leftIcon: ThemeIconType;
+  leftIconClassName?: string;
   content: React.ReactNode;
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -824,6 +825,7 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconEcosystemCC,
+          leftIconClassName: 'text-r-neutral-body',
           content: t('page.dashboard.settings.features.ecosystem'),
           onClick: () => {
             setIsShowEcologyModal(true);
@@ -1416,7 +1418,10 @@ const SettingsInner = ({
                   <Field
                     key={`g-${idxl1}-item-${idxl2}`}
                     leftIcon={
-                      <ThemeIcon src={data.leftIcon} className="icon" />
+                      <ThemeIcon
+                        src={data.leftIcon}
+                        className={clsx('icon', data.leftIconClassName)}
+                      />
                     }
                     rightIcon={
                       data.rightIcon || (
