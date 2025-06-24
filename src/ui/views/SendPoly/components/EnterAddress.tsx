@@ -206,7 +206,7 @@ export const EnterAddress = ({
         <div className={'footer'}>
           <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
             <Button
-              disabled={!isValidAddr && !ensResult?.addr}
+              disabled={(!isValidAddr || !inputAddress) && !ensResult?.addr}
               type="primary"
               htmlType="submit"
               size="large"

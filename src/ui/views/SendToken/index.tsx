@@ -109,6 +109,10 @@ const SendToken = () => {
     const query = new URLSearchParams(search);
     return query.get('to') || '';
   }, [search]);
+  const toAddressType = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('type') || '';
+  }, [search]);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const { balance: currentAccountBalance } = useCurrentBalance(
     currentAccount?.address
@@ -220,7 +224,9 @@ const SendToken = () => {
     });
   }, [toAddress, history, search, form]);
 
-  const { targetAccount, addressDesc } = useAddressInfo(toAddress);
+  const { targetAccount, addressDesc, tmpCexInfo } = useAddressInfo(toAddress, {
+    type: toAddressType,
+  });
   useInitCheck(addressDesc);
 
   const canSubmit =
@@ -1218,6 +1224,7 @@ const SendToken = () => {
                         isSameAddress(w, targetAccount?.address)
                     )
                   }
+                  tmpCexInfo={tmpCexInfo}
                   brandName={targetAccount?.brandName || ''}
                   onClick={() => {
                     history.push(`/send-poly${history.location.search}`);

@@ -43,7 +43,7 @@ const StyledInputWrapper = styled.div`
   overflow: hidden;
   .ant-input {
     font-size: 15px;
-    background: var(--r-neutral-card1);
+    background: var(--r-neutral-card1, #ffffff) !important;
     &:hover,
     &:focus {
       border-color: var(--r-blue-default) !important;
@@ -128,7 +128,7 @@ const WhitelistInput = () => {
   const handleInputChangeAddress = (v) => {
     if (!isValidAddress(v)) {
       setInputAlias('');
-      setIsValidAddr(false);
+      setIsValidAddr(!v);
       setIsCex(false);
       setSelectedExchange(null);
     } else {

@@ -30,7 +30,7 @@ import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.
 import IconSuccess from 'ui/assets/success.svg';
 
 const OuterInput = styled.div`
-  border: 1px solid var(--rabby-light-neutral-line);
+  border: 1px solid var(--r-neutral-line);
   &:hover {
     border: 1px solid var(--r-blue-default, #7084ff);
     cursor: text;
@@ -88,7 +88,6 @@ const AnimatedInputWrapper = styled.div`
     max-height: 1000px;
     opacity: 1;
     flex: 1;
-    padding-bottom: 16px;
     display: flex;
     flex-direction: column;
     transform: scaleY(1);
@@ -112,6 +111,7 @@ const SendPoly = () => {
   const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
+  const [selectedAddressType, setSelectedAddressType] = useState('');
   const [unimportedBalances, setUnimportedBalances] = useState<
     Record<string, number>
   >({});
@@ -143,7 +143,7 @@ const SendPoly = () => {
       ?.filter(
         (w) => !importWhitelistAccounts.some((a) => isSameAddress(w, a.address))
       )
-      .map(padWatchAccount);
+      .map((w) => padWatchAccount(w));
   }, [importWhitelistAccounts, whitelist]);
 
   const allAccounts = useMemo(() => {
@@ -181,17 +181,22 @@ const SendPoly = () => {
     }
   }, [history, inputingAddress]);
 
-  const handleGotoSend = (address: string) => {
+  const handleGotoSend = (address: string, type?: string) => {
     if (nftItem) {
       handleGotoSendNFT(address);
     } else {
-      handleGotoSendToken(address);
+      handleGotoSendToken(address, type);
     }
   };
 
-  const handleGotoSendToken = (address: string) => {
+  const handleGotoSendToken = (address: string, type?: string) => {
     const query = new URLSearchParams(history.location.search);
     query.set('to', address);
+    if (type) {
+      query.set('type', type);
+    } else {
+      query.delete('type');
+    }
     history.push(`/send-token?${query.toString()}`);
   };
 
@@ -202,7 +207,7 @@ const SendPoly = () => {
     history.push(`/send-nft?${query.toString()}`);
   };
 
-  const handleChange = (address: string) => {
+  const handleChange = (address: string, type?: string) => {
     if (!isValidAddress(address)) {
       return;
     }
@@ -216,9 +221,10 @@ const SendPoly = () => {
       )
       ?.some((item) => isSameAddress(item.address, address));
     if (inWhitelist || isMyCoreWallet) {
-      handleGotoSend(address);
+      handleGotoSend(address, type);
     } else {
       setSelectedAddress(address);
+      setSelectedAddressType(type || '');
       setShowAddressRiskAlert(true);
     }
   };
@@ -399,7 +405,7 @@ const SendPoly = () => {
                           type={item.type}
                           brandName={item.brandName}
                           onClick={() => {
-                            handleChange(item.address);
+                            handleChange(item.address, item.type);
                           }}
                         />
                       </WhitelistItemWrapper>
@@ -413,7 +419,7 @@ const SendPoly = () => {
                   )
                 ) : (
                   <AccountList
-                    onChange={(acc) => handleChange(acc.address)}
+                    onChange={(acc) => handleChange(acc.address, acc.type)}
                     containerClassName="mt-[20px]"
                   />
                 )}
@@ -440,23 +446,26 @@ const SendPoly = () => {
       <AccountSelectorModal
         title={t('page.sendPoly.selectImportedAddress')}
         visible={showSelectorModal}
-        onChange={(acc) => handleChange(acc.address)}
+        onChange={(acc) => handleChange(acc.address, acc.type)}
         onCancel={handleCancel}
         getContainer={getContainer}
         height="calc(100% - 60px)"
       />
       <AddressRiskAlert
+        type={selectedAddressType}
         address={selectedAddress}
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
         onConfirm={() => {
-          handleGotoSend(selectedAddress);
+          handleGotoSend(selectedAddress, selectedAddressType);
           setSelectedAddress('');
+          setSelectedAddressType('');
           setShowAddressRiskAlert(false);
         }}
         onCancel={() => {
           setSelectedAddress('');
+          setSelectedAddressType('');
           setShowAddressRiskAlert(false);
         }}
       />
