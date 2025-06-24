@@ -46,7 +46,7 @@ export const EnterAddressButton = styled.div`
   padding: 12px 18px;
   width: fit-content;
   &:hover {
-    background-color: var(--r-neutral-line);
+    background-color: var(--r-neutral-card1);
     border-radius: 8px;
   }
 `;
@@ -73,9 +73,9 @@ const WhitelistItemWrapper = styled.div`
 `;
 
 const AnimatedInputWrapper = styled.div`
-  transition: max-height 0.1s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   /* overflow: hidden; */
   will-change: max-height, opacity, transform;
   &.collapsed {
@@ -88,11 +88,10 @@ const AnimatedInputWrapper = styled.div`
     max-height: 1000px;
     opacity: 1;
     flex: 1;
-    padding-top: 15px;
     padding-bottom: 16px;
     display: flex;
     flex-direction: column;
-    transform: scaleY(1.05);
+    transform: scaleY(1);
   }
 `;
 
@@ -335,7 +334,7 @@ const SendPoly = () => {
         </AnimatedInputWrapper>
 
         {!inputingAddress && (
-          <div className="pb-[59px] h-full">
+          <div className={clsx('h-full', whitelistEnabled ? 'pb-[59px]' : '')}>
             {/* WhiteList or Imported Addresses List */}
             <div className={!whitelistEnabled ? 'h-full' : ''}>
               {whitelistEnabled && (

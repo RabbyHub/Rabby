@@ -44,6 +44,7 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   placeholder?: string;
   getContainer?: DrawerProps['getContainer'];
   btnClassName?: string;
+  containerClassName?: string;
 }
 
 const Description = styled.div`
@@ -137,6 +138,7 @@ const AuthenticationModal = ({
   getContainer,
   confrimClassName,
   btnClassName,
+  containerClassName,
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -189,7 +191,11 @@ const AuthenticationModal = ({
 
   return (
     <Popup
-      className={clsx('input-password-popup', { 'has-desc': !!description })}
+      className={clsx(
+        'input-password-popup',
+        { 'has-desc': !!description },
+        containerClassName
+      )}
       visible={visible}
       title={title}
       onCancel={handleCancel}
