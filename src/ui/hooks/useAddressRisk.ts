@@ -1,12 +1,14 @@
-import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PQueue from 'p-queue';
-import { useRabbyDispatch, useRabbySelector } from '../store';
 import { isValidAddress } from '@ethereumjs/util';
+import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
+
+import { useRabbyDispatch, useRabbySelector } from '../store';
+import { IExchange } from '../component/CexSelect';
+
 import { isSameAddress, useWallet } from '../utils';
 import { KEYRING_CLASS } from 'consts';
-import { IExchange } from '../component/CexSelect';
-import { useTranslation } from 'react-i18next';
 
 const queue = new PQueue({ intervalCap: 5, concurrency: 5, interval: 1000 });
 
@@ -31,10 +33,19 @@ export const useAddressRisks = (
   address: string,
   editCex?: IExchange | null
 ) => {
+  const { t } = useTranslation();
+  const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
+
+  const { accountsList, exchanges } = useRabbySelector((s) => ({
+    accountsList: s.accountToDisplay.accountsList,
+    exchanges: s.exchange.exchanges,
+  }));
+
+  const riskGetRef = useRef(false);
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
-  const { t } = useTranslation();
   const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
   const [hasNoSend, setHasNoSend] = useState(false);
   const [loadingHasTransfer, setLoadingHasTransfer] = useState(true);
@@ -74,12 +85,7 @@ export const useAddressRisks = (
         : null,
     ].filter((i) => !!i) as { type: RiskType; value: string }[];
   }, [addressDesc, hasNoSend]);
-  const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
-  const { accountsList, exchanges } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-    exchanges: s.exchange.exchanges,
-  }));
+
   const myTop10AccountList = useMemo(
     () =>
       accountsList
@@ -92,14 +98,13 @@ export const useAddressRisks = (
         .slice(0, 10),
     [accountsList]
   );
+
   useEffect(() => {
     if (!isValidAddress(address)) {
       return;
     }
     dispatch.accountToDisplay.getAllAccountsToDisplay();
   }, []);
-
-  const riskGetRef = useRef(false);
 
   useLayoutEffect(() => {
     if (address) {
@@ -133,14 +138,14 @@ export const useAddressRisks = (
                 is_deposit: true,
               };
             }
-            if (editCex) {
-              addrDescRes.desc.cex = {
-                id: editCex?.id || '',
-                name: editCex?.name || '',
-                logo_url: editCex?.logo || '',
-                is_deposit: true,
-              };
-            }
+          }
+          if (editCex) {
+            addrDescRes.desc.cex = {
+              id: editCex?.id || '',
+              name: editCex?.name || '',
+              logo_url: editCex?.logo || '',
+              is_deposit: true,
+            };
           }
           setAddressDesc(addrDescRes.desc);
         }
@@ -167,7 +172,7 @@ export const useAddressRisks = (
       let hasError = false;
       try {
         const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('timeout')), 2000);
+          setTimeout(() => reject(new Error('timeout')), 3000);
         });
         const checkTransferPromise = new Promise<void>((resolve) => {
           myTop10AccountList.forEach((acc) => {
