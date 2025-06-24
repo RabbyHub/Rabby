@@ -31,7 +31,8 @@ export default function ClickableStar({
     <div
       className={clsx(
         'flex items-center justify-center',
-        'bg-transparent cursor-pointer',
+        'bg-transparent',
+        !disabled && 'cursor-pointer',
         className
       )}
       style={{ width: propSize, height: propSize, ...style }}

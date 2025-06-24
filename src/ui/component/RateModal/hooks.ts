@@ -144,7 +144,8 @@ export function useRateModal() {
     (feedback: string) => {
       rDispatch.rateGuidance.setField({
         ...rateModalState,
-        userFeedback: feedback.slice(0, FEEDBACK_LEN_LIMIT), // Limit feedback to 300 characters
+        // userFeedback: feedback.slice(0, FEEDBACK_LEN_LIMIT), // Limit feedback to 300 characters
+        userFeedback: feedback.slice(0, 9999), // Limit feedback to 300 characters
       });
     },
     [rDispatch.rateGuidance, rateModalState]
@@ -164,6 +165,15 @@ export function useRateModal() {
         `Total Balance: ${ensurePrefix(params.totalBalanceText, '$')}`,
         `Client Version: ${process.env.release || '0'}`,
       ]
+        .concat(
+          appIsDev
+            ? [
+                '  ',
+                '(Test Only Below) -----------------------',
+                `UseAgent: ${window.navigator.userAgent}`,
+              ]
+            : []
+        )
         .filter(Boolean)
         .join('\n');
       /**
@@ -206,7 +216,7 @@ export function useRateModal() {
       label: [rateModalState.userStar].join('|'),
     });
     ga4.fireEvent('Rate_JumpWebStore', { event_category: 'Rate Rabby' });
-    openTrustedExternalWebsiteInTab('chromeStoreMyReviewUrl');
+    openTrustedExternalWebsiteInTab('chromeStoreReviewsUrl');
   }, []);
 
   return {
@@ -217,8 +227,7 @@ export function useRateModal() {
     selectStar,
 
     userFeedback: rateModalState.userFeedback,
-    feedbackOverLimit:
-      rateModalState.userFeedback.length > FEEDBACK_LEN_LIMIT - 1,
+    feedbackOverLimit: rateModalState.userFeedback.length > FEEDBACK_LEN_LIMIT,
     onChangeFeedback,
     isSubmitting: rateModalState.isSubmitting,
     pushRateDetails,

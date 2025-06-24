@@ -1128,7 +1128,10 @@ const SettingsInner = ({
                 onClick={(evt) => {
                   evt.preventDefault();
                   mockExposureRateGuide();
-                  message.success('Mock exposure rate guide data');
+                  message.success({
+                    className: 'toast-message-2025',
+                    content: 'Mock exposure rate guide data',
+                  });
                 }}
               >
                 Mock
@@ -1139,7 +1142,10 @@ const SettingsInner = ({
                 onClick={(evt) => {
                   evt.preventDefault();
                   resetExposureRateGuide();
-                  message.success('Reset exposure rate guide mock data');
+                  message.success({
+                    className: 'toast-message-2025',
+                    content: 'Reset exposure rate guide mock data',
+                  });
                 }}
               >
                 Reset
