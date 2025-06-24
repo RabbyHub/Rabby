@@ -96,7 +96,7 @@ const TokenSelector = ({
   excludeTokens = defaultExcludeTokens,
   getContainer,
   disableItemCheck,
-  showCustomTestnetAssetList = false,
+  showCustomTestnetAssetList,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -138,7 +138,7 @@ const TokenSelector = ({
   const { selectedTab, onTabChange } = useSwitchNetTab();
 
   const { testnetTokenList: customTestnetTokenList } = useSearchTestnetToken({
-    address: currentAccount!.address,
+    address: currentAccount?.address,
     q: query,
     withBalance: false,
     enabled: showCustomTestnetAssetList && selectedTab === 'testnet',
