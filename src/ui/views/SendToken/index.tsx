@@ -442,11 +442,18 @@ const SendToken = () => {
       [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
         (currentAccount?.type || '') as any
       ) &&
+      !chainItem?.isTestnet &&
       !currentToken?.low_credit_score &&
       !currentToken?.is_suspicious &&
       currentToken?.is_verified !== false
     );
-  }, [currentAccount?.type, currentToken]);
+  }, [
+    chainItem?.isTestnet,
+    currentAccount?.type,
+    currentToken?.is_suspicious,
+    currentToken?.is_verified,
+    currentToken?.low_credit_score,
+  ]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({ amount }: FormSendToken) => {
