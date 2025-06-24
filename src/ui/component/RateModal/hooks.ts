@@ -48,9 +48,11 @@ export function useMakeMockDataForRateGuideExposure() {
 }
 
 export function useExposureRateGuide() {
-  const txCount = useRabbySelector(
-    (s) => s.preference.rateGuideLastExposure?.txCount || 0
-  );
+  const { txCount, shouldForceDisableOnLaunch } = useRabbySelector((s) => ({
+    txCount: s.preference.rateGuideLastExposure?.txCount || 0,
+    shouldForceDisableOnLaunch: !!s.preference.rateGuideLastExposure
+      ?.__UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__,
+  }));
   const userViewedRate = useRabbyGetter((s) => s.preference.userViewedRate);
   const lastExposureTimestamp = useRabbyGetter(
     (s) => s.preference.rateGuideLastExposureTimestamp
@@ -62,14 +64,17 @@ export function useExposureRateGuide() {
   // }
 
   const shouldShowRateGuideOnHome = useMemo(() => {
-    return txCount >= TX_COUNT_LIMIT && userViewedRate;
-  }, [txCount, lastExposureTimestamp]);
+    return (
+      !shouldForceDisableOnLaunch && txCount >= TX_COUNT_LIMIT && userViewedRate
+    );
+  }, [shouldForceDisableOnLaunch, txCount, lastExposureTimestamp]);
 
   const disableExposureRateGuide = useCallback(() => {
     rDispatch.preference.setRateGuideLastExposure({
       ...getDefaultRateGuideLastExposure({
         userViewedRate: true,
       }),
+      __UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__: false,
     });
     rDispatch.rateGuidance.setField({
       ...getDefaultRateModalState(),

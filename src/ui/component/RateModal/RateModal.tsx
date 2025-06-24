@@ -1,7 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { Button, Input, message } from 'antd';
 import { TextAreaRef } from 'antd/lib/input/TextArea';
 import { useTranslation } from 'react-i18next';
+import { useMount } from 'react-use';
 
 import Popup from '@/ui/component/Popup';
 import {
@@ -14,6 +21,7 @@ import ClickableStar from './ClickableStar';
 import { ReactComponent as RabbyLogo } from './icons/rabby-logo.svg';
 import { ReactComponent as ChromeLogo } from './icons/chrome.svg';
 import clsx from 'clsx';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 const DASHED_LINE_STYLE = {
   opacity: 0.5,
@@ -21,6 +29,31 @@ const DASHED_LINE_STYLE = {
   width: '100%',
   borderBottom: '1px dashed var(--r-blue-default, #7084FF)',
 };
+
+function useForceDisableRateGuideOnLaunch(modalShow: boolean) {
+  const rDispatch = useRabbyDispatch();
+  const { disableExposureRateGuide } = useExposureRateGuide();
+
+  const shouldForceDisableOnLaunch = useRabbySelector(
+    (s) =>
+      s.preference.rateGuideLastExposure
+        ?.__UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__
+  );
+  useLayoutEffect(() => {
+    if (modalShow) {
+      rDispatch.preference.setRateGuideLastExposure({
+        __UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__: true,
+      });
+    }
+  }, [modalShow]);
+
+  // only called once
+  useMount(() => {
+    if (shouldForceDisableOnLaunch) {
+      disableExposureRateGuide();
+    }
+  });
+}
 
 export default function RateModal({
   totalBalanceText,
@@ -67,6 +100,8 @@ export default function RateModal({
       return () => clearTimeout(timer);
     }
   }, [rateModalShown, wantFeedback]);
+
+  useForceDisableRateGuideOnLaunch(rateModalShown);
 
   return (
     <Popup
