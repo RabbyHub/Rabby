@@ -28,6 +28,8 @@ import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import IconSuccess from 'ui/assets/success.svg';
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 
+import './styles.less';
+
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
@@ -147,6 +149,7 @@ const WhitelistInput = () => {
       validationHandler: async (password) => {
         await wallet.addWhitelist(password, address);
       },
+      containerClassName: 'whitelist-confirm-modal',
       getContainer,
       btnClassName:
         'pt-[16px] border-t-[0.5px] border-r-neutral-line border-t-r-neutral-line',

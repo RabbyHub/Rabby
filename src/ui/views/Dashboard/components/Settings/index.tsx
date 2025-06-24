@@ -667,6 +667,7 @@ const SettingsInner = ({
 
   const handleWhitelistEnableChange = async (value: boolean) => {
     await AuthenticationModalPromise({
+      containerClassName: 'whitelist-confirm-modal',
       confirmText: t('global.confirm'),
       cancelText: t('page.dashboard.settings.cancel'),
       title: value
