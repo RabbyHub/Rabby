@@ -132,16 +132,7 @@ export const EnterAddress = ({
           }
         }}
       >
-        <Form.Item
-          name="address"
-          className=""
-          rules={[
-            {
-              required: true,
-              message: t('page.newAddress.addContacts.required'),
-            },
-          ]}
-        >
+        <Form.Item name="address">
           <StyledInputWrapper
             onClick={(e) => e.stopPropagation()}
             className="relative"
