@@ -84,16 +84,18 @@ export const exchange = createModel<RootModel>()({
       );
     },
   },
-  effects: (dispatch) => ({
+  effects: () => ({
     async init(_: void, store) {
       store.app.wallet.openapi.getCexSupportList().then((cexLists) => {
-        this.setField({
-          exchanges: cexLists.map((item) => ({
-            id: item.id,
-            name: item.name,
-            logo: item.logo_url,
-          })),
-        });
+        if (cexLists.length) {
+          this.setField({
+            exchanges: cexLists.map((item) => ({
+              id: item.id,
+              name: item.name,
+              logo: item.logo_url,
+            })),
+          });
+        }
       });
     },
   }),

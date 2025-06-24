@@ -17,12 +17,12 @@ import {
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useAddressRisks } from '@/ui/hooks/useAddressRisk';
 import { RiskRow } from './RiskRow';
+import { ellipsisAddress } from '@/ui/utils/address';
+import { IExchange } from '../CexSelect';
 
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconCheckedCC } from 'ui/assets/address/checked-square-cc.svg';
 import { ReactComponent as RcIconCheckCC } from 'ui/assets/address/check-square-cc.svg';
-import { ellipsisAddress } from '@/ui/utils/address';
-import { IExchange } from '../CexSelect';
 
 interface AddressRiskAlertProps {
   visible: boolean;
@@ -40,7 +40,7 @@ interface AddressRiskAlertProps {
   type?: string;
 }
 
-const AddressTyepCard = ({
+const AddressTypeCard = ({
   type,
   brandName,
   aliasName,
@@ -217,7 +217,7 @@ export const AddressRiskAlert = ({
               active
             />
           ) : (
-            <AddressTyepCard
+            <AddressTypeCard
               type={targetAccount.type}
               cexInfo={{
                 id: editCex?.id || riskInfos.addressDesc?.cex?.id,

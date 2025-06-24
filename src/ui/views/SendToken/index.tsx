@@ -651,9 +651,9 @@ const SendToken = () => {
       form.setFieldsValue(nextFormValues);
       setFormSnapshot(nextFormValues);
       setCacheAmount(resultAmount);
-      const alianName = await wallet.getAlianName(toAddress.toLowerCase());
-      if (alianName) {
-        setContactInfo({ address: toAddress, name: alianName });
+      const aliasName = await wallet.getAlianName(toAddress.toLowerCase());
+      if (aliasName) {
+        setContactInfo({ address: toAddress, name: aliasName });
       } else if (contactInfo) {
         setContactInfo(null);
       }
