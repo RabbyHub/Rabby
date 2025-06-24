@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
 import { useTranslation } from 'react-i18next';
@@ -103,6 +103,7 @@ const queue = new PQueue({ interval: 1000, intervalCap: 5 }); // 每秒最多5�
 
 const SendPoly = () => {
   const history = useHistory();
+  const { search } = useLocation();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -131,6 +132,11 @@ const SendPoly = () => {
       whitelist?.some((w) => isSameAddress(w, a.address))
     );
   }, [accountsList, whitelist]);
+
+  const nftItem = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('nftItem') || null;
+  }, [search]);
 
   const unimportedWhitelistAccounts = useMemo(() => {
     return whitelist
@@ -175,10 +181,25 @@ const SendPoly = () => {
     }
   }, [history, inputingAddress]);
 
+  const handleGotoSend = (address: string) => {
+    if (nftItem) {
+      handleGotoSendNFT(address);
+    } else {
+      handleGotoSendToken(address);
+    }
+  };
+
   const handleGotoSendToken = (address: string) => {
     const query = new URLSearchParams(history.location.search);
     query.set('to', address);
     history.push(`/send-token?${query.toString()}`);
+  };
+
+  const handleGotoSendNFT = (address: string) => {
+    const query = new URLSearchParams(history.location.search);
+    query.set('to', address);
+    query.set('nftItem', nftItem || '');
+    history.push(`/send-nft?${query.toString()}`);
   };
 
   const handleChange = (address: string) => {
@@ -195,7 +216,7 @@ const SendPoly = () => {
       )
       ?.some((item) => isSameAddress(item.address, address));
     if (inWhitelist || isMyCoreWallet) {
-      handleGotoSendToken(address);
+      handleGotoSend(address);
     } else {
       setSelectedAddress(address);
       setShowAddressRiskAlert(true);
@@ -430,7 +451,7 @@ const SendPoly = () => {
         getContainer={getContainer}
         height="calc(100% - 60px)"
         onConfirm={() => {
-          handleGotoSendToken(selectedAddress);
+          handleGotoSend(selectedAddress);
           setSelectedAddress('');
           setShowAddressRiskAlert(false);
         }}
