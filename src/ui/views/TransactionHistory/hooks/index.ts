@@ -35,43 +35,6 @@ export const useTxRequests = (
   );
 };
 
-export const useGetTx = ({
-  hash,
-  serverId,
-  gasPrice,
-}: {
-  hash?: string;
-  serverId?: string;
-  gasPrice: number;
-}) => {
-  const wallet = useWallet();
-  return useRequest(
-    async () => {
-      if (!hash || !serverId) {
-        return;
-      }
-      const chain = findChain({
-        serverId: serverId,
-      });
-      if (!chain) {
-        return;
-      }
-      if (chain.isTestnet) {
-        return wallet.getCustomTestnetTx({
-          chainId: chain.id,
-          hash,
-        });
-      } else {
-        return wallet.openapi.getTx(serverId, hash, gasPrice);
-      }
-    },
-    {
-      cacheKey: `${serverId}-${hash}-${gasPrice}`,
-      refreshDeps: [hash, serverId, gasPrice],
-    }
-  );
-};
-
 export const useLoadTxRequests = (
   pendings: TransactionGroup[],
   options?: {
@@ -127,7 +90,6 @@ export const useLoadTxRequests = (
 
 export const useLoadTxData = (item: TransactionGroup) => {
   const { t } = useTranslation();
-  const wallet = useWallet();
   const chain = findChain({
     id: item.chainId,
   });
@@ -165,89 +127,7 @@ export const useLoadTxData = (item: TransactionGroup) => {
   const gasTokenSymbol =
     hasTokenPrice && nativeToken ? getTokenSymbol(nativeToken) : '';
 
-  const loadTxData = async () => {
-    if (gasTokenCount) {
-      return;
-    }
-    let map: Record<
-      string,
-      {
-        frontTx?: number;
-        gasUsed?: number;
-        token?: TokenItem;
-        tokenCount?: number;
-      }
-    > = {};
-    if (chain && completedTx) {
-      const res = chain?.isTestnet
-        ? await wallet.getCustomTestnetTx({
-            chainId: chain.id,
-            hash: completedTx.hash!,
-          })
-        : await wallet.openapi.getTx(
-            chain.serverId,
-            completedTx.hash!,
-            Number(
-              completedTx.rawTx.gasPrice || completedTx.rawTx.maxFeePerGas || 0
-            )
-          );
-      map = {
-        ...map,
-        [res.hash]: {
-          token: res.token,
-          tokenCount:
-            (res.gas_used *
-              Number(
-                completedTx!.rawTx.gasPrice ||
-                  completedTx!.rawTx.maxFeePerGas ||
-                  0
-              )) /
-            1e18,
-          gasUsed: res.gas_used,
-        },
-      };
-      return map;
-    }
-
-    const results = chain
-      ? await Promise.all(
-          item.txs
-            .filter((tx) => !tx.isSubmitFailed && !tx.isWithdrawed && tx.hash)
-            .map((tx) => {
-              if (chain?.isTestnet) {
-                return wallet.getCustomTestnetTx({
-                  chainId: chain.id,
-                  hash: tx.hash!,
-                });
-              } else {
-                return wallet.openapi.getTx(
-                  chain.serverId,
-                  tx.hash!,
-                  Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
-                );
-              }
-            })
-        )
-      : [];
-
-    results.forEach(({ code, status, gas_used, token }, index) => {
-      map = {
-        ...map,
-        [item.txs[index].hash!]: {
-          ...map[item.txs[index].hash!],
-          gasUsed: gas_used,
-          token,
-        },
-      };
-    });
-    return map;
-  };
-
-  const { data: txQueues, runAsync: runLoadTxData } = useRequest(loadTxData);
-
   return {
-    txQueues: txQueues || {},
-    runLoadTxData,
     gasTokenSymbol,
     gasUSDValue,
     gasTokenCount,
