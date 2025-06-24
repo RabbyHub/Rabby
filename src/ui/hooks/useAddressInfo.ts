@@ -10,9 +10,10 @@ export const useAddressInfo = (
   address: string,
   options?: {
     disableDesc?: boolean;
+    type?: string;
   }
 ) => {
-  const { disableDesc } = options || {};
+  const { disableDesc, type } = options || {};
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
@@ -39,9 +40,18 @@ export const useAddressInfo = (
           acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
       )
       .some((acc) => isSameAddress(acc.address, address));
+    const targetTypeAccount = accountsList.find(
+      (acc) =>
+        isSameAddress(acc.address, address) &&
+        (type
+          ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
+          : true)
+    );
+    const targetSameAddressAccount = accountsList.find((acc) =>
+      isSameAddress(acc.address, address)
+    );
     const targetAccount =
-      accountsList.find((acc) => isSameAddress(acc.address, address)) ||
-      padWatchAccount(address);
+      targetTypeAccount || targetSameAddressAccount || padWatchAccount(address);
 
     return {
       isImported,

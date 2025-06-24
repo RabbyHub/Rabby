@@ -37,6 +37,7 @@ interface AddressRiskAlertProps {
   getContainer?: DrawerProps['getContainer'];
   editAlias?: string;
   editCex?: IExchange | null;
+  type?: string;
 }
 
 const AddressTyepCard = ({
@@ -122,6 +123,7 @@ export const AddressRiskAlert = ({
   getContainer,
   editAlias,
   editCex,
+  type,
 }: AddressRiskAlertProps) => {
   const handleCancel = () => {
     onCancel();
@@ -149,11 +151,20 @@ export const AddressRiskAlert = ({
   }));
 
   const targetAccount = useMemo(() => {
-    return (
-      accountsList.find((acc) => isSameAddress(acc.address, address)) ||
-      padWatchAccount(address)
+    const targetTypeAccount = accountsList.find(
+      (acc) =>
+        isSameAddress(acc.address, address) &&
+        (type
+          ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
+          : true)
     );
-  }, [accountsList, address]);
+    const targetSameAddressAccount = accountsList.find((acc) =>
+      isSameAddress(acc.address, address)
+    );
+    return (
+      targetTypeAccount || targetSameAddressAccount || padWatchAccount(address)
+    );
+  }, [accountsList, address, type]);
 
   useEffect(() => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
