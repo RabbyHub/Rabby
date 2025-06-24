@@ -8,7 +8,12 @@ import { isSameAddress } from '@/ui/utils';
 import { padWatchAccount } from '@/ui/views/SendPoly/util';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { pickKeyringThemeIcon } from '@/utils/account';
-import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
+import {
+  BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_CLASS,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+} from '@/constant';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useAddressRisks } from '@/ui/hooks/useAddressRisk';
 import { RiskRow } from './RiskRow';
@@ -63,7 +68,7 @@ const AddressTyepCard = ({
 
   return (
     <div className="flex gap-[4px] items-center">
-      <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] py-[8px] flex items-center gap-[6px]">
+      <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
         {showCexInfo ? (
           <img
             className="icon icon-account-type w-[20px] h-[20px] rounded-full"
@@ -88,8 +93,7 @@ const AddressTyepCard = ({
         <div
           className={`
             text-r-blue-default rounded-[8px] bg-r-blue-light1 
-              px-[12px] py-[6px] text-[13px] font-medium
-
+              px-[12px] h-[32px] text-[13px] font-medium flex items-center
           `}
         >
           {showCexInfo
@@ -97,7 +101,7 @@ const AddressTyepCard = ({
                 cexName: cexInfo.name,
               })
             : t('page.sendPoly.riskAlert.cexAddress', {
-                cexName: brandName,
+                cexName: BRAND_ALIAN_TYPE_TEXT[type],
               })}
         </div>
       )}

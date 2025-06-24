@@ -30,7 +30,7 @@ import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.
 import IconSuccess from 'ui/assets/success.svg';
 
 const OuterInput = styled.div`
-  border: 1px solid var(--rabby-light-neutral-line);
+  border: 1px solid var(--r-neutral-line);
   &:hover {
     border: 1px solid var(--r-blue-default, #7084ff);
     cursor: text;
@@ -88,7 +88,6 @@ const AnimatedInputWrapper = styled.div`
     max-height: 1000px;
     opacity: 1;
     flex: 1;
-    padding-bottom: 16px;
     display: flex;
     flex-direction: column;
     transform: scaleY(1);
