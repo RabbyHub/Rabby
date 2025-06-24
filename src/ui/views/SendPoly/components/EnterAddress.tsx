@@ -2,11 +2,13 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
-import { useWallet } from 'ui/utils';
 import { debounce } from 'lodash';
 import styled from 'styled-components';
 import clsx from 'clsx';
+
 import type { Input as AntdInput } from 'antd';
+
+import { useWallet } from 'ui/utils';
 
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
@@ -36,6 +38,9 @@ export const EnterAddress = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
+
+  const inputRef = useRef<AntdInput>(null);
+
   const [inputAddress, setInputAddress] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
@@ -43,11 +48,12 @@ export const EnterAddress = ({
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [isValidAddr, setIsValidAddr] = useState(true);
-  const [isFoucsAddress, setIsFoucsAddress] = useState(false);
+
+  const [isFocusAddress, setIsFocusAddress] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
-  const inputRef = useRef<AntdInput>(null);
 
   useEffect(() => {
+    // delay footer render to avoid layout animation
     const timer = setTimeout(() => {
       setShouldRender(true);
     }, 300);
@@ -60,7 +66,7 @@ export const EnterAddress = ({
   const handleConfirmENS = (result: string) => {
     setInputAddress(result);
     setIsValidAddr(true);
-    setTags([`ENS: ${ensResult!.name}`]);
+    setTags([`ENS: ${ensResult?.name || ''}`]);
     setEnsResult(null);
   };
 
@@ -143,8 +149,8 @@ export const EnterAddress = ({
               allowClear={false}
               autoFocus
               ref={inputRef}
-              onFocus={() => setIsFoucsAddress(true)}
-              onBlur={() => setIsFoucsAddress(false)}
+              onFocus={() => setIsFocusAddress(true)}
+              onBlur={() => setIsFocusAddress(false)}
               value={inputAddress}
               onChange={(e) => {
                 setInputAddress(e.target.value);
@@ -163,7 +169,7 @@ export const EnterAddress = ({
                   inputRef.current?.focus();
                 }}
                 className={clsx(
-                  isFoucsAddress && inputAddress.length > 0
+                  isFocusAddress && inputAddress.length > 0
                     ? 'opacity-100 cursor-pointer'
                     : 'opacity-0 cursor-text'
                 )}

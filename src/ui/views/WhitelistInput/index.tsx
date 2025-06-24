@@ -60,9 +60,13 @@ const StyledInputWrapper = styled.div`
 `;
 
 const WhitelistInput = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+  const { exchanges } = useRabbySelector((s) => ({
+    exchanges: s.exchange.exchanges,
+  }));
   // main state
   const [inputAddress, setInputAddress] = useState('');
   const [inputAlias, setInputAlias] = useState('');
@@ -70,16 +74,12 @@ const WhitelistInput = () => {
   const [selectedExchange, setSelectedExchange] = useState<IExchange | null>(
     null
   );
-  const { isMyImported } = useAddressInfo(inputAddress, { disableDesc: true });
 
   // other state
+  const { isMyImported } = useAddressInfo(inputAddress, { disableDesc: true });
   const [isValidAddr, setIsValidAddr] = useState(true);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [showCexListModal, setShowCexListModal] = useState(false);
-  const { t } = useTranslation();
-  const { exchanges } = useRabbySelector((s) => ({
-    exchanges: s.exchange.exchanges,
-  }));
   const [isFocusAddress, setIsFocusAddress] = useState(false);
   const [isFocusAlias, setIsFocusAlias] = useState(false);
 
