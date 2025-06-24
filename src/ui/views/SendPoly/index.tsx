@@ -110,6 +110,7 @@ const SendPoly = () => {
   const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
+  const [selectedAddressType, setSelectedAddressType] = useState('');
   const [unimportedBalances, setUnimportedBalances] = useState<
     Record<string, number>
   >({});
@@ -136,7 +137,7 @@ const SendPoly = () => {
       ?.filter(
         (w) => !importWhitelistAccounts.some((a) => isSameAddress(w, a.address))
       )
-      .map(padWatchAccount);
+      .map((w) => padWatchAccount(w));
   }, [importWhitelistAccounts, whitelist]);
 
   const allAccounts = useMemo(() => {
@@ -174,13 +175,16 @@ const SendPoly = () => {
     }
   }, [history, inputingAddress]);
 
-  const handleGotoSendToken = (address: string) => {
+  const handleGotoSendToken = (address: string, type?: string) => {
     const query = new URLSearchParams(history.location.search);
     query.set('to', address);
+    if (type) {
+      query.set('type', type);
+    }
     history.push(`/send-token?${query.toString()}`);
   };
 
-  const handleChange = (address: string) => {
+  const handleChange = (address: string, type?: string) => {
     if (!isValidAddress(address)) {
       return;
     }
@@ -194,9 +198,10 @@ const SendPoly = () => {
       )
       ?.some((item) => isSameAddress(item.address, address));
     if (inWhitelist || isMyCoreWallet) {
-      handleGotoSendToken(address);
+      handleGotoSendToken(address, type);
     } else {
       setSelectedAddress(address);
+      setSelectedAddressType(type || '');
       setShowAddressRiskAlert(true);
     }
   };
@@ -377,7 +382,7 @@ const SendPoly = () => {
                           type={item.type}
                           brandName={item.brandName}
                           onClick={() => {
-                            handleChange(item.address);
+                            handleChange(item.address, item.type);
                           }}
                         />
                       </WhitelistItemWrapper>
@@ -391,7 +396,7 @@ const SendPoly = () => {
                   )
                 ) : (
                   <AccountList
-                    onChange={(acc) => handleChange(acc.address)}
+                    onChange={(acc) => handleChange(acc.address, acc.type)}
                     containerClassName="mt-[20px]"
                   />
                 )}
@@ -418,23 +423,26 @@ const SendPoly = () => {
       <AccountSelectorModal
         title={t('page.sendPoly.selectImportedAddress')}
         visible={showSelectorModal}
-        onChange={(acc) => handleChange(acc.address)}
+        onChange={(acc) => handleChange(acc.address, acc.type)}
         onCancel={handleCancel}
         getContainer={getContainer}
         height="calc(100% - 60px)"
       />
       <AddressRiskAlert
+        type={selectedAddressType}
         address={selectedAddress}
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
         onConfirm={() => {
-          handleGotoSendToken(selectedAddress);
+          handleGotoSendToken(selectedAddress, selectedAddressType);
           setSelectedAddress('');
+          setSelectedAddressType('');
           setShowAddressRiskAlert(false);
         }}
         onCancel={() => {
           setSelectedAddress('');
+          setSelectedAddressType('');
           setShowAddressRiskAlert(false);
         }}
       />
