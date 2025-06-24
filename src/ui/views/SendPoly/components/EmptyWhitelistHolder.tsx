@@ -14,7 +14,7 @@ export const EmptyWhitelistHolder = ({ onAddWhitelist }: IProps) => {
 
   return (
     <div className="flex flex-col items-center px-[20px] pt-[39px] pb-[24px] bg-r-neutral-card1 rounded-[8px] mt-[9px]">
-      <div>
+      <div className="text-r-blue-light1">
         <RcEmptyWhitelistLogo width={60} height={60} />
       </div>
       <div>
