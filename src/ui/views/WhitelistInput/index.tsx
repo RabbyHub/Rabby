@@ -3,7 +3,12 @@ import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
+import {
+  getUiType,
+  isSameAddress,
+  openInternalPageInTab,
+  useWallet,
+} from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
@@ -21,6 +26,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import IconSuccess from 'ui/assets/success.svg';
+import { IconClearCC } from '@/ui/assets/component/IconClear';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -35,6 +41,7 @@ const StyledInputWrapper = styled.div`
   overflow: hidden;
   .ant-input {
     font-size: 15px;
+    background: var(--r-neutral-card1);
     &:hover,
     &:focus {
       border-color: var(--r-blue-default) !important;
@@ -71,6 +78,8 @@ const WhitelistInput = () => {
   const { exchanges } = useRabbySelector((s) => ({
     exchanges: s.exchange.exchanges,
   }));
+  const [isFoucsAddress, setIsFoucsAddress] = useState(false);
+  const [isFoucsAlias, setIsFoucsAlias] = useState(false);
 
   const handleClickBack = useCallback(() => {
     const from = (history.location.state as any)?.from;
@@ -116,7 +125,10 @@ const WhitelistInput = () => {
 
   const handleInputChangeAddress = (v) => {
     if (!isValidAddress(v)) {
+      setInputAlias('');
       setIsValidAddr(false);
+      setIsCex(false);
+      setSelectedExchange(null);
     } else {
       setIsValidAddr(true);
       detectAddress(v);
@@ -129,12 +141,16 @@ const WhitelistInput = () => {
       return;
     }
     AuthenticationModalPromise({
-      title: t('page.addressDetail.add-to-whitelist'),
-      cancelText: t('global.Cancel'),
+      title: t('page.whitelist.confirmPassword'),
       wallet,
+      cancelText: t('global.Cancel'),
       validationHandler: async (password) => {
         await wallet.addWhitelist(password, address);
       },
+      getContainer,
+      btnClassName:
+        'pt-[16px] border-t-[0.5px] border-r-neutral-line border-t-r-neutral-line',
+      onCancel: () => {},
       onFinished: async () => {
         dispatch.whitelist.getWhitelist();
         await wallet.updateAlianName(
@@ -146,12 +162,8 @@ const WhitelistInput = () => {
         history.goBack();
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: t('page.whitelist.addSuccess'),
-          duration: 0.5,
+          content: t('page.whitelist.tips.added'),
         });
-      },
-      onCancel() {
-        // do nothing
       },
     });
   };
@@ -162,6 +174,13 @@ const WhitelistInput = () => {
       return;
     }
     try {
+      const whitelist = await wallet.getWhitelist();
+      if (whitelist.some((a) => isSameAddress(a, inputAddress))) {
+        message.error({
+          content: t('page.whitelist.tips.repeated'),
+        });
+        return;
+      }
       if (isMyImported) {
         confrimToWhitelist(inputAddress);
       } else {
@@ -189,7 +208,7 @@ const WhitelistInput = () => {
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0 "
                 onClick={() => {
                   openInternalPageInTab(`send-poly${history.location.search}`);
                 }}
@@ -204,19 +223,33 @@ const WhitelistInput = () => {
         <main className="flex-1 flex flex-col gap-[20px]">
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
-            <StyledInputWrapper>
+            <StyledInputWrapper className="relative">
               <Input.TextArea
                 maxLength={44}
                 placeholder={t('page.whitelist.enterAddress')}
-                allowClear
+                allowClear={false}
                 autoFocus
                 size="large"
                 spellCheck={false}
                 rows={4}
+                onFocus={() => setIsFoucsAddress(true)}
+                onBlur={() => setIsFoucsAddress(false)}
                 value={inputAddress}
                 onChange={(v) => handleInputChangeAddress(v.target.value)}
                 className="rounded-[8px] leading-normal"
               />
+              <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
+                <IconClearCC
+                  onClick={() => {
+                    handleInputChangeAddress('');
+                  }}
+                  className={clsx(
+                    isFoucsAddress && inputAddress.length > 0
+                      ? 'opacity-100 cursor-pointer'
+                      : 'opacity-0 cursor-text'
+                  )}
+                />
+              </div>
             </StyledInputWrapper>
             {!isValidAddr && (
               <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center">
@@ -229,16 +262,31 @@ const WhitelistInput = () => {
           </div>
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>{t('page.whitelist.name')}</SectionHeader>
-            <div className="rounded-[8px] overflow-hidden">
+            <div className="relative rounded-[8px] overflow-hidden">
               <Input
                 maxLength={20}
                 placeholder={t('page.whitelist.nameYourAddress')}
-                allowClear
+                allowClear={false}
                 size="large"
+                style={{ height: 52 }}
                 value={inputAlias}
+                onFocus={() => setIsFoucsAlias(true)}
+                onBlur={() => setIsFoucsAlias(false)}
                 onChange={(v) => setInputAlias(v.target.value)}
-                className="border-bright-on-active rounded-[8px] leading-normal"
+                className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal"
               />
+              <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
+                <IconClearCC
+                  onClick={() => {
+                    setInputAlias('');
+                  }}
+                  className={clsx(
+                    isFoucsAlias && inputAlias.length > 0
+                      ? 'opacity-100 cursor-pointer'
+                      : 'opacity-0 cursor-text'
+                  )}
+                />
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-[10px]">
@@ -271,7 +319,7 @@ const WhitelistInput = () => {
                   <img
                     src={selectedExchange.logo}
                     alt=""
-                    className="w-[24px] h-[24px]"
+                    className="w-[24px] h-[24px] rounded-full"
                   />
                   <div className="text-[15px] font-medium text-r-neutral-title1">
                     {selectedExchange.name}
@@ -285,7 +333,7 @@ const WhitelistInput = () => {
           </div>
         </main>
         <div className={'footer bg-r-neutral-bg2'}>
-          <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
+          <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
             <Button
               onClick={handleSubmit}
               disabled={!isValidAddr || !inputAddress}

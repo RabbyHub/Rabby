@@ -13,6 +13,7 @@ import { DisplayChainWithWhiteLogo, findChain } from './chain';
 import { isAddress } from 'viem';
 import { isSameAddress } from '@/background/utils';
 import { isObject, isPlainObject } from 'lodash';
+import WatchLogo from 'ui/assets/waitcup.svg';
 
 export function generateAliasName({
   keyringType,
@@ -57,6 +58,7 @@ export function pickKeyringThemeIcon(
     | {
         needLightVersion?: boolean;
         purpleFirst?: boolean;
+        forceWatchTransparent?: boolean;
       }
 ) {
   if (!keyringClass) return null;
@@ -71,6 +73,10 @@ export function pickKeyringThemeIcon(
       keyringClass as any
     ),
   } = options || {};
+
+  if (options.forceWatchTransparent && keyringClass === KEYRING_CLASS.WATCH) {
+    return WatchLogo;
+  }
 
   if (
     purpleFirst &&

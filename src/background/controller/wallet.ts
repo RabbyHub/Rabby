@@ -174,8 +174,7 @@ export class WalletController extends BaseController {
     whitelistService.addWhitelist(address);
   };
 
-  removeWhitelist = async (password: string, address: string) => {
-    await this.verifyPassword(password);
+  removeWhitelist = async (address: string) => {
     whitelistService.removeWhitelist(address);
   };
 

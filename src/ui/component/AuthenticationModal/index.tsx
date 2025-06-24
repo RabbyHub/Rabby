@@ -37,11 +37,13 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   validationHandler?(password: string): Promise<void>;
   confirmText?: string;
   cancelText?: string;
+  confrimClassName?: string;
   title?: string;
   description?: string;
   checklist?: string[];
   placeholder?: string;
   getContainer?: DrawerProps['getContainer'];
+  btnClassName?: string;
 }
 
 const Description = styled.div`
@@ -133,6 +135,8 @@ const AuthenticationModal = ({
   title = 'Enter Password',
   placeholder,
   getContainer,
+  confrimClassName,
+  btnClassName,
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -252,6 +256,7 @@ const AuthenticationModal = ({
         <div
           className={clsx(
             'flex pt-6 popup-footer px-20',
+            btnClassName,
             cancelText ? 'justify-between' : 'justify-center'
           )}
         >
@@ -270,7 +275,11 @@ const AuthenticationModal = ({
             type="primary"
             size="large"
             htmlType="submit"
-            className={clsx(cancelText ? 'w-[172px]' : 'w-[200px]')}
+            className={
+              confrimClassName
+                ? confrimClassName
+                : clsx(cancelText ? 'w-[172px]' : 'w-[200px]')
+            }
             disabled={checklist.length > 0 ? !isAllChecked : false}
           >
             {confirmText}

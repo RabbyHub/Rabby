@@ -5,6 +5,10 @@ import { isValidAddress } from '@ethereumjs/util';
 import { useWallet } from 'ui/utils';
 import { debounce } from 'lodash';
 import styled from 'styled-components';
+import clsx from 'clsx';
+
+import { IconClearCC } from '@/ui/assets/component/IconClear';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
@@ -37,7 +41,8 @@ export const EnterAddress = ({
     name: string;
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
-  const [isValidAddr, setIsValidAddr] = useState(false);
+  const [isValidAddr, setIsValidAddr] = useState(true);
+  const [isFoucsAddress, setIsFoucsAddress] = useState(false);
 
   const handleConfirmENS = (result: string) => {
     setInputAddress(result);
@@ -70,16 +75,18 @@ export const EnterAddress = ({
       debounce(async ({ address }: { address: string }) => {
         setTags([]);
         if (!isValidAddress(address)) {
-          setIsValidAddr(false);
           try {
             const result = await wallet.openapi.getEnsAddressByName(address);
             if (result && result.addr) {
               setEnsResult(result);
+              setIsValidAddr(true);
             } else {
               setEnsResult(null);
+              setIsValidAddr(false);
             }
           } catch (e) {
             setEnsResult(null);
+            setIsValidAddr(false);
           }
         } else {
           setIsValidAddr(true);
@@ -114,7 +121,7 @@ export const EnterAddress = ({
       >
         <Form.Item
           name="address"
-          className="rounded-[8px] overflow-hidden"
+          className=""
           rules={[
             {
               required: true,
@@ -122,12 +129,17 @@ export const EnterAddress = ({
             },
           ]}
         >
-          <StyledInputWrapper onClick={(e) => e.stopPropagation()}>
+          <StyledInputWrapper
+            onClick={(e) => e.stopPropagation()}
+            className="relative"
+          >
             <Input.TextArea
               maxLength={44}
               placeholder={t('page.sendPoly.enterAddressOrENS')}
-              allowClear
+              allowClear={false}
               autoFocus
+              onFocus={() => setIsFoucsAddress(true)}
+              onBlur={() => setIsFoucsAddress(false)}
               value={inputAddress}
               onChange={(e) => {
                 setInputAddress(e.target.value);
@@ -136,9 +148,30 @@ export const EnterAddress = ({
               size="large"
               spellCheck={false}
               rows={4}
-              className="border-bright-on-active rounded-[8px] leading-normal"
+              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[13px] pl-[15px]"
             />
+            <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
+              <IconClearCC
+                onClick={() => {
+                  setInputAddress('');
+                  handleValuesChange({ address: '' });
+                }}
+                className={clsx(
+                  isFoucsAddress && inputAddress.length > 0
+                    ? 'opacity-100 cursor-pointer'
+                    : 'opacity-0 cursor-text'
+                )}
+              />
+            </div>
           </StyledInputWrapper>
+          {!isValidAddr && (
+            <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center mt-[8px]">
+              <div className="text-r-red-default">
+                <RcIconWarningCC />
+              </div>
+              <div>{t('page.whitelist.invalidAddress')}</div>
+            </div>
+          )}
         </Form.Item>
         {tags.length > 0 && (
           <ul className="mt-[13px]">
@@ -164,7 +197,7 @@ export const EnterAddress = ({
         )}
       </div>
       <div className={'footer'}>
-        <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
+        <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
           <Button
             disabled={!isValidAddr && !ensResult?.addr}
             type="primary"
