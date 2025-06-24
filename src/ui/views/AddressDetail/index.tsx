@@ -51,6 +51,7 @@ const AddressDetail = () => {
         : t('page.addressDetail.remove-from-whitelist'),
       cancelText: t('global.Cancel'),
       wallet,
+      containerClassName: 'whitelist-confirm-modal',
       validationHandler: async (password) => {
         await wallet.addWhitelist(password, address);
       },

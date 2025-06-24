@@ -66,9 +66,14 @@ const StyledInput = styled(Input)`
     font-weight: 500;
     line-height: normal;
     border-width: 0px !important;
-    border-color: transparent;
+    border-right-width: 0px !important;
+    border-color: transparent !important;
+    &:hover,
+    &:focus {
+      border-right-width: 0px !important;
+      border-color: transparent !important;
+    }
   }
-
   &::placeholder {
     color: var(--r-neutral-foot, #6a7587);
   }

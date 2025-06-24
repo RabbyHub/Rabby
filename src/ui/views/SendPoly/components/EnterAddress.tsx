@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
@@ -6,6 +6,7 @@ import { useWallet } from 'ui/utils';
 import { debounce } from 'lodash';
 import styled from 'styled-components';
 import clsx from 'clsx';
+import type { Input as AntdInput } from 'antd';
 
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
@@ -43,6 +44,18 @@ export const EnterAddress = ({
   const [tags, setTags] = useState<string[]>([]);
   const [isValidAddr, setIsValidAddr] = useState(true);
   const [isFoucsAddress, setIsFoucsAddress] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+  const inputRef = useRef<AntdInput>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldRender(true);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   const handleConfirmENS = (result: string) => {
     setInputAddress(result);
@@ -82,7 +95,7 @@ export const EnterAddress = ({
               setIsValidAddr(true);
             } else {
               setEnsResult(null);
-              setIsValidAddr(false);
+              setIsValidAddr(!address.length);
             }
           } catch (e) {
             setEnsResult(null);
@@ -138,6 +151,7 @@ export const EnterAddress = ({
               placeholder={t('page.sendPoly.enterAddressOrENS')}
               allowClear={false}
               autoFocus
+              ref={inputRef}
               onFocus={() => setIsFoucsAddress(true)}
               onBlur={() => setIsFoucsAddress(false)}
               value={inputAddress}
@@ -148,13 +162,14 @@ export const EnterAddress = ({
               size="large"
               spellCheck={false}
               rows={4}
-              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[13px] pl-[15px]"
+              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px]"
             />
             <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
               <IconClearCC
                 onClick={() => {
                   setInputAddress('');
                   handleValuesChange({ address: '' });
+                  inputRef.current?.focus();
                 }}
                 className={clsx(
                   isFoucsAddress && inputAddress.length > 0
@@ -196,19 +211,21 @@ export const EnterAddress = ({
           </div>
         )}
       </div>
-      <div className={'footer'}>
-        <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-          <Button
-            disabled={!isValidAddr && !ensResult?.addr}
-            type="primary"
-            htmlType="submit"
-            size="large"
-            className="w-[100%] h-[48px] text-[16px]"
-          >
-            {t('global.confirm')}
-          </Button>
+      {shouldRender && (
+        <div className={'footer'}>
+          <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
+            <Button
+              disabled={!isValidAddr && !ensResult?.addr}
+              type="primary"
+              htmlType="submit"
+              size="large"
+              className="w-[100%] h-[48px] text-[16px]"
+            >
+              {t('global.confirm')}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </Form>
   );
 };
