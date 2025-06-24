@@ -46,9 +46,7 @@ const AddressDetail = () => {
       return;
     }
     AuthenticationModalPromise({
-      title: checked
-        ? t('page.addressDetail.add-to-whitelist')
-        : t('page.addressDetail.remove-from-whitelist'),
+      title: t('page.addressDetail.add-to-whitelist'),
       cancelText: t('global.Cancel'),
       wallet,
       containerClassName: 'whitelist-confirm-modal',

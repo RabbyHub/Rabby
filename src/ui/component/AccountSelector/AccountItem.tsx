@@ -139,15 +139,14 @@ export const AccountItem = memo(
               src={cexLogo || addressTypeIcon}
               className={'w-[28px] h-[28px] rounded-full'}
             />
-            {showWhitelistIcon && (
+            {showWhitelistIcon ? (
               <div className="absolute w-[16px] h-[16px] bottom-[-3px] right-[-3px] text-r-blue-default">
                 <RcWhitelistIconCC
                   viewBox="0 0 16 16"
                   className="w-[16px] h-[16px]"
                 />
               </div>
-            )}
-            {!showWhitelistIcon && (
+            ) : (
               <CommonSignal
                 type={type}
                 brandName={brandName}
