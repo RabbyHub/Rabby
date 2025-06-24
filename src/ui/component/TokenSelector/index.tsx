@@ -30,6 +30,10 @@ import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { ExternalTokenRow } from './ExternalToken';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { TokenDetailInTokenSelectProviderContext } from './context';
+import NetSwitchTabs, {
+  useSwitchNetTab,
+} from 'ui/component/PillsSwitch/NetSwitchTabs';
+import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 
 const isTab = getUiType().isTab;
 
@@ -60,6 +64,7 @@ export interface TokenSelectorProps {
   drawerHeight?: number | string;
   excludeTokens?: TokenItem['id'][];
   getContainer?: DrawerProps['getContainer'];
+  showCustomTestnetAssetList?: boolean;
   disableItemCheck?: (
     token: TokenItem
   ) => {
@@ -91,10 +96,15 @@ const TokenSelector = ({
   excludeTokens = defaultExcludeTokens,
   getContainer,
   disableItemCheck,
+  showCustomTestnetAssetList = false,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [isInputActive, setIsInputActive] = useState(false);
+
+  const { currentAccount } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+  }));
 
   const { chainItem, chainSearchCtx, isTestnet } = useMemo(() => {
     const chain = !chainServerId
@@ -125,7 +135,26 @@ const TokenSelector = ({
     setQuery(value);
   };
 
+  const { selectedTab, onTabChange } = useSwitchNetTab();
+
+  const { testnetTokenList: customTestnetTokenList } = useSearchTestnetToken({
+    address: currentAccount!.address,
+    q: query,
+    withBalance: false,
+    enabled: showCustomTestnetAssetList && selectedTab === 'testnet',
+  });
+
+  useEffect(() => {
+    if (!visible) {
+      onTabChange('mainnet');
+    }
+  }, [visible, onTabChange]);
+
   const displayList = useMemo(() => {
+    if (showCustomTestnetAssetList && selectedTab === 'testnet') {
+      return customTestnetTokenList || [];
+    }
+
     if (!supportChains?.length) {
       const resultList = list || [];
       if (!chainServerId) return resultList.filter(filterTestnetTokenItem);
@@ -159,7 +188,14 @@ const TokenSelector = ({
     );
 
     return [...varied.natural, ...varied.disabled];
-  }, [list, supportChains, chainServerId]);
+  }, [
+    list,
+    supportChains,
+    chainServerId,
+    selectedTab,
+    showCustomTestnetAssetList,
+    customTestnetTokenList,
+  ]);
 
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -415,6 +451,10 @@ const TokenSelector = ({
         <div className="header">
           {t('component.TokenSelector.header.title')}
         </div>
+        {showCustomTestnetAssetList && (
+          <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
+        )}
+
         <div className="input-wrapper">
           <Input
             className={clsx({ active: isInputActive }, 'bg-r-neutral-card2')}
