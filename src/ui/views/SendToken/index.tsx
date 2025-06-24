@@ -224,7 +224,7 @@ const SendToken = () => {
     });
   }, [toAddress, history, search, form]);
 
-  const { targetAccount, addressDesc } = useAddressInfo(toAddress, {
+  const { targetAccount, addressDesc, tmpCexInfo } = useAddressInfo(toAddress, {
     type: toAddressType,
   });
   useInitCheck(addressDesc);
@@ -1224,6 +1224,7 @@ const SendToken = () => {
                         isSameAddress(w, targetAccount?.address)
                     )
                   }
+                  tmpCexInfo={tmpCexInfo}
                   brandName={targetAccount?.brandName || ''}
                   onClick={() => {
                     history.push(`/send-poly${history.location.search}`);

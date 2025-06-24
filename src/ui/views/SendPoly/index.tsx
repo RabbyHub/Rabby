@@ -180,6 +180,8 @@ const SendPoly = () => {
     query.set('to', address);
     if (type) {
       query.set('type', type);
+    } else {
+      query.delete('type');
     }
     history.push(`/send-token?${query.toString()}`);
   };

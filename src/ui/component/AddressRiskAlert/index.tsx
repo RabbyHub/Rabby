@@ -95,6 +95,7 @@ const AddressTyepCard = ({
           className={`
             text-r-blue-default rounded-[8px] bg-r-blue-light1 
               px-[12px] h-[32px] text-[13px] font-medium flex items-center
+              whitespace-nowrap overflow-hidden text-ellipsis
           `}
         >
           {showCexInfo
