@@ -550,16 +550,16 @@ class TxHistory {
               hash: tx.hash!,
             });
           } else {
-            return openapiService.getTx(
-              chain.serverId,
-              tx.hash!,
-              Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
-            );
+            // Use standard RPC to get transaction receipt
+            return openapiService.ethRpc(chain.serverId, {
+              method: 'eth_getTransactionReceipt',
+              params: [tx.hash!],
+            });
           }
         })
       );
       const completed = results.find(
-        (result) => result.code === 0 && result.status !== 0
+        (result) => result && result.status && result.status === '0x1'
       );
       if (!completed) {
         if (duration !== false && +duration < 1000 * 15) {
@@ -571,10 +571,13 @@ class TxHistory {
         }
         return;
       }
-      const completedTx = txs.find((tx) => tx.hash === completed.hash)!;
+      const completedTx = txs.find(
+        (tx) => tx.hash === completed.transactionHash
+      )!;
+      const gasUsed = completed.gasUsed ? parseInt(completed.gasUsed, 16) : 0;
       this.updateSingleTx({
         ...completedTx,
-        gasUsed: completed.gas_used,
+        gasUsed,
       });
       // TOFIX
       this.completeTx({
@@ -582,7 +585,7 @@ class TxHistory {
         chainId,
         nonce,
         hash: completedTx.hash,
-        success: completed.status === 1,
+        success: completed.status === '0x1',
         reqId: completedTx.reqId,
       });
       eventBus.emit(EVENTS.broadcastToUI, {
@@ -592,7 +595,7 @@ class TxHistory {
         },
       });
 
-      return completed.gas_used;
+      return gasUsed;
     } catch (e) {
       if (duration !== false && +duration < 1000 * 15) {
         const timeout = Number(duration) + 1000;
