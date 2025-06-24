@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 
-import ClickableStar from './ClickableStar';
+import { ReactComponent as RcIconCloseCC } from './icons/close-cc.svg';
+// import { ReactComponent as RcIconCloseCC } from '@/ui/assets/component/close-cc.svg';
 import { ReactComponent as RabbySilhouette } from './icons/rabby-silhouette.svg';
+
+import ClickableStar from './ClickableStar';
 import { useExposureRateGuide, useRateModal } from './hooks';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
@@ -67,6 +70,16 @@ export default function RateModalTriggerOnSettings({
       <span className="text-[15px] text-r-neutral-title-1 text-[600]">
         {t('page.dashboard.settings.rateModalTriggerOnHome.description')}
       </span>
+      <div
+        className="absolute w-[28px] h-[28px] pr-[8px] pt-[8px] right-0 top-0 cursor-pointer"
+        onClick={() =>
+          toggleShowRateModal(false, {
+            disableExposureOnClose: true,
+          })
+        }
+      >
+        <RcIconCloseCC className="text-r-blue-light-1 w-[20px] h-[20px]" />
+      </div>
       <div
         className="flex items-center justify-center mt-[8px] group"
         style={{

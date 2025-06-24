@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Button, Input, message } from 'antd';
+import { TextAreaRef } from 'antd/lib/input/TextArea';
 import { useTranslation } from 'react-i18next';
 
 import Popup from '@/ui/component/Popup';
@@ -27,7 +28,6 @@ export default function RateModal({
   totalBalanceText: string;
 }) {
   const { t } = useTranslation();
-  const { disableExposureRateGuide } = useExposureRateGuide();
   const {
     rateModalShown,
     toggleShowRateModal,
@@ -36,6 +36,7 @@ export default function RateModal({
 
     userFeedback,
     onChangeFeedback,
+    feedbackOverLimit,
     isSubmitting,
     pushRateDetails,
 
@@ -53,8 +54,19 @@ export default function RateModal({
   }, [userStar]);
 
   const disableSubmit = useMemo(() => {
-    return !wantFeedback || !userFeedback.length;
-  }, [wantFeedback, userFeedback]);
+    return feedbackOverLimit || !wantFeedback || !userFeedback.length;
+  }, [feedbackOverLimit, wantFeedback, userFeedback]);
+
+  const inputRef = useRef<TextAreaRef>(null);
+  useEffect(() => {
+    if (rateModalShown && wantFeedback) {
+      // Focus on the feedback input when the modal is shown and feedback is requested
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [rateModalShown, wantFeedback]);
 
   return (
     <Popup
@@ -72,6 +84,8 @@ export default function RateModal({
         justifyContent: 'space-between',
         alignItems: 'center',
         background: 'var(--r-neutral-bg2, #F2F4F7)',
+        borderTopLeftRadius: '16px',
+        borderTopRightRadius: '16px',
       }}
       destroyOnClose
       className="settings-popup-wrapper"
@@ -79,7 +93,10 @@ export default function RateModal({
     >
       {!wantFeedback ? (
         <div
-          className="flex flex-col items-center justify-between h-[100%] w-[100%]"
+          className={clsx(
+            'flex flex-col items-center justify-between h-[100%] w-[100%]',
+            !rateModalShown && 'hidden'
+          )}
           style={{
             padding: '47px 0 23px 0',
           }}
@@ -139,7 +156,12 @@ export default function RateModal({
           </footer>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-between h-[100%] w-[100%] pt-[24px]">
+        <div
+          className={clsx(
+            'flex flex-col items-center justify-between h-[100%] w-[100%] pt-[24px]',
+            !rateModalShown && 'hidden'
+          )}
+        >
           <div className="flex flex-col items-center justify-center w-[100%] px-[20px]">
             <div className="w-[52px] h-[52px] flex items-center justify-center mb-[16px]">
               <RabbyLogo className="w-[100%] h-[100%]" />
@@ -176,18 +198,29 @@ export default function RateModal({
                 placeholder={t(
                   'page.dashboard.settings.rateModal.feedbackPlaceholder'
                 )}
+                ref={inputRef}
+                autoFocus
                 rows={4}
+                style={{
+                  background: 'var(--r-neutral-card-1, #FFFFFF) !important',
+                }}
                 className={clsx(
                   'w-[100%] h-[180px] rounded-[8px] p-[12px]',
                   'text-[13px] text-[400] text-r-neutral-title-1',
-                  'border-rabby-blue-default border-[1px] border-solid'
+                  'bg-r-neutral-card-1 border-rabby-blue-default border-[1px] border-solid',
+                  feedbackOverLimit && 'border-rabby-red-default'
                 )}
-                maxLength={FEEDBACK_LEN_LIMIT}
+                // maxLength={FEEDBACK_LEN_LIMIT}
                 onChange={(e) => {
                   onChangeFeedback(e.target.value);
                 }}
               />
-              <span className="absolute right-[12px] bottom-[12px] text-r-neutral-foot text-[12px] text-[400]">
+              <span
+                className={clsx(
+                  'absolute right-[12px] bottom-[12px] text-r-neutral-foot text-[12px] text-[400]',
+                  feedbackOverLimit && 'text-rabby-red-default'
+                )}
+              >
                 {userFeedback.length}/{FEEDBACK_LEN_LIMIT}
               </span>
             </div>
@@ -203,9 +236,12 @@ export default function RateModal({
               onClick={() => {
                 pushRateDetails({ totalBalanceText })
                   .then(() => {
-                    message.success(
-                      t('page.dashboard.settings.rateModal.feedbackSuccess')
-                    );
+                    message.success({
+                      className: 'toast-message-2025',
+                      content: t(
+                        'page.dashboard.settings.rateModal.feedbackSuccess'
+                      ),
+                    });
                   })
                   .finally(() => {
                     closeModal();
