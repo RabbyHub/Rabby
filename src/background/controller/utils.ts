@@ -98,4 +98,4 @@ export const getRpcTxReceipt = (chainServerId: string, hash: string) => {
         gas_used: 0,
       };
     });
-}
+};
