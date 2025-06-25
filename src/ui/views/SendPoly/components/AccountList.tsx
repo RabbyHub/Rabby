@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
-
-import { KEYRING_TYPE } from 'consts';
-
-import { Account } from '@/background/service/preference';
-import { useAccounts } from '@/ui/hooks/useAccounts';
-import { flatten } from 'lodash';
-import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { Virtuoso } from 'react-virtuoso';
 import clsx from 'clsx';
+import { flatten } from 'lodash';
+
+import { useAccounts } from '@/ui/hooks/useAccounts';
+import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
+import { Account } from '@/background/service/preference';
+import { KEYRING_TYPE } from 'consts';
 
 interface ChainSelectorModalProps {
   onChange(val: Account): void;

@@ -36,7 +36,8 @@ const OuterInput = styled.div`
     cursor: text;
   }
 `;
-export const EnterAddressButton = styled.div`
+
+const EnterAddressButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -98,7 +99,7 @@ const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const unimportedBalancesCache: Record<string, number> = {};
-const queue = new PQueue({ interval: 1000, intervalCap: 5 }); // 每秒最多5个
+const queue = new PQueue({ interval: 1000, intervalCap: 8, concurrency: 8 }); // 每秒最多5个
 
 const SendPoly = () => {
   const history = useHistory();
@@ -107,6 +108,15 @@ const SendPoly = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
 
+  const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
+    (s) => ({
+      accountsList: s.accountToDisplay.accountsList,
+      whitelist: s.whitelist.whitelist,
+      whitelistEnabled: s.whitelist.enabled,
+    })
+  );
+
+  // main state
   const [inputingAddress, setInputingAddress] = useState(false);
   const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
@@ -115,14 +125,6 @@ const SendPoly = () => {
   const [unimportedBalances, setUnimportedBalances] = useState<
     Record<string, number>
   >({});
-
-  const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
-    (s) => ({
-      accountsList: s.accountToDisplay.accountsList,
-      whitelist: s.whitelist.whitelist,
-      whitelistEnabled: s.whitelist.enabled,
-    })
-  );
 
   const importWhitelistAccounts = useMemo(() => {
     if (!whitelistEnabled) {
@@ -232,6 +234,7 @@ const SendPoly = () => {
   const handleCancel = () => {
     setShowSelectorModal(false);
   };
+
   const handleDeleteWhitelist = async (address: string) => {
     await wallet.removeWhitelist(address);
     const isImported = importWhitelistAccounts.some((a) =>
@@ -348,11 +351,11 @@ const SendPoly = () => {
           ) : (
             <OuterInput
               className={`
-        border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
-        text-r-neutral-foot text-[15px] 
-         h-[52px] leading-[52px] px-[15px] justify-center items-center
-         hover:cursor-text hover:border-r-blue-default
-        `}
+                border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
+                text-r-neutral-foot text-[15px] 
+                h-[52px] leading-[52px] px-[15px] justify-center items-center
+                hover:cursor-text hover:border-r-blue-default
+              `}
               onClick={() => setInputingAddress(true)}
             >
               {t('page.sendPoly.enterAddress')}
