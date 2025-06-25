@@ -7,7 +7,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
 import { padWatchAccount } from '@/ui/views/SendPoly/util';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
-import { pickKeyringThemeIcon } from '@/utils/account';
+import { findAccountByPriority, pickKeyringThemeIcon } from '@/utils/account';
 import {
   BRAND_ALIAN_TYPE_TEXT,
   KEYRING_CLASS,
@@ -152,19 +152,23 @@ export const AddressRiskAlert = ({
   }, [address]);
 
   const targetAccount = useMemo(() => {
-    const targetTypeAccount = accountsList.find(
+    const targetTypeAccounts = accountsList.filter(
       (acc) =>
         isSameAddress(acc.address, address) &&
         (type
           ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
           : true)
     );
-    const targetSameAddressAccount = accountsList.find((acc) =>
+    if (targetTypeAccounts.length > 0) {
+      return findAccountByPriority(targetTypeAccounts);
+    }
+    const targetSameAddressAccounts = accountsList.filter((acc) =>
       isSameAddress(acc.address, address)
     );
-    return (
-      targetTypeAccount || targetSameAddressAccount || padWatchAccount(address)
-    );
+    if (targetSameAddressAccounts.length > 0) {
+      return findAccountByPriority(targetSameAddressAccounts);
+    }
+    return padWatchAccount(address);
   }, [accountsList, address, type]);
 
   useEffect(() => {
