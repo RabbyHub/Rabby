@@ -1105,7 +1105,10 @@
       "enterPassphraseTitle": "Digite a Senha para Assinar",
       "hd-path": "HD caminho:",
       "seed-phrase": "Frase Semente",
-      "sort-by-address-type": "Classificar por tipo de endereço"
+      "sort-by-address-type": "Classificar por tipo de endereço",
+      "CurrentDappAddress": {
+        "desc": "Alterar o endereço do Dapp\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1268,7 +1271,8 @@
           "currentLanguage": "Idioma atual",
           "customRpc": "Modificar URL RPC",
           "enableWhitelistForSendingAssets": "Ativar Lista Branca Para Envio de Ativos",
-          "enableTestnets": "Ativar Testnets"
+          "enableTestnets": "Ativar Testnets",
+          "enableDappAccount": "Alterar Endereço do Dapp Independentemente\n"
         },
         "cancel": "Cancelar",
         "7Days": "7 dias",
@@ -1302,7 +1306,12 @@
         "clearWatchAddressContent": "Você se certifique de excluir todos os endereços do Modo de Observação?",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gás da Testnet DeBank",
         "clearPendingWarningTip": "A transação removida pode ainda ser confirmada on-chain, a menos que seja substituída.",
-        "aboutUs": "Sobre nós"
+        "aboutUs": "Sobre nós",
+        "DappAccount": {
+          "title": "Alternar o endereço do Dapp Independentemente\n",
+          "button": "Ativar\n",
+          "desc": "Uma vez ativado, pode escolher qual endereço conectar a cada Dapp individualmente. Alterar seu endereço principal não afetará o endereço conectado a cada Dapp.\n"
+        }
       },
       "tokenDetail": {
         "txFailed": "Falha",
@@ -1462,6 +1471,10 @@
       "offlineChain": {
         "chain": "{{chain}} em breve não será integrado.",
         "tips": "A cadeia {{chain}} não será integrada em {{date}}. Seus ativos não serão afetados, mas não estarão incluídos no seu saldo total. Para acessá-los, você pode adicioná-los como uma rede personalizada em \"Mais\"."
+      },
+      "recentConnectionGuide": {
+        "button": "Entendido\n",
+        "title": "Alterar o endereço para a ligação à aplicação aqui\n"
       }
     },
     "nft": {
@@ -1503,13 +1516,10 @@
           "answer": "Sim, será armazenado localmente no seu navegador e somente acessível a você."
         },
         "showSeedPhrase": "Mostrar Frase Semente",
-        "importQuestion1": "Se eu perder minha frase-semente, meus ativos estarão perdidos para sempre.",
         "importError": "[CreateMnemonics] passo inesperado {{0}}",
         "importTips": "Você pode colar toda a sua frase secreta de recuperação no 1º campo.",
         "backup": "Backup Seed Phrase",
         "riskTips": "Antes de começar, por favor, leia e mantenha em mente as seguintes dicas de segurança.",
-        "importQuestion3": "A frase-semente é armazenada apenas no meu computador, e a Rabby não tem acesso a ela.",
-        "importQuestion2": "Se eu compartilhar minha frase-semente com outros, meus ativos serão roubados.",
         "importQuestion4": "Se eu desinstalar o Rabby sem fazer backup da frase-semente, o Rabby não pode recuperá-la para mim.",
         "clearAll": "Limpar tudo",
         "copy": "Copiar frase semente",
@@ -1532,7 +1542,10 @@
         "wordPhrase": "Eu tenho uma frase de <1>{{count}}</1> palavras",
         "inputInvalidCount_one": "1 entrada não conforma os padrões da Seed Phrase, por favor verifique.",
         "inputInvalidCount_other": "{{count}} entradas não estão em conformidade com as normas da Seed Phrase, por favor verifique.",
-        "wordPhraseAndPassphrase": "Eu tenho uma frase de <1>{{count}}</1> palavras com Passphrase."
+        "wordPhraseAndPassphrase": "Eu tenho uma frase de <1>{{count}}</1> palavras com Passphrase.",
+        "importQuestion1": "Se eu perder ou compartilhar minha seed phrase, perderei o acesso aos meus ativos permanentemente.",
+        "importQuestion2": "Minha frase semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
+        "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby."
       },
       "metamask": {
         "step": "Passo",
@@ -1907,7 +1920,8 @@
       "popularLevelMedium": "Média",
       "markAsTrustToast": "Marcar como \"Confiável\"",
       "popularLevelVeryLow": "Muito Baixo",
-      "markRemovedToast": "Marca removida"
+      "markRemovedToast": "Marca removida",
+      "connectAddress": "Ligar Porta\n"
     },
     "addressDetail": {
       "add-to-whitelist": "Adicionar à Lista Branca",
@@ -2436,12 +2450,12 @@
         "desc": "A carteira que muda o jogo para Ethereum e todas as cadeias EVM"
       },
       "createNewAddress": {
-        "title": "Criar nova frase-semente",
-        "tip2": "A frase-semente é armazenada apenas no meu computador, e o Rabby não tem acesso a ela.",
-        "tip1": "Se eu perder ou compartilhar minha seed phrase, meus ativos serão perdidos para sempre.",
         "showSeedPhrase": "Mostrar Frase Semente",
-        "tip3": "Se eu desinstalar o Rabby sem fazer backup da frase-semente, o Rabby não poderá recuperá-la para mim.",
-        "desc": "Antes de começar, por favor, leia e mantenha as seguintes dicas de segurança em mente."
+        "desc": "Por favor, leia e mantenha as seguintes dicas de segurança em mente",
+        "tip2": "Minha frase semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
+        "tip1": "Se eu perder ou compartilhar minha seed phrase, perderei acesso aos meus ativos permanentemente.",
+        "tip3": "Se eu desinstalar o Rabby sem fazer backup da minha frase semente, ela não pode ser recuperada pelo Rabby.",
+        "title": "Antes de Começar"
       },
       "importList": {
         "title": "Selecionar Método de Importação"
@@ -2454,15 +2468,15 @@
         "form": {
           "password": {
             "label": "Senha",
-            "placeholder": "mínimo de 8 caracteres",
             "min": "A senha deve ter pelo menos 8 caracteres.",
-            "required": "Por favor, insira a senha"
+            "required": "Por favor, insira a senha",
+            "placeholder": "Senha (mínimo de 8 caracteres)"
           },
           "confirmPassword": {
-            "placeholder": "Senha",
             "required": "Por favor, confirme a senha",
             "label": "Confirme a Senha",
-            "notMatch": "As senhas não coincidem"
+            "notMatch": "As senhas não coincidem",
+            "placeholder": "Confirmar Senha"
           }
         },
         "agree": "Eu concordo com os<1/> <2>Termos de Uso</2> e <4>Política de Privacidade</4>",
@@ -2478,9 +2492,13 @@
       },
       "readyToUse": {
         "pin": "Fixar Rabby Wallet",
-        "extensionTip": "Clique <1/> e depois <3/>",
-        "desc": "Fixar a Carteira Rabby na sua barra de ferramentas para acesso fácil.",
-        "title": "Rabby Wallet está pronto para uso"
+        "guides": {
+          "step2": "Fixar Rabby Wallet",
+          "step1": "Clique no ícone da extensão do navegador"
+        },
+        "title": "Sua carteira Rabby está pronta!",
+        "desc": "Encontre Rabby Wallet e fixe-o",
+        "extensionTip": "Clique <1/> e depois <3/>"
       },
       "importSeedPhrase": {
         "title": "Importar Frase Semente"
@@ -2820,7 +2838,14 @@
       "help": "Por favor, contate a equipe oficial desta cadeia para suporte.",
       "thirdPartyDappToProceed": "Por favor, utilize um Dapp de terceiros para prosseguir.",
       "selectADapp": "Selecione um Dapp",
-      "chainNotSupported": "Não suportado nesta cadeia"
+      "chainNotSupported": "Não suportado nesta cadeia",
+      "swapOnDapp": "Trocas em aplicativos descentralizados\n",
+      "bridgeOnDapp": "Ponte no Dapp\n",
+      "noDapps": "Nenhum aplicativo descentralizado disponível nesta cadeia.\n"
+    },
+    "AccountSelectorModal": {
+      "title": "Selecionar endereço\n",
+      "searchPlaceholder": "Pesquisar endereço\n"
     }
   },
   "global": {

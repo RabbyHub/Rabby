@@ -1033,7 +1033,10 @@
       "sort-by-address-note": "Adres notuna göre sırala",
       "enterPassphraseTitle": "Parafrayı İmzalamak İçin Girin",
       "sort-by-address-type": "Adres türüne göre sırala",
-      "addNewAddress": "Yeni Adres Ekle"
+      "addNewAddress": "Yeni Adres Ekle",
+      "CurrentDappAddress": {
+        "desc": "DApp Adresini Değiştir\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1220,7 +1223,8 @@
           "customTestnet": "Özel Ağ Ekle",
           "themeMode": "Tema Modu",
           "toggleThemeMode": "Tema Modu",
-          "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla"
+          "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla",
+          "enableDappAccount": "Dapp Adreslerini Bağımsız Olarak Değiştirin\n"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -1230,7 +1234,12 @@
         "testnetBackendServiceUrl": "Testnet Backend Servis URL'si",
         "clearWatchMode": "İzleme Modunu Temizle",
         "requestDeBankTestnetGasToken": "DeBank Testnet Gas Tokeni İste",
-        "clearPendingWarningTip": "Çıkarılan işlem, başka bir işlem ile değiştirilmedikçe zincirde hâlâ onaylanabilir."
+        "clearPendingWarningTip": "Çıkarılan işlem, başka bir işlem ile değiştirilmedikçe zincirde hâlâ onaylanabilir.",
+        "DappAccount": {
+          "button": "Etkinleştir\n",
+          "title": "Dapp Adreslerini Bağımsız Olarak Değiştir\n",
+          "desc": "Etkinleştirildikten sonra, her bir Dapp'e bağımsız olarak hangi adresi bağlayacağınızı seçebilirsiniz. Ana adresinizi değiştirmek, her Dapp'e bağlı adresi etkilemez.\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
@@ -1393,6 +1402,10 @@
       "offlineChain": {
         "chain": "{{chain}} yakında entegre edilmeyecek.",
         "tips": "{{chain}} Zinciri {{date}} tarihinde entegre edilmeyecek. Varlıklarınız etkilenmeyecek ancak toplam bakiyenize dahil edilmeyecektir. Onlara erişmek için “Daha Fazla” altında özel bir ağ olarak ekleyebilirsiniz."
+      },
+      "recentConnectionGuide": {
+        "button": "Anladım\n",
+        "title": "Dapp bağlantısı için burada adres değiştirin.\n"
       }
     },
     "nft": {
@@ -1446,9 +1459,6 @@
           "answer": "Evet, yalnızca tarayıcınızda yerel olarak saklanır ve sadece sizin tarafınızdan erişilebilir."
         },
         "importError": "[CreateMnemonics] beklenmeyen adım {{0}}",
-        "importQuestion1": "Seed Phrase'imi kaybedersem, varlıklarım sonsuza dek kaybolur.",
-        "importQuestion2": "Seed Phrase'imi başkalarıyla paylaşırsam, varlıklarım çalınır.",
-        "importQuestion3": "Seed Phrase sadece bilgisayarımda saklanır ve Rabby'in buna erişimi yoktur.",
         "importQuestion4": "Seed Phrase yedeğini almadan Rabby'yi kaldırırsam, Rabby bunu benim için geri alamaz.",
         "riskTips": "Başlamadan önce, lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
         "showSeedPhrase": "Seed Phrase'i Göster",
@@ -1474,7 +1484,10 @@
         "slip39SeedPhrasePlaceholder_two": "{{count}}nci tohum ifadesi payınızı buraya girin",
         "slip39SeedPhrasePlaceholder_few": "{{count}}. tohum cümlesi paylarınızı buraya girin",
         "passphrase": "Parola cümlesi",
-        "inputInvalidCount_one": "1 giriş Seed Phrase normlarına uymuyor, lütfen kontrol edin."
+        "inputInvalidCount_one": "1 giriş Seed Phrase normlarına uymuyor, lütfen kontrol edin.",
+        "importQuestion3": "Eğer Rabby'yi seed ifademi yedeklemeden kaldırırsam, Rabby tarafından kurtarılamaz.",
+        "importQuestion1": "Eğer kurtarma kelimelerimi kaybeder veya paylaşırsam, varlıklarıma kalıcı olarak erişimimi kaybedeceğim.",
+        "importQuestion2": "Kıdemli kelime ifadem yalnızca cihazımda saklanıyor. Rabby buna erişemez."
       },
       "metamask": {
         "step1": "MetaMask'tan seed phrase'i veya özel anahtarı dışa aktarın <1>Rehber <2/></1>",
@@ -1841,7 +1854,8 @@
         "title": "Bir Cüzdan Seç ve Bağlan",
         "desc": "Yüklediğiniz cüzdanlardan seçim yapın"
       },
-      "otherWalletBtn": "Başka Bir Cüzdan ile Bağlan"
+      "otherWalletBtn": "Başka Bir Cüzdan ile Bağlan",
+      "connectAddress": "Bağlantı Adresi\n"
     },
     "addressDetail": {
       "add-to-whitelist": "Beyaz Listeye Ekle",
@@ -2442,12 +2456,12 @@
         "desc": "Ethereum ve tüm EVM zincirleri için çığır açan cüzdan"
       },
       "createNewAddress": {
-        "title": "Yeni Seed Phrase Oluştur",
-        "desc": "Başlamadan önce, lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
-        "tip2": "Tohum cümlesi yalnızca bilgisayarımda saklanır ve Rabby buna erişemez.",
         "showSeedPhrase": "Tohum İfadesini Göster",
-        "tip3": "Rabby'yi yedekleme cümlesini yedeklemeden kaldırırsam, Rabby bunu benim için kurtaramaz.",
-        "tip1": "Eğer seed cümlemi kaybedersem veya paylaşırsam, varlıklarım sonsuza kadar kaybolur."
+        "title": "Başlamadan Önce",
+        "tip2": "Kök ifadem yalnızca cihazımda saklanır. Rabby buna erişemez.",
+        "desc": "Lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
+        "tip3": "Eğer seed phrase’imı yedeklemeden Rabby'yi kaldırırsam, Rabby tarafından kurtarılamaz.",
+        "tip1": "Eğer tohum cümlemi kaybeder veya paylaşırsam, varlıklarıma kalıcı olarak erişimimi kaybedeceğim."
       },
       "importList": {
         "title": "İçe Aktarma Yöntemini Seç"
@@ -2460,15 +2474,15 @@
         "form": {
           "password": {
             "label": "Parola",
-            "placeholder": "8 karakter minimum",
             "min": "Parola en az 8 karakter uzunluğunda olmalıdır。",
-            "required": "Lütfen Şifreyi Giriniz"
+            "required": "Lütfen Şifreyi Giriniz",
+            "placeholder": "Şifre (en az 8 karakter)"
           },
           "confirmPassword": {
-            "placeholder": "Şifre",
             "notMatch": "Parolalar eşleşmiyor",
             "required": "Lütfen Parolayı Onaylayın",
-            "label": "Şifreyi Onayla"
+            "label": "Şifreyi Onayla",
+            "placeholder": "Şifreyi Onayla"
           }
         },
         "title": "Parola Belirle",
@@ -2483,10 +2497,14 @@
         "create": "Başarıyla Oluşturuldu"
       },
       "readyToUse": {
-        "extensionTip": "<1/> ve ardından <3/> tıklayın",
         "pin": "Rabby Wallet'i Sabitle",
-        "desc": "Rabby Wallet'i kolay erişim için araç çubuğunuza sabitleyin.",
-        "title": "Rabby Cüzdanı Kullanıma Hazırdır"
+        "guides": {
+          "step1": "Tarayıcı uzantısı simgesine tıklayın",
+          "step2": "Pin Rabby Wallet"
+        },
+        "desc": "Rabby Cüzdanını Bul ve Sabitle",
+        "extensionTip": "Tıkla <1/> ve ardından <3/>",
+        "title": "Cüzdanınız hazır!"
       },
       "importSeedPhrase": {
         "title": "Seed Phrase İçe Aktar"
@@ -2826,7 +2844,14 @@
       "thirdPartyDappToProceed": "Lütfen devam etmek için üçüncü taraf bir Dapp kullanın.",
       "noQuotesForChain": "Bu zincir için henüz herhangi bir alıntı mevcut değil.",
       "help": "Lütfen destek için bu zincirin resmi ekibiyle iletişime geçin.",
-      "viewDappOptions": "Dapp Seçeneklerini Görüntüle"
+      "viewDappOptions": "Dapp Seçeneklerini Görüntüle",
+      "bridgeOnDapp": "Köprü Dapp'ta\n",
+      "swapOnDapp": "Dapp'ta Takas\n",
+      "noDapps": "Bu zincirde kullanılabilir hiçbir Dapp yok.\n"
+    },
+    "AccountSelectorModal": {
+      "searchPlaceholder": "Adres ara\n",
+      "title": "Adres seç\n"
     }
   },
   "global": {

@@ -25,6 +25,7 @@ import { intToHex } from 'ui/utils/number';
 import { getActionTypeTextByType } from '../Actions/utils';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
+import { Account } from '@/background/service/preference';
 
 const Wrapper = styled(Card)`
   .nonce-select {
@@ -159,6 +160,7 @@ interface SafeNonceSelectorProps {
   chainId: number;
   safeInfo?: BasicSafeInfo | null;
   disabled?: boolean;
+  account: Account;
 }
 export const SafeNonceSelector = ({
   value,
@@ -167,6 +169,7 @@ export const SafeNonceSelector = ({
   chainId,
   safeInfo,
   disabled,
+  account,
 }: SafeNonceSelectorProps) => {
   const { t } = useTranslation();
   const [isShowOptionList, setIsShowOptionList] = useState(false);
@@ -293,6 +296,7 @@ export const SafeNonceSelector = ({
         {isShowOptionList ? (
           <div ref={optionListRef}>
             <OptionList
+              account={account}
               chainId={chainId}
               value={val === '' ? undefined : val}
               onChange={handleOnChange}
@@ -310,14 +314,15 @@ const OptionList = ({
   value,
   onChange,
   safeInfo,
+  account,
 }: {
   chainId: number;
   value?: number;
   onChange?(value: number): void;
   safeInfo?: BasicSafeInfo | null;
+  account: Account;
 }) => {
   const wallet = useWallet();
-  const [account] = useAccount();
 
   const { t } = useTranslation();
 

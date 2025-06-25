@@ -170,6 +170,7 @@ export const TxTypeComponent = ({
   txDetail,
   origin,
   originLogo,
+  account,
 }: {
   actionRequireData: ActionRequireData;
   actionData: ParsedTransactionActionData;
@@ -182,11 +183,13 @@ export const TxTypeComponent = ({
   engineResults: Result[];
   origin?: string;
   originLogo?: string;
+  account: Account;
 }) => {
   if (!isReady) return <Loading />;
   if (actionData && actionRequireData) {
     return (
       <Actions
+        account={account}
         data={actionData}
         requireData={actionRequireData}
         chain={chain}
@@ -212,6 +215,7 @@ const useExplainGas = ({
   wallet,
   gasLimit,
   isReady,
+  account,
 }: {
   gasUsed: number | string;
   gasPrice: number | string;
@@ -221,6 +225,7 @@ const useExplainGas = ({
   wallet: ReturnType<typeof useWallet>;
   gasLimit: string | undefined;
   isReady: boolean;
+  account: Account;
 }) => {
   const [result, setResult] = useState({
     gasCostUsd: new BigNumber(0),
@@ -239,6 +244,7 @@ const useExplainGas = ({
         wallet,
         tx,
         gasLimit,
+        account,
       }).then((data) => {
         setResult(data);
         setIsLoading(false);
@@ -319,10 +325,12 @@ interface SignTxProps<TData extends any[] = any[]> {
     $ctx?: any;
   };
   origin?: string;
+  account: Account;
 }
 
-const SignTx = ({ params, origin }: SignTxProps) => {
-  const { isGnosis, account } = params;
+const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
+  const { isGnosis } = params;
+  const currentAccount = params.isGnosis ? params.account! : $account;
   const renderStartAt = useRef(0);
   const reportedRenderDuration = useRef(false);
   const securityEngineCtx = useRef<any>(null);
@@ -450,7 +458,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   ]);
   const [currentAccountType, setCurrentAccountType] = useState<
     undefined | string
-  >();
+  >(currentAccount?.type);
   const [gasLessLoading, setGasLessLoading] = useState(false);
   const [canUseGasLess, setCanUseGasLess] = useState(false);
   const [gasLessFailedReason, setGasLessFailedReason] = useState<
@@ -497,8 +505,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       return;
     }
     const { category, source, trigger } = ga;
-    const currentAccount =
-      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
 
     if (category === 'Send') {
       matomoRequestEvent({
@@ -656,6 +662,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     wallet,
     gasLimit,
     isReady,
+    account: currentAccount,
   });
 
   const checkErrors = useCheckGasAndNonce({
@@ -778,6 +785,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           wallet,
           address,
         }),
+        delegate_call: isGnosisAccount ? !!params?.data?.[0]?.operation : false,
       })
       .then(async (res) => {
         let estimateGas = 0;
@@ -914,8 +922,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const explain = async () => {
-    const currentAccount =
-      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     try {
       setIsReady(false);
       await explainTx(currentAccount.address);
@@ -926,6 +932,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         content: e.message || JSON.stringify(e),
         className: 'modal-support-darkmode',
       });
+      Sentry.captureException(e);
     }
   };
 
@@ -1000,6 +1007,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
         account: account,
+        $account: account,
         extra: {
           popupProps: {
             maskStyle: {
@@ -1085,6 +1093,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         title: 'Error',
         content,
       });
+      Sentry.captureException(e);
       return;
     }
 
@@ -1127,9 +1136,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       return;
     }
 
-    const currentAccount =
-      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
-
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
     }
@@ -1141,6 +1147,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         title: 'Error',
         content: e.message || JSON.stringify(e),
       });
+      Sentry.captureException(e);
       return;
     }
 
@@ -1209,6 +1216,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         extra: {
           brandName: currentAccount.brandName,
         },
+        $account: currentAccount,
         $ctx: params.$ctx,
         signingTxId: approval.signingTxId,
         pushType: pushInfo.type,
@@ -1389,8 +1397,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const checkCanProcess = async () => {
     const session = params.session;
-    const currentAccount =
-      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     const site = await wallet.getConnectedSite(session.origin);
 
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
@@ -1469,7 +1475,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const getSafeInfo = async () => {
-    const currentAccount = (await wallet.getCurrentAccount())!;
     const networkId = '' + chainId;
     let safeInfo: BasicSafeInfo | null = null;
     try {
@@ -1538,7 +1543,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const getCoboDelegates = async () => {
-    const currentAccount = (await wallet.getCurrentAccount())!;
     const accountDetail = await wallet.coboSafeGetAccountDetail(
       currentAccount.address
     );
@@ -1630,10 +1634,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     dispatch.securityEngine.resetCurrentTx();
     checkBlockedAddress();
     try {
-      const currentAccount =
-        isGnosis && account ? account : (await wallet.getCurrentAccount())!;
-
-      setCurrentAccountType(currentAccount.type);
       const is1559 =
         support1559 &&
         SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
@@ -1761,6 +1761,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         title: 'Error',
         content: e.message || JSON.stringify(e),
       });
+      Sentry.captureException(e);
     }
   };
 
@@ -1964,6 +1965,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <>
             {txDetail && (
               <TxTypeComponent
+                account={currentAccount}
                 isReady={isReady}
                 actionData={actionData}
                 actionRequireData={actionRequireData}
@@ -1984,6 +1986,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
             {isGnosisAccount && isReady && (
               <SafeNonceSelector
+                account={currentAccount}
                 disabled={isViewGnosisSafe}
                 isReady={isReady}
                 chainId={chainId}
@@ -2002,6 +2005,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         swapPreferMEVGuarded &&
         isReady ? (
           <BroadcastMode
+            account={currentAccount}
             chain={chain.enum}
             value={pushInfo}
             isCancel={isCancel}
@@ -2062,6 +2066,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               originLogo={params.session.icon}
               chain={chain}
               gnosisAccount={currentGnosisAdmin}
+              account={currentGnosisAdmin}
               onCancel={handleCancel}
               // securityLevel={securityLevel}
               // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
@@ -2134,7 +2139,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                   gasCostUsd: gasExplainResponse.gasCostUsd,
                   gasCostAmount: gasExplainResponse.gasCostAmount,
                 }}
-                gasCalcMethod={(price) => {
+                gasCalcMethod={async (price) => {
+                  if (!isReady) {
+                    return {
+                      gasCostUsd: new BigNumber(0),
+                      gasCostAmount: new BigNumber(0),
+                    };
+                  }
                   return explainGas({
                     gasUsed,
                     gasPrice: price,
@@ -2143,6 +2154,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                     tx,
                     wallet,
                     gasLimit,
+                    account: currentAccount,
                   });
                 }}
                 recommendGasLimit={recommendGasLimit}
@@ -2192,7 +2204,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             originLogo={params.session.icon}
             hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             securityLevel={securityLevel}
-            gnosisAccount={isGnosis ? account : undefined}
+            gnosisAccount={isGnosis ? params.account : undefined}
+            account={currentAccount}
             chain={chain}
             isTestnet={chain.isTestnet}
             onCancel={handleCancel}
@@ -2233,6 +2246,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         canClickToken={false}
         hideOperationButtons
         variant="add"
+        account={currentAccount}
       />
     </>
   );

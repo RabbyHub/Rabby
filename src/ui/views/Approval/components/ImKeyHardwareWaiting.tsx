@@ -49,8 +49,10 @@ interface ApprovalParams {
 
 export const ImKeyHardwareWaiting = ({
   params,
+  account: $account,
 }: {
   params: ApprovalParams;
+  account: Account;
 }) => {
   const {
     setTitle,
@@ -96,7 +98,6 @@ export const ImKeyHardwareWaiting = ({
       return;
     }
     if (sessionStatus === 'DISCONNECTED') return;
-    const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.resendSign();
     if (showToast) {
@@ -111,9 +112,7 @@ export const ImKeyHardwareWaiting = ({
   // };
 
   const init = async () => {
-    const account = params.isGnosis
-      ? params.account!
-      : (await wallet.syncGetCurrentAccount())!;
+    const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
 
     const isSignText = params.isGnosis

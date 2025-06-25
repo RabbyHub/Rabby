@@ -243,7 +243,8 @@
           "toggleThemeMode": "主題模式",
           "themeMode": "主題模式",
           "customTestnet": "添加自定义网络",
-          "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby"
+          "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby",
+          "enableDappAccount": "獨立切換 Dapp 地址\n"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "更新版本",
@@ -257,7 +258,12 @@
         "requestDeBankTestnetGasToken": "獲取 DeBank Testnet Gas Token",
         "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！",
         "clearPendingWarningTip": "已移除的交易可能仍会在链上确认，除非将其替换。",
-        "supportedChains": "集成鏈"
+        "supportedChains": "集成鏈",
+        "DappAccount": {
+          "button": "啟用\n",
+          "title": "獨立切換 Dapp 地址\n",
+          "desc": "啟用後，您可以獨立選擇連接至每個 Dapp 的地址。更改您的主要地址不會影響每個 Dapp 的連接地址。\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "已隱藏的代幣將不會顯示在代幣列表中",
@@ -420,6 +426,10 @@
       "offlineChain": {
         "tips": "{{chain}} 鏈將不會於{{date}}整合。你的資產將不受影響，但不會被納入你的總結餘。要取用這些資產，你可以在“更多”功能中添加其為自訂網絡。",
         "chain": "{{chain}} 將很快不再被集成。"
+      },
+      "recentConnectionGuide": {
+        "button": "明白了\n",
+        "title": "在此處切換用於 Dapp 連線的地址\n"
       }
     },
     "chainList": {
@@ -478,9 +488,6 @@
           "answer": "是的，它將存儲在你本地的瀏覽器上，並且只有你可以訪問。"
         },
         "importError": "[CreateMnemonics] 意外步驟 {{0}}",
-        "importQuestion1": "如果我丟失了助記詞，我的資產將永遠丟失。",
-        "importQuestion2": "如果我與他人分享我的助記詞，我的資產就會被盜。",
-        "importQuestion3": "助記詞僅存儲在我的計算機上，Rabby 無權訪問它。",
         "importQuestion4": "如果我在未備份助記詞的情況下卸載 Rabby，Rabby 無法為我找回助記詞。",
         "riskTips": "在開始之前，請閱讀並牢記以下安全提示",
         "showSeedPhrase": "創建助記詞",
@@ -507,7 +514,10 @@
         "invalidContent": "內容無效",
         "inputInvalidCount_one": "1 個輸入不符合種子詞組規範，請檢查。",
         "inputInvalidCount_other": "{{count}} 個輸入不符合種子詞組規範，請檢查。",
-        "passphrase": "通行密碼"
+        "passphrase": "通行密碼",
+        "importQuestion2": "我的种子短语只存储在我的设备上。Rabby 无法访问它。",
+        "importQuestion1": "如果我丟失或分享我的 seed phrase，我將永久失去對我的資產的訪問權限。",
+        "importQuestion3": "如果我在没有备份我的 seed phrase 的情况下卸载 Rabby，Rabby 将无法恢复它。"
       },
       "metamask": {
         "step1": "從 MetaMask 導出助記詞或私鑰  <br/><1>查看操作指南<1/></1>",
@@ -1037,7 +1047,8 @@
         "desc": "選擇你已安裝的錢包",
         "title": "選擇一個錢包來連接"
       },
-      "otherWalletBtn": "連接其他錢包"
+      "otherWalletBtn": "連接其他錢包",
+      "connectAddress": "連接地址\n"
     },
     "gasTopUp": {
       "Amount": "數量",
@@ -1103,7 +1114,10 @@
       "enterThePassphrase": "輸入密碼詞",
       "enterPassphraseTitle": "輸入密碼詞進行簽名",
       "passphraseError": "密碼詞無效",
-      "addNewAddress": "新增地址"
+      "addNewAddress": "新增地址",
+      "CurrentDappAddress": {
+        "desc": "切換 Dapp 地址\n"
+      }
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -2478,11 +2492,11 @@
       },
       "createNewAddress": {
         "showSeedPhrase": "顯示 Seed Phrase",
-        "title": "創建新的 Seed Phrase",
-        "desc": "在您开始之前，请阅读并牢记以下安全提示。",
-        "tip1": "如果我遗失或分享了我的种子短语，我的资产将永远丢失。",
-        "tip3": "如果我在没有备份 seed phrase 的情况下卸载 Rabby，Rabby 无法为我找回。",
-        "tip2": "種子短語僅存儲在我電腦上，Rabby 無法訪問。"
+        "desc": "請閱讀並記住以下安全提示",
+        "title": "在開始之前",
+        "tip2": "我的種子詞僅儲存在我的設備上。Rabby 無法訪問它。",
+        "tip3": "如果我在未备份我的种子短语的情况下卸载 Rabby，它将无法通过 Rabby 恢复。",
+        "tip1": "如果我丢失或分享我的 seed phrase，我将永久失去对我的资产的访问权限。"
       },
       "importList": {
         "title": "選擇導入方法"
@@ -2497,13 +2511,13 @@
             "required": "請輸入密碼",
             "label": "密碼",
             "min": "密碼必須至少8個字符長",
-            "placeholder": "8 個字元起"
+            "placeholder": "密碼（至少 8 個字符）"
           },
           "confirmPassword": {
-            "placeholder": "密碼",
             "label": "確認密碼",
             "required": "請確認密碼",
-            "notMatch": "密碼不匹配"
+            "notMatch": "密碼不匹配",
+            "placeholder": "確認密碼"
           }
         },
         "title": "設置密碼",
@@ -2518,10 +2532,14 @@
         "addMoreAddr": "從這个 Seed Phrase 新增更多地址"
       },
       "readyToUse": {
-        "extensionTip": "按 <1/> 然后 <3/>",
         "pin": "將 Rabby 錢包釘選",
-        "desc": "將 Rabby Wallet 固定到工具欄以便輕鬆訪問。",
-        "title": "Rabby Wallet 已準備好使用"
+        "guides": {
+          "step2": "將 Rabby Wallet 釘選至頂部",
+          "step1": "點擊瀏覽器擴展圖標"
+        },
+        "extensionTip": "点击 <1/> 然后 <3/>",
+        "desc": "尋找 Rabby Wallet 並將其固定",
+        "title": "您的 Rabby Wallet 已準備好！"
       },
       "importSeedPhrase": {
         "title": "導入種子片語"
@@ -2861,7 +2879,14 @@
       "noQuotesForChain": "此链尚无可用报价",
       "help": "請聯絡該鏈的官方團隊以獲取支援",
       "viewDappOptions": "查看 Dapp 选项",
-      "selectADapp": "選擇一個 Dapp"
+      "selectADapp": "選擇一個 Dapp",
+      "swapOnDapp": "在去中心化應用程式上兌換\n",
+      "bridgeOnDapp": "跨鏈 Dapp\n",
+      "noDapps": "此鏈上沒有任何 Dapp 可用\n"
+    },
+    "AccountSelectorModal": {
+      "title": "選擇地址\n",
+      "searchPlaceholder": "搜尋地址\n"
     }
   },
   "background": {

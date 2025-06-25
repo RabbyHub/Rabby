@@ -8,6 +8,7 @@ import {
 } from 'background/service/preference';
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import { changeLanguage } from '@/i18n';
+import { ga4 } from '@/utils/ga4';
 
 interface PreferenceState {
   externalLinkAck: boolean;
@@ -30,6 +31,7 @@ interface PreferenceState {
   themeMode: DARK_MODE_TYPE;
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
+  isEnabledDappAccount?: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -56,6 +58,7 @@ export const preference = createModel<RootModel>()({
     themeMode: DARK_MODE_TYPE.system,
     reserveGasOnSendToken: false,
     isHideEcologyNoticeDict: {},
+    isEnabledDappAccount: false,
   } as PreferenceState,
 
   reducers: {
@@ -220,6 +223,12 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setThemeMode(themeMode);
       dispatch.preference.getPreference('themeMode');
+      ga4.fireEvent(
+        `ThemeMode_${themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'}`,
+        {
+          event_category: 'Settings Snapshot',
+        }
+      );
     },
 
     async setIsReserveGasOnSendToken(value: boolean, store) {
@@ -241,6 +250,14 @@ export const preference = createModel<RootModel>()({
     ) {
       await store.app.wallet.setAddressSortStoreValue(key, value);
       dispatch.preference.getPreference('addressSortStore');
+    },
+
+    async enableDappAccount(v: boolean, store) {
+      await store.app.wallet.enableDappAccount(v);
+      dispatch.preference.getPreference('isEnabledDappAccount');
+      ga4.fireEvent(`DappAccount_${v ? 'On' : 'Off'}`, {
+        event_category: 'Settings Snapshot',
+      });
     },
 
     // async setOpenapiHost(value: string, store) {

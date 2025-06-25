@@ -6,7 +6,7 @@ import {
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isEqual, sortBy, truncate, uniq } from 'lodash';
+import { groupBy, isEqual, pick, sortBy, truncate, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -83,7 +83,7 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
-import { generateAliasName } from '@/utils/account';
+import { generateAliasName, isSameAccount } from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
@@ -198,24 +198,34 @@ export class WalletController extends BaseController {
 
   requestETHRpc = <T = any>(
     data: { method: string; params: any },
-    chainId: string
+    chainId: string,
+    account?: Account
   ): Promise<IExtractFromPromise<T>> => {
     return providerController.ethRpc(
       {
         data,
         session: INTERNAL_REQUEST_SESSION,
+        account,
       },
       chainId
     );
   };
 
-  sendRequest = <T = any>(data: ProviderRequest['data'], isBuild = false) => {
+  sendRequest = <T = any>(
+    data: ProviderRequest['data'],
+    options?: {
+      isBuild?: boolean;
+      account?: Account;
+    }
+  ) => {
+    const { isBuild = false, account } = options || {};
     if (isBuild) {
       return Promise.resolve<T>(data as T);
     }
     return provider<T>({
       data,
       session: INTERNAL_REQUEST_SESSION,
+      account,
     });
   };
 
@@ -673,7 +683,9 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        true
+        {
+          isBuild: true,
+        }
       );
       txs.push(res.params[0]);
       unTriggerTxCounter.decrease();
@@ -903,7 +915,9 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        true
+        {
+          isBuild: true,
+        }
       );
       txs.push(res.params[0]);
       unTriggerTxCounter.decrease();
@@ -1030,7 +1044,9 @@ export class WalletController extends BaseController {
         method: 'eth_sendTransaction',
         params: [tx],
       },
-      isBuild
+      {
+        isBuild,
+      }
     );
   };
 
@@ -1102,7 +1118,9 @@ export class WalletController extends BaseController {
         method: 'eth_sendTransaction',
         params: [tx],
       },
-      isBuild
+      {
+        isBuild,
+      }
     );
   };
 
@@ -1110,9 +1128,10 @@ export class WalletController extends BaseController {
     txMeta: Record<string, any> & {
       txParams: any;
     },
-    chain = CHAINS_ENUM.OP
+    chain = CHAINS_ENUM.OP,
+    _account?: Account
   ) => {
-    const account = await preferenceService.getCurrentAccount();
+    const account = _account || (await preferenceService.getCurrentAccount());
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     buildinProvider.currentProvider.currentAccount = account.address;
     buildinProvider.currentProvider.currentAccountType = account.type;
@@ -1328,7 +1347,9 @@ export class WalletController extends BaseController {
               },
             ],
           },
-          isBuild
+          {
+            isBuild,
+          }
         );
       } else {
         return await this.sendRequest(
@@ -1365,7 +1386,9 @@ export class WalletController extends BaseController {
               },
             ],
           },
-          isBuild
+          {
+            isBuild,
+          }
         );
       }
     } else if (abi === 'ERC1155') {
@@ -1396,7 +1419,9 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        isBuild
+        {
+          isBuild,
+        }
       );
     } else {
       throw new Error(t('background.error.unknownAbi'));
@@ -1710,6 +1735,35 @@ export class WalletController extends BaseController {
   setReserveGasOnSendToken = (val: boolean) =>
     preferenceService.setPreferencePartials({ reserveGasOnSendToken: val });
 
+  enableDappAccount = (enabled: boolean) => {
+    preferenceService.setPreferencePartials({ isEnabledDappAccount: enabled });
+    const currentAccount = preferenceService.getCurrentAccount();
+    const sites = permissionService.getSites();
+    sites.forEach((site) => {
+      if (enabled) {
+        if (site.isConnected) {
+          permissionService.setSite({
+            ...site,
+            account: currentAccount,
+          });
+        }
+      } else {
+        permissionService.setSite({
+          ...site,
+          account: undefined,
+        });
+      }
+    });
+    sessionService.broadcastEvent(
+      'accountsChanged',
+      currentAccount?.address ? [currentAccount?.address] : []
+    );
+  };
+
+  updateGa4EventTime = (timestamp: number) => {
+    preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
+  };
+
   getLastTimeSendToken = (address: string) =>
     preferenceService.getLastTimeSendToken(address);
   setLastTimeSendToken = (address: string, token: TokenItem) =>
@@ -1888,17 +1942,51 @@ export class WalletController extends BaseController {
       return null;
     }
   };
-  setSite = (data: ConnectedSite) => {
+  setSite = (
+    data: ConnectedSite,
+    options?: {
+      shouldBroadcastEvent?: false;
+    }
+  ) => {
     const chainItem = findChain({ enum: data.chain });
     if (!chainItem) {
       throw new Error(`[wallet::setSite] Chain ${data.chain} is not supported`);
     }
-
+    if (data.isConnected && !data.account) {
+      data.account = preferenceService.getCurrentAccount();
+    }
     permissionService.setSite(data);
     broadcastChainChanged({
       origin: data.origin,
       chain: chainItem,
     });
+  };
+
+  setSiteAccount = ({
+    origin,
+    account,
+  }: {
+    origin: string;
+    account?: Account | null;
+  }) => {
+    const site = permissionService.getSite(origin);
+    if (!site) {
+      return;
+    }
+    const _account = account || preferenceService.getCurrentAccount();
+
+    site.account = _account
+      ? pick(_account, 'address', 'type', 'brandName')
+      : undefined;
+    permissionService.setSite(site);
+
+    if (site?.isConnected) {
+      sessionService.broadcastEvent(
+        'accountsChanged',
+        site?.account?.address ? [site.account.address.toLowerCase()] : [],
+        site.origin
+      );
+    }
   };
 
   updateSiteBasicInfo = async (origin: string | string[]) => {
@@ -1929,7 +2017,7 @@ export class WalletController extends BaseController {
             ...local,
             info,
           };
-          wallet.setSite(item);
+          permissionService.setSite(item);
           return item;
         }
       })
@@ -2388,19 +2476,26 @@ export class WalletController extends BaseController {
   };
 
   execGnosisTransaction = async (account: Account) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (keyring.currentTransaction && keyring.safeInstance) {
-      buildinProvider.currentProvider.currentAccount = account.address;
-      buildinProvider.currentProvider.currentAccountType = account.type;
-      buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-      await keyring.execTransaction({
-        safeAddress: keyring.safeInstance.safeAddress,
-        transaction: keyring.currentTransaction,
-        networkId: keyring.safeInstance.network,
-        provider: new ethers.providers.Web3Provider(
-          buildinProvider.currentProvider
-        ),
-      });
+    try {
+      const keyring: GnosisKeyring = this._getKeyringByType(
+        KEYRING_CLASS.GNOSIS
+      );
+      if (keyring.currentTransaction && keyring.safeInstance) {
+        const currentProvider = new EthereumProvider();
+        currentProvider.currentAccount = account.address;
+        currentProvider.currentAccountType = account.type;
+        currentProvider.currentAccountBrand = account.brandName;
+        currentProvider.chainId = keyring.safeInstance.network;
+        await keyring.execTransaction({
+          safeAddress: keyring.safeInstance.safeAddress,
+          transaction: keyring.currentTransaction,
+          networkId: keyring.safeInstance.network,
+          provider: new ethers.providers.Web3Provider(currentProvider),
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
     }
   };
 
@@ -3138,8 +3233,20 @@ export class WalletController extends BaseController {
       current.type === type &&
       current.brandName === brand
     ) {
-      this.resetCurrentAccount();
+      await this.resetCurrentAccount();
     }
+    const sites = permissionService.getSites();
+    sites.forEach((item) => {
+      if (
+        item.account &&
+        isSameAccount(item.account, { address, type, brandName: brand || type })
+      ) {
+        this.setSiteAccount({
+          origin: item.origin,
+          account: preferenceService.getCurrentAccount(),
+        });
+      }
+    });
   };
 
   resetCurrentAccount = async () => {
@@ -4203,6 +4310,9 @@ export class WalletController extends BaseController {
   };
   getIsFirstOpen = () => {
     return preferenceService.getIsFirstOpen();
+  };
+  getIsNewUser = () => {
+    return preferenceService.getIsNewUser();
   };
   updateIsFirstOpen = () => {
     return preferenceService.updateIsFirstOpen();

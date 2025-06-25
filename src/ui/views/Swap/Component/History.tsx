@@ -164,9 +164,17 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             <span>{!isPending && sinceTime(time)}</span>
           </div>
           {!!targetDex && (
-            <span className="text-12 font-medium text-r-neutral-title-1">
-              {targetDex}
-            </span>
+            <div className="flex items-center gap-4">
+              {DEX?.[data?.dex_id]?.logo ? (
+                <img
+                  src={DEX?.[data?.dex_id]?.logo}
+                  className="w-16 h-16 rounded-full"
+                />
+              ) : null}
+              <span className="text-12 font-medium text-r-neutral-title-1">
+                {targetDex}
+              </span>
+            </div>
           )}
         </div>
 

@@ -88,7 +88,6 @@ const checkEnoughUseGasAccount = async ({
  * @param lowGasDeadline low gas deadline
  * @param isGasLess is gas less
  * @param isGasAccount is gas account
- * @param gasAccount gas account { sig, account }
  * @param autoUseGasAccount when gas balance is low , auto use gas account for gasfee
  * @param onUseGasAccount use gas account callback
  */
@@ -102,7 +101,6 @@ export const sendTransaction = async ({
   lowGasDeadline,
   isGasLess,
   isGasAccount,
-  gasAccount,
   autoUseGasAccount,
   waitCompleted = true,
   pushType = 'default',
@@ -124,10 +122,6 @@ export const sendTransaction = async ({
   lowGasDeadline?: number;
   isGasLess?: boolean;
   isGasAccount?: boolean;
-  gasAccount?: {
-    sig: string | undefined;
-    accountId: string | undefined;
-  };
   autoUseGasAccount?: boolean;
   waitCompleted?: boolean;
   pushType?: TxPushType;
@@ -233,6 +227,7 @@ export const sendTransaction = async ({
     wallet,
     tx,
     gasLimit,
+    account: { ...currentAccount, address },
   });
 
   // check gas errors
@@ -293,6 +288,7 @@ export const sendTransaction = async ({
   ) {
     failedCode = FailedCode.SimulationFailed;
   } else if (isGasNotEnough) {
+    const gasAccount = await wallet.getGasAccountSig();
     //  native gas not enough check gasAccount
     if (autoUseGasAccount && gasAccount?.sig && gasAccount?.accountId) {
       const gasAccountCanPay = await checkEnoughUseGasAccount({
@@ -483,6 +479,7 @@ export const sendTransaction = async ({
 
   // submit tx
   let hash = '';
+  const account = await wallet.getCurrentAccount();
   try {
     hash = await wallet.ethSendTransaction({
       data: {
@@ -504,6 +501,7 @@ export const sendTransaction = async ({
       },
       pushed: false,
       result: undefined,
+      account: account!,
     });
     await handleSendAfter();
   } catch (e) {

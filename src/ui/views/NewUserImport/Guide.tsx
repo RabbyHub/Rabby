@@ -53,7 +53,7 @@ export const Guide = () => {
           className={clsx(
             'mt-[85px] mb-16',
             'h-[56px] shadow-none rounded-[8px]',
-            'text-[17px] font-medium'
+            'text-[17px] font-medium bg-r-blue-default'
           )}
         >
           {t('page.newUserImport.guide.createNewAddress')}

@@ -1,0 +1,36 @@
+@import '../../style/var.less';
+
+.global-account-selector {
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid var(--r-neutral-line, #e0e5ec);
+  border-radius: 8px;
+  padding: 8px 6px;
+  max-width: 156px;
+
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--r-neutral-title1, #192945);
+
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &:not(.is-disabled):hover {
+    border: 1px solid var(--r-blue-default, #7084ff);
+    background: var(--r-blue-light1, #eef1ff);
+  }
+
+  .brand-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 1000px;
+  }
+}

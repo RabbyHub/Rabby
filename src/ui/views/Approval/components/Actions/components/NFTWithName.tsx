@@ -46,17 +46,19 @@ const NFTWithName = ({
   showTokenLabel = false,
   id,
   hasHover,
+  className,
 }: {
   nft: NFTItem;
   textStyle?: React.CSSProperties;
   showTokenLabel?: boolean;
   id?: string;
   hasHover?: boolean;
+  className?: string;
 }) => {
   const [focusingNFT, setFocusingNFT] = React.useState<NFTItem | null>(null);
   return (
     <>
-      <Wrapper>
+      <Wrapper className={className}>
         <NFTAvatar
           onPreview={(e) => {
             e.stopPropagation();

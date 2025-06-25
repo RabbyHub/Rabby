@@ -6,18 +6,22 @@ import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
 import SecurityLevelTag from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';
+import clsx from 'clsx';
 
 const RuleResultWrapper = styled.div`
   display: flex;
   align-items: center;
   min-height: 56px;
-  padding: 15px 16px;
+  padding: 18px 16px;
   padding-right: 24px;
-  background: var(--r-neutral-card1, #fff);
   border: none;
-  border-radius: 8px;
-  margin-bottom: 8px;
   position: relative;
+
+  &:has(.security-level-tag) {
+    .rule-value {
+      padding-right: 8px;
+    }
+  }
 
   .rule-desc {
     font-weight: 400;
@@ -59,6 +63,7 @@ const RuleResult = ({
   userListResult,
   onSelect,
   onEditUserList,
+  className,
 }: {
   rule: { id: string; desc: string; result: Result | null };
   collectList: { name: string; logo_url: string }[];
@@ -69,6 +74,7 @@ const RuleResult = ({
   userListResult?: Result;
   onSelect(rule: { id: string; desc: string; result: Result | null }): void;
   onEditUserList(): void;
+  className?: string;
 }) => {
   const { t } = useTranslation();
   const handleClick = () => {
@@ -125,8 +131,17 @@ const RuleResult = ({
   };
 
   return (
-    <RuleResultWrapper>
-      <div className="rule-desc flex items-center">{ruleDesc()}</div>
+    <RuleResultWrapper
+      className={clsx(className, rule.id === '1004' ? 'items-start' : '')}
+    >
+      <div
+        className={clsx(
+          'rule-desc flex items-center',
+          rule.id === '1004' ? 'leading-[20px]' : ''
+        )}
+      >
+        {ruleDesc()}
+      </div>
       <div className="rule-value">
         {rule.id === '1004' && (
           <div className="collect-list">

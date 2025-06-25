@@ -427,7 +427,6 @@ const AddressManagement = () => {
           />
         </div>
       </PageHeader>
-
       {currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
         <>
           <div className="address-wrap-with-padding px-[20px]">
@@ -481,7 +480,7 @@ const AddressManagement = () => {
           </div>
         </>
       )}
-      <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-16">
+      <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-[12px]">
         <SortInput
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}

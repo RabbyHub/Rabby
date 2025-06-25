@@ -1033,7 +1033,10 @@
       "sort-by-balance": "Ordenar por balance",
       "enterPassphraseTitle": "Ingrese la frase de contraseña para firmar",
       "sort-by-address-note": "Ordenar por nota de dirección",
-      "sort-address": "Ordenar dirección"
+      "sort-address": "Ordenar dirección",
+      "CurrentDappAddress": {
+        "desc": "Cambiar dirección Dapp"
+      }
     },
     "dashboard": {
       "home": {
@@ -1220,7 +1223,8 @@
           "customTestnet": "Agregar red personalizada",
           "toggleThemeMode": "Modo de tema",
           "themeMode": "Modo de tema",
-          "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask"
+          "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask",
+          "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
@@ -1230,7 +1234,12 @@
         "testnetBackendServiceUrl": "URL de Servicio de Backend de Testnet",
         "clearWatchMode": "Limpiar Modo de Observación",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gas de Testnet DeBank",
-        "clearPendingWarningTip": "La transacción eliminada aún puede confirmarse en la cadena a menos que sea reemplazada."
+        "clearPendingWarningTip": "La transacción eliminada aún puede confirmarse en la cadena a menos que sea reemplazada.",
+        "DappAccount": {
+          "button": "Habilitar\n",
+          "title": "Cambiar la dirección del Dapp de forma independiente\n",
+          "desc": "Una vez habilitado, puede elegir qué dirección conectar a cada DApp de forma independiente. Cambiar su dirección principal no afectará la dirección conectada a cada DApp.\n"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
@@ -1393,6 +1402,10 @@
       "offlineChain": {
         "chain": "{{chain}} pronto no estará integrado.",
         "tips": "La cadena {{chain}} no se integrará el {{date}}. Tus activos no se verán afectados, pero no se incluirán en tu saldo total. Para acceder a ellos, puedes agregarla como una red personalizada en \"Más\"."
+      },
+      "recentConnectionGuide": {
+        "button": "Entendido",
+        "title": "Cambia la dirección para la conexión Dapp aquí"
       }
     },
     "nft": {
@@ -1446,9 +1459,6 @@
           "answer": "Sí, se almacenará localmente en tu navegador y solo será accesible para ti."
         },
         "importError": "[CreateMnemonics] paso inesperado {{0}}",
-        "importQuestion1": "Si pierdo mi frase de semilla, mis activos se perderán para siempre.",
-        "importQuestion2": "Si comparto mi frase de semilla con otros, mis activos serán robados.",
-        "importQuestion3": "La frase de semilla solo se almacena en mi computadora, y Rabby no tiene acceso a ella.",
         "importQuestion4": "Si desinstalo Rabby sin hacer una copia de respaldo de la frase de semilla, Rabby no podrá recuperarla para mí.",
         "riskTips": "Antes de comenzar, por favor lee y ten en cuenta los siguientes consejos de seguridad.",
         "showSeedPhrase": "Mostrar Frase de Semilla",
@@ -1474,7 +1484,10 @@
         "passphrase": "Passphrase",
         "invalidContent": "Contenido no válido",
         "inputInvalidCount_one": "1 entrada no cumple con las normas de la Seed Phrase, por favor revise.",
-        "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.\n"
+        "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.\n",
+        "importQuestion2": "Mi frase semilla solo se almacena en mi dispositivo. Rabby no puede acceder a ella.",
+        "importQuestion3": "Si desinstalo Rabby sin hacer una copia de seguridad de mi frase semilla, no se podrá recuperar mediante Rabby.",
+        "importQuestion1": "Si pierdo o comparto mi frase semilla, perderé el acceso a mis activos de forma permanente."
       },
       "metamask": {
         "step1": "Exporta la frase de semilla o la clave privada desde MetaMask <br/><1>Guía <1/></1>",
@@ -1838,7 +1851,8 @@
         "desc": "Elige entre las billeteras que has instalado",
         "title": "Seleccione una billetera para conectar"
       },
-      "otherWalletBtn": "Conectar con Otra Wallet"
+      "otherWalletBtn": "Conectar con Otra Wallet",
+      "connectAddress": "Conectar Dirección"
     },
     "addressDetail": {
       "add-to-whitelist": "Agregar a lista blanca",
@@ -2439,12 +2453,12 @@
         "title": "Bienvenido a Rabby Wallet"
       },
       "createNewAddress": {
-        "title": "Crear nueva Seed Phrase",
         "showSeedPhrase": "Mostrar Seed Phrase",
-        "desc": "Antes de comenzar, por favor lee y ten en cuenta los siguientes consejos de seguridad.",
-        "tip3": "Si desinstalo Rabby sin hacer una copia de seguridad de la frase semilla, Rabby no podrá recuperarla por mí.",
-        "tip2": "La frase semilla solo se almacena en mi computadora, y Rabby no tiene acceso a ella.",
-        "tip1": "Si pierdo o comparto mi frase semilla, mis activos se perderán para siempre."
+        "title": "Antes de empezar",
+        "desc": "Por favor, lee y ten en cuenta los siguientes consejos de seguridad.",
+        "tip2": "Mi frase semilla se almacena únicamente en mi dispositivo. Rabby no puede acceder a ella.",
+        "tip1": "Si pierdo o comparto mi frase semilla, perderé el acceso a mis activos de forma permanente.",
+        "tip3": "Si desinstalo Rabby sin hacer una copia de seguridad de mi frase semilla, no se puede recuperar mediante Rabby."
       },
       "importList": {
         "title": "Seleccionar método de importación"
@@ -2459,13 +2473,13 @@
             "label": "Contraseña",
             "min": "La contraseña debe tener al menos 8 caracteres de longitud",
             "required": "Por favor, ingresa la contraseña",
-            "placeholder": "8 caracteres mín."
+            "placeholder": "Contraseña (mínimo 8 caracteres)"
           },
           "confirmPassword": {
             "label": "Confirmar Password",
-            "placeholder": "Contraseña",
             "notMatch": "Las contraseñas no coinciden",
-            "required": "Por favor, confirma la contraseña"
+            "required": "Por favor, confirma la contraseña",
+            "placeholder": "Confirmar contraseña"
           }
         },
         "agree": "Estoy de acuerdo con los<1/> <2>Términos de uso</2> y la <4>Política de privacidad</4>",
@@ -2480,10 +2494,14 @@
         "addMoreFrom": "Agregar más direcciones de {{name}}"
       },
       "readyToUse": {
-        "title": "Rabby Wallet está listo para usar",
-        "extensionTip": "Haz clic en <1/> y luego en <3/>",
         "pin": "Fijar Rabby Wallet",
-        "desc": "Fija Rabby Wallet en tu barra de herramientas para acceder fácilmente."
+        "guides": {
+          "step2": "Anclar Rabby Wallet",
+          "step1": "Haz clic en el ícono de la extensión del navegador."
+        },
+        "desc": "Encuentra Rabby Wallet y fíjalo",
+        "extensionTip": "Haz clic en <1/> y luego en <3/>",
+        "title": "¡Tu billetera Rabby está lista!"
       },
       "importSeedPhrase": {
         "title": "Importar Seed Phrase"
@@ -2823,7 +2841,14 @@
       "help": "Por favor, contacta al equipo oficial de esta cadena para obtener soporte.",
       "noDapp": "No hay Dapps disponibles",
       "viewDappOptions": "Ver opciones de Dapp",
-      "chainNotSupported": "No soportado en esta cadena"
+      "chainNotSupported": "No soportado en esta cadena",
+      "noDapps": "No hay Dapp disponible en esta cadena",
+      "bridgeOnDapp": "Puente en Dapp",
+      "swapOnDapp": "Intercambiar en Dapp\n"
+    },
+    "AccountSelectorModal": {
+      "searchPlaceholder": "Buscar dirección",
+      "title": "Seleccionar dirección"
     }
   },
   "global": {

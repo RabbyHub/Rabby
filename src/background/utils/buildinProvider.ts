@@ -76,7 +76,6 @@ export class EthereumProvider extends EventEmitter {
       session: INTERNAL_REQUEST_SESSION,
     };
     const mapMethod = underline2Camelcase(method);
-    const currentAccount = preferenceService.getCurrentAccount()!;
     const networkId = this.chainId || CHAINS[CHAINS_ENUM.ETH].id.toString();
 
     const chain = findChain({
@@ -110,23 +109,25 @@ export class EthereumProvider extends EventEmitter {
           ...data.params[0],
           chainId: Number(networkId),
         };
-        preferenceService.setCurrentAccount({
-          address: this.currentAccount,
-          type: this.currentAccountType,
-          brandName: this.currentAccountBrand,
-        });
         if (txParams.gas) {
           delete txParams.gas;
         }
-        return wallet
-          .sendRequest({
+        return wallet.sendRequest(
+          {
             $ctx: this.$ctx,
             method: 'eth_sendTransaction',
             params: [txParams],
-          })
-          .finally(() => {
-            preferenceService.setCurrentAccount(currentAccount);
-          });
+          },
+          {
+            account: this.currentAccount
+              ? {
+                  address: this.currentAccount,
+                  type: this.currentAccountType,
+                  brandName: this.currentAccountBrand,
+                }
+              : undefined,
+          }
+        );
       }
       case 'eth_chainId':
         return chain.hex;

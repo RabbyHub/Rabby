@@ -120,7 +120,7 @@ const ExternalTokenRow = memo(
         return <RiskTokenTips isDanger={true} />;
       }
 
-      if (data.is_scam) {
+      if (data.is_suspicious) {
         return <RiskTokenTips isDanger={false} />;
       }
 

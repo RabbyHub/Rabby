@@ -1105,7 +1105,10 @@
       "seed-phrase": "시드 문구",
       "delete-seed-phrase-title_other": "시드 문구와 {{count}} 개의 주소를 삭제합니다.",
       "backup-seed-phrase": "백업 시드 구문",
-      "cancel": "취소"
+      "cancel": "취소",
+      "CurrentDappAddress": {
+        "desc": "Dapp 주소 전환\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1268,7 +1271,8 @@
           "enableWhitelistForSendingAssets": "자산 전송을 위한 화이트리스트 활성화",
           "currentLanguage": "현재 언어",
           "label": "설정",
-          "customTestnet": "커스텀 네트워크 추가"
+          "customTestnet": "커스텀 네트워크 추가",
+          "enableDappAccount": "Dapp 주소를 독립적으로 전환\n"
         },
         "save": "저장",
         "inputOpenapiHost": "openapi 호스트를 입력하세요",
@@ -1302,7 +1306,12 @@
         "clearWatchMode": "클리어 워치 모드",
         "clearPendingWarningTip": "제거된 트랜잭션은 교체되지 않는 한 체인에서 여전히 확인될 수 있습니다.",
         "requestDeBankTestnetGasToken": "DeBank 테스트넷 가스 토큰 요청",
-        "enableWhitelist": "화이트리스트 활성화"
+        "enableWhitelist": "화이트리스트 활성화",
+        "DappAccount": {
+          "button": "啟用\n",
+          "title": "Dapp 주소를 독립적으로 전환하세요\n",
+          "desc": "啟用後，您可以獨立選擇連接到每個 Dapp 的地址。切換您的主要地址不會影響連接到每個 Dapp 的地址。\n"
+        }
       },
       "tokenDetail": {
         "customized": "맞춤형",
@@ -1462,6 +1471,10 @@
       "offlineChain": {
         "chain": "{{chain}}는 곧 통합되지 않을 것입니다.",
         "tips": "{{chain}} 체인은 {{date}}에 통합되지 않습니다. 귀하의 자산에는 영향이 없지만 총 잔액에 포함되지 않을 것입니다. 자산에 접근하려면 \"더보기\"에서 사용자 지정 네트워크로 추가할 수 있습니다."
+      },
+      "recentConnectionGuide": {
+        "title": "여기서 Dapp 연결을 위한 주소를 전환하세요\n",
+        "button": "확인했습니다\n"
       }
     },
     "nft": {
@@ -1506,10 +1519,7 @@
         "importTips": "1번째 필드에 전체 비밀 복구 구문을 붙여넣을 수 있습니다.",
         "importError": "[CreateMnemonics] 예상치 못한 단계 {{0}}",
         "riskTips": "시작하기 전에 다음의 보안 팁을 읽고 기억해 주시기 바랍니다.",
-        "importQuestion1": "내 시드 문구를 잃어버리면, 내 자산은 영원히 잃게 됩니다.",
-        "importQuestion3": "시드 문구는 내 컴퓨터에만 저장되며, Rabby는 이에 접근할 수 없습니다.",
         "showSeedPhrase": "Seed Phrase 보이기",
-        "importQuestion2": "내가 내 시드 구문을 다른 사람과 공유하면 내 자산이 도난당할 것이다.",
         "importQuestion4": "Rabby를 백업하지 않고 제거하면, Rabby는 저를 위해 시드 문구를 복구할 수 없습니다.",
         "createdSuccessfully": "생성 성공",
         "invalidContent": "유효하지 않은 콘텐츠",
@@ -1532,7 +1542,10 @@
         "passphrase": "암호구문",
         "slip39SeedPhrasePlaceholder_one": "여기에 {{count}}번째 시드 구문 공유를 입력하세요",
         "slip39SeedPhrasePlaceholder_other": "여기에 {{count}}번째 시드 구문 공유를 입력하세요",
-        "inputInvalidCount_other": "{{count}} 개의 입력이 Seed Phrase 규범에 준수하지 않으니 확인해 주세요."
+        "inputInvalidCount_other": "{{count}} 개의 입력이 Seed Phrase 규범에 준수하지 않으니 확인해 주세요.",
+        "importQuestion1": "내 시드 구문을 잃어버리거나 공유하면, 자산에 대한 접근을 영구적으로 잃게 됩니다.",
+        "importQuestion2": "내 시드 문구는 오직 내 기기에만 저장됩니다. Rabby는 이를 접근할 수 없습니다.",
+        "importQuestion3": "Rabby를 백업하지 않고 제거하면 seed phrase를 복구할 수 없습니다."
       },
       "metamask": {
         "tips": "팁:",
@@ -1907,7 +1920,8 @@
       "onYourWhitelist": "당신의 화이트리스트에",
       "addedToWhitelist": "화이트리스트에 추가됨",
       "removedFromAll": "모든 목록에서 제거됨",
-      "title": "Dapp에 연결하기"
+      "title": "Dapp에 연결하기",
+      "connectAddress": "연결 주소\n"
     },
     "addressDetail": {
       "address-detail": "주소 세부정보",
@@ -2436,12 +2450,12 @@
         "desc": "이더리움 및 모든 EVM 체인을 위한 게임 체인저 지갑"
       },
       "createNewAddress": {
-        "title": "새로운 시드 프레이즈 생성",
-        "tip2": "시드 문구는 내 컴퓨터에만 저장되며, Rabby는 그것에 접근할 수 없습니다.",
-        "tip3": "Rabby를 백업 없이 제거하면 Rabby가 나를 위해 그것을 복구할 수 없습니다.",
-        "desc": "시작하기 전에 다음 보안 팁을 읽고 기억해 주세요.",
         "showSeedPhrase": "시드 구문 보기",
-        "tip1": "내가 시드 구문을 잃어버리거나 공유하면, 내 자산은 영원히 잃게 될 것이다."
+        "title": "시작하기 전에",
+        "tip2": "내 시드 문구는 내 장치에만 저장됩니다. Rabby는 이를 접근할 수 없습니다.",
+        "tip3": "Rabby를 백업하지 않고 제거하면 seed phrase를 복구할 수 없습니다.",
+        "desc": "다음 보안 팁을 읽고 유의해 주시기 바랍니다.",
+        "tip1": "내 시드 문구를 잃거나 공유하면 자산에 대한 접근 권한을 영구적으로 잃게 됩니다."
       },
       "importList": {
         "title": "가져오기 방법 선택"
@@ -2454,15 +2468,15 @@
         "form": {
           "password": {
             "required": "비밀번호를 입력하십시오",
-            "placeholder": "8자 이상",
             "min": "비밀번호는 최소 8자 이상이어야 합니다.",
-            "label": "비밀번호"
+            "label": "비밀번호",
+            "placeholder": "비밀번호 (최소 8자)"
           },
           "confirmPassword": {
             "label": "비밀번호 확인",
             "notMatch": "비밀번호가 일치하지 않습니다",
-            "placeholder": "비밀번호",
-            "required": "비밀번호를 확인해 주세요"
+            "required": "비밀번호를 확인해 주세요",
+            "placeholder": "비밀번호 확인"
           }
         },
         "title": "비밀번호 설정",
@@ -2478,9 +2492,13 @@
       },
       "readyToUse": {
         "pin": "Rabby Wallet 핀 고정",
-        "extensionTip": "클릭 <1/> 그런 다음 <3/>",
-        "title": "Rabby Wallet은 사용 준비가 되어 있습니다.",
-        "desc": "Rabby Wallet을 툴바에 고정하여 쉽게 접근하세요."
+        "guides": {
+          "step1": "브라우저 확장 아이콘을 클릭하세요.",
+          "step2": "Rabby Wallet 고정하기"
+        },
+        "title": "당신의 Rabby Wallet이 준비되었습니다!",
+        "desc": "Rabby Wallet을 찾아 고정하세요.",
+        "extensionTip": "클릭 <1/> 그리고 나서 <3/>"
       },
       "importSeedPhrase": {
         "title": "시드 문구 가져오기"
@@ -2820,7 +2838,14 @@
       "selectADapp": "Dapp를 선택하세요",
       "help": "이 체인의 공식 팀에 지원을 요청하세요.",
       "chainNotSupported": "이 체인에서는 지원되지 않습니다",
-      "noQuotesForChain": "이 체인에 대한 견적이 아직 없습니다."
+      "noQuotesForChain": "이 체인에 대한 견적이 아직 없습니다.",
+      "swapOnDapp": "Dapp에서 스왑\n",
+      "bridgeOnDapp": "Dapp 브리지\n",
+      "noDapps": "이 체인에는 사용 가능한 Dapp이 없습니다.\n"
+    },
+    "AccountSelectorModal": {
+      "title": "주소 선택\n",
+      "searchPlaceholder": "주소 검색\n"
     }
   },
   "global": {

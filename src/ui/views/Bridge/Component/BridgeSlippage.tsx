@@ -108,6 +108,7 @@ interface BridgeSlippageProps {
   setIsCustomSlippage: (boolean: boolean) => void;
   type: 'swap' | 'bridge';
   isWrapToken?: boolean;
+  autoSuggestSlippage?: string;
 }
 export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
   const { t } = useTranslation();
@@ -123,6 +124,7 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
     setIsCustomSlippage,
     type,
     isWrapToken,
+    autoSuggestSlippage,
   } = props;
 
   const [slippageOpen, setSlippageOpen] = useState(false);
@@ -266,7 +268,10 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
               tips ? 'text-r-red-default' : 'text-r-blue-default'
             )}
           >
-            {displaySlippage}%
+            {type === 'swap' && autoSlippage
+              ? autoSuggestSlippage || displaySlippage
+              : displaySlippage}
+            %
           </span>
         </span>
       </div>

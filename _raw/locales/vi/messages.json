@@ -1105,7 +1105,10 @@
       "delete-title_other": "Xóa {{count}} địa chỉ {{brand}}",
       "seed-phrase-delete-title": "Xóa cụm từ hạt giống?",
       "delete-all-addresses-but-keep-the-seed-phrase": "Xóa tất cả các địa chỉ, nhưng giữ lại cụm từ khôi phục",
-      "delete-seed-phrase": "Xóa cụm từ hạt giống"
+      "delete-seed-phrase": "Xóa cụm từ hạt giống",
+      "CurrentDappAddress": {
+        "desc": "Đổi địa chỉ Dapp\n"
+      }
     },
     "dashboard": {
       "home": {
@@ -1268,7 +1271,8 @@
           "customRpc": "Sửa đổi RPC URL",
           "enableWhitelistForSendingAssets": "Kích hoạt Danh sách Trắng Để Gửi Tài sản",
           "metamaskPreferredDapps": "MetaMask Dapps Ưa Thích",
-          "themeMode": "Chế độ chủ đề"
+          "themeMode": "Chế độ chủ đề",
+          "enableDappAccount": "Thay đổi địa chỉ Dapp độc lập\n"
         },
         "1Hour": "1 giờ",
         "7Days": "7 ngày",
@@ -1302,7 +1306,12 @@
         "requestDeBankTestnetGasToken": "Yêu cầu Token Gas DeBank Testnet",
         "clearWatchMode": "Xóa chế độ xem",
         "updateAvailable": "Cập nhật có sẵn",
-        "clearPendingWarningTip": "Giao dịch đã xóa có thể vẫn được xác nhận trên chuỗi trừ khi nó bị thay thế."
+        "clearPendingWarningTip": "Giao dịch đã xóa có thể vẫn được xác nhận trên chuỗi trừ khi nó bị thay thế.",
+        "DappAccount": {
+          "button": "Bật\n",
+          "title": "Thay đổi địa chỉ DApp độc lập\n",
+          "desc": "Bật tính năng này, bạn có thể chọn địa chỉ kết nối với từng ứng dụng phi tập trung (Dapp) một cách độc lập. Thay đổi địa chỉ chính của bạn sẽ không ảnh hưởng đến địa chỉ đã kết nối với từng Dapp.\n"
+        }
       },
       "tokenDetail": {
         "txFailed": "Thất bại",
@@ -1462,6 +1471,10 @@
       "offlineChain": {
         "chain": "{{chain}} sẽ sớm không được tích hợp.",
         "tips": "{{chain}} Chain sẽ không được tích hợp vào ngày {{date}}. Tài sản của bạn sẽ không bị ảnh hưởng nhưng sẽ không được bao gồm trong tổng số dư của bạn. Để truy cập vào chúng, bạn có thể thêm nó như một mạng tùy chỉnh trong “More”."
+      },
+      "recentConnectionGuide": {
+        "title": "Thay đổi địa chỉ để kết nối DApp tại đây\n",
+        "button": "Rõ ràng\n"
       }
     },
     "nft": {
@@ -1505,13 +1518,10 @@
         "showSeedPhrase": "Hiện Seed Phrase",
         "importError": "[CreateMnemonics] bước không mong đợi {{0}}",
         "copy": "Sao chép cụm từ hạt giống",
-        "importQuestion2": "Nếu tôi chia sẻ cụm từ hạt giống của mình với người khác, tài sản của tôi sẽ bị đánh cắp.",
         "backup": "Sao lưu cụm từ khôi phục",
         "importTips": "Bạn có thể dán toàn bộ cụm từ khôi phục bí mật của bạn vào trường đầu tiên.",
-        "importQuestion1": "Nếu tôi mất cụm từ khôi phục, tài sản của tôi sẽ bị mất vĩnh viễn.",
         "riskTips": "Trước khi bạn bắt đầu, vui lòng đọc và ghi nhớ các mẹo bảo mật sau đây.",
         "backupTips": "Đảm bảo không ai khác đang nhìn vào màn hình của bạn khi bạn sao lưu cụm từ hạt giống.",
-        "importQuestion3": "Cụm từ hạt giống chỉ được lưu trữ trên máy tính của tôi, và Rabby không có quyền truy cập vào nó.",
         "clearAll": "Xóa Tất Cả",
         "passphrase": "Mật khẩu phụ",
         "verifySeedPhrase": "Xác minh cụm từ hạt giống",
@@ -1532,7 +1542,10 @@
         "wordPhraseAndPassphrase": "Tôi có một cụm từ <1>{{count}}</1> từ với Passphrase",
         "wordPhrase": "Tôi có một cụm từ <1>{{count}}</1> từ",
         "slip39SeedPhrasePlaceholder_one": "Nhập các phần chia sẻ cụm từ hạt giống thứ {{count}} của bạn vào đây",
-        "slip39SeedPhraseWithPassphrase": "Tôi có một cụm từ hạt giống <0>{{SLIP39}}</0> với mật khẩu."
+        "slip39SeedPhraseWithPassphrase": "Tôi có một cụm từ hạt giống <0>{{SLIP39}}</0> với mật khẩu.",
+        "importQuestion2": "Câu gốc của tôi chỉ được lưu trữ trên thiết bị của tôi. Rabby không thể truy cập nó.",
+        "importQuestion3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục của mình, nó sẽ không thể được phục hồi bởi Rabby.",
+        "importQuestion1": "Nếu tôi mất hoặc chia sẻ cụm từ hạt giống của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn."
       },
       "metamask": {
         "tips": "Mẹo:",
@@ -1907,7 +1920,8 @@
       "popularLevelLow": "Thấp",
       "trusted": "Đáng tin cậy",
       "markRuleText": "Dấu của tôi",
-      "removedFromAll": "Đã loại bỏ khỏi tất cả danh sách"
+      "removedFromAll": "Đã loại bỏ khỏi tất cả danh sách",
+      "connectAddress": "Kết nối địa chỉ\n"
     },
     "addressDetail": {
       "backup-private-key": "Sao lưu Private Key",
@@ -2436,12 +2450,12 @@
         "desc": "Ví dụ ví cách mạng cho Ethereum và tất cả các chuỗi EVM"
       },
       "createNewAddress": {
-        "desc": "Trước khi bắt đầu, vui lòng đọc và ghi nhớ những mẹo bảo mật sau đây.",
-        "title": "Tạo Cụm Từ Gốc Mới",
-        "tip1": "Nếu tôi làm mất hoặc chia sẻ cụm từ hạt giống của mình, tài sản của tôi sẽ bị mất mãi mãi.",
         "showSeedPhrase": "Hiển thị cụm từ hạt giống",
-        "tip2": "Câu nói hạt giống chỉ được lưu trữ trên máy tính của tôi, và Rabby không có quyền truy cập vào nó.",
-        "tip3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục, Rabby sẽ không thể lấy lại cho tôi."
+        "title": "Trước Khi Bạn Bắt Đầu",
+        "desc": "Vui lòng đọc và ghi nhớ những mẹo bảo mật sau đây.",
+        "tip3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục, nó không thể được khôi phục bởi Rabby.",
+        "tip1": "Nếu tôi mất hoặc chia sẻ cụm từ khôi phục của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn.",
+        "tip2": "Câu nói hạt giống của tôi chỉ được lưu trữ trên thiết bị của tôi. Rabby không thể truy cập vào nó."
       },
       "importList": {
         "title": "Chọn Phương Thức Nhập"
@@ -2454,15 +2468,15 @@
         "form": {
           "password": {
             "label": "Mật khẩu",
-            "placeholder": "Tối thiểu 8 ký tự",
             "min": "Mật khẩu phải có ít nhất 8 ký tự.",
-            "required": "Vui lòng nhập Mật khẩu"
+            "required": "Vui lòng nhập Mật khẩu",
+            "placeholder": "Mật khẩu (tối thiểu 8 ký tự)"
           },
           "confirmPassword": {
             "notMatch": "Mật khẩu không khớp",
             "label": "Xác nhận Mật khẩu",
             "required": "Vui lòng xác nhận mật khẩu",
-            "placeholder": "Mật khẩu"
+            "placeholder": "Xác nhận mật khẩu"
           }
         },
         "title": "Đặt Mật Khẩu",
@@ -2477,10 +2491,14 @@
         "addMoreAddr": "Thêm nhiều địa chỉ từ cụm từ hạt giống này"
       },
       "readyToUse": {
-        "desc": "Ghim Ví Rabby vào thanh công cụ của bạn để truy cập dễ dàng.",
         "pin": "Ghim Rabby Wallet",
-        "title": "Rabby Wallet đã sẵn sàng để sử dụng",
-        "extensionTip": "Click <1/> và sau đó <3/>"
+        "guides": {
+          "step2": "Ghim ví Rabby Wallet",
+          "step1": "Nhấn vào biểu tượng mở rộng trình duyệt"
+        },
+        "title": "Ví của bạn trên Rabby đã sẵn sàng!",
+        "extensionTip": "Click <1/> và sau đó <3/>",
+        "desc": "Tìm Rabby Wallet và ghim nó"
       },
       "importSeedPhrase": {
         "title": "Nhập cụm từ khôi phục"
@@ -2820,7 +2838,14 @@
       "noDapp": "Không có Dapp nào khả dụng",
       "viewDappOptions": "Xem tùy chọn Dapp",
       "thirdPartyDappToProceed": "Vui lòng sử dụng một Dapp bên thứ ba để tiếp tục.",
-      "help": "Vui lòng liên hệ với đội ngũ chính thức của chuỗi này để được hỗ trợ"
+      "help": "Vui lòng liên hệ với đội ngũ chính thức của chuỗi này để được hỗ trợ",
+      "noDapps": "Không có Dapp nào khả dụng trên chuỗi này\n",
+      "bridgeOnDapp": "Trên Dapp\n",
+      "swapOnDapp": "Trên Dapp trao đổi\n"
+    },
+    "AccountSelectorModal": {
+      "searchPlaceholder": "Tìm địa chỉ\n",
+      "title": "Chọn địa chỉ\n"
     }
   },
   "global": {

@@ -93,6 +93,7 @@ export interface PreferenceStore {
   initAlianNames: boolean;
   gasCache: GasCache;
   currentVersion: string;
+  prevVersion?: string;
   firstOpen: boolean;
   pinnedChain: string[];
   /**
@@ -106,6 +107,7 @@ export interface PreferenceStore {
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
   sendEnableTime?: number;
+  ga4EventTime?: number;
   customizedToken?: Token[];
   blockedToken?: Token[];
   collectionStarred?: Token[];
@@ -122,6 +124,8 @@ export interface PreferenceStore {
   /** @deprecated */
   reserveGasOnSendToken?: boolean;
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
+
+  isEnabledDappAccount?: boolean;
 }
 
 export interface AddressSortStore {
@@ -171,6 +175,7 @@ class PreferenceService {
         initAlianNames: false,
         gasCache: {},
         currentVersion: '0',
+        prevVersion: '0',
         firstOpen: false,
         pinnedChain: [],
         addedToken: {},
@@ -191,6 +196,8 @@ class PreferenceService {
         reserveGasOnSendToken: true,
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
+        isEnabledDappAccount: false,
+        ga4EventTime: 0,
       },
     });
 
@@ -283,6 +290,23 @@ class PreferenceService {
     }
     if (!this.store.safeSelfHostConfirm) {
       this.store.safeSelfHostConfirm = {};
+    }
+
+    if (
+      !this.store.currentVersion ||
+      semver(version, this.store.currentVersion) > 0
+    ) {
+      this.store.firstOpen = true;
+    }
+
+    if (this.store.currentVersion !== version) {
+      this.store.prevVersion = this.store.currentVersion;
+    }
+
+    this.store.currentVersion = version;
+
+    if (this.store.ga4EventTime) {
+      this.store.ga4EventTime = 0;
     }
   };
 
@@ -479,9 +503,11 @@ class PreferenceService {
   setCurrentAccount = (account: Account | null) => {
     this.store.currentAccount = account;
     if (account) {
-      sessionService.broadcastEvent('accountsChanged', [
-        account.address.toLowerCase(),
-      ]);
+      if (!this.store.isEnabledDappAccount) {
+        sessionService.broadcastEvent('accountsChanged', [
+          account.address.toLowerCase(),
+        ]);
+      }
       syncStateToUI(BROADCAST_TO_UI_EVENTS.accountsChanged, account);
     }
   };
@@ -680,15 +706,13 @@ class PreferenceService {
     }
   };
   getIsFirstOpen = () => {
-    if (
-      !this.store.currentVersion ||
-      semver(version, this.store.currentVersion) > 0
-    ) {
-      this.store.currentVersion = version;
-      this.store.firstOpen = true;
-    }
     return this.store.firstOpen;
   };
+
+  getIsNewUser = () => {
+    return !this.store.prevVersion || this.store.prevVersion === '0';
+  };
+
   updateIsFirstOpen = () => {
     this.store.firstOpen = false;
   };

@@ -122,6 +122,9 @@ export const Main = () => {
     setLowCreditVisible,
     showMoreVisible,
     inSufficientCanGetQuote,
+
+    autoSuggestSlippage,
+    setAutoSuggestSlippage,
   } = useTokenPair(userAddress);
 
   const {
@@ -332,7 +335,7 @@ export const Main = () => {
         KEYRING_CLASS.HARDWARE.LEDGER,
       ].includes((currentAccount?.type || '') as any) &&
       !receiveToken?.low_credit_score &&
-      !receiveToken?.is_scam &&
+      !receiveToken?.is_suspicious &&
       receiveToken?.is_verified !== false &&
       !isSlippageHigh &&
       !isSlippageLow &&
@@ -693,6 +696,7 @@ export const Main = () => {
           !!receiveToken && (
             <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
               <BridgeShowMore
+                autoSuggestSlippage={autoSuggestSlippage}
                 openFeePopup={openFeePopup}
                 open={showMoreOpen}
                 setOpen={setShowMoreOpen}

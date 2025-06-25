@@ -34,8 +34,7 @@ const RequestOrigin = styled.div`
   line-height: 15px;
   position: relative;
   box-sizing: content-box;
-  padding-top: 10px;
-  padding-bottom: 8px;
+  padding: 10px 12px 8px 12px;
   display: flex;
   align-items: center;
   justify-content: center;

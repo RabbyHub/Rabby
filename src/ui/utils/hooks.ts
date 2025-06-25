@@ -24,16 +24,17 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
+    const approval = await getApproval();
+
     // handle connect
-    if (!(await deviceConnect(data))) {
+    if (!(await deviceConnect(data, approval?.data?.account))) {
       return;
     }
-
-    const approval = await getApproval();
 
     if (approval) {
       wallet.resolveApproval(data, forceReject, approvalId);
     }
+
     if (stay) {
       return;
     }

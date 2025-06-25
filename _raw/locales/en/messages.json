@@ -829,7 +829,7 @@
       },
       "revokeModal": {
         "confirmRevokePrivateKey": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with 1 click.",
-        "confirmRevokeLedger": "Using a Ledger address, you can batch revoke {{count}} approvals with 1 click.",
+        "confirmRevokeLedger": "Batch revoke {{count}} approvals in one task list",
         "batchRevoke": "Batch Revoke",
         "revokeOneByOne": "Revoke One by One",
         "revoked": "Revoked:",
@@ -841,6 +841,7 @@
         "pause": "Pause",
         "resume": "Continue",
         "done": "Done",
+        "ledgerConfirmTitle": "Batch Revoke with Ledger",
         "confirmTitle": "Batch Revoke with One Click",
         "cancelTitle": "Cancel Remaining Revokes",
         "confirm": "Confirm",
@@ -1105,7 +1106,10 @@
       "enterThePassphrase": "Enter the Passphrase",
       "enterPassphraseTitle": "Enter Passphrase to Sign",
       "passphraseError": "Passphrase invalid",
-      "addNewAddress": "Add New Address"
+      "addNewAddress": "Add New Address",
+      "CurrentDappAddress": {
+        "desc": "Switch Dapp Address"
+      }
     },
     "dashboard": {
       "home": {
@@ -1292,7 +1296,8 @@
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
           "customTestnet": "Add Custom Network",
-          "metamaskMode": "Connect Rabby by Disguising as MetaMask"
+          "metamaskMode": "Connect Rabby by Disguising as MetaMask",
+          "enableDappAccount": "Switch Dapp Address Independently"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1302,7 +1307,12 @@
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
         "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token",
-        "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced."
+        "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced.",
+        "DappAccount": {
+          "title": "Switch Dapp Address Independently",
+          "desc": "Once enabled, you can choose which address to connect to each Dapp independently. Switching your main address won't affect the address connected to each Dapp.",
+          "button": "Enable"
+        }
       },
       "tokenDetail": {
         "noIssuer": "No issuer information available",
@@ -1462,6 +1472,10 @@
       "offlineChain": {
         "chain": "{{chain}} will soon not be integrated.",
         "tips": "{{chain}} Chain will not be integrated on {{date}}. Your assets won’t be affected but won’t be included in your total balance. To access them, you may add it as a custom network in “More”."
+      },
+      "recentConnectionGuide": {
+        "title": "Switch address for Dapp connection here",
+        "button": "Got it"
       }
     },
     "nft": {
@@ -1516,9 +1530,9 @@
           "answer": "Yes, it will be stored locally on your browser and only accessible to you."
         },
         "importError": "[CreateMnemonics] unexpected step {{0}}",
-        "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
-        "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
-        "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
+        "importQuestion1": "If I lose or share my seed phrase, I’ll lose access to my assets permanently",
+        "importQuestion2": "My seed phrase is only stored on my device. Rabby can’t access it",
+        "importQuestion3": "If I uninstall Rabby without backing up my seed phrase, it cannot be recovered by Rabby",
         "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.",
         "riskTips": "Before you start, please read and keep the following security tips in mind.",
         "showSeedPhrase": "Show Seed Phrase",
@@ -1907,7 +1921,8 @@
       "SelectWallet": {
         "title": "Select a Wallet to Connect",
         "desc": "Select from the wallets you have installed"
-      }
+      },
+      "connectAddress": "Connect Address"
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -2436,11 +2451,11 @@
         "importAddress": "I already have an address"
       },
       "createNewAddress": {
-        "title": "Create New Seed Phrase",
-        "desc": "Before you start, please read and keep the following security tips in mind.",
-        "tip1": "If I lose or share my seed phrase, my assets will be lost forever.",
-        "tip2": "The seed phrase is only stored on my computer, and Rabby has no access to it. ",
-        "tip3": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me. ",
+        "title": "Before You Start",
+        "desc": "Please read and keep the following security tips in mind",
+        "tip1": "If I lose or share my seed phrase, I’ll lose access to my assets permanently",
+        "tip2": "My seed phrase is only stored on my device. Rabby can’t access it",
+        "tip3": "If I uninstall Rabby without backing up my seed phrase, it cannot be recovered by Rabby",
         "showSeedPhrase": "Show Seed Phrase"
       },
       "importList": {
@@ -2455,13 +2470,13 @@
         "form": {
           "password": {
             "label": "Password",
-            "placeholder": "8 characters min",
+            "placeholder": "Password (8 characters min)",
             "required": "Please input Password",
             "min": "Password must be at least 8 characters long"
           },
           "confirmPassword": {
             "label": "Confirm Password",
-            "placeholder": "Password",
+            "placeholder": "Confirm Password",
             "required": "Please Confirm Password",
             "notMatch": "Passwords do not match"
           }
@@ -2477,10 +2492,14 @@
         "addMoreFrom": "Add more addresses from {{name}}"
       },
       "readyToUse": {
-        "title": "Rabby Wallet is Ready to Use",
-        "desc": "Pin Rabby Wallet to your toolbar for easy access.",
+        "title": "Your Rabby Wallet is Ready !",
+        "desc": "Find Rabby Wallet and Pin it",
         "pin": "Pin Rabby Wallet",
-        "extensionTip": "Click <1/> and then <3/>"
+        "extensionTip": "Click <1/> and then <3/>",
+        "guides": {
+          "step1": "Click the browser extension icon",
+          "step2": "Pin Rabby Wallet"
+        }
       },
       "importSeedPhrase": {
         "title": "Import Seed Phrase"
@@ -2824,6 +2843,10 @@
       "title": "You're Leaving Rabby Wallet",
       "content": "You're about to visit an external website. Rabby Wallet is not responsible for the content or security of this site.",
       "button": "Continue"
+    },
+    "AccountSelectorModal": {
+      "title": "Select address",
+      "searchPlaceholder": "Search address"
     }
   },
   "global": {

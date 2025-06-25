@@ -43,7 +43,6 @@ import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import GasSelectorHeader, {
   GasSelectorResponse,
 } from '../TxComponents/GasSelectorHeader';
-import { sendTransaction } from '@/ui/utils/sendTransaction';
 import clsx from 'clsx';
 import { Ledger } from '../../../CommonPopup/Ledger';
 import { Popup } from '@/ui/component';
@@ -453,6 +452,7 @@ export const MiniSignTx = ({
             wallet,
             tx,
             gasLimit: item.gasLimit,
+            account: currentAccount!,
           }),
         };
       })
@@ -722,6 +722,7 @@ export const MiniSignTx = ({
           wallet,
           tx,
           gasLimit,
+          account: currentAccount,
         });
 
         tx.gas = gasLimit;
@@ -903,6 +904,7 @@ export const MiniSignTx = ({
                       tx: item.tx,
                       wallet,
                       gasLimit: item.gasLimit,
+                      account: currentAccount!,
                     })
                   )
                 );

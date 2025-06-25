@@ -474,6 +474,10 @@ export const useTokenPair = (userAddress: string) => {
 
   const [pending, setPending] = useState(false);
 
+  const [autoSuggestSlippage, setAutoSuggestSlippage] = useState(
+    getSwapAutoSlippageValue(isStableCoin)
+  );
+
   const fetchIdRef = useRef(0);
   const { getAllQuotes, validSlippage } = useQuoteMethods();
   const [
@@ -496,12 +500,40 @@ export const useTokenPair = (userAddress: string) => {
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
-      // setActiveProvider(undefined);
+      let slippage = slippageObj.slippage;
+      if (slippageObj.autoSlippage) {
+        try {
+          const suggestSlippage = await wallet.openapi.suggestSlippage({
+            chain_id: findChainByEnum(chain)!.serverId,
+            slippage: new BigNumber(slippageObj.slippage || '0.1')
+              .div(100)
+              .toFixed(),
+            from_token_id: payToken.id,
+            to_token_id: receiveToken.id,
+            from_token_amount: inputAmount,
+          });
+          console.log('suggest_slippage', {
+            suggestSlippage,
+            current: slippageObj.slippage || '0.1',
+          });
+          slippage = suggestSlippage.suggest_slippage
+            ? new BigNumber(suggestSlippage.suggest_slippage)
+                .times(100)
+                .toFixed()
+            : slippageObj.slippage || '0.1';
+          if (currentFetchId === fetchIdRef.current) {
+            setAutoSuggestSlippage(slippage);
+          }
+        } catch (error) {
+          console.log('suggest_slippage error', error);
+        }
+      }
+
       return getAllQuotes({
         userAddress,
         payToken,
         receiveToken,
-        slippage: slippageObj.slippage || '0.1',
+        slippage: slippage,
         chain,
         payAmount: inputAmount,
         fee: feeRate,
@@ -527,6 +559,7 @@ export const useTokenPair = (userAddress: string) => {
     inputAmount,
     feeRate,
     slippageObj.slippage,
+    slippageObj.autoSlippage,
     isDraggingSlider,
   ]);
 
@@ -554,6 +587,7 @@ export const useTokenPair = (userAddress: string) => {
     feeRate,
     inSufficientCanGetQuote,
     slippageObj?.slippage,
+    slippageObj.autoSlippage,
   ]);
 
   useDebounce(
@@ -841,6 +875,9 @@ export const useTokenPair = (userAddress: string) => {
     showMoreVisible,
 
     ...slippageObj,
+
+    autoSuggestSlippage,
+    setAutoSuggestSlippage,
   };
 };
 
