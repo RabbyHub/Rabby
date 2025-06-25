@@ -68,7 +68,7 @@ const AddressTypeCard = ({
   }, [type, showCexInfo]);
 
   return (
-    <div className="flex gap-[4px] items-center">
+    <div className="flex gap-[4px] items-center justify-center">
       <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
         {showCexInfo ? (
           <img
@@ -86,7 +86,12 @@ const AddressTypeCard = ({
             }
           />
         )}
-        <div className="font-medium text-[13px] text-r-neutral-title1">
+        <div
+          className={clsx(
+            'font-medium text-[13px] text-r-neutral-title1',
+            showSideDesc ? 'max-w-[100px]  truncate' : ''
+          )}
+        >
           {aliasName}
         </div>
       </div>

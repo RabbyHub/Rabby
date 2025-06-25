@@ -430,6 +430,7 @@ const TokenSelector = ({
           disabled={disable}
           token={token}
           type={_type}
+          hideUsdValue={showCustomTestnetAssetList && selectedTab === 'testnet'}
           supportChains={supportChains}
           updateToken={updateToken}
           openTokenDetail={() => {
@@ -439,7 +440,7 @@ const TokenSelector = ({
         />
       );
     },
-    [onConfirm, supportChains, visible]
+    [onConfirm, supportChains, visible, showCustomTestnetAssetList, selectedTab]
   );
 
   const recentToTokens = useRabbySelector((s) => s.swap.recentToTokens || []);
@@ -670,6 +671,7 @@ function CommonTokenItem(props: {
   supportChains?: CHAINS_ENUM[];
   type: TokenSelectorProps['type'];
   openTokenDetail: () => void;
+  hideUsdValue?: boolean;
 }) {
   const {
     token,
@@ -680,6 +682,7 @@ function CommonTokenItem(props: {
     updateToken,
     type,
     openTokenDetail,
+    hideUsdValue,
   } = props;
 
   const { t } = useTranslation();
@@ -826,7 +829,7 @@ function CommonTokenItem(props: {
                   : t('component.TokenSelector.bridge.low')}
               </span>
             </div>
-          ) : (
+          ) : !hideUsdValue ? (
             <>
               <div className={clsx('token_usd_value')}>
                 {formatUsdValue(
@@ -839,6 +842,10 @@ function CommonTokenItem(props: {
                 {formatTokenAmount(value?.amount || 0)}
               </div>
             </>
+          ) : (
+            <div className={clsx('token_usd_value')}>
+              {formatTokenAmount(value?.amount || 0)}
+            </div>
           )}
         </div>
       </li>
