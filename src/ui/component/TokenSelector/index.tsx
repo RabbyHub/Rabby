@@ -399,34 +399,11 @@ const TokenSelector = ({
       if (!visible && updateToken) {
         return null;
       }
-      const { disable, reason } = checkItem?.(token) || {};
+      const { disable } = checkItem?.(token) || {};
       return (
         <CommonTokenItem
           key={`${token.chain}-${token.id}`}
-          onConfirm={(token) => {
-            if (disable) {
-              Modal.confirm({
-                width: 340,
-                closable: true,
-                closeIcon: <></>,
-                centered: true,
-                className: 'token-selector-disable-item-tips',
-                title: null,
-                content: reason,
-                okText: t('global.proceedButton'),
-                cancelText: t('global.cancelButton'),
-                cancelButtonProps: {
-                  type: 'ghost',
-                  className: 'text-r-blue-default border-r-blue-default',
-                },
-                onOk() {
-                  onConfirm(token);
-                },
-              });
-              return;
-            }
-            onConfirm(token);
-          }}
+          onConfirm={onConfirm}
           disabled={disable}
           token={token}
           type={_type}
