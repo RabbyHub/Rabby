@@ -55,7 +55,6 @@ import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHom
 import { GasAccountDashBoardHeader } from '../GasAccount/components/DashBoardHeader';
 import { useGnosisPendingCount } from '@/ui/hooks/useGnosisPendingCount';
 import { ga4 } from '@/utils/ga4';
-import { BalanceViewType } from './components/BalanceView/BalanceView';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -259,7 +258,6 @@ const Dashboard = () => {
   const { dashboardBalanceCacheInited } = useHomeBalanceViewOuterPrefetch(
     currentAccount?.address
   );
-  const balanceViewRef = React.useRef<BalanceViewType>(null);
 
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();
@@ -380,7 +378,7 @@ const Dashboard = () => {
             </div>
           )}
           {dashboardBalanceCacheInited && (
-            <BalanceView ref={balanceViewRef} currentAccount={currentAccount} />
+            <BalanceView currentAccount={currentAccount} />
           )}
           {isGnosis ? (
             <Queue
@@ -406,7 +404,6 @@ const Dashboard = () => {
           isGnosis={isGnosis}
           higherBottom={isGnosis}
           setDashboardReload={() => setDashboardReload(true)}
-          totalBalanceText={balanceViewRef.current?.getBalanceText() || ''}
         />
       </div>
       <Modal

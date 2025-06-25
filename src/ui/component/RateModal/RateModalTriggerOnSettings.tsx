@@ -7,7 +7,11 @@ import { ReactComponent as RcIconCloseCC } from './icons/close-cc.svg';
 import { ReactComponent as RabbySilhouette } from './icons/rabby-silhouette.svg';
 
 import ClickableStar from './ClickableStar';
-import { useExposureRateGuide, useRateModal } from './hooks';
+import {
+  useExposureRateGuide,
+  useRateModal,
+  useTotalBalanceTextForRate,
+} from './hooks';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 
@@ -41,7 +45,8 @@ export default function RateModalTriggerOnSettings({
 }) {
   const { t } = useTranslation();
   const { shouldShowRateGuideOnHome } = useExposureRateGuide();
-  const { toggleShowRateModal } = useRateModal();
+  const { toggleShowRateModal, pushRateDetails } = useRateModal();
+  useTotalBalanceTextForRate();
 
   const [userSelectedStar, setUserSelectedStar] = useState(0);
 
@@ -51,6 +56,10 @@ export default function RateModalTriggerOnSettings({
     matomoRequestEvent({ category: 'Rate Rabby', action: 'Rate_Show' });
     ga4.fireEvent('Rate_Show', { event_category: 'Rate Rabby' });
   }, [shouldShowRateGuideOnHome]);
+
+  const {
+    top10TotalBalanceText: totalBalanceText,
+  } = useTotalBalanceTextForRate();
 
   if (!shouldShowRateGuideOnHome) return null;
 
@@ -111,6 +120,8 @@ export default function RateModalTriggerOnSettings({
               toggleShowRateModal(true, {
                 starCountOnOpen: index + 1,
               });
+              pushRateDetails({ totalBalanceText });
+
               matomoRequestEvent({
                 category: 'Rate Rabby',
                 action: `Rate_Star_${starToText(userSelectedStar)}`,

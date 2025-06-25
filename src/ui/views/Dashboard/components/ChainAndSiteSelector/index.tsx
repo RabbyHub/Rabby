@@ -48,7 +48,6 @@ export default function ChainAndSiteSelector({
   hideAllList,
   isGnosis,
   setDashboardReload,
-  totalBalanceText,
 }: {
   onChange(site: ConnectedSite | null | undefined): void;
   showChain?: boolean;
@@ -60,7 +59,6 @@ export default function ChainAndSiteSelector({
   pendingTxCount?: number;
   gnosisPendingCount?: number;
   setDashboardReload(): void;
-  totalBalanceText: string;
 }) {
   const { t } = useTranslation();
   const history = useHistory();
@@ -454,7 +452,7 @@ export default function ChainAndSiteSelector({
         onClose={() => setIsShowEcologyModal(false)}
       />
 
-      <RateModal totalBalanceText={totalBalanceText} />
+      <RateModal />
     </div>
   );
 }
