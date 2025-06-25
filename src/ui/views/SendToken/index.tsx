@@ -439,21 +439,13 @@ const SendToken = () => {
 
   const canUseMiniTx = useMemo(() => {
     return (
-      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
-        (currentAccount?.type || '') as any
-      ) &&
-      !chainItem?.isTestnet &&
-      !currentToken?.low_credit_score &&
-      !currentToken?.is_suspicious &&
-      currentToken?.is_verified !== false
+      [
+        KEYRING_TYPE.SimpleKeyring,
+        KEYRING_TYPE.HdKeyring,
+        KEYRING_CLASS.HARDWARE.LEDGER,
+      ].includes((currentAccount?.type || '') as any) && !chainItem?.isTestnet
     );
-  }, [
-    chainItem?.isTestnet,
-    currentAccount?.type,
-    currentToken?.is_suspicious,
-    currentToken?.is_verified,
-    currentToken?.low_credit_score,
-  ]);
+  }, [chainItem?.isTestnet, currentAccount?.type]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({ amount }: FormSendToken) => {
@@ -982,7 +974,7 @@ const SendToken = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
-    } else if (history.length > 2) {
+    } else if (history.length > 1) {
       history.goBack();
     } else {
       history.replace(`/send-poly${history.location.search}`);
@@ -1188,7 +1180,7 @@ const SendToken = () => {
         >
           <div className="flex-1 overflow-auto">
             <div className="section relative">
-              <div className={clsx('section-title mt-[8px]')}>
+              <div className="section-title mt-[8px] font-medium">
                 {t('page.sendToken.sectionFrom.title')}
               </div>
               <AccountItem
@@ -1207,7 +1199,7 @@ const SendToken = () => {
                 }
               />
               <div className="section-title mt-[20px]">
-                <span className="section-title__to">
+                <span className="section-title__to font-medium">
                   {t('page.sendToken.sectionTo.title')}
                 </span>
               </div>
@@ -1247,7 +1239,7 @@ const SendToken = () => {
             </div>
             <div className="section">
               <div className="section-title flex justify-between items-center">
-                <div className="token-balance whitespace-pre-wrap">
+                <div className="token-balance whitespace-pre-wrap font-medium">
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
               </div>
