@@ -1,3 +1,4 @@
+/* eslint-enable react-hooks/exhaustive-deps */
 import { useCallback, useMemo } from 'react';
 import * as Sentry from '@sentry/browser';
 
@@ -202,16 +203,15 @@ export function useRateModal() {
   );
 
   const pushRateDetails = useCallback(
-    async (params: { totalBalanceText: string }) => {
-      const needFeedbackText = rateModalState.userStar <= 3;
+    async (params: { totalBalanceText: string; userStar?: number }) => {
+      const userStar = params.userStar ?? rateModalState.userStar;
+      const needFeedbackText = userStar <= 3;
 
       const feedbackText = rateModalState.userFeedback.trim();
 
       const feedbackContent = [
         ...(!needFeedbackText ? [] : [`Comment: ${feedbackText}`, '  ']),
-        `Rate: ${makeStarText(rateModalState.userStar, 5)} (${
-          rateModalState.userStar
-        }) `,
+        `Rate: ${makeStarText(userStar, 5)} (${userStar}) `,
         `Total Balance: ${ensurePrefix(params.totalBalanceText, '$')}`,
         `Client Version: ${process.env.release || '0'}`,
       ]
@@ -241,7 +241,7 @@ export function useRateModal() {
         matomoRequestEvent({
           category: 'Rate Rabby',
           action: 'Rate_SubmitAdvice',
-          label: [rateModalState.userStar].join('|'),
+          label: [userStar].join('|'),
         });
         ga4.fireEvent('Rate_SubmitAdvice', { event_category: 'Rate Rabby' });
       } catch (error) {
@@ -267,7 +267,7 @@ export function useRateModal() {
     });
     ga4.fireEvent('Rate_JumpWebStore', { event_category: 'Rate Rabby' });
     openTrustedExternalWebsiteInTab('chromeStoreReviewsUrl');
-  }, []);
+  }, [rateModalState.userStar]);
 
   return {
     rateModalShown: rateModalState.visible,

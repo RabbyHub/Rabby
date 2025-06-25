@@ -1,3 +1,4 @@
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -121,7 +122,7 @@ export default function RateModalTriggerOnSettings({
                 starCountOnOpen: index + 1,
               });
               if (index + 1 >= 4) {
-                pushRateDetails({ totalBalanceText });
+                pushRateDetails({ totalBalanceText, userStar: index + 1 });
               }
 
               matomoRequestEvent({
