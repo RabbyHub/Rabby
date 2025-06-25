@@ -665,9 +665,7 @@
         "confirmText": "Confirmar",
         "title": "Digite a Senha para Confirmar"
       },
-      "sectionBalance": {
-        "title": "Saldo"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "Rede"
       },

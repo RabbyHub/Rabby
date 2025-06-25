@@ -664,9 +664,7 @@
         "confirmText": "확인",
         "title": "비밀번호를 입력하여 확인하세요"
       },
-      "sectionBalance": {
-        "title": "잔액"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "체인"
       },

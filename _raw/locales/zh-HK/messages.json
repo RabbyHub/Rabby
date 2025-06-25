@@ -1215,9 +1215,7 @@
         "confirmText": "確認",
         "title": "輸入密碼進行確認"
       },
-      "sectionBalance": {
-        "title": "結餘"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "鏈"
       },

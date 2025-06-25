@@ -665,9 +665,7 @@
         "confirmText": "Onayla",
         "title": "Onaylamak için Şifreyi Girin"
       },
-      "sectionBalance": {
-        "title": "Bakiye"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "Zincir"
       },

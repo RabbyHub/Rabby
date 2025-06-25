@@ -664,9 +664,7 @@
         "cancelText": "Batal",
         "title": "Masukkan Kata Sandi untuk Mengonfirmasi"
       },
-      "sectionBalance": {
-        "title": "Saldo"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "Rantai"
       },

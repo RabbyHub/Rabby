@@ -665,9 +665,7 @@
         "confirmText": "確認",
         "title": "確認のためにパスワードを入力"
       },
-      "sectionBalance": {
-        "title": "残高"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "チェーン"
       },

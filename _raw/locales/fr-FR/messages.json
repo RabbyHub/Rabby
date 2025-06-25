@@ -1565,9 +1565,7 @@
         "confirmText": "Confirmer",
         "title": "Entrer le mot de passe pour confirmer"
       },
-      "sectionBalance": {
-        "title": "Solde"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "Chaîne"
       },

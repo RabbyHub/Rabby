@@ -665,9 +665,7 @@
         "confirmText": "Bestätigen",
         "title": "Passwort zur Bestätigung eingeben"
       },
-      "sectionBalance": {
-        "title": "Guthaben"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "Chain"
       },

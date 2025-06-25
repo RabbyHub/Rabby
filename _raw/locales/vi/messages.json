@@ -664,9 +664,7 @@
         "cancelText": "Hủy bỏ",
         "title": "Nhập Mật khẩu để Xác nhận"
       },
-      "sectionBalance": {
-        "title": "Số dư"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "Chuỗi"
       },

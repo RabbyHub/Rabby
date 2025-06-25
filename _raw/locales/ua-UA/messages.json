@@ -666,9 +666,7 @@
         "confirmText": "Підтвердити",
         "title": "Введіть пароль для підтвердження"
       },
-      "sectionBalance": {
-        "title": "Баланс"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "Мережа"
       },

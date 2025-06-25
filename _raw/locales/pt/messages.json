@@ -664,9 +664,7 @@
         "confirmText": "Confirmar",
         "cancelText": "Cancelar"
       },
-      "sectionBalance": {
-        "title": "Saldo"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": " cadeia"
       },

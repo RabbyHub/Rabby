@@ -1215,9 +1215,7 @@
         "confirmText": "确认",
         "title": "输入密码进行确认"
       },
-      "sectionBalance": {
-        "title": "余额"
-      },
+      "sectionBalance": {},
       "sectionChain": {
         "title": "链"
       },
