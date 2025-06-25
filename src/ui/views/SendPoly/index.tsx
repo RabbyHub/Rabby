@@ -190,7 +190,6 @@ const SendPoly = () => {
       handleGotoSendToken(address, type);
     }
   };
-
   const handleGotoSendToken = (address: string, type?: string) => {
     const query = new URLSearchParams(history.location.search);
     query.set('to', address);
@@ -208,7 +207,6 @@ const SendPoly = () => {
     query.set('nftItem', nftItem || '');
     history.push(`/send-nft?${query.toString()}`);
   };
-
   const handleChange = (address: string, type?: string) => {
     if (!isValidAddress(address)) {
       return;

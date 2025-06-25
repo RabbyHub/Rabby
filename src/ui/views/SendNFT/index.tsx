@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +12,9 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Form, message, Button } from 'antd';
 import { isValidAddress } from '@ethereumjs/util';
-import { CHAINS_ENUM } from 'consts';
+import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
+import { useRequest } from 'ahooks';
+import { CHAINS_ENUM, KEYRING_TYPE } from 'consts';
 import { useRabbyDispatch, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
 import {
@@ -24,6 +32,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { MiniApproval } from '../Approval/components/MiniSignTx';
 
 import { findChain, findChainByEnum } from '@/utils/chain';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -35,9 +44,12 @@ import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
+import { Tx } from 'background/service/openapi';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+
+const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -57,9 +69,51 @@ const SendNFT = () => {
   const [form] = useForm<{ to: string; amount: number }>();
   const [inited, setInited] = useState(false);
 
+  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
+  const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
+  const [, setRefreshId] = useState(0);
+
+  const chainInfo = useMemo(() => {
+    return findChain({ enum: chain });
+  }, [chain]);
+
+  const nftItem = useMemo(() => {
+    const query = new URLSearchParams(search);
+    const nftItemParam = query.get('nftItem');
+
+    if (nftItemParam) {
+      try {
+        const decodedNftItem = decodeURIComponent(nftItemParam);
+        const parsedNftItem = JSON.parse(decodedNftItem);
+        return parsedNftItem;
+      } catch (error) {
+        return null;
+      }
+    }
+    return null;
+  }, [search]);
+
+  const toAddress = useMemo(() => {
+    const query = new URLSearchParams(search);
+    const toParam = query.get('to');
+    return toParam || '';
+  }, [search]);
+
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0);
+
+  const miniSignTxs = useMemo(() => {
+    return miniSignTx ? [miniSignTx] : [];
+  }, [miniSignTx]);
+
+  const canUseMiniTx = useMemo(() => {
+    return (
+      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
+        (currentAccount?.type || '') as any
+      ) && !chainInfo?.isTestnet
+    );
+  }, [chainInfo?.isTestnet, currentAccount?.type]);
 
   const handleClickContractId = () => {
     if (!chain || !nftItem) return;
@@ -72,60 +126,126 @@ const SendNFT = () => {
     );
   };
 
-  const handleSubmit = async ({ amount }: { amount: number }) => {
-    if (!nftItem) return;
-    await wallet.setPageStateCache({
-      path: '/send-nft',
-      search: history.location.search,
-      params: {},
-      states: {
-        values: form.getFieldsValue(),
-        nftItem,
-      },
-    });
+  const getNFTTransferParams = useCallback(
+    (amount: number): Record<string, any> => {
+      if (!nftItem || !chainInfo || !currentAccount) {
+        throw new Error('Missing required data for NFT transfer');
+      }
+      const params: Record<string, any> = {
+        chainId: chainInfo.id,
+        from: currentAccount.address,
+        to: nftItem.contract_id,
+        value: '0x0',
+        data: nftItem.is_erc1155
+          ? abiCoder.encodeFunctionCall(
+              {
+                name: 'safeTransferFrom',
+                type: 'function',
+                inputs: [
+                  { type: 'address', name: 'from' },
+                  { type: 'address', name: 'to' },
+                  { type: 'uint256', name: 'id' },
+                  { type: 'uint256', name: 'amount' },
+                  { type: 'bytes', name: 'data' },
+                ] as any[],
+              } as const,
+              [
+                currentAccount.address,
+                toAddress,
+                nftItem.inner_id,
+                amount,
+                '0x',
+              ] as any[]
+            )
+          : abiCoder.encodeFunctionCall(
+              {
+                name: 'safeTransferFrom',
+                type: 'function',
+                inputs: [
+                  { type: 'address', name: 'from' },
+                  { type: 'address', name: 'to' },
+                  { type: 'uint256', name: 'tokenId' },
+                ] as any[],
+              } as const,
+              [currentAccount.address, toAddress, nftItem.inner_id] as any[]
+            ),
+      };
 
-    try {
-      matomoRequestEvent({
-        category: 'Send',
-        action: 'createTx',
-        label: [
-          findChainByEnum(chain)?.name,
-          getKRCategoryByType(currentAccount?.type),
-          currentAccount?.brandName,
-          'nft',
-          filterRbiSource('sendNFT', rbisource) && rbisource,
-        ].join('|'),
+      return params;
+    },
+    [nftItem, chainInfo, currentAccount, toAddress]
+  );
+
+  const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
+    async ({ amount }: { amount: number }) => {
+      if (!nftItem) return;
+      await wallet.setPageStateCache({
+        path: '/send-nft',
+        search: history.location.search,
+        params: {},
+        states: {
+          values: form.getFieldsValue(),
+          nftItem,
+        },
       });
 
-      const promise = wallet.transferNFT(
-        {
-          to: toAddress,
-          amount: amount,
-          tokenId: nftItem.inner_id,
-          chainServerId: nftItem.chain,
-          contractId: nftItem.contract_id,
-          abi: nftItem.is_erc1155 ? 'ERC1155' : 'ERC721',
-        },
-        {
-          ga: {
-            category: 'Send',
-            source: 'sendNFT',
-            trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
-          },
-        }
-      );
-      if (isTab) {
-        await promise;
-        form.setFieldsValue({
-          amount: 1,
+      try {
+        matomoRequestEvent({
+          category: 'Send',
+          action: 'createTx',
+          label: [
+            findChainByEnum(chain)?.name,
+            getKRCategoryByType(currentAccount?.type),
+            currentAccount?.brandName,
+            'nft',
+            filterRbiSource('sendNFT', rbisource) && rbisource,
+          ].join('|'),
         });
-      } else {
-        window.close();
+        const params = getNFTTransferParams(amount);
+        if (canUseMiniTx) {
+          setMiniSignTx(params as Tx);
+          setIsShowMiniSign(true);
+          return;
+        }
+        const promise = wallet.sendRequest({
+          method: 'eth_sendTransaction',
+          params: [params as Record<string, any>],
+          $ctx: {
+            ga: {
+              category: 'Send',
+              source: 'sendNFT',
+              trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
+            },
+          },
+        });
+        if (isTab) {
+          await promise;
+          form.setFieldsValue({
+            amount: 1,
+          });
+        } else {
+          window.close();
+        }
+      } catch (e) {
+        message.error(e.message);
       }
-    } catch (e) {
-      message.error(e.message);
+    },
+    {
+      manual: true,
     }
-  };
+  );
+
+  const handleMiniSignResolve = useCallback(() => {
+    setTimeout(() => {
+      setIsShowMiniSign(false);
+      setMiniSignTx(null);
+      if (!isTab) {
+        history.replace('/');
+      }
+      form.setFieldsValue({ amount: 1 });
+      setRefreshId((e) => e + 1);
+    }, 500);
+  }, [form, history]);
 
   const handleClickBack = () => {
     if (history.length > 1) {
@@ -166,33 +286,6 @@ const SendNFT = () => {
   const { balance: currentAccountBalance } = useCurrentBalance(
     currentAccount?.address
   );
-
-  const chainInfo = useMemo(() => {
-    return findChain({ enum: chain });
-  }, [chain]);
-
-  // 从 URL query 参数中获取 nftItem 和 to 地址
-  const nftItem = useMemo(() => {
-    const query = new URLSearchParams(search);
-    const nftItemParam = query.get('nftItem');
-
-    if (nftItemParam) {
-      try {
-        const decodedNftItem = decodeURIComponent(nftItemParam);
-        const parsedNftItem = JSON.parse(decodedNftItem);
-        return parsedNftItem;
-      } catch (error) {
-        return null;
-      }
-    }
-    return null;
-  }, [search]);
-
-  const toAddress = useMemo(() => {
-    const query = new URLSearchParams(search);
-    const toParam = query.get('to');
-    return toParam || '';
-  }, [search]);
 
   const { targetAccount, addressDesc } = useAddressInfo(toAddress);
 
@@ -406,12 +499,36 @@ const SendNFT = () => {
                 htmlType="submit"
                 size="large"
                 className="w-[100%] h-[48px] text-[16px]"
+                loading={isSubmitLoading}
               >
                 {t('page.sendNFT.sendButton')}
               </Button>
             </div>
           </div>
         </Form>
+        <MiniApproval
+          txs={miniSignTxs}
+          visible={isShowMiniSign}
+          ga={{
+            category: 'Send',
+            source: 'sendNFT',
+            trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
+          }}
+          onClose={() => {
+            setRefreshId((e) => e + 1);
+            setIsShowMiniSign(false);
+            setTimeout(() => {
+              setMiniSignTx(null);
+            }, 500);
+          }}
+          onReject={() => {
+            setRefreshId((e) => e + 1);
+            setIsShowMiniSign(false);
+            setMiniSignTx(null);
+          }}
+          onResolve={handleMiniSignResolve}
+          getContainer={getContainer}
+        />
       </div>
     </FullscreenContainer>
   );
