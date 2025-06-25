@@ -2,7 +2,7 @@ import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useRabbySelector } from '@/ui/store';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { findChain } from '@/utils/chain';
-import { DrawerProps, Input, Skeleton } from 'antd';
+import { DrawerProps, Input, Modal, Skeleton } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import uniqBy from 'lodash/uniqBy';
@@ -128,6 +128,32 @@ const TokenAmountInput = ({
       tokenInputRef.current?.focus();
     }
   }, [amountFocus, tokenSelectorVisible]);
+
+  const checkBeforeConfirm = (token: TokenItem) => {
+    const { disable, reason } = disableItemCheck?.(token) || {};
+    if (disable) {
+      Modal.confirm({
+        width: 340,
+        closable: true,
+        closeIcon: <></>,
+        centered: true,
+        className: 'token-selector-disable-item-tips',
+        title: null,
+        content: reason,
+        okText: t('global.proceedButton'),
+        cancelText: t('global.cancelButton'),
+        cancelButtonProps: {
+          type: 'ghost',
+          className: 'text-r-blue-default border-r-blue-default',
+        },
+        onOk() {
+          handleCurrentTokenChange(token);
+        },
+      });
+      return;
+    }
+    handleCurrentTokenChange(token);
+  };
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
@@ -300,7 +326,7 @@ const TokenAmountInput = ({
       <TokenSelector
         visible={tokenSelectorVisible}
         list={isTestnet ? testnetTokenList : displayTokenList}
-        onConfirm={handleCurrentTokenChange}
+        onConfirm={checkBeforeConfirm}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}
         isLoading={isListLoading}
