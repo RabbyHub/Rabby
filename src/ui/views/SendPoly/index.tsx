@@ -56,7 +56,15 @@ const WhitelistItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
   position: relative;
   border-radius: 8px;
-  margin-top: 8px;
+  margin-top: 12px;
+  &:first-child {
+    margin-top: 9px;
+  }
+  .whitelist-item {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    gap: 12px !important;
+  }
   .icon-delete-container {
     display: flex;
     opacity: 0;
@@ -375,7 +383,7 @@ const SendPoly = () => {
                           />
                         </div>
                         <AccountItem
-                          className="group"
+                          className="group whitelist-item"
                           balance={
                             item.balance ||
                             unimportedBalances[item.address] ||

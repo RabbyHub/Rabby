@@ -68,7 +68,7 @@ const AddressTypeCard = ({
   }, [type, showCexInfo]);
 
   return (
-    <div className="flex gap-[4px] items-center justify-center">
+    <div className="flex gap-[8px] items-center justify-center">
       <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
         {showCexInfo ? (
           <img
@@ -274,9 +274,9 @@ export const AddressRiskAlert = ({
                 {checkedRisk ? (
                   <RcIconCheckedCC className="text-r-blue-default" />
                 ) : (
-                  <RcIconCheckCC className="text-r-neutral-foot" />
+                  <RcIconCheckCC className="text-r-neutral-body" />
                 )}
-                <span className="text-center text-r-neutral-foot text-[13px] font-medium ">
+                <span className="text-center text-r-neutral-body text-[13px] font-medium ">
                   {t('page.sendPoly.riskAlert.understandRisks')}
                 </span>
               </div>

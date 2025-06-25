@@ -151,6 +151,7 @@ const TokenSelector = ({
   const {
     testnetTokenList: customTestnetTokenList,
     loading: customTestnetTokenListLoading,
+    hasData: hasCustomTestnetTokenData,
   } = useSearchTestnetToken({
     address: currentAccount?.address,
     q: query,
@@ -459,7 +460,7 @@ const TokenSelector = ({
         <div className="header">
           {t('component.TokenSelector.header.title')}
         </div>
-        {showCustomTestnetAssetList && (
+        {showCustomTestnetAssetList && hasCustomTestnetTokenData && (
           <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
         )}
         <div
