@@ -120,7 +120,9 @@ export default function RateModalTriggerOnSettings({
               toggleShowRateModal(true, {
                 starCountOnOpen: index + 1,
               });
-              pushRateDetails({ totalBalanceText });
+              if (index + 1 >= 4) {
+                pushRateDetails({ totalBalanceText });
+              }
 
               matomoRequestEvent({
                 category: 'Rate Rabby',
