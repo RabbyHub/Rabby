@@ -125,7 +125,6 @@ export function useTotalBalanceTextForRate() {
         return (b.total_usd_value || 0) - (a.total_usd_value || 0);
       })
       .slice(0, 10);
-    console.log('[useTotalBalanceTextForRate] top10Values:', top10Values);
     const top10TotalBalance = top10Values.reduce(
       (acc, item) => acc + (item.total_usd_value || 0),
       0
@@ -144,10 +143,6 @@ export function useTotalBalanceTextForRate() {
       top10TotalBalanceText: totalBalanceText,
     };
   }, [balanceMap, accountsList]);
-  console.log(
-    '[useTotalBalanceTextForRate] top10TotalBalanceText:',
-    top10TotalBalanceText
-  );
 
   return { top10TotalBalanceText };
 }
