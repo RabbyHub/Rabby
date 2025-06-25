@@ -14,7 +14,7 @@ import { Form, message, Button } from 'antd';
 import { isValidAddress } from '@ethereumjs/util';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useRequest } from 'ahooks';
-import { CHAINS_ENUM, KEYRING_TYPE } from 'consts';
+import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import { useRabbyDispatch, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
 import {
@@ -109,9 +109,11 @@ const SendNFT = () => {
 
   const canUseMiniTx = useMemo(() => {
     return (
-      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
-        (currentAccount?.type || '') as any
-      ) && !chainInfo?.isTestnet
+      [
+        KEYRING_TYPE.SimpleKeyring,
+        KEYRING_TYPE.HdKeyring,
+        KEYRING_CLASS.HARDWARE.LEDGER,
+      ].includes((currentAccount?.type || '') as any) && !chainInfo?.isTestnet
     );
   }, [chainInfo?.isTestnet, currentAccount?.type]);
 
@@ -492,7 +494,7 @@ const SendNFT = () => {
           )}
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
-            <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
+            <div className="btn-wrapper w-[100%] flex justify-center">
               <Button
                 disabled={!canSubmit}
                 type="primary"
