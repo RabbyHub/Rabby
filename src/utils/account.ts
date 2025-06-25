@@ -149,6 +149,8 @@ interface Account {
   type: string;
   address: string;
   brandName: string;
+  alianName?: string;
+  balance?: number;
 }
 
 export const isSameAccount = (a: Account, b: Account) => {
