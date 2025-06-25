@@ -14,7 +14,7 @@ import PQueue from 'p-queue';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import {
   ApprovalItem,
   AssetApprovalItem,
@@ -42,7 +42,7 @@ import {
   isSelectedAllContract,
   toRevokeItem,
 } from './utils';
-import { summarizeRevoke } from '@/utils-isomorphic/approve';
+import { summarizeRevoke } from '@/utils/approve';
 import { Chain, CHAINS_ENUM } from '@debank/common';
 import { findChainByServerID } from '@/utils/chain';
 

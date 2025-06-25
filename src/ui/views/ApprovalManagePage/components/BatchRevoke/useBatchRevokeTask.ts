@@ -1,5 +1,5 @@
 import { useWallet, WalletControllerType } from '@/ui/utils';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { AssetApprovalSpender } from '@/utils/approval';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';

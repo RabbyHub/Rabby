@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect } from 'react';
 import { Button, Modal } from 'antd';
 import { Trans, useTranslation } from 'react-i18next';
-import { RevokeSummary } from '@/utils-isomorphic/approve';
+import { RevokeSummary } from '@/utils/approve';
 import { modalCloseIcon20 } from '@/ui/component/Modal';
 import { useWallet } from '@/ui/utils';
 

@@ -128,7 +128,7 @@ import {
   summarizeRevoke,
   ApprovalSpenderItemToBeRevoked,
   decodePermit2GroupKey,
-} from '@/utils-isomorphic/approve';
+} from '@/utils/approve';
 import { appIsProd, isManifestV3 } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';

@@ -3,7 +3,7 @@ import eventBus from '@/eventBus';
 import {
   LAST_EXPOSURE_VERSIONED_KEY as VERSIONED_KEY,
   RATE_GUIDE_TX_COUNT_LIMIT as TX_COUNT_LIMIT,
-} from '@/utils-isomorphic/rateGuidance';
+} from '@/utils/rateGuidance';
 import { PreferenceServiceCls } from '../service/preference';
 
 export function subscribeTxCompleted({

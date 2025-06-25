@@ -9,7 +9,7 @@ import {
   openTrustedExternalWebsiteInTab,
   useWallet,
 } from '@/ui/utils';
-import { getDefaultRateGuideLastExposure } from '@/utils-isomorphic/rateGuidance';
+import { getDefaultRateGuideLastExposure } from '@/utils/rateGuidance';
 import { __DEV__, appIsDev } from '@/utils/env';
 import { ensurePrefix } from '@/utils/string';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -116,7 +116,13 @@ export function useTotalBalanceTextForRate() {
   const { top10TotalBalanceText } = useMemo(() => {
     const notWatchAccountList = accountsList
       .filter(
-        (e) => e.type !== KEYRING_CLASS.WATCH && e.type !== KEYRING_CLASS.GNOSIS
+        (e) =>
+          !(<string[]>[
+            KEYRING_CLASS.WATCH,
+            KEYRING_CLASS.GNOSIS,
+            KEYRING_CLASS.WALLETCONNECT,
+            KEYRING_CLASS.CoboArgus,
+          ]).includes(e.type)
       )
       .map((e) => e.address?.toLowerCase());
 
