@@ -13,6 +13,8 @@ import { __DEV__, appIsDev } from '@/utils/env';
 import { ensurePrefix } from '@/utils/string';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
+import { KEYRING_CLASS } from '@/constant';
+import { pick } from 'lodash';
 
 const TX_COUNT_LIMIT = appIsDev ? 1 : 3; // Minimum number of transactions before showing the rate guide
 const STAR_COUNT = 5;
@@ -101,6 +103,54 @@ function makeStarText(count: number, total = 5) {
 }
 
 export const FEEDBACK_LEN_LIMIT = 300;
+
+export function useTotalBalanceTextForRate() {
+  const cacheAboutData = useRabbyGetter(
+    (s) => s.account.currentBalanceAboutMap
+  );
+  const accountsList = useRabbySelector((s) => s.accountToDisplay.accountsList);
+
+  const { balanceMap } = cacheAboutData;
+
+  const { top10TotalBalanceText } = useMemo(() => {
+    const notWatchAccountList = accountsList
+      .filter(
+        (e) => e.type !== KEYRING_CLASS.WATCH && e.type !== KEYRING_CLASS.GNOSIS
+      )
+      .map((e) => e.address?.toLowerCase());
+
+    const accounts = pick(balanceMap, notWatchAccountList);
+    const top10Values = Object.values(accounts)
+      .sort((a, b) => {
+        return (b.total_usd_value || 0) - (a.total_usd_value || 0);
+      })
+      .slice(0, 10);
+    console.log('[useTotalBalanceTextForRate] top10Values:', top10Values);
+    const top10TotalBalance = top10Values.reduce(
+      (acc, item) => acc + (item.total_usd_value || 0),
+      0
+    );
+    const totalBalanceText = !top10Values.length
+      ? '-'
+      : ensurePrefix(
+          top10TotalBalance.toLocaleString('en-US', {
+            maximumFractionDigits: 2,
+          }),
+          '$'
+        );
+
+    return {
+      accountsTop10Values: top10Values,
+      top10TotalBalanceText: totalBalanceText,
+    };
+  }, [balanceMap, accountsList]);
+  console.log(
+    '[useTotalBalanceTextForRate] top10TotalBalanceText:',
+    top10TotalBalanceText
+  );
+
+  return { top10TotalBalanceText };
+}
 
 export function useRateModal() {
   const rateModalState = useRabbySelector((s) => s.rateGuidance);

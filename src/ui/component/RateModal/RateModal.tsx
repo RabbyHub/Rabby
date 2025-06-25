@@ -15,6 +15,7 @@ import {
   FEEDBACK_LEN_LIMIT,
   useExposureRateGuide,
   useRateModal,
+  useTotalBalanceTextForRate,
 } from './hooks';
 import ClickableStar from './ClickableStar';
 
@@ -55,11 +56,7 @@ function useForceDisableRateGuideOnLaunch(modalShow: boolean) {
   });
 }
 
-export default function RateModal({
-  totalBalanceText,
-}: {
-  totalBalanceText: string;
-}) {
+export default function RateModal() {
   const { t } = useTranslation();
   const {
     rateModalShown,
@@ -102,6 +99,9 @@ export default function RateModal({
   }, [rateModalShown, wantFeedback]);
 
   useForceDisableRateGuideOnLaunch(rateModalShown);
+  const {
+    top10TotalBalanceText: totalBalanceText,
+  } = useTotalBalanceTextForRate();
 
   return (
     <Popup
@@ -178,9 +178,7 @@ export default function RateModal({
               block
               onClick={() => {
                 openAppRateUrl();
-                pushRateDetails({ totalBalanceText }).finally(() => {
-                  closeModal();
-                });
+                closeModal();
               }}
             >
               <ChromeLogo width={18} height={18} className="mr-[8px]" />
