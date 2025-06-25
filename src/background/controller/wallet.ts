@@ -128,7 +128,7 @@ import {
   summarizeRevoke,
   ApprovalSpenderItemToBeRevoked,
   decodePermit2GroupKey,
-} from '@/utils-isomorphic/approve';
+} from '@/utils/approve';
 import { appIsProd, isManifestV3 } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
@@ -5331,6 +5331,12 @@ export class WalletController extends BaseController {
       highligtedAddresses: filteredHighligtedAddresses,
       alianNames: filteredAlianNames,
     });
+  };
+
+  setRateGuideLastExposure: typeof preferenceService.setRateGuideLastExposure = async (
+    ...args
+  ) => {
+    return preferenceService.setRateGuideLastExposure(...args);
   };
 }
 

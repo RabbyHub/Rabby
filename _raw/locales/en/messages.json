@@ -1284,7 +1284,8 @@
           "connectedDapp": "Connected Dapps",
           "searchDapps": "Search Dapps",
           "gasTopUp": "Gas Top Up",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "ecosystem": "Ecosystem"
         },
         "settings": {
           "label": "Settings",
@@ -1312,6 +1313,18 @@
           "title": "Switch Dapp Address Independently",
           "desc": "Once enabled, you can choose which address to connect to each Dapp independently. Switching your main address won't affect the address connected to each Dapp.",
           "button": "Enable"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "How do you rate Rabby Wallet ?"
+        },
+        "rateModal": {
+          "thxDesc": "If you like Rabby, a quick rating on the Chrome Store would mean a lot.",
+          "thxTitle": "Thank you!",
+          "rateOnChromeStoreButton": "Rate on Chrome Web Store",
+          "feedbackDesc": "Have feedback? We’re listening.",
+          "submitFeedbackButton": "Submit",
+          "feedbackPlaceholder": "Rabby values your feedback!",
+          "feedbackSuccess": "Thank you for your feedback!"
         }
       },
       "tokenDetail": {

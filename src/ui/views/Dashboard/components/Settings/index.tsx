@@ -25,6 +25,7 @@ import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
 import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
+import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -45,6 +46,7 @@ import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboa
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
+import { ReactComponent as RcIconSettingsCodeCC } from 'ui/assets/dashboard/settings/code-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
@@ -64,6 +66,8 @@ import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { ga4 } from '@/utils/ga4';
 import { EcosystemBanner } from './components/EcosystemBanner';
 import { useMemoizedFn } from 'ahooks';
+import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
+import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -569,6 +573,7 @@ const SwitchLangModal = ({
 
 type SettingItem = {
   leftIcon: ThemeIconType;
+  leftIconClassName?: string;
   content: React.ReactNode;
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -755,6 +760,10 @@ const SettingsInner = ({
     }
   };
 
+  const {
+    mockExposureRateGuide,
+    resetExposureRateGuide,
+  } = useMakeMockDataForRateGuideExposure();
   const renderData = {
     features: {
       label: t('page.dashboard.settings.features.label'),
@@ -811,6 +820,14 @@ const SettingsInner = ({
             });
 
             reportSettings('Manage Address');
+          },
+        },
+        {
+          leftIcon: RcIconEcosystemCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.features.ecosystem'),
+          onClick: () => {
+            setIsShowEcologyModal(true);
           },
         },
         {
@@ -1101,6 +1118,44 @@ const SettingsInner = ({
           onClick: handleClickClearWatchMode,
         },
         {
+          leftIcon: RcIconSettingsCodeCC,
+          content: (
+            <div className="flex-shrink-0">Mock Exposure Rate Guidance</div>
+          ),
+          rightIcon: (
+            <div className="flex items-center justify-end gap-8">
+              <Button
+                type="link"
+                danger
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  mockExposureRateGuide();
+                  message.success({
+                    className: 'toast-message-2025',
+                    content: 'Mock exposure rate guide data',
+                  });
+                }}
+              >
+                Mock
+              </Button>
+              <Button
+                type="primary"
+                ghost
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  resetExposureRateGuide();
+                  message.success({
+                    className: 'toast-message-2025',
+                    content: 'Reset exposure rate guide mock data',
+                  });
+                }}
+              >
+                Reset
+              </Button>
+            </div>
+          ),
+        },
+        {
           leftIcon: RcIconSettingsGitForkCC,
           content: <span>Git Build Hash</span>,
           rightIcon: (
@@ -1342,11 +1397,17 @@ const SettingsInner = ({
     dispatch.openapi.getTestnetHost();
   }, []);
 
+  const [isShowEcology, setIsShowEcologyModal] = React.useState(false);
+
   return (
     <div className="popup-settings">
       <div className="content">
         {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
-        <EcosystemBanner />
+        <EcosystemBanner
+          isVisible={isShowEcology}
+          onClose={() => setIsShowEcologyModal(false)}
+        />
+        <RateModalTriggerOnSettings className="mb-[16px]" />
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">
@@ -1356,7 +1417,10 @@ const SettingsInner = ({
                   <Field
                     key={`g-${idxl1}-item-${idxl2}`}
                     leftIcon={
-                      <ThemeIcon src={data.leftIcon} className="icon" />
+                      <ThemeIcon
+                        src={data.leftIcon}
+                        className={clsx('icon', data.leftIconClassName)}
+                      />
                     }
                     rightIcon={
                       data.rightIcon || (

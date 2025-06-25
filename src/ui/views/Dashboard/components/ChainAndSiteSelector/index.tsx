@@ -38,8 +38,9 @@ import { EcologyPopup } from '../EcologyPopup';
 import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';
 import { findChainByID } from '@/utils/chain';
+import RateModal from '@/ui/component/RateModal/RateModal';
 
-export default ({
+export default function ChainAndSiteSelector({
   gnosisPendingCount,
   onChange,
   connectionAnimation,
@@ -58,7 +59,7 @@ export default ({
   pendingTxCount?: number;
   gnosisPendingCount?: number;
   setDashboardReload(): void;
-}) => {
+}) {
   const { t } = useTranslation();
   const history = useHistory();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
@@ -450,6 +451,8 @@ export default ({
         visible={isShowEcology}
         onClose={() => setIsShowEcologyModal(false)}
       />
+
+      <RateModal />
     </div>
   );
-};
+}
