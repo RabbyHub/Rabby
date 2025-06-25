@@ -116,7 +116,13 @@ export function useTotalBalanceTextForRate() {
   const { top10TotalBalanceText } = useMemo(() => {
     const notWatchAccountList = accountsList
       .filter(
-        (e) => e.type !== KEYRING_CLASS.WATCH && e.type !== KEYRING_CLASS.GNOSIS
+        (e) =>
+          !(<string[]>[
+            KEYRING_CLASS.WATCH,
+            KEYRING_CLASS.GNOSIS,
+            KEYRING_CLASS.WALLETCONNECT,
+            KEYRING_CLASS.CoboArgus,
+          ]).includes(e.type)
       )
       .map((e) => e.address?.toLowerCase());
 
