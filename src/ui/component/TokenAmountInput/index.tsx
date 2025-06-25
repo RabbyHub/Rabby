@@ -66,9 +66,14 @@ const StyledInput = styled(Input)`
     font-weight: 500;
     line-height: normal;
     border-width: 0px !important;
-    border-color: transparent;
+    border-right-width: 0px !important;
+    border-color: transparent !important;
+    &:hover,
+    &:focus {
+      border-right-width: 0px !important;
+      border-color: transparent !important;
+    }
   }
-
   &::placeholder {
     color: var(--r-neutral-foot, #6a7587);
   }
@@ -232,6 +237,7 @@ const TokenAmountInput = ({
             !valueNum && 'h-[29px]',
             insufficientError && 'text-rabby-red-default'
           )}
+          autoFocus
           value={value}
           size="large"
           onChange={handleChange}
@@ -253,7 +259,7 @@ const TokenAmountInput = ({
       </div>
       <div className="flex flex-col justify-between gap-[13px] items-end">
         <div className="left" onClick={handleSelectToken}>
-          <TokenWithChain token={token} hideConer />
+          <TokenWithChain width="24px" height="24px" token={token} hideConer />
           <span className="token-input__symbol" title={getTokenSymbol(token)}>
             {getTokenSymbol(token)}
           </span>
@@ -261,7 +267,7 @@ const TokenAmountInput = ({
             <RcIconDownCC width={16} height={16} />
           </div>
         </div>
-        <div className="flex gap-[6px] items-center">
+        <div className="flex items-center">
           {isLoading ? (
             <Skeleton.Input active style={{ width: 100 }} />
           ) : (
@@ -300,6 +306,7 @@ const TokenAmountInput = ({
         isLoading={isListLoading}
         type={type}
         disableItemCheck={disableItemCheck}
+        showCustomTestnetAssetList
         placeholder={placeholder}
         chainId={''}
         getContainer={getContainer}

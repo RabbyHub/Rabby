@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
-
-import { KEYRING_TYPE } from 'consts';
-
-import { Account } from '@/background/service/preference';
-import { useAccounts } from '@/ui/hooks/useAccounts';
+import { Virtuoso } from 'react-virtuoso';
+import clsx from 'clsx';
 import { flatten } from 'lodash';
+
+import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
-import { FixedSizeList } from 'react-window';
+import { Account } from '@/background/service/preference';
+import { KEYRING_TYPE } from 'consts';
 
 interface ChainSelectorModalProps {
   onChange(val: Account): void;
@@ -28,18 +28,15 @@ export const AccountList = ({
   }, [fetchAllAccounts]);
 
   return (
-    <FixedSizeList
+    <Virtuoso
       height={500}
-      className={containerClassName}
+      className={clsx('h-full flex-1', containerClassName)}
       width="100%"
-      itemData={filteredAccounts}
-      itemCount={filteredAccounts.length || 0}
-      itemSize={10}
-    >
-      {({ data, index }) => {
-        const current = data[index];
-        const prev = data[index - 1];
-        const next = data[index + 1];
+      data={filteredAccounts}
+      itemContent={(index, item) => {
+        const current = item;
+        const prev = filteredAccounts[index - 1];
+        const next = filteredAccounts[index + 1];
         const isGroupFirst =
           !prev ||
           (prev?.type !== KEYRING_TYPE.WatchAddressKeyring &&
@@ -52,7 +49,7 @@ export const AccountList = ({
         const isLast = !next;
 
         return (
-          <>
+          <div>
             <div
               style={{
                 borderBottom: '0.5px solid var(--r-neutral-line, #E0E5EC)',
@@ -85,9 +82,9 @@ export const AccountList = ({
               />
             </div>
             {isLast ? <div className="h-[8px]"></div> : null}
-          </>
+          </div>
         );
       }}
-    </FixedSizeList>
+    ></Virtuoso>
   );
 };

@@ -33,6 +33,7 @@ export const useBrandIcon = ({
         ? brandIcon ||
           pickKeyringThemeIcon(type as any, {
             needLightVersion: true,
+            forceWatchTransparent: true,
           }) ||
           WALLET_BRAND_CONTENT?.[brandName]?.image ||
           KEYRINGS_LOGOS[type]

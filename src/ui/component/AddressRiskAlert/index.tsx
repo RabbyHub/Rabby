@@ -8,16 +8,21 @@ import { isSameAddress } from '@/ui/utils';
 import { padWatchAccount } from '@/ui/views/SendPoly/util';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { pickKeyringThemeIcon } from '@/utils/account';
-import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
+import {
+  BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_CLASS,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+} from '@/constant';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useAddressRisks } from '@/ui/hooks/useAddressRisk';
 import { RiskRow } from './RiskRow';
+import { ellipsisAddress } from '@/ui/utils/address';
+import { IExchange } from '../CexSelect';
 
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconCheckedCC } from 'ui/assets/address/checked-square-cc.svg';
 import { ReactComponent as RcIconCheckCC } from 'ui/assets/address/check-square-cc.svg';
-import { ellipsisAddress } from '@/ui/utils/address';
-import { IExchange } from '../CexSelect';
 
 interface AddressRiskAlertProps {
   visible: boolean;
@@ -32,9 +37,10 @@ interface AddressRiskAlertProps {
   getContainer?: DrawerProps['getContainer'];
   editAlias?: string;
   editCex?: IExchange | null;
+  type?: string;
 }
 
-const AddressTyepCard = ({
+const AddressTypeCard = ({
   type,
   brandName,
   aliasName,
@@ -63,10 +69,10 @@ const AddressTyepCard = ({
 
   return (
     <div className="flex gap-[4px] items-center">
-      <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] py-[8px] flex items-center gap-[6px]">
+      <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
         {showCexInfo ? (
           <img
-            className="icon icon-account-type w-[20px] h-[20px]"
+            className="icon icon-account-type w-[20px] h-[20px] rounded-full"
             src={cexInfo.logo}
           />
         ) : (
@@ -88,8 +94,8 @@ const AddressTyepCard = ({
         <div
           className={`
             text-r-blue-default rounded-[8px] bg-r-blue-light1 
-              px-[12px] py-[6px] text-[13px] font-medium
-
+              px-[12px] h-[32px] text-[13px] font-medium flex items-center
+              whitespace-nowrap overflow-hidden text-ellipsis
           `}
         >
           {showCexInfo
@@ -97,7 +103,7 @@ const AddressTyepCard = ({
                 cexName: cexInfo.name,
               })
             : t('page.sendPoly.riskAlert.cexAddress', {
-                cexName: brandName,
+                cexName: BRAND_ALIAN_TYPE_TEXT[type],
               })}
         </div>
       )}
@@ -118,15 +124,16 @@ export const AddressRiskAlert = ({
   getContainer,
   editAlias,
   editCex,
+  type,
 }: AddressRiskAlertProps) => {
-  const handleCancel = () => {
-    onCancel();
-  };
-
   const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+  const { accountsList } = useRabbySelector((s) => ({
+    accountsList: s.accountToDisplay.accountsList,
+  }));
 
   const [checkedRisk, setCheckedRisk] = useState(false);
-  // disable detect risk when unvisible
+  // disable detect risk when invisible
   const riskInfos = useAddressRisks(visible ? address : '', editCex);
   const addressSplit = useMemo(() => {
     if (!address) {
@@ -139,17 +146,21 @@ export const AddressRiskAlert = ({
     return [prefix, middle, suffix];
   }, [address]);
 
-  const dispatch = useRabbyDispatch();
-  const { accountsList } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-  }));
-
   const targetAccount = useMemo(() => {
-    return (
-      accountsList.find((acc) => isSameAddress(acc.address, address)) ||
-      padWatchAccount(address)
+    const targetTypeAccount = accountsList.find(
+      (acc) =>
+        isSameAddress(acc.address, address) &&
+        (type
+          ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
+          : true)
     );
-  }, [accountsList, address]);
+    const targetSameAddressAccount = accountsList.find((acc) =>
+      isSameAddress(acc.address, address)
+    );
+    return (
+      targetTypeAccount || targetSameAddressAccount || padWatchAccount(address)
+    );
+  }, [accountsList, address, type]);
 
   useEffect(() => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
@@ -163,7 +174,7 @@ export const AddressRiskAlert = ({
       closable={showClosableIcon}
       placement={'bottom'}
       visible={visible}
-      onClose={handleCancel}
+      onClose={onCancel}
       className={clsx('custom-popup is-support-darkmode is-new', className)}
       zIndex={zIndex}
       destroyOnClose
@@ -201,7 +212,7 @@ export const AddressRiskAlert = ({
               active
             />
           ) : (
-            <AddressTyepCard
+            <AddressTypeCard
               type={targetAccount.type}
               cexInfo={{
                 id: editCex?.id || riskInfos.addressDesc?.cex?.id,

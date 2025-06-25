@@ -1,10 +1,17 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
-import { useWallet } from 'ui/utils';
 import { debounce } from 'lodash';
 import styled from 'styled-components';
+import clsx from 'clsx';
+
+import type { Input as AntdInput } from 'antd';
+
+import { useWallet } from 'ui/utils';
+
+import { IconClearCC } from '@/ui/assets/component/IconClear';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
@@ -31,18 +38,35 @@ export const EnterAddress = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
+
+  const inputRef = useRef<AntdInput>(null);
+
   const [inputAddress, setInputAddress] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
     name: string;
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
-  const [isValidAddr, setIsValidAddr] = useState(false);
+  const [isValidAddr, setIsValidAddr] = useState(true);
+
+  const [isFocusAddress, setIsFocusAddress] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    // delay footer render to avoid layout animation
+    const timer = setTimeout(() => {
+      setShouldRender(true);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   const handleConfirmENS = (result: string) => {
     setInputAddress(result);
     setIsValidAddr(true);
-    setTags([`ENS: ${ensResult!.name}`]);
+    setTags([`ENS: ${ensResult?.name || ''}`]);
     setEnsResult(null);
   };
 
@@ -70,16 +94,18 @@ export const EnterAddress = ({
       debounce(async ({ address }: { address: string }) => {
         setTags([]);
         if (!isValidAddress(address)) {
-          setIsValidAddr(false);
           try {
             const result = await wallet.openapi.getEnsAddressByName(address);
             if (result && result.addr) {
               setEnsResult(result);
+              setIsValidAddr(true);
             } else {
               setEnsResult(null);
+              setIsValidAddr(!address.length);
             }
           } catch (e) {
             setEnsResult(null);
+            setIsValidAddr(false);
           }
         } else {
           setIsValidAddr(true);
@@ -112,22 +138,19 @@ export const EnterAddress = ({
           }
         }}
       >
-        <Form.Item
-          name="address"
-          className="rounded-[8px] overflow-hidden"
-          rules={[
-            {
-              required: true,
-              message: t('page.newAddress.addContacts.required'),
-            },
-          ]}
-        >
-          <StyledInputWrapper onClick={(e) => e.stopPropagation()}>
+        <Form.Item name="address">
+          <StyledInputWrapper
+            onClick={(e) => e.stopPropagation()}
+            className="relative"
+          >
             <Input.TextArea
               maxLength={44}
               placeholder={t('page.sendPoly.enterAddressOrENS')}
-              allowClear
+              allowClear={false}
               autoFocus
+              ref={inputRef}
+              onFocus={() => setIsFocusAddress(true)}
+              onBlur={() => setIsFocusAddress(false)}
               value={inputAddress}
               onChange={(e) => {
                 setInputAddress(e.target.value);
@@ -136,9 +159,31 @@ export const EnterAddress = ({
               size="large"
               spellCheck={false}
               rows={4}
-              className="border-bright-on-active rounded-[8px] leading-normal"
+              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px]"
             />
+            <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
+              <IconClearCC
+                onClick={() => {
+                  setInputAddress('');
+                  handleValuesChange({ address: '' });
+                  inputRef.current?.focus();
+                }}
+                className={clsx(
+                  isFocusAddress && inputAddress.length > 0
+                    ? 'opacity-100 cursor-pointer'
+                    : 'opacity-0 cursor-text'
+                )}
+              />
+            </div>
           </StyledInputWrapper>
+          {!isValidAddr && (
+            <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center mt-[8px]">
+              <div className="text-r-red-default">
+                <RcIconWarningCC />
+              </div>
+              <div>{t('page.whitelist.invalidAddress')}</div>
+            </div>
+          )}
         </Form.Item>
         {tags.length > 0 && (
           <ul className="mt-[13px]">
@@ -163,19 +208,21 @@ export const EnterAddress = ({
           </div>
         )}
       </div>
-      <div className={'footer'}>
-        <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
-          <Button
-            disabled={!isValidAddr && !ensResult?.addr}
-            type="primary"
-            htmlType="submit"
-            size="large"
-            className="w-[100%] h-[48px] text-[16px]"
-          >
-            {t('global.confirm')}
-          </Button>
+      {shouldRender && (
+        <div className={'footer'}>
+          <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
+            <Button
+              disabled={(!isValidAddr || !inputAddress) && !ensResult?.addr}
+              type="primary"
+              htmlType="submit"
+              size="large"
+              className="w-[100%] h-[48px] text-[16px]"
+            >
+              {t('global.confirm')}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </Form>
   );
 };

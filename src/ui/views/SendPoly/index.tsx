@@ -5,6 +5,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { message } from 'antd';
 
 import { KEYRING_CLASS } from '@/constant';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
@@ -20,19 +21,34 @@ import { AccountList } from './components/AccountList';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { useWallet } from '@/ui/utils/WalletContext';
 import { ellipsisAddress } from '@/ui/utils/address';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
+import IconSuccess from 'ui/assets/success.svg';
 
 const OuterInput = styled.div`
-  border: 1px solid var(--rabby-light-neutral-line);
+  border: 1px solid var(--r-neutral-line);
   &:hover {
     border: 1px solid var(--r-blue-default, #7084ff);
     cursor: text;
+  }
+`;
+
+const EnterAddressButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto 0;
+  gap: 4px;
+  cursor: pointer;
+  padding: 12px 18px;
+  width: fit-content;
+  &:hover {
+    background-color: var(--r-neutral-card1);
+    border-radius: 8px;
   }
 `;
 
@@ -57,11 +73,33 @@ const WhitelistItemWrapper = styled.div`
   }
 `;
 
+const AnimatedInputWrapper = styled.div`
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  /* overflow: hidden; */
+  will-change: max-height, opacity, transform;
+  &.collapsed {
+    height: 52px;
+    max-height: 52px;
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  &.expanded {
+    max-height: 1000px;
+    opacity: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transform: scaleY(1);
+  }
+`;
+
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const unimportedBalancesCache: Record<string, number> = {};
-const queue = new PQueue({ interval: 1000, intervalCap: 5 }); // 每秒最多5个
+const queue = new PQueue({ interval: 1000, intervalCap: 8, concurrency: 8 }); // 每秒最多5个
 
 const SendPoly = () => {
   const history = useHistory();
@@ -70,14 +108,6 @@ const SendPoly = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const [inputingAddress, setInputingAddress] = useState(false);
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
-  const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState('');
-  const [unimportedBalances, setUnimportedBalances] = useState<
-    Record<string, number>
-  >({});
-
   const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
     (s) => ({
       accountsList: s.accountToDisplay.accountsList,
@@ -85,6 +115,16 @@ const SendPoly = () => {
       whitelistEnabled: s.whitelist.enabled,
     })
   );
+
+  // main state
+  const [inputingAddress, setInputingAddress] = useState(false);
+  const [showSelectorModal, setShowSelectorModal] = useState(false);
+  const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState('');
+  const [selectedAddressType, setSelectedAddressType] = useState('');
+  const [unimportedBalances, setUnimportedBalances] = useState<
+    Record<string, number>
+  >({});
 
   const importWhitelistAccounts = useMemo(() => {
     if (!whitelistEnabled) {
@@ -105,7 +145,7 @@ const SendPoly = () => {
       ?.filter(
         (w) => !importWhitelistAccounts.some((a) => isSameAddress(w, a.address))
       )
-      .map(padWatchAccount);
+      .map((w) => padWatchAccount(w));
   }, [importWhitelistAccounts, whitelist]);
 
   const allAccounts = useMemo(() => {
@@ -136,22 +176,28 @@ const SendPoly = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
+    } else if (history.length > 2) {
+      history.goBack();
     } else {
       history.replace('/');
     }
   }, [history, inputingAddress]);
 
-  const handleGotoSend = (address: string) => {
+  const handleGotoSend = (address: string, type?: string) => {
     if (nftItem) {
       handleGotoSendNFT(address);
     } else {
-      handleGotoSendToken(address);
+      handleGotoSendToken(address, type);
     }
   };
-
-  const handleGotoSendToken = (address: string) => {
+  const handleGotoSendToken = (address: string, type?: string) => {
     const query = new URLSearchParams(history.location.search);
     query.set('to', address);
+    if (type) {
+      query.set('type', type);
+    } else {
+      query.delete('type');
+    }
     history.push(`/send-token?${query.toString()}`);
   };
 
@@ -161,8 +207,7 @@ const SendPoly = () => {
     query.set('nftItem', nftItem || '');
     history.push(`/send-nft?${query.toString()}`);
   };
-
-  const handleChange = (address: string) => {
+  const handleChange = (address: string, type?: string) => {
     if (!isValidAddress(address)) {
       return;
     }
@@ -176,9 +221,10 @@ const SendPoly = () => {
       )
       ?.some((item) => isSameAddress(item.address, address));
     if (inWhitelist || isMyCoreWallet) {
-      handleGotoSend(address);
+      handleGotoSend(address, type);
     } else {
       setSelectedAddress(address);
+      setSelectedAddressType(type || '');
       setShowAddressRiskAlert(true);
     }
   };
@@ -186,27 +232,20 @@ const SendPoly = () => {
   const handleCancel = () => {
     setShowSelectorModal(false);
   };
-  const handleDeleteWhitelist = (address: string) => {
-    AuthenticationModalPromise({
-      title: t('page.addressDetail.remove-from-whitelist'),
-      cancelText: t('global.Cancel'),
-      wallet,
-      validationHandler: async (password) => {
-        await wallet.removeWhitelist(password, address);
-        const isImported = importWhitelistAccounts.some((a) =>
-          isSameAddress(a.address, address)
-        );
-        if (!isImported) {
-          wallet.removeContactInfo(address);
-        }
-      },
-      onFinished() {
-        dispatch.whitelist.getWhitelist();
-        dispatch.contactBook.getContactBookAsync();
-      },
-      onCancel() {
-        // do nothing
-      },
+
+  const handleDeleteWhitelist = async (address: string) => {
+    await wallet.removeWhitelist(address);
+    const isImported = importWhitelistAccounts.some((a) =>
+      isSameAddress(a.address, address)
+    );
+    if (!isImported) {
+      await wallet.removeContactInfo(address);
+    }
+    dispatch.whitelist.getWhitelist();
+    dispatch.contactBook.getContactBookAsync();
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('page.whitelist.tips.removed'),
     });
   };
 
@@ -297,29 +336,35 @@ const SendPoly = () => {
         >
           {t('page.sendPoly.title')}
         </PageHeader>
-        {inputingAddress ? (
-          <EnterAddress
-            onCancel={() => {
-              setInputingAddress(false);
-            }}
-            onNext={handleChange}
-          />
-        ) : (
-          <div className="pb-[59px]">
-            {/* Enter Address */}
+        <AnimatedInputWrapper
+          className={inputingAddress ? 'expanded' : 'collapsed'}
+        >
+          {inputingAddress ? (
+            <EnterAddress
+              onCancel={() => {
+                setInputingAddress(false);
+              }}
+              onNext={handleChange}
+            />
+          ) : (
             <OuterInput
               className={`
-            border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
-            text-r-neutral-foot text-[15px] 
-             h-[52px] leading-[52px] px-[15px] justify-center items-center
-             hover:cursor-text hover:border-r-blue-default
-            `}
+                border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
+                text-r-neutral-foot text-[15px] 
+                h-[52px] leading-[52px] px-[15px] justify-center items-center
+                hover:cursor-text hover:border-r-blue-default
+              `}
               onClick={() => setInputingAddress(true)}
             >
               {t('page.sendPoly.enterAddress')}
             </OuterInput>
+          )}
+        </AnimatedInputWrapper>
+
+        {!inputingAddress && (
+          <div className={clsx('h-full', whitelistEnabled ? 'pb-[59px]' : '')}>
             {/* WhiteList or Imported Addresses List */}
-            <div>
+            <div className={!whitelistEnabled ? 'h-full' : ''}>
               {whitelistEnabled && (
                 <div className="flex justify-between items-center pt-[17px]">
                   <div className="text-[15px] text-r-neutral-title1">
@@ -335,7 +380,7 @@ const SendPoly = () => {
                   </div>
                 </div>
               )}
-              <div>
+              <div className="h-full">
                 {whitelistEnabled ? (
                   allAccounts.length > 0 ? (
                     allAccounts.map((item) => (
@@ -361,7 +406,7 @@ const SendPoly = () => {
                           type={item.type}
                           brandName={item.brandName}
                           onClick={() => {
-                            handleChange(item.address);
+                            handleChange(item.address, item.type);
                           }}
                         />
                       </WhitelistItemWrapper>
@@ -375,7 +420,7 @@ const SendPoly = () => {
                   )
                 ) : (
                   <AccountList
-                    onChange={(acc) => handleChange(acc.address)}
+                    onChange={(acc) => handleChange(acc.address, acc.type)}
                     containerClassName="mt-[20px]"
                   />
                 )}
@@ -384,8 +429,7 @@ const SendPoly = () => {
             {/* Imported Addresses Entry */}
             {whitelistEnabled && (
               <div>
-                <div
-                  className="flex justify-center items-center pt-[32px] pb-[8px] gap-[4px] cursor-pointer"
+                <EnterAddressButton
                   onClick={() => {
                     setShowSelectorModal(true);
                   }}
@@ -394,7 +438,7 @@ const SendPoly = () => {
                     {t('page.sendPoly.sendToImportedAddress')}
                   </div>
                   <RcIconRight width={16} height={16} />
-                </div>
+                </EnterAddressButton>
               </div>
             )}
           </div>
@@ -403,23 +447,26 @@ const SendPoly = () => {
       <AccountSelectorModal
         title={t('page.sendPoly.selectImportedAddress')}
         visible={showSelectorModal}
-        onChange={(acc) => handleChange(acc.address)}
+        onChange={(acc) => handleChange(acc.address, acc.type)}
         onCancel={handleCancel}
         getContainer={getContainer}
         height="calc(100% - 60px)"
       />
       <AddressRiskAlert
+        type={selectedAddressType}
         address={selectedAddress}
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
         onConfirm={() => {
-          handleGotoSend(selectedAddress);
+          handleGotoSend(selectedAddress, selectedAddressType);
           setSelectedAddress('');
+          setSelectedAddressType('');
           setShowAddressRiskAlert(false);
         }}
         onCancel={() => {
           setSelectedAddress('');
+          setSelectedAddressType('');
           setShowAddressRiskAlert(false);
         }}
       />

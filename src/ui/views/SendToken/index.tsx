@@ -20,9 +20,14 @@ import {
   CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
   KEYRING_TYPE,
 } from 'consts';
-import { useRabbyDispatch, connectStore } from 'ui/store';
+import { useRabbyDispatch, connectStore, useRabbySelector } from 'ui/store';
 import { Account } from 'background/service/preference';
-import { getUiType, openInternalPageInTab, useWallet } from 'ui/utils';
+import {
+  getUiType,
+  isSameAddress,
+  openInternalPageInTab,
+  useWallet,
+} from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
@@ -80,28 +85,44 @@ type FormSendToken = {
   amount: string;
 };
 const SendToken = () => {
+  const { useForm } = Form;
+  const { t } = useTranslation();
+  const history = useHistory();
+  const dispatch = useRabbyDispatch();
+  const rbisource = useRbiSource();
+  const { search } = useLocation();
   const wallet = useWallet();
+  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+    whitelistEnabled: s.whitelist.enabled,
+  }));
+
+  // UI States
+  const [showSelectorModal, setShowSelectorModal] = useState(false);
+  const [reserveGasOpen, setReserveGasOpen] = useState(false);
+  const [, setRefreshId] = useState(0);
+
+  // Core States
+  const [form] = useForm<FormSendToken>();
+
+  const toAddress = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('to') || '';
+  }, [search]);
+  const toAddressType = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('type') || '';
+  }, [search]);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const { balance: currentAccountBalance } = useCurrentBalance(
     currentAccount?.address
   );
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
-
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
-  const { t } = useTranslation();
-  const { useForm } = Form;
-  const history = useHistory();
-  const dispatch = useRabbyDispatch();
-
-  const rbisource = useRbiSource();
-
-  const [form] = useForm<FormSendToken>();
   const [formSnapshot, setFormSnapshot] = useState(form.getFieldsValue());
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
     null
   );
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
-
   const [currentToken, setCurrentToken] = useState<TokenItem>({
     id: 'eth',
     chain: 'eth',
@@ -119,11 +140,16 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
-
   const [safeInfo, setSafeInfo] = useState<{
     chainId: number;
     nonce: number;
   } | null>(null);
+
+  const [inited, setInited] = useState(false);
+  const [cacheAmount, setCacheAmount] = useState('0');
+  const [isLoading, setIsLoading] = useState(true);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
+
   const persistPageStateCache = useCallback(
     async (nextStateCache?: {
       values?: FormSendToken;
@@ -147,10 +173,6 @@ const SendToken = () => {
     },
     [wallet, history, form, currentToken, safeInfo]
   );
-  const [inited, setInited] = useState(false);
-  const [cacheAmount, setCacheAmount] = useState('0');
-  const [isLoading, setIsLoading] = useState(true);
-  const [balanceError, setBalanceError] = useState<string | null>(null);
 
   const [
     { showGasReserved, clickedMax, isEstimatingGas },
@@ -161,6 +183,7 @@ const SendToken = () => {
     clickedMax: false,
     isEstimatingGas: false,
   });
+
   const setShowGasReserved = useCallback((show: boolean) => {
     setSendMaxInfo((prev) => ({
       ...prev,
@@ -171,7 +194,6 @@ const SendToken = () => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   }, []);
 
-  const [reserveGasOpen, setReserveGasOpen] = useState(false);
   const handleReserveGasClose = useCallback(() => {
     setReserveGasOpen(false);
   }, []);
@@ -186,11 +208,6 @@ const SendToken = () => {
   >({});
   const [isGnosisSafe, setIsGnosisSafe] = useState(false);
 
-  const { search } = useLocation();
-  const toAddress = useMemo(() => {
-    const query = new URLSearchParams(search);
-    return query.get('to') || '';
-  }, [search]);
   useEffect(() => {
     if (!toAddress) {
       const query = new URLSearchParams(search);
@@ -207,7 +224,9 @@ const SendToken = () => {
     });
   }, [toAddress, history, search, form]);
 
-  const { targetAccount, addressDesc } = useAddressInfo(toAddress);
+  const { targetAccount, addressDesc, tmpCexInfo } = useAddressInfo(toAddress, {
+    type: toAddressType,
+  });
   useInitCheck(addressDesc);
 
   const canSubmit =
@@ -414,16 +433,27 @@ const SendToken = () => {
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
 
+  const miniSignTxs = useMemo(() => {
+    return miniSignTx ? [miniSignTx] : [];
+  }, [miniSignTx]);
+
   const canUseMiniTx = useMemo(() => {
     return (
       [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
         (currentAccount?.type || '') as any
       ) &&
+      !chainItem?.isTestnet &&
       !currentToken?.low_credit_score &&
       !currentToken?.is_suspicious &&
       currentToken?.is_verified !== false
     );
-  }, [currentAccount?.type, currentToken]);
+  }, [
+    chainItem?.isTestnet,
+    currentAccount?.type,
+    currentToken?.is_suspicious,
+    currentToken?.is_verified,
+    currentToken?.low_credit_score,
+  ]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({ amount }: FormSendToken) => {
@@ -540,6 +570,7 @@ const SendToken = () => {
         history.replace('/');
       }
       form.setFieldsValue({ amount: '' });
+      setRefreshId((e) => e + 1);
     }, 500);
   }, [form, history]);
 
@@ -620,9 +651,9 @@ const SendToken = () => {
       form.setFieldsValue(nextFormValues);
       setFormSnapshot(nextFormValues);
       setCacheAmount(resultAmount);
-      const alianName = await wallet.getAlianName(toAddress.toLowerCase());
-      if (alianName) {
-        setContactInfo({ address: toAddress, name: alianName });
+      const aliasName = await wallet.getAlianName(toAddress.toLowerCase());
+      if (aliasName) {
+        setContactInfo({ address: toAddress, name: aliasName });
       } else if (contactInfo) {
         setContactInfo(null);
       }
@@ -951,8 +982,10 @@ const SendToken = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
-    } else {
+    } else if (history.length > 2) {
       history.goBack();
+    } else {
+      history.replace(`/send-poly${history.location.search}`);
     }
   };
 
@@ -1064,11 +1097,11 @@ const SendToken = () => {
   };
 
   useEffect(() => {
-    if (inited) {
+    if (inited && currentAccount?.address) {
       initByCache();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inited]);
+  }, [inited, currentAccount?.address]);
 
   useEffect(() => {
     init();
@@ -1173,7 +1206,6 @@ const SendToken = () => {
                   </div>
                 }
               />
-              {/* TODO: 链去掉了，没考虑测试网？？ */}
               <div className="section-title mt-[20px]">
                 <span className="section-title__to">
                   {t('page.sendToken.sectionTo.title')}
@@ -1191,6 +1223,15 @@ const SendToken = () => {
                       ? ellipsis(targetAccount?.address)
                       : ''
                   }
+                  showWhitelistIcon={
+                    whitelistEnabled &&
+                    whitelist?.some(
+                      (w) =>
+                        targetAccount?.address &&
+                        isSameAddress(w, targetAccount?.address)
+                    )
+                  }
+                  tmpCexInfo={tmpCexInfo}
                   brandName={targetAccount?.brandName || ''}
                   onClick={() => {
                     history.push(`/send-poly${history.location.search}`);
@@ -1232,7 +1273,7 @@ const SendToken = () => {
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
-            <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
+            <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
               <Button
                 disabled={!canSubmit}
                 type="primary"
@@ -1269,7 +1310,7 @@ const SendToken = () => {
           height="calc(100% - 60px)"
         />
         <MiniApproval
-          txs={miniSignTx ? [miniSignTx] : []}
+          txs={miniSignTxs}
           visible={isShowMiniSign}
           ga={{
             category: 'Send',
@@ -1277,12 +1318,14 @@ const SendToken = () => {
             trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
           }}
           onClose={() => {
+            setRefreshId((e) => e + 1);
             setIsShowMiniSign(false);
             setTimeout(() => {
               setMiniSignTx(null);
             }, 500);
           }}
           onReject={() => {
+            setRefreshId((e) => e + 1);
             setIsShowMiniSign(false);
             setMiniSignTx(null);
           }}

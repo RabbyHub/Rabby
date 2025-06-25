@@ -126,6 +126,7 @@ async function restoreAppState() {
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
   walletController.syncMainnetChainList();
+  contactBookService.detectWhiteListCex();
 
   // check if user has enabled the extension
   if (isManifestV3) {

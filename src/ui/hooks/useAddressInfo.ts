@@ -1,30 +1,32 @@
-import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRabbyDispatch, useRabbySelector } from '../store';
+import { useEffect, useMemo, useState } from 'react';
 import { isValidAddress } from '@ethereumjs/util';
-import { isSameAddress, useWallet } from '../utils';
+import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
+
+import { useRabbyDispatch, useRabbySelector } from '../store';
 import { padWatchAccount } from '../views/SendPoly/util';
+import { isSameAddress, useWallet } from '../utils';
 import { KEYRING_CLASS } from '@/constant';
 
 export const useAddressInfo = (
   address: string,
   options?: {
     disableDesc?: boolean;
+    type?: string;
   }
 ) => {
-  const { disableDesc } = options || {};
-  const [addressDesc, setAddressDesc] = useState<
-    AddrDescResponse['desc'] | undefined
-  >();
-  const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
-
-  const dispatch = useRabbyDispatch();
+  const { disableDesc, type } = options || {};
 
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
   const { accountsList, exchanges } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
     exchanges: s.exchange.exchanges,
   }));
+
+  const [addressDesc, setAddressDesc] = useState<
+    AddrDescResponse['desc'] | undefined
+  >();
+  const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
 
   const { isImported, targetAccount, isMyImported } = useMemo(() => {
     if (!address) {
@@ -39,9 +41,18 @@ export const useAddressInfo = (
           acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
       )
       .some((acc) => isSameAddress(acc.address, address));
+    const targetTypeAccount = accountsList.find(
+      (acc) =>
+        isSameAddress(acc.address, address) &&
+        (type
+          ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
+          : true)
+    );
+    const targetSameAddressAccount = accountsList.find((acc) =>
+      isSameAddress(acc.address, address)
+    );
     const targetAccount =
-      accountsList.find((acc) => isSameAddress(acc.address, address)) ||
-      padWatchAccount(address);
+      targetTypeAccount || targetSameAddressAccount || padWatchAccount(address);
 
     return {
       isImported,
@@ -88,7 +99,19 @@ export const useAddressInfo = (
         setLoadingAddrDesc(false);
       }
     })();
-  }, [address, dispatch, exchanges]);
+  }, [address, dispatch, exchanges, disableDesc]);
+
+  const tmpCexInfo = useMemo(() => {
+    // 已导入的地址不需要强制展示交易所信息，本地有标才展示
+    if (isImported || !addressDesc?.cex?.id) {
+      return undefined;
+    }
+    return {
+      id: addressDesc?.cex?.id,
+      name: addressDesc?.cex?.name,
+      logo: addressDesc?.cex?.logo_url,
+    };
+  }, [isImported, addressDesc]);
 
   return {
     addressDesc,
@@ -96,5 +119,6 @@ export const useAddressInfo = (
     isMyImported,
     targetAccount,
     loading: loadingAddrDesc,
+    tmpCexInfo,
   };
 };

@@ -1,16 +1,19 @@
 import { useEffect, useState, useCallback, Fragment } from 'react';
-import { query2obj } from '@/ui/utils/url';
-import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
-import { useHistory } from 'react-router-dom';
-import { useWallet } from '@/ui/utils';
-import { useTranslation } from 'react-i18next';
 import { Modal } from 'antd';
+import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
+
+import { query2obj } from '@/ui/utils/url';
+import { useWallet } from '@/ui/utils';
 
 export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
+
   const [checked, setChecked] = useState(false);
+
   const checkFn = useCallback(
     async (id: string, chain: string, toDesc: AddrDescResponse['desc']) => {
       setChecked(true);
