@@ -17,6 +17,20 @@ export const useSearchTestnetToken = ({
 }) => {
   const wallet = useWallet();
 
+  const { data: hasData } = useRequest(
+    async () => {
+      if (!address) {
+        return false;
+      }
+      const allList = await wallet.getCustomTestnetTokenList({
+        address,
+      });
+      return allList.length > 0;
+    },
+    {
+      refreshDeps: [address],
+    }
+  );
   const { data = [], loading } = useRequest(
     async () => {
       if (!enabled || !address) {
@@ -40,5 +54,6 @@ export const useSearchTestnetToken = ({
   return {
     testnetTokenList: data,
     loading,
+    hasData,
   };
 };

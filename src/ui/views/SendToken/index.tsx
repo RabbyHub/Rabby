@@ -33,7 +33,7 @@ import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
-import { ReactComponent as RcIconDownCC } from '@/ui/assets/send-token/down.svg';
+import { ReactComponent as RcIconDownCC } from '@/ui/assets/send-token/down-cc.svg';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
 import './style.less';
@@ -1194,7 +1194,7 @@ const SendToken = () => {
                 className="w-full bg-r-neutral-card1 rounded-[8px]"
                 rightIcon={
                   <div className="text-r-neutral-foot">
-                    <RcIconDownCC width={20} height={20} />
+                    <RcIconDownCC width={16} height={16} />
                   </div>
                 }
               />
@@ -1231,7 +1231,7 @@ const SendToken = () => {
                   className="w-full bg-r-neutral-card1 rounded-[8px]"
                   rightIcon={
                     <div className="text-r-neutral-foot">
-                      <RcIconSwitchCC width={20} height={20} />
+                      <RcIconSwitchCC width={16} height={16} />
                     </div>
                   }
                 />
