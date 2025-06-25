@@ -14,7 +14,7 @@ import {
   LAST_EXPOSURE_VERSIONED_KEY,
   RateGuideLastExposure,
   userCouldRated,
-} from '@/utils-isomorphic/rateGuidance';
+} from '@/utils/rateGuidance';
 
 interface PreferenceState {
   externalLinkAck: boolean;

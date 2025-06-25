@@ -41,7 +41,7 @@ import {
   compareAssetSpenderByAmount,
   compareAssetSpenderByType,
 } from '@/utils/approval';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import {

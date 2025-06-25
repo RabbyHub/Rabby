@@ -9,7 +9,7 @@ import {
   openTrustedExternalWebsiteInTab,
   useWallet,
 } from '@/ui/utils';
-import { getDefaultRateGuideLastExposure } from '@/utils-isomorphic/rateGuidance';
+import { getDefaultRateGuideLastExposure } from '@/utils/rateGuidance';
 import { __DEV__, appIsDev } from '@/utils/env';
 import { ensurePrefix } from '@/utils/string';
 import { matomoRequestEvent } from '@/utils/matomo-request';

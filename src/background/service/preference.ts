@@ -22,7 +22,7 @@ import {
   getDefaultRateGuideLastExposure,
   LAST_EXPOSURE_VERSIONED_KEY,
   RateGuideLastExposure,
-} from '@/utils-isomorphic/rateGuidance';
+} from '@/utils/rateGuidance';
 
 const version = process.env.release || '0';
 
