@@ -1121,7 +1121,8 @@ export const SORT_WEIGHT = {
   [KEYRING_TYPE.SimpleKeyring]: 2,
   [KEYRING_TYPE.HardwareKeyring]: 3,
   [KEYRING_TYPE.WalletConnectKeyring]: 4,
-  [KEYRING_TYPE.WatchAddressKeyring]: 5,
+  [KEYRING_TYPE.GnosisKeyring]: 5,
+  [KEYRING_TYPE.WatchAddressKeyring]: 6,
 };
 
 export const GASPRICE_RANGE = ensureChainHashValid({

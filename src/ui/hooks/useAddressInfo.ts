@@ -6,6 +6,7 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { padWatchAccount } from '../views/SendPoly/util';
 import { isSameAddress, useWallet } from '../utils';
 import { KEYRING_CLASS } from '@/constant';
+import { findAccountByPriority } from '@/utils/account';
 
 export const useAddressInfo = (
   address: string,
@@ -41,15 +42,18 @@ export const useAddressInfo = (
           acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
       )
       .some((acc) => isSameAddress(acc.address, address));
-    const targetTypeAccount = accountsList.find(
-      (acc) =>
-        isSameAddress(acc.address, address) &&
-        (type
-          ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
-          : true)
+    const targetTypeAccount = findAccountByPriority(
+      accountsList.filter(
+        (acc) =>
+          isSameAddress(acc.address, address) &&
+          (type
+            ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
+            : true)
+      )
     );
-    const targetSameAddressAccount = accountsList.find((acc) =>
-      isSameAddress(acc.address, address)
+
+    const targetSameAddressAccount = findAccountByPriority(
+      accountsList.filter((acc) => isSameAddress(acc.address, address))
     );
     const targetAccount =
       targetTypeAccount || targetSameAddressAccount || padWatchAccount(address);

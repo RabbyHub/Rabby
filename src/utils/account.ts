@@ -7,6 +7,7 @@ import {
   KEYRING_PURPLE_LOGOS,
   KEYRING_TYPE,
   KeyringWithIcon,
+  SORT_WEIGHT,
 } from 'consts';
 import { t } from 'i18next';
 import { DisplayChainWithWhiteLogo, findChain } from './chain';
@@ -148,6 +149,8 @@ interface Account {
   type: string;
   address: string;
   brandName: string;
+  alianName?: string;
+  balance?: number;
 }
 
 export const isSameAccount = (a: Account, b: Account) => {
@@ -194,3 +197,9 @@ export const filterKeyringData = (
 
   return data;
 };
+
+export function findAccountByPriority(accounts: Account[]) {
+  return accounts.sort((item1, item2) => {
+    return (SORT_WEIGHT[item1.type] || 100) - (SORT_WEIGHT[item2.type] || 100);
+  })[0];
+}

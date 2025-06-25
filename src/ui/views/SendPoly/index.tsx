@@ -176,7 +176,7 @@ const SendPoly = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
-    } else if (history.length > 2) {
+    } else if (history.length > 1) {
       history.goBack();
     } else {
       history.replace('/');
@@ -319,7 +319,7 @@ const SendPoly = () => {
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isTab}
+          forceShowBack={!isTab || inputingAddress}
           canBack={!isTab || inputingAddress}
           rightSlot={
             isTab ? null : (

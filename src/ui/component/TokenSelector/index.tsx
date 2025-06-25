@@ -399,37 +399,15 @@ const TokenSelector = ({
       if (!visible && updateToken) {
         return null;
       }
-      const { disable, reason } = checkItem?.(token) || {};
+      const { disable } = checkItem?.(token) || {};
       return (
         <CommonTokenItem
           key={`${token.chain}-${token.id}`}
-          onConfirm={(token) => {
-            if (disable) {
-              Modal.confirm({
-                width: 340,
-                closable: true,
-                closeIcon: <></>,
-                centered: true,
-                className: 'token-selector-disable-item-tips',
-                title: null,
-                content: reason,
-                okText: t('global.proceedButton'),
-                cancelText: t('global.cancelButton'),
-                cancelButtonProps: {
-                  type: 'ghost',
-                  className: 'text-r-blue-default border-r-blue-default',
-                },
-                onOk() {
-                  onConfirm(token);
-                },
-              });
-              return;
-            }
-            onConfirm(token);
-          }}
+          onConfirm={onConfirm}
           disabled={disable}
           token={token}
           type={_type}
+          hideUsdValue={showCustomTestnetAssetList && selectedTab === 'testnet'}
           supportChains={supportChains}
           updateToken={updateToken}
           openTokenDetail={() => {
@@ -439,7 +417,7 @@ const TokenSelector = ({
         />
       );
     },
-    [onConfirm, supportChains, visible]
+    [onConfirm, supportChains, visible, showCustomTestnetAssetList, selectedTab]
   );
 
   const recentToTokens = useRabbySelector((s) => s.swap.recentToTokens || []);
@@ -670,6 +648,7 @@ function CommonTokenItem(props: {
   supportChains?: CHAINS_ENUM[];
   type: TokenSelectorProps['type'];
   openTokenDetail: () => void;
+  hideUsdValue?: boolean;
 }) {
   const {
     token,
@@ -680,6 +659,7 @@ function CommonTokenItem(props: {
     updateToken,
     type,
     openTokenDetail,
+    hideUsdValue,
   } = props;
 
   const { t } = useTranslation();
@@ -826,7 +806,7 @@ function CommonTokenItem(props: {
                   : t('component.TokenSelector.bridge.low')}
               </span>
             </div>
-          ) : (
+          ) : !hideUsdValue ? (
             <>
               <div className={clsx('token_usd_value')}>
                 {formatUsdValue(
@@ -839,6 +819,10 @@ function CommonTokenItem(props: {
                 {formatTokenAmount(value?.amount || 0)}
               </div>
             </>
+          ) : (
+            <div className={clsx('token_usd_value')}>
+              {formatTokenAmount(value?.amount || 0)}
+            </div>
           )}
         </div>
       </li>
