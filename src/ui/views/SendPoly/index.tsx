@@ -28,6 +28,8 @@ import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-wh
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import { groupBy } from 'lodash';
+import { findAccountByPriority } from '@/utils/account';
 
 const OuterInput = styled.div`
   border: 1px solid var(--r-neutral-line);
@@ -56,7 +58,13 @@ const WhitelistItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
   position: relative;
   border-radius: 8px;
-  margin-top: 8px;
+  margin-top: 12px;
+  &:first-child {
+    margin-top: 9px;
+  }
+  .whitelist-item {
+    gap: 12px !important;
+  }
   .icon-delete-container {
     display: flex;
     opacity: 0;
@@ -127,10 +135,16 @@ const SendPoly = () => {
   >({});
 
   const importWhitelistAccounts = useMemo(() => {
+    const groupAccounts = groupBy(accountsList, (item) =>
+      item.address.toLocaleLowerCase()
+    );
+    const uniqueAccounts = Object.values(groupAccounts).map((item) =>
+      findAccountByPriority(item)
+    );
     if (!whitelistEnabled) {
-      return accountsList;
+      return uniqueAccounts;
     }
-    return [...accountsList].filter((a) =>
+    return [...uniqueAccounts].filter((a) =>
       whitelist?.some((w) => isSameAddress(w, a.address))
     );
   }, [accountsList, whitelist]);
@@ -176,7 +190,7 @@ const SendPoly = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
-    } else if (history.length > 2) {
+    } else if (history.length > 1) {
       history.goBack();
     } else {
       history.replace('/');
@@ -319,7 +333,7 @@ const SendPoly = () => {
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isTab}
+          forceShowBack={!isTab || inputingAddress}
           canBack={!isTab || inputingAddress}
           rightSlot={
             isTab ? null : (
@@ -394,7 +408,7 @@ const SendPoly = () => {
                           />
                         </div>
                         <AccountItem
-                          className="group"
+                          className="group whitelist-item"
                           balance={
                             item.balance ||
                             unimportedBalances[item.address] ||

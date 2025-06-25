@@ -139,39 +139,44 @@ class ContactBook {
   };
 
   detectWhiteListCex = async () => {
-    const whitelistEnabled = whitelistService.isWhitelistEnabled();
-    if (!whitelistEnabled) return;
+    try {
+      const whitelistEnabled = whitelistService.isWhitelistEnabled();
+      if (!whitelistEnabled) return;
 
-    const accountsList = await keyringService.getAllVisibleAccountsArray();
-    const whitelist = whitelistService.getWhitelist();
+      const accountsList = await keyringService.getAllVisibleAccountsArray();
+      const whitelist = whitelistService.getWhitelist();
 
-    const coreAccountList = accountsList.filter(
-      (acc) =>
-        acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
-    );
-    const filteredAddresses = whitelist.filter(
-      (addr) => !coreAccountList.some((acc) => isSameAddress(acc.address, addr))
-    );
-    const top10Addresses = filteredAddresses.slice(0, 10);
+      const coreAccountList = accountsList.filter(
+        (acc) =>
+          acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
+      );
+      const filteredAddresses = whitelist.filter(
+        (addr) =>
+          !coreAccountList.some((acc) => isSameAddress(acc.address, addr))
+      );
+      const top10Addresses = filteredAddresses.slice(0, 10);
 
-    top10Addresses.map((address) => {
-      return queue.add(async () => {
-        try {
-          const exist = await this.getContactByAddress(address)?.cexId;
-          if (exist) return;
-          const result = await openapiService.addrDesc(address);
-          if (result.desc.cex?.id && result.desc.cex?.is_deposit) {
-            await this.updateCexId(address, result.desc.cex.id);
+      top10Addresses.map((address) => {
+        return queue.add(async () => {
+          try {
+            const exist = await this.getContactByAddress(address)?.cexId;
+            if (exist) return;
+            const result = await openapiService.addrDesc(address);
+            if (result.desc.cex?.id && result.desc.cex?.is_deposit) {
+              await this.updateCexId(address, result.desc.cex.id);
+            }
+          } catch (error) {
+            console.error(
+              'Failed to fetch CEX info for address:',
+              address.slice(-4),
+              error
+            );
           }
-        } catch (error) {
-          console.error(
-            'Failed to fetch CEX info for address:',
-            address.slice(-4),
-            error
-          );
-        }
+        });
       });
-    });
+    } catch (error) {
+      console.error('Failed to detect white list CEX:', error);
+    }
   };
 }
 

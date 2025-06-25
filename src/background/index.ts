@@ -126,7 +126,6 @@ async function restoreAppState() {
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
   walletController.syncMainnetChainList();
-  contactBookService.detectWhiteListCex();
 
   // check if user has enabled the extension
   if (isManifestV3) {
@@ -176,6 +175,7 @@ restoreAppState();
   let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
+    contactBookService.detectWhiteListCex();
 
     if (interval) {
       clearInterval(interval);

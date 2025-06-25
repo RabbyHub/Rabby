@@ -7,7 +7,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
 import { padWatchAccount } from '@/ui/views/SendPoly/util';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
-import { pickKeyringThemeIcon } from '@/utils/account';
+import { findAccountByPriority, pickKeyringThemeIcon } from '@/utils/account';
 import {
   BRAND_ALIAN_TYPE_TEXT,
   KEYRING_CLASS,
@@ -68,7 +68,7 @@ const AddressTypeCard = ({
   }, [type, showCexInfo]);
 
   return (
-    <div className="flex gap-[4px] items-center">
+    <div className="flex gap-[8px] items-center justify-center">
       <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
         {showCexInfo ? (
           <img
@@ -86,7 +86,12 @@ const AddressTypeCard = ({
             }
           />
         )}
-        <div className="font-medium text-[13px] text-r-neutral-title1">
+        <div
+          className={clsx(
+            'font-medium text-[13px] text-r-neutral-title1',
+            showSideDesc ? 'max-w-[100px]  truncate' : ''
+          )}
+        >
           {aliasName}
         </div>
       </div>
@@ -147,19 +152,23 @@ export const AddressRiskAlert = ({
   }, [address]);
 
   const targetAccount = useMemo(() => {
-    const targetTypeAccount = accountsList.find(
+    const targetTypeAccounts = accountsList.filter(
       (acc) =>
         isSameAddress(acc.address, address) &&
         (type
           ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
           : true)
     );
-    const targetSameAddressAccount = accountsList.find((acc) =>
+    if (targetTypeAccounts.length > 0) {
+      return findAccountByPriority(targetTypeAccounts);
+    }
+    const targetSameAddressAccounts = accountsList.filter((acc) =>
       isSameAddress(acc.address, address)
     );
-    return (
-      targetTypeAccount || targetSameAddressAccount || padWatchAccount(address)
-    );
+    if (targetSameAddressAccounts.length > 0) {
+      return findAccountByPriority(targetSameAddressAccounts);
+    }
+    return padWatchAccount(address);
   }, [accountsList, address, type]);
 
   useEffect(() => {
@@ -265,9 +274,9 @@ export const AddressRiskAlert = ({
                 {checkedRisk ? (
                   <RcIconCheckedCC className="text-r-blue-default" />
                 ) : (
-                  <RcIconCheckCC className="text-r-neutral-foot" />
+                  <RcIconCheckCC className="text-r-neutral-body" />
                 )}
-                <span className="text-center text-r-neutral-foot text-[13px] font-medium ">
+                <span className="text-center text-r-neutral-body text-[13px] font-medium ">
                   {t('page.sendPoly.riskAlert.understandRisks')}
                 </span>
               </div>

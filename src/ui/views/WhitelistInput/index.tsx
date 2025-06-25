@@ -87,8 +87,10 @@ const WhitelistInput = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
-    } else {
+    } else if (history.length > 1) {
       history.goBack();
+    } else {
+      history.push('/send-poly');
     }
   }, [history]);
 
@@ -206,8 +208,8 @@ const WhitelistInput = () => {
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isTab}
-          canBack={!isTab}
+          forceShowBack
+          canBack
           rightSlot={
             isTab ? null : (
               <div
