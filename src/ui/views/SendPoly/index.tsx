@@ -28,6 +28,8 @@ import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-wh
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import { groupBy } from 'lodash';
+import { findAccountByPriority } from '@/utils/account';
 
 const OuterInput = styled.div`
   border: 1px solid var(--r-neutral-line);
@@ -61,8 +63,6 @@ const WhitelistItemWrapper = styled.div`
     margin-top: 9px;
   }
   .whitelist-item {
-    padding-top: 14px !important;
-    padding-bottom: 14px !important;
     gap: 12px !important;
   }
   .icon-delete-container {
@@ -134,10 +134,16 @@ const SendPoly = () => {
   >({});
 
   const importWhitelistAccounts = useMemo(() => {
+    const groupAccounts = groupBy(accountsList, (item) =>
+      item.address.toLocaleLowerCase()
+    );
+    const uniqueAccounts = Object.values(groupAccounts).map((item) =>
+      findAccountByPriority(item)
+    );
     if (!whitelistEnabled) {
-      return accountsList;
+      return uniqueAccounts;
     }
-    return [...accountsList].filter((a) =>
+    return [...uniqueAccounts].filter((a) =>
       whitelist?.some((w) => isSameAddress(w, a.address))
     );
   }, [accountsList, whitelist]);
