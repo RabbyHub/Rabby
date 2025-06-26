@@ -666,7 +666,9 @@
         "confirmText": "Підтвердити",
         "title": "Введіть пароль для підтвердження"
       },
-      "sectionBalance": {},
+      "sectionBalance": {
+        "title": "Сума"
+      },
       "sectionChain": {
         "title": "Мережа"
       },
@@ -711,7 +713,11 @@
       },
       "blockedTransaction": "Заблокована Транзакція",
       "blockedTransactionCancelText": "Я знаю",
-      "blockedTransactionContent": "Ця транзакція взаємодіє з адресою, яка знаходиться у списку санкцій OFAC."
+      "blockedTransactionContent": "Ця транзакція взаємодіє з адресою, яка знаходиться у списку санкцій OFAC.",
+      "selectFromAddress": "Виберіть з адреси",
+      "noSupprotTokenForSafe": "Адрес Safe, на який ви надсилаєте токени, не розгорнуто на цій мережі. Перевірте перед продовженням, щоб уникнути втрат.",
+      "noSupportTokenForChain": "Адрес отримувача є адресою контракту на іншому ланцюгу. Перевірте перед продовженням, щоб уникнути втрат.",
+      "noSupprotTokenForDex": "Цей токен може не підтримуватися цією біржею. Перевірте перед продовженням, щоб уникнути втрат."
     },
     "sendTokenComponents": {
       "GasReserved": "Зарезервовано <1>0</1> {{ tokenName }} для вартості газу",
@@ -859,7 +865,8 @@
         "cancelBody": "Якщо ви закриєте цю сторінку, решта reвиконань не буде виконано.",
         "resume": "Продовжити",
         "revokeWithLedger": "Почніть відкликання за допомогою Ledger",
-        "gasTooHigh": "Висока плата за Gas"
+        "gasTooHigh": "Висока плата за Gas",
+        "ledgerConfirmTitle": "Пакетне відкликання з Ledger"
       }
     },
     "gasTopUp": {
@@ -1212,7 +1219,8 @@
           "connectedDapp": "Ваші підключення до dApp",
           "rabbyPoints": "Rabby Points",
           "searchDapps": "Пошук Dapps",
-          "gasTopUp": "Поповнення Gas"
+          "gasTopUp": "Поповнення Gas",
+          "ecosystem": "Екосистема"
         },
         "settings": {
           "label": "Налаштування",
@@ -1240,6 +1248,18 @@
           "button": "Увімкнути\n",
           "title": "Перемикайте адресу Dapp незалежно\n",
           "desc": "Увімкнувши, ви можете самостійно вибрати адресу підключення до кожного Dapp. Зміна основної адреси не вплине на адресу, підключену до кожного Dapp.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Як би ви оцінили Rabby Wallet?"
+        },
+        "rateModal": {
+          "thxTitle": "Дякую!",
+          "submitFeedbackButton": "Подати",
+          "rateOnChromeStoreButton": "Оцінка в Chrome Web Store",
+          "feedbackPlaceholder": "Rabby цінує вашу думку!",
+          "feedbackDesc": "Є відгуки? Ми вас слухаємо.",
+          "thxDesc": "Якщо вам подобається Rabby, швидкий рейтинг у Chrome Store багато значив би.",
+          "feedbackSuccess": "Дякуємо за ваш відгук!"
         }
       },
       "tokenDetail": {
@@ -2675,6 +2695,61 @@
         "noResult": "Немає результатів для",
         "searching": "Результати для"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Додати зараз",
+        "title": "Додати адресу білого списку",
+        "desc": "Додайте надійні адреси до білого списку для швидких переказів - наступного разу підтвердження не потрібно"
+      },
+      "whitelist": {
+        "title": "Список білих адресів",
+        "addWhitelist": "Додати до білого списку",
+        "removeFromWhitelist": "Видалити з білого списку",
+        "addWhitelistDesc": "Додайте довірені адреси до білого списку для швидких переказів — наступного разу підтвердження не потрібно."
+      },
+      "addWhitelist": {
+        "title": "Додати адресу білого списку",
+        "desc": "Додайте надійні адреси до білого списку для швидких переказів — наступного разу підтвердження не потрібне"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Адреса шахрайства позначена Rabby",
+            "contractAddress": "Виявлена адреса контракту, кошти можуть бути втрачені.",
+            "noSend": "Не було жодних переказів на цю адресу протягом 180 днів",
+            "dexNoDeposite": "Не CEX адрес депозиту, кошти можуть бути втрачені"
+          }
+        },
+        "cexAddress": "{{cexName}} Адресa",
+        "cexDepositAddress": "{{cexName}} Адрес депозиту",
+        "title": "Надіслати на цю адресу",
+        "understandRisks": "Я розумію ризики і хочу продовжити",
+        "riskWarning": "Попередження про ризики"
+      },
+      "title": "Відправити на",
+      "enterAddress": "Введіть адресу",
+      "sendToImportedAddress": "Надіслати на імпортовану адресу",
+      "selectExchangeSource": "Виберіть джерело обміну",
+      "selectImportedAddress": "Вибрати імпортовану адресу",
+      "enterAddressOrENS": "Введіть адресу / ENS"
+    },
+    "whitelist": {
+      "tips": {
+        "removed": "Адрес зі списку білих адрес видалено",
+        "added": "Адреса додано до білого списку",
+        "repeated": "Поточна адреса вже є в білому списку."
+      },
+      "title": "Додати адресу до білого списку",
+      "confirmPassword": "Підтвердьте пароль",
+      "nameYourAddress": "Назвіть свою адресу",
+      "address": "Адреса",
+      "exchangeAddress": "Адрес обміну",
+      "name": "Назва",
+      "addSuccess": "Додано успішно",
+      "enterAddress": "Введіть адресу",
+      "invalidAddress": "Ця адреса недійсна",
+      "riskTitle": "Додати адресу до білого списку"
     }
   },
   "component": {

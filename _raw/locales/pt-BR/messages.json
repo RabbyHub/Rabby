@@ -665,7 +665,9 @@
         "confirmText": "Confirmar",
         "title": "Digite a Senha para Confirmar"
       },
-      "sectionBalance": {},
+      "sectionBalance": {
+        "title": "Valor"
+      },
       "sectionChain": {
         "title": "Rede"
       },
@@ -710,7 +712,11 @@
       },
       "blockedTransactionContent": "Esta transação interage com um endereço que está na lista de sanções da OFAC.",
       "blockedTransaction": "Transação Bloqueada",
-      "blockedTransactionCancelText": "Eu sei"
+      "blockedTransactionCancelText": "Eu sei",
+      "selectFromAddress": "Selecionar do Endereço",
+      "noSupprotTokenForDex": "Este token pode não ser suportado por esta exchange. Verifique antes de prosseguir para evitar perdas.",
+      "noSupprotTokenForSafe": "O endereço Safe para o qual você está enviando tokens não está implantado nesta cadeia. Verifique antes de prosseguir para evitar perdas.",
+      "noSupportTokenForChain": "O endereço do destinatário é um endereço de contrato em uma cadeia diferente. Verifique antes de prosseguir para evitar perdas."
     },
     "sendTokenComponents": {
       "GasReserved": "Reservado <1>0</1> {{ tokenName }} para custo de gás",
@@ -857,7 +863,8 @@
         "simulationFailed": "Simulação falhou",
         "ledgerSigned": "Assinado. Criando transação ({{current}}/{{total}})",
         "cancelBody": "Se você fechar esta página, as revogações restantes não serão executadas.",
-        "useGasAccount": "Seu saldo de gás está baixo. Seu GasAccount cobrirá as taxas de gás."
+        "useGasAccount": "Seu saldo de gás está baixo. Seu GasAccount cobrirá as taxas de gás.",
+        "ledgerConfirmTitle": "Revogação em Lote com Ledger"
       }
     },
     "gasTopUp": {
@@ -1209,7 +1216,8 @@
           "connectedDapp": "Dapp Conectado",
           "gasTopUp": "Recarga de Gas",
           "searchDapps": "Pesquisar Dapps",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "ecosystem": "Ecossistema"
         },
         "settings": {
           "label": "Configurações",
@@ -1237,6 +1245,18 @@
           "title": "Alternar Endereço do DApp Independentemente\n",
           "button": "Ativar\n",
           "desc": "Uma vez habilitado, você pode escolher qual endereço conectar a cada DApp individualmente. Alterar seu endereço principal não afetará o endereço conectado a cada DApp.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Como você avalia a Rabby Wallet?"
+        },
+        "rateModal": {
+          "feedbackSuccess": "Obrigado pelo seu feedback!",
+          "thxTitle": "Obrigado!",
+          "submitFeedbackButton": "Enviar",
+          "feedbackPlaceholder": "A Rabby valoriza seu feedback!",
+          "rateOnChromeStoreButton": "Avalie na Chrome Web Store",
+          "feedbackDesc": "Tem feedback? Estamos ouvindo.",
+          "thxDesc": "Se você gosta do Rabby, uma rápida avaliação na Chrome Store significaria muito."
         }
       },
       "tokenDetail": {
@@ -2663,6 +2683,61 @@
         "title": "Todos os Resultados",
         "searchTips": "Buscar na web"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Adicionar Agora",
+        "title": "Adicionar Endereço à Lista Branca",
+        "desc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas - sem confirmação necessária da próxima vez"
+      },
+      "whitelist": {
+        "addWhitelist": "Adicionar à lista de permissões",
+        "removeFromWhitelist": "Remover da lista de permissões",
+        "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas—sem confirmação necessária da próxima vez.",
+        "title": "Lista branca"
+      },
+      "addWhitelist": {
+        "title": "Adicionar Endereço à Lista Branca",
+        "desc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---nenhuma confirmação necessária na próxima vez"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Endereço de golpe sinalizado pelo Rabby",
+            "contractAddress": "Endereço do contrato detectado, os fundos podem ser perdidos",
+            "dexNoDeposite": "Não é um endereço de depósito CEX, os fundos podem ser perdidos",
+            "noSend": "Nenhuma transferência para este endereço nos últimos 180 dias"
+          }
+        },
+        "cexAddress": "{{cexName}} Endereço",
+        "riskWarning": "Aviso de Risco",
+        "understandRisks": "Eu entendo os riscos e quero continuar",
+        "cexDepositAddress": "{{cexName}} Endereço de Depósito",
+        "title": "Enviar para este Endereço"
+      },
+      "sendToImportedAddress": "Enviar para Endereço Importado",
+      "selectExchangeSource": "Selecione a Fonte de Câmbio",
+      "selectImportedAddress": "Selecione o endereço importado",
+      "enterAddressOrENS": "Digite o endereço / ENS",
+      "title": "Enviar para",
+      "enterAddress": "Digite o endereço"
+    },
+    "whitelist": {
+      "tips": {
+        "added": "Endereço adicionado à lista de permissões",
+        "repeated": "O endereço atual já está na lista branca.",
+        "removed": "Endereço da lista de permissões excluído"
+      },
+      "title": "Adicionar Endereço à Lista Branca",
+      "name": "Nome",
+      "exchangeAddress": "Endereço de Exchange",
+      "enterAddress": "Digite o endereço",
+      "address": "Endereço",
+      "confirmPassword": "Confirmar Senha",
+      "nameYourAddress": "Nomeie Seu Endereço",
+      "addSuccess": "Adicionado com sucesso",
+      "riskTitle": "Adicionar Endereço à Lista Branca",
+      "invalidAddress": "Este endereço é inválido"
     }
   },
   "component": {

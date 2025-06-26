@@ -665,7 +665,9 @@
         "confirmText": "Confirmar",
         "title": "Ingresa la Contraseña para Confirmar"
       },
-      "sectionBalance": {},
+      "sectionBalance": {
+        "title": "Cantidad"
+      },
       "sectionChain": {
         "title": "Cadena"
       },
@@ -710,7 +712,11 @@
       },
       "blockedTransactionCancelText": "Lo sé",
       "blockedTransactionContent": "Esta transacción interactúa con una dirección que está en la lista de sanciones de OFAC.",
-      "blockedTransaction": "Transacción Bloqueada"
+      "blockedTransaction": "Transacción Bloqueada",
+      "noSupportTokenForChain": "La dirección del destinatario es una dirección de contrato en una cadena diferente. Verifica antes de continuar para evitar pérdidas.",
+      "selectFromAddress": "Seleccionar de la dirección",
+      "noSupprotTokenForDex": "Este token puede no ser compatible con este intercambio. Verifique antes de continuar para evitar pérdidas.",
+      "noSupprotTokenForSafe": "La dirección Safe a la que estás enviando tokens no está desplegada en esta cadena. Verifica antes de continuar para evitar pérdidas."
     },
     "sendTokenComponents": {
       "GasReserved": "Reservados <1>0</1> {{ tokenName }} para costo de gas",
@@ -857,7 +863,8 @@
         "confirmTitle": "Revocación por lotes con un clic",
         "ledgerSended": "Por favor, firme la solicitud en Ledger ({{current}}/{{total}})",
         "ledgerSigned": "Firmado. Creando transacción ({{current}}/{{total}})",
-        "ledgerSending": "Enviando solicitud de firma ({{current}}/{{total}})"
+        "ledgerSending": "Enviando solicitud de firma ({{current}}/{{total}})",
+        "ledgerConfirmTitle": "Revocar en lote con Ledger"
       }
     },
     "gasTopUp": {
@@ -1209,7 +1216,8 @@
           "connectedDapp": "Dapp Conectada",
           "searchDapps": "Buscar Dapps",
           "rabbyPoints": "Rabby Points",
-          "gasTopUp": "Recarga de Gas"
+          "gasTopUp": "Recarga de Gas",
+          "ecosystem": "Ecosistema"
         },
         "settings": {
           "label": "Configuración",
@@ -1237,6 +1245,18 @@
           "button": "Habilitar\n",
           "title": "Cambiar la dirección del Dapp de forma independiente\n",
           "desc": "Una vez habilitado, puede elegir qué dirección conectar a cada DApp de forma independiente. Cambiar su dirección principal no afectará la dirección conectada a cada DApp.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "¿Cómo calificarías Rabby Wallet?"
+        },
+        "rateModal": {
+          "feedbackSuccess": "¡Gracias por tus comentarios!",
+          "submitFeedbackButton": "Enviar",
+          "feedbackPlaceholder": "¡Rabby valora tus comentarios!",
+          "rateOnChromeStoreButton": "Tasa en Chrome Web Store",
+          "thxTitle": "¡Gracias!",
+          "feedbackDesc": "¿Tienes comentarios? Estamos escuchando.",
+          "thxDesc": "Si te gusta Rabby, una rápida valoración en la Chrome Store significaría mucho."
         }
       },
       "tokenDetail": {
@@ -2663,6 +2683,61 @@
         "searchTips": "Buscar en la web",
         "noResult": "Sin resultados para"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Agregar ahora",
+        "title": "Añadir dirección a la lista blanca",
+        "desc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas - no se necesita confirmación la próxima vez."
+      },
+      "whitelist": {
+        "title": "Lista blanca",
+        "addWhitelist": "Añadir a la lista blanca",
+        "removeFromWhitelist": "Eliminar de la lista blanca",
+        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---no se necesita confirmación la próxima vez"
+      },
+      "addWhitelist": {
+        "title": "Añadir dirección a la lista blanca",
+        "desc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas—sin necesidad de confirmación la próxima vez."
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "noSend": "Sin transferencias a esta dirección en 180 días",
+            "contractAddress": "Dirección de contrato detectada, los fondos pueden perderse.",
+            "scamAddress": "Dirección de estafa marcada por Rabby",
+            "dexNoDeposite": "No es una dirección de depósito CEX, los fondos pueden perderse."
+          }
+        },
+        "title": "Enviar a esta Dirección",
+        "riskWarning": "Advertencia de Riesgo",
+        "cexAddress": "{{cexName}} Dirección",
+        "cexDepositAddress": "{{cexName}} Dirección de Depósito",
+        "understandRisks": "Entiendo los riesgos y quiero continuar"
+      },
+      "enterAddress": "Ingresa la dirección",
+      "selectExchangeSource": "Seleccionar fuente de intercambio",
+      "sendToImportedAddress": "Enviar a dirección importada",
+      "enterAddressOrENS": "Ingrese dirección / ENS",
+      "selectImportedAddress": "Seleccionar dirección importada",
+      "title": "Enviar a"
+    },
+    "whitelist": {
+      "tips": {
+        "repeated": "La dirección actual ya está en la lista blanca.",
+        "added": "Dirección añadida a la lista blanca",
+        "removed": "Dirección de la lista blanca eliminada"
+      },
+      "title": "Agregar dirección a la lista blanca",
+      "confirmPassword": "Confirmar contraseña",
+      "invalidAddress": "Esta dirección no es válida",
+      "riskTitle": "Agregar dirección de lista blanca",
+      "address": "Dirección",
+      "nameYourAddress": "Nombra tu dirección",
+      "name": "Nombre",
+      "addSuccess": "Añadido con éxito",
+      "exchangeAddress": "Dirección de intercambio",
+      "enterAddress": "Introducir dirección"
     }
   },
   "component": {

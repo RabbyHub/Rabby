@@ -664,7 +664,9 @@
         "cancelText": "Hủy bỏ",
         "title": "Nhập Mật khẩu để Xác nhận"
       },
-      "sectionBalance": {},
+      "sectionBalance": {
+        "title": "Số lượng"
+      },
       "sectionChain": {
         "title": "Chuỗi"
       },
@@ -710,7 +712,11 @@
       "whitelistAlert__temporaryGranted": "Quyền tạm thời đã được cấp",
       "blockedTransactionCancelText": "Tôi biết",
       "blockedTransaction": "Giao dịch bị chặn",
-      "blockedTransactionContent": "Giao dịch này tương tác với một địa chỉ nằm trong danh sách trừng phạt của OFAC."
+      "blockedTransactionContent": "Giao dịch này tương tác với một địa chỉ nằm trong danh sách trừng phạt của OFAC.",
+      "selectFromAddress": "Chọn từ Địa chỉ",
+      "noSupprotTokenForDex": "Mã thông báo này có thể không được sàn giao dịch này hỗ trợ. Hãy kiểm tra trước khi tiếp tục để tránh mất mát.",
+      "noSupportTokenForChain": "Địa chỉ người nhận là địa chỉ hợp đồng trên một chuỗi khác. Kiểm tra trước khi tiếp tục để tránh mất mát.",
+      "noSupprotTokenForSafe": "Địa chỉ Safe bạn đang gửi token đến không được triển khai trên chuỗi này. Kiểm tra trước khi tiếp tục để tránh bị mất mát."
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "Dự trữ Gas <1 />",
@@ -857,7 +863,8 @@
         "ledgerSigned": "Đã ký. Đang tạo giao dịch ({{current}}/{{total}})",
         "ledgerAlert": "Vui lòng mở ứng dụng Ethereum trên thiết bị Ledger của bạn",
         "useGasAccount": "Số dư gas của bạn thấp. GasAccount của bạn sẽ chi trả phí gas.",
-        "ledgerSending": "Gửi yêu cầu ký ({{current}}/{{total}})"
+        "ledgerSending": "Gửi yêu cầu ký ({{current}}/{{total}})",
+        "ledgerConfirmTitle": "Batch Revoke với Ledger"
       }
     },
     "gasTopUp": {
@@ -1257,7 +1264,8 @@
           "signatureRecord": "Signature Record",
           "label": "Tính năng",
           "gasTopUp": "Nạp Gas",
-          "manageAddress": "Quản lý Địa chỉ"
+          "manageAddress": "Quản lý Địa chỉ",
+          "ecosystem": "Hệ sinh thái"
         },
         "settings": {
           "label": "Cài đặt",
@@ -1309,6 +1317,18 @@
           "button": "Bật\n",
           "title": "Thay đổi địa chỉ DApp độc lập\n",
           "desc": "Bật tính năng này, bạn có thể chọn địa chỉ kết nối với từng ứng dụng phi tập trung (Dapp) một cách độc lập. Thay đổi địa chỉ chính của bạn sẽ không ảnh hưởng đến địa chỉ đã kết nối với từng Dapp.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Bạn đánh giá như thế nào về Rabby Wallet?"
+        },
+        "rateModal": {
+          "submitFeedbackButton": "Gửi",
+          "feedbackPlaceholder": "Rabby rất trân trọng phản hồi của bạn!",
+          "thxTitle": "Cảm ơn bạn!",
+          "rateOnChromeStoreButton": "Đánh giá trên Chrome Web Store",
+          "feedbackDesc": "Có ý kiến phản hồi? Chúng tôi đang lắng nghe.",
+          "thxDesc": "Nếu bạn thích Rabby, một đánh giá nhanh trên Chrome Store sẽ có ý nghĩa rất nhiều.",
+          "feedbackSuccess": "Cảm ơn bạn đã góp ý!"
         }
       },
       "tokenDetail": {
@@ -2660,6 +2680,61 @@
         "title": "Tất cả Kết quả",
         "noResult": "Không có kết quả cho"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Thêm ngay",
+        "title": "Thêm Địa chỉ Trong Danh Sách Trắng",
+        "desc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh - không cần xác nhận lần sau"
+      },
+      "whitelist": {
+        "title": "Danh sách trắng",
+        "removeFromWhitelist": "Xóa khỏi danh sách trắng",
+        "addWhitelist": "Thêm vào danh sách trắng",
+        "addWhitelistDesc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển khoản nhanh---không cần xác nhận lần sau"
+      },
+      "addWhitelist": {
+        "title": "Thêm địa chỉ danh sách trắng",
+        "desc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh chóng --- không cần xác nhận lần sau"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "dexNoDeposite": "Không phải địa chỉ gửi CEX, có thể mất tiền.",
+            "scamAddress": "Địa chỉ lừa đảo đã được Rabby đánh dấu",
+            "noSend": "Không có giao dịch chuyển khoản đến địa chỉ này trong 180 ngày",
+            "contractAddress": "Địa chỉ hợp đồng được phát hiện, quỹ có thể bị mất."
+          }
+        },
+        "title": "Gửi đến địa chỉ này",
+        "cexAddress": "{{cexName}} Địa chỉ",
+        "cexDepositAddress": "{{cexName}} Địa chỉ Nạp tiền",
+        "riskWarning": "Cảnh báo rủi ro",
+        "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục"
+      },
+      "selectImportedAddress": "Chọn địa chỉ đã nhập",
+      "enterAddressOrENS": "Nhập địa chỉ / ENS",
+      "sendToImportedAddress": "Gửi đến Địa chỉ Nhập khẩu",
+      "selectExchangeSource": "Chọn Nguồn Giao Dịch",
+      "title": "Gửi đến",
+      "enterAddress": "Nhập địa chỉ"
+    },
+    "whitelist": {
+      "tips": {
+        "removed": "Địa chỉ trong danh sách trắng đã bị xóa",
+        "added": "Địa chỉ đã được thêm vào danh sách trắng",
+        "repeated": "Địa chỉ hiện tại đã có trong danh sách trắng."
+      },
+      "title": "Thêm Địa chỉ Danh sách Trắng",
+      "nameYourAddress": "Đặt tên cho địa chỉ của bạn",
+      "address": "Địa chỉ",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "invalidAddress": "Địa chỉ này không hợp lệ",
+      "enterAddress": "Nhập địa chỉ",
+      "name": "Tên",
+      "exchangeAddress": "Địa chỉ Sàn giao dịch",
+      "riskTitle": "Thêm Địa chỉ Danh sách Trắng",
+      "addSuccess": "Thêm thành công"
     }
   },
   "component": {

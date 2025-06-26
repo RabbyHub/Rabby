@@ -665,7 +665,9 @@
         "confirmText": "確認",
         "title": "確認のためにパスワードを入力"
       },
-      "sectionBalance": {},
+      "sectionBalance": {
+        "title": "金額"
+      },
       "sectionChain": {
         "title": "チェーン"
       },
@@ -710,7 +712,11 @@
       },
       "blockedTransaction": "Blocked Transaction",
       "blockedTransactionCancelText": "私は知っている",
-      "blockedTransactionContent": "このトランザクションは、OFAC制裁リストに載っているアドレスとやり取りします。"
+      "blockedTransactionContent": "このトランザクションは、OFAC制裁リストに載っているアドレスとやり取りします。",
+      "selectFromAddress": "アドレスを選択してください",
+      "noSupprotTokenForDex": "このトークンは、この取引所ではサポートされていない可能性があります。損失を避けるために進む前に確認してください。",
+      "noSupportTokenForChain": "受取人アドレスは異なるチェーン上の契約アドレスです。損失を避けるために、進む前に確認してください。",
+      "noSupprotTokenForSafe": "送信先のSafeアドレスはこのチェーンにデプロイされていません。損失を避けるために、進む前に確認してください。"
     },
     "sendTokenComponents": {
       "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました",
@@ -857,7 +863,8 @@
         "ledgerSigned": "署名済み。トランザクションを作成中 ({{current}}/{{total}})",
         "useGasAccount": "ガス残高が少なくなっています。GasAccountがガス料金をカバーします。",
         "simulationFailed": "シミュレーション失敗",
-        "gasNotEnough": "Gasが不足しているため、送信できません"
+        "gasNotEnough": "Gasが不足しているため、送信できません",
+        "ledgerConfirmTitle": "Ledgerでバッチ取り消し"
       }
     },
     "gasTopUp": {
@@ -1209,7 +1216,8 @@
           "connectedDapp": "接続されたDapp",
           "gasTopUp": "ガストップアップ",
           "searchDapps": "Dappsを検索",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "ecosystem": "エコシステム"
         },
         "settings": {
           "label": "設定",
@@ -1237,6 +1245,18 @@
           "title": "Dappアドレスを個別に切り替える\n",
           "button": "有効化\n",
           "desc": "有効化後、各Dappに接続するアドレスを選択できます。メインアドレスの変更は、各Dappに接続されているアドレスに影響しません。\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Rabby Walletをどのように評価しますか？"
+        },
+        "rateModal": {
+          "submitFeedbackButton": "提出する",
+          "feedbackSuccess": "フィードバックありがとうございます！",
+          "rateOnChromeStoreButton": "Chrome ウェブストアでの評価",
+          "feedbackDesc": "フィードバックはありますか？私たちはお聞きしています。",
+          "thxTitle": "ありがとう！",
+          "thxDesc": "Rabbyが気に入っていただけたら、Chromeストアでの簡単な評価はとてもありがたいです。",
+          "feedbackPlaceholder": "Rabbyはあなたのフィードバックを大切にしています！"
         }
       },
       "tokenDetail": {
@@ -2663,6 +2683,61 @@
         "searching": "結果は",
         "noResult": "結果はありません"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "title": "ホワイトリストアドレスを追加",
+        "addNow": "今すぐ追加",
+        "desc": "信頼できるアドレスをホワイトリストに追加して迅速な転送を行います - 次回は確認不要です。"
+      },
+      "whitelist": {
+        "addWhitelist": "ホワイトリストに追加",
+        "title": "ホワイトリスト",
+        "removeFromWhitelist": "ホワイトリストから削除",
+        "addWhitelistDesc": "信頼できるアドレスをホワイトリストに追加して、次回の迅速な転送を実現します - 確認は不要です。"
+      },
+      "addWhitelist": {
+        "desc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を実現---次回は確認不要です。",
+        "title": "ホワイトリストアドレスを追加"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Rabby によってフラグされた詐欺アドレス",
+            "contractAddress": "契約アドレスが検出されました、資金が失われる可能性があります",
+            "dexNoDeposite": "CEXの入金アドレスではありません。資金が失われる可能性があります。",
+            "noSend": "このアドレスへの転送は180日間ありません"
+          }
+        },
+        "riskWarning": "リスク警告",
+        "understandRisks": "リスクを理解しており、続行したいと思います。",
+        "title": "このアドレスに送信",
+        "cexAddress": "{{cexName}} アドレス",
+        "cexDepositAddress": "{{cexName}} 入金アドレス"
+      },
+      "title": "送信先",
+      "enterAddress": "アドレスを入力してください",
+      "enterAddressOrENS": "アドレス / ENSを入力してください",
+      "sendToImportedAddress": "インポートされたアドレスに送信",
+      "selectExchangeSource": "エクスチェンジソースを選択してください",
+      "selectImportedAddress": "インポートしたアドレスを選択してください"
+    },
+    "whitelist": {
+      "tips": {
+        "added": "ホワイトリストにアドレスが追加されました",
+        "repeated": "現在のアドレスは既にホワイトリストに登録されています。",
+        "removed": "ホワイトリストアドレスが削除されました"
+      },
+      "title": "ホワイトリストアドレスを追加",
+      "confirmPassword": "パスワードを確認してください",
+      "name": "名前",
+      "riskTitle": "ホワイトリストアドレスを追加",
+      "invalidAddress": "このアドレスは無効です",
+      "nameYourAddress": "アドレスに名前を付ける",
+      "enterAddress": "アドレスを入力してください",
+      "exchangeAddress": "交換アドレス",
+      "addSuccess": "追加成功",
+      "address": "アドレス"
     }
   },
   "component": {

@@ -664,7 +664,9 @@
         "cancelText": "Batal",
         "title": "Masukkan Kata Sandi untuk Mengonfirmasi"
       },
-      "sectionBalance": {},
+      "sectionBalance": {
+        "title": "Jumlah"
+      },
       "sectionChain": {
         "title": "Rantai"
       },
@@ -710,7 +712,11 @@
       "whitelistAlert__temporaryGranted": "Izin sementara diberikan",
       "tokenInfoPrice": "Harga",
       "blockedTransactionContent": "Transaksi ini berinteraksi dengan alamat yang ada di daftar sanksi OFAC.",
-      "whitelistAlert__disabled": "Whitelist dinonaktifkan. Anda dapat mentransfer ke alamat mana pun."
+      "whitelistAlert__disabled": "Whitelist dinonaktifkan. Anda dapat mentransfer ke alamat mana pun.",
+      "selectFromAddress": "Pilih Dari Alamat",
+      "noSupprotTokenForSafe": "Alamat Safe yang Anda kirim token tidak dikerahkan di rantai ini. Periksa sebelum melanjutkan untuk menghindari kehilangan.",
+      "noSupportTokenForChain": "Alamat penerima adalah alamat kontrak di rantai yang berbeda. Periksa sebelum melanjutkan untuk menghindari kerugian.",
+      "noSupprotTokenForDex": "Token ini mungkin tidak didukung oleh bursa ini. Periksa sebelum melanjutkan untuk menghindari kehilangan."
     },
     "sendTokenComponents": {
       "GasReserved": "Ditetapkan <1>0</1> {{ tokenName }} untuk biaya gas",
@@ -857,7 +863,8 @@
         "ledgerSended": "Silakan tandatangani permintaan di Ledger ({{current}}/{{total}})",
         "ledgerSending": "Mengirim permintaan penandatanganan ({{current}}/{{total}})",
         "done": "Selesai",
-        "cancelBody": "Jika Anda menutup halaman ini, sisa pencabutan tidak akan dilaksanakan."
+        "cancelBody": "Jika Anda menutup halaman ini, sisa pencabutan tidak akan dilaksanakan.",
+        "ledgerConfirmTitle": "Batch Revokasi dengan Ledger"
       }
     },
     "gasTopUp": {
@@ -1257,7 +1264,8 @@
           "gasTopUp": "Pengisian Gas",
           "label": "Fitur",
           "connectedDapp": "Dapps Terkoneksi",
-          "signatureRecord": "Rekaman Tanda Tangan"
+          "signatureRecord": "Rekaman Tanda Tangan",
+          "ecosystem": "Ekosistem"
         },
         "settings": {
           "toggleThemeMode": "Mode Tema",
@@ -1309,6 +1317,18 @@
           "title": "Ganti Alamat Dapp Secara Terpisah\n",
           "desc": "Diaktifkan, Anda dapat memilih alamat mana yang akan dihubungkan ke setiap Dapp secara terpisah. Mengganti alamat utama Anda tidak akan memengaruhi alamat yang terhubung ke setiap Dapp.\n",
           "button": "Aktifkan\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Bagaimana Anda menilai Rabby Wallet?"
+        },
+        "rateModal": {
+          "thxTitle": "Terima kasih!",
+          "rateOnChromeStoreButton": "Tingkat di Chrome Web Store",
+          "feedbackPlaceholder": "Rabby sangat menghargai masukan Anda!",
+          "feedbackSuccess": "Terima kasih atas umpan balik Anda!",
+          "submitFeedbackButton": "Kirim",
+          "feedbackDesc": "Ada masukan? Kami mendengarkan.",
+          "thxDesc": "Jika Anda menyukai Rabby, peringkat cepat di Chrome Store akan sangat berarti."
         }
       },
       "tokenDetail": {
@@ -2660,6 +2680,61 @@
         "title": "Semua Hasil",
         "noResult": "Tidak ada hasil untuk"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "title": "Tambahkan Alamat Daftar Putih",
+        "addNow": "Tambahkan Sekarang",
+        "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat - tidak perlu konfirmasi untuk selanjutnya."
+      },
+      "whitelist": {
+        "title": "Daftar Putih",
+        "removeFromWhitelist": "Hapus dari daftar putih",
+        "addWhitelistDesc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat---tidak perlu konfirmasi di lain waktu",
+        "addWhitelist": "Tambahkan ke daftar putih"
+      },
+      "addWhitelist": {
+        "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat—tidak perlu konfirmasi di lain waktu",
+        "title": "Tambahkan Alamat Daftar Putih"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "noSend": "Tidak ada transfer ke alamat ini dalam 180 hari",
+            "contractAddress": "Alamat kontrak terdeteksi, dana mungkin hilang",
+            "dexNoDeposite": "Bukan alamat deposit CEX, dana mungkin hilang",
+            "scamAddress": "Alamat penipuan ditandai oleh Rabby"
+          }
+        },
+        "riskWarning": "Peringatan Risiko",
+        "title": "Kirim ke Alamat Ini",
+        "cexDepositAddress": "{{cexName}} Alamat Deposit",
+        "cexAddress": "{{cexName}} Alamat",
+        "understandRisks": "Saya memahami risikonya dan ingin melanjutkan"
+      },
+      "enterAddress": "Masukkan alamat",
+      "selectImportedAddress": "Pilih alamat yang diimpor",
+      "enterAddressOrENS": "Masukkan alamat / ENS",
+      "sendToImportedAddress": "Kirim ke Alamat Impor",
+      "title": "Kirim ke",
+      "selectExchangeSource": "Pilih Sumber Pertukaran"
+    },
+    "whitelist": {
+      "tips": {
+        "added": "Alamat ditambahkan ke whitelist",
+        "removed": "Alamat whitelist dihapus",
+        "repeated": "Alamat saat ini sudah ada di whitelist."
+      },
+      "title": "Tambah Alamat Daftar Putih",
+      "address": "Alamat",
+      "exchangeAddress": "Alamat Pertukaran",
+      "nameYourAddress": "Nama Alamat Anda",
+      "enterAddress": "Masukkan alamat",
+      "name": "Nama",
+      "riskTitle": "Tambahkan Alamat Whitelist",
+      "confirmPassword": "Konfirmasi Kata Sandi",
+      "addSuccess": "Ditambahkan dengan sukses",
+      "invalidAddress": "Alamat ini tidak valid"
     }
   },
   "component": {

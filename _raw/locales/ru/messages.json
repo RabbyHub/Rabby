@@ -665,7 +665,9 @@
         "confirmText": "Подтвердить",
         "title": "Введите пароль для подтверждения"
       },
-      "sectionBalance": {},
+      "sectionBalance": {
+        "title": "Сумма"
+      },
       "sectionChain": {
         "title": "Сеть"
       },
@@ -710,7 +712,11 @@
       },
       "blockedTransaction": "Заблокированная транзакция",
       "blockedTransactionCancelText": "Я знаю",
-      "blockedTransactionContent": "Эта транзакция взаимодействует с адресом, который находится в списке санкций OFAC."
+      "blockedTransactionContent": "Эта транзакция взаимодействует с адресом, который находится в списке санкций OFAC.",
+      "selectFromAddress": "Выбрать адрес отправителя",
+      "noSupportTokenForChain": "Адрес получателя является адресом контракта на другой цепочке. Проверьте перед продолжением, чтобы избежать потери.",
+      "noSupprotTokenForDex": "Этот токен может не поддерживаться этой биржей. Проверьте перед тем, как продолжить, чтобы избежать потерь.",
+      "noSupprotTokenForSafe": "Адрес Safe, на который вы отправляете токены, не развернут в этой сети. Проверьте перед продолжением, чтобы избежать потерь."
     },
     "sendTokenComponents": {
       "GasReserved": "Резерв <1>0</1> {{ tokenName }} для оплаты газа",
@@ -857,7 +863,8 @@
         "useGasAccount": "Ваш газовый баланс низкий. Ваш GasAccount покроет комиссию за газ.",
         "ledgerAlert": "Пожалуйста, откройте Ethereum App на вашем устройстве Ledger.",
         "simulationFailed": "Симуляция не удалась",
-        "ledgerSigned": "Подписано. Создание транзакции ({{current}}/{{total}})"
+        "ledgerSigned": "Подписано. Создание транзакции ({{current}}/{{total}})",
+        "ledgerConfirmTitle": "П批回收 с Ledger"
       }
     },
     "gasTopUp": {
@@ -1210,7 +1217,8 @@
           "connectedDapp": "Подключенные dApp",
           "searchDapps": "Найти Dapps",
           "rabbyPoints": "Rabby Points",
-          "gasTopUp": "Пополнение Gas"
+          "gasTopUp": "Пополнение Gas",
+          "ecosystem": "Экосистема"
         },
         "settings": {
           "label": "Настройки",
@@ -1238,6 +1246,18 @@
           "title": "Независимо переключайте адреса DApp\n",
           "button": "Включить\n",
           "desc": "Включив, вы можете выбрать адрес для подключения к каждому Dapp независимо.  Изменение основного адреса не повлияет на адрес, подключенный к каждому Dapp.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Как вы оцениваете Rabby Wallet?"
+        },
+        "rateModal": {
+          "feedbackDesc": "Есть отзывы? Мы вас слушаем.",
+          "feedbackSuccess": "Спасибо за ваш отзыв!",
+          "submitFeedbackButton": "Отправить",
+          "thxTitle": "Спасибо!",
+          "feedbackPlaceholder": "Rabby ценит ваши отзывы!",
+          "rateOnChromeStoreButton": "Оцените в Chrome Web Store",
+          "thxDesc": "Если вам нравится Rabby, быстрая оценка в Chrome Store будет для нас очень важна."
         }
       },
       "tokenDetail": {
@@ -2662,6 +2682,61 @@
         "title": "Все результаты",
         "searchTips": "Поиск в интернете"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Добавить сейчас",
+        "title": "Добавить адрес в белый список",
+        "desc": "Добавьте доверенные адреса в список белых адресов для быстрых переводов - повторно подтверждение не требуется."
+      },
+      "whitelist": {
+        "removeFromWhitelist": "Удалить из белого списка",
+        "addWhitelist": "Добавить в белый список",
+        "title": "Список разрешённых устройств",
+        "addWhitelistDesc": "Добавьте доверенные адреса в белый список для быстрых переводов — подтверждение больше не требуется в следующий раз."
+      },
+      "addWhitelist": {
+        "desc": "Добавьте доверенные адреса в белый список для быстрых переводов — подтверждение не требуется в следующий раз.",
+        "title": "Добавить адрес в белый список"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "contractAddress": "Обнаружен адрес контракта, средства могут быть потеряны",
+            "scamAddress": "Адрес мошенничества, отмеченный Rabby",
+            "dexNoDeposite": "Не адрес депозитов CEX, средства могут быть потеряны",
+            "noSend": "Нет переводов на этот адрес в течение 180 дней"
+          }
+        },
+        "title": "Отправить на этот адрес",
+        "riskWarning": "Предупреждение о рисках",
+        "understandRisks": "Я понимаю риски и хочу продолжить",
+        "cexDepositAddress": "{{cexName}} Адрес депозита",
+        "cexAddress": "{{cexName}} адрес"
+      },
+      "enterAddress": "Введите адрес",
+      "title": "Отправить на",
+      "enterAddressOrENS": "Введите адрес / ENS",
+      "selectImportedAddress": "Выберите импортированный адрес",
+      "selectExchangeSource": "Выбрать источник обмена",
+      "sendToImportedAddress": "Отправить на Импортированный Адрес"
+    },
+    "whitelist": {
+      "tips": {
+        "repeated": "Текущий адрес уже в белом списке.",
+        "added": "Адрес добавлен в белый список",
+        "removed": "Адрес в белом списке удалён"
+      },
+      "title": "Добавить адрес в белый список",
+      "name": "Имя",
+      "confirmPassword": "Подтвердите пароль",
+      "addSuccess": "Добавлено успешно",
+      "exchangeAddress": "Адрес обмена",
+      "riskTitle": "Добавить адрес в whitelist",
+      "nameYourAddress": "Назовите ваш адрес",
+      "invalidAddress": "Этот адрес недействителен",
+      "address": "Адрес",
+      "enterAddress": "Введите адрес"
     }
   },
   "component": {

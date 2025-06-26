@@ -665,7 +665,9 @@
         "confirmText": "Bestätigen",
         "title": "Passwort zur Bestätigung eingeben"
       },
-      "sectionBalance": {},
+      "sectionBalance": {
+        "title": "Betrag"
+      },
       "sectionChain": {
         "title": "Chain"
       },
@@ -710,7 +712,11 @@
       },
       "blockedTransaction": "Blockierte Transaktion",
       "blockedTransactionCancelText": "Ich weiß",
-      "blockedTransactionContent": "Diese Transaktion interagiert mit einer Adresse, die auf der OFAC-Sanktionsliste steht."
+      "blockedTransactionContent": "Diese Transaktion interagiert mit einer Adresse, die auf der OFAC-Sanktionsliste steht.",
+      "noSupportTokenForChain": "Empfängeradresse ist eine Vertragsadresse auf einer anderen Kette. Überprüfen Sie dies, bevor Sie fortfahren, um Verlust zu vermeiden.",
+      "noSupprotTokenForDex": "Dieser Token wird möglicherweise von dieser Börse nicht unterstützt. Überprüfen Sie dies, bevor Sie fortfahren, um Verlust zu vermeiden.",
+      "selectFromAddress": "Wählen Sie die Adresse aus",
+      "noSupprotTokenForSafe": "Die Safe-Adresse, an die Sie Tokens senden, ist auf dieser Chain nicht implementiert. Überprüfen Sie dies, bevor Sie fortfahren, um Verluste zu vermeiden."
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} für Gaskosten reserviert",
@@ -857,7 +863,8 @@
         "ledgerSended": "Bitte unterschreiben Sie die Anfrage auf Ledger ({{current}}/{{total}})",
         "confirmRevokeLedger": "Mithilfe einer Ledger-Adresse können Sie {{count}} Genehmigungen mit einem Klick widerrufen.",
         "stillRevoke": "Noch widerrufen",
-        "resume": "Fortfahren"
+        "resume": "Fortfahren",
+        "ledgerConfirmTitle": "Batch widerrufen mit Ledger"
       }
     },
     "gasTopUp": {
@@ -1209,7 +1216,8 @@
           "connectedDapp": "Verbundene Dapps",
           "rabbyPoints": "Rabby Points",
           "searchDapps": "Dapps durchsuchen",
-          "gasTopUp": "Gas Aufladen"
+          "gasTopUp": "Gas Aufladen",
+          "ecosystem": "Ökosystem"
         },
         "settings": {
           "label": "Einstellungen",
@@ -1237,6 +1245,18 @@
           "button": "Aktivieren\n",
           "title": "DApp-Adressen unabhängig wechseln\n",
           "desc": "Sobald aktiviert, können Sie unabhängig für jedes DApp die gewünschte Adresse auswählen.  Eine Änderung Ihrer Haupt-Adresse wirkt sich nicht auf die Adresse aus, die für jedes DApp verbunden ist.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Wie bewerten Sie Rabby Wallet?"
+        },
+        "rateModal": {
+          "feedbackPlaceholder": "Rabby schätzt Ihr Feedback!",
+          "feedbackDesc": "Haben Sie Feedback? Wir hören zu.",
+          "feedbackSuccess": "Danke für Ihr Feedback!",
+          "thxDesc": "Wenn Ihnen Rabby gefällt, würde eine kurze Bewertung im Chrome Store viel bedeuten.",
+          "submitFeedbackButton": "Einreichen",
+          "thxTitle": "Danke!",
+          "rateOnChromeStoreButton": "Bewertung im Chrome Web Store"
         }
       },
       "tokenDetail": {
@@ -2663,6 +2683,61 @@
         "noResult": "Keine Ergebnisse für",
         "searchTips": "Durchsuchen Sie das Web"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Jetzt hinzufügen",
+        "desc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Transfers - beim nächsten Mal ist keine Bestätigung erforderlich.",
+        "title": "Whitelist-Adresse hinzufügen"
+      },
+      "whitelist": {
+        "title": "Whitelist",
+        "addWhitelist": "Zur Whitelist hinzufügen",
+        "removeFromWhitelist": "Von der Whitelist entfernen",
+        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen - keine Bestätigung beim nächsten Mal erforderlich."
+      },
+      "addWhitelist": {
+        "title": "Whitelist-Adresse hinzufügen",
+        "desc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu, um schnelle Überweisungen zu ermöglichen – beim nächsten Mal sind keine Bestätigungen erforderlich."
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Scam-Adresse von Rabby markiert",
+            "contractAddress": "Vertragsadresse erkannt, Gelder könnten verloren gehen",
+            "dexNoDeposite": "Nicht eine CEX-Einzahlungsadresse, Gelder könnten verloren gehen",
+            "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen"
+          }
+        },
+        "riskWarning": "Risikowarnung",
+        "cexAddress": "{{cexName}} Adresse",
+        "title": "An diese Adresse senden",
+        "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",
+        "cexDepositAddress": "{{cexName}} Einzahlungsadresse"
+      },
+      "selectImportedAddress": "Importierte Adresse auswählen",
+      "enterAddressOrENS": "Adresse / ENS eingeben",
+      "sendToImportedAddress": "An eine importierte Adresse senden",
+      "enterAddress": "Adresse eingeben",
+      "selectExchangeSource": "Wählen Sie die Austauschquelle",
+      "title": "Senden an"
+    },
+    "whitelist": {
+      "tips": {
+        "removed": "Whitelist-Adresse gelöscht",
+        "added": "Adresse zur Whitelist hinzugefügt",
+        "repeated": "Die aktuelle Adresse ist bereits auf der Whitelist."
+      },
+      "title": "Whitelist-Adresse hinzufügen",
+      "name": "Name",
+      "address": "Adresse",
+      "confirmPassword": "Passwort bestätigen",
+      "exchangeAddress": "Exchange-Adresse",
+      "invalidAddress": "Diese Adresse ist ungültig",
+      "riskTitle": "Whitelist-Adresse hinzufügen",
+      "addSuccess": "Erfolgreich hinzugefügt",
+      "nameYourAddress": "Benennen Sie Ihre Adresse",
+      "enterAddress": "Adresse eingeben"
     }
   },
   "component": {
