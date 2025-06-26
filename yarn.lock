@@ -6901,6 +6901,11 @@
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-4.0.4.tgz#cf2f0c7c51b985b6afecea73eb2cd65421ecb717"
   integrity sha512-95Sfz4nvMAb0Nl9DTxN3j64adfwfbBPEYq14VN7zT5J5O2M9V6iZMIIQU1U+pJyl9agHYHNCqhCXgyEtIRRa5A==
 
+"@types/trusted-types@^2.0.7":
+  version "2.0.7"
+  resolved "https://mirrors.tencent.com/npm/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
+  integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
+
 "@types/unist@*", "@types/unist@^2.0.0":
   version "2.0.6"
   resolved "https://r.cnpmjs.org/@types/unist/download/@types/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
@@ -10604,6 +10609,13 @@ domhandler@^2.3.0:
   integrity sha512-JiK04h0Ht5u/80fdLMCEmV4zkNh2BcoMFBmZ/91WtYZ8qVXSKjiw7fXMgFPnHcSZgOo3XdinHvmnDUeMf5R4wA==
   dependencies:
     domelementtype "1"
+
+dompurify@^3.2.6:
+  version "3.2.6"
+  resolved "https://mirrors.tencent.com/npm/dompurify/-/dompurify-3.2.6.tgz#ca040a6ad2b88e2a92dc45f38c79f84a714a1cad"
+  integrity sha512-/2GogDQlohXPZe6D6NOgQvXLPSYBqIWMnZ8zzOhn09REE4eyAzb+Hed3jhoM9OkuaJ8P6ZGTTVWQKAi8ieIzfQ==
+  optionalDependencies:
+    "@types/trusted-types" "^2.0.7"
 
 domutils@^1.5.1, domutils@^1.7.0:
   version "1.7.0"

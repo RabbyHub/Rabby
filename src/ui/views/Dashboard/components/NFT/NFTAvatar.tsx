@@ -2,6 +2,7 @@ import { NFTItem } from '@/background/service/openapi';
 import { Image } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import DOMPurify from 'dompurify';
 // import IconImgLoading from 'ui/assets/img-loading.svg';
 import IconImgFail from 'ui/assets/img-fail-1.svg';
 import IconNFTDefault from 'ui/assets/nft-default.svg';
@@ -33,23 +34,12 @@ const isValidHttpUrl = (url?: string): boolean => {
   }
 };
 
-// sanitize the url to remove javascript and data protocols
-const sanitizeUrl = (url?: string): string | null => {
-  if (!url || typeof url !== 'string') return null;
-  const cleanedUrl = url
-    .replace(/javascript:/gi, '')
-    .replace(/data:/gi, '')
-    .replace(/vbscript:/gi, '');
-  if (!isValidHttpUrl(cleanedUrl)) return null;
-  return cleanedUrl;
-};
-
 const Thumbnail = ({
   content,
   type,
   unknown,
 }: Pick<AvatarProps, 'content' | 'type' | 'unknown'>) => {
-  const sanitizedUrl = sanitizeUrl(content);
+  const sanitizedUrl = DOMPurify.sanitize(content as string);
   if (type && ['video_url'].includes(type) && sanitizedUrl) {
     return (
       <video
@@ -100,7 +90,7 @@ const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
       ></Image>
     );
   }
-  const sanitizedUrl = sanitizeUrl(content);
+  const sanitizedUrl = DOMPurify.sanitize(content as string);
   if (type && ['video_url', 'audio_url'].includes(type) && sanitizedUrl) {
     return (
       <video
