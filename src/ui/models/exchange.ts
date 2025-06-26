@@ -1,5 +1,6 @@
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
+import { WalletControllerType } from '../utils';
 
 export interface Exchange {
   id: string;
@@ -63,6 +64,7 @@ const initExchanges = [
       'https://static.debank.com/image/cex/logo_url/okex/7dffa8dcee98ef99958ed304bf0b2648.png',
   },
 ];
+export const globalSupportCexList: Exchange[] = [];
 
 type IState = {
   exchanges: Exchange[];
@@ -86,17 +88,56 @@ export const exchange = createModel<RootModel>()({
   },
   effects: () => ({
     async init(_: void, store) {
-      store.app.wallet.openapi.getCexSupportList().then((cexLists) => {
-        if (cexLists.length) {
-          this.setField({
-            exchanges: cexLists.map((item) => ({
-              id: item.id,
-              name: item.name,
-              logo: item.logo_url,
-            })),
-          });
-        }
-      });
+      store.app.wallet.openapi
+        .getCexSupportList()
+        .then((cexLists) => {
+          if (cexLists.length) {
+            globalSupportCexList.length === 0 &&
+              globalSupportCexList.push(
+                ...cexLists.map((item) => ({
+                  id: item.id,
+                  name: item.name,
+                  logo: item.logo_url,
+                }))
+              );
+            this.setField({
+              exchanges: cexLists.map((item) => ({
+                id: item.id,
+                name: item.name,
+                logo: item.logo_url,
+              })),
+            });
+          }
+        })
+        .finally(() => {
+          globalSupportCexList.length === 0 &&
+            globalSupportCexList.push(...initExchanges);
+        });
     },
   }),
 });
+
+export const getCexInfo = async (
+  address: string,
+  wallet: WalletControllerType
+) => {
+  try {
+    if (!address || !wallet) {
+      return undefined;
+    }
+    const cexId = await wallet.getCexId(address);
+    const cexInfo = globalSupportCexList.find(
+      (item) => item.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+    );
+    if (!cexInfo || !cexId) {
+      return undefined;
+    }
+    return {
+      id: cexId,
+      name: cexInfo?.name || '',
+      logo: cexInfo?.logo || '',
+    };
+  } catch (error) {
+    return undefined;
+  }
+};

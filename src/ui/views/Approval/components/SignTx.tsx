@@ -87,6 +87,7 @@ import {
 } from '@rabby-wallet/rabby-action';
 import { ga4 } from '@/utils/ga4';
 import { EIP7702Warning } from './EIP7702Warning';
+import { getCexInfo } from '@/ui/models/exchange';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -859,6 +860,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             gasUsed: res.gas.gas_used,
             sender: tx.from,
           });
+          const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
           const requiredData = await fetchActionRequiredData({
             type: 'transaction',
             actionData: parsed,
@@ -874,6 +876,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               isWhitelistEnabled: wallet.isWhitelistEnabled,
               getPendingTxsByNonce: wallet.getPendingTxsByNonce,
             },
+            cex: cexInfo,
             tx: {
               ...tx,
               gas: '0x0',
