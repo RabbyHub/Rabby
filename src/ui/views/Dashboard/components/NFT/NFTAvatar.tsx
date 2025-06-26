@@ -2,7 +2,6 @@ import { NFTItem } from '@/background/service/openapi';
 import { Image } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
-import DOMPurify from 'dompurify';
 // import IconImgLoading from 'ui/assets/img-loading.svg';
 import IconImgFail from 'ui/assets/img-fail-1.svg';
 import IconNFTDefault from 'ui/assets/nft-default.svg';
@@ -39,7 +38,7 @@ const Thumbnail = ({
   type,
   unknown,
 }: Pick<AvatarProps, 'content' | 'type' | 'unknown'>) => {
-  const sanitizedUrl = DOMPurify.sanitize(content as string);
+  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
   if (type && ['video_url'].includes(type) && sanitizedUrl) {
     return (
       <video
@@ -90,7 +89,7 @@ const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
       ></Image>
     );
   }
-  const sanitizedUrl = DOMPurify.sanitize(content as string);
+  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
   if (type && ['video_url', 'audio_url'].includes(type) && sanitizedUrl) {
     return (
       <video
