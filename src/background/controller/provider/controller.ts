@@ -730,7 +730,7 @@ class ProviderController extends BaseController {
                 log_id: logId,
               },
               backend_push_require: {
-                gas_type: isGasLess
+                gas_type: isGasAccount
                   ? 'gas_account'
                   : isGasLess
                   ? 'gasless'

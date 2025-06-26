@@ -53,10 +53,11 @@ function getUniqueId(): number {
   return idCounter;
 }
 
-// const fetchDefaultRpc = async () => {
-//   const { data } = await http.get('https://api.rabby.io/v1/chainrpc');
-//   return data.stats as RPCDefaultItem[];
-// };
+// TODO: remove
+const fetchDefaultRpc = async () => {
+  const { data } = await http.get('https://api.rabby.io/v1/chainrpc');
+  return data.stats as RPCDefaultItem[];
+};
 
 class RPCService {
   store: RPCServiceStore = {
@@ -100,8 +101,11 @@ class RPCService {
 
   syncDefaultRPC = async () => {
     try {
-      const data = await openapiService.getDefaultRPCs();
-      const defaultRPC: Record<string, RPCDefaultItem> = data?.stats.reduce(
+      // const data = (await openapiService.getDefaultRPCs())?.stats;
+
+      // TODO: remove  after test
+      const data = await fetchDefaultRpc();
+      const defaultRPC: Record<string, RPCDefaultItem> = data?.reduce(
         (acc, item) => {
           acc[item.chainId] = item;
           return acc;
