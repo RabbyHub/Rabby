@@ -68,11 +68,9 @@ const AddressBackup = () => {
             {t('page.backupPrivateKey.clickToShow')}
           </div>
         ) : (
-          <>
-            {data}
-            <Copy icon={IconCopy} data={data} className="icon-copy"></Copy>
-          </>
+          <p className="private-key-text">{data}</p>
         )}
+        <Copy icon={IconCopy} data={data} className="icon-copy"></Copy>
       </div>
 
       <div className="footer pb-[20px]">
