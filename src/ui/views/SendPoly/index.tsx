@@ -359,7 +359,7 @@ const SendPoly = () => {
         {!inputingAddress && (
           <div
             className={clsx(
-              'flex-1 overflow-y-auto',
+              'flex-1 overflow-y-auto w-[calc(100%+40px)] px-[20px] ml-[-20px]',
               whitelistEnabled ? 'pb-[24px]' : ''
             )}
           >
@@ -421,7 +421,6 @@ const SendPoly = () => {
                 ) : (
                   <AccountList
                     onChange={(acc) => handleChange(acc.address, acc.type)}
-                    containerClassName="mt-[20px]"
                   />
                 )}
               </div>
