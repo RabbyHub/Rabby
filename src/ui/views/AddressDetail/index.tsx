@@ -43,6 +43,10 @@ const AddressDetail = () => {
   const handleWhitelistChange = async (checked: boolean) => {
     if (!checked) {
       await wallet.removeWhitelist(address);
+      const cexId = await wallet.getCexId(address);
+      if (cexId) {
+        await wallet.updateCexId(address, '');
+      }
       return;
     }
     AuthenticationModalPromise({

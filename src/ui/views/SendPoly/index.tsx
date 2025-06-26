@@ -256,6 +256,11 @@ const SendPoly = () => {
     );
     if (!isImported) {
       await wallet.removeContactInfo(address);
+    } else {
+      const cexId = await wallet.getCexId(address);
+      if (cexId) {
+        await wallet.updateCexId(address, '');
+      }
     }
     dispatch.whitelist.getWhitelist();
     dispatch.contactBook.getContactBookAsync();
