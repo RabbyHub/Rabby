@@ -36,7 +36,10 @@ const isValidHttpUrl = (url?: string): boolean => {
 // sanitize the url to remove javascript and data protocols
 const sanitizeUrl = (url?: string): string | null => {
   if (!url || typeof url !== 'string') return null;
-  const cleanedUrl = url.replace(/javascript:/gi, '').replace(/data:/gi, '');
+  const cleanedUrl = url
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '');
   if (!isValidHttpUrl(cleanedUrl)) return null;
   return cleanedUrl;
 };
