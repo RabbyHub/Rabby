@@ -2,6 +2,7 @@ import { Button, Drawer, DrawerProps, Skeleton, Tooltip } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { createGlobalStyle } from 'styled-components';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
@@ -24,8 +25,6 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import { ReactComponent as RcIconCheckedCC } from 'ui/assets/address/checked-square-cc.svg';
 import { ReactComponent as RcIconCheckCC } from 'ui/assets/address/check-square-cc.svg';
 
-import './style.less';
-
 interface AddressRiskAlertProps {
   visible: boolean;
   showClosableIcon?: boolean;
@@ -41,6 +40,17 @@ interface AddressRiskAlertProps {
   editCex?: IExchange | null;
   type?: string;
 }
+
+const StyledTooltipGlobalStyle = createGlobalStyle`
+  .alias-tooltip {
+    .ant-tooltip-inner {
+      border-radius: 2px !important;
+    }
+    .ant-tooltip-arrow {
+      display: block !important;
+    }
+  }
+`;
 
 const AddressTypeCard = ({
   type,
@@ -71,6 +81,7 @@ const AddressTypeCard = ({
 
   return (
     <div className="flex gap-[8px] items-center justify-center">
+      <StyledTooltipGlobalStyle />
       <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
         <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
           {showCexInfo ? (
