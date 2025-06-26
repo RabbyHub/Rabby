@@ -747,11 +747,11 @@
         "cexDepositAddress": "{{cexName}} Deposit Address",
         "cexAddress": "{{cexName}} Address",
         "riskType": {
-        "risks": {
-          "noSend": "No transfers to this address in 180 days",
-          "dexNoDeposite": "Not a CEX deposit address, funds may be lost",
-          "contractAddress": "Contract address detected, funds may be lost",
-          "scamAddress": "Scam address flagged by Rabby"
+          "risks": {
+            "noSend": "No transfers to this address in 180 days",
+            "dexNoDeposite": "Not a CEX deposit address, funds may be lost",
+            "contractAddress": "Contract address detected, funds may be lost",
+            "scamAddress": "Scam address flagged by Rabby"
           }
         }
       }
@@ -786,6 +786,9 @@
       },
       "sectionFrom": {
         "title": "From"
+      },
+      "sectionAmount": {
+        "title": "Amount"
       },
       "sectionTo": {
         "title": "To",
