@@ -798,7 +798,7 @@ class ProviderController extends BaseController {
                   params.frontend_push_result = {
                     success: false,
                     has_pushed: true,
-                    url: urls?.[0] || '',
+                    url: urls?.rpcUrl?.[0] || '',
                     error_msg:
                       typeof fePushError === 'object'
                         ? fePushError.message
