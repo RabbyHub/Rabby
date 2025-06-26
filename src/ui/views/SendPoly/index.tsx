@@ -6,7 +6,9 @@ import PQueue from 'p-queue';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { message } from 'antd';
+import { groupBy } from 'lodash';
 
+import { findAccountByPriority } from '@/utils/account';
 import { KEYRING_CLASS } from '@/constant';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
@@ -28,8 +30,6 @@ import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-wh
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { groupBy } from 'lodash';
-import { findAccountByPriority } from '@/utils/account';
 
 const OuterInput = styled.div`
   border: 1px solid var(--r-neutral-line);
@@ -88,8 +88,9 @@ const AnimatedInputWrapper = styled.div`
   /* overflow: hidden; */
   will-change: max-height, opacity, transform;
   &.collapsed {
-    height: 52px;
-    max-height: 52px;
+    height: 69px;
+    max-height: 69px;
+    padding-bottom: 17px;
     opacity: 1;
     transform: scaleY(1);
   }
@@ -163,7 +164,7 @@ const SendPoly = () => {
         ...acc,
         balance: unimportedBalances[acc.address],
       })),
-    ];
+    ].sort((a, b) => (b.balance || 0) - (a.balance || 0));
   }, [
     importWhitelistAccounts,
     unimportedWhitelistAccounts,
@@ -181,14 +182,7 @@ const SendPoly = () => {
       setInputingAddress(false);
       return;
     }
-    const from = (history.location.state as any)?.from;
-    if (from) {
-      history.replace(from);
-    } else if (history.length > 1) {
-      history.goBack();
-    } else {
-      history.replace('/');
-    }
+    history.replace('/');
   }, [history, inputingAddress]);
 
   const handleGotoSendToken = (address: string, type?: string) => {
@@ -321,6 +315,7 @@ const SendPoly = () => {
           onBack={handleClickBack}
           forceShowBack={!isTab || inputingAddress}
           canBack={!isTab || inputingAddress}
+          fixed
           rightSlot={
             isTab ? null : (
               <div
@@ -362,11 +357,16 @@ const SendPoly = () => {
         </AnimatedInputWrapper>
 
         {!inputingAddress && (
-          <div className={clsx('h-full', whitelistEnabled ? 'pb-[59px]' : '')}>
+          <div
+            className={clsx(
+              'flex-1 overflow-y-auto',
+              whitelistEnabled ? 'pb-[24px]' : ''
+            )}
+          >
             {/* WhiteList or Imported Addresses List */}
             <div className={!whitelistEnabled ? 'h-full' : ''}>
               {whitelistEnabled && (
-                <div className="flex justify-between items-center pt-[17px]">
+                <div className="flex justify-between items-center">
                   <div className="text-[15px] text-r-neutral-title1">
                     {t('page.sendPoly.whitelist.title')}
                   </div>
