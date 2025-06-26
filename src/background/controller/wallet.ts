@@ -174,8 +174,7 @@ export class WalletController extends BaseController {
     whitelistService.addWhitelist(address);
   };
 
-  removeWhitelist = async (password: string, address: string) => {
-    await this.verifyPassword(password);
+  removeWhitelist = async (address: string) => {
     whitelistService.removeWhitelist(address);
   };
 
@@ -3249,6 +3248,10 @@ export class WalletController extends BaseController {
     });
   };
 
+  removeContactInfo = (address: string) => {
+    contactBookService.removeAlias(address);
+  };
+
   resetCurrentAccount = async () => {
     const [account] = await this.getAccounts();
     if (account) {
@@ -4165,11 +4168,22 @@ export class WalletController extends BaseController {
     return undefined;
   };
 
-  updateAlianName = (address: string, name: string) => {
+  updateAlianName = (address: string, name: string, cexId?: string) => {
     contactBookService.updateAlias({
       name,
       address,
+      cexId,
     });
+  };
+
+  getCexId = (address: string) => {
+    const contact = contactBookService.getContactByAddress(address);
+    if (contact?.cexId) return contact.cexId;
+    return undefined;
+  };
+
+  updateCexId = (address: string, cexId: string) => {
+    contactBookService.updateCexId(address, cexId);
   };
 
   getAllAlianNameByMap = () => {

@@ -177,6 +177,7 @@ restoreAppState();
   let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
+    contactBookService.detectWhiteListCex();
 
     if (interval) {
       clearInterval(interval);
