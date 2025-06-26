@@ -674,9 +674,6 @@
       "sectionFrom": {
         "title": "From"
       },
-      "sectionAmount": {
-        "title": "Amount"
-      },
       "sectionTo": {
         "addrValidator__empty": "Please input address",
         "addrValidator__invalid": "This address is invalid",
@@ -789,6 +786,9 @@
       },
       "sectionFrom": {
         "title": "From"
+      },
+      "sectionAmount": {
+        "title": "Amount"
       },
       "sectionTo": {
         "title": "To",
