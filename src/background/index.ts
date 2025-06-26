@@ -57,6 +57,7 @@ import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
+import { subscribeTxCompleted } from './subscriptions/rateGuidance';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -161,6 +162,7 @@ async function restoreAppState() {
     };
   }
   await sendReadyMessageToTabs();
+  subscribeTxCompleted({ preferenceService });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {
@@ -180,6 +182,7 @@ restoreAppState();
   let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
+    contactBookService.detectWhiteListCex();
 
     if (interval) {
       clearInterval(interval);

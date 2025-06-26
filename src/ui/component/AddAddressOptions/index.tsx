@@ -8,9 +8,6 @@ import IconWalletConnect, {
 import IconCreatenewaddr, {
   ReactComponent as RcIconCreatenewaddr,
 } from 'ui/assets/walletlogo/createnewaddr.svg';
-import IconAddwatchmodo, {
-  ReactComponent as RcIconAddwatchmodo,
-} from 'ui/assets/walletlogo/addwatchmode.svg';
 import IconHardWallet, {
   ReactComponent as RcIconHardWallet,
 } from 'ui/assets/address/hardwallet.svg';
@@ -29,6 +26,12 @@ import IconMnemonics, {
 import IconPrivatekey, {
   ReactComponent as RcIconPrivatekey,
 } from 'ui/assets/import/privatekey-light.svg';
+import IconWatchWhite, {
+  ReactComponent as RcIconWatchWhite,
+} from 'ui/assets/walletlogo/IconWatch-white.svg';
+import IconWatchPurple, {
+  ReactComponent as RcIconWatchPurple,
+} from 'ui/assets/walletlogo/watch-purple.svg';
 
 import { ReactComponent as IconAddFromCurrentSeedPhrase } from 'ui/assets/address/add-from-current-seed-phrase.svg';
 
@@ -52,6 +55,7 @@ import { useWallet } from '@/ui/utils';
 import { Modal, Tooltip } from 'antd';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { useHadSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
@@ -109,6 +113,7 @@ const AddAddressOptions = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const wallet = useWallet();
+  const { isDarkTheme } = useThemeMode();
 
   const [selectedWalletType, setSelectedWalletType] = useState('');
   const handleRouter = async (action: (h: typeof history) => void) =>
@@ -369,7 +374,7 @@ const AddAddressOptions = () => {
   const bottomList = React.useMemo(
     () => [
       {
-        leftIcon: RcIconAddwatchmodo,
+        leftIcon: isDarkTheme ? IconWatchWhite : IconWatchPurple,
         brand: 'addWatchMode',
         content: t('page.newAddress.addContacts.content'),
         subText: t('page.newAddress.addContacts.description'),
@@ -377,7 +382,7 @@ const AddAddressOptions = () => {
           handleRouter((history) => history.push('/import/watch-address')),
       },
     ],
-    [t]
+    [t, isDarkTheme]
   );
 
   const [preventMount, setPreventMount] = React.useState(true);

@@ -1,0 +1,477 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import clsx from 'clsx';
+import { useHistory } from 'react-router-dom';
+import { isValidAddress } from '@ethereumjs/util';
+import PQueue from 'p-queue';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { message } from 'antd';
+
+import { KEYRING_CLASS } from '@/constant';
+import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
+import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
+import { PageHeader } from '@/ui/component';
+import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { EmptyWhitelistHolder } from './components/EmptyWhitelistHolder';
+import { EnterAddress } from './components/EnterAddress';
+import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
+import { padWatchAccount } from './util';
+import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
+import { AccountList } from './components/AccountList';
+import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
+import { useWallet } from '@/ui/utils/WalletContext';
+import { ellipsisAddress } from '@/ui/utils/address';
+
+// icons
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
+import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
+import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
+import IconSuccess from 'ui/assets/success.svg';
+import { groupBy } from 'lodash';
+import { findAccountByPriority } from '@/utils/account';
+
+const OuterInput = styled.div`
+  border: 1px solid var(--r-neutral-line);
+  &:hover {
+    border: 1px solid var(--r-blue-default, #7084ff);
+    cursor: text;
+  }
+`;
+
+const EnterAddressButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto 0;
+  gap: 4px;
+  cursor: pointer;
+  padding: 12px 18px;
+  width: fit-content;
+  &:hover {
+    background-color: var(--r-neutral-card1);
+    border-radius: 8px;
+  }
+`;
+
+const WhitelistItemWrapper = styled.div`
+  background-color: var(--r-neutral-card1);
+  position: relative;
+  border-radius: 8px;
+  margin-top: 12px;
+  &:first-child {
+    margin-top: 9px;
+  }
+  .whitelist-item {
+    gap: 12px !important;
+  }
+  .icon-delete-container {
+    display: flex;
+    opacity: 0;
+    &:hover {
+      g {
+        stroke: #ec5151;
+      }
+    }
+  }
+  &:hover {
+    .icon-delete-container {
+      opacity: 1;
+    }
+  }
+`;
+
+const AnimatedInputWrapper = styled.div`
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  /* overflow: hidden; */
+  will-change: max-height, opacity, transform;
+  &.collapsed {
+    height: 52px;
+    max-height: 52px;
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  &.expanded {
+    max-height: 1000px;
+    opacity: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transform: scaleY(1);
+  }
+`;
+
+const isTab = getUiType().isTab;
+const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+
+const unimportedBalancesCache: Record<string, number> = {};
+const queue = new PQueue({ interval: 1000, intervalCap: 8, concurrency: 8 }); // 每秒最多5个
+
+const SendPoly = () => {
+  const history = useHistory();
+  const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
+  const { t } = useTranslation();
+
+  const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
+    (s) => ({
+      accountsList: s.accountToDisplay.accountsList,
+      whitelist: s.whitelist.whitelist,
+      whitelistEnabled: s.whitelist.enabled,
+    })
+  );
+
+  // main state
+  const [inputingAddress, setInputingAddress] = useState(false);
+  const [showSelectorModal, setShowSelectorModal] = useState(false);
+  const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState('');
+  const [selectedAddressType, setSelectedAddressType] = useState('');
+  const [unimportedBalances, setUnimportedBalances] = useState<
+    Record<string, number>
+  >({});
+
+  const importWhitelistAccounts = useMemo(() => {
+    const groupAccounts = groupBy(accountsList, (item) =>
+      item.address.toLocaleLowerCase()
+    );
+    const uniqueAccounts = Object.values(groupAccounts).map((item) =>
+      findAccountByPriority(item)
+    );
+    if (!whitelistEnabled) {
+      return uniqueAccounts;
+    }
+    return [...uniqueAccounts].filter((a) =>
+      whitelist?.some((w) => isSameAddress(w, a.address))
+    );
+  }, [accountsList, whitelist]);
+
+  const unimportedWhitelistAccounts = useMemo(() => {
+    return whitelist
+      ?.filter(
+        (w) => !importWhitelistAccounts.some((a) => isSameAddress(w, a.address))
+      )
+      .map((w) => padWatchAccount(w));
+  }, [importWhitelistAccounts, whitelist]);
+
+  const allAccounts = useMemo(() => {
+    return [
+      ...importWhitelistAccounts,
+      ...unimportedWhitelistAccounts.map((acc) => ({
+        ...acc,
+        balance: unimportedBalances[acc.address],
+      })),
+    ];
+  }, [
+    importWhitelistAccounts,
+    unimportedWhitelistAccounts,
+    unimportedBalances,
+  ]);
+
+  const fetchData = async () => {
+    dispatch.accountToDisplay.getAllAccountsToDisplay();
+    dispatch.whitelist.getWhitelistEnabled();
+    dispatch.whitelist.getWhitelist();
+  };
+
+  const handleClickBack = useCallback(() => {
+    if (inputingAddress) {
+      setInputingAddress(false);
+      return;
+    }
+    const from = (history.location.state as any)?.from;
+    if (from) {
+      history.replace(from);
+    } else if (history.length > 1) {
+      history.goBack();
+    } else {
+      history.replace('/');
+    }
+  }, [history, inputingAddress]);
+
+  const handleGotoSendToken = (address: string, type?: string) => {
+    const query = new URLSearchParams(history.location.search);
+    query.set('to', address);
+    if (type) {
+      query.set('type', type);
+    } else {
+      query.delete('type');
+    }
+    history.push(`/send-token?${query.toString()}`);
+  };
+
+  const handleChange = (address: string, type?: string) => {
+    if (!isValidAddress(address)) {
+      return;
+    }
+    const inWhitelist =
+      whitelistEnabled &&
+      whitelist.some((item) => isSameAddress(address, item));
+    const isMyCoreWallet = accountsList
+      ?.filter(
+        (acc) =>
+          acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
+      )
+      ?.some((item) => isSameAddress(item.address, address));
+    if (inWhitelist || isMyCoreWallet) {
+      handleGotoSendToken(address, type);
+    } else {
+      setSelectedAddress(address);
+      setSelectedAddressType(type || '');
+      setShowAddressRiskAlert(true);
+    }
+  };
+
+  const handleCancel = () => {
+    setShowSelectorModal(false);
+  };
+
+  const handleDeleteWhitelist = async (address: string) => {
+    await wallet.removeWhitelist(address);
+    const isImported = importWhitelistAccounts.some((a) =>
+      isSameAddress(a.address, address)
+    );
+    if (!isImported) {
+      await wallet.removeContactInfo(address);
+    } else {
+      const cexId = await wallet.getCexId(address);
+      if (cexId) {
+        await wallet.updateCexId(address, '');
+      }
+    }
+    dispatch.whitelist.getWhitelist();
+    dispatch.contactBook.getContactBookAsync();
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('page.whitelist.tips.removed'),
+    });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (
+      !unimportedWhitelistAccounts ||
+      unimportedWhitelistAccounts.length === 0
+    ) {
+      return;
+    }
+    const fetchBalances = async () => {
+      queue.clear();
+      await Promise.all(
+        unimportedWhitelistAccounts.map((acc) =>
+          queue.add(async () => {
+            if (cancelled) {
+              return;
+            }
+            if (unimportedBalancesCache[acc.address] !== undefined) {
+              // 已有缓存，直接set
+              setUnimportedBalances((prev) => ({
+                ...prev,
+                [acc.address]: unimportedBalancesCache[acc.address],
+              }));
+              return;
+            }
+            try {
+              const res = await wallet.getInMemoryAddressBalance(acc.address);
+              const balance = res?.total_usd_value || 0;
+              unimportedBalancesCache[acc.address] = balance;
+              if (!cancelled) {
+                setUnimportedBalances((prev) => ({
+                  ...prev,
+                  [acc.address]: balance,
+                }));
+              }
+            } catch (e) {
+              unimportedBalancesCache[acc.address] = 0;
+              if (!cancelled) {
+                setUnimportedBalances((prev) => ({
+                  ...prev,
+                  [acc.address]: 0,
+                }));
+              }
+            }
+          })
+        )
+      );
+    };
+    fetchBalances();
+    return () => {
+      cancelled = true;
+      queue.clear();
+    };
+  }, [unimportedWhitelistAccounts, wallet]);
+
+  return (
+    <FullscreenContainer className="h-[700px]">
+      <div
+        className={clsx(
+          'send-token overflow-y-scroll',
+          isTab
+            ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
+            : ''
+        )}
+      >
+        <PageHeader
+          onBack={handleClickBack}
+          forceShowBack={!isTab || inputingAddress}
+          canBack={!isTab || inputingAddress}
+          rightSlot={
+            isTab ? null : (
+              <div
+                className="text-r-neutral-title1 absolute right-0 cursor-pointer"
+                onClick={() => {
+                  openInternalPageInTab(`send-poly${history.location.search}`);
+                }}
+              >
+                <RcIconFullscreen />
+              </div>
+            )
+          }
+        >
+          {t('page.sendPoly.title')}
+        </PageHeader>
+        <AnimatedInputWrapper
+          className={inputingAddress ? 'expanded' : 'collapsed'}
+        >
+          {inputingAddress ? (
+            <EnterAddress
+              onCancel={() => {
+                setInputingAddress(false);
+              }}
+              onNext={handleChange}
+            />
+          ) : (
+            <OuterInput
+              className={`
+                border border-r-neutral-line rounded-[8px] bg-r-neutral-card1
+                text-r-neutral-foot text-[15px] 
+                h-[52px] leading-[52px] px-[15px] justify-center items-center
+                hover:cursor-text hover:border-r-blue-default
+              `}
+              onClick={() => setInputingAddress(true)}
+            >
+              {t('page.sendPoly.enterAddress')}
+            </OuterInput>
+          )}
+        </AnimatedInputWrapper>
+
+        {!inputingAddress && (
+          <div className={clsx('h-full', whitelistEnabled ? 'pb-[59px]' : '')}>
+            {/* WhiteList or Imported Addresses List */}
+            <div className={!whitelistEnabled ? 'h-full' : ''}>
+              {whitelistEnabled && (
+                <div className="flex justify-between items-center pt-[17px]">
+                  <div className="text-[15px] text-r-neutral-title1">
+                    {t('page.sendPoly.whitelist.title')}
+                  </div>
+                  <div
+                    className="text-r-neutral-body cursor-pointer"
+                    onClick={() => {
+                      history.push('/whitelist-input');
+                    }}
+                  >
+                    <RcIconAddWhitelist width={20} height={20} />
+                  </div>
+                </div>
+              )}
+              <div className="h-full">
+                {whitelistEnabled ? (
+                  allAccounts.length > 0 ? (
+                    allAccounts.map((item) => (
+                      <WhitelistItemWrapper
+                        key={`${item.address}-${item.type}`}
+                      >
+                        <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center">
+                          <RcIconDeleteAddress
+                            className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
+                            onClick={() => handleDeleteWhitelist(item.address)}
+                          />
+                        </div>
+                        <AccountItem
+                          className="group whitelist-item"
+                          balance={
+                            item.balance ||
+                            unimportedBalances[item.address] ||
+                            0
+                          }
+                          showWhitelistIcon
+                          address={item.address}
+                          alias={ellipsisAddress(item.address)}
+                          type={item.type}
+                          brandName={item.brandName}
+                          onClick={() => {
+                            handleChange(item.address, item.type);
+                          }}
+                        />
+                      </WhitelistItemWrapper>
+                    ))
+                  ) : (
+                    <EmptyWhitelistHolder
+                      onAddWhitelist={() => {
+                        history.push('/whitelist-input');
+                      }}
+                    />
+                  )
+                ) : (
+                  <AccountList
+                    onChange={(acc) => handleChange(acc.address, acc.type)}
+                    containerClassName="mt-[20px]"
+                  />
+                )}
+              </div>
+            </div>
+            {/* Imported Addresses Entry */}
+            {whitelistEnabled && (
+              <div>
+                <EnterAddressButton
+                  onClick={() => {
+                    setShowSelectorModal(true);
+                  }}
+                >
+                  <div className="text-[15px] text-r-neutral-body">
+                    {t('page.sendPoly.sendToImportedAddress')}
+                  </div>
+                  <RcIconRight width={16} height={16} />
+                </EnterAddressButton>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <AccountSelectorModal
+        title={t('page.sendPoly.selectImportedAddress')}
+        visible={showSelectorModal}
+        onChange={(acc) => handleChange(acc.address, acc.type)}
+        onCancel={handleCancel}
+        getContainer={getContainer}
+        height="calc(100% - 60px)"
+      />
+      <AddressRiskAlert
+        type={selectedAddressType}
+        address={selectedAddress}
+        visible={showAddressRiskAlert}
+        getContainer={getContainer}
+        height="calc(100% - 60px)"
+        onConfirm={() => {
+          handleGotoSendToken(selectedAddress, selectedAddressType);
+          setSelectedAddress('');
+          setSelectedAddressType('');
+          setShowAddressRiskAlert(false);
+        }}
+        onCancel={() => {
+          setSelectedAddress('');
+          setSelectedAddressType('');
+          setShowAddressRiskAlert(false);
+        }}
+      />
+    </FullscreenContainer>
+  );
+};
+
+export default connectStore()(SendPoly);

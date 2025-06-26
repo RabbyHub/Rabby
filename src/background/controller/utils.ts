@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { t } from 'i18next';
 import _abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
+  openapiService,
   permissionService,
   preferenceService,
   sessionService,

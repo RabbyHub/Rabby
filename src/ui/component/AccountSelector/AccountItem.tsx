@@ -2,6 +2,7 @@ import { Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_CLASS,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
 } from 'consts';
@@ -14,17 +15,16 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { CopyChecked } from '@/ui/component/CopyChecked';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import IconCheck from 'ui/assets/check-3.svg';
 import { AddressViewer } from 'ui/component';
-import { isSameAddress, splitNumberByStep, useAlias } from 'ui/utils';
+import { splitNumberByStep, useAlias, useCexId } from 'ui/utils';
+import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/lock.svg';
+import { Exchange } from '@/ui/models/exchange';
 
 export interface AddressItemProps {
   balance: number;
@@ -37,6 +37,9 @@ export interface AddressItemProps {
   alias?: string;
   onClick: MouseEventHandler<HTMLDivElement>;
   isSelected?: boolean;
+  rightIcon?: ReactNode;
+  showWhitelistIcon?: boolean;
+  tmpCexInfo?: Exchange;
 }
 
 export const AccountItem = memo(
@@ -51,16 +54,10 @@ export const AccountItem = memo(
     alias: aliasName,
     isSelected,
     extra,
+    rightIcon,
+    showWhitelistIcon,
+    tmpCexInfo,
   }: AddressItemProps) => {
-    const { t } = useTranslation();
-    const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
-      whitelistEnable: s.whitelist.enabled,
-      whiteList: s.whitelist.whitelist,
-    }));
-
-    const isInWhiteList = useMemo(() => {
-      return whiteList.some((e) => isSameAddress(e, address));
-    }, [whiteList, address]);
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
         return KEYRING_TYPE_TEXT[type];
@@ -80,9 +77,16 @@ export const AccountItem = memo(
 
     const [isEdit, setIsEdit] = useState(false);
     const [_alias] = useAlias(address);
+    const [_cexInfo] = useCexId(address);
     const alias = _alias || aliasName;
     const titleRef = useRef<HTMLDivElement>(null);
-    const dispatch = useRabbyDispatch();
+
+    const cexInfo = useMemo(() => {
+      if (tmpCexInfo && !showWhitelistIcon) {
+        return tmpCexInfo;
+      }
+      return _cexInfo;
+    }, [tmpCexInfo, _cexInfo, showWhitelistIcon]);
 
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
@@ -104,6 +108,12 @@ export const AccountItem = memo(
       type,
       forceLight: false,
     });
+    const cexLogo = useMemo(() => {
+      if (type === KEYRING_CLASS.WATCH) {
+        return cexInfo?.logo;
+      }
+      return undefined;
+    }, [cexInfo]);
 
     return (
       <div
@@ -125,13 +135,25 @@ export const AccountItem = memo(
           )}
         >
           <div className="relative flex-none">
-            <img src={addressTypeIcon} className={'w-[28px] h-[28px]'} />
-            <CommonSignal
-              type={type}
-              brandName={brandName}
-              address={address}
-              className={'bottom-0 right-0'}
+            <img
+              src={cexLogo || addressTypeIcon}
+              className={'w-[28px] h-[28px] rounded-full'}
             />
+            {showWhitelistIcon ? (
+              <div className="absolute w-[16px] h-[16px] bottom-[-3px] right-[-3px] text-r-blue-default">
+                <RcWhitelistIconCC
+                  viewBox="0 0 16 16"
+                  className="w-[16px] h-[16px]"
+                />
+              </div>
+            ) : (
+              <CommonSignal
+                type={type}
+                brandName={brandName}
+                address={address}
+                className={'bottom-0 right-0'}
+              />
+            )}
           </div>
         </Tooltip>
 
@@ -151,18 +173,6 @@ export const AccountItem = memo(
                   >
                     {alias}
                   </div>
-                  {whitelistEnable && isInWhiteList && (
-                    <Tooltip
-                      overlayClassName="rectangle"
-                      placement="top"
-                      title={t('page.manageAddress.whitelisted-address')}
-                    >
-                      <ThemeIcon
-                        src={RcIconWhitelist}
-                        className={clsx('w-14 h-14')}
-                      />
-                    </Tooltip>
-                  )}
                   {extra}
                 </>
               }
@@ -184,9 +194,9 @@ export const AccountItem = memo(
             </span>
           </div>
         </div>
-        {isSelected ? (
+        {rightIcon || isSelected ? (
           <div className="flex justify-center items-center ml-auto">
-            <img src={IconCheck} className="w-[20px] h-[20px]" />
+            {rightIcon || <img src={IconCheck} className="w-[20px] h-[20px]" />}
           </div>
         ) : null}
       </div>

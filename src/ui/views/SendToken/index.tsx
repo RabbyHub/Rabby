@@ -3,37 +3,24 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
-import { Trans, useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, useDebounce } from 'react-use';
-import {
-  Input,
-  Form,
-  Skeleton,
-  message,
-  Button,
-  InputProps,
-  Modal,
-} from 'antd';
+import { Form, message, Button, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
 
 import {
   CHAINS_ENUM,
-  KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
   MINIMUM_GAS_LIMIT,
   CAN_ESTIMATE_L1_FEE_CHAINS,
   CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
+  KEYRING_TYPE,
 } from 'consts';
-import {
-  useRabbyDispatch,
-  useRabbySelector,
-  connectStore,
-  useRabbyGetter,
-} from 'ui/store';
+import { useRabbyDispatch, connectStore, useRabbySelector } from 'ui/store';
 import { Account } from 'background/service/preference';
 import {
   getUiType,
@@ -42,19 +29,12 @@ import {
   useWallet,
 } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
-import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
-import AccountCard from '../Approval/components/AccountCard';
+import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
-import { PageHeader, AddressViewer } from 'ui/component';
-import ContactEditModal from 'ui/component/Contact/EditModal';
-import ContactListModal from 'ui/component/Contact/ListModal';
-import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
-import { ReactComponent as RcIconContact } from 'ui/assets/send-token/contact.svg';
-import { ReactComponent as RcIconEdit } from 'ui/assets/edit-purple.svg';
-import { ReactComponent as RcIconCopyCC } from 'ui/assets/icon-copy-cc.svg';
-import { ReactComponent as RcIconCheck } from 'ui/assets/send-token/check.svg';
-import { ReactComponent as RcIconTemporaryGrantCheckbox } from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import { PageHeader } from 'ui/component';
+import { ReactComponent as RcIconDownCC } from '@/ui/assets/send-token/down-cc.svg';
+import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -66,25 +46,11 @@ import {
   findChainByID,
   makeTokenFromChain,
 } from '@/utils/chain';
-import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
-import AccountSearchInput from '@/ui/component/AccountSearchInput';
-import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
-import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
-import { useContactAccounts } from '@/ui/hooks/useContact';
-import {
-  useCheckAddressType,
-  useParseContractAddress,
-} from '@/ui/hooks/useParseAddress';
 import { Chain } from '@debank/common';
-import IconAlertInfo from './alert-info.svg';
-import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import {
   checkIfTokenBalanceEnough,
   customTestnetTokenToTokenItem,
 } from '@/ui/utils/token';
-import { copyAddress } from '@/ui/utils/clipboard';
-import { MaxButton } from './components/MaxButton';
 import {
   GasLevelType,
   SendReserveGasPopup,
@@ -93,194 +59,18 @@ import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.sv
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { useRequest } from 'ahooks';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import { isHex } from 'viem';
+import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
+import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
+import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
+import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
+import { ellipsis } from '@/ui/utils/address';
+import { useInitCheck } from './useInitCheck';
+import { MiniApproval } from '../Approval/components/MiniSignTx';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
-
-type SendTokenMessageForEoAProps = {
-  active: boolean;
-  formData: FormSendToken;
-} & InputProps;
-const SendTokenMessageForEoa = React.forwardRef<
-  typeof Input,
-  SendTokenMessageForEoAProps
->(({ active, formData }, ref) => {
-  const { t } = useTranslation();
-
-  const { messageDataForSendToEoa = '' } = formData;
-
-  const { withInputData, currentIsHex, currentData, hexData } = useMemo(() => {
-    return formatTxInputDataOnERC20(messageDataForSendToEoa);
-  }, [messageDataForSendToEoa]);
-
-  return (
-    <div className={clsx('section', !active && 'hidden')}>
-      <div className="section-title flex justify-between items-center">
-        {/* Message */}
-        {t('page.sendToken.sectionMsgDataForEOA.title')}
-      </div>
-
-      <div className="messagedata-input-wrapper">
-        <Form.Item name="messageDataForSendToEoa">
-          <Input.TextArea
-            ref={ref as any}
-            placeholder={t('page.sendToken.sectionMsgDataForEOA.placeholder')}
-            autoSize={{ minRows: 1 }}
-            className="min-h-[40px] max-h-[84px] padding-12px overflow-y-auto"
-          />
-        </Form.Item>
-      </div>
-
-      {withInputData && (
-        <div className="messagedata-parsed-input text-[12px]">
-          {currentIsHex ? (
-            <>
-              <span className="text-r-neutral-body">
-                {/* The current input is Original Data. UTF-8 is: */}
-                {t('page.sendToken.sectionMsgDataForEOA.currentIsOriginal')}
-              </span>
-              <p className="mt-3 mb-0 break-all text-r-neutral-foot">
-                {currentData}
-              </p>
-            </>
-          ) : (
-            <>
-              <span className="text-r-neutral-body">
-                {/* The current input is UTF-8. Original Data is: */}
-                {t('page.sendToken.sectionMsgDataForEOA.currentIsUTF8')}
-              </span>
-              <p className="mt-3 mb-0 break-all text-r-neutral-foot">
-                {hexData}
-              </p>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
-});
-
-type SendTokenMessageForContractProps = {
-  active: boolean;
-  formData: FormSendToken;
-  userAddress?: string;
-  chain?: Chain | null;
-} & InputProps;
-const SendTokenMessageForContract = React.forwardRef<
-  typeof Input,
-  SendTokenMessageForContractProps
->(({ active, formData, userAddress, chain }, ref) => {
-  const { t } = useTranslation();
-
-  const { messageDataForContractCall: maybeHex = '' } = formData;
-
-  const { currentIsHex, hexData } = useMemo(() => {
-    const result = { currentIsHex: false, hexData: '' };
-
-    if (!maybeHex) return result;
-
-    result.currentIsHex = maybeHex.startsWith('0x') && isHex(maybeHex);
-    result.hexData = maybeHex;
-
-    return result;
-  }, [maybeHex]);
-
-  const {
-    explain,
-    isLoadingExplain,
-    loadingExplainError,
-    contractCallPlainText,
-  } = useParseContractAddress({
-    userAddress,
-    contractAddress: formData.to,
-    chain: chain || null,
-    inputDataHex: hexData,
-  });
-
-  const parseContractError = loadingExplainError || !explain?.abi;
-
-  return (
-    <div className={clsx('section', !active && 'hidden')}>
-      <div className="section-title flex justify-between items-center">
-        {/* Message */}
-        {t('page.sendToken.sectionMsgDataForContract.title')}
-      </div>
-
-      <div className="messagedata-input-wrapper">
-        <Form.Item name="messageDataForContractCall">
-          <Input.TextArea
-            ref={ref as any}
-            placeholder={t(
-              'page.sendToken.sectionMsgDataForContract.placeholder'
-            )}
-            autoSize={{ minRows: 1 }}
-            className="min-h-[40px] max-h-[84px] padding-12px overflow-y-auto text-[12px] text-[#192945]"
-          />
-        </Form.Item>
-      </div>
-
-      {!!maybeHex && (
-        <div className="messagedata-parsed-input text-[12px]">
-          {!currentIsHex ? (
-            <>
-              <span className="mt-16 text-r-red-default">
-                {/* Only supported hex data */}
-                {t('page.sendToken.sectionMsgDataForContract.notHexData')}
-              </span>
-            </>
-          ) : (
-            <>
-              {!parseContractError && (
-                <span className="mt-16 mb-8 text-r-neutral-body">
-                  {/* Contract call simulation: */}
-                  {t('page.sendToken.sectionMsgDataForContract.simulation')}
-                </span>
-              )}
-              {isLoadingExplain ? (
-                <Skeleton.Button
-                  active
-                  className="block min-w-[50px] w-[50%] h-[24px] mt-3"
-                />
-              ) : (
-                <>
-                  {parseContractError && (
-                    <span className="flex items-center text-r-red-default">
-                      <img src={IconAlertInfo} className="w-14 h-14 mr-[3px]" />
-                      <span>
-                        {/* Fail to decode contract call */}
-                        {t(
-                          'page.sendToken.sectionMsgDataForContract.parseError'
-                        )}
-                      </span>
-                    </span>
-                  )}
-                  {!loadingExplainError && contractCallPlainText && (
-                    <p className="mt-3 mb-0 break-all text-r-neutral-foot">
-                      {contractCallPlainText}
-                    </p>
-                  )}
-                </>
-              )}
-            </>
-          )}
-          {/* {explain ? (
-              <PreExecTransactionExplain
-                className="mt-3"
-                explain={explain}
-                // onView={handleView}
-                isViewLoading={isLoadingExplain}
-              />
-            ) : (
-              <Skeleton.Button active style={{ width: '100%', height: 25 }} />
-            )} */}
-        </div>
-      )}
-    </div>
-  );
-});
 
 function findInstanceLevel(gasList: GasLevel[]) {
   return gasList.reduce((prev, current) =>
@@ -293,25 +83,42 @@ const DEFAULT_GAS_USED = 21000;
 type FormSendToken = {
   to: string;
   amount: string;
-  messageDataForSendToEoa: string;
-  messageDataForContractCall: string;
 };
 const SendToken = () => {
-  const wallet = useWallet();
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-
-  const [chain, setChain] = useState(CHAINS_ENUM.ETH);
-
-  const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
-  const { t } = useTranslation();
-  const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
   const { useForm } = Form;
+  const { t } = useTranslation();
   const history = useHistory();
   const dispatch = useRabbyDispatch();
-
   const rbisource = useRbiSource();
+  const { search } = useLocation();
+  const wallet = useWallet();
+  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+    whitelistEnabled: s.whitelist.enabled,
+  }));
 
+  // UI States
+  const [showSelectorModal, setShowSelectorModal] = useState(false);
+  const [reserveGasOpen, setReserveGasOpen] = useState(false);
+  const [, setRefreshId] = useState(0);
+
+  // Core States
   const [form] = useForm<FormSendToken>();
+
+  const toAddress = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('to') || '';
+  }, [search]);
+  const toAddressType = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('type') || '';
+  }, [search]);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const { balance: currentAccountBalance } = useCurrentBalance(
+    currentAccount?.address
+  );
+  const [chain, setChain] = useState(CHAINS_ENUM.ETH);
+  const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
   const [formSnapshot, setFormSnapshot] = useState(form.getFieldsValue());
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
     null
@@ -333,11 +140,16 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
-
   const [safeInfo, setSafeInfo] = useState<{
     chainId: number;
     nonce: number;
   } | null>(null);
+
+  const [inited, setInited] = useState(false);
+  const [cacheAmount, setCacheAmount] = useState('0');
+  const [isLoading, setIsLoading] = useState(true);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
+
   const persistPageStateCache = useCallback(
     async (nextStateCache?: {
       values?: FormSendToken;
@@ -361,16 +173,6 @@ const SendToken = () => {
     },
     [wallet, history, form, currentToken, safeInfo]
   );
-  const [inited, setInited] = useState(false);
-  // const [gasList, setGasList] = useState<GasLevel[]>([]);
-  const [sendAlianName, setSendAlianName] = useState<string | null>(null);
-  const [showEditContactModal, setShowEditContactModal] = useState(false);
-  const [showListContactModal, setShowListContactModal] = useState(false);
-  const [editBtnDisabled, setEditBtnDisabled] = useState(true);
-  const [cacheAmount, setCacheAmount] = useState('0');
-  const [isLoading, setIsLoading] = useState(true);
-  const [balanceError, setBalanceError] = useState<string | null>(null);
-  const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
 
   const [
     { showGasReserved, clickedMax, isEstimatingGas },
@@ -381,6 +183,7 @@ const SendToken = () => {
     clickedMax: false,
     isEstimatingGas: false,
   });
+
   const setShowGasReserved = useCallback((show: boolean) => {
     setSendMaxInfo((prev) => ({
       ...prev,
@@ -390,10 +193,7 @@ const SendToken = () => {
   const cancelClickedMax = useCallback(() => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   }, []);
-  const [showContactInfo, setShowContactInfo] = useState(false);
-  const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
 
-  const [reserveGasOpen, setReserveGasOpen] = useState(false);
   const handleReserveGasClose = useCallback(() => {
     setReserveGasOpen(false);
   }, []);
@@ -403,75 +203,37 @@ const SendToken = () => {
   );
 
   const [estimatedGas, setEstimatedGas] = useState(0);
-  const [temporaryGrant, setTemporaryGrant] = useState(false);
   const [gasPriceMap, setGasPriceMap] = useState<
     Record<string, { list: GasLevel[]; expireAt: number }>
   >({});
   const [isGnosisSafe, setIsGnosisSafe] = useState(false);
 
-  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-    whitelistEnabled: s.whitelist.enabled,
-  }));
-
-  const {
-    getAddressNote,
-    isAddrOnContactBook,
-    fetchContactAccounts,
-  } = useContactAccounts();
-
-  const {
-    toAddressIsValid,
-    toAddressInWhitelist,
-    toAddressInContactBook,
-  } = useMemo(() => {
-    return {
-      toAddressIsValid: !!formSnapshot.to && isValidAddress(formSnapshot.to),
-      toAddressInWhitelist: !!whitelist.find((item) =>
-        isSameAddress(item, formSnapshot.to)
-      ),
-      toAddressInContactBook: isAddrOnContactBook(formSnapshot.to),
-    };
-  }, [whitelist, isAddrOnContactBook, formSnapshot]);
-
-  const whitelistAlertContent = useMemo(() => {
-    if (!whitelistEnabled) {
-      return {
-        content: t('page.sendToken.whitelistAlert__disabled'),
-        success: true,
-      };
+  useEffect(() => {
+    if (!toAddress) {
+      const query = new URLSearchParams(search);
+      query.delete('to');
+      history.replace(
+        `/send-poly${query.toString() ? `?${query.toString()}` : ''}`
+      );
+      return;
     }
-    if (toAddressInWhitelist) {
-      return {
-        content: t('page.sendToken.whitelistAlert__whitelisted'),
-        success: true,
-      };
-    }
-    if (temporaryGrant) {
-      return {
-        content: t('page.sendToken.whitelistAlert__temporaryGranted'),
-        success: true,
-      };
-    }
-    return {
-      success: false,
-      content: (
-        <>
-          <Trans t={t} i18nKey="page.sendToken.whitelistAlert__notWhitelisted">
-            The address is not whitelisted.
-            <br /> I agree to grant temporary permission to transfer.
-          </Trans>
-        </>
-      ),
-    };
-  }, [t, temporaryGrant, toAddressInWhitelist, whitelistEnabled]);
+    const values = form.getFieldsValue();
+    form.setFieldsValue({
+      ...values,
+      to: toAddress,
+    });
+  }, [toAddress, history, search, form]);
+
+  const { targetAccount, addressDesc, tmpCexInfo } = useAddressInfo(toAddress, {
+    type: toAddressType,
+  });
+  useInitCheck(addressDesc);
 
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).gte(0) &&
-    !isLoading &&
-    (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
+    !isLoading;
   const isNativeToken =
     !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
 
@@ -499,25 +261,80 @@ const SendToken = () => {
     [chain]
   );
 
-  const { addressType } = useCheckAddressType(formSnapshot.to, chainItem);
+  const disableItemCheck = useCallback(
+    (token: TokenItem) => {
+      if (!addressDesc) {
+        return {
+          disable: false,
+          reason: '',
+        };
+      }
 
-  const {
-    isShowMessageDataForToken,
-    isShowMessageDataForContract,
-  } = useMemo(() => {
-    return {
-      isShowMessageDataForToken: isNativeToken && addressType === 'EOA',
-      isShowMessageDataForContract: isNativeToken && addressType === 'CONTRACT',
-    };
-  }, [isNativeToken, addressType]);
+      const toCexId = addressDesc?.cex?.id;
+      if (toCexId) {
+        const noSupportToken = token.cex_ids?.every?.(
+          (id) => id.toLocaleLowerCase() !== toCexId.toLocaleLowerCase()
+        );
+        if (!token?.cex_ids?.length || noSupportToken) {
+          return {
+            disable: true,
+            reason: t('page.sendToken.noSupprotTokenForDex'),
+          };
+        }
+      } else {
+        const safeChains = Object.entries(addressDesc?.contract || {})
+          .filter(([, contract]) => {
+            return contract.multisig;
+          })
+          .map(([chain]) => chain?.toLocaleLowerCase());
+        if (
+          safeChains.length > 0 &&
+          !safeChains.includes(token?.chain?.toLocaleLowerCase())
+        ) {
+          return {
+            disable: true,
+            reason: t('page.sendToken.noSupprotTokenForSafe'),
+          };
+        }
+        const contactChains = Object.entries(
+          addressDesc?.contract || {}
+        ).map(([chain]) => chain?.toLocaleLowerCase());
+        if (
+          contactChains.length > 0 &&
+          !contactChains.includes(token?.chain?.toLocaleLowerCase())
+        ) {
+          return {
+            disable: true,
+            reason: t('page.sendToken.noSupportTokenForChain'),
+          };
+        }
+      }
+      return {
+        disable: false,
+        reason: '',
+      };
+    },
+    [addressDesc, t]
+  );
+
+  const handleFromAddressChange = useCallback(
+    async (value: Account) => {
+      await dispatch.account.changeAccountAsync(value);
+      setCurrentAccount(value);
+
+      if (value.type === KEYRING_CLASS.GNOSIS) {
+        setIsGnosisSafe(true);
+      }
+      setShowSelectorModal(false);
+    },
+    [dispatch.account]
+  );
+  const handleFromAddressCancel = useCallback(() => {
+    setShowSelectorModal(false);
+  }, []);
 
   const getParams = React.useCallback(
-    ({
-      to,
-      amount,
-      messageDataForSendToEoa,
-      messageDataForContractCall,
-    }: FormSendToken) => {
+    ({ amount }: FormSendToken) => {
       const chain = findChain({
         serverId: currentToken.chain,
       })!;
@@ -540,7 +357,7 @@ const SendToken = () => {
           ] as any[],
         } as const,
         [
-          to || '0x0000000000000000000000000000000000000000',
+          toAddress || '0x0000000000000000000000000000000000000000',
           sendValue.toFixed(0),
         ] as any[],
       ] as const;
@@ -556,17 +373,8 @@ const SendToken = () => {
         params.nonce = safeInfo.nonce;
       }
       if (isNativeToken) {
-        params.to = to;
+        params.to = toAddress;
         delete params.data;
-
-        if (isShowMessageDataForToken && messageDataForSendToEoa) {
-          const encodedValue = formatTxInputDataOnERC20(messageDataForSendToEoa)
-            .hexData;
-
-          params.data = encodedValue;
-        } else if (isShowMessageDataForContract && messageDataForContractCall) {
-          params.data = messageDataForContractCall;
-        }
 
         params.value = `0x${sendValue.toString(16)}`;
       }
@@ -579,9 +387,8 @@ const SendToken = () => {
       currentToken.decimals,
       currentToken.id,
       isNativeToken,
-      isShowMessageDataForContract,
-      isShowMessageDataForToken,
-      safeInfo,
+      safeInfo?.nonce,
+      toAddress,
     ]
   );
 
@@ -623,21 +430,31 @@ const SendToken = () => {
     }
   }, [clickedMax, loadGasList]);
 
+  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
+  const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
+
+  const miniSignTxs = useMemo(() => {
+    return miniSignTx ? [miniSignTx] : [];
+  }, [miniSignTx]);
+
+  const canUseMiniTx = useMemo(() => {
+    return (
+      [
+        KEYRING_TYPE.SimpleKeyring,
+        KEYRING_TYPE.HdKeyring,
+        KEYRING_CLASS.HARDWARE.LEDGER,
+      ].includes((currentAccount?.type || '') as any) && !chainItem?.isTestnet
+    );
+  }, [chainItem?.isTestnet, currentAccount?.type]);
+
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
-    async ({
-      to,
-      amount,
-      messageDataForSendToEoa,
-      messageDataForContractCall,
-    }: FormSendToken) => {
+    async ({ amount }: FormSendToken) => {
       const chain = findChain({
         serverId: currentToken.chain,
       })!;
       const params = getParams({
-        to,
+        to: toAddress,
         amount,
-        messageDataForSendToEoa,
-        messageDataForContractCall,
       });
 
       if (isNativeToken) {
@@ -650,7 +467,7 @@ const SendToken = () => {
           const code = await wallet.requestETHRpc<any>(
             {
               method: 'eth_getCode',
-              params: [to, 'latest'],
+              params: [toAddress, 'latest'],
             },
             chain.serverId
           );
@@ -680,13 +497,6 @@ const SendToken = () => {
             params.gas = intToHex(DEFAULT_GAS_USED);
           }
         }
-
-        if (
-          isShowMessageDataForToken &&
-          (messageDataForContractCall || messageDataForSendToEoa)
-        ) {
-          delete params.gas;
-        }
         if (clickedMax && selectedGasLevel?.price) {
           params.gasPrice = selectedGasLevel?.price;
         }
@@ -708,6 +518,12 @@ const SendToken = () => {
             filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
           ].join('|'),
         });
+
+        if (canUseMiniTx) {
+          setMiniSignTx(params as Tx);
+          setIsShowMiniSign(true);
+          return;
+        }
 
         const promise = wallet.sendRequest({
           method: 'eth_sendTransaction',
@@ -738,39 +554,17 @@ const SendToken = () => {
     }
   );
 
-  const handleConfirmContact = (account: UIContactBookItem) => {
-    setShowListContactModal(false);
-    setShowEditContactModal(false);
-    setContactInfo(account);
-    const values = form.getFieldsValue();
-    const to = account ? account.address : '';
-    if (!account) return;
-    form.setFieldsValue({
-      ...values,
-      to,
-    });
-    handleFormValuesChange(null, {
-      ...values,
-      to,
-    });
-  };
-
-  const handleCancelContact = () => {
-    setShowListContactModal(false);
-  };
-
-  const handleCancelEditContact = () => {
-    setShowEditContactModal(false);
-  };
-
-  const handleListContact = () => {
-    setShowListContactModal(true);
-  };
-
-  const handleEditContact = () => {
-    if (editBtnDisabled) return;
-    setShowEditContactModal(true);
-  };
+  const handleMiniSignResolve = useCallback(() => {
+    setTimeout(() => {
+      setIsShowMiniSign(false);
+      setMiniSignTx(null);
+      if (!isTab) {
+        history.replace('/');
+      }
+      form.setFieldsValue({ amount: '' });
+      setRefreshId((e) => e + 1);
+    }, 500);
+  }, [form, history]);
 
   const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
     if (!to) return;
@@ -799,7 +593,7 @@ const SendToken = () => {
   const handleFormValuesChange = useCallback(
     async (
       changedValues,
-      { to, amount, ...restForm }: FormSendToken,
+      { amount, ...restForm }: FormSendToken,
       opts?: {
         token?: TokenItem;
         isInitFromCache?: boolean;
@@ -807,23 +601,11 @@ const SendToken = () => {
     ) => {
       const { token, isInitFromCache } = opts || {};
       if (changedValues && changedValues.to) {
-        setTemporaryGrant(false);
         handleReceiveAddressChanged(changedValues.to);
       }
 
-      if ((!isInitFromCache && changedValues?.to) || (!changedValues && to)) {
-        restForm.messageDataForSendToEoa = '';
-        restForm.messageDataForContractCall = '';
-      }
-
       const targetToken = token || currentToken;
-      if (!to || !isValidAddress(to)) {
-        setEditBtnDisabled(true);
-        setShowWhitelistAlert(false);
-      } else {
-        setShowWhitelistAlert(true);
-        setEditBtnDisabled(false);
-      }
+
       let resultAmount = amount;
       if (!/^\d*(\.\d*)?$/.test(amount)) {
         resultAmount = cacheAmount;
@@ -849,7 +631,7 @@ const SendToken = () => {
       }
       const nextFormValues = {
         ...restForm,
-        to,
+        to: toAddress,
         amount: resultAmount,
       };
 
@@ -861,10 +643,9 @@ const SendToken = () => {
       form.setFieldsValue(nextFormValues);
       setFormSnapshot(nextFormValues);
       setCacheAmount(resultAmount);
-      const alianName = await wallet.getAlianName(to.toLowerCase());
-      if (alianName) {
-        setContactInfo({ address: to, name: alianName });
-        setShowContactInfo(true);
+      const aliasName = await wallet.getAlianName(toAddress.toLowerCase());
+      if (aliasName) {
+        setContactInfo({ address: toAddress, name: aliasName });
       } else if (contactInfo) {
         setContactInfo(null);
       }
@@ -879,6 +660,7 @@ const SendToken = () => {
       setShowGasReserved,
       showGasReserved,
       t,
+      toAddress,
       wallet,
     ]
   );
@@ -917,8 +699,6 @@ const SendToken = () => {
         return doReturn();
       }
 
-      const to = form.getFieldValue('to');
-
       let _gasUsed: string = intToHex(DEFAULT_GAS_USED);
       try {
         _gasUsed = await wallet.requestETHRpc<string>(
@@ -927,7 +707,10 @@ const SendToken = () => {
             params: [
               {
                 from: currentAddress,
-                to: to && isValidAddress(to) ? to : zeroAddress(),
+                to:
+                  toAddress && isValidAddress(toAddress)
+                    ? toAddress
+                    : zeroAddress(),
                 gasPrice: intToHex(0),
                 value: intToHex(0),
               },
@@ -946,7 +729,7 @@ const SendToken = () => {
 
       return doReturn(Number(gasUsed));
     },
-    [wallet, currentAccount, chainItem, form, currentToken]
+    [chainItem, currentToken, currentAccount?.address, wallet, toAddress]
   );
 
   const loadCurrentToken = useCallback(
@@ -1006,7 +789,6 @@ const SendToken = () => {
       setEstimatedGas(0);
       await persistPageStateCache({ currentToken: token });
       setBalanceError(null);
-      setBalanceWarn(null);
       setIsLoading(true);
       loadCurrentToken(token.id, token.chain, account.address);
     },
@@ -1039,7 +821,6 @@ const SendToken = () => {
       const gasTokenAmount = new BigNumber(gasLevel.price)
         .times(gasLimit)
         .div(1e18);
-      setTokenAmountForGas(gasTokenAmount.toFixed());
       if (updateTokenAmount) {
         const values = form.getFieldsValue();
         const diffValue = new BigNumber(currentToken.raw_amount_hex_str || 0)
@@ -1077,7 +858,6 @@ const SendToken = () => {
         currentToken.raw_amount_hex_str || 0
       ).div(10 ** currentToken.decimals);
       let amount = tokenBalance.toFixed();
-      const to = form.getFieldValue('to');
 
       const {
         gasLevel = selectedGasLevel ||
@@ -1105,7 +885,10 @@ const SendToken = () => {
                 txParams: {
                   chainId: chainItem.id,
                   from: currentAccount.address,
-                  to: to && isValidAddress(to) ? to : zeroAddress(),
+                  to:
+                    toAddress && isValidAddress(toAddress)
+                      ? toAddress
+                      : zeroAddress(),
                   value: currentToken.raw_amount_hex_str,
                   gas: intToHex(DEFAULT_GAS_USED),
                   gasPrice: `0x${new BigNumber(gasLevel.price).toString(16)}`,
@@ -1125,8 +908,6 @@ const SendToken = () => {
           }
         } catch (e) {
           if (!isGnosisSafe) {
-            // // Gas fee reservation required
-            // setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
             setShowGasReserved(false);
           }
         } finally {
@@ -1143,22 +924,23 @@ const SendToken = () => {
       handleFormValuesChange(null, newValues);
     },
     [
-      chain,
-      chainItem,
       currentAccount,
+      isLoading,
+      isEstimatingGas,
       currentToken,
-      estimateGasOnChain,
       selectedGasLevel,
       loadGasList,
+      couldReserveGas,
       form,
       handleFormValuesChange,
-      handleGasChange,
-      couldReserveGas,
-      isGnosisSafe,
-      isLoading,
       setShowGasReserved,
-      isEstimatingGas,
+      estimateGasOnChain,
+      chainItem,
+      handleGasChange,
+      chain,
       wallet,
+      toAddress,
+      isGnosisSafe,
     ]
   );
   const handleGasLevelChanged = useCallback(
@@ -1188,91 +970,14 @@ const SendToken = () => {
     }
   }, [couldReserveGas, handleMaxInfoChanged]);
 
-  const handleChainChanged = useCallback(
-    async (val: CHAINS_ENUM) => {
-      setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
-      const gasList = await loadGasList();
-      if (gasList && Array.isArray(gasList)) {
-        setSelectedGasLevel(
-          gasList.find(
-            (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
-          ) || findInstanceLevel(gasList)
-        );
-      }
-
-      const account = (await wallet.syncGetCurrentAccount())!;
-      const chain = findChain({
-        enum: val,
-      });
-      if (!chain) {
-        return;
-      }
-      setChain(val);
-      setCurrentToken({
-        id: chain.nativeTokenAddress,
-        decimals: chain.nativeTokenDecimals,
-        logo_url: chain.nativeTokenLogo,
-        symbol: chain.nativeTokenSymbol,
-        display_symbol: chain.nativeTokenSymbol,
-        optimized_symbol: chain.nativeTokenSymbol,
-        is_core: true,
-        is_verified: true,
-        is_wallet: true,
-        amount: 0,
-        price: 0,
-        name: chain.nativeTokenSymbol,
-        chain: chain.serverId,
-        time_at: 0,
-      });
-
-      let nextToken: TokenItem | null = null;
-      try {
-        nextToken = await loadCurrentToken(
-          chain.nativeTokenAddress,
-          chain.serverId,
-          account.address
-        );
-      } catch (error) {
-        console.error(error);
-      }
-
-      const values = form.getFieldsValue();
-      form.setFieldsValue({
-        ...values,
-        amount: '',
-      });
-      setShowGasReserved(false);
-      handleFormValuesChange(
-        { amount: '' },
-        {
-          ...values,
-          amount: '',
-        },
-        {
-          ...(nextToken && { token: nextToken }),
-        }
-      );
-    },
-    [
-      form,
-      handleFormValuesChange,
-      loadCurrentToken,
-      setShowGasReserved,
-      loadGasList,
-      wallet,
-    ]
-  );
-
-  const handleCopyContactAddress = () => {
-    copyAddress(currentToken.id);
-  };
-
   const handleClickBack = () => {
     const from = (history.location.state as any)?.from;
     if (from) {
       history.replace(from);
+    } else if (history.length > 1) {
+      history.goBack();
     } else {
-      history.replace('/');
+      history.replace(`/send-poly${history.location.search}`);
     }
   };
 
@@ -1384,63 +1089,11 @@ const SendToken = () => {
   };
 
   useEffect(() => {
-    if (inited) {
+    if (inited && currentAccount?.address) {
       initByCache();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inited]);
-
-  const getAlianName = async () => {
-    const alianName = await wallet.getAlianName(currentAccount?.address || '');
-    setSendAlianName(alianName || '');
-  };
-
-  const handleClickAllowTransferTo = () => {
-    if (!whitelistEnabled || temporaryGrant || toAddressInWhitelist) return;
-
-    const toAddr = form.getFieldValue('to');
-    confirmAllowTransferToPromise({
-      wallet,
-      toAddr,
-      showAddToWhitelist: !!toAddressInContactBook,
-      // Enter the Password to Confirm
-      title: t('page.sendToken.modalConfirmAllowTransferTo.title'),
-      // Cancel
-      cancelText: t('page.sendToken.modalConfirmAllowTransferTo.cancelText'),
-      // Confirm
-      confirmText: t('page.sendToken.modalConfirmAllowTransferTo.confirmText'),
-      onFinished(result) {
-        dispatch.whitelist.getWhitelist();
-        setTemporaryGrant(true);
-      },
-      getContainer,
-    });
-  };
-
-  const handleClickAddContact = () => {
-    if (toAddressInContactBook) return;
-
-    const toAddr = form.getFieldValue('to');
-    confirmAddToContactsModalPromise({
-      wallet,
-      initAddressNote: getAddressNote(toAddr),
-      addrToAdd: toAddr,
-      title: t('page.sendToken.modalConfirmAddToContacts.title'),
-      confirmText: t('page.sendToken.modalConfirmAddToContacts.confirmText'),
-      async onFinished(result) {
-        await dispatch.contactBook.getContactBookAsync();
-        // trigger fetch contactInfo
-        const values = form.getFieldsValue();
-        handleFormValuesChange(null, { ...values });
-        await Promise.allSettled([
-          fetchContactAccounts(),
-          // trigger get balance of address
-          wallet.getInMemoryAddressBalance(result.contactAddrAdded, true),
-        ]);
-      },
-      getContainer,
-    });
-  };
+  }, [inited, currentAccount?.address]);
 
   useEffect(() => {
     init();
@@ -1449,13 +1102,6 @@ const SendToken = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (currentAccount) {
-      getAlianName();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAccount]);
 
   const { balanceNumText } = useMemo(() => {
     const balanceNum = new BigNumber(currentToken.raw_amount_hex_str || 0).div(
@@ -1510,7 +1156,7 @@ const SendToken = () => {
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0"
                 onClick={() => {
                   openInternalPageInTab(`send-token${history.location.search}`);
                 }}
@@ -1528,264 +1174,98 @@ const SendToken = () => {
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
           initialValues={{
-            to: '',
+            to: toAddress,
             amount: '',
           }}
         >
           <div className="flex-1 overflow-auto">
             <div className="section relative">
-              <div className={clsx('section-title')}>
-                {t('page.sendToken.sectionChain.title')}
-              </div>
-              <ChainSelectorInForm
-                value={chain}
-                onChange={handleChainChanged}
-                disabledTips={'Not supported'}
-                supportChains={undefined}
-                readonly={!!safeInfo}
-                getContainer={getContainer}
-              />
-              <div className={clsx('section-title mt-[10px]')}>
+              <div className="section-title mt-[8px] font-medium">
                 {t('page.sendToken.sectionFrom.title')}
               </div>
-              <AccountCard
-                icons={{
-                  mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
-                  privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
-                  watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
+              <AccountItem
+                balance={currentAccountBalance || 0}
+                address={currentAccount?.address || ''}
+                type={currentAccount?.type || ''}
+                brandName={currentAccount?.brandName || ''}
+                onClick={() => {
+                  setShowSelectorModal(true);
                 }}
-                alianName={sendAlianName}
-                isHideAmount={chainItem?.isTestnet}
+                className="w-full bg-r-neutral-card1 rounded-[8px]"
+                rightIcon={
+                  <div className="text-r-neutral-foot">
+                    <RcIconDownCC width={16} height={16} />
+                  </div>
+                }
               />
-              <div className="section-title">
-                <span className="section-title__to">
+              <div className="section-title mt-[20px]">
+                <span className="section-title__to font-medium">
                   {t('page.sendToken.sectionTo.title')}
                 </span>
-                <div className="flex flex-1 justify-end items-center">
-                  {showContactInfo && !!contactInfo && (
-                    <div
-                      className={clsx('contact-info', {
-                        disabled: editBtnDisabled,
-                      })}
-                      onClick={handleEditContact}
-                    >
-                      {contactInfo && (
-                        <>
-                          <ThemeIcon
-                            src={RcIconEdit}
-                            className="icon icon-edit"
-                          />
-                          <span
-                            title={contactInfo.name}
-                            className="inline-block align-middle truncate max-w-[240px]"
-                          >
-                            {contactInfo.name}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  )}
-                  <ThemeIcon
-                    className="icon icon-contact"
-                    src={whitelistEnabled ? RcIconWhitelist : RcIconContact}
-                    onClick={handleListContact}
-                  />
-                </div>
               </div>
               <div className="to-address">
-                <Form.Item
-                  name="to"
-                  rules={[
-                    {
-                      required: true,
-                      message: t(
-                        'page.sendToken.sectionTo.addrValidator__empty'
-                      ),
-                    },
-                    {
-                      validator(_, value) {
-                        if (!value) return Promise.resolve();
-                        if (value && isValidAddress(value)) {
-                          // setAmountFocus(true);
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error(
-                            t('page.sendToken.sectionTo.addrValidator__invalid')
-                          )
-                        );
-                      },
-                    },
-                  ]}
-                >
-                  <AccountSearchInput
-                    placeholder={t(
-                      'page.sendToken.sectionTo.searchInputPlaceholder'
-                    )}
-                    autoComplete="off"
-                    autoFocus
-                    spellCheck={false}
-                    onSelectedAccount={(account) => {
-                      const nextVals = {
-                        ...form.getFieldsValue(),
-                        to: account.address,
-                      };
-                      handleFormValuesChange({ to: nextVals.to }, nextVals);
-                      form.setFieldsValue(nextVals);
-                    }}
-                  />
-                </Form.Item>
-                {toAddressIsValid && !toAddressInContactBook && (
-                  <div className="tip-no-contact font-normal text-[12px] text-r-neutral-body pt-[12px]">
-                    <Trans i18nKey="page.sendToken.addressNotInContract" t={t}>
-                      Not on address list.{' '}
-                      <span
-                        onClick={handleClickAddContact}
-                        className={clsx(
-                          'ml-[2px] underline cursor-pointer text-r-blue-default'
-                        )}
-                      >
-                        Add to contacts
-                      </span>
-                    </Trans>
-                  </div>
-                )}
+                <AccountItem
+                  balance={
+                    targetAccount?.balance || addressDesc?.usd_value || 0
+                  }
+                  address={targetAccount?.address || ''}
+                  type={targetAccount?.type || ''}
+                  alias={
+                    targetAccount?.address
+                      ? ellipsis(targetAccount?.address)
+                      : ''
+                  }
+                  showWhitelistIcon={
+                    whitelistEnabled &&
+                    whitelist?.some(
+                      (w) =>
+                        targetAccount?.address &&
+                        isSameAddress(w, targetAccount?.address)
+                    )
+                  }
+                  tmpCexInfo={tmpCexInfo}
+                  brandName={targetAccount?.brandName || ''}
+                  onClick={() => {
+                    history.push(`/send-poly${history.location.search}`);
+                  }}
+                  className="w-full bg-r-neutral-card1 rounded-[8px]"
+                  rightIcon={
+                    <div className="text-r-neutral-foot">
+                      <RcIconSwitchCC width={16} height={16} />
+                    </div>
+                  }
+                />
               </div>
             </div>
             <div className="section">
               <div className="section-title flex justify-between items-center">
-                <div className="token-balance whitespace-pre-wrap">
-                  {isLoading ? (
-                    <Skeleton.Input active style={{ width: 100 }} />
-                  ) : (
-                    <>
-                      {t('page.sendToken.sectionBalance.title')}:{' '}
-                      <span
-                        className="truncate max-w-[90px]"
-                        title={balanceNumText}
-                      >
-                        {balanceNumText}
-                      </span>
-                    </>
-                  )}
-                  {currentToken.amount > 0 && (
-                    <MaxButton onClick={handleClickMaxButton}>
-                      {t('page.sendToken.max')}
-                    </MaxButton>
-                  )}
+                <div className="token-balance whitespace-pre-wrap font-medium">
+                  {t('page.sendToken.sectionBalance.title')}
                 </div>
-                {/* {showGasReserved &&
-                (selectedGasLevel ? (
-                  <GasReserved
-                    token={currentToken}
-                    amount={tokenAmountForGas}
-                    // onClickAmount={handleClickGasReserved}
-                  />
-                ) : (
-                  <Skeleton.Input active style={{ width: 180 }} />
-                ))} */}
-                {/* {showGasReserved && !selectedGasLevel && (
-                <Skeleton.Input active style={{ width: 120 }} />
-              )} */}
-                {!clickedMax && (balanceError || balanceWarn) ? (
-                  <div className="balance-error">
-                    {balanceError || balanceWarn}
-                  </div>
-                ) : null}
               </div>
               <Form.Item name="amount">
                 {currentAccount && chainItem && (
                   <TokenAmountInput
+                    className="bg-r-neutral-card1 rounded-[8px]"
                     token={currentToken}
                     onChange={handleAmountChange}
                     onTokenChange={handleCurrentTokenChange}
                     chainId={chainItem.serverId}
                     excludeTokens={[]}
-                    inlinePrize
+                    disableItemCheck={disableItemCheck}
+                    balanceNumText={balanceNumText}
+                    insufficientError={!!balanceError}
+                    handleClickMaxButton={handleClickMaxButton}
+                    isLoading={isLoading}
                     getContainer={getContainer}
                   />
                 )}
               </Form.Item>
-              <div className="token-info">
-                {!isNativeToken ? (
-                  <div className="section-field">
-                    <span>
-                      {t('page.sendToken.tokenInfoFieldLabel.contract')}
-                    </span>
-                    <span className="flex">
-                      <AddressViewer
-                        address={currentToken.id}
-                        showArrow={false}
-                      />
-                      <RcIconCopyCC
-                        viewBox="0 0 14 14"
-                        className="icon icon-copy text-r-neutral-foot"
-                        onClick={handleCopyContactAddress}
-                      />
-                    </span>
-                  </div>
-                ) : (
-                  ''
-                )}
-                <div className="section-field">
-                  <span>{t('page.sendToken.tokenInfoFieldLabel.chain')}</span>
-                  <span>
-                    {
-                      findChain({
-                        serverId: currentToken?.chain,
-                      })?.name
-                    }
-                  </span>
-                </div>
-                {!chainItem?.isTestnet ? (
-                  <div className="section-field">
-                    <span>{t('page.sendToken.tokenInfoPrice')}</span>
-                    <span>
-                      ${splitNumberByStep((currentToken.price || 0).toFixed(2))}
-                    </span>
-                  </div>
-                ) : null}
-              </div>
             </div>
-            <SendTokenMessageForEoa
-              active={isShowMessageDataForToken}
-              formData={formSnapshot}
-            />
-            <SendTokenMessageForContract
-              active={isShowMessageDataForContract}
-              formData={formSnapshot}
-              chain={findChainByEnum(chain)}
-              userAddress={currentAccount?.address}
-            />
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
-            {showWhitelistAlert && (
-              <div
-                className={clsx(
-                  'whitelist-alert',
-                  !whitelistEnabled || whitelistAlertContent.success
-                    ? 'granted'
-                    : 'cursor-pointer'
-                )}
-                onClick={handleClickAllowTransferTo}
-              >
-                <p className="whitelist-alert__content text-center">
-                  {whitelistEnabled && (
-                    <ThemeIcon
-                      src={
-                        whitelistAlertContent.success
-                          ? RcIconCheck
-                          : RcIconTemporaryGrantCheckbox
-                      }
-                      className="icon icon-check inline-block relative -top-1"
-                    />
-                  )}
-                  {whitelistAlertContent.content}
-                </p>
-              </div>
-            )}
-            <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
+            <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
               <Button
                 disabled={!canSubmit}
                 type="primary"
@@ -1799,21 +1279,6 @@ const SendToken = () => {
             </div>
           </div>
         </Form>
-        <ContactEditModal
-          visible={showEditContactModal}
-          address={form.getFieldValue('to')}
-          onOk={handleConfirmContact}
-          onCancel={handleCancelEditContact}
-          isEdit={!!contactInfo}
-          getContainer={getContainer}
-        />
-        <ContactListModal
-          visible={showListContactModal}
-          onCancel={handleCancelContact}
-          onOk={handleConfirmContact}
-          getContainer={getContainer}
-        />
-
         <SendReserveGasPopup
           selectedItem={selectedGasLevel?.level as GasLevelType}
           chain={chain}
@@ -1825,6 +1290,38 @@ const SendToken = () => {
           visible={reserveGasOpen}
           rawHexBalance={currentToken.raw_amount_hex_str}
           onClose={() => handleReserveGasClose()}
+          getContainer={getContainer}
+        />
+        <AccountSelectorModal
+          title={t('page.sendToken.selectFromAddress')}
+          visible={showSelectorModal}
+          onChange={handleFromAddressChange}
+          onCancel={handleFromAddressCancel}
+          value={currentAccount}
+          getContainer={getContainer}
+          height="calc(100% - 60px)"
+        />
+        <MiniApproval
+          txs={miniSignTxs}
+          visible={isShowMiniSign}
+          ga={{
+            category: 'Send',
+            source: 'sendToken',
+            trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
+          }}
+          onClose={() => {
+            setRefreshId((e) => e + 1);
+            setIsShowMiniSign(false);
+            setTimeout(() => {
+              setMiniSignTx(null);
+            }, 500);
+          }}
+          onReject={() => {
+            setRefreshId((e) => e + 1);
+            setIsShowMiniSign(false);
+            setMiniSignTx(null);
+          }}
+          onResolve={handleMiniSignResolve}
           getContainer={getContainer}
         />
       </div>
