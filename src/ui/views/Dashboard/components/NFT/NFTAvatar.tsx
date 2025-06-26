@@ -22,12 +22,23 @@ type AvatarProps = {
   unknown?: string;
 };
 
+// 验证 URL 是否为 http(s) 协议
+const isValidHttpUrl = (url?: string): boolean => {
+  if (!url) return false;
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 const Thumbnail = ({
   content,
   type,
   unknown,
 }: Pick<AvatarProps, 'content' | 'type' | 'unknown'>) => {
-  if (type && ['video_url'].includes(type) && content) {
+  if (type && ['video_url'].includes(type) && content && isValidHttpUrl(content)) {
     return (
       <video
         src={content}
