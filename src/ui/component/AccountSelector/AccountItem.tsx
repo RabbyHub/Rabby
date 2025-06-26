@@ -39,6 +39,7 @@ export interface AddressItemProps {
   isSelected?: boolean;
   rightIcon?: ReactNode;
   showWhitelistIcon?: boolean;
+  disabled?: boolean;
   tmpCexInfo?: Exchange;
 }
 
@@ -56,6 +57,7 @@ export const AccountItem = memo(
     extra,
     rightIcon,
     showWhitelistIcon,
+    disabled = false,
     tmpCexInfo,
   }: AddressItemProps) => {
     const formatAddressTooltip = (type: string, brandName: string) => {
@@ -115,16 +117,24 @@ export const AccountItem = memo(
       return undefined;
     }, [cexInfo]);
 
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!disabled) {
+        onClick(e);
+      }
+    };
+
     return (
       <div
         className={clsx(
           className,
-          'relative flex items-center px-[15px] py-[11px] gap-[8px] cursor-pointer',
+          'relative flex items-center px-[15px] py-[11px] gap-[8px]',
           'border-[1px] border-solid border-transparent rounded-[8px]',
-          'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+          disabled
+            ? 'cursor-default'
+            : 'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light1'
         )}
         style={style}
-        onClick={onClick}
+        onClick={handleClick}
       >
         <Tooltip
           overlayClassName="rectangle addressType__tooltip"
@@ -194,7 +204,7 @@ export const AccountItem = memo(
             </span>
           </div>
         </div>
-        {rightIcon || isSelected ? (
+        {(!disabled && rightIcon) || isSelected ? (
           <div className="flex justify-center items-center ml-auto">
             {rightIcon || <img src={IconCheck} className="w-[20px] h-[20px]" />}
           </div>
