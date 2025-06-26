@@ -90,11 +90,15 @@ export const useAddressRisks = (
     () =>
       accountsList
         .filter(
-          (acc) =>
-            acc.type !== KEYRING_CLASS.WATCH &&
-            acc.type !== KEYRING_CLASS.GNOSIS
+          (e) =>
+            !(<string[]>[
+              KEYRING_CLASS.WATCH,
+              KEYRING_CLASS.GNOSIS,
+              KEYRING_CLASS.WALLETCONNECT,
+              KEYRING_CLASS.CoboArgus,
+            ]).includes(e.type)
         )
-        .sort((a, b) => a.balance - b.balance)
+        .sort((a, b) => b.balance - a.balance)
         .slice(0, 10),
     [accountsList]
   );
