@@ -138,7 +138,6 @@ async function restoreAppState() {
       periodInMinutes: 60,
     });
   } else {
-    RPCService.syncDefaultRPC();
     setInterval(() => {
       startEnableUser();
       RPCService.syncDefaultRPC();

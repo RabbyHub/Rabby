@@ -546,6 +546,13 @@ export const MiniSignTx = ({
     if (!chainId) {
       return;
     }
+
+    try {
+      await wallet.syncDefaultRPC();
+    } catch (error) {
+      console.error('before submit sync default rpc error', error);
+    }
+
     try {
       const currentAccount = (await wallet.getCurrentAccount())!;
 

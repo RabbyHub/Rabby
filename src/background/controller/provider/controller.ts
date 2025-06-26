@@ -717,27 +717,39 @@ class ProviderController extends BaseController {
             notificationService.setStatsData(statsData);
           } else {
             const chainServerId = findChain({ enum: chain })!.serverId;
-            const params = {
-              tx: {
-                ...approvalRes,
-                r: convertToHex(signedTx.r),
-                s: convertToHex(signedTx.s),
-                v: convertToHex(signedTx.v),
-                value: approvalRes.value || '0x0',
+            const params: Parameters<typeof openapiService.submitTxV2>[0] = {
+              context: {
+                tx: {
+                  ...approvalRes,
+                  r: convertToHex(signedTx.r),
+                  s: convertToHex(signedTx.s),
+                  v: convertToHex(signedTx.v),
+                  value: approvalRes.value || '0x0',
+                },
+                origin,
+                log_id: logId,
               },
-              push_type: pushType,
-              low_gas_deadline: lowGasDeadline,
-              req_id: preReqId || '',
-              origin,
-              is_gasless: isGasLess,
-              is_gas_account: isGasAccount,
-              log_id: logId,
+              backend_push_require: {
+                gas_type: isGasLess
+                  ? 'gas_account'
+                  : isGasLess
+                  ? 'gasless'
+                  : null,
+              },
               sig,
+              mev_share_model: pushType === 'mev' ? 'user' : 'rabby',
             };
 
             const defaultRPC = RPCService.getDefaultRPC(chainServerId);
-            let txhashByFE: string | undefined = '';
-            if (defaultRPC?.txPushRpc && !isGasLess && !isGasAccount) {
+            console.log(
+              'defaultRPC',
+              chainServerId,
+              defaultRPC,
+              defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount,
+              isGasLess,
+              isGasAccount
+            );
+            if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
               const txData: any = {
                 ...approvalRes,
                 gasLimit: approvalRes.gas,
@@ -748,50 +760,66 @@ class ProviderController extends BaseController {
               if (is1559) {
                 txData.type = '0x2';
               }
-              txhashByFE = '';
-
-              const notify = async (push?: boolean) => {
-                openapiService.submitTxV2(params).catch((error) => {
-                  console.log('ignore notify error', error);
-                });
-              };
 
               const tx = TransactionFactory.fromTxData(txData);
               const rawTx = bytesToHex(tx.serialize());
 
               try {
-                await RPCService.syncDefaultRPC();
-              } catch (error) {
-                console.error('before submit sync default rpc error', error);
-              }
-
-              try {
-                hash = await RPCService.requestDefaultRPC(
+                const [
+                  hash,
+                  url,
+                ] = await RPCService.requestDefaultRPCWithFallback(
                   chainServerId,
                   'eth_sendRawTransaction',
                   [rawTx]
                 );
-                txhashByFE = hash;
-                (params as any).txhash = txhashByFE;
 
-                notify();
+                console.log('push tx id', hash);
+
+                params.frontend_push_result = {
+                  success: true,
+                  has_pushed: true,
+                  raw_tx: rawTx,
+                  url,
+                  return_tx_id: hash!,
+                };
+
+                openapiService.submitTxV2(params).catch((error) => {
+                  console.log('ignore BE error', error);
+                });
 
                 onTransactionCreated({ hash, reqId, pushType });
                 notificationService.setStatsData(statsData);
-              } catch (e) {
-                console.log('rpc send tx error', e);
-                const errMsg = typeof e === 'object' ? e.message : e;
-                notify();
-                onTransactionSubmitFailed({
-                  ...e,
-                  message: errMsg,
-                });
+              } catch (fePushError) {
+                try {
+                  const urls = RPCService.getDefaultRPCByChainServerId(
+                    chainServerId
+                  );
+                  params.frontend_push_result = {
+                    success: false,
+                    has_pushed: true,
+                    url: urls?.[0] || '',
+                    error_msg:
+                      typeof fePushError === 'object'
+                        ? fePushError.message
+                        : String(fePushError),
+                  };
+                  const res = openapiService.submitTxV2(params);
+                } catch (error) {
+                  console.log('rpc send tx error', error);
+                  const errMsg =
+                    typeof error === 'object' ? error.message : error;
+                  onTransactionSubmitFailed({
+                    ...error,
+                    message: errMsg,
+                  });
+                }
               }
 
               return hash;
             }
 
-            const res = await openapiService.submitTx(params);
+            const res = await openapiService.submitTxV2(params);
             if (res.access_token) {
               gasAccountService.setGasAccountSig(
                 res.access_token,
@@ -801,9 +829,11 @@ class ProviderController extends BaseController {
                 method: EVENTS.GAS_ACCOUNT.LOG_IN,
               });
             }
-            hash = res.req.tx_id || undefined;
-            reqId = res.req.id || undefined;
-            if (res.req.push_status === 'failed') {
+            hash = res.tx_id;
+            //No more low gas push, reqId is no longer required.
+            reqId = undefined;
+
+            if (!hash) {
               onTransactionSubmitFailed(new Error('Submit tx failed'));
             } else {
               onTransactionCreated({ hash, reqId, pushType });
