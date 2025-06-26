@@ -35,19 +35,22 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
   const handleClickSend = () => {
     setVisible(false);
     onClose?.();
-    history.push({
-      pathname: '/send-nft',
-      state: {
-        nftItem: {
+    const query = new URLSearchParams();
+    query.set('rbisource', 'nftdetail');
+    query.set(
+      'nftItem',
+      encodeURIComponent(
+        JSON.stringify({
           ...data,
           collection: {
             ...data?.collection,
             name: collectionName,
           },
-        },
-      },
-      search: `?rbisource=${'nftdetail' as IGAEventSource.ISendNFT}`,
-    });
+        })
+      )
+    );
+
+    history.push(`/send-poly?${query.toString()}`);
   };
 
   const onDetail = () => {

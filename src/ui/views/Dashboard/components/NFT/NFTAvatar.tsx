@@ -22,15 +22,27 @@ type AvatarProps = {
   unknown?: string;
 };
 
+// check if the url is a valid http(s) url
+const isValidHttpUrl = (url?: string): boolean => {
+  if (!url) return false;
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 const Thumbnail = ({
   content,
   type,
   unknown,
 }: Pick<AvatarProps, 'content' | 'type' | 'unknown'>) => {
-  if (type && ['video_url'].includes(type) && content) {
+  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
+  if (type && ['video_url'].includes(type) && sanitizedUrl) {
     return (
       <video
-        src={content}
+        src={sanitizedUrl}
         preload="metadata"
         className="nft-avatar-image"
         controlsList="nodownload nofullscreen noplaybackrate"
@@ -77,10 +89,11 @@ const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
       ></Image>
     );
   }
-  if (type && ['video_url', 'audio_url'].includes(type) && content) {
+  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
+  if (type && ['video_url', 'audio_url'].includes(type) && sanitizedUrl) {
     return (
       <video
-        src={content}
+        src={sanitizedUrl}
         controls
         className="nft-avatar-image"
         controlsList="nodownload nofullscreen noplaybackrate"
