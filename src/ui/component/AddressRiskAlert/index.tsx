@@ -1,7 +1,8 @@
-import { Button, Drawer, DrawerProps, Skeleton } from 'antd';
+import { Button, Drawer, DrawerProps, Skeleton, Tooltip } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { createGlobalStyle } from 'styled-components';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
@@ -40,6 +41,17 @@ interface AddressRiskAlertProps {
   type?: string;
 }
 
+const StyledTooltipGlobalStyle = createGlobalStyle`
+  .alias-tooltip {
+    .ant-tooltip-inner {
+      border-radius: 2px !important;
+    }
+    .ant-tooltip-arrow {
+      display: block !important;
+    }
+  }
+`;
+
 const AddressTypeCard = ({
   type,
   brandName,
@@ -69,32 +81,35 @@ const AddressTypeCard = ({
 
   return (
     <div className="flex gap-[8px] items-center justify-center">
-      <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
-        {showCexInfo ? (
-          <img
-            className="icon icon-account-type w-[20px] h-[20px] rounded-full"
-            src={cexInfo.logo}
-          />
-        ) : (
-          <ThemeIcon
-            className="icon icon-account-type w-[20px] h-[20px]"
-            src={
-              pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
-              WALLET_BRAND_CONTENT[brandName]?.image ||
-              pickKeyringThemeIcon(type as any, isDarkTheme) ||
-              KEYRING_ICONS[type]
-            }
-          />
-        )}
-        <div
-          className={clsx(
-            'font-medium text-[13px] text-r-neutral-title1',
-            showSideDesc ? 'max-w-[100px]  truncate' : ''
+      <StyledTooltipGlobalStyle />
+      <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
+        <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
+          {showCexInfo ? (
+            <img
+              className="icon icon-account-type w-[20px] h-[20px] rounded-full"
+              src={cexInfo.logo}
+            />
+          ) : (
+            <ThemeIcon
+              className="icon icon-account-type w-[20px] h-[20px]"
+              src={
+                pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
+                WALLET_BRAND_CONTENT[brandName]?.image ||
+                pickKeyringThemeIcon(type as any, isDarkTheme) ||
+                KEYRING_ICONS[type]
+              }
+            />
           )}
-        >
-          {aliasName}
+          <div
+            className={clsx(
+              'font-medium text-[13px] text-r-neutral-title1',
+              showSideDesc ? 'max-w-[100px]  truncate' : ''
+            )}
+          >
+            {aliasName}
+          </div>
         </div>
-      </div>
+      </Tooltip>
       {showSideDesc && (
         <div
           className={`
