@@ -22,7 +22,7 @@ type AvatarProps = {
   unknown?: string;
 };
 
-// 验证 URL 是否为 http(s) 协议
+// check if the url is a valid http(s) url
 const isValidHttpUrl = (url?: string): boolean => {
   if (!url) return false;
   try {
@@ -33,15 +33,24 @@ const isValidHttpUrl = (url?: string): boolean => {
   }
 };
 
+// sanitize the url to remove javascript and data protocols
+const sanitizeUrl = (url?: string): string | null => {
+  if (!url || typeof url !== 'string') return null;
+  const cleanedUrl = url.replace(/javascript:/gi, '').replace(/data:/gi, '');
+  if (!isValidHttpUrl(cleanedUrl)) return null;
+  return cleanedUrl;
+};
+
 const Thumbnail = ({
   content,
   type,
   unknown,
 }: Pick<AvatarProps, 'content' | 'type' | 'unknown'>) => {
-  if (type && ['video_url'].includes(type) && content && isValidHttpUrl(content)) {
+  const sanitizedUrl = sanitizeUrl(content);
+  if (type && ['video_url'].includes(type) && sanitizedUrl) {
     return (
       <video
-        src={content}
+        src={sanitizedUrl}
         preload="metadata"
         className="nft-avatar-image"
         controlsList="nodownload nofullscreen noplaybackrate"
@@ -88,10 +97,11 @@ const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
       ></Image>
     );
   }
-  if (type && ['video_url', 'audio_url'].includes(type) && content) {
+  const sanitizedUrl = sanitizeUrl(content);
+  if (type && ['video_url', 'audio_url'].includes(type) && sanitizedUrl) {
     return (
       <video
-        src={content}
+        src={sanitizedUrl}
         controls
         className="nft-avatar-image"
         controlsList="nodownload nofullscreen noplaybackrate"
