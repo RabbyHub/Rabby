@@ -44,6 +44,7 @@ import { http as axios } from '../utils/http';
 import { getFormattedIpfsUrl } from '../utils/ipfs';
 import { storage } from '../webapi';
 import RPCService, { RPCServiceStore } from './rpc';
+import dayjs from 'dayjs';
 
 const MAX_READ_CONTRACT_TIME = 15_000;
 
@@ -90,9 +91,17 @@ export interface CustomTestnetToken extends CustomTestnetTokenBase {
   logo?: string;
 }
 
-export type CutsomTestnetServiceStore = {
+export type CustomTestnetServiceStore = {
   customTestnet: Record<string, TestnetChain>;
   customTokenList: CustomTestnetTokenBase[];
+  logos: Record<
+    string,
+    {
+      chain_logo_url: string;
+      token_logo_url?: string;
+    }
+  >;
+  logosUpdatedAt: number;
 };
 
 const MAX = 4_294_967_295;
@@ -104,30 +113,29 @@ function getUniqueId(): number {
 }
 
 class CustomTestnetService {
-  store: CutsomTestnetServiceStore = {
+  store: CustomTestnetServiceStore = {
     customTestnet: {},
     customTokenList: [],
+    logos: {},
+    logosUpdatedAt: 0,
   };
 
   chains: Record<string, ReturnType<typeof createClientByChain>> = {};
 
-  logos: Record<
-    string,
-    {
-      chain_logo_url: string;
-      token_logo_url?: string;
-    }
-  > = {};
-
   init = async () => {
-    const storageCache = await createPersistStore<CutsomTestnetServiceStore>({
+    const storageCache = await createPersistStore<CustomTestnetServiceStore>({
       name: 'customTestnet',
       template: {
         customTestnet: {},
         customTokenList: [],
+        logos: {},
+        logosUpdatedAt: 0,
       },
     });
     this.store = storageCache || this.store;
+    this.store.logos = this.store.logos || {};
+    this.store.logosUpdatedAt = this.store.logosUpdatedAt || 0;
+
     const coped = { ...this.store.customTestnet };
     Object.keys(coped).forEach((key) => {
       if (!/^\d+$/.test(key)) {
@@ -266,9 +274,9 @@ class CustomTestnetService {
     const list = Object.values(this.store.customTestnet).map((item) => {
       const res = createTestnetChain(item);
 
-      if (this.logos?.[res.id]) {
-        res.logo = this.logos[res.id].chain_logo_url;
-        res.nativeTokenLogo = this.logos[res.id].token_logo_url || '';
+      if (this.store.logos?.[res.id]) {
+        res.logo = this.store.logos[res.id].chain_logo_url;
+        res.nativeTokenLogo = this.store.logos[res.id].token_logo_url || '';
       }
 
       return res;
@@ -321,7 +329,7 @@ class CustomTestnetService {
             id: chain.nativeTokenAddress,
             chainId: chain.id,
             rawAmount: '0',
-            logo: this.logos?.[chain.id]?.token_logo_url,
+            logo: this.store.logos?.[chain.id]?.token_logo_url,
           }),
         };
       })
@@ -338,7 +346,7 @@ class CustomTestnetService {
             id: chain.nativeTokenAddress,
             chainId: chain.id,
             rawAmount: '0',
-            logo: this.logos?.[chain.id]?.token_logo_url,
+            logo: this.store.logos?.[chain.id]?.token_logo_url,
           }),
         };
       });
@@ -542,7 +550,7 @@ class CustomTestnetService {
       rawAmount: balance.toString(),
       logo:
         !tokenId || tokenId?.replace('custom_', '') === String(chainId)
-          ? this.logos?.[chainId]?.token_logo_url
+          ? this.store.logos?.[chainId]?.token_logo_url
           : undefined,
     };
   };
@@ -654,7 +662,7 @@ class CustomTestnetService {
           id: null,
           chainId: item.id,
           symbol: item.nativeTokenSymbol,
-          logo: this.logos?.[item.id]?.token_logo_url,
+          logo: this.store.logos?.[item.id]?.token_logo_url,
         };
       }
     );
@@ -741,10 +749,16 @@ class CustomTestnetService {
 
   fetchLogos = async () => {
     try {
-      const { data } = await axios.get<typeof this.logos>(
+      if (
+        dayjs().isBefore(dayjs(this.store.logosUpdatedAt || 0).add(1, 'day'))
+      ) {
+        return {};
+      }
+      const { data } = await axios.get<CustomTestnetServiceStore['logos']>(
         'https://static.debank.com/supported_testnet_chains.json'
       );
-      this.logos = data;
+      this.store.logos = data;
+      this.store.logosUpdatedAt = Date.now();
       return data;
     } catch (e) {
       console.error(e);
@@ -1073,7 +1087,7 @@ class CustomTestnetService {
               id: chain.nativeTokenAddress,
               chainId: chain.id,
               rawAmount: _value.toString(),
-              logo: this.logos?.[chain.id]?.token_logo_url,
+              logo: this.store.logos?.[chain.id]?.token_logo_url,
             }),
           },
         },
