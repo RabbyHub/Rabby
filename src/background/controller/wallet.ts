@@ -1897,6 +1897,8 @@ export class WalletController extends BaseController {
 
   hasCustomRPC = RPCService.hasCustomRPC;
 
+  syncDefaultRPC = RPCService.syncDefaultRPC;
+
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();
   saveChain = (id: string) => preferenceService.saveChain(id);
