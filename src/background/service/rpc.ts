@@ -9,7 +9,7 @@ export interface RPCItem {
   enable: boolean;
 }
 
-type RPCDefaultItem = DefaultRPCRes['stats'][number];
+type RPCDefaultItem = DefaultRPCRes['rpcs'][number];
 
 export type RPCServiceStore = {
   customRPC: Record<string, RPCItem>;
@@ -56,7 +56,7 @@ function getUniqueId(): number {
 // TODO: remove
 const fetchDefaultRpc = async () => {
   const { data } = await http.get('https://api.rabby.io/v1/chainrpc');
-  return data.stats as RPCDefaultItem[];
+  return data.rpcs as RPCDefaultItem[];
 };
 
 class RPCService {
@@ -101,18 +101,21 @@ class RPCService {
 
   syncDefaultRPC = async () => {
     try {
-      // const data = (await openapiService.getDefaultRPCs())?.stats;
+      // const data = (await openapiService.getDefaultRPCs())?.rpcs;
 
       // TODO: remove  after test
       const data = await fetchDefaultRpc();
-      const defaultRPC: Record<string, RPCDefaultItem> = data?.reduce(
-        (acc, item) => {
-          acc[item.chainId] = item;
-          return acc;
-        },
-        {} as Record<string, RPCDefaultItem>
-      );
-      this.store.defaultRPC = defaultRPC;
+      if (data.length) {
+        const defaultRPC: Record<string, RPCDefaultItem> = data?.reduce(
+          (acc, item) => {
+            acc[item.chainId] = item;
+
+            return acc;
+          },
+          {} as Record<string, RPCDefaultItem>
+        );
+        this.store.defaultRPC = defaultRPC;
+      }
     } catch (error) {
       console.error('Failed to fetch default RPC:', error);
     }
