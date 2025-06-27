@@ -22,7 +22,6 @@ export const getMainnetListFromLocal = () => {
 };
 
 getMainnetListFromLocal().then((list) => {
-  console.log('from local list', list);
   if (list.length) {
     updateChainStore({
       mainnetList: list,

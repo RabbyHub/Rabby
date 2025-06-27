@@ -19,8 +19,6 @@ class SyncChainService {
     updatedAt: 0,
   };
 
-  isSyncing = false;
-
   init = async () => {
     const storage = await createPersistStore<SyncChainServiceStore>({
       name: 'supported_chains',
@@ -33,9 +31,6 @@ class SyncChainService {
   };
 
   syncMainnetChainList = async () => {
-    if (this.isSyncing) {
-      return;
-    }
     if (dayjs().isBefore(dayjs(this.store.updatedAt).add(1, 'hour'))) {
       return;
     }

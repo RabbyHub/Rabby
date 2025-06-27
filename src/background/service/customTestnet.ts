@@ -44,7 +44,6 @@ import { http as axios } from '../utils/http';
 import { getFormattedIpfsUrl } from '../utils/ipfs';
 import { storage } from '../webapi';
 import RPCService, { RPCServiceStore } from './rpc';
-import { number } from '@metamask/abi-utils/dist/parsers';
 import dayjs from 'dayjs';
 
 const MAX_READ_CONTRACT_TIME = 15_000;
