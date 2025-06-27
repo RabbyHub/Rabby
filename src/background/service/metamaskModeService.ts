@@ -4,15 +4,18 @@ import { createPersistStore } from '../utils';
 import { ALARMS_SYNC_METAMASK_DAPPS } from '../utils/alarms';
 import { http } from '../utils/http';
 import permissionService from './permission';
+import dayjs from 'dayjs';
 
 interface MetamaskModeServiceStore {
   sites: string[];
+  updatedAt: number;
 }
 class MetamaskModeService {
   timer: ReturnType<typeof setInterval> | null = null;
 
   store: MetamaskModeServiceStore = {
     sites: [],
+    updatedAt: 0,
   };
 
   localSites: string[] = [];
@@ -22,9 +25,11 @@ class MetamaskModeService {
       name: 'metamaskMode',
       template: {
         sites: [],
+        updatedAt: 0,
       },
     });
     this.store = storageCache || this.store;
+    this.store.updatedAt = this.store.updatedAt || 0;
 
     this.syncMetamaskModeList();
     this.resetTimer();
@@ -34,6 +39,9 @@ class MetamaskModeService {
   };
 
   syncMetamaskModeList = async () => {
+    if (dayjs().isBefore(dayjs(this.store.updatedAt || 0).add(30, 'minute'))) {
+      return [];
+    }
     try {
       const sites = await http
         .get('https://static.debank.com/fake_mm_dapps.json')
@@ -41,6 +49,7 @@ class MetamaskModeService {
           return res.data as string[];
         });
       this.store.sites = sites;
+      this.store.updatedAt = Date.now();
     } catch (e) {
       console.error('fetch metamask list error: ', e);
     }

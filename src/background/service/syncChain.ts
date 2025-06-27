@@ -6,11 +6,39 @@ import { ALARMS_SYNC_CHAINS } from '../utils/alarms';
 import { http } from '../utils/http';
 import { SupportedChain } from './openapi';
 import { openapiService } from '.';
+import { createPersistStore } from '../utils';
+import dayjs from 'dayjs';
+
+interface SyncChainServiceStore {
+  updatedAt: number;
+}
 
 class SyncChainService {
   timer: ReturnType<typeof setInterval> | null = null;
+  store: SyncChainServiceStore = {
+    updatedAt: 0,
+  };
+
+  isSyncing = false;
+
+  init = async () => {
+    const storage = await createPersistStore<SyncChainServiceStore>({
+      name: 'supported_chains',
+      template: {
+        updatedAt: 0,
+      },
+    });
+    this.store = storage || this.store;
+    this.store.updatedAt = this.store.updatedAt || 0;
+  };
 
   syncMainnetChainList = async () => {
+    if (this.isSyncing) {
+      return;
+    }
+    if (dayjs().isBefore(dayjs(this.store.updatedAt).add(1, 'hour'))) {
+      return;
+    }
     try {
       const chains = process.env.DEBUG
         ? await openapiService.getSupportedChains()
@@ -31,6 +59,7 @@ class SyncChainService {
       browser.storage.local.set({
         rabbyMainnetChainList: list,
       });
+      this.store.updatedAt = Date.now();
     } catch (e) {
       console.error('fetch chain list error: ', e);
     }
