@@ -215,8 +215,8 @@ export function useRateModal() {
       const feedbackText = rateModalState.userFeedback.trim();
 
       const starText = `${makeStarText(userStar, 5)} (${userStar})`;
-      const versionText = process.env.release || '0';
       const balanceText = ensurePrefix(params.totalBalanceText, '$');
+      const versionText = process.env.release || '0';
 
       const feedbackContent = [
         ...(!needFeedbackText
