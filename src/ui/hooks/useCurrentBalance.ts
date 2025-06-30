@@ -44,9 +44,12 @@ export default function useCurrentBalance(
   const [getInMemoryAddressBalance] = useWalletRequest(
     wallet.getInMemoryAddressBalance,
     {
-      onSuccess({ total_usd_value, chain_list, evmUsdValue }) {
+      onSuccess(options) {
+        const { total_usd_value, chain_list } = options;
+        const evmUsdValue =
+          'evmUsdValue' in options ? (options.evmUsdValue as number) : 0;
         if (isCanceled) return;
-        setEvmBalance(evmUsdValue || 0);
+        setEvmBalance(evmUsdValue);
         setBalance(total_usd_value);
         setSuccess(true);
         const chainList = normalizeChainList(chain_list);
@@ -84,7 +87,7 @@ export default function useCurrentBalance(
     if (cacheData) {
       setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
-      setEvmBalance(cacheData.evmUsdValue);
+      setEvmBalance(cacheData.evmUsdValue || 0);
       const chainList = normalizeChainList(cacheData.chain_list);
       setChainBalances(chainList);
 
