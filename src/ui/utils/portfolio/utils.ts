@@ -80,6 +80,15 @@ export const loadPortfolioSnapshot = (
   });
 };
 
+export const loadAppChainList = (
+  userAddr: string,
+  wallet: WalletControllerType
+) => {
+  return pQueue.add(() => {
+    return wallet.openapi.getAppChainList(userAddr);
+  });
+};
+
 /**
  * @deprecated
  */

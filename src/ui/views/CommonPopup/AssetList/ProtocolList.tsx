@@ -77,10 +77,12 @@ const ProtocolItemWrapper = styled.div`
 const ProtocolItem = ({
   protocol,
   enableDelayVisible,
+  hideChainIcon,
   isSearch,
 }: {
   protocol: DisplayedProject;
   enableDelayVisible: boolean;
+  hideChainIcon?: boolean;
   isSearch?: boolean;
 }) => {
   const [isExpand, setIsExpand] = useState(false);
@@ -138,6 +140,7 @@ const ProtocolItem = ({
             width="24px"
             height="24px"
             isShowChainTooltip={true}
+            hideChainIcon={hideChainIcon}
           />
           <div
             className="ml-[8px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
@@ -172,13 +175,14 @@ const ProtocolItem = ({
 interface Props {
   list: DisplayedProject[] | undefined;
   isSearch?: boolean;
+  appIds?: string[];
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, isSearch }: Props) => {
+const ProtocolList = ({ list, isSearch, appIds }: Props) => {
   const enableDelayVisible = useMemo(() => {
     return (list || []).length > 100;
   }, [list]);
@@ -192,6 +196,7 @@ const ProtocolList = ({ list, isSearch }: Props) => {
           protocol={item}
           key={item.id}
           enableDelayVisible={enableDelayVisible}
+          hideChainIcon={appIds?.includes(item.id)}
           isSearch={isSearch}
         />
       ))}
