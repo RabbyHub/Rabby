@@ -2922,6 +2922,9 @@
     "AccountSelectorModal": {
       "title": "Select address",
       "searchPlaceholder": "Search address"
+    },
+    "ChainItem": {
+      "appChain": "On {{chain}} Account"
     }
   },
   "global": {
