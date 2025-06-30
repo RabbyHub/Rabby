@@ -35,7 +35,7 @@ export interface AddressItemProps {
   style?: React.CSSProperties;
   extra?: ReactNode;
   alias?: string;
-  onClick: MouseEventHandler<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLDivElement>;
   isSelected?: boolean;
   rightIcon?: ReactNode;
   showWhitelistIcon?: boolean;
@@ -119,7 +119,7 @@ export const AccountItem = memo(
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (!disabled) {
-        onClick(e);
+        onClick?.(e);
       }
     };
 
