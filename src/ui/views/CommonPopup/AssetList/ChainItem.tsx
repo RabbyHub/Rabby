@@ -5,6 +5,8 @@ import clsx from 'clsx';
 import React from 'react';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'antd';
+import { createGlobalStyle } from 'styled-components';
 
 export interface ChainItemType extends DisplayChainWithWhiteLogo {
   percent: number;
@@ -16,6 +18,17 @@ export interface Props {
   onClick?(): void;
   inactive?: boolean;
 }
+
+const StyledTooltipGlobalStyle = createGlobalStyle`
+  .app-chain-tooltip {
+    .ant-tooltip-inner {
+      border-radius: 2px !important;
+    }
+    .ant-tooltip-arrow {
+      display: block !important;
+    }
+  }
+`;
 
 export const ChainItem: React.FC<Props> = ({
   item: { logo_url, name, usd_value, percent, isAppChain },
@@ -57,14 +70,14 @@ export const ChainItem: React.FC<Props> = ({
         ${currentBalance}
       </span>
       {isAppChain ? (
-        <TooltipWithMagnetArrow
-          className="rectangle"
+        <Tooltip
+          overlayClassName="app-chain-tooltip"
           title={t('component.ChainItem.appChain', { chain: name })}
         >
           <div className="text-r-neutral-foot">
             <RcIconInfoCC />
           </div>
-        </TooltipWithMagnetArrow>
+        </Tooltip>
       ) : (
         <span
           className={clsx('text-12 text-r-neutral-foot', {
@@ -74,6 +87,7 @@ export const ChainItem: React.FC<Props> = ({
           {percent?.toFixed(0)}%
         </span>
       )}
+      <StyledTooltipGlobalStyle />
     </div>
   );
 };

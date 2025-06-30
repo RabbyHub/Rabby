@@ -65,6 +65,7 @@ const BalanceView = ({
 
   const {
     balance: latestBalance,
+    evmBalance: latestEvmBalance,
     matteredChainBalances: latestMatteredChainBalances,
     chainBalancesWithValue: latestChainBalancesWithValue,
     success: loadBalanceSuccess,
@@ -88,7 +89,7 @@ const BalanceView = ({
     isLoading: curveLoading,
   } = useCurve(currentAccount?.address, {
     nonce: accountBalanceUpdateNonce,
-    realtimeNetWorth: latestBalance,
+    realtimeNetWorth: latestEvmBalance,
     initData: currentHomeBalanceCache?.originalCurveData,
   });
   const wallet = useWallet();
