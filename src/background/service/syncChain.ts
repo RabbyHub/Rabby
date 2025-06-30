@@ -31,7 +31,7 @@ class SyncChainService {
   };
 
   syncMainnetChainList = async () => {
-    if (dayjs().isBefore(dayjs(this.store.updatedAt).add(1, 'hour'))) {
+    if (dayjs().isBefore(dayjs(this.store.updatedAt).add(55, 'minute'))) {
       return;
     }
     try {

@@ -39,7 +39,7 @@ class MetamaskModeService {
   };
 
   syncMetamaskModeList = async () => {
-    if (dayjs().isBefore(dayjs(this.store.updatedAt || 0).add(30, 'minute'))) {
+    if (dayjs().isBefore(dayjs(this.store.updatedAt || 0).add(25, 'minute'))) {
       return [];
     }
     try {
