@@ -72,6 +72,7 @@ export const BridgeContent = () => {
     openQuotesList,
     quoteLoading,
     quoteList,
+    setQuotesList,
 
     bestQuoteId,
     selectedBridgeQuote,
@@ -228,6 +229,13 @@ export const BridgeContent = () => {
         }
       } catch (error) {
         message.error(error?.message || String(error));
+        setQuotesList((pre) =>
+          pre?.filter(
+            (item) =>
+              item?.aggregator?.id !== selectedBridgeQuote?.aggregator?.id &&
+              item?.bridge_id !== selectedBridgeQuote?.bridge_id
+          )
+        );
         stats.report('bridgeQuoteResult', {
           aggregatorIds: selectedBridgeQuote.aggregator.id,
           bridgeId: selectedBridgeQuote.bridge_id,
@@ -337,6 +345,13 @@ export const BridgeContent = () => {
           }
         );
       } catch (error) {
+        setQuotesList((pre) =>
+          pre?.filter(
+            (item) =>
+              item?.aggregator?.id !== selectedBridgeQuote?.aggregator?.id &&
+              item?.bridge_id !== selectedBridgeQuote?.bridge_id
+          )
+        );
         message.error(error?.message || String(error));
         stats.report('bridgeQuoteResult', {
           aggregatorIds: selectedBridgeQuote.aggregator.id,

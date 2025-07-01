@@ -308,12 +308,17 @@ export const useBridge = () => {
   }, [inSufficientCanGetQuote, setSelectedBridgeQuote]);
 
   useEffect(() => {
-    if (!enableInsufficientQuote || !amount || Number(amount) === 0) {
+    if (
+      !enableInsufficientQuote ||
+      !amount ||
+      Number(amount) === 0 ||
+      quoteList.length < 1
+    ) {
       setQuotesList([]);
       setRecommendFromToken(undefined);
       setSelectedBridgeQuote(undefined);
     }
-  }, [amount, setSelectedBridgeQuote]);
+  }, [amount, setSelectedBridgeQuote, quoteList.length]);
 
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
@@ -754,6 +759,7 @@ export const useBridge = () => {
 
     openQuotesList,
     quoteLoading: pending || quoteLoading,
+    setQuotesList,
     quoteList,
 
     bestQuoteId,
