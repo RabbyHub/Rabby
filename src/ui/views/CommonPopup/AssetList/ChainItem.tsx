@@ -74,7 +74,11 @@ export const ChainItem: React.FC<Props> = ({
           overlayClassName="app-chain-tooltip"
           title={t('component.ChainItem.appChain', { chain: name })}
         >
-          <div className="text-r-neutral-foot">
+          <div
+            className={clsx('text-r-neutral-foot', {
+              'opacity-30': inactive,
+            })}
+          >
             <RcIconInfoCC />
           </div>
         </Tooltip>
