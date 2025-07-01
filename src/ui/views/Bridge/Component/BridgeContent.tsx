@@ -232,8 +232,10 @@ export const BridgeContent = () => {
         setQuotesList((pre) =>
           pre?.filter(
             (item) =>
-              item?.aggregator?.id !== selectedBridgeQuote?.aggregator?.id &&
-              item?.bridge_id !== selectedBridgeQuote?.bridge_id
+              !(
+                item?.aggregator?.id === selectedBridgeQuote?.aggregator?.id &&
+                item?.bridge_id === selectedBridgeQuote?.bridge_id
+              )
           )
         );
         stats.report('bridgeQuoteResult', {
@@ -348,8 +350,10 @@ export const BridgeContent = () => {
         setQuotesList((pre) =>
           pre?.filter(
             (item) =>
-              item?.aggregator?.id !== selectedBridgeQuote?.aggregator?.id &&
-              item?.bridge_id !== selectedBridgeQuote?.bridge_id
+              !(
+                item?.aggregator?.id === selectedBridgeQuote?.aggregator?.id &&
+                item?.bridge_id === selectedBridgeQuote?.bridge_id
+              )
           )
         );
         message.error(error?.message || String(error));
