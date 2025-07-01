@@ -1006,6 +1006,7 @@ export const MiniApproval = ({
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
+  const currentAccount = useCurrentAccount();
   useEffect(() => {
     if (visible) {
       setStatus('idle');
@@ -1032,6 +1033,7 @@ export const MiniApproval = ({
         backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
       }}
       getContainer={getContainer}
+      key={`${currentAccount?.address}-${currentAccount?.type}`}
     >
       {txs?.length ? (
         <MiniSignTx
