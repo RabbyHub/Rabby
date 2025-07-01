@@ -19,20 +19,29 @@ export const BalanceChangeWrapper: React.FC<Props> = ({
 }) => {
   const notShowBalanceChange = React.useMemo(() => {
     if (!data) {
-      return true;
+      if (!balanceChange) return true;
+      if (
+        balanceChange.receive_nft_list.length +
+          balanceChange.receive_token_list.length +
+          balanceChange.send_nft_list.length +
+          balanceChange.send_token_list.length <=
+        0
+      ) {
+        return true;
+      }
     }
     if (
-      data.approveNFT ||
-      data.approveNFTCollection ||
-      data.approveToken ||
-      data.cancelTx ||
-      data.deployContract ||
-      data.pushMultiSig ||
-      data.revokeNFT ||
-      data.revokeNFTCollection ||
-      data.revokeToken ||
-      data.permit2BatchRevokeToken ||
-      data.revokePermit2
+      data?.approveNFT ||
+      data?.approveNFTCollection ||
+      data?.approveToken ||
+      data?.cancelTx ||
+      data?.deployContract ||
+      data?.pushMultiSig ||
+      data?.revokeNFT ||
+      data?.revokeNFTCollection ||
+      data?.revokeToken ||
+      data?.permit2BatchRevokeToken ||
+      data?.revokePermit2
     ) {
       if (!preExecSuccess) return false;
 

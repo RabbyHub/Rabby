@@ -57,6 +57,10 @@ import { generateTypedData } from '@safe-global/protocol-kit';
 import { ga4 } from '@/utils/ga4';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { getCexInfo } from '@/ui/models/exchange';
+import {
+  MultiAction,
+  TypeDataActionItem,
+} from '@rabby-wallet/rabby-api/dist/types';
 
 interface SignTypedDataProps {
   method: string;
@@ -121,6 +125,19 @@ const SignTypedData = ({
     parsedActionData,
     setParsedActionData,
   ] = useState<ParsedTypedDataActionData | null>(null);
+  const [multiActionList, setMultiActionList] = useState<
+    ParsedTypedDataActionData[]
+  >([]);
+  const [multiActionRequireDataList, setMultiActionRequireDataList] = useState<
+    ActionRequireData[]
+  >([]);
+  const [
+    multiActionEngineResultList,
+    setMultiActionEngineResultList,
+  ] = useState<Result[][]>([]);
+  const isMultiActions = useMemo(() => {
+    return !parsedActionData && multiActionList.length > 0;
+  }, [parsedActionData, multiActionList]);
   const [
     cantProcessReason,
     setCantProcessReason,
@@ -175,7 +192,6 @@ const SignTypedData = ({
   >)[] = useMemo(() => {
     if (!isSignTypedDataV1) {
       try {
-        console.log(data[1]);
         const v = JSON.parse(data[1]);
         const displayData = cloneDeep(v);
         const normalized = normalizeTypeData(v);
@@ -461,52 +477,66 @@ const SignTypedData = ({
         data.chainId = findChain({ enum: site.chain })?.id.toString();
       }
     }
-    if (currentAccount) {
-      let chainServerId: string | undefined;
-      if (data.chainId) {
-        chainServerId = findChain({
-          id: Number(data.chainId),
-        })?.serverId;
-      }
-
-      const cexInfo = await getCexInfo(data.send?.to || '', wallet);
-      const requireData = await fetchActionRequiredData({
-        type: 'typed_data',
-        actionData: data,
-        sender: currentAccount.address,
-        chainId: chainServerId || CHAINS.ETH.serverId,
-        walletProvider: {
-          hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
-          hasAddress: wallet.hasAddress,
-          getWhitelist: wallet.getWhitelist,
-          isWhitelistEnabled: wallet.isWhitelistEnabled,
-          getPendingTxsByNonce: wallet.getPendingTxsByNonce,
-          findChain,
-          ALIAS_ADDRESS,
-        },
-        cex: cexInfo,
-        apiProvider: isTestnetChainId(data.chainId)
-          ? wallet.testnetOpenapi
-          : wallet.openapi,
-      });
-      setActionRequireData(requireData);
-      const ctx = await formatSecurityEngineContext({
-        type: 'typed_data',
-        actionData: data,
-        requireData,
-        chainId: chainServerId || CHAINS.ETH.serverId,
-        isTestnet: isTestnetChainId(data.chainId),
-        provider: {
-          getTimeSpan,
-          hasAddress: wallet.hasAddress,
-        },
-        origin: params.session.origin,
-      });
-      securityEngineCtx.current = ctx;
-      const result = await executeEngine(ctx);
-      setEngineResults(result);
+    if (!currentAccount) throw new Error('No current account found');
+    let chainServerId: string | undefined;
+    if (data.chainId) {
+      chainServerId = findChain({
+        id: Number(data.chainId),
+      })?.serverId;
     }
-    setIsLoading(false);
+    const cexInfo = await getCexInfo(data.send?.to || '', wallet);
+
+    const requireData = await fetchActionRequiredData({
+      type: 'typed_data',
+      actionData: data,
+      sender: currentAccount.address,
+      chainId: chainServerId || CHAINS.ETH.serverId,
+      walletProvider: {
+        hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+        hasAddress: wallet.hasAddress,
+        getWhitelist: wallet.getWhitelist,
+        isWhitelistEnabled: wallet.isWhitelistEnabled,
+        getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+        findChain,
+        ALIAS_ADDRESS,
+      },
+      cex: cexInfo,
+      apiProvider: isTestnetChainId(data.chainId)
+        ? wallet.testnetOpenapi
+        : wallet.openapi,
+    });
+    return requireData;
+  };
+
+  const getSecurityEngineResult = async ({
+    data,
+    requireData,
+  }: {
+    data: ParsedTypedDataActionData;
+    requireData: ActionRequireData;
+  }) => {
+    let chainServerId: string | undefined;
+    if (data.chainId) {
+      chainServerId = findChain({
+        id: Number(data.chainId),
+      })?.serverId;
+    }
+    const ctx = await formatSecurityEngineContext({
+      type: 'typed_data',
+      actionData: data,
+      requireData,
+      chainId: chainServerId || CHAINS.ETH.serverId,
+      isTestnet: isTestnetChainId(data.chainId),
+      provider: {
+        getTimeSpan,
+        hasAddress: wallet.hasAddress,
+      },
+      origin: params.session.origin,
+    });
+    securityEngineCtx.current = ctx;
+    const result = await executeEngine(ctx);
+    return result;
+    // setEngineResults(result);
   };
 
   const executeSecurityEngine = async () => {
@@ -669,22 +699,69 @@ const SignTypedData = ({
       if (typedDataActionData) {
         logId.current = typedDataActionData.log_id;
         actionType.current = typedDataActionData?.action?.type || '';
-        const parsed = parseAction({
-          type: 'typed_data',
-          data: typedDataActionData.action as any,
-          typedData: signTypedData,
-          sender,
-          balanceChange: typedDataActionData.pre_exec_result?.balance_change,
-          preExecVersion: typedDataActionData.pre_exec_result?.pre_exec_version,
-          gasUsed: typedDataActionData.pre_exec_result?.gas.gas_used,
-        });
-        setParsedActionData(parsed);
-        // TODO: move to action
-        if (!parsed.contractId) {
-          parsed.contractId =
-            typedDataActionData.contract_call_data?.contract.id;
+        if (typedDataActionData?.action?.type === 'multi_actions') {
+          const actions = typedDataActionData.action.data as MultiAction;
+          const res = actions.map((action) =>
+            parseAction({
+              type: 'typed_data',
+              data: action as TypeDataActionItem,
+              typedData: signTypedData,
+              sender,
+              balanceChange:
+                typedDataActionData.pre_exec_result?.balance_change,
+              preExecVersion:
+                typedDataActionData.pre_exec_result?.pre_exec_version,
+              gasUsed: typedDataActionData.pre_exec_result?.gas.gas_used,
+            })
+          );
+          setMultiActionList(res);
+          Promise.all(
+            res.map((item) => {
+              if (!item.contractId) {
+                item.contractId =
+                  typedDataActionData.contract_call_data?.contract.id;
+              }
+              return getRequireData(item);
+            })
+          ).then(async (requireDataList) => {
+            setMultiActionRequireDataList(requireDataList);
+            const results = await Promise.all(
+              requireDataList.map((requireData, index) => {
+                return getSecurityEngineResult({
+                  data: res[index],
+                  requireData,
+                });
+              })
+            );
+            setMultiActionEngineResultList(results);
+            setIsLoading(false);
+          });
+        } else {
+          const parsed = parseAction({
+            type: 'typed_data',
+            data: typedDataActionData.action as any,
+            typedData: signTypedData,
+            sender,
+            balanceChange: typedDataActionData.pre_exec_result?.balance_change,
+            preExecVersion:
+              typedDataActionData.pre_exec_result?.pre_exec_version,
+            gasUsed: typedDataActionData.pre_exec_result?.gas.gas_used,
+          });
+          setParsedActionData(parsed);
+          if (!parsed.contractId) {
+            parsed.contractId =
+              typedDataActionData.contract_call_data?.contract.id;
+          }
+          getRequireData(parsed).then(async (requireData) => {
+            setActionRequireData(requireData);
+            const securityEngineResult = await getSecurityEngineResult({
+              data: parsed,
+              requireData,
+            });
+            setEngineResults(securityEngineResult);
+            setIsLoading(false);
+          });
         }
-        getRequireData(parsed);
       } else {
         setIsLoading(false);
       }
@@ -774,6 +851,15 @@ const SignTypedData = ({
             origin={params.session.origin}
             originLogo={params.session.icon}
             typedDataActionData={typedDataActionData}
+            multiAction={
+              isMultiActions
+                ? {
+                    actionList: multiActionList,
+                    requireDataList: multiActionRequireDataList,
+                    engineResultList: multiActionEngineResultList,
+                  }
+                : undefined
+            }
           />
         )}
         {isGnosisAccount && safeInfo && (
