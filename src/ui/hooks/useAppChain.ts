@@ -85,11 +85,6 @@ export const useAppChain = (
 
     // load app chain list
     const appChainListRes = await loadAppChainList(userAddr, wallet);
-    console.log(
-      'CUSTOM_LOGGER:=>: loadAppChainList',
-      userAddr.slice(-4),
-      appChainListRes.apps.length
-    );
     if (!appChainListRes?.apps?.length) {
       return;
     }
