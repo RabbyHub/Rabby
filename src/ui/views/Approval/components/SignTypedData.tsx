@@ -56,6 +56,7 @@ import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
 import { ga4 } from '@/utils/ga4';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
+import { getCexInfo } from '@/ui/models/exchange';
 import {
   MultiAction,
   TypeDataActionItem,
@@ -483,6 +484,7 @@ const SignTypedData = ({
         id: Number(data.chainId),
       })?.serverId;
     }
+    const cexInfo = await getCexInfo(data.send?.to || '', wallet);
 
     const requireData = await fetchActionRequiredData({
       type: 'typed_data',
@@ -498,6 +500,7 @@ const SignTypedData = ({
         findChain,
         ALIAS_ADDRESS,
       },
+      cex: cexInfo,
       apiProvider: isTestnetChainId(data.chainId)
         ? wallet.testnetOpenapi
         : wallet.openapi,

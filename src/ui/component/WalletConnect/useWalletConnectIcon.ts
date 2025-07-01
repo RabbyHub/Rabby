@@ -1,8 +1,4 @@
-import {
-  KEYRING_CLASS,
-  WALLET_BRAND_CONTENT,
-  WALLET_BRAND_TYPES,
-} from '@/constant';
+import { KEYRING_CLASS, WALLET_BRAND_CONTENT, KEYRING_TYPE } from '@/constant';
 import { useWallet } from '@/ui/utils';
 import React from 'react';
 
@@ -21,7 +17,10 @@ export const useWalletConnectIcon = (
 
   React.useEffect(() => {
     if (!account) return;
-    if (WALLET_BRAND_CONTENT[account.brandName]) {
+    if (
+      WALLET_BRAND_CONTENT[account.brandName] ||
+      account.type !== KEYRING_TYPE.WalletConnectKeyring
+    ) {
       return;
     }
 

@@ -23,6 +23,7 @@ import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconEditPen from 'ui/assets/editpen.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy.svg';
+import WatchLogo from 'ui/assets/waitcup.svg';
 
 import IconSuccess from 'ui/assets/success.svg';
 import { AddressViewer, Modal } from 'ui/component';
@@ -312,16 +313,18 @@ const Dashboard = () => {
                   placement="bottomLeft"
                   overlayClassName="switch-popover"
                 >
-                  <div className="relative mr-[4px]">
+                  <div className="relative">
                     <img
                       className={clsx(
-                        'icon w-[24px] h-[24px]',
+                        'icon w-[20px] h-[20px]',
                         opacity60 && 'opacity-60'
                       )}
                       src={
                         brandIcon ||
                         WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
-                        KEYRING_ICONS_WHITE[currentAccount.type]
+                        (currentAccount.type === KEYRING_CLASS.WATCH
+                          ? WatchLogo
+                          : KEYRING_ICONS_WHITE[currentAccount.type])
                       }
                     />
                     <CommonSignal

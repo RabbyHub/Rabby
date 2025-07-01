@@ -101,6 +101,26 @@
     }
   }
 }
+.toast-message-2025 .ant-message-notice-content {
+  display: inline-flex;
+  justify-content: center;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  align-items: center;
+  border-radius: 2px;
+  background: var(--r-neutral-black, #000);
+
+  .anticon {
+    top: 0;
+  }
+
+  .anticon + span {
+    line-height: 1;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--r-neutral-title-2, #fff);
+  }
+}
 
 /*---------------------
         modal
@@ -192,6 +212,7 @@
   }
   .ant-modal-confirm-content {
     margin-top: 20px;
+    color: var(--r-neutral-body);
     background-color: var(--r-neutral-bg-1);
     padding: 18px 12px;
     border-radius: 6px;
@@ -232,7 +253,7 @@
 
 .ant-modal-confirm-error {
   .ant-modal-content {
-    background: #fff;
+    background: var(--r-neutral-bg-1, #FFF);
   }
   .anticon-close-circle {
     display: none;

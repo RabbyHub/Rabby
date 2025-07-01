@@ -26,6 +26,7 @@ import {
   fetchActionRequiredData,
 } from '@rabby-wallet/rabby-action';
 import stats from '@/stats';
+import { getCexInfo } from '../models/exchange';
 
 // fail code
 export enum FailedCode {
@@ -369,6 +370,7 @@ export const sendTransaction = async ({
     gasUsed: preExecResult.gas.gas_used,
     sender: tx.from,
   });
+  const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
   const requiredData = await fetchActionRequiredData({
     type: 'transaction',
     actionData: parsed,
@@ -384,6 +386,7 @@ export const sendTransaction = async ({
       findChain,
       ALIAS_ADDRESS,
     },
+    cex: cexInfo,
     tx: {
       ...tx,
       gas: '0x0',

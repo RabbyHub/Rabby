@@ -92,6 +92,7 @@ import {
 import { ga4 } from '@/utils/ga4';
 import { EIP7702Warning } from './EIP7702Warning';
 import { MultiActionProps } from './TypedDataActions';
+import { getCexInfo } from '@/ui/models/exchange';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -887,7 +888,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               })
             );
             const requireDataList = await Promise.all(
-              parsedActions.map((item) => {
+              parsedActions.map(async (item) => {
+                const cexInfo = await getCexInfo(item.send?.to || '', wallet);
                 return fetchActionRequiredData({
                   type: 'transaction',
                   actionData: item,
@@ -903,6 +905,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                     isWhitelistEnabled: wallet.isWhitelistEnabled,
                     getPendingTxsByNonce: wallet.getPendingTxsByNonce,
                   },
+                  cex: cexInfo,
                   tx: {
                     ...tx,
                     gas: '0x0',
@@ -954,11 +957,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               gasUsed: res.gas.gas_used,
               sender: tx.from,
             });
+            const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
             requiredData = await fetchActionRequiredData({
               type: 'transaction',
               actionData: parsed,
               contractCall: actionData.contract_call,
               chainId: chain.serverId,
+              cex: cexInfo,
               sender: address,
               walletProvider: {
                 findChain,
