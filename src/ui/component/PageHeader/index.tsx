@@ -1,23 +1,19 @@
-import clsx from 'clsx';
-import React, { ReactNode, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import IconBack from 'ui/assets/back.svg';
-import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
-import { ReactComponent as RcIconClose } from 'ui/assets/component/close-cc.svg';
-import './style.less';
-import ThemeIcon from '../ThemeMode/ThemeIcon';
-import { AccountSelectorModal } from '../AccountSelector/AccountSelectorModal';
-import { useTranslation } from 'react-i18next';
 import { Account } from '@/background/service/preference';
-import {
-  useCurrentAccount,
-  useSceneAccountInfo,
-} from '@/ui/hooks/backgroundState/useAccount';
-import { KEYRING_ICONS_WHITE, WALLET_BRAND_CONTENT } from '@/constant';
+import { ReactComponent as RcIconDownCC } from '@/ui/assets/arrow-down-cc.svg';
+import { useSceneAccountInfo } from '@/ui/hooks/backgroundState/useAccount';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import { useRabbyDispatch } from '@/ui/store';
 import { getUiType } from '@/ui/utils';
+import clsx from 'clsx';
+import React, { ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
+import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
+import IconBack from 'ui/assets/back.svg';
+import { ReactComponent as RcIconClose } from 'ui/assets/component/close-cc.svg';
+import { AccountSelectorModal } from '../AccountSelector/AccountSelectorModal';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
+import './style.less';
 const isTab = getUiType().isTab;
 
 const PageHeader = ({
@@ -131,9 +127,9 @@ const AccountSwitchInner = ({
 
   return (
     <>
-      <div className="flex justify-center mt-[2px]">
+      <div className="flex justify-center mt-[-1px]">
         <div
-          className="flex items-center justify-center cursor-pointer"
+          className="flex items-center justify-center cursor-pointer px-[8px] py-[3px] rounded-[4px] hover:bg-r-neutral-line"
           onClick={() => {
             setIsShowModal(true);
           }}
@@ -142,10 +138,7 @@ const AccountSwitchInner = ({
           <div className="text-r-neutral-body text-[13px] leading-[16px] font-medium">
             {currentAccount?.alianName}
           </div>
-          <RcIconDownCC
-            className="text-r-neutral-foot w-[16px] h-[16px]"
-            viewBox="0 0 14 14"
-          />
+          <RcIconDownCC className="text-r-neutral-foot w-[16px] h-[16px]" />
         </div>
       </div>
       <AccountSelectorModal

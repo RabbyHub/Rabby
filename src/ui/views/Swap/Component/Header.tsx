@@ -44,7 +44,7 @@ export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
   return (
     <>
       <PageHeader
-        className="mx-[20px] mb-0"
+        className="mx-[20px] mb-[5px]"
         forceShowBack={!isTab}
         onBack={gotoDashboard}
         canBack={!isTab}
