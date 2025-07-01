@@ -191,14 +191,14 @@ const TokenAmountInput = ({
   const {
     isLoading: isSearchLoading,
     list: searchedTokenByQuery,
-  } = useSearchToken(currentAccount?.address, keyword, chainServerId);
+  } = useSearchToken(currentAccount?.address, keyword, chainServerId, true);
 
   const {
     loading: isSearchTestnetLoading,
     testnetTokenList,
   } = useSearchTestnetToken({
     address: currentAccount?.address,
-    withBalance: keyword ? false : true,
+    withBalance: true,
     chainId: chainItem?.id,
     q: keyword,
     enabled: isTestnet,

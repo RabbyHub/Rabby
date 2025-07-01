@@ -155,8 +155,8 @@ const TokenSelector = ({
   } = useSearchTestnetToken({
     address: currentAccount?.address,
     q: query,
-    withBalance: false,
-    enabled: showCustomTestnetAssetList && selectedTab === 'testnet',
+    withBalance: true,
+    enabled: showCustomTestnetAssetList && visible,
   });
 
   useEffect(() => {
@@ -242,7 +242,12 @@ const TokenSelector = ({
     }
   }, [visible]);
 
-  const isEmpty = list.length <= 0;
+  const isEmpty = useMemo(() => {
+    if (showCustomTestnetAssetList && selectedTab === 'testnet') {
+      return customTestnetTokenList?.length <= 0;
+    }
+    return list.length <= 0;
+  }, [list, showCustomTestnetAssetList, selectedTab, customTestnetTokenList]);
 
   const isSwapType = isSwapTokenType(type);
 

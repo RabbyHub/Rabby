@@ -22,13 +22,16 @@ export const useSearchTestnetToken = ({
       if (!address) {
         return false;
       }
-      const allList = await wallet.getCustomTestnetTokenList({
+      let allList = await wallet.getCustomTestnetTokenList({
         address,
       });
+      if (withBalance) {
+        allList = allList.filter((item) => item.amount > 0);
+      }
       return allList.length > 0;
     },
     {
-      refreshDeps: [address],
+      refreshDeps: [address, withBalance],
     }
   );
   const { data = [], loading } = useRequest(
