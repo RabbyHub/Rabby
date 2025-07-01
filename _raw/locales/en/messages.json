@@ -2925,6 +2925,9 @@
     },
     "ChainItem": {
       "appChain": "On {{chain}} Account"
+    },
+    "PageHeader": {
+      "selectAccount": "Select Address"
     }
   },
   "global": {
