@@ -27,6 +27,7 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         if (!isCexSupport.support) {
           return {
             disable: true,
+            cexId: toCexId,
             reason: t('page.sendToken.noSupprotTokenForDex'),
           };
         }
@@ -93,7 +94,15 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
             type: 'ghost',
             className: 'text-r-blue-default border-r-blue-default',
           },
-          onOk() {},
+          onOk() {
+            if (res.cexId) {
+              wallet.openapi.checkCex({
+                chain_id: tokenChain,
+                id,
+                cex_id: res.cexId,
+              });
+            }
+          },
           onCancel() {
             history.goBack();
           },

@@ -278,6 +278,7 @@ const SendToken = () => {
         if (!token?.cex_ids?.length || noSupportToken) {
           return {
             disable: true,
+            cexId: toCexId,
             reason: t('page.sendToken.noSupprotTokenForDex'),
           };
         }
