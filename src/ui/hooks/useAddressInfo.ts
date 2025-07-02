@@ -63,7 +63,7 @@ export const useAddressInfo = (
       targetAccount,
       isMyImported,
     };
-  }, []);
+  }, [accountsList, address, type]);
 
   useEffect(() => {
     if (!isValidAddress(address)) {
@@ -75,6 +75,7 @@ export const useAddressInfo = (
   useEffect(() => {
     (async () => {
       if (disableDesc && !isValidAddress(address)) {
+        setAddressDesc(undefined);
         return;
       }
       setLoadingAddrDesc(true);
@@ -98,12 +99,12 @@ export const useAddressInfo = (
           setAddressDesc(addrDescRes.desc);
         }
       } catch (error) {
-        /* empty */
+        setAddressDesc(undefined);
       } finally {
         setLoadingAddrDesc(false);
       }
     })();
-  }, [address, dispatch, exchanges, disableDesc]);
+  }, [address, dispatch, exchanges, disableDesc, wallet]);
 
   const tmpCexInfo = useMemo(() => {
     // 已导入的地址不需要强制展示交易所信息，本地有标才展示
