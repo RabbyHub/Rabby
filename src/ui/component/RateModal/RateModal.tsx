@@ -179,7 +179,9 @@ export default function RateModal() {
               block
               onClick={() => {
                 openAppRateUrl();
-                closeModal();
+                pushRateDetails({ totalBalanceText }).finally(() => {
+                  closeModal();
+                });
               }}
             >
               <ChromeLogo width={18} height={18} className="mr-[8px]" />
