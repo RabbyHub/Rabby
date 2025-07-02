@@ -95,8 +95,6 @@ class RPCService {
         this.store.customRPC = { ...this.store.customRPC };
       }
     }
-
-    this.syncDefaultRPC();
   };
 
   syncDefaultRPC = async () => {
