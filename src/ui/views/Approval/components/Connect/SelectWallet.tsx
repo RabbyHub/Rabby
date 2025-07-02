@@ -56,7 +56,7 @@ export const SelectWallet: React.FC<Props> = ({
               src={IconLogo}
               alt=""
             />
-            <div className="truncate text-[18px] leading-[21px] font-medium">
+            <div className="truncate text-[18px] leading-[21px] font-medium text-r-neutral-title1">
               Rabby Wallet
             </div>
           </div>
@@ -81,7 +81,7 @@ export const SelectWallet: React.FC<Props> = ({
                   src={item.icon}
                   alt=""
                 />
-                <div className="truncate text-[18px] leading-[21px] font-medium">
+                <div className="truncate text-[18px] leading-[21px] font-medium text-r-neutral-title1">
                   {item.name}
                 </div>
               </div>
