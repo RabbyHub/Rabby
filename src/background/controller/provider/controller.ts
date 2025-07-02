@@ -750,6 +750,7 @@ class ProviderController extends BaseController {
               isGasAccount
             );
             if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
+              let fePushedFailed = false;
               const txData: any = {
                 ...approvalRes,
                 gasLimit: approvalRes.gas,
@@ -766,7 +767,7 @@ class ProviderController extends BaseController {
 
               try {
                 const [
-                  hash,
+                  fePushedHash,
                   url,
                 ] = await RPCService.requestDefaultRPCWithFallback(
                   chainServerId,
@@ -774,62 +775,56 @@ class ProviderController extends BaseController {
                   [rawTx]
                 );
 
-                console.log('push tx id', hash);
+                hash = fePushedHash;
+
+                console.log('push tx id', fePushedHash);
 
                 params.frontend_push_result = {
                   success: true,
                   has_pushed: true,
                   raw_tx: rawTx,
                   url,
-                  return_tx_id: hash!,
+                  return_tx_id: fePushedHash!,
                 };
 
                 openapiService.submitTxV2(params).catch((error) => {
                   console.log('ignore BE error', error);
                 });
-
-                onTransactionCreated({ hash, reqId, pushType });
-                notificationService.setStatsData(statsData);
               } catch (fePushError) {
-                try {
-                  const urls = RPCService.getDefaultRPCByChainServerId(
-                    chainServerId
-                  );
-                  params.frontend_push_result = {
-                    success: false,
-                    has_pushed: true,
-                    url: urls?.rpcUrl?.[0] || '',
-                    error_msg:
-                      typeof fePushError === 'object'
-                        ? fePushError.message
-                        : String(fePushError),
-                  };
-                  const res = openapiService.submitTxV2(params);
-                } catch (error) {
-                  console.log('rpc send tx error', error);
-                  const errMsg =
-                    typeof error === 'object' ? error.message : error;
-                  onTransactionSubmitFailed({
-                    ...error,
-                    message: errMsg,
-                  });
-                }
+                fePushedFailed = true;
+
+                const urls = RPCService.getDefaultRPCByChainServerId(
+                  chainServerId
+                );
+                params.frontend_push_result = {
+                  success: false,
+                  has_pushed: true,
+                  url: urls?.rpcUrl?.[0] || '',
+                  error_msg:
+                    typeof fePushError === 'object'
+                      ? fePushError.message
+                      : String(fePushError),
+                };
               }
 
-              return hash;
+              if (fePushedFailed) {
+                const res = await openapiService.submitTxV2(params);
+                hash = res.tx_id;
+              }
+            } else {
+              const res = await openapiService.submitTxV2(params);
+              if (res.access_token) {
+                gasAccountService.setGasAccountSig(
+                  res.access_token,
+                  currentAccount
+                );
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.GAS_ACCOUNT.LOG_IN,
+                });
+              }
+              hash = res.tx_id;
             }
 
-            const res = await openapiService.submitTxV2(params);
-            if (res.access_token) {
-              gasAccountService.setGasAccountSig(
-                res.access_token,
-                currentAccount
-              );
-              eventBus.emit(EVENTS.broadcastToUI, {
-                method: EVENTS.GAS_ACCOUNT.LOG_IN,
-              });
-            }
-            hash = res.tx_id;
             //No more low gas push, reqId is no longer required.
             reqId = undefined;
 
