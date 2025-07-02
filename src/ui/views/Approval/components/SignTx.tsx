@@ -869,7 +869,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         return preExecPromise.then(async (res) => {
           let parsed: ParsedTransactionActionData,
             requiredData: ActionRequireData;
-          if (actionData.action.type === 'multi_actions') {
+          if (actionData.action?.type === 'multi_actions') {
             const actions = actionData.action.data as MultiAction;
             const parsedActions = actions.map((action) =>
               parseAction({
