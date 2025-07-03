@@ -185,7 +185,7 @@ export const AssetListContainer: React.FC<Props> = ({
           display: visible ? 'block' : 'none',
         }}
       >
-        {isPortfoliosLoading || isAppPortfoliosLoading ? (
+        {isPortfoliosLoading && isAppPortfoliosLoading ? (
           <TokenListSkeleton />
         ) : (
           <ProtocolList
