@@ -74,7 +74,7 @@ const MatrixWrapper = styled.div.withConfig<{
         border: 1.5px solid var(--r-neutral-line, #e0e5ec);
         text-align: center;
         font-size: 22px;
-        color: var(--rabby-light-neutral-body, #3e495eff);
+        color: var(--r-neutral-title-1, #192945);
         &:hover {
           border-color: var(--r-blue-default, #7084ff);
         }

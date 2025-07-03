@@ -15,6 +15,7 @@ import { SpecialTokenListPopup } from './components/TokenButton';
 import { useRabbySelector } from '@/ui/store';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { TestnetChainList } from './TestnetChainList';
+import { useFilteredTokens } from './useFilteredTokens';
 
 export const AssetList = ({
   visible,
@@ -51,8 +52,7 @@ export const AssetList = ({
 
   const [isShowAddModal, setIsShowAddModal] = useState<boolean>(false);
 
-  const { customize } = useRabbySelector((store) => store.account.tokens);
-  const tokens = useSortToken(customize);
+  const { sortedCustomize: tokens } = useFilteredTokens(selectChainId, false);
   const [showCustomizedTokens, setShowCustomizedTokens] = React.useState(false);
 
   return (

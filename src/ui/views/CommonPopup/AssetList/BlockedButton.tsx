@@ -1,19 +1,23 @@
 import React from 'react';
 import { TokenButton } from './components/TokenButton';
-import { useRabbySelector } from '@/ui/store';
-import useSortToken from '@/ui/hooks/useSortTokens';
 import { useTranslation } from 'react-i18next';
+import { useFilteredTokens } from './useFilteredTokens';
 
 interface Props {
   onClickLink: () => void;
   isTestnet: boolean;
+  selectChainId?: string | null;
 }
 
-export const BlockedButton: React.FC<Props> = ({ onClickLink, isTestnet }) => {
-  const { blocked } = useRabbySelector((store) =>
-    isTestnet ? store.account.testnetTokens : store.account.tokens
+export const BlockedButton: React.FC<Props> = ({
+  onClickLink,
+  isTestnet,
+  selectChainId,
+}) => {
+  const { sortedBlocked: list } = useFilteredTokens(
+    selectChainId || null,
+    isTestnet
   );
-  const list = useSortToken(blocked);
   const { t } = useTranslation();
 
   return (
