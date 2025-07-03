@@ -3,6 +3,7 @@ import { createPersistStore } from 'background/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { http } from '../utils/http';
 import openapiService, { DefaultRPCRes } from './openapi';
+import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 
 export interface RPCItem {
   url: string;
@@ -26,15 +27,36 @@ export const BE_SUPPORTED_METHODS: string[] = [
   'eth_chainId',
 ];
 
-async function callWithFallbackRpcs<T>(
+async function submitTxWithFallbackRpcs<T>(
   rpcUrls: string[],
   fn: (rpc: string) => Promise<T>
 ): Promise<[T, string]> {
+  const promises = rpcUrls.map((url) =>
+    fn(url)
+      .then((result) => [result, url] as [T, string])
+      .catch((err) => {
+        throw err;
+      })
+  );
+  try {
+    return await Promise.race(promises);
+  } catch (e) {
+    // If all fail, collect errors
+    const errors = await Promise.allSettled(promises);
+    const firstRejected = errors.find((r) => r.status === 'rejected');
+    throw firstRejected ? (firstRejected as PromiseRejectedResult).reason : e;
+  }
+}
+
+async function callWithFallbackRpcs<T>(
+  rpcUrls: string[],
+  fn: (rpc: string) => Promise<T>
+): Promise<T> {
   let error;
   for (const url of rpcUrls) {
     try {
       const result = await fn(url);
-      return [result, url];
+      return result;
     } catch (err) {
       if (!error) {
         error = err;
@@ -127,6 +149,28 @@ class RPCService {
     return BE_SUPPORTED_METHODS.some((e) => e === method);
   };
 
+  defaultRPCRequest = async (
+    host: string,
+    method: string,
+    params: any[],
+    timeout = 5000
+  ) => {
+    const { data } = await http.post(
+      host,
+      {
+        jsonrpc: '2.0',
+        id: getUniqueId(),
+        params,
+        method,
+      },
+      {
+        timeout,
+      }
+    );
+    if (data?.error) throw data.error;
+    return data.result;
+  };
+
   requestDefaultRPCWithFallback = async (
     chainServerId: string,
     method: string,
@@ -136,24 +180,34 @@ class RPCService {
     if (!hostList.length) {
       throw new Error(`No available rpc for ${chainServerId}`);
     }
-    return callWithFallbackRpcs(hostList, (rpc) =>
-      this.request(rpc, method, params)
+    return submitTxWithFallbackRpcs(hostList, (rpc) =>
+      this.defaultRPCRequest(rpc, method, params)
     );
   };
 
   requestDefaultRPC = async (
     chainServerId: string,
     method: string,
-    params: any[]
+    params: any,
+    origin = INTERNAL_REQUEST_ORIGIN
   ) => {
     const hostList = this?.store?.defaultRPC?.[chainServerId]?.rpcUrl || [];
-    if (!hostList.length) {
-      throw new Error(`No available rpc for ${chainServerId}`);
+    const isBESupported = this.supportedRpcMethodByBE(method);
+
+    if (!isBESupported || !hostList.length) {
+      // throw new Error(`No available rpc for ${chainServerId}`);
+      return openapiService.ethRpc(chainServerId, {
+        origin: encodeURIComponent(origin),
+        method,
+        params,
+      });
     }
     // return callWithFallbackRpcs(hostList, (rpc) =>
     //   this.request(rpc, method, params)
     // );
-    return this.request(hostList[0], method, params);
+    return callWithFallbackRpcs(hostList, (rpc) =>
+      this.defaultRPCRequest(rpc, method, params)
+    );
   };
 
   getDefaultRPC = (chainServerId: string) => {
