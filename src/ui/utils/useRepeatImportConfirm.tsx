@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import AddressItem from '@/ui/component/AccountSearchInput/AddressItem';
+import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import './confirmPopup.less';
 
@@ -46,7 +46,7 @@ export const useRepeatImportConfirm = () => {
           </div>
         ),
         content: (
-          <AddressItem
+          <AccountItem
             address={address}
             type={account.type}
             brandName={account.type}

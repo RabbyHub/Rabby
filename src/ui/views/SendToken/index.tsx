@@ -80,6 +80,24 @@ function findInstanceLevel(gasList: GasLevel[]) {
 
 const DEFAULT_GAS_USED = 21000;
 
+const DEFAULT_TOKEN = {
+  id: 'eth',
+  chain: 'eth',
+  name: 'ETH',
+  symbol: 'ETH',
+  display_symbol: null,
+  optimized_symbol: 'ETH',
+  decimals: 18,
+  logo_url:
+    'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+  price: 0,
+  is_verified: true,
+  is_core: true,
+  is_wallet: true,
+  time_at: 0,
+  amount: 0,
+};
+
 type FormSendToken = {
   to: string;
   amount: string;
@@ -123,23 +141,7 @@ const SendToken = () => {
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
     null
   );
-  const [currentToken, setCurrentToken] = useState<TokenItem>({
-    id: 'eth',
-    chain: 'eth',
-    name: 'ETH',
-    symbol: 'ETH',
-    display_symbol: null,
-    optimized_symbol: 'ETH',
-    decimals: 18,
-    logo_url:
-      'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
-    price: 0,
-    is_verified: true,
-    is_core: true,
-    is_wallet: true,
-    time_at: 0,
-    amount: 0,
-  });
+  const [currentToken, setCurrentToken] = useState<TokenItem>(DEFAULT_TOKEN);
   const [safeInfo, setSafeInfo] = useState<{
     chainId: number;
     nonce: number;
@@ -224,7 +226,12 @@ const SendToken = () => {
     });
   }, [toAddress, history, search, form]);
 
-  const { targetAccount, addressDesc, tmpCexInfo } = useAddressInfo(toAddress, {
+  const {
+    targetAccount,
+    addressDesc,
+    tmpCexInfo,
+    isTokenSupport,
+  } = useAddressInfo(toAddress, {
     type: toAddressType,
   });
   useInitCheck(addressDesc);
@@ -1024,22 +1031,23 @@ const SendToken = () => {
 
       const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
       if (
-        lastTimeToken &&
-        findChain({
-          serverId: lastTimeToken.chain,
-        })
+        !(
+          lastTimeToken &&
+          findChain({
+            serverId: lastTimeToken.chain,
+          })
+        )
       ) {
-        setCurrentToken(lastTimeToken);
-      } else {
         const { firstChain } = await dispatch.chains.getOrderedChainList({
           supportChains: undefined,
         });
         tokenFromOrder = firstChain ? makeTokenFromChain(firstChain) : null;
-        if (firstChain) setCurrentToken(tokenFromOrder!);
       }
 
       let needLoadToken: TokenItem =
         lastTimeToken || tokenFromOrder || currentToken;
+
+      let cachesState;
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
         if (cache?.path === history.location.pathname) {
@@ -1051,7 +1059,7 @@ const SendToken = () => {
             });
           }
           if (cache.states.currentToken) {
-            setCurrentToken(cache.states.currentToken);
+            cachesState = cache.states;
             needLoadToken = cache.states.currentToken;
           }
           if (cache.states.safeInfo) {
@@ -1059,6 +1067,53 @@ const SendToken = () => {
           }
         }
       }
+
+      // check the recommended token is support for address
+      const {
+        isCex,
+        isCexSupport,
+        isContractAddress,
+        contractSupportChain,
+      } = await isTokenSupport(needLoadToken.id, needLoadToken.chain);
+
+      // CEX CHECK: 交易所地址但不支持该token，默认eth:eth
+      if (isCex && !isCexSupport) {
+        needLoadToken = DEFAULT_TOKEN;
+        // reset formValues change
+        if (cachesState) {
+          handleFormValuesChange(cachesState.values, form.getFieldsValue(), {
+            token: DEFAULT_TOKEN,
+            isInitFromCache: true,
+          });
+        }
+        // CONTRACT CHECK: 合约地址但合约不支持该token，默认第一个支持的链的原生代币
+      } else if (
+        isContractAddress &&
+        !contractSupportChain.includes(needLoadToken.chain)
+      ) {
+        const chainList = contractSupportChain
+          .map((chain) => findChain({ serverId: chain })?.enum)
+          .filter((chainEnum): chainEnum is CHAINS_ENUM => !!chainEnum);
+        let { firstChain } = await dispatch.chains.getOrderedChainList({
+          supportChains: chainList,
+        });
+        const noSortFirstChain = findChainByEnum(chainList[0]);
+        if (!firstChain && noSortFirstChain) {
+          firstChain = noSortFirstChain;
+        }
+        if (firstChain) {
+          const targetToken = makeTokenFromChain(firstChain);
+          needLoadToken = targetToken;
+          // reset formValues change
+          if (cachesState) {
+            handleFormValuesChange(cachesState.values, form.getFieldsValue(), {
+              token: targetToken,
+              isInitFromCache: true,
+            });
+          }
+        }
+      }
+      setCurrentToken(needLoadToken);
 
       if (chainItem && needLoadToken.chain !== chainItem.serverId) {
         const target = findChain({ serverId: needLoadToken.chain });

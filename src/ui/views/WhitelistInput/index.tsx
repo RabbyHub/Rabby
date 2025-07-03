@@ -121,7 +121,7 @@ const WhitelistInput = () => {
         setInputAlias(name || '');
       });
     },
-    [wallet]
+    [exchanges, wallet]
   );
 
   const handleInputChangeAddress = (v) => {
