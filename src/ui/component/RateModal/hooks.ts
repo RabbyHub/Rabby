@@ -226,7 +226,6 @@ export function useRateModal() {
               `Rate: ${starText} `,
               `Total Balance: ${balanceText}`,
               `Client Version: ${versionText}`,
-              '  ',
             ]),
       ]
         .concat(
@@ -248,12 +247,16 @@ export function useRateModal() {
 
       try {
         rDispatch.rateGuidance.setField({ isSubmitting: true });
-        await wallet.openapi.submitFeedback({
-          text: feedbackContent,
-          usage: 'rating',
-        });
-        needFeedbackText &&
-          ga4.fireEvent('Rate_SubmitAdvice', { event_category: 'Rate Rabby' });
+        if (needFeedbackText) {
+          await wallet.openapi.submitFeedback({
+            text: feedbackContent,
+            usage: 'rating',
+          });
+          needFeedbackText &&
+            ga4.fireEvent('Rate_SubmitAdvice', {
+              event_category: 'Rate Rabby',
+            });
+        }
       } catch (error) {
         Sentry.captureException(error, {
           extra: {
