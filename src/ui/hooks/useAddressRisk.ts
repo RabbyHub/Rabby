@@ -84,7 +84,7 @@ export const useAddressRisks = (
           }
         : null,
     ].filter((i) => !!i) as { type: RiskType; value: string }[];
-  }, [addressDesc, hasNoSend]);
+  }, [addressDesc, hasNoSend, t]);
 
   const myTop10AccountList = useMemo(
     () =>
@@ -159,7 +159,7 @@ export const useAddressRisks = (
         setLoadingAddrDesc(false);
       }
     })();
-  }, [address, dispatch, editCex]);
+  }, [address, dispatch, editCex, exchanges, wallet]);
 
   useEffect(() => {
     if (

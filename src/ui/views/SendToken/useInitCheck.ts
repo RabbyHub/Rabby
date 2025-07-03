@@ -101,5 +101,5 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         return;
       }
     });
-  }, [checked, history.location.search, addressDesc, checkFn]);
+  }, [checked, history.location.search, addressDesc, checkFn, history, t]);
 };
