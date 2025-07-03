@@ -27,11 +27,12 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         if (!isCexSupport.support) {
           return {
             disable: true,
+            cexId: toCexId,
             reason: t('page.sendToken.noSupprotTokenForDex'),
           };
         }
       } else {
-        const safeChains = Object.entries(addressDesc?.contract || {})
+        const safeChains = Object.entries(toDesc?.contract || {})
           .filter(([, contract]) => {
             return contract.multisig;
           })
@@ -46,7 +47,7 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
           };
         }
         const contactChains = Object.entries(
-          addressDesc?.contract || {}
+          toDesc?.contract || {}
         ).map(([chain]) => chain?.toLocaleLowerCase());
         if (
           contactChains.length > 0 &&
@@ -63,7 +64,7 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         reason: '',
       };
     },
-    [wallet]
+    [t, wallet.openapi]
   );
 
   useEffect(() => {
@@ -93,7 +94,15 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
             type: 'ghost',
             className: 'text-r-blue-default border-r-blue-default',
           },
-          onOk() {},
+          onOk() {
+            if (res.cexId) {
+              wallet.openapi.checkCex({
+                chain_id: tokenChain,
+                id,
+                cex_id: res.cexId,
+              });
+            }
+          },
           onCancel() {
             history.goBack();
           },
@@ -101,5 +110,5 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         return;
       }
     });
-  }, [checked, history.location.search, addressDesc, checkFn]);
+  }, [checked, history.location.search, addressDesc, checkFn, history, t]);
 };

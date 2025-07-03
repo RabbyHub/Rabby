@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import clsx from 'clsx';
+import { Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import PortfolioTemplate from './ProtocolTemplates';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
-import clsx from 'clsx';
 import { openInTab, useCommonPopupView } from '@/ui/utils';
 import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
+import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -77,12 +81,15 @@ const ProtocolItemWrapper = styled.div`
 const ProtocolItem = ({
   protocol,
   enableDelayVisible,
+  isAppChain,
   isSearch,
 }: {
   protocol: DisplayedProject;
   enableDelayVisible: boolean;
+  isAppChain?: boolean;
   isSearch?: boolean;
 }) => {
+  const { t } = useTranslation();
   const [isExpand, setIsExpand] = useState(false);
   const { visible } = useCommonPopupView();
   const [delayVisible, setDelayVisible] = useState(false);
@@ -137,7 +144,9 @@ const ProtocolItem = ({
             chainServerId={protocol.chain || 'eth'}
             width="24px"
             height="24px"
+            noRound={isAppChain}
             isShowChainTooltip={true}
+            hideChainIcon={isAppChain}
           />
           <div
             className="ml-[8px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
@@ -149,6 +158,18 @@ const ProtocolItem = ({
             <span className="name inline-flex items-center">
               {protocol.name}
             </span>
+            {!!isAppChain && (
+              <Tooltip
+                overlayClassName="app-chain-tooltip"
+                title={t('component.ChainItem.appChain', {
+                  chain: protocol.name,
+                })}
+              >
+                <div className="text-r-neutral-foot ml-[4px] mr-[2px]">
+                  <RcIconInfoCC />
+                </div>
+              </Tooltip>
+            )}
             <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot" />
           </div>
           <div className="flex items-center justify-end flex-1">
@@ -172,13 +193,14 @@ const ProtocolItem = ({
 interface Props {
   list: DisplayedProject[] | undefined;
   isSearch?: boolean;
+  appIds?: string[];
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, isSearch }: Props) => {
+const ProtocolList = ({ list, isSearch, appIds }: Props) => {
   const enableDelayVisible = useMemo(() => {
     return (list || []).length > 100;
   }, [list]);
@@ -192,6 +214,7 @@ const ProtocolList = ({ list, isSearch }: Props) => {
           protocol={item}
           key={item.id}
           enableDelayVisible={enableDelayVisible}
+          isAppChain={appIds?.includes(item.id)}
           isSearch={isSearch}
         />
       ))}

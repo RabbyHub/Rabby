@@ -13,7 +13,6 @@ import {
   useRateModal,
   useTotalBalanceTextForRate,
 } from './hooks';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 
 const StarLayoutSizes = {
@@ -54,7 +53,6 @@ export default function RateModalTriggerOnSettings({
   useEffect(() => {
     if (!shouldShowRateGuideOnHome) return;
 
-    matomoRequestEvent({ category: 'Rate Rabby', action: 'Rate_Show' });
     ga4.fireEvent('Rate_Show', { event_category: 'Rate Rabby' });
   }, [shouldShowRateGuideOnHome]);
 
@@ -121,14 +119,7 @@ export default function RateModalTriggerOnSettings({
               toggleShowRateModal(true, {
                 starCountOnOpen: index + 1,
               });
-              if (index + 1 >= 4) {
-                pushRateDetails({ totalBalanceText, userStar: index + 1 });
-              }
 
-              matomoRequestEvent({
-                category: 'Rate Rabby',
-                action: `Rate_Star_${starToText(userSelectedStar)}`,
-              });
               ga4.fireEvent(`Rate_Star_${starToText(userSelectedStar)}`, {
                 event_category: 'Rate Rabby',
               });

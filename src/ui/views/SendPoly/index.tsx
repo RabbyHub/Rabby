@@ -148,7 +148,7 @@ const SendPoly = () => {
     return [...uniqueAccounts].filter((a) =>
       whitelist?.some((w) => isSameAddress(w, a.address))
     );
-  }, [accountsList, whitelist]);
+  }, [accountsList, whitelist, whitelistEnabled]);
 
   const nftItem = useMemo(() => {
     const query = new URLSearchParams(search);

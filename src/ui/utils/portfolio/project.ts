@@ -171,7 +171,7 @@ class DisplayedPortfolio implements AbstractPortfolio {
   _changePercentStr = '';
 
   constructor(p: PortfolioItem) {
-    this.id = `${p.pool.id}${p.position_index || ''}`;
+    this.id = `${p.pool?.id}${p.position_index || ''}`;
     this._originPortfolio = p;
     this.name = p.name;
     // this._project = project;

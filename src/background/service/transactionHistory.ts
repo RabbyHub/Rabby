@@ -679,7 +679,7 @@ class TxHistory {
         const item = list[i];
         maxCompletedNonceByChain[item.chainId] = Math.max(
           item.nonce,
-          maxCompletedNonceByChain[item.chainId] || 0
+          maxCompletedNonceByChain[item.chainId] ?? -1
         );
         completeds.push(item);
       }
@@ -688,7 +688,7 @@ class TxHistory {
     return {
       pendings: pendings
         .filter(
-          (item) => item.nonce > (maxCompletedNonceByChain[item.chainId] || 0)
+          (item) => item.nonce > (maxCompletedNonceByChain[item.chainId] ?? -1)
         )
         .sort((a, b) => {
           if (a.chainId === b.chainId) {

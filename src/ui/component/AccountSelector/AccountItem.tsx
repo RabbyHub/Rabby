@@ -35,7 +35,7 @@ export interface AddressItemProps {
   style?: React.CSSProperties;
   extra?: ReactNode;
   alias?: string;
-  onClick: MouseEventHandler<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLDivElement>;
   isSelected?: boolean;
   rightIcon?: ReactNode;
   showWhitelistIcon?: boolean;
@@ -119,7 +119,7 @@ export const AccountItem = memo(
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (!disabled) {
-        onClick(e);
+        onClick?.(e);
       }
     };
 
@@ -139,10 +139,14 @@ export const AccountItem = memo(
         <Tooltip
           overlayClassName="rectangle addressType__tooltip"
           placement="topRight"
-          title={formatAddressTooltip(
-            type,
-            BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
-          )}
+          title={
+            !showWhitelistIcon
+              ? formatAddressTooltip(
+                  type,
+                  BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
+                )
+              : ''
+          }
         >
           <div className="relative flex-none">
             <img
@@ -150,12 +154,17 @@ export const AccountItem = memo(
               className={'w-[28px] h-[28px] rounded-full'}
             />
             {showWhitelistIcon ? (
-              <div className="absolute w-[16px] h-[16px] bottom-[-3px] right-[-3px] text-r-blue-default">
-                <RcWhitelistIconCC
-                  viewBox="0 0 16 16"
-                  className="w-[16px] h-[16px]"
-                />
-              </div>
+              <Tooltip
+                overlayClassName="rectangle addressType__tooltip"
+                title="Whitelist Address"
+              >
+                <div className="absolute w-[16px] h-[16px] bottom-[-3px] right-[-3px] text-r-blue-default">
+                  <RcWhitelistIconCC
+                    viewBox="0 0 16 16"
+                    className="w-[16px] h-[16px]"
+                  />
+                </div>
+              </Tooltip>
             ) : (
               <CommonSignal
                 type={type}
