@@ -54,20 +54,6 @@ export const AssetListContainer: React.FC<Props> = ({
     isLoading: isAppPortfoliosLoading,
   } = useAppChain(currentAccount?.address, visible, isTestnet);
 
-  const isEmptyAssets =
-    !isTokensLoading &&
-    !tokenList.length &&
-    !isPortfoliosLoading &&
-    !portfolios?.length &&
-    !blockedTokens?.length &&
-    !customizeTokens?.length &&
-    !isAppPortfoliosLoading &&
-    !appPortfolios?.length;
-
-  React.useEffect(() => {
-    onEmptyAssets(isEmptyAssets);
-  }, [isEmptyAssets]);
-
   const inputRef = React.useRef<Input>(null);
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
@@ -94,6 +80,34 @@ export const AssetListContainer: React.FC<Props> = ({
     }
     return combinedPortfolios;
   }, [portfolios, appPortfolios, selectChainId]);
+
+  const displayBlockedTokens = useMemo(() => {
+    if (selectChainId) {
+      return blockedTokens?.filter((item) => item.chain === selectChainId);
+    }
+    return blockedTokens;
+  }, [blockedTokens, selectChainId]);
+
+  const displayCustomizeTokens = useMemo(() => {
+    if (selectChainId) {
+      return customizeTokens?.filter((item) => item.chain === selectChainId);
+    }
+    return customizeTokens;
+  }, [customizeTokens, selectChainId]);
+
+  const isEmptyAssets =
+    !isTokensLoading &&
+    !displayTokenList.length &&
+    !isPortfoliosLoading &&
+    !displayPortfolios?.length &&
+    !displayBlockedTokens?.length &&
+    !displayCustomizeTokens?.length &&
+    !isAppPortfoliosLoading &&
+    !appPortfolios?.length;
+
+  React.useEffect(() => {
+    onEmptyAssets(isEmptyAssets);
+  }, [isEmptyAssets, onEmptyAssets]);
 
   const sortTokens = useSortTokens(displayTokenList);
   const filteredPortfolios = useFilterProtocolList({
@@ -173,9 +187,10 @@ export const AssetListContainer: React.FC<Props> = ({
             }}
             isSearch={!!search}
             isNoResults={isNoResults}
-            blockedTokens={blockedTokens}
-            customizeTokens={customizeTokens}
+            blockedTokens={displayBlockedTokens}
+            customizeTokens={displayCustomizeTokens}
             isTestnet={isTestnet}
+            selectChainId={selectChainId}
           />
         </div>
       )}
