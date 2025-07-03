@@ -171,7 +171,7 @@ class RPCService {
     return data.result;
   };
 
-  requestDefaultRPCWithFallback = async (
+  defaultRPCSubmitTxWithFallback = async (
     chainServerId: string,
     method: string,
     params: any[]
