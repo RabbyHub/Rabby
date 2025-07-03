@@ -32,7 +32,7 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
           };
         }
       } else {
-        const safeChains = Object.entries(addressDesc?.contract || {})
+        const safeChains = Object.entries(toDesc?.contract || {})
           .filter(([, contract]) => {
             return contract.multisig;
           })
@@ -47,7 +47,7 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
           };
         }
         const contactChains = Object.entries(
-          addressDesc?.contract || {}
+          toDesc?.contract || {}
         ).map(([chain]) => chain?.toLocaleLowerCase());
         if (
           contactChains.length > 0 &&
@@ -64,7 +64,7 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         reason: '',
       };
     },
-    [wallet]
+    [t, wallet.openapi]
   );
 
   useEffect(() => {
