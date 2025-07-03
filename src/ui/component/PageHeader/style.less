@@ -9,13 +9,32 @@
   position: relative;
   align-items: center;
 
+  &.switch-account {
+    padding-top: 9px;
+    padding-bottom: 6px;
+
+    .icon-back {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .header-content {
+      color: var(--r-neutral-title1, #192945);
+      text-align: center;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 24px;
+    }
+  }
+
   &-container {
     height: 64px;
     flex-shrink: 0;
   }
   &-container.transparent-wrap .page-header-wrap {
     background-color: transparent;
-  };
+  }
   &-wrap {
     position: fixed;
     top: 0;
