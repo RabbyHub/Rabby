@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { isValidAddress } from '@ethereumjs/util';
 import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
 
@@ -72,6 +72,75 @@ export const useAddressInfo = (
     dispatch.accountToDisplay.getAllAccountsToDisplay();
   }, []);
 
+  const fetchAddressDesc = useCallback(async () => {
+    let addrDescRes: AddrDescResponse | undefined;
+    if (addressDesc?.id && isSameAddress(addressDesc?.id, address)) {
+      addrDescRes = { desc: addressDesc };
+    } else {
+      addrDescRes = await wallet.openapi.addrDesc(address);
+    }
+    const cexId = await wallet.getCexId(address);
+    if (addrDescRes) {
+      if (cexId) {
+        const localCexInfo = exchanges.find(
+          (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+        );
+        if (localCexInfo) {
+          addrDescRes.desc.cex = {
+            id: localCexInfo?.id || '',
+            name: localCexInfo?.name || '',
+            logo_url: localCexInfo?.logo || '',
+            is_deposit: true,
+          };
+        }
+      }
+      return addrDescRes;
+    }
+    return undefined;
+  }, [address, addressDesc, exchanges, wallet]);
+
+  const isTokenSupport = useCallback(
+    async (
+      id: string,
+      chain: string
+    ): Promise<{
+      isCex: boolean;
+      isCexSupport: boolean;
+      isContractAddress: boolean;
+      contractSupportChain: string[];
+    }> => {
+      try {
+        const addrDescRes = await fetchAddressDesc();
+        const cexId = addrDescRes?.desc?.cex?.id;
+
+        const isSupportRes = cexId
+          ? await wallet.openapi.depositCexSupport(id, chain, cexId)
+          : { support: true };
+        const isContract =
+          Object.keys(addrDescRes?.desc?.contract || {}).length > 0;
+        const supportChains = Object.entries(
+          addrDescRes?.desc?.contract || {}
+        ).map(([chainName]) => chainName?.toLocaleLowerCase());
+
+        return {
+          isCex: !!cexId,
+          isCexSupport: isSupportRes.support,
+          isContractAddress: isContract,
+          contractSupportChain: supportChains,
+        };
+      } catch (error) {
+        // if error, don't check cex and contract
+        return {
+          isCex: false,
+          isCexSupport: true,
+          isContractAddress: false,
+          contractSupportChain: [],
+        };
+      }
+    },
+    [fetchAddressDesc, wallet]
+  );
+
   useEffect(() => {
     (async () => {
       if (disableDesc && !isValidAddress(address)) {
@@ -80,31 +149,15 @@ export const useAddressInfo = (
       }
       setLoadingAddrDesc(true);
       try {
-        const addrDescRes = await wallet.openapi.addrDesc(address);
-        const cexId = await wallet.getCexId(address);
-        if (addrDescRes) {
-          if (cexId) {
-            const localCexInfo = exchanges.find(
-              (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
-            );
-            if (localCexInfo) {
-              addrDescRes.desc.cex = {
-                id: localCexInfo?.id || '',
-                name: localCexInfo?.name || '',
-                logo_url: localCexInfo?.logo || '',
-                is_deposit: true,
-              };
-            }
-          }
-          setAddressDesc(addrDescRes.desc);
-        }
+        const addrDescRes = await fetchAddressDesc();
+        setAddressDesc(addrDescRes?.desc);
       } catch (error) {
         setAddressDesc(undefined);
       } finally {
         setLoadingAddrDesc(false);
       }
     })();
-  }, [address, dispatch, exchanges, disableDesc, wallet]);
+  }, [address, dispatch, exchanges, disableDesc, wallet, fetchAddressDesc]);
 
   const tmpCexInfo = useMemo(() => {
     // 已导入的地址不需要强制展示交易所信息，本地有标才展示
@@ -125,5 +178,6 @@ export const useAddressInfo = (
     targetAccount,
     loading: loadingAddrDesc,
     tmpCexInfo,
+    isTokenSupport,
   };
 };
