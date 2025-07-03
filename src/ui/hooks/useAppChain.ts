@@ -79,29 +79,32 @@ export const useAppChain = (
       setLoading(false);
       return;
     }
+    try {
+      const { list } = snapshot2Display([]);
+      projectDict.current = list;
 
-    const { list } = snapshot2Display([]);
-    projectDict.current = list;
-
-    // load app chain list
-    const appChainListRes = await loadAppChainList(userAddr, wallet);
-    if (!appChainListRes?.apps?.length) {
-      return;
-    }
-    appChainListRes.apps.forEach((app) => {
-      if (projectDict.current) {
-        projectDict.current = produce(projectDict.current, (draft) => {
-          portfolio2Display({ ...app, chain: app.id }, draft);
-        });
+      // load app chain list
+      const appChainListRes = await loadAppChainList(userAddr, wallet);
+      if (!appChainListRes?.apps?.length) {
+        return;
       }
-    });
+      appChainListRes.apps.forEach((app) => {
+        if (projectDict.current) {
+          projectDict.current = produce(projectDict.current, (draft) => {
+            portfolio2Display({ ...app, chain: app.id }, draft);
+          });
+        }
+      });
 
-    const realtimeData = Object.values(projectDict.current)?.sort(
-      (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
-    );
-    setData(realtimeData);
-    setHasValue(true);
-    setNetWorth(realtimeData.reduce((m, n) => m + n.netWorth, 0));
+      const realtimeData = Object.values(projectDict.current)?.sort(
+        (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
+      );
+      setData(realtimeData);
+      setHasValue(true);
+      setNetWorth(realtimeData.reduce((m, n) => m + n.netWorth, 0));
+    } catch (error) {
+      // just ignore appChain data
+    }
     setLoading(false);
   };
 

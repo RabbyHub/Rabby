@@ -1610,13 +1610,17 @@ export class WalletController extends BaseController {
         core = true;
       }
       const data = await openapiService.getTotalBalance(address, core);
-      const { apps } = await openapiService.getAppChainList(address);
       let appChainTotalNetWorth = 0;
-      apps.forEach((app) => {
-        app.portfolio_item_list.forEach((item) => {
-          appChainTotalNetWorth += item.stats.net_usd_value;
+      try {
+        const { apps } = await openapiService.getAppChainList(address);
+        apps?.forEach((app) => {
+          app?.portfolio_item_list?.forEach((item) => {
+            appChainTotalNetWorth += item.stats.net_usd_value;
+          });
         });
-      });
+      } catch (error) {
+        // just ignore appChain data
+      }
       const formatData = {
         ...data,
         evmUsdValue: data.total_usd_value,

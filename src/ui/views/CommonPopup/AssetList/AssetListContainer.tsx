@@ -140,6 +140,7 @@ export const AssetListContainer: React.FC<Props> = ({
     !isSearching &&
     !isTokensLoading &&
     !isPortfoliosLoading &&
+    !isAppPortfoliosLoading &&
     !!search &&
     !sortTokens.length &&
     !filteredPortfolios?.length;
@@ -184,7 +185,7 @@ export const AssetListContainer: React.FC<Props> = ({
           display: visible ? 'block' : 'none',
         }}
       >
-        {isPortfoliosLoading ? (
+        {isPortfoliosLoading || isAppPortfoliosLoading ? (
           <TokenListSkeleton />
         ) : (
           <ProtocolList
