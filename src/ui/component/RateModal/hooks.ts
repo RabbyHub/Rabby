@@ -12,7 +12,6 @@ import {
 import { getDefaultRateGuideLastExposure } from '@/utils/rateGuidance';
 import { __DEV__, appIsDev } from '@/utils/env';
 import { ensurePrefix } from '@/utils/string';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import { KEYRING_CLASS } from '@/constant';
 import { pick } from 'lodash';
@@ -215,11 +214,20 @@ export function useRateModal() {
 
       const feedbackText = rateModalState.userFeedback.trim();
 
+      const starText = `${makeStarText(userStar, 5)} (${userStar})`;
+      const balanceText = ensurePrefix(params.totalBalanceText, '$');
+      const versionText = process.env.release || '0';
+
       const feedbackContent = [
-        ...(!needFeedbackText ? [] : [`Comment: ${feedbackText}`, '  ']),
-        `Rate: ${makeStarText(userStar, 5)} (${userStar}) `,
-        `Total Balance: ${ensurePrefix(params.totalBalanceText, '$')}`,
-        `Client Version: ${process.env.release || '0'}`,
+        ...(!needFeedbackText
+          ? [`${starText} (${balanceText}; ${versionText}) `]
+          : [
+              `Comment: ${feedbackText}`,
+              `Rate: ${starText} `,
+              `Total Balance: ${balanceText}`,
+              `Client Version: ${versionText}`,
+              '  ',
+            ]),
       ]
         .concat(
           appIsDev
@@ -244,12 +252,8 @@ export function useRateModal() {
           text: feedbackContent,
           usage: 'rating',
         });
-        matomoRequestEvent({
-          category: 'Rate Rabby',
-          action: 'Rate_SubmitAdvice',
-          label: [userStar].join('|'),
-        });
-        ga4.fireEvent('Rate_SubmitAdvice', { event_category: 'Rate Rabby' });
+        needFeedbackText &&
+          ga4.fireEvent('Rate_SubmitAdvice', { event_category: 'Rate Rabby' });
       } catch (error) {
         Sentry.captureException(error, {
           extra: {
@@ -266,11 +270,6 @@ export function useRateModal() {
   );
 
   const openAppRateUrl = useCallback(() => {
-    matomoRequestEvent({
-      category: 'Rate Rabby',
-      action: 'Rate_JumpWebStore',
-      label: [rateModalState.userStar].join('|'),
-    });
     ga4.fireEvent('Rate_JumpWebStore', { event_category: 'Rate Rabby' });
     openTrustedExternalWebsiteInTab('chromeStoreReviewsUrl');
   }, [rateModalState.userStar]);
