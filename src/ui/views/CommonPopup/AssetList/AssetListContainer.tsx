@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
 import AddTokenEntry, { AddTokenEntryInst } from './AddTokenEntry';
 import { useRabbySelector } from '@/ui/store';
@@ -13,6 +13,8 @@ import ProtocolList from './ProtocolList';
 import { useQueryProjects } from 'ui/utils/portfolio';
 import { Input } from 'antd';
 import { useFilterProtocolList } from './useFilterProtocolList';
+import { useAppChain } from '@/ui/hooks/useAppChain';
+import { useCommonPopupView } from '@/ui/utils';
 
 interface Props {
   className?: string;
@@ -37,6 +39,7 @@ export const AssetListContainer: React.FC<Props> = ({
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
+  const { setApps } = useCommonPopupView();
   const {
     isTokensLoading,
     isPortfoliosLoading,
@@ -46,6 +49,10 @@ export const AssetListContainer: React.FC<Props> = ({
     blockedTokens,
     customizeTokens,
   } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
+  const {
+    data: appPortfolios,
+    isLoading: isAppPortfoliosLoading,
+  } = useAppChain(currentAccount?.address, visible, isTestnet);
 
   const inputRef = React.useRef<Input>(null);
   const { isLoading: isSearching, list } = useSearchToken(
@@ -64,11 +71,15 @@ export const AssetListContainer: React.FC<Props> = ({
   }, [list, tokenList, search, selectChainId]);
 
   const displayPortfolios = useMemo(() => {
+    const combinedPortfolios = [
+      ...(portfolios || []),
+      ...(appPortfolios || []),
+    ].sort((m, n) => (n.netWorth || 0) - (m.netWorth || 0));
     if (selectChainId) {
-      return portfolios?.filter((item) => item.chain === selectChainId);
+      return combinedPortfolios?.filter((item) => item.chain === selectChainId);
     }
-    return portfolios;
-  }, [portfolios, selectChainId]);
+    return combinedPortfolios;
+  }, [portfolios, appPortfolios, selectChainId]);
 
   const displayBlockedTokens = useMemo(() => {
     if (selectChainId) {
@@ -90,7 +101,9 @@ export const AssetListContainer: React.FC<Props> = ({
     !isPortfoliosLoading &&
     !displayPortfolios?.length &&
     !displayBlockedTokens?.length &&
-    !displayCustomizeTokens?.length;
+    !displayCustomizeTokens?.length &&
+    !isAppPortfoliosLoading &&
+    !appPortfolios?.length;
 
   React.useEffect(() => {
     onEmptyAssets(isEmptyAssets);
@@ -115,6 +128,22 @@ export const AssetListContainer: React.FC<Props> = ({
     }
   }, [visible]);
 
+  useEffect(() => {
+    if (appPortfolios) {
+      setApps(
+        appPortfolios.map((item) => ({
+          logo: item.logo || '',
+          name: item.name,
+          id: item.id,
+          usd_value: item.netWorth || 0,
+        }))
+      );
+    }
+  }, [appPortfolios]);
+  const appIds = useMemo(() => {
+    return [...new Set(appPortfolios?.map((item) => item.id) || [])];
+  }, [appPortfolios]);
+
   const addTokenEntryRef = React.useRef<AddTokenEntryInst>(null);
 
   if (isTokensLoading && !hasTokens) {
@@ -125,6 +154,7 @@ export const AssetListContainer: React.FC<Props> = ({
     !isSearching &&
     !isTokensLoading &&
     !isPortfoliosLoading &&
+    !isAppPortfoliosLoading &&
     !!search &&
     !sortTokens.length &&
     !filteredPortfolios?.length;
@@ -170,10 +200,14 @@ export const AssetListContainer: React.FC<Props> = ({
           display: visible ? 'block' : 'none',
         }}
       >
-        {isPortfoliosLoading ? (
+        {isPortfoliosLoading && isAppPortfoliosLoading ? (
           <TokenListSkeleton />
         ) : (
-          <ProtocolList isSearch={!!search} list={filteredPortfolios} />
+          <ProtocolList
+            appIds={appIds}
+            isSearch={!!search}
+            list={filteredPortfolios}
+          />
         )}
       </div>
     </div>
