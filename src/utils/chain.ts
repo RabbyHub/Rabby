@@ -173,6 +173,7 @@ export function isTestnetChainId(chainId?: string | number) {
 export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;
+  isAppChain?: boolean;
 }
 
 export function formatChainToDisplay(
