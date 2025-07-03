@@ -225,14 +225,11 @@ class ProviderController extends BaseController {
         });
         return promise;
       } else {
-        const isBESupported = RPCService.supportedRpcMethodByBE(method);
-        const promise = (isBESupported
-          ? openapiService.ethRpc(chainServerId, {
-              origin: encodeURIComponent(origin),
-              method,
-              params,
-            })
-          : RPCService.requestDefaultRPC(chainServerId, method, params)
+        const promise = RPCService.requestDefaultRPC(
+          chainServerId,
+          method,
+          params,
+          origin
         ).then((result) => {
           RpcCache.set(currentAddress, {
             method,
