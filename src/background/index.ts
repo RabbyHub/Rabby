@@ -116,6 +116,7 @@ async function restoreAppState() {
   await uninstalledService.init();
   await metamaskModeService.init();
   await OfflineChainsService.init();
+  await syncChainService.init();
 
   await walletController.tryUnlock();
 
