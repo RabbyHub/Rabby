@@ -752,6 +752,9 @@
       "tipAddToContacts": "連絡先に追加",
       "confirmModal": {
         "title": "確認するためのパスワードを入力"
+      },
+      "sectionAmount": {
+        "title": "金額"
       }
     },
     "approvals": {
@@ -2922,6 +2925,12 @@
     "AccountSelectorModal": {
       "title": "アドレスを選択",
       "searchPlaceholder": "アドレスを検索"
+    },
+    "PageHeader": {
+      "selectAccount": "アドレスを選択"
+    },
+    "ChainItem": {
+      "appChain": "{{chain}}アカウント"
     }
   },
   "global": {

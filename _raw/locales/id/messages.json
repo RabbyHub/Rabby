@@ -752,7 +752,10 @@
       "tipAddToContacts": "Tambahkan ke kontak",
       "whitelistAlert__notWhitelisted": "Alamat tidak ada dalam daftar putih. <1 /> Saya setuju untuk memberikan izin sementara untuk mentransfer.",
       "whitelistAlert__disabled": "Whitelist dinonaktifkan. Anda dapat mentransfer ke alamat mana saja.",
-      "whitelistAlert__whitelisted": "Alamat telah dimasukkan dalam daftar putih"
+      "whitelistAlert__whitelisted": "Alamat telah dimasukkan dalam daftar putih",
+      "sectionAmount": {
+        "title": "Jumlah"
+      }
     },
     "approvals": {
       "header": {
@@ -2919,6 +2922,12 @@
     "AccountSelectorModal": {
       "title": "Pilih alamat",
       "searchPlaceholder": "Cari alamat"
+    },
+    "PageHeader": {
+      "selectAccount": "Pilih Alamat"
+    },
+    "ChainItem": {
+      "appChain": "Di Akun {{chain}}"
     }
   },
   "global": {

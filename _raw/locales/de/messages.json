@@ -752,6 +752,9 @@
       "tipAddToContacts": "Zu Kontakten hinzufügen",
       "confirmModal": {
         "title": "Geben Sie das Passwort zur Bestätigung ein"
+      },
+      "sectionAmount": {
+        "title": "Betrag"
       }
     },
     "approvals": {
@@ -2922,6 +2925,12 @@
     "AccountSelectorModal": {
       "title": "Adresse auswählen",
       "searchPlaceholder": "Adresse suchen"
+    },
+    "PageHeader": {
+      "selectAccount": "Adresse auswählen"
+    },
+    "ChainItem": {
+      "appChain": "Auf {{chain}} Konto"
     }
   },
   "global": {

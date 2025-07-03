@@ -752,6 +752,9 @@
       "tipAddToContacts": "Adicionar aos contatos",
       "confirmModal": {
         "title": "Digite a Senha para Confirmar"
+      },
+      "sectionAmount": {
+        "title": "Quantidade"
       }
     },
     "approvals": {
@@ -2923,6 +2926,12 @@
     "AccountSelectorModal": {
       "searchPlaceholder": "Pesquisar endereço\n",
       "title": "Selecionar endereço\n"
+    },
+    "PageHeader": {
+      "selectAccount": "Selecionar Endereço"
+    },
+    "ChainItem": {
+      "appChain": "Na Conta {{chain}}"
     }
   },
   "global": {

@@ -1186,6 +1186,9 @@
       "whitelistAlert__whitelisted": "白名单地址",
       "confirmModal": {
         "title": "输入密码进行确认"
+      },
+      "sectionAmount": {
+        "title": "数量"
       }
     },
     "sendToken": {
@@ -2960,6 +2963,12 @@
     "AccountSelectorModal": {
       "title": "选择地址\n",
       "searchPlaceholder": "搜索地址\n"
+    },
+    "PageHeader": {
+      "selectAccount": "选择地址"
+    },
+    "ChainItem": {
+      "appChain": "在 {{chain}} 账户"
     }
   },
   "background": {

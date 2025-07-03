@@ -752,6 +752,9 @@
       "tipAddToContacts": "Добавить в контакты",
       "confirmModal": {
         "title": "Введите пароль для подтверждения"
+      },
+      "sectionAmount": {
+        "title": "Сумма"
       }
     },
     "approvals": {
@@ -2921,6 +2924,12 @@
     "AccountSelectorModal": {
       "searchPlaceholder": "Поиск адреса\n",
       "title": "Выберите адрес\n"
+    },
+    "PageHeader": {
+      "selectAccount": "Выбрать адрес"
+    },
+    "ChainItem": {
+      "appChain": "На {{chain}} Счёт"
     }
   },
   "global": {

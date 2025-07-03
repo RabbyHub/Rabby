@@ -752,7 +752,10 @@
       "whitelistAlert__disabled": "Danh sách trắng đã bị vô hiệu hóa. Bạn có thể chuyển đến bất kỳ địa chỉ nào.",
       "tipNotOnAddressList": "Không có trong danh sách địa chỉ.",
       "whitelistAlert__notWhitelisted": "Địa chỉ này không nằm trong danh sách trắng. <1 /> Tôi đồng ý cấp quyền tạm thời để chuyển giao.",
-      "whitelistAlert__whitelisted": "Địa chỉ đã được đưa vào danh sách trắng."
+      "whitelistAlert__whitelisted": "Địa chỉ đã được đưa vào danh sách trắng.",
+      "sectionAmount": {
+        "title": "Số lượng"
+      }
     },
     "approvals": {
       "header": {
@@ -2919,6 +2922,12 @@
     "AccountSelectorModal": {
       "searchPlaceholder": "Tìm địa chỉ\n",
       "title": "Chọn địa chỉ\n"
+    },
+    "PageHeader": {
+      "selectAccount": "Chọn Địa chỉ"
+    },
+    "ChainItem": {
+      "appChain": "Trên tài khoản {{chain}}"
     }
   },
   "global": {
