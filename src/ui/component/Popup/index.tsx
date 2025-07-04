@@ -14,6 +14,7 @@ export interface PopupProps extends DrawerProps {
   children?: ReactNode;
   isSupportDarkMode?: boolean;
   isNew?: boolean;
+  isLoading?: boolean;
 }
 
 const Popup = ({
