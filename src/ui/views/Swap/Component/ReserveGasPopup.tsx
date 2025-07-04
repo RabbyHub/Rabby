@@ -284,7 +284,7 @@ export const SendReserveGasPopup = (
     }
     const gasLevel = reverseGasContentRef.current?.getSelectedGasLevel();
     onClose?.(gasLevel);
-  }, [onClose]);
+  }, [onClose, isLoading]);
 
   return (
     <Popup
