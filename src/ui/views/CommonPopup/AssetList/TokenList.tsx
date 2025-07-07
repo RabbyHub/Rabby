@@ -18,6 +18,7 @@ export interface Props {
   blockedTokens?: TokenItemProps['item'][];
   customizeTokens?: TokenItemProps['item'][];
   isTestnet: boolean;
+  selectChainId?: string | null;
 }
 
 export const HomeTokenList = ({
@@ -29,6 +30,7 @@ export const HomeTokenList = ({
   blockedTokens,
   customizeTokens,
   isTestnet,
+  selectChainId,
 }) => {
   const totalValue = React.useMemo(() => {
     return list
@@ -37,8 +39,19 @@ export const HomeTokenList = ({
   }, [list]);
   const { result: currentList } = useExpandList(list, totalValue);
   const lowValueList = React.useMemo(() => {
-    return list?.filter((item) => currentList?.indexOf(item) === -1);
-  }, [currentList, list, isSearch]);
+    // 排除customized tokens
+    const customizedTokenIds = new Set(
+      customizeTokens?.map((token) => token.id) || []
+    );
+    return list?.filter(
+      (item) =>
+        currentList?.indexOf(item) === -1 &&
+        !customizedTokenIds.has(item.id) &&
+        !blockedTokens?.some(
+          (blocked) => blocked.id === item.id && blocked.chain === item.chain
+        )
+    );
+  }, [currentList, list, isSearch, customizeTokens]);
   const { t } = useTranslation();
 
   if (isNoResults) {
@@ -74,8 +87,13 @@ export const HomeTokenList = ({
           <CustomizedButton
             onClickButton={onOpenAddEntryPopup}
             isTestnet={isTestnet}
+            selectChainId={selectChainId}
           />
-          <BlockedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
+          <BlockedButton
+            onClickLink={onFocusInput}
+            isTestnet={isTestnet}
+            selectChainId={selectChainId}
+          />
         </div>
       )}
     </div>

@@ -69,7 +69,9 @@ export interface PreferenceStore {
   externalLinkAck: boolean;
   hiddenAddresses: Account[];
   balanceMap: {
-    [address: string]: TotalBalanceResponse;
+    [address: string]: TotalBalanceResponse & {
+      evmUsdValue?: number;
+    };
   };
   curvePointsMap: {
     [address: string]: CurvePointCollection;

@@ -752,7 +752,10 @@
       "whitelistAlert__notWhitelisted": "O endereço não está na lista de permissões. <1 /> Concordo em conceder permissão temporária para transferir.",
       "tipAddToContacts": "Adicionar aos contatos",
       "whitelistAlert__disabled": "Lista branca desativada. Você pode transferir para qualquer endereço.",
-      "tipNotOnAddressList": "Não na lista de endereços."
+      "tipNotOnAddressList": "Não na lista de endereços.",
+      "sectionAmount": {
+        "title": "Quantidade"
+      }
     },
     "approvals": {
       "header": {
@@ -2919,6 +2922,12 @@
     "AccountSelectorModal": {
       "title": "Selecionar endereço\n",
       "searchPlaceholder": "Pesquisar endereço\n"
+    },
+    "PageHeader": {
+      "selectAccount": "Selecionar Endereço"
+    },
+    "ChainItem": {
+      "appChain": "Na Conta {{chain}}"
     }
   },
   "global": {

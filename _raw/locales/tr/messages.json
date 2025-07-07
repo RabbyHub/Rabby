@@ -752,6 +752,9 @@
       "tipAddToContacts": "Rehbere ekle",
       "confirmModal": {
         "title": "Onaylamak için Şifreyi Girin"
+      },
+      "sectionAmount": {
+        "title": "Miktar"
       }
     },
     "approvals": {
@@ -2925,6 +2928,12 @@
     "AccountSelectorModal": {
       "searchPlaceholder": "Adres ara\n",
       "title": "Adres seç\n"
+    },
+    "PageHeader": {
+      "selectAccount": "Adres Seçin"
+    },
+    "ChainItem": {
+      "appChain": "{{chain}} Hesabı üzerinde"
     }
   },
   "global": {

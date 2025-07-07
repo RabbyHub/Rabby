@@ -84,10 +84,7 @@ const WhitelistInput = () => {
   const [isFocusAlias, setIsFocusAlias] = useState(false);
 
   const handleClickBack = useCallback(() => {
-    const from = (history.location.state as any)?.from;
-    if (from) {
-      history.replace(from);
-    } else if (history.length > 1) {
+    if (history.length > 1) {
       history.goBack();
     } else {
       history.push('/send-poly');
@@ -124,7 +121,7 @@ const WhitelistInput = () => {
         setInputAlias(name || '');
       });
     },
-    [wallet]
+    [exchanges, wallet]
   );
 
   const handleInputChangeAddress = (v) => {
@@ -269,7 +266,6 @@ const WhitelistInput = () => {
             <SectionHeader>{t('page.whitelist.name')}</SectionHeader>
             <div className="relative rounded-[8px] overflow-hidden">
               <Input
-                maxLength={20}
                 placeholder={t('page.whitelist.nameYourAddress')}
                 allowClear={false}
                 size="large"

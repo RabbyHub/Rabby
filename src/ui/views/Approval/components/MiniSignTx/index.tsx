@@ -13,7 +13,12 @@ import {
   getNativeTokenBalance,
   getPendingTxs,
 } from '@/utils/transaction';
-import { GasLevel, Tx, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  GasLevel,
+  ParseTxResponse,
+  Tx,
+  TxPushType,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { useMemoizedFn, useRequest, useSetState, useSize } from 'ahooks';
@@ -232,6 +237,7 @@ export const MiniSignTx = ({
       gasLimit: string;
       recommendGasLimitRatio: number;
       gasCost: Awaited<ReturnType<typeof explainGas>>;
+      actionData: ParseTxResponse;
     }[]
   >([]);
 
@@ -378,6 +384,10 @@ export const MiniSignTx = ({
             ignoreGasNotEnoughCheck: true,
             ignoreSimulationFailed: true,
             sig,
+            extra: {
+              preExecResult: item.preExecResult,
+              actionData: item.actionData,
+            },
           },
           status: 'idle',
         };
@@ -1013,6 +1023,7 @@ export const MiniApproval = ({
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
+  const currentAccount = useCurrentAccount();
   useEffect(() => {
     if (visible) {
       setStatus('idle');
@@ -1039,6 +1050,7 @@ export const MiniApproval = ({
         backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
       }}
       getContainer={getContainer}
+      key={`${currentAccount?.address}-${currentAccount?.type}`}
     >
       {txs?.length ? (
         <MiniSignTx

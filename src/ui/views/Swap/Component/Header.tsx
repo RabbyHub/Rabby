@@ -44,12 +44,13 @@ export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
   return (
     <>
       <PageHeader
-        className="mx-[20px] pt-[20px] mb-[14px]"
+        className="mx-[20px] mb-[5px]"
         forceShowBack={!isTab}
         onBack={gotoDashboard}
         canBack={!isTab}
+        isShowAccount
         rightSlot={
-          <div className="flex items-center gap-20 absolute bottom-0 right-0">
+          <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
             {isTab ? null : (
               <div
                 className="text-r-neutral-title1 cursor-pointer"

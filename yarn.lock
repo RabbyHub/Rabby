@@ -4807,10 +4807,10 @@
     events "^3.3.0"
     web3-utils "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.3.tgz#9a72284cdf2610dd9cd923bc6081023b3d08fd4b"
-  integrity sha512-CseQnvVxyBYnDVGmWIAUh/7ppKADkZIOeLJObtocjHj30aCddyaSkYGFWfxVy214y4/p4S/yH3F1R/DUoThg/A==
+"@rabby-wallet/gnosis-sdk@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.4.tgz#e91bd60cdfe06bbf0badb09ee2b2da9ab8febfd8"
+  integrity sha512-z/GKHZq+OfwsXFF1NkqEgzKAMeUC74YxSKvBr7s9K5hOjms5f/HQx9C0LYJKDN6HoPKZXelt5Zm9zgFryHoaBg==
   dependencies:
     "@ethersproject/bignumber" "5.5.0"
     "@ethersproject/bytes" "5.5.0"
@@ -4819,7 +4819,7 @@
     "@ethersproject/solidity" "5.5.0"
     "@safe-global/api-kit" "2.5.8"
     "@safe-global/protocol-kit" "5.2.1"
-    "@safe-global/safe-deployments" "1.37.28"
+    "@safe-global/safe-deployments" "1.37.36"
     "@safe-global/types-kit" "1.0.2"
     axios "0.24.0"
     ethereumjs-util "7.1.3"
@@ -4849,10 +4849,10 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.12.tgz#6cbde496e5d36e4b0e5efc894e6ce4acf8ecab7d"
   integrity sha512-fUtqYyVrauzugoRZw0cq8iSfvQ5FhX0O5F/Jk/j62oSicdJpgO2XgRM4HFoevYKa9ZD+3CnEjE0fY9D2YpXMZw==
 
-"@rabby-wallet/rabby-api@0.9.26":
-  version "0.9.26"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.26.tgz#8d9d0a5de5e6d08c9a9122877fd9fdde0137bcb3"
-  integrity sha512-vPElslI0654o/JzuLybzk236ZqcQU+EUaNdpUyPhDPSz8gEoiUvsTKQHegfc1bVRvlUBD8+nAbBOiER0PSOn/Q==
+"@rabby-wallet/rabby-api@0.9.27":
+  version "0.9.27"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.27.tgz#d3ed64a711e0a2f5eddd8589f705e74b0596002b"
+  integrity sha512-XV7/VC0J/mtV6mKPgX3AQV5K9S6n5DZ59v0HzZhI2pWU27a/I85bzm27Paqg6GH60ipSbSGQzAE5dDtIuxaO8A==
   dependencies:
     "@rabby-wallet/rabby-sign" "0.4.0"
     axios "^0.27.2"
@@ -5066,10 +5066,10 @@
     "@safe-global/types-kit" "^1.0.1"
     viem "^2.21.8"
 
-"@safe-global/safe-deployments@1.37.28":
-  version "1.37.28"
-  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.28.tgz#9bc7e8bf5f4df088321e8cb324387d6c7b01fd9d"
-  integrity sha512-b+dxFmJK4peNWGJyc6mXoyFsbwK3eXT2jRKDKoElZMovdefl4D0zn8OKme+GtHqxFgbeT9pswZdAoRRT/SBxeA==
+"@safe-global/safe-deployments@1.37.36":
+  version "1.37.36"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.36.tgz#1c463cc9000af600056f5e1874527b5679b62505"
+  integrity sha512-h9vuA659vvjJKf7wgoV5iPIHXWEQMoSkXAIZ2CJEoBteP9vP4LjyuPFp+wVQ6WyQSeHi22HjrlvGXxZD72Kqqw==
   dependencies:
     semver "^7.6.2"
 

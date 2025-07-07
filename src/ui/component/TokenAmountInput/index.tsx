@@ -15,7 +15,7 @@ import React, {
 } from 'react';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
-import { splitNumberByStep } from 'ui/utils';
+import { splitNumberByStep, useWallet } from 'ui/utils';
 import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
@@ -47,6 +47,7 @@ interface TokenAmountInputProps {
     token: TokenItem
   ) => {
     disable: boolean;
+    cexId?: string;
     reason: string;
   };
 }
@@ -109,6 +110,7 @@ const TokenAmountInput = ({
   const currentAccount = useRabbySelector(
     (state) => state.account.currentAccount
   );
+  const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
   const [chainServerId, setChainServerId] = useState(chainId);
   const { t } = useTranslation();
@@ -130,7 +132,7 @@ const TokenAmountInput = ({
   }, [amountFocus, tokenSelectorVisible]);
 
   const checkBeforeConfirm = (token: TokenItem) => {
-    const { disable, reason } = disableItemCheck?.(token) || {};
+    const { disable, reason, cexId } = disableItemCheck?.(token) || {};
     if (disable) {
       Modal.confirm({
         width: 340,
@@ -147,6 +149,13 @@ const TokenAmountInput = ({
           className: 'text-r-blue-default border-r-blue-default',
         },
         onOk() {
+          if (cexId) {
+            wallet.openapi.checkCex({
+              chain_id: token.chain,
+              id: token.id,
+              cex_id: cexId,
+            });
+          }
           handleCurrentTokenChange(token);
         },
       });
@@ -191,14 +200,14 @@ const TokenAmountInput = ({
   const {
     isLoading: isSearchLoading,
     list: searchedTokenByQuery,
-  } = useSearchToken(currentAccount?.address, keyword, chainServerId);
+  } = useSearchToken(currentAccount?.address, keyword, chainServerId, true);
 
   const {
     loading: isSearchTestnetLoading,
     testnetTokenList,
   } = useSearchTestnetToken({
     address: currentAccount?.address,
-    withBalance: keyword ? false : true,
+    withBalance: true,
     chainId: chainItem?.id,
     q: keyword,
     enabled: isTestnet,

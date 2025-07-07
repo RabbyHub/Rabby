@@ -216,6 +216,12 @@
     "AccountSelectorModal": {
       "searchPlaceholder": "Rechercher l'adresse",
       "title": "Sélectionner l'adresse"
+    },
+    "PageHeader": {
+      "selectAccount": "Sélectionner l'adresse"
+    },
+    "ChainItem": {
+      "appChain": "Sur le compte {{chain}}"
     }
   },
   "constant": {
@@ -1529,7 +1535,10 @@
       "whitelistAlert__disabled": "Liste blanche désactivée. Vous pouvez transférer vers n'importe quelle adresse.",
       "whitelistAlert__notWhitelisted": "L'adresse n'est pas sur liste blanche. <1 /> J'accepte d'accorder une autorisation temporaire de transfert.",
       "whitelistAlert__temporaryGranted": "Autorisation temporaire accordée",
-      "whitelistAlert__whitelisted": "L'adresse est sur liste blanche"
+      "whitelistAlert__whitelisted": "L'adresse est sur liste blanche",
+      "sectionAmount": {
+        "title": "Montant"
+      }
     },
     "sendToken": {
       "AddToContactsModal": {

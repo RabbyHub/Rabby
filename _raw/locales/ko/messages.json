@@ -752,7 +752,10 @@
       "whitelistAlert__notWhitelisted": "주소가 화이트리스트에 없습니다. <1 /> 일시적으로 전송 권한을 부여하는 데 동의합니다.",
       "whitelistAlert__disabled": "Whitelist이 비활성화되었습니다. 모든 주소로 전송할 수 있습니다.",
       "tipAddToContacts": "연락처에 추가",
-      "tipNotOnAddressList": "주소 목록에 없습니다."
+      "tipNotOnAddressList": "주소 목록에 없습니다.",
+      "sectionAmount": {
+        "title": "양떼"
+      }
     },
     "approvals": {
       "header": {
@@ -2919,6 +2922,12 @@
     "AccountSelectorModal": {
       "title": "주소 선택\n",
       "searchPlaceholder": "주소 검색\n"
+    },
+    "PageHeader": {
+      "selectAccount": "주소 선택"
+    },
+    "ChainItem": {
+      "appChain": "{{chain}} 계정에서"
     }
   },
   "global": {

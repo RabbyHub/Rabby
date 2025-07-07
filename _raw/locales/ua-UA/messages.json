@@ -754,6 +754,9 @@
       "tipAddToContacts": "Додати в контакти",
       "confirmModal": {
         "title": "Введіть пароль для підтвердження"
+      },
+      "sectionAmount": {
+        "title": "Сума"
       }
     },
     "approvals": {
@@ -2934,6 +2937,12 @@
     "AccountSelectorModal": {
       "title": "Виберіть адресу\n",
       "searchPlaceholder": "Пошук адреси\n"
+    },
+    "PageHeader": {
+      "selectAccount": "Виберіть адресу"
+    },
+    "ChainItem": {
+      "appChain": "На акаунті {{chain}}"
     }
   },
   "global": {

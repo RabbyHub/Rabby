@@ -66,7 +66,11 @@ import {
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
-import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  MultiAction,
+  TransactionAction,
+  TxPushType,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { findChain, isTestnet } from '@/utils/chain';
@@ -87,6 +91,7 @@ import {
 } from '@rabby-wallet/rabby-action';
 import { ga4 } from '@/utils/ga4';
 import { EIP7702Warning } from './EIP7702Warning';
+import { MultiActionProps } from './TypedDataActions';
 import { getCexInfo } from '@/ui/models/exchange';
 
 interface BasicCoboArgusInfo {
@@ -172,6 +177,7 @@ export const TxTypeComponent = ({
   origin,
   originLogo,
   account,
+  multiAction,
 }: {
   actionRequireData: ActionRequireData;
   actionData: ParsedTransactionActionData;
@@ -185,9 +191,10 @@ export const TxTypeComponent = ({
   origin?: string;
   originLogo?: string;
   account: Account;
+  multiAction?: MultiActionProps;
 }) => {
   if (!isReady) return <Loading />;
-  if (actionData && actionRequireData) {
+  if (multiAction || (actionData && actionRequireData)) {
     return (
       <Actions
         account={account}
@@ -201,6 +208,7 @@ export const TxTypeComponent = ({
         isSpeedUp={isSpeedUp}
         origin={origin}
         originLogo={originLogo}
+        multiAction={multiAction}
       />
     );
   }
@@ -639,6 +647,19 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
+  const [multiActionList, setMultiActionList] = useState<
+    ParsedTransactionActionData[]
+  >([]);
+  const [multiActionRequireDataList, setMultiActionRequireDataList] = useState<
+    ActionRequireData[]
+  >([]);
+  const [
+    multiActionEngineResultList,
+    setMultiActionEngineResultList,
+  ] = useState<Result[][]>([]);
+  const isMultiActions = useMemo(() => {
+    return multiActionList.length > 0;
+  }, [multiActionList]);
   const securityLevel = useMemo(() => {
     const enableResults = engineResults.filter((result) => {
       return result.enable && !currentTx.processedRules.includes(result.id);
@@ -846,63 +867,141 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         logId.current = actionData.log_id;
         actionType.current = actionData?.action?.type || '';
         return preExecPromise.then(async (res) => {
-          const parsed = parseAction({
-            type: 'transaction',
-            data: actionData.action,
-            balanceChange: res.balance_change,
-            tx: {
-              ...tx,
-              gas: '0x0',
-              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-              value: tx.value || '0x0',
-            },
-            preExecVersion: res.pre_exec_version,
-            gasUsed: res.gas.gas_used,
-            sender: tx.from,
-          });
-          const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
-          const requiredData = await fetchActionRequiredData({
-            type: 'transaction',
-            actionData: parsed,
-            contractCall: actionData.contract_call,
-            chainId: chain.serverId,
-            sender: address,
-            walletProvider: {
-              findChain,
-              ALIAS_ADDRESS,
-              hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
-              hasAddress: wallet.hasAddress,
-              getWhitelist: wallet.getWhitelist,
-              isWhitelistEnabled: wallet.isWhitelistEnabled,
-              getPendingTxsByNonce: wallet.getPendingTxsByNonce,
-            },
-            cex: cexInfo,
-            tx: {
-              ...tx,
-              gas: '0x0',
-              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-              value: tx.value || '0x0',
-            },
-            apiProvider: isTestnet(chain.serverId)
-              ? wallet.testnetOpenapi
-              : wallet.openapi,
-          });
-          const ctx = await formatSecurityEngineContext({
-            type: 'transaction',
-            actionData: parsed,
-            requireData: requiredData,
-            chainId: chain.serverId,
-            isTestnet: isTestnet(chain.serverId),
-            provider: {
-              getTimeSpan,
-              hasAddress: wallet.hasAddress,
-            },
-          });
-          securityEngineCtx.current = ctx;
-          const result = await executeEngine(ctx);
-          setEngineResults(result);
-          setActionData(parsed);
-          setActionRequireData(requiredData);
+          let parsed: ParsedTransactionActionData,
+            requiredData: ActionRequireData;
+          if (actionData.action?.type === 'multi_actions') {
+            const actions = actionData.action.data as MultiAction;
+            const parsedActions = actions.map((action) =>
+              parseAction({
+                type: 'transaction',
+                data: action,
+                balanceChange: res.balance_change,
+                tx: {
+                  ...tx,
+                  gas: '0x0',
+                  nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+                  value: tx.value || '0x0',
+                },
+                preExecVersion: res.pre_exec_version,
+                gasUsed: res.gas.gas_used,
+                sender: tx.from,
+              })
+            );
+            const requireDataList = await Promise.all(
+              parsedActions.map(async (item) => {
+                const cexInfo = await getCexInfo(item.send?.to || '', wallet);
+                return fetchActionRequiredData({
+                  type: 'transaction',
+                  actionData: item,
+                  contractCall: actionData.contract_call,
+                  chainId: chain.serverId,
+                  sender: address,
+                  walletProvider: {
+                    findChain,
+                    ALIAS_ADDRESS,
+                    hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+                    hasAddress: wallet.hasAddress,
+                    getWhitelist: wallet.getWhitelist,
+                    isWhitelistEnabled: wallet.isWhitelistEnabled,
+                    getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+                  },
+                  cex: cexInfo,
+                  tx: {
+                    ...tx,
+                    gas: '0x0',
+                    nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+                    value: tx.value || '0x0',
+                  },
+                  apiProvider: isTestnet(chain.serverId)
+                    ? wallet.testnetOpenapi
+                    : wallet.openapi,
+                });
+              })
+            );
+            const ctxList = await Promise.all(
+              requireDataList.map((requireData, index) => {
+                return formatSecurityEngineContext({
+                  type: 'transaction',
+                  actionData: parsedActions[index],
+                  requireData,
+                  chainId: chain.serverId,
+                  isTestnet: isTestnet(chain.serverId),
+                  provider: {
+                    getTimeSpan,
+                    hasAddress: wallet.hasAddress,
+                  },
+                });
+              })
+            );
+            const resultList = await Promise.all(
+              ctxList.map((ctx) => executeEngine(ctx))
+            );
+            parsed = parsedActions[0];
+            requiredData = requireDataList[0];
+            console.log('parsedActions', parsedActions);
+            setMultiActionList(parsedActions);
+            setMultiActionRequireDataList(requireDataList);
+            setMultiActionEngineResultList(resultList);
+          } else {
+            parsed = parseAction({
+              type: 'transaction',
+              data: actionData.action,
+              balanceChange: res.balance_change,
+              tx: {
+                ...tx,
+                gas: '0x0',
+                nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+                value: tx.value || '0x0',
+              },
+              preExecVersion: res.pre_exec_version,
+              gasUsed: res.gas.gas_used,
+              sender: tx.from,
+            });
+            const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
+            requiredData = await fetchActionRequiredData({
+              type: 'transaction',
+              actionData: parsed,
+              contractCall: actionData.contract_call,
+              chainId: chain.serverId,
+              cex: cexInfo,
+              sender: address,
+              walletProvider: {
+                findChain,
+                ALIAS_ADDRESS,
+                hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+                hasAddress: wallet.hasAddress,
+                getWhitelist: wallet.getWhitelist,
+                isWhitelistEnabled: wallet.isWhitelistEnabled,
+                getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+              },
+              tx: {
+                ...tx,
+                gas: '0x0',
+                nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+                value: tx.value || '0x0',
+              },
+              apiProvider: isTestnet(chain.serverId)
+                ? wallet.testnetOpenapi
+                : wallet.openapi,
+            });
+            const ctx = await formatSecurityEngineContext({
+              type: 'transaction',
+              actionData: parsed,
+              requireData: requiredData,
+              chainId: chain.serverId,
+              isTestnet: isTestnet(chain.serverId),
+              provider: {
+                getTimeSpan,
+                hasAddress: wallet.hasAddress,
+              },
+            });
+            securityEngineCtx.current = ctx;
+            const result = await executeEngine(ctx);
+            setEngineResults(result);
+            setActionData(parsed);
+            setActionRequireData(requiredData);
+          }
+
           const approval = await getApproval();
 
           approval.signingTxId &&
@@ -1989,6 +2088,15 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                 engineResults={engineResults}
                 origin={origin}
                 originLogo={params.session.icon}
+                multiAction={
+                  isMultiActions
+                    ? {
+                        actionList: multiActionList,
+                        requireDataList: multiActionRequireDataList,
+                        engineResultList: multiActionEngineResultList,
+                      }
+                    : undefined
+                }
               />
             )}
 
