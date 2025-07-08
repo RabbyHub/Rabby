@@ -766,7 +766,6 @@ class ProviderController extends BaseController {
 
                 hash = fePushedHash;
 
-                console.log('push tx id', fePushedHash);
 
                 params.frontend_push_result = {
                   success: true,
