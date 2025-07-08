@@ -751,6 +751,7 @@ export const GnosisTransactionQueueList = (props: {
         onCancel={handleCancel}
         isLoading={isSubmitting}
         networkId={networkId}
+        owners={safeInfo?.owners}
       />
     </div>
   );
