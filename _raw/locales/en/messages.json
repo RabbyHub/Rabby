@@ -742,7 +742,7 @@
       },
       "riskAlert": {
         "title": "Send to this Address",
-        "riskWarning": "Risk Warining",
+        "riskWarning": "Risk Warning",
         "understandRisks": "I understand the risks and want to continue",
         "cexDepositAddress": "{{cexName}} Deposit Address",
         "cexAddress": "{{cexName}} Address",

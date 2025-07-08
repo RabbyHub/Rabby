@@ -413,7 +413,10 @@ const SendToken = () => {
     return list;
   }, [chainItem, form, getParams, wallet]);
 
-  const [{ value: gasList }, loadGasList] = useAsyncFn(() => {
+  const [
+    { value: gasList, loading: loadingGasList },
+    loadGasList,
+  ] = useAsyncFn(() => {
     return fetchGasList();
   }, [fetchGasList]);
 
@@ -1344,6 +1347,7 @@ const SendToken = () => {
           }}
           gasList={gasList}
           visible={reserveGasOpen}
+          isLoading={loadingGasList}
           rawHexBalance={currentToken.raw_amount_hex_str}
           onClose={() => handleReserveGasClose()}
           getContainer={getContainer}
