@@ -121,10 +121,11 @@ class RPCService {
 
   syncDefaultRPC = async () => {
     try {
-      // const data = (await openapiService.getDefaultRPCs())?.rpcs;
-
       // TODO: remove  after test
-      const data = await fetchDefaultRpc();
+      const data = process.env.DEBUG
+        ? await fetchDefaultRpc()
+        : (await openapiService.getDefaultRPCs())?.rpcs;
+
       if (data.length) {
         const defaultRPC: Record<string, RPCDefaultItem> = data?.reduce(
           (acc, item) => {
