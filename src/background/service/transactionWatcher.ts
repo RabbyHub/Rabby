@@ -2,6 +2,7 @@ import {
   openapiService,
   i18n,
   transactionHistoryService,
+  RPCService,
 } from 'background/service';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import { notification } from 'background/webapi';
@@ -90,12 +91,11 @@ class TransactionWatcher {
         .catch(() => null);
     }
 
-    return openapiService
-      .ethRpc(chainItem.serverId, {
-        method: 'eth_getTransactionReceipt',
-        params: [hash],
-      })
-      .catch(() => null);
+    return RPCService.requestDefaultRPC({
+      chainServerId: chainItem.serverId,
+      method: 'eth_getTransactionReceipt',
+      params: [hash],
+    }).catch(() => null);
   };
 
   notify = async (id: string, txReceipt) => {
