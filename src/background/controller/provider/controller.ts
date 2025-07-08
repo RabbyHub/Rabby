@@ -738,14 +738,6 @@ class ProviderController extends BaseController {
             };
 
             const defaultRPC = RPCService.getDefaultRPC(chainServerId);
-            console.log(
-              'defaultRPC',
-              chainServerId,
-              defaultRPC,
-              defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount,
-              isGasLess,
-              isGasAccount
-            );
             if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
               let fePushedFailed = false;
               const txData: any = {
