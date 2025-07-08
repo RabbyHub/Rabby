@@ -121,10 +121,11 @@ class RPCService {
 
   syncDefaultRPC = async () => {
     try {
-      // const data = (await openapiService.getDefaultRPCs())?.rpcs;
-
       // TODO: remove  after test
-      const data = await fetchDefaultRpc();
+      const data = process.env.DEBUG
+        ? await fetchDefaultRpc()
+        : (await openapiService.getDefaultRPCs())?.rpcs;
+
       if (data.length) {
         const defaultRPC: Record<string, RPCDefaultItem> = data?.reduce(
           (acc, item) => {
@@ -185,16 +186,21 @@ class RPCService {
     );
   };
 
-  requestDefaultRPC = async (
-    chainServerId: string,
-    method: string,
-    params: any,
-    origin = INTERNAL_REQUEST_ORIGIN
-  ) => {
+  requestDefaultRPC = async ({
+    chainServerId,
+    method,
+    params,
+    origin = INTERNAL_REQUEST_ORIGIN,
+  }: {
+    chainServerId: string;
+    method: string;
+    params: any;
+    origin?: string;
+  }) => {
     const hostList = this?.store?.defaultRPC?.[chainServerId]?.rpcUrl || [];
     const isBESupported = this.supportedRpcMethodByBE(method);
 
-    if (!isBESupported || !hostList.length) {
+    if (!hostList.length || isBESupported) {
       // throw new Error(`No available rpc for ${chainServerId}`);
       return openapiService.ethRpc(chainServerId, {
         origin: encodeURIComponent(origin),

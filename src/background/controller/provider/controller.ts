@@ -225,12 +225,12 @@ class ProviderController extends BaseController {
         });
         return promise;
       } else {
-        const promise = RPCService.requestDefaultRPC(
+        const promise = RPCService.requestDefaultRPC({
           chainServerId,
           method,
           params,
-          origin
-        ).then((result) => {
+          origin,
+        }).then((result) => {
           RpcCache.set(currentAddress, {
             method,
             params,
