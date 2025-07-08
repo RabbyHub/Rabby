@@ -14,13 +14,28 @@ const create = (
   priority = 0
 ) => {
   const randomId = +new Date();
-  browser.notifications.create(url && `${url}_randomId_=${randomId}`, {
-    type: 'basic',
-    title,
-    iconUrl: browser.runtime.getURL('./images/icon-64.png'),
-    message,
-    priority,
-  });
+  const notificationId = url ? `${url}_randomId_=${randomId}` : '';
+
+  // Use native Chrome API if available to support requireInteraction
+  if (typeof chrome !== 'undefined' && chrome.notifications) {
+    chrome.notifications.create(notificationId, {
+      type: 'basic',
+      title,
+      iconUrl: chrome.runtime.getURL('./images/icon-64.png'),
+      message,
+      priority,
+      requireInteraction: false,
+    });
+  } else {
+    // Fallback to webextension-polyfill
+    browser.notifications.create(notificationId, {
+      type: 'basic',
+      title,
+      iconUrl: browser.runtime.getURL('./images/icon-64.png'),
+      message,
+      priority,
+    });
+  }
 };
 
 export default { create };

@@ -4,6 +4,7 @@ dist-*
 .yarn
 .DS_Store
 yarn-error
+.claude
 
 tmp/*.zip
 tmp/inv-batch.json
