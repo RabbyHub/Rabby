@@ -91,11 +91,11 @@ class TransactionWatcher {
         .catch(() => null);
     }
 
-    return RPCService.requestDefaultRPC(
-      chainItem.serverId,
-      'eth_getTransactionReceipt',
-      [hash]
-    ).catch(() => null);
+    return RPCService.requestDefaultRPC({
+      chainServerId: chainItem.serverId,
+      method: 'eth_getTransactionReceipt',
+      params: [hash],
+    }).catch(() => null);
   };
 
   notify = async (id: string, txReceipt) => {

@@ -23,7 +23,7 @@ import {
   ActionRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
-import { uninstalledService } from '.';
+import { RPCService, uninstalledService } from '.';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -514,11 +514,11 @@ class TxHistory {
   };
 
   getRpcTxReceipt = (chainServerId: string, hash: string) => {
-    return openapiService
-      .ethRpc(chainServerId, {
-        method: 'eth_getTransactionReceipt',
-        params: [hash],
-      })
+    return RPCService.requestDefaultRPC({
+      chainServerId,
+      method: 'eth_getTransactionReceipt',
+      params: [hash],
+    })
       .then((res) => {
         return {
           hash: res.transactionHash,
