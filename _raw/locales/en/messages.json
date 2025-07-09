@@ -19,6 +19,11 @@
       "modalViewMessage": {
         "title": "View Message"
       },
+      "detail": {
+        "Pending": "Pending",
+        "Failed": "Failed",
+        "Succeeded": "Succeeded"
+      },
       "filterScam": {
         "title": "Hide scam transactions",
         "loading": "Loading may take a moment, and data delays are possible",

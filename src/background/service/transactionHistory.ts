@@ -8,6 +8,7 @@ import openapiService, {
   TxPushType,
   testnetOpenapiService,
   TxRequest,
+  TokenItem,
 } from './openapi';
 import { INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
@@ -75,10 +76,57 @@ export interface TransactionGroup {
   $ctx?: any;
 }
 
+export interface BridgeTxHistoryItem {
+  address: string;
+  fromChainId: number;
+  toChainId: number;
+  fromToken: TokenItem;
+  toToken: TokenItem;
+  slippage: number;
+  fromAmount: number;
+  toAmount: number;
+  dexId: string;
+  status: 'pending' | 'fromSuccess' | 'allSuccess' | 'failed';
+  hash: string;
+  createdAt: number;
+  completedAt?: number;
+}
+
+export interface SwapTxHistoryItem {
+  address: string;
+  chainId: number;
+  fromToken: TokenItem;
+  toToken: TokenItem;
+  slippage: number;
+  fromAmount: number;
+  toAmount: number;
+  dexId: string;
+  status: 'pending' | 'success' | 'failed';
+  hash: string;
+  createdAt: number;
+  completedAt?: number;
+}
+
+export interface SendTxHistoryItem {
+  address: string;
+  chainId: number;
+  from: string;
+  to: string;
+  token: TokenItem;
+  amount: number;
+  status: 'pending' | 'success' | 'failed';
+  hash: string;
+  createdAt: number;
+  completedAt?: number;
+}
+
 interface TxHistoryStore {
   transactions: {
     [addr: string]: Record<string, TransactionGroup>;
   };
+  swapTxHistory: SwapTxHistoryItem[];
+  sendTxHistory: SendTxHistoryItem[];
+  bridgeTxHistory: BridgeTxHistoryItem[];
 }
 
 class TxHistory {
@@ -152,8 +200,24 @@ class TxHistory {
       name: 'txHistory',
       template: {
         transactions: {},
+        swapTxHistory: [],
+        sendTxHistory: [],
+        bridgeTxHistory: [],
       },
     });
+
+    if (!Array.isArray(this.store.swapTxHistory)) {
+      this.store.swapTxHistory = [];
+    }
+
+    if (!Array.isArray(this.store.sendTxHistory)) {
+      this.store.sendTxHistory = [];
+    }
+
+    if (!Array.isArray(this.store.bridgeTxHistory)) {
+      this.store.bridgeTxHistory = [];
+    }
+
     if (!this.store.transactions) this.store.transactions = {};
 
     this._populateAvailableTxs();
@@ -218,6 +282,98 @@ class TxHistory {
         return checkIsPendingTxGroup(item);
       }
     ).length;
+  }
+
+  addSwapTxHistory(tx: SwapTxHistoryItem) {
+    this.store.swapTxHistory.push(tx);
+    this.store.swapTxHistory = this.store.swapTxHistory
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
+  }
+
+  addSendTxHistory(tx: SendTxHistoryItem) {
+    this.store.sendTxHistory.push(tx);
+    this.store.sendTxHistory = this.store.sendTxHistory
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 500); // need use to show send history list
+  }
+
+  addBridgeTxHistory(tx: BridgeTxHistoryItem) {
+    this.store.bridgeTxHistory.push(tx);
+    this.store.bridgeTxHistory = this.store.bridgeTxHistory
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
+  }
+
+  getRecentPendingTxHistory(address: string, type: 'swap' | 'send' | 'bridge') {
+    console.log('getRecentPendingTxHistory', this.store);
+    const recentItem = this.store[`${type}TxHistory`]
+      .filter((item) => {
+        return isSameAddress(address, item.address);
+      })
+      .sort((a, b) => b.createdAt - a.createdAt)[0];
+    if (recentItem?.status === 'pending') {
+      return recentItem;
+    } else {
+      return null;
+    }
+  }
+
+  getRecentTxHistory(
+    address: string,
+    hash: string,
+    chainId: number,
+    type: 'swap' | 'send' | 'bridge'
+  ) {
+    return this.store[`${type}TxHistory`].find(
+      (item) =>
+        isSameAddress(address, item.address) &&
+        item.hash === hash &&
+        ('chainId' in item ? item.chainId : item.fromChainId) === chainId
+    );
+  }
+
+  completeRecentTxHistory(
+    txs: TransactionHistoryItem[],
+    chainId: number,
+    status: SwapTxHistoryItem['status']
+  ) {
+    const arr = [
+      this.store.swapTxHistory,
+      this.store.sendTxHistory,
+      this.store.bridgeTxHistory,
+    ];
+    const hashArr = txs.map((item) => item.hash);
+    arr.forEach(async (history) => {
+      const index = history.findIndex(
+        (item: SwapTxHistoryItem | SendTxHistoryItem | BridgeTxHistoryItem) =>
+          ('fromChainId' in item ? item.fromChainId : item.chainId) ===
+            chainId && hashArr.includes(item.hash)
+      );
+      if (index > -1) {
+        if ('fromChainId' in history[index]) {
+          // bridge tx
+          history[index].status =
+            status === 'success' ? 'fromSuccess' : 'failed';
+        } else {
+          history[index].status = status;
+        }
+        history[index].completedAt = Date.now();
+      }
+    });
+  }
+
+  completeBridgeTxHistory(
+    from_tx_id: string,
+    chainId: number,
+    status: BridgeTxHistoryItem['status']
+  ) {
+    this.store.bridgeTxHistory.forEach((item) => {
+      if (item.fromChainId === chainId && item.hash === from_tx_id) {
+        item.status = status;
+        item.completedAt = Date.now();
+      }
+    });
   }
 
   getPendingTxsByNonce(address: string, chainId: number, nonce: number) {
@@ -604,6 +760,11 @@ class TxHistory {
         success: completed.status === 1,
         reqId: completedTx.reqId,
       });
+      this.completeRecentTxHistory(
+        txs,
+        chainId,
+        completed.status === 1 ? 'success' : 'failed'
+      );
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.RELOAD_TX,
         params: {

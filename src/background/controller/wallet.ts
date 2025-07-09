@@ -138,6 +138,11 @@ import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
 import { metamaskModeService } from '../service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
+import {
+  BridgeTxHistoryItem,
+  SendTxHistoryItem,
+  SwapTxHistoryItem,
+} from '../service/transactionHistory';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -4005,6 +4010,33 @@ export class WalletController extends BaseController {
 
   // getTxExplainCacheByApprovalId = (id: string) =>
   //   transactionHistoryService.getExplainCacheByApprovalId(id);
+  getRecentPendingTxHistory = (
+    address: string,
+    type: 'swap' | 'send' | 'bridge'
+  ) => transactionHistoryService.getRecentPendingTxHistory(address, type);
+  addSwapTxHistory = (tx: SwapTxHistoryItem) =>
+    transactionHistoryService.addSwapTxHistory(tx);
+  addSendTxHistory = (tx: SendTxHistoryItem) =>
+    transactionHistoryService.addSendTxHistory(tx);
+  addBridgeTxHistory = (tx: BridgeTxHistoryItem) =>
+    transactionHistoryService.addBridgeTxHistory(tx);
+  getRecentTxHistory = (
+    address: string,
+    hash: string,
+    chainId: number,
+    type: 'swap' | 'send' | 'bridge'
+  ) =>
+    transactionHistoryService.getRecentTxHistory(address, hash, chainId, type);
+  completeBridgeTxHistory = (
+    from_tx_id: string,
+    chainId: number,
+    status: BridgeTxHistoryItem['status']
+  ) =>
+    transactionHistoryService.completeBridgeTxHistory(
+      from_tx_id,
+      chainId,
+      status
+    );
 
   getTransactionHistory = (address: string) =>
     transactionHistoryService.getList(address);

@@ -66,6 +66,7 @@ import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { ellipsis } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
 import { MiniApproval } from '../Approval/components/MiniSignTx';
+import { PendingTxItem } from '../Swap/Component/PendingTxItem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -1321,6 +1322,11 @@ const SendToken = () => {
                 )}
               </Form.Item>
             </div>
+            {!canSubmit && (
+              <div className="mt-20">
+                <PendingTxItem type="send" />
+              </div>
+            )}
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>

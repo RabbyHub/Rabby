@@ -13,6 +13,7 @@ import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import {
+  usePollBridgePendingNumber,
   useQuoteVisible,
   useSetQuoteVisible,
   useSetRefreshId,
@@ -42,6 +43,7 @@ import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
+import { PendingTxItem } from '../../Swap/Component/PendingTxItem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -97,6 +99,8 @@ export const BridgeContent = () => {
     inSufficientCanGetQuote,
   } = useBridge();
 
+  const [historyVisible, setHistoryVisible] = useState(false);
+
   const chains = useMemo(
     () => [toChain, fromChain].filter((e) => !!e) as CHAINS_ENUM[],
     [toChain, fromChain]
@@ -140,6 +144,11 @@ export const BridgeContent = () => {
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
+
+  const { pendingNumber, historyList } = usePollBridgePendingNumber() || {
+    pendingNumber: 0,
+    historyList: [],
+  };
 
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
 
@@ -488,6 +497,9 @@ export const BridgeContent = () => {
   return (
     <>
       <Header
+        historyVisible={historyVisible}
+        setHistoryVisible={setHistoryVisible}
+        pendingNumber={pendingNumber}
         onOpenInTab={() => {
           openInternalPageInTab(
             `bridge?${obj2query({
@@ -634,6 +646,15 @@ export const BridgeContent = () => {
             />
           )}
         </div>
+        {!selectedBridgeQuote && !recommendFromToken && (
+          <div className="mt-20 mx-20">
+            <PendingTxItem
+              type="bridge"
+              bridgeHistoryList={historyList}
+              openBridgeHistory={() => setHistoryVisible(true)}
+            />
+          </div>
+        )}
 
         <div
           className={clsx(

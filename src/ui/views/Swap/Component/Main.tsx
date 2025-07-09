@@ -49,6 +49,7 @@ import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
+import { PendingTxItem } from './PendingTxItem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -525,6 +526,24 @@ export const Main = () => {
     activeProvider?.quote,
   ]);
 
+  const isShowMoreVisible = useMemo(
+    () =>
+      showMoreVisible &&
+      Number(inputAmount) > 0 &&
+      inSufficientCanGetQuote &&
+      !!amountAvailable &&
+      !!payToken &&
+      !!receiveToken,
+    [
+      showMoreVisible,
+      inputAmount,
+      inSufficientCanGetQuote,
+      amountAvailable,
+      payToken,
+      receiveToken,
+    ]
+  );
+
   return (
     <>
       <Header
@@ -688,56 +707,57 @@ export const Main = () => {
           />
         ) : null}
 
-        {showMoreVisible &&
-          Number(inputAmount) > 0 &&
-          inSufficientCanGetQuote &&
-          !!amountAvailable &&
-          !!payToken &&
-          !!receiveToken && (
-            <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
-              <BridgeShowMore
-                autoSuggestSlippage={autoSuggestSlippage}
-                openFeePopup={openFeePopup}
-                open={showMoreOpen}
-                setOpen={setShowMoreOpen}
-                sourceName={sourceName}
-                sourceLogo={sourceLogo}
-                slippage={slippageState}
-                displaySlippage={slippage}
-                onSlippageChange={setSlippage}
-                fromToken={payToken}
-                toToken={receiveToken}
-                amount={inputAmount}
-                toAmount={
-                  isWrapToken
-                    ? inputAmount
-                    : activeProvider?.actualReceiveAmount || 0
-                }
-                openQuotesList={openQuotesList}
-                quoteLoading={quoteLoading}
-                slippageError={isSlippageHigh || isSlippageLow}
-                autoSlippage={!!autoSlippage}
-                isCustomSlippage={isCustomSlippage}
-                setAutoSlippage={setAutoSlippage}
-                setIsCustomSlippage={setIsCustomSlippage}
-                type="swap"
-                isWrapToken={isWrapToken}
-                isBestQuote={
-                  !!activeProvider &&
-                  !!bestQuoteDex &&
-                  bestQuoteDex === activeProvider?.name
-                }
-                showMEVGuardedSwitch={showMEVGuardedSwitch}
-                originPreferMEVGuarded={originPreferMEVGuarded}
-                switchPreferMEV={switchPreferMEV}
-                recommendValue={
-                  slippageValidInfo?.is_valid
-                    ? undefined
-                    : slippageValidInfo?.suggest_slippage
-                }
-              />
-            </div>
-          )}
+        {isShowMoreVisible && (
+          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
+            <BridgeShowMore
+              autoSuggestSlippage={autoSuggestSlippage}
+              openFeePopup={openFeePopup}
+              open={showMoreOpen}
+              setOpen={setShowMoreOpen}
+              sourceName={sourceName}
+              sourceLogo={sourceLogo}
+              slippage={slippageState}
+              displaySlippage={slippage}
+              onSlippageChange={setSlippage}
+              fromToken={payToken}
+              toToken={receiveToken}
+              amount={inputAmount}
+              toAmount={
+                isWrapToken
+                  ? inputAmount
+                  : activeProvider?.actualReceiveAmount || 0
+              }
+              openQuotesList={openQuotesList}
+              quoteLoading={quoteLoading}
+              slippageError={isSlippageHigh || isSlippageLow}
+              autoSlippage={!!autoSlippage}
+              isCustomSlippage={isCustomSlippage}
+              setAutoSlippage={setAutoSlippage}
+              setIsCustomSlippage={setIsCustomSlippage}
+              type="swap"
+              isWrapToken={isWrapToken}
+              isBestQuote={
+                !!activeProvider &&
+                !!bestQuoteDex &&
+                bestQuoteDex === activeProvider?.name
+              }
+              showMEVGuardedSwitch={showMEVGuardedSwitch}
+              originPreferMEVGuarded={originPreferMEVGuarded}
+              switchPreferMEV={switchPreferMEV}
+              recommendValue={
+                slippageValidInfo?.is_valid
+                  ? undefined
+                  : slippageValidInfo?.suggest_slippage
+              }
+            />
+          </div>
+        )}
+
+        {Boolean(!isShowMoreVisible) && (
+          <div className="mx-20 mt-20">
+            <PendingTxItem type="swap" />
+          </div>
+        )}
 
         <div
           className={clsx(
