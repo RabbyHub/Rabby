@@ -381,6 +381,7 @@ const SendPoly = () => {
                           item.balance || unimportedBalances[item.address] || 0
                         }
                         showWhitelistIcon
+                        allowEditAlias
                         address={item.address}
                         alias={ellipsisAddress(item.address)}
                         type={item.type}
