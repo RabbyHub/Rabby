@@ -1,5 +1,3 @@
-/* eslint "react-hooks/exhaustive-deps": ["error"] */
-/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -21,7 +19,6 @@ import {
   KEYRING_TYPE,
 } from 'consts';
 import { useRabbyDispatch, connectStore, useRabbySelector } from 'ui/store';
-import { Account } from 'background/service/preference';
 import {
   getUiType,
   isSameAddress,
@@ -38,7 +35,6 @@ import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
-import { UIContactBookItem } from '@/background/service/contactBook';
 import {
   findChain,
   findChainByEnum,
@@ -118,7 +114,6 @@ const SendToken = () => {
 
   // Core States
   const [form] = useForm<FormSendToken>();
-
   const toAddress = useMemo(() => {
     const query = new URLSearchParams(search);
     return query.get('to') || '';
@@ -130,10 +125,6 @@ const SendToken = () => {
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
-  const [formSnapshot, setFormSnapshot] = useState(form.getFieldsValue());
-  const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
-    null
-  );
   const [currentToken, setCurrentToken] = useState<TokenItem>(DEFAULT_TOKEN);
   const [safeInfo, setSafeInfo] = useState<{
     chainId: number;
@@ -590,7 +581,7 @@ const SendToken = () => {
         isInitFromCache?: boolean;
       }
     ) => {
-      const { token, isInitFromCache } = opts || {};
+      const { token } = opts || {};
       if (changedValues && changedValues.to) {
         handleReceiveAddressChanged(changedValues.to);
       }
@@ -632,18 +623,10 @@ const SendToken = () => {
       });
 
       form.setFieldsValue(nextFormValues);
-      setFormSnapshot(nextFormValues);
       setCacheAmount(resultAmount);
-      const aliasName = await wallet.getAlianName(toAddress.toLowerCase());
-      if (aliasName) {
-        setContactInfo({ address: toAddress, name: aliasName });
-      } else if (contactInfo) {
-        setContactInfo(null);
-      }
     },
     [
       cacheAmount,
-      contactInfo,
       currentToken,
       form,
       handleReceiveAddressChanged,
@@ -652,7 +635,6 @@ const SendToken = () => {
       showGasReserved,
       t,
       toAddress,
-      wallet,
     ]
   );
 
