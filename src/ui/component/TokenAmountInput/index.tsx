@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import styled from 'styled-components';
+import { RiskWarningTitle } from '../RiskWarningTitle';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -140,7 +141,7 @@ const TokenAmountInput = ({
         closeIcon: <></>,
         centered: true,
         className: 'token-selector-disable-item-tips',
-        title: null,
+        title: <RiskWarningTitle />,
         content: reason,
         okText: t('global.proceedButton'),
         cancelText: t('global.cancelButton'),

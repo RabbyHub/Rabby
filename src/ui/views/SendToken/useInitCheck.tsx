@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback, Fragment } from 'react';
+import React, { useEffect, useState, useCallback, Fragment } from 'react';
 import { Modal } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
-
 import { query2obj } from '@/ui/utils/url';
 import { useWallet } from '@/ui/utils';
+import { RiskWarningTitle } from '@/ui/component/RiskWarningTitle';
 
 export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
   const history = useHistory();
@@ -86,7 +86,7 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
           closeIcon: Fragment,
           centered: true,
           className: 'token-selector-disable-item-tips',
-          title: null,
+          title: <RiskWarningTitle />,
           content: res.reason,
           okText: t('global.proceedButton'),
           cancelText: t('global.cancelButton'),
@@ -110,5 +110,13 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         return;
       }
     });
-  }, [checked, history.location.search, addressDesc, checkFn, history, t]);
+  }, [
+    checked,
+    history.location.search,
+    addressDesc,
+    checkFn,
+    history,
+    t,
+    wallet.openapi,
+  ]);
 };

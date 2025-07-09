@@ -2931,6 +2931,9 @@
     },
     "ChainItem": {
       "appChain": "On {{chain}} Account"
+    },
+    "RiskTip": {
+      "title": "Risk Warning"
     }
   },
   "global": {
