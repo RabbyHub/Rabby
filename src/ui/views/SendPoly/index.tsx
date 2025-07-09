@@ -5,7 +5,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { groupBy } from 'lodash';
 
 import { findAccountByPriority } from '@/utils/account';
@@ -18,7 +18,6 @@ import { EmptyWhitelistHolder } from './components/EmptyWhitelistHolder';
 import { EnterAddress } from './components/EnterAddress';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { padWatchAccount } from './util';
-import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { useWallet } from '@/ui/utils/WalletContext';
 import { ellipsisAddress } from '@/ui/utils/address';
@@ -26,8 +25,8 @@ import { ellipsisAddress } from '@/ui/utils/address';
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
-import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
+import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
 
 const OuterInput = styled.div`
@@ -35,21 +34,6 @@ const OuterInput = styled.div`
   &:hover {
     border: 1px solid var(--r-blue-default, #7084ff);
     cursor: text;
-  }
-`;
-
-const EnterAddressButton = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px auto 0;
-  gap: 4px;
-  cursor: pointer;
-  padding: 12px 18px;
-  width: fit-content;
-  &:hover {
-    background-color: var(--r-neutral-card1);
-    border-radius: 8px;
   }
 `;
 
@@ -123,7 +107,6 @@ const SendPoly = () => {
 
   // main state
   const [inputingAddress, setInputingAddress] = useState(false);
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
   const [selectedAddressType, setSelectedAddressType] = useState('');
@@ -228,10 +211,6 @@ const SendPoly = () => {
       setSelectedAddressType(type || '');
       setShowAddressRiskAlert(true);
     }
-  };
-
-  const handleCancel = () => {
-    setShowSelectorModal(false);
   };
 
   const handleDeleteWhitelist = async (address: string) => {
@@ -421,30 +400,33 @@ const SendPoly = () => {
                 )}
               </div>
             </div>
-            {/* Imported Addresses Entry */}
+            {/* Add Whitelist Entry */}
             <div>
-              <EnterAddressButton
+              <Button
                 onClick={() => {
-                  setShowSelectorModal(true);
+                  history.push('/whitelist-input');
                 }}
+                type="primary"
+                className={`
+                  bg-r-neutral-card1 mt-[12px] w-full shadow-none h-[48px] border-transparent 
+                  hover:border-rabby-blue-default hover:bg-r-blue-light-2 hover:before:hidden`}
               >
-                <div className="text-[15px] text-r-neutral-body">
-                  {t('page.sendPoly.sendToImportedAddress')}
+                <div className="flex items-center justify-center space-x-6 text-r-blue-default">
+                  <IconAdd />
+                  <span
+                    className="text-[13px] font-medium"
+                    style={{
+                      textShadow: 'none',
+                    }}
+                  >
+                    {t('page.sendPoly.whitelist.addWhitelist')}
+                  </span>
                 </div>
-                <RcIconRight width={16} height={16} />
-              </EnterAddressButton>
+              </Button>
             </div>
           </div>
         )}
       </div>
-      <AccountSelectorModal
-        title={t('page.sendPoly.selectImportedAddress')}
-        visible={showSelectorModal}
-        onChange={(acc) => handleChange(acc.address, acc.type)}
-        onCancel={handleCancel}
-        getContainer={getContainer}
-        height="calc(100% - 60px)"
-      />
       <AddressRiskAlert
         type={selectedAddressType}
         address={selectedAddress}
