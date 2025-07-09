@@ -2713,7 +2713,6 @@
           }
         },
         "title": "Enviar a esta Dirección",
-        "riskWarning": "Advertencia de Riesgo",
         "cexAddress": "{{cexName}} Dirección",
         "cexDepositAddress": "{{cexName}} Dirección de Depósito",
         "understandRisks": "Entiendo los riesgos y quiero continuar"

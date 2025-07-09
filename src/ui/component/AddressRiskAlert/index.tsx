@@ -5,6 +5,7 @@ import {
   Form,
   Input,
   Skeleton,
+  Switch,
   Tooltip,
 } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
@@ -30,8 +31,6 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { IExchange } from '../CexSelect';
 
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { ReactComponent as RcIconCheckedCC } from 'ui/assets/address/checked-square-cc.svg';
-import { ReactComponent as RcIconCheckCC } from 'ui/assets/address/check-square-cc.svg';
 
 interface AddressRiskAlertProps {
   visible: boolean;
@@ -186,6 +185,7 @@ export const AddressRiskAlert = ({
   const [form] = Form.useForm();
   const [hasInputPassword, setHasInputPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [inWhiteList, setInWhiteList] = useState(false);
   // disable detect risk when invisible
   const riskInfos = useAddressRisks(visible ? address : '', editCex);
   const addressSplit = useMemo(() => {
@@ -222,6 +222,11 @@ export const AddressRiskAlert = ({
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
       await wallet?.verifyPassword(password);
+      if (inWhiteList) {
+        await wallet.addWhitelist(password, address);
+      } else {
+        await wallet.removeWhitelist(address);
+      }
       onConfirm?.();
     } catch (e: any) {
       setPasswordError(true);
@@ -262,10 +267,13 @@ export const AddressRiskAlert = ({
     >
       <div className="flex flex-col h-full">
         <header
-          className={`
-              header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]
-              flex flex-col items-center gap-[8px]
-           `}
+          className={clsx(
+            'header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]',
+            'flex flex-col items-center gap-[8px]',
+            {
+              'pb-0': riskInfos.hasNotRisk,
+            }
+          )}
         >
           {riskInfos.loadingAddrDesc ? (
             <Skeleton.Input className="w-full h-[44px] rounded-[8px]" active />
@@ -304,6 +312,34 @@ export const AddressRiskAlert = ({
               }
             />
           )}
+          {riskInfos.hasNotRisk && (
+            <div className="w-full mt-[12px]">
+              <div className="relative">
+                <div className="absolute w-[calc(100%+32px)] left-[-16px] right-[-16px] h-[1px] bg-r-neutral-line" />
+              </div>
+              <div className="w-full h-[48px] flex flex-row justify-between items-center">
+                <div className="text-r-neutral-body text-[13px]">
+                  {t('page.sendPoly.riskAlert.TransferBefore')}
+                </div>
+                <div className="text-r-neutral-title1 font-medium text-[13px]">
+                  {t('page.sendPoly.riskAlert.TransferBeforeValue')}
+                </div>
+              </div>
+              <div className="w-full h-[48px] flex flex-row justify-between items-center">
+                <div className="text-r-neutral-body text-[13px]">
+                  {t('page.sendPoly.riskAlert.AddToWhitelist')}
+                </div>
+                <div>
+                  <Switch
+                    checked={inWhiteList}
+                    onChange={(v) => {
+                      setInWhiteList(!!v);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </header>
         {riskInfos.loadingHasTransfer ? (
           <div className="flex-1">
@@ -313,12 +349,7 @@ export const AddressRiskAlert = ({
             </div>
           </div>
         ) : (
-          <div className="mt-[32px] flex-1">
-            {riskInfos.risks.length > 0 && (
-              <div className="text-r-neutral-foot text-[12px] font-medium text-center">
-                {t('page.sendPoly.riskAlert.riskWarning')}
-              </div>
-            )}
+          <div className="mt-[20px] flex-1">
             <main className="flex flex-col gap-[8px] mt-[8px]">
               {riskInfos.risks.map((item) => (
                 <RiskRow key={item.type} desc={item.value} />

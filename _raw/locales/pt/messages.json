@@ -2711,7 +2711,6 @@
         },
         "title": "Enviar para este Endereço",
         "cexAddress": "{{cexName}} Endereço",
-        "riskWarning": "Aviso de Risco",
         "cexDepositAddress": "{{cexName}} Endereço de Depósito",
         "understandRisks": "Eu entendo os riscos e quero continuar"
       },

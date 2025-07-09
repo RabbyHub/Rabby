@@ -2717,7 +2717,6 @@
         },
         "cexAddress": "{{cexName}} Adresi",
         "title": "Bu Adrese Gönder",
-        "riskWarning": "Risk Uyarısı",
         "cexDepositAddress": "{{cexName}} Yatırım Adresi",
         "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum."
       },

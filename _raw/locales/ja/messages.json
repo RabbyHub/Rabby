@@ -2712,7 +2712,6 @@
             "noSend": "このアドレスへの転送は180日間ありません"
           }
         },
-        "riskWarning": "リスク警告",
         "understandRisks": "リスクを理解しており、続行したいと思います。",
         "title": "このアドレスに送信",
         "cexAddress": "{{cexName}} アドレス",

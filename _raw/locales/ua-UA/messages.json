@@ -2727,8 +2727,7 @@
         "cexAddress": "{{cexName}} Адресa",
         "cexDepositAddress": "{{cexName}} Адрес депозиту",
         "title": "Надіслати на цю адресу",
-        "understandRisks": "Я розумію ризики і хочу продовжити",
-        "riskWarning": "Попередження про ризики"
+        "understandRisks": "Я розумію ризики і хочу продовжити"
       },
       "title": "Відправити на",
       "enterAddress": "Введіть адресу",

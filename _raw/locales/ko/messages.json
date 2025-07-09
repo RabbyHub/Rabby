@@ -2709,7 +2709,6 @@
             "scamAddress": "Rabby에서 플래그된 사기 주소"
           }
         },
-        "riskWarning": "위험 경고",
         "cexAddress": "{{cexName}} 주소",
         "cexDepositAddress": "{{cexName}} 입금 주소",
         "understandRisks": "위험을 이해하며 계속 진행하고자 합니다.",

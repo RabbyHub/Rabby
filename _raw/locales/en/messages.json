@@ -742,11 +742,13 @@
       },
       "riskAlert": {
         "title": "Send to this Address",
-        "riskWarning": "Risk Warning",
         "understandRisks": "I understand the risks and want to continue",
         "cexDepositAddress": "{{cexName}} Deposit Address",
         "cexAddress": "{{cexName}} Address",
         "passwordPlaceholder": "Input password to continue",
+        "TransferBefore": "Transfer before",
+        "TransferBeforeValue": "Yes",
+        "AddToWhitelist": "Add to Whitelist",
         "riskType": {
           "risks": {
             "noSend": "No transfers to this address in 180 days",

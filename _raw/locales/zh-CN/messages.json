@@ -2751,7 +2751,6 @@
           }
         },
         "title": "发送到此地址",
-        "riskWarning": "风险警告",
         "understandRisks": "我理解这些风险，并且想继续",
         "cexAddress": "{{cexName}} 地址",
         "cexDepositAddress": "{{cexName}} 存款地址"

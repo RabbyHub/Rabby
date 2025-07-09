@@ -2712,7 +2712,6 @@
           }
         },
         "title": "Отправить на этот адрес",
-        "riskWarning": "Предупреждение о рисках",
         "understandRisks": "Я понимаю риски и хочу продолжить",
         "cexDepositAddress": "{{cexName}} Адрес депозита",
         "cexAddress": "{{cexName}} адрес"

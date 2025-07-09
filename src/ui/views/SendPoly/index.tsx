@@ -9,7 +9,6 @@ import { Button, message } from 'antd';
 import { groupBy } from 'lodash';
 
 import { findAccountByPriority } from '@/utils/account';
-import { KEYRING_CLASS } from '@/constant';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
@@ -198,13 +197,7 @@ const SendPoly = () => {
       return;
     }
     const inWhitelist = whitelist.some((item) => isSameAddress(address, item));
-    const isMyCoreWallet = accountsList
-      ?.filter(
-        (acc) =>
-          acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
-      )
-      ?.some((item) => isSameAddress(item.address, address));
-    if (inWhitelist || isMyCoreWallet) {
+    if (inWhitelist) {
       handleGotoSend(address, type);
     } else {
       setSelectedAddress(address);

@@ -2989,7 +2989,6 @@
         "cexAddress": "{{cexName}} Adresse",
         "cexDepositAddress": "{{cexName}} Adresse de dépôt",
         "title": "Envoyer à cette adresse",
-        "riskWarning": "Avertissement de risque",
         "understandRisks": "Je comprends les risques et je souhaite continuer"
       },
       "sendToImportedAddress": "Envoyer à l'adresse importée",

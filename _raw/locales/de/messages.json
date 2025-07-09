@@ -2712,7 +2712,6 @@
             "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen"
           }
         },
-        "riskWarning": "Risikowarnung",
         "cexAddress": "{{cexName}} Adresse",
         "title": "An diese Adresse senden",
         "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",

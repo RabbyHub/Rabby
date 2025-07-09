@@ -2709,7 +2709,6 @@
             "scamAddress": "Alamat penipuan ditandai oleh Rabby"
           }
         },
-        "riskWarning": "Peringatan Risiko",
         "title": "Kirim ke Alamat Ini",
         "cexDepositAddress": "{{cexName}} Alamat Deposit",
         "cexAddress": "{{cexName}} Alamat",
