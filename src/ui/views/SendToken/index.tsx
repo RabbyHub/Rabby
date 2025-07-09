@@ -58,6 +58,8 @@ import { Account } from '@/background/service/preference';
 import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
 import { ReactComponent as RcIconCopy } from 'ui/assets/send-token/modal/copy.svg';
 import { copyAddress } from '@/ui/utils/clipboard';
+import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import styled from 'styled-components';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -99,6 +101,17 @@ interface AddressTypeCardProps {
   account: Account;
   cexInfo?: Cex;
 }
+
+const ChainSelectWrapper = styled.div`
+  border: 1px solid transparent;
+  border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+  &:hover {
+    border: 1px solid var(--r-blue-default, #7084ff);
+    background-color: var(--r-blue-light-1, #eef1ff);
+    border-radius: 8px;
+  }
+`;
+
 const ToAddressCard = ({
   account: targetAccount,
   cexInfo,
@@ -1010,6 +1023,81 @@ const SendToken = () => {
     }
   };
 
+  const handleChainChanged = useCallback(
+    async (val: CHAINS_ENUM) => {
+      setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
+      const gasList = await loadGasList();
+      if (gasList && Array.isArray(gasList)) {
+        setSelectedGasLevel(
+          gasList.find(
+            (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
+          ) || findInstanceLevel(gasList)
+        );
+      }
+
+      const account = (await wallet.syncGetCurrentAccount())!;
+      const chain = findChain({
+        enum: val,
+      });
+      if (!chain) {
+        return;
+      }
+      setChain(val);
+      setCurrentToken({
+        id: chain.nativeTokenAddress,
+        decimals: chain.nativeTokenDecimals,
+        logo_url: chain.nativeTokenLogo,
+        symbol: chain.nativeTokenSymbol,
+        display_symbol: chain.nativeTokenSymbol,
+        optimized_symbol: chain.nativeTokenSymbol,
+        is_core: true,
+        is_verified: true,
+        is_wallet: true,
+        amount: 0,
+        price: 0,
+        name: chain.nativeTokenSymbol,
+        chain: chain.serverId,
+        time_at: 0,
+      });
+
+      let nextToken: TokenItem | null = null;
+      try {
+        nextToken = await loadCurrentToken(
+          chain.nativeTokenAddress,
+          chain.serverId,
+          account.address
+        );
+      } catch (error) {
+        console.error(error);
+      }
+
+      const values = form.getFieldsValue();
+      form.setFieldsValue({
+        ...values,
+        amount: '',
+      });
+      setShowGasReserved(false);
+      handleFormValuesChange(
+        { amount: '' },
+        {
+          ...values,
+          amount: '',
+        },
+        {
+          ...(nextToken && { token: nextToken }),
+        }
+      );
+    },
+    [
+      form,
+      handleFormValuesChange,
+      loadCurrentToken,
+      setShowGasReserved,
+      loadGasList,
+      wallet,
+    ]
+  );
+
   const initByCache = async () => {
     const account = (await wallet.syncGetCurrentAccount())!;
     const qs = query2obj(history.location.search);
@@ -1284,20 +1372,37 @@ const SendToken = () => {
               </div>
               <Form.Item name="amount">
                 {currentAccount && chainItem && (
-                  <TokenAmountInput
-                    className="bg-r-neutral-card1 rounded-[8px]"
-                    token={currentToken}
-                    onChange={handleAmountChange}
-                    onTokenChange={handleCurrentTokenChange}
-                    chainId={chainItem.serverId}
-                    excludeTokens={[]}
-                    disableItemCheck={disableItemCheck}
-                    balanceNumText={balanceNumText}
-                    insufficientError={!!balanceError}
-                    handleClickMaxButton={handleClickMaxButton}
-                    isLoading={isLoading}
-                    getContainer={getContainer}
-                  />
+                  <div className="bg-r-neutral-card1 rounded-[8px]">
+                    <ChainSelectWrapper>
+                      <ChainSelectorInForm
+                        value={chain}
+                        onChange={handleChainChanged}
+                        // TODO: to address是否支持这个链
+                        // disabledTips={getDisabledChainTips}
+                        chainRenderClassName={clsx(
+                          'text-[13px] font-medium border-0 bg-transparent',
+                          'before:border-transparent hover:before:border-rabby-blue-default'
+                        )}
+                        drawerHeight={540}
+                        showClosableIcon
+                        getContainer={getContainer}
+                      />
+                    </ChainSelectWrapper>
+                    <TokenAmountInput
+                      className="bg-r-neutral-card1 rounded-[8px]"
+                      token={currentToken}
+                      onChange={handleAmountChange}
+                      onTokenChange={handleCurrentTokenChange}
+                      chainId={chainItem.serverId}
+                      excludeTokens={[]}
+                      disableItemCheck={disableItemCheck}
+                      balanceNumText={balanceNumText}
+                      insufficientError={!!balanceError}
+                      handleClickMaxButton={handleClickMaxButton}
+                      isLoading={isLoading}
+                      getContainer={getContainer}
+                    />
+                  </div>
                 )}
               </Form.Item>
             </div>

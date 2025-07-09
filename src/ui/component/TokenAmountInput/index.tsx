@@ -343,7 +343,7 @@ const TokenAmountInput = ({
         disableItemCheck={disableItemCheck}
         showCustomTestnetAssetList
         placeholder={placeholder}
-        chainId={''}
+        chainId={chainServerId}
         getContainer={getContainer}
       />
     </div>
