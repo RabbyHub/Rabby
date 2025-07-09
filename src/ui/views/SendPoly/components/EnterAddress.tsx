@@ -12,6 +12,7 @@ import { useWallet } from 'ui/utils';
 
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { AccountList } from './AccountList';
 
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
@@ -33,7 +34,7 @@ export const EnterAddress = ({
   onNext,
   onCancel,
 }: {
-  onNext: (address: string) => void;
+  onNext: (address: string, type?: string) => void;
   onCancel: () => void;
 }) => {
   const { t } = useTranslation();
@@ -209,19 +210,22 @@ export const EnterAddress = ({
         )}
       </div>
       {shouldRender && (
-        <div className={'footer'}>
-          <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-            <Button
-              disabled={(!isValidAddr || !inputAddress) && !ensResult?.addr}
-              type="primary"
-              htmlType="submit"
-              size="large"
-              className="w-[100%] h-[48px] text-[16px]"
-            >
-              {t('global.confirm')}
-            </Button>
+        <>
+          <AccountList onChange={(acc) => onNext(acc.address, acc.type)} />
+          <div className={'footer'}>
+            <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
+              <Button
+                disabled={(!isValidAddr || !inputAddress) && !ensResult?.addr}
+                type="primary"
+                htmlType="submit"
+                size="large"
+                className="w-[100%] h-[48px] text-[16px]"
+              >
+                {t('global.confirm')}
+              </Button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </Form>
   );

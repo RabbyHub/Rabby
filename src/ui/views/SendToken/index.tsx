@@ -110,9 +110,8 @@ const SendToken = () => {
   const rbisource = useRbiSource();
   const { search } = useLocation();
   const wallet = useWallet();
-  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
+  const { whitelist } = useRabbySelector((s) => ({
     whitelist: s.whitelist.whitelist,
-    whitelistEnabled: s.whitelist.enabled,
   }));
 
   // UI States
@@ -1274,14 +1273,11 @@ const SendToken = () => {
                       ? ellipsis(targetAccount?.address)
                       : ''
                   }
-                  showWhitelistIcon={
-                    whitelistEnabled &&
-                    whitelist?.some(
-                      (w) =>
-                        targetAccount?.address &&
-                        isSameAddress(w, targetAccount?.address)
-                    )
-                  }
+                  showWhitelistIcon={whitelist?.some(
+                    (w) =>
+                      targetAccount?.address &&
+                      isSameAddress(w, targetAccount?.address)
+                  )}
                   tmpCexInfo={tmpCexInfo}
                   brandName={targetAccount?.brandName || ''}
                   onClick={() => {
