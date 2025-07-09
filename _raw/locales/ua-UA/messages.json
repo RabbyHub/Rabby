@@ -2734,8 +2734,7 @@
       "enterAddress": "Введіть адресу",
       "sendToImportedAddress": "Надіслати на імпортовану адресу",
       "selectExchangeSource": "Виберіть джерело обміну",
-      "selectImportedAddress": "Вибрати імпортовану адресу",
-      "enterAddressOrENS": "Введіть адресу / ENS"
+      "selectImportedAddress": "Вибрати імпортовану адресу"
     },
     "whitelist": {
       "tips": {

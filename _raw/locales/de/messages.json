@@ -2719,7 +2719,6 @@
         "cexDepositAddress": "{{cexName}} Einzahlungsadresse"
       },
       "selectImportedAddress": "Importierte Adresse auswählen",
-      "enterAddressOrENS": "Adresse / ENS eingeben",
       "sendToImportedAddress": "An eine importierte Adresse senden",
       "enterAddress": "Adresse eingeben",
       "selectExchangeSource": "Wählen Sie die Austauschquelle",

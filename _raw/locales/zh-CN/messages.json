@@ -2760,7 +2760,6 @@
       "sendToImportedAddress": "发送到导入的地址",
       "title": "发送到",
       "enterAddress": "输入地址",
-      "enterAddressOrENS": "输入地址 / ENS",
       "selectExchangeSource": "选择交易所来源"
     },
     "whitelist": {

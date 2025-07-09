@@ -2716,7 +2716,6 @@
         "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục"
       },
       "selectImportedAddress": "Chọn địa chỉ đã nhập",
-      "enterAddressOrENS": "Nhập địa chỉ / ENS",
       "sendToImportedAddress": "Gửi đến Địa chỉ Nhập khẩu",
       "selectExchangeSource": "Chọn Nguồn Giao Dịch",
       "title": "Gửi đến",

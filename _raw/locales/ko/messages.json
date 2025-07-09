@@ -2719,7 +2719,6 @@
       "title": "보내기",
       "selectImportedAddress": "가져온 주소 선택",
       "sendToImportedAddress": "가져온 주소로 보내기",
-      "enterAddressOrENS": "주소 / ENS 입력",
       "selectExchangeSource": "거래소 출처 선택"
     },
     "whitelist": {

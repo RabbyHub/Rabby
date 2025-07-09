@@ -2760,7 +2760,6 @@
       "selectExchangeSource": "選擇交易所來源",
       "title": "發送至",
       "sendToImportedAddress": "發送到已導入地址",
-      "enterAddressOrENS": "輸入地址 / ENS",
       "selectImportedAddress": "選擇導入的地址"
     },
     "whitelist": {

@@ -2721,7 +2721,6 @@
       "enterAddress": "Ingresa la dirección",
       "selectExchangeSource": "Seleccionar fuente de intercambio",
       "sendToImportedAddress": "Enviar a dirección importada",
-      "enterAddressOrENS": "Ingrese dirección / ENS",
       "selectImportedAddress": "Seleccionar dirección importada",
       "title": "Enviar a"
     },

@@ -2993,7 +2993,6 @@
         "understandRisks": "Je comprends les risques et je souhaite continuer"
       },
       "sendToImportedAddress": "Envoyer à l'adresse importée",
-      "enterAddressOrENS": "Entrez l'adresse / ENS",
       "enterAddress": "Entrer l'adresse",
       "title": "Envoyer à",
       "selectExchangeSource": "Sélectionner la source d'échange",

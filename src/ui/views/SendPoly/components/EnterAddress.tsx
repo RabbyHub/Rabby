@@ -132,7 +132,7 @@ export const EnterAddress = ({
       className="flex flex-1 flex-col"
     >
       <div
-        className="relative flex-1 overflow-auto"
+        className="relative overflow-auto"
         onClick={() => {
           if (!inputAddress) {
             onCancel();
@@ -211,7 +211,9 @@ export const EnterAddress = ({
       </div>
       {shouldRender && (
         <>
-          <AccountList onChange={(acc) => onNext(acc.address, acc.type)} />
+          <div className="flex-1 pt-[20px] overflow-y-scroll">
+            <AccountList onChange={(acc) => onNext(acc.address, acc.type)} />
+          </div>
           <div className={'footer'}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
               <Button

@@ -2719,7 +2719,6 @@
       },
       "enterAddress": "Введите адрес",
       "title": "Отправить на",
-      "enterAddressOrENS": "Введите адрес / ENS",
       "selectImportedAddress": "Выберите импортированный адрес",
       "selectExchangeSource": "Выбрать источник обмена",
       "sendToImportedAddress": "Отправить на Импортированный Адрес"

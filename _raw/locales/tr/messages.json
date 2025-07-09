@@ -2725,7 +2725,6 @@
       "selectExchangeSource": "Borsa Kaynağını Seçin",
       "title": "Göndermek için",
       "sendToImportedAddress": "İçe Aktarılan Adrese Gönder",
-      "enterAddressOrENS": "Adres / ENS girin",
       "selectImportedAddress": "İçe aktarılan adresi seçin"
     },
     "whitelist": {

@@ -721,7 +721,7 @@
     "sendPoly": {
       "title": "Send to",
       "enterAddress": "Enter address",
-      "enterAddressOrENS": "Enter address / ENS",
+      "enterAddressOrENS": "Enter or Search address",
       "selectExchangeSource": "Select Exchange Source",
       "emptyWhitelist": {
         "title": "Add Whitelist Address",

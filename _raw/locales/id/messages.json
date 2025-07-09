@@ -2717,7 +2717,6 @@
       },
       "enterAddress": "Masukkan alamat",
       "selectImportedAddress": "Pilih alamat yang diimpor",
-      "enterAddressOrENS": "Masukkan alamat / ENS",
       "sendToImportedAddress": "Kirim ke Alamat Impor",
       "title": "Kirim ke",
       "selectExchangeSource": "Pilih Sumber Pertukaran"

@@ -2717,7 +2717,6 @@
       },
       "enterAddress": "Digite o endereço",
       "sendToImportedAddress": "Enviar para Endereço Importado",
-      "enterAddressOrENS": "Digite o endereço / ENS",
       "selectExchangeSource": "Selecionar Fonte de Câmbio",
       "title": "Enviar para",
       "selectImportedAddress": "Selecione o endereço importado"
