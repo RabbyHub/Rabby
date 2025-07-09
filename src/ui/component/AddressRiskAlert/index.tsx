@@ -1,11 +1,19 @@
-import { Button, Drawer, DrawerProps, Skeleton, Tooltip } from 'antd';
+import {
+  Button,
+  Drawer,
+  DrawerProps,
+  Form,
+  Input,
+  Skeleton,
+  Tooltip,
+} from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { isSameAddress } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { padWatchAccount } from '@/ui/views/SendPoly/util';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { findAccountByPriority, pickKeyringThemeIcon } from '@/utils/account';
@@ -48,6 +56,28 @@ const StyledTooltipGlobalStyle = createGlobalStyle`
     }
     .ant-tooltip-arrow {
       display: block !important;
+    }
+  }
+`;
+
+const AuthFormItemWrapper = styled.div`
+  .ant-form-item {
+    margin-bottom: 20px !important;
+  }
+  .ant-form-item-has-error {
+    .ant-input {
+      border-color: #f24822 !important;
+    }
+  }
+  .ant-input.ant-input-lg.popup-input {
+    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
+    background: var(--r-neutral-card1, #ffffff) !important;
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587) !important;
+    }
+    &:focus,
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff) !important;
     }
   }
 `;
@@ -148,11 +178,14 @@ export const AddressRiskAlert = ({
 }: AddressRiskAlertProps) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
   const { accountsList } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
   }));
 
-  const [checkedRisk, setCheckedRisk] = useState(false);
+  const [form] = Form.useForm();
+  const [hasInputPassword, setHasInputPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   // disable detect risk when invisible
   const riskInfos = useAddressRisks(visible ? address : '', editCex);
   const addressSplit = useMemo(() => {
@@ -185,6 +218,23 @@ export const AddressRiskAlert = ({
     }
     return padWatchAccount(address);
   }, [accountsList, address, type]);
+
+  const handleSubmit = async ({ password }: { password: string }) => {
+    try {
+      await wallet?.verifyPassword(password);
+      onConfirm?.();
+    } catch (e: any) {
+      setPasswordError(true);
+      form.setFields([
+        {
+          name: 'password',
+          errors: [
+            e?.message || t('component.AuthenticationModal.passwordError'),
+          ],
+        },
+      ]);
+    }
+  };
 
   useEffect(() => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
@@ -276,39 +326,52 @@ export const AddressRiskAlert = ({
             </main>
           </div>
         )}
-        <div className="footer pb-[23px]">
-          <div className="relative pb-[16px]">
+        <div className="footer pb-[20px]">
+          <div className="relative pb-[20px]">
             <div className="absolute left-[-20px] right-[-20px] h-[1px] bg-r-neutral-line" />
           </div>
-          {riskInfos.risks.length > 0 && (
-            <div
-              className="whitelist-alert pb-[16px]"
-              onClick={() => setCheckedRisk((pre) => !pre)}
-            >
-              <div className="cursor-pointer flex items-center justify-center gap-[6px]">
-                {checkedRisk ? (
-                  <RcIconCheckedCC className="text-r-blue-default" />
-                ) : (
-                  <RcIconCheckCC className="text-r-neutral-body" />
-                )}
-                <span className="text-center text-r-neutral-body text-[13px] font-medium ">
-                  {t('page.sendPoly.riskAlert.understandRisks')}
-                </span>
-              </div>
-            </div>
-          )}
           <div className="btn-wrapper w-[100%] flex justify-center">
-            <Button
-              disabled={
-                riskInfos.loading || (!!riskInfos.risks.length && !checkedRisk)
-              }
-              type="primary"
-              onClick={onConfirm}
-              size="large"
-              className="w-[100%] h-[48px] text-[16px]"
-            >
-              {t('global.confirm')}
-            </Button>
+            <Form className="w-full" onFinish={handleSubmit} form={form}>
+              <AuthFormItemWrapper>
+                <Form.Item
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        'component.AuthenticationModal.passwordRequired'
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    className="popup-input"
+                    placeholder={t(
+                      'page.sendPoly.riskAlert.passwordPlaceholder'
+                    )}
+                    onChange={(e) => {
+                      setHasInputPassword(e.target.value.length > 0);
+                      setPasswordError(false);
+                    }}
+                    type="password"
+                    size="large"
+                    autoFocus
+                    spellCheck={false}
+                  />
+                </Form.Item>
+              </AuthFormItemWrapper>
+              <Button
+                disabled={
+                  riskInfos.loading || !hasInputPassword || passwordError
+                }
+                type="primary"
+                htmlType="submit"
+                size="large"
+                className="w-[100%] h-[48px] text-[16px]"
+              >
+                {t('global.confirm')}
+              </Button>
+            </Form>
           </div>
         </div>
       </div>
