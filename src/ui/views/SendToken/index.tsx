@@ -33,7 +33,6 @@ import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
-import { ReactComponent as RcIconDownCC } from '@/ui/assets/send-token/down-cc.svg';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
 import './style.less';
@@ -59,13 +58,12 @@ import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.sv
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { useRequest } from 'ahooks';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
-import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { ellipsis } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
 import { MiniApproval } from '../Approval/components/MiniSignTx';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -115,7 +113,6 @@ const SendToken = () => {
   }));
 
   // UI States
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [reserveGasOpen, setReserveGasOpen] = useState(false);
   const [, setRefreshId] = useState(0);
 
@@ -130,10 +127,7 @@ const SendToken = () => {
     const query = new URLSearchParams(search);
     return query.get('type') || '';
   }, [search]);
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const { balance: currentAccountBalance } = useCurrentBalance(
-    currentAccount?.address
-  );
+  const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
   const [formSnapshot, setFormSnapshot] = useState(form.getFieldsValue());
@@ -207,7 +201,10 @@ const SendToken = () => {
   const [gasPriceMap, setGasPriceMap] = useState<
     Record<string, { list: GasLevel[]; expireAt: number }>
   >({});
-  const [isGnosisSafe, setIsGnosisSafe] = useState(false);
+
+  const isGnosisSafe = useMemo(() => {
+    return currentAccount?.type === KEYRING_CLASS.GNOSIS;
+  }, [currentAccount?.type]);
 
   useEffect(() => {
     if (!toAddress) {
@@ -323,22 +320,6 @@ const SendToken = () => {
     },
     [addressDesc, t]
   );
-
-  const handleFromAddressChange = useCallback(
-    async (value: Account) => {
-      await dispatch.account.changeAccountAsync(value);
-      setCurrentAccount(value);
-
-      if (value.type === KEYRING_CLASS.GNOSIS) {
-        setIsGnosisSafe(true);
-      }
-      setShowSelectorModal(false);
-    },
-    [dispatch.account]
-  );
-  const handleFromAddressCancel = useCallback(() => {
-    setShowSelectorModal(false);
-  }, []);
 
   const getParams = React.useCallback(
     ({ amount }: FormSendToken) => {
@@ -1137,11 +1118,6 @@ const SendToken = () => {
       history.replace('/');
       return;
     }
-    setCurrentAccount(account);
-
-    if (account.type === KEYRING_CLASS.GNOSIS) {
-      setIsGnosisSafe(true);
-    }
 
     setInited(true);
   };
@@ -1211,6 +1187,7 @@ const SendToken = () => {
           onBack={handleClickBack}
           forceShowBack={!isTab}
           canBack={!isTab}
+          isShowAccount
           rightSlot={
             isTab ? null : (
               <div
@@ -1238,24 +1215,6 @@ const SendToken = () => {
         >
           <div className="flex-1 overflow-auto">
             <div className="section relative">
-              <div className="section-title mt-[8px] font-medium">
-                {t('page.sendToken.sectionFrom.title')}
-              </div>
-              <AccountItem
-                balance={currentAccountBalance || 0}
-                address={currentAccount?.address || ''}
-                type={currentAccount?.type || ''}
-                brandName={currentAccount?.brandName || ''}
-                onClick={() => {
-                  setShowSelectorModal(true);
-                }}
-                className="w-full bg-r-neutral-card1 rounded-[8px]"
-                rightIcon={
-                  <div className="text-r-neutral-foot">
-                    <RcIconDownCC width={16} height={16} />
-                  </div>
-                }
-              />
               <div className="section-title mt-[20px]">
                 <span className="section-title__to font-medium">
                   {t('page.sendToken.sectionTo.title')}
@@ -1347,15 +1306,6 @@ const SendToken = () => {
           rawHexBalance={currentToken.raw_amount_hex_str}
           onClose={() => handleReserveGasClose()}
           getContainer={getContainer}
-        />
-        <AccountSelectorModal
-          title={t('page.sendToken.selectFromAddress')}
-          visible={showSelectorModal}
-          onChange={handleFromAddressChange}
-          onCancel={handleFromAddressCancel}
-          value={currentAccount}
-          getContainer={getContainer}
-          height="calc(100% - 60px)"
         />
         <MiniApproval
           txs={miniSignTxs}
