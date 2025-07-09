@@ -19,16 +19,11 @@ import {
   KEYRING_TYPE,
 } from 'consts';
 import { useRabbyDispatch, connectStore, useRabbySelector } from 'ui/store';
-import {
-  getUiType,
-  isSameAddress,
-  openInternalPageInTab,
-  useWallet,
-} from 'ui/utils';
+import { getUiType, openInternalPageInTab, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
-import { GasLevel, TokenItem, Tx } from 'background/service/openapi';
+import { Cex, GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
@@ -54,12 +49,15 @@ import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.sv
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { useRequest } from 'ahooks';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
-import { ellipsis } from '@/ui/utils/address';
+import { ellipsisAddress } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
 import { MiniApproval } from '../Approval/components/MiniSignTx';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { Account } from '@/background/service/preference';
+import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
+import { ReactComponent as RcIconCopy } from 'ui/assets/send-token/modal/copy.svg';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -96,6 +94,69 @@ type FormSendToken = {
   to: string;
   amount: string;
 };
+
+interface AddressTypeCardProps {
+  account: Account;
+  cexInfo?: Cex;
+}
+const ToAddressCard = ({
+  account: targetAccount,
+  cexInfo,
+}: AddressTypeCardProps) => {
+  const addressSplit = useMemo(() => {
+    const address = targetAccount.address || '';
+    if (!address) {
+      return [];
+    }
+    const prefix = address.slice(0, 8);
+    const middle = address.slice(8, -6);
+    const suffix = address.slice(-6);
+
+    return [prefix, middle, suffix];
+  }, [targetAccount.address]);
+
+  return (
+    <header
+      className={clsx(
+        'header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]',
+        'flex flex-col items-center gap-[8px]'
+      )}
+    >
+      <div className="text-[16px] w-full text-center text-r-neutral-foot break-words">
+        <span className="text-r-neutral-title1 font-medium">
+          {addressSplit[0]}
+        </span>
+        {addressSplit[1]}
+        <span className="text-r-neutral-title1 font-medium">
+          {addressSplit[2]}
+        </span>
+        <span
+          className="cursor-pointer ml-2 inline-block w-[14px] h-[13px]"
+          onClick={() => {
+            copyAddress(targetAccount.address);
+          }}
+        >
+          <RcIconCopy />
+        </span>
+      </div>
+
+      <AddressTypeCard
+        type={targetAccount.type}
+        cexInfo={{
+          id: cexInfo?.id,
+          name: cexInfo?.name,
+          logo: cexInfo?.logo_url,
+          isDeposit: !!cexInfo?.is_deposit,
+        }}
+        brandName={targetAccount.brandName}
+        aliasName={
+          targetAccount.alianName || ellipsisAddress(targetAccount.address)
+        }
+      />
+    </header>
+  );
+};
+
 const SendToken = () => {
   const { useForm } = Form;
   const { t } = useTranslation();
@@ -104,9 +165,6 @@ const SendToken = () => {
   const rbisource = useRbiSource();
   const { search } = useLocation();
   const wallet = useWallet();
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
 
   // UI States
   const [reserveGasOpen, setReserveGasOpen] = useState(false);
@@ -213,14 +271,12 @@ const SendToken = () => {
     });
   }, [toAddress, history, search, form]);
 
-  const {
-    targetAccount,
-    addressDesc,
-    tmpCexInfo,
-    isTokenSupport,
-  } = useAddressInfo(toAddress, {
-    type: toAddressType,
-  });
+  const { targetAccount, addressDesc, isTokenSupport } = useAddressInfo(
+    toAddress,
+    {
+      type: toAddressType,
+    }
+  );
   useInitCheck(addressDesc);
 
   const canSubmit =
@@ -1197,40 +1253,27 @@ const SendToken = () => {
         >
           <div className="flex-1 overflow-auto">
             <div className="section relative">
-              <div className="section-title mt-[20px]">
+              <div className="section-title justify-between items-center flex">
                 <span className="section-title__to font-medium">
                   {t('page.sendToken.sectionTo.title')}
                 </span>
-              </div>
-              <div className="to-address">
-                <AccountItem
-                  balance={
-                    targetAccount?.balance || addressDesc?.usd_value || 0
-                  }
-                  address={targetAccount?.address || ''}
-                  type={targetAccount?.type || ''}
-                  alias={
-                    targetAccount?.address
-                      ? ellipsis(targetAccount?.address)
-                      : ''
-                  }
-                  showWhitelistIcon={whitelist?.some(
-                    (w) =>
-                      targetAccount?.address &&
-                      isSameAddress(w, targetAccount?.address)
-                  )}
-                  tmpCexInfo={tmpCexInfo}
-                  brandName={targetAccount?.brandName || ''}
+
+                <div
+                  className="cursor-pointer text-r-neutral-title1"
                   onClick={() => {
                     history.push(`/send-poly${history.location.search}`);
                   }}
-                  className="w-full bg-r-neutral-card1 rounded-[8px]"
-                  rightIcon={
-                    <div className="text-r-neutral-foot">
-                      <RcIconSwitchCC width={16} height={16} />
-                    </div>
-                  }
-                />
+                >
+                  <RcIconSwitchCC width={20} height={20} />
+                </div>
+              </div>
+              <div className="to-address">
+                {targetAccount && (
+                  <ToAddressCard
+                    account={targetAccount}
+                    cexInfo={addressDesc?.cex}
+                  />
+                )}
               </div>
             </div>
             <div className="section">

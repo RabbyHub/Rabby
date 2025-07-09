@@ -81,7 +81,7 @@ const AuthFormItemWrapper = styled.div`
   }
 `;
 
-const AddressTypeCard = ({
+export const AddressTypeCard = ({
   type,
   brandName,
   aliasName,
