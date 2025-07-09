@@ -1847,7 +1847,6 @@
         "error": "kata sandi tidak benar"
       },
       "btnForgotPassword": "Lupa Kata Sandi?",
-      "description": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM",
       "title": "Rabby Wallet"
     },
     "addToken": {
@@ -2468,7 +2467,7 @@
         "importAddress": "Saya sudah memiliki alamat",
         "title": "Selamat datang di Rabby Wallet",
         "createNewAddress": "Buat alamat baru",
-        "desc": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM"
+        "desc": ""
       },
       "createNewAddress": {
         "showSeedPhrase": "Tampilkan Frasa Seed",
@@ -2949,7 +2948,6 @@
     "copied": "Disalin",
     "Loading": "Memuat",
     "Deleted": "Dihapus",
-    "appDescription": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM",
     "addButton": "Tambahkan",
     "watchModeAddress": "Watch Mode alamat",
     "gas": "Gas",

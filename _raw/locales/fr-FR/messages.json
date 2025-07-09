@@ -247,7 +247,6 @@
     "Loading": "Chargement",
     "Save": "Sauvegarder",
     "addButton": "Ajouter",
-    "appDescription": "Le wallet révolutionnaire pour Ethereum et toutes les chaînes EVM",
     "appName": "Rabby Wallet",
     "assets": "actifs",
     "back": "Retour",
@@ -2284,7 +2283,6 @@
         "required": "Entrer le mot de passe pour déverrouiller"
       },
       "title": "Rabby Wallet",
-      "description": "Le portefeuille révolutionnaire pour Ethereum et toutes les chaînes EVM",
       "btnForgotPassword": "Mot de passe oublié ?"
     },
     "welcome": {
@@ -2745,7 +2743,7 @@
         "title": "Bienvenue sur Rabby Wallet",
         "importAddress": "J'ai déjà une adresse",
         "createNewAddress": "Créer une nouvelle adresse",
-        "desc": "Le portefeuille révolutionnaire pour Ethereum et toutes les chaînes EVM"
+        "desc": ""
       },
       "createNewAddress": {
         "showSeedPhrase": "Afficher la phrase secrète",

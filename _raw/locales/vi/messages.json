@@ -1847,7 +1847,6 @@
         "placeholder": "Nhập mật khẩu để mở khóa"
       },
       "title": "Ví dụ ví Rabby",
-      "description": "Ví dụ ví cách mạng cho Ethereum và tất cả các chuỗi EVM",
       "btnForgotPassword": "Quên mật khẩu?"
     },
     "addToken": {
@@ -2468,7 +2467,7 @@
         "importAddress": "Tôi đã có một địa chỉ",
         "title": "Chào mừng bạn đến với Rabby Wallet",
         "createNewAddress": "Tạo một địa chỉ mới",
-        "desc": "Ví dụ ví cách mạng cho Ethereum và tất cả các chuỗi EVM"
+        "desc": ""
       },
       "createNewAddress": {
         "showSeedPhrase": "Hiển thị cụm từ hạt giống",
@@ -2941,7 +2940,6 @@
     "failed": "Thất bại",
     "next": "Tiếp theo",
     "gas": "Gas",
-    "appDescription": "Ví wallet đột phá cho Ethereum và tất cả các chuỗi EVM",
     "unknownNFT": "NFT không xác định",
     "refresh": "Làm mới",
     "cancelButton": "Hủy bỏ",

@@ -1778,7 +1778,6 @@
         "error": "Contraseña incorrecta"
       },
       "title": "Rabby Wallet",
-      "description": "El wallet revolucionario para Ethereum y todas las cadenas EVM",
       "btnForgotPassword": "¿Olvidaste la contraseña?"
     },
     "addToken": {
@@ -2470,7 +2469,7 @@
       "guide": {
         "createNewAddress": "Crea una nueva dirección",
         "importAddress": "Ya tengo una dirección",
-        "desc": "La billetera revolucionaria para Ethereum y todas las cadenas EVM",
+        "desc": "",
         "title": "Bienvenido a Rabby Wallet"
       },
       "createNewAddress": {
@@ -2935,7 +2934,6 @@
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "La billetera revolucionaria para Ethereum y todas las cadenas EVM",
     "copied": "Copiado",
     "confirm": "Confirmar",
     "next": "Siguiente",

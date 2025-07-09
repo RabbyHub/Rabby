@@ -1790,8 +1790,7 @@
         "error": "неправильний пароль"
       },
       "btnForgotPassword": "Забули пароль?",
-      "title": "Rabby Wallet",
-      "description": "Гамевий гаманець для Ethereum та всіх EVM ланцюгів"
+      "title": "Rabby Wallet"
     },
     "addToken": {
       "noTokenFound": "Токен не знайдено",
@@ -2480,7 +2479,6 @@
     },
     "newUserImport": {
       "guide": {
-        "desc": "Гамовеідний гаманець для Ethereum та всіх EVM ланцюгів",
         "createNewAddress": "Створити нову адресу",
         "title": "Ласкаво просимо до Rabby Wallet",
         "importAddress": "У мене вже є адреса"
@@ -2947,7 +2945,6 @@
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "Гаманець, що змінює правила гри для Ethereum і всіх EVM-мереж",
     "copied": "Скопійовано",
     "confirm": "Підтвердити",
     "next": "Далі",
