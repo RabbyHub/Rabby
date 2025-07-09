@@ -7,25 +7,49 @@ import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from 'consts';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { isSameAddress } from '@/ui/utils';
 
 interface ChainSelectorModalProps {
   onChange(val: Account): void;
   containerClassName?: string;
+  filterText?: string;
 }
 
 export const AccountList = ({
+  filterText,
   onChange,
   containerClassName,
 }: ChainSelectorModalProps) => {
+  const dispatch = useRabbyDispatch();
+
   const { fetchAllAccounts, allSortedAccountList } = useAccounts();
+  const { whitelist } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+  }));
 
   const filteredAccounts = useMemo(() => {
-    return flatten(allSortedAccountList);
-  }, [allSortedAccountList]);
+    const lowerFilterText = filterText?.toLowerCase() || '';
+    const flattenedAccounts = flatten(allSortedAccountList);
+    if (!lowerFilterText) {
+      return flattenedAccounts;
+    }
+    return flattenedAccounts.filter((account) => {
+      const address = account.address.toLowerCase();
+      const brandName = account.brandName?.toLowerCase() || '';
+      const aliasName = account.alianName?.toLowerCase() || '';
+      return (
+        address.includes(lowerFilterText) ||
+        brandName.includes(lowerFilterText) ||
+        aliasName.includes(lowerFilterText)
+      );
+    });
+  }, [allSortedAccountList, filterText]);
 
   useEffect(() => {
     fetchAllAccounts();
-  }, [fetchAllAccounts]);
+    dispatch.whitelist.getWhitelist();
+  }, [dispatch.whitelist, fetchAllAccounts]);
 
   return (
     <Virtuoso
@@ -75,6 +99,9 @@ export const AccountList = ({
                 balance={current.balance}
                 address={current.address}
                 type={current.type}
+                showWhitelistIcon={whitelist.some((item) =>
+                  isSameAddress(item, current.address)
+                )}
                 brandName={current.brandName}
                 onClick={() => {
                   onChange?.(current);

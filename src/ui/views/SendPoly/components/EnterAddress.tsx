@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
@@ -64,12 +70,15 @@ export const EnterAddress = ({
     };
   }, []);
 
-  const handleConfirmENS = (result: string) => {
-    setInputAddress(result);
-    setIsValidAddr(true);
-    setTags([`ENS: ${ensResult?.name || ''}`]);
-    setEnsResult(null);
-  };
+  const handleConfirmENS = useCallback(
+    (result: string) => {
+      setInputAddress(result);
+      setIsValidAddr(true);
+      setTags([`ENS: ${ensResult?.name || ''}`]);
+      setEnsResult(null);
+    },
+    [ensResult?.name]
+  );
 
   const handleKeyDown = useMemo(() => {
     const handler = (e: KeyboardEvent) => {
@@ -81,7 +90,7 @@ export const EnterAddress = ({
       }
     };
     return handler;
-  }, [ensResult]);
+  }, [ensResult, handleConfirmENS]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -212,7 +221,10 @@ export const EnterAddress = ({
       {shouldRender && (
         <>
           <div className="flex-1 pt-[20px] overflow-y-scroll">
-            <AccountList onChange={(acc) => onNext(acc.address, acc.type)} />
+            <AccountList
+              filterText={inputAddress}
+              onChange={(acc) => onNext(acc.address, acc.type)}
+            />
           </div>
           <div className={'footer'}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
