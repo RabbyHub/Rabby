@@ -169,7 +169,7 @@ export const EnterAddress = ({
               size="large"
               spellCheck={false}
               rows={4}
-              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px]"
+              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px] h-[80px]"
             />
             <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
               <IconClearCC
