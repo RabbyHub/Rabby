@@ -138,6 +138,7 @@ import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
 import { metamaskModeService } from '../service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
+import { bgRetryTxMethods } from '../utils/errorTxRetry';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1861,6 +1862,13 @@ export class WalletController extends BaseController {
 
   getCloseTipsChains = OfflineChainsService.getCloseTipsChains;
   setCloseTipsChains = OfflineChainsService.setCloseTipsChains;
+
+  getRetryTxType = bgRetryTxMethods.getRetryTxType;
+  setRetryTxType = bgRetryTxMethods.setRetryTxType;
+  retryTxReset = bgRetryTxMethods.retryTxReset;
+  getRetryTxRecommendNonce = bgRetryTxMethods.getRetryTxRecommendNonce;
+  setRetryTxRecommendNonce = bgRetryTxMethods.setRetryTxRecommendNonce;
+  getTxFailedResult = bgRetryTxMethods.getTxFailedResult;
 
   setCustomRPC = (chainEnum: CHAINS_ENUM, url: string) => {
     RPCService.setRPC(chainEnum, url);
