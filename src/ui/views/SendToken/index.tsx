@@ -113,7 +113,7 @@ const ChainSelectWrapper = styled.div`
   }
 `;
 
-const ToAddressCard = ({
+export const ToAddressCard = ({
   account: targetAccount,
   cexInfo,
 }: AddressTypeCardProps) => {

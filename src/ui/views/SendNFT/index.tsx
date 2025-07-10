@@ -16,7 +16,6 @@ import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useRequest } from 'ahooks';
 import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import { useRabbyDispatch, connectStore } from 'ui/store';
-import { Account } from 'background/service/preference';
 import {
   useWallet,
   openInTab,
@@ -38,13 +37,12 @@ import { findChain, findChainByEnum } from '@/utils/chain';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { getAddressScanLink } from '@/utils';
 import ChainIcon from '@/ui/component/ChainIcon';
-import { ellipsis } from '@/ui/utils/address';
-import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
-import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { Tx } from 'background/service/openapi';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { ToAddressCard } from '../SendToken';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -59,7 +57,7 @@ const SendNFT = () => {
   const rbisource = useRbiSource();
   const dispatch = useRabbyDispatch();
 
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState<CHAINS_ENUM | undefined>(undefined);
 
   const amountInputEl = useRef<any>(null);
@@ -280,14 +278,8 @@ const SendNFT = () => {
       history.replace('/');
       return;
     }
-
-    setCurrentAccount(account);
     setInited(true);
   };
-
-  const { balance: currentAccountBalance } = useCurrentBalance(
-    currentAccount?.address
-  );
 
   const { targetAccount, addressDesc } = useAddressInfo(toAddress);
 
@@ -341,6 +333,8 @@ const SendNFT = () => {
           onBack={handleClickBack}
           forceShowBack={!isTab}
           canBack={!isTab}
+          isShowAccount
+          disableSwitchAccount
           rightSlot={
             isTab ? null : (
               <div
@@ -367,34 +361,12 @@ const SendNFT = () => {
           {nftItem && (
             <div className="flex-1 overflow-auto">
               <div className="section relative">
-                <div className="section-title">
-                  {t('page.sendNFT.sectionFrom.title')}
-                </div>
-                <AccountItem
-                  balance={currentAccountBalance || 0}
-                  address={currentAccount?.address || ''}
-                  type={currentAccount?.type || ''}
-                  brandName={currentAccount?.brandName || ''}
-                  onClick={() => {}}
-                  disabled={true}
-                  className="w-full bg-r-neutral-card1 rounded-[8px]"
-                />
-                <div className="section-title mt-[20px]">
-                  {t('page.sendNFT.sectionTo.title')}
-                </div>
-                <div className="to-address">
-                  <AccountItem
-                    balance={
-                      targetAccount?.balance || addressDesc?.usd_value || 0
-                    }
-                    address={targetAccount?.address || ''}
-                    type={targetAccount?.type || ''}
-                    alias={
-                      targetAccount?.address
-                        ? ellipsis(targetAccount?.address)
-                        : ''
-                    }
-                    brandName={targetAccount?.brandName || ''}
+                <div className="section-title justify-between items-center flex">
+                  <span className="section-title__to font-medium">
+                    {t('page.sendNFT.sectionTo.title')}
+                  </span>
+                  <div
+                    className="cursor-pointer text-r-neutral-title1"
                     onClick={() => {
                       const query = new URLSearchParams(search);
                       query.set(
@@ -404,13 +376,17 @@ const SendNFT = () => {
                       query.set('to', toAddress);
                       history.push(`/send-poly?${query.toString()}`);
                     }}
-                    className="w-full bg-r-neutral-card1 rounded-[8px]"
-                    rightIcon={
-                      <div className="text-r-neutral-foot">
-                        <RcIconSwitchCC width={20} height={20} />
-                      </div>
-                    }
-                  />
+                  >
+                    <RcIconSwitchCC width={20} height={20} />
+                  </div>
+                </div>
+                <div className="to-address">
+                  {targetAccount && (
+                    <ToAddressCard
+                      account={targetAccount}
+                      cexInfo={addressDesc?.cex}
+                    />
+                  )}
                 </div>
               </div>
               <div className={clsx('section')}>
