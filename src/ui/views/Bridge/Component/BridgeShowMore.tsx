@@ -383,6 +383,15 @@ export const BridgeShowMore = ({
               recommendValue={recommendValue}
             />
           )}
+          {showGasFeeError && fromToken && supportDirectSign ? (
+            <DirectSignGasInfo
+              supportDirectSign={supportDirectSign}
+              loading={!!quoteLoading}
+              openShowMore={setShowGasFeeError}
+              noQuote={!sourceLogo && !sourceName}
+              chainServeId={fromToken?.chain}
+            />
+          ) : null}
         </>
       )}
     </div>
@@ -407,10 +416,6 @@ export const DirectSignGasInfo = ({
   const miniApprovalGas = useMiniApprovalGas();
   const setMiniApprovalGas = useSetMiniApprovalGas();
   const [gasModalVisible, setGasModalVisible] = useState(false);
-
-  useEffect(() => {
-    console.log('miniApprovalGas', miniApprovalGas);
-  }, [miniApprovalGas]);
 
   const chainEnum = findChainByServerID(chainServeId)?.enum;
 
@@ -459,8 +464,6 @@ export const DirectSignGasInfo = ({
   const gasAccountCost = miniApprovalGas?.gasAccountCost;
 
   const gasTipsComp = useGetGasTipsComponent();
-
-  console.log('gasTipsComp', gasTipsComp);
 
   if (!supportDirectSign) {
     return null;

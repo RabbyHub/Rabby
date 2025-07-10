@@ -71,6 +71,7 @@ import {
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { ShowMoreOnSend } from './components/SendShowMore';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -592,10 +593,11 @@ const SendToken = () => {
   const amount = form.getFieldValue('amount');
   const address = form.getFieldValue('to');
 
-  useCallback(() => {
+  useEffect(() => {
     let isCurrent = true;
     const setMiniTx = async () => {
       if (canSubmit && canUseDirectSubmitTx && amount && address) {
+        console.log('123123123');
         const chain = findChain({
           serverId: currentToken.chain,
         })!;
@@ -682,13 +684,10 @@ const SendToken = () => {
     setTimeout(() => {
       setIsShowMiniSign(false);
       setMiniSignTx(null);
-      if (!isTab) {
-        history.replace('/');
-      }
       form.setFieldsValue({ amount: '' });
       setRefreshId((e) => e + 1);
     }, 500);
-  }, [form, history]);
+  }, [form]);
 
   const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
     if (!to) return;
@@ -1311,6 +1310,8 @@ const SendToken = () => {
     }
   }, [currentToken, gasList]);
 
+  const [gasFeeOpen, setGasFeeOpen] = useState(false);
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -1434,6 +1435,14 @@ const SendToken = () => {
                 )}
               </Form.Item>
             </div>
+
+            {chainItem?.serverId && canUseDirectSubmitTx ? (
+              <ShowMoreOnSend
+                chainServeId={chainItem?.serverId}
+                open={gasFeeOpen}
+                setOpen={setGasFeeOpen}
+              />
+            ) : null}
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>

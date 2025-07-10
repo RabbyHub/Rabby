@@ -46,10 +46,11 @@ import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { Tx } from 'background/service/openapi';
 import {
-  DirectSigningProvider,
+  DirectSubmitProvider,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { ShowMoreOnSend } from '../SendToken/components/SendShowMore';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -286,13 +287,10 @@ const SendNFT = () => {
     setTimeout(() => {
       setIsShowMiniSign(false);
       setMiniSignTx(null);
-      if (!isTab) {
-        history.replace('/');
-      }
       form.setFieldsValue({ amount: 1 });
       setRefreshId((e) => e + 1);
     }, 500);
-  }, [form, history]);
+  }, [form]);
 
   const handleClickBack = () => {
     if (history.length > 1) {
@@ -371,6 +369,8 @@ const SendNFT = () => {
       });
     }
   }, [toAddress, form]);
+
+  const [gasFeeOpen, setGasFeeOpen] = useState(false);
 
   return (
     <FullscreenContainer className="h-[700px]">
@@ -535,6 +535,13 @@ const SendNFT = () => {
                   </div>
                 </div>
               </div>
+              {chainInfo?.serverId && canUseDirectSubmitTx ? (
+                <ShowMoreOnSend
+                  chainServeId={chainInfo?.serverId}
+                  open={gasFeeOpen}
+                  setOpen={setGasFeeOpen}
+                />
+              ) : null}
             </div>
           )}
 
@@ -602,9 +609,9 @@ const SendNFT = () => {
 };
 
 const SendNFTWrapper = () => (
-  <DirectSigningProvider>
+  <DirectSubmitProvider>
     <SendNFT />
-  </DirectSigningProvider>
+  </DirectSubmitProvider>
 );
 
 export default isTab

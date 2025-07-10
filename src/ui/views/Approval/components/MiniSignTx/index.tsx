@@ -1,7 +1,7 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
+import { isLedgerLockError, useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { findChain } from '@/utils/chain';
 import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
 import {
@@ -72,10 +72,11 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import {
   useDirectSigning,
   useResetDirectSignState,
-  useSetDirectSubmitInnerError,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { ReactComponent as RCIconLoadingCC } from '@/ui/assets/loading-cc.svg';
+import { RetryUpdateType } from '@/background/utils/errorTxRetry';
 import { MiniApprovalPopupContainer } from '../Popup/MiniApprovalPopupContainer';
+import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 
 export const MiniSignTx = ({
   txs,
@@ -1034,17 +1035,68 @@ export const MiniSignTx = ({
     [chainId, txsResult, currentAccount]
   );
 
-  console.log('ga', ga);
+  const { value } = useAsync<() => Promise<[string, RetryUpdateType]>>(() => {
+    let msg = task.error;
+
+    const getLedgerError = (description: string) => {
+      if (isLedgerLockError(description)) {
+        return t('page.signFooterBar.ledger.unlockAlert');
+      } else if (
+        description.includes('0x6e00') ||
+        description.includes('0x6b00')
+      ) {
+        return t('page.signFooterBar.ledger.updateFirmwareAlert');
+      } else if (description.includes('0x6985')) {
+        return t('page.signFooterBar.ledger.txRejectedByLedger');
+      }
+
+      return description;
+    };
+    if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
+      msg = getLedgerError(msg);
+    }
+    return msg
+      ? wallet.getTxFailedResult(msg)
+      : Promise.resolve(['', 'origin']);
+  }, [task.error, currentAccount?.type]);
+
+  const [description, retryUpdateType] = value || ['', 'origin'];
+
+  const content = useMemo(() => {
+    if (ga?.category) {
+      if (task?.error && retryUpdateType) {
+        return t('page.signFooterBar.qrcode.retryTxFailedBy', {
+          category: ga?.category,
+        });
+      }
+      return t('page.signFooterBar.qrcode.txFailedBy', {
+        category: ga?.category,
+      });
+    }
+    return t('page.signFooterBar.qrcode.txFailed');
+  }, [ga?.category, task?.error, retryUpdateType]);
+
+  const brandIcon = useMemo(() => {
+    switch (currentAccount?.type) {
+      case KEYRING_CLASS.HARDWARE.LEDGER: {
+        return LedgerSVG;
+      }
+
+      default: {
+        return null;
+      }
+    }
+  }, [currentAccount?.type]);
 
   return (
     <>
       <Popup
-        height={'auto'}
+        height={'fit-content'}
         visible={!!task.error}
         bodyStyle={{ padding: 0 }}
-        maskStyle={{
-          backgroundColor: 'transparent',
-        }}
+        // maskStyle={{
+        //   backgroundColor: 'transparent',
+        // }}
         getContainer={getContainer}
       >
         <MiniApprovalPopupContainer
@@ -1053,14 +1105,17 @@ export const MiniSignTx = ({
               ? 'wired'
               : 'privatekey'
           }
+          brandIcon={brandIcon}
           status={'FAILED'}
-          content={t('page.signFooterBar.qrcode.txFailed')}
-          description={task.error}
+          content={content}
+          description={description}
           onCancel={onReject}
           onRetry={async () => {
+            await wallet.setRetryTxType(retryUpdateType);
             await task.retry();
             onResolve?.();
           }}
+          retryUpdateType={retryUpdateType}
         />
       </Popup>
 

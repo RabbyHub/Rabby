@@ -60,20 +60,12 @@ export const [
   useSetGasTipsComponent,
 ] = createContextState<React.ReactNode>(null);
 
-export const [
-  InnerErrorProvider,
-  useGetDirectSubmitInnerError,
-  useSetDirectSubmitInnerError,
-] = createContextState(false);
-
 export const DirectSubmitProvider = ({
   children,
 }: React.PropsWithChildren<unknown>) => (
   <MiniApprovalGasProvider>
     <DirectSigningProvider>
-      <GasTipsComponentProvider>
-        <InnerErrorProvider>{children}</InnerErrorProvider>
-      </GasTipsComponentProvider>
+      <GasTipsComponentProvider>{children}</GasTipsComponentProvider>
     </DirectSigningProvider>
   </MiniApprovalGasProvider>
 );

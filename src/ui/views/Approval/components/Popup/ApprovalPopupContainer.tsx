@@ -14,6 +14,7 @@ import ConnectWalletConnectSVG from 'ui/assets/approval/connect-walletconnect.sv
 import { noop, useCommonPopupView } from '@/ui/utils';
 import { FooterDoneButton } from './FooterDoneButton';
 import { Dots } from './Dots';
+import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
 
 const PRIVATE_KEY_ERROR_HEIGHT = 247;
 const OTHER_ERROR_HEIGHT = 392;
@@ -36,6 +37,7 @@ export interface Props {
   hasMoreDescription?: boolean;
   children?: React.ReactNode;
   showAnimation?: boolean;
+  retryUpdateType?: RetryUpdateType;
 }
 
 export const ApprovalPopupContainer: React.FC<Props> = ({
@@ -50,6 +52,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   hasMoreDescription,
   children,
   showAnimation,
+  retryUpdateType = 'origin',
 }) => {
   const [image, setImage] = React.useState('');
   const [iconColor, setIconColor] = React.useState('');

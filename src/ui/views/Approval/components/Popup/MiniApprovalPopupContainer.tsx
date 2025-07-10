@@ -1,22 +1,17 @@
 import clsx from 'clsx';
-import React from 'react';
+import React, { SVGProps } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FooterResend } from './FooterResend';
-import { FooterButton } from './FooterButton';
 import { FooterResendCancelGroup } from './FooterResendCancelGroup';
-import TXWaitingSVG from 'ui/assets/approval/tx-waiting.svg';
-import TxFailedSVG from 'ui/assets/approval/tx-failed.svg';
 import TxSucceedSVG from 'ui/assets/approval/tx-succeed.svg';
 import ConnectWiredSVG from 'ui/assets/approval/connect-wired.svg';
 import ConnectWirelessSVG from 'ui/assets/approval/connect-wireless.svg';
 import ConnectQRCodeSVG from 'ui/assets/approval/connect-qrcode.svg';
 import ConnectWalletConnectSVG from 'ui/assets/approval/connect-walletconnect.svg';
-import { noop, useCommonPopupView } from '@/ui/utils';
-import { FooterDoneButton } from './FooterDoneButton';
+import { noop } from '@/ui/utils';
 import { Dots } from './Dots';
-
-const PRIVATE_KEY_ERROR_HEIGHT = 247;
-const OTHER_ERROR_HEIGHT = 392;
+import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
+import TxWarnSVG from '@/ui/assets/info-warn.svg';
+import TxErrorSVG from '@/ui/assets/info-error.svg';
 
 export interface Props {
   hdType: 'wired' | 'wireless' | 'qrcode' | 'privatekey' | 'walletconnect';
@@ -36,6 +31,8 @@ export interface Props {
   hasMoreDescription?: boolean;
   children?: React.ReactNode;
   showAnimation?: boolean;
+  retryUpdateType?: RetryUpdateType;
+  brandIcon?: null | React.FC<SVGProps<any>>;
 }
 
 export const MiniApprovalPopupContainer: React.FC<Props> = ({
@@ -50,12 +47,14 @@ export const MiniApprovalPopupContainer: React.FC<Props> = ({
   hasMoreDescription,
   children,
   showAnimation,
+  retryUpdateType = 'origin',
+  brandIcon,
 }) => {
   const [image, setImage] = React.useState('');
   const [iconColor, setIconColor] = React.useState('');
   const [contentColor, setContentColor] = React.useState('');
   const { t } = useTranslation();
-  const { setHeight, height } = useCommonPopupView();
+  // const { setHeight, height } = useCommonPopupView();
 
   const sendUrl = React.useMemo(() => {
     switch (hdType) {
@@ -88,9 +87,13 @@ export const MiniApprovalPopupContainer: React.FC<Props> = ({
         break;
       case 'FAILED':
       case 'REJECTED':
-        setImage(TxFailedSVG);
-        setIconColor('bg-red-forbidden');
-        setContentColor('text-red-forbidden');
+        setImage(retryUpdateType ? TxWarnSVG : TxErrorSVG);
+        setIconColor(
+          retryUpdateType ? 'bg-r-orange-default' : 'bg-red-forbidden'
+        );
+        setContentColor(
+          retryUpdateType ? 'text-r-neutral-title-1' : 'text-red-forbidden'
+        );
         break;
       case 'RESOLVED':
         setImage(TxSucceedSVG);
@@ -100,35 +103,10 @@ export const MiniApprovalPopupContainer: React.FC<Props> = ({
       default:
         break;
     }
-  }, [status]);
-
-  const lastNormalHeight = React.useRef(0);
-
-  React.useEffect(() => {
-    if (
-      height !== lastNormalHeight.current &&
-      height !== OTHER_ERROR_HEIGHT &&
-      height !== PRIVATE_KEY_ERROR_HEIGHT
-    ) {
-      lastNormalHeight.current = height;
-    }
-  }, [height]);
-
-  React.useEffect(() => {
-    if (status === 'FAILED' || status === 'REJECTED') {
-      if (hdType === 'privatekey') {
-        setHeight(PRIVATE_KEY_ERROR_HEIGHT);
-      } else {
-        setHeight(OTHER_ERROR_HEIGHT);
-      }
-    } else {
-      setHeight(lastNormalHeight.current);
-    }
-  }, [setHeight, hdType, status]);
+  }, [status, retryUpdateType]);
 
   return (
     <div className={clsx('flex flex-col items-center', 'flex-1')}>
-      {sendUrl ? <img src={sendUrl} className={'w-[160px] h-[160px]'} /> : null}
       <div
         className={clsx(
           'text-[20px] font-medium leading-[24px]',
@@ -145,31 +123,33 @@ export const MiniApprovalPopupContainer: React.FC<Props> = ({
       </div>
       <div
         className={clsx(
-          contentColor,
-          'mt-[12px]',
-          'text-13 leading-[16px] font-normal text-center',
-          'overflow-auto h-[36px] w-full'
+          // contentColor,
+          'text-r-neutral-foot text-[13px] text-center',
+          'mt-[12px] mb-[24px]',
+          'px-20',
+          'overflow-auto w-full'
         )}
       >
         {description}
       </div>
 
       <div className="w-full text-center">
-        {/* {status === 'SENDING' && <FooterResend onResend={onRetry} />}
-        {status === 'WAITING' && <FooterResend onResend={onRetry} />} */}
         {status === 'FAILED' && (
-          <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
-        )}
-        {/* {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} hide />} */}
-        {status === 'REJECTED' && (
-          <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
-        )}
-        {/* {status === 'SUBMITTING' && (
-          <FooterButton
-            text={t('page.signFooterBar.submitTx')}
-            onClick={onSubmit}
+          <FooterResendCancelGroup
+            onCancel={onCancel}
+            onResend={onRetry}
+            brandIcon={brandIcon}
+            retryUpdateType={retryUpdateType}
           />
-        )} */}
+        )}
+        {status === 'REJECTED' && (
+          <FooterResendCancelGroup
+            onCancel={onCancel}
+            onResend={onRetry}
+            brandIcon={brandIcon}
+            retryUpdateType={retryUpdateType}
+          />
+        )}
       </div>
       {children}
     </div>

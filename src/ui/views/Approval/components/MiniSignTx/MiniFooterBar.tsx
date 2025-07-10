@@ -414,43 +414,14 @@ export const MiniFooterBar: React.FC<Props> = ({
     showGasLess,
   ]);
 
-  console.log('isInited directSubmit', {
-    directSubmit,
-    isInited,
-    isSetGasMethodRef: isSetGasMethodRef.current,
-    isFirstGasCostLoading,
-    isFirstGasLessLoading,
-  });
-
   useEffect(() => {
     if (isInited && directSubmit) {
-      // if (
-      //   (showGasLess && !useGasLess && !canGotoUseGasAccount) ||
-      //   (payGasByGasAccount &&
-      //     !(
-      //       !isWalletConnect &&
-      //       gasAccountCost?.balance_is_enough &&
-      //       !gasAccountCost?.chain_not_support &&
-      //       noCustomRPC
-      //     ))
-      // ) {
-      //   setCanDirectSign(false);
-      // } else {
-      //   setCanDirectSign(true);
-      // }
-
       const disabledProcess = payGasByGasAccount
         ? !gasAccountCanPay
         : useGasLess
         ? false
         : props.disabledProcess;
 
-      console.log('setMiniApprovalGasState miniFooterBar', {
-        payGasByGasAccount,
-        gasAccountCanPay,
-        useGasLess,
-        disabledProcess: props.disabledProcess,
-      });
       setMiniApprovalGasState((pre) => ({
         ...pre,
         noCustomRPC,

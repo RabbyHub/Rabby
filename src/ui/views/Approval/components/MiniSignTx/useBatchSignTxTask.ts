@@ -1,13 +1,12 @@
-import { message } from 'antd';
 import { useWallet } from '@/ui/utils';
 import { sendTransaction } from '@/ui/utils/sendTransaction';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn } from 'ahooks';
-import PQueue from 'p-queue';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import { isLedgerLockError } from '@/ui/utils/ledger';
 import { useSetDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import BigNumber from 'bignumber.js';
 
 type TxStatus = 'sended' | 'signed' | 'idle' | 'failed';
 
@@ -50,27 +49,79 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
     setStatus('idle');
   });
 
+  const retryTxs = useRef<ListItemType[]>([]);
+
   const setDirectSigning = useSetDirectSigning();
 
-  const start = useMemoizedFn(async () => {
+  const start = useMemoizedFn(async (isRetry = false) => {
     try {
       setDirectSigning(true);
       setStatus('active');
+
+      const {
+        getRetryTxType,
+        retryTxReset,
+        getRetryTxRecommendNonce,
+        setRetryTxRecommendNonce,
+      } = wallet;
+
+      if (!isRetry) {
+        retryTxs.current = [];
+        await retryTxReset();
+      } else {
+        if (!retryTxs.current.length) {
+          retryTxs.current = list;
+        }
+      }
+
       for (let index = 0; index < list.length; index++) {
-        const item = list[index];
-        const tx = item.tx;
+        let item = list[index];
         const options = item.options;
+
         if (item.status === 'signed') {
           continue;
+        }
+
+        if (isRetry) {
+          item = retryTxs.current[index];
+        }
+        const tx = item.tx;
+
+        if (isRetry) {
+          const retryType = await getRetryTxType();
+          switch (retryType) {
+            case 'nonce': {
+              const recommendNonce = await getRetryTxRecommendNonce();
+              tx.nonce = recommendNonce;
+              break;
+            }
+
+            case 'gasPrice': {
+              if (tx.gasPrice) {
+                tx.gasPrice = `0x${new BigNumber(
+                  new BigNumber(tx.gasPrice, 16).times(1.3).toFixed(0)
+                ).toString(16)}`;
+              }
+              if (tx.maxFeePerGas) {
+                tx.maxFeePerGas = `0x${new BigNumber(
+                  new BigNumber(tx.maxFeePerGas, 16).times(1.3).toFixed(0)
+                ).toString(16)}`;
+              }
+              break;
+            }
+
+            default:
+              break;
+          }
+          const tmp = [...list];
+          tmp[index] = { ...item, tx: { ...tx } };
+          retryTxs.current = tmp;
         }
 
         try {
           const result = await sendTransaction({
             ...options,
-            tx: {
-              ...tx,
-              nonce: '0x0',
-            },
+            tx,
             wallet,
             ga,
             onProgress: (status) => {
@@ -107,12 +158,27 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
             },
           });
 
+          retryTxReset();
           if (!(isLedgerLockError(msg) || msg === 'DISCONNECTED')) {
+            try {
+              await setRetryTxRecommendNonce({
+                from: tx.from,
+                chainId: tx.chainId,
+                nonce: tx.nonce,
+              });
+            } catch (error) {
+              console.error(
+                'useBatchSignTxTask setRetryTxRecommendNonce error',
+                error
+              );
+            }
+
             setError(msg);
           }
           throw e;
         }
       }
+      retryTxReset();
       setStatus('completed');
       // eventBus.emit(EVENTS.DIRECT_SIGN, {});
     } catch (e) {
@@ -130,7 +196,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
 
   const handleRetry = useMemoizedFn(async () => {
     setError('');
-    await start();
+    await start(true);
   });
 
   const stop = useMemoizedFn(() => {
