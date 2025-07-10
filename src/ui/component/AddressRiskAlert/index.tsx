@@ -46,6 +46,7 @@ interface AddressRiskAlertProps {
   editAlias?: string;
   editCex?: IExchange | null;
   type?: string;
+  forWhitelist?: boolean;
 }
 
 const StyledTooltipGlobalStyle = createGlobalStyle`
@@ -172,6 +173,7 @@ export const AddressRiskAlert = ({
   showClosableIcon = true,
   getContainer,
   editAlias,
+  forWhitelist,
   editCex,
   type,
 }: AddressRiskAlertProps) => {
@@ -222,7 +224,7 @@ export const AddressRiskAlert = ({
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
       await wallet?.verifyPassword(password);
-      if (inWhiteList) {
+      if (inWhiteList || forWhitelist) {
         await wallet.addWhitelist(password, address);
       } else {
         await wallet.removeWhitelist(address);
