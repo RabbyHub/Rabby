@@ -735,7 +735,8 @@
         "title": "Whitelist",
         "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
         "addWhitelist": "Add to whitelist",
-        "removeFromWhitelist": "Remove from whitelist"
+        "removeFromWhitelist": "Remove from whitelist",
+        "notWhitelist": "Not a whitelist Address"
       },
       "sendToImportedAddress": "Send to Imported Address",
       "selectImportedAddress": "Select Imported address",

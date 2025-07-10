@@ -424,6 +424,7 @@ const SendPoly = () => {
       <AddressRiskAlert
         type={selectedAddressType}
         address={selectedAddress}
+        title={t('page.sendPoly.whitelist.notWhitelist')}
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
