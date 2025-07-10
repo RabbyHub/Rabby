@@ -31,6 +31,7 @@ import { ReactComponent as RcIconChainFilterCloseCC } from 'ui/assets/chain-sele
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/riskWarning-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { getUiType, useWallet } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
@@ -80,6 +81,7 @@ export interface TokenSelectorProps {
   ) => {
     disable: boolean;
     reason: string;
+    shortReason: string;
   };
 }
 
@@ -400,17 +402,18 @@ const TokenSelector = ({
       ) => {
         disable: boolean;
         reason: string;
+        shortReason: string;
       }
     ) => {
       if (!visible && updateToken) {
         return null;
       }
-      const { disable } = checkItem?.(token) || {};
+      const { disable, shortReason } = checkItem?.(token) || {};
       return (
         <CommonTokenItem
           key={`${token.chain}-${token.id}`}
           onConfirm={onConfirm}
-          disabled={disable}
+          warningText={disable ? shortReason : undefined}
           token={token}
           type={_type}
           hideUsdValue={showCustomTestnetAssetList && selectedTab === 'testnet'}
@@ -649,6 +652,7 @@ function CommonTokenItem(props: {
   };
   disabledTips?: React.ReactNode;
   disabled?: boolean;
+  warningText?: string;
   onConfirm: (token: TokenItem) => void;
   updateToken?: boolean;
   supportChains?: CHAINS_ENUM[];
@@ -661,6 +665,7 @@ function CommonTokenItem(props: {
     disabledTips,
     supportChains,
     disabled: disabledFromProps,
+    warningText,
     onConfirm,
     updateToken,
     type,
@@ -762,75 +767,92 @@ function CommonTokenItem(props: {
         )}
         onClick={handleTokenPress}
       >
-        <div>
-          <TokenWithChain
-            token={value || token}
-            width="32px"
-            height="32px"
-            hideConer
-          />
-          <div className="flex flex-col">
-            <span className="symbol_click" onClick={onClickTokenSymbol}>
-              {getTokenSymbol(token)}
-            </span>
-            <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-              {isSwapTo
-                ? `$${formatPrice(token.price || 0)}`
-                : currentChainName}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-col"></div>
-
-        <div className="flex flex-col text-right items-end">
-          {isBridgeTo ? (
-            <div
-              className={clsx(
-                'flex items-center justify-center gap-4',
-                'py-2 px-8 rounded-full',
-                'text-13 font-normal',
-                token.trade_volume_level === 'high'
-                  ? 'bg-r-green-light'
-                  : 'bg-r-orange-light',
-                token.trade_volume_level === 'high'
-                  ? 'text-r-green-default'
-                  : 'text-r-orange-default'
-              )}
-            >
-              <div
-                className={clsx(
-                  'w-[3px] h-[3px] rounded-full',
-                  token.trade_volume_level === 'high'
-                    ? 'bg-r-green-default'
-                    : 'bg-r-orange-default'
-                )}
-              />
-              <span>
-                {token?.trade_volume_level === 'high'
-                  ? t('component.TokenSelector.bridge.high')
-                  : t('component.TokenSelector.bridge.low')}
+        <div className="token-info">
+          <div>
+            <TokenWithChain
+              token={value || token}
+              width="32px"
+              height="32px"
+              hideConer
+            />
+            <div className="flex flex-col">
+              <span className="symbol_click" onClick={onClickTokenSymbol}>
+                {getTokenSymbol(token)}
+              </span>
+              <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
+                {isSwapTo
+                  ? `$${formatPrice(token.price || 0)}`
+                  : currentChainName}
               </span>
             </div>
-          ) : !hideUsdValue ? (
-            <>
-              <div className={clsx('token_usd_value')}>
-                {formatUsdValue(
-                  new BigNumber(value?.price || 0)
-                    .times(value?.amount || 0)
-                    .toFixed()
+          </div>
+
+          <div className="flex flex-col"></div>
+
+          <div className="flex flex-col text-right items-end">
+            {isBridgeTo ? (
+              <div
+                className={clsx(
+                  'flex items-center justify-center gap-4',
+                  'py-2 px-8 rounded-full',
+                  'text-13 font-normal',
+                  token.trade_volume_level === 'high'
+                    ? 'bg-r-green-light'
+                    : 'bg-r-orange-light',
+                  token.trade_volume_level === 'high'
+                    ? 'text-r-green-default'
+                    : 'text-r-orange-default'
                 )}
+              >
+                <div
+                  className={clsx(
+                    'w-[3px] h-[3px] rounded-full',
+                    token.trade_volume_level === 'high'
+                      ? 'bg-r-green-default'
+                      : 'bg-r-orange-default'
+                  )}
+                />
+                <span>
+                  {token?.trade_volume_level === 'high'
+                    ? t('component.TokenSelector.bridge.high')
+                    : t('component.TokenSelector.bridge.low')}
+                </span>
               </div>
-              <div className="text-13 font-normal text-r-neutral-foot mb-2">
+            ) : !hideUsdValue ? (
+              <>
+                <div className={clsx('token_usd_value')}>
+                  {formatUsdValue(
+                    new BigNumber(value?.price || 0)
+                      .times(value?.amount || 0)
+                      .toFixed()
+                  )}
+                </div>
+                <div className="text-13 font-normal text-r-neutral-foot mb-2">
+                  {formatTokenAmount(value?.amount || 0)}
+                </div>
+              </>
+            ) : (
+              <div className={clsx('token_usd_value')}>
                 {formatTokenAmount(value?.amount || 0)}
               </div>
-            </>
-          ) : (
-            <div className={clsx('token_usd_value')}>
-              {formatTokenAmount(value?.amount || 0)}
-            </div>
-          )}
+            )}
+          </div>
         </div>
+        {!!warningText && (
+          <div
+            className={`
+            gap-2 rounded-[4px] bg-r-red-light
+            h-[31px] mt-[-2px] mb-16
+            flex justify-center items-center`}
+          >
+            <div className="text-r-red-default">
+              <RcIconWarningCC />
+            </div>
+            <span className="text-[13px] font-medium text-r-red-default">
+              {warningText}
+            </span>
+          </div>
+        )}
       </li>
     </Tooltip>
   );

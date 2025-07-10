@@ -325,11 +325,20 @@ const SendToken = () => {
   );
 
   const disableItemCheck = useCallback(
-    (token: TokenItem) => {
+    (
+      token: TokenItem
+    ): {
+      disable: boolean;
+      reason: string;
+      shortReason: string;
+      cexId?: string;
+    } => {
       if (!addressDesc) {
         return {
           disable: false,
+          cexId: '',
           reason: '',
+          shortReason: '',
         };
       }
 
@@ -343,6 +352,7 @@ const SendToken = () => {
             disable: true,
             cexId: toCexId,
             reason: t('page.sendToken.noSupprotTokenForDex'),
+            shortReason: t('page.sendToken.noSupprotTokenForDex_short'),
           };
         }
       } else {
@@ -358,6 +368,7 @@ const SendToken = () => {
           return {
             disable: true,
             reason: t('page.sendToken.noSupprotTokenForSafe'),
+            shortReason: t('page.sendToken.noSupprotTokenForSafe_short'),
           };
         }
         const contactChains = Object.entries(
@@ -370,12 +381,15 @@ const SendToken = () => {
           return {
             disable: true,
             reason: t('page.sendToken.noSupportTokenForChain'),
+            shortReason: t('page.sendToken.noSupportTokenForChain_short'),
           };
         }
       }
       return {
         disable: false,
+        cexId: '',
         reason: '',
+        shortReason: '',
       };
     },
     [addressDesc, t]

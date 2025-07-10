@@ -50,6 +50,7 @@ interface TokenAmountInputProps {
     disable: boolean;
     cexId?: string;
     reason: string;
+    shortReason: string;
   };
 }
 

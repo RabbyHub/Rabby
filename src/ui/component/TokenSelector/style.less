@@ -77,9 +77,10 @@
     padding-bottom: 20px;
     li {
       display: flex;
+      flex-direction: column;
       cursor: pointer;
       padding: 0 16px;
-      & > div {
+      & > .token-info > div {
         @token-icon-margin: 6px;
         @symbol-click-pl: 4px;
         &:nth-child(1) {
@@ -177,14 +178,18 @@
       }
     }
     .token-list__item {
-      height: 60px;
-      align-items: center;
       border: 1px solid transparent;
       box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
       background: var(--r-neutral-card1, #fff);
       border-radius: 8px;
       margin: 0 20px;
       margin-bottom: 8px;
+      .token-info {
+        height: 60px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
       &.token-disabled {
         opacity: 0.5;
         cursor: default;
