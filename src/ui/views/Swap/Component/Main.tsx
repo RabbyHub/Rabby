@@ -230,6 +230,24 @@ export const Main = () => {
                 },
                 dex_id: activeProvider?.name || 'WrapToken',
               },
+              addHistoryData: {
+                address: userAddress,
+                chainId: findChain({ enum: chain })?.id || 0,
+                fromToken: payToken,
+                toToken: receiveToken,
+                fromAmount: Number(inputAmount),
+                toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
+                  .div(
+                    10 **
+                      (activeProvider?.quote.toTokenDecimals ||
+                        receiveToken.decimals)
+                  )
+                  .toNumber(),
+                slippage: new BigNumber(slippage).div(100).toNumber(),
+                dexId: activeProvider?.name || 'WrapToken',
+                status: 'pending',
+                createdAt: Date.now(),
+              },
             },
             {
               ga: {
@@ -293,6 +311,24 @@ export const Main = () => {
                 slippage: new BigNumber(slippage).div(100).toNumber(),
               },
               dex_id: activeProvider?.name || 'WrapToken',
+            },
+            addHistoryData: {
+              address: userAddress,
+              chainId: findChain({ enum: chain })?.id || 0,
+              fromToken: payToken,
+              toToken: receiveToken,
+              fromAmount: Number(inputAmount),
+              toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
+                .div(
+                  10 **
+                    (activeProvider?.quote.toTokenDecimals ||
+                      receiveToken.decimals)
+                )
+                .toNumber(),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: activeProvider?.name || 'WrapToken',
+              status: 'pending',
+              createdAt: Date.now(),
             },
           },
           {
@@ -544,6 +580,8 @@ export const Main = () => {
     ]
   );
 
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
   return (
     <>
       <Header
@@ -755,7 +793,7 @@ export const Main = () => {
 
         {Boolean(!isShowMoreVisible) && (
           <div className="mx-20 mt-20">
-            <PendingTxItem type="swap" />
+            <PendingTxItem type="swap" ref={pendingTxRef} />
           </div>
         )}
 

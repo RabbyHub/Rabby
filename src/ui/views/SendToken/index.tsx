@@ -1,6 +1,13 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -67,6 +74,7 @@ import { ellipsis } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
 import { MiniApproval } from '../Approval/components/MiniSignTx';
 import { PendingTxItem } from '../Swap/Component/PendingTxItem';
+import { SendTxHistoryItem } from '@/background/service/transactionHistory';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -531,6 +539,20 @@ const SendToken = () => {
           ].join('|'),
         });
 
+        wallet.addCacheHistoryData(
+          `${chain.enum}-${params.data || '0x'}`,
+          {
+            address: currentAccount!.address,
+            chainId: findChainByEnum(chain.enum)?.id || 0,
+            from: currentAccount!.address,
+            to: toAddress,
+            token: currentToken,
+            amount: Number(amount),
+            status: 'pending',
+            createdAt: Date.now(),
+          } as SendTxHistoryItem,
+          'send'
+        );
         if (canUseMiniTx) {
           setMiniSignTx(params as Tx);
           setIsShowMiniSign(true);
@@ -1199,6 +1221,8 @@ const SendToken = () => {
     }
   }, [currentToken, gasList]);
 
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -1324,7 +1348,7 @@ const SendToken = () => {
             </div>
             {!canSubmit && (
               <div className="mt-20">
-                <PendingTxItem type="send" />
+                <PendingTxItem type="send" ref={pendingTxRef} />
               </div>
             )}
           </div>

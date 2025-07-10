@@ -220,6 +220,9 @@ class TxHistory {
 
     if (!this.store.transactions) this.store.transactions = {};
 
+    // Clear cache on initialization
+    this.cacheHistoryData = {};
+
     this._populateAvailableTxs();
   }
 
@@ -284,6 +287,59 @@ class TxHistory {
     ).length;
   }
 
+  cacheHistoryData: Record<
+    string,
+    {
+      data: Omit<
+        SwapTxHistoryItem | SendTxHistoryItem | BridgeTxHistoryItem,
+        'hash'
+      >;
+      type: 'swap' | 'send' | 'bridge';
+    }
+  > = {};
+
+  addCacheHistoryData(
+    key: string, //`${chain}-${tx.data}`;
+    data: Omit<
+      SwapTxHistoryItem | SendTxHistoryItem | BridgeTxHistoryItem,
+      'hash'
+    >,
+    type: 'swap' | 'send' | 'bridge'
+  ) {
+    this.cacheHistoryData[key] = {
+      data,
+      type,
+    };
+  }
+
+  postCacheHistoryData(key: string, txHash: string) {
+    if (this.cacheHistoryData[key]) {
+      const { data, type } = this.cacheHistoryData[key];
+      if (!data) return;
+      delete this.cacheHistoryData[key];
+      if (type === 'swap') {
+        this.addSwapTxHistory({
+          ...(data as SwapTxHistoryItem),
+          hash: txHash,
+        });
+      }
+
+      if (type === 'send') {
+        this.addSendTxHistory({
+          ...(data as SendTxHistoryItem),
+          hash: txHash,
+        });
+      }
+
+      if (type === 'bridge') {
+        this.addBridgeTxHistory({
+          ...(data as BridgeTxHistoryItem),
+          hash: txHash,
+        });
+      }
+    }
+  }
+
   addSwapTxHistory(tx: SwapTxHistoryItem) {
     this.store.swapTxHistory.push(tx);
     this.store.swapTxHistory = this.store.swapTxHistory
@@ -306,7 +362,6 @@ class TxHistory {
   }
 
   getRecentPendingTxHistory(address: string, type: 'swap' | 'send' | 'bridge') {
-    console.log('getRecentPendingTxHistory', this.store);
     const recentItem = this.store[`${type}TxHistory`]
       .filter((item) => {
         return isSameAddress(address, item.address);

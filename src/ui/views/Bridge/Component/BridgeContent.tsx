@@ -221,6 +221,19 @@ export const BridgeContent = () => {
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               slippage: new BigNumber(slippage).div(100).toNumber(),
             },
+            addHistoryData: {
+              address: userAddress,
+              fromChainId: findChainByEnum(fromToken.chain)?.id || 0,
+              toChainId: findChainByEnum(toToken.chain)?.id || 0,
+              fromToken: fromToken,
+              toToken: toToken,
+              fromAmount: Number(amount),
+              toAmount: Number(selectedBridgeQuote.to_token_amount),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: selectedBridgeQuote.aggregator.id,
+              status: 'pending',
+              createdAt: Date.now(),
+            },
           },
           {
             ga: {
@@ -345,6 +358,19 @@ export const BridgeContent = () => {
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               slippage: new BigNumber(slippage).div(100).toNumber(),
+            },
+            addHistoryData: {
+              address: userAddress,
+              fromChainId: findChainByEnum(fromToken.chain)?.id || 0,
+              toChainId: findChainByEnum(toToken.chain)?.id || 0,
+              fromToken: fromToken,
+              toToken: toToken,
+              fromAmount: Number(amount),
+              toAmount: Number(selectedBridgeQuote.to_token_amount),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: selectedBridgeQuote.aggregator.id,
+              status: 'pending',
+              createdAt: Date.now(),
             },
           },
           {
@@ -493,6 +519,8 @@ export const BridgeContent = () => {
   const openFeePopup = useCallback(() => {
     switchFeePopup(true);
   }, [switchFeePopup]);
+
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
 
   return (
     <>
@@ -652,6 +680,7 @@ export const BridgeContent = () => {
               type="bridge"
               bridgeHistoryList={historyList}
               openBridgeHistory={() => setHistoryVisible(true)}
+              ref={pendingTxRef}
             />
           </div>
         )}

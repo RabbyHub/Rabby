@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  forwardRef,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import clsx from 'clsx';
@@ -84,35 +91,6 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
   );
 };
 
-const fetchRefreshLocalData = (
-  data: PendingTxData,
-  type: 'swap' | 'send' | 'bridge'
-) => {
-  if (data.status !== 'pending') {
-    // has done
-    return;
-  }
-
-  const address = data.address;
-  const chainId =
-    'chainId' in data
-      ? data.chainId
-      : 'fromChainId' in data
-      ? data.fromChainId
-      : null;
-  const hash = data.hash;
-  const newData = transactionHistoryService.getRecentTxHistory(
-    address,
-    hash,
-    chainId!,
-    type
-  );
-
-  if (newData?.status !== 'pending') {
-    return newData;
-  }
-};
-
 // const mockData = {
 //   status: 'failed',
 //   hash: '0x1234567890',
@@ -190,15 +168,14 @@ const fetchRefreshLocalData = (
 //   },
 // } as SwapTxHistoryItem;
 
-export const PendingTxItem = ({
-  type,
-  bridgeHistoryList,
-  openBridgeHistory,
-}: {
-  type: 'send' | 'swap' | 'bridge';
-  bridgeHistoryList?: BridgeHistory[];
-  openBridgeHistory?: () => void;
-}) => {
+export const PendingTxItem = forwardRef<
+  { fetchHistory: () => void },
+  {
+    type: 'send' | 'swap' | 'bridge';
+    bridgeHistoryList?: BridgeHistory[];
+    openBridgeHistory?: () => void;
+  }
+>(({ type, bridgeHistoryList, openBridgeHistory }, ref) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
@@ -220,9 +197,37 @@ export const PendingTxItem = ({
     fetchHistory();
   }, [fetchHistory]);
 
-  useInterval(() => {
+  const fetchRefreshLocalData = useMemoizedFn(
+    async (data: PendingTxData, type: 'swap' | 'send' | 'bridge') => {
+      if (data.status !== 'pending') {
+        // has done
+        return;
+      }
+
+      const address = data.address;
+      const chainId =
+        'chainId' in data
+          ? data.chainId
+          : 'fromChainId' in data
+          ? data.fromChainId
+          : null;
+      const hash = data.hash;
+      const newData = await wallet.getRecentTxHistory(
+        address,
+        hash,
+        chainId!,
+        type
+      );
+
+      if (newData?.status !== 'pending') {
+        return newData;
+      }
+    }
+  );
+
+  useInterval(async () => {
     if (data) {
-      const refreshTx = fetchRefreshLocalData(data, type);
+      const refreshTx = await fetchRefreshLocalData(data, type);
       if (refreshTx) {
         setData(refreshTx);
       }
@@ -269,17 +274,6 @@ export const PendingTxItem = ({
     }
   }, [bridgeHistoryList, data, type, wallet]);
 
-  const chainItem = React.useMemo(() => {
-    if (!data) return null;
-    const chainId =
-      'chainId' in data
-        ? data.chainId
-        : 'fromChainId' in data
-        ? data.fromChainId
-        : null;
-    return chainId ? findChain({ id: chainId }) : null;
-  }, [data]);
-
   const isPending =
     data?.status === 'pending' || data?.status === 'fromSuccess';
   const isFailed = data?.status === 'failed';
@@ -324,6 +318,12 @@ export const PendingTxItem = ({
     }
     return 'text-r-green-default';
   }, [isPending, isFailed]);
+
+  useImperativeHandle(ref, () => ({
+    fetchHistory: () => {
+      fetchHistory();
+    },
+  }));
 
   if (!data) {
     return null;
@@ -404,4 +404,4 @@ export const PendingTxItem = ({
       </div>
     </div>
   );
-};
+});
