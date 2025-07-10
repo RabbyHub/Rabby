@@ -600,7 +600,12 @@ const TokenSelector = ({
             {isEmpty
               ? NoDataUI
               : displayList.map((token) => {
-                  return commonItemRender(token, type);
+                  return commonItemRender(
+                    token,
+                    type,
+                    undefined,
+                    disableItemCheck
+                  );
                 })}
           </ul>
         )}

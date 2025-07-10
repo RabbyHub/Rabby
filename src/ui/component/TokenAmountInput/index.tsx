@@ -343,7 +343,7 @@ const TokenAmountInput = ({
         isLoading={isListLoading}
         type={type}
         disableItemCheck={disableItemCheck}
-        showCustomTestnetAssetList
+        // showCustomTestnetAssetList
         placeholder={placeholder}
         chainId={chainServerId}
         getContainer={getContainer}
