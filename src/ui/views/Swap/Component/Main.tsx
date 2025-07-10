@@ -16,6 +16,7 @@ import clsx from 'clsx';
 import { QuoteList } from './Quotes';
 import {
   useQuoteVisible,
+  useRefreshId,
   useSetQuoteVisible,
   useSetRabbyFee,
   useSetRefreshId,
@@ -49,6 +50,12 @@ import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
+import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import {
+  useSetDirectSigning,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import eventBus from '@/eventBus';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -134,6 +141,8 @@ export const Main = () => {
   } = useExternalSwapBridgeDapps(chain, 'swap');
 
   const refresh = useSetRefreshId();
+
+  const refreshId = useRefreshId();
 
   const originPreferMEVGuarded = useRabbySelector(
     (s) => !!s.swap.preferMEVGuarded
@@ -349,24 +358,6 @@ export const Main = () => {
     ]
   );
 
-  const [swapDappOpen, setSwapDappOpen] = useState(false);
-
-  const handleSwap = useMemoizedFn(() => {
-    if (!isTab) {
-      dispatch.swap.setRecentSwapToToken(receiveToken);
-    }
-    if (!isSupportedChain) {
-      setSwapDappOpen(true);
-      return;
-    }
-    if (canUseMiniTx) {
-      setIsShowSign(true);
-      clearExpiredTimer();
-    } else {
-      gotoSwap();
-    }
-  });
-
   const swapBtnDisabled = isSupportedChain
     ? quoteLoading ||
       !payToken ||
@@ -377,6 +368,57 @@ export const Main = () => {
     : externalDapps.length
     ? false
     : true;
+
+  const startDirectSigning = useStartDirectSigning();
+
+  const canUseDirectSubmitTx = useMemo(
+    () =>
+      !swapBtnDisabled &&
+      isSupportedChain &&
+      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
+        (currentAccount?.type || '') as any
+      ) &&
+      !receiveToken?.low_credit_score &&
+      !receiveToken?.is_suspicious &&
+      receiveToken?.is_verified !== false &&
+      !isSlippageHigh &&
+      !isSlippageLow &&
+      !showLoss,
+    [
+      swapBtnDisabled,
+      isSupportedChain,
+      receiveToken,
+      isSlippageHigh,
+      isSlippageLow,
+      showLoss,
+      currentAccount?.type,
+    ]
+  );
+
+  const [swapDappOpen, setSwapDappOpen] = useState(false);
+
+  const handleSwap = useMemoizedFn(() => {
+    if (!isTab) {
+      dispatch.swap.setRecentSwapToToken(receiveToken);
+    }
+    if (!isSupportedChain) {
+      setSwapDappOpen(true);
+      return;
+    }
+
+    if (canUseDirectSubmitTx) {
+      clearExpiredTimer();
+      startDirectSigning();
+      return;
+    }
+    if (canUseMiniTx) {
+      setIsShowSign(true);
+      clearExpiredTimer();
+      startDirectSigning();
+    } else {
+      gotoSwap();
+    }
+  });
 
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
@@ -696,6 +738,7 @@ export const Main = () => {
           !!receiveToken && (
             <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
               <BridgeShowMore
+                supportDirectSign={canUseDirectSubmitTx}
                 autoSuggestSlippage={autoSuggestSlippage}
                 openFeePopup={openFeePopup}
                 open={showMoreOpen}
@@ -762,53 +805,63 @@ export const Main = () => {
                 : false
             }
           >
-            <Button
-              type="primary"
-              block
-              size="large"
-              className="h-[48px] text-white text-[16px] font-medium"
-              loading={isSubmitLoading}
-              onClick={() => {
-                if (!isSupportedChain && externalDapps.length > 0) {
-                  setSwapDappOpen(true);
-                  return;
-                }
-                if (!activeProvider) {
-                  refresh((e) => e + 1);
-                  return;
-                }
-                if (activeProvider?.shouldTwoStepApprove) {
-                  return Modal.confirm({
-                    width: 360,
-                    closable: true,
-                    centered: true,
-                    className: twoStepApproveCn,
-                    title: null,
-                    content: (
-                      <>
-                        <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                          {t('page.swap.two-step-approve')}
-                        </div>
-                        <div className="text-13 leading-[17px]  text-r-neutral-body">
-                          {t('page.swap.two-step-approve-details')}
-                        </div>
-                      </>
-                    ),
-                    okText: t('page.swap.process-with-two-step-approve'),
-                    onOk() {
-                      // gotoSwap();
-                      handleSwap();
-                    },
-                  });
-                }
-                // gotoSwap();
-                // runBuildSwapTxs();
-                handleSwap();
-              }}
-              disabled={swapBtnDisabled}
-            >
-              {btnText}
-            </Button>
+            {canUseDirectSubmitTx ? (
+              <ToConfirmBtn
+                // disabled
+                key={refreshId}
+                disabled={swapBtnDisabled}
+                title={'Swap'}
+                onConfirm={handleSwap}
+              />
+            ) : (
+              <Button
+                type="primary"
+                block
+                size="large"
+                className="h-[48px] text-white text-[16px] font-medium"
+                loading={isSubmitLoading}
+                onClick={() => {
+                  if (!isSupportedChain && externalDapps.length > 0) {
+                    setSwapDappOpen(true);
+                    return;
+                  }
+                  if (!activeProvider) {
+                    refresh((e) => e + 1);
+                    return;
+                  }
+                  if (activeProvider?.shouldTwoStepApprove) {
+                    return Modal.confirm({
+                      width: 360,
+                      closable: true,
+                      centered: true,
+                      className: twoStepApproveCn,
+                      title: null,
+                      content: (
+                        <>
+                          <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                            {t('page.swap.two-step-approve')}
+                          </div>
+                          <div className="text-13 leading-[17px]  text-r-neutral-body">
+                            {t('page.swap.two-step-approve-details')}
+                          </div>
+                        </>
+                      ),
+                      okText: t('page.swap.process-with-two-step-approve'),
+                      onOk() {
+                        // gotoSwap();
+                        handleSwap();
+                      },
+                    });
+                  }
+                  // gotoSwap();
+                  // runBuildSwapTxs();
+                  handleSwap();
+                }}
+                disabled={swapBtnDisabled}
+              >
+                {btnText}
+              </Button>
+            )}
           </TooltipWithMagnetArrow>
         </div>
 
@@ -855,18 +908,16 @@ export const Main = () => {
           }}
           onResolve={() => {
             setTimeout(() => {
+              refresh((e) => e + 1);
               setIsShowSign(false);
               mutateTxs([]);
-              // setPayAmount('');
-              // setTimeout(() => {
-              if (!isTab) {
-                history.replace('/');
-              }
               handleAmountChange('');
-              // }, 500);
             }, 500);
           }}
+          onPreExecError={gotoSwap}
           getContainer={getContainer}
+          directSubmit
+          canUseDirectSubmitTx={canUseDirectSubmitTx}
         />
         <LowCreditModal
           token={lowCreditToken}

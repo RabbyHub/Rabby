@@ -45,6 +45,11 @@ import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { Tx } from 'background/service/openapi';
+import {
+  DirectSigningProvider,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -117,6 +122,18 @@ const SendNFT = () => {
     );
   }, [chainInfo?.isTestnet, currentAccount?.type]);
 
+  const startDirectSigning = useStartDirectSigning();
+
+  const canUseDirectSubmitTx = useMemo(
+    () =>
+      canSubmit &&
+      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
+        (currentAccount?.type || '') as any
+      ) &&
+      !chainInfo?.isTestnet,
+    [canSubmit, chainInfo?.isTestnet, currentAccount?.type]
+  );
+
   const handleClickContractId = () => {
     if (!chain || !nftItem) return;
     const targetChain = findChainByEnum(chain);
@@ -178,9 +195,31 @@ const SendNFT = () => {
     [nftItem, chainInfo, currentAccount, toAddress]
   );
 
+  const amount = form.getFieldValue('amount');
+
+  useEffect(() => {
+    if (canUseDirectSubmitTx) {
+      const params = getNFTTransferParams(amount);
+      setMiniSignTx(params as Tx);
+    } else {
+      setMiniSignTx(null);
+    }
+
+    return () => {
+      setMiniSignTx(null);
+    };
+  }, [canUseDirectSubmitTx, amount, getNFTTransferParams]);
+
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
-    async ({ amount }: { amount: number }) => {
+    async ({
+      amount,
+      forceSignPage,
+    }: {
+      amount: number;
+      forceSignPage?: boolean;
+    }) => {
       if (!nftItem) return;
+
       await wallet.setPageStateCache({
         path: '/send-nft',
         search: history.location.search,
@@ -203,8 +242,14 @@ const SendNFT = () => {
             filterRbiSource('sendNFT', rbisource) && rbisource,
           ].join('|'),
         });
+
+        if (canUseDirectSubmitTx && !forceSignPage) {
+          startDirectSigning();
+          return;
+        }
+
         const params = getNFTTransferParams(amount);
-        if (canUseMiniTx) {
+        if (canUseMiniTx && !forceSignPage) {
           setMiniSignTx(params as Tx);
           setIsShowMiniSign(true);
           return;
@@ -495,16 +540,28 @@ const SendNFT = () => {
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] flex justify-center">
-              <Button
-                disabled={!canSubmit}
-                type="primary"
-                htmlType="submit"
-                size="large"
-                className="w-[100%] h-[48px] text-[16px]"
-                loading={isSubmitLoading}
-              >
-                {t('page.sendNFT.sendButton')}
-              </Button>
+              {canUseDirectSubmitTx ? (
+                <ToConfirmBtn
+                  title={t('page.sendToken.sendButton')}
+                  onConfirm={() =>
+                    handleSubmit({
+                      amount: form.getFieldValue('amount'),
+                    })
+                  }
+                  disabled={!canSubmit}
+                />
+              ) : (
+                <Button
+                  disabled={!canSubmit}
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  className="w-[100%] h-[48px] text-[16px]"
+                  loading={isSubmitLoading}
+                >
+                  {t('page.sendNFT.sendButton')}
+                </Button>
+              )}
             </div>
           </div>
         </Form>
@@ -529,13 +586,27 @@ const SendNFT = () => {
             setMiniSignTx(null);
           }}
           onResolve={handleMiniSignResolve}
+          onPreExecError={() => {
+            handleSubmit({
+              amount: form.getFieldValue('amount'),
+              forceSignPage: true,
+            });
+          }}
           getContainer={getContainer}
+          directSubmit
+          canUseDirectSubmitTx={canUseDirectSubmitTx}
         />
       </div>
     </FullscreenContainer>
   );
 };
 
+const SendNFTWrapper = () => (
+  <DirectSigningProvider>
+    <SendNFT />
+  </DirectSigningProvider>
+);
+
 export default isTab
-  ? connectStore()(withAccountChange(SendNFT))
-  : connectStore()(SendNFT);
+  ? connectStore()(withAccountChange(SendNFTWrapper))
+  : connectStore()(SendNFTWrapper);

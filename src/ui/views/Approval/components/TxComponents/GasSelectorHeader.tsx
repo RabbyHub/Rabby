@@ -50,6 +50,7 @@ import { calcGasEstimated } from '@/utils/time';
 import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { noop } from 'lodash';
+import { useSetMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -114,6 +115,10 @@ interface GasSelectorProps {
     balance_is_enough: boolean;
     chain_not_support: boolean;
   };
+  directSubmit?: boolean;
+  checkGasLevelIsNotEnough?: (
+    gas: GasSelectorResponse
+  ) => Promise<[number, boolean, boolean]>;
   getContainer?: DrawerProps['getContainer'];
 }
 
@@ -301,6 +306,8 @@ const GasSelectorHeader = ({
   gasAccountCost,
   onChangeGasMethod,
   tx,
+  checkGasLevelIsNotEnough,
+  directSubmit,
   getContainer,
 }: GasSelectorProps) => {
   const wallet = useWallet();
@@ -423,6 +430,116 @@ const GasSelectorHeader = ({
     },
   });
 
+  const gasSlowUsd = useExplainGas({
+    price: gasList.find((e) => e.level === 'slow')?.price || 0,
+    method: gasCalcMethod,
+    value: {
+      gasCostAmount: new BigNumber(gas.gasCostAmount),
+      gasCostUsd: new BigNumber(gas.gasCostUsd),
+    },
+  }).gasCostUsd;
+
+  const gasNormalUsd = useExplainGas({
+    price: gasList.find((e) => e.level === 'normal')?.price || 0,
+    method: gasCalcMethod,
+    value: {
+      gasCostAmount: new BigNumber(gas.gasCostAmount),
+      gasCostUsd: new BigNumber(gas.gasCostUsd),
+    },
+  }).gasCostUsd;
+
+  const gasFastUsd = useExplainGas({
+    price: gasList.find((e) => e.level === 'fast')?.price || 0,
+    method: gasCalcMethod,
+    value: {
+      gasCostAmount: new BigNumber(gas.gasCostAmount),
+      gasCostUsd: new BigNumber(gas.gasCostUsd),
+    },
+  }).gasCostUsd;
+
+  const [gasIsNotEnough, setGasIsNotEnough] = useState({
+    slow: false,
+    normal: false,
+    fast: false,
+  });
+  const [gasAccountIsNotEnough, setGasAccountIsNotEnough] = useState<{
+    slow: [boolean, string];
+    normal: [boolean, string];
+    fast: [boolean, string];
+  }>({
+    slow: [false, ''],
+    normal: [false, ''],
+    fast: [false, ''],
+  });
+
+  const calcGasAccountUsd = useCallback((n: number | string) => {
+    const v = Number(n);
+    if (!Number.isNaN(v) && v < 0.0001) {
+      return `$${n}`;
+    }
+    return formatGasAccountUSDValue(n || '0');
+  }, []);
+
+  useDebounce(
+    () => {
+      if (
+        checkGasLevelIsNotEnough &&
+        gasList.length &&
+        directSubmit &&
+        isReady
+      ) {
+        let init = true;
+        ['slow', 'normal', 'fast'].map((level) => {
+          const selectedGas = gasList.find((e) => e.level === level);
+          return checkGasLevelIsNotEnough({
+            ...gasList.find((e) => e.level === level),
+            gasLimit: Number(afterGasLimit),
+            nonce: Number(customNonce),
+            level: selectedGas!.level,
+            maxPriorityFee: calcMaxPriorityFee(
+              gasList,
+              selectedGas!,
+              chainId,
+              isCancel || isSpeedUp
+            ),
+          } as GasSelectorResponse)
+            .then((arr) => {
+              if (init) {
+                setGasAccountIsNotEnough((pre) => ({
+                  ...pre,
+                  [level]: [
+                    !arr[1],
+                    calcGasAccountUsd(((arr[0] as unknown) as number) || 0),
+                  ],
+                }));
+                setGasIsNotEnough((pre) => ({ ...pre, [level]: arr[2] }));
+              }
+            })
+            .catch((e) => {
+              console.log('checkGasLevelIsNotEnough error', e);
+            });
+        });
+
+        return () => {
+          init = false;
+        };
+      }
+    },
+    100,
+    [
+      isReady,
+      directSubmit,
+      afterGasLimit,
+      checkGasLevelIsNotEnough,
+      customNonce,
+      gasList,
+      chainId,
+      isCancel,
+      isSpeedUp,
+      calcGasAccountUsd,
+    ]
+  );
+
   const handleConfirmGas = () => {
     if (!selectedGas) return;
     if (selectedGas.level === 'custom') {
@@ -465,7 +582,7 @@ const GasSelectorHeader = ({
   }, [customGas, changedCustomGas]);
 
   const [isSelectCustom, setIsSelectCustom] = useState(false);
-  const handleClickEdit = () => {
+  const handleClickEdit = useCallback(() => {
     setModalVisible(true);
     if (rawSelectedGas?.level !== 'custom') {
       setSelectedGas(rawSelectedGas);
@@ -484,7 +601,7 @@ const GasSelectorHeader = ({
       },
       getContainer ? 1000 : 50
     );
-  };
+  }, [chain?.serverId, gasLimit, nonce, rawSelectedGas]);
 
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
@@ -520,39 +637,51 @@ const GasSelectorHeader = ({
     return panelSelection(e, gas);
   };
 
-  const externalPanelSelection = (gas: GasLevel) => {
-    const target = gas;
+  const externalPanelSelection = useCallback(
+    (gas: GasLevel) => {
+      const target = gas;
 
-    if (gas.level === 'custom') {
-      if (!changedCustomGas) return;
-      onChange({
-        ...target,
-        level: 'custom',
-        price: Number(target.price),
-        gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce),
-        maxPriorityFee: calcMaxPriorityFee(
-          gasList,
-          target,
-          chainId,
-          isCancel || isSpeedUp
-        ),
-      });
-    } else {
-      onChange({
-        ...gas,
-        gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce),
-        level: gas?.level,
-        maxPriorityFee: calcMaxPriorityFee(
-          gasList,
-          target,
-          chainId,
-          isCancel || isSpeedUp
-        ),
-      });
-    }
-  };
+      if (gas.level === 'custom') {
+        if (!changedCustomGas) return;
+        onChange({
+          ...target,
+          level: 'custom',
+          price: Number(target.price),
+          gasLimit: Number(afterGasLimit),
+          nonce: Number(customNonce),
+          maxPriorityFee: calcMaxPriorityFee(
+            gasList,
+            target,
+            chainId,
+            isCancel || isSpeedUp
+          ),
+        });
+      } else {
+        onChange({
+          ...gas,
+          gasLimit: Number(afterGasLimit),
+          nonce: Number(customNonce),
+          level: gas?.level,
+          maxPriorityFee: calcMaxPriorityFee(
+            gasList,
+            target,
+            chainId,
+            isCancel || isSpeedUp
+          ),
+        });
+      }
+    },
+    [
+      afterGasLimit,
+      chainId,
+      changedCustomGas,
+      customNonce,
+      gasList,
+      isCancel,
+      isSpeedUp,
+      onChange,
+    ]
+  );
 
   const customGasConfirm = (e) => {
     const customGas = gasList.find((item) => item.level === 'custom')!;
@@ -733,14 +862,6 @@ const GasSelectorHeader = ({
     )} ${chain.nativeTokenSymbol}`;
   }, [modalExplainGas?.gasCostAmount]);
 
-  const calcGasAccountUsd = useCallback((n: number | string) => {
-    const v = Number(n);
-    if (!Number.isNaN(v) && v < 0.0001) {
-      return `$${n}`;
-    }
-    return formatGasAccountUSDValue(n || '0');
-  }, []);
-
   const [isGasHovering, gasHoverProps] = useHover();
 
   const [isGasAccountHovering, gasAccountHoverProps] = useHover();
@@ -751,6 +872,66 @@ const GasSelectorHeader = ({
     setSelectedGas(rawSelectedGas);
     setModalVisible(false);
   };
+
+  const setMiniApprovalGasState = useSetMiniApprovalGas();
+
+  useEffect(() => {
+    if (
+      isFirstTimeLoad ||
+      disabled ||
+      !isReady ||
+      !selectedGas ||
+      !directSubmit
+    ) {
+      setMiniApprovalGasState(undefined);
+      return;
+    }
+
+    setMiniApprovalGasState((pre) => ({
+      ...pre,
+      gasIsNotEnough,
+      gasAccountIsNotEnough,
+      loading: !isReady && !isFirstTimeLoad,
+      gasMethod,
+      onChangeGasMethod,
+      // isDisabledGasPopup,
+      gasList,
+      selectedGas,
+      externalPanelSelection,
+      handleClickEdit,
+      changedCustomGas,
+      gasCostUsdStr,
+      gasUsdList: {
+        slow: formatGasHeaderUsdValue(new BigNumber(gasSlowUsd).toString(10)),
+        normal: formatGasHeaderUsdValue(
+          new BigNumber(gasNormalUsd).toString(10)
+        ),
+        fast: formatGasHeaderUsdValue(new BigNumber(gasFastUsd).toString(10)),
+      },
+      gasAccountCost: gasAccountCost?.gas_account_cost,
+    }));
+  }, [
+    gasAccountIsNotEnough,
+    gasIsNotEnough,
+    directSubmit,
+    isReady,
+    isFirstTimeLoad,
+    disabled,
+    setMiniApprovalGasState,
+    gasMethod,
+    onChangeGasMethod,
+    // isDisabledGasPopup,
+    gasList,
+    selectedGas,
+    externalPanelSelection,
+    handleClickEdit,
+    changedCustomGas,
+    gasCostUsdStr,
+    gasSlowUsd,
+    gasNormalUsd,
+    gasFastUsd,
+    gasAccountCost?.gas_account_cost,
+  ]);
 
   const uiType = useMemo(() => getUiType(), []);
 
@@ -1186,14 +1367,22 @@ const GasSelectorHeader = ({
   );
 };
 
-const GasMethod = (props: {
+export const GasMethod = (props: {
   active: boolean;
-  onChange: () => void;
+  onChange: React.MouseEventHandler<HTMLDivElement>;
   ActiveComponent: React.FC<React.SVGProps<SVGSVGElement>>;
   BlurComponent: React.FC<React.SVGProps<SVGSVGElement>>;
   tips?: React.ReactNode;
+  title?: React.ReactNode;
 }) => {
-  const { active, onChange, ActiveComponent, BlurComponent, tips } = props;
+  const {
+    title,
+    active,
+    onChange,
+    ActiveComponent,
+    BlurComponent,
+    tips,
+  } = props;
   return (
     <Tooltip
       overlayClassName="rectangle"
@@ -1206,7 +1395,8 @@ const GasMethod = (props: {
     >
       <div
         className={clsx(
-          'w-32 h-24 relative rounded',
+          title ? 'w-[114px] h-[28px]' : 'w-32 h-24',
+          'relative rounded gap-[4px]',
           'flex items-center justify-center',
           'group cursor-pointer',
           active ? 'bg-r-blue-light1' : 'bg-transparent'
@@ -1221,6 +1411,16 @@ const GasMethod = (props: {
               : 'text-r-neutral-foot group-hover:text-r-neutral-body'
           )}
         />
+        {title ? (
+          <div
+            className={clsx(
+              'text-[13px] font-medium',
+              active ? 'text-r-blue-default' : 'text-r-neutral-body'
+            )}
+          >
+            {title}
+          </div>
+        ) : null}
       </div>
     </Tooltip>
   );

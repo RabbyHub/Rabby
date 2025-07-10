@@ -7,6 +7,7 @@ import PQueue from 'p-queue';
 import React, { useMemo, useState } from 'react';
 import _ from 'lodash';
 import { isLedgerLockError } from '@/ui/utils/ledger';
+import { useSetDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 type TxStatus = 'sended' | 'signed' | 'idle' | 'failed';
 
@@ -49,8 +50,11 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
     setStatus('idle');
   });
 
+  const setDirectSigning = useSetDirectSigning();
+
   const start = useMemoizedFn(async () => {
     try {
+      setDirectSigning(true);
       setStatus('active');
       for (let index = 0; index < list.length; index++) {
         const item = list[index];
@@ -63,7 +67,10 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
         try {
           const result = await sendTransaction({
             ...options,
-            tx,
+            tx: {
+              ...tx,
+              nonce: '0x0',
+            },
             wallet,
             ga,
             onProgress: (status) => {
@@ -87,6 +94,11 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
         } catch (e) {
           console.error(e);
           const msg = e.message || e.name;
+
+          // eventBus.emit(EVENTS.DIRECT_SIGN, {
+          //   error: msg,
+          // });
+
           _updateList({
             index,
             payload: {
@@ -102,16 +114,22 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
         }
       }
       setStatus('completed');
+      // eventBus.emit(EVENTS.DIRECT_SIGN, {});
     } catch (e) {
       console.error(e);
+      const msg = e.message || e.name;
+
+      // eventBus.emit(EVENTS.DIRECT_SIGN, {
+      //   error: msg || 'failed to completed',
+      // });
       throw e;
+    } finally {
+      setDirectSigning(false);
     }
   });
 
   const handleRetry = useMemoizedFn(async () => {
     setError('');
-    // setStatus('idle');
-    // setStatus('')
     await start();
   });
 

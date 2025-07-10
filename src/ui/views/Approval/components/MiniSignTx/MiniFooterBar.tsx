@@ -12,9 +12,10 @@ import {
   CHAINS,
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
+  KEYRING_TYPE,
   SecurityEngineLevel,
 } from 'consts';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
@@ -30,6 +31,13 @@ import { MiniLedgerAction } from './MiniLedgerAction';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { DrawerProps } from 'antd';
+import {
+  useDirectSigning,
+  // useSetCanDirectSign,
+  useSetGasTipsComponent,
+  useSetMiniApprovalGas,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useDebounce } from 'react-use';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -63,6 +71,9 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   canGotoUseGasAccount?: boolean;
   canDepositUseGasAccount?: boolean;
   getContainer?: DrawerProps['getContainer'];
+  isFirstGasCostLoading?: boolean;
+  isFirstGasLessLoading?: boolean;
+  directSubmit?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -101,6 +112,26 @@ const Wrapper = styled.section`
       border-bottom: 8px solid currentColor;
       top: -13px;
       left: 115px;
+    }
+  }
+`;
+
+const GasTipsWrapper = styled.div`
+  position: relative;
+
+  .security-level-tip {
+    margin-top: 10px;
+    border-radius: 4px;
+    padding: 6px 10px 6px 8px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    display: flex;
+    position: relative;
+    .icon-level {
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
     }
   }
 `;
@@ -179,6 +210,10 @@ export const MiniFooterBar: React.FC<Props> = ({
   canDepositUseGasAccount,
   task,
   getContainer,
+  isFirstGasCostLoading,
+  isFirstGasLessLoading,
+  isGasNotEnough,
+  directSubmit,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -234,6 +269,12 @@ export const MiniFooterBar: React.FC<Props> = ({
     if (currentAccount) setAccount(currentAccount);
   };
 
+  const setMiniApprovalGasState = useSetMiniApprovalGas();
+  // const setCanDirectSign = useSetCanDirectSign();
+  const setGasTipsComponent = useSetGasTipsComponent();
+  const isSetGasMethodRef = useRef(false);
+  const [isInited, setIsInited] = useState(false);
+
   useEffect(() => {
     if (origin) {
       wallet.getConnectedSite(origin).then((site) => {
@@ -245,6 +286,201 @@ export const MiniFooterBar: React.FC<Props> = ({
   React.useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (!account || !directSubmit) {
+      setGasTipsComponent(null);
+      return;
+    }
+
+    setGasTipsComponent(
+      !isInited ? null : (
+        <GasTipsWrapper>
+          {showGasLess &&
+          !canGotoUseGasAccount &&
+          (!securityLevel || !hasUnProcessSecurityResult) ? (
+            canUseGasLess ? (
+              <GasLessActivityToSign
+                gasLessEnable={useGasLess}
+                handleFreeGas={() => {
+                  enableGasLess?.();
+                }}
+                gasLessConfig={gasLessConfig}
+              />
+            ) : isWatchAddr ||
+              account?.type === KEYRING_TYPE.GnosisKeyring ? null : null
+          ) : null}
+
+          {showGasLess &&
+          !canUseGasLess &&
+          (!securityLevel || !hasUnProcessSecurityResult) &&
+          !gasAccountCanPay &&
+          !isWalletConnect &&
+          gasAccountCost &&
+          !gasAccountCost?.balance_is_enough &&
+          !gasAccountCost?.chain_not_support &&
+          noCustomRPC &&
+          !(isWatchAddr || account?.type === KEYRING_TYPE.GnosisKeyring) ? (
+            // <GasLessNotEnough
+            //   directSubmit
+            //   // inShowMore
+            //   gasLessFailedReason={gasLessFailedReason}
+            //   canGotoUseGasAccount={canGotoUseGasAccount}
+            //   onChangeGasAccount={onChangeGasAccount}
+            //   canDepositUseGasAccount={canDepositUseGasAccount}
+            //   miniFooter
+            // />
+            <GasAccountTips
+              gasAccountCost={gasAccountCost}
+              isGasAccountLogin={isGasAccountLogin}
+              isWalletConnect={isWalletConnect}
+              noCustomRPC={noCustomRPC}
+              miniFooter
+              directSubmit
+            />
+          ) : null}
+
+          {payGasByGasAccount && !gasAccountCanPay ? (
+            isWatchAddr ||
+            account?.type ===
+              KEYRING_TYPE.GnosisKeyring ? null : gasAccountCost?.chain_not_support ||
+              !noCustomRPC ||
+              isWalletConnect ? (
+              <GasAccountTips
+                directSubmit
+                gasAccountCost={gasAccountCost}
+                isGasAccountLogin={isGasAccountLogin}
+                isWalletConnect={isWalletConnect}
+                noCustomRPC={noCustomRPC}
+                miniFooter
+              />
+            ) : null
+          ) : null}
+        </GasTipsWrapper>
+      )
+    );
+    return () => {
+      setGasTipsComponent(null);
+    };
+  }, [
+    isInited,
+    directSubmit,
+    account,
+    account?.type,
+    canDepositUseGasAccount,
+    canGotoUseGasAccount,
+    canUseGasLess,
+    enableGasLess,
+    gasAccountCanPay,
+    gasAccountCost,
+    gasLessConfig,
+    hasUnProcessSecurityResult,
+    isGasAccountLogin,
+    isWalletConnect,
+    isWatchAddr,
+    noCustomRPC,
+    onChangeGasAccount,
+    payGasByGasAccount,
+    securityLevel,
+    setGasTipsComponent,
+    showGasLess,
+    useGasLess,
+  ]);
+
+  useEffect(() => {
+    if (isSetGasMethodRef.current) {
+      return;
+    }
+    if (!isFirstGasCostLoading && !isFirstGasLessLoading) {
+      isSetGasMethodRef.current = true;
+
+      if (showGasLess && !canUseGasLess && canGotoUseGasAccount) {
+        onChangeGasAccount?.();
+      }
+
+      if (showGasLess && directSubmit && canGotoUseGasAccount) {
+        onChangeGasAccount?.();
+      }
+
+      setIsInited(true);
+    }
+  }, [
+    directSubmit,
+    canGotoUseGasAccount,
+    canUseGasLess,
+    isFirstGasCostLoading,
+    isFirstGasLessLoading,
+    onChangeGasAccount,
+    showGasLess,
+  ]);
+
+  console.log('isInited directSubmit', {
+    directSubmit,
+    isInited,
+    isSetGasMethodRef: isSetGasMethodRef.current,
+    isFirstGasCostLoading,
+    isFirstGasLessLoading,
+  });
+
+  useEffect(() => {
+    if (isInited && directSubmit) {
+      // if (
+      //   (showGasLess && !useGasLess && !canGotoUseGasAccount) ||
+      //   (payGasByGasAccount &&
+      //     !(
+      //       !isWalletConnect &&
+      //       gasAccountCost?.balance_is_enough &&
+      //       !gasAccountCost?.chain_not_support &&
+      //       noCustomRPC
+      //     ))
+      // ) {
+      //   setCanDirectSign(false);
+      // } else {
+      //   setCanDirectSign(true);
+      // }
+
+      const disabledProcess = payGasByGasAccount
+        ? !gasAccountCanPay
+        : useGasLess
+        ? false
+        : props.disabledProcess;
+
+      console.log('setMiniApprovalGasState miniFooterBar', {
+        payGasByGasAccount,
+        gasAccountCanPay,
+        useGasLess,
+        disabledProcess: props.disabledProcess,
+      });
+      setMiniApprovalGasState((pre) => ({
+        ...pre,
+        noCustomRPC,
+        disabledProcess,
+        showGasLevelPopup:
+          (showGasLess && !useGasLess && !canGotoUseGasAccount) ||
+          (payGasByGasAccount &&
+            !(
+              !isWalletConnect &&
+              gasAccountCost?.balance_is_enough &&
+              !gasAccountCost?.chain_not_support &&
+              noCustomRPC
+            )),
+      }));
+    }
+  }, [
+    canGotoUseGasAccount,
+    gasAccountCanPay,
+    isInited,
+    payGasByGasAccount,
+    setMiniApprovalGasState,
+    showGasLess,
+    noCustomRPC,
+    isWalletConnect,
+    gasAccountCost?.balance_is_enough,
+    gasAccountCost?.chain_not_support,
+    useGasLess,
+    directSubmit,
+    props.disabledProcess,
+  ]);
 
   const { isDarkTheme } = useThemeMode();
 
@@ -331,6 +567,8 @@ export const MiniFooterBar: React.FC<Props> = ({
         <div className="pt-[10px]">
           {account.type === KEYRING_CLASS.HARDWARE.LEDGER ? (
             <MiniLedgerAction
+              directSubmit={directSubmit}
+              isMiniSignTx
               key={gasMethod}
               task={task}
               account={account}
@@ -360,6 +598,8 @@ export const MiniFooterBar: React.FC<Props> = ({
             ></MiniLedgerAction>
           ) : (
             <MiniCommonAction
+              directSubmit={directSubmit}
+              isMiniSignTx
               key={gasMethod}
               task={task}
               account={account}
