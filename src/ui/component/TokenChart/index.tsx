@@ -139,9 +139,12 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
     if (data?.list?.length) {
       const pre = data?.list?.[0]?.value;
       const now = data?.list?.[data?.list?.length - 1]?.value;
-      const isLoss = now < pre;
+      let isLoss = now < pre;
       let currentPercent = '';
       if (activeKey === '24h') {
+        isLoss = token?.price_24h_change
+          ? Number(token.price_24h_change) < 0
+          : false;
         currentPercent =
           Math.abs((token?.price_24h_change || 0) * 100).toFixed(2) + '%';
       } else {
@@ -166,10 +169,14 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
   const currentInfo = useMemo(() => {
     const price =
       priceType === 'holding' ? token.price * amountSum : token.price;
+    // price_24h_change will loss some zero point
+    const oneDayIsLoss = token.price_24h_change
+      ? Number(token.price_24h_change) < 0
+      : false;
     return {
       date: dayjs().format(DATE_FORMATTER),
       netWorth: '$' + formatPrice(price || 0, 8),
-      isLoss: !!data?.isLoss,
+      isLoss: activeKey === '24h' ? oneDayIsLoss : !!data?.isLoss,
       changePercent: percent,
     };
   }, [data?.isLoss, percent, token?.price, amountSum, priceType]);
