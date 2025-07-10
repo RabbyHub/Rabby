@@ -1,66 +1,37 @@
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import clsx from 'clsx';
-import { flatten } from 'lodash';
 
-import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from 'consts';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
+import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 
 interface ChainSelectorModalProps {
   onChange(val: Account): void;
   containerClassName?: string;
   filterText?: string;
+  whitelist: string[];
+  list: IDisplayedAccountWithBalance[];
 }
 
 export const AccountList = ({
-  filterText,
   onChange,
+  list,
+  whitelist,
   containerClassName,
 }: ChainSelectorModalProps) => {
-  const dispatch = useRabbyDispatch();
-
-  const { fetchAllAccounts, allSortedAccountList } = useAccounts();
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
-
-  const filteredAccounts = useMemo(() => {
-    const lowerFilterText = filterText?.toLowerCase() || '';
-    const flattenedAccounts = flatten(allSortedAccountList);
-    if (!lowerFilterText) {
-      return flattenedAccounts;
-    }
-    return flattenedAccounts.filter((account) => {
-      const address = account.address.toLowerCase();
-      const brandName = account.brandName?.toLowerCase() || '';
-      const aliasName = account.alianName?.toLowerCase() || '';
-      return (
-        address.includes(lowerFilterText) ||
-        brandName.includes(lowerFilterText) ||
-        aliasName.includes(lowerFilterText)
-      );
-    });
-  }, [allSortedAccountList, filterText]);
-
-  useEffect(() => {
-    fetchAllAccounts();
-    dispatch.whitelist.getWhitelist();
-  }, [dispatch.whitelist, fetchAllAccounts]);
-
   return (
     <Virtuoso
       height={500}
       className={clsx('h-full flex-1', containerClassName)}
       width="100%"
-      data={filteredAccounts}
+      data={list}
       itemContent={(index, item) => {
         const current = item;
-        const prev = filteredAccounts[index - 1];
-        const next = filteredAccounts[index + 1];
+        const prev = list[index - 1];
+        const next = list[index + 1];
         const isGroupFirst =
           !prev ||
           (prev?.type !== KEYRING_TYPE.WatchAddressKeyring &&

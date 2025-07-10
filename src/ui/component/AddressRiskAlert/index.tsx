@@ -87,10 +87,12 @@ export const AddressTypeCard = ({
   brandName,
   aliasName,
   cexInfo,
+  className = 'bg-r-neutral-card2 ',
 }: {
   type: string;
   brandName: string;
   aliasName: string;
+  className?: string;
   cexInfo: {
     id?: string;
     name?: string;
@@ -113,7 +115,12 @@ export const AddressTypeCard = ({
     <div className="flex gap-[8px] items-center justify-center">
       <StyledTooltipGlobalStyle />
       <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
-        <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
+        <div
+          className={clsx(
+            'rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]',
+            className
+          )}
+        >
           {showCexInfo ? (
             <img
               className="icon icon-account-type w-[20px] h-[20px] rounded-full"

@@ -136,7 +136,7 @@ export const AccountItem = memo(
         return cexInfo?.logo;
       }
       return undefined;
-    }, [cexInfo]);
+    }, [cexInfo?.logo, type]);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (!disabled) {

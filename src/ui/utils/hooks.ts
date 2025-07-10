@@ -9,6 +9,7 @@ import { useApprovalPopup } from './approval-popup';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
+import { isValidAddress } from '@ethereumjs/util';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -224,7 +225,7 @@ export const useAlias = (address: string) => {
     if (address) {
       wallet.getAlianName(address).then(setName);
     }
-  }, [address]);
+  }, [address, wallet]);
 
   const updateAlias = useCallback(
     async (alias: string) => {
@@ -244,10 +245,12 @@ export const useCexId = (address: string) => {
   }));
   const [cexId, setCexId] = useState<string>();
   useEffect(() => {
-    if (address) {
-      wallet.getCexId(address).then(setCexId);
+    setCexId(undefined);
+    if (!address || !isValidAddress(address)) {
+      return;
     }
-  }, [address]);
+    wallet.getCexId(address).then(setCexId);
+  }, [address, wallet]);
 
   const updateCexId = useCallback(
     async (cexId: string) => {

@@ -8,17 +8,22 @@ import React, {
 import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
-import { debounce } from 'lodash';
+import { debounce, flatten } from 'lodash';
 import styled from 'styled-components';
 import clsx from 'clsx';
 
 import type { Input as AntdInput } from 'antd';
 
-import { useWallet } from 'ui/utils';
+import { isSameAddress, useAlias, useCexId, useWallet } from 'ui/utils';
 
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { AccountList } from './AccountList';
+import { useAccounts } from '@/ui/hooks/useAccounts';
+import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
+import { KEYRING_TYPE } from '@/constant';
+import { ellipsisAddress } from '@/ui/utils/address';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 const StyledInputWrapper = styled.div`
   border-radius: 8px;
@@ -36,6 +41,27 @@ const StyledInputWrapper = styled.div`
   }
 `;
 
+const WhitelistAddressTypeCard = ({ address }: { address: string }) => {
+  const [cexInfo] = useCexId(address);
+  const [aliasName] = useAlias(address);
+  return (
+    <div className="mt-[20px] w-full">
+      <AddressTypeCard
+        type={KEYRING_TYPE.WatchAddressKeyring}
+        brandName={KEYRING_TYPE.WatchAddressKeyring}
+        aliasName={aliasName || ellipsisAddress(address)}
+        className="bg-r-neutral-card1"
+        cexInfo={{
+          id: cexInfo?.id,
+          name: cexInfo?.name,
+          logo: cexInfo?.logo,
+          isDeposit: !!cexInfo?.id,
+        }}
+      />
+    </div>
+  );
+};
+
 export const EnterAddress = ({
   onNext,
   onCancel,
@@ -45,6 +71,12 @@ export const EnterAddress = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
+  const { fetchAllAccounts, allSortedAccountList } = useAccounts();
+  const dispatch = useRabbyDispatch();
+
+  const { whitelist } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+  }));
 
   const inputRef = useRef<AntdInput>(null);
 
@@ -59,6 +91,24 @@ export const EnterAddress = ({
   const [isFocusAddress, setIsFocusAddress] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
 
+  const filteredAccounts = useMemo(() => {
+    const lowerFilterText = inputAddress?.toLowerCase() || '';
+    const flattenedAccounts = flatten(allSortedAccountList);
+    if (!lowerFilterText) {
+      return flattenedAccounts;
+    }
+    return flattenedAccounts.filter((account) => {
+      const address = account.address.toLowerCase();
+      const brandName = account.brandName?.toLowerCase() || '';
+      const aliasName = account.alianName?.toLowerCase() || '';
+      return (
+        address.includes(lowerFilterText) ||
+        brandName.includes(lowerFilterText) ||
+        aliasName.includes(lowerFilterText)
+      );
+    });
+  }, [allSortedAccountList, inputAddress]);
+
   useEffect(() => {
     // delay footer render to avoid layout animation
     const timer = setTimeout(() => {
@@ -69,6 +119,14 @@ export const EnterAddress = ({
       clearTimeout(timer);
     };
   }, []);
+
+  useEffect(() => {
+    fetchAllAccounts();
+  }, [fetchAllAccounts]);
+
+  useEffect(() => {
+    dispatch.whitelist.getWhitelist();
+  }, [dispatch.whitelist]);
 
   const handleConfirmENS = useCallback(
     (result: string) => {
@@ -186,7 +244,7 @@ export const EnterAddress = ({
               />
             </div>
           </StyledInputWrapper>
-          {!isValidAddr && (
+          {!isValidAddr && !filteredAccounts.length && (
             <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center mt-[8px]">
               <div className="text-r-red-default">
                 <RcIconWarningCC />
@@ -217,12 +275,18 @@ export const EnterAddress = ({
             </div>
           </div>
         )}
+        {filteredAccounts.length === 0 &&
+          isValidAddress(inputAddress) &&
+          whitelist.some((item) => isSameAddress(item, inputAddress)) && (
+            <WhitelistAddressTypeCard address={inputAddress} />
+          )}
       </div>
       {shouldRender && (
         <>
           <div className="flex-1 pt-[20px] overflow-y-scroll">
             <AccountList
-              filterText={inputAddress}
+              list={filteredAccounts}
+              whitelist={whitelist}
               onChange={(acc) => onNext(acc.address, acc.type)}
             />
           </div>
