@@ -1776,7 +1776,8 @@
         "error": "неверный пароль"
       },
       "title": "Кошелек Rabby",
-      "btnForgotPassword": "Забыли пароль?"
+      "btnForgotPassword": "Забыли пароль?",
+      "description": "Ваш кошелек для Ethereum и EVM"
     },
     "addToken": {
       "noTokenFound": "Токен не найден",
@@ -2469,7 +2470,7 @@
         "title": "Добро пожаловать в Rabby Wallet",
         "importAddress": "У меня уже есть адрес",
         "createNewAddress": "Создать новый адрес",
-        "desc": ""
+        "desc": "Ваш основной кошелек для Ethereum и EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Показать Seed Phrase",
@@ -2964,7 +2965,8 @@
     "Done": "Готово",
     "Nonce": "Nonce",
     "tryAgain": "Попробовать снова",
-    "notSupportTesntnet": "Эта своя сеть поддерживается"
+    "notSupportTesntnet": "Эта своя сеть поддерживается",
+    "appDescription": "Ваш кошелек для Ethereum и EVM"
   },
   "background": {
     "error": {

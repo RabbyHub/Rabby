@@ -1778,7 +1778,8 @@
         "error": "パスワードが正しくありません"
       },
       "title": "Rabby Wallet",
-      "btnForgotPassword": "パスワードをお忘れですか?"
+      "btnForgotPassword": "パスワードをお忘れですか?",
+      "description": "EthereumとEVMのための定番ウォレット"
     },
     "addToken": {
       "noTokenFound": "トークンが見つかりません",
@@ -2470,7 +2471,7 @@
         "createNewAddress": "新しいアドレスを作成",
         "importAddress": "すでにアドレスを持っています。",
         "title": "Rabby Walletへようこそ",
-        "desc": ""
+        "desc": "EthereumおよびEVMのためのあなたの頼りになるウォレット"
       },
       "createNewAddress": {
         "showSeedPhrase": "シードフレーズを表示",
@@ -2965,7 +2966,8 @@
     "Done": "完了",
     "Nonce": "Nonce",
     "notSupportTesntnet": "カスタムネットワークには対応していません。",
-    "tryAgain": "再試行してください"
+    "tryAgain": "再試行してください",
+    "appDescription": "EthereumおよびEVMのためのあなたの定番ウォレット"
   },
   "background": {
     "error": {

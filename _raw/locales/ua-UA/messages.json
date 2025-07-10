@@ -1790,7 +1790,8 @@
         "error": "неправильний пароль"
       },
       "btnForgotPassword": "Забули пароль?",
-      "title": "Rabby Wallet"
+      "title": "Rabby Wallet",
+      "description": "Ваш невід'ємний гаманець для Ethereum та EVM"
     },
     "addToken": {
       "noTokenFound": "Токен не знайдено",
@@ -2481,7 +2482,8 @@
       "guide": {
         "createNewAddress": "Створити нову адресу",
         "title": "Ласкаво просимо до Rabby Wallet",
-        "importAddress": "У мене вже є адреса"
+        "importAddress": "У мене вже є адреса",
+        "desc": "Ваш улюблений гаманець для Ethereum та EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Показати Seed Phrase",
@@ -2984,7 +2986,8 @@
     "notSupportTesntnet": "Не підтримується для користувацької мережі",
     "Deleted": "Видалити",
     "Save": "Зберегти",
-    "Done": "Готово"
+    "Done": "Готово",
+    "appDescription": "Ваш улюблений гаманець для Ethereum та EVM"
   },
   "background": {
     "error": {

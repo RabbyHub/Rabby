@@ -32,7 +32,8 @@
     "nonce": "nonce",
     "Nonce": "Nonce",
     "tryAgain": "再試一次",
-    "notSupportTesntnet": "不支持自定義網絡"
+    "notSupportTesntnet": "不支持自定義網絡",
+    "appDescription": "您首选的以太坊和 EVM 钱包"
   },
   "page": {
     "transactions": {
@@ -1909,7 +1910,8 @@
         "required": "輸入密碼解鎖"
       },
       "btnForgotPassword": "忘記密碼?",
-      "title": "Rabby Wallet"
+      "title": "Rabby Wallet",
+      "description": "您首选的以太坊和 EVM 钱包"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名單",
@@ -2506,7 +2508,8 @@
       "guide": {
         "title": "歡迎來到 Rabby 錢包",
         "importAddress": "我已經有一個地址",
-        "createNewAddress": "創建一個新地址"
+        "createNewAddress": "創建一個新地址",
+        "desc": "您首选的以太坊和 EVM 钱包"
       },
       "createNewAddress": {
         "showSeedPhrase": "顯示 Seed Phrase",

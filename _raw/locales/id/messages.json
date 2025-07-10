@@ -1847,7 +1847,8 @@
         "error": "kata sandi tidak benar"
       },
       "btnForgotPassword": "Lupa Kata Sandi?",
-      "title": "Rabby Wallet"
+      "title": "Rabby Wallet",
+      "description": "Dompet andalan Anda untuk Ethereum dan EVM"
     },
     "addToken": {
       "balance": "Saldo",
@@ -2467,7 +2468,7 @@
         "importAddress": "Saya sudah memiliki alamat",
         "title": "Selamat datang di Rabby Wallet",
         "createNewAddress": "Buat alamat baru",
-        "desc": ""
+        "desc": "Dompet andalan Anda untuk Ethereum dan EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Tampilkan Frasa Seed",
@@ -2962,7 +2963,8 @@
     "notSupportTesntnet": "Tidak didukung untuk jaringan kustom",
     "tryAgain": "Coba Lagi",
     "Nonce": "Nonce",
-    "backButton": "Kembali"
+    "backButton": "Kembali",
+    "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM"
   },
   "background": {
     "error": {

@@ -1847,7 +1847,8 @@
         "placeholder": "Nhập mật khẩu để mở khóa"
       },
       "title": "Ví dụ ví Rabby",
-      "btnForgotPassword": "Quên mật khẩu?"
+      "btnForgotPassword": "Quên mật khẩu?",
+      "description": "Ví dụ ví của bạn cho Ethereum và EVM"
     },
     "addToken": {
       "noTokenFound": "Không tìm thấy token",
@@ -2467,7 +2468,7 @@
         "importAddress": "Tôi đã có một địa chỉ",
         "title": "Chào mừng bạn đến với Rabby Wallet",
         "createNewAddress": "Tạo một địa chỉ mới",
-        "desc": ""
+        "desc": "Ví dụ ví của bạn cho Ethereum và EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Hiển thị cụm từ hạt giống",
@@ -2962,7 +2963,8 @@
     "assets": "tài sản",
     "Loading": "Đang tải",
     "Clear": "Xóa",
-    "proceedButton": "Tiến hành"
+    "proceedButton": "Tiến hành",
+    "appDescription": "Ví dụ ví của bạn cho Ethereum và EVM"
   },
   "background": {
     "error": {

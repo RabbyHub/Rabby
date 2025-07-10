@@ -1778,7 +1778,8 @@
         "error": "Contraseña incorrecta"
       },
       "title": "Rabby Wallet",
-      "btnForgotPassword": "¿Olvidaste la contraseña?"
+      "btnForgotPassword": "¿Olvidaste la contraseña?",
+      "description": "Tu billetera de referencia para Ethereum y EVM"
     },
     "addToken": {
       "noTokenFound": "No se encontró ningún token",
@@ -2469,7 +2470,7 @@
       "guide": {
         "createNewAddress": "Crea una nueva dirección",
         "importAddress": "Ya tengo una dirección",
-        "desc": "",
+        "desc": "Tu billetera de referencia para Ethereum y EVM",
         "title": "Bienvenido a Rabby Wallet"
       },
       "createNewAddress": {
@@ -2965,7 +2966,8 @@
     "Done": "Hecho",
     "notSupportTesntnet": "No compatible con red personalizada",
     "tryAgain": "Inténtalo de nuevo",
-    "Nonce": "Nonce"
+    "Nonce": "Nonce",
+    "appDescription": "Tu billetera de referencia para Ethereum y EVM"
   },
   "background": {
     "error": {

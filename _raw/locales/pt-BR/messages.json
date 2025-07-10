@@ -1778,7 +1778,8 @@
         "error": "Senha incorreta"
       },
       "btnForgotPassword": "Esqueceu a senha?",
-      "title": "Rabby Wallet"
+      "title": "Rabby Wallet",
+      "description": "Sua carteira de referência para Ethereum e EVM"
     },
     "addToken": {
       "noTokenFound": "Nenhum token encontrado",
@@ -2470,7 +2471,7 @@
         "importAddress": "Já tenho um endereço",
         "title": "Bem-vindo ao Rabby Wallet",
         "createNewAddress": "Criar um novo endereço",
-        "desc": ""
+        "desc": "Sua carteira de referência para Ethereum e EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Mostrar Seed Phrase",
@@ -2966,7 +2967,8 @@
     "Done": "Concluído",
     "notSupportTesntnet": "Não é compatível com rede personalizada",
     "tryAgain": "Tente Novamente",
-    "Nonce": "Nonce"
+    "Nonce": "Nonce",
+    "appDescription": "Sua carteira de referência para Ethereum e EVM"
   },
   "background": {
     "error": {

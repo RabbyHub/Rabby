@@ -270,7 +270,8 @@
     "watchModeAddress": "Adresse en mode observation",
     "Nonce": "Nonce",
     "tryAgain": "Essayer à nouveau",
-    "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé"
+    "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé",
+    "appDescription": "Votre portefeuille de référence pour Ethereum et EVM"
   },
   "page": {
     "activities": {
@@ -2283,7 +2284,8 @@
         "required": "Entrer le mot de passe pour déverrouiller"
       },
       "title": "Rabby Wallet",
-      "btnForgotPassword": "Mot de passe oublié ?"
+      "btnForgotPassword": "Mot de passe oublié ?",
+      "description": "Votre portefeuille incontournable pour Ethereum et EVM"
     },
     "welcome": {
       "step1": {
@@ -2743,7 +2745,7 @@
         "title": "Bienvenue sur Rabby Wallet",
         "importAddress": "J'ai déjà une adresse",
         "createNewAddress": "Créer une nouvelle adresse",
-        "desc": ""
+        "desc": "Votre portefeuille indispensable pour Ethereum et EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Afficher la phrase secrète",
