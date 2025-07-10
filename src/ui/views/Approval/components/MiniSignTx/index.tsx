@@ -280,7 +280,9 @@ export const MiniSignTx = ({
     });
   };
 
-  const { swapPreferMEVGuarded, isSwap, isBridge } = normalizeTxParams(txs[0]);
+  const { swapPreferMEVGuarded, isSwap, isBridge, isSend } = normalizeTxParams(
+    txs[0]
+  );
 
   const [pushInfo, setPushInfo] = useState<{
     type: TxPushType;
@@ -579,6 +581,13 @@ export const MiniSignTx = ({
     if (!chainId) {
       return;
     }
+
+    try {
+      await wallet.syncDefaultRPC();
+    } catch (error) {
+      console.error('before submit sync default rpc error', error);
+    }
+
     try {
       const currentAccount = (await wallet.getCurrentAccount())!;
 
@@ -620,7 +629,7 @@ export const MiniSignTx = ({
         customGasPrice = lastTimeGas.gasPrice;
       }
       const gasPrice = txs[0].gasPrice || txs[0].maxFeePerGas;
-      if ((isSwap || isBridge) && gasPrice) {
+      if ((isSend || isSwap || isBridge) && gasPrice) {
         // use gasPrice set by dapp when it's a speedup or cancel tx
         customGasPrice = parseInt(gasPrice!);
       }

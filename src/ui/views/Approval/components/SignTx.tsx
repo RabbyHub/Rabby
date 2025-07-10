@@ -1732,6 +1732,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   });
 
   const init = async () => {
+    try {
+      await wallet.syncDefaultRPC();
+    } catch (error) {
+      console.error('before submit sync default rpc error', error);
+    }
     dispatch.securityEngine.init();
     dispatch.securityEngine.resetCurrentTx();
     checkBlockedAddress();
