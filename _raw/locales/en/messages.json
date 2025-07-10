@@ -1902,7 +1902,7 @@
         "error": "incorrect password"
       },
       "title": "Rabby Wallet",
-      "description": "The game-changing wallet for Ethereum and all EVM chains",
+      "description": "Your go-to wallet for Ethereum and EVM",
       "btnForgotPassword": "Forgot Password?"
     },
     "addToken": {
@@ -2521,7 +2521,7 @@
     "newUserImport": {
       "guide": {
         "title": "Welcome to Rabby Wallet",
-        "desc": "The game-changing wallet for Ethereum and all EVM chains",
+        "desc": "Your go-to wallet for Ethereum and EVM",
         "createNewAddress": "Create a new address",
         "importAddress": "I already have an address"
       },
@@ -2932,7 +2932,7 @@
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
+    "appDescription": "Your go-to wallet for Ethereum and EVM",
     "copied": "Copied",
     "confirm": "Confirm",
     "next": "Next",
