@@ -60,6 +60,7 @@ import { ReactComponent as RcIconCopy } from 'ui/assets/send-token/modal/copy.sv
 import { copyAddress } from '@/ui/utils/clipboard';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
+import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -388,6 +389,55 @@ const SendToken = () => {
       return {
         disable: false,
         cexId: '',
+        reason: '',
+        shortReason: '',
+      };
+    },
+    [addressDesc, t]
+  );
+
+  const disableChainCheck: TDisableCheckChainFn = useCallback(
+    (chain) => {
+      // do not check cex
+      if (!addressDesc || addressDesc.cex?.id) {
+        return {
+          disable: false,
+          reason: '',
+          shortReason: '',
+        };
+      }
+
+      const safeChains = Object.entries(addressDesc?.contract || {})
+        .filter(([, contract]) => {
+          return contract.multisig;
+        })
+        .map(([chain]) => chain?.toLocaleLowerCase());
+      if (
+        safeChains.length > 0 &&
+        !safeChains.includes(chain?.toLocaleLowerCase())
+      ) {
+        return {
+          disable: true,
+          reason: t('page.sendToken.noSupprotTokenForSafe'),
+          shortReason: t('page.sendToken.noSupprotTokenForSafe_short'),
+        };
+      }
+      const contactChains = Object.entries(
+        addressDesc?.contract || {}
+      ).map(([chain]) => chain?.toLocaleLowerCase());
+      if (
+        contactChains.length > 0 &&
+        !contactChains.includes(chain?.toLocaleLowerCase())
+      ) {
+        return {
+          disable: true,
+          reason: t('page.sendToken.noSupportTokenForChain'),
+          shortReason: t('page.sendToken.noSupportTokenForChain_short'),
+        };
+      }
+
+      return {
+        disable: false,
         reason: '',
         shortReason: '',
       };
@@ -1391,8 +1441,7 @@ const SendToken = () => {
                       <ChainSelectorInForm
                         value={chain}
                         onChange={handleChainChanged}
-                        // TODO: to address是否支持这个链
-                        // disabledTips={getDisabledChainTips}
+                        disableChainCheck={disableChainCheck}
                         chainRenderClassName={clsx(
                           'text-[13px] font-medium border-0 bg-transparent',
                           'before:border-transparent hover:before:border-rabby-blue-default'
