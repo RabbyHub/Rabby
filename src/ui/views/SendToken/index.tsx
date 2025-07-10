@@ -136,7 +136,12 @@ export const ToAddressCard = ({
         'flex flex-col items-center gap-[8px]'
       )}
     >
-      <div className="text-[16px] w-full text-center text-r-neutral-foot break-words">
+      <div
+        className="text-[16px] w-full text-center text-r-neutral-foot break-words cursor-pointer"
+        onClick={() => {
+          copyAddress(targetAccount.address);
+        }}
+      >
         <span className="text-r-neutral-title1 font-medium">
           {addressSplit[0]}
         </span>
@@ -144,12 +149,7 @@ export const ToAddressCard = ({
         <span className="text-r-neutral-title1 font-medium">
           {addressSplit[2]}
         </span>
-        <span
-          className="cursor-pointer ml-2 inline-block w-[14px] h-[13px]"
-          onClick={() => {
-            copyAddress(targetAccount.address);
-          }}
-        >
+        <span className="ml-2 inline-block w-[14px] h-[13px]">
           <RcIconCopy />
         </span>
       </div>
