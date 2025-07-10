@@ -951,7 +951,10 @@ const SendToken = () => {
     ]
   );
 
-  const couldReserveGas = isNativeToken && !isGnosisSafe;
+  const couldReserveGas = useMemo(() => isNativeToken && !isGnosisSafe, [
+    isGnosisSafe,
+    isNativeToken,
+  ]);
 
   const handleMaxInfoChanged = useCallback(
     async (input?: { gasLevel: GasLevel }) => {
@@ -989,7 +992,7 @@ const SendToken = () => {
             const l1GasFee = await wallet.fetchEstimatedL1Fee(
               {
                 txParams: {
-                  chainId: chainItem.id,
+                  chainId: chainItem?.id,
                   from: currentAccount.address,
                   to:
                     toAddress && isValidAddress(toAddress)
@@ -1434,23 +1437,23 @@ const SendToken = () => {
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
               </div>
-              <Form.Item name="amount">
-                {currentAccount && chainItem && (
-                  <div className="bg-r-neutral-card1 rounded-[8px]">
-                    <ChainSelectWrapper>
-                      <ChainSelectorInForm
-                        value={chain}
-                        onChange={handleChainChanged}
-                        disableChainCheck={disableChainCheck}
-                        chainRenderClassName={clsx(
-                          'text-[13px] font-medium border-0 bg-transparent',
-                          'before:border-transparent hover:before:border-rabby-blue-default'
-                        )}
-                        drawerHeight={540}
-                        showClosableIcon
-                        getContainer={getContainer}
-                      />
-                    </ChainSelectWrapper>
+              {currentAccount && chainItem && (
+                <div className="bg-r-neutral-card1 rounded-[8px]">
+                  <ChainSelectWrapper>
+                    <ChainSelectorInForm
+                      value={chain}
+                      onChange={handleChainChanged}
+                      disableChainCheck={disableChainCheck}
+                      chainRenderClassName={clsx(
+                        'text-[13px] font-medium border-0 bg-transparent',
+                        'before:border-transparent hover:before:border-rabby-blue-default'
+                      )}
+                      drawerHeight={540}
+                      showClosableIcon
+                      getContainer={getContainer}
+                    />
+                  </ChainSelectWrapper>
+                  <Form.Item name="amount">
                     <TokenAmountInput
                       className="bg-r-neutral-card1 rounded-[8px]"
                       token={currentToken}
@@ -1465,9 +1468,9 @@ const SendToken = () => {
                       isLoading={isLoading}
                       getContainer={getContainer}
                     />
-                  </div>
-                )}
-              </Form.Item>
+                  </Form.Item>
+                </div>
+              )}
             </div>
           </div>
 
