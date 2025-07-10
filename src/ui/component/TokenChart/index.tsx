@@ -179,7 +179,15 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
       isLoss: activeKey === '24h' ? oneDayIsLoss : !!data?.isLoss,
       changePercent: percent,
     };
-  }, [data?.isLoss, percent, token?.price, amountSum, priceType]);
+  }, [
+    data?.isLoss,
+    percent,
+    token?.price,
+    amountSum,
+    priceType,
+    activeKey,
+    token?.price_24h_change,
+  ]);
 
   const headerTab: { label: string; key: typeof priceType }[] = useMemo(() => {
     if (token.amount < 0) {
