@@ -72,7 +72,10 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
         visible={visible}
         closable
         push={false}
-        onClose={() => setVisible(false)}
+        onClose={(e) => {
+          e?.stopPropagation();
+          setVisible(false);
+        }}
         bodyStyle={{
           padding: '20px 20px 0',
         }}
