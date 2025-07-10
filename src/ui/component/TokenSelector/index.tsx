@@ -768,7 +768,10 @@ function CommonTokenItem(props: {
       <li
         className={clsx(
           'token-list__item',
-          (disabledFromProps || disabled) && 'token-disabled'
+          (disabledFromProps || disabled) && 'token-disabled',
+          {
+            'opacity-80': !!warningText,
+          }
         )}
         onClick={handleTokenPress}
       >
