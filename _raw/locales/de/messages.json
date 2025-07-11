@@ -716,7 +716,11 @@
       "noSupportTokenForChain": "Empfängeradresse ist eine Vertragsadresse auf einer anderen Kette. Überprüfen Sie dies, bevor Sie fortfahren, um Verlust zu vermeiden.",
       "noSupprotTokenForDex": "Dieser Token wird möglicherweise von dieser Börse nicht unterstützt. Überprüfen Sie dies, bevor Sie fortfahren, um Verlust zu vermeiden.",
       "selectFromAddress": "Wählen Sie die Adresse aus",
-      "noSupprotTokenForSafe": "Die Safe-Adresse, an die Sie Tokens senden, ist auf dieser Chain nicht implementiert. Überprüfen Sie dies, bevor Sie fortfahren, um Verluste zu vermeiden."
+      "noSupprotTokenForSafe": "Die Safe-Adresse, an die Sie Tokens senden, ist auf dieser Chain nicht implementiert. Überprüfen Sie dies, bevor Sie fortfahren, um Verluste zu vermeiden.",
+      "noSupportTokenForChain_short": "Vertragsadresse nicht auf dieser Kette bereitgestellt",
+      "noSupprotTokenForSafe_short": "Die Safe-Adresse ist auf dieser Kette nicht bereitgestellt.",
+      "noSupprotTokenForDex_short": "Von dieser Börse nicht unterstützt",
+      "selectToken": "Token auswählen"
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} für Gaskosten reserviert",
@@ -2697,7 +2701,8 @@
         "title": "Whitelist",
         "addWhitelist": "Zur Whitelist hinzufügen",
         "removeFromWhitelist": "Von der Whitelist entfernen",
-        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen - keine Bestätigung beim nächsten Mal erforderlich."
+        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen - keine Bestätigung beim nächsten Mal erforderlich.",
+        "notWhitelist": "Keine Whitelist-Adresse"
       },
       "addWhitelist": {
         "title": "Whitelist-Adresse hinzufügen",
@@ -2715,19 +2720,25 @@
         "cexAddress": "{{cexName}} Adresse",
         "title": "An diese Adresse senden",
         "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",
-        "cexDepositAddress": "{{cexName}} Einzahlungsadresse"
+        "cexDepositAddress": "{{cexName}} Einzahlungsadresse",
+        "passwordPlaceholder": "Passwort eingeben, um fortzufahren",
+        "AddToWhitelist": "Zur Whitelist hinzufügen",
+        "TransferBeforeValue": "Ja",
+        "TransferBefore": "Übertragen Sie vorher"
       },
       "selectImportedAddress": "Importierte Adresse auswählen",
       "sendToImportedAddress": "An eine importierte Adresse senden",
       "enterAddress": "Adresse eingeben",
       "selectExchangeSource": "Wählen Sie die Austauschquelle",
-      "title": "Senden an"
+      "title": "Senden an",
+      "enterAddressOrENS": "Adresse eingeben oder suchen"
     },
     "whitelist": {
       "tips": {
         "removed": "Whitelist-Adresse gelöscht",
         "added": "Adresse zur Whitelist hinzugefügt",
-        "repeated": "Die aktuelle Adresse ist bereits auf der Whitelist."
+        "repeated": "Die aktuelle Adresse ist bereits auf der Whitelist.",
+        "tooltip": "Whitelist-Adresse"
       },
       "title": "Whitelist-Adresse hinzufügen",
       "name": "Name",
@@ -2929,6 +2940,9 @@
     },
     "ChainItem": {
       "appChain": "Auf {{chain}} Konto"
+    },
+    "RiskTip": {
+      "title": "Risiko Warnung"
     }
   },
   "global": {

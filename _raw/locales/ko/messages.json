@@ -716,7 +716,11 @@
       "selectFromAddress": "주소 선택",
       "noSupprotTokenForDex": "이 토큰은 이 거래소에서 지원되지 않을 수 있습니다. 손실을 피하기 위해 진행하기 전에 확인하세요.",
       "noSupprotTokenForSafe": "당신이 토큰을 보내고 있는 Safe 주소는 이 체인에 배포되지 않았습니다. 손실을 피하기 위해 진행하기 전에 확인하세요.",
-      "noSupportTokenForChain": "수신자 주소가 다른 체인의 계약 주소입니다. 손실을 피하기 위해 진행하기 전에 확인하세요."
+      "noSupportTokenForChain": "수신자 주소가 다른 체인의 계약 주소입니다. 손실을 피하기 위해 진행하기 전에 확인하세요.",
+      "selectToken": "토큰 선택",
+      "noSupprotTokenForSafe_short": "이 체인에 배포되지 않은 안전 주소",
+      "noSupportTokenForChain_short": "이 체인에 배포되지 않은 계약 주소입니다",
+      "noSupprotTokenForDex_short": "이 거래소에서는 지원되지 않습니다."
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "가스 예약 <1 />",
@@ -2694,7 +2698,8 @@
         "addWhitelist": "화이트리스트에 추가",
         "removeFromWhitelist": "화이트리스트에서 제거",
         "title": "화이트리스트",
-        "addWhitelistDesc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 전송이 가능합니다---다음 번에는 확인이 필요 없습니다."
+        "addWhitelistDesc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 전송이 가능합니다---다음 번에는 확인이 필요 없습니다.",
+        "notWhitelist": "흰색 목록 주소가 아닙니다"
       },
       "addWhitelist": {
         "title": "화이트리스트 주소 추가",
@@ -2712,19 +2717,25 @@
         "cexAddress": "{{cexName}} 주소",
         "cexDepositAddress": "{{cexName}} 입금 주소",
         "understandRisks": "위험을 이해하며 계속 진행하고자 합니다.",
-        "title": "이 주소로 보내기"
+        "title": "이 주소로 보내기",
+        "TransferBefore": "이전 전송",
+        "AddToWhitelist": "화이트리스트에 추가",
+        "passwordPlaceholder": "비밀번호를 입력하여 계속 진행하세요",
+        "TransferBeforeValue": "네"
       },
       "enterAddress": "주소 입력",
       "title": "보내기",
       "selectImportedAddress": "가져온 주소 선택",
       "sendToImportedAddress": "가져온 주소로 보내기",
-      "selectExchangeSource": "거래소 출처 선택"
+      "selectExchangeSource": "거래소 출처 선택",
+      "enterAddressOrENS": "주소 입력 또는 검색"
     },
     "whitelist": {
       "tips": {
         "repeated": "현재 주소는 이미 화이트리스트에 있습니다.",
         "added": "허용 목록에 주소가 추가되었습니다",
-        "removed": "허가된 주소가 삭제되었습니다"
+        "removed": "허가된 주소가 삭제되었습니다",
+        "tooltip": "화이트리스트 주소"
       },
       "title": "화이트리스트 주소 추가",
       "exchangeAddress": "교환 주소",
@@ -2926,6 +2937,9 @@
     },
     "ChainItem": {
       "appChain": "{{chain}} 계정에서"
+    },
+    "RiskTip": {
+      "title": "위험 경고"
     }
   },
   "global": {

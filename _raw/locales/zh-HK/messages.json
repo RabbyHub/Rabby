@@ -1283,7 +1283,11 @@
       "selectFromAddress": "選擇地址",
       "noSupprotTokenForSafe": "您要发送代币的 Safe 地址未在此链上部署。请在继续之前检查以避免损失。",
       "noSupportTokenForChain": "收件地址是在其他链上的合约地址。在继续之前请检查，以避免损失。",
-      "noSupprotTokenForDex": "此代幣可能不被該交易所支持。請在繼續之前檢查以避免損失。"
+      "noSupprotTokenForDex": "此代幣可能不被該交易所支持。請在繼續之前檢查以避免損失。",
+      "noSupprotTokenForSafe_short": "安全地址未在此链上部署",
+      "selectToken": "選擇代幣",
+      "noSupprotTokenForDex_short": "此交易所不支持",
+      "noSupportTokenForChain_short": "合約地址未在此鏈上部署"
     },
     "sendTokenComponents": {
       "GasReserved": "預留 <1>0</1> {{ tokenName }} 用於 礦工費",
@@ -2735,7 +2739,8 @@
         "title": "白名单",
         "removeFromWhitelist": "從白名單中移除",
         "addWhitelist": "添加到白名單",
-        "addWhitelistDesc": "將受信任的地址加入白名單以便快速轉帳——下次無需確認"
+        "addWhitelistDesc": "將受信任的地址加入白名單以便快速轉帳——下次無需確認",
+        "notWhitelist": "不是白名单地址"
       },
       "addWhitelist": {
         "title": "添加白名单地址",
@@ -2753,19 +2758,25 @@
         "title": "發送到此地址",
         "cexAddress": "{{cexName}} 地址",
         "cexDepositAddress": "{{cexName}} 存款地址",
-        "understandRisks": "我明白風險並希望繼續"
+        "understandRisks": "我明白風險並希望繼續",
+        "AddToWhitelist": "加入白名单",
+        "TransferBefore": "轉移之前",
+        "TransferBeforeValue": "是的",
+        "passwordPlaceholder": "輸入密碼以繼續"
       },
       "enterAddress": "輸入地址",
       "selectExchangeSource": "選擇交易所來源",
       "title": "發送至",
       "sendToImportedAddress": "發送到已導入地址",
-      "selectImportedAddress": "選擇導入的地址"
+      "selectImportedAddress": "選擇導入的地址",
+      "enterAddressOrENS": "輸入或搜尋地址"
     },
     "whitelist": {
       "tips": {
         "added": "地址已加入白名单",
         "repeated": "當前地址已經在白名單上。",
-        "removed": "已刪除白名單地址"
+        "removed": "已刪除白名單地址",
+        "tooltip": "白名單地址"
       },
       "title": "添加白名单地址",
       "confirmPassword": "確認密碼",
@@ -2967,6 +2978,9 @@
     },
     "ChainItem": {
       "appChain": "在 {{chain}} 帐戶"
+    },
+    "RiskTip": {
+      "title": "風險警告"
     }
   },
   "background": {
