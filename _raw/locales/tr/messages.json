@@ -2717,7 +2717,6 @@
         },
         "cexAddress": "{{cexName}} Adresi",
         "title": "Bu Adrese Gönder",
-        "riskWarning": "Risk Uyarısı",
         "cexDepositAddress": "{{cexName}} Yatırım Adresi",
         "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum."
       },
@@ -2725,7 +2724,6 @@
       "selectExchangeSource": "Borsa Kaynağını Seçin",
       "title": "Göndermek için",
       "sendToImportedAddress": "İçe Aktarılan Adrese Gönder",
-      "enterAddressOrENS": "Adres / ENS girin",
       "selectImportedAddress": "İçe aktarılan adresi seçin"
     },
     "whitelist": {

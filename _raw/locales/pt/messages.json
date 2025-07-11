@@ -2711,13 +2711,11 @@
         },
         "title": "Enviar para este Endereço",
         "cexAddress": "{{cexName}} Endereço",
-        "riskWarning": "Aviso de Risco",
         "cexDepositAddress": "{{cexName}} Endereço de Depósito",
         "understandRisks": "Eu entendo os riscos e quero continuar"
       },
       "enterAddress": "Digite o endereço",
       "sendToImportedAddress": "Enviar para Endereço Importado",
-      "enterAddressOrENS": "Digite o endereço / ENS",
       "selectExchangeSource": "Selecionar Fonte de Câmbio",
       "title": "Enviar para",
       "selectImportedAddress": "Selecione o endereço importado"

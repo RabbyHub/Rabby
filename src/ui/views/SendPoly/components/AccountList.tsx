@@ -1,42 +1,37 @@
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import clsx from 'clsx';
-import { flatten } from 'lodash';
 
-import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from 'consts';
+import { isSameAddress } from '@/ui/utils';
+import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 
 interface ChainSelectorModalProps {
   onChange(val: Account): void;
   containerClassName?: string;
+  filterText?: string;
+  whitelist: string[];
+  list: IDisplayedAccountWithBalance[];
 }
 
 export const AccountList = ({
   onChange,
+  list,
+  whitelist,
   containerClassName,
 }: ChainSelectorModalProps) => {
-  const { fetchAllAccounts, allSortedAccountList } = useAccounts();
-
-  const filteredAccounts = useMemo(() => {
-    return flatten(allSortedAccountList);
-  }, [allSortedAccountList]);
-
-  useEffect(() => {
-    fetchAllAccounts();
-  }, [fetchAllAccounts]);
-
   return (
     <Virtuoso
       height={500}
       className={clsx('h-full flex-1', containerClassName)}
       width="100%"
-      data={filteredAccounts}
+      data={list}
       itemContent={(index, item) => {
         const current = item;
-        const prev = filteredAccounts[index - 1];
-        const next = filteredAccounts[index + 1];
+        const prev = list[index - 1];
+        const next = list[index + 1];
         const isGroupFirst =
           !prev ||
           (prev?.type !== KEYRING_TYPE.WatchAddressKeyring &&
@@ -75,6 +70,9 @@ export const AccountList = ({
                 balance={current.balance}
                 address={current.address}
                 type={current.type}
+                showWhitelistIcon={whitelist.some((item) =>
+                  isSameAddress(item, current.address)
+                )}
                 brandName={current.brandName}
                 onClick={() => {
                   onChange?.(current);

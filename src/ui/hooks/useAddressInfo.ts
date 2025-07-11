@@ -4,9 +4,10 @@ import { AddrDescResponse } from '@rabby-wallet/rabby-api/dist/types';
 
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { padWatchAccount } from '../views/SendPoly/util';
-import { isSameAddress, useWallet } from '../utils';
+import { isSameAddress, useAlias, useWallet } from '../utils';
 import { KEYRING_CLASS } from '@/constant';
 import { findAccountByPriority } from '@/utils/account';
+import { ellipsisAddress } from '../utils/address';
 
 export const useAddressInfo = (
   address: string,
@@ -19,6 +20,7 @@ export const useAddressInfo = (
 
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+  const [alias] = useAlias(address);
   const { accountsList, exchanges } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
     exchanges: s.exchange.exchanges,
@@ -60,10 +62,13 @@ export const useAddressInfo = (
 
     return {
       isImported,
-      targetAccount,
+      targetAccount: {
+        ...targetAccount,
+        alianName: alias || ellipsisAddress(address),
+      },
       isMyImported,
     };
-  }, [accountsList, address, type]);
+  }, [accountsList, address, type, alias]);
 
   useEffect(() => {
     if (!isValidAddress(address)) {

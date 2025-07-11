@@ -31,6 +31,7 @@ const PageHeader = ({
   onClose,
   closeCn,
   isShowAccount,
+  disableSwitchAccount,
 }: {
   children: ReactNode;
   canBack?: boolean;
@@ -46,6 +47,7 @@ const PageHeader = ({
   closeable?: boolean;
   closeCn?: string;
   isShowAccount?: boolean;
+  disableSwitchAccount?: boolean;
 }) => {
   const history = useHistory();
 
@@ -70,7 +72,10 @@ const PageHeader = ({
         <div className="header-content">
           {children}
           {isShowAccount && currentAccount ? (
-            <AccountSwitchInner currentAccount={currentAccount} />
+            <AccountSwitchInner
+              disableSwitch={disableSwitchAccount}
+              currentAccount={currentAccount}
+            />
           ) : null}
         </div>
         {rightSlot && rightSlot}
@@ -109,8 +114,10 @@ const PageHeader = ({
 
 const AccountSwitchInner = ({
   currentAccount,
+  disableSwitch,
 }: {
   currentAccount: Account;
+  disableSwitch?: boolean;
 }) => {
   const addressTypeIcon = useBrandIcon({
     address: currentAccount?.address,
@@ -129,8 +136,14 @@ const AccountSwitchInner = ({
     <>
       <div className="flex justify-center mt-[-1px]">
         <div
-          className="flex items-center justify-center cursor-pointer px-[8px] py-[3px] rounded-[4px] hover:bg-r-neutral-line"
+          className={clsx(
+            'flex items-center justify-center px-[8px] py-[3px] rounded-[4px]',
+            !disableSwitch && 'hover:bg-r-neutral-line cursor-pointer'
+          )}
           onClick={() => {
+            if (disableSwitch) {
+              return;
+            }
             setIsShowModal(true);
           }}
         >
@@ -138,7 +151,9 @@ const AccountSwitchInner = ({
           <div className="text-r-neutral-body text-[13px] leading-[16px] font-medium">
             {currentAccount?.alianName}
           </div>
-          <RcIconDownCC className="text-r-neutral-foot w-[16px] h-[16px]" />
+          {disableSwitch ? null : (
+            <RcIconDownCC className="text-r-neutral-foot w-[16px] h-[16px]" />
+          )}
         </div>
       </div>
       <AccountSelectorModal

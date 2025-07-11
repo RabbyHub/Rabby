@@ -228,5 +228,6 @@ export const useAddressRisks = (
     loading: loadingHasTransfer || loadingAddrDesc,
     loadingAddrDesc,
     loadingHasTransfer,
+    hasNotRisk: !risks.length && !loadingHasTransfer && !loadingAddrDesc,
   };
 };

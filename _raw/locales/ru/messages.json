@@ -2712,14 +2712,12 @@
           }
         },
         "title": "Отправить на этот адрес",
-        "riskWarning": "Предупреждение о рисках",
         "understandRisks": "Я понимаю риски и хочу продолжить",
         "cexDepositAddress": "{{cexName}} Адрес депозита",
         "cexAddress": "{{cexName}} адрес"
       },
       "enterAddress": "Введите адрес",
       "title": "Отправить на",
-      "enterAddressOrENS": "Введите адрес / ENS",
       "selectImportedAddress": "Выберите импортированный адрес",
       "selectExchangeSource": "Выбрать источник обмена",
       "sendToImportedAddress": "Отправить на Импортированный Адрес"

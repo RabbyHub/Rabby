@@ -2751,7 +2751,6 @@
           }
         },
         "title": "發送到此地址",
-        "riskWarning": "風險警告",
         "cexAddress": "{{cexName}} 地址",
         "cexDepositAddress": "{{cexName}} 存款地址",
         "understandRisks": "我明白風險並希望繼續"
@@ -2760,7 +2759,6 @@
       "selectExchangeSource": "選擇交易所來源",
       "title": "發送至",
       "sendToImportedAddress": "發送到已導入地址",
-      "enterAddressOrENS": "輸入地址 / ENS",
       "selectImportedAddress": "選擇導入的地址"
     },
     "whitelist": {

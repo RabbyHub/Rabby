@@ -55,7 +55,9 @@ class WhitelistService {
   };
 
   isWhitelistEnabled = () => {
-    return this.store.enabled;
+    // ignore user option from now
+    // return this.store.enabled;
+    return true;
   };
 
   isInWhiteList = (address: string) => {

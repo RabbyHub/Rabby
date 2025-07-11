@@ -2713,7 +2713,6 @@
           }
         },
         "title": "Enviar a esta Dirección",
-        "riskWarning": "Advertencia de Riesgo",
         "cexAddress": "{{cexName}} Dirección",
         "cexDepositAddress": "{{cexName}} Dirección de Depósito",
         "understandRisks": "Entiendo los riesgos y quiero continuar"
@@ -2721,7 +2720,6 @@
       "enterAddress": "Ingresa la dirección",
       "selectExchangeSource": "Seleccionar fuente de intercambio",
       "sendToImportedAddress": "Enviar a dirección importada",
-      "enterAddressOrENS": "Ingrese dirección / ENS",
       "selectImportedAddress": "Seleccionar dirección importada",
       "title": "Enviar a"
     },

@@ -2712,7 +2712,6 @@
             "noSend": "このアドレスへの転送は180日間ありません"
           }
         },
-        "riskWarning": "リスク警告",
         "understandRisks": "リスクを理解しており、続行したいと思います。",
         "title": "このアドレスに送信",
         "cexAddress": "{{cexName}} アドレス",
@@ -2720,7 +2719,6 @@
       },
       "title": "送信先",
       "enterAddress": "アドレスを入力してください",
-      "enterAddressOrENS": "アドレス / ENSを入力してください",
       "sendToImportedAddress": "インポートされたアドレスに送信",
       "selectExchangeSource": "エクスチェンジソースを選択してください",
       "selectImportedAddress": "インポートしたアドレスを選択してください"

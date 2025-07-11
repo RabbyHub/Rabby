@@ -5,14 +5,49 @@ import { CHAINS_ENUM } from '@debank/common';
 import { useState } from 'react';
 import { SelectChainListProps } from '@/ui/component/ChainSelector/components/SelectChainList';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import ChainIcon from '@/ui/component/ChainIcon';
 import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-cc.svg';
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
-import { DrawerProps } from 'antd';
+import { DrawerProps, Modal } from 'antd';
+import { TDisableCheckChainFn } from './components/SelectChainItem';
+import { RiskWarningTitle } from '../RiskWarningTitle';
 
+const ChainGlobalStyle = createGlobalStyle`
+  .chain-selector-disable-item-tips {
+    .ant-modal-body {
+      background: var(--r-neutral-bg1, #fff);
+      padding-top: 24px !important;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      padding-bottom: 20px !important;
+    }
+    .ant-modal-confirm-content {
+      margin-top: 0 !important;
+      padding: 0 !important;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--r-neutral-title1, #192945);
+    }
+    .ant-modal-confirm-btns {
+      margin-top: 35px !important;
+      .ant-btn {
+        font-size: 13px !important;
+        font-weight: 500;
+      }
+      .ant-btn-ghost {
+        border-color: var(--r-blue-default);
+        color: var(--r-blue-default);
+        &:hover {
+          background: var(--r-blue-light1, #eef1ff) !important;
+        }
+      }
+    }
+  }
+`;
 const ChainWrapper = styled.div`
   /* height: 40px; */
   background: var(--r-neutral-card-2, #f2f4f7);
@@ -186,6 +221,7 @@ interface ChainSelectorProps {
   showClosableIcon?: boolean;
   swap?: boolean;
   getContainer?: DrawerProps['getContainer'];
+  disableChainCheck?: TDisableCheckChainFn;
 }
 export default function ChainSelectorInForm({
   value,
@@ -193,6 +229,7 @@ export default function ChainSelectorInForm({
   readonly = false,
   showModal = false,
   disabledTips,
+  disableChainCheck,
   title,
   supportChains,
   chainRenderClassName,
@@ -207,6 +244,7 @@ export default function ChainSelectorInForm({
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
+  const { t } = useTranslation();
   const handleClickSelector = () => {
     if (readonly) return;
     setShowSelectorModal(true);
@@ -221,6 +259,35 @@ export default function ChainSelectorInForm({
     if (readonly) return;
     onChange && onChange(value);
     setShowSelectorModal(false);
+  };
+  const checkBeforeConfirm = (value: CHAINS_ENUM) => {
+    if (readonly) return;
+    const chainServerId = findChain({ enum: value })?.serverId;
+    if (chainServerId) {
+      const { disable, reason } = disableChainCheck?.(chainServerId) || {};
+      if (disable) {
+        Modal.confirm({
+          width: 340,
+          closable: true,
+          closeIcon: <></>,
+          centered: true,
+          className: 'chain-selector-disable-item-tips',
+          title: <RiskWarningTitle />,
+          content: reason,
+          okText: t('global.proceedButton'),
+          cancelText: t('global.cancelButton'),
+          cancelButtonProps: {
+            type: 'ghost',
+            className: 'text-r-blue-default border-r-blue-default',
+          },
+          onOk() {
+            handleChange(value);
+          },
+        });
+        return;
+      }
+    }
+    handleChange(value);
   };
 
   return (
@@ -241,16 +308,18 @@ export default function ChainSelectorInForm({
           hideTestnetTab={hideTestnetTab}
           value={value}
           visible={showSelectorModal}
-          onChange={handleChange}
+          onChange={checkBeforeConfirm}
           onCancel={handleCancel}
           supportChains={supportChains}
           disabledTips={disabledTips}
+          disableChainCheck={disableChainCheck}
           title={title}
           showClosableIcon={showClosableIcon}
           showRPCStatus
           getContainer={getContainer}
         />
       )}
+      <ChainGlobalStyle />
     </>
   );
 }

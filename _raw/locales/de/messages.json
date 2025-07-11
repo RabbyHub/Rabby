@@ -2712,14 +2712,12 @@
             "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen"
           }
         },
-        "riskWarning": "Risikowarnung",
         "cexAddress": "{{cexName}} Adresse",
         "title": "An diese Adresse senden",
         "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",
         "cexDepositAddress": "{{cexName}} Einzahlungsadresse"
       },
       "selectImportedAddress": "Importierte Adresse auswählen",
-      "enterAddressOrENS": "Adresse / ENS eingeben",
       "sendToImportedAddress": "An eine importierte Adresse senden",
       "enterAddress": "Adresse eingeben",
       "selectExchangeSource": "Wählen Sie die Austauschquelle",
