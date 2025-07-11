@@ -25,11 +25,13 @@ import { KEYRING_TYPE } from '@/constant';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
-const StyledInputWrapper = styled.div`
+const StyledInputWrapper = styled.div<{ $hasError?: boolean }>`
   border-radius: 8px;
   overflow: hidden;
   .ant-input {
     font-size: 15px;
+    ${({ $hasError }) =>
+      $hasError && 'border-color: var(--r-red-default) !important;'}
   }
   .ant-input-clear-icon {
     top: unset !important;
@@ -210,6 +212,7 @@ export const EnterAddress = ({
           <StyledInputWrapper
             onClick={(e) => e.stopPropagation()}
             className="relative"
+            $hasError={!isValidAddr && !filteredAccounts.length}
           >
             <Input.TextArea
               maxLength={44}
@@ -227,7 +230,9 @@ export const EnterAddress = ({
               size="large"
               spellCheck={false}
               rows={4}
-              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px] h-[80px]"
+              className={clsx(
+                'border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px] h-[80px]'
+              )}
             />
             <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
               <IconClearCC
