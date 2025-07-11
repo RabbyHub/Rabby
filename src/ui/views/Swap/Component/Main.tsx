@@ -56,6 +56,7 @@ import {
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import eventBus from '@/eventBus';
+import { PendingTxItem } from './PendingTxItem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -238,6 +239,24 @@ export const Main = () => {
                 },
                 dex_id: activeProvider?.name || 'WrapToken',
               },
+              addHistoryData: {
+                address: userAddress,
+                chainId: findChain({ enum: chain })?.id || 0,
+                fromToken: payToken,
+                toToken: receiveToken,
+                fromAmount: Number(inputAmount),
+                toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
+                  .div(
+                    10 **
+                      (activeProvider?.quote.toTokenDecimals ||
+                        receiveToken.decimals)
+                  )
+                  .toNumber(),
+                slippage: new BigNumber(slippage).div(100).toNumber(),
+                dexId: activeProvider?.name || 'WrapToken',
+                status: 'pending',
+                createdAt: Date.now(),
+              },
             },
             {
               ga: {
@@ -301,6 +320,24 @@ export const Main = () => {
                 slippage: new BigNumber(slippage).div(100).toNumber(),
               },
               dex_id: activeProvider?.name || 'WrapToken',
+            },
+            addHistoryData: {
+              address: userAddress,
+              chainId: findChain({ enum: chain })?.id || 0,
+              fromToken: payToken,
+              toToken: receiveToken,
+              fromAmount: Number(inputAmount),
+              toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
+                .div(
+                  10 **
+                    (activeProvider?.quote.toTokenDecimals ||
+                      receiveToken.decimals)
+                )
+                .toNumber(),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: activeProvider?.name || 'WrapToken',
+              status: 'pending',
+              createdAt: Date.now(),
             },
           },
           {
@@ -567,6 +604,26 @@ export const Main = () => {
     activeProvider?.quote,
   ]);
 
+  const isShowMoreVisible = useMemo(
+    () =>
+      showMoreVisible &&
+      Number(inputAmount) > 0 &&
+      inSufficientCanGetQuote &&
+      !!amountAvailable &&
+      !!payToken &&
+      !!receiveToken,
+    [
+      showMoreVisible,
+      inputAmount,
+      inSufficientCanGetQuote,
+      amountAvailable,
+      payToken,
+      receiveToken,
+    ]
+  );
+
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
   return (
     <>
       <Header
@@ -730,58 +787,57 @@ export const Main = () => {
           />
         ) : null}
 
-        {showMoreVisible &&
-          Number(inputAmount) > 0 &&
-          inSufficientCanGetQuote &&
-          !!amountAvailable &&
-          !!payToken &&
-          !!receiveToken && (
-            <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
-              <BridgeShowMore
-                supportDirectSign={canUseDirectSubmitTx}
-                autoSuggestSlippage={autoSuggestSlippage}
-                openFeePopup={openFeePopup}
-                open={showMoreOpen}
-                setOpen={setShowMoreOpen}
-                sourceName={sourceName}
-                sourceLogo={sourceLogo}
-                slippage={slippageState}
-                displaySlippage={slippage}
-                onSlippageChange={setSlippage}
-                fromToken={payToken}
-                toToken={receiveToken}
-                amount={inputAmount}
-                toAmount={
-                  isWrapToken
-                    ? inputAmount
-                    : activeProvider?.actualReceiveAmount || 0
-                }
-                openQuotesList={openQuotesList}
-                quoteLoading={quoteLoading}
-                slippageError={isSlippageHigh || isSlippageLow}
-                autoSlippage={!!autoSlippage}
-                isCustomSlippage={isCustomSlippage}
-                setAutoSlippage={setAutoSlippage}
-                setIsCustomSlippage={setIsCustomSlippage}
-                type="swap"
-                isWrapToken={isWrapToken}
-                isBestQuote={
-                  !!activeProvider &&
-                  !!bestQuoteDex &&
-                  bestQuoteDex === activeProvider?.name
-                }
-                showMEVGuardedSwitch={showMEVGuardedSwitch}
-                originPreferMEVGuarded={originPreferMEVGuarded}
-                switchPreferMEV={switchPreferMEV}
-                recommendValue={
-                  slippageValidInfo?.is_valid
-                    ? undefined
-                    : slippageValidInfo?.suggest_slippage
-                }
-              />
-            </div>
-          )}
-
+        {isShowMoreVisible && (
+          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
+            <BridgeShowMore
+              supportDirectSign={canUseDirectSubmitTx}
+              autoSuggestSlippage={autoSuggestSlippage}
+              openFeePopup={openFeePopup}
+              open={showMoreOpen}
+              setOpen={setShowMoreOpen}
+              sourceName={sourceName}
+              sourceLogo={sourceLogo}
+              slippage={slippageState}
+              displaySlippage={slippage}
+              onSlippageChange={setSlippage}
+              fromToken={payToken}
+              toToken={receiveToken}
+              amount={inputAmount}
+              toAmount={
+                isWrapToken
+                  ? inputAmount
+                  : activeProvider?.actualReceiveAmount || 0
+              }
+              openQuotesList={openQuotesList}
+              quoteLoading={quoteLoading}
+              slippageError={isSlippageHigh || isSlippageLow}
+              autoSlippage={!!autoSlippage}
+              isCustomSlippage={isCustomSlippage}
+              setAutoSlippage={setAutoSlippage}
+              setIsCustomSlippage={setIsCustomSlippage}
+              type="swap"
+              isWrapToken={isWrapToken}
+              isBestQuote={
+                !!activeProvider &&
+                !!bestQuoteDex &&
+                bestQuoteDex === activeProvider?.name
+              }
+              showMEVGuardedSwitch={showMEVGuardedSwitch}
+              originPreferMEVGuarded={originPreferMEVGuarded}
+              switchPreferMEV={switchPreferMEV}
+              recommendValue={
+                slippageValidInfo?.is_valid
+                  ? undefined
+                  : slippageValidInfo?.suggest_slippage
+              }
+            />
+          </div>
+        )}
+        {Boolean(!isShowMoreVisible && !activeProvider?.quote) && (
+          <div className="mx-20 mt-20">
+            <PendingTxItem type="swap" ref={pendingTxRef} />
+          </div>
+        )}
         <div
           className={clsx(
             'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',

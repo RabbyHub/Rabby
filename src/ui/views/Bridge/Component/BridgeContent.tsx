@@ -13,6 +13,7 @@ import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import {
+  usePollBridgePendingNumber,
   useQuoteVisible,
   useSetQuoteVisible,
   useSetRefreshId,
@@ -44,6 +45,7 @@ import {
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
 import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { PendingTxItem } from '../../Swap/Component/PendingTxItem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -99,6 +101,8 @@ export const BridgeContent = () => {
     inSufficientCanGetQuote,
   } = useBridge();
 
+  const [historyVisible, setHistoryVisible] = useState(false);
+
   const chains = useMemo(
     () => [toChain, fromChain].filter((e) => !!e) as CHAINS_ENUM[],
     [toChain, fromChain]
@@ -142,6 +146,11 @@ export const BridgeContent = () => {
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
+
+  const { pendingNumber, historyList } = usePollBridgePendingNumber() || {
+    pendingNumber: 0,
+    historyList: [],
+  };
 
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
 
@@ -213,6 +222,19 @@ export const BridgeContent = () => {
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               slippage: new BigNumber(slippage).div(100).toNumber(),
+            },
+            addHistoryData: {
+              address: userAddress,
+              fromChainId: findChainByEnum(fromToken.chain)?.id || 0,
+              toChainId: findChainByEnum(toToken.chain)?.id || 0,
+              fromToken: fromToken,
+              toToken: toToken,
+              fromAmount: Number(amount),
+              toAmount: Number(selectedBridgeQuote.to_token_amount),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: selectedBridgeQuote.aggregator.id,
+              status: 'pending',
+              createdAt: Date.now(),
             },
           },
           {
@@ -338,6 +360,19 @@ export const BridgeContent = () => {
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               slippage: new BigNumber(slippage).div(100).toNumber(),
+            },
+            addHistoryData: {
+              address: userAddress,
+              fromChainId: findChainByEnum(fromToken.chain)?.id || 0,
+              toChainId: findChainByEnum(toToken.chain)?.id || 0,
+              fromToken: fromToken,
+              toToken: toToken,
+              fromAmount: Number(amount),
+              toAmount: Number(selectedBridgeQuote.to_token_amount),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: selectedBridgeQuote.aggregator.id,
+              status: 'pending',
+              createdAt: Date.now(),
             },
           },
           {
@@ -524,9 +559,14 @@ export const BridgeContent = () => {
     switchFeePopup(true);
   }, [switchFeePopup]);
 
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
   return (
     <>
       <Header
+        historyVisible={historyVisible}
+        setHistoryVisible={setHistoryVisible}
+        pendingNumber={pendingNumber}
         onOpenInTab={() => {
           openInternalPageInTab(
             `bridge?${obj2query({
@@ -674,6 +714,16 @@ export const BridgeContent = () => {
             />
           )}
         </div>
+        {!selectedBridgeQuote && !recommendFromToken && (
+          <div className="mt-20 mx-20">
+            <PendingTxItem
+              type="bridge"
+              bridgeHistoryList={historyList}
+              openBridgeHistory={() => setHistoryVisible(true)}
+              ref={pendingTxRef}
+            />
+          </div>
+        )}
 
         <div
           className={clsx(

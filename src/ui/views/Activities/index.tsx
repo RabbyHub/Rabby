@@ -18,8 +18,8 @@ const Activities = () => {
   return (
     <div className="activities">
       <PageHeader
-        canBack={false}
-        closeable
+        canBack={true}
+        closeable={false}
         wrapperClassName="bg-r-neutral-bg-2"
         fixed
       >

@@ -139,6 +139,11 @@ import { userGuideService } from '../service/userGuide';
 import { metamaskModeService } from '../service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { bgRetryTxMethods } from '../utils/errorTxRetry';
+import {
+  BridgeTxHistoryItem,
+  SendTxHistoryItem,
+  SwapTxHistoryItem,
+} from '../service/transactionHistory';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -469,6 +474,7 @@ export class WalletController extends BaseController {
       gasPrice,
       shouldTwoStepApprove,
       postSwapParams,
+      addHistoryData,
       swapPreferMEVGuarded,
     }: {
       chain: CHAINS_ENUM;
@@ -485,6 +491,7 @@ export class WalletController extends BaseController {
         Parameters<OpenApiService['postSwap']>[0],
         'tx_id' | 'tx'
       >;
+      addHistoryData: Omit<SwapTxHistoryItem, 'hash'>;
     },
     $ctx?: any
   ) => {
@@ -537,6 +544,11 @@ export class WalletController extends BaseController {
 
       if (postSwapParams) {
         swapService.addTx(chain, quote.tx.data, postSwapParams);
+        transactionHistoryService.addCacheHistoryData(
+          `${chain}-${quote.tx.data}`,
+          addHistoryData,
+          'swap'
+        );
       }
       await this.sendRequest({
         $ctx:
@@ -581,6 +593,7 @@ export class WalletController extends BaseController {
       gasPrice,
       shouldTwoStepApprove,
       postSwapParams,
+      addHistoryData,
       swapPreferMEVGuarded,
     }: {
       chain: CHAINS_ENUM;
@@ -597,6 +610,7 @@ export class WalletController extends BaseController {
         Parameters<OpenApiService['postSwap']>[0],
         'tx_id' | 'tx'
       >;
+      addHistoryData: Omit<SwapTxHistoryItem, 'hash'>;
     },
     $ctx?: any
   ) => {
@@ -655,6 +669,11 @@ export class WalletController extends BaseController {
 
       if (postSwapParams) {
         swapService.addTx(chain, quote.tx.data, postSwapParams);
+        transactionHistoryService.addCacheHistoryData(
+          `${chain}-${quote.tx.data}`,
+          addHistoryData,
+          'swap'
+        );
       }
       const res = await this.sendRequest(
         {
@@ -708,6 +727,7 @@ export class WalletController extends BaseController {
       gasPrice,
       info,
       value,
+      addHistoryData,
     }: {
       data: string;
       to: string;
@@ -720,6 +740,7 @@ export class WalletController extends BaseController {
       payTokenRawAmount: string;
       gasPrice?: number;
       info: BridgeRecord;
+      addHistoryData: Omit<BridgeTxHistoryItem, 'hash'>;
     },
     $ctx?: any
   ) => {
@@ -773,6 +794,11 @@ export class WalletController extends BaseController {
 
       if (info) {
         bridgeService.addTx(chainObj.enum, data, info);
+        transactionHistoryService.addCacheHistoryData(
+          `${chainObj.enum}-${data}`,
+          addHistoryData,
+          'bridge'
+        );
       }
       await this.sendRequest({
         $ctx:
@@ -817,6 +843,7 @@ export class WalletController extends BaseController {
       gasPrice,
       info,
       value,
+      addHistoryData,
     }: {
       data: string;
       to: string;
@@ -829,6 +856,7 @@ export class WalletController extends BaseController {
       payTokenRawAmount: string;
       gasPrice?: number;
       info: BridgeRecord;
+      addHistoryData: Omit<BridgeTxHistoryItem, 'hash'>;
     },
     $ctx?: any
   ) => {
@@ -888,6 +916,11 @@ export class WalletController extends BaseController {
 
       if (info) {
         bridgeService.addTx(chainObj.enum, data, info);
+        transactionHistoryService.addCacheHistoryData(
+          `${chainObj.enum}-${data}`,
+          addHistoryData,
+          'bridge'
+        );
       }
       const res = await this.sendRequest(
         {
@@ -4013,6 +4046,35 @@ export class WalletController extends BaseController {
 
   // getTxExplainCacheByApprovalId = (id: string) =>
   //   transactionHistoryService.getExplainCacheByApprovalId(id);
+  getRecentPendingTxHistory = (
+    address: string,
+    type: 'swap' | 'send' | 'bridge'
+  ) => transactionHistoryService.getRecentPendingTxHistory(address, type);
+  addCacheHistoryData = (
+    key: string,
+    data: Omit<
+      SwapTxHistoryItem | SendTxHistoryItem | BridgeTxHistoryItem,
+      'hash'
+    >,
+    type: 'swap' | 'send' | 'bridge'
+  ) => transactionHistoryService.addCacheHistoryData(key, data, type);
+  getRecentTxHistory = (
+    address: string,
+    hash: string,
+    chainId: number,
+    type: 'swap' | 'send' | 'bridge'
+  ) =>
+    transactionHistoryService.getRecentTxHistory(address, hash, chainId, type);
+  completeBridgeTxHistory = (
+    from_tx_id: string,
+    chainId: number,
+    status: BridgeTxHistoryItem['status']
+  ) =>
+    transactionHistoryService.completeBridgeTxHistory(
+      from_tx_id,
+      chainId,
+      status
+    );
 
   getTransactionHistory = (address: string) =>
     transactionHistoryService.getList(address);

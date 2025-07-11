@@ -1,6 +1,13 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -72,6 +79,8 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from './components/SendShowMore';
+import { PendingTxItem } from '../Swap/Component/PendingTxItem';
+import { SendTxHistoryItem } from '@/background/service/transactionHistory';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -554,6 +563,21 @@ const SendToken = () => {
             filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
           ].join('|'),
         });
+
+        wallet.addCacheHistoryData(
+          `${chain.enum}-${params.data || '0x'}`,
+          {
+            address: currentAccount!.address,
+            chainId: findChainByEnum(chain.enum)?.id || 0,
+            from: currentAccount!.address,
+            to: toAddress,
+            token: currentToken,
+            amount: Number(amount),
+            status: 'pending',
+            createdAt: Date.now(),
+          } as SendTxHistoryItem,
+          'send'
+        );
 
         if (canUseMiniTx && !forceSignPage) {
           setMiniSignTx(params as Tx);
@@ -1311,6 +1335,7 @@ const SendToken = () => {
   }, [currentToken, gasList]);
 
   const [gasFeeOpen, setGasFeeOpen] = useState(false);
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
 
   return (
     <FullscreenContainer className="h-[700px]">
@@ -1443,6 +1468,11 @@ const SendToken = () => {
                 setOpen={setGasFeeOpen}
               />
             ) : null}
+            {!(chainItem?.serverId && canUseDirectSubmitTx) && (
+              <div className="mt-20">
+                <PendingTxItem type="send" ref={pendingTxRef} />
+              </div>
+            )}
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>

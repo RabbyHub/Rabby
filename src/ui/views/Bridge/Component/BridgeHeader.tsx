@@ -17,16 +17,22 @@ import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 const isTab = getUiType().isTab;
 
-export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
+export const Header = ({
+  onOpenInTab,
+  pendingNumber,
+  historyVisible,
+  setHistoryVisible,
+}: {
+  onOpenInTab?(): void;
+  pendingNumber: number;
+  historyVisible: boolean;
+  setHistoryVisible: (visible: boolean) => void;
+}) => {
   const feePopupVisible = useSettingVisible();
   const setFeePopupVisible = useSetSettingVisible();
-
-  const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
 
   const dispath = useRabbyDispatch();
-
-  const loadingNumber = usePollBridgePendingNumber();
 
   const openHistory = useCallback(() => {
     setHistoryVisible(true);
@@ -61,8 +67,8 @@ export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
                 <RcIconFullscreen />
               </div>
             )}
-            {loadingNumber ? (
-              <PendingTx number={loadingNumber} onClick={openHistory} />
+            {pendingNumber ? (
+              <PendingTx number={pendingNumber} onClick={openHistory} />
             ) : (
               <RcIconHistory className="cursor-pointer" onClick={openHistory} />
             )}

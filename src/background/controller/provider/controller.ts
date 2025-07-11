@@ -538,6 +538,8 @@ class ProviderController extends BaseController {
         if (hash) {
           swapService.postSwap(chain, hash, other);
           bridgeService.postBridge(chain, hash, other);
+          const key = `${chain}-${other.data}`;
+          transactionHistoryService.postCacheHistoryData(key, hash);
         }
 
         statsData.submit = true;
