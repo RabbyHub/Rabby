@@ -119,7 +119,7 @@ const ChainSelectWrapper = styled.div`
 `;
 
 const AddressText = styled.span`
-  font-weight: 590;
+  font-weight: 500;
   color: var(--r-neutral-title1);
 `;
 
@@ -156,7 +156,7 @@ export const ToAddressCard = ({
       )}
     >
       <div
-        className="text-[16px] w-full text-center text-r-neutral-body break-words cursor-pointer"
+        className="text-[16px] w-full text-center text-r-neutral-foot break-words cursor-pointer"
         onClick={() => {
           copyAddress(targetAccount.address);
         }}
@@ -1390,10 +1390,11 @@ const SendToken = () => {
           forceShowBack={!isTab}
           canBack={!isTab}
           isShowAccount
+          className="mb-[10px]"
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer absolute right-0"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0 top-1/2 -translate-y-1/2"
                 onClick={() => {
                   openInternalPageInTab(`send-token${history.location.search}`);
                 }}

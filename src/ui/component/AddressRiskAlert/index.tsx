@@ -62,7 +62,7 @@ const StyledTooltipGlobalStyle = createGlobalStyle`
 `;
 
 const AddressText = styled.span`
-  font-weight: 590;
+  font-weight: 500;
   color: var(--r-neutral-title1);
 `;
 
@@ -318,7 +318,7 @@ export const AddressRiskAlert = ({
           ) : (
             <div className="text-[16px] w-full text-center">
               <AddressText>{addressSplit[0]}</AddressText>
-              <span className="text-r-neutral-body">{addressSplit[1]}</span>
+              <span className="text-r-neutral-foot">{addressSplit[1]}</span>
               <AddressText>{addressSplit[2]}</AddressText>
             </div>
           )}
