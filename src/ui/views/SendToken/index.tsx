@@ -300,7 +300,7 @@ const SendToken = () => {
 
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
-    currentToken &&
+    !!currentToken &&
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).gte(0) &&
     !isLoading;
@@ -732,7 +732,7 @@ const SendToken = () => {
   }, [
     canSubmit,
     canUseDirectSubmitTx,
-    currentToken.chain,
+    currentToken?.chain,
     getParams,
     toAddress,
     form,
