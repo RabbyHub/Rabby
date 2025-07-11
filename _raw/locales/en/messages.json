@@ -716,9 +716,9 @@
       "noSupprotTokenForDex": "This token may not be supported by this exchange. Check before proceeding to avoid loss",
       "noSupprotTokenForDex_short": "Not supported by this exchange",
       "noSupprotTokenForSafe": "The Safe address you're sending tokens to isn't deployed on this chain. Check before proceeding to avoid loss.",
-      "noSupprotTokenForSafe_short": "Not supported by this safe chain",
+      "noSupprotTokenForSafe_short": "Safe address not deployed on this chain ",
       "noSupportTokenForChain": "Recipient address is a contract address on a different chain. Check before proceeding to avoid loss",
-      "noSupportTokenForChain_short": "Not supported by this chain",
+      "noSupportTokenForChain_short": "Contract address not deployed on this chain ",
       "selectFromAddress": "Select From Address",
       "selectToken": "Select Token"
     },
