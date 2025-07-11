@@ -133,10 +133,11 @@ interface Props {
   showCustomGasPrice: boolean;
 }
 
-const GasLevelIcon: React.FC<{ level: string; isActive }> = ({
-  level,
-  isActive,
-}) => {
+export const GasLevelIcon: React.FC<{
+  level: string;
+  isActive;
+  overWriteClass?: string;
+}> = ({ level, isActive, overWriteClass }) => {
   const GasLevelSVG =
     level === 'slow'
       ? GasLevelNormalSVG
@@ -148,10 +149,14 @@ const GasLevelIcon: React.FC<{ level: string; isActive }> = ({
   return (
     <div>
       <GasLevelSVG
-        className={clsx({
-          'text-r-neutral-body': !isActive,
-          'text-r-blue-default': isActive,
-        })}
+        className={clsx(
+          overWriteClass
+            ? overWriteClass
+            : {
+                'text-r-neutral-body': !isActive,
+                'text-r-blue-default': isActive,
+              }
+        )}
       />
     </div>
   );

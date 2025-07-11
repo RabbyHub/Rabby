@@ -1,6 +1,13 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -66,6 +73,14 @@ import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { ellipsis } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
 import { MiniApproval } from '../Approval/components/MiniSignTx';
+import {
+  DirectSubmitProvider,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { ShowMoreOnSend } from './components/SendShowMore';
+import { PendingTxItem } from '../Swap/Component/PendingTxItem';
+import { SendTxHistoryItem } from '@/background/service/transactionHistory';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -458,8 +473,27 @@ const SendToken = () => {
     );
   }, [chainItem?.isTestnet, currentAccount?.type]);
 
+  const startDirectSigning = useStartDirectSigning();
+
+  const canUseDirectSubmitTx = useMemo(
+    () =>
+      canSubmit &&
+      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
+        (currentAccount?.type || '') as any
+      ) &&
+      !chainItem?.isTestnet,
+    [canSubmit, chainItem?.isTestnet, currentAccount?.type]
+  );
+
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
-    async ({ amount }: FormSendToken) => {
+    async ({
+      amount,
+      forceSignPage,
+    }: FormSendToken & { forceSignPage?: boolean }) => {
+      if (canUseDirectSubmitTx && !forceSignPage) {
+        startDirectSigning();
+        return;
+      }
       const chain = findChain({
         serverId: currentToken.chain,
       })!;
@@ -530,7 +564,22 @@ const SendToken = () => {
           ].join('|'),
         });
 
-        if (canUseMiniTx) {
+        wallet.addCacheHistoryData(
+          `${chain.enum}-${params.data || '0x'}`,
+          {
+            address: currentAccount!.address,
+            chainId: findChainByEnum(chain.enum)?.id || 0,
+            from: currentAccount!.address,
+            to: toAddress,
+            token: currentToken,
+            amount: Number(amount),
+            status: 'pending',
+            createdAt: Date.now(),
+          } as SendTxHistoryItem,
+          'send'
+        );
+
+        if (canUseMiniTx && !forceSignPage) {
           setMiniSignTx(params as Tx);
           setIsShowMiniSign(true);
           return;
@@ -565,17 +614,122 @@ const SendToken = () => {
     }
   );
 
+  const amount = form.getFieldValue('amount');
+  const address = form.getFieldValue('to');
+
+  useEffect(() => {
+    let isCurrent = true;
+    const setMiniTx = async () => {
+      if (canSubmit && canUseDirectSubmitTx && amount && address) {
+        console.log('123123123');
+        const chain = findChain({
+          serverId: currentToken.chain,
+        })!;
+        const params = getParams({
+          to: toAddress,
+          amount: form.getFieldValue('amount'),
+        });
+
+        if (isNativeToken) {
+          // L2 has extra validation fee so we can not set gasLimit as 21000 when send native token
+          const couldSpecifyIntrinsicGas = !CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS.includes(
+            chain.enum
+          );
+
+          try {
+            const code = await wallet.requestETHRpc<any>(
+              {
+                method: 'eth_getCode',
+                params: [toAddress, 'latest'],
+              },
+              chain.serverId
+            );
+            const notContract = !!code && (code === '0x' || code === '0x0');
+
+            let gasLimit = 0;
+
+            if (estimatedGas) {
+              gasLimit = estimatedGas;
+            }
+
+            /**
+             * we don't need always fetch estimatedGas, if no `params.gas` set below,
+             * `params.gas` would be filled on Tx Page.
+             */
+            if (gasLimit > 0) {
+              params.gas = intToHex(gasLimit);
+            } else if (notContract && couldSpecifyIntrinsicGas) {
+              params.gas = intToHex(DEFAULT_GAS_USED);
+            }
+            if (!notContract) {
+              // not pre-set gasLimit if to address is contract address
+              delete params.gas;
+            }
+          } catch (e) {
+            if (couldSpecifyIntrinsicGas) {
+              params.gas = intToHex(DEFAULT_GAS_USED);
+            }
+          }
+          if (clickedMax && selectedGasLevel?.price) {
+            params.gasPrice = selectedGasLevel?.price;
+          }
+        }
+
+        wallet.addCacheHistoryData(
+          `${chain.enum}-${params.data || '0x'}`,
+          {
+            address: currentAccount!.address,
+            chainId: findChainByEnum(chain.enum)?.id || 0,
+            from: currentAccount!.address,
+            to: toAddress,
+            token: currentToken,
+            amount: Number(amount),
+            status: 'pending',
+            createdAt: Date.now(),
+          } as SendTxHistoryItem,
+          'send'
+        );
+
+        if (isCurrent) {
+          setMiniSignTx(params as Tx);
+        }
+      } else {
+        if (isCurrent) {
+          setMiniSignTx(null);
+        }
+      }
+    };
+    setMiniTx();
+    return () => {
+      isCurrent = false;
+      setMiniSignTx(null);
+    };
+  }, [
+    canSubmit,
+    canUseDirectSubmitTx,
+    currentToken.chain,
+    getParams,
+    toAddress,
+    form,
+    isNativeToken,
+    clickedMax,
+    selectedGasLevel?.price,
+    wallet,
+    estimatedGas,
+    amount,
+    address,
+    currentAccount,
+    currentToken,
+  ]);
+
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
       setIsShowMiniSign(false);
       setMiniSignTx(null);
-      if (!isTab) {
-        history.replace('/');
-      }
       form.setFieldsValue({ amount: '' });
       setRefreshId((e) => e + 1);
     }, 500);
-  }, [form, history]);
+  }, [form]);
 
   const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
     if (!to) return;
@@ -1198,6 +1352,9 @@ const SendToken = () => {
     }
   }, [currentToken, gasList]);
 
+  const [gasFeeOpen, setGasFeeOpen] = useState(false);
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -1321,20 +1478,46 @@ const SendToken = () => {
                 )}
               </Form.Item>
             </div>
+
+            {chainItem?.serverId && canUseDirectSubmitTx ? (
+              <ShowMoreOnSend
+                chainServeId={chainItem?.serverId}
+                open={gasFeeOpen}
+                setOpen={setGasFeeOpen}
+              />
+            ) : null}
+            {!canSubmit && (
+              <div className="mt-20">
+                <PendingTxItem type="send" ref={pendingTxRef} />
+              </div>
+            )}
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-              <Button
-                disabled={!canSubmit}
-                type="primary"
-                htmlType="submit"
-                size="large"
-                className="w-[100%] h-[48px] text-[16px]"
-                loading={isSubmitLoading}
-              >
-                {t('page.sendToken.sendButton')}
-              </Button>
+              {canUseDirectSubmitTx ? (
+                <ToConfirmBtn
+                  title={t('page.sendToken.sendButton')}
+                  onConfirm={() =>
+                    handleSubmit({
+                      to: form.getFieldValue('to'),
+                      amount: form.getFieldValue('amount'),
+                    })
+                  }
+                  disabled={!canSubmit}
+                />
+              ) : (
+                <Button
+                  disabled={!canSubmit}
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  className="w-[100%] h-[48px] text-[16px]"
+                  loading={isSubmitLoading}
+                >
+                  {t('page.sendToken.sendButton')}
+                </Button>
+              )}
             </div>
           </div>
         </Form>
@@ -1382,13 +1565,30 @@ const SendToken = () => {
             setMiniSignTx(null);
           }}
           onResolve={handleMiniSignResolve}
+          onPreExecError={() => {
+            handleSubmit({
+              to: form.getFieldValue('to'),
+              amount: form.getFieldValue('amount'),
+              forceSignPage: true,
+            });
+          }}
           getContainer={getContainer}
+          directSubmit
+          canUseDirectSubmitTx={canUseDirectSubmitTx}
         />
       </div>
     </FullscreenContainer>
   );
 };
 
+const SendTokenWrapper = () => {
+  return (
+    <DirectSubmitProvider>
+      <SendToken />
+    </DirectSubmitProvider>
+  );
+};
+
 export default isTab
-  ? connectStore()(withAccountChange(SendToken))
-  : connectStore()(SendToken);
+  ? connectStore()(withAccountChange(SendTokenWrapper))
+  : connectStore()(SendTokenWrapper);

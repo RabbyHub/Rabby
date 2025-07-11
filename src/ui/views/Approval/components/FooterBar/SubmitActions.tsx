@@ -8,6 +8,8 @@ import { GasLessAnimatedWrapper } from './GasLessComponents';
 import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useDebounce } from 'react-use';
 
 const ButtonStyled = styled(Button)`
   &:hover {
@@ -25,6 +27,8 @@ export const SubmitActions: React.FC<Props> = ({
   gasLessThemeColor,
   isGasNotEnough,
   isSubmitting,
+  directSubmit,
+  isMiniSignTx,
 }) => {
   const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
@@ -40,6 +44,24 @@ export const SubmitActions: React.FC<Props> = ({
   const handleClickCancel = React.useCallback(() => {
     setIsSign(false);
   }, []);
+
+  const directSigning = useDirectSigning();
+
+  useDebounce(
+    () => {
+      if (isMiniSignTx && !disabledProcess && directSigning && directSubmit) {
+        handleClickConfirm();
+      }
+    },
+    300,
+    [
+      directSigning,
+      disabledProcess,
+      handleClickConfirm,
+      isMiniSignTx,
+      directSubmit,
+    ]
+  );
 
   return (
     <ActionsContainer onCancel={onCancel}>
