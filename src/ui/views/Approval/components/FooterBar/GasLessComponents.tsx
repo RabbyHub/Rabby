@@ -31,6 +31,7 @@ export function GasLessNotEnough({
   canGotoUseGasAccount,
   canDepositUseGasAccount,
   miniFooter,
+  directSubmit,
 }: {
   url?: string;
   gasLessFailedReason?: string;
@@ -38,6 +39,7 @@ export function GasLessNotEnough({
   canGotoUseGasAccount?: boolean;
   canDepositUseGasAccount?: boolean;
   miniFooter?: boolean;
+  directSubmit?: boolean;
 }) {
   const { t } = useTranslation();
 
@@ -45,7 +47,14 @@ export function GasLessNotEnough({
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
 
   return (
-    <div className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center">
+    <div
+      className={clsx(
+        'security-level-tip  items-center text-r-neutral-card2',
+        directSubmit
+          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default'
+          : 'bg-r-neutral-card2  mt-[15px]'
+      )}
+    >
       <RcIconGas
         viewBox="0 0 16 16"
         className="w-16 h-16 mr-4 text-r-neutral-title-1"
@@ -126,6 +135,10 @@ const GasLessReady = styled.div`
   position: relative;
   height: 54px;
 
+  &.direct-submit {
+    height: auto;
+  }
+
   & > .gas-ready,
   & > .gas-to-sign {
     position: absolute !important;
@@ -156,26 +169,56 @@ const GasLessReady = styled.div`
       z-index: -1;
     }
   }
+
+  &.direct-submit {
+    & > .gas-ready {
+      display: none;
+    }
+
+    & > .gas-to-sign {
+      display: flex;
+    }
+    & > .gas-ready,
+    & > .gas-to-sign {
+      margin-top: 8px !important;
+      position: static !important;
+      top: 0px;
+      align-items: center;
+    }
+  }
+
+  &.gasLess.direct-submit > {
+    .gas-ready {
+      display: flex;
+    }
+    .gas-to-sign {
+      display: none;
+    }
+  }
 `;
 
 function FreeGasReady({
   freeGasText,
   color,
   logo,
+  directSubmit,
 }: {
   freeGasText?: string;
   color?: string;
   logo?: string;
+  directSubmit?: boolean;
 }) {
   const { t } = useTranslation();
   return (
     <span
       className={clsx(
-        'gas-ready security-level-tip text-transparent py-0 pt-[18px] h-[46px]',
-        'bg-transparent'
+        'gas-ready security-level-tip text-transparent h-[46px]',
+        directSubmit
+          ? 'mt-8 bg-r-blue-light-1 border border-solid border-rabby-blue-default'
+          : 'bg-transparent py-0 pt-[18px] '
       )}
       style={
-        freeGasText
+        freeGasText || directSubmit
           ? {}
           : {
               backgroundImage: `url(${GasLessBg})`,
@@ -205,11 +248,13 @@ export function GasLessActivityToSign({
   handleFreeGas,
   gasLessEnable,
   gasLessConfig,
+  directSubmit,
 }: {
   handleFreeGas: () => void;
   gasLessEnable: boolean;
 
   gasLessConfig?: GasLessConfig;
+  directSubmit?: boolean;
 }) {
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
@@ -221,13 +266,19 @@ export function GasLessActivityToSign({
 
   return (
     <>
-      <GasLessReady className={clsx(gasLessEnable && 'gasLess')}>
+      <GasLessReady
+        className={clsx(
+          gasLessEnable && 'gasLess',
+          directSubmit && 'direct-submit'
+        )}
+      >
         <FreeGasReady
+          directSubmit={directSubmit}
           freeGasText={gasLessConfig?.after_click_text}
           color={themeColor}
           logo={gasLessConfig?.logo}
         />
-        {themeColor && (
+        {themeColor && !directSubmit && (
           <RcIconCCFreeGasBg
             style={{
               color: themeColor,
@@ -237,8 +288,11 @@ export function GasLessActivityToSign({
         )}
         <span
           className={clsx(
-            'gas-to-sign security-level-tip  items-center pr-6',
-            themeColor
+            'gas-to-sign security-level-tip  items-center ',
+            !directSubmit && 'pr-6',
+            directSubmit
+              ? 'mt-8 rounded-[8px] border border-solid bg-r-red-light border-rabby-red-default'
+              : themeColor
               ? 'bg-transparent text-transparent'
               : 'bg-r-neutral-card2 text-r-neutral-card2'
           )}
@@ -344,12 +398,14 @@ export function GasAccountTips({
   isWalletConnect,
   noCustomRPC,
   miniFooter,
+  directSubmit,
 }: {
   gasAccountCost?: GasAccountCheckResult;
   isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
   noCustomRPC?: boolean;
   miniFooter?: boolean;
+  directSubmit?: boolean;
 }) {
   const { t } = useTranslation();
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
@@ -432,7 +488,14 @@ export function GasAccountTips({
   }
 
   return (
-    <div className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px] items-center">
+    <div
+      className={clsx(
+        'security-level-tip text-r-neutral-card2 items-center',
+        directSubmit
+          ? 'bg-r-red-light border border-solid border-rabby-red-default'
+          : 'bg-r-neutral-card2 mt-[15px]'
+      )}
+    >
       <RcIconGasAccountCC
         viewBox="0 0 20 20"
         className="w-16 h-16 mr-4 text-r-neutral-foot"

@@ -347,7 +347,18 @@
       "label": "Label",
       "addressSource": "Address Source",
       "maxPriorityFeeDisabledAlert": "Please set Gas Price first",
-      "primaryType": "Primary type"
+      "primaryType": "Primary type",
+      "errorRetry": {
+        "defaultTips": "Something is wrong. Please retry later.",
+        "insufficient": "Your gas balance isn’t enough to cover the network gas fee. Add funds for gas and try again.",
+        "gasPriceTooLow": "Gas price too low. We’ll adjust it by 30% to help your transaction confirm. Click “Retry” to confirm and try again.",
+        "nonceTooLow": "Nonce too low. We’ll update it to {{nonce}}. Click “Retry” to confirm and try again.",
+        "nonceTooHigh": "Nonce too high. Please adjust the nonce and try again.",
+        "alreadySubmitted": "Transaction already submitted. Duplicate transaction detected.",
+        "gasExceedsBlockGasLimit": "Gas exceeds block gas limit. Please adjust and try again.",
+        "InvalidTx": "Invalid transaction.",
+        "gasLimitTooLow": "Gas limit too low"
+      }
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -419,6 +430,8 @@
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
         "txFailed": "Fail to create",
+        "txFailedBy": "Fail to {{category}}",
+        "retryTxFailedBy": "Fail to {{category}}: Please Retry",
         "sigReceived": "Signature received",
         "sigCompleted": "Transaction created",
         "getSig": "Get signature",
@@ -456,6 +469,7 @@
       "common": {
         "notSupport": "{{0}} is not supported"
       },
+      "iGotIt": "I Got it",
       "resend": "Retry",
       "submitTx": "Submit Transaction",
       "testnet": "Testnet",
