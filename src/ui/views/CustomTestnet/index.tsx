@@ -136,7 +136,7 @@ export const CustomTestnet = () => {
 
   return (
     <FullscreenContainer className="h-[700px]">
-      <div className="custom-testnet">
+      <div className="custom-testnet h-full overflow-auto">
         <PageHeader
           className="pt-[24px] mx-[20px] mb-16"
           canBack={false}
