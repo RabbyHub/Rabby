@@ -22,9 +22,9 @@ import { ReactComponent as RcIconCustomTestnet } from 'ui/assets/dashboard/icon-
 import { ReactComponent as RcIconPreferMetamask } from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import { ReactComponent as RcIconAutoLock } from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
 import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings/lock.svg';
-import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
 import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
+import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -35,7 +35,6 @@ import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
 import './style.less';
 
@@ -45,6 +44,7 @@ import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboa
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
+import { ReactComponent as RcIconSettingsCodeCC } from 'ui/assets/dashboard/settings/code-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
@@ -64,6 +64,8 @@ import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { ga4 } from '@/utils/ga4';
 import { EcosystemBanner } from './components/EcosystemBanner';
 import { useMemoizedFn } from 'ahooks';
+import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
+import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -122,7 +124,6 @@ const OpenApiModal = ({
   const [isVisible, setIsVisible] = useState(false);
   const [form] = useForm<{ host: string }>();
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
 
   title = title || t('page.dashboard.settings.backendServiceUrl');
 
@@ -569,6 +570,7 @@ const SwitchLangModal = ({
 
 type SettingItem = {
   leftIcon: ThemeIconType;
+  leftIconClassName?: string;
   content: React.ReactNode;
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -590,7 +592,6 @@ const SettingsInner = ({
   const [isShowLangModal, setIsShowLangModal] = useState(false);
   const [isShowThemeModeModal, setIsShowThemeModeModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
-  const [whitelistEnable, setWhitelistEnable] = useState(true);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
@@ -625,21 +626,6 @@ const SettingsInner = ({
     return LANGS.find((item) => item.code === locale)?.name;
   }, [locale]);
 
-  const handleSwitchWhitelistEnable = async (checked: boolean) => {
-    matomoRequestEvent({
-      category: 'Setting',
-      action: 'clickToUse',
-      label: 'Whitelist',
-    });
-
-    ga4.fireEvent('More_Whitelist', {
-      event_category: 'Click More',
-    });
-
-    reportSettings('Whitelist');
-    handleWhitelistEnableChange(checked);
-  };
-
   const handleEnableDappAccount = useMemoizedFn(() => {
     matomoRequestEvent({
       category: 'Setting',
@@ -659,30 +645,6 @@ const SettingsInner = ({
       setIsShowDappAccountModal(true);
     }
   });
-
-  console.log({ isEnabledDappAccount, isShowDappAccountModal });
-
-  const handleWhitelistEnableChange = async (value: boolean) => {
-    await AuthenticationModalPromise({
-      confirmText: t('global.confirm'),
-      cancelText: t('page.dashboard.settings.cancel'),
-      title: value
-        ? t('page.dashboard.settings.enableWhitelist')
-        : t('page.dashboard.settings.disableWhitelist'),
-      description: value
-        ? t('page.dashboard.settings.enableWhitelistTip')
-        : t('page.dashboard.settings.disableWhitelistTip'),
-      validationHandler: async (password: string) =>
-        await wallet.toggleWhitelist(password, value),
-      onFinished() {
-        setWhitelistEnable(value);
-      },
-      onCancel() {
-        // do nothing
-      },
-      wallet,
-    });
-  };
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -752,6 +714,10 @@ const SettingsInner = ({
     }
   };
 
+  const {
+    mockExposureRateGuide,
+    resetExposureRateGuide,
+  } = useMakeMockDataForRateGuideExposure();
   const renderData = {
     features: {
       label: t('page.dashboard.settings.features.label'),
@@ -811,6 +777,14 @@ const SettingsInner = ({
           },
         },
         {
+          leftIcon: RcIconEcosystemCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.features.ecosystem'),
+          onClick: () => {
+            setIsShowEcologyModal(true);
+          },
+        },
+        {
           leftIcon: RcIconPoints,
           content: t('page.dashboard.settings.features.rabbyPoints'),
           onClick: () => {
@@ -858,19 +832,6 @@ const SettingsInner = ({
     settings: {
       label: t('page.dashboard.settings.settings.label'),
       items: [
-        {
-          leftIcon: RcIconWhitelist,
-          content: t(
-            'page.dashboard.settings.settings.enableWhitelistForSendingAssets'
-          ),
-          rightIcon: (
-            <Switch
-              checked={whitelistEnable}
-              onChange={handleSwitchWhitelistEnable}
-            />
-          ),
-        },
-
         {
           leftIcon: RcIconDappSwitchAddress,
           content: t('page.dashboard.settings.settings.enableDappAccount'),
@@ -1096,6 +1057,44 @@ const SettingsInner = ({
           leftIcon: RcIconClearCC,
           content: <span>{t('page.dashboard.settings.clearWatchMode')}</span>,
           onClick: handleClickClearWatchMode,
+        },
+        {
+          leftIcon: RcIconSettingsCodeCC,
+          content: (
+            <div className="flex-shrink-0">Mock Exposure Rate Guidance</div>
+          ),
+          rightIcon: (
+            <div className="flex items-center justify-end gap-8">
+              <Button
+                type="link"
+                danger
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  mockExposureRateGuide();
+                  message.success({
+                    className: 'toast-message-2025',
+                    content: 'Mock exposure rate guide data',
+                  });
+                }}
+              >
+                Mock
+              </Button>
+              <Button
+                type="primary"
+                ghost
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  resetExposureRateGuide();
+                  message.success({
+                    className: 'toast-message-2025',
+                    content: 'Reset exposure rate guide mock data',
+                  });
+                }}
+              >
+                Reset
+              </Button>
+            </div>
+          ),
         },
         {
           leftIcon: RcIconSettingsGitForkCC,
@@ -1328,22 +1327,22 @@ const SettingsInner = ({
     onClose && onClose(e);
   };
 
-  const initWhitelistEnabled = async () => {
-    const enabled = await wallet.isWhitelistEnabled();
-    setWhitelistEnable(enabled);
-  };
-
   useEffect(() => {
-    initWhitelistEnabled();
     dispatch.openapi.getHost();
     dispatch.openapi.getTestnetHost();
   }, []);
+
+  const [isShowEcology, setIsShowEcologyModal] = React.useState(false);
 
   return (
     <div className="popup-settings">
       <div className="content">
         {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
-        <EcosystemBanner />
+        <EcosystemBanner
+          isVisible={isShowEcology}
+          onClose={() => setIsShowEcologyModal(false)}
+        />
+        <RateModalTriggerOnSettings className="mb-[16px]" />
         {Object.values(renderData).map((group, idxl1) => {
           return (
             <div key={`g-${idxl1}`} className="setting-block">
@@ -1353,7 +1352,10 @@ const SettingsInner = ({
                   <Field
                     key={`g-${idxl1}-item-${idxl2}`}
                     leftIcon={
-                      <ThemeIcon src={data.leftIcon} className="icon" />
+                      <ThemeIcon
+                        src={data.leftIcon}
+                        className={clsx('icon', data.leftIconClassName)}
+                      />
                     }
                     rightIcon={
                       data.rightIcon || (

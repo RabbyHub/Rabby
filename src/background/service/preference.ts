@@ -18,6 +18,11 @@ import dayjs from 'dayjs';
 import type { IExtractFromPromise } from '@/ui/utils/type';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { getFirstPreferredLangCode } from './i18n';
+import {
+  getDefaultRateGuideLastExposure,
+  LAST_EXPOSURE_VERSIONED_KEY,
+  RateGuideLastExposure,
+} from '@/utils/rateGuidance';
 
 const version = process.env.release || '0';
 
@@ -58,12 +63,15 @@ export type IHighlightedAddress = {
 export type CurvePointCollection = IExtractFromPromise<
   ReturnType<OpenApiService['getNetCurve']>
 >;
+
 export interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
   hiddenAddresses: Account[];
   balanceMap: {
-    [address: string]: TotalBalanceResponse;
+    [address: string]: TotalBalanceResponse & {
+      evmUsdValue?: number;
+    };
   };
   curvePointsMap: {
     [address: string]: CurvePointCollection;
@@ -107,6 +115,7 @@ export interface PreferenceStore {
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
   sendEnableTime?: number;
+  ga4EventTime?: number;
   customizedToken?: Token[];
   blockedToken?: Token[];
   collectionStarred?: Token[];
@@ -125,6 +134,8 @@ export interface PreferenceStore {
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
 
   isEnabledDappAccount?: boolean;
+
+  rateGuideLastExposure?: RateGuideLastExposure;
 }
 
 export interface AddressSortStore {
@@ -138,6 +149,8 @@ const defaultAddressSortStore: AddressSortStore = {
   search: '',
   sortType: 'usd',
 };
+
+export type PreferenceServiceCls = PreferenceService;
 
 class PreferenceService {
   store!: PreferenceStore;
@@ -196,6 +209,8 @@ class PreferenceService {
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
         isEnabledDappAccount: false,
+        ga4EventTime: 0,
+        rateGuideLastExposure: getDefaultRateGuideLastExposure(),
       },
     });
 
@@ -302,6 +317,10 @@ class PreferenceService {
     }
 
     this.store.currentVersion = version;
+
+    if (this.store.ga4EventTime) {
+      this.store.ga4EventTime = 0;
+    }
   };
 
   hasConfirmSafeSelfHost = (networkId: string) => {
@@ -891,6 +910,25 @@ class PreferenceService {
   };
   setIsHideEcologyNoticeDict = (v: Record<string | number, boolean>) => {
     this.store.isHideEcologyNoticeDict = v;
+  };
+
+  getRateGuideLastExposure = () => {
+    return (
+      this.store.rateGuideLastExposure || getDefaultRateGuideLastExposure()
+    );
+  };
+
+  setRateGuideLastExposure = (exposure: Partial<RateGuideLastExposure>) => {
+    this.store.rateGuideLastExposure = {
+      txCount: 0,
+      ...this.store.rateGuideLastExposure,
+      ...exposure,
+      [LAST_EXPOSURE_VERSIONED_KEY]: {
+        time: -1,
+        ...this.store.rateGuideLastExposure?.[LAST_EXPOSURE_VERSIONED_KEY],
+        ...exposure[LAST_EXPOSURE_VERSIONED_KEY],
+      },
+    };
   };
 }
 

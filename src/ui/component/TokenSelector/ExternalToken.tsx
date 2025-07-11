@@ -120,7 +120,7 @@ const ExternalTokenRow = memo(
         return <RiskTokenTips isDanger={true} />;
       }
 
-      if (data.is_scam) {
+      if (data.is_suspicious) {
         return <RiskTokenTips isDanger={false} />;
       }
 
@@ -168,7 +168,7 @@ const ExternalTokenRow = memo(
         )}
         onClick={onPressToken}
       >
-        <li className="w-full">
+        <li className="w-full flex flex-row swap-to">
           <div className="w-[220px]">
             <TokenWithChain token={data} width="32px" height="32px" hideConer />
             <div className="flex flex-col">

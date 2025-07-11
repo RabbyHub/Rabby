@@ -12,7 +12,7 @@ import {
   RiskNumMap,
   compareContractApprovalItemByRiskLevel,
 } from '@/utils/approval';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { SorterResult } from 'antd/lib/table/interface';
 import {
   NFTApproval,

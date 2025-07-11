@@ -40,19 +40,22 @@ const AddressDetail = () => {
     dispatch.whitelist.getWhitelist();
   }, []);
 
-  const handleWhitelistChange = (checked: boolean) => {
+  const handleWhitelistChange = async (checked: boolean) => {
+    if (!checked) {
+      await wallet.removeWhitelist(address);
+      const cexId = await wallet.getCexId(address);
+      if (cexId) {
+        await wallet.updateCexId(address, '');
+      }
+      return;
+    }
     AuthenticationModalPromise({
-      title: checked
-        ? t('page.addressDetail.add-to-whitelist')
-        : t('page.addressDetail.remove-from-whitelist'),
+      title: t('page.addressDetail.add-to-whitelist'),
       cancelText: t('global.Cancel'),
       wallet,
+      containerClassName: 'whitelist-confirm-modal',
       validationHandler: async (password) => {
-        if (checked) {
-          await wallet.addWhitelist(password, address);
-        } else {
-          await wallet.removeWhitelist(password, address);
-        }
+        await wallet.addWhitelist(password, address);
       },
       onFinished() {
         // dispatch.whitelist.getWhitelist();

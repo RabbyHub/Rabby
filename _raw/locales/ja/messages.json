@@ -666,7 +666,7 @@
         "title": "確認のためにパスワードを入力"
       },
       "sectionBalance": {
-        "title": "残高"
+        "title": "金額"
       },
       "sectionChain": {
         "title": "チェーン"
@@ -712,7 +712,15 @@
       },
       "blockedTransaction": "Blocked Transaction",
       "blockedTransactionCancelText": "私は知っている",
-      "blockedTransactionContent": "このトランザクションは、OFAC制裁リストに載っているアドレスとやり取りします。"
+      "blockedTransactionContent": "このトランザクションは、OFAC制裁リストに載っているアドレスとやり取りします。",
+      "selectFromAddress": "アドレスを選択してください",
+      "noSupprotTokenForDex": "このトークンは、この取引所ではサポートされていない可能性があります。損失を避けるために進む前に確認してください。",
+      "noSupportTokenForChain": "受取人アドレスは異なるチェーン上の契約アドレスです。損失を避けるために、進む前に確認してください。",
+      "noSupprotTokenForSafe": "送信先のSafeアドレスはこのチェーンにデプロイされていません。損失を避けるために、進む前に確認してください。",
+      "selectToken": "トークンを選択",
+      "noSupprotTokenForDex_short": "この取引所ではサポートされていません。",
+      "noSupprotTokenForSafe_short": "このチェーンにはデプロイされていない安全なアドレスです",
+      "noSupportTokenForChain_short": "このチェーンにデプロイされていないコントラクトアドレス"
     },
     "sendTokenComponents": {
       "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました",
@@ -748,6 +756,9 @@
       "tipAddToContacts": "連絡先に追加",
       "confirmModal": {
         "title": "確認するためのパスワードを入力"
+      },
+      "sectionAmount": {
+        "title": "金額"
       }
     },
     "approvals": {
@@ -859,7 +870,8 @@
         "ledgerSigned": "署名済み。トランザクションを作成中 ({{current}}/{{total}})",
         "useGasAccount": "ガス残高が少なくなっています。GasAccountがガス料金をカバーします。",
         "simulationFailed": "シミュレーション失敗",
-        "gasNotEnough": "Gasが不足しているため、送信できません"
+        "gasNotEnough": "Gasが不足しているため、送信できません",
+        "ledgerConfirmTitle": "Ledgerでバッチ取り消し"
       }
     },
     "gasTopUp": {
@@ -1211,7 +1223,8 @@
           "connectedDapp": "接続されたDapp",
           "gasTopUp": "ガストップアップ",
           "searchDapps": "Dappsを検索",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "ecosystem": "エコシステム"
         },
         "settings": {
           "label": "設定",
@@ -1239,6 +1252,18 @@
           "title": "Dappアドレスを個別に切り替える\n",
           "button": "有効化\n",
           "desc": "有効化後、各Dappに接続するアドレスを選択できます。メインアドレスの変更は、各Dappに接続されているアドレスに影響しません。\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Rabby Walletをどのように評価しますか？"
+        },
+        "rateModal": {
+          "submitFeedbackButton": "提出する",
+          "feedbackSuccess": "フィードバックありがとうございます！",
+          "rateOnChromeStoreButton": "Chrome ウェブストアでの評価",
+          "feedbackDesc": "フィードバックはありますか？私たちはお聞きしています。",
+          "thxTitle": "ありがとう！",
+          "thxDesc": "Rabbyが気に入っていただけたら、Chromeストアでの簡単な評価はとてもありがたいです。",
+          "feedbackPlaceholder": "Rabbyはあなたのフィードバックを大切にしています！"
         }
       },
       "tokenDetail": {
@@ -1459,9 +1484,6 @@
           "answer": "はい、それはブラウザー上でローカルに保存され、あなた以外はアクセスできません。"
         },
         "importError": "[CreateMnemonics] 予期しないステップ {{0}}",
-        "importQuestion1": "シードフレーズを失うと、資産も失われます。",
-        "importQuestion2": "シードフレーズを他の人と共有すると、資産が盗まれる可能性があります。",
-        "importQuestion3": "シードフレーズは私のコンピューターにのみ保存され、Rabbyはアクセスできません。",
         "importQuestion4": "シードフレーズのバックアップを取らずにRabbyをアンインストールすると、Rabbyはそれを取り戻すことができません。",
         "riskTips": "始める前に、以下のセキュリティのヒントを読んで心に留めておいてください。",
         "showSeedPhrase": "シードフレーズを表示",
@@ -1487,7 +1509,10 @@
         "inputInvalidCount_other": "{{count}} 件の入力がシードフレーズの規範に適合していません。確認してください。",
         "inputInvalidCount_one": "1入力がシードフレーズの基準に合致していません。ご確認ください。",
         "wordPhraseAndPassphrase": "私はPassphrase付きの<1>{{count}}</1>単語のフレーズを持っています。",
-        "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズシェアを入力してください。"
+        "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズシェアを入力してください。",
+        "importQuestion2": "私のシードフレーズは私のデバイスのみに保存されています。Rabbyはそれにアクセスできません。",
+        "importQuestion1": "もし私がシードフレーズを失ったり共有したりすると、資産へのアクセスを永久に失うことになります。",
+        "importQuestion3": "Rabbyをアンインストールしてシードフレーズをバックアップしなかった場合、Rabbyでは回復できません。"
       },
       "metamask": {
         "step1": "MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
@@ -1758,7 +1783,7 @@
       },
       "title": "Rabby Wallet",
       "btnForgotPassword": "パスワードをお忘れですか?",
-      "description": "EthereumおよびすべてのEVMチェーン対応の画期的なウォレット"
+      "description": "EthereumとEVMのための定番ウォレット"
     },
     "addToken": {
       "noTokenFound": "トークンが見つかりません",
@@ -2450,15 +2475,15 @@
         "createNewAddress": "新しいアドレスを作成",
         "importAddress": "すでにアドレスを持っています。",
         "title": "Rabby Walletへようこそ",
-        "desc": "EthereumおよびすべてのEVMチェーンに対応する画期的なウォレット"
+        "desc": "EthereumおよびEVMのためのあなたの頼りになるウォレット"
       },
       "createNewAddress": {
-        "title": "新しいSeed Phraseを作成",
-        "tip3": "Rabbyをアンインストールしてシードフレーズをバックアップしていない場合、Rabbyはそれを取得できません。",
-        "tip1": "シードフレーズを紛失したり共有したりすると、私の資産は永遠に失われます。",
         "showSeedPhrase": "シードフレーズを表示",
-        "tip2": "シードフレーズは私のコンピュータにのみ保存されており、Rabby はそれにアクセスできません。",
-        "desc": "開始する前に、次のセキュリティの注意事項をよく読み、心に留めておいてください。"
+        "desc": "次のセキュリティのヒントをお読みいただき、覚えておいてください。",
+        "tip1": "シードフレーズを失ったり共有したりすると、資産に恒久的にアクセスできなくなります。",
+        "tip2": "私のシードフレーズは私のデバイスにのみ保存されています。Rabbyはアクセスできません。",
+        "tip3": "Rabbyをアンインストールし、シードフレーズをバックアップしなかった場合、それはRabbyによって復元できません。",
+        "title": "始める前に"
       },
       "importList": {
         "title": "インポート方法を選択"
@@ -2471,15 +2496,15 @@
         "form": {
           "password": {
             "label": "パスワード",
-            "placeholder": "8文字以上",
             "required": "パスワードを入力してください",
-            "min": "パスワードは8文字以上である必要があります。"
+            "min": "パスワードは8文字以上である必要があります。",
+            "placeholder": "パスワード（8文字以上）"
           },
           "confirmPassword": {
-            "placeholder": "パスワード",
             "label": "パスワードを確認",
             "notMatch": "パスワードが一致しません。",
-            "required": "パスワードを確認してください"
+            "required": "パスワードを確認してください",
+            "placeholder": "パスワードを確認してください"
           }
         },
         "title": "パスワードを設定",
@@ -2495,9 +2520,13 @@
       },
       "readyToUse": {
         "pin": "Rabby Wallet をピン留め",
-        "extensionTip": "<1/> をクリックして、次に <3/> をクリックしてください",
-        "desc": "Rabby Walletをツールバーに固定して簡単にアクセス。",
-        "title": "Rabby Walletの準備ができました"
+        "guides": {
+          "step1": "ブラウザー拡張アイコンをクリックしてください",
+          "step2": "Rabby Walletをピン留めする"
+        },
+        "title": "あなたのRabbyウォレットの準備ができました！",
+        "extensionTip": "クリック<1/>、次に<3/>",
+        "desc": "Rabby Walletを見つけてピン留めしてください。"
       },
       "importSeedPhrase": {
         "title": "シードフレーズをインポート"
@@ -2661,6 +2690,66 @@
         "searching": "結果は",
         "noResult": "結果はありません"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "title": "ホワイトリストアドレスを追加",
+        "addNow": "今すぐ追加",
+        "desc": "信頼できるアドレスをホワイトリストに追加して迅速な転送を行います - 次回は確認不要です。"
+      },
+      "whitelist": {
+        "addWhitelist": "ホワイトリストに追加",
+        "title": "ホワイトリスト",
+        "removeFromWhitelist": "ホワイトリストから削除",
+        "addWhitelistDesc": "信頼できるアドレスをホワイトリストに追加して、次回の迅速な転送を実現します - 確認は不要です。",
+        "notWhitelist": "ホワイトリストアドレスではありません"
+      },
+      "addWhitelist": {
+        "desc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を実現---次回は確認不要です。",
+        "title": "ホワイトリストアドレスを追加"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Rabby によってフラグされた詐欺アドレス",
+            "contractAddress": "契約アドレスが検出されました、資金が失われる可能性があります",
+            "dexNoDeposite": "CEXの入金アドレスではありません。資金が失われる可能性があります。",
+            "noSend": "このアドレスへの転送は180日間ありません"
+          }
+        },
+        "understandRisks": "リスクを理解しており、続行したいと思います。",
+        "title": "このアドレスに送信",
+        "cexAddress": "{{cexName}} アドレス",
+        "cexDepositAddress": "{{cexName}} 入金アドレス",
+        "TransferBeforeValue": "はい",
+        "passwordPlaceholder": "パスワードを入力して続けてください",
+        "TransferBefore": "転送前",
+        "AddToWhitelist": "ホワイトリストに追加"
+      },
+      "title": "送信先",
+      "enterAddress": "アドレスを入力してください",
+      "sendToImportedAddress": "インポートされたアドレスに送信",
+      "selectExchangeSource": "エクスチェンジソースを選択してください",
+      "selectImportedAddress": "インポートしたアドレスを選択してください",
+      "enterAddressOrENS": "アドレスを入力または検索してください"
+    },
+    "whitelist": {
+      "tips": {
+        "added": "ホワイトリストにアドレスが追加されました",
+        "repeated": "現在のアドレスは既にホワイトリストに登録されています。",
+        "removed": "ホワイトリストアドレスが削除されました",
+        "tooltip": "ホワイトリストアドレス"
+      },
+      "title": "ホワイトリストアドレスを追加",
+      "confirmPassword": "パスワードを確認してください",
+      "name": "名前",
+      "riskTitle": "ホワイトリストアドレスを追加",
+      "invalidAddress": "このアドレスは無効です",
+      "nameYourAddress": "アドレスに名前を付ける",
+      "enterAddress": "アドレスを入力してください",
+      "exchangeAddress": "交換アドレス",
+      "addSuccess": "追加成功",
+      "address": "アドレス"
     }
   },
   "component": {
@@ -2845,11 +2934,19 @@
     "AccountSelectorModal": {
       "title": "アドレスを選択",
       "searchPlaceholder": "アドレスを検索"
+    },
+    "PageHeader": {
+      "selectAccount": "アドレスを選択"
+    },
+    "ChainItem": {
+      "appChain": "{{chain}}アカウント"
+    },
+    "RiskTip": {
+      "title": "リスク警告"
     }
   },
   "global": {
     "appName": "Rabbyウォレット",
-    "appDescription": "EthereumおよびすべてのEVMチェーン向けの画期的なウォレット",
     "copied": "コピー済み",
     "confirm": "確認",
     "next": "次へ",
@@ -2881,7 +2978,8 @@
     "Done": "完了",
     "Nonce": "Nonce",
     "notSupportTesntnet": "カスタムネットワークには対応していません。",
-    "tryAgain": "再試行してください"
+    "tryAgain": "再試行してください",
+    "appDescription": "EthereumおよびEVMのためのあなたの定番ウォレット"
   },
   "background": {
     "error": {

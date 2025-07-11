@@ -47,6 +47,7 @@ import {
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import * as Sentry from '@sentry/browser';
+import { getCexInfo } from '@/ui/models/exchange';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -563,6 +564,7 @@ export const SignTestnetTx = ({
           sender: tx.from,
         });
 
+        const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
         const requiredData = await fetchActionRequiredData({
           type: 'transaction',
           actionData: parsed,
@@ -578,6 +580,7 @@ export const SignTestnetTx = ({
             isWhitelistEnabled: wallet.isWhitelistEnabled,
             getPendingTxsByNonce: wallet.getPendingTxsByNonce,
           },
+          cex: cexInfo,
           tx: {
             ...tx,
             gas: '0x0',

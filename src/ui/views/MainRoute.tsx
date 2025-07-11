@@ -70,7 +70,7 @@ import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
 import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
-import { KEYRING_CLASS } from '@/constant';
+import { DARK_MODE_TYPE, KEYRING_CLASS } from '@/constant';
 import {
   MetamaskModeDappsGuide,
   MetamaskModeDappsList,
@@ -79,6 +79,10 @@ import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
 import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
 import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
+import dayjs from 'dayjs';
+import { PreferenceStore } from '@/background/service/preference';
+import SendPoly from './SendPoly';
+import WhitelistInput from './WhitelistInput';
 
 declare global {
   interface Window {
@@ -124,6 +128,34 @@ const Main = () => {
             event_category: 'User Active',
           }
         );
+        const preference: PreferenceStore = await wallet.getPreference();
+        if (
+          dayjs(preference.ga4EventTime || 0)
+            .utc()
+            .isSame(dayjs().utc(), 'day')
+        ) {
+          return;
+        }
+        ga4.fireEvent(
+          `ThemeMode_${
+            preference.themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'
+          }`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
+        ga4.fireEvent(
+          `DappAccount_${preference.isEnabledDappAccount ? 'On' : 'Off'}`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
+
+        const isEnabledWhiteList = await wallet.isWhitelistEnabled();
+        ga4.fireEvent(`Whitelist_${isEnabledWhiteList ? 'On' : 'Off'}`, {
+          event_category: 'Settings Snapshot',
+        });
+        wallet.updateGa4EventTime(Date.now());
       }
     })();
   }, []);
@@ -327,8 +359,14 @@ const Main = () => {
         <PrivateRoute exact path="/send-token">
           <SendToken />
         </PrivateRoute>
+        <PrivateRoute exact path="/send-poly">
+          <SendPoly />
+        </PrivateRoute>
         <PrivateRoute exact path="/send-nft">
           <SendNFT />
+        </PrivateRoute>
+        <PrivateRoute exact path="/whitelist-input">
+          <WhitelistInput />
         </PrivateRoute>
         <PrivateRoute exact path="/receive">
           <Receive />

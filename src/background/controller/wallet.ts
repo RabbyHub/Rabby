@@ -128,7 +128,7 @@ import {
   summarizeRevoke,
   ApprovalSpenderItemToBeRevoked,
   decodePermit2GroupKey,
-} from '@/utils-isomorphic/approve';
+} from '@/utils/approve';
 import { appIsProd, isManifestV3 } from '@/utils/env';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
@@ -174,8 +174,7 @@ export class WalletController extends BaseController {
     whitelistService.addWhitelist(address);
   };
 
-  removeWhitelist = async (password: string, address: string) => {
-    await this.verifyPassword(password);
+  removeWhitelist = async (address: string) => {
     whitelistService.removeWhitelist(address);
   };
 
@@ -1611,10 +1610,26 @@ export class WalletController extends BaseController {
         core = true;
       }
       const data = await openapiService.getTotalBalance(address, core);
+      let appChainTotalNetWorth = 0;
+      try {
+        const { apps } = await openapiService.getAppChainList(address);
+        apps?.forEach((app) => {
+          app?.portfolio_item_list?.forEach((item) => {
+            appChainTotalNetWorth += item.stats.net_usd_value;
+          });
+        });
+      } catch (error) {
+        // just ignore appChain data
+      }
+      const formatData = {
+        ...data,
+        evmUsdValue: data.total_usd_value,
+        total_usd_value: data.total_usd_value + appChainTotalNetWorth,
+      };
       preferenceService.updateBalanceAboutCache(address, {
-        totalBalance: data,
+        totalBalance: formatData,
       });
-      return data;
+      return formatData;
     },
     {
       timeout: BALANCE_LOADING_CONFS.TIMEOUT,
@@ -1760,6 +1775,10 @@ export class WalletController extends BaseController {
     );
   };
 
+  updateGa4EventTime = (timestamp: number) => {
+    preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
+  };
+
   getLastTimeSendToken = (address: string) =>
     preferenceService.getLastTimeSendToken(address);
   setLastTimeSendToken = (address: string, token: TokenItem) =>
@@ -1893,6 +1912,8 @@ export class WalletController extends BaseController {
   };
 
   hasCustomRPC = RPCService.hasCustomRPC;
+
+  syncDefaultRPC = RPCService.syncDefaultRPC;
 
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();
@@ -2472,19 +2493,26 @@ export class WalletController extends BaseController {
   };
 
   execGnosisTransaction = async (account: Account) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (keyring.currentTransaction && keyring.safeInstance) {
-      buildinProvider.currentProvider.currentAccount = account.address;
-      buildinProvider.currentProvider.currentAccountType = account.type;
-      buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-      await keyring.execTransaction({
-        safeAddress: keyring.safeInstance.safeAddress,
-        transaction: keyring.currentTransaction,
-        networkId: keyring.safeInstance.network,
-        provider: new ethers.providers.Web3Provider(
-          buildinProvider.currentProvider
-        ),
-      });
+    try {
+      const keyring: GnosisKeyring = this._getKeyringByType(
+        KEYRING_CLASS.GNOSIS
+      );
+      if (keyring.currentTransaction && keyring.safeInstance) {
+        const currentProvider = new EthereumProvider();
+        currentProvider.currentAccount = account.address;
+        currentProvider.currentAccountType = account.type;
+        currentProvider.currentAccountBrand = account.brandName;
+        currentProvider.chainId = keyring.safeInstance.network;
+        await keyring.execTransaction({
+          safeAddress: keyring.safeInstance.safeAddress,
+          transaction: keyring.currentTransaction,
+          networkId: keyring.safeInstance.network,
+          provider: new ethers.providers.Web3Provider(currentProvider),
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
     }
   };
 
@@ -3236,6 +3264,10 @@ export class WalletController extends BaseController {
         });
       }
     });
+  };
+
+  removeContactInfo = (address: string) => {
+    contactBookService.removeAlias(address);
   };
 
   resetCurrentAccount = async () => {
@@ -4154,11 +4186,22 @@ export class WalletController extends BaseController {
     return undefined;
   };
 
-  updateAlianName = (address: string, name: string) => {
+  updateAlianName = (address: string, name: string, cexId?: string) => {
     contactBookService.updateAlias({
       name,
       address,
+      cexId,
     });
+  };
+
+  getCexId = (address: string) => {
+    const contact = contactBookService.getContactByAddress(address);
+    if (contact?.cexId) return contact.cexId;
+    return undefined;
+  };
+
+  updateCexId = (address: string, cexId: string) => {
+    contactBookService.updateCexId(address, cexId);
   };
 
   getAllAlianNameByMap = () => {
@@ -5386,6 +5429,12 @@ export class WalletController extends BaseController {
       highligtedAddresses: filteredHighligtedAddresses,
       alianNames: filteredAlianNames,
     });
+  };
+
+  setRateGuideLastExposure: typeof preferenceService.setRateGuideLastExposure = async (
+    ...args
+  ) => {
+    return preferenceService.setRateGuideLastExposure(...args);
   };
 }
 

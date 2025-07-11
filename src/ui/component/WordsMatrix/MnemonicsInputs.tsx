@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled, { css } from 'styled-components';
 import { Dropdown, Input, Menu, message } from 'antd';
 import { wordlist } from '@scure/bip39/wordlists/english';
@@ -19,21 +19,19 @@ import { Trans, useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 
-import { ReactComponent as RcIconMnemonicsShow } from '@/ui/assets/import/mnemonics-show.svg';
-import { ReactComponent as RcIconMnemonicsHide } from '@/ui/assets/import/mnemonics-hide.svg';
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/import/arrow-cc.svg';
 import { ReactComponent as RcIconSwipeCC } from '@/ui/assets/import/swipe-cc.svg';
 
-const ITEM_H = 208 / 4;
+const ITEM_H = 40;
 const ROW_COUNT = 3;
 const DEFAULT_MEMONICS_COUNT = 12;
 
 const NumberFlag = styled.div`
-  color: var(--r-neutral-title-1, #192945);
-  font-weight: 500;
-  font-size: 15px;
-  height: 18px;
-  line-height: 1;
+  color: var(--r-neutral-body);
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 12px;
+  height: 12px;
 `;
 
 const useClearClipboardToast = () => {
@@ -65,14 +63,18 @@ const MatrixWrapper = styled.div.withConfig<{
 
   &.new-user-import {
     background-color: transparent;
-    gap: 9px;
+    gap: 8px;
     .matrix-word-item {
-      border-radius: 8px;
-      width: calc(calc(100% - 18px) / 3);
-      border: 1px solid var(--r-neutral-line, #e0e5ec) !important;
+      width: calc(calc(100% - 16px) / 3);
+      border-color: transparent;
 
       .mnemonics-input {
+        background-color: rgba(217, 217, 217, 0.2);
+        border-radius: 8px;
+        border: 1.5px solid var(--r-neutral-line, #e0e5ec);
         text-align: center;
+        font-size: 22px;
+        color: var(--r-neutral-title-1, #192945);
         &:hover {
           border-color: var(--r-blue-default, #7084ff);
         }
@@ -85,14 +87,16 @@ const MatrixWrapper = styled.div.withConfig<{
       &:not(.invalid) {
         .mnemonics-input:hover {
           border-color: var(--r-blue-default, #7084ff);
+          border-right-width: 1.5px !important;
         }
       }
 
       ${styid(NumberFlag)} {
-        top: 8px;
+        top: 6px;
         left: 8px;
         color: var(--r-neutral-body, #3e495e);
-        font-size: 13px;
+        font-size: 10px;
+        line-height: 12px;
         font-style: normal;
         font-weight: 400;
       }
@@ -181,6 +185,8 @@ const MatrixWrapper = styled.div.withConfig<{
     &:focus,
     &.ant-input-focused {
       border-color: var(--r-blue-default, #7084ff);
+      border-width: 1.5px;
+      border-right-width: 1.5px !important;
       background-color: var(--r-neutral-bg-1, #fff);
       box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
     }
@@ -188,6 +194,7 @@ const MatrixWrapper = styled.div.withConfig<{
   .matrix-word-item.invalid {
     .mnemonics-input {
       opacity: 1;
+      border-width: 1.5px;
       border-color: var(--r-red-default, #e34935);
     }
     ${styid(NumberFlag)} {
@@ -339,6 +346,10 @@ function MnemonicsInputs({
     [onChange, mnemonicsCount]
   );
 
+  const hasInputValue = useMemo(() => {
+    return value?.trim?.()?.length > 0;
+  }, [inputTexts]);
+
   React.useEffect(() => {
     setFocusing({
       index: 0,
@@ -424,7 +435,7 @@ function MnemonicsInputs({
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
-      <HeadToolbar className="mb-[8px] text-r-neutral-body">
+      <HeadToolbar className="mb-[20px] text-r-neutral-body">
         <Dropdown
           trigger={['click']}
           overlay={
@@ -557,29 +568,28 @@ function MnemonicsInputs({
             )}
           </div>
         </Dropdown>
-        <div
-          className={clsx(
-            'right flex items-center cursor-pointer',
-            newUserImport && 'min-w-max p-4 hover:bg-r-neutral-card2 rounded'
-          )}
-          onClick={() => {
-            clearAll();
-          }}
-        >
-          {newUserImport ? (
-            <RcIconSwipeCC
-              viewBox="0 0 16 16"
-              className="w-16 h-16 text-r-neutral-foot"
+        {hasInputValue && (
+          <div
+            className={clsx(
+              'right flex items-center cursor-pointer',
+              newUserImport &&
+                'min-w-max pb-[2px] hover:bg-r-blue-disable rounded-[1px]'
+            )}
+            onClick={() => {
+              clearAll();
+            }}
+          >
+            <RcIconClearAll
+              viewBox="0 0 18 18"
+              className="w-[18px] h-[18px] text-rabby-blue-default"
             />
-          ) : (
-            <ThemeIcon src={RcIconClearAll} svgSize={16} />
-          )}
-          {!newUserImport && (
-            <span className="ml-[6px]">
-              {t('page.newAddress.seedPhrase.clearAll')}
-            </span>
-          )}
-        </div>
+            {!newUserImport && (
+              <span className="ml-[6px]">
+                {t('page.newAddress.seedPhrase.clearAll')}
+              </span>
+            )}
+          </div>
+        )}
       </HeadToolbar>
       <MatrixWrapper
         className={clsx(
@@ -601,7 +611,7 @@ function MnemonicsInputs({
 
           return (
             <div
-              key={`word-item-${word}-${idx}`}
+              key={`word-item-${idx}`}
               className={clsx('matrix-word-item is-mnemonics-input', {
                 invalid: invalidWords.includes(idx),
               })}
@@ -615,6 +625,7 @@ function MnemonicsInputs({
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content] top-[-20px]"
                 title={word}
+                disableLeft
                 placement="top"
                 visible={
                   !!(
@@ -689,7 +700,7 @@ function MnemonicsInputs({
       {errMsgs?.[0] || invalidWords.length > 0 ? (
         <div
           className={
-            'ant-form-item-explain ant-form-item-explain-error text-r-red-default mt-[12px] pt-[0] min-h-0 text-[13px]'
+            'ant-form-item-explain ant-form-item-explain-error text-r-red-default mt-[14px] pt-[0] min-h-0 text-[13px]'
           }
         >
           {invalidWords.length > 0 && (

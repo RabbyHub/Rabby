@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Input, Drawer, Skeleton, Tooltip, DrawerProps } from 'antd';
+import {
+  Input,
+  Drawer,
+  Skeleton,
+  Tooltip,
+  DrawerProps,
+  Modal,
+  Button,
+} from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
@@ -22,6 +30,8 @@ import IconSearch from 'ui/assets/search.svg';
 import { ReactComponent as RcIconChainFilterCloseCC } from 'ui/assets/chain-select/chain-filter-close-cc.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconMatchCC } from '@/ui/assets/match-cc.svg';
+import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/riskWarning-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { getUiType, useWallet } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
@@ -30,6 +40,11 @@ import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { ExternalTokenRow } from './ExternalToken';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { TokenDetailInTokenSelectProviderContext } from './context';
+import NetSwitchTabs, {
+  useSwitchNetTab,
+} from 'ui/component/PillsSwitch/NetSwitchTabs';
+import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
+import { useHistory } from 'react-router-dom';
 
 const isTab = getUiType().isTab;
 
@@ -60,6 +75,14 @@ export interface TokenSelectorProps {
   drawerHeight?: number | string;
   excludeTokens?: TokenItem['id'][];
   getContainer?: DrawerProps['getContainer'];
+  showCustomTestnetAssetList?: boolean;
+  disableItemCheck?: (
+    token: TokenItem
+  ) => {
+    disable: boolean;
+    reason: string;
+    shortReason: string;
+  };
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
@@ -84,10 +107,17 @@ const TokenSelector = ({
   drawerHeight = '540px',
   excludeTokens = defaultExcludeTokens,
   getContainer,
+  disableItemCheck,
+  showCustomTestnetAssetList,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [isInputActive, setIsInputActive] = useState(false);
+  const history = useHistory();
+
+  const { currentAccount } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+  }));
 
   const { chainItem, chainSearchCtx, isTestnet } = useMemo(() => {
     const chain = !chainServerId
@@ -118,7 +148,46 @@ const TokenSelector = ({
     setQuery(value);
   };
 
+  const { selectedTab, onTabChange } = useSwitchNetTab();
+
+  const {
+    testnetTokenList: customTestnetTokenList,
+    loading: customTestnetTokenListLoading,
+    hasData: hasCustomTestnetTokenData,
+  } = useSearchTestnetToken({
+    address: currentAccount?.address,
+    q: query,
+    withBalance: true,
+    enabled: showCustomTestnetAssetList && visible,
+  });
+
+  useEffect(() => {
+    if (!visible) {
+      onTabChange('mainnet');
+    }
+  }, [visible, onTabChange]);
+
+  const emptyTestnetTokenList = useMemo(() => {
+    return (
+      showCustomTestnetAssetList &&
+      selectedTab === 'testnet' &&
+      customTestnetTokenList?.length === 0 &&
+      !query &&
+      !customTestnetTokenListLoading
+    );
+  }, [
+    customTestnetTokenList,
+    showCustomTestnetAssetList,
+    selectedTab,
+    query,
+    customTestnetTokenListLoading,
+  ]);
+
   const displayList = useMemo(() => {
+    if (showCustomTestnetAssetList && selectedTab === 'testnet') {
+      return customTestnetTokenList || [];
+    }
+
     if (!supportChains?.length) {
       const resultList = list || [];
       if (!chainServerId) return resultList.filter(filterTestnetTokenItem);
@@ -152,7 +221,14 @@ const TokenSelector = ({
     );
 
     return [...varied.natural, ...varied.disabled];
-  }, [list, supportChains, chainServerId]);
+  }, [
+    list,
+    supportChains,
+    chainServerId,
+    selectedTab,
+    showCustomTestnetAssetList,
+    customTestnetTokenList,
+  ]);
 
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -168,7 +244,12 @@ const TokenSelector = ({
     }
   }, [visible]);
 
-  const isEmpty = list.length <= 0;
+  const isEmpty = useMemo(() => {
+    if (showCustomTestnetAssetList && selectedTab === 'testnet') {
+      return customTestnetTokenList?.length <= 0;
+    }
+    return list.length <= 0;
+  }, [list, showCustomTestnetAssetList, selectedTab, customTestnetTokenList]);
 
   const isSwapType = isSwapTokenType(type);
 
@@ -312,16 +393,30 @@ const TokenSelector = ({
   }, [tokenDetail, supportChains]);
 
   const commonItemRender = React.useCallback(
-    (token: TokenItem, _type: typeof type, updateToken?: boolean) => {
+    (
+      token: TokenItem,
+      _type: typeof type,
+      updateToken?: boolean,
+      checkItem?: (
+        token: TokenItem
+      ) => {
+        disable: boolean;
+        reason: string;
+        shortReason: string;
+      }
+    ) => {
       if (!visible && updateToken) {
         return null;
       }
+      const { disable, shortReason } = checkItem?.(token) || {};
       return (
         <CommonTokenItem
           key={`${token.chain}-${token.id}`}
           onConfirm={onConfirm}
+          warningText={disable ? shortReason : undefined}
           token={token}
           type={_type}
+          hideUsdValue={showCustomTestnetAssetList && selectedTab === 'testnet'}
           supportChains={supportChains}
           updateToken={updateToken}
           openTokenDetail={() => {
@@ -331,7 +426,7 @@ const TokenSelector = ({
         />
       );
     },
-    [onConfirm, supportChains, visible]
+    [onConfirm, supportChains, visible, showCustomTestnetAssetList, selectedTab]
   );
 
   const recentToTokens = useRabbySelector((s) => s.swap.recentToTokens || []);
@@ -373,7 +468,41 @@ const TokenSelector = ({
         <div className="header">
           {t('component.TokenSelector.header.title')}
         </div>
-        <div className="input-wrapper">
+        {showCustomTestnetAssetList && hasCustomTestnetTokenData && (
+          <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
+        )}
+        <div
+          className={clsx(
+            'mt-[120px]',
+            emptyTestnetTokenList ? 'block' : 'hidden'
+          )}
+        >
+          <AssetEmptySVG className="m-auto" />
+          <div>
+            <div className="mt-0 text-r-neutral-foot text-[14px] text-center">
+              {t('page.dashboard.assets.noTestnetAssets')}
+            </div>
+            <div className="text-center mt-[50px]">
+              <Button
+                type="primary"
+                onClick={() => {
+                  onCancel?.();
+                  history.push('/custom-testnet');
+                }}
+                className="w-[200px] h-[44px]"
+              >
+                {t('component.ChainSelectorModal.addTestnet')}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className={clsx(
+            'input-wrapper',
+            emptyTestnetTokenList ? 'hidden' : 'block'
+          )}
+        >
           <Input
             className={clsx({ active: isInputActive }, 'bg-r-neutral-card2')}
             size="large"
@@ -454,7 +583,12 @@ const TokenSelector = ({
             {isEmpty
               ? NoDataUI
               : displayList.map((token) => {
-                  return commonItemRender(token, type);
+                  return commonItemRender(
+                    token,
+                    type,
+                    undefined,
+                    disableItemCheck
+                  );
                 })}
           </ul>
         ) : (
@@ -466,7 +600,12 @@ const TokenSelector = ({
             {isEmpty
               ? NoDataUI
               : displayList.map((token) => {
-                  return commonItemRender(token, type);
+                  return commonItemRender(
+                    token,
+                    type,
+                    undefined,
+                    disableItemCheck
+                  );
                 })}
           </ul>
         )}
@@ -518,20 +657,25 @@ function CommonTokenItem(props: {
   };
   disabledTips?: React.ReactNode;
   disabled?: boolean;
+  warningText?: string;
   onConfirm: (token: TokenItem) => void;
   updateToken?: boolean;
   supportChains?: CHAINS_ENUM[];
   type: TokenSelectorProps['type'];
   openTokenDetail: () => void;
+  hideUsdValue?: boolean;
 }) {
   const {
     token,
     disabledTips,
     supportChains,
+    disabled: disabledFromProps,
+    warningText,
     onConfirm,
     updateToken,
     type,
     openTokenDetail,
+    hideUsdValue,
   } = props;
 
   const { t } = useTranslation();
@@ -622,74 +766,101 @@ function CommonTokenItem(props: {
       align={{ targetOffset: [0, -30] }}
     >
       <li
-        className={clsx('token-list__item', disabled && 'token-disabled')}
+        className={clsx(
+          'token-list__item',
+          (disabledFromProps || disabled) && 'token-disabled',
+          {
+            'opacity-80': !!warningText,
+          }
+        )}
         onClick={handleTokenPress}
       >
-        <div>
-          <TokenWithChain
-            token={value || token}
-            width="32px"
-            height="32px"
-            hideConer
-          />
-          <div className="flex flex-col">
-            <span className="symbol_click" onClick={onClickTokenSymbol}>
-              {getTokenSymbol(token)}
-            </span>
-            <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-              {isSwapTo
-                ? `$${formatPrice(token.price || 0)}`
-                : currentChainName}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-col"></div>
-
-        <div className="flex flex-col text-right items-end">
-          {isBridgeTo ? (
-            <div
-              className={clsx(
-                'flex items-center justify-center gap-4',
-                'py-2 px-8 rounded-full',
-                'text-13 font-normal',
-                token.trade_volume_level === 'high'
-                  ? 'bg-r-green-light'
-                  : 'bg-r-orange-light',
-                token.trade_volume_level === 'high'
-                  ? 'text-r-green-default'
-                  : 'text-r-orange-default'
-              )}
-            >
-              <div
-                className={clsx(
-                  'w-[3px] h-[3px] rounded-full',
-                  token.trade_volume_level === 'high'
-                    ? 'bg-r-green-default'
-                    : 'bg-r-orange-default'
-                )}
-              />
-              <span>
-                {token?.trade_volume_level === 'high'
-                  ? t('component.TokenSelector.bridge.high')
-                  : t('component.TokenSelector.bridge.low')}
+        <div className="token-info">
+          <div>
+            <TokenWithChain
+              token={value || token}
+              width="32px"
+              height="32px"
+              hideConer
+            />
+            <div className="flex flex-col">
+              <span className="symbol_click" onClick={onClickTokenSymbol}>
+                {getTokenSymbol(token)}
+              </span>
+              <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
+                {isSwapTo
+                  ? `$${formatPrice(token.price || 0)}`
+                  : currentChainName}
               </span>
             </div>
-          ) : (
-            <>
-              <div className={clsx('token_usd_value')}>
-                {formatUsdValue(
-                  new BigNumber(value?.price || 0)
-                    .times(value?.amount || 0)
-                    .toFixed()
+          </div>
+
+          <div className="flex flex-col"></div>
+
+          <div className="flex flex-col text-right items-end">
+            {isBridgeTo ? (
+              <div
+                className={clsx(
+                  'flex items-center justify-center gap-4',
+                  'py-2 px-8 rounded-full',
+                  'text-13 font-normal',
+                  token.trade_volume_level === 'high'
+                    ? 'bg-r-green-light'
+                    : 'bg-r-orange-light',
+                  token.trade_volume_level === 'high'
+                    ? 'text-r-green-default'
+                    : 'text-r-orange-default'
                 )}
+              >
+                <div
+                  className={clsx(
+                    'w-[3px] h-[3px] rounded-full',
+                    token.trade_volume_level === 'high'
+                      ? 'bg-r-green-default'
+                      : 'bg-r-orange-default'
+                  )}
+                />
+                <span>
+                  {token?.trade_volume_level === 'high'
+                    ? t('component.TokenSelector.bridge.high')
+                    : t('component.TokenSelector.bridge.low')}
+                </span>
               </div>
-              <div className="text-13 font-normal text-r-neutral-foot mb-2">
+            ) : !hideUsdValue ? (
+              <>
+                <div className={clsx('token_usd_value')}>
+                  {formatUsdValue(
+                    new BigNumber(value?.price || 0)
+                      .times(value?.amount || 0)
+                      .toFixed()
+                  )}
+                </div>
+                <div className="text-13 font-normal text-r-neutral-foot mb-2">
+                  {formatTokenAmount(value?.amount || 0)}
+                </div>
+              </>
+            ) : (
+              <div className={clsx('token_usd_value')}>
                 {formatTokenAmount(value?.amount || 0)}
               </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
+        {!!warningText && (
+          <div
+            className={`
+            gap-2 rounded-[4px] bg-r-red-light
+            h-[31px] mt-[-2px] mb-16
+            flex justify-center items-center`}
+          >
+            <div className="text-r-red-default">
+              <RcIconWarningCC />
+            </div>
+            <span className="text-[13px] font-medium text-r-red-default">
+              {warningText}
+            </span>
+          </div>
+        )}
       </li>
     </Tooltip>
   );

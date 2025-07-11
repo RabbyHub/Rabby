@@ -216,6 +216,15 @@
     "AccountSelectorModal": {
       "searchPlaceholder": "Rechercher l'adresse",
       "title": "Sélectionner l'adresse"
+    },
+    "PageHeader": {
+      "selectAccount": "Sélectionner l'adresse"
+    },
+    "ChainItem": {
+      "appChain": "Sur le compte {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Avertissement de risque"
     }
   },
   "constant": {
@@ -241,7 +250,6 @@
     "Loading": "Chargement",
     "Save": "Sauvegarder",
     "addButton": "Ajouter",
-    "appDescription": "Le wallet révolutionnaire pour Ethereum et toutes les chaînes EVM",
     "appName": "Rabby Wallet",
     "assets": "actifs",
     "back": "Retour",
@@ -265,7 +273,8 @@
     "watchModeAddress": "Adresse en mode observation",
     "Nonce": "Nonce",
     "tryAgain": "Essayer à nouveau",
-    "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé"
+    "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé",
+    "appDescription": "Votre portefeuille de référence pour Ethereum et EVM"
   },
   "page": {
     "activities": {
@@ -522,7 +531,8 @@
         "gasNotEnough": "Gaz insuffisant pour soumettre",
         "ledgerSending": "Envoi de la demande de signature ({{current}}/{{total}})",
         "confirm": "Confirmer",
-        "ledgerSigned": "Signé. Création de la transaction ({{current}}/{{total}})"
+        "ledgerSigned": "Signé. Création de la transaction ({{current}}/{{total}})",
+        "ledgerConfirmTitle": "Révocation par lots avec Ledger"
       }
     },
     "backupPrivateKey": {
@@ -879,7 +889,8 @@
           "signatureRecord": "Journal des signatures",
           "rabbyPoints": "Rabby Points",
           "searchDapps": "Rechercher des dApps",
-          "gasTopUp": "Recharge de Gas"
+          "gasTopUp": "Recharge de Gas",
+          "ecosystem": "Écosystème"
         },
         "followUs": "Suivez-nous",
         "host": "Hôte",
@@ -920,6 +931,18 @@
           "title": "Changer l'adresse Dapp indépendamment\n",
           "button": "Activer\n",
           "desc": "Une fois activé, vous pouvez choisir l'adresse à connecter à chaque Dapp indépendamment. Le changement de votre adresse principale n'affectera pas l'adresse connectée à chaque Dapp.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Comment évaluez-vous Rabby Wallet ?"
+        },
+        "rateModal": {
+          "thxTitle": "Merci !",
+          "submitFeedbackButton": "Soumettre",
+          "feedbackDesc": "Avez-vous des retours ? Nous écoutons.",
+          "feedbackSuccess": "Merci pour vos retours !",
+          "rateOnChromeStoreButton": "Évaluez sur le Chrome Web Store",
+          "feedbackPlaceholder": "Rabby apprécie vos retours !",
+          "thxDesc": "Si vous aimez Rabby, un rapide avis sur le Chrome Store serait très apprécié."
         }
       },
       "tokenDetail": {
@@ -1307,9 +1330,6 @@
         "createdSuccessfully": "Créé avec succès",
         "fillInTheBackupSeedPhraseInOrder": "Remplir la seed phrase dans l'ordre",
         "importError": "[CreateMnemonics] étape inattendue {{0}}",
-        "importQuestion1": "Si je perds ma seed phrase, mes actifs seront perdus à jamais.",
-        "importQuestion2": "Si je partage ma seed phrase avec d'autres personnes, mes actifs seront volés.",
-        "importQuestion3": "La seed phrase n'est stockée que sur mon ordinateur et Rabby n'y a pas accès.",
         "importQuestion4": "Si je désinstalle Rabby sans sauvegarder la seed phrase, Rabby ne pourra pas la récupérer pour moi.",
         "importTips": "Vous pouvez coller l'intégralité de votre seed phrase dans le 1er champ",
         "isItSafeToImportItInRabby": {
@@ -1338,7 +1358,10 @@
         "slip39SeedPhrasePlaceholder_other": "Entrez vos {{count}}ème parts de phrase de récupération ici",
         "slip39SeedPhrasePlaceholder_one": "Entrez vos {{count}}e fragments de phrase secrète ici",
         "slip39SeedPhrase": "J'ai une phrase de récupération <0>{{SLIP39}}</0>",
-        "slip39SeedPhraseWithPassphrase": "J'ai une phrase secrète <0>{{SLIP39}}</0> avec une phrase de passe"
+        "slip39SeedPhraseWithPassphrase": "J'ai une phrase secrète <0>{{SLIP39}}</0> avec une phrase de passe",
+        "importQuestion1": "Si je perds ou partage ma phrase secrète, je perdrai l'accès à mes actifs de manière permanente.",
+        "importQuestion2": "Ma phrase de récupération est uniquement stockée sur mon appareil. Rabby ne peut pas y accéder.",
+        "importQuestion3": "Si je désinstalle Rabby sans sauvegarder ma phrase de récupération, elle ne pourra pas être restaurée par Rabby."
       },
       "selectImportMethod": "Sélectionner la méthode d'importation",
       "theSeedPhraseIsInvalidPleaseCheck": "La seed phrase n'est pas valide, veuillez vérifier !",
@@ -1515,7 +1538,10 @@
       "whitelistAlert__disabled": "Liste blanche désactivée. Vous pouvez transférer vers n'importe quelle adresse.",
       "whitelistAlert__notWhitelisted": "L'adresse n'est pas sur liste blanche. <1 /> J'accepte d'accorder une autorisation temporaire de transfert.",
       "whitelistAlert__temporaryGranted": "Autorisation temporaire accordée",
-      "whitelistAlert__whitelisted": "L'adresse est sur liste blanche"
+      "whitelistAlert__whitelisted": "L'adresse est sur liste blanche",
+      "sectionAmount": {
+        "title": "Montant"
+      }
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -1566,7 +1592,7 @@
         "title": "Entrer le mot de passe pour confirmer"
       },
       "sectionBalance": {
-        "title": "Solde"
+        "title": "Montant"
       },
       "sectionChain": {
         "title": "Chaîne"
@@ -1605,7 +1631,15 @@
       },
       "blockedTransaction": "Transaction Bloquée",
       "blockedTransactionCancelText": "Je sais",
-      "blockedTransactionContent": "Cette transaction interagit avec une adresse qui figure sur la liste des sanctions de l'OFAC."
+      "blockedTransactionContent": "Cette transaction interagit avec une adresse qui figure sur la liste des sanctions de l'OFAC.",
+      "selectFromAddress": "Sélectionner depuis l'adresse",
+      "noSupportTokenForChain": "L'adresse du destinataire est une adresse de contrat sur une chaîne différente. Vérifiez avant de continuer pour éviter toute perte.",
+      "noSupprotTokenForSafe": "L'adresse Safe à laquelle vous envoyez des tokens n'est pas déployée sur cette chaîne. Vérifiez avant de continuer pour éviter toute perte.",
+      "noSupprotTokenForDex": "Ce token peut ne pas être pris en charge par cet échange. Vérifiez avant de continuer pour éviter toute perte.",
+      "noSupprotTokenForDex_short": "Non pris en charge par cet échange",
+      "noSupprotTokenForSafe_short": "Adresse sécurisée non déployée sur cette chaîne",
+      "selectToken": "Sélectionnez le jeton",
+      "noSupportTokenForChain_short": "L'adresse du contrat n'est pas déployée sur cette chaîne"
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} réservé pour le coût du gaz",
@@ -2257,8 +2291,8 @@
         "required": "Entrer le mot de passe pour déverrouiller"
       },
       "title": "Rabby Wallet",
-      "description": "Le portefeuille révolutionnaire pour Ethereum et toutes les chaînes EVM",
-      "btnForgotPassword": "Mot de passe oublié ?"
+      "btnForgotPassword": "Mot de passe oublié ?",
+      "description": "Votre portefeuille incontournable pour Ethereum et EVM"
     },
     "welcome": {
       "step1": {
@@ -2718,15 +2752,15 @@
         "title": "Bienvenue sur Rabby Wallet",
         "importAddress": "J'ai déjà une adresse",
         "createNewAddress": "Créer une nouvelle adresse",
-        "desc": "Le portefeuille révolutionnaire pour Ethereum et toutes les chaînes EVM"
+        "desc": "Votre portefeuille indispensable pour Ethereum et EVM"
       },
       "createNewAddress": {
-        "title": "Créer une nouvelle Seed Phrase",
         "showSeedPhrase": "Afficher la phrase secrète",
-        "tip1": "Si je perds ou partage ma seed phrase, mes actifs seront perdus pour toujours.",
-        "desc": "Avant de commencer, veuillez lire et garder à l'esprit les conseils de sécurité suivants.",
-        "tip2": "La phrase de récupération est uniquement stockée sur mon ordinateur, et Rabby n'y a pas accès.",
-        "tip3": "Si je désinstalle Rabby sans sauvegarder la phrase de récupération, Rabby ne pourra pas la récupérer pour moi."
+        "title": "Avant de commencer",
+        "desc": "Veuillez lire et garder à l'esprit les conseils de sécurité suivants.",
+        "tip3": "Si je désinstalle Rabby sans sauvegarder ma phrase de récupération, elle ne peut pas être récupérée par Rabby.",
+        "tip2": "Ma phrase secrète est stockée uniquement sur mon appareil. Rabby ne peut pas y accéder.",
+        "tip1": "Si je perds ou partage ma seed phrase, je perds l'accès à mes actifs de manière permanente."
       },
       "importList": {
         "title": "Sélectionner la méthode d'importation"
@@ -2739,15 +2773,15 @@
         "form": {
           "password": {
             "label": "Mot de passe",
-            "placeholder": "8 caractères minimum",
             "min": "Le mot de passe doit comporter au moins 8 caractères",
-            "required": "Veuillez saisir le mot de passe"
+            "required": "Veuillez saisir le mot de passe",
+            "placeholder": "Mot de passe (8 caractères minimum)"
           },
           "confirmPassword": {
             "notMatch": "Les mots de passe ne correspondent pas",
             "label": "Confirmer le mot de passe",
             "required": "Veuillez confirmer le mot de passe",
-            "placeholder": "Mot de passe"
+            "placeholder": "Confirmer le mot de passe"
           }
         },
         "title": "Définir le mot de passe",
@@ -2763,9 +2797,13 @@
       },
       "readyToUse": {
         "pin": "Épingler Rabby Wallet",
-        "desc": "Épinglez Rabby Wallet à votre barre d'outils pour un accès facile.",
-        "title": "Rabby Wallet est prêt à être utilisé",
-        "extensionTip": "Cliquez sur <1/> puis sur <3/>"
+        "guides": {
+          "step2": "Épingler Rabby Wallet",
+          "step1": "Cliquez sur l'icône de l'extension du navigateur"
+        },
+        "desc": "Trouvez Rabby Wallet et épinglez-le",
+        "extensionTip": "Cliquez sur <1/> puis sur <3/>",
+        "title": "Votre portefeuille Rabby est prêt !"
       },
       "importSeedPhrase": {
         "title": "Importer Seed Phrase"
@@ -2929,6 +2967,66 @@
         "noResults": "Aucun résultat",
         "title": "Tous les résultats"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Ajouter maintenant",
+        "title": "Ajouter une adresse à la liste blanche",
+        "desc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides - aucune confirmation nécessaire la prochaine fois."
+      },
+      "whitelist": {
+        "title": "Liste blanche",
+        "removeFromWhitelist": "Retirer de la liste blanche",
+        "addWhitelist": "Ajouter à la liste blanche",
+        "addWhitelistDesc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides - aucune confirmation nécessaire la prochaine fois",
+        "notWhitelist": "Pas une adresse sur la liste blanche"
+      },
+      "addWhitelist": {
+        "title": "Ajouter une adresse à la liste blanche",
+        "desc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides---aucune confirmation nécessaire la prochaine fois."
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Adresse de scam signalée par Rabby",
+            "contractAddress": "Adresse de contrat détectée, des fonds pourraient être perdus.",
+            "noSend": "Aucun transfert vers cette adresse depuis 180 jours",
+            "dexNoDeposite": "Pas une adresse de dépôt CEX, les fonds peuvent être perdus."
+          }
+        },
+        "cexAddress": "{{cexName}} Adresse",
+        "cexDepositAddress": "{{cexName}} Adresse de dépôt",
+        "title": "Envoyer à cette adresse",
+        "understandRisks": "Je comprends les risques et je souhaite continuer",
+        "TransferBefore": "Transférer avant",
+        "TransferBeforeValue": "Oui",
+        "passwordPlaceholder": "Entrez le mot de passe pour continuer",
+        "AddToWhitelist": "Ajouter à la liste blanche"
+      },
+      "sendToImportedAddress": "Envoyer à l'adresse importée",
+      "enterAddress": "Entrer l'adresse",
+      "title": "Envoyer à",
+      "selectExchangeSource": "Sélectionner la source d'échange",
+      "selectImportedAddress": "Sélectionner l'adresse importée",
+      "enterAddressOrENS": "Entrez ou recherchez l'adresse"
+    },
+    "whitelist": {
+      "tips": {
+        "repeated": "L'adresse actuelle est déjà sur la liste blanche.",
+        "removed": "Adresse de la liste blanche supprimée",
+        "added": "Adresse ajoutée à la liste blanche",
+        "tooltip": "Adresse de la liste blanche"
+      },
+      "title": "Ajouter une adresse blanche",
+      "addSuccess": "Ajouté avec succès",
+      "riskTitle": "Ajouter une adresse à la liste blanche",
+      "address": "Adresse",
+      "exchangeAddress": "Adresse d'échange",
+      "nameYourAddress": "Nommez votre adresse",
+      "invalidAddress": "Cette adresse est invalide",
+      "confirmPassword": "Confirmer le mot de passe",
+      "enterAddress": "Entrez l'adresse",
+      "name": "Nom"
     }
   }
 }

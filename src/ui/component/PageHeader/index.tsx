@@ -1,11 +1,20 @@
+import { Account } from '@/background/service/preference';
+import { ReactComponent as RcIconDownCC } from '@/ui/assets/arrow-down-cc.svg';
+import { useSceneAccountInfo } from '@/ui/hooks/backgroundState/useAccount';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
+import { useRabbyDispatch } from '@/ui/store';
+import { getUiType } from '@/ui/utils';
 import clsx from 'clsx';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import IconBack from 'ui/assets/back.svg';
 import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
+import IconBack from 'ui/assets/back.svg';
 import { ReactComponent as RcIconClose } from 'ui/assets/component/close-cc.svg';
-import './style.less';
+import { AccountSelectorModal } from '../AccountSelector/AccountSelectorModal';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
+import './style.less';
+const isTab = getUiType().isTab;
 
 const PageHeader = ({
   children,
@@ -21,6 +30,8 @@ const PageHeader = ({
   closeable = false,
   onClose,
   closeCn,
+  isShowAccount,
+  disableSwitchAccount,
 }: {
   children: ReactNode;
   canBack?: boolean;
@@ -35,40 +46,60 @@ const PageHeader = ({
   className?: string;
   closeable?: boolean;
   closeCn?: string;
+  isShowAccount?: boolean;
+  disableSwitchAccount?: boolean;
 }) => {
   const history = useHistory();
 
+  const { currentAccount } = useSceneAccountInfo();
+
   const Content = (
-    <div className={clsx('page-header', !fixed && className)}>
-      {(forceShowBack || (canBack && history.length > 1)) && (
-        <ThemeIcon
-          src={keepBackLightVersion ? IconBack : RcIconBackNew}
-          className={clsx('icon icon-back', invertBack && 'filter invert')}
-          onClick={onBack || (() => history.goBack())}
-        />
-      )}
-      <div className="header-content">{children}</div>
-      {rightSlot && rightSlot}
-      {closeable && (
-        <ThemeIcon
-          src={RcIconClose}
-          className={clsx(
-            'icon-close text-r-neutral-body',
-            invertBack && 'filter invert',
-            closeCn
-          )}
-          onClick={() => {
-            if (onClose) {
-              onClose();
-            } else if (history.length > 1) {
-              history.goBack();
-            } else {
-              history.replace('/');
-            }
-          }}
-        />
-      )}
-    </div>
+    <>
+      <div
+        className={clsx(
+          'page-header',
+          isShowAccount && 'switch-account',
+          !fixed && className
+        )}
+      >
+        {(forceShowBack || (canBack && history.length > 1)) && (
+          <ThemeIcon
+            src={keepBackLightVersion ? IconBack : RcIconBackNew}
+            className={clsx('icon icon-back', invertBack && 'filter invert')}
+            onClick={onBack || (() => history.goBack())}
+          />
+        )}
+        <div className="header-content">
+          {children}
+          {isShowAccount && currentAccount ? (
+            <AccountSwitchInner
+              disableSwitch={disableSwitchAccount}
+              currentAccount={currentAccount}
+            />
+          ) : null}
+        </div>
+        {rightSlot && rightSlot}
+        {closeable && (
+          <ThemeIcon
+            src={RcIconClose}
+            className={clsx(
+              'icon-close text-r-neutral-body',
+              invertBack && 'filter invert',
+              closeCn
+            )}
+            onClick={() => {
+              if (onClose) {
+                onClose();
+              } else if (history.length > 1) {
+                history.goBack();
+              } else {
+                history.replace('/');
+              }
+            }}
+          />
+        )}
+      </div>
+    </>
   );
   return fixed ? (
     <div className={clsx('page-header-container', className)}>
@@ -78,6 +109,74 @@ const PageHeader = ({
     </div>
   ) : (
     Content
+  );
+};
+
+const AccountSwitchInner = ({
+  currentAccount,
+  disableSwitch,
+}: {
+  currentAccount: Account;
+  disableSwitch?: boolean;
+}) => {
+  const addressTypeIcon = useBrandIcon({
+    address: currentAccount?.address,
+    brandName: currentAccount?.brandName,
+    type: currentAccount?.type,
+    forceLight: false,
+  });
+
+  const { t } = useTranslation();
+
+  const [isShowModal, setIsShowModal] = useState(false);
+
+  const dispatch = useRabbyDispatch();
+
+  return (
+    <>
+      <div className="flex justify-center mt-[-1px]">
+        <div
+          className={clsx(
+            'flex items-center justify-center px-[8px] py-[3px] rounded-[4px]',
+            !disableSwitch && 'hover:bg-r-neutral-line cursor-pointer'
+          )}
+          onClick={() => {
+            if (disableSwitch) {
+              return;
+            }
+            setIsShowModal(true);
+          }}
+        >
+          <img className="w-[16px] h-[16px] mr-[4px]" src={addressTypeIcon} />
+          <div className="text-r-neutral-body text-[13px] leading-[16px] font-medium">
+            {currentAccount?.alianName}
+          </div>
+          {disableSwitch ? null : (
+            <RcIconDownCC className="text-r-neutral-foot w-[16px] h-[16px]" />
+          )}
+        </div>
+      </div>
+      <AccountSelectorModal
+        title={t('component.PageHeader.selectAccount')}
+        height="calc(100% - 60px)"
+        visible={isShowModal}
+        value={currentAccount}
+        onCancel={() => {
+          setIsShowModal(false);
+        }}
+        getContainer={
+          isTab
+            ? (document.querySelector(
+                '.js-rabby-popup-container'
+              ) as HTMLDivElement) || document.body
+            : document.body
+        }
+        onChange={(val) => {
+          dispatch.account.changeAccountAsync(val);
+          setIsShowModal(false);
+        }}
+      />
+    </>
   );
 };
 

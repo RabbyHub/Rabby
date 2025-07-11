@@ -41,7 +41,7 @@ import {
   compareAssetSpenderByAmount,
   compareAssetSpenderByType,
 } from '@/utils/approval';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import {
@@ -912,15 +912,41 @@ const getCellKey = (params: IVGridContextualPayload<ContractApprovalItem>) => {
 };
 
 const getCellClassName = (
-  ctx: IVGridContextualPayload<ContractApprovalItem>
+  ctx: IVGridContextualPayload<ContractApprovalItem>,
+  selectedRows: ApprovalSpenderItemToBeRevoked[]
 ) => {
   const riskResult = getFinalRiskInfo(ctx.record);
 
   return clsx(
-    riskResult.isServerRisk && 'is-contract-row__risky'
+    riskResult.isServerRisk && 'is-contract-row__risky',
+    //check is current row is selected
+    ctx.record.list.some((spenderHost) => {
+      return (
+        findIndexRevokeList(selectedRows, {
+          item: ctx.record,
+          spenderHost,
+          itemIsContractApproval: true,
+        }) > -1
+      );
+    }) && 'is-selected-row-cell'
     // riskResult.isServerDanger && 'is-contract-row__danger',
     // riskResult.isServerWarning && 'is-contract-row__warning'
   );
+};
+
+const getCellClassNameForAsset = (
+  ctx: IVGridContextualPayload<AssetApprovalSpender>,
+  selectedRows: ApprovalSpenderItemToBeRevoked[]
+) => {
+  // check if current row is selected
+  const isSelected =
+    findIndexRevokeList(selectedRows, {
+      item: ctx.record.$assetContract!,
+      spenderHost: ctx.record.$assetToken!,
+      assetApprovalSpender: ctx.record,
+    }) > -1;
+
+  return clsx(isSelected && 'is-selected-row-cell');
 };
 
 type PageTableProps<
@@ -1031,7 +1057,7 @@ function TableByContracts({
       getTotalHeight={getContractListTotalHeight}
       getRowHeight={getRowHeight}
       getCellKey={getCellKey}
-      getCellClassName={getCellClassName}
+      getCellClassName={(ctx) => getCellClassName(ctx, selectedRows)}
       onChange={handleChange}
     />
   );
@@ -1095,6 +1121,7 @@ function TableByAssetSpenders({
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRowInspection}
+      getCellClassName={(ctx) => getCellClassNameForAsset(ctx, selectedRows)}
       // getRowHeight={(row) => ROW_HEIGHT}
       onChange={handleChange}
     />

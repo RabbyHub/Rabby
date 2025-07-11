@@ -6,9 +6,10 @@ import React, {
   useCallback,
   useRef,
   useMemo,
+  useImperativeHandle,
 } from 'react';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { useCommonPopupView, useWallet } from 'ui/utils';
+import { formatUsdValue, useCommonPopupView, useWallet } from 'ui/utils';
 import { KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
@@ -64,6 +65,7 @@ const BalanceView = ({
 
   const {
     balance: latestBalance,
+    evmBalance: latestEvmBalance,
     matteredChainBalances: latestMatteredChainBalances,
     chainBalancesWithValue: latestChainBalancesWithValue,
     success: loadBalanceSuccess,
@@ -87,7 +89,7 @@ const BalanceView = ({
     isLoading: curveLoading,
   } = useCurve(currentAccount?.address, {
     nonce: accountBalanceUpdateNonce,
-    realtimeNetWorth: latestBalance,
+    realtimeNetWorth: latestEvmBalance,
     initData: currentHomeBalanceCache?.originalCurveData,
   });
   const wallet = useWallet();

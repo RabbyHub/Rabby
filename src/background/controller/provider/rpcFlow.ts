@@ -157,7 +157,8 @@ const flowContext = flow
               ? defaultAccount || preferenceService.getCurrentAccount()
               : undefined,
           });
-          ctx.request.account = defaultAccount;
+          ctx.request.account =
+            defaultAccount || preferenceService.getCurrentAccount();
         } catch (e) {
           console.error(e);
           connectOrigins.delete(origin);
@@ -427,7 +428,12 @@ export default (request: ProviderRequest) => {
       }
     }
   } else {
-    account = preferenceService.getCurrentAccount() || undefined;
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      account =
+        request.account || preferenceService.getCurrentAccount() || undefined;
+    } else {
+      account = preferenceService.getCurrentAccount() || undefined;
+    }
   }
 
   const ctx: any = {

@@ -171,7 +171,7 @@ class DisplayedPortfolio implements AbstractPortfolio {
   _changePercentStr = '';
 
   constructor(p: PortfolioItem) {
-    this.id = `${p.pool.id}${p.position_index || ''}`;
+    this.id = `${p.pool?.id}${p.position_index || ''}`;
     this._originPortfolio = p;
     this.name = p.name;
     // this._project = project;
@@ -321,6 +321,7 @@ export class DisplayedToken implements AbstractPortfolioToken {
   price_24h_change?: number | null;
   low_credit_score?: boolean;
   raw_amount_hex_str?: string;
+  cex_ids: string[];
   _amountStr?: string;
   _priceStr?: string;
   _amountChange?: number;
@@ -361,6 +362,7 @@ export class DisplayedToken implements AbstractPortfolioToken {
     this.price_24h_change = token.price_24h_change;
     this.low_credit_score = token.low_credit_score;
     this.raw_amount_hex_str = token.raw_amount_hex_str;
+    this.cex_ids = token.cex_ids || [];
 
     // 默认是它
     this._usdValueChangeStr = '-';

@@ -71,12 +71,7 @@ export const TransactionItem = ({
     item.txs.length > 1 &&
     isSameAddress(completedTx!.rawTx.from, completedTx!.rawTx.to);
 
-  const {
-    txQueues,
-    gasTokenCount,
-    gasTokenSymbol,
-    gasUSDValue,
-  } = useLoadTxData(item);
+  const { gasTokenCount, gasTokenSymbol, gasUSDValue } = useLoadTxData(item);
 
   const handleClickCancel = () => {
     setIsShowCancelPopup(true);
@@ -401,14 +396,6 @@ export const TransactionItem = ({
                     ? `${gasTokenCount.toFixed(
                         6
                       )} ${gasTokenSymbol} ($${gasUSDValue})`
-                    : txQueues[completedTx!.hash!]
-                    ? txQueues[completedTx!.hash!].tokenCount?.toFixed(8) +
-                      ` ${getTokenSymbol(
-                        txQueues[completedTx!.hash!].token
-                      )} ($${(
-                        txQueues[completedTx!.hash!].tokenCount! *
-                        (txQueues[completedTx!.hash!].token?.price || 1)
-                      ).toFixed(2)})`
                     : t('page.activities.signedTx.common.unknown')}
                 </span>
               </>

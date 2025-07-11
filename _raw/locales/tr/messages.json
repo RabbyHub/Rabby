@@ -666,7 +666,7 @@
         "title": "Onaylamak için Şifreyi Girin"
       },
       "sectionBalance": {
-        "title": "Bakiye"
+        "title": "Miktar"
       },
       "sectionChain": {
         "title": "Zincir"
@@ -712,7 +712,15 @@
       },
       "blockedTransaction": "Engellenmiş İşlem",
       "blockedTransactionCancelText": "Biliyorum",
-      "blockedTransactionContent": "Bu işlem, OFAC yaptırım listesinde yer alan bir adresle etkileşime giriyor."
+      "blockedTransactionContent": "Bu işlem, OFAC yaptırım listesinde yer alan bir adresle etkileşime giriyor.",
+      "selectFromAddress": "Adresten Seçin",
+      "noSupportTokenForChain": "Alıcı adresi farklı bir zincirde bir sözleşme adresidir. Devam etmeden önce kontrol edin, kaybı önlemek için.",
+      "noSupprotTokenForDex": "Bu token bu borsa tarafından desteklenmiyor olabilir. Kaybı önlemek için ilerlemeden önce kontrol edin.",
+      "noSupprotTokenForSafe": "Gönderdiğiniz token'ların adresi bu zincirde dağıtılmamış. Kayıp yaşamamak için ilerlemeden önce kontrol edin.",
+      "selectToken": "Token Seçin",
+      "noSupprotTokenForDex_short": "Bu borsa tarafından desteklenmiyor",
+      "noSupprotTokenForSafe_short": "Bu zincirde dağıtılmamış güvenli adres",
+      "noSupportTokenForChain_short": "Sözleşme adresi bu zincirde dağıtılmamış."
     },
     "sendTokenComponents": {
       "GasReserved": "Gas maliyeti için <1>0</1> {{ tokenName }} ayrıldı",
@@ -748,6 +756,9 @@
       "tipAddToContacts": "Rehbere ekle",
       "confirmModal": {
         "title": "Onaylamak için Şifreyi Girin"
+      },
+      "sectionAmount": {
+        "title": "Miktar"
       }
     },
     "approvals": {
@@ -859,7 +870,8 @@
         "revokeWithLedger": "Ledger ile Revoke Başlat",
         "cancelBody": "Bu sayfayı kapatırsanız, kalan iptaller gerçekleştirilmez.",
         "simulationFailed": "Simülasyon Başarısız Oldu",
-        "useGasAccount": "Gas bakiyeniz düşük. GasAccount gaz ücretlerini karşılayacaktır."
+        "useGasAccount": "Gas bakiyeniz düşük. GasAccount gaz ücretlerini karşılayacaktır.",
+        "ledgerConfirmTitle": "Ledger ile Toplu İptal"
       }
     },
     "gasTopUp": {
@@ -1211,7 +1223,8 @@
           "connectedDapp": "Bağlı Dapp'ler",
           "gasTopUp": "Gas Yüklemesi",
           "searchDapps": "Dapp'leri Ara",
-          "rabbyPoints": "Rabby Puanları"
+          "rabbyPoints": "Rabby Puanları",
+          "ecosystem": "Ekosistem"
         },
         "settings": {
           "label": "Ayarlar",
@@ -1239,6 +1252,18 @@
           "button": "Etkinleştir\n",
           "title": "Dapp Adreslerini Bağımsız Olarak Değiştir\n",
           "desc": "Etkinleştirildikten sonra, her bir Dapp'e bağımsız olarak hangi adresi bağlayacağınızı seçebilirsiniz. Ana adresinizi değiştirmek, her Dapp'e bağlı adresi etkilemez.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Rabby Wallet'ı nasıl değerlendiriyorsunuz?"
+        },
+        "rateModal": {
+          "submitFeedbackButton": "Gönder",
+          "feedbackSuccess": "Geri bildiriminiz için teşekkür ederiz!",
+          "feedbackDesc": "Geri bildiriminiz var mı? Biz dinliyoruz.",
+          "rateOnChromeStoreButton": "Chrome Web Store'da Derecelendir",
+          "thxTitle": "Teşekkür ederim!",
+          "feedbackPlaceholder": "Rabby geri bildiriminizi değerlendirir!",
+          "thxDesc": "Eğer Rabby'yi beğendiyseniz, Chrome Mağazası'na yapacağınız hızlı bir değerlendirme çok şey ifade eder."
         }
       },
       "tokenDetail": {
@@ -1459,9 +1484,6 @@
           "answer": "Evet, yalnızca tarayıcınızda yerel olarak saklanır ve sadece sizin tarafınızdan erişilebilir."
         },
         "importError": "[CreateMnemonics] beklenmeyen adım {{0}}",
-        "importQuestion1": "Seed Phrase'imi kaybedersem, varlıklarım sonsuza dek kaybolur.",
-        "importQuestion2": "Seed Phrase'imi başkalarıyla paylaşırsam, varlıklarım çalınır.",
-        "importQuestion3": "Seed Phrase sadece bilgisayarımda saklanır ve Rabby'in buna erişimi yoktur.",
         "importQuestion4": "Seed Phrase yedeğini almadan Rabby'yi kaldırırsam, Rabby bunu benim için geri alamaz.",
         "riskTips": "Başlamadan önce, lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
         "showSeedPhrase": "Seed Phrase'i Göster",
@@ -1487,7 +1509,10 @@
         "slip39SeedPhrasePlaceholder_two": "{{count}}nci tohum ifadesi payınızı buraya girin",
         "slip39SeedPhrasePlaceholder_few": "{{count}}. tohum cümlesi paylarınızı buraya girin",
         "passphrase": "Parola cümlesi",
-        "inputInvalidCount_one": "1 giriş Seed Phrase normlarına uymuyor, lütfen kontrol edin."
+        "inputInvalidCount_one": "1 giriş Seed Phrase normlarına uymuyor, lütfen kontrol edin.",
+        "importQuestion3": "Eğer Rabby'yi seed ifademi yedeklemeden kaldırırsam, Rabby tarafından kurtarılamaz.",
+        "importQuestion1": "Eğer kurtarma kelimelerimi kaybeder veya paylaşırsam, varlıklarıma kalıcı olarak erişimimi kaybedeceğim.",
+        "importQuestion2": "Kıdemli kelime ifadem yalnızca cihazımda saklanıyor. Rabby buna erişemez."
       },
       "metamask": {
         "step1": "MetaMask'tan seed phrase'i veya özel anahtarı dışa aktarın <1>Rehber <2/></1>",
@@ -1761,7 +1786,7 @@
       },
       "btnForgotPassword": "Şifrenizi mi unuttunuz?",
       "title": "Rabby Cüzdan",
-      "description": "Ethereum ve tüm EVM zincirleri için çığır açan cüzdan"
+      "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan"
     },
     "addToken": {
       "noTokenFound": "Token bulunamadı",
@@ -2453,15 +2478,15 @@
         "importAddress": "Zaten bir adresim var",
         "createNewAddress": "Yeni bir adres oluştur",
         "title": "Rabby Wallet'e Hoş Geldiniz",
-        "desc": "Ethereum ve tüm EVM zincirleri için çığır açan cüzdan"
+        "desc": "Ethereum ve EVM için vazgeçilmez cüzdanınız"
       },
       "createNewAddress": {
-        "title": "Yeni Seed Phrase Oluştur",
-        "desc": "Başlamadan önce, lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
-        "tip2": "Tohum cümlesi yalnızca bilgisayarımda saklanır ve Rabby buna erişemez.",
         "showSeedPhrase": "Tohum İfadesini Göster",
-        "tip3": "Rabby'yi yedekleme cümlesini yedeklemeden kaldırırsam, Rabby bunu benim için kurtaramaz.",
-        "tip1": "Eğer seed cümlemi kaybedersem veya paylaşırsam, varlıklarım sonsuza kadar kaybolur."
+        "title": "Başlamadan Önce",
+        "tip2": "Kök ifadem yalnızca cihazımda saklanır. Rabby buna erişemez.",
+        "desc": "Lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
+        "tip3": "Eğer seed phrase’imı yedeklemeden Rabby'yi kaldırırsam, Rabby tarafından kurtarılamaz.",
+        "tip1": "Eğer tohum cümlemi kaybeder veya paylaşırsam, varlıklarıma kalıcı olarak erişimimi kaybedeceğim."
       },
       "importList": {
         "title": "İçe Aktarma Yöntemini Seç"
@@ -2474,15 +2499,15 @@
         "form": {
           "password": {
             "label": "Parola",
-            "placeholder": "8 karakter minimum",
             "min": "Parola en az 8 karakter uzunluğunda olmalıdır。",
-            "required": "Lütfen Şifreyi Giriniz"
+            "required": "Lütfen Şifreyi Giriniz",
+            "placeholder": "Şifre (en az 8 karakter)"
           },
           "confirmPassword": {
-            "placeholder": "Şifre",
             "notMatch": "Parolalar eşleşmiyor",
             "required": "Lütfen Parolayı Onaylayın",
-            "label": "Şifreyi Onayla"
+            "label": "Şifreyi Onayla",
+            "placeholder": "Şifreyi Onayla"
           }
         },
         "title": "Parola Belirle",
@@ -2497,10 +2522,14 @@
         "create": "Başarıyla Oluşturuldu"
       },
       "readyToUse": {
-        "extensionTip": "<1/> ve ardından <3/> tıklayın",
         "pin": "Rabby Wallet'i Sabitle",
-        "desc": "Rabby Wallet'i kolay erişim için araç çubuğunuza sabitleyin.",
-        "title": "Rabby Cüzdanı Kullanıma Hazırdır"
+        "guides": {
+          "step1": "Tarayıcı uzantısı simgesine tıklayın",
+          "step2": "Pin Rabby Wallet"
+        },
+        "desc": "Rabby Cüzdanını Bul ve Sabitle",
+        "extensionTip": "Tıkla <1/> ve ardından <3/>",
+        "title": "Cüzdanınız hazır!"
       },
       "importSeedPhrase": {
         "title": "Seed Phrase İçe Aktar"
@@ -2664,6 +2693,66 @@
         "noResults": "Sonuç Yok",
         "searching": "Sonuçlar için"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Şimdi Ekle",
+        "desc": "Güvenilir adresleri hızlı transferler için beyaz listeye ekleyin - bir sonraki sefer onay gerekmiyor",
+        "title": "Beyaz Liste Adresi Ekle"
+      },
+      "whitelist": {
+        "title": "Beyaz Liste",
+        "removeFromWhitelist": "Beyaz listeye eklemeyi kaldır",
+        "addWhitelist": "Beyaz listeye ekle",
+        "addWhitelistDesc": "Güvenilir adresleri hızlı transferler için beyaz listeye ekleyin --- bir sonraki sefer onaya gerek yok",
+        "notWhitelist": "Beyaz liste adresi değil"
+      },
+      "addWhitelist": {
+        "title": "Beyaz Liste Adresi Ekle",
+        "desc": "Güvenilir adresleri beyaz listeye ekleyin, hızlı transferler için---bir dahaki sefere onay gerekmez"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "contractAddress": "Kontrat adresi tespit edildi, fonlar kaybolabilir.",
+            "noSend": "Bu adrese 180 gün boyunca transfer yok.",
+            "dexNoDeposite": "CEX depozit adresi değil, fonlar kaybolabilir",
+            "scamAddress": "Rabby tarafından işaretlenmiş dolandırıcılık adresi"
+          }
+        },
+        "cexAddress": "{{cexName}} Adresi",
+        "title": "Bu Adrese Gönder",
+        "cexDepositAddress": "{{cexName}} Yatırım Adresi",
+        "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
+        "TransferBeforeValue": "Evet",
+        "TransferBefore": "Transfer öncesi",
+        "AddToWhitelist": "Beyaz Listeye Ekle",
+        "passwordPlaceholder": "Şifreyi girin devam etmek için"
+      },
+      "enterAddress": "Adres girin",
+      "selectExchangeSource": "Borsa Kaynağını Seçin",
+      "title": "Göndermek için",
+      "sendToImportedAddress": "İçe Aktarılan Adrese Gönder",
+      "selectImportedAddress": "İçe aktarılan adresi seçin",
+      "enterAddressOrENS": "Adres girin veya arayın"
+    },
+    "whitelist": {
+      "tips": {
+        "added": "Beyaz listeye eklendi",
+        "removed": "Beyaz liste adresi silindi",
+        "repeated": "Mevcut adres zaten beyaz listede.",
+        "tooltip": "Beyaz liste adresi"
+      },
+      "title": "Beyaz Liste Adresi Ekle",
+      "name": "Adınız",
+      "nameYourAddress": "Adresinizi Adlandırın",
+      "invalidAddress": "Bu adres geçersizdir.",
+      "addSuccess": "Başarıyla eklendi",
+      "enterAddress": "Adres girin",
+      "confirmPassword": "Şifreyi Onayla",
+      "riskTitle": "Beyaz Liste Adresi Ekle",
+      "exchangeAddress": "Değişim Adresi",
+      "address": "Adres"
     }
   },
   "component": {
@@ -2848,11 +2937,19 @@
     "AccountSelectorModal": {
       "searchPlaceholder": "Adres ara\n",
       "title": "Adres seç\n"
+    },
+    "PageHeader": {
+      "selectAccount": "Adres Seçin"
+    },
+    "ChainItem": {
+      "appChain": "{{chain}} Hesabı üzerinde"
+    },
+    "RiskTip": {
+      "title": "Risk Uyarısı"
     }
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "Ethereum ve tüm EVM zincirleri için oyun değiştirici cüzdan",
     "copied": "Kopyalandı",
     "confirm": "Onayla",
     "next": "İleri",
@@ -2884,7 +2981,8 @@
     "Done": "Bitti",
     "Nonce": "Nonce",
     "notSupportTesntnet": "Özel ağ için desteklenmiyor",
-    "tryAgain": "Tekrar Dene"
+    "tryAgain": "Tekrar Dene",
+    "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan."
   },
   "background": {
     "error": {

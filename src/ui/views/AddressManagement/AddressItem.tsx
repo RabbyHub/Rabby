@@ -20,16 +20,14 @@ import { ReactComponent as RcIconArrowRight } from 'ui/assets/address/bold-right
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 
 import { AddressViewer } from 'ui/component';
-import { isSameAddress, splitNumberByStep, useAlias } from 'ui/utils';
+import { splitNumberByStep, useAlias } from 'ui/utils';
 import IconSuccess from 'ui/assets/success.svg';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import IconCheck from 'ui/assets/check.svg';
 
-import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 
 export interface AddressItemProps {
@@ -68,14 +66,7 @@ const AddressItem = memo(
     onDelete,
   }: AddressItemProps) => {
     const { t } = useTranslation();
-    const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
-      whitelistEnable: s.whitelist.enabled,
-      whiteList: s.whitelist.whitelist,
-    }));
 
-    const isInWhiteList = useMemo(() => {
-      return whiteList.some((e) => isSameAddress(e, address));
-    }, [whiteList, address]);
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
         return KEYRING_TYPE_TEXT[type];
@@ -238,21 +229,6 @@ const AddressItem = memo(
                         >
                           {alias}
                         </div>
-                        {whitelistEnable && isInWhiteList && (
-                          <Tooltip
-                            overlayClassName="rectangle"
-                            placement="top"
-                            title={t('page.manageAddress.whitelisted-address')}
-                          >
-                            <ThemeIcon
-                              src={RcIconWhitelist}
-                              className={clsx(
-                                'w-14 h-14',
-                                isCurrentAccount && 'brightness-[100]'
-                              )}
-                            />
-                          </Tooltip>
-                        )}
                         {extra}
                       </>
                     }

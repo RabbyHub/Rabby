@@ -24,7 +24,6 @@
     "scamTx": "诈骗交易",
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "观察模式地址",
-    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
     "appName": "Rabby Wallet",
     "Deleted": "已删除",
     "Loading": "加载中",
@@ -33,7 +32,8 @@
     "nonce": "nonce",
     "Nonce": "Nonce",
     "tryAgain": "再试一次",
-    "notSupportTesntnet": "不支持自定义网络"
+    "notSupportTesntnet": "不支持自定义网络",
+    "appDescription": "你首选的以太坊和 EVM 钱包"
   },
   "page": {
     "transactions": {
@@ -221,7 +221,8 @@
           "signatureRecord": "签名记录",
           "searchDapps": "搜索 Dapp",
           "gasTopUp": "Gas Top Up",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "ecosystem": "生态系统"
         },
         "followUs": "关注我们",
         "host": "host",
@@ -263,6 +264,18 @@
           "title": "独立切换 Dapp 地址\n",
           "button": "启用\n",
           "desc": "启用后，您可以独立选择连接到每个 Dapp 的地址。切换您的主地址不会影响连接到每个 Dapp 的地址。\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "您如何评价 Rabby Wallet？"
+        },
+        "rateModal": {
+          "feedbackDesc": "有反馈吗？我们在倾听。",
+          "feedbackSuccess": "感谢您的反馈！",
+          "thxTitle": "谢谢！",
+          "rateOnChromeStoreButton": "在 Chrome 网上商店评估",
+          "thxDesc": "如果你喜欢 Rabby，在 Chrome 商店给个快速评分会对我们意义重大。",
+          "feedbackPlaceholder": "Rabby 重视您的反馈！",
+          "submitFeedbackButton": "提交"
         }
       },
       "tokenDetail": {
@@ -489,9 +502,6 @@
           "answer": "是的，它将存储在你本地的浏览器上，并且只有你可以访问。"
         },
         "importError": "[CreateMnemonics] 意外步骤 {{0}}",
-        "importQuestion1": "如果我丢失了助记词，我的资产将永远丢失。",
-        "importQuestion2": "如果我与他人分享我的助记词，我的资产就会被盗。",
-        "importQuestion3": "助记词仅存储在我的计算机上，Rabby 无权访问它。",
         "importQuestion4": "如果我在未备份助记词的情况下卸载 Rabby，Rabby 无法为我找回助记词。",
         "riskTips": "在开始之前，请阅读并牢记以下安全提示",
         "showSeedPhrase": "创建助记词",
@@ -518,7 +528,10 @@
         "invalidContent": "内容无效",
         "inputInvalidCount_one": "1 个输入不符合种子短语规范，请检查。",
         "inputInvalidCount_other": "{{count}} 个输入不符合种子短语规范，请检查。",
-        "passphrase": "密码"
+        "passphrase": "密码",
+        "importQuestion1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
+        "importQuestion3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，将无法通过 Rabby 恢复。",
+        "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看操作指南<1/></1>",
@@ -1005,7 +1018,8 @@
         "confirmRevokePrivateKey": "使用助记词或私钥地址，您可以一键批量撤销 {{count}} 个批准。",
         "simulationFailed": "交易模拟失败",
         "paused": "暂停",
-        "waitInQueue": "排队等待"
+        "waitInQueue": "排队等待",
+        "ledgerConfirmTitle": "使用Ledger批量撤销"
       }
     },
     "connect": {
@@ -1172,6 +1186,9 @@
       "whitelistAlert__whitelisted": "白名单地址",
       "confirmModal": {
         "title": "输入密码进行确认"
+      },
+      "sectionAmount": {
+        "title": "数量"
       }
     },
     "sendToken": {
@@ -1216,7 +1233,7 @@
         "title": "输入密码进行确认"
       },
       "sectionBalance": {
-        "title": "余额"
+        "title": "金额"
       },
       "sectionChain": {
         "title": "链"
@@ -1262,7 +1279,15 @@
       },
       "blockedTransactionContent": "该交易涉及的地址在OFAC制裁名单上。",
       "blockedTransaction": "已阻止的交易",
-      "blockedTransactionCancelText": "我知道"
+      "blockedTransactionCancelText": "我知道",
+      "selectFromAddress": "选择地址",
+      "noSupportTokenForChain": "收件人地址是另一个链上的合约地址。请在继续之前检查以避免损失。",
+      "noSupprotTokenForSafe": "您发送代币的 Safe 地址未在该链上部署。在继续之前请检查，以避免损失。",
+      "noSupprotTokenForDex": "此代币可能不被该交易所支持。请在继续之前检查以避免损失。",
+      "selectToken": "选择 Token",
+      "noSupprotTokenForDex_short": "此交易所不支持",
+      "noSupprotTokenForSafe_short": "该安全地址未在该链上部署",
+      "noSupportTokenForChain_short": "合约地址未在此链上部署"
     },
     "sendTokenComponents": {
       "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费",
@@ -1889,8 +1914,8 @@
         "required": "输入密码解锁"
       },
       "btnForgotPassword": "忘记密码？",
-      "description": "革命性改变的Ethereum及所有EVM链的钱包",
-      "title": "Rabby Wallet"
+      "title": "Rabby Wallet",
+      "description": "你首选的以太坊和 EVM 钱包"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名单",
@@ -2527,15 +2552,15 @@
         "importAddress": "我已经有一个地址",
         "title": "欢迎使用 Rabby Wallet",
         "createNewAddress": "创建一个新地址",
-        "desc": "颠覆性的以太坊及所有 EVM 链的钱包"
+        "desc": "你首选的以太坊和 EVM 钱包"
       },
       "createNewAddress": {
-        "tip1": "如果我丢失或泄露种子短语，我的资产将永远丢失。",
         "showSeedPhrase": "显示 Seed Phrase",
-        "title": "创建新的 Seed Phrase",
-        "tip3": "如果我在未备份种子短语的情况下卸载 Rabby，Rabby 无法为我找回。",
-        "desc": "在开始之前，请阅读并牢记以下安全提示。",
-        "tip2": "助记词仅存储在我的电脑上，Rabby 无法访问。"
+        "title": "在开始之前",
+        "desc": "请阅读并牢记以下安全提示",
+        "tip2": "我的种子短语仅存储在我的设备上。Rabby 无法访问它。",
+        "tip1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
+        "tip3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，则无法通过 Rabby 恢复。"
       },
       "importList": {
         "title": "选择导入方式"
@@ -2548,15 +2573,15 @@
         "form": {
           "password": {
             "label": "密码",
-            "placeholder": "至少 8 个字符",
             "required": "请输入密码",
-            "min": "密码长度必须至少为 8 个字符"
+            "min": "密码长度必须至少为 8 个字符",
+            "placeholder": "密码（最少8个字符）"
           },
           "confirmPassword": {
             "label": "确认密码",
             "required": "请确认密码",
-            "placeholder": "密码",
-            "notMatch": "密码不匹配"
+            "notMatch": "密码不匹配",
+            "placeholder": "确认密码"
           }
         },
         "title": "设置密码",
@@ -2571,10 +2596,14 @@
         "addMoreFrom": "从 {{name}} 添加更多地址"
       },
       "readyToUse": {
-        "title": "Rabby 钱包已准备就绪",
         "pin": "固定 Rabby 钱包",
+        "guides": {
+          "step2": "固定 Rabby Wallet",
+          "step1": "点击浏览器扩展图标"
+        },
+        "desc": "找到 Rabby Wallet 并将其固定",
         "extensionTip": "点击 <1/> 然后 <3/>",
-        "desc": "将 Rabby Wallet 固定到工具栏以便于访问。"
+        "title": "您的 Rabby Wallet 已准备就绪！"
       },
       "importSeedPhrase": {
         "title": "导入助记词"
@@ -2699,6 +2728,66 @@
         "noResult": "没有结果สำหรับ",
         "title": "所有结果"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "立即添加",
+        "desc": "将信任的地址添加到白名单以便快速转账 - 下次无需确认",
+        "title": "添加白名单地址"
+      },
+      "whitelist": {
+        "removeFromWhitelist": "从白名单中移除",
+        "addWhitelist": "添加到白名单",
+        "title": "白名单",
+        "addWhitelistDesc": "将受信任的地址添加到白名单，以便快速转账——下次无需确认",
+        "notWhitelist": "不是白名单地址"
+      },
+      "addWhitelist": {
+        "title": "添加白名单地址",
+        "desc": "将信任的地址添加到白名单，以便快速转账——下次无需确认"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "noSend": "180天内没有转账到此地址",
+            "dexNoDeposite": "不是CEX存款地址，资金可能会丢失",
+            "contractAddress": "检测到合约地址，资金可能会丢失。",
+            "scamAddress": "被Rabby标记的诈骗地址"
+          }
+        },
+        "title": "发送到此地址",
+        "understandRisks": "我理解这些风险，并且想继续",
+        "cexAddress": "{{cexName}} 地址",
+        "cexDepositAddress": "{{cexName}} 存款地址",
+        "TransferBefore": "转账前",
+        "AddToWhitelist": "添加到白名单",
+        "passwordPlaceholder": "输入密码以继续",
+        "TransferBeforeValue": "是的"
+      },
+      "selectImportedAddress": "选择导入的地址",
+      "sendToImportedAddress": "发送到导入的地址",
+      "title": "发送到",
+      "enterAddress": "输入地址",
+      "selectExchangeSource": "选择交易所来源",
+      "enterAddressOrENS": "输入或搜索地址"
+    },
+    "whitelist": {
+      "tips": {
+        "repeated": "当前地址已经在白名单中。",
+        "removed": "已删除白名单地址",
+        "added": "地址已添加到白名单",
+        "tooltip": "白名单地址"
+      },
+      "title": "添加白名单地址",
+      "confirmPassword": "确认密码",
+      "riskTitle": "添加白名单地址",
+      "addSuccess": "添加成功",
+      "exchangeAddress": "交易地址",
+      "name": "名称",
+      "enterAddress": "输入地址",
+      "nameYourAddress": "命名您的地址",
+      "address": "地址",
+      "invalidAddress": "该地址无效"
     }
   },
   "component": {
@@ -2883,6 +2972,15 @@
     "AccountSelectorModal": {
       "title": "选择地址\n",
       "searchPlaceholder": "搜索地址\n"
+    },
+    "PageHeader": {
+      "selectAccount": "选择地址"
+    },
+    "ChainItem": {
+      "appChain": "在 {{chain}} 账户"
+    },
+    "RiskTip": {
+      "title": "风险提示"
     }
   },
   "background": {

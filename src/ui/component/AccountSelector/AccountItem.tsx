@@ -1,7 +1,8 @@
-import { Tooltip } from 'antd';
+import { Button, Form, Input, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_CLASS,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
 } from 'consts';
@@ -18,13 +19,15 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { CopyChecked } from '@/ui/component/CopyChecked';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import IconCheck from 'ui/assets/check-3.svg';
-import { AddressViewer } from 'ui/component';
-import { isSameAddress, splitNumberByStep, useAlias } from 'ui/utils';
+import { AddressViewer, Popup } from 'ui/component';
+import { splitNumberByStep, useAlias, useCexId } from 'ui/utils';
+import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/lock.svg';
+import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
+import { Exchange } from '@/ui/models/exchange';
+import { useForm } from 'antd/lib/form/Form';
+import styled from 'styled-components';
 
 export interface AddressItemProps {
   balance: number;
@@ -35,9 +38,26 @@ export interface AddressItemProps {
   style?: React.CSSProperties;
   extra?: ReactNode;
   alias?: string;
-  onClick: MouseEventHandler<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLDivElement>;
   isSelected?: boolean;
+  rightIcon?: ReactNode;
+  showWhitelistIcon?: boolean;
+  disabled?: boolean;
+  tmpCexInfo?: Exchange;
+  allowEditAlias?: boolean;
 }
+
+const HoverShowEditPenWrapper = styled.div`
+  position: relative;
+  .edit-pen {
+    opacity: 0;
+  }
+  &:hover {
+    .edit-pen {
+      opacity: 1;
+    }
+  }
+`;
 
 export const AccountItem = memo(
   ({
@@ -51,16 +71,12 @@ export const AccountItem = memo(
     alias: aliasName,
     isSelected,
     extra,
+    rightIcon,
+    showWhitelistIcon,
+    disabled = false,
+    allowEditAlias = false,
+    tmpCexInfo,
   }: AddressItemProps) => {
-    const { t } = useTranslation();
-    const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
-      whitelistEnable: s.whitelist.enabled,
-      whiteList: s.whitelist.whitelist,
-    }));
-
-    const isInWhiteList = useMemo(() => {
-      return whiteList.some((e) => isSameAddress(e, address));
-    }, [whiteList, address]);
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
         return KEYRING_TYPE_TEXT[type];
@@ -79,10 +95,21 @@ export const AccountItem = memo(
     };
 
     const [isEdit, setIsEdit] = useState(false);
-    const [_alias] = useAlias(address);
+    const [_alias, setAlias] = useAlias(address);
+    const [_cexInfo] = useCexId(address);
     const alias = _alias || aliasName;
     const titleRef = useRef<HTMLDivElement>(null);
-    const dispatch = useRabbyDispatch();
+    const [form] = useForm();
+
+    const inputRef = useRef<Input>(null);
+    const { t } = useTranslation();
+
+    const cexInfo = useMemo(() => {
+      if (tmpCexInfo && !showWhitelistIcon) {
+        return tmpCexInfo;
+      }
+      return _cexInfo;
+    }, [tmpCexInfo, _cexInfo, showWhitelistIcon]);
 
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
@@ -104,34 +131,153 @@ export const AccountItem = memo(
       type,
       forceLight: false,
     });
+    const cexLogo = useMemo(() => {
+      if (type === KEYRING_CLASS.WATCH) {
+        return cexInfo?.logo;
+      }
+      return undefined;
+    }, [cexInfo?.logo, type]);
+
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!disabled) {
+        onClick?.(e);
+      }
+    };
+
+    const handleEditMemo = () => {
+      form.setFieldsValue({
+        memo: alias,
+      });
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+      const { destroy } = Popup.info({
+        title: t('page.addressDetail.edit-memo-title'),
+        isSupportDarkMode: true,
+        height: 215,
+        isNew: true,
+        content: (
+          <div className="pt-[4px]">
+            <Form
+              form={form}
+              onFinish={async () => {
+                form
+                  .validateFields()
+                  .then((values) => {
+                    return setAlias(values.memo);
+                  })
+                  .then(() => {
+                    destroy();
+                  });
+              }}
+              initialValues={{
+                memo: alias,
+              }}
+            >
+              <Form.Item
+                name="memo"
+                className="h-[80px] mb-0"
+                rules={[
+                  {
+                    required: true,
+                    message: t('page.addressDetail.please-input-address-note'),
+                  },
+                ]}
+              >
+                <Input
+                  ref={inputRef}
+                  className="popup-input h-[48px] bg-r-neutral-card-1"
+                  size="large"
+                  placeholder={t(
+                    'page.addressDetail.please-input-address-note'
+                  )}
+                  autoFocus
+                  allowClear
+                  spellCheck={false}
+                  autoComplete="off"
+                  maxLength={50}
+                ></Input>
+              </Form.Item>
+              <div className="text-center flex gap-x-16">
+                <Button
+                  size="large"
+                  type="ghost"
+                  onClick={() => destroy()}
+                  className={clsx(
+                    'w-[200px]',
+                    'text-blue-light',
+                    'border-blue-light',
+                    'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                    'before:content-none'
+                  )}
+                >
+                  {t('global.Cancel')}
+                </Button>
+                <Button
+                  type="primary"
+                  size="large"
+                  className="w-[200px]"
+                  htmlType="submit"
+                >
+                  {t('global.confirm')}
+                </Button>
+              </div>
+            </Form>
+          </div>
+        ),
+      });
+    };
 
     return (
-      <div
+      <HoverShowEditPenWrapper
         className={clsx(
           className,
-          'relative flex items-center px-[15px] py-[11px] gap-[8px] cursor-pointer',
+          'relative flex items-center px-[15px] py-[11px] gap-[8px]',
           'border-[1px] border-solid border-transparent rounded-[8px]',
-          'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+          disabled
+            ? 'cursor-default'
+            : 'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light1'
         )}
         style={style}
-        onClick={onClick}
+        onClick={handleClick}
       >
         <Tooltip
           overlayClassName="rectangle addressType__tooltip"
           placement="topRight"
-          title={formatAddressTooltip(
-            type,
-            BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
-          )}
+          title={
+            !showWhitelistIcon
+              ? formatAddressTooltip(
+                  type,
+                  BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
+                )
+              : ''
+          }
         >
           <div className="relative flex-none">
-            <img src={addressTypeIcon} className={'w-[28px] h-[28px]'} />
-            <CommonSignal
-              type={type}
-              brandName={brandName}
-              address={address}
-              className={'bottom-0 right-0'}
+            <img
+              src={cexLogo || addressTypeIcon}
+              className={'w-[28px] h-[28px] rounded-full'}
             />
+            {showWhitelistIcon ? (
+              <Tooltip
+                overlayClassName="rectangle addressType__tooltip"
+                title="Whitelist Address"
+              >
+                <div className="absolute w-[16px] h-[16px] bottom-[-3px] right-[-3px] text-r-blue-default">
+                  <RcWhitelistIconCC
+                    viewBox="0 0 16 16"
+                    className="w-[16px] h-[16px]"
+                  />
+                </div>
+              </Tooltip>
+            ) : (
+              <CommonSignal
+                type={type}
+                brandName={brandName}
+                address={address}
+                className={'bottom-0 right-0'}
+              />
+            )}
           </div>
         </Tooltip>
 
@@ -151,17 +297,20 @@ export const AccountItem = memo(
                   >
                     {alias}
                   </div>
-                  {whitelistEnable && isInWhiteList && (
-                    <Tooltip
-                      overlayClassName="rectangle"
-                      placement="top"
-                      title={t('page.manageAddress.whitelisted-address')}
+                  {allowEditAlias && (
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditMemo();
+                      }}
+                      className={`
+                        edit-pen
+                        text-r-neutral-foot transition-opacity duration-100 cursor-pointer
+                        hover:text-r-blue-default
+                      `}
                     >
-                      <ThemeIcon
-                        src={RcIconWhitelist}
-                        className={clsx('w-14 h-14')}
-                      />
-                    </Tooltip>
+                      <IconEditPen />
+                    </div>
                   )}
                   {extra}
                 </>
@@ -184,12 +333,12 @@ export const AccountItem = memo(
             </span>
           </div>
         </div>
-        {isSelected ? (
+        {(!disabled && rightIcon) || isSelected ? (
           <div className="flex justify-center items-center ml-auto">
-            <img src={IconCheck} className="w-[20px] h-[20px]" />
+            {rightIcon || <img src={IconCheck} className="w-[20px] h-[20px]" />}
           </div>
         ) : null}
-      </div>
+      </HoverShowEditPenWrapper>
     );
   }
 );

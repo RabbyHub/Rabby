@@ -665,7 +665,7 @@
         "title": "Masukkan Kata Sandi untuk Mengonfirmasi"
       },
       "sectionBalance": {
-        "title": "Saldo"
+        "title": "Jumlah"
       },
       "sectionChain": {
         "title": "Rantai"
@@ -712,7 +712,15 @@
       "whitelistAlert__temporaryGranted": "Izin sementara diberikan",
       "tokenInfoPrice": "Harga",
       "blockedTransactionContent": "Transaksi ini berinteraksi dengan alamat yang ada di daftar sanksi OFAC.",
-      "whitelistAlert__disabled": "Whitelist dinonaktifkan. Anda dapat mentransfer ke alamat mana pun."
+      "whitelistAlert__disabled": "Whitelist dinonaktifkan. Anda dapat mentransfer ke alamat mana pun.",
+      "selectFromAddress": "Pilih Dari Alamat",
+      "noSupprotTokenForSafe": "Alamat Safe yang Anda kirim token tidak dikerahkan di rantai ini. Periksa sebelum melanjutkan untuk menghindari kehilangan.",
+      "noSupportTokenForChain": "Alamat penerima adalah alamat kontrak di rantai yang berbeda. Periksa sebelum melanjutkan untuk menghindari kerugian.",
+      "noSupprotTokenForDex": "Token ini mungkin tidak didukung oleh bursa ini. Periksa sebelum melanjutkan untuk menghindari kehilangan.",
+      "noSupprotTokenForDex_short": "Tidak didukung oleh bursa ini",
+      "selectToken": "Pilih Token",
+      "noSupprotTokenForSafe_short": "Alamat aman belum diterapkan di rantai ini",
+      "noSupportTokenForChain_short": "Alamat kontrak tidak dikerahkan di rantai ini"
     },
     "sendTokenComponents": {
       "GasReserved": "Ditetapkan <1>0</1> {{ tokenName }} untuk biaya gas",
@@ -748,7 +756,10 @@
       "tipAddToContacts": "Tambahkan ke kontak",
       "whitelistAlert__notWhitelisted": "Alamat tidak ada dalam daftar putih. <1 /> Saya setuju untuk memberikan izin sementara untuk mentransfer.",
       "whitelistAlert__disabled": "Whitelist dinonaktifkan. Anda dapat mentransfer ke alamat mana saja.",
-      "whitelistAlert__whitelisted": "Alamat telah dimasukkan dalam daftar putih"
+      "whitelistAlert__whitelisted": "Alamat telah dimasukkan dalam daftar putih",
+      "sectionAmount": {
+        "title": "Jumlah"
+      }
     },
     "approvals": {
       "header": {
@@ -859,7 +870,8 @@
         "ledgerSended": "Silakan tandatangani permintaan di Ledger ({{current}}/{{total}})",
         "ledgerSending": "Mengirim permintaan penandatanganan ({{current}}/{{total}})",
         "done": "Selesai",
-        "cancelBody": "Jika Anda menutup halaman ini, sisa pencabutan tidak akan dilaksanakan."
+        "cancelBody": "Jika Anda menutup halaman ini, sisa pencabutan tidak akan dilaksanakan.",
+        "ledgerConfirmTitle": "Batch Revokasi dengan Ledger"
       }
     },
     "gasTopUp": {
@@ -1259,7 +1271,8 @@
           "gasTopUp": "Pengisian Gas",
           "label": "Fitur",
           "connectedDapp": "Dapps Terkoneksi",
-          "signatureRecord": "Rekaman Tanda Tangan"
+          "signatureRecord": "Rekaman Tanda Tangan",
+          "ecosystem": "Ekosistem"
         },
         "settings": {
           "toggleThemeMode": "Mode Tema",
@@ -1311,6 +1324,18 @@
           "title": "Ganti Alamat Dapp Secara Terpisah\n",
           "desc": "Diaktifkan, Anda dapat memilih alamat mana yang akan dihubungkan ke setiap Dapp secara terpisah. Mengganti alamat utama Anda tidak akan memengaruhi alamat yang terhubung ke setiap Dapp.\n",
           "button": "Aktifkan\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Bagaimana Anda menilai Rabby Wallet?"
+        },
+        "rateModal": {
+          "thxTitle": "Terima kasih!",
+          "rateOnChromeStoreButton": "Tingkat di Chrome Web Store",
+          "feedbackPlaceholder": "Rabby sangat menghargai masukan Anda!",
+          "feedbackSuccess": "Terima kasih atas umpan balik Anda!",
+          "submitFeedbackButton": "Kirim",
+          "feedbackDesc": "Ada masukan? Kami mendengarkan.",
+          "thxDesc": "Jika Anda menyukai Rabby, peringkat cepat di Chrome Store akan sangat berarti."
         }
       },
       "tokenDetail": {
@@ -1525,18 +1550,15 @@
         "backupTips": "Pastikan tidak ada orang lain yang melihat layar Anda saat Anda mencadangkan frase biji.",
         "importError": "[CreateMnemonics] langkah tak terduga {{0}}",
         "wordPhrase": "Saya memiliki frasa <1>{{count}}</1> kata",
-        "importQuestion1": "Jika saya kehilangan frase seed saya, aset saya akan hilang selamanya.",
         "verifySeedPhrase": "Verifikasi Seed Phrase",
         "inputInvalidCount_one": "1 input tidak sesuai dengan norma Seed Phrase, silakan periksa.",
         "slip39SeedPhrasePlaceholder_two": "Masukkan {{count}}nd seed phrase shares di sini",
         "slip39SeedPhrasePlaceholder_one": "Masukkan {{count}} saham frase benih Anda di sini",
         "slip39SeedPhrase": "Saya memiliki frase biji <0>{{SLIP39}}</0>",
         "pleaseSelectWords": "Silakan pilih kata-kata",
-        "importQuestion3": "Frasa biji hanya disimpan di komputer saya, dan Rabby tidak memiliki akses ke sana.",
         "slip39SeedPhraseWithPassphrase": "Saya memiliki <0>{{SLIP39}}</0> Frasa Bijak dengan Frasa Sandi",
         "copy": "Salin frasa benih",
         "clearAll": "Hapus Semua",
-        "importQuestion2": "Jika saya membagikan frasa benih saya kepada orang lain, aset saya akan dicuri.",
         "wordPhraseAndPassphrase": "Saya memiliki frasa <1>{{count}}</1>-kata dengan Passphrase",
         "riskTips": "Sebelum Anda mulai, harap baca dan ingat tips keamanan berikut.",
         "createdSuccessfully": "Dibuat Berhasil",
@@ -1545,7 +1567,10 @@
         "pastedAndClear": "Ditempelkan dan clipboard dibersihkan",
         "verificationFailed": "Verifikasi gagal",
         "passphrase": "Frasa sandi",
-        "inputInvalidCount_other": "{{count}} input tidak sesuai dengan norma Seed Phrase, silakan periksa."
+        "inputInvalidCount_other": "{{count}} input tidak sesuai dengan norma Seed Phrase, silakan periksa.",
+        "importQuestion2": "Frasa seed saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
+        "importQuestion3": "Jika saya mencopot pemasangan Rabby tanpa mencadangkan frase benih saya, itu tidak dapat dipulihkan oleh Rabby.",
+        "importQuestion1": "Jika saya kehilangan atau membagikan seed phrase saya, saya akan kehilangan akses ke aset saya secara permanen."
       },
       "metamask": {
         "tips": "Tips:",
@@ -1826,8 +1851,8 @@
         "error": "kata sandi tidak benar"
       },
       "btnForgotPassword": "Lupa Kata Sandi?",
-      "description": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM",
-      "title": "Rabby Wallet"
+      "title": "Rabby Wallet",
+      "description": "Dompet andalan Anda untuk Ethereum dan EVM"
     },
     "addToken": {
       "balance": "Saldo",
@@ -2447,15 +2472,15 @@
         "importAddress": "Saya sudah memiliki alamat",
         "title": "Selamat datang di Rabby Wallet",
         "createNewAddress": "Buat alamat baru",
-        "desc": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM"
+        "desc": "Dompet andalan Anda untuk Ethereum dan EVM"
       },
       "createNewAddress": {
-        "tip1": "Jika saya kehilangan atau membagikan frase seed saya, aset saya akan hilang selamanya.",
         "showSeedPhrase": "Tampilkan Frasa Seed",
-        "title": "Buat Frasa Benih Baru",
-        "tip2": "Frasa benih hanya disimpan di komputer saya, dan Rabby tidak memiliki akses ke sana.",
-        "tip3": "Jika saya mencopot pemasangan Rabby tanpa menyimpan frasa pemulihan, Rabby tidak dapat mengembalikannya untuk saya.",
-        "desc": "Sebelum Anda mulai, harap baca dan ingat tips keamanan berikut."
+        "title": "Sebelum Anda Mulai",
+        "tip2": "Frase benih saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
+        "desc": "Silakan baca dan ingat tips keamanan berikut ini",
+        "tip1": "Jika saya kehilangan atau membagikan frase pemulihan saya, saya akan kehilangan akses ke aset saya secara permanen.",
+        "tip3": "Jika saya menghapus Rabby tanpa mencadangkan frasa benih saya, itu tidak dapat dipulihkan oleh Rabby"
       },
       "importList": {
         "title": "Pilih Metode Impor"
@@ -2468,15 +2493,15 @@
         "form": {
           "password": {
             "label": "Kata Sandi",
-            "placeholder": "8 karakter min",
             "required": "Silakan masukkan Kata Sandi",
-            "min": "Kata sandi harus terdiri dari setidaknya 8 karakter."
+            "min": "Kata sandi harus terdiri dari setidaknya 8 karakter.",
+            "placeholder": "Kata Sandi (min 8 karakter)"
           },
           "confirmPassword": {
             "label": "Konfirmasi Kata Sandi",
-            "placeholder": "Kata Sandi",
             "required": "Silakan Konfirmasi Kata Sandi",
-            "notMatch": "Kata sandi tidak cocok"
+            "notMatch": "Kata sandi tidak cocok",
+            "placeholder": "Konfirmasi Kata Sandi"
           }
         },
         "title": "Atur Kata Sandi",
@@ -2492,9 +2517,13 @@
       },
       "readyToUse": {
         "pin": "Pin Dompet Rabby",
-        "desc": "Simpan Rabby Wallet di bilah alat Anda untuk akses mudah.",
-        "extensionTip": "Klik <1/> dan kemudian <3/>",
-        "title": "Rabby Wallet Siap Digunakan"
+        "guides": {
+          "step1": "Klik ikon ekstensi browser",
+          "step2": "Pin Dompet Rabby"
+        },
+        "desc": "Temukan Rabby Wallet dan Pin itu",
+        "title": "Dompet Rabby Anda Sudah Siap!",
+        "extensionTip": "Klik <1/> dan kemudian <3/>"
       },
       "importSeedPhrase": {
         "title": "Impor Kata Sandi Seed"
@@ -2658,6 +2687,66 @@
         "title": "Semua Hasil",
         "noResult": "Tidak ada hasil untuk"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "title": "Tambahkan Alamat Daftar Putih",
+        "addNow": "Tambahkan Sekarang",
+        "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat - tidak perlu konfirmasi untuk selanjutnya."
+      },
+      "whitelist": {
+        "title": "Daftar Putih",
+        "removeFromWhitelist": "Hapus dari daftar putih",
+        "addWhitelistDesc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat---tidak perlu konfirmasi di lain waktu",
+        "addWhitelist": "Tambahkan ke daftar putih",
+        "notWhitelist": "Bukan Alamat whitelist"
+      },
+      "addWhitelist": {
+        "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat—tidak perlu konfirmasi di lain waktu",
+        "title": "Tambahkan Alamat Daftar Putih"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "noSend": "Tidak ada transfer ke alamat ini dalam 180 hari",
+            "contractAddress": "Alamat kontrak terdeteksi, dana mungkin hilang",
+            "dexNoDeposite": "Bukan alamat deposit CEX, dana mungkin hilang",
+            "scamAddress": "Alamat penipuan ditandai oleh Rabby"
+          }
+        },
+        "title": "Kirim ke Alamat Ini",
+        "cexDepositAddress": "{{cexName}} Alamat Deposit",
+        "cexAddress": "{{cexName}} Alamat",
+        "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
+        "TransferBefore": "Transfer sebelum",
+        "TransferBeforeValue": "Ya",
+        "AddToWhitelist": "Tambahkan ke Daftar Putih",
+        "passwordPlaceholder": "Masukkan kata sandi untuk melanjutkan"
+      },
+      "enterAddress": "Masukkan alamat",
+      "selectImportedAddress": "Pilih alamat yang diimpor",
+      "sendToImportedAddress": "Kirim ke Alamat Impor",
+      "title": "Kirim ke",
+      "selectExchangeSource": "Pilih Sumber Pertukaran",
+      "enterAddressOrENS": "Masukkan atau Cari alamat"
+    },
+    "whitelist": {
+      "tips": {
+        "added": "Alamat ditambahkan ke whitelist",
+        "removed": "Alamat whitelist dihapus",
+        "repeated": "Alamat saat ini sudah ada di whitelist.",
+        "tooltip": "Whitelist address"
+      },
+      "title": "Tambah Alamat Daftar Putih",
+      "address": "Alamat",
+      "exchangeAddress": "Alamat Pertukaran",
+      "nameYourAddress": "Nama Alamat Anda",
+      "enterAddress": "Masukkan alamat",
+      "name": "Nama",
+      "riskTitle": "Tambahkan Alamat Whitelist",
+      "confirmPassword": "Konfirmasi Kata Sandi",
+      "addSuccess": "Ditambahkan dengan sukses",
+      "invalidAddress": "Alamat ini tidak valid"
     }
   },
   "component": {
@@ -2842,6 +2931,15 @@
     "AccountSelectorModal": {
       "title": "Pilih alamat",
       "searchPlaceholder": "Cari alamat"
+    },
+    "PageHeader": {
+      "selectAccount": "Pilih Alamat"
+    },
+    "ChainItem": {
+      "appChain": "Di Akun {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Peringatan Risiko"
     }
   },
   "global": {
@@ -2863,7 +2961,6 @@
     "copied": "Disalin",
     "Loading": "Memuat",
     "Deleted": "Dihapus",
-    "appDescription": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM",
     "addButton": "Tambahkan",
     "watchModeAddress": "Watch Mode alamat",
     "gas": "Gas",
@@ -2878,7 +2975,8 @@
     "notSupportTesntnet": "Tidak didukung untuk jaringan kustom",
     "tryAgain": "Coba Lagi",
     "Nonce": "Nonce",
-    "backButton": "Kembali"
+    "backButton": "Kembali",
+    "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM"
   },
   "background": {
     "error": {

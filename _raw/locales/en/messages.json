@@ -666,7 +666,7 @@
         "title": "Enter the Password to Confirm"
       },
       "sectionBalance": {
-        "title": "Balance"
+        "title": "Amount"
       },
       "sectionChain": {
         "title": "Chain"
@@ -712,7 +712,75 @@
       },
       "blockedTransaction": "Blocked Transaction",
       "blockedTransactionContent": "This transaction interacts with an address that is on the OFAC sanctions list.",
-      "blockedTransactionCancelText": "I Know"
+      "blockedTransactionCancelText": "I Know",
+      "noSupprotTokenForDex": "This token may not be supported by this exchange. Check before proceeding to avoid loss",
+      "noSupprotTokenForDex_short": "Not supported by this exchange",
+      "noSupprotTokenForSafe": "The Safe address you're sending tokens to isn't deployed on this chain. Check before proceeding to avoid loss.",
+      "noSupprotTokenForSafe_short": "Safe address not deployed on this chain ",
+      "noSupportTokenForChain": "Recipient address is a contract address on a different chain. Check before proceeding to avoid loss",
+      "noSupportTokenForChain_short": "Contract address not deployed on this chain ",
+      "selectFromAddress": "Select From Address",
+      "selectToken": "Select Token"
+    },
+    "sendPoly": {
+      "title": "Send to",
+      "enterAddress": "Enter address",
+      "enterAddressOrENS": "Enter or Search address",
+      "selectExchangeSource": "Select Exchange Source",
+      "emptyWhitelist": {
+        "title": "Add Whitelist Address",
+        "desc": "Add trusted addresses to whitelist for fast transfers - no confirmation needed next time",
+        "addNow": "Add Now"
+      },
+      "whitelist": {
+        "title": "Whitelist",
+        "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
+        "addWhitelist": "Add to whitelist",
+        "removeFromWhitelist": "Remove from whitelist",
+        "notWhitelist": "Not a whitelist Address"
+      },
+      "sendToImportedAddress": "Send to Imported Address",
+      "selectImportedAddress": "Select Imported address",
+      "addWhitelist": {
+        "title": "Add Whitelist Address",
+        "desc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time"
+      },
+      "riskAlert": {
+        "title": "Send to this Address",
+        "understandRisks": "I understand the risks and want to continue",
+        "cexDepositAddress": "{{cexName}} Deposit Address",
+        "cexAddress": "{{cexName}} Address",
+        "passwordPlaceholder": "Input password to continue",
+        "TransferBefore": "Transfer before",
+        "TransferBeforeValue": "Yes",
+        "AddToWhitelist": "Add to Whitelist",
+        "riskType": {
+          "risks": {
+            "noSend": "No transfers to this address in 180 days",
+            "dexNoDeposite": "Not a CEX deposit address, funds may be lost",
+            "contractAddress": "Contract address detected, funds may be lost",
+            "scamAddress": "Scam address flagged by Rabby"
+          }
+        }
+      }
+    },
+    "whitelist": {
+      "title": "Add Whitelist Address",
+      "address": "Address",
+      "name": "Name",
+      "exchangeAddress": "Exchange Address",
+      "nameYourAddress": "Name Your Address",
+      "addSuccess": "Add successfully",
+      "invalidAddress": "This address is invalid",
+      "enterAddress": "Enter address",
+      "riskTitle": "Add Whitelist Address",
+      "confirmPassword": "Confirm Password",
+      "tips": {
+        "removed": "Whitelist address deleted",
+        "added": "Address added to whitelist",
+        "repeated": "The current address is already on the whitelist.",
+        "tooltip": "Whitelist address"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost",
@@ -727,6 +795,9 @@
       },
       "sectionFrom": {
         "title": "From"
+      },
+      "sectionAmount": {
+        "title": "Amount"
       },
       "sectionTo": {
         "title": "To",
@@ -839,7 +910,7 @@
       },
       "revokeModal": {
         "confirmRevokePrivateKey": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with 1 click.",
-        "confirmRevokeLedger": "Using a Ledger address, you can batch revoke {{count}} approvals with 1 click.",
+        "confirmRevokeLedger": "Batch revoke {{count}} approvals in one task list",
         "batchRevoke": "Batch Revoke",
         "revokeOneByOne": "Revoke One by One",
         "revoked": "Revoked:",
@@ -851,6 +922,7 @@
         "pause": "Pause",
         "resume": "Continue",
         "done": "Done",
+        "ledgerConfirmTitle": "Batch Revoke with Ledger",
         "confirmTitle": "Batch Revoke with One Click",
         "cancelTitle": "Cancel Remaining Revokes",
         "confirm": "Confirm",
@@ -1293,7 +1365,8 @@
           "connectedDapp": "Connected Dapps",
           "searchDapps": "Search Dapps",
           "gasTopUp": "Gas Top Up",
-          "rabbyPoints": "Rabby Points"
+          "rabbyPoints": "Rabby Points",
+          "ecosystem": "Ecosystem"
         },
         "settings": {
           "label": "Settings",
@@ -1321,6 +1394,18 @@
           "title": "Switch Dapp Address Independently",
           "desc": "Once enabled, you can choose which address to connect to each Dapp independently. Switching your main address won't affect the address connected to each Dapp.",
           "button": "Enable"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "How do you rate Rabby Wallet ?"
+        },
+        "rateModal": {
+          "thxDesc": "If you like Rabby, a quick rating on the Chrome Store would mean a lot.",
+          "thxTitle": "Thank you!",
+          "rateOnChromeStoreButton": "Rate on Chrome Web Store",
+          "feedbackDesc": "Have feedback? We’re listening.",
+          "submitFeedbackButton": "Submit",
+          "feedbackPlaceholder": "Rabby values your feedback!",
+          "feedbackSuccess": "Thank you for your feedback!"
         }
       },
       "tokenDetail": {
@@ -1539,9 +1624,9 @@
           "answer": "Yes, it will be stored locally on your browser and only accessible to you."
         },
         "importError": "[CreateMnemonics] unexpected step {{0}}",
-        "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
-        "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
-        "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
+        "importQuestion1": "If I lose or share my seed phrase, I’ll lose access to my assets permanently",
+        "importQuestion2": "My seed phrase is only stored on my device. Rabby can’t access it",
+        "importQuestion3": "If I uninstall Rabby without backing up my seed phrase, it cannot be recovered by Rabby",
         "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.",
         "riskTips": "Before you start, please read and keep the following security tips in mind.",
         "showSeedPhrase": "Show Seed Phrase",
@@ -1836,7 +1921,7 @@
         "error": "incorrect password"
       },
       "title": "Rabby Wallet",
-      "description": "The game-changing wallet for Ethereum and all EVM chains",
+      "description": "Your go-to wallet for Ethereum and EVM",
       "btnForgotPassword": "Forgot Password?"
     },
     "addToken": {
@@ -2455,16 +2540,16 @@
     "newUserImport": {
       "guide": {
         "title": "Welcome to Rabby Wallet",
-        "desc": "The game-changing wallet for Ethereum and all EVM chains",
+        "desc": "Your go-to wallet for Ethereum and EVM",
         "createNewAddress": "Create a new address",
         "importAddress": "I already have an address"
       },
       "createNewAddress": {
-        "title": "Create New Seed Phrase",
-        "desc": "Before you start, please read and keep the following security tips in mind.",
-        "tip1": "If I lose or share my seed phrase, my assets will be lost forever.",
-        "tip2": "The seed phrase is only stored on my computer, and Rabby has no access to it. ",
-        "tip3": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me. ",
+        "title": "Before You Start",
+        "desc": "Please read and keep the following security tips in mind",
+        "tip1": "If I lose or share my seed phrase, I’ll lose access to my assets permanently",
+        "tip2": "My seed phrase is only stored on my device. Rabby can’t access it",
+        "tip3": "If I uninstall Rabby without backing up my seed phrase, it cannot be recovered by Rabby",
         "showSeedPhrase": "Show Seed Phrase"
       },
       "importList": {
@@ -2479,13 +2564,13 @@
         "form": {
           "password": {
             "label": "Password",
-            "placeholder": "8 characters min",
+            "placeholder": "Password (8 characters min)",
             "required": "Please input Password",
             "min": "Password must be at least 8 characters long"
           },
           "confirmPassword": {
             "label": "Confirm Password",
-            "placeholder": "Password",
+            "placeholder": "Confirm Password",
             "required": "Please Confirm Password",
             "notMatch": "Passwords do not match"
           }
@@ -2501,10 +2586,14 @@
         "addMoreFrom": "Add more addresses from {{name}}"
       },
       "readyToUse": {
-        "title": "Rabby Wallet is Ready to Use",
-        "desc": "Pin Rabby Wallet to your toolbar for easy access.",
+        "title": "Your Rabby Wallet is Ready !",
+        "desc": "Find Rabby Wallet and Pin it",
         "pin": "Pin Rabby Wallet",
-        "extensionTip": "Click <1/> and then <3/>"
+        "extensionTip": "Click <1/> and then <3/>",
+        "guides": {
+          "step1": "Click the browser extension icon",
+          "step2": "Pin Rabby Wallet"
+        }
       },
       "importSeedPhrase": {
         "title": "Import Seed Phrase"
@@ -2852,11 +2941,20 @@
     "AccountSelectorModal": {
       "title": "Select address",
       "searchPlaceholder": "Search address"
+    },
+    "PageHeader": {
+      "selectAccount": "Select Address"
+    },
+    "ChainItem": {
+      "appChain": "On {{chain}} Account"
+    },
+    "RiskTip": {
+      "title": "Risk Warning"
     }
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
+    "appDescription": "Your go-to wallet for Ethereum and EVM",
     "copied": "Copied",
     "confirm": "Confirm",
     "next": "Next",

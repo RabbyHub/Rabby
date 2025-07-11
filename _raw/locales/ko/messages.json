@@ -665,7 +665,7 @@
         "title": "비밀번호를 입력하여 확인하세요"
       },
       "sectionBalance": {
-        "title": "잔액"
+        "title": "금액"
       },
       "sectionChain": {
         "title": "체인"
@@ -712,7 +712,15 @@
       "max": "최대",
       "blockedTransaction": "차단된 거래",
       "blockedTransactionContent": "이 거래는 OFAC 제재 목록에 있는 주소와 상호작용합니다.",
-      "blockedTransactionCancelText": "나는 안다"
+      "blockedTransactionCancelText": "나는 안다",
+      "selectFromAddress": "주소 선택",
+      "noSupprotTokenForDex": "이 토큰은 이 거래소에서 지원되지 않을 수 있습니다. 손실을 피하기 위해 진행하기 전에 확인하세요.",
+      "noSupprotTokenForSafe": "당신이 토큰을 보내고 있는 Safe 주소는 이 체인에 배포되지 않았습니다. 손실을 피하기 위해 진행하기 전에 확인하세요.",
+      "noSupportTokenForChain": "수신자 주소가 다른 체인의 계약 주소입니다. 손실을 피하기 위해 진행하기 전에 확인하세요.",
+      "selectToken": "토큰 선택",
+      "noSupprotTokenForSafe_short": "이 체인에 배포되지 않은 안전 주소",
+      "noSupportTokenForChain_short": "이 체인에 배포되지 않은 계약 주소입니다",
+      "noSupprotTokenForDex_short": "이 거래소에서는 지원되지 않습니다."
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "가스 예약 <1 />",
@@ -748,7 +756,10 @@
       "whitelistAlert__notWhitelisted": "주소가 화이트리스트에 없습니다. <1 /> 일시적으로 전송 권한을 부여하는 데 동의합니다.",
       "whitelistAlert__disabled": "Whitelist이 비활성화되었습니다. 모든 주소로 전송할 수 있습니다.",
       "tipAddToContacts": "연락처에 추가",
-      "tipNotOnAddressList": "주소 목록에 없습니다."
+      "tipNotOnAddressList": "주소 목록에 없습니다.",
+      "sectionAmount": {
+        "title": "양떼"
+      }
     },
     "approvals": {
       "header": {
@@ -859,7 +870,8 @@
         "ledgerSending": "전송 서명 요청 ({{current}}/{{total}})",
         "ledgerSigned": "서명됨. 거래 생성 중 ({{current}}/{{total}})",
         "useGasAccount": "귀하의 가스 잔액이 부족합니다. 귀하의 GasAccount가 가스 요금을 충당할 것입니다.",
-        "ledgerSended": "Ledger에서 요청에 서명해 주세요 ({{current}}/{{total}})"
+        "ledgerSended": "Ledger에서 요청에 서명해 주세요 ({{current}}/{{total}})",
+        "ledgerConfirmTitle": "Ledger와 함께 일괄 철회"
       }
     },
     "gasTopUp": {
@@ -1259,7 +1271,8 @@
           "lockWallet": "잠금 지갑",
           "rabbyPoints": "Rabby 포인트",
           "signatureRecord": "서명 기록",
-          "searchDapps": "Dapps 검색"
+          "searchDapps": "Dapps 검색",
+          "ecosystem": "생태계"
         },
         "settings": {
           "enableTestnets": "테스트넷 활성화",
@@ -1311,6 +1324,18 @@
           "button": "啟用\n",
           "title": "Dapp 주소를 독립적으로 전환하세요\n",
           "desc": "啟用後，您可以獨立選擇連接到每個 Dapp 的地址。切換您的主要地址不會影響連接到每個 Dapp 的地址。\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Rabby Wallet은 어떻게 평가하시나요?"
+        },
+        "rateModal": {
+          "thxTitle": "감사합니다!",
+          "submitFeedbackButton": "제출",
+          "feedbackSuccess": "피드백 주셔서 감사합니다!",
+          "rateOnChromeStoreButton": "Chrome 웹 스토어에서 평가하기",
+          "thxDesc": "Rabby를 좋아하신다면, Chrome Store에서 간단한 평가를 남겨주시면 큰 도움이 됩니다.",
+          "feedbackDesc": "피드백이 있으신가요? 저희가 듣고 있습니다.",
+          "feedbackPlaceholder": "Rabby는 귀하의 피드백을 소중히 여깁니다!"
         }
       },
       "tokenDetail": {
@@ -1519,10 +1544,7 @@
         "importTips": "1번째 필드에 전체 비밀 복구 구문을 붙여넣을 수 있습니다.",
         "importError": "[CreateMnemonics] 예상치 못한 단계 {{0}}",
         "riskTips": "시작하기 전에 다음의 보안 팁을 읽고 기억해 주시기 바랍니다.",
-        "importQuestion1": "내 시드 문구를 잃어버리면, 내 자산은 영원히 잃게 됩니다.",
-        "importQuestion3": "시드 문구는 내 컴퓨터에만 저장되며, Rabby는 이에 접근할 수 없습니다.",
         "showSeedPhrase": "Seed Phrase 보이기",
-        "importQuestion2": "내가 내 시드 구문을 다른 사람과 공유하면 내 자산이 도난당할 것이다.",
         "importQuestion4": "Rabby를 백업하지 않고 제거하면, Rabby는 저를 위해 시드 문구를 복구할 수 없습니다.",
         "createdSuccessfully": "생성 성공",
         "invalidContent": "유효하지 않은 콘텐츠",
@@ -1545,7 +1567,10 @@
         "passphrase": "암호구문",
         "slip39SeedPhrasePlaceholder_one": "여기에 {{count}}번째 시드 구문 공유를 입력하세요",
         "slip39SeedPhrasePlaceholder_other": "여기에 {{count}}번째 시드 구문 공유를 입력하세요",
-        "inputInvalidCount_other": "{{count}} 개의 입력이 Seed Phrase 규범에 준수하지 않으니 확인해 주세요."
+        "inputInvalidCount_other": "{{count}} 개의 입력이 Seed Phrase 규범에 준수하지 않으니 확인해 주세요.",
+        "importQuestion1": "내 시드 구문을 잃어버리거나 공유하면, 자산에 대한 접근을 영구적으로 잃게 됩니다.",
+        "importQuestion2": "내 시드 문구는 오직 내 기기에만 저장됩니다. Rabby는 이를 접근할 수 없습니다.",
+        "importQuestion3": "Rabby를 백업하지 않고 제거하면 seed phrase를 복구할 수 없습니다."
       },
       "metamask": {
         "tips": "팁:",
@@ -1826,8 +1851,8 @@
         "error": "잘못된 비밀번호"
       },
       "title": "Rabby 지갑",
-      "description": "Ethereum 및 모든 EVM 체인을 위한 게임 체인저 지갑",
-      "btnForgotPassword": "비밀번호를 잊으셨나요?"
+      "btnForgotPassword": "비밀번호를 잊으셨나요?",
+      "description": "이더리움 및 EVM을 위한 귀하의 필수 지갑입니다."
     },
     "addToken": {
       "balance": "잔액",
@@ -2447,15 +2472,15 @@
         "importAddress": "저는 이미 주소가 있습니다.",
         "title": "Rabby Wallet에 오신 것을 환영합니다.",
         "createNewAddress": "새 주소 만들기",
-        "desc": "이더리움 및 모든 EVM 체인을 위한 게임 체인저 지갑"
+        "desc": "Ethereum 및 EVM을 위한 최고의 지갑"
       },
       "createNewAddress": {
-        "title": "새로운 시드 프레이즈 생성",
-        "tip2": "시드 문구는 내 컴퓨터에만 저장되며, Rabby는 그것에 접근할 수 없습니다.",
-        "tip3": "Rabby를 백업 없이 제거하면 Rabby가 나를 위해 그것을 복구할 수 없습니다.",
-        "desc": "시작하기 전에 다음 보안 팁을 읽고 기억해 주세요.",
         "showSeedPhrase": "시드 구문 보기",
-        "tip1": "내가 시드 구문을 잃어버리거나 공유하면, 내 자산은 영원히 잃게 될 것이다."
+        "title": "시작하기 전에",
+        "tip2": "내 시드 문구는 내 장치에만 저장됩니다. Rabby는 이를 접근할 수 없습니다.",
+        "tip3": "Rabby를 백업하지 않고 제거하면 seed phrase를 복구할 수 없습니다.",
+        "desc": "다음 보안 팁을 읽고 유의해 주시기 바랍니다.",
+        "tip1": "내 시드 문구를 잃거나 공유하면 자산에 대한 접근 권한을 영구적으로 잃게 됩니다."
       },
       "importList": {
         "title": "가져오기 방법 선택"
@@ -2468,15 +2493,15 @@
         "form": {
           "password": {
             "required": "비밀번호를 입력하십시오",
-            "placeholder": "8자 이상",
             "min": "비밀번호는 최소 8자 이상이어야 합니다.",
-            "label": "비밀번호"
+            "label": "비밀번호",
+            "placeholder": "비밀번호 (최소 8자)"
           },
           "confirmPassword": {
             "label": "비밀번호 확인",
             "notMatch": "비밀번호가 일치하지 않습니다",
-            "placeholder": "비밀번호",
-            "required": "비밀번호를 확인해 주세요"
+            "required": "비밀번호를 확인해 주세요",
+            "placeholder": "비밀번호 확인"
           }
         },
         "title": "비밀번호 설정",
@@ -2492,9 +2517,13 @@
       },
       "readyToUse": {
         "pin": "Rabby Wallet 핀 고정",
-        "extensionTip": "클릭 <1/> 그런 다음 <3/>",
-        "title": "Rabby Wallet은 사용 준비가 되어 있습니다.",
-        "desc": "Rabby Wallet을 툴바에 고정하여 쉽게 접근하세요."
+        "guides": {
+          "step1": "브라우저 확장 아이콘을 클릭하세요.",
+          "step2": "Rabby Wallet 고정하기"
+        },
+        "title": "당신의 Rabby Wallet이 준비되었습니다!",
+        "desc": "Rabby Wallet을 찾아 고정하세요.",
+        "extensionTip": "클릭 <1/> 그리고 나서 <3/>"
       },
       "importSeedPhrase": {
         "title": "시드 문구 가져오기"
@@ -2658,6 +2687,66 @@
         "searchTips": "웹 검색하기",
         "noResult": "결과가 없습니다 для"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "title": "목록 주소 추가",
+        "addNow": "지금 추가",
+        "desc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 전송을 하세요 - 다음 번에는 확인이 필요하지 않습니다."
+      },
+      "whitelist": {
+        "addWhitelist": "화이트리스트에 추가",
+        "removeFromWhitelist": "화이트리스트에서 제거",
+        "title": "화이트리스트",
+        "addWhitelistDesc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 전송이 가능합니다---다음 번에는 확인이 필요 없습니다.",
+        "notWhitelist": "흰색 목록 주소가 아닙니다"
+      },
+      "addWhitelist": {
+        "title": "화이트리스트 주소 추가",
+        "desc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 이체를 수행하세요---다음 번에는 확인이 필요하지 않습니다."
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "noSend": "이 주소로 180일 동안의 전송이 없습니다.",
+            "contractAddress": "계약 주소가 감지되었습니다. 자금이 손실될 수 있습니다.",
+            "dexNoDeposite": "CEX 예치 주소가 아닙니다, 자금이 손실될 수 있습니다",
+            "scamAddress": "Rabby에서 플래그된 사기 주소"
+          }
+        },
+        "cexAddress": "{{cexName}} 주소",
+        "cexDepositAddress": "{{cexName}} 입금 주소",
+        "understandRisks": "위험을 이해하며 계속 진행하고자 합니다.",
+        "title": "이 주소로 보내기",
+        "TransferBefore": "이전 전송",
+        "AddToWhitelist": "화이트리스트에 추가",
+        "passwordPlaceholder": "비밀번호를 입력하여 계속 진행하세요",
+        "TransferBeforeValue": "네"
+      },
+      "enterAddress": "주소 입력",
+      "title": "보내기",
+      "selectImportedAddress": "가져온 주소 선택",
+      "sendToImportedAddress": "가져온 주소로 보내기",
+      "selectExchangeSource": "거래소 출처 선택",
+      "enterAddressOrENS": "주소 입력 또는 검색"
+    },
+    "whitelist": {
+      "tips": {
+        "repeated": "현재 주소는 이미 화이트리스트에 있습니다.",
+        "added": "허용 목록에 주소가 추가되었습니다",
+        "removed": "허가된 주소가 삭제되었습니다",
+        "tooltip": "화이트리스트 주소"
+      },
+      "title": "화이트리스트 주소 추가",
+      "exchangeAddress": "교환 주소",
+      "enterAddress": "주소를 입력하세요",
+      "addSuccess": "성공적으로 추가되었습니다",
+      "riskTitle": "화이트리스트 주소 추가",
+      "nameYourAddress": "주소 이름 지정",
+      "confirmPassword": "비밀번호 확인",
+      "invalidAddress": "이 주소는 유효하지 않습니다",
+      "address": "주소",
+      "name": "이름"
     }
   },
   "component": {
@@ -2842,6 +2931,15 @@
     "AccountSelectorModal": {
       "title": "주소 선택\n",
       "searchPlaceholder": "주소 검색\n"
+    },
+    "PageHeader": {
+      "selectAccount": "주소 선택"
+    },
+    "ChainItem": {
+      "appChain": "{{chain}} 계정에서"
+    },
+    "RiskTip": {
+      "title": "위험 경고"
     }
   },
   "global": {
@@ -2854,7 +2952,6 @@
     "copied": "복사됨",
     "refresh": "새로 고침",
     "confirm": "확인",
-    "appDescription": "Ethereum 및 모든 EVM 체인을 위한 게임 체인저 지갑",
     "next": "다음",
     "Clear": "지우기",
     "editButton": "편집",
@@ -2878,7 +2975,8 @@
     "Confirm": "확인",
     "closeButton": "닫기",
     "Nonce": "논스",
-    "unknownNFT": "알 수 없는 NFT"
+    "unknownNFT": "알 수 없는 NFT",
+    "appDescription": "Ethereum 및 EVM을 위한 당신의 필수 지갑"
   },
   "background": {
     "error": {

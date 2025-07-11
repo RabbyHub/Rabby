@@ -23,7 +23,7 @@ import {
   ActionRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
-import { uninstalledService } from '.';
+import { RPCService, uninstalledService } from '.';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -513,6 +513,30 @@ class TxHistory {
     }
   };
 
+  getRpcTxReceipt = (chainServerId: string, hash: string) => {
+    return RPCService.requestDefaultRPC({
+      chainServerId,
+      method: 'eth_getTransactionReceipt',
+      params: [hash],
+    })
+      .then((res) => {
+        return {
+          hash: res.transactionHash,
+          code: 0,
+          status: parseInt(res.status, 16),
+          gas_used: parseInt(res.gasUsed, 16),
+        };
+      })
+      .catch((e) => {
+        return {
+          hash: hash,
+          code: -1,
+          status: 0,
+          gas_used: 0,
+        };
+      });
+  };
+
   async reloadTx(
     {
       address,
@@ -550,17 +574,12 @@ class TxHistory {
               hash: tx.hash!,
             });
           } else {
-            return openapiService.getTx(
-              chain.serverId,
-              tx.hash!,
-              Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
-            );
+            // Use standard RPC to get transaction receipt
+            return this.getRpcTxReceipt(chain.serverId, tx.hash!);
           }
         })
       );
-      const completed = results.find(
-        (result) => result.code === 0 && result.status !== 0
-      );
+      const completed = results.find((result) => result.code === 0);
       if (!completed) {
         if (duration !== false && +duration < 1000 * 15) {
           const timeout = Number(duration) + 1000;
@@ -660,7 +679,7 @@ class TxHistory {
         const item = list[i];
         maxCompletedNonceByChain[item.chainId] = Math.max(
           item.nonce,
-          maxCompletedNonceByChain[item.chainId] || 0
+          maxCompletedNonceByChain[item.chainId] ?? -1
         );
         completeds.push(item);
       }
@@ -669,7 +688,7 @@ class TxHistory {
     return {
       pendings: pendings
         .filter(
-          (item) => item.nonce > (maxCompletedNonceByChain[item.chainId] || 0)
+          (item) => item.nonce > (maxCompletedNonceByChain[item.chainId] ?? -1)
         )
         .sort((a, b) => {
           if (a.chainId === b.chainId) {

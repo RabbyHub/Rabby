@@ -665,7 +665,7 @@
         "cancelText": "Cancelar"
       },
       "sectionBalance": {
-        "title": "Saldo"
+        "title": "Quantidade"
       },
       "sectionChain": {
         "title": " cadeia"
@@ -712,7 +712,15 @@
       "max": "MÁXIMO",
       "blockedTransactionCancelText": "Eu sei",
       "blockedTransaction": "Transação Bloqueada",
-      "blockedTransactionContent": "Esta transação interage com um endereço que está na lista de sanções da OFAC."
+      "blockedTransactionContent": "Esta transação interage com um endereço que está na lista de sanções da OFAC.",
+      "noSupprotTokenForDex": "Este token pode não ser suportado por esta exchange. Verifique antes de prosseguir para evitar perdas.",
+      "selectFromAddress": "Selecione o Endereço",
+      "noSupprotTokenForSafe": "O endereço Safe para o qual você está enviando tokens não está implantado nesta cadeia. Verifique antes de continuar para evitar perdas.",
+      "noSupportTokenForChain": "O endereço do destinatário é um endereço de contrato em uma cadeia diferente. Verifique antes de prosseguir para evitar perdas.",
+      "selectToken": "Selecionar Token",
+      "noSupportTokenForChain_short": "Endereço do contrato não implantado nesta cadeia",
+      "noSupprotTokenForSafe_short": "Endereço seguro não implantado nesta rede",
+      "noSupprotTokenForDex_short": "Não suportado por esta exchange"
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "Reservar Gas <1 />",
@@ -748,7 +756,10 @@
       "whitelistAlert__notWhitelisted": "O endereço não está na lista de permissões. <1 /> Concordo em conceder permissão temporária para transferir.",
       "tipAddToContacts": "Adicionar aos contatos",
       "whitelistAlert__disabled": "Lista branca desativada. Você pode transferir para qualquer endereço.",
-      "tipNotOnAddressList": "Não na lista de endereços."
+      "tipNotOnAddressList": "Não na lista de endereços.",
+      "sectionAmount": {
+        "title": "Quantidade"
+      }
     },
     "approvals": {
       "header": {
@@ -859,7 +870,8 @@
         "ledgerAlert": "Por favor, abra o aplicativo Ethereum no seu dispositivo Ledger",
         "ledgerSigned": "Assinado. Criando transação ({{current}}/{{total}})",
         "stillRevoke": "Ainda Revogar",
-        "ledgerSended": "Por favor, assine a solicitação no Ledger ({{current}}/{{total}})"
+        "ledgerSended": "Por favor, assine a solicitação no Ledger ({{current}}/{{total}})",
+        "ledgerConfirmTitle": "Revogar em Lote com Ledger"
       }
     },
     "gasTopUp": {
@@ -1259,7 +1271,8 @@
           "connectedDapp": "Dapps Conectados",
           "signatureRecord": "Registro de Assinatura",
           "searchDapps": "Buscar Dapps",
-          "label": "Características"
+          "label": "Características",
+          "ecosystem": "Ecossistema"
         },
         "settings": {
           "toggleThemeMode": "Modo de Tema",
@@ -1311,6 +1324,18 @@
           "title": "Alternar o endereço do Dapp Independentemente\n",
           "button": "Ativar\n",
           "desc": "Uma vez ativado, pode escolher qual endereço conectar a cada Dapp individualmente. Alterar seu endereço principal não afetará o endereço conectado a cada Dapp.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Como você avalia a Rabby Wallet?"
+        },
+        "rateModal": {
+          "rateOnChromeStoreButton": "Avalie na Chrome Web Store",
+          "feedbackPlaceholder": "A Rabby valoriza seu feedback!",
+          "thxTitle": "Obrigado!",
+          "submitFeedbackButton": "Enviar",
+          "feedbackSuccess": "Obrigado pelo seu feedback!",
+          "feedbackDesc": "Tem feedback? Estamos ouvindo.",
+          "thxDesc": "Se você gosta do Rabby, uma rápida avaliação na Chrome Store significaria muito."
         }
       },
       "tokenDetail": {
@@ -1516,13 +1541,10 @@
           "answer": "Sim, será armazenado localmente no seu navegador e somente acessível a você."
         },
         "showSeedPhrase": "Mostrar Frase Semente",
-        "importQuestion1": "Se eu perder minha frase-semente, meus ativos estarão perdidos para sempre.",
         "importError": "[CreateMnemonics] passo inesperado {{0}}",
         "importTips": "Você pode colar toda a sua frase secreta de recuperação no 1º campo.",
         "backup": "Backup Seed Phrase",
         "riskTips": "Antes de começar, por favor, leia e mantenha em mente as seguintes dicas de segurança.",
-        "importQuestion3": "A frase-semente é armazenada apenas no meu computador, e a Rabby não tem acesso a ela.",
-        "importQuestion2": "Se eu compartilhar minha frase-semente com outros, meus ativos serão roubados.",
         "importQuestion4": "Se eu desinstalar o Rabby sem fazer backup da frase-semente, o Rabby não pode recuperá-la para mim.",
         "clearAll": "Limpar tudo",
         "copy": "Copiar frase semente",
@@ -1545,7 +1567,10 @@
         "wordPhrase": "Eu tenho uma frase de <1>{{count}}</1> palavras",
         "inputInvalidCount_one": "1 entrada não conforma os padrões da Seed Phrase, por favor verifique.",
         "inputInvalidCount_other": "{{count}} entradas não estão em conformidade com as normas da Seed Phrase, por favor verifique.",
-        "wordPhraseAndPassphrase": "Eu tenho uma frase de <1>{{count}}</1> palavras com Passphrase."
+        "wordPhraseAndPassphrase": "Eu tenho uma frase de <1>{{count}}</1> palavras com Passphrase.",
+        "importQuestion1": "Se eu perder ou compartilhar minha seed phrase, perderei o acesso aos meus ativos permanentemente.",
+        "importQuestion2": "Minha frase semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
+        "importQuestion3": "Se eu desinstalar o Rabby sem fazer backup da minha frase-semente, não poderá ser recuperado pelo Rabby."
       },
       "metamask": {
         "step": "Passo",
@@ -1827,7 +1852,7 @@
       },
       "title": "Rabby Wallet",
       "btnForgotPassword": "Esqueceu a senha?",
-      "description": "A carteira revolucionária para Ethereum e todas as cadeias EVM"
+      "description": "Sua carteira de referência para Ethereum e EVM"
     },
     "addToken": {
       "title": "Adicione um token personalizado ao Rabby",
@@ -2447,15 +2472,15 @@
         "importAddress": "Eu já tenho um endereço",
         "createNewAddress": "Crie um novo endereço",
         "title": "Bem-vindo ao Rabby Wallet",
-        "desc": "A carteira que muda o jogo para Ethereum e todas as cadeias EVM"
+        "desc": "Sua carteira de referência para Ethereum e EVM"
       },
       "createNewAddress": {
-        "title": "Criar nova frase-semente",
-        "tip2": "A frase-semente é armazenada apenas no meu computador, e o Rabby não tem acesso a ela.",
-        "tip1": "Se eu perder ou compartilhar minha seed phrase, meus ativos serão perdidos para sempre.",
         "showSeedPhrase": "Mostrar Frase Semente",
-        "tip3": "Se eu desinstalar o Rabby sem fazer backup da frase-semente, o Rabby não poderá recuperá-la para mim.",
-        "desc": "Antes de começar, por favor, leia e mantenha as seguintes dicas de segurança em mente."
+        "desc": "Por favor, leia e mantenha as seguintes dicas de segurança em mente",
+        "tip2": "Minha frase semente é armazenada apenas no meu dispositivo. Rabby não pode acessá-la.",
+        "tip1": "Se eu perder ou compartilhar minha seed phrase, perderei acesso aos meus ativos permanentemente.",
+        "tip3": "Se eu desinstalar o Rabby sem fazer backup da minha frase semente, ela não pode ser recuperada pelo Rabby.",
+        "title": "Antes de Começar"
       },
       "importList": {
         "title": "Selecionar Método de Importação"
@@ -2468,15 +2493,15 @@
         "form": {
           "password": {
             "label": "Senha",
-            "placeholder": "mínimo de 8 caracteres",
             "min": "A senha deve ter pelo menos 8 caracteres.",
-            "required": "Por favor, insira a senha"
+            "required": "Por favor, insira a senha",
+            "placeholder": "Senha (mínimo de 8 caracteres)"
           },
           "confirmPassword": {
-            "placeholder": "Senha",
             "required": "Por favor, confirme a senha",
             "label": "Confirme a Senha",
-            "notMatch": "As senhas não coincidem"
+            "notMatch": "As senhas não coincidem",
+            "placeholder": "Confirmar Senha"
           }
         },
         "agree": "Eu concordo com os<1/> <2>Termos de Uso</2> e <4>Política de Privacidade</4>",
@@ -2492,9 +2517,13 @@
       },
       "readyToUse": {
         "pin": "Fixar Rabby Wallet",
-        "extensionTip": "Clique <1/> e depois <3/>",
-        "desc": "Fixar a Carteira Rabby na sua barra de ferramentas para acesso fácil.",
-        "title": "Rabby Wallet está pronto para uso"
+        "guides": {
+          "step2": "Fixar Rabby Wallet",
+          "step1": "Clique no ícone da extensão do navegador"
+        },
+        "title": "Sua carteira Rabby está pronta!",
+        "desc": "Encontre Rabby Wallet e fixe-o",
+        "extensionTip": "Clique <1/> e depois <3/>"
       },
       "importSeedPhrase": {
         "title": "Importar Frase Semente"
@@ -2658,6 +2687,66 @@
         "noResult": "Nenhum resultado para",
         "searching": "Resultados para"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "title": "Adicionar Endereço à Lista de Permissão",
+        "addNow": "Adicionar Agora",
+        "desc": "Adicionar endereços confiáveis à lista de permissões para transferências rápidas - sem necessidade de confirmação da próxima vez"
+      },
+      "whitelist": {
+        "removeFromWhitelist": "Remover da lista branca",
+        "title": "Lista de Permissão",
+        "addWhitelist": "Adicionar à lista de permissões",
+        "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---sem necessidade de confirmação na próxima vez.",
+        "notWhitelist": "Não é um endereço na lista branca"
+      },
+      "addWhitelist": {
+        "title": "Adicionar Endereço à Lista Branca",
+        "desc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---sem confirmação necessária na próxima vez"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Endereço de golpe sinalizado pelo Rabby",
+            "dexNoDeposite": "Não é um endereço de depósito CEX, os fundos podem ser perdidos",
+            "contractAddress": "Endereço de contrato detectado, os fundos podem ser perdidos",
+            "noSend": "Nenhuma transferência para este endereço em 180 dias"
+          }
+        },
+        "title": "Enviar para este Endereço",
+        "cexAddress": "{{cexName}} Endereço",
+        "cexDepositAddress": "{{cexName}} Endereço de Depósito",
+        "understandRisks": "Eu entendo os riscos e quero continuar",
+        "TransferBeforeValue": "Sim",
+        "TransferBefore": "Transferir antes",
+        "AddToWhitelist": "Adicionar à Lista Branca",
+        "passwordPlaceholder": "Insira a senha para continuar"
+      },
+      "enterAddress": "Digite o endereço",
+      "sendToImportedAddress": "Enviar para Endereço Importado",
+      "selectExchangeSource": "Selecionar Fonte de Câmbio",
+      "title": "Enviar para",
+      "selectImportedAddress": "Selecione o endereço importado",
+      "enterAddressOrENS": "Digite ou Pesquise o endereço"
+    },
+    "whitelist": {
+      "tips": {
+        "removed": "Endereço da lista branca excluído",
+        "repeated": "O endereço atual já está na lista branca.",
+        "added": "Endereço adicionado à lista de permissões",
+        "tooltip": "Whitelist address"
+      },
+      "title": "Adicionar Endereço à Lista Branca",
+      "nameYourAddress": "Nomeie Seu Endereço",
+      "confirmPassword": "Confirmar Senha",
+      "name": "Nome",
+      "address": "Endereço",
+      "enterAddress": "Digite o endereço",
+      "exchangeAddress": "Endereço de Troca",
+      "invalidAddress": "Este endereço é inválido",
+      "riskTitle": "Adicionar Endereço à Lista Branca",
+      "addSuccess": "Adicionado com sucesso"
     }
   },
   "component": {
@@ -2842,6 +2931,15 @@
     "AccountSelectorModal": {
       "title": "Selecionar endereço\n",
       "searchPlaceholder": "Pesquisar endereço\n"
+    },
+    "PageHeader": {
+      "selectAccount": "Selecionar Endereço"
+    },
+    "ChainItem": {
+      "appChain": "Na Conta {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Aviso de Risco"
     }
   },
   "global": {
@@ -2855,7 +2953,6 @@
     "refresh": "Atualizar",
     "next": "Próximo",
     "failed": "Falhou",
-    "appDescription": "A carteira que muda o jogo para Ethereum e todas as cadeias EVM",
     "Loading": "Carregando",
     "Confirm": "Confirmar",
     "Nonce": "Nonce",
@@ -2878,7 +2975,8 @@
     "closeButton": "Fechar",
     "addButton": "Adicionar",
     "nonce": "nonce",
-    "copyAddress": "Copie o endereço"
+    "copyAddress": "Copie o endereço",
+    "appDescription": "Sua carteira de referência para Ethereum e EVM"
   },
   "background": {
     "error": {

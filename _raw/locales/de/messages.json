@@ -666,7 +666,7 @@
         "title": "Passwort zur Bestätigung eingeben"
       },
       "sectionBalance": {
-        "title": "Guthaben"
+        "title": "Betrag"
       },
       "sectionChain": {
         "title": "Chain"
@@ -712,7 +712,15 @@
       },
       "blockedTransaction": "Blockierte Transaktion",
       "blockedTransactionCancelText": "Ich weiß",
-      "blockedTransactionContent": "Diese Transaktion interagiert mit einer Adresse, die auf der OFAC-Sanktionsliste steht."
+      "blockedTransactionContent": "Diese Transaktion interagiert mit einer Adresse, die auf der OFAC-Sanktionsliste steht.",
+      "noSupportTokenForChain": "Empfängeradresse ist eine Vertragsadresse auf einer anderen Kette. Überprüfen Sie dies, bevor Sie fortfahren, um Verlust zu vermeiden.",
+      "noSupprotTokenForDex": "Dieser Token wird möglicherweise von dieser Börse nicht unterstützt. Überprüfen Sie dies, bevor Sie fortfahren, um Verlust zu vermeiden.",
+      "selectFromAddress": "Wählen Sie die Adresse aus",
+      "noSupprotTokenForSafe": "Die Safe-Adresse, an die Sie Tokens senden, ist auf dieser Chain nicht implementiert. Überprüfen Sie dies, bevor Sie fortfahren, um Verluste zu vermeiden.",
+      "noSupportTokenForChain_short": "Vertragsadresse nicht auf dieser Kette bereitgestellt",
+      "noSupprotTokenForSafe_short": "Die Safe-Adresse ist auf dieser Kette nicht bereitgestellt.",
+      "noSupprotTokenForDex_short": "Von dieser Börse nicht unterstützt",
+      "selectToken": "Token auswählen"
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} für Gaskosten reserviert",
@@ -748,6 +756,9 @@
       "tipAddToContacts": "Zu Kontakten hinzufügen",
       "confirmModal": {
         "title": "Geben Sie das Passwort zur Bestätigung ein"
+      },
+      "sectionAmount": {
+        "title": "Betrag"
       }
     },
     "approvals": {
@@ -859,7 +870,8 @@
         "ledgerSended": "Bitte unterschreiben Sie die Anfrage auf Ledger ({{current}}/{{total}})",
         "confirmRevokeLedger": "Mithilfe einer Ledger-Adresse können Sie {{count}} Genehmigungen mit einem Klick widerrufen.",
         "stillRevoke": "Noch widerrufen",
-        "resume": "Fortfahren"
+        "resume": "Fortfahren",
+        "ledgerConfirmTitle": "Batch widerrufen mit Ledger"
       }
     },
     "gasTopUp": {
@@ -1211,7 +1223,8 @@
           "connectedDapp": "Verbundene Dapps",
           "rabbyPoints": "Rabby Points",
           "searchDapps": "Dapps durchsuchen",
-          "gasTopUp": "Gas Aufladen"
+          "gasTopUp": "Gas Aufladen",
+          "ecosystem": "Ökosystem"
         },
         "settings": {
           "label": "Einstellungen",
@@ -1239,6 +1252,18 @@
           "button": "Aktivieren\n",
           "title": "DApp-Adressen unabhängig wechseln\n",
           "desc": "Sobald aktiviert, können Sie unabhängig für jedes DApp die gewünschte Adresse auswählen.  Eine Änderung Ihrer Haupt-Adresse wirkt sich nicht auf die Adresse aus, die für jedes DApp verbunden ist.\n"
+        },
+        "rateModalTriggerOnHome": {
+          "description": "Wie bewerten Sie Rabby Wallet?"
+        },
+        "rateModal": {
+          "feedbackPlaceholder": "Rabby schätzt Ihr Feedback!",
+          "feedbackDesc": "Haben Sie Feedback? Wir hören zu.",
+          "feedbackSuccess": "Danke für Ihr Feedback!",
+          "thxDesc": "Wenn Ihnen Rabby gefällt, würde eine kurze Bewertung im Chrome Store viel bedeuten.",
+          "submitFeedbackButton": "Einreichen",
+          "thxTitle": "Danke!",
+          "rateOnChromeStoreButton": "Bewertung im Chrome Web Store"
         }
       },
       "tokenDetail": {
@@ -1459,9 +1484,6 @@
           "answer": "Ja, sie wird lokal in Ihrem Browser gespeichert und ist nur für Sie zugänglich."
         },
         "importError": "[CreateMnemonics] unerwarteter Schritt {{0}}",
-        "importQuestion1": "Wenn ich meine Seed Phrase verliere, werden meine Vermögenswerte für immer verloren sein.",
-        "importQuestion2": "Wenn ich meine Seed Phrase mit anderen teile, werden meine Vermögenswerte gestohlen.",
-        "importQuestion3": "Die Seed Phrase wird nur auf meinem Computer gespeichert, und Rabby hat keinen Zugriff darauf.",
         "importQuestion4": "Wenn ich Rabby deinstalliere, ohne die Seed Phrase zu sichern, kann Rabby sie nicht für mich wiederherstellen.",
         "riskTips": "Bevor Sie beginnen, lesen Sie bitte die folgenden Sicherheitstipps und behalten Sie sie im Kopf.",
         "showSeedPhrase": "Seed Phrase anzeigen",
@@ -1487,7 +1509,10 @@
         "inputInvalidCount_other": "{{count}} Eingaben entsprechen nicht den Seed Phrase-Normen, bitte überprüfen.",
         "slip39SeedPhrase": "Ich habe eine <0>{{SLIP39}}</0>-Seed Phrase",
         "slip39SeedPhrasePlaceholder_other": "Geben Sie hier Ihren {{count}}ten Seed-Phrase-Anteil ein",
-        "slip39SeedPhrasePlaceholder_few": "Geben Sie hier Ihre {{count}}te Seed-Phrase-Teile ein"
+        "slip39SeedPhrasePlaceholder_few": "Geben Sie hier Ihre {{count}}te Seed-Phrase-Teile ein",
+        "importQuestion2": "Mein Seed-Phrase wird nur auf meinem Gerät gespeichert. Rabby kann nicht darauf zugreifen.",
+        "importQuestion1": "Wenn ich meinen Seed-Phrase verliere oder teile, verliere ich den Zugriff auf meine Vermögenswerte dauerhaft.",
+        "importQuestion3": "Wenn ich Rabby deinstalliere, ohne meinen Seed-Phrase zu sichern, kann er von Rabby nicht wiederhergestellt werden."
       },
       "metamask": {
         "step1": "Seed Phrase oder Private Key aus MetaMask exportieren <br /> <1>Klicken Sie hier, um das Tutorial anzuzeigen <1/></1>",
@@ -1757,8 +1782,8 @@
         "error": "Falsches Passwort"
       },
       "title": "Rabby Wallet",
-      "description": "Die revolutionäre Wallet für Ethereum und alle EVM-Chains",
-      "btnForgotPassword": "Passwort vergessen?"
+      "btnForgotPassword": "Passwort vergessen?",
+      "description": "Ihr bevorzugtes Wallet für Ethereum und EVM"
     },
     "addToken": {
       "noTokenFound": "Kein Token gefunden",
@@ -2450,15 +2475,15 @@
         "importAddress": "Ich habe bereits eine Adresse",
         "title": "Willkommen bei Rabby Wallet",
         "createNewAddress": "Erstellen Sie eine neue Adresse",
-        "desc": "Die bahnbrechende Wallet für Ethereum und alle EVM Chains"
+        "desc": "Ihre bevorzugte Wallet für Ethereum und EVM"
       },
       "createNewAddress": {
-        "title": "Neue Seed Phrase erstellen",
-        "desc": "Bevor Sie beginnen, lesen Sie bitte die folgenden Sicherheitstipps und behalten Sie diese im Hinterkopf.",
         "showSeedPhrase": "Seed Phrase anzeigen",
-        "tip1": "Wenn ich meine Seed-Phrase verliere oder teile, sind meine Vermögenswerte für immer verloren.",
-        "tip3": "Wenn ich Rabby deinstalliere, ohne die Seed-Phrase zu sichern, kann Rabby sie nicht für mich wiederherstellen.",
-        "tip2": "Die Seed-Phrase wird nur auf meinem Computer gespeichert und Rabby hat keinen Zugriff darauf."
+        "title": "Bevor Sie beginnen",
+        "desc": "Bitte lesen Sie die folgenden Sicherheitstipps und behalten Sie sie im Hinterkopf.",
+        "tip1": "Wenn ich meinen Seed-Phrase verliere oder teile, verliere ich dauerhaft den Zugang zu meinen Vermögenswerten.",
+        "tip2": "Mein Seed-Phrase wird nur auf meinem Gerät gespeichert. Rabby kann darauf nicht zugreifen.",
+        "tip3": "Wenn ich Rabby deinstalliere, ohne meine seed phrase zu sichern, kann sie von Rabby nicht wiederhergestellt werden."
       },
       "importList": {
         "title": "Import-Methode auswählen"
@@ -2470,16 +2495,16 @@
       "PasswordCard": {
         "form": {
           "password": {
-            "placeholder": "Mindestens 8 Zeichen",
             "min": "Das Passwort muss mindestens 8 Zeichen lang sein。",
             "label": "Passwort",
-            "required": "Bitte Passwort eingeben"
+            "required": "Bitte Passwort eingeben",
+            "placeholder": "Passwort (min. 8 Zeichen)"
           },
           "confirmPassword": {
-            "placeholder": "Passwort",
             "notMatch": "Passwörter stimmen nicht überein",
             "required": "Bitte Passwort bestätigen",
-            "label": "Passwort bestätigen"
+            "label": "Passwort bestätigen",
+            "placeholder": "Passwort bestätigen"
           }
         },
         "title": "Passwort festlegen",
@@ -2494,10 +2519,14 @@
         "addMoreFrom": "Fügen Sie weitere Adressen von {{name}} hinzu"
       },
       "readyToUse": {
-        "title": "Rabby Wallet ist einsatzbereit",
-        "extensionTip": "Klicken Sie auf <1/> und dann auf <3/>",
-        "desc": "Pinne Rabby Wallet an deine Symbolleiste für einfachen Zugriff.",
-        "pin": "Rabby Wallet anheften"
+        "pin": "Rabby Wallet anheften",
+        "guides": {
+          "step2": "Pin Rabby Wallet",
+          "step1": "Klicken Sie auf das Browsererweiterungssymbol"
+        },
+        "extensionTip": "Klicke <1/> und dann <3/>",
+        "title": "Ihr Rabby Wallet ist bereit!",
+        "desc": "Finde Rabby Wallet und pinne es."
       },
       "importSeedPhrase": {
         "title": "Seed Phrase importieren"
@@ -2661,6 +2690,66 @@
         "noResult": "Keine Ergebnisse für",
         "searchTips": "Durchsuchen Sie das Web"
       }
+    },
+    "sendPoly": {
+      "emptyWhitelist": {
+        "addNow": "Jetzt hinzufügen",
+        "desc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Transfers - beim nächsten Mal ist keine Bestätigung erforderlich.",
+        "title": "Whitelist-Adresse hinzufügen"
+      },
+      "whitelist": {
+        "title": "Whitelist",
+        "addWhitelist": "Zur Whitelist hinzufügen",
+        "removeFromWhitelist": "Von der Whitelist entfernen",
+        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen - keine Bestätigung beim nächsten Mal erforderlich.",
+        "notWhitelist": "Keine Whitelist-Adresse"
+      },
+      "addWhitelist": {
+        "title": "Whitelist-Adresse hinzufügen",
+        "desc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu, um schnelle Überweisungen zu ermöglichen – beim nächsten Mal sind keine Bestätigungen erforderlich."
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Scam-Adresse von Rabby markiert",
+            "contractAddress": "Vertragsadresse erkannt, Gelder könnten verloren gehen",
+            "dexNoDeposite": "Nicht eine CEX-Einzahlungsadresse, Gelder könnten verloren gehen",
+            "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen"
+          }
+        },
+        "cexAddress": "{{cexName}} Adresse",
+        "title": "An diese Adresse senden",
+        "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",
+        "cexDepositAddress": "{{cexName}} Einzahlungsadresse",
+        "passwordPlaceholder": "Passwort eingeben, um fortzufahren",
+        "AddToWhitelist": "Zur Whitelist hinzufügen",
+        "TransferBeforeValue": "Ja",
+        "TransferBefore": "Übertragen Sie vorher"
+      },
+      "selectImportedAddress": "Importierte Adresse auswählen",
+      "sendToImportedAddress": "An eine importierte Adresse senden",
+      "enterAddress": "Adresse eingeben",
+      "selectExchangeSource": "Wählen Sie die Austauschquelle",
+      "title": "Senden an",
+      "enterAddressOrENS": "Adresse eingeben oder suchen"
+    },
+    "whitelist": {
+      "tips": {
+        "removed": "Whitelist-Adresse gelöscht",
+        "added": "Adresse zur Whitelist hinzugefügt",
+        "repeated": "Die aktuelle Adresse ist bereits auf der Whitelist.",
+        "tooltip": "Whitelist-Adresse"
+      },
+      "title": "Whitelist-Adresse hinzufügen",
+      "name": "Name",
+      "address": "Adresse",
+      "confirmPassword": "Passwort bestätigen",
+      "exchangeAddress": "Exchange-Adresse",
+      "invalidAddress": "Diese Adresse ist ungültig",
+      "riskTitle": "Whitelist-Adresse hinzufügen",
+      "addSuccess": "Erfolgreich hinzugefügt",
+      "nameYourAddress": "Benennen Sie Ihre Adresse",
+      "enterAddress": "Adresse eingeben"
     }
   },
   "component": {
@@ -2845,11 +2934,19 @@
     "AccountSelectorModal": {
       "title": "Adresse auswählen",
       "searchPlaceholder": "Adresse suchen"
+    },
+    "PageHeader": {
+      "selectAccount": "Adresse auswählen"
+    },
+    "ChainItem": {
+      "appChain": "Auf {{chain}} Konto"
+    },
+    "RiskTip": {
+      "title": "Risiko Warnung"
     }
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "Die bahnbrechende Wallet für Ethereum und alle EVM-Blockchains",
     "copied": "Kopiert",
     "confirm": "Bestätigen",
     "next": "Weiter",
@@ -2881,7 +2978,8 @@
     "Done": "Erledigt",
     "Nonce": "Nonce",
     "tryAgain": "Erneut versuchen",
-    "notSupportTesntnet": "Für benutzerdefiniertes Netzwerk nicht unterstützt"
+    "notSupportTesntnet": "Für benutzerdefiniertes Netzwerk nicht unterstützt",
+    "appDescription": "Ihr bevorzugtes Wallet für Ethereum und EVM"
   },
   "background": {
     "error": {

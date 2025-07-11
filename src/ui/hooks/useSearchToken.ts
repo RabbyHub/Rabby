@@ -327,6 +327,9 @@ const useSearchToken = (
       }
       const reg = safeBuildRegExp(q, 'i');
       const matchCustomTokens = customize.filter((token) => {
+        if (chainId && token.chain !== chainId) {
+          return false;
+        }
         return (
           reg.test(token.name) ||
           reg.test(token.symbol) ||

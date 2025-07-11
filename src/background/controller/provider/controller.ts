@@ -230,21 +230,20 @@ class ProviderController extends BaseController {
         });
         return promise;
       } else {
-        const promise = openapiService
-          .ethRpc(chainServerId, {
-            origin: encodeURIComponent(origin),
+        const promise = RPCService.requestDefaultRPC({
+          chainServerId,
+          method,
+          params,
+          origin,
+        }).then((result) => {
+          RpcCache.set(currentAddress, {
             method,
             params,
-          })
-          .then((result) => {
-            RpcCache.set(currentAddress, {
-              method,
-              params,
-              result,
-              chainId: chainServerId,
-            });
-            return result;
+            result,
+            chainId: chainServerId,
           });
+          return result;
+        });
         RpcCache.set(currentAddress, {
           method,
           params,
@@ -800,35 +799,109 @@ class ProviderController extends BaseController {
             onTransactionCreated({ hash, reqId, pushType });
             notificationService.setStatsData(statsData);
           } else {
-            const res = await openapiService.submitTx({
-              tx: {
-                ...approvalRes,
-                r: convertToHex(signedTx.r),
-                s: convertToHex(signedTx.s),
-                v: convertToHex(signedTx.v),
-                value: approvalRes.value || '0x0',
+            const chainServerId = findChain({ enum: chain })!.serverId;
+            const params: Parameters<typeof openapiService.submitTxV2>[0] = {
+              context: {
+                tx: {
+                  ...approvalRes,
+                  r: convertToHex(signedTx.r),
+                  s: convertToHex(signedTx.s),
+                  v: convertToHex(signedTx.v),
+                  value: approvalRes.value || '0x0',
+                },
+                origin,
+                log_id: logId,
               },
-              push_type: pushType,
-              low_gas_deadline: lowGasDeadline,
-              req_id: preReqId || '',
-              origin,
-              is_gasless: isGasLess,
-              is_gas_account: isGasAccount,
-              log_id: logId,
+              backend_push_require: {
+                gas_type: isGasAccount
+                  ? 'gas_account'
+                  : isGasLess
+                  ? 'gasless'
+                  : null,
+              },
               sig,
-            });
-            if (res.access_token) {
-              gasAccountService.setGasAccountSig(
-                res.access_token,
-                currentAccount
-              );
-              eventBus.emit(EVENTS.broadcastToUI, {
-                method: EVENTS.GAS_ACCOUNT.LOG_IN,
-              });
+              mev_share_model: pushType === 'mev' ? 'user' : 'rabby',
+            };
+
+            const defaultRPC = RPCService.getDefaultRPC(chainServerId);
+            if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
+              let fePushedFailed = false;
+              const txData: any = {
+                ...approvalRes,
+                gasLimit: approvalRes.gas,
+                r: addHexPrefix(signedTx.r),
+                s: addHexPrefix(signedTx.s),
+                v: addHexPrefix(signedTx.v),
+              };
+              if (is1559) {
+                txData.type = '0x2';
+              }
+
+              const tx = TransactionFactory.fromTxData(txData);
+              const rawTx = bytesToHex(tx.serialize());
+
+              try {
+                const [
+                  fePushedHash,
+                  url,
+                ] = await RPCService.defaultRPCSubmitTxWithFallback(
+                  chainServerId,
+                  'eth_sendRawTransaction',
+                  [rawTx]
+                );
+
+                hash = fePushedHash;
+
+                params.frontend_push_result = {
+                  success: true,
+                  has_pushed: true,
+                  raw_tx: rawTx,
+                  url,
+                  return_tx_id: fePushedHash!,
+                };
+
+                openapiService.submitTxV2(params).catch((error) => {
+                  console.log('ignore BE error', error);
+                });
+              } catch (fePushError) {
+                fePushedFailed = true;
+
+                const urls = RPCService.getDefaultRPCByChainServerId(
+                  chainServerId
+                );
+                params.frontend_push_result = {
+                  success: false,
+                  has_pushed: true,
+                  url: urls?.rpcUrl?.[0] || '',
+                  error_msg:
+                    typeof fePushError === 'object'
+                      ? fePushError.message
+                      : String(fePushError),
+                };
+              }
+
+              if (fePushedFailed) {
+                const res = await openapiService.submitTxV2(params);
+                hash = res.tx_id;
+              }
+            } else {
+              const res = await openapiService.submitTxV2(params);
+              if (res.access_token) {
+                gasAccountService.setGasAccountSig(
+                  res.access_token,
+                  currentAccount
+                );
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.GAS_ACCOUNT.LOG_IN,
+                });
+              }
+              hash = res.tx_id;
             }
-            hash = res.req.tx_id || undefined;
-            reqId = res.req.id || undefined;
-            if (res.req.push_status === 'failed') {
+
+            //No more low gas push, reqId is no longer required.
+            reqId = undefined;
+
+            if (!hash) {
               onTransactionSubmitFailed(new Error('Submit tx failed'));
             } else {
               onTransactionCreated({ hash, reqId, pushType });
