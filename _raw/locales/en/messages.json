@@ -778,7 +778,8 @@
       "tips": {
         "removed": "Whitelist address deleted",
         "added": "Address added to whitelist",
-        "repeated": "The current address is already on the whitelist."
+        "repeated": "The current address is already on the whitelist.",
+        "tooltip": "Whitelist address"
       }
     },
     "sendTokenComponents": {

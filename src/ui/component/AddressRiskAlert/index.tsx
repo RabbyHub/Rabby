@@ -130,12 +130,15 @@ export const AddressTypeCard = ({
   return (
     <div className="flex gap-[8px] items-center justify-center">
       <StyledTooltipGlobalStyle />
-      <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
-        <div
-          className={clsx(
-            'rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]',
-            className
-          )}
+      <div
+        className={clsx(
+          'rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]',
+          className
+        )}
+      >
+        <Tooltip
+          overlayClassName="alias-tooltip"
+          title={inWhitelist ? t('page.whitelist.tips.tooltip') : ''}
         >
           <div className="relative w-[20px] h-[20px]">
             {showCexInfo ? (
@@ -160,6 +163,9 @@ export const AddressTypeCard = ({
               </div>
             )}
           </div>
+        </Tooltip>
+
+        <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
           <div
             className={clsx(
               'font-medium text-[13px] text-r-neutral-title1',
@@ -168,8 +174,8 @@ export const AddressTypeCard = ({
           >
             {aliasName}
           </div>
-        </div>
-      </Tooltip>
+        </Tooltip>
+      </div>
       {showSideDesc && (
         <div
           className={`
