@@ -19,7 +19,12 @@ import {
   KEYRING_TYPE,
 } from 'consts';
 import { useRabbyDispatch, connectStore, useRabbySelector } from 'ui/store';
-import { getUiType, openInternalPageInTab, useWallet } from 'ui/utils';
+import {
+  getUiType,
+  isSameAddress,
+  openInternalPageInTab,
+  useWallet,
+} from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
@@ -113,10 +118,20 @@ const ChainSelectWrapper = styled.div`
   }
 `;
 
+const AddressText = styled.span`
+  font-weight: 590;
+  color: var(--r-neutral-title1);
+`;
+
 export const ToAddressCard = ({
   account: targetAccount,
   cexInfo,
 }: AddressTypeCardProps) => {
+  const { whitelist } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+  }));
+  const dispatch = useRabbyDispatch();
+
   const addressSplit = useMemo(() => {
     const address = targetAccount.address || '';
     if (!address) {
@@ -129,6 +144,10 @@ export const ToAddressCard = ({
     return [prefix, middle, suffix];
   }, [targetAccount.address]);
 
+  useEffect(() => {
+    dispatch.whitelist.getWhitelist();
+  }, []);
+
   return (
     <header
       className={clsx(
@@ -137,18 +156,14 @@ export const ToAddressCard = ({
       )}
     >
       <div
-        className="text-[16px] w-full text-center text-r-neutral-foot break-words cursor-pointer"
+        className="text-[16px] w-full text-center text-r-neutral-body break-words cursor-pointer"
         onClick={() => {
           copyAddress(targetAccount.address);
         }}
       >
-        <span className="text-r-neutral-title1 font-medium">
-          {addressSplit[0]}
-        </span>
+        <AddressText>{addressSplit[0]}</AddressText>
         {addressSplit[1]}
-        <span className="text-r-neutral-title1 font-medium">
-          {addressSplit[2]}
-        </span>
+        <AddressText>{addressSplit[2]}</AddressText>
         <span className="ml-2 inline-block w-[14px] h-[13px]">
           <RcIconCopy />
         </span>
@@ -162,6 +177,9 @@ export const ToAddressCard = ({
           logo: cexInfo?.logo_url,
           isDeposit: !!cexInfo?.is_deposit,
         }}
+        inWhitelist={whitelist?.some((w) =>
+          isSameAddress(w, targetAccount.address)
+        )}
         brandName={targetAccount.brandName}
         aliasName={
           targetAccount.alianName || ellipsisAddress(targetAccount.address)
@@ -1437,7 +1455,7 @@ const SendToken = () => {
                       disableChainCheck={disableChainCheck}
                       chainRenderClassName={clsx(
                         'text-[13px] font-medium border-0 bg-transparent',
-                        'before:border-transparent hover:before:border-rabby-blue-default'
+                        'before:border-transparent hover:before:border-rabby-blue-default pl-[8px]'
                       )}
                       drawerHeight={540}
                       showClosableIcon

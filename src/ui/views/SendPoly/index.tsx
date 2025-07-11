@@ -395,29 +395,31 @@ const SendPoly = () => {
               </div>
             </div>
             {/* Add Whitelist Entry */}
-            <div>
-              <Button
-                onClick={() => {
-                  history.push('/whitelist-input');
-                }}
-                type="primary"
-                className={`
+            {allAccounts.length > 0 && (
+              <div>
+                <Button
+                  onClick={() => {
+                    history.push('/whitelist-input');
+                  }}
+                  type="primary"
+                  className={`
                   bg-r-neutral-card1 mt-[12px] w-full shadow-none h-[48px] border-transparent 
                   hover:border-rabby-blue-default hover:bg-r-blue-light-2 hover:before:hidden`}
-              >
-                <div className="flex items-center justify-center space-x-6 text-r-blue-default">
-                  <IconAdd />
-                  <span
-                    className="text-[13px] font-medium"
-                    style={{
-                      textShadow: 'none',
-                    }}
-                  >
-                    {t('page.sendPoly.whitelist.addWhitelist')}
-                  </span>
-                </div>
-              </Button>
-            </div>
+                >
+                  <div className="flex items-center justify-center space-x-6 text-r-blue-default">
+                    <IconAdd />
+                    <span
+                      className="text-[13px] font-medium"
+                      style={{
+                        textShadow: 'none',
+                      }}
+                    >
+                      {t('page.sendPoly.whitelist.addWhitelist')}
+                    </span>
+                  </div>
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -428,11 +430,14 @@ const SendPoly = () => {
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
-        onConfirm={() => {
+        onConfirm={(cexId) => {
           handleGotoSend(selectedAddress, selectedAddressType);
           setSelectedAddress('');
           setSelectedAddressType('');
           setShowAddressRiskAlert(false);
+          if (cexId) {
+            wallet.updateCexId(selectedAddress, cexId);
+          }
         }}
         onCancel={() => {
           setSelectedAddress('');

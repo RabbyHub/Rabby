@@ -75,7 +75,6 @@ const WhitelistInput = () => {
   );
 
   // other state
-  const { isMyImported } = useAddressInfo(inputAddress, { disableDesc: true });
   const [isValidAddr, setIsValidAddr] = useState(true);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [showCexListModal, setShowCexListModal] = useState(false);
@@ -167,11 +166,7 @@ const WhitelistInput = () => {
         });
         return;
       }
-      if (isMyImported) {
-        confirmToWhitelist(inputAddress);
-      } else {
-        setShowAddressRiskAlert(true);
-      }
+      setShowAddressRiskAlert(true);
     } catch (e) {
       console.error('Failed to add whitelist:', e);
     }
