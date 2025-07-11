@@ -69,9 +69,17 @@ export default function ShowMoreGasSelectModal({
             <Tooltip
               placement={'top'}
               overlayClassName="rectangle w-[max-content]"
-              title={t('page.signTx.BroadcastMode.tips.customRPC')}
+              title={
+                hasCustomRpc
+                  ? t('page.signTx.BroadcastMode.tips.customRPC')
+                  : undefined
+              }
             >
-              <div className={clsx('cursor-not-allowed opacity-50')}>
+              <div
+                className={clsx(
+                  hasCustomRpc && 'cursor-not-allowed opacity-50'
+                )}
+              >
                 <GasMethod
                   active={miniApprovalGas.gasMethod === 'gasAccount'}
                   onChange={(e) => {
@@ -89,7 +97,7 @@ export default function ShowMoreGasSelectModal({
             </Tooltip>
           </div>
 
-          <div className="space-y-2 w-full px-4">
+          <div className="space-y-2 w-full px-4 pb-[4px]">
             {miniApprovalGas.gasList?.map((gas) => {
               const gwei = new BigNumber(gas.price / 1e9).toFixed().slice(0, 8);
               const levelTitle = t(getGasLevelI18nKey(gas.level));

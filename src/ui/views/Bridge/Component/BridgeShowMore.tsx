@@ -486,7 +486,7 @@ export const DirectSignGasInfo = ({
               <div
                 className={clsx(
                   'cursor-pointer',
-                  'cursor text-[13px] font-medium flex items-center gap-4',
+                  'cursor text-12 font-medium flex items-center gap-4',
                   miniApprovalGas.disabledProcess
                     ? 'text-r-red-default'
                     : 'text-r-blue-default'
