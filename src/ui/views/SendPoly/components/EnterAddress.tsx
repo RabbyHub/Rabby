@@ -1,23 +1,37 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
-import { debounce } from 'lodash';
+import { debounce, flatten } from 'lodash';
 import styled from 'styled-components';
 import clsx from 'clsx';
 
 import type { Input as AntdInput } from 'antd';
 
-import { useWallet } from 'ui/utils';
+import { isSameAddress, useAlias, useCexId, useWallet } from 'ui/utils';
 
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { AccountList } from './AccountList';
+import { useAccounts } from '@/ui/hooks/useAccounts';
+import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
+import { KEYRING_TYPE } from '@/constant';
+import { ellipsisAddress } from '@/ui/utils/address';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
-const StyledInputWrapper = styled.div`
+const StyledInputWrapper = styled.div<{ $hasError?: boolean }>`
   border-radius: 8px;
   overflow: hidden;
   .ant-input {
     font-size: 15px;
+    ${({ $hasError }) =>
+      $hasError && 'border-color: var(--r-red-default) !important;'}
   }
   .ant-input-clear-icon {
     top: unset !important;
@@ -29,15 +43,50 @@ const StyledInputWrapper = styled.div`
   }
 `;
 
+const WhitelistAddressTypeCard = ({
+  address,
+  type,
+  brandName,
+}: {
+  address: string;
+  type: string;
+  brandName: string;
+}) => {
+  const [cexInfo] = useCexId(address);
+  const [aliasName] = useAlias(address);
+  return (
+    <div className="mt-[20px] w-full">
+      <AddressTypeCard
+        type={type}
+        brandName={brandName}
+        aliasName={aliasName || ellipsisAddress(address)}
+        className="bg-r-neutral-card1"
+        cexInfo={{
+          id: cexInfo?.id,
+          name: cexInfo?.name,
+          logo: cexInfo?.logo,
+          isDeposit: !!cexInfo?.id,
+        }}
+      />
+    </div>
+  );
+};
+
 export const EnterAddress = ({
   onNext,
   onCancel,
 }: {
-  onNext: (address: string) => void;
+  onNext: (address: string, type?: string) => void;
   onCancel: () => void;
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
+  const { fetchAllAccounts, allSortedAccountList } = useAccounts();
+  const dispatch = useRabbyDispatch();
+
+  const { whitelist } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+  }));
 
   const inputRef = useRef<AntdInput>(null);
 
@@ -52,6 +101,24 @@ export const EnterAddress = ({
   const [isFocusAddress, setIsFocusAddress] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
 
+  const filteredAccounts = useMemo(() => {
+    const lowerFilterText = inputAddress?.toLowerCase() || '';
+    const flattenedAccounts = flatten(allSortedAccountList);
+    if (!lowerFilterText) {
+      return flattenedAccounts;
+    }
+    return flattenedAccounts.filter((account) => {
+      const address = account.address.toLowerCase();
+      const brandName = account.brandName?.toLowerCase() || '';
+      const aliasName = account.alianName?.toLowerCase() || '';
+      return (
+        address.includes(lowerFilterText) ||
+        brandName.includes(lowerFilterText) ||
+        aliasName.includes(lowerFilterText)
+      );
+    });
+  }, [allSortedAccountList, inputAddress]);
+
   useEffect(() => {
     // delay footer render to avoid layout animation
     const timer = setTimeout(() => {
@@ -63,12 +130,23 @@ export const EnterAddress = ({
     };
   }, []);
 
-  const handleConfirmENS = (result: string) => {
-    setInputAddress(result);
-    setIsValidAddr(true);
-    setTags([`ENS: ${ensResult?.name || ''}`]);
-    setEnsResult(null);
-  };
+  useEffect(() => {
+    fetchAllAccounts();
+  }, [fetchAllAccounts]);
+
+  useEffect(() => {
+    dispatch.whitelist.getWhitelist();
+  }, [dispatch.whitelist]);
+
+  const handleConfirmENS = useCallback(
+    (result: string) => {
+      setInputAddress(result);
+      setIsValidAddr(true);
+      setTags([`ENS: ${ensResult?.name || ''}`]);
+      setEnsResult(null);
+    },
+    [ensResult?.name]
+  );
 
   const handleKeyDown = useMemo(() => {
     const handler = (e: KeyboardEvent) => {
@@ -80,7 +158,7 @@ export const EnterAddress = ({
       }
     };
     return handler;
-  }, [ensResult]);
+  }, [ensResult, handleConfirmENS]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -123,6 +201,9 @@ export const EnterAddress = ({
       setIsValidAddr(false);
     }
   };
+  const isValidateAddress = useMemo(() => {
+    return isValidAddress(inputAddress);
+  }, [inputAddress]);
 
   return (
     <Form
@@ -131,7 +212,7 @@ export const EnterAddress = ({
       className="flex flex-1 flex-col"
     >
       <div
-        className="relative flex-1 overflow-auto"
+        className="relative overflow-auto"
         onClick={() => {
           if (!inputAddress) {
             onCancel();
@@ -142,6 +223,7 @@ export const EnterAddress = ({
           <StyledInputWrapper
             onClick={(e) => e.stopPropagation()}
             className="relative"
+            $hasError={!isValidAddr && !filteredAccounts.length}
           >
             <Input.TextArea
               maxLength={44}
@@ -159,7 +241,9 @@ export const EnterAddress = ({
               size="large"
               spellCheck={false}
               rows={4}
-              className="border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px]"
+              className={clsx(
+                'border-bright-on-active bg-r-neutral-card1 rounded-[8px] leading-normal pt-[14px] pl-[15px] h-[80px]'
+              )}
             />
             <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">
               <IconClearCC
@@ -176,7 +260,7 @@ export const EnterAddress = ({
               />
             </div>
           </StyledInputWrapper>
-          {!isValidAddr && (
+          {!isValidAddr && !filteredAccounts.length && (
             <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center mt-[8px]">
               <div className="text-r-red-default">
                 <RcIconWarningCC />
@@ -207,21 +291,51 @@ export const EnterAddress = ({
             </div>
           </div>
         )}
+        {isValidateAddress &&
+          (whitelist.some((item) => isSameAddress(item, inputAddress)) ||
+            !!filteredAccounts.length) && (
+            <WhitelistAddressTypeCard
+              address={inputAddress}
+              type={
+                filteredAccounts?.[0]?.address &&
+                isSameAddress(inputAddress, filteredAccounts[0].address)
+                  ? filteredAccounts[0].type
+                  : KEYRING_TYPE.WatchAddressKeyring
+              }
+              brandName={
+                filteredAccounts?.[0]?.address &&
+                isSameAddress(inputAddress, filteredAccounts[0].address)
+                  ? filteredAccounts[0].brandName
+                  : KEYRING_TYPE.WatchAddressKeyring
+              }
+            />
+          )}
       </div>
       {shouldRender && (
-        <div className={'footer'}>
-          <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-            <Button
-              disabled={(!isValidAddr || !inputAddress) && !ensResult?.addr}
-              type="primary"
-              htmlType="submit"
-              size="large"
-              className="w-[100%] h-[48px] text-[16px]"
-            >
-              {t('global.confirm')}
-            </Button>
+        <>
+          <div className="flex-1 pt-[20px] overflow-y-scroll">
+            {!isValidateAddress && (
+              <AccountList
+                list={filteredAccounts}
+                whitelist={whitelist}
+                onChange={(acc) => onNext(acc.address, acc.type)}
+              />
+            )}
           </div>
-        </div>
+          <div className={'footer'}>
+            <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
+              <Button
+                disabled={(!isValidAddr || !inputAddress) && !ensResult?.addr}
+                type="primary"
+                htmlType="submit"
+                size="large"
+                className="w-[100%] h-[48px] text-[16px]"
+              >
+                {t('global.confirm')}
+              </Button>
+            </div>
+          </div>
+        </>
       )}
     </Form>
   );

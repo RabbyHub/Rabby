@@ -716,7 +716,11 @@
       "selectFromAddress": "アドレスを選択してください",
       "noSupprotTokenForDex": "このトークンは、この取引所ではサポートされていない可能性があります。損失を避けるために進む前に確認してください。",
       "noSupportTokenForChain": "受取人アドレスは異なるチェーン上の契約アドレスです。損失を避けるために、進む前に確認してください。",
-      "noSupprotTokenForSafe": "送信先のSafeアドレスはこのチェーンにデプロイされていません。損失を避けるために、進む前に確認してください。"
+      "noSupprotTokenForSafe": "送信先のSafeアドレスはこのチェーンにデプロイされていません。損失を避けるために、進む前に確認してください。",
+      "selectToken": "トークンを選択",
+      "noSupprotTokenForDex_short": "この取引所ではサポートされていません。",
+      "noSupprotTokenForSafe_short": "このチェーンにはデプロイされていない安全なアドレスです",
+      "noSupportTokenForChain_short": "このチェーンにデプロイされていないコントラクトアドレス"
     },
     "sendTokenComponents": {
       "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました",
@@ -2697,7 +2701,8 @@
         "addWhitelist": "ホワイトリストに追加",
         "title": "ホワイトリスト",
         "removeFromWhitelist": "ホワイトリストから削除",
-        "addWhitelistDesc": "信頼できるアドレスをホワイトリストに追加して、次回の迅速な転送を実現します - 確認は不要です。"
+        "addWhitelistDesc": "信頼できるアドレスをホワイトリストに追加して、次回の迅速な転送を実現します - 確認は不要です。",
+        "notWhitelist": "ホワイトリストアドレスではありません"
       },
       "addWhitelist": {
         "desc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を実現---次回は確認不要です。",
@@ -2712,24 +2717,28 @@
             "noSend": "このアドレスへの転送は180日間ありません"
           }
         },
-        "riskWarning": "リスク警告",
         "understandRisks": "リスクを理解しており、続行したいと思います。",
         "title": "このアドレスに送信",
         "cexAddress": "{{cexName}} アドレス",
-        "cexDepositAddress": "{{cexName}} 入金アドレス"
+        "cexDepositAddress": "{{cexName}} 入金アドレス",
+        "TransferBeforeValue": "はい",
+        "passwordPlaceholder": "パスワードを入力して続けてください",
+        "TransferBefore": "転送前",
+        "AddToWhitelist": "ホワイトリストに追加"
       },
       "title": "送信先",
       "enterAddress": "アドレスを入力してください",
-      "enterAddressOrENS": "アドレス / ENSを入力してください",
       "sendToImportedAddress": "インポートされたアドレスに送信",
       "selectExchangeSource": "エクスチェンジソースを選択してください",
-      "selectImportedAddress": "インポートしたアドレスを選択してください"
+      "selectImportedAddress": "インポートしたアドレスを選択してください",
+      "enterAddressOrENS": "アドレスを入力または検索してください"
     },
     "whitelist": {
       "tips": {
         "added": "ホワイトリストにアドレスが追加されました",
         "repeated": "現在のアドレスは既にホワイトリストに登録されています。",
-        "removed": "ホワイトリストアドレスが削除されました"
+        "removed": "ホワイトリストアドレスが削除されました",
+        "tooltip": "ホワイトリストアドレス"
       },
       "title": "ホワイトリストアドレスを追加",
       "confirmPassword": "パスワードを確認してください",
@@ -2931,6 +2940,9 @@
     },
     "ChainItem": {
       "appChain": "{{chain}}アカウント"
+    },
+    "RiskTip": {
+      "title": "リスク警告"
     }
   },
   "global": {

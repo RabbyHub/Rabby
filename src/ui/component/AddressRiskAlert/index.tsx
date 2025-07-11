@@ -1,11 +1,20 @@
-import { Button, Drawer, DrawerProps, Skeleton, Tooltip } from 'antd';
+import {
+  Button,
+  Drawer,
+  DrawerProps,
+  Form,
+  Input,
+  Skeleton,
+  Switch,
+  Tooltip,
+} from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { isSameAddress } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { padWatchAccount } from '@/ui/views/SendPoly/util';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { findAccountByPriority, pickKeyringThemeIcon } from '@/utils/account';
@@ -21,9 +30,8 @@ import { RiskRow } from './RiskRow';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { IExchange } from '../CexSelect';
 
+import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/small-lock.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { ReactComponent as RcIconCheckedCC } from 'ui/assets/address/checked-square-cc.svg';
-import { ReactComponent as RcIconCheckCC } from 'ui/assets/address/check-square-cc.svg';
 
 interface AddressRiskAlertProps {
   visible: boolean;
@@ -31,7 +39,7 @@ interface AddressRiskAlertProps {
   title?: ReactNode;
   address: string;
   onCancel(): void;
-  onConfirm?(): void;
+  onConfirm?(cexId?: string): void;
   className?: string;
   height?: number | string;
   zIndex?: number;
@@ -39,6 +47,7 @@ interface AddressRiskAlertProps {
   editAlias?: string;
   editCex?: IExchange | null;
   type?: string;
+  forWhitelist?: boolean;
 }
 
 const StyledTooltipGlobalStyle = createGlobalStyle`
@@ -52,15 +61,50 @@ const StyledTooltipGlobalStyle = createGlobalStyle`
   }
 `;
 
-const AddressTypeCard = ({
+const AddressText = styled.span`
+  font-weight: 500;
+  color: var(--r-neutral-title1);
+`;
+
+const AuthFormItemWrapper = styled.div<{ $hasError?: boolean }>`
+  .ant-form-item {
+    margin-bottom: 20px !important;
+  }
+  .ant-form-item-has-error {
+    .ant-input {
+      border-color: #f24822 !important;
+    }
+  }
+  .ant-input.ant-input-lg.popup-input {
+    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
+    background: var(--r-neutral-card1, #ffffff) !important;
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587) !important;
+    }
+    &:focus,
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff) !important;
+    }
+    ${({ $hasError }) =>
+      $hasError && 'border-color: var(--r-red-default) !important;'}
+  }
+`;
+
+export const AddressTypeCard = ({
   type,
   brandName,
   aliasName,
   cexInfo,
+  inWhitelist,
+  className = 'bg-r-neutral-card2 ',
+  loading,
 }: {
   type: string;
   brandName: string;
   aliasName: string;
+  className?: string;
+  inWhitelist?: boolean;
+  loading?: boolean;
   cexInfo: {
     id?: string;
     name?: string;
@@ -70,46 +114,82 @@ const AddressTypeCard = ({
 }) => {
   const { isDarkTheme } = useThemeMode();
   const { t } = useTranslation();
-
   const showCexInfo = useMemo(() => {
     return cexInfo.id && cexInfo.isDeposit && type === KEYRING_CLASS.WATCH;
   }, [cexInfo, type]);
 
   const showSideDesc = useMemo(() => {
-    return type !== KEYRING_CLASS.WATCH || showCexInfo;
+    if (showCexInfo) {
+      return true;
+    }
+    if (type === KEYRING_CLASS.GNOSIS) {
+      return true;
+    }
+    return false;
   }, [type, showCexInfo]);
 
   return (
     <div className="flex gap-[8px] items-center justify-center">
       <StyledTooltipGlobalStyle />
-      <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
-        <div className="bg-r-neutral-card2 rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]">
-          {showCexInfo ? (
-            <img
-              className="icon icon-account-type w-[20px] h-[20px] rounded-full"
-              src={cexInfo.logo}
-            />
-          ) : (
-            <ThemeIcon
-              className="icon icon-account-type w-[20px] h-[20px]"
-              src={
-                pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
-                WALLET_BRAND_CONTENT[brandName]?.image ||
-                pickKeyringThemeIcon(type as any, isDarkTheme) ||
-                KEYRING_ICONS[type]
-              }
-            />
-          )}
-          <div
-            className={clsx(
-              'font-medium text-[13px] text-r-neutral-title1',
-              showSideDesc ? 'max-w-[100px]  truncate' : ''
-            )}
-          >
-            {aliasName}
-          </div>
-        </div>
-      </Tooltip>
+      <div
+        className={clsx(
+          'rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]',
+          className
+        )}
+      >
+        {loading ? (
+          <>
+            <Skeleton.Avatar className="bg-r-neutral-line w-[20px] h-[20px] rounded-full" />
+            <Skeleton.Avatar className="bg-r-neutral-line w-[94px] h-[16px] rounded-[2px]" />
+          </>
+        ) : (
+          <>
+            <Tooltip
+              overlayClassName="alias-tooltip"
+              title={inWhitelist ? t('page.whitelist.tips.tooltip') : ''}
+            >
+              <div className="relative w-[20px] h-[20px]">
+                {showCexInfo ? (
+                  <img
+                    className="icon icon-account-type w-[20px] h-[20px] rounded-full"
+                    src={cexInfo.logo}
+                  />
+                ) : (
+                  <ThemeIcon
+                    className="icon icon-account-type w-[20px] h-[20px]"
+                    src={
+                      pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
+                      WALLET_BRAND_CONTENT[brandName]?.image ||
+                      pickKeyringThemeIcon(type as any, isDarkTheme) ||
+                      KEYRING_ICONS[type]
+                    }
+                  />
+                )}
+                {inWhitelist && (
+                  <div className="absolute w-[12px] h-[12px] bottom-[-2px] right-[-2px] text-r-blue-default">
+                    <RcWhitelistIconCC
+                      width={12}
+                      height={12}
+                      viewBox="0 0 12 12"
+                    />
+                  </div>
+                )}
+              </div>
+            </Tooltip>
+
+            <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
+              <div
+                className={clsx(
+                  'font-medium text-[13px] text-r-neutral-title1',
+                  showSideDesc ? 'max-w-[100px]  truncate' : ''
+                )}
+              >
+                {aliasName}
+              </div>
+            </Tooltip>
+          </>
+        )}
+      </div>
       {showSideDesc && (
         <div
           className={`
@@ -122,9 +202,11 @@ const AddressTypeCard = ({
             ? t('page.sendPoly.riskAlert.cexDepositAddress', {
                 cexName: cexInfo.name,
               })
-            : t('page.sendPoly.riskAlert.cexAddress', {
+            : type === KEYRING_CLASS.GNOSIS
+            ? t('page.sendPoly.riskAlert.cexAddress', {
                 cexName: BRAND_ALIAN_TYPE_TEXT[type],
-              })}
+              })
+            : BRAND_ALIAN_TYPE_TEXT[type]}
         </div>
       )}
     </div>
@@ -143,16 +225,21 @@ export const AddressRiskAlert = ({
   showClosableIcon = true,
   getContainer,
   editAlias,
+  forWhitelist,
   editCex,
   type,
 }: AddressRiskAlertProps) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
   const { accountsList } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
   }));
 
-  const [checkedRisk, setCheckedRisk] = useState(false);
+  const [form] = Form.useForm();
+  const [hasInputPassword, setHasInputPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [inWhiteList, setInWhiteList] = useState(false);
   // disable detect risk when invisible
   const riskInfos = useAddressRisks(visible ? address : '', editCex);
   const addressSplit = useMemo(() => {
@@ -186,6 +273,40 @@ export const AddressRiskAlert = ({
     return padWatchAccount(address);
   }, [accountsList, address, type]);
 
+  const handleSubmit = async ({ password }: { password: string }) => {
+    try {
+      await wallet?.verifyPassword(password);
+      if (inWhiteList || forWhitelist) {
+        await wallet.addWhitelist(password, address);
+      } else {
+        await wallet.removeWhitelist(address);
+      }
+      onConfirm?.(
+        riskInfos?.addressDesc?.cex?.is_deposit
+          ? riskInfos?.addressDesc?.cex?.id
+          : undefined
+      );
+    } catch (e: any) {
+      setPasswordError(true);
+      form.setFields([
+        {
+          name: 'password',
+          errors: [
+            e?.message || t('component.AuthenticationModal.passwordError'),
+          ],
+        },
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    if (!visible) {
+      form.resetFields();
+      setPasswordError(false);
+      setHasInputPassword(false);
+    }
+  }, [visible]);
+
   useEffect(() => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
   }, []);
@@ -212,22 +333,21 @@ export const AddressRiskAlert = ({
     >
       <div className="flex flex-col h-full">
         <header
-          className={`
-              header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]
-              flex flex-col items-center gap-[8px]
-           `}
+          className={clsx(
+            'header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]',
+            'flex flex-col items-center gap-[8px]',
+            {
+              'pb-0': riskInfos.hasNotRisk,
+            }
+          )}
         >
           {riskInfos.loadingAddrDesc ? (
             <Skeleton.Input className="w-full h-[44px] rounded-[8px]" active />
           ) : (
             <div className="text-[16px] w-full text-center">
-              <span className="text-r-neutral-title1 font-medium">
-                {addressSplit[0]}
-              </span>
+              <AddressText>{addressSplit[0]}</AddressText>
               <span className="text-r-neutral-foot">{addressSplit[1]}</span>
-              <span className="text-r-neutral-title1 font-medium">
-                {addressSplit[2]}
-              </span>
+              <AddressText>{addressSplit[2]}</AddressText>
             </div>
           )}
           {riskInfos.loadingAddrDesc ? (
@@ -254,6 +374,36 @@ export const AddressRiskAlert = ({
               }
             />
           )}
+          {riskInfos.hasNotRisk && (
+            <div className="w-full mt-[12px]">
+              <div className="relative">
+                <div className="absolute w-[calc(100%+32px)] left-[-16px] right-[-16px] h-[0.5px] bg-r-neutral-line" />
+              </div>
+              <div className="w-full h-[48px] flex flex-row justify-between items-center">
+                <div className="text-r-neutral-body text-[13px]">
+                  {t('page.sendPoly.riskAlert.TransferBefore')}
+                </div>
+                <div className="text-r-neutral-title1 font-medium text-[13px]">
+                  {t('page.sendPoly.riskAlert.TransferBeforeValue')}
+                </div>
+              </div>
+              {!forWhitelist && (
+                <div className="w-full h-[48px] flex flex-row justify-between items-center">
+                  <div className="text-r-neutral-body text-[13px]">
+                    {t('page.sendPoly.riskAlert.AddToWhitelist')}
+                  </div>
+                  <div>
+                    <Switch
+                      checked={inWhiteList}
+                      onChange={(v) => {
+                        setInWhiteList(!!v);
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </header>
         {riskInfos.loadingHasTransfer ? (
           <div className="flex-1">
@@ -263,12 +413,7 @@ export const AddressRiskAlert = ({
             </div>
           </div>
         ) : (
-          <div className="mt-[32px] flex-1">
-            {riskInfos.risks.length > 0 && (
-              <div className="text-r-neutral-foot text-[12px] font-medium text-center">
-                {t('page.sendPoly.riskAlert.riskWarning')}
-              </div>
-            )}
+          <div className="mt-[20px] flex-1">
             <main className="flex flex-col gap-[8px] mt-[8px]">
               {riskInfos.risks.map((item) => (
                 <RiskRow key={item.type} desc={item.value} />
@@ -276,39 +421,52 @@ export const AddressRiskAlert = ({
             </main>
           </div>
         )}
-        <div className="footer pb-[23px]">
-          <div className="relative pb-[16px]">
+        <div className="footer pb-[20px]">
+          <div className="relative pb-[20px]">
             <div className="absolute left-[-20px] right-[-20px] h-[1px] bg-r-neutral-line" />
           </div>
-          {riskInfos.risks.length > 0 && (
-            <div
-              className="whitelist-alert pb-[16px]"
-              onClick={() => setCheckedRisk((pre) => !pre)}
-            >
-              <div className="cursor-pointer flex items-center justify-center gap-[6px]">
-                {checkedRisk ? (
-                  <RcIconCheckedCC className="text-r-blue-default" />
-                ) : (
-                  <RcIconCheckCC className="text-r-neutral-body" />
-                )}
-                <span className="text-center text-r-neutral-body text-[13px] font-medium ">
-                  {t('page.sendPoly.riskAlert.understandRisks')}
-                </span>
-              </div>
-            </div>
-          )}
           <div className="btn-wrapper w-[100%] flex justify-center">
-            <Button
-              disabled={
-                riskInfos.loading || (!!riskInfos.risks.length && !checkedRisk)
-              }
-              type="primary"
-              onClick={onConfirm}
-              size="large"
-              className="w-[100%] h-[48px] text-[16px]"
-            >
-              {t('global.confirm')}
-            </Button>
+            <Form className="w-full" onFinish={handleSubmit} form={form}>
+              <AuthFormItemWrapper $hasError={passwordError}>
+                <Form.Item
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        'component.AuthenticationModal.passwordRequired'
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    className="popup-input"
+                    placeholder={t(
+                      'page.sendPoly.riskAlert.passwordPlaceholder'
+                    )}
+                    onChange={(e) => {
+                      setHasInputPassword(e.target.value.length > 0);
+                      setPasswordError(false);
+                    }}
+                    type="password"
+                    size="large"
+                    autoFocus
+                    spellCheck={false}
+                  />
+                </Form.Item>
+              </AuthFormItemWrapper>
+              <Button
+                disabled={
+                  riskInfos.loading || !hasInputPassword || passwordError
+                }
+                type="primary"
+                htmlType="submit"
+                size="large"
+                className="w-[100%] h-[48px] text-[16px]"
+              >
+                {t('global.confirm')}
+              </Button>
+            </Form>
           </div>
         </div>
       </div>

@@ -1283,7 +1283,11 @@
       "selectFromAddress": "选择地址",
       "noSupportTokenForChain": "收件人地址是另一个链上的合约地址。请在继续之前检查以避免损失。",
       "noSupprotTokenForSafe": "您发送代币的 Safe 地址未在该链上部署。在继续之前请检查，以避免损失。",
-      "noSupprotTokenForDex": "此代币可能不被该交易所支持。请在继续之前检查以避免损失。"
+      "noSupprotTokenForDex": "此代币可能不被该交易所支持。请在继续之前检查以避免损失。",
+      "selectToken": "选择 Token",
+      "noSupprotTokenForDex_short": "此交易所不支持",
+      "noSupprotTokenForSafe_short": "该安全地址未在该链上部署",
+      "noSupportTokenForChain_short": "合约地址未在此链上部署"
     },
     "sendTokenComponents": {
       "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费",
@@ -2735,7 +2739,8 @@
         "removeFromWhitelist": "从白名单中移除",
         "addWhitelist": "添加到白名单",
         "title": "白名单",
-        "addWhitelistDesc": "将受信任的地址添加到白名单，以便快速转账——下次无需确认"
+        "addWhitelistDesc": "将受信任的地址添加到白名单，以便快速转账——下次无需确认",
+        "notWhitelist": "不是白名单地址"
       },
       "addWhitelist": {
         "title": "添加白名单地址",
@@ -2751,23 +2756,27 @@
           }
         },
         "title": "发送到此地址",
-        "riskWarning": "风险警告",
         "understandRisks": "我理解这些风险，并且想继续",
         "cexAddress": "{{cexName}} 地址",
-        "cexDepositAddress": "{{cexName}} 存款地址"
+        "cexDepositAddress": "{{cexName}} 存款地址",
+        "TransferBefore": "转账前",
+        "AddToWhitelist": "添加到白名单",
+        "passwordPlaceholder": "输入密码以继续",
+        "TransferBeforeValue": "是的"
       },
       "selectImportedAddress": "选择导入的地址",
       "sendToImportedAddress": "发送到导入的地址",
       "title": "发送到",
       "enterAddress": "输入地址",
-      "enterAddressOrENS": "输入地址 / ENS",
-      "selectExchangeSource": "选择交易所来源"
+      "selectExchangeSource": "选择交易所来源",
+      "enterAddressOrENS": "输入或搜索地址"
     },
     "whitelist": {
       "tips": {
         "repeated": "当前地址已经在白名单中。",
         "removed": "已删除白名单地址",
-        "added": "地址已添加到白名单"
+        "added": "地址已添加到白名单",
+        "tooltip": "白名单地址"
       },
       "title": "添加白名单地址",
       "confirmPassword": "确认密码",
@@ -2969,6 +2978,9 @@
     },
     "ChainItem": {
       "appChain": "在 {{chain}} 账户"
+    },
+    "RiskTip": {
+      "title": "风险提示"
     }
   },
   "background": {

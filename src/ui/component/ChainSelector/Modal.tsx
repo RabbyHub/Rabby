@@ -29,6 +29,7 @@ import {
 import { LoadingBalances } from './LoadingBalances';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { Account } from '@/background/service/preference';
+import { TDisableCheckChainFn } from './components/SelectChainItem';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -40,6 +41,7 @@ interface ChainSelectorModalProps {
   className?: string;
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
+  disableChainCheck?: TDisableCheckChainFn;
   hideTestnetTab?: boolean;
   hideMainnetTab?: boolean;
   showRPCStatus?: boolean;
@@ -150,6 +152,7 @@ const ChainSelectorModal = ({
   showClosableIcon = true,
   getContainer,
   account,
+  disableChainCheck,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -273,6 +276,7 @@ const ChainSelectorModal = ({
               value={value}
               disabledTips={disabledTips}
               showRPCStatus={showRPCStatus}
+              disableChainCheck={disableChainCheck}
             ></SelectChainList>
             <SelectChainList
               supportChains={supportChains}
@@ -283,6 +287,7 @@ const ChainSelectorModal = ({
               onChange={handleChange}
               disabledTips={disabledTips}
               showRPCStatus={showRPCStatus}
+              disableChainCheck={disableChainCheck}
             ></SelectChainList>
 
             {matteredList.length === 0 && unmatteredList.length === 0 ? (

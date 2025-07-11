@@ -716,7 +716,11 @@
       "noSupprotTokenForDex": "Este token pode não ser suportado por esta exchange. Verifique antes de prosseguir para evitar perdas.",
       "selectFromAddress": "Selecione o Endereço",
       "noSupprotTokenForSafe": "O endereço Safe para o qual você está enviando tokens não está implantado nesta cadeia. Verifique antes de continuar para evitar perdas.",
-      "noSupportTokenForChain": "O endereço do destinatário é um endereço de contrato em uma cadeia diferente. Verifique antes de prosseguir para evitar perdas."
+      "noSupportTokenForChain": "O endereço do destinatário é um endereço de contrato em uma cadeia diferente. Verifique antes de prosseguir para evitar perdas.",
+      "selectToken": "Selecionar Token",
+      "noSupportTokenForChain_short": "Endereço do contrato não implantado nesta cadeia",
+      "noSupprotTokenForSafe_short": "Endereço seguro não implantado nesta rede",
+      "noSupprotTokenForDex_short": "Não suportado por esta exchange"
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "Reservar Gas <1 />",
@@ -2694,7 +2698,8 @@
         "removeFromWhitelist": "Remover da lista branca",
         "title": "Lista de Permissão",
         "addWhitelist": "Adicionar à lista de permissões",
-        "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---sem necessidade de confirmação na próxima vez."
+        "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---sem necessidade de confirmação na próxima vez.",
+        "notWhitelist": "Não é um endereço na lista branca"
       },
       "addWhitelist": {
         "title": "Adicionar Endereço à Lista Branca",
@@ -2711,22 +2716,26 @@
         },
         "title": "Enviar para este Endereço",
         "cexAddress": "{{cexName}} Endereço",
-        "riskWarning": "Aviso de Risco",
         "cexDepositAddress": "{{cexName}} Endereço de Depósito",
-        "understandRisks": "Eu entendo os riscos e quero continuar"
+        "understandRisks": "Eu entendo os riscos e quero continuar",
+        "TransferBeforeValue": "Sim",
+        "TransferBefore": "Transferir antes",
+        "AddToWhitelist": "Adicionar à Lista Branca",
+        "passwordPlaceholder": "Insira a senha para continuar"
       },
       "enterAddress": "Digite o endereço",
       "sendToImportedAddress": "Enviar para Endereço Importado",
-      "enterAddressOrENS": "Digite o endereço / ENS",
       "selectExchangeSource": "Selecionar Fonte de Câmbio",
       "title": "Enviar para",
-      "selectImportedAddress": "Selecione o endereço importado"
+      "selectImportedAddress": "Selecione o endereço importado",
+      "enterAddressOrENS": "Digite ou Pesquise o endereço"
     },
     "whitelist": {
       "tips": {
         "removed": "Endereço da lista branca excluído",
         "repeated": "O endereço atual já está na lista branca.",
-        "added": "Endereço adicionado à lista de permissões"
+        "added": "Endereço adicionado à lista de permissões",
+        "tooltip": "Whitelist address"
       },
       "title": "Adicionar Endereço à Lista Branca",
       "nameYourAddress": "Nomeie Seu Endereço",
@@ -2928,6 +2937,9 @@
     },
     "ChainItem": {
       "appChain": "Na Conta {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Aviso de Risco"
     }
   },
   "global": {

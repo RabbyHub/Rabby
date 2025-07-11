@@ -716,7 +716,11 @@
       "selectFromAddress": "Adresten Seçin",
       "noSupportTokenForChain": "Alıcı adresi farklı bir zincirde bir sözleşme adresidir. Devam etmeden önce kontrol edin, kaybı önlemek için.",
       "noSupprotTokenForDex": "Bu token bu borsa tarafından desteklenmiyor olabilir. Kaybı önlemek için ilerlemeden önce kontrol edin.",
-      "noSupprotTokenForSafe": "Gönderdiğiniz token'ların adresi bu zincirde dağıtılmamış. Kayıp yaşamamak için ilerlemeden önce kontrol edin."
+      "noSupprotTokenForSafe": "Gönderdiğiniz token'ların adresi bu zincirde dağıtılmamış. Kayıp yaşamamak için ilerlemeden önce kontrol edin.",
+      "selectToken": "Token Seçin",
+      "noSupprotTokenForDex_short": "Bu borsa tarafından desteklenmiyor",
+      "noSupprotTokenForSafe_short": "Bu zincirde dağıtılmamış güvenli adres",
+      "noSupportTokenForChain_short": "Sözleşme adresi bu zincirde dağıtılmamış."
     },
     "sendTokenComponents": {
       "GasReserved": "Gas maliyeti için <1>0</1> {{ tokenName }} ayrıldı",
@@ -2700,7 +2704,8 @@
         "title": "Beyaz Liste",
         "removeFromWhitelist": "Beyaz listeye eklemeyi kaldır",
         "addWhitelist": "Beyaz listeye ekle",
-        "addWhitelistDesc": "Güvenilir adresleri hızlı transferler için beyaz listeye ekleyin --- bir sonraki sefer onaya gerek yok"
+        "addWhitelistDesc": "Güvenilir adresleri hızlı transferler için beyaz listeye ekleyin --- bir sonraki sefer onaya gerek yok",
+        "notWhitelist": "Beyaz liste adresi değil"
       },
       "addWhitelist": {
         "title": "Beyaz Liste Adresi Ekle",
@@ -2717,22 +2722,26 @@
         },
         "cexAddress": "{{cexName}} Adresi",
         "title": "Bu Adrese Gönder",
-        "riskWarning": "Risk Uyarısı",
         "cexDepositAddress": "{{cexName}} Yatırım Adresi",
-        "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum."
+        "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
+        "TransferBeforeValue": "Evet",
+        "TransferBefore": "Transfer öncesi",
+        "AddToWhitelist": "Beyaz Listeye Ekle",
+        "passwordPlaceholder": "Şifreyi girin devam etmek için"
       },
       "enterAddress": "Adres girin",
       "selectExchangeSource": "Borsa Kaynağını Seçin",
       "title": "Göndermek için",
       "sendToImportedAddress": "İçe Aktarılan Adrese Gönder",
-      "enterAddressOrENS": "Adres / ENS girin",
-      "selectImportedAddress": "İçe aktarılan adresi seçin"
+      "selectImportedAddress": "İçe aktarılan adresi seçin",
+      "enterAddressOrENS": "Adres girin veya arayın"
     },
     "whitelist": {
       "tips": {
         "added": "Beyaz listeye eklendi",
         "removed": "Beyaz liste adresi silindi",
-        "repeated": "Mevcut adres zaten beyaz listede."
+        "repeated": "Mevcut adres zaten beyaz listede.",
+        "tooltip": "Beyaz liste adresi"
       },
       "title": "Beyaz Liste Adresi Ekle",
       "name": "Adınız",
@@ -2934,6 +2943,9 @@
     },
     "ChainItem": {
       "appChain": "{{chain}} Hesabı üzerinde"
+    },
+    "RiskTip": {
+      "title": "Risk Uyarısı"
     }
   },
   "global": {

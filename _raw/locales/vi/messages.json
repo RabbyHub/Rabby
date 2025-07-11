@@ -716,7 +716,11 @@
       "selectFromAddress": "Chọn từ Địa chỉ",
       "noSupprotTokenForDex": "Mã thông báo này có thể không được sàn giao dịch này hỗ trợ. Hãy kiểm tra trước khi tiếp tục để tránh mất mát.",
       "noSupportTokenForChain": "Địa chỉ người nhận là địa chỉ hợp đồng trên một chuỗi khác. Kiểm tra trước khi tiếp tục để tránh mất mát.",
-      "noSupprotTokenForSafe": "Địa chỉ Safe bạn đang gửi token đến không được triển khai trên chuỗi này. Kiểm tra trước khi tiếp tục để tránh bị mất mát."
+      "noSupprotTokenForSafe": "Địa chỉ Safe bạn đang gửi token đến không được triển khai trên chuỗi này. Kiểm tra trước khi tiếp tục để tránh bị mất mát.",
+      "selectToken": "Chọn Token",
+      "noSupprotTokenForSafe_short": "Địa chỉ an toàn chưa được triển khai trên chuỗi này",
+      "noSupprotTokenForDex_short": "Không được hỗ trợ bởi sàn giao dịch này",
+      "noSupportTokenForChain_short": "Địa chỉ hợp đồng chưa được triển khai trên chuỗi này"
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "Dự trữ Gas <1 />",
@@ -2694,7 +2698,8 @@
         "title": "Danh sách trắng",
         "removeFromWhitelist": "Xóa khỏi danh sách trắng",
         "addWhitelist": "Thêm vào danh sách trắng",
-        "addWhitelistDesc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển khoản nhanh---không cần xác nhận lần sau"
+        "addWhitelistDesc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển khoản nhanh---không cần xác nhận lần sau",
+        "notWhitelist": "Không phải địa chỉ whitelist"
       },
       "addWhitelist": {
         "title": "Thêm địa chỉ danh sách trắng",
@@ -2712,21 +2717,25 @@
         "title": "Gửi đến địa chỉ này",
         "cexAddress": "{{cexName}} Địa chỉ",
         "cexDepositAddress": "{{cexName}} Địa chỉ Nạp tiền",
-        "riskWarning": "Cảnh báo rủi ro",
-        "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục"
+        "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục",
+        "TransferBeforeValue": "Có",
+        "TransferBefore": "Chuyển trước",
+        "passwordPlaceholder": "Nhập mật khẩu để tiếp tục",
+        "AddToWhitelist": "Thêm vào Danh sách Trắng"
       },
       "selectImportedAddress": "Chọn địa chỉ đã nhập",
-      "enterAddressOrENS": "Nhập địa chỉ / ENS",
       "sendToImportedAddress": "Gửi đến Địa chỉ Nhập khẩu",
       "selectExchangeSource": "Chọn Nguồn Giao Dịch",
       "title": "Gửi đến",
-      "enterAddress": "Nhập địa chỉ"
+      "enterAddress": "Nhập địa chỉ",
+      "enterAddressOrENS": "Nhập hoặc Tìm kiếm địa chỉ"
     },
     "whitelist": {
       "tips": {
         "removed": "Địa chỉ trong danh sách trắng đã bị xóa",
         "added": "Địa chỉ đã được thêm vào danh sách trắng",
-        "repeated": "Địa chỉ hiện tại đã có trong danh sách trắng."
+        "repeated": "Địa chỉ hiện tại đã có trong danh sách trắng.",
+        "tooltip": "Danh sách trắng địa chỉ"
       },
       "title": "Thêm Địa chỉ Danh sách Trắng",
       "nameYourAddress": "Đặt tên cho địa chỉ của bạn",
@@ -2928,6 +2937,9 @@
     },
     "ChainItem": {
       "appChain": "Trên tài khoản {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Cảnh báo rủi ro"
     }
   },
   "global": {
