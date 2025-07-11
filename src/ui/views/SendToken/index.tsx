@@ -674,6 +674,22 @@ const SendToken = () => {
             params.gasPrice = selectedGasLevel?.price;
           }
         }
+
+        wallet.addCacheHistoryData(
+          `${chain.enum}-${params.data || '0x'}`,
+          {
+            address: currentAccount!.address,
+            chainId: findChainByEnum(chain.enum)?.id || 0,
+            from: currentAccount!.address,
+            to: toAddress,
+            token: currentToken,
+            amount: Number(amount),
+            status: 'pending',
+            createdAt: Date.now(),
+          } as SendTxHistoryItem,
+          'send'
+        );
+
         if (isCurrent) {
           setMiniSignTx(params as Tx);
         }
@@ -702,6 +718,8 @@ const SendToken = () => {
     estimatedGas,
     amount,
     address,
+    currentAccount,
+    currentToken,
   ]);
 
   const handleMiniSignResolve = useCallback(() => {
@@ -1468,7 +1486,7 @@ const SendToken = () => {
                 setOpen={setGasFeeOpen}
               />
             ) : null}
-            {!(chainItem?.serverId && canUseDirectSubmitTx) && (
+            {!canSubmit && (
               <div className="mt-20">
                 <PendingTxItem type="send" ref={pendingTxRef} />
               </div>
