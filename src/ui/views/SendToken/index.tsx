@@ -163,7 +163,7 @@ export const ToAddressCard = ({
 
   useEffect(() => {
     dispatch.whitelist.getWhitelist();
-  }, []);
+  }, [dispatch.whitelist]);
 
   return (
     <header
