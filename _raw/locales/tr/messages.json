@@ -1782,7 +1782,7 @@
       },
       "btnForgotPassword": "Şifrenizi mi unuttunuz?",
       "title": "Rabby Cüzdan",
-      "description": "Ethereum ve tüm EVM zincirleri için çığır açan cüzdan"
+      "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan"
     },
     "addToken": {
       "noTokenFound": "Token bulunamadı",
@@ -2474,7 +2474,7 @@
         "importAddress": "Zaten bir adresim var",
         "createNewAddress": "Yeni bir adres oluştur",
         "title": "Rabby Wallet'e Hoş Geldiniz",
-        "desc": "Ethereum ve tüm EVM zincirleri için çığır açan cüzdan"
+        "desc": "Ethereum ve EVM için vazgeçilmez cüzdanınız"
       },
       "createNewAddress": {
         "showSeedPhrase": "Tohum İfadesini Göster",
@@ -2936,7 +2936,6 @@
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "Ethereum ve tüm EVM zincirleri için oyun değiştirici cüzdan",
     "copied": "Kopyalandı",
     "confirm": "Onayla",
     "next": "İleri",
@@ -2968,7 +2967,8 @@
     "Done": "Bitti",
     "Nonce": "Nonce",
     "notSupportTesntnet": "Özel ağ için desteklenmiyor",
-    "tryAgain": "Tekrar Dene"
+    "tryAgain": "Tekrar Dene",
+    "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan."
   },
   "background": {
     "error": {

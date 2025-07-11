@@ -24,7 +24,6 @@
     "scamTx": "诈骗交易",
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "观察模式地址",
-    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
     "appName": "Rabby Wallet",
     "Deleted": "已删除",
     "Loading": "加载中",
@@ -33,7 +32,8 @@
     "nonce": "nonce",
     "Nonce": "Nonce",
     "tryAgain": "再试一次",
-    "notSupportTesntnet": "不支持自定义网络"
+    "notSupportTesntnet": "不支持自定义网络",
+    "appDescription": "你首选的以太坊和 EVM 钱包"
   },
   "page": {
     "transactions": {
@@ -1910,8 +1910,8 @@
         "required": "输入密码解锁"
       },
       "btnForgotPassword": "忘记密码？",
-      "description": "革命性改变的Ethereum及所有EVM链的钱包",
-      "title": "Rabby Wallet"
+      "title": "Rabby Wallet",
+      "description": "你首选的以太坊和 EVM 钱包"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名单",
@@ -2548,7 +2548,7 @@
         "importAddress": "我已经有一个地址",
         "title": "欢迎使用 Rabby Wallet",
         "createNewAddress": "创建一个新地址",
-        "desc": "颠覆性的以太坊及所有 EVM 链的钱包"
+        "desc": "你首选的以太坊和 EVM 钱包"
       },
       "createNewAddress": {
         "showSeedPhrase": "显示 Seed Phrase",

@@ -63,6 +63,7 @@ const ActionItem = ({
   engineResults,
   account,
   message,
+  origin,
 }: {
   data: ParsedTypedDataActionData | null;
   requireData: ActionRequireData;
@@ -72,6 +73,7 @@ const ActionItem = ({
   message: string;
   typedDataActionData?: ParseCommonResponse | null;
   account: Account;
+  origin: string;
 }) => {
   const { t } = useTranslation();
 
@@ -368,6 +370,7 @@ const Actions = ({
                 raw={raw}
                 message={message}
                 account={account}
+                origin={origin}
               />
             )
           )
@@ -380,6 +383,7 @@ const Actions = ({
             raw={raw}
             message={message}
             account={account}
+            origin={origin}
           />
         )}
       </ActionWrapper>

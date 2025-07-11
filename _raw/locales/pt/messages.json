@@ -1848,7 +1848,7 @@
       },
       "title": "Rabby Wallet",
       "btnForgotPassword": "Esqueceu a senha?",
-      "description": "A carteira revolucionária para Ethereum e todas as cadeias EVM"
+      "description": "Sua carteira de referência para Ethereum e EVM"
     },
     "addToken": {
       "title": "Adicione um token personalizado ao Rabby",
@@ -2468,7 +2468,7 @@
         "importAddress": "Eu já tenho um endereço",
         "createNewAddress": "Crie um novo endereço",
         "title": "Bem-vindo ao Rabby Wallet",
-        "desc": "A carteira que muda o jogo para Ethereum e todas as cadeias EVM"
+        "desc": "Sua carteira de referência para Ethereum e EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Mostrar Frase Semente",
@@ -2939,7 +2939,6 @@
     "refresh": "Atualizar",
     "next": "Próximo",
     "failed": "Falhou",
-    "appDescription": "A carteira que muda o jogo para Ethereum e todas as cadeias EVM",
     "Loading": "Carregando",
     "Confirm": "Confirmar",
     "Nonce": "Nonce",
@@ -2962,7 +2961,8 @@
     "closeButton": "Fechar",
     "addButton": "Adicionar",
     "nonce": "nonce",
-    "copyAddress": "Copie o endereço"
+    "copyAddress": "Copie o endereço",
+    "appDescription": "Sua carteira de referência para Ethereum e EVM"
   },
   "background": {
     "error": {

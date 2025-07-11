@@ -1847,8 +1847,8 @@
         "error": "잘못된 비밀번호"
       },
       "title": "Rabby 지갑",
-      "description": "Ethereum 및 모든 EVM 체인을 위한 게임 체인저 지갑",
-      "btnForgotPassword": "비밀번호를 잊으셨나요?"
+      "btnForgotPassword": "비밀번호를 잊으셨나요?",
+      "description": "이더리움 및 EVM을 위한 귀하의 필수 지갑입니다."
     },
     "addToken": {
       "balance": "잔액",
@@ -2468,7 +2468,7 @@
         "importAddress": "저는 이미 주소가 있습니다.",
         "title": "Rabby Wallet에 오신 것을 환영합니다.",
         "createNewAddress": "새 주소 만들기",
-        "desc": "이더리움 및 모든 EVM 체인을 위한 게임 체인저 지갑"
+        "desc": "Ethereum 및 EVM을 위한 최고의 지갑"
       },
       "createNewAddress": {
         "showSeedPhrase": "시드 구문 보기",
@@ -2938,7 +2938,6 @@
     "copied": "복사됨",
     "refresh": "새로 고침",
     "confirm": "확인",
-    "appDescription": "Ethereum 및 모든 EVM 체인을 위한 게임 체인저 지갑",
     "next": "다음",
     "Clear": "지우기",
     "editButton": "편집",
@@ -2962,7 +2961,8 @@
     "Confirm": "확인",
     "closeButton": "닫기",
     "Nonce": "논스",
-    "unknownNFT": "알 수 없는 NFT"
+    "unknownNFT": "알 수 없는 NFT",
+    "appDescription": "Ethereum 및 EVM을 위한 당신의 필수 지갑"
   },
   "background": {
     "error": {

@@ -1778,8 +1778,8 @@
         "error": "Falsches Passwort"
       },
       "title": "Rabby Wallet",
-      "description": "Die revolutionäre Wallet für Ethereum und alle EVM-Chains",
-      "btnForgotPassword": "Passwort vergessen?"
+      "btnForgotPassword": "Passwort vergessen?",
+      "description": "Ihr bevorzugtes Wallet für Ethereum und EVM"
     },
     "addToken": {
       "noTokenFound": "Kein Token gefunden",
@@ -2471,7 +2471,7 @@
         "importAddress": "Ich habe bereits eine Adresse",
         "title": "Willkommen bei Rabby Wallet",
         "createNewAddress": "Erstellen Sie eine neue Adresse",
-        "desc": "Die bahnbrechende Wallet für Ethereum und alle EVM Chains"
+        "desc": "Ihre bevorzugte Wallet für Ethereum und EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Seed Phrase anzeigen",
@@ -2933,7 +2933,6 @@
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "Die bahnbrechende Wallet für Ethereum und alle EVM-Blockchains",
     "copied": "Kopiert",
     "confirm": "Bestätigen",
     "next": "Weiter",
@@ -2965,7 +2964,8 @@
     "Done": "Erledigt",
     "Nonce": "Nonce",
     "tryAgain": "Erneut versuchen",
-    "notSupportTesntnet": "Für benutzerdefiniertes Netzwerk nicht unterstützt"
+    "notSupportTesntnet": "Für benutzerdefiniertes Netzwerk nicht unterstützt",
+    "appDescription": "Ihr bevorzugtes Wallet für Ethereum und EVM"
   },
   "background": {
     "error": {
