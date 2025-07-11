@@ -32,6 +32,7 @@ interface TokenAmountInputProps {
   token: TokenItem | null;
   value?: string;
   isLoading?: boolean;
+  initLoading?: boolean;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
   chainId: string;
@@ -104,6 +105,7 @@ const TokenAmountInput = ({
   handleClickMaxButton,
   insufficientError,
   isLoading,
+  initLoading,
   disableItemCheck,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
@@ -296,26 +298,39 @@ const TokenAmountInput = ({
       </div>
       <div className="flex flex-col justify-between gap-[13px] items-end">
         <div className="left" onClick={handleSelectToken}>
-          {!!token && (
-            <TokenWithChain
-              width="24px"
-              height="24px"
-              token={token}
-              hideChainIcon
-              hideConer
-            />
+          {initLoading ? (
+            <>
+              <Skeleton.Avatar className="bg-r-neutral-line w-[24px] h-[24px] rounded-full" />
+              <Skeleton.Input className="bg-r-neutral-line w-[58px] h-[20px] rounded-[2px] ml-[6px] mr-[6px]" />
+            </>
+          ) : (
+            <>
+              {!!token && (
+                <TokenWithChain
+                  width="24px"
+                  height="24px"
+                  token={token}
+                  hideChainIcon
+                  hideConer
+                />
+              )}
+              <span
+                className={clsx(
+                  'token-input__symbol',
+                  token ? '' : 'max-w-max leading-[24px]'
+                )}
+                title={
+                  token
+                    ? getTokenSymbol(token)
+                    : t('page.sendToken.selectToken')
+                }
+              >
+                {token
+                  ? getTokenSymbol(token)
+                  : t('page.sendToken.selectToken')}
+              </span>
+            </>
           )}
-          <span
-            className={clsx(
-              'token-input__symbol',
-              token ? '' : 'max-w-max leading-[24px]'
-            )}
-            title={
-              token ? getTokenSymbol(token) : t('page.sendToken.selectToken')
-            }
-          >
-            {token ? getTokenSymbol(token) : t('page.sendToken.selectToken')}
-          </span>
           <div className="text-r-neutral-foot ml-[6px]">
             <RcIconDownCC width={16} height={16} />
           </div>

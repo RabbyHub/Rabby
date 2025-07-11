@@ -104,6 +104,7 @@ type FormSendToken = {
 };
 
 interface AddressTypeCardProps {
+  loading?: boolean;
   account: Account;
   cexInfo?: Cex;
 }
@@ -125,6 +126,7 @@ const AddressText = styled.span`
 
 export const ToAddressCard = ({
   account: targetAccount,
+  loading,
   cexInfo,
 }: AddressTypeCardProps) => {
   const { whitelist } = useRabbySelector((s) => ({
@@ -177,6 +179,7 @@ export const ToAddressCard = ({
           logo: cexInfo?.logo_url,
           isDeposit: !!cexInfo?.is_deposit,
         }}
+        loading={loading}
         inWhitelist={whitelist?.some((w) =>
           isSameAddress(w, targetAccount.address)
         )}
@@ -224,6 +227,7 @@ const SendToken = () => {
   } | null>(null);
 
   const [inited, setInited] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState<string | null>(null);
@@ -302,12 +306,14 @@ const SendToken = () => {
     });
   }, [toAddress, history, search, form]);
 
-  const { targetAccount, addressDesc, isTokenSupport } = useAddressInfo(
-    toAddress,
-    {
-      type: toAddressType,
-    }
-  );
+  const {
+    targetAccount,
+    addressDesc,
+    isTokenSupport,
+    loading: loadingToAddressDesc,
+  } = useAddressInfo(toAddress, {
+    type: toAddressType,
+  });
   useInitCheck(addressDesc);
 
   const canSubmit =
@@ -1171,145 +1177,170 @@ const SendToken = () => {
   );
 
   const initByCache = async () => {
-    const account = (await wallet.syncGetCurrentAccount())!;
-    const qs = query2obj(history.location.search);
+    try {
+      const account = (await wallet.syncGetCurrentAccount())!;
+      const qs = query2obj(history.location.search);
 
-    if (qs.token) {
-      const [tokenChain, id] = qs.token.split(':');
-      if (!tokenChain || !id) return;
+      if (qs.token) {
+        const [tokenChain, id] = qs.token.split(':');
+        if (!tokenChain || !id) {
+          setInitLoading(false);
+          return;
+        }
 
-      const target = findChain({
-        serverId: tokenChain,
-      });
-      if (!target) {
-        if (currentToken) {
-          loadCurrentToken(
-            currentToken.id,
-            currentToken.chain,
+        const target = findChain({
+          serverId: tokenChain,
+        });
+        if (!target) {
+          if (currentToken) {
+            setInitLoading(false);
+            loadCurrentToken(
+              currentToken.id,
+              currentToken.chain,
+              account.address
+            );
+          }
+          return;
+        }
+        setChain(target.enum);
+        await loadCurrentToken(id, tokenChain, account.address);
+      } else if ((history.location.state as any)?.safeInfo) {
+        const safeInfo: {
+          nonce: number;
+          chainId: number;
+        } = (history.location.state as any)?.safeInfo;
+
+        const chain = findChainByID(safeInfo.chainId);
+        let nativeToken: TokenItem | null = null;
+        if (chain) {
+          setChain(chain.enum);
+          nativeToken = await loadCurrentToken(
+            chain.nativeTokenAddress,
+            chain.serverId,
             account.address
           );
         }
-        return;
-      }
-      setChain(target.enum);
-      loadCurrentToken(id, tokenChain, account.address);
-    } else if ((history.location.state as any)?.safeInfo) {
-      const safeInfo: {
-        nonce: number;
-        chainId: number;
-      } = (history.location.state as any)?.safeInfo;
+        setSafeInfo(safeInfo);
+        persistPageStateCache({
+          safeInfo,
+          currentToken: nativeToken || currentToken,
+        });
+      } else {
+        let tokenFromOrder: TokenItem | null = null;
 
-      const chain = findChainByID(safeInfo.chainId);
-      let nativeToken: TokenItem | null = null;
-      if (chain) {
-        setChain(chain.enum);
-        nativeToken = await loadCurrentToken(
-          chain.nativeTokenAddress,
-          chain.serverId,
+        const lastTimeToken = await wallet.getLastTimeSendToken(
           account.address
         );
-      }
-      setSafeInfo(safeInfo);
-      persistPageStateCache({
-        safeInfo,
-        currentToken: nativeToken || currentToken,
-      });
-    } else {
-      let tokenFromOrder: TokenItem | null = null;
-
-      const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-      if (
-        !(
-          lastTimeToken &&
-          findChain({
-            serverId: lastTimeToken.chain,
-          })
-        )
-      ) {
-        const { firstChain } = await dispatch.chains.getOrderedChainList({
-          supportChains: undefined,
-        });
-        tokenFromOrder = firstChain ? makeTokenFromChain(firstChain) : null;
-      }
-
-      let needLoadToken: TokenItem =
-        lastTimeToken || tokenFromOrder || currentToken;
-
-      let cachesState;
-      if (await wallet.hasPageStateCache()) {
-        const cache = await wallet.getPageStateCache();
-        if (cache?.path === history.location.pathname) {
-          if (cache.states.values) {
-            form.setFieldsValue(cache.states.values);
-            handleFormValuesChange(cache.states.values, form.getFieldsValue(), {
-              token: cache.states.currentToken,
-              isInitFromCache: true,
-            });
-          }
-          if (cache.states.currentToken) {
-            cachesState = cache.states;
-            needLoadToken = cache.states.currentToken;
-          }
-          if (cache.states.safeInfo) {
-            setSafeInfo(cache.states.safeInfo);
-          }
-        }
-      }
-
-      // check the recommended token is support for address
-      const {
-        isCex,
-        isCexSupport,
-        isContractAddress,
-        contractSupportChain,
-      } = await isTokenSupport(needLoadToken.id, needLoadToken.chain);
-
-      // CEX CHECK: 交易所地址但不支持该token，默认eth:eth
-      if (isCex && !isCexSupport) {
-        needLoadToken = DEFAULT_TOKEN;
-        // reset formValues change
-        if (cachesState) {
-          handleFormValuesChange(cachesState.values, form.getFieldsValue(), {
-            token: DEFAULT_TOKEN,
-            isInitFromCache: true,
+        if (
+          !(
+            lastTimeToken &&
+            findChain({
+              serverId: lastTimeToken.chain,
+            })
+          )
+        ) {
+          const { firstChain } = await dispatch.chains.getOrderedChainList({
+            supportChains: undefined,
           });
+          tokenFromOrder = firstChain ? makeTokenFromChain(firstChain) : null;
         }
-        // CONTRACT CHECK: 合约地址但合约不支持该token，默认第一个支持的链的原生代币
-      } else if (
-        isContractAddress &&
-        !contractSupportChain.includes(needLoadToken.chain)
-      ) {
-        const chainList = contractSupportChain
-          .map((chain) => findChain({ serverId: chain })?.enum)
-          .filter((chainEnum): chainEnum is CHAINS_ENUM => !!chainEnum);
-        let { firstChain } = await dispatch.chains.getOrderedChainList({
-          supportChains: chainList,
-        });
-        const noSortFirstChain = findChainByEnum(chainList[0]);
-        if (!firstChain && noSortFirstChain) {
-          firstChain = noSortFirstChain;
+
+        let needLoadToken: TokenItem =
+          lastTimeToken || tokenFromOrder || currentToken;
+
+        let cachesState;
+        if (await wallet.hasPageStateCache()) {
+          const cache = await wallet.getPageStateCache();
+          if (cache?.path === history.location.pathname) {
+            if (cache.states.values) {
+              form.setFieldsValue(cache.states.values);
+              handleFormValuesChange(
+                cache.states.values,
+                form.getFieldsValue(),
+                {
+                  token: cache.states.currentToken,
+                  isInitFromCache: true,
+                }
+              );
+            }
+            if (cache.states.currentToken) {
+              cachesState = cache.states;
+              needLoadToken = cache.states.currentToken;
+            }
+            if (cache.states.safeInfo) {
+              setSafeInfo(cache.states.safeInfo);
+            }
+          }
         }
-        if (firstChain) {
-          const targetToken = makeTokenFromChain(firstChain);
-          needLoadToken = targetToken;
+
+        // check the recommended token is support for address
+        const {
+          isCex,
+          isCexSupport,
+          isContractAddress,
+          contractSupportChain,
+        } = await isTokenSupport(needLoadToken.id, needLoadToken.chain);
+
+        // CEX CHECK: 交易所地址但不支持该token，默认eth:eth
+        if (isCex && !isCexSupport) {
+          needLoadToken = DEFAULT_TOKEN;
           // reset formValues change
           if (cachesState) {
             handleFormValuesChange(cachesState.values, form.getFieldsValue(), {
-              token: targetToken,
+              token: DEFAULT_TOKEN,
               isInitFromCache: true,
             });
           }
+          // CONTRACT CHECK: 合约地址但合约不支持该token，默认第一个支持的链的原生代币
+        } else if (
+          isContractAddress &&
+          !contractSupportChain.includes(needLoadToken.chain)
+        ) {
+          const chainList = contractSupportChain
+            .map((chain) => findChain({ serverId: chain })?.enum)
+            .filter((chainEnum): chainEnum is CHAINS_ENUM => !!chainEnum);
+          let { firstChain } = await dispatch.chains.getOrderedChainList({
+            supportChains: chainList,
+          });
+          const noSortFirstChain = findChainByEnum(chainList[0]);
+          if (!firstChain && noSortFirstChain) {
+            firstChain = noSortFirstChain;
+          }
+          if (firstChain) {
+            const targetToken = makeTokenFromChain(firstChain);
+            needLoadToken = targetToken;
+            // reset formValues change
+            if (cachesState) {
+              handleFormValuesChange(
+                cachesState.values,
+                form.getFieldsValue(),
+                {
+                  token: targetToken,
+                  isInitFromCache: true,
+                }
+              );
+            }
+          }
         }
-      }
-      setCurrentToken(needLoadToken);
-
-      if (chainItem && needLoadToken.chain !== chainItem.serverId) {
-        const target = findChain({ serverId: needLoadToken.chain });
-        if (target?.enum) {
-          setChain(target.enum);
+        setCurrentToken(needLoadToken);
+        if (chainItem && needLoadToken.chain !== chainItem.serverId) {
+          const target = findChain({ serverId: needLoadToken.chain });
+          if (target?.enum) {
+            setChain(target.enum);
+          }
         }
+        setInitLoading(false);
+        await loadCurrentToken(
+          needLoadToken.id,
+          needLoadToken.chain,
+          account.address
+        );
       }
-      loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
+    } catch (error) {
+      /* empty */
+      console.error('initByCache error', error);
+    } finally {
+      setInitLoading(false);
     }
   };
 
@@ -1435,6 +1466,7 @@ const SendToken = () => {
               <div className="to-address">
                 {targetAccount && (
                   <ToAddressCard
+                    loading={loadingToAddressDesc}
                     account={targetAccount}
                     cexInfo={addressDesc?.cex}
                   />
@@ -1452,6 +1484,7 @@ const SendToken = () => {
                   <ChainSelectWrapper>
                     <ChainSelectorInForm
                       value={chain}
+                      loading={initLoading}
                       onChange={handleChainChanged}
                       disableChainCheck={disableChainCheck}
                       chainRenderClassName={clsx(
@@ -1471,6 +1504,7 @@ const SendToken = () => {
                       onTokenChange={handleCurrentTokenChange}
                       chainId={chainItem.serverId}
                       excludeTokens={[]}
+                      initLoading={initLoading}
                       disableItemCheck={disableItemCheck}
                       balanceNumText={balanceNumText}
                       insufficientError={!!balanceError}

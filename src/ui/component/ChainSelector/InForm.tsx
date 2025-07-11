@@ -11,7 +11,7 @@ import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
-import { DrawerProps, Modal } from 'antd';
+import { DrawerProps, Modal, Skeleton } from 'antd';
 import { TDisableCheckChainFn } from './components/SelectChainItem';
 import { RiskWarningTitle } from '../RiskWarningTitle';
 
@@ -136,12 +136,14 @@ export const ChainRender = ({
   arrowDownComponent,
   bridge,
   swap,
+  loading,
   ...other
 }: {
   chain?: CHAINS_ENUM;
   readonly: boolean;
   arrowDownComponent?: React.ReactNode;
   bridge?: boolean;
+  loading?: boolean;
   swap?: boolean;
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
@@ -174,24 +176,33 @@ export const ChainRender = ({
       )}
       {...other}
     >
-      {chain && (
-        <ChainIcon
-          chain={chain}
-          customRPC={customRPC}
-          size={'small'}
-          innerClassName={clsx(
-            bridge && 'w-[16px] h-[16px]',
-            swap && 'w-[18px] h-[18px]'
+      {loading ? (
+        <>
+          <Skeleton.Avatar className="bg-r-neutral-card2 w-[18px] h-[18px] rounded-full" />
+          <Skeleton.Avatar className="bg-r-neutral-card2 w-[94px] h-[18px] rounded-[2px]" />
+        </>
+      ) : (
+        <>
+          {chain && (
+            <ChainIcon
+              chain={chain}
+              customRPC={customRPC}
+              size={'small'}
+              innerClassName={clsx(
+                bridge && 'w-[16px] h-[16px]',
+                swap && 'w-[18px] h-[18px]'
+              )}
+              showCustomRPCToolTip
+              tooltipProps={{
+                visible: swap || bridge ? false : undefined,
+              }}
+            />
           )}
-          showCustomRPCToolTip
-          tooltipProps={{
-            visible: swap || bridge ? false : undefined,
-          }}
-        />
+          <span className={clsx('name')}>
+            {chainInfo?.name || t('page.bridge.Select')}
+          </span>
+        </>
       )}
-      <span className={clsx('name')}>
-        {chainInfo?.name || t('page.bridge.Select')}
-      </span>
       {/* {!readonly && <img className="down" src={ImgArrowDown} alt="" />} */}
       {!readonly &&
         (arrowDownComponent ? (
@@ -222,6 +233,7 @@ interface ChainSelectorProps {
   swap?: boolean;
   getContainer?: DrawerProps['getContainer'];
   disableChainCheck?: TDisableCheckChainFn;
+  loading?: boolean;
 }
 export default function ChainSelectorInForm({
   value,
@@ -240,6 +252,7 @@ export default function ChainSelectorInForm({
   drawerHeight,
   showClosableIcon,
   swap,
+  loading,
   getContainer,
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
@@ -300,6 +313,7 @@ export default function ChainSelectorInForm({
         arrowDownComponent={arrowDownComponent}
         bridge={bridge}
         swap={swap}
+        loading={loading}
       />
       {!readonly && (
         <ChainSelectorModal

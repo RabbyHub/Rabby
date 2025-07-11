@@ -97,12 +97,14 @@ export const AddressTypeCard = ({
   cexInfo,
   inWhitelist,
   className = 'bg-r-neutral-card2 ',
+  loading,
 }: {
   type: string;
   brandName: string;
   aliasName: string;
   className?: string;
   inWhitelist?: boolean;
+  loading?: boolean;
   cexInfo: {
     id?: string;
     name?: string;
@@ -112,7 +114,6 @@ export const AddressTypeCard = ({
 }) => {
   const { isDarkTheme } = useThemeMode();
   const { t } = useTranslation();
-
   const showCexInfo = useMemo(() => {
     return cexInfo.id && cexInfo.isDeposit && type === KEYRING_CLASS.WATCH;
   }, [cexInfo, type]);
@@ -136,45 +137,58 @@ export const AddressTypeCard = ({
           className
         )}
       >
-        <Tooltip
-          overlayClassName="alias-tooltip"
-          title={inWhitelist ? t('page.whitelist.tips.tooltip') : ''}
-        >
-          <div className="relative w-[20px] h-[20px]">
-            {showCexInfo ? (
-              <img
-                className="icon icon-account-type w-[20px] h-[20px] rounded-full"
-                src={cexInfo.logo}
-              />
-            ) : (
-              <ThemeIcon
-                className="icon icon-account-type w-[20px] h-[20px]"
-                src={
-                  pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
-                  WALLET_BRAND_CONTENT[brandName]?.image ||
-                  pickKeyringThemeIcon(type as any, isDarkTheme) ||
-                  KEYRING_ICONS[type]
-                }
-              />
-            )}
-            {inWhitelist && (
-              <div className="absolute w-[12px] h-[12px] bottom-[-2px] right-[-2px] text-r-blue-default">
-                <RcWhitelistIconCC width={12} height={12} viewBox="0 0 12 12" />
+        {loading ? (
+          <>
+            <Skeleton.Avatar className="bg-r-neutral-line w-[20px] h-[20px] rounded-full" />
+            <Skeleton.Avatar className="bg-r-neutral-line w-[94px] h-[16px] rounded-[2px]" />
+          </>
+        ) : (
+          <>
+            <Tooltip
+              overlayClassName="alias-tooltip"
+              title={inWhitelist ? t('page.whitelist.tips.tooltip') : ''}
+            >
+              <div className="relative w-[20px] h-[20px]">
+                {showCexInfo ? (
+                  <img
+                    className="icon icon-account-type w-[20px] h-[20px] rounded-full"
+                    src={cexInfo.logo}
+                  />
+                ) : (
+                  <ThemeIcon
+                    className="icon icon-account-type w-[20px] h-[20px]"
+                    src={
+                      pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
+                      WALLET_BRAND_CONTENT[brandName]?.image ||
+                      pickKeyringThemeIcon(type as any, isDarkTheme) ||
+                      KEYRING_ICONS[type]
+                    }
+                  />
+                )}
+                {inWhitelist && (
+                  <div className="absolute w-[12px] h-[12px] bottom-[-2px] right-[-2px] text-r-blue-default">
+                    <RcWhitelistIconCC
+                      width={12}
+                      height={12}
+                      viewBox="0 0 12 12"
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </Tooltip>
+            </Tooltip>
 
-        <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
-          <div
-            className={clsx(
-              'font-medium text-[13px] text-r-neutral-title1',
-              showSideDesc ? 'max-w-[100px]  truncate' : ''
-            )}
-          >
-            {aliasName}
-          </div>
-        </Tooltip>
+            <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
+              <div
+                className={clsx(
+                  'font-medium text-[13px] text-r-neutral-title1',
+                  showSideDesc ? 'max-w-[100px]  truncate' : ''
+                )}
+              >
+                {aliasName}
+              </div>
+            </Tooltip>
+          </>
+        )}
       </div>
       {showSideDesc && (
         <div
