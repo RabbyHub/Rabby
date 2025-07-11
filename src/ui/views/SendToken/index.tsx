@@ -539,17 +539,15 @@ const SendToken = () => {
   );
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
-<<<<<<< HEAD
     async ({
       amount,
       forceSignPage,
     }: FormSendToken & { forceSignPage?: boolean }) => {
       if (canUseDirectSubmitTx && !forceSignPage) {
         startDirectSigning();
-=======
-    async ({ amount }: FormSendToken) => {
+        return;
+      }
       if (!currentToken) {
->>>>>>> feat/send0711
         return;
       }
       const chain = findChain({
