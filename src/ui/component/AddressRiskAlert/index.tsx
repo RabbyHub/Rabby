@@ -280,6 +280,14 @@ export const AddressRiskAlert = ({
   };
 
   useEffect(() => {
+    if (!visible) {
+      form.resetFields();
+      setPasswordError(false);
+      setHasInputPassword(false);
+    }
+  }, [visible]);
+
+  useEffect(() => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
   }, []);
 
