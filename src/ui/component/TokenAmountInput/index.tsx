@@ -29,7 +29,7 @@ import styled from 'styled-components';
 import { RiskWarningTitle } from '../RiskWarningTitle';
 
 interface TokenAmountInputProps {
-  token: TokenItem;
+  token: TokenItem | null;
   value?: string;
   isLoading?: boolean;
   onChange?(amount: string): void;
@@ -284,21 +284,36 @@ const TokenAmountInput = ({
         <div
           className="text-r-neutral-foot font-normal text-[13px] max-w-full truncate"
           title={splitNumberByStep(
-            ((valueNum || 0) * token.price || 0).toFixed(2)
+            ((valueNum || 0) * (token?.price || 0) || 0).toFixed(2)
           )}
         >
           {valueNum
             ? `$${splitNumberByStep(
-                ((valueNum || 0) * token.price || 0).toFixed(2)
+                ((valueNum || 0) * (token?.price || 0) || 0).toFixed(2)
               )}`
             : '$0.00'}
         </div>
       </div>
       <div className="flex flex-col justify-between gap-[13px] items-end">
         <div className="left" onClick={handleSelectToken}>
-          <TokenWithChain width="24px" height="24px" token={token} hideConer />
-          <span className="token-input__symbol" title={getTokenSymbol(token)}>
-            {getTokenSymbol(token)}
+          {!!token && (
+            <TokenWithChain
+              width="24px"
+              height="24px"
+              token={token}
+              hideConer
+            />
+          )}
+          <span
+            className={clsx(
+              'token-input__symbol',
+              token ? '' : 'max-w-max leading-[24px]'
+            )}
+            title={
+              token ? getTokenSymbol(token) : t('page.sendToken.selectToken')
+            }
+          >
+            {token ? getTokenSymbol(token) : t('page.sendToken.selectToken')}
           </span>
           <div className="text-r-neutral-foot ml-[6px]">
             <RcIconDownCC width={16} height={16} />
@@ -327,7 +342,7 @@ const TokenAmountInput = ({
               </span>
             </div>
           )}
-          {token.amount > 0 && !isLoading && (
+          {token && token.amount > 0 && !isLoading && (
             <MaxButton onClick={handleClickMaxButton}>
               {t('page.sendToken.max')}
             </MaxButton>

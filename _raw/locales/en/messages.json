@@ -719,7 +719,8 @@
       "noSupprotTokenForSafe_short": "Not supported by this safe chain",
       "noSupportTokenForChain": "Recipient address is a contract address on a different chain. Check before proceeding to avoid loss",
       "noSupportTokenForChain_short": "Not supported by this chain",
-      "selectFromAddress": "Select From Address"
+      "selectFromAddress": "Select From Address",
+      "selectToken": "Select Token"
     },
     "sendPoly": {
       "title": "Send to",
