@@ -43,14 +43,22 @@ const StyledInputWrapper = styled.div<{ $hasError?: boolean }>`
   }
 `;
 
-const WhitelistAddressTypeCard = ({ address }: { address: string }) => {
+const WhitelistAddressTypeCard = ({
+  address,
+  type,
+  brandName,
+}: {
+  address: string;
+  type: string;
+  brandName: string;
+}) => {
   const [cexInfo] = useCexId(address);
   const [aliasName] = useAlias(address);
   return (
     <div className="mt-[20px] w-full">
       <AddressTypeCard
-        type={KEYRING_TYPE.WatchAddressKeyring}
-        brandName={KEYRING_TYPE.WatchAddressKeyring}
+        type={type}
+        brandName={brandName}
         aliasName={aliasName || ellipsisAddress(address)}
         className="bg-r-neutral-card1"
         cexInfo={{
@@ -193,6 +201,9 @@ export const EnterAddress = ({
       setIsValidAddr(false);
     }
   };
+  const isValidateAddress = useMemo(() => {
+    return isValidAddress(inputAddress);
+  }, [inputAddress]);
 
   return (
     <Form
@@ -280,20 +291,36 @@ export const EnterAddress = ({
             </div>
           </div>
         )}
-        {filteredAccounts.length === 0 &&
-          isValidAddress(inputAddress) &&
-          whitelist.some((item) => isSameAddress(item, inputAddress)) && (
-            <WhitelistAddressTypeCard address={inputAddress} />
+        {isValidateAddress &&
+          (whitelist.some((item) => isSameAddress(item, inputAddress)) ||
+            !!filteredAccounts.length) && (
+            <WhitelistAddressTypeCard
+              address={inputAddress}
+              type={
+                filteredAccounts?.[0]?.address &&
+                isSameAddress(inputAddress, filteredAccounts[0].address)
+                  ? filteredAccounts[0].type
+                  : KEYRING_TYPE.WatchAddressKeyring
+              }
+              brandName={
+                filteredAccounts?.[0]?.address &&
+                isSameAddress(inputAddress, filteredAccounts[0].address)
+                  ? filteredAccounts[0].brandName
+                  : KEYRING_TYPE.WatchAddressKeyring
+              }
+            />
           )}
       </div>
       {shouldRender && (
         <>
           <div className="flex-1 pt-[20px] overflow-y-scroll">
-            <AccountList
-              list={filteredAccounts}
-              whitelist={whitelist}
-              onChange={(acc) => onNext(acc.address, acc.type)}
-            />
+            {!isValidateAddress && (
+              <AccountList
+                list={filteredAccounts}
+                whitelist={whitelist}
+                onChange={(acc) => onNext(acc.address, acc.type)}
+              />
+            )}
           </div>
           <div className={'footer'}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">

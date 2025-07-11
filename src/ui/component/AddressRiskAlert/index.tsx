@@ -118,7 +118,13 @@ export const AddressTypeCard = ({
   }, [cexInfo, type]);
 
   const showSideDesc = useMemo(() => {
-    return type !== KEYRING_CLASS.WATCH || showCexInfo;
+    if (showCexInfo) {
+      return true;
+    }
+    if (type === KEYRING_CLASS.GNOSIS) {
+      return true;
+    }
+    return false;
   }, [type, showCexInfo]);
 
   return (
@@ -343,7 +349,7 @@ export const AddressRiskAlert = ({
           {riskInfos.hasNotRisk && (
             <div className="w-full mt-[12px]">
               <div className="relative">
-                <div className="absolute w-[calc(100%+32px)] left-[-16px] right-[-16px] h-[1px] bg-r-neutral-line" />
+                <div className="absolute w-[calc(100%+32px)] left-[-16px] right-[-16px] h-[0.5px] bg-r-neutral-line" />
               </div>
               <div className="w-full h-[48px] flex flex-row justify-between items-center">
                 <div className="text-r-neutral-body text-[13px]">

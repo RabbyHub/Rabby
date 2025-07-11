@@ -430,13 +430,14 @@ const SendPoly = () => {
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
-        onConfirm={(cexId) => {
+        onConfirm={async (cexId) => {
           handleGotoSend(selectedAddress, selectedAddressType);
           setSelectedAddress('');
           setSelectedAddressType('');
           setShowAddressRiskAlert(false);
           if (cexId) {
-            wallet.updateCexId(selectedAddress, cexId);
+            const alias = await wallet.getAlianName(selectedAddress);
+            wallet.updateAlianName(selectedAddress, alias || '', cexId);
           }
         }}
         onCancel={() => {
