@@ -98,7 +98,10 @@ function parseSignTypedData(typedData: {
     } else if (types[dataType]) {
       for (const field of types[dataType]) {
         const { name, type } = field;
-        data[name] = parseAndDecode(data[name], type);
+        if (type !== 'bytes') {
+          // bytes type is complex and no need to normalize
+          data[name] = parseAndDecode(data[name], type);
+        }
       }
       return data;
     } else {
