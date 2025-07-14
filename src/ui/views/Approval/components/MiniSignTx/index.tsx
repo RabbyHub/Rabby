@@ -755,7 +755,7 @@ export const MiniSignTx = ({
             nonce: tx.nonce || '0x1',
             value: tx.value || '0x0',
             to: tx.to || '',
-            type: is7702Tx(tx) ? 4 : support1559 ? 2 : 1,
+            type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
           } as any,
           origin: origin || '',
           addr: currentAccount.address,

@@ -215,7 +215,6 @@ export const TransactionItem = ({
           tx: originTx.rawTx,
         });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
-    console.log('originTx.rawTx', originTx.rawTx);
     const is7702 = is7702Tx(originTx.rawTx);
     await wallet.sendRequest({
       method: 'eth_sendTransaction',

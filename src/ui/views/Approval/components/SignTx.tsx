@@ -635,25 +635,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     return result;
   };
 
-  console.log(
-    'tx params',
-    params.data[0],
-    omit(
-      {
-        chainId,
-        data: data || '0x', // can not execute with empty string, use 0x instead
-        from,
-        gas: gas || params.data[0].gasLimit,
-        gasPrice: getGasPrice(),
-        nonce,
-        to,
-        value,
-        authorizationList:
-          params?.$ctx?.eip7702RevokeAuthorization || authorizationList,
-      },
-      !enable7702 ? ['authorizationList'] : []
-    )
-  );
   const [tx, setTx] = useState<Tx>(
     omit(
       {
@@ -894,7 +875,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             value: tx.value || '0x0',
             // todo
             to: tx.to || '',
-            type: is7702Tx(tx) ? 4 : support1559 ? 2 : 1,
+            type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
             authorizationList:
               params?.$ctx?.eip7702RevokeAuthorization ||
               authorizationList?.map((e) => [

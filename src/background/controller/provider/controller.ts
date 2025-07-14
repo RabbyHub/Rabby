@@ -69,7 +69,7 @@ import {
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
-import { numberToHex, stringToHex, toHex } from 'viem';
+import { hexToNumber, numberToHex, stringToHex, toHex } from 'viem';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
 import { add0x } from '@/ui/utils/address';
@@ -481,11 +481,14 @@ class ProviderController extends BaseController {
           txData.maxPriorityFeePerGas || txData.gasPrice;
         delete txData.gasPrice;
       }
-      // txData.gasLimit = new BigNumber(txData?.gasLimit || 0).gte(
-      //   EIP7702RevokeMiniGasLimit
-      // )
-      //   ? txData.gasLimit
-      //   : numberToHex(EIP7702RevokeMiniGasLimit);
+
+      if (!approvalRes.maxFeePerGas || !approvalRes.maxPriorityFeePerGas) {
+        approvalRes.maxFeePerGas =
+          approvalRes.maxFeePerGas || approvalRes.gasPrice;
+        approvalRes.maxPriorityFeePerGas =
+          approvalRes.maxPriorityFeePerGas || approvalRes.gasPrice;
+        delete approvalRes.gasPrice;
+      }
     }
 
     const tx = TransactionFactory.fromTxData(txData as FeeMarketEIP1559TxData, {
@@ -761,21 +764,10 @@ class ProviderController extends BaseController {
                 txData.maxPriorityFeePerGas =
                   txData.maxPriorityFeePerGas || txData.gasPrice;
                 delete txData.gasPrice;
-
-                console.log(
-                  'EIP-7702 Revoke tx use gasPrice, not maxFeePerGas',
-                  txData
-                );
               }
-              // txData.gasLimit = new BigNumber(txData?.gasLimit || 0).gte(
-              //   EIP7702RevokeMiniGasLimit
-              // )
-              //   ? txData.gasLimit
-              //   : numberToHex(EIP7702RevokeMiniGasLimit);
             }
 
             const tx = TransactionFactory.fromTxData(txData, { common });
-
             const rawTx = bytesToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
@@ -795,7 +787,6 @@ class ProviderController extends BaseController {
                 message: errMsg,
               });
             }
-
             onTransactionCreated({ hash, reqId, pushType });
             notificationService.setStatsData(statsData);
           } else {
@@ -821,6 +812,25 @@ class ProviderController extends BaseController {
               },
               sig,
               mev_share_model: pushType === 'mev' ? 'user' : 'rabby',
+            };
+
+            const adoptBE7702Params = () => {
+              if (
+                approvalRes.authorizationList &&
+                approvalRes.authorizationList?.some((e) => e.yParity)
+              ) {
+                params.context.tx = {
+                  ...params.context.tx,
+                  authorizationList: approvalRes.authorizationList.map((e) => ({
+                    chainId: hexToNumber(e.chainId),
+                    address: e.address,
+                    nonce: e.nonce,
+                    r: e.r,
+                    s: e.s,
+                    v: e.yParity,
+                  })),
+                } as any;
+              }
             };
 
             const defaultRPC = RPCService.getDefaultRPC(chainServerId);
@@ -881,10 +891,12 @@ class ProviderController extends BaseController {
               }
 
               if (fePushedFailed) {
+                adoptBE7702Params();
                 const res = await openapiService.submitTxV2(params);
                 hash = res.tx_id;
               }
             } else {
+              adoptBE7702Params();
               const res = await openapiService.submitTxV2(params);
               if (res.access_token) {
                 gasAccountService.setGasAccountSig(
