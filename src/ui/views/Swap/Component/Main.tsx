@@ -406,11 +406,29 @@ export const Main = () => {
     ? false
     : true;
 
+  const isShowMoreVisible = useMemo(
+    () =>
+      showMoreVisible &&
+      Number(inputAmount) > 0 &&
+      inSufficientCanGetQuote &&
+      !!amountAvailable &&
+      !!payToken &&
+      !!receiveToken,
+    [
+      showMoreVisible,
+      inputAmount,
+      inSufficientCanGetQuote,
+      amountAvailable,
+      payToken,
+      receiveToken,
+    ]
+  );
+
   const startDirectSigning = useStartDirectSigning();
 
   const canUseDirectSubmitTx = useMemo(
     () =>
-      !swapBtnDisabled &&
+      isShowMoreVisible &&
       isSupportedChain &&
       [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
         (currentAccount?.type || '') as any
@@ -422,7 +440,7 @@ export const Main = () => {
       !isSlippageLow &&
       !showLoss,
     [
-      swapBtnDisabled,
+      isShowMoreVisible,
       isSupportedChain,
       receiveToken,
       isSlippageHigh,
@@ -603,24 +621,6 @@ export const Main = () => {
     activeProvider?.name,
     activeProvider?.quote,
   ]);
-
-  const isShowMoreVisible = useMemo(
-    () =>
-      showMoreVisible &&
-      Number(inputAmount) > 0 &&
-      inSufficientCanGetQuote &&
-      !!amountAvailable &&
-      !!payToken &&
-      !!receiveToken,
-    [
-      showMoreVisible,
-      inputAmount,
-      inSufficientCanGetQuote,
-      amountAvailable,
-      payToken,
-      receiveToken,
-    ]
-  );
 
   const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
 
@@ -866,7 +866,7 @@ export const Main = () => {
                 // disabled
                 key={refreshId}
                 disabled={swapBtnDisabled}
-                title={'Swap'}
+                title={btnText}
                 onConfirm={handleSwap}
               />
             ) : (

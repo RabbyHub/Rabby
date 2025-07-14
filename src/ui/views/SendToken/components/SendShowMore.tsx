@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowDownCC } from 'ui/assets/bridge/tiny-down-arrow-cc.svg';
 import { DirectSignGasInfo } from '../../Bridge/Component/BridgeShowMore';
 import { useMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { noop } from 'lodash';
 
 export const ShowMoreOnSend = ({
   chainServeId,
@@ -19,7 +20,6 @@ export const ShowMoreOnSend = ({
   const [showGasFeeError, setShowGasFeeError] = useState(false);
 
   const state = useMiniApprovalGas();
-  console.log('ShowMoreOnSend state', state);
 
   return (
     <div className="mx-16">
@@ -49,7 +49,7 @@ export const ShowMoreOnSend = ({
         <DirectSignGasInfo
           supportDirectSign
           loading={false}
-          openShowMore={setOpen}
+          openShowMore={noop}
           chainServeId={chainServeId}
           noQuote={false}
         />
