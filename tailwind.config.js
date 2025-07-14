@@ -1,10 +1,18 @@
-const colors = require('tailwindcss/colors');
-const tinycolor2 = require('tinycolor2');
-const { blackA, violet, mauve, grassA, amberA } = require('@radix-ui/colors');
+// const colors = require('tailwindcss/colors');
+// const tinycolor2 = require('tinycolor2');
+const {
+  blackA,
+  violet,
+  mauve,
+  grassA,
+  amberA,
+  grayA,
+  irisA,
+} = require('@radix-ui/colors');
 
-const { themeColors, rabbyCssPrefix } = require('./src/constant/theme-colors');
+// const { themeColors, rabbyCssPrefix } = require('./src/constant/theme-colors');
 
-const rabbyColors = ['light', 'dark'].reduce(
+/*const rabbyColors = ['light', 'dark'].reduce(
   (accu, theme) => {
     Object.entries(themeColors[theme]).forEach(([cssvarKey, colorValue]) => {
       // const splitorIdx = cssvarKey.indexOf('-');
@@ -32,7 +40,7 @@ const rabbyColors = ['light', 'dark'].reduce(
     dark: {},
     auto: {},
   }
-);
+);*/
 
 /** @type {import('tailwindcss').Config} */
 // module.exports = {
@@ -164,14 +172,16 @@ const rabbyColors = ['light', 'dark'].reduce(
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './node_modules/@radix-ui/themes/**/*.{js,ts,jsx,tsx}', // Add Radix UI themes
     './src/ui/**/*.{jsx,tsx,html}',
+    './node_modules/@radix-ui/themes/**/*.{js,ts,jsx,tsx}', // Add Radix UI themes
   ],
-  darkMode: 'media',
+  darkMode: 'class', // Use class-based dark mode
   theme: {
     extend: {
       colors: {
         ...blackA,
+        ...grayA,
+        ...irisA,
         ...violet,
         ...mauve,
         ...grassA,

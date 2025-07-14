@@ -180,6 +180,7 @@ const Unlock = () => {
                 </Text>
                 <TextField.Root
                   required
+                  className={clsx(isTab ? 'h-[56px]' : '')}
                   placeholder={t('page.unlock.password.placeholder')}
                   ref={inputEl}
                   size={'3'}

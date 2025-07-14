@@ -20,11 +20,15 @@ import { useThemeModeOnMain } from '../hooks/usePreference';
 import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
 import { ForgotPassword } from './ForgotPassword/ForgotPassword';
 import { Theme } from '@radix-ui/themes';
-import '@radix-ui/themes/styles.css';
-import '../style/globals.css';
+import { Toaster } from 'sonner';
+import { ClerkProvider } from '@clerk/chrome-extension';
 
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 const isTab = getUiType().isTab;
+
+import '@radix-ui/themes/styles.css';
+import '../style/globals.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const useAutoLock = () => {
   const history = useHistory();
@@ -104,21 +108,65 @@ const Main = () => {
   );
 };
 
+const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+const SYNC_HOST = process.env.REACT_APP_CLERK_SYNC_HOST;
+console.log('PublishABle Key', PUBLISHABLE_KEY, SYNC_HOST);
+
+// if (!PUBLISHABLE_KEY || !SYNC_HOST) {
+//   throw new Error(
+//     'Please add the PUBLIC_CLERK_PUBLISHABLE_KEY and PUBLIC_CLERK_SYNC_HOST to the .env.development file'
+//   );
+// }
+const EXTENSION_URL = chrome.runtime.getURL('.');
+
 const App = ({ wallet }: { wallet: any }) => {
+  const history = useHistory();
+  const queryClient = new QueryClient();
+  const themeMode = useRabbySelector((state) => state.preference.themeMode);
+  let appTheme;
+
+  if (themeMode.toString() === '0') {
+    appTheme = 'light';
+  } else if (themeMode.toString() === '1') {
+    appTheme = 'dark';
+  } else {
+    appTheme = 'light';
+  }
+
   return (
-    <Theme
-      accentColor="gray"
-      appearance={'dark'}
-      grayColor="sand"
-      radius="large"
-      scaling="95%"
+    <ClerkProvider
+      routerPush={(to) => history.push(to)}
+      routerReplace={(to) => history.replace(to)}
+      publishableKey={
+        PUBLISHABLE_KEY ||
+        'pk_test_ZGl2ZXJzZS1tb25hcmNoLTc3LmNsZXJrLmFjY291bnRzLmRldiQ'
+      }
+      afterSignOutUrl="/"
+      signInFallbackRedirectUrl={`${EXTENSION_URL}/popup.html`}
+      signUpFallbackRedirectUrl={`${EXTENSION_URL}/popup.html`}
     >
-      <WalletProvider wallet={wallet}>
-        <Router>
-          <Main />
-        </Router>
-      </WalletProvider>
-    </Theme>
+      <Theme
+        accentColor="gray"
+        appearance={appTheme}
+        grayColor="sand"
+        radius="large"
+        scaling="95%"
+      >
+        <Toaster
+          visibleToasts={2}
+          richColors={true}
+          duration={4000}
+          closeButton={true}
+        />
+        <QueryClientProvider client={queryClient}>
+          <WalletProvider wallet={wallet}>
+            <Router>
+              <Main />
+            </Router>
+          </WalletProvider>
+        </QueryClientProvider>
+      </Theme>
+    </ClerkProvider>
   );
 };
 

@@ -13,3 +13,8 @@ tmp/styled-components-id-mappings.*
 flake.nix
 flake.lock
 .envrc
+
+.env.development
+.env.*
+.env
+.idea

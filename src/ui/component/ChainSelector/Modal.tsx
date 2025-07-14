@@ -1,6 +1,6 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { Button, Drawer, DrawerProps, Input } from 'antd';
+import { Drawer, DrawerProps, Input } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
@@ -28,6 +28,7 @@ import {
 } from './components/SelectChainList';
 import { LoadingBalances } from './LoadingBalances';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { Button } from '@radix-ui/themes';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -289,7 +290,8 @@ const ChainSelectorModal = ({
                 {selectedTab === 'testnet' ? (
                   <div className="text-center mt-[50px]">
                     <Button
-                      type="primary"
+                      variant={'soft'}
+                      // type="primary"
                       onClick={() => {
                         history.push('/custom-testnet');
                       }}

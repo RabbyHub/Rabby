@@ -450,7 +450,7 @@ const BalanceView = ({
               </span>
             )}
           </div>
-          <div className={clsx('h-[80px] w-full relative')}>
+          {/*<div className={clsx('h-[80px] w-full relative')}>
             {!!shouldRenderCurve && !!curveChartData && (
               <CurveThumbnail
                 isHover={currentHover}
@@ -466,7 +466,7 @@ const BalanceView = ({
                 />
               </div>
             )}
-          </div>
+          </div>*/}
         </div>
       </div>
       <OfflineChainNotify />

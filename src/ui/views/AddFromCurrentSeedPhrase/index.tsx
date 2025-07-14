@@ -1,5 +1,5 @@
-import { AddressViewer, Copy, PageHeader } from '@/ui/component';
-import React, { useMemo } from 'react';
+import { AddressViewer, Copy } from '@/ui/component';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UseSeedPhrase } from './hooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -12,22 +12,56 @@ import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import clsx from 'clsx';
+import { Flex } from '@radix-ui/themes';
+import {
+  PageBody,
+  PageContainer,
+  PageHeader,
+  PageHeading,
+} from 'ui/component/PageContainer';
+import { AddAddressFromSeedPhraseButton } from '@/ui/components/AddAddressFromSeedPhraseButton';
+import { toast } from 'sonner';
 
 export const AddFromCurrentSeedPhrase = () => {
   const { t } = useTranslation();
-  const { handleAddSeedPhraseAddress, seedPhraseList } = UseSeedPhrase();
+  const {
+    handleAddSeedPhraseAddress,
+    addSeedPhraseAddressDirect,
+    seedPhraseList,
+  } = UseSeedPhrase();
 
   return (
-    <div className="flex flex-col min-h-full bg-r-neutral-bg-2 px-20 ">
-      <PageHeader className="pt-[20px]" fixed>
-        {t('page.newAddress.addFromCurrentSeedPhrase')}
-      </PageHeader>
-      <div className="flex-1 flex flex-col space-y-[20px] pb-[20px]">
-        {seedPhraseList?.map((item, index) => (
-          <Group data={item} index={index} onAdd={handleAddSeedPhraseAddress} />
-        ))}
-      </div>
-    </div>
+    <>
+      <PageContainer>
+        <PageHeader>
+          <PageHeading>
+            {t('page.newAddress.addFromCurrentSeedPhrase')}
+          </PageHeading>
+        </PageHeader>
+
+        <PageBody>
+          <Flex direction={'column'}>
+            {seedPhraseList?.map((item, index) => (
+              <Group
+                data={item}
+                index={index}
+                onAdd={handleAddSeedPhraseAddress}
+              />
+            ))}
+          </Flex>
+        </PageBody>
+      </PageContainer>
+      {/*<div className="flex flex-col min-h-full bg-r-neutral-bg-2 px-20 ">
+        <PageHeader className="pt-[20px]" fixed>
+          {t('page.newAddress.addFromCurrentSeedPhrase')}
+        </PageHeader>
+        <div className="flex-1 flex flex-col space-y-[20px] pb-[20px]">
+          {seedPhraseList?.map((item, index) => (
+            <Group data={item} index={index} onAdd={handleAddSeedPhraseAddress} />
+          ))}
+        </div>
+      </div>*/}
+    </>
   );
 };
 
@@ -41,6 +75,16 @@ const Group = ({
   onAdd: (p: string) => void;
 }) => {
   const { t } = useTranslation();
+
+  const handleSuccess = (result) => {
+    toast.success(
+      `Address ${result.address.slice(0, 6)}...${result.address.slice(
+        -4
+      )} added successfully`
+    );
+    // Refresh the page or update the list if needed
+  };
+
   return (
     <div className="relative w-full p-[16px] bg-r-neutral-card-1 overflow-hidden rounded-[6px] pt-0">
       <div className="h-[48px] flex items-center mb-14 text-r-neutral-title1 text-[15px] font-medium">
@@ -54,26 +98,30 @@ const Group = ({
         ))}
       </div>
 
-      <Button
-        onClick={() => onAdd(data.publicKey!)}
-        type="primary"
-        className={clsx(
-          'bg-rabby-blue-light1 w-full shadow-none h-[40px] border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light-2 hover:before:hidden',
-          data.list.length ? 'mt-[20px]' : 'mt-[6px]'
-        )}
+      <Flex
+        direction="column"
+        gap="2"
+        className={data.list.length ? 'mt-[20px]' : 'mt-[6px]'}
       >
-        <div className="flex items-center justify-center space-x-6 text-r-blue-default">
-          <IconAdd />
-          <span
-            className="text-[13px] font-medium"
-            style={{
-              textShadow: 'none',
-            }}
-          >
-            {t('page.manageAddress.add-address')}
-          </span>
-        </div>
-      </Button>
+        <AddAddressFromSeedPhraseButton
+          publicKey={data.publicKey!}
+          onSuccess={handleSuccess}
+          buttonText={`${t(
+            'page.manageAddress.add-address'
+          )} - ${data.publicKey?.slice(0, 6)}...${data.publicKey?.slice(-6)}`}
+          className="w-full"
+        />
+
+        <Button
+          onClick={() => onAdd(data.publicKey!)}
+          type="default"
+          className="w-full h-[40px]"
+        >
+          <div className="flex items-center justify-center space-x-6">
+            <span className="text-[13px] font-medium">{t('selectAddr')}</span>
+          </div>
+        </Button>
+      </Flex>
     </div>
   );
 };

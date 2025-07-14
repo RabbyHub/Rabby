@@ -98,80 +98,82 @@ export const HistoryList = ({
   ] = React.useState<HistoryItemActionContext | null>(null);
 
   return (
-    <div className="overflow-auto h-full" ref={ref}>
-      <Modal
-        visible={!!focusingHistoryItem}
-        // View Message
-        title={t('page.transactions.modalViewMessage.title')}
-        className="view-tx-message-modal"
-        onCancel={() => {
-          setFocusingHistoryItem(null);
-        }}
-        maxHeight="360px"
-      >
-        <div className="parsed-content text-14">
-          {focusingHistoryItem?.parsedInputData}
-        </div>
-      </Modal>
+    <>
+      <div className="overflow-auto h-full" ref={ref}>
+        <Modal
+          visible={!!focusingHistoryItem}
+          // View Message
+          title={t('page.transactions.modalViewMessage.title')}
+          className="view-tx-message-modal"
+          onCancel={() => {
+            setFocusingHistoryItem(null);
+          }}
+          maxHeight="360px"
+        >
+          <div className="parsed-content text-14">
+            {focusingHistoryItem?.parsedInputData}
+          </div>
+        </Modal>
 
-      {loading ? (
-        <div className={isFilterScam ? 'pt-[20px]' : ''}>
-          {isFilterScam ? (
-            <div className="filter-scam-loading-text">
-              {t('page.transactions.filterScam.loading')}
-            </div>
-          ) : null}
-          <Loading count={4} active />
-        </div>
-      ) : (
-        <>
-          {isEmpty ? (
-            <Empty
-              title={t('page.transactions.empty.title')}
-              desc={
-                <span>
-                  <Trans i18nKey="page.transactions.empty.desc" t={t}>
-                    No transactions found on
-                    <Link className="underline" to="/settings/chain-list">
-                      supported chains
-                    </Link>
-                  </Trans>
-                </span>
-              }
-              className="pt-[108px]"
-            ></Empty>
-          ) : (
-            <Virtuoso
-              style={{
-                height: '100%',
-              }}
-              data={data?.list || []}
-              itemContent={(_, item) => {
-                return (
-                  <HistoryItem
-                    data={item}
-                    projectDict={item.projectDict}
-                    cateDict={item.cateDict}
-                    tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
-                    key={item.id}
-                    onViewInputData={setFocusingHistoryItem}
-                  />
-                );
-              }}
-              endReached={loadMore}
-              increaseViewportBy={100}
-              components={{
-                Footer: () => {
-                  if (loadingMore) {
-                    return <Loading count={2} active />;
-                  }
-                  return null;
-                },
-              }}
-            ></Virtuoso>
-          )}
-        </>
-      )}
-    </div>
+        {loading ? (
+          <div className={isFilterScam ? 'pt-[20px]' : ''}>
+            {isFilterScam ? (
+              <div className="filter-scam-loading-text">
+                {t('page.transactions.filterScam.loading')}
+              </div>
+            ) : null}
+            <Loading count={4} active />
+          </div>
+        ) : (
+          <>
+            {isEmpty ? (
+              <Empty
+                title={t('page.transactions.empty.title')}
+                desc={
+                  <span>
+                    <Trans i18nKey="page.transactions.empty.desc" t={t}>
+                      No transactions found on
+                      <Link className="underline" to="/settings/chain-list">
+                        supported chains
+                      </Link>
+                    </Trans>
+                  </span>
+                }
+                className="pt-[108px]"
+              ></Empty>
+            ) : (
+              <Virtuoso
+                style={{
+                  height: '100%',
+                }}
+                data={data?.list || []}
+                itemContent={(_, item) => {
+                  return (
+                    <HistoryItem
+                      data={item}
+                      projectDict={item.projectDict}
+                      cateDict={item.cateDict}
+                      tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
+                      key={item.id}
+                      onViewInputData={setFocusingHistoryItem}
+                    />
+                  );
+                }}
+                endReached={loadMore}
+                increaseViewportBy={100}
+                components={{
+                  Footer: () => {
+                    if (loadingMore) {
+                      return <Loading count={2} active />;
+                    }
+                    return null;
+                  },
+                }}
+              ></Virtuoso>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 };

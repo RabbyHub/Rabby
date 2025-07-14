@@ -11,19 +11,28 @@ import {
   useSetState,
   useUnmount,
 } from 'ahooks';
-import { Button, message } from 'antd';
+// import { Button, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import IconSuccess from 'ui/assets/success.svg';
-import { PageHeader } from 'ui/component';
+// import { PageHeader } from 'ui/component';
 import { CustomTestnetItem } from './components/CustomTestnetItem';
 import { EditCustomTestnetModal } from './components/EditTestnetModal';
 import './style.less';
-import { Emtpy } from './components/Empty';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { sortBy } from 'lodash';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import {
+  PageBody,
+  PageContainer,
+  PageHeader,
+  PageHeading,
+} from 'ui/component/PageContainer';
+import { Button, Callout, Flex } from '@radix-ui/themes';
+import { LucideInfo } from 'lucide-react';
+import { toast } from 'sonner';
+import Empty from 'ui/component/Empty';
 
 const Footer = styled.div`
   height: 84px;
@@ -51,22 +60,33 @@ export const CustomTestnet = () => {
   });
 
   const handleAddClick = () => {
-    const next = {
+    /*const next = {
       isShowModal: true,
       current: null,
       isEdit: false,
-    };
-    setState(next);
-    wallet.setPageStateCache({
+    };*/
+    // setState(next);
+    /*wallet.setPageStateCache({
       path: '/custom-testnet',
       states: {
         ...next,
       },
-    });
+    });*/
     matomoRequestEvent({
       category: 'Custom Network',
       action: 'Click Add Network',
     });
+
+    history.push('/custom-testnet/add');
+  };
+
+  const handleAddChainListClick = () => {
+    matomoRequestEvent({
+      category: 'New Network',
+      action: 'Click Add Network From ChainList',
+    });
+
+    history.push('/custom-testnet/chainlist-explorer');
   };
 
   const { data: list, runAsync: runGetCustomTestnetList } = useRequest(
@@ -91,7 +111,7 @@ export const CustomTestnet = () => {
 
   const handleRemoveClick = useMemoizedFn(async (item: TestnetChain) => {
     await wallet.removeCustomTestnet(item.id);
-    message.success({
+    /*message.success({
       duration: 0.5,
       icon: <i />,
       content: (
@@ -102,7 +122,9 @@ export const CustomTestnet = () => {
           </div>
         </div>
       ),
-    });
+    });*/
+
+    toast.success(t('global.Deleted'));
     const list = await runGetCustomTestnetList();
     updateChainStore({
       testnetList: list,
@@ -134,73 +156,121 @@ export const CustomTestnet = () => {
   });
 
   return (
-    <div className="custom-testnet">
-      <PageHeader
-        className="pt-[24px] mx-[20px] mb-16"
-        canBack={false}
-        closeable
-        onClose={() => {
-          if (history.length > 1) {
-            history.goBack();
-          } else {
-            history.replace('/');
-          }
-        }}
-      >
-        {t('page.customTestnet.title')}
+    <PageContainer>
+      <PageHeader>
+        <PageHeading>{t('page.customTestnet.title')}</PageHeading>
       </PageHeader>
-      <p className="text-r-neutral-body text-[13px] text-center leading-[16px] mb-20 px-20">
-        {t('page.customTestnet.desc')}
-      </p>
-      {!list?.length ? (
-        <Emtpy description={t('page.customTestnet.empty')} />
-      ) : (
-        <div className="flex flex-col gap-[12px] px-[20px] flex-1 overflow-auto pb-[12px]">
-          {list?.map((item) => (
-            <CustomTestnetItem
-              item={item as any}
-              key={item.id}
-              className="bg-r-neutral-card1"
-              onEdit={handleEditClick}
-              onRemove={handleRemoveClick}
-              editable
-            />
-          ))}
-        </div>
-      )}
-      <Footer>
-        <Button size="large" type="primary" block onClick={handleAddClick}>
+
+      <PageBody>
+        <Callout.Root color="gray" variant="soft" highContrast>
+          <Callout.Icon>
+            <LucideInfo size={16} />
+          </Callout.Icon>
+          <Callout.Text>{t('page.customTestnet.desc')}</Callout.Text>
+        </Callout.Root>
+
+        <Flex direction={'column'} py={'3'}>
+          {!list?.length ? (
+            <Empty desc={t('page.customTestnet.empty')} />
+          ) : (
+            <Flex direction={'column'} gap={'2'}>
+              {list?.map((item) => (
+                <CustomTestnetItem
+                  item={item as any}
+                  key={item.id}
+                  className="bg-r-neutral-card1"
+                  onEdit={handleEditClick}
+                  onRemove={handleRemoveClick}
+                  editable
+                />
+              ))}
+            </Flex>
+          )}
+        </Flex>
+      </PageBody>
+
+      <Flex direction={'row'} justify={'center'} gap={'4'} p={'4'} width="100%">
+        <Button
+          highContrast
+          className={'flex-1'}
+          size={'3'}
+          onClick={handleAddChainListClick}
+        >
+          {t('page.customRpc.AddCustomTestnetModal.quickAdd')}
+        </Button>
+        <Button className={'w-1/3'} size={'3'} onClick={handleAddClick}>
           {t('page.customTestnet.add')}
         </Button>
-      </Footer>
-      <EditCustomTestnetModal
-        ctx={{
-          ga: {
-            source: 'setting',
-          },
-        }}
-        visible={state.isShowModal}
-        data={state.current}
-        isEdit={state.isEdit}
-        onCancel={() => {
-          setState({
-            isShowModal: false,
-            current: null,
-            isEdit: false,
-          });
-          wallet.clearPageStateCache();
-        }}
-        onChange={(values) => {
-          wallet.setPageStateCache({
-            path: '/custom-testnet',
-            states: {
-              ...state,
-              current: values,
+      </Flex>
+
+      {/*<div className="custom-testnet">
+        <PageHeader
+          className="pt-[24px] mx-[20px] mb-16"
+          canBack={false}
+          closeable
+          onClose={() => {
+            if (history.length > 1) {
+              history.goBack();
+            } else {
+              history.replace('/');
+            }
+          }}
+        >
+          {t('page.customTestnet.title')}
+        </PageHeader>
+        <p className="text-r-neutral-body text-[13px] text-center leading-[16px] mb-20 px-20">
+          {t('page.customTestnet.desc')}
+        </p>
+        {!list?.length ? (
+          <Emtpy description={t('page.customTestnet.empty')} />
+        ) : (
+          <div className="flex flex-col gap-[12px] px-[20px] flex-1 overflow-auto pb-[12px]">
+            {list?.map((item) => (
+              <CustomTestnetItem
+                item={item as any}
+                key={item.id}
+                className="bg-r-neutral-card1"
+                onEdit={handleEditClick}
+                onRemove={handleRemoveClick}
+                editable
+              />
+            ))}
+          </div>
+        )}
+        <Footer>
+          <Button size="large" type="primary" block onClick={handleAddClick}>
+            {t('page.customTestnet.add')}
+          </Button>
+        </Footer>
+        <EditCustomTestnetModal
+          ctx={{
+            ga: {
+              source: 'setting',
             },
-          });
-        }}
-        onConfirm={handleConfirm}
-      />
-    </div>
+          }}
+          visible={state.isShowModal}
+          data={state.current}
+          isEdit={state.isEdit}
+          onCancel={() => {
+            setState({
+              isShowModal: false,
+              current: null,
+              isEdit: false,
+            });
+            wallet.clearPageStateCache();
+          }}
+          onChange={(values) => {
+            wallet.setPageStateCache({
+              path: '/custom-testnet',
+              states: {
+                ...state,
+                current: values,
+              },
+            });
+          }}
+          onConfirm={handleConfirm}
+        />
+      </div>*/}
+    </PageContainer>
   );
 };

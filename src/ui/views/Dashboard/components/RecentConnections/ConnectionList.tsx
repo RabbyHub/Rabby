@@ -2,6 +2,7 @@ import { ConnectedSite } from '@/background/service/permission';
 import clsx from 'clsx';
 import React, { ReactNode, memo, useEffect, useState } from 'react';
 import { Item } from './ConnectionItem';
+import { Flex } from '@radix-ui/themes';
 
 interface ConnectionProps {
   className?: string;
@@ -33,10 +34,10 @@ const ConnectionList = memo(
       return null;
     }
     return (
-      <div className={clsx('list', className)}>
-        {visible && data && data.length > 0 ? (
-          <div className="list-content droppable">
-            <>
+      <>
+        <Flex direction={'column'} gap={'2'}>
+          {visible && data && data.length > 0 ? (
+            <Flex direction={'column'} gap={'2'}>
               {data.map((item, index) => (
                 <Item
                   onRemove={onRemove}
@@ -46,12 +47,32 @@ const ConnectionList = memo(
                   onPin={onPin}
                 />
               ))}
-            </>
-          </div>
-        ) : (
-          empty
-        )}
-      </div>
+            </Flex>
+          ) : (
+            empty
+          )}
+        </Flex>
+
+        {/*<div className={clsx('list', className)}>
+          {visible && data && data.length > 0 ? (
+            <div className="list-content droppable">
+              <>
+                {data.map((item, index) => (
+                  <Item
+                    onRemove={onRemove}
+                    item={item}
+                    key={item?.origin || index}
+                    onClick={() => onClick && onClick(item)}
+                    onPin={onPin}
+                  />
+                ))}
+              </>
+            </div>
+          ) : (
+            empty
+          )}
+        </div>*/}
+      </>
     );
   }
 );

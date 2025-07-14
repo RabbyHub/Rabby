@@ -2,7 +2,7 @@
 /*@import 'tailwindcss/components';*/
 /*@import 'tailwindcss/utilities';*/
 
-/*@tailwind base;*/
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -31,6 +31,10 @@ The div of the scrollarea-viewport
 This is necessary so that the pages do not overflow into the horizontal dimension.
  */
 .rt-ScrollAreaViewport>div {
+    /*display: flex !important;*/
+    /*flex-direction: column;*/
+
+    /*display: inherit !important;*/
     width: 100%;
     max-width: 100%;
 }

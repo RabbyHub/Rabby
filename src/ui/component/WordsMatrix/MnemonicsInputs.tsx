@@ -68,7 +68,7 @@ const MatrixWrapper = styled.div.withConfig<{
     return !['rowCount'].includes(prop) && defaultValidatorFn(prop);
   },
 })`
-  background-color: var(--r-neutral-card-3, #f7fafc);
+  //background-color: var(--r-neutral-card-3, #f7fafc);
   display: flex;
   flex-wrap: wrap;
 
@@ -598,11 +598,11 @@ function MnemonicsInputs({
             {/*) : (*/}
             {/*  <ThemeIcon src={RcIconClearAll} svgSize={16} />*/}
             {/*)}*/}
-            {!newUserImport && (
+            {/*{!newUserImport && (
               <span className="ml-[6px]">
                 {t('page.newAddress.seedPhrase.clearAll')}
               </span>
-            )}
+            )}*/}
           </Button>
         )}
       </Flex>
@@ -772,7 +772,7 @@ function MnemonicsInputs({
         <MatrixWrapper
           className={clsx(
             'rounded-[6px] text-center',
-            !newUserImport && 'border border-rabby-neutral-line border-solid',
+            // !newUserImport && 'border border-rabby-neutral-line border-solid',
             isSlip39 && 'hidden',
             newUserImport && 'new-user-import',
             className

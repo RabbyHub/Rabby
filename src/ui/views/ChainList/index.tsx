@@ -3,8 +3,15 @@ import { getChainList, getMainnetChainList } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { PageHeader } from 'ui/component';
-import './style.less';
+// import { PageHeader } from 'ui/component';
+// import './style.less';
+import {
+  PageBody,
+  PageContainer,
+  PageHeader,
+  PageHeading,
+} from 'ui/component/PageContainer';
+import { Avatar, Card, Flex, Grid, Text, Tooltip } from '@radix-ui/themes';
 
 const List = ({ list }: { list: Chain[] }) => {
   return (
@@ -37,13 +44,40 @@ const ChainList = () => {
   const list = getChainList('mainnet');
 
   return (
-    <div className="page-chain-list">
-      <PageHeader className="transparent-wrap" canBack={false} closeable fixed>
-        {t('page.chainList.title', { count: list.length })}
+    <PageContainer>
+      <PageHeader showBackButton>
+        <PageHeading>
+          {t('page.chainList.title', { count: list.length })}
+        </PageHeading>
       </PageHeader>
 
-      <List list={list} />
-    </div>
+      <PageBody>
+        <Grid columns={'2'} gap={'2'} py={'3'}>
+          {list.map((item) => {
+            return (
+              <Card key={item.id}>
+                <Flex align={'center'} gap={'3'}>
+                  <Avatar size={'1'} src={item.logo} fallback="A" />
+                  <Tooltip content="Add to library">
+                    <Text truncate size={'2'}>
+                      {item.name}
+                    </Text>
+                  </Tooltip>
+                </Flex>
+              </Card>
+            );
+          })}
+        </Grid>
+      </PageBody>
+
+      {/*<div className="page-chain-list">
+        <PageHeader className="transparent-wrap" canBack={false} closeable fixed>
+          {t('page.chainList.title', { count: list.length })}
+        </PageHeader>
+
+        <List list={list} />
+      </div>*/}
+    </PageContainer>
   );
 };
 

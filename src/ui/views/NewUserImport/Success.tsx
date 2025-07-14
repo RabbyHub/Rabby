@@ -31,10 +31,11 @@ import {
   Card,
   Flex,
   ScrollArea,
+  Separator,
   Text,
   TextField,
 } from '@radix-ui/themes';
-import { LucideCheck, LucideInfo } from 'lucide-react';
+import { LucideCheck, LucideExternalLink, LucideInfo } from 'lucide-react';
 
 const AccountItem = ({ account }: { account: Account }) => {
   const [edit, setEdit] = useState(false);
@@ -381,14 +382,18 @@ export const ImportOrCreatedSuccess = () => {
               )}
             </Text>
 
-            <ScrollArea className={'my-8'}>
-              {accounts?.map((account) => {
-                if (!account?.address) {
-                  return null;
-                }
-                return <AccountItem key={account.address} account={account} />;
-              })}
-              <GnosisChainList chainList={chainList} className="mt-[-4px]" />
+            <ScrollArea className={'my-8 py-2'}>
+              <Flex direction={'column'} gap={'2'}>
+                {accounts?.map((account) => {
+                  if (!account?.address) {
+                    return null;
+                  }
+                  return (
+                    <AccountItem key={account.address} account={account} />
+                  );
+                })}
+                <GnosisChainList chainList={chainList} className="mt-[-4px]" />
+              </Flex>
             </ScrollArea>
 
             <Button highContrast size={'3'} onClick={getStarted}>
@@ -396,6 +401,29 @@ export const ImportOrCreatedSuccess = () => {
             </Button>
 
             {!!hd && (
+              <Text
+                align={'center'}
+                className={
+                  'hover:underline underline-offset-2 cursor-pointer mt-6'
+                }
+              >
+                <Separator size={'4'} className={'my-4'} />
+                {isSeedPhrase ? (
+                  <Text size={'2'}>
+                    {t('page.newUserImport.successful.addMoreAddr')}
+                  </Text>
+                ) : (
+                  <Text size={'2'}>
+                    {t('page.newUserImport.successful.addMoreFrom', {
+                      name: brand || BRAND_ALIAN_TYPE_TEXT[hd] || hd,
+                    })}
+                  </Text>
+                )}
+                {/*<LucideExternalLink size={14} strokeWidth={3} />*/}
+              </Text>
+            )}
+
+            {/*{!!hd && (
               <div
                 onClick={addMoreAddr}
                 className="flex items-center justify-center gap-2 text-[14px] text-r-neutral-foot mt-[23px] cursor-pointer"
@@ -411,7 +439,7 @@ export const ImportOrCreatedSuccess = () => {
                 )}
                 <RcIconExternalCC className="w-20 h-20" viewBox="0 0 16 17" />
               </div>
-            )}
+            )}*/}
           </Flex>
         </CardBody>
       </CardContainer>

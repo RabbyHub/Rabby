@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { VariableSizeList as VList, ListOnScrollProps } from 'react-window';
-import { PageHeader } from 'ui/component';
+// import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
@@ -28,6 +28,15 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 import dayjs from 'dayjs';
 import { useAccounts } from '@/ui/hooks/useAccounts';
+import {
+  PageBody,
+  PageContainer,
+  PageHeader,
+  PageHeading,
+} from 'ui/component/PageContainer';
+import { Button, Callout, Flex, Text } from '@radix-ui/themes';
+import { LucideInfo, LucideWallet } from 'lucide-react';
+import AddressRow from 'ui/views/AddressManagement/AddressRow';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -78,6 +87,8 @@ const AddressManagement = () => {
     loadingAccounts,
     allSortedAccountList,
   } = useAccounts();
+  console.log('Address management - sortedAccountsList', sortedAccountsList);
+  console.log('Address management - accountsList', accountsList);
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
   );
@@ -206,19 +217,30 @@ const AddressManagement = () => {
 
   const AddNewAddressColumn = useMemo(() => {
     return (
-      <div
-        onClick={gotoAddAddress}
-        className="mt-24 h-[52px] flex items-center justify-center gap-[8px] bg-r-neutral-card-1 rounded-lg cursor-pointer"
-      >
-        <RcIconAddAddress
-          viewBox="0 0 20 20"
-          className={clsx('text-r-blue-default w-[20px] h-[20px] ')}
-        />
+      <>
+        <Flex direction={'column'} align={'center'} justify={'center'} p={'3'}>
+          <Button highContrast size={'3'} onClick={gotoAddAddress}>
+            <LucideWallet size={15} />
+            <Text size={'2'} weight={'bold'}>
+              {t('page.manageAddress.addNewAddress')}
+            </Text>
+          </Button>
+        </Flex>
 
-        <span className="text-13 text-r-blue-default font-medium">
-          {t('page.manageAddress.addNewAddress')}
-        </span>
-      </div>
+        {/*<div
+          onClick={gotoAddAddress}
+          className="mt-24 h-[52px] flex items-center justify-center gap-[8px] bg-r-neutral-card-1 rounded-lg cursor-pointer"
+        >
+          <RcIconAddAddress
+            viewBox="0 0 20 20"
+            className={clsx('text-r-blue-default w-[20px] h-[20px] ')}
+          />
+
+          <span className="text-13 text-r-blue-default font-medium">
+            {t('page.manageAddress.addNewAddress')}
+          </span>
+        </div>*/}
+      </>
     );
   }, [gotoAddAddress]);
 
@@ -226,6 +248,7 @@ const AddressManagement = () => {
     (
       props: any //ListChildComponentProps<typeof accountsList[] | typeof accountsList>
     ) => {
+      console.log('Address management - Row', props);
       const { data, index, style } = props;
       const account = data[index];
 
@@ -241,12 +264,12 @@ const AddressManagement = () => {
 
         return (
           <>
-            <div
-              className={clsx(
-                'address-wrap-with-padding px-[20px]',
-                isGroup && 'row-group'
-              )}
-              style={!isGroup ? style : undefined}
+            <Flex
+              direction={'column'}
+              gap={'2'}
+              my={'2'}
+              // className={clsx(isGroup && 'row-group')}
+              // style={!isGroup ? style : undefined}
               key={account.address}
             >
               <AddressItem
@@ -255,6 +278,7 @@ const AddressManagement = () => {
                 type={account.type}
                 brandName={account.brandName}
                 alias={account.alianName}
+                isCurrentAccount={account.address === currentAccount?.address}
                 isUpdatingBalance={isUpdateAllBalanceLoading}
                 extra={
                   <div
@@ -293,17 +317,26 @@ const AddressManagement = () => {
                   switchAccount(account);
                 }}
                 enableSwitch={enableSwitch}
-              />
+              >
+                {isWalletConnect && (
+                  <SessionStatusBar
+                    address={accountList[currentAccountIndex].address || ''}
+                    brandName={accountList[currentAccountIndex].brandName || ''}
+                    className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                    type={accountList[currentAccountIndex].type}
+                  />
+                )}
+              </AddressItem>
 
-              {!isGroup && index === data.length - 1
+              {/*{!isGroup && index === data.length - 1
                 ? AddNewAddressColumn
-                : null}
-            </div>
+                : null}*/}
+            </Flex>
           </>
         );
       };
 
-      if (addressSortStore.sortType === 'addressType') {
+      /*if (addressSortStore.sortType === 'addressType') {
         return (
           <div style={style} className="address-type-container">
             {(account as typeof accountsList)?.map((e) => render(e, true))}
@@ -312,7 +345,7 @@ const AddressManagement = () => {
             ) : null}
           </div>
         );
-      }
+      }*/
 
       return render(account as typeof accountsList[number]);
     },
@@ -411,112 +444,287 @@ const AddressManagement = () => {
     listRef.current?.resetAfterIndex(0);
   }, [accountsList.length]);
 
+  const dynamicCallOut = () => {
+    const callOutTexts = [
+      'Right click to edit your account name',
+      'Right click to see your account details',
+      'Right click to see your private key',
+      'Right click to copy your address',
+      'Right click to share your address',
+    ];
+    return callOutTexts[Math.floor(Math.random() * callOutTexts.length)];
+  };
+
   return (
-    <div className="page-address-management px-0 overflow-hidden">
-      <PageHeader className="pt-[24px] mx-[20px]">
-        {enableSwitch
-          ? t('page.manageAddress.current-address')
-          : t('page.manageAddress.address-management')}
-        <div className="bg-r-neutral-card1 rounded absolute top-20 right-0 w-[32px] h-[28px] flex items-center justify-center">
-          <RcIconAddAddress
-            viewBox="0 0 20 20"
-            className={clsx(
-              'text-r-blue-default w-[20px] h-[20px] cursor-pointer'
-            )}
-            onClick={gotoAddAddress}
-          />
-        </div>
+    <PageContainer>
+      <PageHeader showBackButton>
+        <PageHeading>
+          {enableSwitch
+            ? t('page.manageAddress.current-address')
+            : t('page.manageAddress.address-management')}
+        </PageHeading>
       </PageHeader>
 
-      {currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
-        <>
-          <div className="address-wrap-with-padding px-[20px]">
-            <AddressItem
-              balance={accountList[currentAccountIndex].balance || 0}
-              address={accountList[currentAccountIndex].address || ''}
-              type={accountList[currentAccountIndex].type || ''}
-              brandName={accountList[currentAccountIndex].brandName || ''}
-              alias={accountList[currentAccountIndex].alianName}
-              isCurrentAccount
-              isUpdatingBalance={isUpdateAllBalanceLoading}
-              onClick={() => {
-                history.push(
-                  `/settings/address-detail?${obj2query({
-                    address: accountList[currentAccountIndex].address,
-                    type: accountList[currentAccountIndex].type,
-                    brandName: accountList[currentAccountIndex].brandName,
-                    byImport:
-                      ((accountList[currentAccountIndex]
-                        .byImport as unknown) as string) || '',
-                  })}`
-                );
-              }}
-            >
-              {isWalletConnect && (
-                <SessionStatusBar
+      <PageBody>
+        <Flex direction={'column'} gap={'3'}>
+          <Callout.Root size={'1'} color="gray" variant="soft" highContrast>
+            <Callout.Icon>
+              <LucideInfo size={18} />
+            </Callout.Icon>
+            {/* @ts-expect-error "This is a negligible error" */}
+            <Callout.Text>{dynamicCallOut()}</Callout.Text>
+          </Callout.Root>
+
+          <Flex align={'center'} justify={'between'} py={'4'}>
+            {/*<SortInput
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+            />*/}
+            <Flex align={'center'} className="cursor-pointer">
+              <Button variant={'soft'} onClick={gotoManageAddress}>
+                <span>{t('page.manageAddress.manage-address')}</span>
+              </Button>
+            </Flex>
+          </Flex>
+
+          {/* TODO: June 13, 2025. Remember this for when handling Ledger connections */}
+          {/*{currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
+            <>
+              <Flex direction={'column'} gap={'2'} py={'2'}>
+                <AddressItem
+                  balance={accountList[currentAccountIndex].balance || 0}
                   address={accountList[currentAccountIndex].address || ''}
+                  type={accountList[currentAccountIndex].type || ''}
                   brandName={accountList[currentAccountIndex].brandName || ''}
-                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
-                  type={accountList[currentAccountIndex].type}
+                  alias={accountList[currentAccountIndex].alianName}
+                  isCurrentAccount
+                  isUpdatingBalance={isUpdateAllBalanceLoading}
+                  onClick={() => {
+                    history.push(
+                      `/settings/address-detail?${obj2query({
+                        address: accountList[currentAccountIndex].address,
+                        type: accountList[currentAccountIndex].type,
+                        brandName: accountList[currentAccountIndex].brandName,
+                        byImport:
+                          ((accountList[currentAccountIndex]
+                            .byImport as unknown) as string) || '',
+                      })}`
+                    );
+                  }}
+                >
+                  {isWalletConnect && (
+                    <SessionStatusBar
+                      address={accountList[currentAccountIndex].address || ''}
+                      brandName={
+                        accountList[currentAccountIndex].brandName || ''
+                      }
+                      className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                      type={accountList[currentAccountIndex].type}
+                    />
+                  )}
+                  {isLedger && (
+                    <LedgerStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                  )}
+                  {isKeystone && (
+                    <KeystoneStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                  )}
+                  {isGridPlus && (
+                    <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                  )}
+                  {isCoinbase && (
+                    <SessionStatusBar
+                      address={accountList[currentAccountIndex].address || ''}
+                      brandName={KEYRING_CLASS.Coinbase}
+                      className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                      type={KEYRING_CLASS.Coinbase}
+                    />
+                  )}
+                </AddressItem>
+              </Flex>
+            </>
+          )}*/}
+
+          {noAnyAccount && <NoAddressUI />}
+          {noAnySearchedAccount && <NoSearchedAddressUI />}
+          {!(noAnyAccount && noAnySearchedAccount) &&
+            filteredAccounts.length > 0 &&
+            filteredAccounts.map((_, index) => (
+              <Flex direction={'column'} gap={'2'} py={'2'}>
+                <AddressRow
+                  data={filteredAccounts}
+                  index={index}
+                  style={{}}
+                  accountsList={accountsList}
+                  highlightedAddresses={highlightedAddresses}
+                  isUpdateAllBalanceLoading={isUpdateAllBalanceLoading}
+                  dispatch={dispatch}
+                  currentAccount={currentAccount}
+                  history={history}
+                  enableSwitch={enableSwitch}
+                  switchAccount={switchAccount}
+                  addressSortStore={addressSortStore}
+                  AddNewAddressColumn={AddNewAddressColumn}
+                  currentAccountIndex={currentAccountIndex}
+                  accountList={accountList}
+                  isWalletConnect={isWalletConnect}
                 />
-              )}
-              {isLedger && (
-                <LedgerStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
-              )}
-              {isKeystone && (
-                <KeystoneStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
-              )}
-              {isGridPlus && (
-                <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
-              )}
-              {isCoinbase && (
-                <SessionStatusBar
-                  address={accountList[currentAccountIndex].address || ''}
-                  brandName={KEYRING_CLASS.Coinbase}
-                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
-                  type={KEYRING_CLASS.Coinbase}
-                />
-              )}
-            </AddressItem>
-          </div>
-        </>
-      )}
-      <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-16">
-        <SortInput
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
-        />
-        <div
-          className="flex items-center cursor-pointer "
-          onClick={gotoManageAddress}
-        >
-          <span>{t('page.manageAddress.manage-address')}</span>
-          <RcIconRight className="relative top-1" />
-        </div>
-      </div>
-      {noAnyAccount ? (
-        <NoAddressUI />
-      ) : noAnySearchedAccount ? (
-        <NoSearchedAddressUI />
-      ) : (
-        <div className={'address-group-list management'}>
-          <VList
+              </Flex>
+            ))}
+
+          {/* Uncomment the following lines if you want to use the VList component */}
+          {/*<div className={'address-group-list management'}>*/}
+
+          {/*{Row}*/}
+          {/*<VList
             ref={listRef}
             key={addressSortStore.sortType + debouncedSearchKeyword}
-            height={currentAccountIndex === -1 ? 471 : hasStatusBar ? 368 : 417}
+            height={
+              currentAccountIndex === -1 ? 471 : hasStatusBar ? 368 : 417
+            }
             width="100%"
             itemData={filteredAccounts}
             itemCount={filteredAccounts.length}
             itemSize={getItemSize}
-            className="address-scroll-container"
             overscanCount={6}
-            onScroll={handleScroll}
+            // onScroll={handleScroll}
           >
             {Row}
-          </VList>
+          </VList>*/}
+
+          {noAnyAccount ? (
+            <NoAddressUI />
+          ) : noAnySearchedAccount ? (
+            <NoSearchedAddressUI />
+          ) : (
+            <div className={'space-y-2'}>
+              <VList
+                ref={listRef}
+                key={addressSortStore.sortType + debouncedSearchKeyword}
+                height={
+                  currentAccountIndex === -1 ? 471 : hasStatusBar ? 368 : 417
+                }
+                width="100%"
+                itemData={filteredAccounts}
+                itemCount={filteredAccounts.length}
+                itemSize={getItemSize}
+                overscanCount={6}
+                onScroll={handleScroll}
+              >
+                {Row}
+              </VList>
+            </div>
+          )}
+        </Flex>
+      </PageBody>
+
+      {AddNewAddressColumn}
+
+      {/*<div className="page-address-management px-0 overflow-hidden">
+        <PageHeader className="pt-[24px] mx-[20px]">
+          {enableSwitch
+            ? t('page.manageAddress.current-address')
+            : t('page.manageAddress.address-management')}
+          <div className="bg-r-neutral-card1 rounded absolute top-20 right-0 w-[32px] h-[28px] flex items-center justify-center">
+            <RcIconAddAddress
+              viewBox="0 0 20 20"
+              className={clsx(
+                'text-r-blue-default w-[20px] h-[20px] cursor-pointer'
+              )}
+              onClick={gotoAddAddress}
+            />
+          </div>
+        </PageHeader>
+
+        {currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
+          <>
+            <div className="address-wrap-with-padding px-[20px]">
+              <AddressItem
+                balance={accountList[currentAccountIndex].balance || 0}
+                address={accountList[currentAccountIndex].address || ''}
+                type={accountList[currentAccountIndex].type || ''}
+                brandName={accountList[currentAccountIndex].brandName || ''}
+                alias={accountList[currentAccountIndex].alianName}
+                isCurrentAccount
+                isUpdatingBalance={isUpdateAllBalanceLoading}
+                onClick={() => {
+                  history.push(
+                    `/settings/address-detail?${obj2query({
+                      address: accountList[currentAccountIndex].address,
+                      type: accountList[currentAccountIndex].type,
+                      brandName: accountList[currentAccountIndex].brandName,
+                      byImport:
+                        ((accountList[currentAccountIndex]
+                          .byImport as unknown) as string) || '',
+                    })}`
+                  );
+                }}
+              >
+                {isWalletConnect && (
+                  <SessionStatusBar
+                    address={accountList[currentAccountIndex].address || ''}
+                    brandName={accountList[currentAccountIndex].brandName || ''}
+                    className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                    type={accountList[currentAccountIndex].type}
+                  />
+                )}
+                {isLedger && (
+                  <LedgerStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                )}
+                {isKeystone && (
+                  <KeystoneStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                )}
+                {isGridPlus && (
+                  <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                )}
+                {isCoinbase && (
+                  <SessionStatusBar
+                    address={accountList[currentAccountIndex].address || ''}
+                    brandName={KEYRING_CLASS.Coinbase}
+                    className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                    type={KEYRING_CLASS.Coinbase}
+                  />
+                )}
+              </AddressItem>
+            </div>
+          </>
+        )}
+        <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-16">
+          <SortInput
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+          <div
+            className="flex items-center cursor-pointer "
+            onClick={gotoManageAddress}
+          >
+            <span>{t('page.manageAddress.manage-address')}</span>
+            <RcIconRight className="relative top-1" />
+          </div>
         </div>
-      )}
-    </div>
+        {noAnyAccount ? (
+          <NoAddressUI />
+        ) : noAnySearchedAccount ? (
+          <NoSearchedAddressUI />
+        ) : (
+          <div className={'address-group-list management'}>
+            <VList
+              ref={listRef}
+              key={addressSortStore.sortType + debouncedSearchKeyword}
+              height={currentAccountIndex === -1 ? 471 : hasStatusBar ? 368 : 417}
+              width="100%"
+              itemData={filteredAccounts}
+              itemCount={filteredAccounts.length}
+              itemSize={getItemSize}
+              className="address-scroll-container"
+              overscanCount={6}
+              onScroll={handleScroll}
+            >
+              {Row}
+            </VList>
+          </div>
+        )}
+      </div>*/}
+    </PageContainer>
   );
 };
 

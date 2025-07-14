@@ -78,76 +78,80 @@ export const CustomTestnetForm = ({
   });
 
   return (
-    <Warper>
-      <Form
-        layout="vertical"
-        form={form}
-        requiredMark={false}
-        onFieldsChange={onFieldsChange}
-      >
-        <Form.Item
-          label={t('page.customTestnet.CustomTestnetForm.id')}
-          name="id"
-          rules={[
-            {
-              required: true,
-              pattern: /^\d+$/,
-              message: t('page.customTestnet.CustomTestnetForm.idRequired'),
-            },
-          ]}
+    <>
+      <Warper>
+        <Form
+          layout="vertical"
+          form={form}
+          requiredMark={false}
+          onFieldsChange={onFieldsChange}
         >
-          <Input
-            ref={inputRef}
-            autoComplete="off"
-            disabled={disabled || idDisabled || isEdit}
-          />
-        </Form.Item>
-        <Form.Item
-          label={t('page.customTestnet.CustomTestnetForm.name')}
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: t('page.customTestnet.CustomTestnetForm.nameRequired'),
-            },
-          ]}
-        >
-          <Input autoComplete="off" disabled={disabled} />
-        </Form.Item>
-        <Form.Item
-          label={t('page.customTestnet.CustomTestnetForm.rpcUrl')}
-          name="rpcUrl"
-          rules={[
-            {
-              required: true,
-              type: 'url',
-              message: t('page.customTestnet.CustomTestnetForm.rpcUrlRequired'),
-            },
-          ]}
-        >
-          <Input autoComplete="off" type="url" disabled={disabled} />
-        </Form.Item>
-        <Form.Item
-          label={t('page.customTestnet.CustomTestnetForm.nativeTokenSymbol')}
-          name="nativeTokenSymbol"
-          rules={[
-            {
-              required: true,
-              message: t(
-                'page.customTestnet.CustomTestnetForm.nativeTokenSymbolRequired'
-              ),
-            },
-          ]}
-        >
-          <Input autoComplete="off" disabled={disabled} />
-        </Form.Item>
-        <Form.Item
-          label={t('page.customTestnet.CustomTestnetForm.blockExplorerUrl')}
-          name="scanLink"
-        >
-          <Input autoComplete="off" disabled={disabled} />
-        </Form.Item>
-      </Form>
-    </Warper>
+          <Form.Item
+            label={t('page.customTestnet.CustomTestnetForm.id')}
+            name="id"
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+$/,
+                message: t('page.customTestnet.CustomTestnetForm.idRequired'),
+              },
+            ]}
+          >
+            <Input
+              ref={inputRef}
+              autoComplete="off"
+              disabled={disabled || idDisabled || isEdit}
+            />
+          </Form.Item>
+          <Form.Item
+            label={t('page.customTestnet.CustomTestnetForm.name')}
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: t('page.customTestnet.CustomTestnetForm.nameRequired'),
+              },
+            ]}
+          >
+            <Input autoComplete="off" disabled={disabled} />
+          </Form.Item>
+          <Form.Item
+            label={t('page.customTestnet.CustomTestnetForm.rpcUrl')}
+            name="rpcUrl"
+            rules={[
+              {
+                required: true,
+                type: 'url',
+                message: t(
+                  'page.customTestnet.CustomTestnetForm.rpcUrlRequired'
+                ),
+              },
+            ]}
+          >
+            <Input autoComplete="off" type="url" disabled={disabled} />
+          </Form.Item>
+          <Form.Item
+            label={t('page.customTestnet.CustomTestnetForm.nativeTokenSymbol')}
+            name="nativeTokenSymbol"
+            rules={[
+              {
+                required: true,
+                message: t(
+                  'page.customTestnet.CustomTestnetForm.nativeTokenSymbolRequired'
+                ),
+              },
+            ]}
+          >
+            <Input autoComplete="off" disabled={disabled} />
+          </Form.Item>
+          <Form.Item
+            label={t('page.customTestnet.CustomTestnetForm.blockExplorerUrl')}
+            name="scanLink"
+          >
+            <Input autoComplete="off" disabled={disabled} />
+          </Form.Item>
+        </Form>
+      </Warper>
+    </>
   );
 };

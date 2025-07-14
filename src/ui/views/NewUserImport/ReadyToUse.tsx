@@ -41,11 +41,11 @@ export const ReadyToUse = () => {
       </Card>
 
       <CardContainer className={'overflow-auto relative'}>
-        <CardHeader showBackButton onPress={history.goBack}>
-          {/*<CardDescription>*/}
-          {/*  {t('page.newUserImport.PasswordCard.desc')}*/}
-          {/*</CardDescription>*/}
-        </CardHeader>
+        {/*<CardHeader showBackButton={false} onPress={history.goBack}>*/}
+        {/*  /!*<CardDescription>*!/*/}
+        {/*  /!*  {t('page.newUserImport.PasswordCard.desc')}*!/*/}
+        {/*  /!*</CardDescription>*!/*/}
+        {/*</CardHeader>*/}
         <CardBody>
           <Flex direction={'column'} align={'center'} mt={'32'} gapY={'8'}>
             <Avatar size="8" fallback="" radius={'full'} />

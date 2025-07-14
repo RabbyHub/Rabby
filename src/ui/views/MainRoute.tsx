@@ -79,6 +79,16 @@ import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
 import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
 import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
+import OAuthSignInPage from 'ui/views/OAuthSignin';
+import Settings from 'ui/views/Settings';
+import { RecentConnections } from './Dashboard/components';
+import ChangeLanguage from './Settings/ChangeLanguage';
+import ChangeTheme from './Settings/ChangeTheme';
+import ChangeLockTime from 'ui/views/Settings/ChangeLockTime';
+import ResetAccount from 'ui/views/Settings/ClearPending';
+import { AddNetwork } from 'ui/views/CustomTestnet/AddNetworks';
+import ChainListExplorerDetails from 'ui/views/CustomTestnet/ChainListDetails';
+import { ChainListExplorer } from 'ui/views/CustomTestnet/ChainListExplorer';
 
 declare global {
   interface Window {
@@ -208,6 +218,10 @@ const Main = () => {
 
         <Route exact path="/no-address">
           <NoAddress />
+        </Route>
+
+        <Route exact path="/oauth-signin">
+          <OAuthSignInPage />
         </Route>
 
         <Route exact path="/connect-approval">
@@ -353,6 +367,10 @@ const Main = () => {
           <AddressManagement />
         </PrivateRoute>
 
+        <PrivateRoute exact path="/accounts">
+          <AddressManagement />
+        </PrivateRoute>
+
         <PrivateRoute exact path="/dex-swap">
           <Swap />
         </PrivateRoute>
@@ -361,6 +379,15 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/custom-testnet">
           <CustomTestnet />
+        </PrivateRoute>
+        <PrivateRoute exact path="/custom-testnet/add">
+          <AddNetwork />
+        </PrivateRoute>
+        <PrivateRoute exact path="/custom-testnet/chainlist-explorer">
+          <ChainListExplorer />
+        </PrivateRoute>
+        <PrivateRoute exact path="/custom-testnet/chainlist-details/:chainId">
+          <ChainListExplorerDetails />
         </PrivateRoute>
         <PrivateRoute exact path="/metamask-mode-dapps">
           <MetamaskModeDappsGuide />
@@ -379,6 +406,24 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute path="/gas-account">
           <GasAccount />
+        </PrivateRoute>
+        <PrivateRoute path="/settings">
+          <Settings />
+        </PrivateRoute>
+        <PrivateRoute path="/connected-sites">
+          <RecentConnections />
+        </PrivateRoute>
+        <PrivateRoute path="/change-language">
+          <ChangeLanguage />
+        </PrivateRoute>
+        <PrivateRoute path="/change-theme">
+          <ChangeTheme />
+        </PrivateRoute>
+        <PrivateRoute path="/change-lock-time">
+          <ChangeLockTime />
+        </PrivateRoute>
+        <PrivateRoute path="/clear-pending">
+          <ResetAccount />
         </PrivateRoute>
       </Switch>
 

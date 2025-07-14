@@ -122,6 +122,8 @@ export interface PreferenceStore {
   /** @deprecated */
   reserveGasOnSendToken?: boolean;
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
+
+  testnetChain?: CHAINS_ENUM | string;
 }
 
 export interface AddressSortStore {
@@ -191,6 +193,7 @@ class PreferenceService {
         reserveGasOnSendToken: true,
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
+        testnetChain: '',
       },
     });
 
@@ -873,6 +876,10 @@ class PreferenceService {
   };
   setIsHideEcologyNoticeDict = (v: Record<string | number, boolean>) => {
     this.store.isHideEcologyNoticeDict = v;
+  };
+
+  setTestnetChain = (chain: CHAINS_ENUM) => {
+    this.store.testnetChain = chain;
   };
 }
 

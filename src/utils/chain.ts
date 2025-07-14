@@ -3,7 +3,8 @@ import {
   CustomTestnetToken,
   TestnetChain,
 } from '@/background/service/customTestnet';
-import defaultSuppordChain from '@/constant/default-support-chains.json';
+import defaultSupportedChain from '@/constant/default-support-chains.json';
+import chainList from '@/constant/chainList.json';
 import eventBus from '@/eventBus';
 import { Chain } from '@debank/common';
 import {
@@ -14,6 +15,16 @@ import {
 import { CHAINS, CHAINS_ENUM, EVENTS } from 'consts';
 import { toHex } from 'viem';
 import browser from 'webextension-polyfill';
+
+export const fetchTestnetChains = () => {
+  return chainList
+    .filter((chain) => chain?.name.toString().toLowerCase().includes('testnet'))
+    .map((chain: Chain) => {
+      return supportedChainToTestnetChain(chain);
+    });
+};
+
+export const defaultTestnetChains = fetchTestnetChains().slice(0, 10);
 
 export const getMainnetListFromLocal = () => {
   return browser.storage.local.get('rabbyMainnetChainList').then((res) => {
@@ -30,12 +41,17 @@ getMainnetListFromLocal().then((list) => {
 });
 
 const store = {
-  mainnetList: defaultSuppordChain
+  mainnetList: defaultSupportedChain
     .filter((item) => !item.is_disabled)
     .map((item) => {
       return supportedChainToChain(item);
     }),
-  testnetList: [] as TestnetChain[],
+  // testnetList: [] as TestnetChain[],
+  testnetList: chainList
+    .filter((chain) => chain?.name.toString().toLowerCase().includes('testnet'))
+    .map((chain: Chain) => {
+      return supportedChainToTestnetChain(chain);
+    }),
 };
 
 export const updateChainStore = (params: Partial<typeof store>) => {
@@ -362,6 +378,33 @@ export function makeTokenFromChain(chain: Chain): TokenItem {
     name: chain.nativeTokenSymbol,
     chain: chain.serverId,
     time_at: 0,
+  };
+}
+
+export function supportedChainToTestnetChain(item: any): TestnetChain {
+  return {
+    isTestnet: true,
+    rpcUrl: item.rpc?.[0]?.url,
+    severity: 0,
+    id: item.shortName,
+    enum: item.chain.toUpperCase(),
+    name: item.name,
+    serverId: item.shortName,
+    hex: toHex(+item.chainId.toString()),
+    network: item.networkId.toString() + '',
+    nativeTokenSymbol: item.nativeCurrency?.symbol,
+    nativeTokenLogo: item.nativeCurrency?.logo,
+    nativeTokenDecimals: item.nativeCurrency?.decimals,
+    nativeTokenAddress: item.shortName,
+    needEstimateGas: false,
+    scanLink: `${item.explorers?.[0]?.url}/${
+      item.id === 'heco' ? 'transaction' : 'tx'
+    }/_s_`,
+    logo: '',
+    whiteLogo: '',
+    eip: {
+      '1559': item?.eip_1559,
+    },
   };
 }
 

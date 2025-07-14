@@ -77,18 +77,19 @@ export const MnemonicManager: React.FC = () => {
 
   return (
     <>
-      <div className="toolbar">
+      {/*<div className="toolbar">
         <div className="toolbar-item" onClick={openAdvanced}>
           <RcSettingSVG className="icon text-r-neutral-title1" />
           <span className="title">
             {t('page.newAddress.hd.advancedSettings')}
           </span>
         </div>
-      </div>
+      </div>*/}
 
       <MainContainer setting={setting} loading={loading} HDName="Seed Phrase" />
 
-      <Modal
+      {/* TODO: June 15, 2025. Create this to fit the UI for LEdger Live and Ledger Legacy */}
+      {/*<Modal
         destroyOnClose
         className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
@@ -102,7 +103,7 @@ export const MnemonicManager: React.FC = () => {
           onConfirm={onConfirmAdvanced}
           initSettingData={setting}
         />
-      </Modal>
+      </Modal>*/}
     </>
   );
 };

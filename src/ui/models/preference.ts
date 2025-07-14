@@ -30,6 +30,7 @@ interface PreferenceState {
   themeMode: DARK_MODE_TYPE;
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
+  testnetChain: CHAINS_ENUM;
 }
 
 export const preference = createModel<RootModel>()({
@@ -56,6 +57,7 @@ export const preference = createModel<RootModel>()({
     themeMode: DARK_MODE_TYPE.system,
     reserveGasOnSendToken: false,
     isHideEcologyNoticeDict: {},
+    testnetChain: CHAINS_ENUM.SETH,
   } as PreferenceState,
 
   reducers: {

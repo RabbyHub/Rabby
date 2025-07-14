@@ -1535,6 +1535,10 @@ export class WalletController extends BaseController {
     return preferenceService.setIsShowTestnet(value);
   };
 
+  setTestnetChain = (value: CHAINS_ENUM) => {
+    return preferenceService.setTestnetChain(value);
+  };
+
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
   };
@@ -3366,7 +3370,9 @@ export class WalletController extends BaseController {
     keyringId: keyof typeof stashKeyrings,
     byImport = true
   ) => {
+    console.log('add keyring', keyringId, byImport);
     const keyring = stashKeyrings[keyringId];
+    console.log('Add keyring', keyringId, keyring);
     if (keyring) {
       keyring.byImport = byImport;
       // If keyring exits, just save

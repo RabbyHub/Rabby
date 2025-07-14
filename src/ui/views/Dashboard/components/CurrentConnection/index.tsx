@@ -15,6 +15,8 @@ import IconMetamaskMode from 'ui/assets/metamask-mode-circle.svg';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
+import { Avatar, Card, Flex, Text, Tooltip } from '@radix-ui/themes';
+import { LucideLink2Off } from 'lucide-react';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -79,80 +81,167 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   }, []);
 
   return (
-    <div className={clsx('current-connection-block h-[52px]')}>
-      {site ? (
-        <div className="site mr-[18px]">
-          <div className="relative">
-            <FallbackSiteLogo
-              url={site.icon}
-              origin={site.origin}
-              width="28px"
-              className="site-icon"
-            ></FallbackSiteLogo>
-            {site.isMetamaskMode ? (
-              <TooltipWithMagnetArrow
-                placement="top"
-                overlayClassName={clsx('rectangle max-w-[360px] w-[360px]')}
-                align={{
-                  offset: [0, 4],
-                }}
-                title={t(
-                  'page.dashboard.recentConnection.metamaskModeTooltipNew'
+    <Flex direction={'column'} className={'w-full'}>
+      <Card className={'w-full'}>
+        <Flex align={'center'} justify={'between'} gap={'2'}>
+          {site ? (
+            <Flex align={'center'} gap={'2'}>
+              <Flex position={'relative'} gap={'2'}>
+                <FallbackSiteLogo
+                  url={site.icon}
+                  origin={site.origin}
+                  width="28px"
+                  className="site-icon"
+                ></FallbackSiteLogo>
+                {site.isMetamaskMode ? (
+                  <Tooltip
+                    content={t(
+                      'page.dashboard.recentConnection.metamaskModeTooltipNew'
+                    )}
+                  >
+                    <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                      <img src={IconMetamaskMode} alt="metamask mode"></img>
+                    </div>
+                  </Tooltip>
+                ) : null}
+              </Flex>
+              <Flex direction={'column'}>
+                <Text
+                  truncate
+                  size={'1'}
+                  title={site?.origin}
+                  weight={'medium'}
+                >
+                  {site?.origin}
+                </Text>
+                <Text
+                  className={clsx(
+                    'site-status text-[12px]',
+                    site?.isConnected && 'active'
+                  )}
+                >
+                  <Flex align={'center'} gap={'2'}>
+                    <Text color={'gray'} size={'1'}>
+                      {site?.isConnected
+                        ? t('page.dashboard.recentConnection.connected')
+                        : t('page.dashboard.recentConnection.notConnected')}
+                    </Text>
+                    <LucideLink2Off
+                      size={12}
+                      className={'hover:text-red-800'}
+                      onClick={() => handleRemove(site!.origin)}
+                    />
+                  </Flex>
+                </Text>
+              </Flex>
+            </Flex>
+          ) : (
+            <Flex align={'center'} gap={'2'}>
+              {/*<img src={IconDapps} className="site-icon ml-2" alt="" />*/}
+              <Avatar radius="full" fallback="-" size={'1'} src={IconDapps} />
+              <Text size={'1'} weight={'medium'}>
+                {t('page.dashboard.recentConnection.noDappFound')}
+              </Text>
+            </Flex>
+          )}
+
+          <ChainSelector
+            isDisabled={!site}
+            className={clsx(!site && 'disabled')}
+            value={site?.chain || CHAINS_ENUM.ETH}
+            onChange={handleChangeDefaultChain}
+            showModal={visible}
+            onAfterOpen={() => {
+              matomoRequestEvent({
+                category: 'Front Page Click',
+                action: 'Click',
+                label: 'Change Chain',
+              });
+
+              ga4.fireEvent('Click_ChangeChain', {
+                event_category: 'Front Page Click',
+              });
+            }}
+            showRPCStatus
+          />
+        </Flex>
+      </Card>
+
+      {/*<div className={clsx('current-connection-block h-[52px]')}>
+        {site ? (
+          <div className="site mr-[18px]">
+            <div className="relative">
+              <FallbackSiteLogo
+                url={site.icon}
+                origin={site.origin}
+                width="28px"
+                className="site-icon"
+              ></FallbackSiteLogo>
+              {site.isMetamaskMode ? (
+                <TooltipWithMagnetArrow
+                  placement="top"
+                  overlayClassName={clsx('rectangle max-w-[360px] w-[360px]')}
+                  align={{
+                    offset: [0, 4],
+                  }}
+                  title={t(
+                    'page.dashboard.recentConnection.metamaskModeTooltipNew'
+                  )}
+                >
+                  <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
+                    <img src={IconMetamaskMode} alt="metamask mode"></img>
+                  </div>
+                </TooltipWithMagnetArrow>
+              ) : null}
+            </div>
+            <div className="site-content">
+              <div className="site-name" title={site?.origin}>
+                {site?.origin}
+              </div>
+              <div
+                className={clsx(
+                  'site-status text-[12px]',
+                  site?.isConnected && 'active'
                 )}
               >
-                <div className="absolute top-[-4px] right-[-4px] text-r-neutral-title-2">
-                  <img src={IconMetamaskMode} alt="metamask mode"></img>
-                </div>
-              </TooltipWithMagnetArrow>
-            ) : null}
-          </div>
-          <div className="site-content">
-            <div className="site-name" title={site?.origin}>
-              {site?.origin}
-            </div>
-            <div
-              className={clsx(
-                'site-status text-[12px]',
-                site?.isConnected && 'active'
-              )}
-            >
-              {site?.isConnected
-                ? t('page.dashboard.recentConnection.connected')
-                : t('page.dashboard.recentConnection.notConnected')}
-              <RCIconDisconnectCC
-                viewBox="0 0 14 14"
-                className="site-status-icon w-12 h-12 ml-4 text-r-neutral-foot hover:text-rabby-red-default"
-                onClick={() => handleRemove(site!.origin)}
-              />
+                {site?.isConnected
+                  ? t('page.dashboard.recentConnection.connected')
+                  : t('page.dashboard.recentConnection.notConnected')}
+                <RCIconDisconnectCC
+                  viewBox="0 0 14 14"
+                  className="site-status-icon w-12 h-12 ml-4 text-r-neutral-foot hover:text-rabby-red-default"
+                  onClick={() => handleRemove(site!.origin)}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="site is-empty">
-          <img src={IconDapps} className="site-icon ml-6" alt="" />
-          <div className="site-content">
-            {t('page.dashboard.recentConnection.noDappFound')}
+        ) : (
+          <div className="site is-empty">
+            <img src={IconDapps} className="site-icon ml-6" alt="" />
+            <div className="site-content">
+              {t('page.dashboard.recentConnection.noDappFound')}
+            </div>
           </div>
-        </div>
-      )}
-      <ChainSelector
-        className={clsx(!site && 'disabled')}
-        value={site?.chain || CHAINS_ENUM.ETH}
-        onChange={handleChangeDefaultChain}
-        showModal={visible}
-        onAfterOpen={() => {
-          matomoRequestEvent({
-            category: 'Front Page Click',
-            action: 'Click',
-            label: 'Change Chain',
-          });
+        )}
+        <ChainSelector
+          className={clsx(!site && 'disabled')}
+          value={site?.chain || CHAINS_ENUM.ETH}
+          onChange={handleChangeDefaultChain}
+          showModal={visible}
+          onAfterOpen={() => {
+            matomoRequestEvent({
+              category: 'Front Page Click',
+              action: 'Click',
+              label: 'Change Chain',
+            });
 
-          ga4.fireEvent('Click_ChangeChain', {
-            event_category: 'Front Page Click',
-          });
-        }}
-        showRPCStatus
-      />
-    </div>
+            ga4.fireEvent('Click_ChangeChain', {
+              event_category: 'Front Page Click',
+            });
+          }}
+          showRPCStatus
+        />
+      </div>*/}
+    </Flex>
   );
 });

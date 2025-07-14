@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { useAsync } from 'react-use';
 import { TypeKeyringGroup, useWalletTypeData } from '../ManageAddress/hooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { addAddressFromSeedPhrase } from '@/ui/utils/addAddressFromSeedPhrase';
 
 const useGetHdKeys = () => {
   const wallet = useWallet();
@@ -25,17 +26,39 @@ export const UseSeedPhrase = () => {
 
   const handleAddSeedPhraseAddress = useCallback(
     async (publicKey: string) => {
+      console.log('get HANDLEADDSEEDPHRASEADDRESS::: public key', publicKey);
       if (publicKey) {
+        console.log(
+          'handleaddseedphraseaddress::: public key exist',
+          publicKey
+        );
         await invokeEnterPassphrase(publicKey);
         const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
           publicKey
         );
+        console.log('get HANDLEADDSEEDPHRASEADDRESS::: keyring', keyringId);
         openInternalPageInTab(
           `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
         );
       }
+      console.log(
+        'handleaddseedphraseaddress::: public key not exist',
+        publicKey
+      );
     },
     [invokeEnterPassphrase, wallet?.getMnemonicKeyRingIdFromPublicKey]
+  );
+
+  const addSeedPhraseAddressDirect = useCallback(
+    async (publicKey: string) => {
+      if (!publicKey) {
+        throw new Error('Public key is required');
+      }
+
+      await invokeEnterPassphrase(publicKey);
+      return addAddressFromSeedPhrase(wallet, publicKey);
+    },
+    [invokeEnterPassphrase, wallet]
   );
 
   const seedPhraseList = useMemo(() => {
@@ -59,6 +82,7 @@ export const UseSeedPhrase = () => {
   return {
     seedPhraseList,
     handleAddSeedPhraseAddress,
+    addSeedPhraseAddressDirect,
   };
 };
 

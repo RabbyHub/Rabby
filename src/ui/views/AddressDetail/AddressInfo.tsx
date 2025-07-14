@@ -1,4 +1,4 @@
-import { Button, Form, Input, Popover } from 'antd';
+import { Form, Input, Popover } from 'antd';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Popup } from 'ui/component';
@@ -33,6 +33,20 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import clsx from 'clsx';
 import { HardwareBar } from './HardwareBar';
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Code,
+  DataList,
+  Flex,
+  Link,
+  Table,
+  Text,
+} from '@radix-ui/themes';
+import { LucideCopy } from 'lucide-react';
+import CopyTextComponent from '@/ui/component/CopyToClipboard';
 
 type Props = {
   address: string;
@@ -137,147 +151,233 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <div className="rabby-list">
-      <div className="rabby-list-item">
-        <div className="rabby-list-item-content pr-11">
-          <div className="rabby-list-item-label">
-            {t('page.addressDetail.address')}
-            <div className="rabby-list-item-desc flex gap-4 text-[12px]">
+    <>
+      <Flex direction={'column'} gap={'2'} py={'4'}>
+        <Flex
+          direction={'column'}
+          align={'center'}
+          justify={'center'}
+          gap={'4'}
+          p={'3'}
+        >
+          <Box className={'p-4 bg-white rounded-xl'}>
+            <QRCode
+              value={address}
+              size={120}
+              className="cursor-pointer"
+            ></QRCode>
+          </Box>
+          <Flex direction={'column'} align={'center'} gap={'2'}>
+            <Text size={'2'} weight={'bold'}>
               {address}
-              <img
-                src={IconCopy}
-                className="w-14 h-14 flex-shrink-0 cursor-pointer"
-                onClick={() => {
-                  copyAddress(address);
-                }}
-              />
+            </Text>
+
+            <CopyTextComponent textToCopy={address as string}>
+              <Flex direction={'column'}>
+                <Button radius={'full'} variant={'soft'}>
+                  Copy Address
+                  <LucideCopy size={14} />
+                </Button>
+              </Flex>
+            </CopyTextComponent>
+          </Flex>
+        </Flex>
+
+        <Card size={'2'}>
+          <Flex direction={'column'} gap={'2'}>
+            <Text size={'2'} weight={'bold'}>
+              {t('page.addressDetail.address')}
+            </Text>
+            <Text size={'2'}>{address}</Text>
+          </Flex>
+        </Card>
+
+        <Table.Root size="3" variant={'surface'}>
+          <Table.Body>
+            <Table.Row>
+              <Table.RowHeaderCell>
+                {t('page.addressDetail.address-note')}
+              </Table.RowHeaderCell>
+              <Table.Cell align={'right'}>{alias}</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.RowHeaderCell>
+                {t('page.addressDetail.assets')}
+              </Table.RowHeaderCell>
+              <Table.Cell align={'right'}>
+                <Text truncate align={'right'} size={'3'} weight={'bold'}>
+                  ${splitNumberByStep((balance || 0).toFixed(0))}
+                </Text>
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.RowHeaderCell>
+                {t('page.addressDetail.qr-code')}
+              </Table.RowHeaderCell>
+              <Table.Cell align={'right'}>
+                <QRCode
+                  value={address}
+                  size={28}
+                  className="cursor-pointer"
+                ></QRCode>
+              </Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.RowHeaderCell>
+                {t('page.addressDetail.source')}
+              </Table.RowHeaderCell>
+              <Table.Cell align={'right'}>
+                <Text align={'right'} size={'2'} weight={'medium'}>
+                  {source}
+                </Text>
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table.Root>
+      </Flex>
+
+      {/*<div className="rabby-list">
+        <div className="rabby-list-item">
+          <div className="rabby-list-item-content pr-11">
+            <div className="rabby-list-item-label">
+              {t('page.addressDetail.address')}
+              <div className="rabby-list-item-desc flex gap-4 text-[12px]">
+                {address}
+                <img
+                  src={IconCopy}
+                  className="w-14 h-14 flex-shrink-0 cursor-pointer"
+                  onClick={() => {
+                    copyAddress(address);
+                  }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="rabby-list-item-extra"></div>
-          <div className="rabby-list-item-arrow"></div>
-        </div>
-      </div>
-      <div className="rabby-list-item">
-        <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">
-            {t('page.addressDetail.address-note')}
-          </div>
-          <div
-            className="rabby-list-item-extra flex gap-[10px]"
-            onClick={handleEditMemo}
-          >
-            <div className="ellipsis" title={alias}>
-              {alias}
-            </div>
-            <img src={IconPen} className="cursor-pointer" alt="" />
+            <div className="rabby-list-item-extra"></div>
+            <div className="rabby-list-item-arrow"></div>
           </div>
         </div>
-      </div>
-      <div className="rabby-list-item">
-        <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">
-            {t('page.addressDetail.assets')}
-          </div>
-          <div
-            className="rabby-list-item-extra truncate"
-            title={splitNumberByStep((balance || 0).toFixed(0))}
-          >
-            ${splitNumberByStep((balance || 0).toFixed(0))}
-          </div>
-        </div>
-      </div>
-      <div className="rabby-list-item">
-        <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">
-            {t('page.addressDetail.qr-code')}
-          </div>
-          <div className="rabby-list-item-extra">
-            <Popover
-              placement="bottomLeft"
-              // trigger="click"
-              overlayClassName="page-address-detail-qrcode-popover"
-              align={{
-                offset: [-16, 6],
-              }}
-              content={<QRCode value={address} size={140}></QRCode>}
-            >
-              <QRCode
-                value={address}
-                size={28}
-                className="cursor-pointer"
-              ></QRCode>
-            </Popover>
-          </div>
-        </div>
-      </div>
-      <div className="rabby-list-item">
-        <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">
-            {t('page.addressDetail.source')}
-          </div>
-          <div className="rabby-list-item-extra flex gap-[4px] max-w-full">
-            <ThemeIcon
-              className="w-[16px] h-[16px]"
-              src={
-                pickKeyringThemeIcon(type as any, isDarkTheme) ||
-                pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
-                KEYRING_ICONS[type] ||
-                WALLET_BRAND_CONTENT[brandName as string]?.image
-              }
-            />
-            {source}
-          </div>
-        </div>
-        {type === KEYRING_CLASS.WALLETCONNECT && (
-          <div className="pb-[20px]">
-            <SessionStatusBar
-              className="text-r-neutral-body bg-r-neutral-bg2 connect-status"
-              address={address}
-              brandName={brandName}
-              type={type}
-            />
-          </div>
-        )}
-        {Object.values(HARDWARE_KEYRING_TYPES).find(
-          (item) => item.type === type
-        ) && (
-          <div className="pb-[20px]">
-            <HardwareBar address={address} type={type} brand={brandName} />
-          </div>
-        )}
-        {type === KEYRING_CLASS.MNEMONIC && (
-          <div className="pb-[20px]">
-            <SeedPhraseBar address={address} />
-          </div>
-        )}
-        {type === KEYRING_CLASS.Coinbase && (
-          <div className="pb-[20px]">
-            <SessionStatusBar
-              className="text-r-neutral-body bg-r-neutral-bg2 connect-status"
-              address={address}
-              brandName={KEYRING_CLASS.Coinbase}
-              type={KEYRING_CLASS.Coinbase}
-            />
-          </div>
-        )}
-      </div>
-      {accountInfo && (
         <div className="rabby-list-item">
           <div className="rabby-list-item-content">
             <div className="rabby-list-item-label">
-              {t('page.addressDetail.hd-path')}
+              {t('page.addressDetail.address-note')}
             </div>
-            <div className="rabby-list-item-extra flex gap-[4px]">{`${accountInfo.hdPathTypeLabel} #${accountInfo.index}`}</div>
+            <div
+              className="rabby-list-item-extra flex gap-[10px]"
+              onClick={handleEditMemo}
+            >
+              <div className="ellipsis" title={alias}>
+                {alias}
+              </div>
+              <img src={IconPen} className="cursor-pointer" alt="" />
+            </div>
           </div>
         </div>
-      )}
+        <div className="rabby-list-item">
+          <div className="rabby-list-item-content">
+            <div className="rabby-list-item-label">
+              {t('page.addressDetail.assets')}
+            </div>
+            <div
+              className="rabby-list-item-extra truncate"
+              title={splitNumberByStep((balance || 0).toFixed(0))}
+            >
+              ${splitNumberByStep((balance || 0).toFixed(0))}
+            </div>
+          </div>
+        </div>
+        <div className="rabby-list-item">
+          <div className="rabby-list-item-content">
+            <div className="rabby-list-item-label">
+              {t('page.addressDetail.qr-code')}
+            </div>
+            <div className="rabby-list-item-extra">
+              <Popover
+                placement="bottomLeft"
+                // trigger="click"
+                overlayClassName="page-address-detail-qrcode-popover"
+                align={{
+                  offset: [-16, 6],
+                }}
+                content={<QRCode value={address} size={140}></QRCode>}
+              >
+                <QRCode
+                  value={address}
+                  size={28}
+                  className="cursor-pointer"
+                ></QRCode>
+              </Popover>
+            </div>
+          </div>
+        </div>
+        <div className="rabby-list-item">
+          <div className="rabby-list-item-content">
+            <div className="rabby-list-item-label">
+              {t('page.addressDetail.source')}
+            </div>
+            <div className="rabby-list-item-extra flex gap-[4px] max-w-full">
+              <ThemeIcon
+                className="w-[16px] h-[16px]"
+                src={
+                  pickKeyringThemeIcon(type as any, isDarkTheme) ||
+                  pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
+                  KEYRING_ICONS[type] ||
+                  WALLET_BRAND_CONTENT[brandName as string]?.image
+                }
+              />
+              {source}
+            </div>
+          </div>
+          {type === KEYRING_CLASS.WALLETCONNECT && (
+            <div className="pb-[20px]">
+              <SessionStatusBar
+                className="text-r-neutral-body bg-r-neutral-bg2 connect-status"
+                address={address}
+                brandName={brandName}
+                type={type}
+              />
+            </div>
+          )}
+          {Object.values(HARDWARE_KEYRING_TYPES).find(
+            (item) => item.type === type
+          ) && (
+            <div className="pb-[20px]">
+              <HardwareBar address={address} type={type} brand={brandName} />
+            </div>
+          )}
+          {type === KEYRING_CLASS.MNEMONIC && (
+            <div className="pb-[20px]">
+              <SeedPhraseBar address={address} />
+            </div>
+          )}
+          {type === KEYRING_CLASS.Coinbase && (
+            <div className="pb-[20px]">
+              <SessionStatusBar
+                className="text-r-neutral-body bg-r-neutral-bg2 connect-status"
+                address={address}
+                brandName={KEYRING_CLASS.Coinbase}
+                type={KEYRING_CLASS.Coinbase}
+              />
+            </div>
+          )}
+        </div>
+        {accountInfo && (
+          <div className="rabby-list-item">
+            <div className="rabby-list-item-content">
+              <div className="rabby-list-item-label">
+                {t('page.addressDetail.hd-path')}
+              </div>
+              <div className="rabby-list-item-extra flex gap-[4px]">{`${accountInfo.hdPathTypeLabel} #${accountInfo.index}`}</div>
+            </div>
+          </div>
+        )}
 
-      {isGnosis ? (
-        <GnonisSafeInfo address={address} type={type} brandName={brandName} />
-      ) : null}
+        {isGnosis ? (
+          <GnonisSafeInfo address={address} type={type} brandName={brandName} />
+        ) : null}
 
-      {isCoboArugs ? <CoboArgusInfo address={address} /> : null}
-    </div>
+        {isCoboArugs ? <CoboArgusInfo address={address} /> : null}
+      </div>*/}
+    </>
   );
 };
 

@@ -2,6 +2,7 @@ import { Input } from 'antd';
 import React from 'react';
 import { ReactComponent as EditPenSVG } from 'ui/assets/editpen.svg';
 import { ReactComponent as CheckSVG } from 'ui/assets/check-2.svg';
+import { Flex, Text, TextField } from '@radix-ui/themes';
 
 interface Props {
   address: string;
@@ -70,22 +71,32 @@ export const AliasName: React.FC<Props> = ({
   return (
     <div className="AliasName" onClick={() => setHover(true)}>
       {hover || focus ? (
-        <div className="input-group">
-          <Input
+        <Flex align={'center'} gap={'2'} className="input-group">
+          {/*<Input
             className="alias-input"
             defaultValue={value}
             onBlur={onChangeAliasName}
             onFocus={() => setFocus(true)}
             onPressEnter={onChangeAliasName}
             autoFocus
+          />*/}
+          <TextField.Root
+            radius="large"
+            defaultValue={value}
+            onBlur={onChangeAliasName}
+            onFocus={() => setFocus(true)}
+            // onPressEnter={onChangeAliasName}
+            autoFocus
           />
           <CheckSVG className="icon" />
-        </div>
+        </Flex>
       ) : (
-        <div className="label">
-          <span className="text">{value}</span>
+        <Flex align={'center'} gap={'2'} className="label">
+          <Text size={'2'} className="text">
+            {value}
+          </Text>
           <EditPenSVG className="icon" />
-        </div>
+        </Flex>
       )}
     </div>
   );

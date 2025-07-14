@@ -12,7 +12,7 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { ReactNode, Suspense } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { LucideArrowLeft } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -159,5 +159,61 @@ export const CardBody = ({ children }: { children: ReactNode }) => {
         {children}
       </Box>
     </ScrollArea>
+  );
+};
+
+export const SettingsCardTemplate = ({
+  icon,
+  title,
+  description,
+  children,
+  size,
+  variant,
+  path,
+  onClick,
+}: {
+  icon?: ReactNode | string;
+  title?: ReactNode | string;
+  description?: ReactNode | string;
+  children?: ReactNode;
+  size?: CardProps['size'];
+  variant?: CardProps['variant'];
+  path?: string;
+  onClick?: () => void;
+}) => {
+  const Container = ({ children }: { children: ReactNode }) => {
+    if (path) {
+      return (
+        <Link to={path} className="w-full">
+          {children}
+        </Link>
+      );
+    }
+
+    return <Box onClick={onClick}>{children}</Box>;
+  };
+
+  return (
+    <Card
+      asChild={!!path}
+      className={clsx(onClick ? 'cursor-pointer' : '')}
+      variant={variant}
+      size={size}
+    >
+      <Container>
+        <Flex align={'center'} gap={'3'}>
+          {icon && <Flex align={'stretch'}>{icon}</Flex>}
+          <Box width={'100%'}>
+            <Text as="div" size="2" weight="bold">
+              {title}
+            </Text>
+            <Text as="div" color="gray" size="2" wrap={'balance'}>
+              {description}
+            </Text>
+          </Box>
+          <Box>{children}</Box>
+        </Flex>
+      </Container>
+    </Card>
   );
 };

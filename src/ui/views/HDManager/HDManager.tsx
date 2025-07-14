@@ -6,7 +6,7 @@ import {
   HDManagerStateProvider,
   StateProviderProps,
 } from './utils';
-import { Button, Spin, message } from 'antd';
+// import { Button, Spin, message } from 'antd';
 import {
   HARDWARE_KEYRING_TYPES,
   KEYRING_CLASS,
@@ -38,6 +38,8 @@ import { useMemoizedFn, useRequest } from 'ahooks';
 import { useRabbyDispatch } from '@/ui/store';
 import { account } from '@/ui/models/account';
 import { useNewUserGuideStore } from '../NewUserImport/hooks/useNewUserGuideStore';
+import { Box, Button, Flex, Heading, Section, Spinner } from '@radix-ui/themes';
+import { toast } from 'sonner';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -136,10 +138,11 @@ export const HDManager: React.FC<StateProviderProps> = ({
         .catch((e) => {
           console.error(e);
           setInitialed(false);
-          message.error({
-            content: t('page.newAddress.hd.tooltip.connectError'),
-            key: 'ledger-error',
-          });
+          // message.error({
+          //   content: t('page.newAddress.hd.tooltip.connectError'),
+          //   key: 'ledger-error',
+          // });
+          toast.error(t('page.newAddress.hd.tooltip.connectError'));
         });
     }
     if (!isNewUserImport) {
@@ -168,7 +171,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
   if (!initialed) {
     return (
       <div className="flex items-center justify-center w-screen h-screen">
-        <Spin />
+        <Spinner size={'3'} />
       </div>
     );
   }
@@ -185,18 +188,35 @@ export const HDManager: React.FC<StateProviderProps> = ({
       brand={brand}
     >
       <div className="HDManager relative">
-        <main>
-          <div className="logo">
+        <Flex align={'center'} justify={'center'} py={'6'}>
+          <Heading align={'center'} size={'5'}>
+            {name}
+          </Heading>
+          {/*<Flex position={'absolute'} right={'8'}>
+            <DoneButton onClick={handleCloseWin} />
+          </Flex>*/}
+        </Flex>
+        <Box position={'relative'} px={'8'}>
+          {/*<div className="logo">
             {typeof Logo === 'string' ? (
               <img src={Logo} className="icon" />
             ) : (
               <Logo className="icon text-r-neutral-body" />
             )}
             <span className="title">{name}</span>
-          </div>
+          </div>*/}
           <Manager brand={brand} />
-        </main>
-        <DoneButton onClick={handleCloseWin} />
+          <Flex
+            position={'absolute'}
+            right={'8'}
+            top={'0'}
+            my={'-2'}
+            // className={'bg-orange-500 z-10'}
+          >
+            <DoneButton onClick={handleCloseWin} />
+          </Flex>
+        </Box>
+        {/*<DoneButton onClick={handleCloseWin} />*/}
       </div>
     </HDManagerStateProvider>
   );
@@ -265,29 +285,56 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
   );
 
   return (
-    <div className="absolute bottom-[40px] left-0 right-0 text-center">
-      {isLazyImport ? (
-        <Button
-          type="primary"
-          className="w-[280px] h-[60px] text-20"
-          onClick={handleLazyAdd}
-          loading={loading}
-          disabled={!selectedAccounts.length}
-        >
-          {t('page.newAddress.hd.importBtn', {
-            count: selectedAccounts.length,
-          })}
-        </Button>
-      ) : (
-        <Button
-          type="primary"
-          className="w-[280px] h-[60px] text-20"
-          onClick={onClick}
-          disabled={!currentAccounts.length}
-        >
-          {t('page.newAddress.hd.done')}
-        </Button>
-      )}
-    </div>
+    <>
+      <Flex direction={'column'}>
+        {isLazyImport ? (
+          <Button
+            highContrast
+            disabled={!selectedAccounts.length}
+            loading={loading}
+            size={'3'}
+            onClick={handleLazyAdd}
+          >
+            {t('page.newAddress.hd.importBtn', {
+              count: selectedAccounts.length,
+            })}
+          </Button>
+        ) : (
+          <Button
+            highContrast
+            disabled={!currentAccounts.length}
+            size={'3'}
+            onClick={onClick}
+          >
+            {t('page.newAddress.hd.done')}
+          </Button>
+        )}
+      </Flex>
+
+      {/*<div className="absolute bottom-[40px] left-0 right-0 text-center">
+        {isLazyImport ? (
+          <Button
+            type="primary"
+            className="w-[280px] h-[60px] text-20"
+            onClick={handleLazyAdd}
+            loading={loading}
+            disabled={!selectedAccounts.length}
+          >
+            {t('page.newAddress.hd.importBtn', {
+              count: selectedAccounts.length,
+            })}
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            className="w-[280px] h-[60px] text-20"
+            onClick={onClick}
+            disabled={!currentAccounts.length}
+          >
+            {t('page.newAddress.hd.done')}
+          </Button>
+        )}
+      </div>*/}
+    </>
   );
 };

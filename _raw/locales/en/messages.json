@@ -614,8 +614,8 @@
       "signedText": {
         "label": "Text",
         "empty": {
-          "title": "No signed texts yet",
-          "desc": "All texts signed via Rabby will be listed here."
+          "title": "You haven't signed any Transaction texts yet",
+          "desc": "All texts you have signed using WalletPro will be listed here."
         }
       }
     },
@@ -1246,7 +1246,9 @@
         "1Day": "1 day",
         "4Hours": "4 hours",
         "1Hour": "1 hour",
+        "30Minutes": "30 minutes",
         "10Minutes": "10 minutes",
+        "5Minutes": "5 minutes",
         "backendServiceUrl": "Backend Service URL",
         "inputOpenapiHost": "Please input openapi host",
         "pleaseCheckYourHost": "Please check your host",
@@ -1283,7 +1285,7 @@
           "rabbyPoints": "Rabby Points"
         },
         "settings": {
-          "label": "Settings",
+          "label": "Configuration",
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
           "customRpc": "Modify RPC URL",
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
@@ -1302,7 +1304,7 @@
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
         "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token",
-        "clearPendingWarningTip": "The removed transaction may still be confirmed on-chain unless it is replaced."
+        "clearPendingWarningTip": "The removed transactions may still be confirmed on-chain unless it is replaced."
       },
       "tokenDetail": {
         "noIssuer": "No issuer information available",
@@ -1958,8 +1960,12 @@
         "rpcUrlPlaceholder": "Enter the RPC URL"
       },
       "EditCustomTestnetModal": {
-        "title": "Add Custom Network",
-        "quickAdd": "Quick add from Chainlist"
+        "title": "Edit Network",
+        "quickAdd": "Add from Chainlist"
+      },
+      "AddCustomTestnetModal": {
+        "title": "New Network",
+        "quickAdd": "Add from Chainlist"
       }
     },
     "requestDebankTestnetGasToken": {
@@ -2205,10 +2211,10 @@
       "secondRoundEnded": "🎉 The second round of Rabby Points has ended"
     },
     "customTestnet": {
-      "title": "Custom Network",
-      "desc": "Rabby cannot verify the security of custom networks. Please add trusted networks only.",
-      "add": "Add Custom Network",
-      "empty": "No Custom Network",
+      "title": "Add Network",
+      "desc": "Only add networks you trust. WalletPro cannot verify the security of every network.",
+      "add": "Add Network",
+      "empty": "No Testnet Network",
       "currency": "Currency",
       "id": "ID",
       "CustomTestnetForm": {
@@ -2228,7 +2234,7 @@
         "empty": "No chains found",
         "tips": {
           "added": "You've already added this chain",
-          "supported": "Chain already integrated by Rabby Wallet"
+          "supported": "already added to your Wallet"
         }
       },
       "signTx": {
@@ -2594,17 +2600,19 @@
       "alert": "EIP-7702 is not supported yet"
     },
     "metamaskModeDappsGuide": {
-      "title": "Connect Rabby by Disguising as MetaMask",
-      "alert": "Can't connect to a Dapp because it doesn't show Rabby Wallet as an option?",
+      "titleRabby": "Connect Rabby by Disguising as MetaMask",
+      "title": "Disguise as MetaMask",
+      "alertRabby": "Can't connect to a Dapp because it doesn't show Rabby Wallet as an option?",
+      "alert": "If you can't connect to a Dapp because it doesn't show WalletPro as an option?",
       "step1": "Step 1",
-      "step1Desc": "Allow Rabby to disguise as MetaMask on the current Dapp",
+      "step1Desc": "Allow WalletPro to disguise as MetaMask on the current site",
       "step2": "Step 2",
       "step2Desc": "Refresh and connect via MetaMask",
       "manage": "Manage Allowed Dapps",
       "noDappFound": "No Dapp found",
       "toast": {
-        "enabled": "Disguise enabled. Refresh the Dapp to reconnect.",
-        "disabled": "Disguise disabled. Refresh the Dapp."
+        "enabled": "Disguise enabled. Refresh the website to reconnect.",
+        "disabled": "Disguise disabled. Refresh the website."
       }
     },
     "syncToMobile": {

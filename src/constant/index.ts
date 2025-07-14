@@ -212,6 +212,8 @@ export { CHAINS, CHAINS_ENUM };
 
 export const MINIMUM_PASSWORD_LENGTH = 8;
 
+export const NETWORK_TYPE_LIST = ['testnet', 'mainnet'];
+
 interface PortfolioChain extends Chain {
   isSupportHistory: boolean;
 }

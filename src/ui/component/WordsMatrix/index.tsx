@@ -142,7 +142,7 @@ function WordsMatrix({
 
   return (
     <MatrixWrapper
-      className={clsx('rounded-[6px] bg-white text-center', className)}
+      className={clsx('rounded-[6px] text-center', className)}
       rowCount={rowCount}
     >
       {checkedWords.map((word, idx) => {

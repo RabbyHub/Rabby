@@ -42,20 +42,23 @@ import {
   IWalletBrandContent,
   WALLET_SORT_SCORE,
   WALLET_BRAND_CATEGORY,
+  KEYRING_TYPE,
 } from 'consts';
 
 import clsx from 'clsx';
 import _ from 'lodash';
 import { connectStore } from '@/ui/store';
 import { Item } from '../Item';
-import { useWallet } from '@/ui/utils';
+import { getUiType, useWallet } from '@/ui/utils';
 import { Modal, Tooltip } from 'antd';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { useHadSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 import { PageContainer } from 'ui/component/PageContainer';
-import { Avatar, Box, Card, Flex, Text } from '@radix-ui/themes';
+import { Avatar, Box, Button, Card, Flex, Text } from '@radix-ui/themes';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
+
+const isTab = getUiType().isTab;
 
 const AddressItem = ({ data }) => {
   const { t } = useTranslation();
@@ -409,7 +412,8 @@ const AddAddressOptions = () => {
   return (
     <PageContainer>
       <Flex
-        direction={{ sm: 'column', lg: 'row' }}
+        // direction={{ sm: 'column', lg: 'row' }}
+        direction={isTab ? 'row' : 'column'}
         gap={{ sm: '12px', lg: '24px' }}
         className="rabby-container pb-[12px]"
         ref={rootRef}
@@ -486,7 +490,7 @@ const AddAddressOptions = () => {
                         className="absolute top-0 w-[20px] h-[20px] select-none"
                         onDragStart={() => false}
                         style={{
-                          left: 0 + 16 * i,
+                          left: 16 * i,
                         }}
                       />
                     ))}

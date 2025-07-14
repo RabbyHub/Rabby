@@ -21,21 +21,27 @@ import { sleep } from '../utils';
 
 type IState = {
   currentConnection: ConnectedSite | null | undefined;
+  testnetCurrentConnection: ConnectedSite | null | undefined;
+  mainnetCurrentConnection: ConnectedSite | null | undefined;
 
   gnosisPendingCount: number;
 
   gnosisNetworkIds: string[];
   mainnetList: Chain[];
   testnetList: TestnetChain[];
+  networkType: 'mainnet' | 'testnet';
 };
 
 export const chains = createModel<RootModel>()({
   name: 'chains',
   state: <IState>{
     currentConnection: null,
+    testnetCurrentConnection: null,
+    mainnetCurrentConnection: null,
     gnosisNetworkIds: [] as string[],
     mainnetList: getChainList('mainnet'),
     testnetList: getChainList('testnet'),
+    networkType: 'testnet', // default to testnet
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -89,6 +95,15 @@ export const chains = createModel<RootModel>()({
           this.setField({ mainnetList });
         }
       });
+      store.app.wallet.getPreference('testnetChain').then((testnetChain) => {
+        if (testnetChain) {
+          store.app.wallet.setTestnetChain(testnetChain);
+        }
+        /* else {
+          store.app.wallet.setTestnetChain(CHAINS_ENUM.ETHEREUM);
+          this.setField({ networkType: 'mainnet' });
+        }*/
+      });
     },
     /**
      * @description get all chains current account could access, vary them and sort them
@@ -126,6 +141,14 @@ export const chains = createModel<RootModel>()({
         unmatteredList,
         firstChain: matteredList[0],
       };
+    },
+
+    async setTestnetChain(chain: CHAINS_ENUM, store) {
+      dispatch.preference.setField({
+        testnetChain: chain,
+      });
+      await store.app.wallet.setTestnetChain(chain);
+      await dispatch.preference.getPreference('testnetChain');
     },
   }),
 });

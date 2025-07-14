@@ -12,6 +12,7 @@ import { ReactComponent as IconSortByAlphabet } from '@/ui/assets/address/sort-b
 import { AddressSortStore } from '@/background/service/preference';
 import clsx from 'clsx';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { Flex } from '@radix-ui/themes';
 
 export const AddressSortIconMapping: Record<
   AddressSortStore['sortType'],
@@ -42,7 +43,7 @@ export const SortInput = ({
 
   return (
     <>
-      <div
+      <Flex
         className={clsx(
           'sort-input widget-has-ant-input',
           value && 'searching'
@@ -66,7 +67,7 @@ export const SortInput = ({
           value={value}
           allowClear
         />
-      </div>
+      </Flex>
       <AddressSortPopup open={on} onCancel={turnOff} />
     </>
   );

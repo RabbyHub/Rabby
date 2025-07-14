@@ -8,6 +8,7 @@ import {
   Section,
   Spinner,
 } from '@radix-ui/themes';
+import { LucideArrowLeft } from 'lucide-react';
 import { ReactNode, Suspense } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -69,9 +70,11 @@ export const PageHeader = ({
             variant={'ghost'}
             radius={'large'}
             style={{ width: '40px' }}
-            onClick={() => history.go(-1)}
+            onClick={() =>
+              history.length > 1 ? history.goBack() : history.replace('/')
+            }
           >
-            {/*<LucideArrowLeft size={24} strokeWidth={4} />*/}
+            <LucideArrowLeft size={24} strokeWidth={4} />
           </IconButton>
           {children}
         </Flex>
@@ -93,5 +96,16 @@ export const PageBody = ({ children }: { children: ReactNode }) => {
         {children}
       </Box>
     </ScrollArea>
+  );
+};
+
+export const PageFooter = ({ children }: { children: ReactNode }) => {
+  return (
+    <Box
+      className="rounded-[6px] overflow-hidden"
+      style={{ width: '100%', padding: '8px' }}
+    >
+      {children}
+    </Box>
   );
 };

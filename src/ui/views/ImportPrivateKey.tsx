@@ -13,6 +13,23 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { useRepeatImportConfirm } from '../utils/useRepeatImportConfirm';
 import { safeJSONParse } from '@/utils';
+import {
+  PageBody,
+  PageContainer,
+  PageHeader,
+  PageHeading,
+} from 'ui/component/PageContainer';
+import {
+  Button,
+  Callout,
+  Flex,
+  Heading,
+  Section,
+  Text,
+  TextField,
+} from '@radix-ui/themes';
+import { toast } from 'sonner';
+import { LucideInfo } from 'lucide-react';
 
 const TipTextList = styled.div`
   margin-top: 32px;
@@ -45,6 +62,8 @@ const ImportPrivateKey = () => {
     0
   );
   const isWide = useMedia('(min-width: 401px)');
+  const [error, setError] = useState<string>('');
+  const [privateKey, setPrivateKey] = useState<string>('');
 
   const { show, contextHolder } = useRepeatImportConfirm();
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
@@ -72,6 +91,9 @@ const ImportPrivateKey = () => {
           type: KEYRING_CLASS.PRIVATE_KEY,
         });
       } else {
+        setError(
+          err?.message || t('page.newAddress.privateKey.notAValidPrivateKey')
+        );
         form.setFields([
           {
             name: 'key',
@@ -107,7 +129,97 @@ const ImportPrivateKey = () => {
   return (
     <>
       {contextHolder}
-      <StrayPageWithButton
+      <PageContainer>
+        <PageHeader>
+          <PageHeading>{t('page.newAddress.importPrivateKey')}</PageHeading>
+        </PageHeader>
+
+        <PageBody>
+          <Flex direction={'column'} gap={'4'}>
+            <Flex direction={'column'} gap={'2'} my={'3'}>
+              <Section size={'1'}>
+                <Heading size={'4'}>Your Private Key is</Heading>
+                <Text size={'3'}>
+                  {t('page.newAddress.privateKey.whatIsAPrivateKey.answer')}
+                </Text>
+              </Section>
+
+              <Callout.Root>
+                <Callout.Icon>
+                  <LucideInfo size={16} />
+                </Callout.Icon>
+                <Callout.Text>
+                  {t(
+                    'page.newAddress.privateKey.isItSafeToImportItInRabby.answer'
+                  )}
+                </Callout.Text>
+              </Callout.Root>
+
+              {/*<section>
+                <h3>
+                  {t(
+                    'page.newAddress.privateKey.isItSafeToImportItInRabby.question'
+                  )}
+                </h3>
+                <p>
+                  {t(
+                    'page.newAddress.privateKey.isItSafeToImportItInRabby.answer'
+                  )}
+                </p>
+              </section>
+              <section>
+                <h3>
+                  {t(
+                    'page.newAddress.privateKey.isItPossibleToImportKeystore.question'
+                  )}
+                </h3>
+                <p>
+                  <Trans
+                    t={t}
+                    i18nKey="page.newAddress.privateKey.isItPossibleToImportKeystore.answer"
+                  >
+                    Yes, you can
+                    <a
+                      className="underline text-r-blue-default cursor-pointer"
+                      onClick={() => history.push('/import/json')}
+                    >
+                      import KeyStore
+                    </a>
+                    here.
+                  </Trans>
+                </p>
+              </section>*/}
+            </Flex>
+
+            <TextField.Root
+              autoFocus
+              className={'h-[56px]'}
+              size={'3'}
+              spellCheck={false}
+              type={'password'}
+              placeholder={t('page.newAddress.privateKey.placeholder')}
+              onPaste={() => {
+                clearClipboard();
+                toast.success(t('page.newAddress.seedPhrase.pastedAndClear'));
+              }}
+              onChange={(e) => setPrivateKey(e.target.value)}
+            ></TextField.Root>
+          </Flex>
+        </PageBody>
+
+        <Flex direction={'column'} p={'2'}>
+          <Button
+            highContrast
+            disabled={!privateKey.trim()}
+            size={'3'}
+            onClick={() => run(privateKey)}
+          >
+            {t('global.confirm')}
+          </Button>
+        </Flex>
+      </PageContainer>
+
+      {/*<StrayPageWithButton
         custom={isWide}
         spinning={loading}
         form={form}
@@ -221,7 +333,7 @@ const ImportPrivateKey = () => {
             </TipTextList>
           </div>
         </div>
-      </StrayPageWithButton>
+      </StrayPageWithButton>*/}
     </>
   );
 };
