@@ -414,6 +414,7 @@ export function VirtualTable<RecordType extends object>({
           }
           columns={mergedColumns}
           pagination={false}
+          showHeader={!!props?.dataSource?.length}
           components={{
             header: {
               cell: TableHeadCell,
