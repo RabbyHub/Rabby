@@ -217,7 +217,7 @@ const SendToken = () => {
 
   // UI States
   const [reserveGasOpen, setReserveGasOpen] = useState(false);
-  const [, setRefreshId] = useState(0);
+  const [refreshId, setRefreshId] = useState(0);
 
   // Core States
   const [form] = useForm<FormSendToken>();
@@ -713,9 +713,10 @@ const SendToken = () => {
         canUseDirectSubmitTx &&
         amount &&
         address &&
-        currentToken?.chain
+        currentToken?.chain &&
+        !isEstimatingGas &&
+        !reserveGasOpen
       ) {
-        console.log('123123123');
         const chain = findChain({
           serverId: currentToken.chain,
         })!;
@@ -799,6 +800,9 @@ const SendToken = () => {
       setMiniSignTx(null);
     };
   }, [
+    refreshId,
+    reserveGasOpen,
+    isEstimatingGas,
     canSubmit,
     canUseDirectSubmitTx,
     currentToken?.chain,
@@ -1175,6 +1179,10 @@ const SendToken = () => {
       };
       form.setFieldsValue(newValues);
       handleFormValuesChange(null, newValues);
+
+      setTimeout(() => {
+        setRefreshId((e) => e + 1);
+      }, 0);
     },
     [
       currentAccount,

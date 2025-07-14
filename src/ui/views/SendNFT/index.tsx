@@ -512,11 +512,13 @@ const SendNFT = () => {
                 </div>
               </div>
               {chainInfo?.serverId && canUseDirectSubmitTx ? (
-                <ShowMoreOnSend
-                  chainServeId={chainInfo?.serverId}
-                  open={gasFeeOpen}
-                  setOpen={setGasFeeOpen}
-                />
+                <div className="pb-20">
+                  <ShowMoreOnSend
+                    chainServeId={chainInfo?.serverId}
+                    open={gasFeeOpen}
+                    setOpen={setGasFeeOpen}
+                  />
+                </div>
               ) : null}
             </div>
           )}
