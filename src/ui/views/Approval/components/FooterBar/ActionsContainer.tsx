@@ -20,6 +20,8 @@ export interface Props {
   gasLessThemeColor?: string;
   isGasNotEnough?: boolean;
   isSubmitting?: boolean;
+  isMiniSignTx?: boolean;
+  directSubmit?: boolean;
 }
 
 export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({

@@ -13,6 +13,7 @@ import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import {
+  usePollBridgePendingNumber,
   useQuoteVisible,
   useSetQuoteVisible,
   useSetRefreshId,
@@ -42,6 +43,9 @@ import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
+import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { PendingTxItem } from '../../Swap/Component/PendingTxItem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -97,6 +101,8 @@ export const BridgeContent = () => {
     inSufficientCanGetQuote,
   } = useBridge();
 
+  const [historyVisible, setHistoryVisible] = useState(false);
+
   const chains = useMemo(
     () => [toChain, fromChain].filter((e) => !!e) as CHAINS_ENUM[],
     [toChain, fromChain]
@@ -140,6 +146,11 @@ export const BridgeContent = () => {
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
+
+  const { pendingNumber, historyList } = usePollBridgePendingNumber() || {
+    pendingNumber: 0,
+    historyList: [],
+  };
 
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
 
@@ -211,6 +222,19 @@ export const BridgeContent = () => {
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               slippage: new BigNumber(slippage).div(100).toNumber(),
+            },
+            addHistoryData: {
+              address: userAddress,
+              fromChainId: findChainByEnum(fromToken.chain)?.id || 0,
+              toChainId: findChainByEnum(toToken.chain)?.id || 0,
+              fromToken: fromToken,
+              toToken: toToken,
+              fromAmount: Number(amount),
+              toAmount: Number(selectedBridgeQuote.to_token_amount),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: selectedBridgeQuote.aggregator.id,
+              status: 'pending',
+              createdAt: Date.now(),
             },
           },
           {
@@ -337,6 +361,19 @@ export const BridgeContent = () => {
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               slippage: new BigNumber(slippage).div(100).toNumber(),
             },
+            addHistoryData: {
+              address: userAddress,
+              fromChainId: findChainByEnum(fromToken.chain)?.id || 0,
+              toChainId: findChainByEnum(toToken.chain)?.id || 0,
+              fromToken: fromToken,
+              toToken: toToken,
+              fromAmount: Number(amount),
+              toAmount: Number(selectedBridgeQuote.to_token_amount),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: selectedBridgeQuote.aggregator.id,
+              status: 'pending',
+              createdAt: Date.now(),
+            },
           },
           {
             ga: {
@@ -395,6 +432,23 @@ export const BridgeContent = () => {
 
   const runBuildSwapTxsRef = useRef<ReturnType<typeof runBuildSwapTxs>>();
 
+  const noQuote =
+    inSufficientCanGetQuote &&
+    !!fromToken &&
+    !!toToken &&
+    Number(amount) > 0 &&
+    !quoteLoading &&
+    !quoteList?.length;
+
+  const btnDisabled =
+    inSufficient ||
+    !fromToken ||
+    !toToken ||
+    !amountAvailable ||
+    !selectedBridgeQuote ||
+    quoteLoading ||
+    !quoteList?.length;
+
   const canUseMiniTx = useMemo(
     () =>
       !toToken?.low_credit_score &&
@@ -411,8 +465,45 @@ export const BridgeContent = () => {
     [toToken, isSlippageHigh, isSlippageLow, currentAccount?.type, showLoss]
   );
 
+  const startDirectSigning = useStartDirectSigning();
+
+  const canUseDirectSubmitTx = useMemo(
+    () =>
+      !btnDisabled &&
+      isSupportedChain &&
+      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
+        (currentAccount?.type || '') as any
+      ) &&
+      !toToken?.low_credit_score &&
+      !toToken?.is_suspicious &&
+      toToken?.is_verified !== false &&
+      !isSlippageHigh &&
+      !isSlippageLow &&
+      !showLoss,
+    [
+      btnDisabled,
+      isSupportedChain,
+      toToken,
+      isSlippageHigh,
+      isSlippageLow,
+      showLoss,
+      currentAccount?.type,
+    ]
+  );
+
   const handleBridge = useMemoizedFn(async () => {
-    if (canUseMiniTx) {
+    if (canUseDirectSubmitTx) {
+      try {
+        setFetchingBridgeQuote(true);
+        await runBuildSwapTxsRef.current;
+      } catch (error) {
+        console.error('runBuildSwapTxsRef', error);
+      } finally {
+        setFetchingBridgeQuote(false);
+      }
+      clearExpiredTimer();
+      startDirectSigning();
+    } else if (canUseMiniTx) {
       try {
         setFetchingBridgeQuote(true);
         await runBuildSwapTxsRef.current;
@@ -453,23 +544,6 @@ export const BridgeContent = () => {
     },
   });
 
-  const noQuote =
-    inSufficientCanGetQuote &&
-    !!fromToken &&
-    !!toToken &&
-    Number(amount) > 0 &&
-    !quoteLoading &&
-    !quoteList?.length;
-
-  const btnDisabled =
-    inSufficient ||
-    !fromToken ||
-    !toToken ||
-    !amountAvailable ||
-    !selectedBridgeQuote ||
-    quoteLoading ||
-    !quoteList?.length;
-
   useEffect(() => {
     if (!btnDisabled && selectedBridgeQuote) {
       mutateTxs([]);
@@ -485,9 +559,14 @@ export const BridgeContent = () => {
     switchFeePopup(true);
   }, [switchFeePopup]);
 
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
   return (
     <>
       <Header
+        historyVisible={historyVisible}
+        setHistoryVisible={setHistoryVisible}
+        pendingNumber={pendingNumber}
         onOpenInTab={() => {
           openInternalPageInTab(
             `bridge?${obj2query({
@@ -594,6 +673,7 @@ export const BridgeContent = () => {
         <div className="mx-20 mt-20">
           {selectedBridgeQuote && (
             <BridgeShowMore
+              supportDirectSign={canUseDirectSubmitTx}
               openFeePopup={openFeePopup}
               open={showMoreOpen}
               setOpen={setShowMoreOpen}
@@ -634,6 +714,16 @@ export const BridgeContent = () => {
             />
           )}
         </div>
+        {!selectedBridgeQuote && !recommendFromToken && (
+          <div className="mt-20 mx-20">
+            <PendingTxItem
+              type="bridge"
+              bridgeHistoryList={historyList}
+              openBridgeHistory={() => setHistoryVisible(true)}
+              ref={pendingTxRef}
+            />
+          </div>
+        )}
 
         <div
           className={clsx(
@@ -658,61 +748,69 @@ export const BridgeContent = () => {
                 : false
             }
           >
-            <Button
-              loading={fetchingBridgeQuote}
-              type="primary"
-              block
-              size="large"
-              className="h-[48px] text-white text-[16px] font-medium"
-              onClick={() => {
-                if (showExternalDappTips && externalDapps.length > 0) {
-                  setExternalDappOpen(true);
-                  return;
-                }
-                if (fetchingBridgeQuote) return;
-                if (!selectedBridgeQuote) {
-                  refresh((e) => e + 1);
+            {canUseDirectSubmitTx ? (
+              <ToConfirmBtn
+                disabled={btnDisabled || !isSupportedChain}
+                title={t('page.bridge.title')}
+                onConfirm={handleBridge}
+              />
+            ) : (
+              <Button
+                loading={fetchingBridgeQuote}
+                type="primary"
+                block
+                size="large"
+                className="h-[48px] text-white text-[16px] font-medium"
+                onClick={() => {
+                  if (showExternalDappTips && externalDapps.length > 0) {
+                    setExternalDappOpen(true);
+                    return;
+                  }
+                  if (fetchingBridgeQuote) return;
+                  if (!selectedBridgeQuote) {
+                    refresh((e) => e + 1);
 
-                  return;
-                }
-                if (selectedBridgeQuote?.shouldTwoStepApprove) {
-                  return Modal.confirm({
-                    width: 360,
-                    closable: true,
-                    centered: true,
-                    className: twoStepApproveCn,
-                    title: null,
-                    content: (
-                      <>
-                        <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                          Sign 2 transactions to change allowance
-                        </div>
-                        <div className="text-13 leading-[17px]  text-r-neutral-body">
-                          Token USDT requires 2 transactions to change
-                          allowance. First you would need to reset allowance to
-                          zero, and only then set new allowance value.
-                        </div>
-                      </>
-                    ),
-                    okText: 'Proceed with two step approve',
+                    return;
+                  }
+                  if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                    return Modal.confirm({
+                      width: 360,
+                      closable: true,
+                      centered: true,
+                      className: twoStepApproveCn,
+                      title: null,
+                      content: (
+                        <>
+                          <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                            Sign 2 transactions to change allowance
+                          </div>
+                          <div className="text-13 leading-[17px]  text-r-neutral-body">
+                            Token USDT requires 2 transactions to change
+                            allowance. First you would need to reset allowance
+                            to zero, and only then set new allowance value.
+                          </div>
+                        </>
+                      ),
+                      okText: 'Proceed with two step approve',
 
-                    onOk() {
-                      // gotoBridge();
-                      handleBridge();
-                    },
-                  });
+                      onOk() {
+                        // gotoBridge();
+                        handleBridge();
+                      },
+                    });
+                  }
+                  // gotoBridge();
+                  handleBridge();
+                }}
+                disabled={
+                  !isSupportedChain && externalDapps.length > 0
+                    ? false
+                    : btnDisabled
                 }
-                // gotoBridge();
-                handleBridge();
-              }}
-              disabled={
-                !isSupportedChain && externalDapps.length > 0
-                  ? false
-                  : btnDisabled
-              }
-            >
-              {btnText}
-            </Button>
+              >
+                {btnText}
+              </Button>
+            )}
           </TooltipWithMagnetArrow>
         </div>
         {fromToken && toToken ? (
@@ -733,6 +831,8 @@ export const BridgeContent = () => {
           />
         ) : null}
         <MiniApproval
+          directSubmit
+          canUseDirectSubmitTx={canUseDirectSubmitTx}
           visible={isShowSign}
           ga={{
             category: 'Bridge',
@@ -765,6 +865,7 @@ export const BridgeContent = () => {
               // }, 500);
             }, 500);
           }}
+          onPreExecError={gotoBridge}
           getContainer={getContainer}
         />
       </div>

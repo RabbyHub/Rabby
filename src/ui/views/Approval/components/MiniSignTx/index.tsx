@@ -1,7 +1,7 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
+import { isLedgerLockError, useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { findChain } from '@/utils/chain';
 import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
 import {
@@ -35,7 +35,14 @@ import {
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
 } from 'consts';
-import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useScroll } from 'react-use';
 import { useApproval } from 'ui/utils';
@@ -63,21 +70,33 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { useGasAccountTxsCheck } from '@/ui/views/GasAccount/hooks/checkTxs';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import {
+  useDirectSigning,
+  useResetDirectSignState,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { ReactComponent as RCIconLoadingCC } from '@/ui/assets/loading-cc.svg';
+import { RetryUpdateType } from '@/background/utils/errorTxRetry';
+import { MiniApprovalPopupContainer } from '../Popup/MiniApprovalPopupContainer';
+import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 
 export const MiniSignTx = ({
   txs,
   onReject,
   onResolve,
+  onPreExecError,
   onStatusChange,
   ga,
   getContainer,
+  directSubmit,
 }: {
   txs: Tx[];
   onReject?: () => void;
   onResolve?: () => void;
+  onPreExecError?: () => void;
   onStatusChange?: (status: BatchSignTxTaskType['status']) => void;
   ga?: Record<string, any>;
   getContainer?: DrawerProps['getContainer'];
+  directSubmit?: boolean;
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -201,6 +220,7 @@ export const MiniSignTx = ({
     undefined | string
   >();
   const [gasLessLoading, setGasLessLoading] = useState(false);
+  const [isFirstGasLessLoading, setIsFirstGasLessLoading] = useState(true);
   const [canUseGasLess, setCanUseGasLess] = useState(false);
   const [gasLessFailedReason, setGasLessFailedReason] = useState<
     string | undefined
@@ -341,6 +361,8 @@ export const MiniSignTx = ({
     canGotoUseGasAccount,
     canDepositUseGasAccount,
     sig,
+    gasAccountAddress,
+    isFirstGasCostLoading,
   } = useGasAccountTxsCheck({
     isReady,
     txs: gasAccountTxs,
@@ -541,11 +563,13 @@ export const MiniSignTx = ({
             : res?.promotion?.config
         );
       }
+      setIsFirstGasLessLoading(false);
     } catch (error) {
       console.error('gasLessTxCheck error', error);
       setCanUseGasLess(false);
       setGasLessConfig(undefined);
       setGasLessLoading(false);
+      setIsFirstGasLessLoading(false);
     }
   });
 
@@ -598,7 +622,11 @@ export const MiniSignTx = ({
         chainId
       );
       let customGasPrice = 0;
-      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+      if (
+        lastTimeGas?.lastTimeSelect === 'gasPrice' &&
+        lastTimeGas.gasPrice &&
+        !directSubmit
+      ) {
         // use cached gasPrice if exist
         customGasPrice = lastTimeGas.gasPrice;
       }
@@ -615,7 +643,8 @@ export const MiniSignTx = ({
         gas = gasList.find((item) => item.level === 'custom')!;
       } else if (
         lastTimeGas?.lastTimeSelect &&
-        lastTimeGas?.lastTimeSelect === 'gasLevel'
+        lastTimeGas?.lastTimeSelect === 'gasLevel' &&
+        !directSubmit
       ) {
         const target = gasList.find(
           (item) => item.level === lastTimeGas?.gasLevel
@@ -648,6 +677,105 @@ export const MiniSignTx = ({
     init();
   }, []);
 
+  const [initdTxs, setInitdTxs] = useState<typeof txsResult>([]);
+
+  const checkGasLevelIsNotEnough = useCallback(
+    (gas: GasSelectorResponse): Promise<[number, boolean, boolean]> => {
+      if (!isReady || !initdTxs.length) {
+        return Promise.resolve([0, false, true]);
+      }
+      let _txsResult = initdTxs;
+      return Promise.all(
+        initdTxs.map(async (item) => {
+          const tx = {
+            ...item.tx,
+            ...(support1559
+              ? {
+                  maxFeePerGas: intToHex(Math.round(gas.price || 0)),
+                  maxPriorityFeePerGas:
+                    gas.maxPriorityFee <= 0
+                      ? item.tx.maxFeePerGas
+                      : intToHex(Math.round(gas.maxPriorityFee)),
+                }
+              : { gasPrice: intToHex(Math.round(gas.price)) }),
+          };
+          return {
+            ...item,
+            tx,
+            gasCost: await explainGas({
+              gasUsed: item.gasUsed,
+              gasPrice: gas.price,
+              chainId: chain.id,
+              nativeTokenPrice: item.preExecResult.native_token.price,
+              wallet,
+              tx,
+              gasLimit: item.gasLimit,
+              account: currentAccount!,
+            }),
+          };
+        })
+      ).then((arr) => {
+        let balance = nativeTokenBalance;
+        _txsResult = arr;
+
+        if (!_txsResult.length) {
+          return [0, false, true];
+        }
+
+        return wallet.openapi
+          .checkGasAccountTxs({
+            sig: sig || '',
+            account_id: gasAccountAddress,
+            tx_list: arr.map((item, index) => {
+              return {
+                ...item.tx,
+                gas: item.gasLimit,
+                gasPrice: intToHex(gas.price),
+              };
+            }),
+          })
+          .then((gasAccountRes) => {
+            const checkResult = _txsResult.map((item, index) => {
+              const result = checkGasAndNonce({
+                recommendGasLimitRatio: item.recommendGasLimitRatio,
+                recommendGasLimit: item.gasLimit,
+                recommendNonce: item.tx.nonce,
+                tx: item.tx,
+                gasLimit: item.gasLimit,
+                nonce: item.tx.nonce,
+                isCancel: false,
+                gasExplainResponse: item.gasCost,
+                isSpeedUp: false,
+                isGnosisAccount: false,
+                nativeTokenBalance: balance,
+              });
+              balance = new BigNumber(balance)
+                .minus(new BigNumber(item.tx.value || 0))
+                .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
+                .toFixed();
+              return result;
+            });
+            return [
+              gasAccountRes.gas_account_cost.total_cost,
+              gasAccountRes.balance_is_enough,
+              _.flatten(checkResult)?.some((e) => e.code === 3001),
+            ];
+          });
+      });
+    },
+    [
+      isReady,
+      chain.id,
+      gasAccountAddress,
+      nativeTokenBalance,
+      sig,
+      support1559,
+      initdTxs,
+    ]
+  );
+
+  const [preExecError, setPreExecError] = useState(false);
+
   const prepareTxs = useMemoizedFn(async () => {
     if (!selectedGas || !inited || !currentAccount?.address) {
       return;
@@ -658,7 +786,7 @@ export const MiniSignTx = ({
       chainId: chain.id,
     });
     setRecommendNonce(recommendNonce);
-
+    setPreExecError(false);
     const tempTxs: Tx[] = [];
     const res = await Promise.all(
       txs.map(async (rawTx, index) => {
@@ -696,6 +824,10 @@ export const MiniSignTx = ({
           ],
         });
         let estimateGas = 0;
+
+        if (!preExecResult.pre_exec.success) {
+          throw new Error('Pre exec failed');
+        }
         if (preExecResult.gas.success) {
           estimateGas =
             preExecResult.gas.gas_limit || preExecResult.gas.gas_used;
@@ -776,7 +908,16 @@ export const MiniSignTx = ({
 
     setIsReady(true);
     setTxsResult(res);
+    setInitdTxs(res);
   });
+
+  const directSigning = useDirectSigning();
+
+  useEffect(() => {
+    if (directSigning && directSubmit && onPreExecError && preExecError) {
+      onPreExecError?.();
+    }
+  }, [directSigning, directSubmit, preExecError, onPreExecError]);
 
   useEffect(() => {
     if (
@@ -788,6 +929,7 @@ export const MiniSignTx = ({
       if (isSupportedAddr && noCustomRPC) {
         checkGasLessStatus();
       } else {
+        setIsFirstGasLessLoading(false);
         setGasLessLoading(false);
       }
     }
@@ -805,9 +947,14 @@ export const MiniSignTx = ({
 
   useEffect(() => {
     if (inited) {
-      prepareTxs();
+      prepareTxs().catch((error) => {
+        if (directSubmit) {
+          setPreExecError(true);
+          //goto origin signTx
+        }
+      });
     }
-  }, [inited, txs]);
+  }, [inited, txs, directSubmit]);
 
   const checkErrors = useMemo(() => {
     let balance = nativeTokenBalance;
@@ -828,7 +975,7 @@ export const MiniSignTx = ({
       balance = new BigNumber(balance)
         .minus(new BigNumber(item.tx.value || 0))
         .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
-        .toString();
+        .toFixed();
       return result;
     });
     return _.flatten(res);
@@ -853,35 +1000,136 @@ export const MiniSignTx = ({
     return checkErrors.some((e) => e.code === 3001);
   }, [checkErrors]);
 
+  const gasCalcMethod = useCallback(
+    async (price) => {
+      const res = await Promise.all(
+        txsResult.map((item) =>
+          explainGas({
+            gasUsed: item.gasUsed,
+            gasPrice: price,
+            chainId,
+            nativeTokenPrice: item.preExecResult.native_token.price || 0,
+            tx: item.tx,
+            wallet,
+            gasLimit: item.gasLimit,
+            account: currentAccount!,
+          })
+        )
+      );
+      const totalCost = res.reduce(
+        (sum, item) => {
+          sum.gasCostAmount = sum.gasCostAmount.plus(item.gasCostAmount);
+          sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
+
+          sum.maxGasCostAmount = sum.maxGasCostAmount.plus(
+            item.maxGasCostAmount
+          );
+          return sum;
+        },
+        {
+          gasCostUsd: new BigNumber(0),
+          gasCostAmount: new BigNumber(0),
+          maxGasCostAmount: new BigNumber(0),
+        }
+      );
+      return totalCost;
+    },
+    [chainId, txsResult, currentAccount]
+  );
+
+  const { value } = useAsync<() => Promise<[string, RetryUpdateType]>>(() => {
+    let msg = task.error;
+
+    const getLedgerError = (description: string) => {
+      if (isLedgerLockError(description)) {
+        return t('page.signFooterBar.ledger.unlockAlert');
+      } else if (
+        description.includes('0x6e00') ||
+        description.includes('0x6b00')
+      ) {
+        return t('page.signFooterBar.ledger.updateFirmwareAlert');
+      } else if (description.includes('0x6985')) {
+        return t('page.signFooterBar.ledger.txRejectedByLedger');
+      }
+
+      return description;
+    };
+    if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
+      msg = getLedgerError(msg);
+    }
+    return msg
+      ? wallet.getTxFailedResult(msg)
+      : Promise.resolve(['', 'origin']);
+  }, [task.error, currentAccount?.type]);
+
+  const [description, retryUpdateType] = value || ['', 'origin'];
+
+  const content = useMemo(() => {
+    if (ga?.category) {
+      if (task?.error && retryUpdateType) {
+        return t('page.signFooterBar.qrcode.retryTxFailedBy', {
+          category: ga?.category,
+        });
+      }
+      return t('page.signFooterBar.qrcode.txFailedBy', {
+        category: ga?.category,
+      });
+    }
+    return t('page.signFooterBar.qrcode.txFailed');
+  }, [ga?.category, task?.error, retryUpdateType]);
+
+  const brandIcon = useMemo(() => {
+    switch (currentAccount?.type) {
+      case KEYRING_CLASS.HARDWARE.LEDGER: {
+        return LedgerSVG;
+      }
+
+      default: {
+        return null;
+      }
+    }
+  }, [currentAccount?.type]);
+
   return (
     <>
       <Popup
-        height={180}
+        height={'fit-content'}
         visible={!!task.error}
         bodyStyle={{ padding: 0 }}
-        maskStyle={{
-          backgroundColor: 'transparent',
-        }}
+        // maskStyle={{
+        //   backgroundColor: 'transparent',
+        // }}
         getContainer={getContainer}
       >
-        <ApprovalPopupContainer
-          hdType={'privatekey'}
+        <MiniApprovalPopupContainer
+          hdType={
+            currentAccount!.type === KEYRING_CLASS.HARDWARE.LEDGER
+              ? 'wired'
+              : 'privatekey'
+          }
+          brandIcon={brandIcon}
           status={'FAILED'}
-          content={t('page.signFooterBar.qrcode.txFailed')}
-          description={task.error}
+          content={content}
+          description={description}
           onCancel={onReject}
           onRetry={async () => {
+            await wallet.setRetryTxType(retryUpdateType);
             await task.retry();
             onResolve?.();
           }}
+          retryUpdateType={retryUpdateType}
         />
       </Popup>
 
       <MiniFooterBar
+        directSubmit={directSubmit}
         task={task}
         Header={
           <div
-            className={clsx(task.status !== 'idle' && 'pointer-events-none')}
+            className={clsx(
+              'fixed left-[99999px] top-[99999px] z-[-1]',
+              task.status !== 'idle' && 'pointer-events-none'
+            )}
             key={task.status}
           >
             <GasSelectorHeader
@@ -913,37 +1161,9 @@ export const MiniSignTx = ({
               nativeTokenBalance={nativeTokenBalance}
               gasPriceMedian={gasPriceMedian}
               gas={totalGasCost}
-              gasCalcMethod={async (price) => {
-                const res = await Promise.all(
-                  txsResult.map((item) =>
-                    explainGas({
-                      gasUsed: item.gasUsed,
-                      gasPrice: price,
-                      chainId,
-                      nativeTokenPrice:
-                        item.preExecResult.native_token.price || 0,
-                      tx: item.tx,
-                      wallet,
-                      gasLimit: item.gasLimit,
-                      account: currentAccount!,
-                    })
-                  )
-                );
-                const totalCost = res.reduce(
-                  (sum, item) => {
-                    sum.gasCostAmount = sum.gasCostAmount.plus(
-                      item.gasCostAmount
-                    );
-                    sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
-                    return sum;
-                  },
-                  {
-                    gasCostUsd: new BigNumber(0),
-                    gasCostAmount: new BigNumber(0),
-                  }
-                );
-                return totalCost;
-              }}
+              gasCalcMethod={gasCalcMethod}
+              directSubmit={directSubmit}
+              checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
               getContainer={getContainer}
             />
           </div>
@@ -1002,6 +1222,8 @@ export const MiniSignTx = ({
           !canProcess ||
           !!checkErrors.find((item) => item.level === 'forbidden')
         }
+        isFirstGasLessLoading={isFirstGasLessLoading}
+        isFirstGasCostLoading={isFirstGasCostLoading}
         getContainer={getContainer}
       />
     </>
@@ -1014,20 +1236,34 @@ export const MiniApproval = ({
   onClose,
   onResolve,
   onReject,
+  onPreExecError,
   ga,
   getContainer,
+  directSubmit,
+  canUseDirectSubmitTx,
 }: {
   txs?: Tx[];
   visible?: boolean;
   onClose?: () => void;
   onReject?: () => void;
   onResolve?: () => void;
+  onPreExecError?: () => void;
   ga?: Record<string, any>;
   getContainer?: DrawerProps['getContainer'];
+  directSubmit?: boolean;
+  canUseDirectSubmitTx?: boolean;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
   const currentAccount = useCurrentAccount();
+
+  const isSigningLoading = useDirectSigning();
+  const resetDirectSigning = useResetDirectSignState();
+
+  useEffect(() => {
+    resetDirectSigning();
+  }, [txs]);
+
   useEffect(() => {
     if (visible) {
       setStatus('idle');
@@ -1035,41 +1271,64 @@ export const MiniApproval = ({
   }, [visible]);
 
   return (
-    <Popup
-      placement="bottom"
-      height="fit-content"
-      className="is-support-darkmode"
-      visible={visible}
-      onClose={onClose}
-      maskClosable={status === 'idle'}
-      closable={false}
-      bodyStyle={{
-        padding: 0,
-        // maxHeight: 160,
-      }}
-      push={false}
-      forceRender
-      destroyOnClose={false}
-      maskStyle={{
-        backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
-      }}
-      getContainer={getContainer}
-      key={`${currentAccount?.address}-${currentAccount?.type}`}
-    >
-      {txs?.length ? (
-        <MiniSignTx
-          ga={ga}
-          txs={txs}
-          onStatusChange={(status) => {
-            setStatus(status);
-          }}
-          onReject={onReject}
-          onResolve={() => {
-            onResolve?.();
-          }}
-          getContainer={getContainer}
-        />
+    <>
+      <Popup
+        placement="bottom"
+        height="fit-content"
+        className="is-support-darkmode"
+        visible={visible}
+        onClose={onClose}
+        maskClosable={status === 'idle'}
+        closable={false}
+        bodyStyle={{
+          padding: 0,
+          // maxHeight: 160,
+        }}
+        push={false}
+        forceRender
+        destroyOnClose={false}
+        maskStyle={{
+          backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
+        }}
+        getContainer={getContainer}
+        key={`${currentAccount?.address}-${currentAccount?.type}`}
+      >
+        {txs?.length ? (
+          <MiniSignTx
+            directSubmit={directSubmit}
+            ga={ga}
+            txs={txs}
+            onStatusChange={(status) => {
+              setStatus(status);
+            }}
+            onPreExecError={onPreExecError}
+            onReject={onReject}
+            onResolve={() => {
+              onResolve?.();
+            }}
+            getContainer={getContainer}
+          />
+        ) : null}
+      </Popup>
+
+      {directSubmit && canUseDirectSubmitTx ? (
+        <Modal
+          transitionName=""
+          visible={isSigningLoading}
+          maskClosable={false}
+          centered
+          cancelText={null}
+          okText={null}
+          footer={null}
+          width={'auto'}
+          closable={false}
+          bodyStyle={{ padding: 0 }}
+        >
+          <div className="w-[52px] h-[52px] p-[14px] flex items-center justify-center">
+            <RCIconLoadingCC className="text-r-neutral-body animate-spin" />
+          </div>
+        </Modal>
       ) : null}
-    </Popup>
+    </>
   );
 };

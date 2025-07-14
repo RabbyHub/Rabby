@@ -21,6 +21,8 @@ import { useTranslation } from 'react-i18next';
 import { Ledger } from '../../../CommonPopup/Ledger';
 import { useMemoizedFn } from 'ahooks';
 import { DrawerProps } from 'antd';
+import { useDebounce } from 'react-use';
+import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -69,6 +71,9 @@ export const MiniLedgerAction: React.FC<Props> = ({
   footer,
   onSubmit,
   getContainer,
+  isMiniSignTx,
+  disabledProcess,
+  directSubmit,
   ...props
 }) => {
   const { isDarkTheme } = useThemeMode();
@@ -107,6 +112,34 @@ export const MiniLedgerAction: React.FC<Props> = ({
     onSubmit();
   });
 
+  const directSigning = useDirectSigning();
+
+  useDebounce(
+    () => {
+      if (
+        isMiniSignTx &&
+        !disabledProcess &&
+        // !pressedConfirm &&
+        directSigning &&
+        directSubmit
+      ) {
+        // handlePress();
+        console.log('submit handleClickConfirm');
+        handleSubmit();
+      }
+    },
+    300,
+    [
+      directSigning,
+      disabledProcess,
+      handleSubmit,
+      // handlePress,
+      isMiniSignTx,
+      // pressedConfirm,
+      directSubmit,
+    ]
+  );
+
   React.useEffect(() => {
     if (task.status === 'active' && status === 'DISCONNECTED') {
       eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
@@ -130,59 +163,65 @@ export const MiniLedgerAction: React.FC<Props> = ({
         <Ledger isModalContent />
       </Popup>
 
-      {task.status === 'idle' ? (
-        <>
-          <ProcessActions
-            account={account}
-            gasLess={useGasLess}
-            {...props}
-            onSubmit={handleSubmit}
-          >
-            <div className="flex items-center gap-[8px] justify-center">
-              <LedgerSVG width={22} height={22} viewBox="0 0 28 28" />
-              {t('page.miniSignFooterBar.signWithLedger')}
+      {
+        // task.status === 'idle' ? (
+        //   <>
+        //     <ProcessActions
+        //       account={account}
+        //       gasLess={useGasLess}
+        //       {...props}
+        //       onSubmit={handleSubmit}
+        //     >
+        //       <div className="flex items-center gap-[8px] justify-center">
+        //         <LedgerSVG width={22} height={22} viewBox="0 0 28 28" />
+        //         {t('page.miniSignFooterBar.signWithLedger')}
+        //       </div>
+        //     </ProcessActions>
+
+        //     {footer}
+        //   </>
+        // ) :
+
+        task.status === 'completed' ? (
+          <>
+            <div
+              className={clsx(
+                'rounded-[6px] bg-r-green-light p-[14px] text-r-green-default text-[16px] leading-[20px] font-medium',
+                'flex items-center justify-center gap-[8px]'
+              )}
+            >
+              <RcIconCheckedCC
+                viewBox="0 0 20 20"
+                className="text-r-green-default w-[16px] h-[16px]"
+              />
+
+              {t('page.miniSignFooterBar.status.txCreated')}
             </div>
-          </ProcessActions>
-
-          {footer}
-        </>
-      ) : task.status === 'completed' ? (
-        <>
-          <div
-            className={clsx(
-              'rounded-[6px] bg-r-green-light p-[14px] text-r-green-default text-[16px] leading-[20px] font-medium',
-              'flex items-center justify-center gap-[8px]'
-            )}
-          >
-            <RcIconCheckedCC
-              viewBox="0 0 20 20"
-              className="text-r-green-default w-[16px] h-[16px]"
-            />
-
-            {t('page.miniSignFooterBar.status.txCreated')}
+          </>
+        ) : current + 1 === total && txStatus === 'signed' ? (
+          <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
+            {t('page.miniSignFooterBar.status.txSigned')} <Dots />
           </div>
-        </>
-      ) : current + 1 === total && txStatus === 'signed' ? (
-        <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
-          {t('page.miniSignFooterBar.status.txSigned')} <Dots />
-        </div>
-      ) : (
-        <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
-          {total > 1 ? (
-            <>
-              {t('page.miniSignFooterBar.status.txSendings', {
-                current: current + 1,
-                total: total,
-              })}
-              <Dots />
-            </>
-          ) : (
-            <>
-              {t('page.miniSignFooterBar.status.txSending')} <Dots />
-            </>
-          )}
-        </div>
-      )}
+        ) : (
+          <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center flex items-center justify-center gap-2">
+            <LedgerSVG width={22} height={22} viewBox="0 0 28 28" />
+
+            {total > 1 ? (
+              <div>
+                {t('page.miniSignFooterBar.status.txSendings', {
+                  current: current + 1,
+                  total: total,
+                })}
+                <Dots />
+              </div>
+            ) : (
+              <div>
+                {t('page.miniSignFooterBar.status.txSending')} <Dots />
+              </div>
+            )}
+          </div>
+        )
+      }
     </>
   );
 };
