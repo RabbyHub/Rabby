@@ -222,6 +222,9 @@
     },
     "ChainItem": {
       "appChain": "Sur le compte {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Avertissement de risque"
     }
   },
   "constant": {
@@ -247,7 +250,6 @@
     "Loading": "Chargement",
     "Save": "Sauvegarder",
     "addButton": "Ajouter",
-    "appDescription": "Le wallet révolutionnaire pour Ethereum et toutes les chaînes EVM",
     "appName": "Rabby Wallet",
     "assets": "actifs",
     "back": "Retour",
@@ -271,7 +273,8 @@
     "watchModeAddress": "Adresse en mode observation",
     "Nonce": "Nonce",
     "tryAgain": "Essayer à nouveau",
-    "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé"
+    "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé",
+    "appDescription": "Votre portefeuille de référence pour Ethereum et EVM"
   },
   "page": {
     "activities": {
@@ -1632,7 +1635,11 @@
       "selectFromAddress": "Sélectionner depuis l'adresse",
       "noSupportTokenForChain": "L'adresse du destinataire est une adresse de contrat sur une chaîne différente. Vérifiez avant de continuer pour éviter toute perte.",
       "noSupprotTokenForSafe": "L'adresse Safe à laquelle vous envoyez des tokens n'est pas déployée sur cette chaîne. Vérifiez avant de continuer pour éviter toute perte.",
-      "noSupprotTokenForDex": "Ce token peut ne pas être pris en charge par cet échange. Vérifiez avant de continuer pour éviter toute perte."
+      "noSupprotTokenForDex": "Ce token peut ne pas être pris en charge par cet échange. Vérifiez avant de continuer pour éviter toute perte.",
+      "noSupprotTokenForDex_short": "Non pris en charge par cet échange",
+      "noSupprotTokenForSafe_short": "Adresse sécurisée non déployée sur cette chaîne",
+      "selectToken": "Sélectionnez le jeton",
+      "noSupportTokenForChain_short": "L'adresse du contrat n'est pas déployée sur cette chaîne"
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} réservé pour le coût du gaz",
@@ -2284,8 +2291,8 @@
         "required": "Entrer le mot de passe pour déverrouiller"
       },
       "title": "Rabby Wallet",
-      "description": "Le portefeuille révolutionnaire pour Ethereum et toutes les chaînes EVM",
-      "btnForgotPassword": "Mot de passe oublié ?"
+      "btnForgotPassword": "Mot de passe oublié ?",
+      "description": "Votre portefeuille incontournable pour Ethereum et EVM"
     },
     "welcome": {
       "step1": {
@@ -2745,7 +2752,7 @@
         "title": "Bienvenue sur Rabby Wallet",
         "importAddress": "J'ai déjà une adresse",
         "createNewAddress": "Créer une nouvelle adresse",
-        "desc": "Le portefeuille révolutionnaire pour Ethereum et toutes les chaînes EVM"
+        "desc": "Votre portefeuille indispensable pour Ethereum et EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Afficher la phrase secrète",
@@ -2971,7 +2978,8 @@
         "title": "Liste blanche",
         "removeFromWhitelist": "Retirer de la liste blanche",
         "addWhitelist": "Ajouter à la liste blanche",
-        "addWhitelistDesc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides - aucune confirmation nécessaire la prochaine fois"
+        "addWhitelistDesc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides - aucune confirmation nécessaire la prochaine fois",
+        "notWhitelist": "Pas une adresse sur la liste blanche"
       },
       "addWhitelist": {
         "title": "Ajouter une adresse à la liste blanche",
@@ -2989,21 +2997,25 @@
         "cexAddress": "{{cexName}} Adresse",
         "cexDepositAddress": "{{cexName}} Adresse de dépôt",
         "title": "Envoyer à cette adresse",
-        "riskWarning": "Avertissement de risque",
-        "understandRisks": "Je comprends les risques et je souhaite continuer"
+        "understandRisks": "Je comprends les risques et je souhaite continuer",
+        "TransferBefore": "Transférer avant",
+        "TransferBeforeValue": "Oui",
+        "passwordPlaceholder": "Entrez le mot de passe pour continuer",
+        "AddToWhitelist": "Ajouter à la liste blanche"
       },
       "sendToImportedAddress": "Envoyer à l'adresse importée",
-      "enterAddressOrENS": "Entrez l'adresse / ENS",
       "enterAddress": "Entrer l'adresse",
       "title": "Envoyer à",
       "selectExchangeSource": "Sélectionner la source d'échange",
-      "selectImportedAddress": "Sélectionner l'adresse importée"
+      "selectImportedAddress": "Sélectionner l'adresse importée",
+      "enterAddressOrENS": "Entrez ou recherchez l'adresse"
     },
     "whitelist": {
       "tips": {
         "repeated": "L'adresse actuelle est déjà sur la liste blanche.",
         "removed": "Adresse de la liste blanche supprimée",
-        "added": "Adresse ajoutée à la liste blanche"
+        "added": "Adresse ajoutée à la liste blanche",
+        "tooltip": "Adresse de la liste blanche"
       },
       "title": "Ajouter une adresse blanche",
       "addSuccess": "Ajouté avec succès",

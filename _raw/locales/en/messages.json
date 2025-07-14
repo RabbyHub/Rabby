@@ -733,14 +733,18 @@
       "blockedTransactionContent": "This transaction interacts with an address that is on the OFAC sanctions list.",
       "blockedTransactionCancelText": "I Know",
       "noSupprotTokenForDex": "This token may not be supported by this exchange. Check before proceeding to avoid loss",
+      "noSupprotTokenForDex_short": "Not supported by this exchange",
       "noSupprotTokenForSafe": "The Safe address you're sending tokens to isn't deployed on this chain. Check before proceeding to avoid loss.",
+      "noSupprotTokenForSafe_short": "Safe address not deployed on this chain ",
       "noSupportTokenForChain": "Recipient address is a contract address on a different chain. Check before proceeding to avoid loss",
-      "selectFromAddress": "Select From Address"
+      "noSupportTokenForChain_short": "Contract address not deployed on this chain ",
+      "selectFromAddress": "Select From Address",
+      "selectToken": "Select Token"
     },
     "sendPoly": {
       "title": "Send to",
       "enterAddress": "Enter address",
-      "enterAddressOrENS": "Enter address / ENS",
+      "enterAddressOrENS": "Enter or Search address",
       "selectExchangeSource": "Select Exchange Source",
       "emptyWhitelist": {
         "title": "Add Whitelist Address",
@@ -751,7 +755,8 @@
         "title": "Whitelist",
         "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
         "addWhitelist": "Add to whitelist",
-        "removeFromWhitelist": "Remove from whitelist"
+        "removeFromWhitelist": "Remove from whitelist",
+        "notWhitelist": "Not a whitelist Address"
       },
       "sendToImportedAddress": "Send to Imported Address",
       "selectImportedAddress": "Select Imported address",
@@ -761,10 +766,13 @@
       },
       "riskAlert": {
         "title": "Send to this Address",
-        "riskWarning": "Risk Warning",
         "understandRisks": "I understand the risks and want to continue",
         "cexDepositAddress": "{{cexName}} Deposit Address",
         "cexAddress": "{{cexName}} Address",
+        "passwordPlaceholder": "Input password to continue",
+        "TransferBefore": "Transfer before",
+        "TransferBeforeValue": "Yes",
+        "AddToWhitelist": "Add to Whitelist",
         "riskType": {
           "risks": {
             "noSend": "No transfers to this address in 180 days",
@@ -789,7 +797,8 @@
       "tips": {
         "removed": "Whitelist address deleted",
         "added": "Address added to whitelist",
-        "repeated": "The current address is already on the whitelist."
+        "repeated": "The current address is already on the whitelist.",
+        "tooltip": "Whitelist address"
       }
     },
     "sendTokenComponents": {
@@ -1921,7 +1930,7 @@
         "error": "incorrect password"
       },
       "title": "Rabby Wallet",
-      "description": "The game-changing wallet for Ethereum and all EVM chains",
+      "description": "Your go-to wallet for Ethereum and EVM",
       "btnForgotPassword": "Forgot Password?"
     },
     "addToken": {
@@ -2540,7 +2549,7 @@
     "newUserImport": {
       "guide": {
         "title": "Welcome to Rabby Wallet",
-        "desc": "The game-changing wallet for Ethereum and all EVM chains",
+        "desc": "Your go-to wallet for Ethereum and EVM",
         "createNewAddress": "Create a new address",
         "importAddress": "I already have an address"
       },
@@ -2947,11 +2956,14 @@
     },
     "ChainItem": {
       "appChain": "On {{chain}} Account"
+    },
+    "RiskTip": {
+      "title": "Risk Warning"
     }
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
+    "appDescription": "Your go-to wallet for Ethereum and EVM",
     "copied": "Copied",
     "confirm": "Confirm",
     "next": "Next",

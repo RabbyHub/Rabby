@@ -36,17 +36,17 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
       className={clsx(
         'flex justify-between border border-transparent items-center mt-8 bg-r-neutral-card1 rounded-[8px] px-16',
         'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10',
+        'cursor-pointer',
         className
       )}
+      onClick={() => setVisible(true)}
     >
       <div
         className={clsx(
           'text-r-neutral-foot text-13',
           'flex items-center',
-          'cursor-pointer',
           'hover:opacity-60'
         )}
-        onClick={() => setVisible(true)}
       >
         <LowValueSVG className="mr-12" />
         <div className="text-r-neutral-title1">
@@ -72,7 +72,10 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
         visible={visible}
         closable
         push={false}
-        onClose={() => setVisible(false)}
+        onClose={(e) => {
+          e?.stopPropagation();
+          setVisible(false);
+        }}
         bodyStyle={{
           padding: '20px 20px 0',
         }}

@@ -716,7 +716,11 @@
       "selectFromAddress": "Selecionar do Endereço",
       "noSupprotTokenForDex": "Este token pode não ser suportado por esta exchange. Verifique antes de prosseguir para evitar perdas.",
       "noSupprotTokenForSafe": "O endereço Safe para o qual você está enviando tokens não está implantado nesta cadeia. Verifique antes de prosseguir para evitar perdas.",
-      "noSupportTokenForChain": "O endereço do destinatário é um endereço de contrato em uma cadeia diferente. Verifique antes de prosseguir para evitar perdas."
+      "noSupportTokenForChain": "O endereço do destinatário é um endereço de contrato em uma cadeia diferente. Verifique antes de prosseguir para evitar perdas.",
+      "noSupprotTokenForDex_short": "Não suportado por esta exchange",
+      "noSupprotTokenForSafe_short": "Endereço seguro não implantado nesta rede",
+      "selectToken": "Selecionar Token",
+      "noSupportTokenForChain_short": "Endereço do contrato não implantado nesta cadeia"
     },
     "sendTokenComponents": {
       "GasReserved": "Reservado <1>0</1> {{ tokenName }} para custo de gás",
@@ -1779,7 +1783,7 @@
       },
       "btnForgotPassword": "Esqueceu a senha?",
       "title": "Rabby Wallet",
-      "description": "A carteira revolucionária para Ethereum e todas as cadeias EVM"
+      "description": "Sua carteira de referência para Ethereum e EVM"
     },
     "addToken": {
       "noTokenFound": "Nenhum token encontrado",
@@ -2471,7 +2475,7 @@
         "importAddress": "Já tenho um endereço",
         "title": "Bem-vindo ao Rabby Wallet",
         "createNewAddress": "Criar um novo endereço",
-        "desc": "A carteira revolucionária para Ethereum e todas as cadeias EVM"
+        "desc": "Sua carteira de referência para Ethereum e EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Mostrar Seed Phrase",
@@ -2697,7 +2701,8 @@
         "addWhitelist": "Adicionar à lista de permissões",
         "removeFromWhitelist": "Remover da lista de permissões",
         "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas—sem confirmação necessária da próxima vez.",
-        "title": "Lista branca"
+        "title": "Lista branca",
+        "notWhitelist": "Não é um endereço da whitelist"
       },
       "addWhitelist": {
         "title": "Adicionar Endereço à Lista Branca",
@@ -2713,23 +2718,27 @@
           }
         },
         "cexAddress": "{{cexName}} Endereço",
-        "riskWarning": "Aviso de Risco",
         "understandRisks": "Eu entendo os riscos e quero continuar",
         "cexDepositAddress": "{{cexName}} Endereço de Depósito",
-        "title": "Enviar para este Endereço"
+        "title": "Enviar para este Endereço",
+        "TransferBeforeValue": "Sim",
+        "TransferBefore": "Transferir antes",
+        "AddToWhitelist": "Adicionar à Lista Branca",
+        "passwordPlaceholder": "Digite a senha para continuar"
       },
       "sendToImportedAddress": "Enviar para Endereço Importado",
       "selectExchangeSource": "Selecione a Fonte de Câmbio",
       "selectImportedAddress": "Selecione o endereço importado",
-      "enterAddressOrENS": "Digite o endereço / ENS",
       "title": "Enviar para",
-      "enterAddress": "Digite o endereço"
+      "enterAddress": "Digite o endereço",
+      "enterAddressOrENS": "Digite ou Pesquise o endereço"
     },
     "whitelist": {
       "tips": {
         "added": "Endereço adicionado à lista de permissões",
         "repeated": "O endereço atual já está na lista branca.",
-        "removed": "Endereço da lista de permissões excluído"
+        "removed": "Endereço da lista de permissões excluído",
+        "tooltip": "Whitelist address"
       },
       "title": "Adicionar Endereço à Lista Branca",
       "name": "Nome",
@@ -2932,11 +2941,13 @@
     },
     "ChainItem": {
       "appChain": "Na Conta {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Aviso de Risco"
     }
   },
   "global": {
     "appName": "Carteira Rabby",
-    "appDescription": "A carteira revolucionária para Ethereum e todas as blockchains EVM",
     "copied": "Copiado",
     "confirm": "Confirmar",
     "next": "Próximo",
@@ -2968,7 +2979,8 @@
     "Done": "Concluído",
     "notSupportTesntnet": "Não é compatível com rede personalizada",
     "tryAgain": "Tente Novamente",
-    "Nonce": "Nonce"
+    "Nonce": "Nonce",
+    "appDescription": "Sua carteira de referência para Ethereum e EVM"
   },
   "background": {
     "error": {

@@ -716,7 +716,11 @@
       "selectFromAddress": "Pilih Dari Alamat",
       "noSupprotTokenForSafe": "Alamat Safe yang Anda kirim token tidak dikerahkan di rantai ini. Periksa sebelum melanjutkan untuk menghindari kehilangan.",
       "noSupportTokenForChain": "Alamat penerima adalah alamat kontrak di rantai yang berbeda. Periksa sebelum melanjutkan untuk menghindari kerugian.",
-      "noSupprotTokenForDex": "Token ini mungkin tidak didukung oleh bursa ini. Periksa sebelum melanjutkan untuk menghindari kehilangan."
+      "noSupprotTokenForDex": "Token ini mungkin tidak didukung oleh bursa ini. Periksa sebelum melanjutkan untuk menghindari kehilangan.",
+      "noSupprotTokenForDex_short": "Tidak didukung oleh bursa ini",
+      "selectToken": "Pilih Token",
+      "noSupprotTokenForSafe_short": "Alamat aman belum diterapkan di rantai ini",
+      "noSupportTokenForChain_short": "Alamat kontrak tidak dikerahkan di rantai ini"
     },
     "sendTokenComponents": {
       "GasReserved": "Ditetapkan <1>0</1> {{ tokenName }} untuk biaya gas",
@@ -1847,8 +1851,8 @@
         "error": "kata sandi tidak benar"
       },
       "btnForgotPassword": "Lupa Kata Sandi?",
-      "description": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM",
-      "title": "Rabby Wallet"
+      "title": "Rabby Wallet",
+      "description": "Dompet andalan Anda untuk Ethereum dan EVM"
     },
     "addToken": {
       "balance": "Saldo",
@@ -2468,7 +2472,7 @@
         "importAddress": "Saya sudah memiliki alamat",
         "title": "Selamat datang di Rabby Wallet",
         "createNewAddress": "Buat alamat baru",
-        "desc": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM"
+        "desc": "Dompet andalan Anda untuk Ethereum dan EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Tampilkan Frasa Seed",
@@ -2694,7 +2698,8 @@
         "title": "Daftar Putih",
         "removeFromWhitelist": "Hapus dari daftar putih",
         "addWhitelistDesc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat---tidak perlu konfirmasi di lain waktu",
-        "addWhitelist": "Tambahkan ke daftar putih"
+        "addWhitelist": "Tambahkan ke daftar putih",
+        "notWhitelist": "Bukan Alamat whitelist"
       },
       "addWhitelist": {
         "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat—tidak perlu konfirmasi di lain waktu",
@@ -2709,24 +2714,28 @@
             "scamAddress": "Alamat penipuan ditandai oleh Rabby"
           }
         },
-        "riskWarning": "Peringatan Risiko",
         "title": "Kirim ke Alamat Ini",
         "cexDepositAddress": "{{cexName}} Alamat Deposit",
         "cexAddress": "{{cexName}} Alamat",
-        "understandRisks": "Saya memahami risikonya dan ingin melanjutkan"
+        "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
+        "TransferBefore": "Transfer sebelum",
+        "TransferBeforeValue": "Ya",
+        "AddToWhitelist": "Tambahkan ke Daftar Putih",
+        "passwordPlaceholder": "Masukkan kata sandi untuk melanjutkan"
       },
       "enterAddress": "Masukkan alamat",
       "selectImportedAddress": "Pilih alamat yang diimpor",
-      "enterAddressOrENS": "Masukkan alamat / ENS",
       "sendToImportedAddress": "Kirim ke Alamat Impor",
       "title": "Kirim ke",
-      "selectExchangeSource": "Pilih Sumber Pertukaran"
+      "selectExchangeSource": "Pilih Sumber Pertukaran",
+      "enterAddressOrENS": "Masukkan atau Cari alamat"
     },
     "whitelist": {
       "tips": {
         "added": "Alamat ditambahkan ke whitelist",
         "removed": "Alamat whitelist dihapus",
-        "repeated": "Alamat saat ini sudah ada di whitelist."
+        "repeated": "Alamat saat ini sudah ada di whitelist.",
+        "tooltip": "Whitelist address"
       },
       "title": "Tambah Alamat Daftar Putih",
       "address": "Alamat",
@@ -2928,6 +2937,9 @@
     },
     "ChainItem": {
       "appChain": "Di Akun {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Peringatan Risiko"
     }
   },
   "global": {
@@ -2949,7 +2961,6 @@
     "copied": "Disalin",
     "Loading": "Memuat",
     "Deleted": "Dihapus",
-    "appDescription": "Dompet yang mengubah permainan untuk Ethereum dan semua rantai EVM",
     "addButton": "Tambahkan",
     "watchModeAddress": "Watch Mode alamat",
     "gas": "Gas",
@@ -2964,7 +2975,8 @@
     "notSupportTesntnet": "Tidak didukung untuk jaringan kustom",
     "tryAgain": "Coba Lagi",
     "Nonce": "Nonce",
-    "backButton": "Kembali"
+    "backButton": "Kembali",
+    "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM"
   },
   "background": {
     "error": {

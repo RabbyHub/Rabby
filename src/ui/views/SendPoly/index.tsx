@@ -5,11 +5,10 @@ import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { groupBy } from 'lodash';
 
 import { findAccountByPriority } from '@/utils/account';
-import { KEYRING_CLASS } from '@/constant';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
@@ -18,8 +17,6 @@ import { EmptyWhitelistHolder } from './components/EmptyWhitelistHolder';
 import { EnterAddress } from './components/EnterAddress';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { padWatchAccount } from './util';
-import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
-import { AccountList } from './components/AccountList';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { useWallet } from '@/ui/utils/WalletContext';
 import { ellipsisAddress } from '@/ui/utils/address';
@@ -27,8 +24,8 @@ import { ellipsisAddress } from '@/ui/utils/address';
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
-import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
+import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
 
 const OuterInput = styled.div`
@@ -36,21 +33,6 @@ const OuterInput = styled.div`
   &:hover {
     border: 1px solid var(--r-blue-default, #7084ff);
     cursor: text;
-  }
-`;
-
-const EnterAddressButton = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px auto 0;
-  gap: 4px;
-  cursor: pointer;
-  padding: 12px 18px;
-  width: fit-content;
-  &:hover {
-    background-color: var(--r-neutral-card1);
-    border-radius: 8px;
   }
 `;
 
@@ -117,17 +99,13 @@ const SendPoly = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
-    (s) => ({
-      accountsList: s.accountToDisplay.accountsList,
-      whitelist: s.whitelist.whitelist,
-      whitelistEnabled: s.whitelist.enabled,
-    })
-  );
+  const { accountsList, whitelist } = useRabbySelector((s) => ({
+    accountsList: s.accountToDisplay.accountsList,
+    whitelist: s.whitelist.whitelist,
+  }));
 
   // main state
   const [inputingAddress, setInputingAddress] = useState(false);
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
   const [selectedAddressType, setSelectedAddressType] = useState('');
@@ -142,13 +120,10 @@ const SendPoly = () => {
     const uniqueAccounts = Object.values(groupAccounts).map((item) =>
       findAccountByPriority(item)
     );
-    if (!whitelistEnabled) {
-      return uniqueAccounts;
-    }
     return [...uniqueAccounts].filter((a) =>
       whitelist?.some((w) => isSameAddress(w, a.address))
     );
-  }, [accountsList, whitelist, whitelistEnabled]);
+  }, [accountsList, whitelist]);
 
   const nftItem = useMemo(() => {
     const query = new URLSearchParams(search);
@@ -221,26 +196,14 @@ const SendPoly = () => {
     if (!isValidAddress(address)) {
       return;
     }
-    const inWhitelist =
-      whitelistEnabled &&
-      whitelist.some((item) => isSameAddress(address, item));
-    const isMyCoreWallet = accountsList
-      ?.filter(
-        (acc) =>
-          acc.type !== KEYRING_CLASS.WATCH && acc.type !== KEYRING_CLASS.GNOSIS
-      )
-      ?.some((item) => isSameAddress(item.address, address));
-    if (inWhitelist || isMyCoreWallet) {
+    const inWhitelist = whitelist.some((item) => isSameAddress(address, item));
+    if (inWhitelist) {
       handleGotoSend(address, type);
     } else {
       setSelectedAddress(address);
       setSelectedAddressType(type || '');
       setShowAddressRiskAlert(true);
     }
-  };
-
-  const handleCancel = () => {
-    setShowSelectorModal(false);
   };
 
   const handleDeleteWhitelist = async (address: string) => {
@@ -378,111 +341,104 @@ const SendPoly = () => {
         </AnimatedInputWrapper>
 
         {!inputingAddress && (
-          <div
-            className={clsx(
-              'flex-1 overflow-y-auto w-[calc(100%+40px)] px-[20px] ml-[-20px]',
-              whitelistEnabled ? 'pb-[24px]' : ''
-            )}
-          >
+          <div className="flex-1 overflow-y-auto w-[calc(100%+40px)] px-[20px] ml-[-20px] pb-[24px]">
             {/* WhiteList or Imported Addresses List */}
-            <div className={!whitelistEnabled ? 'h-full' : ''}>
-              {whitelistEnabled && (
-                <div className="flex justify-between items-center">
-                  <div className="text-[15px] text-r-neutral-title1">
-                    {t('page.sendPoly.whitelist.title')}
-                  </div>
-                  <div
-                    className="text-r-neutral-body cursor-pointer"
-                    onClick={() => {
+            <div>
+              <div className="flex justify-between items-center">
+                <div className="text-[15px] text-r-neutral-title1">
+                  {t('page.sendPoly.whitelist.title')}
+                </div>
+                <div
+                  className="text-r-neutral-body cursor-pointer"
+                  onClick={() => {
+                    history.push('/whitelist-input');
+                  }}
+                >
+                  <RcIconAddWhitelist width={20} height={20} />
+                </div>
+              </div>
+
+              <div className="h-full">
+                {allAccounts.length > 0 ? (
+                  allAccounts.map((item) => (
+                    <WhitelistItemWrapper key={`${item.address}-${item.type}`}>
+                      <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center">
+                        <RcIconDeleteAddress
+                          className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
+                          onClick={() => handleDeleteWhitelist(item.address)}
+                        />
+                      </div>
+                      <AccountItem
+                        className="group whitelist-item"
+                        balance={
+                          item.balance || unimportedBalances[item.address] || 0
+                        }
+                        showWhitelistIcon
+                        allowEditAlias
+                        address={item.address}
+                        alias={ellipsisAddress(item.address)}
+                        type={item.type}
+                        brandName={item.brandName}
+                        onClick={() => {
+                          handleChange(item.address, item.type);
+                        }}
+                      />
+                    </WhitelistItemWrapper>
+                  ))
+                ) : (
+                  <EmptyWhitelistHolder
+                    onAddWhitelist={() => {
                       history.push('/whitelist-input');
                     }}
-                  >
-                    <RcIconAddWhitelist width={20} height={20} />
-                  </div>
-                </div>
-              )}
-              <div className="h-full">
-                {whitelistEnabled ? (
-                  allAccounts.length > 0 ? (
-                    allAccounts.map((item) => (
-                      <WhitelistItemWrapper
-                        key={`${item.address}-${item.type}`}
-                      >
-                        <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center">
-                          <RcIconDeleteAddress
-                            className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
-                            onClick={() => handleDeleteWhitelist(item.address)}
-                          />
-                        </div>
-                        <AccountItem
-                          className="group whitelist-item"
-                          balance={
-                            item.balance ||
-                            unimportedBalances[item.address] ||
-                            0
-                          }
-                          showWhitelistIcon
-                          address={item.address}
-                          alias={ellipsisAddress(item.address)}
-                          type={item.type}
-                          brandName={item.brandName}
-                          onClick={() => {
-                            handleChange(item.address, item.type);
-                          }}
-                        />
-                      </WhitelistItemWrapper>
-                    ))
-                  ) : (
-                    <EmptyWhitelistHolder
-                      onAddWhitelist={() => {
-                        history.push('/whitelist-input');
-                      }}
-                    />
-                  )
-                ) : (
-                  <AccountList
-                    onChange={(acc) => handleChange(acc.address, acc.type)}
                   />
                 )}
               </div>
             </div>
-            {/* Imported Addresses Entry */}
-            {whitelistEnabled && (
+            {/* Add Whitelist Entry */}
+            {allAccounts.length > 0 && (
               <div>
-                <EnterAddressButton
+                <Button
                   onClick={() => {
-                    setShowSelectorModal(true);
+                    history.push('/whitelist-input');
                   }}
+                  type="primary"
+                  className={`
+                  bg-r-neutral-card1 mt-[12px] w-full shadow-none h-[48px] border-transparent 
+                  hover:border-rabby-blue-default hover:bg-r-blue-light-2 hover:before:hidden`}
                 >
-                  <div className="text-[15px] text-r-neutral-body">
-                    {t('page.sendPoly.sendToImportedAddress')}
+                  <div className="flex items-center justify-center space-x-6 text-r-blue-default">
+                    <IconAdd />
+                    <span
+                      className="text-[13px] font-medium"
+                      style={{
+                        textShadow: 'none',
+                      }}
+                    >
+                      {t('page.sendPoly.whitelist.addWhitelist')}
+                    </span>
                   </div>
-                  <RcIconRight width={16} height={16} />
-                </EnterAddressButton>
+                </Button>
               </div>
             )}
           </div>
         )}
       </div>
-      <AccountSelectorModal
-        title={t('page.sendPoly.selectImportedAddress')}
-        visible={showSelectorModal}
-        onChange={(acc) => handleChange(acc.address, acc.type)}
-        onCancel={handleCancel}
-        getContainer={getContainer}
-        height="calc(100% - 60px)"
-      />
       <AddressRiskAlert
         type={selectedAddressType}
         address={selectedAddress}
+        title={t('page.sendPoly.whitelist.notWhitelist')}
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         height="calc(100% - 60px)"
-        onConfirm={() => {
+        onConfirm={async (cexId) => {
           handleGotoSend(selectedAddress, selectedAddressType);
           setSelectedAddress('');
           setSelectedAddressType('');
           setShowAddressRiskAlert(false);
+          if (cexId) {
+            const alias = await wallet.getAlianName(selectedAddress);
+            wallet.updateAlianName(selectedAddress, alias || '', cexId);
+          }
         }}
         onCancel={() => {
           setSelectedAddress('');

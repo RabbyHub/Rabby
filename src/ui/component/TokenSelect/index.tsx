@@ -23,6 +23,7 @@ import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync } from 'react-use';
 import { getUiType, useWallet } from '@/ui/utils';
 import { isAddress } from 'viem/utils';
+import { useTranslation } from 'react-i18next';
 const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
@@ -136,6 +137,7 @@ const TokenSelect = forwardRef<
       (state) => state.account.currentAccount
     );
     const wallet = useWallet();
+    const { t } = useTranslation();
 
     useImperativeHandle(ref, () => ({
       openTokenModal: setTokenSelectorVisible,
@@ -348,7 +350,7 @@ const TokenSelect = forwardRef<
               </TokenWrapper>
             ) : (
               <SelectTips>
-                <span>Select Token</span>
+                <span>{t('page.sendToken.selectToken')}</span>
                 <SvgIconArrowDownTriangle className="brightness-[100] ml-[7px]" />
               </SelectTips>
             )}

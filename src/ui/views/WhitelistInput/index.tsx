@@ -17,7 +17,6 @@ import { PageHeader } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 
 // icons
@@ -76,7 +75,6 @@ const WhitelistInput = () => {
   );
 
   // other state
-  const { isMyImported } = useAddressInfo(inputAddress, { disableDesc: true });
   const [isValidAddr, setIsValidAddr] = useState(true);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [showCexListModal, setShowCexListModal] = useState(false);
@@ -141,32 +139,17 @@ const WhitelistInput = () => {
     if (!isValidAddress(address)) {
       return;
     }
-    AuthenticationModalPromise({
-      title: t('page.whitelist.confirmPassword'),
-      wallet,
-      cancelText: t('global.Cancel'),
-      validationHandler: async (password) => {
-        await wallet.addWhitelist(password, address);
-      },
-      containerClassName: 'whitelist-confirm-modal',
-      getContainer,
-      btnClassName:
-        'pt-[16px] border-t-[0.5px] border-r-neutral-line border-t-r-neutral-line',
-      onCancel: () => {},
-      onFinished: async () => {
-        dispatch.whitelist.getWhitelist();
-        await wallet.updateAlianName(
-          address,
-          inputAlias || '',
-          isCex && selectedExchange?.id ? selectedExchange?.id : ''
-        );
-        setShowAddressRiskAlert(false);
-        history.goBack();
-        message.success({
-          icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: t('page.whitelist.tips.added'),
-        });
-      },
+    dispatch.whitelist.getWhitelist();
+    await wallet.updateAlianName(
+      address,
+      inputAlias || '',
+      isCex && selectedExchange?.id ? selectedExchange?.id : ''
+    );
+    setShowAddressRiskAlert(false);
+    history.goBack();
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('page.whitelist.tips.added'),
     });
   };
 
@@ -183,11 +166,7 @@ const WhitelistInput = () => {
         });
         return;
       }
-      if (isMyImported) {
-        confirmToWhitelist(inputAddress);
-      } else {
-        setShowAddressRiskAlert(true);
-      }
+      setShowAddressRiskAlert(true);
     } catch (e) {
       console.error('Failed to add whitelist:', e);
     }
@@ -353,6 +332,7 @@ const WhitelistInput = () => {
         visible={showAddressRiskAlert}
         getContainer={getContainer}
         editAlias={inputAlias}
+        forWhitelist
         title={t('page.whitelist.riskTitle')}
         editCex={isCex ? selectedExchange : null}
         height="calc(100% - 60px)"

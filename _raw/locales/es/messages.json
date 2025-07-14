@@ -716,7 +716,11 @@
       "noSupportTokenForChain": "La dirección del destinatario es una dirección de contrato en una cadena diferente. Verifica antes de continuar para evitar pérdidas.",
       "selectFromAddress": "Seleccionar de la dirección",
       "noSupprotTokenForDex": "Este token puede no ser compatible con este intercambio. Verifique antes de continuar para evitar pérdidas.",
-      "noSupprotTokenForSafe": "La dirección Safe a la que estás enviando tokens no está desplegada en esta cadena. Verifica antes de continuar para evitar pérdidas."
+      "noSupprotTokenForSafe": "La dirección Safe a la que estás enviando tokens no está desplegada en esta cadena. Verifica antes de continuar para evitar pérdidas.",
+      "noSupprotTokenForDex_short": "No soportado por este exchange",
+      "noSupportTokenForChain_short": "Dirección del contrato no desplegada en esta cadena",
+      "selectToken": "Seleccionar Token",
+      "noSupprotTokenForSafe_short": "La dirección segura no está desplegada en esta cadena"
     },
     "sendTokenComponents": {
       "GasReserved": "Reservados <1>0</1> {{ tokenName }} para costo de gas",
@@ -1778,8 +1782,8 @@
         "error": "Contraseña incorrecta"
       },
       "title": "Rabby Wallet",
-      "description": "El wallet revolucionario para Ethereum y todas las cadenas EVM",
-      "btnForgotPassword": "¿Olvidaste la contraseña?"
+      "btnForgotPassword": "¿Olvidaste la contraseña?",
+      "description": "Tu billetera de referencia para Ethereum y EVM"
     },
     "addToken": {
       "noTokenFound": "No se encontró ningún token",
@@ -2470,7 +2474,7 @@
       "guide": {
         "createNewAddress": "Crea una nueva dirección",
         "importAddress": "Ya tengo una dirección",
-        "desc": "La billetera revolucionaria para Ethereum y todas las cadenas EVM",
+        "desc": "Tu billetera de referencia para Ethereum y EVM",
         "title": "Bienvenido a Rabby Wallet"
       },
       "createNewAddress": {
@@ -2697,7 +2701,8 @@
         "title": "Lista blanca",
         "addWhitelist": "Añadir a la lista blanca",
         "removeFromWhitelist": "Eliminar de la lista blanca",
-        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---no se necesita confirmación la próxima vez"
+        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---no se necesita confirmación la próxima vez",
+        "notWhitelist": "No es una dirección de lista blanca"
       },
       "addWhitelist": {
         "title": "Añadir dirección a la lista blanca",
@@ -2713,23 +2718,27 @@
           }
         },
         "title": "Enviar a esta Dirección",
-        "riskWarning": "Advertencia de Riesgo",
         "cexAddress": "{{cexName}} Dirección",
         "cexDepositAddress": "{{cexName}} Dirección de Depósito",
-        "understandRisks": "Entiendo los riesgos y quiero continuar"
+        "understandRisks": "Entiendo los riesgos y quiero continuar",
+        "TransferBeforeValue": "Sí",
+        "passwordPlaceholder": "Introduce la contraseña para continuar",
+        "TransferBefore": "Transferir antes",
+        "AddToWhitelist": "Añadir a la lista blanca"
       },
       "enterAddress": "Ingresa la dirección",
       "selectExchangeSource": "Seleccionar fuente de intercambio",
       "sendToImportedAddress": "Enviar a dirección importada",
-      "enterAddressOrENS": "Ingrese dirección / ENS",
       "selectImportedAddress": "Seleccionar dirección importada",
-      "title": "Enviar a"
+      "title": "Enviar a",
+      "enterAddressOrENS": "Ingresa o busca la dirección"
     },
     "whitelist": {
       "tips": {
         "repeated": "La dirección actual ya está en la lista blanca.",
         "added": "Dirección añadida a la lista blanca",
-        "removed": "Dirección de la lista blanca eliminada"
+        "removed": "Dirección de la lista blanca eliminada",
+        "tooltip": "Dirección de Whitelist"
       },
       "title": "Agregar dirección a la lista blanca",
       "confirmPassword": "Confirmar contraseña",
@@ -2931,11 +2940,13 @@
     },
     "ChainItem": {
       "appChain": "En la cuenta de {{chain}}"
+    },
+    "RiskTip": {
+      "title": "Advertencia de Riesgo"
     }
   },
   "global": {
     "appName": "Rabby Wallet",
-    "appDescription": "La billetera revolucionaria para Ethereum y todas las cadenas EVM",
     "copied": "Copiado",
     "confirm": "Confirmar",
     "next": "Siguiente",
@@ -2967,7 +2978,8 @@
     "Done": "Hecho",
     "notSupportTesntnet": "No compatible con red personalizada",
     "tryAgain": "Inténtalo de nuevo",
-    "Nonce": "Nonce"
+    "Nonce": "Nonce",
+    "appDescription": "Tu billetera de referencia para Ethereum y EVM"
   },
   "background": {
     "error": {

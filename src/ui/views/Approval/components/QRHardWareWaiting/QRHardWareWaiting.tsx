@@ -45,7 +45,7 @@ export type RequestSignPayload = {
 
 const QRHardWareWaiting = ({ params, account: $account }) => {
   const account = params.isGnosis ? params.account : $account;
-  const { setTitle, closePopup } = useCommonPopupView();
+  const { setTitle, closePopup, setHeight } = useCommonPopupView();
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
     QRHARDWARE_STATUS.SYNC
   );
@@ -101,6 +101,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         </span>
       </div>
     );
+    setHeight(440);
     setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
     setIsSignText(
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
@@ -336,7 +337,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         {status === QRHARDWARE_STATUS.SYNC && signPayload && (
           <Player
             layoutStyle={shouldShowSignatureSwitchButton ? 'normal' : 'compact'}
-            playerSize={shouldShowSignatureSwitchButton ? 144 : 180}
+            playerSize={shouldShowSignatureSwitchButton ? 144 : 260}
             type={signPayload.payload.type}
             cbor={signPayload.payload.cbor}
             onSign={handleRequestSignature}
