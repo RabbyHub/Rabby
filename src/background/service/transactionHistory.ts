@@ -341,22 +341,19 @@ class TxHistory {
   }
 
   addSwapTxHistory(tx: SwapTxHistoryItem) {
-    this.store.swapTxHistory.push(tx);
-    this.store.swapTxHistory = this.store.swapTxHistory
+    this.store.swapTxHistory = [...this.store.swapTxHistory, tx]
       .sort((a, b) => b.createdAt - a.createdAt)
       .slice(0, 200);
   }
 
   addSendTxHistory(tx: SendTxHistoryItem) {
-    this.store.sendTxHistory.push(tx);
-    this.store.sendTxHistory = this.store.sendTxHistory
+    this.store.sendTxHistory = [...this.store.sendTxHistory, tx]
       .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, 500); // need use to show send history list
+      .slice(0, 500);
   }
 
   addBridgeTxHistory(tx: BridgeTxHistoryItem) {
-    this.store.bridgeTxHistory.push(tx);
-    this.store.bridgeTxHistory = this.store.bridgeTxHistory
+    this.store.bridgeTxHistory = [...this.store.bridgeTxHistory, tx]
       .sort((a, b) => b.createdAt - a.createdAt)
       .slice(0, 200);
   }
@@ -393,28 +390,40 @@ class TxHistory {
     chainId: number,
     status: SwapTxHistoryItem['status']
   ) {
-    const arr = [
-      this.store.swapTxHistory,
-      this.store.sendTxHistory,
-      this.store.bridgeTxHistory,
-    ];
     const hashArr = txs.map((item) => item.hash);
-    arr.forEach(async (history) => {
-      const index = history.findIndex(
-        (item: SwapTxHistoryItem | SendTxHistoryItem | BridgeTxHistoryItem) =>
-          ('fromChainId' in item ? item.fromChainId : item.chainId) ===
-            chainId && hashArr.includes(item.hash)
-      );
-      if (index > -1) {
-        if ('fromChainId' in history[index]) {
-          // bridge tx
-          history[index].status =
-            status === 'success' ? 'fromSuccess' : 'failed';
-        } else {
-          history[index].status = status;
-        }
-        history[index].completedAt = Date.now();
+    const completedAt = Date.now();
+
+    this.store.swapTxHistory = this.store.swapTxHistory.map((item) => {
+      if (item.chainId === chainId && hashArr.includes(item.hash)) {
+        return {
+          ...item,
+          status,
+          completedAt,
+        };
       }
+      return item;
+    });
+
+    this.store.sendTxHistory = this.store.sendTxHistory.map((item) => {
+      if (item.chainId === chainId && hashArr.includes(item.hash)) {
+        return {
+          ...item,
+          status,
+          completedAt,
+        };
+      }
+      return item;
+    });
+
+    this.store.bridgeTxHistory = this.store.bridgeTxHistory.map((item) => {
+      if (item.fromChainId === chainId && hashArr.includes(item.hash)) {
+        return {
+          ...item,
+          status: status === 'success' ? 'fromSuccess' : 'failed',
+          completedAt,
+        };
+      }
+      return item;
     });
   }
 
@@ -423,11 +432,15 @@ class TxHistory {
     chainId: number,
     status: BridgeTxHistoryItem['status']
   ) {
-    this.store.bridgeTxHistory.forEach((item) => {
+    this.store.bridgeTxHistory = this.store.bridgeTxHistory.map((item) => {
       if (item.fromChainId === chainId && item.hash === from_tx_id) {
-        item.status = status;
-        item.completedAt = Date.now();
+        return {
+          ...item,
+          status,
+          completedAt: Date.now(),
+        };
       }
+      return item;
     });
   }
 
