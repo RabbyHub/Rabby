@@ -6,7 +6,7 @@ import {
   preferenceService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
-import { CHAINS, EVENTS, INTERNAL_REQUEST_ORIGIN } from 'consts';
+import { EVENTS } from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
@@ -17,7 +17,6 @@ import { addHexPrefix, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
-import { Account } from '@/background/service/preference';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -412,32 +411,8 @@ function reportStatsData() {
 }
 
 export default (request: ProviderRequest) => {
-  const origin = request.session?.origin || request.origin;
-  let account: Account | undefined = undefined;
-  if (preferenceService.getPreference('isEnabledDappAccount')) {
-    if (origin) {
-      if (origin === INTERNAL_REQUEST_ORIGIN) {
-        account =
-          request.account || preferenceService.getCurrentAccount() || undefined;
-      } else {
-        const site = permissionService.getConnectedSite(origin);
-        if (site?.isConnected) {
-          account =
-            site.account || preferenceService.getCurrentAccount() || undefined;
-        }
-      }
-    }
-  } else {
-    if (origin === INTERNAL_REQUEST_ORIGIN) {
-      account =
-        request.account || preferenceService.getCurrentAccount() || undefined;
-    } else {
-      account = preferenceService.getCurrentAccount() || undefined;
-    }
-  }
-
   const ctx: any = {
-    request: { ...request, account, requestedApproval: false },
+    request: { ...request, requestedApproval: false },
   };
   notificationService.setStatsData();
   return flowContext(ctx).finally(() => {
