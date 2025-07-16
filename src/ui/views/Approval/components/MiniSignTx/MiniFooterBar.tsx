@@ -33,6 +33,7 @@ import { GasAccountCheckResult } from '@/background/service/openapi';
 import { DrawerProps } from 'antd';
 import {
   useDirectSigning,
+  useSetDisableProcessDirectSign,
   // useSetCanDirectSign,
   useSetGasTipsComponent,
   useSetMiniApprovalGas,
@@ -270,6 +271,7 @@ export const MiniFooterBar: React.FC<Props> = ({
   };
 
   const setMiniApprovalGasState = useSetMiniApprovalGas();
+  const setDisableProcessDirectSign = useSetDisableProcessDirectSign();
   // const setCanDirectSign = useSetCanDirectSign();
   const setGasTipsComponent = useSetGasTipsComponent();
   const isSetGasMethodRef = useRef(false);
@@ -301,6 +303,7 @@ export const MiniFooterBar: React.FC<Props> = ({
           (!securityLevel || !hasUnProcessSecurityResult) ? (
             canUseGasLess ? (
               <GasLessActivityToSign
+                directSubmit
                 gasLessEnable={useGasLess}
                 handleFreeGas={() => {
                   enableGasLess?.();
@@ -321,22 +324,13 @@ export const MiniFooterBar: React.FC<Props> = ({
           !gasAccountCost?.chain_not_support &&
           noCustomRPC &&
           !(isWatchAddr || account?.type === KEYRING_TYPE.GnosisKeyring) ? (
-            // <GasLessNotEnough
-            //   directSubmit
-            //   // inShowMore
-            //   gasLessFailedReason={gasLessFailedReason}
-            //   canGotoUseGasAccount={canGotoUseGasAccount}
-            //   onChangeGasAccount={onChangeGasAccount}
-            //   canDepositUseGasAccount={canDepositUseGasAccount}
-            //   miniFooter
-            // />
-            <GasAccountTips
-              gasAccountCost={gasAccountCost}
-              isGasAccountLogin={isGasAccountLogin}
-              isWalletConnect={isWalletConnect}
-              noCustomRPC={noCustomRPC}
-              miniFooter
+            <GasLessNotEnough
               directSubmit
+              gasLessFailedReason={gasLessFailedReason}
+              canGotoUseGasAccount={canGotoUseGasAccount}
+              onChangeGasAccount={onChangeGasAccount}
+              canDepositUseGasAccount={canDepositUseGasAccount}
+              miniFooter
             />
           ) : null}
 
@@ -422,19 +416,13 @@ export const MiniFooterBar: React.FC<Props> = ({
         ? false
         : props.disabledProcess;
 
+      setDisableProcessDirectSign(disabledProcess);
+
       setMiniApprovalGasState((pre) => ({
         ...pre,
         noCustomRPC,
         disabledProcess,
-        showGasLevelPopup:
-          (showGasLess && !useGasLess && !canGotoUseGasAccount) ||
-          (payGasByGasAccount &&
-            !(
-              !isWalletConnect &&
-              gasAccountCost?.balance_is_enough &&
-              !gasAccountCost?.chain_not_support &&
-              noCustomRPC
-            )),
+        showGasLevelPopup: disabledProcess,
       }));
     }
   }, [
@@ -443,6 +431,7 @@ export const MiniFooterBar: React.FC<Props> = ({
     isInited,
     payGasByGasAccount,
     setMiniApprovalGasState,
+    setDisableProcessDirectSign,
     showGasLess,
     noCustomRPC,
     isWalletConnect,

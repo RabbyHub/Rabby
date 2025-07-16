@@ -11,12 +11,17 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { DirectSubmitProvider } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useRabbySelector } from '@/ui/store';
 const isTab = getUiType().isTab;
 
 const Swap = () => {
   const { isDarkTheme } = useThemeMode();
+  const { userAddress, accountType } = useRabbySelector((state) => ({
+    userAddress: state.account.currentAccount?.address || '',
+    accountType: state.account.currentAccount?.type,
+  }));
   return (
-    <RefreshIdProvider>
+    <RefreshIdProvider key={userAddress + accountType}>
       <QuoteVisibleProvider>
         <RabbyFeeProvider>
           <DirectSubmitProvider>

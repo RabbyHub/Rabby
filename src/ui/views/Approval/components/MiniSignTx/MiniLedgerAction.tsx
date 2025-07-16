@@ -6,7 +6,7 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
 import { EVENTS, KEYRING_CLASS } from 'consts';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
@@ -22,7 +22,10 @@ import { Ledger } from '../../../CommonPopup/Ledger';
 import { useMemoizedFn } from 'ahooks';
 import { DrawerProps } from 'antd';
 import { useDebounce } from 'react-use';
-import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import {
+  useDirectSigning,
+  useSetDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -113,6 +116,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
   });
 
   const directSigning = useDirectSigning();
+  const setDirectSigning = useSetDirectSigning();
 
   useDebounce(
     () => {
@@ -153,7 +157,10 @@ export const MiniLedgerAction: React.FC<Props> = ({
         height={320}
         visible={visibleLedgerConnectModal}
         closable
-        onCancel={() => setVisibleLedgerConnectModal(false)}
+        onCancel={() => {
+          setDirectSigning(false);
+          setVisibleLedgerConnectModal(false);
+        }}
         title={t('page.dashboard.hd.ledgerIsDisconnected')}
         maskStyle={{
           backgroundColor: 'transparent',
@@ -204,7 +211,12 @@ export const MiniLedgerAction: React.FC<Props> = ({
           </div>
         ) : (
           <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center flex items-center justify-center gap-2">
-            <LedgerSVG width={22} height={22} viewBox="0 0 28 28" />
+            <LedgerSVG
+              width={22}
+              height={22}
+              viewBox="0 0 28 28"
+              className="mr-6"
+            />
 
             {total > 1 ? (
               <div>

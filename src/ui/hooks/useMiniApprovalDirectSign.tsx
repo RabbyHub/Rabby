@@ -2,6 +2,7 @@ import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import { useCallback } from 'react';
 import { createContextState } from './contextState';
 import React from 'react';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 
 export const [
   MiniApprovalGasProvider,
@@ -60,12 +61,20 @@ export const [
   useSetGasTipsComponent,
 ] = createContextState<React.ReactNode>(null);
 
+export const [
+  DisableProcessDirectSignProvider,
+  useGetDisableProcessDirectSign,
+  useSetDisableProcessDirectSign,
+] = createContextState<boolean>(false);
+
 export const DirectSubmitProvider = ({
   children,
 }: React.PropsWithChildren<unknown>) => (
   <MiniApprovalGasProvider>
     <DirectSigningProvider>
-      <GasTipsComponentProvider>{children}</GasTipsComponentProvider>
+      <DisableProcessDirectSignProvider>
+        <GasTipsComponentProvider>{children}</GasTipsComponentProvider>
+      </DisableProcessDirectSignProvider>
     </DirectSigningProvider>
   </MiniApprovalGasProvider>
 );
@@ -78,11 +87,13 @@ export const useResetDirectSignState = () => {
   const setGasRelativeComponent = useSetGasTipsComponent();
 
   const setDirectSigning = useSetDirectSigning();
+  const setDisableProcessDirectSign = useSetDisableProcessDirectSign();
 
   const resetState = useCallback(() => {
     setMiniApprovalGasState(undefined);
     setDirectSigning(false);
     setGasRelativeComponent(null);
+    setDisableProcessDirectSign(false);
   }, [setDirectSigning, setMiniApprovalGasState, setGasRelativeComponent]);
 
   return resetState;
@@ -140,4 +151,12 @@ export const useStartDirectSigning = () => {
     setDirectSigning(true);
     // await waitingDirectSignReSult();
   }, [setDirectSigning]);
+};
+
+export const supportedDirectSign = (type: string) => {
+  return [
+    KEYRING_TYPE.SimpleKeyring,
+    KEYRING_TYPE.HdKeyring,
+    KEYRING_CLASS.HARDWARE.LEDGER,
+  ].includes(type);
 };

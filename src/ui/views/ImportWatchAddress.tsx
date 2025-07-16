@@ -9,7 +9,7 @@ import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import { EVENTS, KEYRING_CLASS } from 'consts';
-import WatchLogo from 'ui/assets/waitcup.svg';
+import WatchLogo from 'ui/assets/watch.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
 import IconArrowDown from 'ui/assets/big-arrow-down.svg';

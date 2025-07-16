@@ -72,7 +72,10 @@ import { useGasAccountTxsCheck } from '@/ui/views/GasAccount/hooks/checkTxs';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import {
   useDirectSigning,
+  useGetDisableProcessDirectSign,
+  useMiniApprovalGas,
   useResetDirectSignState,
+  useSetDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { ReactComponent as RCIconLoadingCC } from '@/ui/assets/loading-cc.svg';
 import { RetryUpdateType } from '@/background/utils/errorTxRetry';
@@ -1258,10 +1261,23 @@ export const MiniApproval = ({
   const currentAccount = useCurrentAccount();
 
   const isSigningLoading = useDirectSigning();
+  const setDirectSigning = useSetDirectSigning();
+
   const resetDirectSigning = useResetDirectSignState();
+  const disabledProcess = useGetDisableProcessDirectSign();
+
+  const [innerVisible, setInnerVisible] = useState(false);
+
+  useEffect(() => {
+    if (isSigningLoading && disabledProcess) {
+      setDirectSigning(false);
+      setInnerVisible(false);
+    }
+  }, [isSigningLoading, disabledProcess, setDirectSigning]);
 
   useEffect(() => {
     resetDirectSigning();
+    setInnerVisible(false);
   }, [txs]);
 
   useEffect(() => {
@@ -1270,13 +1286,30 @@ export const MiniApproval = ({
     }
   }, [visible]);
 
+  useEffect(() => {
+    if (innerVisible) {
+      setStatus('idle');
+    }
+  }, [innerVisible]);
+
+  useEffect(() => {
+    if (
+      currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
+      isSigningLoading
+    ) {
+      setInnerVisible(true);
+    } else {
+      setInnerVisible(false);
+    }
+  }, [currentAccount?.type, isSigningLoading]);
+
   return (
     <>
       <Popup
         placement="bottom"
         height="fit-content"
         className="is-support-darkmode"
-        visible={visible}
+        visible={innerVisible}
         onClose={onClose}
         maskClosable={status === 'idle'}
         closable={false}

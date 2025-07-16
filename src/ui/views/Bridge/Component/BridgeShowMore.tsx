@@ -33,6 +33,7 @@ import { formatGasHeaderUsdValue } from '@/ui/utils';
 import ShowMoreGasSelectModal from './ShowMoreGasModal';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
+import { noop } from 'lodash';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -152,24 +153,9 @@ export const BridgeShowMore = ({
     return undefined;
   }, [isBestQuote]);
 
-  const [showSlippageError, setShowSlippageError] = useState(false);
+  const showSlippageError = slippageError;
 
   const [showGasFeeError, setShowGasFeeError] = useState(false);
-
-  useDebounce(
-    () => {
-      if (
-        (!quoteLoading && sourceLogo && sourceName && data?.showLoss) ||
-        slippageError
-      ) {
-        setShowSlippageError(true);
-      } else {
-        setShowSlippageError(false);
-      }
-    },
-    50,
-    [quoteLoading, data?.showLoss, sourceLogo, sourceName]
-  );
 
   const lostValueContentRender = useCallback(() => {
     return (
@@ -227,7 +213,7 @@ export const BridgeShowMore = ({
       <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
-            'flex items-center opacity-30',
+            'flex items-center opacity-50',
             'cursor-pointer',
             'text-r-neutral-foot text-12'
           )}
@@ -387,7 +373,7 @@ export const BridgeShowMore = ({
             <DirectSignGasInfo
               supportDirectSign={supportDirectSign}
               loading={!!quoteLoading}
-              openShowMore={setShowGasFeeError}
+              openShowMore={noop}
               noQuote={!sourceLogo && !sourceName}
               chainServeId={fromToken?.chain}
             />
@@ -451,7 +437,13 @@ export const DirectSignGasInfo = ({
     } else {
       openShowMore(false);
     }
-  }, [chainEnum, miniApprovalGas?.gasCostUsdStr, openShowMore, showGasContent]);
+  }, [
+    chainEnum,
+    miniApprovalGas?.showGasLevelPopup,
+    miniApprovalGas?.gasCostUsdStr,
+    openShowMore,
+    showGasContent,
+  ]);
 
   const calcGasAccountUsd = useCallback((n: number | string) => {
     const v = Number(n);

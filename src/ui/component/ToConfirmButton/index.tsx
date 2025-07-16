@@ -1,3 +1,4 @@
+import { useGetDisableProcessDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useState } from 'react';
@@ -94,5 +95,16 @@ export const ToConfirmBtn = (props: {
         </>
       )}
     </div>
+  );
+};
+
+export const DirectSignToConfirmBtn = (props: {
+  title: React.ReactNode;
+  onConfirm: () => void;
+  disabled?: boolean;
+}) => {
+  const disabledProcess = useGetDisableProcessDirectSign();
+  return (
+    <ToConfirmBtn {...props} disabled={props.disabled || disabledProcess} />
   );
 };

@@ -66,9 +66,10 @@ import { useInitCheck } from './useInitCheck';
 import { MiniApproval } from '../Approval/components/MiniSignTx';
 import {
   DirectSubmitProvider,
+  supportedDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from './components/SendShowMore';
 import { PendingTxItem } from '../Swap/Component/PendingTxItem';
 import { SendTxHistoryItem } from '@/background/service/transactionHistory';
@@ -563,9 +564,7 @@ const SendToken = () => {
   const canUseDirectSubmitTx = useMemo(
     () =>
       canSubmit &&
-      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
-        (currentAccount?.type || '') as any
-      ) &&
+      supportedDirectSign(currentAccount?.type || '') &&
       !chainItem?.isTestnet,
     [canSubmit, chainItem?.isTestnet, currentAccount?.type]
   );
@@ -1261,6 +1260,10 @@ const SendToken = () => {
       if (!chain) {
         return;
       }
+      form.setFieldsValue({
+        ...form.getFieldsValue(),
+        amount: '',
+      });
       setChain(val);
       if (addressDesc?.cex?.id && addressDesc.cex.is_deposit) {
         try {
@@ -1704,7 +1707,7 @@ const SendToken = () => {
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
               {canUseDirectSubmitTx ? (
-                <ToConfirmBtn
+                <DirectSignToConfirmBtn
                   title={t('page.sendToken.sendButton')}
                   onConfirm={() =>
                     handleSubmit({
