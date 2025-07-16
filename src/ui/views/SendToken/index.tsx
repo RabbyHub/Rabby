@@ -540,9 +540,12 @@ const SendToken = () => {
       const arr = Object.keys(addressDesc.contract || {}).map((chain) =>
         chain.toLowerCase()
       );
-      sendToOtherChainContract = !arr.includes(
-        chainItem.serverId.toLowerCase()
-      );
+      if (arr.length > 0) {
+        // is contract address
+        sendToOtherChainContract = !arr.includes(
+          chainItem.serverId.toLowerCase()
+        );
+      }
     }
     return keyringTypeCanUseMiniTx && !sendToOtherChainContract;
   }, [chainItem, currentAccount?.type, addressDesc]);
