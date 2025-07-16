@@ -564,13 +564,24 @@ const SendToken = () => {
 
   const startDirectSigning = useStartDirectSigning();
 
-  const canUseDirectSubmitTx = useMemo(
-    () =>
+  const canUseDirectSubmitTx = useMemo(() => {
+    let sendToOtherChainContract = false;
+    if (addressDesc && chainItem) {
+      const arr = Object.keys(addressDesc.contract || {}).map((chain) =>
+        chain.toLowerCase()
+      );
+      sendToOtherChainContract = !arr.includes(
+        chainItem.serverId.toLowerCase()
+      );
+    }
+    return (
       canSubmit &&
       supportedDirectSign(currentAccount?.type || '') &&
-      !chainItem?.isTestnet,
-    [canSubmit, chainItem?.isTestnet, currentAccount?.type]
-  );
+      !chainItem?.isTestnet &&
+      !sendToOtherChainContract
+    );
+  }, [canSubmit, chainItem, currentAccount?.type, addressDesc]);
+
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
       amount,
