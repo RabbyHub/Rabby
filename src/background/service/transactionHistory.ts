@@ -9,6 +9,7 @@ import openapiService, {
   testnetOpenapiService,
   TxRequest,
   TokenItem,
+  NFTItem,
 } from './openapi';
 import { INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
@@ -112,12 +113,13 @@ export interface SendTxHistoryItem {
   chainId: number;
   from: string;
   to: string;
-  token: TokenItem;
+  token: TokenItem | NFTItem;
   amount: number;
   status: 'pending' | 'success' | 'failed';
   hash: string;
   createdAt: number;
   completedAt?: number;
+  isNft?: boolean;
 }
 
 interface TxHistoryStore {

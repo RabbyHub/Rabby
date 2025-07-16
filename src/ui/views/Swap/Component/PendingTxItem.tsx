@@ -31,7 +31,8 @@ import type {
 } from '@/background/service/transactionHistory';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Image } from 'antd';
-import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
+import { BridgeHistory, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 
 type PendingTxData =
   | SwapTxHistoryItem
@@ -294,7 +295,11 @@ export const PendingTxItem = forwardRef<
     if (type === 'send' && data) {
       const sendData = data as SendTxHistoryItem;
       const sendAmount = formatTokenAmount(sendData?.amount);
-      return `-${sendAmount} ${getTokenSymbol(sendData?.token)}`;
+      if ((data as SendTxHistoryItem).isNft) {
+        return `-${sendAmount} NFT`;
+      }
+
+      return `-${sendAmount} ${getTokenSymbol(sendData?.token as TokenItem)}`;
     }
     return '';
   }, [type, data]);
@@ -329,6 +334,17 @@ export const PendingTxItem = forwardRef<
     return null;
   }
 
+  const sendToken = (type === 'send' && !(data as SendTxHistoryItem).isNft
+    ? (data as SendTxHistoryItem)?.token
+    : undefined) as TokenItem | undefined;
+
+  const sendChainItem =
+    type === 'send'
+      ? findChain({
+          serverId: (data as SendTxHistoryItem)?.token?.chain || '',
+        })
+      : undefined;
+
   return (
     <div>
       <div
@@ -343,10 +359,30 @@ export const PendingTxItem = forwardRef<
           <div className="flex items-center gap-6">
             {type === 'send' ? (
               <>
-                <TokenWithChain
-                  token={(data as SendTxHistoryItem)?.token?.logo_url}
-                  chain={(data as SendTxHistoryItem)?.token?.chain || ''}
-                />
+                {(data as SendTxHistoryItem)?.isNft ? (
+                  <div className="relative w-20 h-20">
+                    <NFTAvatar
+                      content={(data as SendTxHistoryItem)?.token?.content}
+                      type={(data as SendTxHistoryItem)?.token?.content_type}
+                      className="w-[20px] h-[20px]"
+                    />
+                    <TooltipWithMagnetArrow
+                      title={sendChainItem?.name}
+                      className="rectangle w-[max-content]"
+                    >
+                      <img
+                        className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
+                        src={sendChainItem?.logo || IconUnknown}
+                        alt={sendChainItem?.name}
+                      />
+                    </TooltipWithMagnetArrow>
+                  </div>
+                ) : (
+                  <TokenWithChain
+                    token={sendToken?.logo_url || ''}
+                    chain={(data as SendTxHistoryItem)?.token?.chain || ''}
+                  />
+                )}
                 <span className="text-15 font-medium text-r-neutral-title-1">
                   {sendTitleTextStr}
                 </span>
@@ -397,7 +433,7 @@ export const PendingTxItem = forwardRef<
 
         <div className="flex items-center gap-4">
           <StatusIcon status={data.status} />
-          <span className={clsx('text-15 font-semibold', statusClassName)}>
+          <span className={clsx('text-15 font-medium', statusClassName)}>
             {statusText}
           </span>
         </div>
