@@ -14,7 +14,7 @@ import { DisplayChainWithWhiteLogo, findChain } from './chain';
 import { isAddress } from 'viem';
 import { isSameAddress } from '@/background/utils';
 import { isObject, isPlainObject } from 'lodash';
-import WatchLogo from 'ui/assets/watch.svg';
+import WatchLogo from 'ui/assets/waitcup.svg';
 
 export function generateAliasName({
   keyringType,

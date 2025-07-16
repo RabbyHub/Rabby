@@ -132,9 +132,6 @@ module.exports = {
         },
       ],
     },
-     boxShadow: {
-      btn: '0px 8px 16px rgba(134, 151, 255, 0.3)',
-    },
     /** @notice configuration here would override the default config above */
     extend: {
       colors: {
