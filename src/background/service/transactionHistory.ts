@@ -17,7 +17,11 @@ import { nanoid } from 'nanoid';
 import { findChain, findChainByID } from '@/utils/chain';
 import { makeTransactionId } from '@/utils/transaction';
 import { sortBy, groupBy } from 'lodash';
-import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
+import {
+  checkIsPendingTxGroup,
+  checkIsSubmittedTxGroup,
+  findMaxGasTx,
+} from '@/utils/tx';
 import eventBus from '@/eventBus';
 import { customTestnetService } from './customTestnet';
 import {
@@ -906,10 +910,12 @@ class TxHistory {
         pendings.push(list[i]);
       } else {
         const item = list[i];
-        maxCompletedNonceByChain[item.chainId] = Math.max(
-          item.nonce,
-          maxCompletedNonceByChain[item.chainId] ?? -1
-        );
+        if (checkIsSubmittedTxGroup(list[i])) {
+          maxCompletedNonceByChain[item.chainId] = Math.max(
+            item.nonce,
+            maxCompletedNonceByChain[item.chainId] ?? -1
+          );
+        }
         completeds.push(item);
       }
     }
