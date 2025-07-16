@@ -429,25 +429,33 @@ export const Main = () => {
   const startDirectSigning = useStartDirectSigning();
 
   const canUseDirectSubmitTx = useMemo(
-    () =>
-      isSupportedChain &&
-      supportedDirectSign(currentAccount?.type || '') &&
-      !receiveToken?.low_credit_score &&
-      !receiveToken?.is_suspicious &&
-      receiveToken?.is_verified !== false &&
-      !isSlippageHigh &&
-      !isSlippageLow &&
-      !showLoss,
+    () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
+    // &&
+    // !receiveToken?.low_credit_score &&
+    // !receiveToken?.is_suspicious &&
+    // receiveToken?.is_verified !== false,
+    // &&
+    // !isSlippageHigh &&
+    // !isSlippageLow &&
+    // !showLoss,
     [
-      isShowMoreVisible,
+      // isShowMoreVisible,
+      // receiveToken,
+      // isSlippageHigh,
+      // isSlippageLow,
+      // showLoss,
       isSupportedChain,
-      receiveToken,
-      isSlippageHigh,
-      isSlippageLow,
-      showLoss,
       currentAccount?.type,
     ]
   );
+
+  const noRiskSign =
+    !receiveToken?.low_credit_score &&
+    !receiveToken?.is_suspicious &&
+    receiveToken?.is_verified !== false &&
+    !isSlippageHigh &&
+    !isSlippageLow &&
+    !showLoss;
 
   const [swapDappOpen, setSwapDappOpen] = useState(false);
 
@@ -460,15 +468,10 @@ export const Main = () => {
       return;
     }
 
-    if (canUseDirectSubmitTx) {
+    if (canUseDirectSubmitTx && noRiskSign) {
       clearExpiredTimer();
       startDirectSigning();
       return;
-    }
-    if (canUseMiniTx) {
-      setIsShowSign(true);
-      clearExpiredTimer();
-      startDirectSigning();
     } else {
       gotoSwap();
     }
@@ -828,7 +831,7 @@ export const Main = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx ? (
+            {canUseDirectSubmitTx && noRiskSign ? (
               <DirectSignToConfirmBtn
                 // disabled
                 key={refreshId}

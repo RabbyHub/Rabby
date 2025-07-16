@@ -549,16 +549,6 @@ const SendToken = () => {
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
 
-  const canUseMiniTx = useMemo(() => {
-    return (
-      [
-        KEYRING_TYPE.SimpleKeyring,
-        KEYRING_TYPE.HdKeyring,
-        KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any) && !chainItem?.isTestnet
-    );
-  }, [chainItem?.isTestnet, currentAccount?.type]);
-
   const startDirectSigning = useStartDirectSigning();
 
   const canUseDirectSubmitTx = useMemo(
@@ -666,12 +656,6 @@ const SendToken = () => {
           'send'
         );
 
-        if (canUseMiniTx && !forceSignPage) {
-          setMiniSignTx(params as Tx);
-          setIsShowMiniSign(true);
-          return;
-        }
-
         const promise = wallet.sendRequest({
           method: 'eth_sendTransaction',
           params: [params],
@@ -683,6 +667,7 @@ const SendToken = () => {
             },
           },
         });
+
         if (isTab) {
           await promise;
           form.setFieldsValue({
@@ -824,6 +809,8 @@ const SendToken = () => {
       setIsShowMiniSign(false);
       setMiniSignTx(null);
       form.setFieldsValue({ amount: '' });
+      // persistPageStateCache();
+      wallet.clearPageStateCache();
       setRefreshId((e) => e + 1);
     }, 500);
   }, [form]);
@@ -1709,12 +1696,12 @@ const SendToken = () => {
               {canUseDirectSubmitTx ? (
                 <DirectSignToConfirmBtn
                   title={t('page.sendToken.sendButton')}
-                  onConfirm={() =>
+                  onConfirm={() => {
                     handleSubmit({
                       to: form.getFieldValue('to'),
                       amount: form.getFieldValue('amount'),
-                    })
-                  }
+                    });
+                  }}
                   disabled={!canSubmit}
                 />
               ) : (

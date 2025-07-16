@@ -913,10 +913,12 @@ export const MiniSignTx = ({
   });
 
   const directSigning = useDirectSigning();
+  const setDirectSigning = useSetDirectSigning();
 
   useEffect(() => {
     if (directSigning && directSubmit && onPreExecError && preExecError) {
       onPreExecError?.();
+      setDirectSigning(false);
     }
   }, [directSigning, directSubmit, preExecError, onPreExecError]);
 

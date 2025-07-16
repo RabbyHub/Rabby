@@ -471,28 +471,21 @@ export const BridgeContent = () => {
   const startDirectSigning = useStartDirectSigning();
 
   const canUseDirectSubmitTx = useMemo(
-    () =>
-      isSupportedChain &&
-      supportedDirectSign(currentAccount?.type || '') &&
-      !toToken?.low_credit_score &&
-      !toToken?.is_suspicious &&
-      toToken?.is_verified !== false &&
-      !isSlippageHigh &&
-      !isSlippageLow &&
-      !showLoss,
-    [
-      btnDisabled,
-      isSupportedChain,
-      toToken,
-      isSlippageHigh,
-      isSlippageLow,
-      showLoss,
-      currentAccount?.type,
-    ]
+    () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
+
+    [isSupportedChain, currentAccount?.type]
   );
 
+  const noRiskSign =
+    !toToken?.low_credit_score &&
+    !toToken?.is_suspicious &&
+    toToken?.is_verified !== false &&
+    !isSlippageHigh &&
+    !isSlippageLow &&
+    !showLoss;
+
   const handleBridge = useMemoizedFn(async () => {
-    if (canUseDirectSubmitTx) {
+    if (canUseDirectSubmitTx && noRiskSign) {
       try {
         setFetchingBridgeQuote(true);
         await runBuildSwapTxsRef.current;
@@ -503,18 +496,6 @@ export const BridgeContent = () => {
       }
       clearExpiredTimer();
       startDirectSigning();
-    } else if (canUseMiniTx) {
-      try {
-        setFetchingBridgeQuote(true);
-        await runBuildSwapTxsRef.current;
-      } catch (error) {
-        console.error('runBuildSwapTxsRef', error);
-      } finally {
-        setFetchingBridgeQuote(false);
-      }
-
-      setIsShowSign(true);
-      clearExpiredTimer();
     } else {
       gotoBridge();
     }
@@ -748,7 +729,7 @@ export const BridgeContent = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx ? (
+            {canUseDirectSubmitTx && noRiskSign ? (
               <DirectSignToConfirmBtn
                 disabled={btnDisabled || !isSupportedChain}
                 title={t('page.bridge.title')}
