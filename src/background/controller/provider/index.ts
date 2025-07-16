@@ -6,10 +6,13 @@ import {
   sessionService,
   keyringService,
   preferenceService,
+  permissionService,
 } from 'background/service';
 
 import rpcFlow from './rpcFlow';
 import internalMethod from './internalMethod';
+import { Account } from '@/background/service/preference';
+import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 
 const IGNORE_CHECK = ['wallet_importAddress'];
 
@@ -21,6 +24,32 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
   const {
     data: { method },
   } = req;
+
+  const origin = req.session?.origin || req.origin;
+  let account: Account | undefined = undefined;
+  if (preferenceService.getPreference('isEnabledDappAccount')) {
+    if (origin) {
+      if (origin === INTERNAL_REQUEST_ORIGIN) {
+        account =
+          req.account || preferenceService.getCurrentAccount() || undefined;
+      } else {
+        const site = permissionService.getConnectedSite(origin);
+        if (site?.isConnected) {
+          account =
+            site.account || preferenceService.getCurrentAccount() || undefined;
+        }
+      }
+    }
+  } else {
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      account =
+        req.account || preferenceService.getCurrentAccount() || undefined;
+    } else {
+      account = preferenceService.getCurrentAccount() || undefined;
+    }
+  }
+
+  req.account = account;
 
   if (internalMethod[method]) {
     return internalMethod[method](req);
