@@ -50,6 +50,8 @@ import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from '../SendToken/components/SendShowMore';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ToAddressCard } from '../SendToken';
+import { PendingTxItem } from '../Swap/Component/PendingTxItem';
+import { SendTxHistoryItem } from '@/background/service/transactionHistory';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -241,12 +243,28 @@ const SendNFT = () => {
           ].join('|'),
         });
 
+        const params = getNFTTransferParams(amount);
+        wallet.addCacheHistoryData(
+          `${chain}-${params.data || '0x'}`,
+          {
+            address: currentAccount!.address,
+            chainId: findChainByEnum(chain)?.id || 0,
+            from: currentAccount!.address,
+            to: toAddress,
+            token: nftItem,
+            amount: Number(amount),
+            status: 'pending',
+            createdAt: Date.now(),
+            isNft: true,
+          } as SendTxHistoryItem,
+          'send'
+        );
+
         if (canUseDirectSubmitTx && !forceSignPage) {
           startDirectSigning();
           return;
         }
 
-        const params = getNFTTransferParams(amount);
         if (canUseMiniTx && !forceSignPage) {
           setMiniSignTx(params as Tx);
           setIsShowMiniSign(true);
@@ -284,7 +302,7 @@ const SendNFT = () => {
     setTimeout(() => {
       setIsShowMiniSign(false);
       setMiniSignTx(null);
-      form.setFieldsValue({ amount: 1 });
+      form.setFieldsValue({ amount: 0 });
       setRefreshId((e) => e + 1);
     }, 500);
   }, [form]);
@@ -510,6 +528,11 @@ const SendNFT = () => {
                   </div>
                 </div>
               </div>
+              {!canSubmit && (
+                <div className="mt-16 mb-16">
+                  <PendingTxItem type="send" />
+                </div>
+              )}
               {chainInfo?.serverId && canUseDirectSubmitTx ? (
                 <div className="pb-20">
                   <ShowMoreOnSend
