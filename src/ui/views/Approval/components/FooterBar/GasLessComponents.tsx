@@ -55,11 +55,18 @@ export function GasLessNotEnough({
           : 'bg-r-neutral-card2  mt-[15px]'
       )}
     >
-      <RcIconGas
-        viewBox="0 0 16 16"
-        className="w-16 h-16 mr-4 text-r-neutral-title-1"
-      />
-      <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
+      {!directSubmit && (
+        <RcIconGas
+          viewBox="0 0 16 16"
+          className="w-16 h-16 mr-4 text-r-neutral-title-1"
+        />
+      )}
+      <span
+        className={clsx(
+          'relative flex-1  inline-flex gap-4 items-center',
+          directSubmit ? 'text-r-red-default' : 'text-r-neutral-title1'
+        )}
+      >
         {t('page.signFooterBar.gasless.notEnough')}
       </span>
 
@@ -212,10 +219,10 @@ function FreeGasReady({
   return (
     <span
       className={clsx(
-        'gas-ready security-level-tip text-transparent h-[46px]',
+        'gas-ready security-level-tip text-transparent',
         directSubmit
-          ? 'mt-8 bg-r-blue-light-1 border border-solid border-rabby-blue-default'
-          : 'bg-transparent py-0 pt-[18px] '
+          ? 'mt-8 bg-r-blue-light-1 border border-solid border-rabby-blue-default h-[40px]'
+          : 'bg-transparent py-0 pt-[18px] h-[46px]'
       )}
       style={
         freeGasText || directSubmit
@@ -300,16 +307,19 @@ export function GasLessActivityToSign({
           {gasLessConfig?.logo ? (
             <img src={gasLessConfig?.logo} className="w-16 h-16 mr-4" />
           ) : (
-            <RcIconGas
-              viewBox="0 0 16 16"
-              className="w-16 h-16 mr-4 text-r-neutral-title-1"
-            />
+            !directSubmit && (
+              <RcIconGas
+                viewBox="0 0 16 16"
+                className="w-16 h-16 mr-4 text-r-neutral-title-1"
+              />
+            )
           )}
 
           <span
             className={clsx(
               'flex-1',
-              themeColor ? '' : 'text-r-neutral-title-1'
+              themeColor ? '' : 'text-r-neutral-title-1',
+              directSubmit && 'text-r-red-default'
             )}
             style={{
               color: themeColor,
@@ -496,11 +506,18 @@ export function GasAccountTips({
           : 'bg-r-neutral-card2 mt-[15px]'
       )}
     >
-      <RcIconGasAccountCC
-        viewBox="0 0 20 20"
-        className="w-16 h-16 mr-4 text-r-neutral-foot"
-      />
-      <span className="relative flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
+      {!directSubmit && (
+        <RcIconGasAccountCC
+          viewBox="0 0 20 20"
+          className="w-16 h-16 mr-4 text-r-neutral-foot"
+        />
+      )}
+      <span
+        className={clsx(
+          'relative flex-1  inline-flex gap-4 items-center',
+          directSubmit ? 'text-r-red-default' : 'text-r-neutral-title1'
+        )}
+      >
         {tip}
       </span>
 

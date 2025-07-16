@@ -43,9 +43,10 @@ import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { Tx } from 'background/service/openapi';
 import {
   DirectSubmitProvider,
+  supportedDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from '../SendToken/components/SendShowMore';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ToAddressCard } from '../SendToken';
@@ -126,9 +127,7 @@ const SendNFT = () => {
   const canUseDirectSubmitTx = useMemo(
     () =>
       canSubmit &&
-      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
-        (currentAccount?.type || '') as any
-      ) &&
+      supportedDirectSign(currentAccount?.type || '') &&
       !chainInfo?.isTestnet,
     [canSubmit, chainInfo?.isTestnet, currentAccount?.type]
   );
@@ -526,7 +525,7 @@ const SendNFT = () => {
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] flex justify-center">
               {canUseDirectSubmitTx ? (
-                <ToConfirmBtn
+                <DirectSignToConfirmBtn
                   title={t('page.sendToken.sendButton')}
                   onConfirm={() =>
                     handleSubmit({

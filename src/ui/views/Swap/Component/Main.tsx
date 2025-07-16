@@ -50,8 +50,10 @@ import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
-import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import {
+  supportedDirectSign,
+  useMiniApprovalGas,
   useSetDirectSigning,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -428,11 +430,8 @@ export const Main = () => {
 
   const canUseDirectSubmitTx = useMemo(
     () =>
-      isShowMoreVisible &&
       isSupportedChain &&
-      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
-        (currentAccount?.type || '') as any
-      ) &&
+      supportedDirectSign(currentAccount?.type || '') &&
       !receiveToken?.low_credit_score &&
       !receiveToken?.is_suspicious &&
       receiveToken?.is_verified !== false &&
@@ -571,38 +570,6 @@ export const Main = () => {
       setShowMoreOpen(true);
     }
   }, [noQuote]);
-
-  useDebounce(
-    () => {
-      if (
-        !isWrapToken &&
-        Number(inputAmount) > 0 &&
-        inSufficientCanGetQuote &&
-        amountAvailable &&
-        !quoteLoading &&
-        !!payToken &&
-        !!receiveToken &&
-        activeProvider &&
-        Number(slippage) >= Number(SWAP_SLIPPAGE[1])
-      ) {
-        setShowMoreOpen(true);
-      }
-    },
-    10,
-    [
-      showMoreVisible,
-      isWrapToken,
-      inputAmount,
-      inSufficientCanGetQuote,
-      amountAvailable,
-      payToken,
-      receiveToken,
-      activeProvider,
-      autoSlippage,
-      activeProvider,
-      quoteLoading,
-    ]
-  );
 
   const setRabbyFeeVisible = useSetRabbyFee();
 
@@ -862,7 +829,7 @@ export const Main = () => {
             }
           >
             {canUseDirectSubmitTx ? (
-              <ToConfirmBtn
+              <DirectSignToConfirmBtn
                 // disabled
                 key={refreshId}
                 disabled={swapBtnDisabled}

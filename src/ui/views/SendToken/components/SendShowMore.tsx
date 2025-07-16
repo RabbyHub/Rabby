@@ -26,7 +26,7 @@ export const ShowMoreOnSend = ({
       <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
-            'flex items-center opacity-30',
+            'flex items-center opacity-50',
             'cursor-pointer',
             'text-r-neutral-foot text-12'
           )}
@@ -49,7 +49,7 @@ export const ShowMoreOnSend = ({
         <DirectSignGasInfo
           supportDirectSign
           loading={false}
-          openShowMore={noop}
+          openShowMore={setShowGasFeeError}
           chainServeId={chainServeId}
           noQuote={false}
         />
@@ -61,7 +61,7 @@ export const ShowMoreOnSend = ({
             <DirectSignGasInfo
               supportDirectSign
               loading={false}
-              openShowMore={setShowGasFeeError}
+              openShowMore={noop}
               chainServeId={chainServeId}
               noQuote={false}
             />

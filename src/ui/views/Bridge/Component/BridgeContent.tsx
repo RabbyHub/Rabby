@@ -43,8 +43,11 @@ import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
-import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
-import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import {
+  supportedDirectSign,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from '../../Swap/Component/PendingTxItem';
 
 const isTab = getUiType().isTab;
@@ -469,11 +472,8 @@ export const BridgeContent = () => {
 
   const canUseDirectSubmitTx = useMemo(
     () =>
-      !btnDisabled &&
       isSupportedChain &&
-      [KEYRING_TYPE.SimpleKeyring, KEYRING_TYPE.HdKeyring].includes(
-        (currentAccount?.type || '') as any
-      ) &&
+      supportedDirectSign(currentAccount?.type || '') &&
       !toToken?.low_credit_score &&
       !toToken?.is_suspicious &&
       toToken?.is_verified !== false &&
@@ -749,7 +749,7 @@ export const BridgeContent = () => {
             }
           >
             {canUseDirectSubmitTx ? (
-              <ToConfirmBtn
+              <DirectSignToConfirmBtn
                 disabled={btnDisabled || !isSupportedChain}
                 title={t('page.bridge.title')}
                 onConfirm={handleBridge}
