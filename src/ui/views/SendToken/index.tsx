@@ -551,9 +551,11 @@ const SendToken = () => {
       const arr = Object.keys(addressDesc.contract || {}).map((chain) =>
         chain.toLowerCase()
       );
-      sendToOtherChainContract = !arr.includes(
-        chainItem.serverId.toLowerCase()
-      );
+      if (arr.length > 0) {
+        sendToOtherChainContract = !arr.includes(
+          chainItem.serverId.toLowerCase()
+        );
+      }
     }
     return (
       canSubmit &&
@@ -678,7 +680,7 @@ const SendToken = () => {
             amount: '',
           });
         } else {
-          window.close();
+          // window.close();
         }
       } catch (e) {
         message.error(e.message);
