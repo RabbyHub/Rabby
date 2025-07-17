@@ -1223,7 +1223,8 @@
         "importType": "Imported by {{type}}",
         "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
         "chain": " chain, ",
-        "chainEnd": " chain"
+        "chainEnd": " chain",
+        "appChainTips": "Hyperliquid Account not included in chart"
       },
       "recentConnection": {
         "disconnected": "Disconnected",

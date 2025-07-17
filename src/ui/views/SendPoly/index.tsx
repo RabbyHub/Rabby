@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory, useLocation } from 'react-router-dom';
 import { isValidAddress } from '@ethereumjs/util';
-import PQueue from 'p-queue';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Button, message } from 'antd';
@@ -89,9 +88,6 @@ const AnimatedInputWrapper = styled.div`
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
 
-const unimportedBalancesCache: Record<string, number> = {};
-const queue = new PQueue({ interval: 1000, intervalCap: 8, concurrency: 8 }); // 每秒最多5个
-
 const SendPoly = () => {
   const history = useHistory();
   const { search } = useLocation();
@@ -109,9 +105,6 @@ const SendPoly = () => {
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
   const [selectedAddressType, setSelectedAddressType] = useState('');
-  const [unimportedBalances, setUnimportedBalances] = useState<
-    Record<string, number>
-  >({});
 
   const importWhitelistAccounts = useMemo(() => {
     const groupAccounts = groupBy(accountsList, (item) =>
@@ -130,27 +123,17 @@ const SendPoly = () => {
     return query.get('nftItem') || null;
   }, [search]);
 
-  const unimportedWhitelistAccounts = useMemo(() => {
-    return whitelist
-      ?.filter(
-        (w) => !importWhitelistAccounts.some((a) => isSameAddress(w, a.address))
-      )
-      .map((w) => padWatchAccount(w));
-  }, [importWhitelistAccounts, whitelist]);
-
   const allAccounts = useMemo(() => {
-    return [
-      ...importWhitelistAccounts,
-      ...unimportedWhitelistAccounts.map((acc) => ({
-        ...acc,
-        balance: unimportedBalances[acc.address],
-      })),
-    ].sort((a, b) => (b.balance || 0) - (a.balance || 0));
-  }, [
-    importWhitelistAccounts,
-    unimportedWhitelistAccounts,
-    unimportedBalances,
-  ]);
+    return whitelist.map((addr) => {
+      const account = importWhitelistAccounts.find((a) =>
+        isSameAddress(a.address, addr)
+      );
+      if (account) {
+        return account;
+      }
+      return padWatchAccount(addr);
+    });
+  }, [importWhitelistAccounts]);
 
   const fetchData = async () => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
@@ -230,60 +213,6 @@ const SendPoly = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (
-      !unimportedWhitelistAccounts ||
-      unimportedWhitelistAccounts.length === 0
-    ) {
-      return;
-    }
-    const fetchBalances = async () => {
-      queue.clear();
-      await Promise.all(
-        unimportedWhitelistAccounts.map((acc) =>
-          queue.add(async () => {
-            if (cancelled) {
-              return;
-            }
-            if (unimportedBalancesCache[acc.address] !== undefined) {
-              // 已有缓存，直接set
-              setUnimportedBalances((prev) => ({
-                ...prev,
-                [acc.address]: unimportedBalancesCache[acc.address],
-              }));
-              return;
-            }
-            try {
-              const res = await wallet.getInMemoryAddressBalance(acc.address);
-              const balance = res?.total_usd_value || 0;
-              unimportedBalancesCache[acc.address] = balance;
-              if (!cancelled) {
-                setUnimportedBalances((prev) => ({
-                  ...prev,
-                  [acc.address]: balance,
-                }));
-              }
-            } catch (e) {
-              unimportedBalancesCache[acc.address] = 0;
-              if (!cancelled) {
-                setUnimportedBalances((prev) => ({
-                  ...prev,
-                  [acc.address]: 0,
-                }));
-              }
-            }
-          })
-        )
-      );
-    };
-    fetchBalances();
-    return () => {
-      cancelled = true;
-      queue.clear();
-    };
-  }, [unimportedWhitelistAccounts, wallet]);
 
   return (
     <FullscreenContainer className="h-[700px]">
@@ -370,11 +299,11 @@ const SendPoly = () => {
                       </div>
                       <AccountItem
                         className="group whitelist-item"
-                        balance={
-                          item.balance || unimportedBalances[item.address] || 0
-                        }
+                        balance={0}
                         showWhitelistIcon
                         allowEditAlias
+                        hideBalance
+                        longEllipsis
                         address={item.address}
                         alias={ellipsisAddress(item.address)}
                         type={item.type}
