@@ -1224,7 +1224,7 @@
         "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
         "chain": " chain, ",
         "chainEnd": " chain",
-        "appChainTips": "Hyperliquid Account not included in chart"
+        "appChainTips": "Hyperliquid Account not included"
       },
       "recentConnection": {
         "disconnected": "Disconnected",
