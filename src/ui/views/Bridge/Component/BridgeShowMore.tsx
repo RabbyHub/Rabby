@@ -495,7 +495,10 @@ export const DirectSignGasInfo = ({
                   {' · '}
 
                   {miniApprovalGas.gasMethod === 'gasAccount'
-                    ? calcGasAccountUsd(gasAccountCost?.total_cost || '0')
+                    ? calcGasAccountUsd(
+                        (gasAccountCost?.estimate_tx_cost || 0) +
+                          (gasAccountCost?.gas_cost || 0)
+                      )
                     : miniApprovalGas!.gasCostUsdStr}
                 </div>
                 {miniApprovalGas.gasMethod === 'gasAccount' ? (
