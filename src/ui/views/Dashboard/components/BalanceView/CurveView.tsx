@@ -46,13 +46,13 @@ const CurveGlobalStyle = createGlobalStyle`
 
 const AppChainTips = styled.div`
   position: absolute;
-  bottom: 12px;
+  bottom: 6px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   font-size: 11px;
-  opacity: 50%;
+  opacity: 70%;
   pointer-events: none;
 `;
 

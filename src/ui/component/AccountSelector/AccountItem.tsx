@@ -51,12 +51,20 @@ export interface AddressItemProps {
 
 const HoverShowEditPenWrapper = styled.div`
   position: relative;
-  .edit-pen {
+  .edit-pen,
+  .copy-icon {
     opacity: 0;
   }
   &:hover {
     .edit-pen {
       opacity: 1;
+    }
+    .copy-icon {
+      opacity: 1;
+      color: var(--r-neutral-body) !important;
+      &:hover {
+        color: var(--r-blue-default) !important;
+      }
     }
   }
 `;
@@ -309,7 +317,7 @@ export const AccountItem = memo(
                       }}
                       className={`
                         edit-pen
-                        text-r-neutral-foot transition-opacity duration-100 cursor-pointer
+                        text-r-neutral-body transition-opacity duration-100 cursor-pointer
                         hover:text-r-blue-default
                       `}
                     >
@@ -331,7 +339,7 @@ export const AccountItem = memo(
 
             <CopyChecked
               addr={address}
-              className={clsx('w-[14px] h-[14px] ml-2 text-14')}
+              className={clsx('copy-icon w-[14px] h-[14px] ml-4 text-14')}
             />
             {!hideBalance && (
               <span className="ml-[12px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
