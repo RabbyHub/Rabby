@@ -388,16 +388,6 @@ export function VirtualTable<RecordType extends object>({
     [isLoading]
   );
 
-  // // leave here for debug unexpected re-render
-  // useEffect(() => {
-  //   if (!appIsProd) return ;
-  //   console.log('VirtualTable mounted');
-
-  //   return () => {
-  //     console.log('VirtualTable unmounted');
-  //   };
-  // }, []);
-
   return (
     <ConfigProvider renderEmpty={renderEmpty}>
       <ResizeObserver

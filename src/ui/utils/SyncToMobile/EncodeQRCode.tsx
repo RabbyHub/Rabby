@@ -16,8 +16,6 @@ export const EncodeQRCode: React.FC<{
   React.useMemo(() => {
     const result = new UREncoder(UR.from(input), 200);
 
-    console.log('origin size', result.fragmentsLength, result.messageLength);
-
     return result;
   }, [input]);
 
@@ -26,8 +24,6 @@ export const EncodeQRCode: React.FC<{
       new UR(Buffer.from(gzipSync(strToU8(input))), 'bytes'),
       200
     );
-
-    console.log('fflate  size', result.fragmentsLength, result.messageLength);
 
     return result;
   }, [input]);

@@ -118,7 +118,6 @@ const TokenItemPercent: React.FC<Props> = ({ item }) => {
 };
 
 export const SummaryItem: React.FC<Props> = ({ item }) => {
-  console.log(item);
   return (
     <TRow
       className={clsx(

@@ -7,7 +7,6 @@ export const getFirstPreferredLangCode = async () => {
 
   try {
     userPreferredLocaleCodes = await browser.i18n.getAcceptLanguages();
-    console.log('userPreferredLocaleCodes', userPreferredLocaleCodes);
   } catch (e) {
     userPreferredLocaleCodes = [];
   }
