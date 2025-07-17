@@ -45,6 +45,8 @@ export interface AddressItemProps {
   disabled?: boolean;
   tmpCexInfo?: Exchange;
   allowEditAlias?: boolean;
+  hideBalance?: boolean;
+  longEllipsis?: boolean;
 }
 
 const HoverShowEditPenWrapper = styled.div`
@@ -75,7 +77,9 @@ export const AccountItem = memo(
     showWhitelistIcon,
     disabled = false,
     allowEditAlias = false,
+    hideBalance,
     tmpCexInfo,
+    longEllipsis,
   }: AddressItemProps) => {
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
@@ -321,6 +325,7 @@ export const AccountItem = memo(
             <AddressViewer
               address={address?.toLowerCase()}
               showArrow={false}
+              longEllipsis={longEllipsis}
               className={clsx('text-[13px] text-r-neutral-body leading-[16px]')}
             />
 
@@ -328,9 +333,11 @@ export const AccountItem = memo(
               addr={address}
               className={clsx('w-[14px] h-[14px] ml-2 text-14')}
             />
-            <span className="ml-[12px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
-              ${splitNumberByStep(balance?.toFixed(2))}
-            </span>
+            {!hideBalance && (
+              <span className="ml-[12px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
+                ${splitNumberByStep(balance?.toFixed(2))}
+              </span>
+            )}
           </div>
         </div>
         {(!disabled && rightIcon) || isSelected ? (

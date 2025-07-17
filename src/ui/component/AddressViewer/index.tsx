@@ -12,6 +12,7 @@ interface AddressViewProps {
   showImportIcon?: boolean;
   index?: number;
   showIndex?: boolean;
+  longEllipsis?: boolean;
 }
 
 export default ({
@@ -22,6 +23,7 @@ export default ({
   className = 'normal',
   index = -1,
   showIndex = false,
+  longEllipsis = false,
 }: AddressViewProps) => {
   return (
     <div
@@ -37,7 +39,9 @@ export default ({
         {ellipsis
           ? `${address
               ?.toLowerCase()
-              .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`
+              .slice(0, longEllipsis ? 8 : 6)}...${address
+              ?.toLowerCase()
+              .slice(longEllipsis ? -6 : -4)}`
           : address?.toLowerCase()}
       </div>
       {showArrow && (

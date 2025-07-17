@@ -15,6 +15,9 @@ import { coerceFloat, sleep } from '../utils';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
 import { requestOpenApiMultipleNets } from '../utils/openapi';
 
+interface TotalBalanceWithEvmUsdValue extends TotalBalanceResponse {
+  evmUsdValue?: number;
+}
 export interface AccountState {
   currentAccount: null | Account;
   /**
@@ -29,7 +32,7 @@ export interface AccountState {
     curvePoints: CurvePointCollection;
   };
   balanceAboutCacheMap: {
-    balanceMap: Record<string, TotalBalanceResponse>;
+    balanceMap: Record<string, TotalBalanceWithEvmUsdValue>;
     curvePointsMap: Record<string, CurvePointCollection>;
   };
   matteredChainBalances: {
