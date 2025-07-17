@@ -2,26 +2,19 @@ import { ReactComponent as RcIconSwapHistory } from '@/ui/assets/swap/history.sv
 
 import { PageHeader } from '@/ui/component';
 import React, { useCallback, useState } from 'react';
-import {
-  usePollSwapPendingNumber,
-  useRabbyFee,
-  useSetRabbyFee,
-} from '../hooks';
+import { useRabbyFee, useSetRabbyFee } from '../hooks';
 import { SwapTxHistory } from './History';
 import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
-import { PendingTx } from '../../Bridge/Component/PendingTx';
 import { RabbyFeePopup } from './RabbyFeePopup';
 import { useHistory } from 'react-router-dom';
-import { getUiType, openInternalPageInTab } from '@/ui/utils';
+import { getUiType } from '@/ui/utils';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 const isTab = getUiType().isTab;
 
 export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
   const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
-
-  const loadingNumber = usePollSwapPendingNumber(5000);
 
   const { visible, feeDexDesc, dexName } = useRabbyFee();
   const setRabbyFeeVisible = useSetRabbyFee();
@@ -61,14 +54,10 @@ export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
                 <RcIconFullscreen />
               </div>
             )}
-            {loadingNumber ? (
-              <PendingTx number={loadingNumber} onClick={openHistory} />
-            ) : (
-              <RcIconSwapHistory
-                className="cursor-pointer"
-                onClick={openHistory}
-              />
-            )}
+            <RcIconSwapHistory
+              className="cursor-pointer"
+              onClick={openHistory}
+            />
           </div>
         }
       >

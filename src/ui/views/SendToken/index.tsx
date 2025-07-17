@@ -552,6 +552,7 @@ const SendToken = () => {
         chain.toLowerCase()
       );
       if (arr.length > 0) {
+        // is contract address
         sendToOtherChainContract = !arr.includes(
           chainItem.serverId.toLowerCase()
         );
@@ -563,7 +564,7 @@ const SendToken = () => {
       !chainItem?.isTestnet &&
       !sendToOtherChainContract
     );
-  }, [canSubmit, chainItem, currentAccount?.type, addressDesc]);
+  }, [canSubmit, chainItem?.isTestnet, currentAccount?.type, addressDesc]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
