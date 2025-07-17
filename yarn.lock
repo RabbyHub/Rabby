@@ -4742,10 +4742,10 @@
     gridplus-sdk "3.2.0"
     rlp "^3.0.0"
 
-"@rabby-wallet/eth-simple-keyring@5.1.0-beta.1", "@rabby-wallet/eth-simple-keyring@^5.0.1":
-  version "5.1.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.1.0-beta.1.tgz#5007debf747f7d73d621ddc03d4036cb0306c992"
-  integrity sha512-59+YPSkoms1tVYzN0Q6UXn+7QUjDpVRLApD5Worp3etBFfv0iZ02zBUvHGXmssWvd6+bpqqbJdlmE5X10vjRYw==
+"@rabby-wallet/eth-simple-keyring@5.1.0", "@rabby-wallet/eth-simple-keyring@^5.0.1":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.1.0.tgz#7b24466980a5271d87836f6f90c121298f02651c"
+  integrity sha512-VheEGr1bIjsFcxw7bGVIdfGLAwT5FzMvy1M7NrxW+4zROvNsLSVtZWdfo9nLcFbcXH+Xrd0KMX12Xny8F1co5w==
   dependencies:
     "@ethereumjs/util" "^9.0.0"
     "@metamask/eth-sig-util" "8.2.0"
