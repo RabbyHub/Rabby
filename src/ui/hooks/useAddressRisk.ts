@@ -48,6 +48,7 @@ export const useAddressRisks = (
   >();
   const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
   const [hasNoSend, setHasNoSend] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [loadingHasTransfer, setLoadingHasTransfer] = useState(true);
 
   const risks = useMemo(() => {
@@ -116,6 +117,7 @@ export const useAddressRisks = (
       setAddressDesc(undefined);
       setLoadingAddrDesc(true);
       setHasNoSend(false);
+      setHasError(false);
       setLoadingHasTransfer(true);
     }
   }, [address]);
@@ -172,6 +174,7 @@ export const useAddressRisks = (
     riskGetRef.current = true;
     (async () => {
       setLoadingHasTransfer(true);
+      setHasError(false);
       let hasSended = false;
       let hasError = false;
       try {
@@ -212,8 +215,10 @@ export const useAddressRisks = (
         if (!hasSended && !hasError) {
           setHasNoSend(true);
         }
+        setHasError(hasError);
       } catch (error) {
         console.error('check transfer timeout or error', error);
+        setHasError(true);
         queue.clear();
       } finally {
         setLoadingHasTransfer(false);
@@ -228,6 +233,7 @@ export const useAddressRisks = (
     loading: loadingHasTransfer || loadingAddrDesc,
     loadingAddrDesc,
     loadingHasTransfer,
-    hasNotRisk: !risks.length && !loadingHasTransfer && !loadingAddrDesc,
+    hasNotRisk:
+      !risks.length && !loadingHasTransfer && !loadingAddrDesc && !hasError,
   };
 };
