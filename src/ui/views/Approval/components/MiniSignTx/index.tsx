@@ -1305,6 +1305,14 @@ export const MiniApproval = ({
     }
   }, [currentAccount?.type, isSigningLoading]);
 
+  const handleClose = useCallback(() => {
+    onClose?.();
+    setInnerVisible(false);
+    setDirectSigning(false);
+  }, [onClose]);
+
+  console.log('status', status);
+
   return (
     <>
       <Popup
@@ -1312,7 +1320,7 @@ export const MiniApproval = ({
         height="fit-content"
         className="is-support-darkmode"
         visible={innerVisible}
-        onClose={onClose}
+        onClose={handleClose}
         maskClosable={status === 'idle'}
         closable={false}
         bodyStyle={{
@@ -1346,7 +1354,9 @@ export const MiniApproval = ({
         ) : null}
       </Popup>
 
-      {directSubmit && canUseDirectSubmitTx ? (
+      {directSubmit &&
+      canUseDirectSubmitTx &&
+      currentAccount?.type !== KEYRING_CLASS.HARDWARE.LEDGER ? (
         <Modal
           transitionName=""
           visible={isSigningLoading}
