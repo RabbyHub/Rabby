@@ -35,12 +35,7 @@ import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
-import {
-  findChain,
-  findChainByEnum,
-  findChainByID,
-  makeTokenFromChain,
-} from '@/utils/chain';
+import { findChain, findChainByID } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import {
   checkIfTokenBalanceEnough,
@@ -89,7 +84,7 @@ const DEFAULT_TOKEN = {
   optimized_symbol: 'ETH',
   decimals: 18,
   logo_url:
-    'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+    'https://static.debank.com/image/coin/logo_url/eth/6443cdccced33e204d90cb723c632917.png',
   price: 0,
   is_verified: true,
   is_core: true,
@@ -227,7 +222,7 @@ const SendToken = () => {
   } | null>(null);
 
   const [inited, setInited] = useState(false);
-  const [initLoading, setInitLoading] = useState(true);
+  const [initLoading, setInitLoading] = useState(false);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState<string | null>(null);
@@ -309,7 +304,6 @@ const SendToken = () => {
   const {
     targetAccount,
     addressDesc,
-    isTokenSupport,
     loading: loadingToAddressDesc,
   } = useAddressInfo(toAddress, {
     type: toAddressType,
@@ -535,15 +529,26 @@ const SendToken = () => {
   }, [miniSignTx]);
 
   const canUseMiniTx = useMemo(() => {
-    return (
+    const keyringTypeCanUseMiniTx =
       [
         KEYRING_TYPE.SimpleKeyring,
         KEYRING_TYPE.HdKeyring,
         KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any) && !chainItem?.isTestnet
-    );
-  }, [chainItem?.isTestnet, currentAccount?.type]);
-
+      ].includes((currentAccount?.type || '') as any) && !chainItem?.isTestnet;
+    let sendToOtherChainContract = false;
+    if (addressDesc && chainItem) {
+      const arr = Object.keys(addressDesc.contract || {}).map((chain) =>
+        chain.toLowerCase()
+      );
+      if (arr.length > 0) {
+        // is contract address
+        sendToOtherChainContract = !arr.includes(
+          chainItem.serverId.toLowerCase()
+        );
+      }
+    }
+    return keyringTypeCanUseMiniTx && !sendToOtherChainContract;
+  }, [chainItem, currentAccount?.type, addressDesc]);
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({ amount }: FormSendToken) => {
       if (!currentToken) {
@@ -1226,29 +1231,8 @@ const SendToken = () => {
           currentToken: nativeToken || currentToken,
         });
       } else {
-        let tokenFromOrder: TokenItem | null = null;
+        let needLoadToken: TokenItem | null = currentToken;
 
-        const lastTimeToken = await wallet.getLastTimeSendToken(
-          account.address
-        );
-        if (
-          !(
-            lastTimeToken &&
-            findChain({
-              serverId: lastTimeToken.chain,
-            })
-          )
-        ) {
-          const { firstChain } = await dispatch.chains.getOrderedChainList({
-            supportChains: undefined,
-          });
-          tokenFromOrder = firstChain ? makeTokenFromChain(firstChain) : null;
-        }
-
-        let needLoadToken: TokenItem =
-          lastTimeToken || tokenFromOrder || currentToken;
-
-        let cachesState;
         if (await wallet.hasPageStateCache()) {
           const cache = await wallet.getPageStateCache();
           if (cache?.path === history.location.pathname) {
@@ -1264,7 +1248,6 @@ const SendToken = () => {
               );
             }
             if (cache.states.currentToken) {
-              cachesState = cache.states;
               needLoadToken = cache.states.currentToken;
             }
             if (cache.states.safeInfo) {
@@ -1272,56 +1255,8 @@ const SendToken = () => {
             }
           }
         }
-
+        if (!needLoadToken) return;
         // check the recommended token is support for address
-        const {
-          isCex,
-          isCexSupport,
-          isContractAddress,
-          contractSupportChain,
-        } = await isTokenSupport(needLoadToken.id, needLoadToken.chain);
-
-        // CEX CHECK: 交易所地址但不支持该token，默认eth:eth
-        if (isCex && !isCexSupport) {
-          needLoadToken = DEFAULT_TOKEN;
-          // reset formValues change
-          if (cachesState) {
-            handleFormValuesChange(cachesState.values, form.getFieldsValue(), {
-              token: DEFAULT_TOKEN,
-              isInitFromCache: true,
-            });
-          }
-          // CONTRACT CHECK: 合约地址但合约不支持该token，默认第一个支持的链的原生代币
-        } else if (
-          isContractAddress &&
-          !contractSupportChain.includes(needLoadToken.chain)
-        ) {
-          const chainList = contractSupportChain
-            .map((chain) => findChain({ serverId: chain })?.enum)
-            .filter((chainEnum): chainEnum is CHAINS_ENUM => !!chainEnum);
-          let { firstChain } = await dispatch.chains.getOrderedChainList({
-            supportChains: chainList,
-          });
-          const noSortFirstChain = findChainByEnum(chainList[0]);
-          if (!firstChain && noSortFirstChain) {
-            firstChain = noSortFirstChain;
-          }
-          if (firstChain) {
-            const targetToken = makeTokenFromChain(firstChain);
-            needLoadToken = targetToken;
-            // reset formValues change
-            if (cachesState) {
-              handleFormValuesChange(
-                cachesState.values,
-                form.getFieldsValue(),
-                {
-                  token: targetToken,
-                  isInitFromCache: true,
-                }
-              );
-            }
-          }
-        }
         setCurrentToken(needLoadToken);
         if (chainItem && needLoadToken.chain !== chainItem.serverId) {
           const target = findChain({ serverId: needLoadToken.chain });
