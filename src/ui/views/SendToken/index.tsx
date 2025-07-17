@@ -1742,16 +1742,14 @@ const SendToken = () => {
             trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
           }}
           onClose={() => {
+            setMiniSignTx(null);
             setRefreshId((e) => e + 1);
             setIsShowMiniSign(false);
-            setTimeout(() => {
-              setMiniSignTx(null);
-            }, 500);
           }}
           onReject={() => {
+            setMiniSignTx(null);
             setRefreshId((e) => e + 1);
             setIsShowMiniSign(false);
-            setMiniSignTx(null);
           }}
           onResolve={handleMiniSignResolve}
           onPreExecError={() => {

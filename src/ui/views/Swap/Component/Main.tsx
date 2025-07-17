@@ -375,28 +375,6 @@ export const Main = () => {
     receiveToken: receiveToken,
   });
 
-  const canUseMiniTx = useMemo(
-    () =>
-      [
-        KEYRING_TYPE.SimpleKeyring,
-        KEYRING_TYPE.HdKeyring,
-        KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any) &&
-      !receiveToken?.low_credit_score &&
-      !receiveToken?.is_suspicious &&
-      receiveToken?.is_verified !== false &&
-      !isSlippageHigh &&
-      !isSlippageLow &&
-      !showLoss,
-    [
-      receiveToken,
-      isSlippageHigh,
-      isSlippageLow,
-      showLoss,
-      currentAccount?.type,
-    ]
-  );
-
   const swapBtnDisabled = isSupportedChain
     ? quoteLoading ||
       !payToken ||
@@ -479,12 +457,12 @@ export const Main = () => {
 
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
-      if (canUseMiniTx) {
+      if (canUseDirectSubmitTx) {
         mutateTxs([]);
         runBuildSwapTxs();
       }
     }
-  }, [swapBtnDisabled, canUseMiniTx, activeProvider]);
+  }, [swapBtnDisabled, canUseDirectSubmitTx, activeProvider]);
 
   const history = useHistory();
 

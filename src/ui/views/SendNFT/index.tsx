@@ -78,7 +78,7 @@ const SendNFT = () => {
 
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
-  const [, setRefreshId] = useState(0);
+  const [freshId, setRefreshId] = useState(0);
 
   const chainInfo = useMemo(() => {
     return findChain({ enum: chain });
@@ -113,16 +113,6 @@ const SendNFT = () => {
   const miniSignTxs = useMemo(() => {
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
-
-  const canUseMiniTx = useMemo(() => {
-    return (
-      [
-        KEYRING_TYPE.SimpleKeyring,
-        KEYRING_TYPE.HdKeyring,
-        KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any) && !chainInfo?.isTestnet
-    );
-  }, [chainInfo?.isTestnet, currentAccount?.type]);
 
   const startDirectSigning = useStartDirectSigning();
 
@@ -208,7 +198,7 @@ const SendNFT = () => {
     return () => {
       setMiniSignTx(null);
     };
-  }, [canUseDirectSubmitTx, amount, getNFTTransferParams]);
+  }, [canUseDirectSubmitTx, amount, getNFTTransferParams, freshId]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
@@ -265,11 +255,6 @@ const SendNFT = () => {
           return;
         }
 
-        if (canUseMiniTx && !forceSignPage) {
-          setMiniSignTx(params as Tx);
-          setIsShowMiniSign(true);
-          return;
-        }
         const promise = wallet.sendRequest({
           method: 'eth_sendTransaction',
           params: [params as Record<string, any>],
@@ -286,6 +271,7 @@ const SendNFT = () => {
           form.setFieldsValue({
             amount: 1,
           });
+          setRefreshId((e) => e + 1);
         } else {
           window.close();
         }
@@ -581,11 +567,9 @@ const SendNFT = () => {
             trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
           }}
           onClose={() => {
-            setRefreshId((e) => e + 1);
             setIsShowMiniSign(false);
-            setTimeout(() => {
-              setMiniSignTx(null);
-            }, 500);
+            setMiniSignTx(null);
+            setRefreshId((e) => e + 1);
           }}
           onReject={() => {
             setRefreshId((e) => e + 1);

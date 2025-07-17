@@ -452,22 +452,6 @@ export const BridgeContent = () => {
     quoteLoading ||
     !quoteList?.length;
 
-  const canUseMiniTx = useMemo(
-    () =>
-      !toToken?.low_credit_score &&
-      !toToken?.is_suspicious &&
-      toToken?.is_verified !== false &&
-      !isSlippageHigh &&
-      !isSlippageLow &&
-      !showLoss &&
-      [
-        KEYRING_TYPE.SimpleKeyring,
-        KEYRING_TYPE.HdKeyring,
-        KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any),
-    [toToken, isSlippageHigh, isSlippageLow, currentAccount?.type, showLoss]
-  );
-
   const startDirectSigning = useStartDirectSigning();
 
   const canUseDirectSubmitTx = useMemo(
@@ -530,7 +514,7 @@ export const BridgeContent = () => {
       mutateTxs([]);
       runBuildSwapTxsRef.current = runBuildSwapTxs();
     }
-  }, [canUseMiniTx, btnDisabled, selectedBridgeQuote]);
+  }, [canUseDirectSubmitTx, btnDisabled, selectedBridgeQuote]);
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);
 
