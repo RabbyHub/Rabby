@@ -174,40 +174,9 @@ const BalanceView = ({
           });
         }
       })();
-
-      // const handler = async ({ address }) => {
-      //   if (
-      //     !currentAccount?.address ||
-      //     !isSameAddress(address, currentAccount.address)
-      //   )
-      //     return;
-
-      //   const count = await dispatch.transactions.getPendingTxCountAsync(
-      //     currentAccount.address
-      //   );
-      //   if (count === 0) {
-      //     if (refreshTimerlegacy.current)
-      //       clearTimeout(refreshTimerlegacy.current);
-
-      //     refreshTimerlegacy.current = setTimeout(() => {
-      //       // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
-      //       // delay 5s for waiting db sync data
-      //       setAccountBalanceUpdateNonce((prev) => prev + 1);
-      //     }, 5000);
-      //   }
-      // };
-      // eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-
-      // return () => {
-      //   eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-      // };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      // currentHomeBalanceCache?.balance,
-      // onRefresh,
-      // getCacheExpired
-    ]
+    []
   );
 
   const handleIsGnosisChange = useCallback(async () => {
