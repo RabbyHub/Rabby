@@ -821,13 +821,7 @@ export const BridgeContent = () => {
             setTimeout(() => {
               setIsShowSign(false);
               mutateTxs([]);
-              // setPayAmount('');
-              // setTimeout(() => {
-              if (!isTab) {
-                history.replace('/');
-              }
               handleAmountChange('');
-              // }, 500);
             }, 500);
           }}
           onPreExecError={gotoBridge}
