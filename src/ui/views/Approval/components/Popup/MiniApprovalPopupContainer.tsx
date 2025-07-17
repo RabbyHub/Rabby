@@ -87,7 +87,7 @@ export const MiniApprovalPopupContainer: React.FC<Props> = ({
         break;
       case 'FAILED':
       case 'REJECTED':
-        setImage(retryUpdateType ? TxErrorSVG : TxWarnSVG);
+        setImage(retryUpdateType ? TxWarnSVG : TxErrorSVG);
         setIconColor(
           retryUpdateType ? 'bg-r-orange-default' : 'bg-red-forbidden'
         );
