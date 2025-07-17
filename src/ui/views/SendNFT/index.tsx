@@ -106,6 +106,31 @@ const SendNFT = () => {
     return toParam || '';
   }, [search]);
 
+  const updateUrlAmount = useCallback(
+    (newAmount: number) => {
+      const query = new URLSearchParams(search);
+
+      query.set('amount', newAmount.toString());
+      const newSearch = query.toString();
+      const newUrl = `${history.location.pathname}${
+        newSearch ? `?${newSearch}` : ''
+      }`;
+
+      history.replace(newUrl);
+    },
+    [search, history]
+  );
+
+  const getInitialAmount = useCallback(() => {
+    const query = new URLSearchParams(search);
+    const amountParam = query.get('amount');
+    if (amountParam !== null) {
+      const parsedAmount = parseInt(amountParam, 10);
+      return !isNaN(parsedAmount) && parsedAmount >= 0 ? parsedAmount : 1;
+    }
+    return 1;
+  }, [search]);
+
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0);
@@ -284,8 +309,9 @@ const SendNFT = () => {
         if (isTab) {
           await promise;
           form.setFieldsValue({
-            amount: 1,
+            amount: 0,
           });
+          updateUrlAmount(0);
         } else {
           window.close();
         }
@@ -303,9 +329,10 @@ const SendNFT = () => {
       setIsShowMiniSign(false);
       setMiniSignTx(null);
       form.setFieldsValue({ amount: 0 });
+      updateUrlAmount(0);
       setRefreshId((e) => e + 1);
     }, 500);
-  }, [form]);
+  }, [form, updateUrlAmount]);
 
   const handleClickBack = () => {
     if (history.length > 1) {
@@ -417,7 +444,7 @@ const SendNFT = () => {
           onFinish={handleSubmit}
           initialValues={{
             to: toAddress,
-            amount: 1,
+            amount: getInitialAmount(),
           }}
         >
           {nftItem && (
