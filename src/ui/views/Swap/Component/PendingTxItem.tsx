@@ -40,7 +40,7 @@ type PendingTxData =
   | BridgeTxHistoryItem;
 
 const StatusIcon = ({ status }: { status: string }) => {
-  if (status === 'pending') {
+  if (status === 'pending' || status === 'fromSuccess') {
     return (
       <div className="w-16 h-16 rounded-full flex items-center justify-center">
         <SvgIcPending
@@ -251,13 +251,17 @@ export const PendingTxItem = forwardRef<
           (item) => item.from_tx?.tx_id === recentlyTxHash
         );
         if (!findTx) {
-          // no find tx, default set this tx failed
-          wallet.completeBridgeTxHistory(
-            recentlyTxHash,
-            data?.fromChainId,
-            'failed'
-          );
-          return;
+          const currentTime = Date.now();
+          const txCreateTime = data?.createdAt;
+          if (currentTime - txCreateTime > 1000 * 60 * 60) {
+            // tx create time is more than 60 minutes, set this tx failed
+            wallet.completeBridgeTxHistory(
+              recentlyTxHash,
+              data?.fromChainId,
+              'failed'
+            );
+            return;
+          }
         }
         if (findTx && findTx.status === 'completed' && data) {
           setData({
