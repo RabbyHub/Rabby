@@ -297,6 +297,15 @@ const SendNFT = () => {
             amount: 0,
           });
           updateUrlAmount(0);
+          wallet.setPageStateCache({
+            path: '/send-nft',
+            search: history.location.search,
+            params: {},
+            states: {
+              values: form.getFieldsValue(),
+              nftItem,
+            },
+          });
           setRefreshId((e) => e + 1);
         } else {
           window.close();
@@ -316,6 +325,15 @@ const SendNFT = () => {
       setMiniSignTx(null);
       form.setFieldsValue({ amount: 0 });
       updateUrlAmount(0);
+      wallet.setPageStateCache({
+        path: '/send-nft',
+        search: history.location.search,
+        params: {},
+        states: {
+          values: form.getFieldsValue(),
+          nftItem,
+        },
+      });
       setRefreshId((e) => e + 1);
     }, 500);
   }, [form, updateUrlAmount]);
