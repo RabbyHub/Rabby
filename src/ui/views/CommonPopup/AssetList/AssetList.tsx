@@ -1,5 +1,5 @@
 import { useCommonPopupView } from '@/ui/utils';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChainList } from './ChainList';
 import { AssetListContainer } from './AssetListContainer';
 import NetSwitchTabs, {
@@ -12,8 +12,6 @@ import { CustomTestnetAssetList } from './CustomTestnetAssetList';
 import { AddCustomTokenPopup } from './CustomAssetList/AddCustomTokenPopup';
 import { Button } from 'antd';
 import { SpecialTokenListPopup } from './components/TokenButton';
-import { useRabbySelector } from '@/ui/store';
-import useSortToken from '@/ui/hooks/useSortTokens';
 import { TestnetChainList } from './TestnetChainList';
 import { useFilteredTokens } from './useFilteredTokens';
 
@@ -26,6 +24,7 @@ export const AssetList = ({
 }) => {
   const { t } = useTranslation();
   const { setHeight, data } = useCommonPopupView();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [selectChainId, setSelectChainId] = useState<string | null>(null);
   const [selectTestnetChainId, setSelectTestnetChainId] = useState<
     string | null
@@ -47,6 +46,13 @@ export const AssetList = ({
   React.useEffect(() => {
     if (visible) {
       onTabChange('mainnet');
+    } else {
+      // Reset scroll position when component becomes invisible
+      setTimeout(() => {
+        if (containerRef.current && containerRef.current.parentElement) {
+          containerRef.current.parentElement.scrollTop = 0;
+        }
+      }, 200);
     }
   }, [visible]);
 
@@ -56,7 +62,7 @@ export const AssetList = ({
   const [showCustomizedTokens, setShowCustomizedTokens] = React.useState(false);
 
   return (
-    <>
+    <div ref={containerRef}>
       {isShowTestnet && (
         <NetSwitchTabs
           value={selectedTab}
@@ -129,6 +135,6 @@ export const AssetList = ({
           onClose={onClose}
         />
       </div>
-    </>
+    </div>
   );
 };

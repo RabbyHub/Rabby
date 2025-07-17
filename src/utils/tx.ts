@@ -26,6 +26,14 @@ export const checkIsPendingTxGroup = (txGroup: TransactionGroup) => {
   return txGroup.isPending && !isSubmitFailed && !maxGasTx?.isWithdrawed;
 };
 
+export const checkIsSubmittedTxGroup = (txGroup: TransactionGroup) => {
+  const maxGasTx = findMaxGasTx(txGroup.txs);
+
+  const isSubmitFailed = txGroup.isSubmitFailed;
+
+  return !txGroup.isPending && !isSubmitFailed && !maxGasTx.isWithdrawed;
+};
+
 export const getPendingGroupCategory = (pendings: TransactionGroup[]) => {
   const txs = pendings.reduce((res, pending) => {
     return res.concat(pending.txs);
