@@ -41,7 +41,7 @@ import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
-import { findChain, findChainByID } from '@/utils/chain';
+import { findChain, findChainByEnum, findChainByID } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import {
   checkIfTokenBalanceEnough,
