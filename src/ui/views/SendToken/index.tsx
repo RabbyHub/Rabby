@@ -1004,12 +1004,30 @@ const SendToken = () => {
           currentAddress,
         });
         setCurrentToken(result);
+
+        const currentValues = form.getFieldsValue();
+        if (currentValues.amount && result) {
+          const amount = currentValues.amount;
+          if (
+            new BigNumber(amount || 0).isGreaterThan(
+              new BigNumber(result.raw_amount_hex_str || 0).div(
+                10 ** result.decimals
+              )
+            )
+          ) {
+            setBalanceError(
+              t('page.sendToken.balanceError.insufficientBalance')
+            );
+          } else {
+            setBalanceError(null);
+          }
+        }
       }
       setIsLoading(false);
 
       return result;
     },
-    [wallet, estimateGasOnChain]
+    [wallet, estimateGasOnChain, form, t]
   );
 
   const handleAmountChange = useCallback(() => {
