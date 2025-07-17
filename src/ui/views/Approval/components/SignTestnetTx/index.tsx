@@ -419,8 +419,6 @@ export const SignTestnetTx = ({
           address: currentAccount.address,
         });
 
-        console.log('balace', balance.rawAmount);
-
         setNativeTokenBalance(balance.rawAmount);
       } catch (e) {
         console.error(e);
@@ -590,8 +588,6 @@ export const SignTestnetTx = ({
           // todo fake api provider
           apiProvider: (wallet.fakeTestnetOpenapi as unknown) as any,
         });
-
-        console.log({ parsed, requiredData });
 
         return {
           actionData: parsed,

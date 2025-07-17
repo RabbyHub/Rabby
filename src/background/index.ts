@@ -491,7 +491,6 @@ if (isManifestV3) {
     }
     if (alarm.name === ALARMS_SYNC_DEFAULT_RPC) {
       RPCService.syncDefaultRPC();
-      console.log('ALARMS_SYNC_DEFAULT_RPC');
     }
   });
 }

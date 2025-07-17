@@ -108,7 +108,6 @@ class Analytics {
       if (!this.debug) {
         return;
       }
-      console.log(await response.text());
     } catch (e) {
       console.error('Google Analytics request failed with an exception', e);
     }

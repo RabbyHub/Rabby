@@ -192,7 +192,7 @@ const Actions = ({
   const isMultiAction = useMemo(() => {
     return !!multiAction;
   }, [multiAction]);
-  console.log(multiAction);
+
   return (
     <>
       <ActionWrapper>

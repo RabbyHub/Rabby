@@ -828,7 +828,6 @@ function getColumnsForEIP7702({
               e.chain === record.chain &&
               e.delegatedAddress === record.delegatedAddress
           ) > -1;
-        console.log('selected', selected);
         return <CheckboxRow isSelected={!!selected} />;
       },
       width: 80,
@@ -865,7 +864,7 @@ function getColumnsForEIP7702({
       dataIndex: 'address',
       render: (_, row, rowIndex) => {
         const chainItem = findChainByEnum(row.chain as Chain['serverId']);
-        console.log('chainItem', chainItem, row.delegatedAddress);
+
         if (!chainItem) return null;
 
         return (
