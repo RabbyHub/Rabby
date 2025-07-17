@@ -29,6 +29,8 @@ import { useLoadTxData } from '../hooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
+import { is7702Tx } from '@/utils/transaction';
+import { omit } from 'lodash';
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -213,22 +215,29 @@ export const TransactionItem = ({
           tx: originTx.rawTx,
         });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
+    const is7702 = is7702Tx(originTx.rawTx);
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [
-        {
-          from: originTx.rawTx.from,
-          value: originTx.rawTx.value,
-          data: originTx.rawTx.data,
-          nonce: originTx.rawTx.nonce,
-          chainId: originTx.rawTx.chainId,
-          to: originTx.rawTx.to,
-          gasPrice: intToHex(
-            Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
-          ),
-          isSpeedUp: true,
-          reqId: maxGasTx.reqId,
-        },
+        omit(
+          {
+            from: originTx.rawTx.from,
+            value: originTx.rawTx.value,
+            data: originTx.rawTx.data,
+            nonce: originTx.rawTx.nonce,
+            chainId: originTx.rawTx.chainId,
+            to: originTx.rawTx.to,
+            gasPrice: intToHex(
+              Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
+            ),
+            isSpeedUp: true,
+            reqId: maxGasTx.reqId,
+            authorizationList: is7702
+              ? (originTx?.rawTx as any)?.authorizationList
+              : [],
+          },
+          is7702 ? [] : ['authorizationList']
+        ),
       ],
     });
     window.close();

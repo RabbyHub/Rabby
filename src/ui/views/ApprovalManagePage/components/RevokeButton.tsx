@@ -120,3 +120,45 @@ export const RevokeButton: React.FC<Props> = ({
     </>
   );
 };
+
+export const RevokeEIP7702Button = ({
+  onRevoke,
+  selectedCount,
+}: {
+  onRevoke: () => Promise<void>;
+  selectedCount?: number;
+}) => {
+  const { t } = useTranslation();
+
+  const [isRevokeLoading, setIsRevokeLoading] = React.useState(false);
+  const wallet = useWallet();
+  const handleOnRevoke = useCallback(async () => {
+    if (isRevokeLoading) return;
+
+    try {
+      setIsRevokeLoading(true);
+      await onRevoke();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsRevokeLoading(false);
+    }
+  }, [onRevoke]);
+
+  return (
+    <>
+      <Button
+        loading={isRevokeLoading}
+        className="w-[280px] h-[60px] text-[20px] am-revoke-btn"
+        type="primary"
+        size="large"
+        disabled={!selectedCount}
+        onClick={handleOnRevoke}
+      >
+        {t('page.approvals.component.RevokeButton.btnText', {
+          count: selectedCount,
+        })}
+      </Button>
+    </>
+  );
+};

@@ -7,12 +7,13 @@ import {
   getKRCategoryByType,
   getNativeTokenBalance,
   getPendingTxs,
+  is7702Tx,
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
 import { Drawer, message, Modal } from 'antd';
-import { maxBy } from 'lodash';
+import { maxBy, omit } from 'lodash';
 import {
   Chain,
   ExplainTxResponse,
@@ -91,6 +92,7 @@ import {
 } from '@rabby-wallet/rabby-action';
 import { ga4 } from '@/utils/ga4';
 import { EIP7702Warning } from './EIP7702Warning';
+import { getEIP7702MiniGasLimit } from '@/background/utils/7702';
 import { MultiActionProps } from './TypedDataActions';
 import { getCexInfo } from '@/ui/models/exchange';
 
@@ -598,10 +600,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     return normalizeTxParams(params.data[0]);
   }, [params.data]);
 
-  // is eip7702
-  if (authorizationList) {
+  const is7702 = is7702Tx({ authorizationList } as any);
+
+  if (is7702 && !(isSpeedUp || params?.$ctx?.eip7702Revoke)) {
     return <EIP7702Warning />;
   }
+
+  const enable7702 = (is7702 && isSpeedUp) || params?.$ctx?.eip7702Revoke;
 
   const [pushInfo, setPushInfo] = useState<{
     type: TxPushType;
@@ -629,16 +634,26 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
     return result;
   };
-  const [tx, setTx] = useState<Tx>({
-    chainId,
-    data: data || '0x', // can not execute with empty string, use 0x instead
-    from,
-    gas: gas || params.data[0].gasLimit,
-    gasPrice: getGasPrice(),
-    nonce,
-    to,
-    value,
-  });
+
+  const [tx, setTx] = useState<Tx>(
+    omit(
+      {
+        chainId,
+        data: data || '0x', // can not execute with empty string, use 0x instead
+        from,
+        gas: enable7702
+          ? getEIP7702MiniGasLimit(gas || params.data[0].gasLimit)
+          : gas || params.data[0].gasLimit,
+        gasPrice: getGasPrice(),
+        nonce,
+        to,
+        value,
+        authorizationList:
+          params?.$ctx?.eip7702RevokeAuthorization || authorizationList,
+      },
+      !enable7702 ? ['authorizationList'] : []
+    ) as any
+  );
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
   const [safeInfo, setSafeInfo] = useState<BasicSafeInfo | null>(null);
@@ -852,14 +867,25 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     return wallet.openapi
       .parseTx({
         chainId: chain.serverId,
-        tx: {
-          ...tx,
-          gas: '0x0',
-          nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-          value: tx.value || '0x0',
-          // todo
-          to: tx.to || '',
-        },
+        tx: omit(
+          {
+            ...tx,
+            gas: '0x0',
+            nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+            value: tx.value || '0x0',
+            // todo
+            to: tx.to || '',
+            type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
+            authorizationList:
+              params?.$ctx?.eip7702RevokeAuthorization ||
+              authorizationList?.map((e) => [
+                new BigNumber(e.chainId).toNumber(),
+                e.address,
+                new BigNumber(e.nonce).toNumber(),
+              ]),
+          },
+          !enable7702 ? ['authorizationList'] : []
+        ),
         origin: origin || '',
         addr: address,
       })
@@ -1277,6 +1303,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       chainId: tx.chainId,
       gas: '',
     };
+
     if (support1559) {
       transaction.maxFeePerGas = tx.maxFeePerGas;
       transaction.maxPriorityFeePerGas =
@@ -1392,11 +1419,14 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
+    const gasLimitHex = enable7702
+      ? getEIP7702MiniGasLimit(intToHex(gas.gasLimit))
+      : intToHex(gas.gasLimit);
     if (support1559) {
       setTx({
         ...tx,
         maxFeePerGas: intToHex(Math.round(gas.price)),
-        gas: intToHex(gas.gasLimit),
+        gas: gasLimitHex,
         nonce: afterNonce,
       });
       setMaxPriorityFee(Math.round(gas.maxPriorityFee));
@@ -1404,12 +1434,12 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       setTx({
         ...tx,
         gasPrice: intToHex(Math.round(gas.price)),
-        gas: intToHex(gas.gasLimit),
+        gas: gasLimitHex,
         nonce: afterNonce,
       });
     }
-    setGasLimit(intToHex(gas.gasLimit));
-    if (Number(gasLimit) !== gas.gasLimit) {
+    setGasLimit(gasLimitHex);
+    if (Number(gasLimit) !== new BigNumber(gasLimitHex).toNumber()) {
       setManuallyChangeGasLimit(true);
     }
     if (!isGnosisAccount) {
@@ -1429,21 +1459,24 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const handleAdvancedSettingsChange = (gas: GasSelectorResponse) => {
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
+    const gasLimitHex = enable7702
+      ? getEIP7702MiniGasLimit(intToHex(gas.gasLimit))
+      : intToHex(gas.gasLimit);
     if (support1559) {
       setTx({
         ...tx,
-        gas: intToHex(gas.gasLimit),
+        gas: gasLimitHex,
         nonce: afterNonce,
       });
     } else {
       setTx({
         ...tx,
-        gas: intToHex(gas.gasLimit),
+        gas: gasLimitHex,
         nonce: afterNonce,
       });
     }
-    setGasLimit(intToHex(gas.gasLimit));
-    if (Number(gasLimit) !== gas.gasLimit) {
+    setGasLimit(gasLimitHex);
+    if (Number(gasLimit) !== new BigNumber(gasLimitHex).toNumber()) {
       setManuallyChangeGasLimit(true);
     }
     if (!isGnosisAccount) {
@@ -1849,11 +1882,18 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       setSelectedGas(gas);
       setSupport1559(is1559);
       if (is1559) {
+        const is7702 = is7702Tx(tx);
         setTx(
-          convertLegacyTo1559({
-            ...tx,
-            gasPrice: intToHex(gas.price),
-          })
+          omit(
+            {
+              ...convertLegacyTo1559({
+                ...tx,
+                gasPrice: intToHex(gas.price),
+              }),
+              authorizationList: (tx as any).authorizationList,
+            },
+            is7702 ? [] : ['authorizationList']
+          ) as any
         );
       } else {
         setTx({

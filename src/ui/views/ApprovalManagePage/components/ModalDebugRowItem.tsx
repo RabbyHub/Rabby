@@ -7,6 +7,7 @@ import { ContractApprovalItem, AssetApprovalSpender } from '@/utils/approval';
 import { HandleClickTableRow } from './Table';
 import { appIsDev } from '@/utils/env';
 import { detectClientOS } from '@/ui/utils/os';
+import { EIP7702Delegated } from '../useEIP7702Approvals';
 
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
@@ -144,7 +145,7 @@ export function ModalInspectSpender({
 
 const IS_WINDOWS = detectClientOS() === 'win32';
 export function useInspectRowItem<
-  T extends ContractApprovalItem | AssetApprovalSpender
+  T extends ContractApprovalItem | AssetApprovalSpender | EIP7702Delegated
 >(origOnClickRow?: HandleClickTableRow<T>) {
   // const [selectedRow, setSelectedRow] = useState<T | null>(null);
   const onClickRowInspection: HandleClickTableRow<T> = useCallback(
