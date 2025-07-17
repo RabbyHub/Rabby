@@ -67,11 +67,7 @@ export const Header = ({
                 <RcIconFullscreen />
               </div>
             )}
-            {pendingNumber ? (
-              <PendingTx number={pendingNumber} onClick={openHistory} />
-            ) : (
-              <RcIconHistory className="cursor-pointer" onClick={openHistory} />
-            )}
+            <RcIconHistory className="cursor-pointer" onClick={openHistory} />
           </div>
         }
       >
