@@ -116,7 +116,8 @@ export default function ShowMoreGasSelectModal({
               costUsd = isActive
                 ? miniApprovalGas.gasMethod === 'gasAccount'
                   ? calcGasAccountUsd(
-                      miniApprovalGas?.gasAccountCost?.total_cost || '0'
+                      (miniApprovalGas?.gasAccountCost?.estimate_tx_cost || 0) +
+                        (miniApprovalGas?.gasAccountCost?.gas_cost || 0)
                     )
                   : miniApprovalGas!.gasCostUsdStr
                 : costUsd;
