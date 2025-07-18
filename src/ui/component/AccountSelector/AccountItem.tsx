@@ -45,16 +45,29 @@ export interface AddressItemProps {
   disabled?: boolean;
   tmpCexInfo?: Exchange;
   allowEditAlias?: boolean;
+  hideBalance?: boolean;
+  longEllipsis?: boolean;
 }
 
-const HoverShowEditPenWrapper = styled.div`
+const HoverShowEditPenWrapper = styled.div<{ hideBalance?: boolean }>`
   position: relative;
   .edit-pen {
     opacity: 0;
   }
+  .copy-icon {
+    display: ${(props) => (props.hideBalance ? 'none' : 'block')};
+  }
   &:hover {
     .edit-pen {
       opacity: 1;
+    }
+    .copy-icon {
+      opacity: 1;
+      display: block;
+      color: var(--r-neutral-body) !important;
+      &:hover {
+        color: var(--r-blue-default) !important;
+      }
     }
   }
 `;
@@ -75,7 +88,9 @@ export const AccountItem = memo(
     showWhitelistIcon,
     disabled = false,
     allowEditAlias = false,
+    hideBalance,
     tmpCexInfo,
+    longEllipsis,
   }: AddressItemProps) => {
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
@@ -230,6 +245,7 @@ export const AccountItem = memo(
 
     return (
       <HoverShowEditPenWrapper
+        hideBalance={hideBalance}
         className={clsx(
           className,
           'relative flex items-center px-[15px] py-[11px] gap-[8px]',
@@ -305,7 +321,7 @@ export const AccountItem = memo(
                       }}
                       className={`
                         edit-pen
-                        text-r-neutral-foot transition-opacity duration-100 cursor-pointer
+                        text-r-neutral-body transition-opacity duration-100 cursor-pointer
                         hover:text-r-blue-default
                       `}
                     >
@@ -321,16 +337,19 @@ export const AccountItem = memo(
             <AddressViewer
               address={address?.toLowerCase()}
               showArrow={false}
+              longEllipsis={longEllipsis}
               className={clsx('text-[13px] text-r-neutral-body leading-[16px]')}
             />
 
             <CopyChecked
               addr={address}
-              className={clsx('w-[14px] h-[14px] ml-2 text-14')}
+              className={clsx('copy-icon w-[14px] h-[14px] ml-4 text-14')}
             />
-            <span className="ml-[12px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
-              ${splitNumberByStep(balance?.toFixed(2))}
-            </span>
+            {!hideBalance && (
+              <span className="ml-[12px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
+                ${splitNumberByStep(balance?.toFixed(2))}
+              </span>
+            )}
           </div>
         </div>
         {(!disabled && rightIcon) || isSelected ? (

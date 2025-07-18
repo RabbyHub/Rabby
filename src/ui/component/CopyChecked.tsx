@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useRef, useState, useEffect } from 'react';
 import { copyAddress } from '../utils/clipboard';
 import { ReactComponent as RcIconCopyCheck } from 'ui/assets/copy-checked.svg';
-import { ReactComponent as RcIconCopy } from 'ui/assets/component/icon-copy.svg';
+import { ReactComponent as RcIconCopy } from 'ui/assets/component/icon-copy-cc.svg';
 
 export const CopyChecked = ({
   addr,
@@ -48,7 +48,11 @@ export const CopyChecked = ({
     <RcIconCopy
       viewBox="0 0 16 16"
       onClick={handleCopy}
-      className={clsx(className, copyClassName)}
+      className={clsx(
+        'text-r-neutral-foot w-[16px] h-[16px]',
+        className,
+        copyClassName
+      )}
     />
   );
 };

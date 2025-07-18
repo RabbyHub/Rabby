@@ -101,14 +101,17 @@ const BalanceView = ({
 
   const {
     balance,
+    evmBalance,
     curveChartData,
     matteredChainBalances,
     chainBalancesWithValue,
   } = useMemo(() => {
     const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
-
+    const evmBalanceValue =
+      latestEvmBalance || currentHomeBalanceCache?.evmBalance;
     return {
       balance: balanceValue,
+      evmBalance: evmBalanceValue,
       curveChartData:
         latestCurveChartData ||
         formChartData(
@@ -125,6 +128,7 @@ const BalanceView = ({
     };
   }, [
     latestBalance,
+    latestEvmBalance,
     latestMatteredChainBalances,
     latestChainBalancesWithValue,
     latestCurveChartData,
@@ -299,6 +303,10 @@ const BalanceView = ({
   const shouldRenderCurve =
     !shouldShowLoading && !hiddenBalance && !!curveChartData;
 
+  const showAppChainTips = useMemo(() => {
+    return evmBalance !== balance;
+  }, [evmBalance, balance]);
+
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
       <div className="left relative overflow-x-hidden mx-10">
@@ -426,6 +434,7 @@ const BalanceView = ({
               <CurveThumbnail
                 isHover={currentHover}
                 data={curveChartData}
+                showAppChainTips={showAppChainTips}
                 onHover={handleHoverCurve}
               />
             )}
