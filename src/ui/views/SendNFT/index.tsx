@@ -51,7 +51,7 @@ import { ShowMoreOnSend } from '../SendToken/components/SendShowMore';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ToAddressCard } from '../SendToken';
 import { PendingTxItem } from '../Swap/Component/PendingTxItem';
-import { SendTxHistoryItem } from '@/background/service/transactionHistory';
+import { SendNftTxHistoryItem } from '@/background/service/transactionHistory';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -270,9 +270,8 @@ const SendNFT = () => {
             amount: Number(amount),
             status: 'pending',
             createdAt: Date.now(),
-            isNft: true,
-          } as SendTxHistoryItem,
-          'send'
+          } as SendNftTxHistoryItem,
+          'sendNft'
         );
 
         if (canUseDirectSubmitTx && !forceSignPage) {
@@ -561,7 +560,7 @@ const SendNFT = () => {
               </div>
               {!canSubmit && (
                 <div className="mt-16 mb-16">
-                  <PendingTxItem type="send" />
+                  <PendingTxItem type="sendNft" />
                 </div>
               )}
               {chainInfo?.serverId && canUseDirectSubmitTx ? (

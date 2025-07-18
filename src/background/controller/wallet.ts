@@ -141,6 +141,7 @@ import { ga4 } from '@/utils/ga4';
 import { bgRetryTxMethods } from '../utils/errorTxRetry';
 import {
   BridgeTxHistoryItem,
+  SendNftTxHistoryItem,
   SendTxHistoryItem,
   SwapTxHistoryItem,
 } from '../service/transactionHistory';
@@ -4048,21 +4049,24 @@ export class WalletController extends BaseController {
   //   transactionHistoryService.getExplainCacheByApprovalId(id);
   getRecentPendingTxHistory = (
     address: string,
-    type: 'swap' | 'send' | 'bridge'
+    type: 'swap' | 'send' | 'bridge' | 'sendNft'
   ) => transactionHistoryService.getRecentPendingTxHistory(address, type);
   addCacheHistoryData = (
     key: string,
     data: Omit<
-      SwapTxHistoryItem | SendTxHistoryItem | BridgeTxHistoryItem,
+      | SwapTxHistoryItem
+      | SendTxHistoryItem
+      | BridgeTxHistoryItem
+      | SendNftTxHistoryItem,
       'hash'
     >,
-    type: 'swap' | 'send' | 'bridge'
+    type: 'swap' | 'send' | 'bridge' | 'sendNft'
   ) => transactionHistoryService.addCacheHistoryData(key, data, type);
   getRecentTxHistory = (
     address: string,
     hash: string,
     chainId: number,
-    type: 'swap' | 'send' | 'bridge'
+    type: 'swap' | 'send' | 'bridge' | 'sendNft'
   ) =>
     transactionHistoryService.getRecentTxHistory(address, hash, chainId, type);
   completeBridgeTxHistory = (
