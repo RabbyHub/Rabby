@@ -49,11 +49,13 @@ export interface AddressItemProps {
   longEllipsis?: boolean;
 }
 
-const HoverShowEditPenWrapper = styled.div`
+const HoverShowEditPenWrapper = styled.div<{ hideBalance?: boolean }>`
   position: relative;
-  .edit-pen,
-  .copy-icon {
+  .edit-pen {
     opacity: 0;
+  }
+  .copy-icon {
+    display: ${(props) => (props.hideBalance ? 'none' : 'block')};
   }
   &:hover {
     .edit-pen {
@@ -61,6 +63,7 @@ const HoverShowEditPenWrapper = styled.div`
     }
     .copy-icon {
       opacity: 1;
+      display: block;
       color: var(--r-neutral-body) !important;
       &:hover {
         color: var(--r-blue-default) !important;
@@ -242,6 +245,7 @@ export const AccountItem = memo(
 
     return (
       <HoverShowEditPenWrapper
+        hideBalance={hideBalance}
         className={clsx(
           className,
           'relative flex items-center px-[15px] py-[11px] gap-[8px]',

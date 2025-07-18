@@ -48,7 +48,11 @@ export const CopyChecked = ({
     <RcIconCopy
       viewBox="0 0 16 16"
       onClick={handleCopy}
-      className={clsx('text-r-neutral-foot', className, copyClassName)}
+      className={clsx(
+        'text-r-neutral-foot w-[16px] h-[16px]',
+        className,
+        copyClassName
+      )}
     />
   );
 };

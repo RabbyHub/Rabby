@@ -46,12 +46,12 @@ const CurveGlobalStyle = createGlobalStyle`
 
 const AppChainTips = styled.div`
   position: absolute;
-  bottom: 6px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  font-size: 11px;
+  font-size: 9px;
   opacity: 70%;
   pointer-events: none;
 `;
@@ -134,7 +134,7 @@ export const CurveThumbnail = ({
       {isHover && showAppChainTips && (
         <AppChainTips>
           <div className="text-r-neutral-title2 mr-[2px]">
-            <RcIconInfoCC width={12} height={12} />
+            <RcIconInfoCC width={10} height={10} />
           </div>
           <div className="text-r-neutral-title2 whitespace-nowrap">
             {t('page.dashboard.home.appChainTips')}
