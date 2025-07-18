@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
@@ -47,9 +47,17 @@ export const SubmitActions: React.FC<Props> = ({
 
   const directSigning = useDirectSigning();
 
+  const autoSigned = useRef(false);
   useDebounce(
     () => {
-      if (isMiniSignTx && !disabledProcess && directSigning && directSubmit) {
+      if (
+        !autoSigned.current &&
+        isMiniSignTx &&
+        !disabledProcess &&
+        directSigning &&
+        directSubmit
+      ) {
+        autoSigned.current = true;
         handleClickConfirm();
       }
     },
