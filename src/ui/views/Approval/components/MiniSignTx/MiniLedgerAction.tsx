@@ -120,28 +120,12 @@ export const MiniLedgerAction: React.FC<Props> = ({
 
   useDebounce(
     () => {
-      if (
-        isMiniSignTx &&
-        !disabledProcess &&
-        // !pressedConfirm &&
-        directSigning &&
-        directSubmit
-      ) {
-        // handlePress();
-        console.log('submit handleClickConfirm');
+      if (isMiniSignTx && !disabledProcess && directSigning && directSubmit) {
         handleSubmit();
       }
     },
     300,
-    [
-      directSigning,
-      disabledProcess,
-      handleSubmit,
-      // handlePress,
-      isMiniSignTx,
-      // pressedConfirm,
-      directSubmit,
-    ]
+    [directSigning, disabledProcess, handleSubmit, isMiniSignTx, directSubmit]
   );
 
   React.useEffect(() => {

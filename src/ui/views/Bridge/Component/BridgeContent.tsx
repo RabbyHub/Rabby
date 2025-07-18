@@ -46,6 +46,7 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import {
   supportedDirectSign,
+  useGetDisableProcessDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from '../../Swap/Component/PendingTxItem';
@@ -453,6 +454,7 @@ export const BridgeContent = () => {
     !quoteList?.length;
 
   const startDirectSigning = useStartDirectSigning();
+  const disabledProcess = useGetDisableProcessDirectSign();
 
   const canUseDirectSubmitTx = useMemo(
     () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
@@ -713,9 +715,9 @@ export const BridgeContent = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx && noRiskSign ? (
+            {canUseDirectSubmitTx && noRiskSign && isSupportedChain ? (
               <DirectSignToConfirmBtn
-                disabled={btnDisabled || !isSupportedChain}
+                disabled={btnDisabled}
                 title={t('page.bridge.title')}
                 onConfirm={handleBridge}
               />
@@ -770,6 +772,8 @@ export const BridgeContent = () => {
                 disabled={
                   !isSupportedChain && externalDapps.length > 0
                     ? false
+                    : canUseDirectSubmitTx
+                    ? btnDisabled || disabledProcess
                     : btnDisabled
                 }
               >
