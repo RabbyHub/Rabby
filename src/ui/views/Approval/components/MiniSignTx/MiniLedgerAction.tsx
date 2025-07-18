@@ -6,7 +6,7 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
 import { EVENTS, KEYRING_CLASS } from 'consts';
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
@@ -117,10 +117,18 @@ export const MiniLedgerAction: React.FC<Props> = ({
 
   const directSigning = useDirectSigning();
   const setDirectSigning = useSetDirectSigning();
+  const autoSigned = useRef(false);
 
   useDebounce(
     () => {
-      if (isMiniSignTx && !disabledProcess && directSigning && directSubmit) {
+      if (
+        !autoSigned.current &&
+        isMiniSignTx &&
+        !disabledProcess &&
+        directSigning &&
+        directSubmit
+      ) {
+        autoSigned.current = true;
         handleSubmit();
       }
     },
