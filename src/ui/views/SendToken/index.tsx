@@ -648,20 +648,21 @@ const SendToken = () => {
           ].join('|'),
         });
 
-        wallet.addCacheHistoryData(
-          `${chain.enum}-${params.data || '0x'}`,
-          {
-            address: currentAccount!.address,
-            chainId: findChainByEnum(chain.enum)?.id || 0,
-            from: currentAccount!.address,
-            to: toAddress,
-            token: currentToken,
-            amount: Number(amount),
-            status: 'pending',
-            createdAt: Date.now(),
-          } as SendTxHistoryItem,
-          'send'
-        );
+        !isGnosisSafe &&
+          wallet.addCacheHistoryData(
+            `${chain.enum}-${params.data || '0x'}`,
+            {
+              address: currentAccount!.address,
+              chainId: findChainByEnum(chain.enum)?.id || 0,
+              from: currentAccount!.address,
+              to: toAddress,
+              token: currentToken,
+              amount: Number(amount),
+              status: 'pending',
+              createdAt: Date.now(),
+            } as SendTxHistoryItem,
+            'send'
+          );
 
         const promise = wallet.sendRequest({
           method: 'eth_sendTransaction',
@@ -761,20 +762,21 @@ const SendToken = () => {
           }
         }
 
-        wallet.addCacheHistoryData(
-          `${chain.enum}-${params.data || '0x'}`,
-          {
-            address: currentAccount!.address,
-            chainId: findChainByEnum(chain.enum)?.id || 0,
-            from: currentAccount!.address,
-            to: toAddress,
-            token: currentToken,
-            amount: Number(amount),
-            status: 'pending',
-            createdAt: Date.now(),
-          } as SendTxHistoryItem,
-          'send'
-        );
+        !isGnosisSafe &&
+          wallet.addCacheHistoryData(
+            `${chain.enum}-${params.data || '0x'}`,
+            {
+              address: currentAccount!.address,
+              chainId: findChainByEnum(chain.enum)?.id || 0,
+              from: currentAccount!.address,
+              to: toAddress,
+              token: currentToken,
+              amount: Number(amount),
+              status: 'pending',
+              createdAt: Date.now(),
+            } as SendTxHistoryItem,
+            'send'
+          );
 
         if (isCurrent) {
           setMiniSignTx(params as Tx);
