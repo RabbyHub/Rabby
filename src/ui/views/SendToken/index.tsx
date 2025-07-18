@@ -681,7 +681,7 @@ const SendToken = () => {
             amount: '',
           });
         } else {
-          // window.close();
+          window.close();
         }
       } catch (e) {
         message.error(e.message);
