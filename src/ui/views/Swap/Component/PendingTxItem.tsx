@@ -28,6 +28,7 @@ import type {
   SwapTxHistoryItem,
   SendTxHistoryItem,
   BridgeTxHistoryItem,
+  SendNftTxHistoryItem,
 } from '@/background/service/transactionHistory';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Image } from 'antd';
@@ -36,6 +37,7 @@ import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 
 type PendingTxData =
   | SwapTxHistoryItem
+  | SendNftTxHistoryItem
   | SendTxHistoryItem
   | BridgeTxHistoryItem;
 
@@ -172,7 +174,7 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
 export const PendingTxItem = forwardRef<
   { fetchHistory: () => void },
   {
-    type: 'send' | 'swap' | 'bridge';
+    type: 'send' | 'swap' | 'bridge' | 'sendNft';
     bridgeHistoryList?: BridgeHistory[];
     openBridgeHistory?: () => void;
   }
@@ -199,7 +201,10 @@ export const PendingTxItem = forwardRef<
   }, [fetchHistory]);
 
   const fetchRefreshLocalData = useMemoizedFn(
-    async (data: PendingTxData, type: 'swap' | 'send' | 'bridge') => {
+    async (
+      data: PendingTxData,
+      type: 'swap' | 'send' | 'bridge' | 'sendNft'
+    ) => {
       if (data.status !== 'pending') {
         // has done
         return;
@@ -296,14 +301,14 @@ export const PendingTxItem = forwardRef<
   });
 
   const sendTitleTextStr = useMemo(() => {
-    if (type === 'send' && data) {
+    if ((type === 'send' || type === 'sendNft') && data) {
       const sendData = data as SendTxHistoryItem;
       const sendAmount = formatTokenAmount(sendData?.amount);
-      if ((data as SendTxHistoryItem).isNft) {
+      if (type === 'sendNft') {
         return `-${sendAmount} NFT`;
+      } else {
+        return `-${sendAmount} ${getTokenSymbol(sendData?.token as TokenItem)}`;
       }
-
-      return `-${sendAmount} ${getTokenSymbol(sendData?.token as TokenItem)}`;
     }
     return '';
   }, [type, data]);
@@ -338,12 +343,8 @@ export const PendingTxItem = forwardRef<
     return null;
   }
 
-  const sendToken = (type === 'send' && !(data as SendTxHistoryItem).isNft
-    ? (data as SendTxHistoryItem)?.token
-    : undefined) as TokenItem | undefined;
-
   const sendChainItem =
-    type === 'send'
+    type === 'send' || type === 'sendNft'
       ? findChain({
           serverId: (data as SendTxHistoryItem)?.token?.chain || '',
         })
@@ -361,13 +362,13 @@ export const PendingTxItem = forwardRef<
       >
         <div className="flex items-center gap-12">
           <div className="flex items-center gap-6">
-            {type === 'send' ? (
+            {type === 'send' || type === 'sendNft' ? (
               <>
-                {(data as SendTxHistoryItem)?.isNft ? (
+                {type === 'sendNft' ? (
                   <div className="relative w-20 h-20">
                     <NFTAvatar
-                      content={(data as SendTxHistoryItem)?.token?.content}
-                      type={(data as SendTxHistoryItem)?.token?.content_type}
+                      content={(data as SendNftTxHistoryItem)?.token?.content}
+                      type={(data as SendNftTxHistoryItem)?.token?.content_type}
                       className="w-[20px] h-[20px]"
                     />
                     <TooltipWithMagnetArrow
@@ -383,7 +384,7 @@ export const PendingTxItem = forwardRef<
                   </div>
                 ) : (
                   <TokenWithChain
-                    token={sendToken?.logo_url || ''}
+                    token={(data as SendTxHistoryItem)?.token?.logo_url || ''}
                     chain={(data as SendTxHistoryItem)?.token?.chain || ''}
                   />
                 )}
