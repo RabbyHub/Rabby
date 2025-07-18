@@ -24,8 +24,8 @@ import {
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useCss, useDebounce } from 'react-use';
-import { DEX_WITH_WRAP, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { useCss } from 'react-use';
+import { DEX_WITH_WRAP } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
@@ -43,7 +43,6 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
-import { SWAP_SLIPPAGE } from '../../Bridge/Component/BridgeSlippage';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useExternalSwapBridgeDapps } from '@/ui/component/ExternalSwapBridgeDappPopup/hooks';
 import {
@@ -53,11 +52,9 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import {
   supportedDirectSign,
-  useMiniApprovalGas,
-  useSetDirectSigning,
+  useGetDisableProcessDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import eventBus from '@/eventBus';
 import { PendingTxItem } from './PendingTxItem';
 
 const isTab = getUiType().isTab;
@@ -405,6 +402,7 @@ export const Main = () => {
   );
 
   const startDirectSigning = useStartDirectSigning();
+  const disabledProcess = useGetDisableProcessDirectSign();
 
   const canUseDirectSubmitTx = useMemo(
     () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
@@ -861,7 +859,11 @@ export const Main = () => {
                   // runBuildSwapTxs();
                   handleSwap();
                 }}
-                disabled={swapBtnDisabled}
+                disabled={
+                  canUseDirectSubmitTx
+                    ? swapBtnDisabled || disabledProcess
+                    : swapBtnDisabled
+                }
               >
                 {btnText}
               </Button>

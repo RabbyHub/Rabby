@@ -642,7 +642,10 @@ export const MiniSignTx = ({
       loadGasMedian(chain);
       let gas: GasLevel | null = null;
 
-      if (customGasPrice || lastTimeGas?.lastTimeSelect === 'gasPrice') {
+      if (
+        (customGasPrice || lastTimeGas?.lastTimeSelect === 'gasPrice') &&
+        !directSubmit
+      ) {
         gas = gasList.find((item) => item.level === 'custom')!;
       } else if (
         lastTimeGas?.lastTimeSelect &&
@@ -1310,8 +1313,6 @@ export const MiniApproval = ({
     setInnerVisible(false);
     setDirectSigning(false);
   }, [onClose]);
-
-  console.log('status', status);
 
   return (
     <>
