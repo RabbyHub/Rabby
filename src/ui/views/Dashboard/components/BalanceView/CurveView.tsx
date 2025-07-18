@@ -68,7 +68,63 @@ export const CurveThumbnail = ({
   }, [data]);
   const divRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(92);
+  const [showTips, setShowTips] = useState(false);
+  const mousePositionRef = useRef({ x: 0, y: 0 });
+  const mouseMoveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const mouseMoveCountRef = useRef(0);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    return () => {
+      if (mouseMoveTimeoutRef.current) {
+        clearTimeout(mouseMoveTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseMove = (event: any) => {
+    const currentX = event?.nativeEvent?.offsetX || 0;
+
+    const distance = Math.abs(currentX - mousePositionRef.current.x);
+
+    mousePositionRef.current = { x: currentX, y: 0 };
+
+    const MOVE_THRESHOLD = 5;
+
+    if (distance > MOVE_THRESHOLD) {
+      mouseMoveCountRef.current += 1;
+
+      if (mouseMoveCountRef.current >= 3 && isHover) {
+        setShowTips(true);
+      }
+    }
+
+    if (mouseMoveTimeoutRef.current) {
+      clearTimeout(mouseMoveTimeoutRef.current);
+    }
+
+    mouseMoveTimeoutRef.current = setTimeout(() => {
+      setShowTips(false);
+    }, 500);
+  };
+
+  const handleMouseEnter = () => {
+    mouseMoveCountRef.current = 0;
+    setShowTips(false);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTips(false);
+    mouseMoveCountRef.current = 0;
+    mousePositionRef.current = { x: 0, y: 0 };
+
+    if (mouseMoveTimeoutRef.current) {
+      clearTimeout(mouseMoveTimeoutRef.current);
+      mouseMoveTimeoutRef.current = null;
+    }
+
+    onHover(undefined);
+  };
 
   useEffect(() => {
     if (divRef.current) {
@@ -88,12 +144,21 @@ export const CurveThumbnail = ({
           height={height}
           style={{ position: 'absolute', left: 0, cursor: 'pointer' }}
           margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
-          onMouseMove={(val) => {
+          onMouseMove={(val, event) => {
             if (val?.activePayload) {
               onHover(val.activePayload[0].payload);
             }
+            if (showAppChainTips) {
+              handleMouseMove(event);
+            }
           }}
-          onMouseLeave={() => onHover(undefined)}
+          onMouseEnter={showAppChainTips ? handleMouseEnter : undefined}
+          onMouseLeave={() => {
+            onHover(undefined);
+            if (showAppChainTips) {
+              handleMouseLeave();
+            }
+          }}
         >
           <defs>
             <linearGradient id="curveThumbnail" x1="0" y1="0" x2="0" y2="1">
@@ -131,10 +196,10 @@ export const CurveThumbnail = ({
           />
         </AreaChart>
       )}
-      {isHover && showAppChainTips && (
+      {showTips && (
         <AppChainTips>
           <div className="text-r-neutral-title2 mr-[2px]">
-            <RcIconInfoCC width={10} height={10} />
+            <RcIconInfoCC width={12} height={12} />
           </div>
           <div className="text-r-neutral-title2 whitespace-nowrap">
             {t('page.dashboard.home.appChainTips')}

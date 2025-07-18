@@ -212,13 +212,12 @@ export const useAddressRisks = (
         });
 
         await Promise.race([checkTransferPromise, timeoutPromise]);
-        if (!hasSended && !hasError) {
-          setHasNoSend(true);
-        }
+        setHasNoSend(!hasSended);
         setHasError(hasError);
       } catch (error) {
         console.error('check transfer timeout or error', error);
         setHasError(true);
+        setHasNoSend(true);
         queue.clear();
       } finally {
         setLoadingHasTransfer(false);
