@@ -23,7 +23,12 @@
         "loading": "로딩하는 데 잠시 시간이 걸릴 수 있으며, 데이터 지연이 발생할 수 있습니다.",
         "btn": "사기 거래 숨기기"
       },
-      "title": "거래"
+      "title": "거래",
+      "detail": {
+        "Pending": "대기 중",
+        "Succeeded": "성공했습니다",
+        "Failed": "실패했습니다"
+      }
     },
     "chainList": {
       "mainnet": "메인넷",
@@ -347,7 +352,18 @@
       "amount": "금액",
       "maxPriorityFeeDisabledAlert": "먼저 Gas Price를 설정하십시오.",
       "label": "레이블",
-      "contract": "스마트 계약 주소"
+      "contract": "스마트 계약 주소",
+      "errorRetry": {
+        "InvalidTx": "유효하지 않은 거래입니다.",
+        "gasLimitTooLow": "가스 한도가 너무 낮습니다",
+        "defaultTips": "문제가 발생했습니다. 나중에 다시 시도해주세요.",
+        "nonceTooHigh": "Nonce가 너무 높습니다. nonce를 조정하고 다시 시도하십시오.",
+        "alreadySubmitted": "거래가 이미 제출되었습니다. 중복 거래가 감지되었습니다.",
+        "gasExceedsBlockGasLimit": "가스가 블록 가스 한도를 초과했습니다. 조정 후 다시 시도하세요.",
+        "nonceTooLow": "Nonce가 너무 낮습니다. {{nonce}}로 업데이트하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
+        "gasPriceTooLow": "가스 가격이 너무 낮습니다. 트랜잭션이 확인되도록 30% 조정하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
+        "insufficient": "당신의 가스 잔액이 네트워크 가스 요금을 충당하기에 충분하지 않습니다. 가스를 위한 자금을 추가하고 다시 시도하세요."
+      }
     },
     "signFooterBar": {
       "gasless": {
@@ -412,7 +428,9 @@
         "afterSignDesc": "서명한 후, QR 코드를 {{brand}} 앞에 있는 PC 카메라 앞에 두세요.",
         "signWith": "{{brand}}로 서명하기",
         "getSig": "서명 받기",
-        "misMatchSignId": "불일치하는 거래 데이터입니다. 거래 세부 정보를 확인해 주세요."
+        "misMatchSignId": "불일치하는 거래 데이터입니다. 거래 세부 정보를 확인해 주세요.",
+        "txFailedBy": "{{category}}에 실패했습니다.",
+        "retryTxFailedBy": "{{category}}에 실패했습니다: 다시 시도해 주세요"
       },
       "keystone": {
         "txRejected": "거래가 거부되었습니다",
@@ -468,7 +486,8 @@
       "cancelAll": "모든 {{count}} 요청을 Dapp에서 취소합니다.",
       "resend": "재시도",
       "blockDappFromSendingRequests": "블록 Dapp이 1분 동안 요청을 보내지 못하게 합니다.",
-      "cancelConnection": "연결 취소"
+      "cancelConnection": "연결 취소",
+      "iGotIt": "알겠어요"
     },
     "signTypedData": {
       "permit": {
@@ -767,11 +786,13 @@
       },
       "tab-switch": {
         "contract": "계약에 의해",
-        "assets": "자산별"
+        "assets": "자산별",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "EIP-7702 위임 없음",
             "noDataText": "승인 없음",
             "noMatchText": "일치하지 않음",
             "loadingText": "로딩 중..."
@@ -789,7 +810,9 @@
           },
           "btnText_one": "Revoke ({{count}})",
           "btnText_other": "Revoke ({{count}})",
-          "btnText_zero": "철회"
+          "btnText_zero": "철회",
+          "notSupport7702Title": "현재 주소 유형에 대해 지원되지 않음",
+          "notSupport7702Content": "현재 개인 키 및 시드 구문 주소에 대한 EIP-7702 위임 철회만 지원합니다."
         },
         "ViewMore": {
           "text": "자세히 보기"
@@ -826,6 +849,12 @@
               "tipApprovedAmount": "승인된 금액",
               "tipMyBalance": "내 잔액"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "currentAddress": "현재 주소",
+            "delegatedAddress": "위임된 주소"
           }
         }
       },
@@ -1163,7 +1192,8 @@
         "chainEnd": "체인",
         "chain": "체인,",
         "missingDataTooltip": "현재 {{text}}의 네트워크 문제로 인해 잔액이 업데이트되지 않을 수 있습니다.",
-        "importType": "{{type}}에 의해 가져왔습니다."
+        "importType": "{{type}}에 의해 가져왔습니다.",
+        "appChainTips": "Hyperliquid 계정이 포함되지 않음"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

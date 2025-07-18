@@ -23,6 +23,11 @@
         "loading": "La carga puede tardar un momento y es posible que haya retrasos en los datos.",
         "title": "Ocultar transacciones fraudulentas",
         "btn": "Ocultar transacciones de estafa"
+      },
+      "detail": {
+        "Pending": "Pendiente",
+        "Failed": "Fallido",
+        "Succeeded": "Sucedido"
       }
     },
     "chainList": {
@@ -347,6 +352,17 @@
           "title": "Cambiar al servicio seguro de Rabby",
           "button": "OK"
         }
+      },
+      "errorRetry": {
+        "InvalidTx": "Transacción inválida.",
+        "defaultTips": "Algo está mal. Por favor, intenta de nuevo más tarde.",
+        "gasLimitTooLow": "Límite de gas demasiado bajo",
+        "alreadySubmitted": "Transacción ya enviada. Transacción duplicada detectada.",
+        "gasExceedsBlockGasLimit": "El gas excede el límite de gas del bloque. Por favor, ajusta y vuelve a intentarlo.",
+        "nonceTooLow": "Nonce demasiado bajo. Lo actualizaremos a {{nonce}}. Haga clic en \"Reintentar\" para confirmar y volver a intentarlo.",
+        "nonceTooHigh": "Nonce demasiado alto. Por favor, ajusta el nonce y vuelve a intentarlo.",
+        "insufficient": "Su saldo de gas no es suficiente para cubrir la tarifa de gas de la red. Agregue fondos para el gas e intente nuevamente.",
+        "gasPriceTooLow": "El precio del gas es demasiado bajo. Lo ajustaremos en un 30% para ayudar a que su transacción se confirme. Haga clic en “Retry” para confirmar y volver a intentarlo."
       }
     },
     "signFooterBar": {
@@ -401,7 +417,9 @@
         "qrcodeDesc": "Escanea con tu {{brand}} para firmar<br></br>Después de firmar, haz clic en el botón de abajo para recibir la firma",
         "misMatchSignId": "Datos de transacción incongruentes. Por favor, verifica los detalles de la transacción.",
         "unknownQRCode": "Error: No pudimos identificar ese código QR",
-        "afterSignDesc": "Después de firmar, coloca el código QR en tu {{brand}} frente a la cámara de tu PC"
+        "afterSignDesc": "Después de firmar, coloca el código QR en tu {{brand}} frente a la cámara de tu PC",
+        "txFailedBy": "Fail to {{category}}",
+        "retryTxFailedBy": "Fallo al {{category}}: Por favor, inténtalo de nuevo"
       },
       "ledger": {
         "resent": "Reenviar",
@@ -468,7 +486,8 @@
       "cancelAll": "Cancelar todas las {{count}} solicitudes de Dapp",
       "cancelConnection": "Cancelar conexión",
       "cancelTransaction": "Cancelar Transacción",
-      "detectedMultipleRequestsFromThisDapp": "Detectamos múltiples solicitudes de esta Dapp"
+      "detectedMultipleRequestsFromThisDapp": "Detectamos múltiples solicitudes de esta Dapp",
+      "iGotIt": "Lo tengo"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Firmar Datos Tipados en {{chain}}",
@@ -767,11 +786,13 @@
       },
       "tab-switch": {
         "contract": "Por Contratos",
-        "assets": "Por Activos"
+        "assets": "Por Activos",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "No EIP-7702 Delegation",
             "loadingText": "Cargando...",
             "noMatchText": "Sin Coincidencias",
             "noDataText": "Sin Aprobaciones"
@@ -789,7 +810,9 @@
             "modalTitle_other": "Se requiere un total de <2>{{count}}</2> firmas",
             "modalTitle_one": "Se requiere un total de <2>{{count}}</2> firmas",
             "modalContent": "Las aprobaciones del mismo contrato Permit2 se empaquetarían juntas bajo la misma firma."
-          }
+          },
+          "notSupport7702Title": "No compatible con el tipo de dirección actual",
+          "notSupport7702Content": "Actualmente solo admite revocar la delegación EIP-7702 para direcciones de clave privada y frase semilla."
         },
         "ViewMore": {
           "text": "Ver más"
@@ -826,6 +849,12 @@
               "tipMyBalance": "Mi Balance",
               "tipApprovedAmount": "Monto Aprobado"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "delegatedAddress": "Dirección Delegada",
+            "currentAddress": "Dirección actual"
           }
         }
       },
@@ -1091,7 +1120,8 @@
         "importType": "Importado por {{type}}",
         "missingDataTooltip": "El saldo puede no estar actualizado debido a problemas actuales de la red con {{text}}.",
         "chainEnd": "cadena",
-        "chain": "cadena,"
+        "chain": "cadena,",
+        "appChainTips": "Hyperliquid Account no incluido"
       },
       "recentConnection": {
         "disconnected": "Desconectado",

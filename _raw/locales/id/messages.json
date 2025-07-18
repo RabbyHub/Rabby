@@ -23,7 +23,12 @@
         "btn": "Sembunyikan transaksi penipuan",
         "title": "Sembunyikan transaksi penipuan"
       },
-      "title": "Transaksi"
+      "title": "Transaksi",
+      "detail": {
+        "Failed": "Gagal",
+        "Pending": "Menunggu",
+        "Succeeded": "Sukses"
+      }
     },
     "chainList": {
       "mainnet": "Jaringan Utama",
@@ -347,7 +352,18 @@
       "protocol": "Protokol",
       "contract": "Alamat kontrak pintar",
       "advancedSettings": "Pengaturan Lanjutan",
-      "trustValueTitle": "Nilai kepercayaan"
+      "trustValueTitle": "Nilai kepercayaan",
+      "errorRetry": {
+        "alreadySubmitted": "Transaksi sudah diajukan. Transaksi duplikat terdeteksi.",
+        "gasExceedsBlockGasLimit": "Gas melebihi batas gas blok. Silakan sesuaikan dan coba lagi.",
+        "nonceTooHigh": "Nonce terlalu tinggi. Silakan sesuaikan nonce dan coba lagi.",
+        "gasLimitTooLow": "Batas gas terlalu rendah",
+        "InvalidTx": "Transaksi tidak valid.",
+        "defaultTips": "Ada yang salah. Silakan coba lagi nanti.",
+        "insufficient": "Saldo gas Anda tidak cukup untuk menutupi biaya gas jaringan. Tambahkan dana untuk gas dan coba lagi.",
+        "nonceTooLow": "Nonce terlalu rendah. Kami akan memperbaruinya menjadi {{nonce}}. Klik “Retry” untuk mengonfirmasi dan mencoba lagi.",
+        "gasPriceTooLow": "Harga gas terlalu rendah. Kami akan menyesuaikannya sebesar 30% untuk membantu konfirmasi transaksi Anda. Klik \"Coba Lagi\" untuk mengonfirmasi dan mencoba lagi."
+      }
     },
     "signFooterBar": {
       "gasless": {
@@ -412,7 +428,9 @@
         "unknownQRCode": "Kesalahan: Kami tidak dapat mengidentifikasi kode QR itu",
         "qrcodeDesc": "Pindai dengan {{brand}} Anda untuk menandatangani<br></br>Setelah menandatangani, klik tombol di bawah untuk menerima tanda tangan",
         "txFailed": "Gagal membuat",
-        "getSig": "Dapatkan tanda tangan"
+        "getSig": "Dapatkan tanda tangan",
+        "txFailedBy": "Gagal untuk {{category}}",
+        "retryTxFailedBy": "Gagal untuk {{category}}: Silakan Coba Lagi"
       },
       "keystone": {
         "unsupportedType": "Kesalahan: Jenis transaksi tidak didukung atau tidak dikenal.",
@@ -468,7 +486,8 @@
       "resend": "Coba lagi",
       "cancelConnection": "Batalkan koneksi",
       "imKeyConnected": "imKey terhubung",
-      "imKeyNotConnected": "imKey tidak terhubung"
+      "imKeyNotConnected": "imKey tidak terhubung",
+      "iGotIt": "Saya Mengerti"
     },
     "signTypedData": {
       "permit": {
@@ -767,11 +786,13 @@
       },
       "tab-switch": {
         "assets": "Dengan Aset",
-        "contract": "Oleh Kontrak"
+        "contract": "Oleh Kontrak",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "Tidak ada Delegasi EIP-7702",
             "loadingText": "Memuat...",
             "noDataText": "Tidak Ada Persetujuan",
             "noMatchText": "Tidak Sesuai"
@@ -789,7 +810,9 @@
           },
           "btnText_one": "Cabut ({{count}})",
           "btnText_zero": "Batalkan",
-          "btnText_other": "Cabut ({{count}})"
+          "btnText_other": "Cabut ({{count}})",
+          "notSupport7702Title": "Tidak Didukung untuk Tipe Alamat Saat Ini",
+          "notSupport7702Content": "Saat ini hanya mendukung mencabut delegasi EIP-7702 untuk alamat kunci pribadi & frase benih."
         },
         "ViewMore": {
           "text": "Lihat lebih banyak"
@@ -826,6 +849,12 @@
               "tipApprovedAmount": "Jumlah Disetujui",
               "tipMyBalance": "Saldo Saya"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "currentAddress": "Alamat Saat Ini",
+            "delegatedAddress": "Alamat Delegasi"
           }
         }
       },
@@ -1163,7 +1192,8 @@
         "view": "Lihat",
         "pendingCountPlural": "{{countStr}} Pendings",
         "missingDataTooltip": "Saldo mungkin tidak diperbarui karena masalah jaringan saat ini dengan {{text}}.",
-        "rejectAll": "Tolak Semua"
+        "rejectAll": "Tolak Semua",
+        "appChainTips": "Akun Hyperliquid tidak termasuk"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

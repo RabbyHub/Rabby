@@ -23,7 +23,12 @@
         "title": "Ocultar transações de scam",
         "loading": "Carregando pode levar um momento e atrasos nos dados são possíveis."
       },
-      "title": "Transações"
+      "title": "Transações",
+      "detail": {
+        "Pending": "Pendente",
+        "Failed": "Falhou",
+        "Succeeded": "Aprovado"
+      }
     },
     "chainList": {
       "title": "{{count}} chains Integrados",
@@ -347,7 +352,18 @@
       "advancedSettings": "Configurações Avançadas",
       "trustValueTitle": "Valor de confiança",
       "contract": "Endereço do contrato inteligente",
-      "amount": "Quantidade"
+      "amount": "Quantidade",
+      "errorRetry": {
+        "gasLimitTooLow": "Limite de Gas muito baixo",
+        "InvalidTx": "Transação inválida.",
+        "nonceTooHigh": "Nonce muito alto. Por favor, ajuste o nonce e tente novamente.",
+        "alreadySubmitted": "Transação já enviada. Transação duplicada detectada.",
+        "gasExceedsBlockGasLimit": "O gás excede o limite de gás do bloco. Por favor, ajuste e tente novamente.",
+        "insufficient": "Seu saldo de gás não é suficiente para cobrir a taxa de gás da rede. Adicione fundos para gás e tente novamente.",
+        "nonceTooLow": "Nonce muito baixo. Vamos atualizá-lo para {{nonce}}. Clique em “Tentar novamente” para confirmar e tentar de novo.",
+        "defaultTips": "Algo está errado. Por favor, tente novamente mais tarde.",
+        "gasPriceTooLow": "Preço do gás muito baixo. Iremos ajustá-lo em 30% para ajudar na confirmação da sua transação. Clique em \"Tentar novamente\" para confirmar e tentar outra vez."
+      }
     },
     "signFooterBar": {
       "gasless": {
@@ -412,7 +428,9 @@
         "unknownQRCode": "Erro: Não conseguimos identificar esse QR code",
         "afterSignDesc": "Após assinar, coloque o QR code no {{brand}} em frente à câmera do seu PC",
         "signWith": "Assine com {{brand}}",
-        "qrcodeDesc": "Escaneie com seu {{brand}} para assinar<br></br>Após assinar, clique no botão abaixo para receber a assinatura"
+        "qrcodeDesc": "Escaneie com seu {{brand}} para assinar<br></br>Após assinar, clique no botão abaixo para receber a assinatura",
+        "txFailedBy": "Falha ao {{category}}",
+        "retryTxFailedBy": "Falha ao {{category}}: Por favor, tente novamente"
       },
       "keystone": {
         "mismatchedWalletError": "Carteira incompatível",
@@ -468,7 +486,8 @@
       "cancelCurrentConnection": "Cancelar a conexão atual",
       "testnet": "Testnet",
       "cancelCurrentTransaction": "Cancelar transação atual",
-      "blockDappFromSendingRequests": "Bloquear Dapp de enviar solicitações por 1 min"
+      "blockDappFromSendingRequests": "Bloquear Dapp de enviar solicitações por 1 min",
+      "iGotIt": "Eu Entendi"
     },
     "signTypedData": {
       "permit": {
@@ -767,11 +786,13 @@
       },
       "tab-switch": {
         "contract": "Por Contratos",
-        "assets": "Por Ativos"
+        "assets": "Por Ativos",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "Sem Delegação EIP-7702",
             "noDataText": "Sem Aprovações",
             "noMatchText": "Sem correspondência",
             "loadingText": "Carregando..."
@@ -789,7 +810,9 @@
           },
           "btnText_other": "Revogar ({{count}})",
           "btnText_zero": "Revoke",
-          "btnText_one": "Revogar ({{count}})"
+          "btnText_one": "Revogar ({{count}})",
+          "notSupport7702Title": "Não suportado para o tipo de endereço atual",
+          "notSupport7702Content": "Atualmente, suporta apenas a revogação da delegação EIP-7702 para endereços de chave privada e frase-semente."
         },
         "ViewMore": {
           "text": "Ver mais"
@@ -826,6 +849,12 @@
               "tipMyBalance": "Meu Saldo",
               "tipApprovedAmount": "Quantidade Aprovada"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "currentAddress": "Endereço Atual",
+            "delegatedAddress": "Endereço Delegado"
           }
         }
       },
@@ -1163,7 +1192,8 @@
         "chain": "cadeia,",
         "chainEnd": "cadeia",
         "missingDataTooltip": "O saldo pode não ser atualizado devido a problemas de rede atuais com {{text}}.",
-        "importType": "Importado por {{type}}"
+        "importType": "Importado por {{type}}",
+        "appChainTips": "Hyperliquid Account não incluído"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

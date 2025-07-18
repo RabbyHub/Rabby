@@ -445,13 +445,16 @@
             "modalTitle_other": "Un total de <2>{{count}}</2> signatures est requis",
             "modalContent": "Les approbations du même contrat Permit2 seraient regroupées sous la même signature.",
             "modalTitle_one": "Un total de <2>{{count}}</2> signature est requis"
-          }
+          },
+          "notSupport7702Title": "Non pris en charge pour le type d'adresse actuel",
+          "notSupport7702Content": "Actuellement, seuls les retraits de délégation EIP-7702 pour les adresses de clé privée et de phrase de graine sont supportés."
         },
         "ViewMore": {
           "text": "Voir plus"
         },
         "table": {
           "bodyEmpty": {
+            "7702": "Pas de délégation EIP-7702",
             "loadingText": "Chargement...",
             "noMatchText": "Aucune concordance",
             "noDataText": "Aucune autorisation"
@@ -466,7 +469,8 @@
       },
       "tab-switch": {
         "assets": "Par actifs",
-        "contract": "Par contrats"
+        "contract": "Par contrats",
+        "eip-7702": "EIP-7702"
       },
       "tableConfig": {
         "byAssets": {
@@ -496,6 +500,12 @@
             "myApprovalTime": "Heure d'approbation",
             "myApprovedAssets": "Mes actifs approuvés",
             "revokeTrends": "Tendances des révocations sur 24h"
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "delegatedAddress": "Adresse Déléguée",
+            "currentAddress": "Adresse actuelle"
           }
         }
       },
@@ -787,7 +797,8 @@
         "whatsNew": "Quoi de neuf",
         "chain": "chaîne,",
         "chainEnd": "chaîne",
-        "missingDataTooltip": "Le solde peut ne pas être mis à jour en raison de problèmes de réseau actuels avec {{text}}."
+        "missingDataTooltip": "Le solde peut ne pas être mis à jour en raison de problèmes de réseau actuels avec {{text}}.",
+        "appChainTips": "Compte Hyperliquid non inclus"
       },
       "nft": {
         "collectionList": {
@@ -1696,7 +1707,9 @@
         "sigReceived": "Signature reçue",
         "signWith": "Signer avec {{brand}}",
         "txFailed": "Échec de la soumission",
-        "unknownQRCode": "Erreur : Nous n'avons pas pu identifier ce QR code"
+        "unknownQRCode": "Erreur : Nous n'avons pas pu identifier ce QR code",
+        "txFailedBy": "Échec de {{category}}",
+        "retryTxFailedBy": "Échec de {{category}} : Veuillez réessayer"
       },
       "requestFrom": "Demande de",
       "resend": "Recommencer",
@@ -1764,7 +1777,8 @@
         "depositTips": "Pour compléter le dépôt GasAccount, cette transaction sera annulée. Vous devrez la recréer après le dépôt."
       },
       "imKeyConnected": "imKey est connecté",
-      "imKeyNotConnected": "imKey n'est pas connecté"
+      "imKeyNotConnected": "imKey n'est pas connecté",
+      "iGotIt": "Je l'ai eu"
     },
     "signText": {
       "createKey": {
@@ -2092,6 +2106,17 @@
           "content": "L'API Safe est indisponible. Passez au service Safe déployé par Rabby pour que votre Safe reste fonctionnel. <strong>Tous les signataires Safe doivent utiliser Rabby Wallet pour autoriser les transactions.<strong>",
           "button": "OK"
         }
+      },
+      "errorRetry": {
+        "InvalidTx": "Transaction invalide.",
+        "gasLimitTooLow": "Limite de gaz trop basse",
+        "defaultTips": "Quelque chose ne va pas. Veuillez réessayer plus tard.",
+        "nonceTooHigh": "Nonce trop élevé. Veuillez ajuster le nonce et réessayer.",
+        "alreadySubmitted": "Transaction déjà soumise. Transaction dupliquée détectée.",
+        "gasExceedsBlockGasLimit": "Le gaz dépasse la limite de gaz du bloc. Veuillez ajuster et réessayer.",
+        "insufficient": "Votre solde de gaz n'est pas suffisant pour couvrir les frais de gaz du réseau. Ajoutez des fonds pour le gaz et réessayez.",
+        "nonceTooLow": "Nonce trop bas. Nous allons le mettre à jour à {{nonce}}. Cliquez sur \"Réessayer\" pour confirmer et réessayer.",
+        "gasPriceTooLow": "Le prix du gaz est trop bas. Nous allons l'ajuster de 30 % pour aider votre transaction à être confirmée. Cliquez sur « Réessayer » pour confirmer et réessayer."
       }
     },
     "signTypedData": {
@@ -2279,6 +2304,11 @@
         "parseInputDataError": "Échec de l'analyse du message",
         "tipInputData": "La transaction comprend un message",
         "scamToolTip": "Cette transaction est initiée par des escrocs pour envoyer des tokens et NFTs frauduleux. Veuillez éviter d'interagir avec elle."
+      },
+      "detail": {
+        "Pending": "En attente",
+        "Succeeded": "Réussi",
+        "Failed": "Échoué"
       }
     },
     "unlock": {

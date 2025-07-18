@@ -23,7 +23,12 @@
         "title": "Ẩn giao dịch lừa đảo",
         "btn": "Ẩn giao dịch lừa đảo"
       },
-      "title": "Giao dịch"
+      "title": "Giao dịch",
+      "detail": {
+        "Succeeded": "Thành công",
+        "Pending": "Đang chờ xử lý",
+        "Failed": "Thất bại"
+      }
     },
     "chainList": {
       "mainnet": "Mainnets",
@@ -347,7 +352,18 @@
       "addressSource": "Nguồn địa chỉ",
       "maxPriorityFeeDisabledAlert": "Vui lòng đặt Giá Gas trước.",
       "label": "Nhãn",
-      "contract": "Địa chỉ hợp đồng thông minh"
+      "contract": "Địa chỉ hợp đồng thông minh",
+      "errorRetry": {
+        "defaultTips": "Có điều gì đó không đúng. Vui lòng thử lại sau.",
+        "gasLimitTooLow": "Giới hạn Gas quá thấp",
+        "nonceTooLow": "Nonce quá thấp. Chúng tôi sẽ cập nhật nó thành {{nonce}}. Nhấn \"Retry\" để xác nhận và thử lại.",
+        "gasExceedsBlockGasLimit": "Gas vượt quá giới hạn gas của khối. Vui lòng điều chỉnh và thử lại.",
+        "alreadySubmitted": "Giao dịch đã được nộp. Phát hiện giao dịch trùng lặp.",
+        "insufficient": "Số dư gas của bạn không đủ để trang trải phí gas mạng. Vui lòng thêm tiền vào gas và thử lại.",
+        "nonceTooHigh": "Nonce quá cao. Vui lòng điều chỉnh nonce và thử lại.",
+        "gasPriceTooLow": "Giá gas quá thấp. Chúng tôi sẽ điều chỉnh nó tăng 30% để giúp giao dịch của bạn được xác nhận. Nhấn “Retry” để xác nhận và thử lại.",
+        "InvalidTx": "Giao dịch không hợp lệ."
+      }
     },
     "signFooterBar": {
       "gasless": {
@@ -412,7 +428,9 @@
         "unknownQRCode": "Lỗi: Chúng tôi không thể nhận diện mã QR đó.",
         "misMatchSignId": "Dữ liệu giao dịch không khớp. Vui lòng kiểm tra chi tiết giao dịch.",
         "qrcodeDesc": "Quét với {{brand}} của bạn để ký<br></br>Sau khi ký xong, nhấn nút bên dưới để nhận chữ ký",
-        "failedToGetExplain": "Không thể lấy giải thích"
+        "failedToGetExplain": "Không thể lấy giải thích",
+        "txFailedBy": "Không thể {{category}}",
+        "retryTxFailedBy": "Không thể {{category}}: Vui lòng thử lại"
       },
       "keystone": {
         "siging": "Gửi yêu cầu ký",
@@ -468,7 +486,8 @@
       "blockDappFromSendingRequests": "Chặn Dapp gửi yêu cầu trong 1 phút",
       "cancelCurrentTransaction": "Hủy giao dịch hiện tại",
       "cancelAll": "Hủy tất cả {{count}} yêu cầu từ Dapp",
-      "connectButton": "Kết nối"
+      "connectButton": "Kết nối",
+      "iGotIt": "Tôi đã hiểu rồi"
     },
     "signTypedData": {
       "permit": {
@@ -767,11 +786,13 @@
       },
       "tab-switch": {
         "assets": "Bởi Tài sản",
-        "contract": "Bằng Hợp Đồng"
+        "contract": "Bằng Hợp Đồng",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "Không có EIP-7702 Delegation",
             "noMatchText": "Không khớp",
             "loadingText": "Đang tải...",
             "noDataText": "Không có phê duyệt"
@@ -789,7 +810,9 @@
           },
           "btnText_other": "Hủy bỏ ({{count}})",
           "btnText_zero": "Hủy bỏ",
-          "btnText_one": "Thu hồi ({{count}})"
+          "btnText_one": "Thu hồi ({{count}})",
+          "notSupport7702Title": "Không hỗ trợ cho loại địa chỉ hiện tại",
+          "notSupport7702Content": "Hiện tại chỉ hỗ trợ thu hồi ủy quyền EIP-7702 cho các địa chỉ khóa riêng & cụm từ hạt giống."
         },
         "ViewMore": {
           "text": "Xem thêm"
@@ -826,6 +849,12 @@
               "tipMyBalance": "Số Dư Của Tôi",
               "tipApprovedAmount": "Số tiền đã phê duyệt"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "currentAddress": "Địa chỉ hiện tại",
+            "delegatedAddress": "Địa chỉ được ủy quyền"
           }
         }
       },
@@ -1163,7 +1192,8 @@
         "rabbyIsInUseAndMetamaskIsBanned": "Rabby đang được sử dụng và Metamask bị cấm",
         "chainEnd": "chuỗi",
         "chain": "chuỗi,",
-        "pendingCountPlural": "{{countStr}} Đang chờ xử lý"
+        "pendingCountPlural": "{{countStr}} Đang chờ xử lý",
+        "appChainTips": "Tài khoản Hyperliquid không được bao gồm"
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

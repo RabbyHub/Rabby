@@ -23,6 +23,11 @@
         "loading": "Das Laden kann einen Moment dauern, und Datenverzögerungen sind möglich",
         "title": "Betrugstransaktionen ausblenden",
         "btn": "Betrügerische Transaktionen ausblenden"
+      },
+      "detail": {
+        "Succeeded": "Erfolgreich",
+        "Failed": "Fehlgeschlagen",
+        "Pending": "Ausstehend"
       }
     },
     "chainList": {
@@ -347,6 +352,17 @@
           "title": "Wechseln Sie zum Rabby Safe Service",
           "content": "Safe API ist nicht verfügbar. Wechseln Sie zum von Rabby bereitgestellten Safe-Dienst, um Ihren Safe funktionsfähig zu halten. <strong>Alle Safe-Signierer müssen Rabby Wallet verwenden, um Transaktionen zu autorisieren.<strong>"
         }
+      },
+      "errorRetry": {
+        "InvalidTx": "Ungültige Transaktion.",
+        "gasLimitTooLow": "Gas Limit zu niedrig",
+        "gasExceedsBlockGasLimit": "Gas überschreitet das Blockgaslimit. Bitte anpassen und erneut versuchen.",
+        "alreadySubmitted": "Transaktion bereits eingereicht. Doppelte Transaktion erkannt.",
+        "nonceTooLow": "Nonce zu niedrig. Wir werden es auf {{nonce}} aktualisieren. Klicken Sie auf „Wiederholen“, um zu bestätigen und es erneut zu versuchen.",
+        "gasPriceTooLow": "Gaspreis zu niedrig. Wir werden ihn um 30 % anpassen, um Ihnen zu helfen, Ihre Transaktion zu bestätigen. Klicken Sie auf „Erneut versuchen“, um zu bestätigen und es erneut zu versuchen.",
+        "insufficient": "Ihr Gasbilanz reicht nicht aus, um die Netzwerk-Gebühr zu decken. Fügen Sie Mittel für Gas hinzu und versuchen Sie es erneut.",
+        "nonceTooHigh": "Nonce zu hoch. Bitte passen Sie den Nonce an und versuchen Sie es erneut.",
+        "defaultTips": "Etwas stimmt nicht. Bitte versuchen Sie es später erneut."
       }
     },
     "signFooterBar": {
@@ -401,7 +417,9 @@
         "qrcodeDesc": "Scannen Sie mit Ihrem {{brand}} zum Signieren<br></br>Nach dem Signieren, klicken Sie auf den untenstehenden Button, um die Signatur zu empfangen",
         "misMatchSignId": "Inkongruente Transaktionsdaten. Bitte überprüfen Sie die Transaktionsdetails.",
         "unknownQRCode": "Fehler: Diesen QR-Code konnten wir nicht erkennen",
-        "afterSignDesc": "Nach dem Signieren, halten Sie den QR-Code auf Ihrem {{brand}} vor die Kamera Ihres PCs"
+        "afterSignDesc": "Nach dem Signieren, halten Sie den QR-Code auf Ihrem {{brand}} vor die Kamera Ihres PCs",
+        "txFailedBy": "Fehler bei {{category}}",
+        "retryTxFailedBy": "Fehler bei {{category}}: Bitte versuchen Sie es erneut"
       },
       "ledger": {
         "resent": "Erneut gesendet",
@@ -468,7 +486,8 @@
       "keystoneNotConnected": "Keystone ist nicht verbunden",
       "imKeyConnected": "imKey ist verbunden",
       "keystoneConnected": "Keystone ist verbunden",
-      "imKeyNotConnected": "imKey ist nicht verbunden"
+      "imKeyNotConnected": "imKey ist nicht verbunden",
+      "iGotIt": "Ich hab's."
     },
     "signTypedData": {
       "signTypeDataOnChain": "Signiere {{chain}} typisierte Daten",
@@ -767,11 +786,13 @@
       },
       "tab-switch": {
         "contract": "Nach Smart Contracts",
-        "assets": "Nach Vermögenswerten"
+        "assets": "Nach Vermögenswerten",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "Keine EIP-7702-Delegation",
             "loadingText": "Laden...",
             "noMatchText": "Keine Übereinstimmung",
             "noDataText": "Keine Genehmigungen"
@@ -789,7 +810,9 @@
             "modalTitle_other": "Insgesamt sind <2>{{count}}</2> Signaturen erforderlich",
             "modalContent": "Genehmigungen desselben Permit2-Vertrags würden mit derselben Signatur zusammengefasst.",
             "modalTitle_one": "Insgesamt ist eine Signatur von <2>{{count}}</2> erforderlich."
-          }
+          },
+          "notSupport7702Title": "Für den aktuellen Adresstyp nicht unterstützt",
+          "notSupport7702Content": "Derzeit wird nur das Widerrufen von EIP-7702-Delegierungen für private Schlüssel- und Seed-Phrasen-Adressen unterstützt."
         },
         "ViewMore": {
           "text": "Mehr anzeigen"
@@ -826,6 +849,12 @@
               "tipApprovedAmount": "Genehmigter Betrag",
               "tipMyBalance": "Mein Guthaben"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "delegatedAddress": "Delegierte Adresse",
+            "currentAddress": "Aktuelle Adresse"
           }
         }
       },
@@ -1091,7 +1120,8 @@
         "importType": "Importiert von {{type}}",
         "chainEnd": "Kette",
         "chain": "kette,",
-        "missingDataTooltip": "Der Kontostand wird möglicherweise aufgrund aktueller Netzwerkprobleme mit {{text}} nicht aktualisiert."
+        "missingDataTooltip": "Der Kontostand wird möglicherweise aufgrund aktueller Netzwerkprobleme mit {{text}} nicht aktualisiert.",
+        "appChainTips": "Hyperliquid Account nicht enthalten"
       },
       "recentConnection": {
         "disconnected": "Getrennt",

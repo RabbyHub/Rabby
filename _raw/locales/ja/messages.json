@@ -23,6 +23,11 @@
         "title": "スキャム取引を非表示にする",
         "btn": "スキャム取引を非表示",
         "loading": "読み込みには時間がかかる場合があり、データの遅延が発生する可能性があります。"
+      },
+      "detail": {
+        "Succeeded": "成功しました",
+        "Pending": "保留中",
+        "Failed": "失敗しました"
       }
     },
     "chainList": {
@@ -347,6 +352,17 @@
           "title": "RabbyのSafe Serviceに切り替える",
           "content": "Safe API は利用できません。Rabby によってデプロイされた Safe サービスに切り替えて、Safe を機能させ続けてください。<strong>すべての Safe 署名者は Rabby Wallet を使用してトランザクションを承認する必要があります。<strong>"
         }
+      },
+      "errorRetry": {
+        "InvalidTx": "無効なトランザクション。",
+        "defaultTips": "何か問題が発生しました。後でもう一度お試しください。",
+        "nonceTooHigh": "Nonceが高すぎます。nonceを調整して再試行してください。",
+        "gasLimitTooLow": "ガス制限が低すぎます",
+        "gasExceedsBlockGasLimit": "ガスがブロックのガス制限を超えています。調整して再試行してください。",
+        "nonceTooLow": "Nonceが低すぎます。{{nonce}}に更新します。“Retry”をクリックして確認し、再試行してください。",
+        "insufficient": "あなたのガス残高は、ネットワークガス料金をカバーするには不十分です。ガスのために資金を追加して、もう一度お試しください。",
+        "gasPriceTooLow": "ガス価格が低すぎます。取引が確認できるように30％調整します。「再試行」をクリックして確認し、再度お試しください。",
+        "alreadySubmitted": "取引はすでに提出されています。重複する取引が検出されました。"
       }
     },
     "signFooterBar": {
@@ -401,7 +417,9 @@
         "qrcodeDesc": "署名するためにあなたの{{brand}}でスキャンしてください<br></br>署名した後、下のボタンをクリックして署名を受け取ってください",
         "misMatchSignId": "不一致のトランザクションデータです。トランザクションの詳細を確認してください",
         "unknownQRCode": "エラー：そのQRコードは識別できませんでした",
-        "afterSignDesc": "署名後、{{brand}}のQRコードをPCカメラの前に置いてください"
+        "afterSignDesc": "署名後、{{brand}}のQRコードをPCカメラの前に置いてください",
+        "retryTxFailedBy": "{{category}}に失敗しました: 再試行してください",
+        "txFailedBy": "{{category}}に失敗しました"
       },
       "ledger": {
         "resent": "再送",
@@ -468,7 +486,8 @@
       "cancelCurrentConnection": "現在の接続をキャンセル",
       "cancelTransaction": "トランザクションをキャンセル",
       "cancelCurrentTransaction": "現在のトランザクションをキャンセルする",
-      "detectedMultipleRequestsFromThisDapp": "このDappからの複数のリクエストを検出しました。"
+      "detectedMultipleRequestsFromThisDapp": "このDappからの複数のリクエストを検出しました。",
+      "iGotIt": "わかった"
     },
     "signTypedData": {
       "signTypeDataOnChain": "{{chain}}の型付きデータに署名",
@@ -767,11 +786,13 @@
       },
       "tab-switch": {
         "contract": "契約別",
-        "assets": "資産別"
+        "assets": "資産別",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "EIP-7702の委任はありません",
             "loadingText": "読み込み中...",
             "noMatchText": "該当なし",
             "noDataText": "承認なし"
@@ -789,7 +810,9 @@
             "modalContent": "同じPermit2コントラクトからの承認は、同じ署名の下にまとめられます。",
             "modalTitle_other": "合計で <2>{{count}}</2> つの署名が必要です",
             "modalTitle_one": "<2>{{count}}</2> 件の署名が必要です"
-          }
+          },
+          "notSupport7702Title": "現在のアドレスタイプではサポートされていません",
+          "notSupport7702Content": "現在は、プライベートキーとシードフレーズアドレスのEIP-7702の委任を取り消すことのみをサポートしています。"
         },
         "ViewMore": {
           "text": "詳細を表示"
@@ -826,6 +849,12 @@
               "tipApprovedAmount": "承認数量",
               "tipMyBalance": "私の残高"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "delegatedAddress": "委任アドレス",
+            "currentAddress": "現在のアドレス"
           }
         }
       },
@@ -1091,7 +1120,8 @@
         "importType": "{{type}} によってインポート",
         "chainEnd": "チェーン",
         "chain": "チェーン，",
-        "missingDataTooltip": "現在の{{text}}のネットワーク問題により、残高が更新されない場合があります。"
+        "missingDataTooltip": "現在の{{text}}のネットワーク問題により、残高が更新されない場合があります。",
+        "appChainTips": "Hyperliquid アカウントは含まれていません"
       },
       "recentConnection": {
         "disconnected": "切断済み",

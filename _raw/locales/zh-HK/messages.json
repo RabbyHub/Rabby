@@ -59,6 +59,11 @@
         "title": "隱藏欺詐交易",
         "loading": "數據加載需要一定時間，且可能會有延遲",
         "btn": "隱藏欺詐交易"
+      },
+      "detail": {
+        "Pending": "待处理",
+        "Failed": "失敗",
+        "Succeeded": "成功"
       }
     },
     "dashboard": {
@@ -133,7 +138,8 @@
         "importType": "由 {{type}} 導入",
         "missingDataTooltip": "由於 {{text}}的當前網絡問題，地址結餘可能無法更新。",
         "chain": " 鏈、",
-        "chainEnd": " 鏈"
+        "chainEnd": " 鏈",
+        "appChainTips": "Hyperliquid 帳戶未包含"
       },
       "recentConnection": {
         "disconnected": "已斷開連接",
@@ -926,6 +932,7 @@
         },
         "table": {
           "bodyEmpty": {
+            "7702": "無 EIP-7702 委託",
             "loadingText": "加載中...",
             "noMatchText": "沒有匹配",
             "noDataText": "無授權"
@@ -939,7 +946,9 @@
             "modalTitle_other": "需要總共 <2>{{count}}</2> 个簽名",
             "modalTitle_one": "總共需要 <2>{{count}}</2> 個簽名",
             "modalContent": "來自相同 Permit2 合約的批准將會在相同的簽名下打包在一起。"
-          }
+          },
+          "notSupport7702Title": "不支持当前地址类型",
+          "notSupport7702Content": "目前只支持撤销私钥和种子短语地址的 EIP-7702 授权。"
         },
         "ViewMore": {
           "text": "查看更多"
@@ -953,7 +962,8 @@
       },
       "tab-switch": {
         "assets": "按資產分類",
-        "contract": "按合約分類"
+        "contract": "按合約分類",
+        "eip-7702": "EIP-7702"
       },
       "tableConfig": {
         "byAssets": {
@@ -983,6 +993,12 @@
             "myApprovedAssets": "我的授權資產",
             "revokeTrends": "24小時取消授權趨勢",
             "myApprovalTime": "我的授權時間"
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "delegatedAddress": "委托地址",
+            "currentAddress": "當前地址"
           }
         }
       },
@@ -1363,7 +1379,9 @@
         "sigReceived": "簽名已獲取",
         "signWith": "使用 {{brand}} 簽名",
         "txFailed": "交易失敗",
-        "unknownQRCode": "錯誤：無法識別二維碼"
+        "unknownQRCode": "錯誤：無法識別二維碼",
+        "txFailedBy": "無法 {{category}}",
+        "retryTxFailedBy": "無法 {{category}}：請重試"
       },
       "keystone": {
         "signWith": "切換到{{method}}進行簽名",
@@ -1412,7 +1430,8 @@
         "chainNotSupported": "此區塊鏈不被 GasAccount 支援",
         "depositTips": "要完成GasAccount存款，此交易將被丟棄。您需要在存款後重新進行交易。",
         "loginTips": "若要完成 GasAccount 登录，此交易将被放弃。您需要在登录后重新进行。"
-      }
+      },
+      "iGotIt": "我明白了"
     },
     "signText": {
       "createKey": {
@@ -1740,6 +1759,17 @@
           "button": "OK",
           "content": "Safe API 無法使用。切換至由 Rabby 部署的 Safe 服務，以保持您的 Safe 功能正常。<strong>所有 Safe 簽署者必須使用 Rabby Wallet 來授權交易。<strong>"
         }
+      },
+      "errorRetry": {
+        "InvalidTx": "無效交易。",
+        "gasLimitTooLow": "Gas limit 太低",
+        "defaultTips": "出現錯誤。請稍後再試。",
+        "nonceTooHigh": "Nonce 過高。請調整 nonce 並重試。",
+        "alreadySubmitted": "交易已提交。檢測到重複交易。",
+        "gasExceedsBlockGasLimit": "超出區塊燃氣限制。請調整後再試。",
+        "nonceTooLow": "Nonce 太低。我們將更新為 {{nonce}}。請點擊“重試”確認並再試一次。",
+        "gasPriceTooLow": "Gas 價格太低。我們將調整它 30% 以幫助您的交易確認。點擊 “Retry” 來確認並重試。",
+        "insufficient": "您的 gas 餘額不足以支付網絡 gas 費。請添加資金以支付 gas，然後再試一次。"
       }
     },
     "signTypedData": {

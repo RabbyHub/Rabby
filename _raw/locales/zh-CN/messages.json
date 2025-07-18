@@ -59,6 +59,11 @@
         "title": "隐藏欺诈交易",
         "loading": "数据加载需要一定时间，且可能会有延迟",
         "btn": "隐藏欺诈交易"
+      },
+      "detail": {
+        "Pending": "待处理",
+        "Failed": "失败",
+        "Succeeded": "成功"
       }
     },
     "dashboard": {
@@ -133,7 +138,8 @@
         "importType": "由 {{type}} 导入",
         "missingDataTooltip": "由于 {{text}}的当前网络问题，地址余额可能无法更新。",
         "chain": " 链、",
-        "chainEnd": " 链"
+        "chainEnd": " 链",
+        "appChainTips": "Hyperliquid 账户未包含"
       },
       "recentConnection": {
         "disconnected": "已断开连接",
@@ -926,6 +932,7 @@
         },
         "table": {
           "bodyEmpty": {
+            "7702": "不支持 EIP-7702 委托",
             "loadingText": "加载中...",
             "noMatchText": "没有匹配",
             "noDataText": "无授权"
@@ -939,7 +946,9 @@
             "modalTitle_other": "总共需要<2>{{count}}</2>个签名",
             "modalTitle_one": "共需 <2>{{count}}</2> 个签名",
             "modalContent": "来自相同 Permit2 合约的授权将会在相同的签名下打包在一起。"
-          }
+          },
+          "notSupport7702Title": "当前地址类型不支持",
+          "notSupport7702Content": "当前仅支持撤销私钥和助记词地址的 EIP-7702 授权。"
         },
         "ViewMore": {
           "text": "查看更多"
@@ -953,7 +962,8 @@
       },
       "tab-switch": {
         "assets": "按资产分类",
-        "contract": "按合约分类"
+        "contract": "按合约分类",
+        "eip-7702": "EIP-7702"
       },
       "tableConfig": {
         "byAssets": {
@@ -983,6 +993,12 @@
             "myApprovedAssets": "我的授权资产",
             "revokeTrends": "24小时取消授权趋势",
             "myApprovalTime": "我的授权时间"
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "delegatedAddress": "委托地址",
+            "currentAddress": "当前地址"
           }
         }
       },
@@ -1363,7 +1379,9 @@
         "sigReceived": "签名已获取",
         "signWith": "使用 {{brand}} 签名",
         "txFailed": "交易失败",
-        "unknownQRCode": "错误：无法识别二维码"
+        "unknownQRCode": "错误：无法识别二维码",
+        "retryTxFailedBy": "无法 {{category}}：请重试",
+        "txFailedBy": "无法 {{category}}"
       },
       "keystone": {
         "signWith": "切换到{{method}}进行签名",
@@ -1412,7 +1430,8 @@
         "chainNotSupported": "此链不被GasAccount支持",
         "loginTips": "要完成 GasAccount 登录，此交易将被丢弃。您需要在登录后重新进行。",
         "depositTips": "要完成 GasAccount 存款，此交易将被丢弃。存款完成后，您需要重新发起交易。"
-      }
+      },
+      "iGotIt": "我明白了"
     },
     "signText": {
       "createKey": {
@@ -1740,6 +1759,17 @@
           "button": "OK",
           "content": "Safe API 暂不可用。切换到由 Rabby 部署的 Safe 服务以保持您的 Safe 功能正常。<strong>所有 Safe 签署者必须使用 Rabby Wallet 授权交易。</strong>"
         }
+      },
+      "errorRetry": {
+        "alreadySubmitted": "交易已提交。检测到重复交易。",
+        "InvalidTx": "无效的交易。",
+        "gasExceedsBlockGasLimit": "Gas 超过区块 Gas 限制。请调整后重试。",
+        "defaultTips": "出现了问题。请稍后重试。",
+        "insufficient": "您的 gas 余额不足以支付网络 gas 费用。请为 gas 添加资金后重试。",
+        "nonceTooHigh": "Nonce 太高。请调整 nonce 并重试。",
+        "gasPriceTooLow": "Gas价格太低。我们将其调整30%以帮助您的交易确认。点击“重试”以确认并再次尝试。",
+        "nonceTooLow": "Nonce 太低了。我们将更新为 {{nonce}}。点击“Retry”以确认并重试。",
+        "gasLimitTooLow": "Gas 限制过低"
       }
     },
     "signTypedData": {

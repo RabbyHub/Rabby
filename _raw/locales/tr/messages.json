@@ -23,6 +23,11 @@
         "title": "Dolandırıcılık işlemlerini gizle",
         "btn": "Dolandırıcılık işlemlerini gizle",
         "loading": "Yükleme biraz zaman alabilir ve veri gecikmeleri mümkün olabilir"
+      },
+      "detail": {
+        "Failed": "Başarısız",
+        "Pending": "Beklemede",
+        "Succeeded": "Başarılı"
       }
     },
     "chainList": {
@@ -347,6 +352,17 @@
           "title": "Rabby'nin Safe Servisi'ne Geç",
           "content": "Safe API kullanılamıyor. Safe'inizin işlevselliğini sürdürmek için Rabby tarafından dağıtılan Safe hizmetine geçin. <strong>Tüm Safe imzalayıcılarının işlemleri yetkilendirmek için Rabby Wallet kullanması gerekiyor.<strong>"
         }
+      },
+      "errorRetry": {
+        "gasLimitTooLow": "Gas limiti çok düşük",
+        "alreadySubmitted": "İşlem zaten gönderildi. Davet edilen işlem tespit edildi.",
+        "gasExceedsBlockGasLimit": "Gaz, blok gaz limitini aşıyor. Lütfen ayarlayın ve tekrar deneyin.",
+        "insufficient": "Gaz bakiyeniz, ağ gaz ücretini karşılamak için yeterli değil. Gaz için fon ekleyin ve tekrar deneyin.",
+        "nonceTooHigh": "Nonce çok yüksek. Lütfen nonce'u ayarlayın ve tekrar deneyin.",
+        "nonceTooLow": "Nonce çok düşük. Bunu {{nonce}} olarak güncelleyacağız. Onaylamak ve tekrar denemek için \"Yeniden Dene\"ye tıklayın.",
+        "gasPriceTooLow": "Gaz fiyatı çok düşük. İşleminizin onaylanmasına yardımcı olmak için %30 artıracağız. Onaylamak ve tekrar denemek için “Tekrar Dene”ye tıklayın.",
+        "defaultTips": "Bir şeyler yanlış. Lütfen daha sonra tekrar deneyin.",
+        "InvalidTx": "Geçersiz işlem."
       }
     },
     "signFooterBar": {
@@ -401,7 +417,9 @@
         "qrcodeDesc": "İmzalamak için {{brand}} ile tarayın<br></br>İmzaladıktan sonra, imzayı almak için aşağıdaki butona tıklayın",
         "misMatchSignId": "Uyuşmayan işlem verileri. Lütfen işlem detaylarını kontrol edin.",
         "unknownQRCode": "Hata: Bu QR kodunu tanımlayamadık",
-        "afterSignDesc": "İmzaladıktan sonra bilgisayar kamerasının önüne {{brand}} QR kodunu yerleştirin"
+        "afterSignDesc": "İmzaladıktan sonra bilgisayar kamerasının önüne {{brand}} QR kodunu yerleştirin",
+        "txFailedBy": "{{category}} başarısız oldu",
+        "retryTxFailedBy": "{{category}} yapılamadı: Lütfen Yeniden Deneyin"
       },
       "ledger": {
         "resent": "Yeniden gönderildi",
@@ -468,7 +486,8 @@
       "cancelConnection": "Bağlantıyı iptal et",
       "imKeyNotConnected": "imKey bağlantısı yok",
       "imKeyConnected": "imKey bağlı",
-      "blockDappFromSendingRequests": "Dapp'in 1 dakika boyunca istek göndermesini engelle"
+      "blockDappFromSendingRequests": "Dapp'in 1 dakika boyunca istek göndermesini engelle",
+      "iGotIt": "Aldım"
     },
     "signTypedData": {
       "signTypeDataOnChain": "{{chain}} Yazılmış Veriyi İmzala",
@@ -767,11 +786,13 @@
       },
       "tab-switch": {
         "contract": "Kontratlara Göre",
-        "assets": "Varlıklara Göre"
+        "assets": "Varlıklara Göre",
+        "eip-7702": "EIP-7702"
       },
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "EIP-7702 Delegasyonu Yok",
             "loadingText": "Yükleniyor...",
             "noMatchText": "Eşleşme Yok",
             "noDataText": "Onay Yok"
@@ -789,7 +810,9 @@
             "modalTitle_one": "Toplamda <2>{{count}}</2> imza gereklidir",
             "modalTitle_other": "Toplam <2>{{count}}</2> imza gereklidir",
             "modalContent": "Aynı Permit2 sözleşmesinden gelen onaylar aynı imza altında birleştirilecektir."
-          }
+          },
+          "notSupport7702Title": "Geçerli Adres Türü İçin Desteklenmiyor",
+          "notSupport7702Content": "Şu anda yalnızca özel anahtar ve tohum kelime adresleri için EIP-7702 delegasyonunu iptal etmeyi desteklemektedir."
         },
         "ViewMore": {
           "text": "Daha fazla göster"
@@ -826,6 +849,12 @@
               "tipApprovedAmount": "Onaylanmış Miktar",
               "tipMyBalance": "Bakiyem"
             }
+          }
+        },
+        "byEIP7702": {
+          "columnTitle": {
+            "currentAddress": "Mevcut Adres",
+            "delegatedAddress": "Delege edilmiş Adres"
           }
         }
       },
@@ -1091,7 +1120,8 @@
         "importType": "{{type}} tarafından içe aktarıldı",
         "missingDataTooltip": "Dengen, {{text}} ile ilgili mevcut ağ sorunları nedeniyle güncellenmeyebilir.",
         "chainEnd": "zincir",
-        "chain": "zincir,"
+        "chain": "zincir,",
+        "appChainTips": "Hyperliquid Hesabı dahil edilmedi"
       },
       "recentConnection": {
         "disconnected": "Bağlantı kesildi",
