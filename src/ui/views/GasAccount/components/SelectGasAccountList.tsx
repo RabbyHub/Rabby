@@ -91,8 +91,6 @@ export const SelectGasAccountList = ({
     });
   }, [_list, gasAccountBalanceDict, isGasAccount]);
 
-  console.log('gasAccountBalanceDict', gasAccountBalanceDict);
-
   return (
     <>
       <div className="w-full flex justify-between px-20 mb-8 text-r-neutral-foot">
@@ -129,7 +127,6 @@ export const SelectGasAccountList = ({
 };
 
 const GasAccountBalance = ({ account }: { account?: GasAccountInfo }) => {
-  console.log('account', account);
   if (!account || account.no_register) {
     return null;
   }

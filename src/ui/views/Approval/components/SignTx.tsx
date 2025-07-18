@@ -964,7 +964,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             );
             parsed = parsedActions[0];
             requiredData = requireDataList[0];
-            console.log('parsedActions', parsedActions);
             setMultiActionList(parsedActions);
             setMultiActionRequireDataList(requireDataList);
             setMultiActionEngineResultList(resultList);

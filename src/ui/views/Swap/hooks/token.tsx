@@ -512,10 +512,7 @@ export const useTokenPair = (userAddress: string) => {
             to_token_id: receiveToken.id,
             from_token_amount: inputAmount,
           });
-          console.log('suggest_slippage', {
-            suggestSlippage,
-            current: slippageObj.slippage || '0.1',
-          });
+
           slippage = suggestSlippage.suggest_slippage
             ? new BigNumber(suggestSlippage.suggest_slippage)
                 .times(100)
