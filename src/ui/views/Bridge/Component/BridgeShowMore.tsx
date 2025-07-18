@@ -457,6 +457,36 @@ export const DirectSignGasInfo = ({
 
   const gasTipsComp = useGetGasTipsComponent();
 
+  const gasCostUsd =
+    miniApprovalGas?.gasMethod === 'gasAccount'
+      ? calcGasAccountUsd(
+          (gasAccountCost?.estimate_tx_cost || 0) +
+            (gasAccountCost?.gas_cost || 0)
+        )
+      : miniApprovalGas?.gasCostUsdStr;
+
+  useEffect(() => {
+    const showGasLevelPopup =
+      showGasContent && miniApprovalGas?.showGasLevelPopup;
+    const gasTooHigh =
+      showGasContent &&
+      gasCostUsd &&
+      new BigNumber(gasCostUsd?.replace(/\$/g, '')).gt(
+        chainEnum === CHAINS_ENUM.ETH ? 10 : 1
+      );
+    if (showGasLevelPopup || gasTooHigh) {
+      openShowMore(true);
+    } else {
+      openShowMore(false);
+    }
+  }, [
+    chainEnum,
+    gasCostUsd,
+    miniApprovalGas?.showGasLevelPopup,
+    openShowMore,
+    showGasContent,
+  ]);
+
   if (!supportDirectSign) {
     return null;
   }
@@ -494,12 +524,7 @@ export const DirectSignGasInfo = ({
 
                   {' · '}
 
-                  {miniApprovalGas.gasMethod === 'gasAccount'
-                    ? calcGasAccountUsd(
-                        (gasAccountCost?.estimate_tx_cost || 0) +
-                          (gasAccountCost?.gas_cost || 0)
-                      )
-                    : miniApprovalGas!.gasCostUsdStr}
+                  {gasCostUsd}
                 </div>
                 {miniApprovalGas.gasMethod === 'gasAccount' ? (
                   <Tooltip
