@@ -199,7 +199,7 @@ export const CurveThumbnail = ({
       {showTips && (
         <AppChainTips>
           <div className="text-r-neutral-title2 mr-[2px]">
-            <RcIconInfoCC width={10} height={10} />
+            <RcIconInfoCC width={12} height={12} />
           </div>
           <div className="text-r-neutral-title2 whitespace-nowrap">
             {t('page.dashboard.home.appChainTips')}
