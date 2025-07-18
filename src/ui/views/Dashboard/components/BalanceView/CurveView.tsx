@@ -46,7 +46,7 @@ const CurveGlobalStyle = createGlobalStyle`
 
 const AppChainTips = styled.div`
   position: absolute;
-  bottom: 8px;
+  bottom: 6px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
