@@ -13,7 +13,10 @@ export const usePollBridgePendingNumber = (timer = 10000) => {
   const { value, loading, error } = useAsync(async () => {
     const account = await wallet.getCurrentAccount();
     if (!account?.address) {
-      return 0;
+      return {
+        pendingNumber: 0,
+        historyList: [],
+      };
     }
 
     const data = await wallet.openapi.getBridgeHistoryList({
@@ -21,10 +24,16 @@ export const usePollBridgePendingNumber = (timer = 10000) => {
       start: 0,
       limit: 10,
     });
-    return (
-      data?.history_list?.filter((item) => item?.status === 'pending')
-        ?.length || 0
-    );
+    // return (
+    //   data?.history_list?.filter((item) => item?.status === 'pending')
+    //     ?.length || 0
+    // );
+    return {
+      pendingNumber:
+        data?.history_list?.filter((item) => item?.status === 'pending')
+          ?.length || 0,
+      historyList: data?.history_list || [],
+    };
   }, [refetchCount]);
 
   const timerRef = useRef<NodeJS.Timeout>();

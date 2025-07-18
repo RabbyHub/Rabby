@@ -189,7 +189,8 @@ const SendPoly = () => {
     const query = new URLSearchParams(history.location.search);
     query.set('to', address);
     query.set('nftItem', nftItem || '');
-    history.push(`/send-nft?${query.toString()}`);
+    // avoid again jump send nft when tx done nft amount error
+    history.replace(`/send-nft?${query.toString()}`);
   };
 
   const handleChange = (address: string, type?: string) => {

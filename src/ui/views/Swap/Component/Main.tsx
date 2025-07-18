@@ -16,6 +16,7 @@ import clsx from 'clsx';
 import { QuoteList } from './Quotes';
 import {
   useQuoteVisible,
+  useRefreshId,
   useSetQuoteVisible,
   useSetRabbyFee,
   useSetRefreshId,
@@ -23,8 +24,8 @@ import {
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useCss, useDebounce } from 'react-use';
-import { DEX_WITH_WRAP, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { useCss } from 'react-use';
+import { DEX_WITH_WRAP } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
@@ -42,13 +43,19 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
-import { SWAP_SLIPPAGE } from '../../Bridge/Component/BridgeSlippage';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useExternalSwapBridgeDapps } from '@/ui/component/ExternalSwapBridgeDappPopup/hooks';
 import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import {
+  supportedDirectSign,
+  useGetDisableProcessDirectSign,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { PendingTxItem } from './PendingTxItem';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -134,6 +141,8 @@ export const Main = () => {
   } = useExternalSwapBridgeDapps(chain, 'swap');
 
   const refresh = useSetRefreshId();
+
+  const refreshId = useRefreshId();
 
   const originPreferMEVGuarded = useRabbySelector(
     (s) => !!s.swap.preferMEVGuarded
@@ -229,6 +238,24 @@ export const Main = () => {
                 },
                 dex_id: activeProvider?.name || 'WrapToken',
               },
+              addHistoryData: {
+                address: userAddress,
+                chainId: findChain({ enum: chain })?.id || 0,
+                fromToken: payToken,
+                toToken: receiveToken,
+                fromAmount: Number(inputAmount),
+                toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
+                  .div(
+                    10 **
+                      (activeProvider?.quote.toTokenDecimals ||
+                        receiveToken.decimals)
+                  )
+                  .toNumber(),
+                slippage: new BigNumber(slippage).div(100).toNumber(),
+                dexId: activeProvider?.name || 'WrapToken',
+                status: 'pending',
+                createdAt: Date.now(),
+              },
             },
             {
               ga: {
@@ -293,6 +320,24 @@ export const Main = () => {
               },
               dex_id: activeProvider?.name || 'WrapToken',
             },
+            addHistoryData: {
+              address: userAddress,
+              chainId: findChain({ enum: chain })?.id || 0,
+              fromToken: payToken,
+              toToken: receiveToken,
+              fromAmount: Number(inputAmount),
+              toAmount: new BigNumber(activeProvider?.quote.toTokenAmount)
+                .div(
+                  10 **
+                    (activeProvider?.quote.toTokenDecimals ||
+                      receiveToken.decimals)
+                )
+                .toNumber(),
+              slippage: new BigNumber(slippage).div(100).toNumber(),
+              dexId: activeProvider?.name || 'WrapToken',
+              status: 'pending',
+              createdAt: Date.now(),
+            },
           },
           {
             ga: {
@@ -327,46 +372,6 @@ export const Main = () => {
     receiveToken: receiveToken,
   });
 
-  const canUseMiniTx = useMemo(
-    () =>
-      [
-        KEYRING_TYPE.SimpleKeyring,
-        KEYRING_TYPE.HdKeyring,
-        KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any) &&
-      !receiveToken?.low_credit_score &&
-      !receiveToken?.is_suspicious &&
-      receiveToken?.is_verified !== false &&
-      !isSlippageHigh &&
-      !isSlippageLow &&
-      !showLoss,
-    [
-      receiveToken,
-      isSlippageHigh,
-      isSlippageLow,
-      showLoss,
-      currentAccount?.type,
-    ]
-  );
-
-  const [swapDappOpen, setSwapDappOpen] = useState(false);
-
-  const handleSwap = useMemoizedFn(() => {
-    if (!isTab) {
-      dispatch.swap.setRecentSwapToToken(receiveToken);
-    }
-    if (!isSupportedChain) {
-      setSwapDappOpen(true);
-      return;
-    }
-    if (canUseMiniTx) {
-      setIsShowSign(true);
-      clearExpiredTimer();
-    } else {
-      gotoSwap();
-    }
-  });
-
   const swapBtnDisabled = isSupportedChain
     ? quoteLoading ||
       !payToken ||
@@ -378,14 +383,84 @@ export const Main = () => {
     ? false
     : true;
 
+  const isShowMoreVisible = useMemo(
+    () =>
+      showMoreVisible &&
+      Number(inputAmount) > 0 &&
+      inSufficientCanGetQuote &&
+      !!amountAvailable &&
+      !!payToken &&
+      !!receiveToken,
+    [
+      showMoreVisible,
+      inputAmount,
+      inSufficientCanGetQuote,
+      amountAvailable,
+      payToken,
+      receiveToken,
+    ]
+  );
+
+  const startDirectSigning = useStartDirectSigning();
+  const disabledProcess = useGetDisableProcessDirectSign();
+
+  const canUseDirectSubmitTx = useMemo(
+    () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
+    // &&
+    // !receiveToken?.low_credit_score &&
+    // !receiveToken?.is_suspicious &&
+    // receiveToken?.is_verified !== false,
+    // &&
+    // !isSlippageHigh &&
+    // !isSlippageLow &&
+    // !showLoss,
+    [
+      // isShowMoreVisible,
+      // receiveToken,
+      // isSlippageHigh,
+      // isSlippageLow,
+      // showLoss,
+      isSupportedChain,
+      currentAccount?.type,
+    ]
+  );
+
+  const noRiskSign =
+    !receiveToken?.low_credit_score &&
+    !receiveToken?.is_suspicious &&
+    receiveToken?.is_verified !== false &&
+    !isSlippageHigh &&
+    !isSlippageLow &&
+    !showLoss;
+
+  const [swapDappOpen, setSwapDappOpen] = useState(false);
+
+  const handleSwap = useMemoizedFn(() => {
+    if (!isTab) {
+      dispatch.swap.setRecentSwapToToken(receiveToken);
+    }
+    if (!isSupportedChain) {
+      setSwapDappOpen(true);
+      return;
+    }
+
+    if (canUseDirectSubmitTx && noRiskSign) {
+      clearExpiredTimer();
+      startDirectSigning();
+      return;
+    } else {
+      gotoSwap();
+    }
+  });
+
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
-      if (canUseMiniTx) {
+      if (canUseDirectSubmitTx) {
         mutateTxs([]);
         runBuildSwapTxs();
       }
     }
-  }, [swapBtnDisabled, canUseMiniTx, activeProvider]);
+  }, [swapBtnDisabled, canUseDirectSubmitTx, activeProvider]);
 
   const history = useHistory();
 
@@ -475,38 +550,6 @@ export const Main = () => {
     }
   }, [noQuote]);
 
-  useDebounce(
-    () => {
-      if (
-        !isWrapToken &&
-        Number(inputAmount) > 0 &&
-        inSufficientCanGetQuote &&
-        amountAvailable &&
-        !quoteLoading &&
-        !!payToken &&
-        !!receiveToken &&
-        activeProvider &&
-        Number(slippage) >= Number(SWAP_SLIPPAGE[1])
-      ) {
-        setShowMoreOpen(true);
-      }
-    },
-    10,
-    [
-      showMoreVisible,
-      isWrapToken,
-      inputAmount,
-      inSufficientCanGetQuote,
-      amountAvailable,
-      payToken,
-      receiveToken,
-      activeProvider,
-      autoSlippage,
-      activeProvider,
-      quoteLoading,
-    ]
-  );
-
   const setRabbyFeeVisible = useSetRabbyFee();
 
   const openFeePopup = useCallback(() => {
@@ -524,6 +567,8 @@ export const Main = () => {
     activeProvider?.name,
     activeProvider?.quote,
   ]);
+
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
 
   return (
     <>
@@ -688,57 +733,57 @@ export const Main = () => {
           />
         ) : null}
 
-        {showMoreVisible &&
-          Number(inputAmount) > 0 &&
-          inSufficientCanGetQuote &&
-          !!amountAvailable &&
-          !!payToken &&
-          !!receiveToken && (
-            <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
-              <BridgeShowMore
-                autoSuggestSlippage={autoSuggestSlippage}
-                openFeePopup={openFeePopup}
-                open={showMoreOpen}
-                setOpen={setShowMoreOpen}
-                sourceName={sourceName}
-                sourceLogo={sourceLogo}
-                slippage={slippageState}
-                displaySlippage={slippage}
-                onSlippageChange={setSlippage}
-                fromToken={payToken}
-                toToken={receiveToken}
-                amount={inputAmount}
-                toAmount={
-                  isWrapToken
-                    ? inputAmount
-                    : activeProvider?.actualReceiveAmount || 0
-                }
-                openQuotesList={openQuotesList}
-                quoteLoading={quoteLoading}
-                slippageError={isSlippageHigh || isSlippageLow}
-                autoSlippage={!!autoSlippage}
-                isCustomSlippage={isCustomSlippage}
-                setAutoSlippage={setAutoSlippage}
-                setIsCustomSlippage={setIsCustomSlippage}
-                type="swap"
-                isWrapToken={isWrapToken}
-                isBestQuote={
-                  !!activeProvider &&
-                  !!bestQuoteDex &&
-                  bestQuoteDex === activeProvider?.name
-                }
-                showMEVGuardedSwitch={showMEVGuardedSwitch}
-                originPreferMEVGuarded={originPreferMEVGuarded}
-                switchPreferMEV={switchPreferMEV}
-                recommendValue={
-                  slippageValidInfo?.is_valid
-                    ? undefined
-                    : slippageValidInfo?.suggest_slippage
-                }
-              />
-            </div>
-          )}
-
+        {isShowMoreVisible && (
+          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
+            <BridgeShowMore
+              supportDirectSign={canUseDirectSubmitTx}
+              autoSuggestSlippage={autoSuggestSlippage}
+              openFeePopup={openFeePopup}
+              open={showMoreOpen}
+              setOpen={setShowMoreOpen}
+              sourceName={sourceName}
+              sourceLogo={sourceLogo}
+              slippage={slippageState}
+              displaySlippage={slippage}
+              onSlippageChange={setSlippage}
+              fromToken={payToken}
+              toToken={receiveToken}
+              amount={inputAmount}
+              toAmount={
+                isWrapToken
+                  ? inputAmount
+                  : activeProvider?.actualReceiveAmount || 0
+              }
+              openQuotesList={openQuotesList}
+              quoteLoading={quoteLoading}
+              slippageError={isSlippageHigh || isSlippageLow}
+              autoSlippage={!!autoSlippage}
+              isCustomSlippage={isCustomSlippage}
+              setAutoSlippage={setAutoSlippage}
+              setIsCustomSlippage={setIsCustomSlippage}
+              type="swap"
+              isWrapToken={isWrapToken}
+              isBestQuote={
+                !!activeProvider &&
+                !!bestQuoteDex &&
+                bestQuoteDex === activeProvider?.name
+              }
+              showMEVGuardedSwitch={showMEVGuardedSwitch}
+              originPreferMEVGuarded={originPreferMEVGuarded}
+              switchPreferMEV={switchPreferMEV}
+              recommendValue={
+                slippageValidInfo?.is_valid
+                  ? undefined
+                  : slippageValidInfo?.suggest_slippage
+              }
+            />
+          </div>
+        )}
+        {Boolean(!isShowMoreVisible && !activeProvider?.quote) && (
+          <div className="mx-20 mt-20">
+            <PendingTxItem type="swap" ref={pendingTxRef} />
+          </div>
+        )}
         <div
           className={clsx(
             'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
@@ -762,53 +807,67 @@ export const Main = () => {
                 : false
             }
           >
-            <Button
-              type="primary"
-              block
-              size="large"
-              className="h-[48px] text-white text-[16px] font-medium"
-              loading={isSubmitLoading}
-              onClick={() => {
-                if (!isSupportedChain && externalDapps.length > 0) {
-                  setSwapDappOpen(true);
-                  return;
+            {canUseDirectSubmitTx && noRiskSign ? (
+              <DirectSignToConfirmBtn
+                // disabled
+                key={refreshId}
+                disabled={swapBtnDisabled}
+                title={btnText}
+                onConfirm={handleSwap}
+              />
+            ) : (
+              <Button
+                type="primary"
+                block
+                size="large"
+                className="h-[48px] text-white text-[16px] font-medium"
+                loading={isSubmitLoading}
+                onClick={() => {
+                  if (!isSupportedChain && externalDapps.length > 0) {
+                    setSwapDappOpen(true);
+                    return;
+                  }
+                  if (!activeProvider) {
+                    refresh((e) => e + 1);
+                    return;
+                  }
+                  if (activeProvider?.shouldTwoStepApprove) {
+                    return Modal.confirm({
+                      width: 360,
+                      closable: true,
+                      centered: true,
+                      className: twoStepApproveCn,
+                      title: null,
+                      content: (
+                        <>
+                          <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                            {t('page.swap.two-step-approve')}
+                          </div>
+                          <div className="text-13 leading-[17px]  text-r-neutral-body">
+                            {t('page.swap.two-step-approve-details')}
+                          </div>
+                        </>
+                      ),
+                      okText: t('page.swap.process-with-two-step-approve'),
+                      onOk() {
+                        // gotoSwap();
+                        handleSwap();
+                      },
+                    });
+                  }
+                  // gotoSwap();
+                  // runBuildSwapTxs();
+                  handleSwap();
+                }}
+                disabled={
+                  canUseDirectSubmitTx
+                    ? swapBtnDisabled || disabledProcess
+                    : swapBtnDisabled
                 }
-                if (!activeProvider) {
-                  refresh((e) => e + 1);
-                  return;
-                }
-                if (activeProvider?.shouldTwoStepApprove) {
-                  return Modal.confirm({
-                    width: 360,
-                    closable: true,
-                    centered: true,
-                    className: twoStepApproveCn,
-                    title: null,
-                    content: (
-                      <>
-                        <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                          {t('page.swap.two-step-approve')}
-                        </div>
-                        <div className="text-13 leading-[17px]  text-r-neutral-body">
-                          {t('page.swap.two-step-approve-details')}
-                        </div>
-                      </>
-                    ),
-                    okText: t('page.swap.process-with-two-step-approve'),
-                    onOk() {
-                      // gotoSwap();
-                      handleSwap();
-                    },
-                  });
-                }
-                // gotoSwap();
-                // runBuildSwapTxs();
-                handleSwap();
-              }}
-              disabled={swapBtnDisabled}
-            >
-              {btnText}
-            </Button>
+              >
+                {btnText}
+              </Button>
+            )}
           </TooltipWithMagnetArrow>
         </div>
 
@@ -855,18 +914,16 @@ export const Main = () => {
           }}
           onResolve={() => {
             setTimeout(() => {
+              refresh((e) => e + 1);
               setIsShowSign(false);
               mutateTxs([]);
-              // setPayAmount('');
-              // setTimeout(() => {
-              if (!isTab) {
-                history.replace('/');
-              }
               handleAmountChange('');
-              // }, 500);
             }, 500);
           }}
+          onPreExecError={gotoSwap}
           getContainer={getContainer}
+          directSubmit
+          canUseDirectSubmitTx={canUseDirectSubmitTx}
         />
         <LowCreditModal
           token={lowCreditToken}

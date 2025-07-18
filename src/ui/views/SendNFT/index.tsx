@@ -41,8 +41,17 @@ import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { Tx } from 'background/service/openapi';
+import {
+  DirectSubmitProvider,
+  supportedDirectSign,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { ShowMoreOnSend } from '../SendToken/components/SendShowMore';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ToAddressCard } from '../SendToken';
+import { PendingTxItem } from '../Swap/Component/PendingTxItem';
+import { SendNftTxHistoryItem } from '@/background/service/transactionHistory';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -69,7 +78,7 @@ const SendNFT = () => {
 
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
-  const [, setRefreshId] = useState(0);
+  const [freshId, setRefreshId] = useState(0);
 
   const chainInfo = useMemo(() => {
     return findChain({ enum: chain });
@@ -97,6 +106,31 @@ const SendNFT = () => {
     return toParam || '';
   }, [search]);
 
+  const updateUrlAmount = useCallback(
+    (newAmount: number) => {
+      const query = new URLSearchParams(search);
+
+      query.set('amount', newAmount.toString());
+      const newSearch = query.toString();
+      const newUrl = `${history.location.pathname}${
+        newSearch ? `?${newSearch}` : ''
+      }`;
+
+      history.replace(newUrl);
+    },
+    [search, history]
+  );
+
+  const getInitialAmount = useCallback(() => {
+    const query = new URLSearchParams(search);
+    const amountParam = query.get('amount');
+    if (amountParam !== null) {
+      const parsedAmount = parseInt(amountParam, 10);
+      return !isNaN(parsedAmount) && parsedAmount >= 0 ? parsedAmount : 1;
+    }
+    return 1;
+  }, [search]);
+
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0);
@@ -105,15 +139,15 @@ const SendNFT = () => {
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
 
-  const canUseMiniTx = useMemo(() => {
-    return (
-      [
-        KEYRING_TYPE.SimpleKeyring,
-        KEYRING_TYPE.HdKeyring,
-        KEYRING_CLASS.HARDWARE.LEDGER,
-      ].includes((currentAccount?.type || '') as any) && !chainInfo?.isTestnet
-    );
-  }, [chainInfo?.isTestnet, currentAccount?.type]);
+  const startDirectSigning = useStartDirectSigning();
+
+  const canUseDirectSubmitTx = useMemo(
+    () =>
+      canSubmit &&
+      supportedDirectSign(currentAccount?.type || '') &&
+      !chainInfo?.isTestnet,
+    [canSubmit, chainInfo?.isTestnet, currentAccount?.type]
+  );
 
   const handleClickContractId = () => {
     if (!chain || !nftItem) return;
@@ -176,9 +210,31 @@ const SendNFT = () => {
     [nftItem, chainInfo, currentAccount, toAddress]
   );
 
+  const amount = form.getFieldValue('amount');
+
+  useEffect(() => {
+    if (canUseDirectSubmitTx) {
+      const params = getNFTTransferParams(amount);
+      setMiniSignTx(params as Tx);
+    } else {
+      setMiniSignTx(null);
+    }
+
+    return () => {
+      setMiniSignTx(null);
+    };
+  }, [canUseDirectSubmitTx, amount, getNFTTransferParams, freshId]);
+
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
-    async ({ amount }: { amount: number }) => {
+    async ({
+      amount,
+      forceSignPage,
+    }: {
+      amount: number;
+      forceSignPage?: boolean;
+    }) => {
       if (!nftItem) return;
+
       await wallet.setPageStateCache({
         path: '/send-nft',
         search: history.location.search,
@@ -201,12 +257,28 @@ const SendNFT = () => {
             filterRbiSource('sendNFT', rbisource) && rbisource,
           ].join('|'),
         });
+
         const params = getNFTTransferParams(amount);
-        if (canUseMiniTx) {
-          setMiniSignTx(params as Tx);
-          setIsShowMiniSign(true);
+        wallet.addCacheHistoryData(
+          `${chain}-${params.data || '0x'}`,
+          {
+            address: currentAccount!.address,
+            chainId: findChainByEnum(chain)?.id || 0,
+            from: currentAccount!.address,
+            to: toAddress,
+            token: nftItem,
+            amount: Number(amount),
+            status: 'pending',
+            createdAt: Date.now(),
+          } as SendNftTxHistoryItem,
+          'sendNft'
+        );
+
+        if (canUseDirectSubmitTx && !forceSignPage) {
+          startDirectSigning();
           return;
         }
+
         const promise = wallet.sendRequest({
           method: 'eth_sendTransaction',
           params: [params as Record<string, any>],
@@ -221,8 +293,19 @@ const SendNFT = () => {
         if (isTab) {
           await promise;
           form.setFieldsValue({
-            amount: 1,
+            amount: 0,
           });
+          updateUrlAmount(0);
+          wallet.setPageStateCache({
+            path: '/send-nft',
+            search: history.location.search,
+            params: {},
+            states: {
+              values: form.getFieldsValue(),
+              nftItem,
+            },
+          });
+          setRefreshId((e) => e + 1);
         } else {
           window.close();
         }
@@ -239,13 +322,20 @@ const SendNFT = () => {
     setTimeout(() => {
       setIsShowMiniSign(false);
       setMiniSignTx(null);
-      if (!isTab) {
-        history.replace('/');
-      }
-      form.setFieldsValue({ amount: 1 });
+      form.setFieldsValue({ amount: 0 });
+      updateUrlAmount(0);
+      wallet.setPageStateCache({
+        path: '/send-nft',
+        search: history.location.search,
+        params: {},
+        states: {
+          values: form.getFieldsValue(),
+          nftItem,
+        },
+      });
       setRefreshId((e) => e + 1);
     }, 500);
-  }, [form, history]);
+  }, [form, updateUrlAmount]);
 
   const handleClickBack = () => {
     if (history.length > 1) {
@@ -319,6 +409,8 @@ const SendNFT = () => {
     }
   }, [toAddress, form]);
 
+  const [gasFeeOpen, setGasFeeOpen] = useState(false);
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -355,7 +447,7 @@ const SendNFT = () => {
           onFinish={handleSubmit}
           initialValues={{
             to: toAddress,
-            amount: 1,
+            amount: getInitialAmount(),
           }}
         >
           {nftItem && (
@@ -466,21 +558,47 @@ const SendNFT = () => {
                   </div>
                 </div>
               </div>
+              {!canSubmit && (
+                <div className="mt-16 mb-16">
+                  <PendingTxItem type="sendNft" />
+                </div>
+              )}
+              {chainInfo?.serverId && canUseDirectSubmitTx ? (
+                <div className="pb-20">
+                  <ShowMoreOnSend
+                    chainServeId={chainInfo?.serverId}
+                    open={gasFeeOpen}
+                    setOpen={setGasFeeOpen}
+                  />
+                </div>
+              ) : null}
             </div>
           )}
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] flex justify-center">
-              <Button
-                disabled={!canSubmit}
-                type="primary"
-                htmlType="submit"
-                size="large"
-                className="w-[100%] h-[48px] text-[16px]"
-                loading={isSubmitLoading}
-              >
-                {t('page.sendNFT.sendButton')}
-              </Button>
+              {canUseDirectSubmitTx ? (
+                <DirectSignToConfirmBtn
+                  title={t('page.sendToken.sendButton')}
+                  onConfirm={() =>
+                    handleSubmit({
+                      amount: form.getFieldValue('amount'),
+                    })
+                  }
+                  disabled={!canSubmit}
+                />
+              ) : (
+                <Button
+                  disabled={!canSubmit}
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  className="w-[100%] h-[48px] text-[16px]"
+                  loading={isSubmitLoading}
+                >
+                  {t('page.sendNFT.sendButton')}
+                </Button>
+              )}
             </div>
           </div>
         </Form>
@@ -493,11 +611,9 @@ const SendNFT = () => {
             trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
           }}
           onClose={() => {
-            setRefreshId((e) => e + 1);
             setIsShowMiniSign(false);
-            setTimeout(() => {
-              setMiniSignTx(null);
-            }, 500);
+            setMiniSignTx(null);
+            setRefreshId((e) => e + 1);
           }}
           onReject={() => {
             setRefreshId((e) => e + 1);
@@ -505,13 +621,27 @@ const SendNFT = () => {
             setMiniSignTx(null);
           }}
           onResolve={handleMiniSignResolve}
+          onPreExecError={() => {
+            handleSubmit({
+              amount: form.getFieldValue('amount'),
+              forceSignPage: true,
+            });
+          }}
           getContainer={getContainer}
+          directSubmit
+          canUseDirectSubmitTx={canUseDirectSubmitTx}
         />
       </div>
     </FullscreenContainer>
   );
 };
 
+const SendNFTWrapper = () => (
+  <DirectSubmitProvider>
+    <SendNFT />
+  </DirectSubmitProvider>
+);
+
 export default isTab
-  ? connectStore()(withAccountChange(SendNFT))
-  : connectStore()(SendNFT);
+  ? connectStore()(withAccountChange(SendNFTWrapper))
+  : connectStore()(SendNFTWrapper);

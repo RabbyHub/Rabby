@@ -2,7 +2,7 @@ import { Checkbox, Popup } from '@/ui/component';
 import { formatTokenAmount } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
-import { Button } from 'antd';
+import { Button, Skeleton } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -296,6 +296,56 @@ export const SendReserveGasPopup = (
       {...otherPopupProps}
       onClose={handleClose}
     >
+      {!gasList && (
+        <div>
+          <div className={clsx('flex flex-col gap-12')}>
+            <Skeleton.Input
+              active
+              style={{
+                height: 66,
+              }}
+              className="h-[66px] rounded-[8px]"
+            />
+            <Skeleton.Input
+              active
+              style={{
+                height: 66,
+              }}
+              className="h-[66px] rounded-[8px]"
+            />
+            <Skeleton.Input
+              active
+              style={{
+                height: 66,
+              }}
+              className="h-[66px] rounded-[8px]"
+            />
+            <Skeleton.Input
+              active
+              style={{
+                height: 66,
+              }}
+              className="h-[66px] rounded-[8px]"
+            />
+            <div
+              className={clsx(
+                'fixed left-0 bottom-0',
+                'w-full px-20 py-18',
+                'border-t-[0.5px] border-solid border-rabby-neutral-line'
+              )}
+            >
+              <Button
+                type="primary"
+                block
+                disabled
+                className="h-[44px] text-15 text-r-neutral-title2"
+              >
+                {t('global.Confirm')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       {gasList && (
         <ReserveGasContent
           ref={reverseGasContentRef}

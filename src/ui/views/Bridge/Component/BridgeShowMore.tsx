@@ -7,7 +7,11 @@ import React, {
   Dispatch,
   PropsWithChildren,
   SetStateAction,
+  useCallback,
+  useEffect,
   useMemo,
+  useRef,
+  useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowDownCC } from 'ui/assets/bridge/tiny-down-arrow-cc.svg';
@@ -17,6 +21,19 @@ import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
 import styled from 'styled-components';
 import { useDebounce } from 'react-use';
+import {
+  useGetGasTipsComponent,
+  useMiniApprovalGas,
+  useSetMiniApprovalGas,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { findChainByServerID } from '@/utils/chain';
+import BigNumber from 'bignumber.js';
+import { CHAINS_ENUM } from '@debank/common';
+import { formatGasHeaderUsdValue } from '@/ui/utils';
+import ShowMoreGasSelectModal from './ShowMoreGasModal';
+import { getGasLevelI18nKey } from '@/ui/utils/trans';
+import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
+import { noop } from 'lodash';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -64,6 +81,7 @@ export const BridgeShowMore = ({
   switchPreferMEV,
   recommendValue,
   openFeePopup,
+  supportDirectSign = false,
   autoSuggestSlippage,
 }: {
   open: boolean;
@@ -97,6 +115,7 @@ export const BridgeShowMore = ({
   recommendValue?: number;
   openFeePopup: () => void;
   autoSuggestSlippage?: string;
+  supportDirectSign?: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -134,44 +153,13 @@ export const BridgeShowMore = ({
     return undefined;
   }, [isBestQuote]);
 
-  useDebounce(
-    () => {
-      if (
-        (!quoteLoading && sourceLogo && sourceName && data?.showLoss) ||
-        slippageError
-      ) {
-        setOpen(true);
-      }
-    },
-    50,
-    [quoteLoading, data?.showLoss, sourceLogo, sourceName]
-  );
+  const showSlippageError = slippageError;
 
-  return (
-    <div className="mx-16">
-      <div className="flex items-center justify-center gap-8 mb-8">
-        <div
-          className={clsx(
-            'flex items-center opacity-30',
-            'cursor-pointer',
-            'text-r-neutral-foot text-12'
-          )}
-          onClick={() => setOpen((e) => !e)}
-        >
-          <span>{t('page.bridge.showMore.title')}</span>
-          <IconArrowDownCC
-            viewBox="0 0 14 14"
-            width={14}
-            height={14}
-            className={clsx(
-              'transition-transform',
-              open && 'rotate-180 translate-y-1'
-            )}
-          />
-        </div>
-      </div>
+  const [showGasFeeError, setShowGasFeeError] = useState(false);
 
-      <div className={clsx('overflow-hidden', !open && 'h-0')}>
+  const lostValueContentRender = useCallback(() => {
+    return (
+      <>
         {data?.showLoss && !quoteLoading && (
           <div className="leading-4 mb-12 text-12 text-r-neutral-foot">
             <div className="flex justify-between">
@@ -216,6 +204,36 @@ export const BridgeShowMore = ({
             </div>
           </div>
         )}
+      </>
+    );
+  }, [data, quoteLoading, toToken, fromToken]);
+
+  return (
+    <div className="mx-16">
+      <div className="flex items-center justify-center gap-8 mb-8">
+        <div
+          className={clsx(
+            'flex items-center opacity-50',
+            'cursor-pointer',
+            'text-r-neutral-foot text-12'
+          )}
+          onClick={() => setOpen((e) => !e)}
+        >
+          <span>{t('page.bridge.showMore.title')}</span>
+          <IconArrowDownCC
+            viewBox="0 0 14 14"
+            width={14}
+            height={14}
+            className={clsx(
+              'transition-transform',
+              open && 'rotate-180 translate-y-1'
+            )}
+          />
+        </div>
+      </div>
+
+      <div className={clsx('overflow-hidden', !open && 'h-0')}>
+        {lostValueContentRender()}
 
         <ListItem
           name={
@@ -280,6 +298,16 @@ export const BridgeShowMore = ({
           recommendValue={recommendValue}
         />
 
+        {fromToken && supportDirectSign ? (
+          <DirectSignGasInfo
+            supportDirectSign={supportDirectSign}
+            loading={!!quoteLoading}
+            openShowMore={setShowGasFeeError}
+            noQuote={!sourceLogo && !sourceName}
+            chainServeId={fromToken?.chain}
+          />
+        ) : null}
+
         <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
           <div
             className={clsx(
@@ -322,7 +350,236 @@ export const BridgeShowMore = ({
           </ListItem>
         ) : null}
       </div>
+
+      {!open && (
+        <>
+          {lostValueContentRender()}
+          {showSlippageError && (
+            <BridgeSlippage
+              autoSuggestSlippage={autoSuggestSlippage}
+              value={slippage}
+              displaySlippage={displaySlippage}
+              onChange={onSlippageChange}
+              autoSlippage={autoSlippage}
+              isCustomSlippage={isCustomSlippage}
+              setAutoSlippage={setAutoSlippage}
+              setIsCustomSlippage={setIsCustomSlippage}
+              type={type}
+              isWrapToken={isWrapToken}
+              recommendValue={recommendValue}
+            />
+          )}
+          {showGasFeeError && fromToken && supportDirectSign ? (
+            <DirectSignGasInfo
+              supportDirectSign={supportDirectSign}
+              loading={!!quoteLoading}
+              openShowMore={noop}
+              noQuote={!sourceLogo && !sourceName}
+              chainServeId={fromToken?.chain}
+            />
+          ) : null}
+        </>
+      )}
     </div>
+  );
+};
+
+export const DirectSignGasInfo = ({
+  supportDirectSign,
+  loading,
+  openShowMore,
+  noQuote,
+  chainServeId,
+}: {
+  supportDirectSign: boolean;
+  loading: boolean;
+  openShowMore: (v: boolean) => void;
+  noQuote?: boolean;
+  chainServeId: string;
+}) => {
+  const { t } = useTranslation();
+
+  const miniApprovalGas = useMiniApprovalGas();
+  const setMiniApprovalGas = useSetMiniApprovalGas();
+  const [gasModalVisible, setGasModalVisible] = useState(false);
+
+  const chainEnum = findChainByServerID(chainServeId)?.enum;
+
+  const showGasContent =
+    !!miniApprovalGas &&
+    !miniApprovalGas.loading &&
+    !!miniApprovalGas.gasCostUsdStr &&
+    !loading &&
+    !noQuote;
+
+  useEffect(() => {
+    if (loading) {
+      setMiniApprovalGas(undefined);
+      // setGasTipsComponent(null);
+    }
+  }, [
+    loading,
+    // setGasTipsComponent,
+    setMiniApprovalGas,
+  ]);
+
+  useEffect(() => {
+    const showGasLevelPopup =
+      showGasContent && miniApprovalGas?.showGasLevelPopup;
+    const gasTooHigh =
+      showGasContent &&
+      miniApprovalGas?.gasCostUsdStr &&
+      new BigNumber(miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')).gt(
+        chainEnum === CHAINS_ENUM.ETH ? 10 : 1
+      );
+    if (showGasLevelPopup || gasTooHigh) {
+      openShowMore(true);
+    } else {
+      openShowMore(false);
+    }
+  }, [
+    chainEnum,
+    miniApprovalGas?.showGasLevelPopup,
+    miniApprovalGas?.gasCostUsdStr,
+    openShowMore,
+    showGasContent,
+  ]);
+
+  const calcGasAccountUsd = useCallback((n: number | string) => {
+    const v = Number(n);
+    if (!Number.isNaN(v) && v < 0.0001) {
+      return `$${n}`;
+    }
+    return formatGasHeaderUsdValue(n || '0');
+  }, []);
+
+  const gasAccountCost = miniApprovalGas?.gasAccountCost;
+
+  const gasTipsComp = useGetGasTipsComponent();
+
+  const gasCostUsd =
+    miniApprovalGas?.gasMethod === 'gasAccount'
+      ? calcGasAccountUsd(
+          (gasAccountCost?.estimate_tx_cost || 0) +
+            (gasAccountCost?.gas_cost || 0)
+        )
+      : miniApprovalGas?.gasCostUsdStr;
+
+  useEffect(() => {
+    const showGasLevelPopup =
+      showGasContent && miniApprovalGas?.showGasLevelPopup;
+    const gasTooHigh =
+      showGasContent &&
+      gasCostUsd &&
+      new BigNumber(gasCostUsd?.replace(/\$/g, '')).gt(
+        chainEnum === CHAINS_ENUM.ETH ? 10 : 1
+      );
+    if (showGasLevelPopup || gasTooHigh) {
+      openShowMore(true);
+    } else {
+      openShowMore(false);
+    }
+  }, [
+    chainEnum,
+    gasCostUsd,
+    miniApprovalGas?.showGasLevelPopup,
+    openShowMore,
+    showGasContent,
+  ]);
+
+  if (!supportDirectSign) {
+    return null;
+  }
+
+  return (
+    <>
+      <ListItem name={<>{'Gas fee'}</>} className="mt-12">
+        {showGasContent ? (
+          <>
+            <ShowMoreGasSelectModal
+              visible={gasModalVisible}
+              onCancel={() => {
+                setGasModalVisible(false);
+              }}
+              onConfirm={() => {
+                setGasModalVisible(false);
+              }}
+            >
+              <div
+                className={clsx(
+                  'cursor-pointer',
+                  'cursor text-12 font-medium flex items-center gap-4',
+                  miniApprovalGas.disabledProcess
+                    ? 'text-r-red-default'
+                    : 'text-r-blue-default'
+                )}
+                onClick={() => {
+                  setGasModalVisible(true);
+                }}
+              >
+                <div>
+                  {miniApprovalGas?.selectedGas?.level
+                    ? t(getGasLevelI18nKey(miniApprovalGas.selectedGas.level))
+                    : t(getGasLevelI18nKey('normal'))}
+
+                  {' · '}
+
+                  {gasCostUsd}
+                </div>
+                {miniApprovalGas.gasMethod === 'gasAccount' ? (
+                  <Tooltip
+                    align={{
+                      offset: [10, 0],
+                    }}
+                    placement={'topRight'}
+                    overlayClassName="rectangle w-[max-content]"
+                    title={
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <div>
+                          {t('page.signTx.gasAccount.estimatedGas')}
+                          {calcGasAccountUsd(
+                            gasAccountCost?.estimate_tx_cost || 0
+                          )}
+                        </div>
+                        <div>
+                          {t('page.signTx.gasAccount.maxGas')}
+                          {calcGasAccountUsd(gasAccountCost?.total_cost || '0')}
+                        </div>
+                        <div>
+                          {t('page.signTx.gasAccount.sendGas')}
+                          {calcGasAccountUsd(gasAccountCost?.total_cost || '0')}
+                        </div>
+                        <div>
+                          {t('page.signTx.gasAccount.gasCost')}
+                          {calcGasAccountUsd(gasAccountCost?.gas_cost || '0')}
+                        </div>
+                      </div>
+                    }
+                  >
+                    <IconInfoSVG
+                      className="text-r-neutral-foot -top-1"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Tooltip>
+                ) : null}
+              </div>
+            </ShowMoreGasSelectModal>
+          </>
+        ) : !loading && noQuote ? (
+          <div>-</div>
+        ) : (
+          <Skeleton.Input
+            active
+            className="rounded"
+            style={{
+              width: 52,
+              height: 12,
+            }}
+          />
+        )}
+      </ListItem>
+      {showGasContent && <>{gasTipsComp}</>}
+    </>
   );
 };
 
