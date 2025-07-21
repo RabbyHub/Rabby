@@ -1,0 +1,7 @@
+{
+  "name": "SurgeDefi",
+  "description": "Surge is the first native DEX on XRPL-EVM, that delivers frictionless token swaps, hyper-efficient concentrated liquidity, and near-zero gas fees.",
+  "url": "https://app.surgedefi.com/",
+  "icon": "https://drive.google.com/file/d/1ZV4AuiTc2jRWLkSi9syJLdpjPeriwECI/view?usp=sharing",
+  "chains": ["XRPL EVM"]
+}
