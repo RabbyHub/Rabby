@@ -1315,6 +1315,12 @@ export const MiniApproval = ({
     setDirectSigning(false);
   }, [onClose]);
 
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    setKey((e) => e + 1);
+  }, [txs]);
+
   return (
     <>
       <Popup
@@ -1340,6 +1346,7 @@ export const MiniApproval = ({
       >
         {txs?.length ? (
           <MiniSignTx
+            key={key}
             directSubmit={directSubmit}
             ga={ga}
             txs={txs}
