@@ -23,8 +23,11 @@ import { message } from 'antd';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
+  from?: string;
+  nonce?: string;
   address: string;
   chainId?: number;
   isGnosis?: boolean;
@@ -50,6 +53,7 @@ export const CommonWaiting = ({
 }) => {
   const wallet = useWallet();
   const {
+    setHeight,
     setTitle,
     setVisible,
     closePopup,
@@ -86,7 +90,12 @@ export const CommonWaiting = ({
       return;
     }
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.resendSign();
+
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    await wallet.resendSign(autoRetryUpdate);
+
     message.success(t('page.signFooterBar.ledger.resent'));
     emitSignComponentAmounted();
   };
@@ -226,6 +235,7 @@ export const CommonWaiting = ({
           </span>
         </div>
       );
+      setHeight('fit-content');
       init();
     })();
   }, []);
@@ -284,6 +294,14 @@ export const CommonWaiting = ({
     }
   }, [brandContent?.brand]);
 
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce: params?.nonce,
+    chainId: params?.chainId,
+    from: params?.from,
+    status: connectStatus,
+    description: description,
+  });
+
   if (!brandContent) {
     throw new Error(t('page.signFooterBar.common.notSupport', [brandName]));
   }
@@ -295,10 +313,11 @@ export const CommonWaiting = ({
       status={statusProp}
       onRetry={handleRetry}
       content={content}
-      description={description}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
       hasMoreDescription={!!errorMessage}
+      description={txFailedResult?.[0] || description}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
     />
   );
 };

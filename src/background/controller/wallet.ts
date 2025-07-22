@@ -235,8 +235,8 @@ export class WalletController extends BaseController {
     });
   };
 
-  resendSign = () => {
-    notificationService.callCurrentRequestDeferFn();
+  resendSign = (retry?: boolean) => {
+    notificationService.callCurrentRequestDeferFn(retry);
   };
 
   getApproval = notificationService.getApproval;

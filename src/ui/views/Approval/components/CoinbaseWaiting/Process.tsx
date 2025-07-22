@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import {
@@ -6,7 +6,7 @@ import {
   WALLETCONNECT_STATUS_MAP,
   WALLET_BRAND_CONTENT,
 } from 'consts';
-import { useCommonPopupView } from 'ui/utils';
+import { useCommonPopupView, useWallet } from 'ui/utils';
 import {
   WALLET_BRAND_NAME_KEY,
   useDisplayBrandName,
@@ -17,6 +17,7 @@ import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from '../Popup/ApprovalPopupContainer';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 type Valueof<T> = T[keyof T];
 const INIT_SENDING_COUNTER = 10;
@@ -29,15 +30,21 @@ const Process = ({
   onCancel,
   onDone,
   chain,
+  chainId,
+  nonce,
+  from,
 }: {
   chain: CHAINS_ENUM;
   result: string;
   status: Valueof<typeof WALLETCONNECT_STATUS_MAP>;
   account: Account;
   error: { code?: number; message?: string } | null;
-  onRetry(): void;
+  onRetry(bool?: boolean): void;
   onCancel(): void;
   onDone(): void;
+  nonce?: string;
+  chainId?: number;
+  from?: string;
 }) => {
   const { setClassName, setTitle: setPopupViewTitle } = useCommonPopupView();
   const [displayBrandName] = useDisplayBrandName(account.brandName);
@@ -60,8 +67,13 @@ const Process = ({
     ApprovalPopupContainerProps['status']
   >('SENDING');
 
-  const handleRetry = () => {
-    onRetry();
+  const wallet = useWallet();
+
+  const handleRetry = async () => {
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    onRetry(autoRetryUpdate);
     setSendingCounter(INIT_SENDING_COUNTER);
   };
   const handleCancel = () => {
@@ -128,6 +140,26 @@ const Process = ({
     init();
   }, []);
 
+  const showOriginDesc = useCallback(() => {
+    if (
+      ![
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(mergedStatus)
+    ) {
+      return description;
+    }
+  }, [mergedStatus, description]);
+
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce,
+    chainId,
+    status: mergedStatus,
+    from,
+    description: error?.message || '',
+    showOriginDesc,
+  });
+
   return (
     <ApprovalPopupContainer
       hdType="walletconnect"
@@ -136,7 +168,8 @@ const Process = ({
       onRetry={handleRetry}
       onDone={onDone}
       onCancel={handleCancel}
-      description={description}
+      description={txFailedResult?.[0] || description}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
       hasMoreDescription={!!description}
       content={
         <>

@@ -1,12 +1,11 @@
 import { Account } from '@/background/service/preference';
 import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
 import { KEYRING_CLASS } from 'consts';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import {
   ActionGroup,
@@ -17,6 +16,8 @@ import { ProcessActions } from '../FooterBar/ProcessActions';
 import { Dots } from '../Popup/Dots';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'react-use';
+import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -64,8 +65,34 @@ export const MiniCommonAction: React.FC<Props> = ({
   footer,
   ...props
 }) => {
-  const { isDarkTheme } = useThemeMode();
   const { t } = useTranslation();
+
+  const directSigning = useDirectSigning();
+  const autoSigned = useRef(false);
+
+  useDebounce(
+    () => {
+      if (
+        !autoSigned.current &&
+        props.isMiniSignTx &&
+        !props.disabledProcess &&
+        directSigning &&
+        props.directSubmit
+      ) {
+        autoSigned.current = true;
+        props.onSubmit();
+      }
+    },
+    300,
+    [
+      directSigning,
+      props.disabledProcess,
+      props.onSubmit,
+      props.isMiniSignTx,
+      props.directSubmit,
+    ]
+  );
+
   return (
     <>
       {task.status === 'idle' ? (
