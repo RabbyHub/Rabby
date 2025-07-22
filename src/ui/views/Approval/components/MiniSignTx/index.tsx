@@ -1250,6 +1250,8 @@ export const MiniApproval = ({
   getContainer,
   directSubmit,
   canUseDirectSubmitTx,
+  isPreparingSign,
+  setIsPreparingSign,
 }: {
   txs?: Tx[];
   visible?: boolean;
@@ -1261,6 +1263,8 @@ export const MiniApproval = ({
   getContainer?: DrawerProps['getContainer'];
   directSubmit?: boolean;
   canUseDirectSubmitTx?: boolean;
+  isPreparingSign?: boolean;
+  setIsPreparingSign?: (isPreparingSign: boolean) => void;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1277,6 +1281,7 @@ export const MiniApproval = ({
   useEffect(() => {
     if (isSigningLoading && disabledProcess) {
       setDirectSigning(false);
+      setIsPreparingSign?.(false);
       setInnerVisible(false);
     }
   }, [isSigningLoading, disabledProcess, setDirectSigning]);
@@ -1313,6 +1318,7 @@ export const MiniApproval = ({
     onClose?.();
     setInnerVisible(false);
     setDirectSigning(false);
+    setIsPreparingSign?.(false);
   }, [onClose]);
 
   return (
@@ -1361,7 +1367,7 @@ export const MiniApproval = ({
       currentAccount?.type !== KEYRING_CLASS.HARDWARE.LEDGER ? (
         <Modal
           transitionName=""
-          visible={isSigningLoading}
+          visible={isSigningLoading || isPreparingSign}
           maskClosable={false}
           centered
           cancelText={null}
