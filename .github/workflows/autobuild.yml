@@ -35,7 +35,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.20.4'
+          node-version: '22.17.1'
 
       - name: Use NPM Token with organization read access
         uses: heisenberg-2077/use-npm-token-action@v1
@@ -51,6 +51,11 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.17.1'
 
       # - name: Get yarn cache directory path
       #   id: yarn-cache-dir-path
