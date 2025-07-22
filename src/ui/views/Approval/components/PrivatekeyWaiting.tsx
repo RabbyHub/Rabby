@@ -30,10 +30,15 @@ import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
+import { useAsync } from 'react-use';
+import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
   address: string;
   chainId?: number;
+  from?: string;
+  nonce?: string;
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
@@ -92,7 +97,12 @@ export const PrivatekeyWaiting = ({
       return;
     }
     setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
-    await wallet.resendSign();
+
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    await wallet.resendSign(autoRetryUpdate);
+
     message.success(t('page.signFooterBar.ledger.resent'));
     emitSignComponentAmounted();
   };
@@ -126,6 +136,8 @@ export const PrivatekeyWaiting = ({
         break;
     }
   }, [type, isDarkTheme]);
+
+  const account = params.isGnosis ? params.account! : $account;
 
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
@@ -243,11 +255,11 @@ export const PrivatekeyWaiting = ({
       if (isSignText) {
         setHeight(0);
       } else {
-        setHeight(208);
+        setHeight('fit-content');
       }
       init();
     })();
-  }, []);
+  }, [connectStatus]);
 
   React.useEffect(() => {
     setPopupProps(params?.extra?.popupProps);
@@ -294,6 +306,16 @@ export const PrivatekeyWaiting = ({
     }
   }, [connectStatus, errorMessage]);
 
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce: params?.nonce,
+    chainId: params?.chainId,
+    status: connectStatus,
+    from: params.from,
+    description,
+  });
+
+  console.log('txFailedResult', txFailedResult, description, connectStatus);
+
   if (isSignText && connectStatus !== WALLETCONNECT_STATUS_MAP.FAILED) {
     return null;
   }
@@ -305,10 +327,11 @@ export const PrivatekeyWaiting = ({
       status={statusProp}
       onRetry={handleRetry}
       content={content}
-      description={description}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
       hasMoreDescription={!!description}
+      description={txFailedResult?.[0] || description}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
     />
   );
 };

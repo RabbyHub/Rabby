@@ -22,6 +22,8 @@ import { ga4 } from '@/utils/ga4';
 interface ApprovalParams {
   address: string;
   chainId?: number;
+  nonce?: string;
+  from?: string;
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
@@ -91,10 +93,10 @@ const CoinbaseWaiting = ({
     rejectApproval('user cancel');
   };
 
-  const handleRetry = async () => {
+  const handleRetry = async (retry?: boolean) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
     setConnectError(null);
-    await wallet.resendSign();
+    await wallet.resendSign(retry);
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
     emitSignComponentAmounted();
   };
@@ -203,7 +205,7 @@ const CoinbaseWaiting = ({
 
   useEffect(() => {
     init();
-    setHeight(360);
+    setHeight('fit-content');
   }, []);
 
   useEffect(() => {
@@ -238,6 +240,9 @@ const CoinbaseWaiting = ({
             onCancel={handleCancel}
             account={currentAccount}
             onDone={() => setIsClickDone(true)}
+            chainId={params.chainId}
+            nonce={params.nonce}
+            from={params.from}
           />
         )}
       </div>

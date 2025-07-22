@@ -30,10 +30,13 @@ import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
   address: string;
   chainId?: number;
+  from?: string;
+  nonce?: string;
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
@@ -55,6 +58,7 @@ export const ImKeyHardwareWaiting = ({
   account: Account;
 }) => {
   const {
+    setHeight,
     setTitle,
     setVisible,
     closePopup,
@@ -99,7 +103,10 @@ export const ImKeyHardwareWaiting = ({
     }
     if (sessionStatus === 'DISCONNECTED') return;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.resendSign();
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    await wallet.resendSign(autoRetryUpdate);
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
@@ -250,6 +257,7 @@ export const ImKeyHardwareWaiting = ({
         </span>
       </div>
     );
+    setHeight('fit-content');
     init();
     mountedRef.current = true;
   }, []);
@@ -316,6 +324,14 @@ export const ImKeyHardwareWaiting = ({
     return description;
   }, [description]);
 
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce: params?.nonce,
+    chainId: params?.chainId,
+    status: connectStatus,
+    from: params.from,
+    description: description,
+  });
+
   return (
     <ApprovalPopupContainer
       showAnimation
@@ -324,7 +340,8 @@ export const ImKeyHardwareWaiting = ({
       onRetry={() => handleRetry()}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
-      description={currentDescription}
+      description={txFailedResult?.[0] || currentDescription}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
       content={content}
       hasMoreDescription={statusProp === 'REJECTED' || statusProp === 'FAILED'}
     />

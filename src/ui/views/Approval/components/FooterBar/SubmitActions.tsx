@@ -27,8 +27,6 @@ export const SubmitActions: React.FC<Props> = ({
   gasLessThemeColor,
   isGasNotEnough,
   isSubmitting,
-  directSubmit,
-  isMiniSignTx,
 }) => {
   const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
@@ -44,32 +42,6 @@ export const SubmitActions: React.FC<Props> = ({
   const handleClickCancel = React.useCallback(() => {
     setIsSign(false);
   }, []);
-
-  const directSigning = useDirectSigning();
-
-  const autoSigned = useRef(false);
-  useDebounce(
-    () => {
-      if (
-        !autoSigned.current &&
-        isMiniSignTx &&
-        !disabledProcess &&
-        directSigning &&
-        directSubmit
-      ) {
-        autoSigned.current = true;
-        handleClickConfirm();
-      }
-    },
-    300,
-    [
-      directSigning,
-      disabledProcess,
-      handleClickConfirm,
-      isMiniSignTx,
-      directSubmit,
-    ]
-  );
 
   return (
     <ActionsContainer onCancel={onCancel}>
