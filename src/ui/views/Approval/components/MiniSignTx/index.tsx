@@ -1362,7 +1362,7 @@ export const MiniApproval = ({
 
       {directSubmit &&
       canUseDirectSubmitTx &&
-      !supportedHardwareDirectSign(KEYRING_CLASS.HARDWARE.LEDGER) ? (
+      !supportedHardwareDirectSign(currentAccount?.type || '') ? (
         <Modal
           transitionName=""
           visible={isSigningLoading}
