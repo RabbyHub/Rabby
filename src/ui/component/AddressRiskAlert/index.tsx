@@ -240,6 +240,12 @@ export const AddressRiskAlert = ({
   const [hasInputPassword, setHasInputPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [inWhiteList, setInWhiteList] = useState(false);
+
+  const shouldPassword = useMemo(() => {
+    // should password for whitelist
+    return inWhiteList || forWhitelist;
+  }, [inWhiteList, forWhitelist]);
+
   // disable detect risk when invisible
   const riskInfos = useAddressRisks(visible ? address : '', editCex);
   const addressSplit = useMemo(() => {
@@ -275,8 +281,8 @@ export const AddressRiskAlert = ({
 
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
-      await wallet?.verifyPassword(password);
-      if (inWhiteList || forWhitelist) {
+      if (shouldPassword) {
+        await wallet?.verifyPassword(password);
         await wallet.addWhitelist(password, address);
       } else {
         await wallet.removeWhitelist(address);
@@ -298,6 +304,16 @@ export const AddressRiskAlert = ({
       ]);
     }
   };
+
+  const disableSubmit = useMemo(() => {
+    if (riskInfos.loading) {
+      return true;
+    }
+    if (shouldPassword) {
+      return !hasInputPassword || passwordError;
+    }
+    return false;
+  }, [riskInfos.loading, shouldPassword, hasInputPassword, passwordError]);
 
   useEffect(() => {
     if (!visible) {
@@ -427,38 +443,39 @@ export const AddressRiskAlert = ({
           </div>
           <div className="btn-wrapper w-[100%] flex justify-center">
             <Form className="w-full" onFinish={handleSubmit} form={form}>
-              <AuthFormItemWrapper $hasError={passwordError}>
-                <Form.Item
-                  name="password"
-                  rules={[
-                    {
-                      required: true,
-                      message: t(
-                        'component.AuthenticationModal.passwordRequired'
-                      ),
-                    },
-                  ]}
-                >
-                  <Input
-                    className="popup-input"
-                    placeholder={t(
-                      'page.sendPoly.riskAlert.passwordPlaceholder'
-                    )}
-                    onChange={(e) => {
-                      setHasInputPassword(e.target.value.length > 0);
-                      setPasswordError(false);
-                    }}
-                    type="password"
-                    size="large"
-                    autoFocus
-                    spellCheck={false}
-                  />
-                </Form.Item>
-              </AuthFormItemWrapper>
+              {shouldPassword && (
+                <AuthFormItemWrapper $hasError={passwordError}>
+                  <Form.Item
+                    name="password"
+                    rules={[
+                      {
+                        required: true,
+                        message: t(
+                          'component.AuthenticationModal.passwordRequired'
+                        ),
+                      },
+                    ]}
+                  >
+                    <Input
+                      className="popup-input"
+                      placeholder={t(
+                        'page.sendPoly.riskAlert.passwordPlaceholder'
+                      )}
+                      onChange={(e) => {
+                        setHasInputPassword(e.target.value.length > 0);
+                        setPasswordError(false);
+                      }}
+                      type="password"
+                      size="large"
+                      autoFocus
+                      spellCheck={false}
+                    />
+                  </Form.Item>
+                </AuthFormItemWrapper>
+              )}
+
               <Button
-                disabled={
-                  riskInfos.loading || !hasInputPassword || passwordError
-                }
+                disabled={disableSubmit}
                 type="primary"
                 htmlType="submit"
                 size="large"
