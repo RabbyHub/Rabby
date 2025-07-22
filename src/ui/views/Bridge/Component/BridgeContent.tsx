@@ -470,18 +470,20 @@ export const BridgeContent = () => {
     !isSlippageLow &&
     !showLoss;
 
+  const [isPreparingSign, setIsPreparingSign] = useState(false);
+
   const handleBridge = useMemoizedFn(async () => {
     if (canUseDirectSubmitTx && noRiskSign) {
-      try {
-        setFetchingBridgeQuote(true);
-        await runBuildSwapTxsRef.current;
-      } catch (error) {
-        console.error('runBuildSwapTxsRef', error);
-      } finally {
-        setFetchingBridgeQuote(false);
-      }
+      setIsPreparingSign(true);
+      setFetchingBridgeQuote(true);
+      await runBuildSwapTxsRef.current;
+      setFetchingBridgeQuote(false);
       clearExpiredTimer();
-      startDirectSigning();
+      if (txs?.length) {
+        // may be runBuildSwapTxs error so no txs so retry
+        startDirectSigning();
+      }
+      setIsPreparingSign(false);
     } else {
       gotoBridge();
     }
@@ -801,6 +803,8 @@ export const BridgeContent = () => {
         ) : null}
         <MiniApproval
           directSubmit
+          isPreparingSign={isPreparingSign}
+          setIsPreparingSign={setIsPreparingSign}
           canUseDirectSubmitTx={canUseDirectSubmitTx}
           visible={isShowSign}
           ga={{
@@ -810,6 +814,7 @@ export const BridgeContent = () => {
           }}
           txs={txs}
           onClose={() => {
+            setIsPreparingSign(false);
             setIsShowSign(false);
             refresh((e) => e + 1);
             setTimeout(() => {
@@ -817,18 +822,23 @@ export const BridgeContent = () => {
             }, 500);
           }}
           onReject={() => {
+            setIsPreparingSign(false);
             setIsShowSign(false);
             refresh((e) => e + 1);
             mutateTxs([]);
           }}
           onResolve={() => {
+            setIsPreparingSign(false);
             setTimeout(() => {
               setIsShowSign(false);
               mutateTxs([]);
               handleAmountChange('');
             }, 500);
           }}
-          onPreExecError={gotoBridge}
+          onPreExecError={() => {
+            setIsPreparingSign(false);
+            gotoBridge();
+          }}
           getContainer={getContainer}
         />
       </div>
