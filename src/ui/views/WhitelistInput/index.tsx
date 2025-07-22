@@ -201,7 +201,7 @@ const WhitelistInput = () => {
         >
           {t('page.whitelist.title')}
         </PageHeader>
-        <main className="flex-1 flex flex-col gap-[20px]">
+        <main className="flex-1 flex flex-col gap-[20px] mt-[20px]">
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
             <StyledInputWrapper className="relative">
