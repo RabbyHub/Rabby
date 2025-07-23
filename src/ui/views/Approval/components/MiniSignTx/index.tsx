@@ -814,6 +814,10 @@ export const MiniSignTx = ({
 
         if (support1559) {
           tx = convertLegacyTo1559(tx);
+          tx.maxPriorityFeePerGas =
+            maxPriorityFee <= 0
+              ? tx.maxFeePerGas
+              : intToHex(Math.round(maxPriorityFee));
         }
 
         const preExecResult = await wallet.openapi.preExecTx({
