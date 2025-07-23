@@ -159,7 +159,13 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
           });
 
           retryTxReset();
-          if (!(isLedgerLockError(msg) || msg === 'DISCONNECTED')) {
+          if (
+            !(
+              isLedgerLockError(msg) ||
+              msg === 'DISCONNECTED' ||
+              msg === 'No OneKey Device found'
+            )
+          ) {
             try {
               await setRetryTxRecommendNonce({
                 from: tx.from,

@@ -6,7 +6,7 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
 import { EVENTS } from 'consts';
-import React, { ReactNode, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 
 import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
@@ -82,13 +82,11 @@ export const MiniOneKeyAction: React.FC<Props> = ({
   const { isDarkTheme } = useThemeMode();
   const { txStatus, total, currentActiveIndex: current } = task;
 
-  const { status } = useLedgerStatus();
   const [disconnectTipsModal, setDisconnectTipsModal] = React.useState(false);
 
   React.useEffect(() => {
     const listener = (msg) => {
-      console.log('EVENTS.COMMON_HARDWARE.REJECTED', msg);
-      if (msg === 'DISCONNECTED') {
+      if (msg === 'No OneKey Device found') {
         setDisconnectTipsModal(true);
         task.stop();
       }
@@ -102,11 +100,6 @@ export const MiniOneKeyAction: React.FC<Props> = ({
   }, []);
 
   const handleSubmit = useMemoizedFn(() => {
-    if (status === 'DISCONNECTED') {
-      console.log('console', status);
-      setDisconnectTipsModal(true);
-      return;
-    }
     onSubmit();
   });
 
@@ -131,11 +124,6 @@ export const MiniOneKeyAction: React.FC<Props> = ({
     [directSigning, disabledProcess, handleSubmit, isMiniSignTx, directSubmit]
   );
 
-  React.useEffect(() => {
-    if (task.status === 'active' && status === 'DISCONNECTED') {
-      eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
-    }
-  }, [task.status, status]);
   const { t } = useTranslation();
 
   return (
@@ -150,9 +138,6 @@ export const MiniOneKeyAction: React.FC<Props> = ({
           props.onCancel?.();
         }}
         title={t('page.dashboard.hd.onekeyIsDisconnected')}
-        maskStyle={{
-          backgroundColor: 'transparent',
-        }}
         getContainer={getContainer}
       >
         <OneKey isModalContent />
