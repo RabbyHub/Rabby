@@ -281,13 +281,6 @@ const flowContext = flow
         return waitSignComponentPromise.then(() => {
           let _approvalRes = originApprovalRes;
 
-          console.log(
-            'waitSignComponentPromise',
-            isRetry,
-            approvalType,
-            mapMethod
-          );
-
           if (
             isRetry &&
             approvalType === 'SignTx' &&
@@ -299,11 +292,10 @@ const flowContext = flow
               getRetryTxRecommendNonce,
             } = bgRetryTxMethods;
             const retryType = getRetryTxType();
-            console.log('retryType', retryType);
             switch (retryType) {
               case 'nonce': {
                 const recommendNonce = getRetryTxRecommendNonce();
-                console.log('current nonce', _approvalRes.nonce);
+                console.log('current nonce', _approvalRes?.nonce);
                 console.log('recommendNonce nonce', recommendNonce);
                 if (recommendNonce === _approvalRes.nonce) {
                   _approvalRes.nonce = intToHex(
@@ -346,7 +338,6 @@ const flowContext = flow
             }
           }
 
-          console.log('_approvalRes', originApprovalRes.nonce, _approvalRes);
           return Promise.resolve(
             providerController[mapMethod]({
               ...request,
