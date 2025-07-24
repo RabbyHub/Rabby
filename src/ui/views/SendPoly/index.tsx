@@ -124,7 +124,7 @@ const SendPoly = () => {
   }, [search]);
 
   const allAccounts = useMemo(() => {
-    return whitelist.map((addr) => {
+    return [...whitelist].reverse().map((addr) => {
       const account = importWhitelistAccounts.find((a) =>
         isSameAddress(a.address, addr)
       );
@@ -133,7 +133,7 @@ const SendPoly = () => {
       }
       return padWatchAccount(addr);
     });
-  }, [importWhitelistAccounts]);
+  }, [importWhitelistAccounts, whitelist]);
 
   const fetchData = async () => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();

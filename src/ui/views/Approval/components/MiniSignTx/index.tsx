@@ -816,6 +816,10 @@ export const MiniSignTx = ({
 
         if (support1559) {
           tx = convertLegacyTo1559(tx);
+          tx.maxPriorityFeePerGas =
+            maxPriorityFee <= 0
+              ? tx.maxFeePerGas
+              : intToHex(Math.round(maxPriorityFee));
         }
 
         const preExecResult = await wallet.openapi.preExecTx({
@@ -1254,6 +1258,8 @@ export const MiniApproval = ({
   getContainer,
   directSubmit,
   canUseDirectSubmitTx,
+  isPreparingSign,
+  setIsPreparingSign,
 }: {
   txs?: Tx[];
   visible?: boolean;
@@ -1265,6 +1271,8 @@ export const MiniApproval = ({
   getContainer?: DrawerProps['getContainer'];
   directSubmit?: boolean;
   canUseDirectSubmitTx?: boolean;
+  isPreparingSign?: boolean;
+  setIsPreparingSign?: (isPreparingSign: boolean) => void;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1281,6 +1289,7 @@ export const MiniApproval = ({
   useEffect(() => {
     if (isSigningLoading && disabledProcess) {
       setDirectSigning(false);
+      setIsPreparingSign?.(false);
       setInnerVisible(false);
     }
   }, [isSigningLoading, disabledProcess, setDirectSigning]);
@@ -1317,7 +1326,14 @@ export const MiniApproval = ({
     onClose?.();
     setInnerVisible(false);
     setDirectSigning(false);
+    setIsPreparingSign?.(false);
   }, [onClose]);
+
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    setKey((e) => e + 1);
+  }, [txs]);
 
   return (
     <>
@@ -1344,6 +1360,7 @@ export const MiniApproval = ({
       >
         {txs?.length ? (
           <MiniSignTx
+            key={key}
             directSubmit={directSubmit}
             ga={ga}
             txs={txs}
@@ -1365,7 +1382,7 @@ export const MiniApproval = ({
       !supportedHardwareDirectSign(currentAccount?.type || '') ? (
         <Modal
           transitionName=""
-          visible={isSigningLoading}
+          visible={isSigningLoading || isPreparingSign}
           maskClosable={false}
           centered
           cancelText={null}

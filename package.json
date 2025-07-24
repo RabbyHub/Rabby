@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.93.39",
+  "version": "0.93.40",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "node build/clean.js",
@@ -89,7 +89,7 @@
     "ahooks": "3.7.8",
     "antd": "4.15.3",
     "bignumber.js": "9.0.1",
-    "bitbox-api": "0.3.2",
+    "bitbox-api": "0.10.0",
     "browserify-zlib": "0.2.0",
     "buffer": "6.0.3",
     "clipboard": "2.0.8",
@@ -227,6 +227,9 @@
     "@debank/common": "^0.3.0",
     "blake2b": "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36",
     "@rabby-wallet/eth-simple-keyring": "5.1.0"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "keywords": [],
   "author": "",
