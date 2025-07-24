@@ -295,8 +295,6 @@ const flowContext = flow
             switch (retryType) {
               case 'nonce': {
                 const recommendNonce = getRetryTxRecommendNonce();
-                console.log('current nonce', _approvalRes?.nonce);
-                console.log('recommendNonce nonce', recommendNonce);
                 if (recommendNonce === _approvalRes.nonce) {
                   _approvalRes.nonce = intToHex(
                     hexToNumber(recommendNonce as '0x${string}') + 1

@@ -211,8 +211,6 @@ export const useGetTxFailedResultInWaiting = ({
 
     const approval = await getApproval();
 
-    console.log('approval', { approval });
-
     if (approval?.data?.approvalType === 'SignTx' && nonce && chainId && from) {
       const txFailedResult = await wallet.getTxFailedResult(description || '');
 
@@ -223,7 +221,6 @@ export const useGetTxFailedResultInWaiting = ({
           nonce: nonce,
         });
 
-        console.log('recommendNonce', recommendNonce);
         return wallet.getTxFailedResult(description || '', {
           nonce: recommendNonce,
         });
