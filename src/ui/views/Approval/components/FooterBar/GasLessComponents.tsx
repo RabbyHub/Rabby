@@ -15,6 +15,7 @@ import { GasAccountCheckResult } from '@/background/service/openapi';
 import { Button } from 'antd';
 import { useLoginDepositConfirm } from '@/ui/views/GasAccount/hooks/checkTxs';
 import { GasAccountDepositTipPopup } from '@/ui/views/GasAccount/components/GasAccountTxPopups';
+import { useHistory } from 'react-router-dom';
 
 export type GasLessConfig = {
   button_text: string;
@@ -45,6 +46,10 @@ export function GasLessNotEnough({
 
   const modalConfirm = useLoginDepositConfirm();
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
+  const history = useHistory();
+  const gotoGasAccount = React.useCallback(() => {
+    history.push('/gas-account');
+  }, []);
 
   return (
     <div
@@ -75,7 +80,9 @@ export function GasLessNotEnough({
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
           onClick={() => {
-            if (miniFooter) {
+            if (directSubmit) {
+              gotoGasAccount();
+            } else if (miniFooter) {
               modalConfirm('deposit');
             } else {
               setTipPopupVisible(true);
@@ -487,6 +494,11 @@ export function GasAccountTips({
 
   const modalConfirm = useLoginDepositConfirm();
 
+  const history = useHistory();
+  const gotoGasAccount = React.useCallback(() => {
+    history.push('/gas-account');
+  }, []);
+
   if (
     !isWalletConnect &&
     // isGasAccountLogin &&
@@ -526,7 +538,9 @@ export function GasAccountTips({
           type="primary"
           className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
           onClick={() => {
-            if (depositGasAccount && miniFooter) {
+            if (depositGasAccount && directSubmit) {
+              gotoGasAccount();
+            } else if (depositGasAccount && miniFooter) {
               modalConfirm('deposit');
             } else {
               setTipPopupVisible(true);
