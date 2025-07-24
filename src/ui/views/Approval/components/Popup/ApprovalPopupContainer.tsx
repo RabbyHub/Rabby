@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FooterResend } from './FooterResend';
 import { FooterButton } from './FooterButton';
@@ -60,7 +60,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   const [iconColor, setIconColor] = React.useState('');
   const [contentColor, setContentColor] = React.useState('');
   const { t } = useTranslation();
-  // const { setHeight, height } = useCommonPopupView();
+  const { setTitle } = useCommonPopupView();
 
   const sendUrl = React.useMemo(() => {
     switch (hdType) {
@@ -93,7 +93,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         break;
       case 'FAILED':
       case 'REJECTED':
-        setImage(retryUpdateType ? TxErrorSVG : TxWarnSVG);
+        setImage(retryUpdateType ? TxWarnSVG : TxErrorSVG);
         setIconColor(
           retryUpdateType ? 'bg-r-orange-default' : 'bg-red-forbidden'
         );
@@ -137,8 +137,33 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
 
   const showSendSvg = retryUpdateType === 'origin' && !isFailedOrRejected;
 
+  const originTitleRef = React.useRef<React.ReactNode>(null);
+
+  useEffect(() => {
+    if (isFailedOrRejected && retryUpdateType !== 'origin') {
+      setTitle((pre) => {
+        if (pre && !originTitleRef.current) {
+          originTitleRef.current = pre;
+          console.log('pre', pre);
+        }
+        return <div>{null}</div>;
+      });
+    } else {
+      if (originTitleRef.current) {
+        setTitle(originTitleRef.current);
+      }
+    }
+  }, [isFailedOrRejected, retryUpdateType]);
+
   return (
-    <div className={clsx('flex flex-col items-center', 'flex-1')}>
+    <div
+      className={clsx(
+        'flex flex-col items-center',
+        'flex-1',
+        // reduce body padding top
+        isFailedOrRejected && retryUpdateType !== 'origin' ? '-mt-16' : ''
+      )}
+    >
       {sendUrl && showSendSvg ? (
         <img src={sendUrl} className={'w-[160px] h-[160px]'} />
       ) : null}
@@ -156,37 +181,39 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
           <Dots />
         ) : null}
       </div>
+
       <div
         className={clsx(
-          contentColor,
-          'mt-[12px]',
-          'text-13 leading-[16px] font-normal text-center',
-          'overflow-auto h-[36px] w-full'
+          // contentColor,
+          'text-r-neutral-foot text-[13px] text-center',
+          'mt-[12px] mb-[24px]',
+          "px-20'",
+          'overflow-auto w-full'
         )}
       >
         {description}
       </div>
 
-      {status === 'FAILED' || status === 'REJECTED' ? (
-        <div className="h-[85px]" />
-      ) : null}
-      <div className="absolute bottom-0 left-0 right-0 text-center">
-        {status === 'SENDING' && <FooterResend onResend={onRetry} />}
-        {status === 'WAITING' && <FooterResend onResend={onRetry} />}
-        {status === 'FAILED' && (
-          <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
-        )}
-        {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} hide />}
-        {status === 'REJECTED' && (
-          <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
-        )}
-        {status === 'SUBMITTING' && (
-          <FooterButton
-            text={t('page.signFooterBar.submitTx')}
-            onClick={onSubmit}
-          />
-        )}
+      <div className="w-[calc(100%+32px)] relative -mb-16">
+        <div className="text-center">
+          {status === 'SENDING' && <FooterResend onResend={onRetry} />}
+          {status === 'WAITING' && <FooterResend onResend={onRetry} />}
+          {status === 'FAILED' && (
+            <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
+          )}
+          {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} hide />}
+          {status === 'REJECTED' && (
+            <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
+          )}
+          {status === 'SUBMITTING' && (
+            <FooterButton
+              text={t('page.signFooterBar.submitTx')}
+              onClick={onSubmit}
+            />
+          )}
+        </div>
       </div>
+
       {children}
     </div>
   );

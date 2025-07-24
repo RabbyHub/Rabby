@@ -302,7 +302,7 @@ export const ImKeyHardwareWaiting = ({
         break;
       case WALLETCONNECT_STATUS_MAP.REJECTED:
         setStatusProp('REJECTED');
-        setContent(t('page.signFooterBar.ledger.txRejected'));
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
@@ -331,6 +331,21 @@ export const ImKeyHardwareWaiting = ({
     from: params.from,
     description: description,
   });
+
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(connectStatus)
+    ) {
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], connectStatus]);
 
   return (
     <ApprovalPopupContainer

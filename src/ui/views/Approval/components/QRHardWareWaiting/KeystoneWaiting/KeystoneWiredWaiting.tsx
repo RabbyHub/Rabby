@@ -169,7 +169,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       }
 
       setStatusProp('REJECTED');
-      return t('page.signFooterBar.keystone.txRejected');
+      return t('page.signFooterBar.qrcode.txFailed');
     }
     if (isDone) {
       setStatusProp('RESOLVED');
