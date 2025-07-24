@@ -435,6 +435,7 @@
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
         "txFailed": "Fail to create",
+        "txFailedRetry": "Fail to create: Please Retry",
         "txFailedBy": "Fail to {{category}}",
         "retryTxFailedBy": "Fail to {{category}}: Please Retry",
         "sigReceived": "Signature received",

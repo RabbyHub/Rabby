@@ -259,7 +259,7 @@ export const PrivatekeyWaiting = ({
       }
       init();
     })();
-  }, [connectStatus]);
+  }, []);
 
   React.useEffect(() => {
     setPopupProps(params?.extra?.popupProps);
@@ -314,7 +314,20 @@ export const PrivatekeyWaiting = ({
     description,
   });
 
-  console.log('txFailedResult', txFailedResult, description, connectStatus);
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(connectStatus)
+    ) {
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], connectStatus]);
 
   if (isSignText && connectStatus !== WALLETCONNECT_STATUS_MAP.FAILED) {
     return null;

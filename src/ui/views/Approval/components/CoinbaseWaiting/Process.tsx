@@ -119,7 +119,10 @@ const Process = ({
         setStatusProp('WAITING');
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
-        setContent(t('page.signFooterBar.walletConnect.requestFailedToSend'));
+        setContent(
+          t('page.signFooterBar.qrcode.txFailed')
+          // t('page.signFooterBar.walletConnect.requestFailedToSend')
+        );
         setDescription(error?.message || '');
         setStatusProp('FAILED');
         break;
@@ -159,6 +162,21 @@ const Process = ({
     description: error?.message || '',
     showOriginDesc,
   });
+
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(mergedStatus)
+    ) {
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], mergedStatus]);
 
   return (
     <ApprovalPopupContainer

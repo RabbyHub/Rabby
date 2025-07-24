@@ -271,7 +271,7 @@ export const CommonWaiting = ({
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
         setStatusProp('REJECTED');
-        setContent(t('page.signFooterBar.ledger.txRejected'));
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTED:
@@ -301,6 +301,21 @@ export const CommonWaiting = ({
     status: connectStatus,
     description: description,
   });
+
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(connectStatus)
+    ) {
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], connectStatus]);
 
   if (!brandContent) {
     throw new Error(t('page.signFooterBar.common.notSupport', [brandName]));
