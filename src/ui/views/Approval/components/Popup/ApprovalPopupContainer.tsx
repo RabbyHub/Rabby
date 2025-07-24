@@ -4,8 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { FooterResend } from './FooterResend';
 import { FooterButton } from './FooterButton';
 import { FooterResendCancelGroup } from './FooterResendCancelGroup';
-import TXWaitingSVG from 'ui/assets/approval/tx-waiting.svg';
-import TxFailedSVG from 'ui/assets/approval/tx-failed.svg';
 import TxSucceedSVG from 'ui/assets/approval/tx-succeed.svg';
 import ConnectWiredSVG from 'ui/assets/approval/connect-wired.svg';
 import ConnectWirelessSVG from 'ui/assets/approval/connect-wireless.svg';
@@ -107,7 +105,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
       default:
         break;
     }
-  }, [status]);
+  }, [status, retryUpdateType]);
 
   // const lastNormalHeight = React.useRef(0);
 

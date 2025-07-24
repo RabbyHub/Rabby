@@ -101,7 +101,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         </span>
       </div>
     );
-    setHeight(440);
+    setHeight('fit-content');
     setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
     setIsSignText(
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
