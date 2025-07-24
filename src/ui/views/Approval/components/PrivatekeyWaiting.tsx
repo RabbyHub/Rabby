@@ -321,6 +321,7 @@ export const PrivatekeyWaiting = ({
         WALLETCONNECT_STATUS_MAP.REJECTED,
       ].includes(connectStatus)
     ) {
+      setHeight('fit-content');
       setContent(
         txFailedResult?.[1]
           ? t('page.signFooterBar.qrcode.txFailedRetry')

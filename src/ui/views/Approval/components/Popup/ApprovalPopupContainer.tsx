@@ -135,16 +135,15 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
 
   const isFailedOrRejected = status === 'FAILED' || status === 'REJECTED';
 
-  const showSendSvg = retryUpdateType === 'origin' && !isFailedOrRejected;
+  const showSendSvg = !isFailedOrRejected;
 
   const originTitleRef = React.useRef<React.ReactNode>(null);
 
   useEffect(() => {
-    if (isFailedOrRejected && retryUpdateType !== 'origin') {
+    if (isFailedOrRejected) {
       setTitle((pre) => {
         if (pre && !originTitleRef.current) {
           originTitleRef.current = pre;
-          console.log('pre', pre);
         }
         return <div>{null}</div>;
       });
@@ -161,7 +160,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         'flex flex-col items-center',
         'flex-1',
         // reduce body padding top
-        isFailedOrRejected && retryUpdateType !== 'origin' ? '-mt-16' : ''
+        isFailedOrRejected ? '-mt-16' : ''
       )}
     >
       {sendUrl && showSendSvg ? (
@@ -199,11 +198,19 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
           {status === 'SENDING' && <FooterResend onResend={onRetry} />}
           {status === 'WAITING' && <FooterResend onResend={onRetry} />}
           {status === 'FAILED' && (
-            <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
+            <FooterResendCancelGroup
+              onCancel={onCancel}
+              onResend={onRetry}
+              retryUpdateType={retryUpdateType}
+            />
           )}
           {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} hide />}
           {status === 'REJECTED' && (
-            <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
+            <FooterResendCancelGroup
+              onCancel={onCancel}
+              onResend={onRetry}
+              retryUpdateType={retryUpdateType}
+            />
           )}
           {status === 'SUBMITTING' && (
             <FooterButton
