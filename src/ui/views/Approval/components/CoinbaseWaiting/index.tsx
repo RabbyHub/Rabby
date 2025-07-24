@@ -240,9 +240,9 @@ const CoinbaseWaiting = ({
             onCancel={handleCancel}
             account={currentAccount}
             onDone={() => setIsClickDone(true)}
-            chainId={params.chainId}
-            nonce={params.nonce}
-            from={params.from}
+            chainId={params?.chainId}
+            nonce={params?.nonce}
+            from={params?.from}
           />
         )}
       </div>

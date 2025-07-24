@@ -6,7 +6,7 @@ import {
   WALLETCONNECT_STATUS_MAP,
   WALLET_BRAND_CONTENT,
 } from 'consts';
-import { useCommonPopupView, useWallet } from 'ui/utils';
+import { useCommonPopupView } from 'ui/utils';
 import {
   WALLET_BRAND_NAME_KEY,
   useDisplayBrandName,
@@ -17,7 +17,6 @@ import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from '../Popup/ApprovalPopupContainer';
-import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 type Valueof<T> = T[keyof T];
 const INIT_SENDING_COUNTER = 10;
@@ -67,13 +66,8 @@ const Process = ({
     ApprovalPopupContainerProps['status']
   >('SENDING');
 
-  const wallet = useWallet();
-
   const handleRetry = async () => {
-    const autoRetryUpdate =
-      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
-    await wallet.setRetryTxType(txFailedResult?.[1] || false);
-    onRetry(autoRetryUpdate);
+    onRetry();
     setSendingCounter(INIT_SENDING_COUNTER);
   };
   const handleCancel = () => {
@@ -154,30 +148,6 @@ const Process = ({
     }
   }, [mergedStatus, description]);
 
-  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
-    nonce,
-    chainId,
-    status: mergedStatus,
-    from,
-    description: error?.message || '',
-    showOriginDesc,
-  });
-
-  React.useEffect(() => {
-    if (
-      [
-        WALLETCONNECT_STATUS_MAP.FAILED,
-        WALLETCONNECT_STATUS_MAP.REJECTED,
-      ].includes(mergedStatus)
-    ) {
-      setContent(
-        txFailedResult?.[1]
-          ? t('page.signFooterBar.qrcode.txFailedRetry')
-          : t('page.signFooterBar.qrcode.txFailed')
-      );
-    }
-  }, [txFailedResult?.[1], mergedStatus]);
-
   return (
     <ApprovalPopupContainer
       hdType="walletconnect"
@@ -186,8 +156,7 @@ const Process = ({
       onRetry={handleRetry}
       onDone={onDone}
       onCancel={handleCancel}
-      description={txFailedResult?.[0] || description}
-      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
+      description={description}
       hasMoreDescription={!!description}
       content={
         <>
