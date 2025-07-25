@@ -320,6 +320,7 @@ export const AddressRiskAlert = ({
       form.resetFields();
       setPasswordError(false);
       setHasInputPassword(false);
+      setInWhiteList(false);
     }
   }, [visible]);
 
