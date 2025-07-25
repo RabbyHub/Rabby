@@ -397,6 +397,7 @@ export const BridgeContent = () => {
               )
           )
         );
+        setIsPreparingSign(false);
         message.error(error?.message || String(error));
         stats.report('bridgeQuoteResult', {
           aggregatorIds: selectedBridgeQuote.aggregator.id,
