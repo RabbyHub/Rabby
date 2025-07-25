@@ -1,3 +1,20 @@
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
+index 4842adc..687b6de 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
+@@ -169,7 +169,11 @@ export default class Eth {
+                 await this.provideNFTInformation(nft);
+             }
+             for (const data of resolution.erc20Tokens) {
+-                await this.provideERC20TokenInformation(data);
++                try {
++                    await this.provideERC20TokenInformation(data);
++                } catch (e) {
++                    console.warn("Failed to provide ERC20 token information, continuing with blind signing:", e);
++                }
+             }
+         }
+         const rawTx = Buffer.from(rawTxHex, "hex");
 diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js
 index c3deee8..2556634 100644
 --- a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js
