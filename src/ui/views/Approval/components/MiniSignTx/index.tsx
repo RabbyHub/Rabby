@@ -1377,9 +1377,10 @@ export const MiniApproval = ({
         ) : null}
       </Popup>
 
-      {directSubmit &&
-      canUseDirectSubmitTx &&
-      !supportedHardwareDirectSign(currentAccount?.type || '') ? (
+      {isPreparingSign ||
+      (directSubmit &&
+        canUseDirectSubmitTx &&
+        !supportedHardwareDirectSign(currentAccount?.type || '')) ? (
         <Modal
           transitionName=""
           visible={isSigningLoading || isPreparingSign}

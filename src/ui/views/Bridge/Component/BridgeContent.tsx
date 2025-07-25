@@ -397,6 +397,7 @@ export const BridgeContent = () => {
               )
           )
         );
+        setIsPreparingSign(false);
         message.error(error?.message || String(error));
         stats.report('bridgeQuoteResult', {
           aggregatorIds: selectedBridgeQuote.aggregator.id,
@@ -476,7 +477,7 @@ export const BridgeContent = () => {
     if (canUseDirectSubmitTx && noRiskSign) {
       setIsPreparingSign(true);
       setFetchingBridgeQuote(true);
-      await runBuildSwapTxsRef.current;
+      const txs = await runBuildSwapTxsRef.current;
       setFetchingBridgeQuote(false);
       clearExpiredTimer();
       if (txs?.length) {
