@@ -39,6 +39,7 @@ import {
   useSetMiniApprovalGas,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useDebounce } from 'react-use';
+import { MiniOneKeyAction } from './MiniOneKeyAction';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -515,6 +516,11 @@ export const MiniFooterBar: React.FC<Props> = ({
     </>
   );
 
+  const MiniHardwareAction =
+    account.type === KEYRING_CLASS.HARDWARE.LEDGER
+      ? MiniLedgerAction
+      : MiniOneKeyAction;
+
   return (
     <div className="relative">
       {!isDarkTheme && <Shadow isShow={hasShadow} />}
@@ -525,8 +531,11 @@ export const MiniFooterBar: React.FC<Props> = ({
       >
         {Header}
         <div className="pt-[10px]">
-          {account.type === KEYRING_CLASS.HARDWARE.LEDGER ? (
-            <MiniLedgerAction
+          {[
+            KEYRING_CLASS.HARDWARE.LEDGER,
+            KEYRING_CLASS.HARDWARE.ONEKEY,
+          ].includes(account.type) ? (
+            <MiniHardwareAction
               directSubmit={directSubmit}
               isMiniSignTx
               key={gasMethod}
@@ -555,7 +564,7 @@ export const MiniFooterBar: React.FC<Props> = ({
               }
               footer={footer}
               getContainer={getContainer}
-            ></MiniLedgerAction>
+            ></MiniHardwareAction>
           ) : (
             <MiniCommonAction
               directSubmit={directSubmit}

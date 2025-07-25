@@ -2,7 +2,14 @@ import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import { useCallback } from 'react';
 import { createContextState } from './contextState';
 import React from 'react';
-import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import {
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  WALLETCONNECT_STATUS_MAP,
+} from '@/constant';
+import useAsync from 'react-use/lib/useAsync';
+import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
+import { useApproval, useWallet } from '../utils';
 
 export const [
   MiniApprovalGasProvider,
@@ -158,5 +165,70 @@ export const supportedDirectSign = (type: string) => {
     KEYRING_TYPE.SimpleKeyring,
     KEYRING_TYPE.HdKeyring,
     KEYRING_CLASS.HARDWARE.LEDGER,
+    KEYRING_CLASS.HARDWARE.ONEKEY,
   ].includes(type);
+};
+
+export const supportedHardwareDirectSign = (type: string) => {
+  return [
+    KEYRING_CLASS.HARDWARE.LEDGER,
+    KEYRING_CLASS.HARDWARE.ONEKEY,
+  ].includes(type);
+};
+
+export const useGetTxFailedResultInWaiting = ({
+  nonce,
+  chainId,
+  status,
+  from,
+  description,
+  showOriginDesc,
+}: {
+  nonce?: string;
+  chainId?: number;
+  status: number;
+  from?: string;
+  description?: string;
+  showOriginDesc?: () => string | undefined;
+}) => {
+  const wallet = useWallet();
+  const [getApproval] = useApproval();
+
+  return useAsync<() => Promise<[string, RetryUpdateType]>>(async () => {
+    const originDesc = showOriginDesc?.();
+    if (originDesc) {
+      return [originDesc, 'origin'];
+    }
+
+    if (
+      ![
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(status)
+    ) {
+      return [description || '', 'origin'];
+    }
+
+    const approval = await getApproval();
+
+    if (approval?.data?.approvalType === 'SignTx' && nonce && chainId && from) {
+      const txFailedResult = await wallet.getTxFailedResult(description || '');
+
+      if (txFailedResult?.[1] === 'nonce') {
+        const recommendNonce = await wallet.setRetryTxRecommendNonce({
+          from: from,
+          chainId: chainId,
+          nonce: nonce,
+        });
+
+        return wallet.getTxFailedResult(description || '', {
+          nonce: recommendNonce,
+        });
+      }
+
+      return txFailedResult;
+    }
+
+    return [description, 'origin'] as [string, RetryUpdateType];
+  }, [nonce, chainId, status, from, description]);
 };

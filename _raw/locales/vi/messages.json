@@ -430,7 +430,8 @@
         "qrcodeDesc": "Quét với {{brand}} của bạn để ký<br></br>Sau khi ký xong, nhấn nút bên dưới để nhận chữ ký",
         "failedToGetExplain": "Không thể lấy giải thích",
         "txFailedBy": "Không thể {{category}}",
-        "retryTxFailedBy": "Không thể {{category}}: Vui lòng thử lại"
+        "retryTxFailedBy": "Không thể {{category}}: Vui lòng thử lại",
+        "txFailedRetry": "Không thể tạo: Xin vui lòng thử lại"
       },
       "keystone": {
         "siging": "Gửi yêu cầu ký",
@@ -1508,7 +1509,8 @@
         "userRejectedTheRequest": "Người dùng đã từ chối yêu cầu.",
         "howToConnectLedger": "Cách Kết Nối Ledger",
         "ledgerIsDisconnected": "Ví của bạn không được kết nối",
-        "howToConnectImKey": "Cách kết nối imKey"
+        "howToConnectImKey": "Cách kết nối imKey",
+        "onekeyIsDisconnected": "OneKey của bạn chưa được kết nối"
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Địa chỉ Safe của bạn chưa được triển khai trên chuỗi này."

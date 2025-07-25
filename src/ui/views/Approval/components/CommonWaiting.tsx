@@ -23,8 +23,11 @@ import { message } from 'antd';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
+  from?: string;
+  nonce?: string;
   address: string;
   chainId?: number;
   isGnosis?: boolean;
@@ -50,6 +53,7 @@ export const CommonWaiting = ({
 }) => {
   const wallet = useWallet();
   const {
+    setHeight,
     setTitle,
     setVisible,
     closePopup,
@@ -86,7 +90,12 @@ export const CommonWaiting = ({
       return;
     }
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.resendSign();
+
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    await wallet.resendSign(autoRetryUpdate);
+
     message.success(t('page.signFooterBar.ledger.resent'));
     emitSignComponentAmounted();
   };
@@ -226,6 +235,7 @@ export const CommonWaiting = ({
           </span>
         </div>
       );
+      setHeight('fit-content');
       init();
     })();
   }, []);
@@ -261,7 +271,7 @@ export const CommonWaiting = ({
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
         setStatusProp('REJECTED');
-        setContent(t('page.signFooterBar.ledger.txRejected'));
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTED:
@@ -284,6 +294,29 @@ export const CommonWaiting = ({
     }
   }, [brandContent?.brand]);
 
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce: params?.nonce,
+    chainId: params?.chainId,
+    from: params?.from,
+    status: connectStatus,
+    description: description,
+  });
+
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(connectStatus)
+    ) {
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], connectStatus]);
+
   if (!brandContent) {
     throw new Error(t('page.signFooterBar.common.notSupport', [brandName]));
   }
@@ -295,10 +328,11 @@ export const CommonWaiting = ({
       status={statusProp}
       onRetry={handleRetry}
       content={content}
-      description={description}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
       hasMoreDescription={!!errorMessage}
+      description={txFailedResult?.[0] || description}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
     />
   );
 };

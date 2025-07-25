@@ -24,6 +24,7 @@ import {
 } from './Popup/ApprovalPopupContainer';
 import { isLedgerLockError } from '@/ui/utils/ledger';
 import { ga4 } from '@/utils/ga4';
+import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
   address: string;
@@ -31,6 +32,10 @@ interface ApprovalParams {
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  from?: string;
+  nonce?: string;
+  gasPrice?: string;
+  maxFeePerGas?: string;
   $ctx?: any;
   extra?: Record<string, any>;
   safeMessage?: {
@@ -49,6 +54,7 @@ const LedgerHardwareWaiting = ({
   account: Account;
 }) => {
   const {
+    height,
     setTitle,
     setVisible,
     setHeight,
@@ -94,7 +100,11 @@ const LedgerHardwareWaiting = ({
     }
     if (sessionStatus === 'DISCONNECTED') return;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.resendSign();
+
+    const autoRetryUpdate =
+      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
+    await wallet.setRetryTxType(txFailedResult?.[1] || false);
+    await wallet.resendSign(autoRetryUpdate);
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
@@ -236,7 +246,6 @@ const LedgerHardwareWaiting = ({
   }, [sessionStatus]);
 
   React.useEffect(() => {
-    setHeight(360);
     setTitle(
       <div className="flex justify-center items-center">
         <img src={LedgerSVG} className="w-20 mr-8" />
@@ -245,6 +254,8 @@ const LedgerHardwareWaiting = ({
         </span>
       </div>
     );
+    setHeight('fit-content');
+
     init();
     mountedRef.current = true;
   }, []);
@@ -289,7 +300,7 @@ const LedgerHardwareWaiting = ({
         break;
       case WALLETCONNECT_STATUS_MAP.REJECTED:
         setStatusProp('REJECTED');
-        setContent(t('page.signFooterBar.ledger.txRejected'));
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
@@ -322,6 +333,45 @@ const LedgerHardwareWaiting = ({
     return description;
   }, [description]);
 
+  const showOriginDesc = React.useCallback(() => {
+    if (isLedgerLockError(description)) {
+      return t('page.signFooterBar.ledger.unlockAlert');
+    } else if (
+      description.includes('0x6e00') ||
+      description.includes('0x6b00')
+    ) {
+      return t('page.signFooterBar.ledger.updateFirmwareAlert');
+    } else if (description.includes('0x6985')) {
+      return t('page.signFooterBar.ledger.txRejectedByLedger');
+    }
+
+    return undefined;
+  }, [description, t]);
+
+  const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    nonce: params?.nonce,
+    chainId: params?.chainId,
+    status: connectStatus,
+    from: params.from,
+    description,
+    showOriginDesc,
+  });
+
+  React.useEffect(() => {
+    if (
+      [
+        WALLETCONNECT_STATUS_MAP.FAILED,
+        WALLETCONNECT_STATUS_MAP.REJECTED,
+      ].includes(connectStatus)
+    ) {
+      setContent(
+        txFailedResult?.[1]
+          ? t('page.signFooterBar.qrcode.txFailedRetry')
+          : t('page.signFooterBar.qrcode.txFailed')
+      );
+    }
+  }, [txFailedResult?.[1], connectStatus]);
+
   return (
     <ApprovalPopupContainer
       showAnimation
@@ -332,7 +382,7 @@ const LedgerHardwareWaiting = ({
       onCancel={handleCancel}
       description={
         <>
-          {currentDescription}
+          {txFailedResult?.[0] || currentDescription}
           {currentDescription.includes('EthAppPleaseEnableContractData') && (
             <a
               className="underline text-blue-light block text-center mt-8"
@@ -353,6 +403,7 @@ const LedgerHardwareWaiting = ({
       }
       content={content}
       hasMoreDescription={statusProp === 'REJECTED' || statusProp === 'FAILED'}
+      retryUpdateType={txFailedResult?.[1] ?? 'origin'}
     />
   );
 };

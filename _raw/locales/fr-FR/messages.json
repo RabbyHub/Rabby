@@ -755,7 +755,8 @@
           "doc1": "Branchez un seul imKey"
         },
         "howToConnectImKey": "Comment connecter imKey",
-        "ledgerIsDisconnected": "Votre Ledger n'est pas connecté"
+        "ledgerIsDisconnected": "Votre Ledger n'est pas connecté",
+        "onekeyIsDisconnected": "Votre OneKey n'est pas connecté"
       },
       "home": {
         "comingSoon": "À venir",
@@ -1709,7 +1710,8 @@
         "txFailed": "Échec de la soumission",
         "unknownQRCode": "Erreur : Nous n'avons pas pu identifier ce QR code",
         "txFailedBy": "Échec de {{category}}",
-        "retryTxFailedBy": "Échec de {{category}} : Veuillez réessayer"
+        "retryTxFailedBy": "Échec de {{category}} : Veuillez réessayer",
+        "txFailedRetry": "Échec de la création : Veuillez réessayer"
       },
       "requestFrom": "Demande de",
       "resend": "Recommencer",

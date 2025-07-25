@@ -419,7 +419,8 @@
         "unknownQRCode": "Помилка: Ми не змогли ідентифікувати цей QR-код",
         "afterSignDesc": "Після підписання розмістіть QR-код на {{brand}} перед камерою вашого ПК",
         "txFailedBy": "Не вдається {{category}}",
-        "retryTxFailedBy": "Не вдалося {{category}}: Будь ласка, спробуйте ще раз"
+        "retryTxFailedBy": "Не вдалося {{category}}: Будь ласка, спробуйте ще раз",
+        "txFailedRetry": "Не вдалося створити: Будь ласка, спробуйте ще раз"
       },
       "ledger": {
         "resent": "Resent",
@@ -1442,7 +1443,8 @@
         },
         "howToConnectImKey": "Як підключити imKey",
         "ledgerIsDisconnected": "Ваш Ledger не підключено",
-        "howToConnectKeystone": "Як підключити Keystone"
+        "howToConnectKeystone": "Як підключити Keystone",
+        "onekeyIsDisconnected": "Ваш OneKey не підключено"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}",

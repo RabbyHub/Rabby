@@ -435,6 +435,7 @@
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
         "txFailed": "Fail to create",
+        "txFailedRetry": "Fail to create: Please Retry",
         "txFailedBy": "Fail to {{category}}",
         "retryTxFailedBy": "Fail to {{category}}: Please Retry",
         "sigReceived": "Signature received",
@@ -1568,7 +1569,8 @@
           "doc2": "Enter pin to unlock"
         },
         "howToConnectImKey": "How to Connect imKey",
-        "ledgerIsDisconnected": "Your ledger is not connected"
+        "ledgerIsDisconnected": "Your ledger is not connected",
+        "onekeyIsDisconnected": "Your OneKey is not connected"
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Your Safe address is not deployed on this chain"

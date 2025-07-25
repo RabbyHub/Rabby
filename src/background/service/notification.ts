@@ -85,7 +85,7 @@ class NotificationService extends Events {
   _approvals: Approval[] = [];
   notifiWindowId: null | number = null;
   isLocked = false;
-  currentRequestDeferFn?: () => void;
+  currentRequestDeferFn?: (retry?: boolean) => void;
   statsData: StatsData | undefined;
 
   get approvals() {
@@ -419,12 +419,12 @@ class NotificationService extends Events {
     }
   };
 
-  setCurrentRequestDeferFn = (fn: () => void) => {
+  setCurrentRequestDeferFn = (fn: (retry?: boolean) => void) => {
     this.currentRequestDeferFn = fn;
   };
 
-  callCurrentRequestDeferFn = () => {
-    return this.currentRequestDeferFn?.();
+  callCurrentRequestDeferFn = (retry?: boolean) => {
+    return this.currentRequestDeferFn?.(retry);
   };
 
   setStatsData = (data?: StatsData) => {

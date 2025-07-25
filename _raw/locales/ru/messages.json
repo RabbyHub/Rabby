@@ -430,7 +430,8 @@
         "unknownQRCode": "Ошибка: мы не смогли идентифицировать этот QR-код",
         "afterSignDesc": "После подписи поместите QR-код с {{brand}} перед веб-камерой вашего ПК",
         "txFailedBy": "Не удалось {{category}}",
-        "retryTxFailedBy": "Не удалось {{category}}: Пожалуйста, попробуйте снова"
+        "retryTxFailedBy": "Не удалось {{category}}: Пожалуйста, попробуйте снова",
+        "txFailedRetry": "Не удалось создать: Пожалуйста, попробуйте снова"
       },
       "keystone": {
         "signWith": "Переключиться на {{method}} для подписи",
@@ -1439,7 +1440,8 @@
           "doc2": "Enter pin to unlock"
         },
         "howToConnectImKey": "How to Connect imKey",
-        "ledgerIsDisconnected": "Ваш Ledger не подключен"
+        "ledgerIsDisconnected": "Ваш Ledger не подключен",
+        "onekeyIsDisconnected": "Ваш OneKey не подключен"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe адрес не поддерживается в сети {{chain}}",
@@ -1563,7 +1565,10 @@
           "question": "Что такое приватный ключ?",
           "answer": "Это последовательность букв и цифр, используемая для управления вашими активами."
         },
-        "repeatImportTips": "Адрес уже импортирован, хотите переключиться?",
+        "repeatImportTips": {
+          "desc": "Этот адрес был импортирован.",
+          "question": "Вы хотите переключиться на этот адрес?"
+        },
         "isItSafeToImportItInRabby": {
           "question": "Безопасно ли импортировать его в Rabby?",
           "answer": "Да, он будет храниться локально в вашем браузере и доступен только вам."

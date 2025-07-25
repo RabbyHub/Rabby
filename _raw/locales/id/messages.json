@@ -430,7 +430,8 @@
         "txFailed": "Gagal membuat",
         "getSig": "Dapatkan tanda tangan",
         "txFailedBy": "Gagal untuk {{category}}",
-        "retryTxFailedBy": "Gagal untuk {{category}}: Silakan Coba Lagi"
+        "retryTxFailedBy": "Gagal untuk {{category}}: Silakan Coba Lagi",
+        "txFailedRetry": "Gagal membuat: Harap Coba Lagi"
       },
       "keystone": {
         "unsupportedType": "Kesalahan: Jenis transaksi tidak didukung atau tidak dikenal.",
@@ -1508,7 +1509,8 @@
         "userRejectedTheRequest": "Pengguna menolak permintaan tersebut.",
         "howToSwitch": "Cara untuk beralih",
         "ledgerIsDisconnected": "Ledger Anda tidak terhubung",
-        "howToConnectImKey": "Cara Menghubungkan imKey"
+        "howToConnectImKey": "Cara Menghubungkan imKey",
+        "onekeyIsDisconnected": "OneKey Anda tidak terhubung"
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Alamat Safe Anda tidak diterapkan di rantai ini"

@@ -13,10 +13,14 @@ import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
-import { addHexPrefix, stripHexPrefix } from '@ethereumjs/util';
+import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
+import { Account } from '@/background/service/preference';
+import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
+import { hexToNumber } from 'viem';
+import BigNumber from 'bignumber.js';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -257,7 +261,10 @@ const flowContext = flow
     const {
       session: { origin },
     } = request;
-    const requestDeferFn = () =>
+
+    const createRequestDeferFn = (
+      originApprovalRes: typeof approvalRes
+    ) => async (isRetry = false) =>
       new Promise((resolve, reject) => {
         let waitSignComponentPromise = Promise.resolve();
         if (isSignApproval(approvalType) && uiRequestComponent) {
@@ -267,15 +274,72 @@ const flowContext = flow
         // if (approvalRes?.isGnosis && !approvalRes.safeMessage) {
         //   return resolve(undefined);
         // }
-        if (approvalRes?.isGnosis) {
+        if (originApprovalRes?.isGnosis) {
           return resolve(undefined);
         }
 
-        return waitSignComponentPromise.then(() =>
-          Promise.resolve(
+        return waitSignComponentPromise.then(() => {
+          let _approvalRes = originApprovalRes;
+
+          if (
+            isRetry &&
+            approvalType === 'SignTx' &&
+            mapMethod === 'ethSendTransaction'
+          ) {
+            _approvalRes = { ...originApprovalRes };
+            const {
+              getRetryTxType,
+              getRetryTxRecommendNonce,
+            } = bgRetryTxMethods;
+            const retryType = getRetryTxType();
+            switch (retryType) {
+              case 'nonce': {
+                const recommendNonce = getRetryTxRecommendNonce();
+                if (recommendNonce === _approvalRes.nonce) {
+                  _approvalRes.nonce = intToHex(
+                    hexToNumber(recommendNonce as '0x${string}') + 1
+                  );
+                } else {
+                  _approvalRes.nonce = recommendNonce;
+                }
+
+                break;
+              }
+
+              case 'gasPrice': {
+                if (_approvalRes.gasPrice) {
+                  _approvalRes.gasPrice = `0x${new BigNumber(
+                    new BigNumber(_approvalRes.gasPrice, 16)
+                      .times(1.3)
+                      .toFixed(0)
+                  ).toString(16)}`;
+                }
+                if (_approvalRes.maxFeePerGas) {
+                  _approvalRes.maxFeePerGas = `0x${new BigNumber(
+                    new BigNumber(_approvalRes.maxFeePerGas, 16)
+                      .times(1.3)
+                      .toFixed(0)
+                  ).toString(16)}`;
+                }
+                break;
+              }
+
+              default:
+                break;
+            }
+            if (retryType) {
+              if (!approvalRes?.isGnosis) {
+                notificationService.setCurrentRequestDeferFn(
+                  createRequestDeferFn(_approvalRes)
+                );
+              }
+            }
+          }
+
+          return Promise.resolve(
             providerController[mapMethod]({
               ...request,
-              approvalRes,
+              approvalRes: _approvalRes,
             })
           )
             .then((result) => {
@@ -310,9 +374,11 @@ const flowContext = flow
                 eventBus.emit(EVENTS.broadcastToUI, payload);
               }
               reject(e);
-            })
-        );
+            });
+        });
       });
+
+    const requestDeferFn = createRequestDeferFn(approvalRes);
 
     if (!approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);

@@ -430,7 +430,8 @@
         "signWith": "Assine com {{brand}}",
         "qrcodeDesc": "Escaneie com seu {{brand}} para assinar<br></br>Após assinar, clique no botão abaixo para receber a assinatura",
         "txFailedBy": "Falha ao {{category}}",
-        "retryTxFailedBy": "Falha ao {{category}}: Por favor, tente novamente"
+        "retryTxFailedBy": "Falha ao {{category}}: Por favor, tente novamente",
+        "txFailedRetry": "Falha ao criar: Por favor, tente novamente"
       },
       "keystone": {
         "mismatchedWalletError": "Carteira incompatível",
@@ -1508,7 +1509,8 @@
         "userRejectedTheRequest": "O usuário rejeitou a solicitação.",
         "howToConnectImKey": "Como Conectar imKey",
         "ledgerIsDisconnected": "Seu ledger não está conectado.",
-        "howToSwitch": "Como mudar"
+        "howToSwitch": "Como mudar",
+        "onekeyIsDisconnected": "Seu OneKey não está conectado"
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Seu endereço Safe não está implantado nesta rede."

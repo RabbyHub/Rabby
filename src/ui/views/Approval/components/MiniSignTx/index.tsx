@@ -71,6 +71,7 @@ import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { useGasAccountTxsCheck } from '@/ui/views/GasAccount/hooks/checkTxs';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import {
+  supportedHardwareDirectSign,
   useDirectSigning,
   useGetDisableProcessDirectSign,
   useMiniApprovalGas,
@@ -81,6 +82,7 @@ import { ReactComponent as RCIconLoadingCC } from '@/ui/assets/loading-cc.svg';
 import { RetryUpdateType } from '@/background/utils/errorTxRetry';
 import { MiniApprovalPopupContainer } from '../Popup/MiniApprovalPopupContainer';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
+import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 
 export const MiniSignTx = ({
   txs,
@@ -1096,7 +1098,9 @@ export const MiniSignTx = ({
       case KEYRING_CLASS.HARDWARE.LEDGER: {
         return LedgerSVG;
       }
-
+      case KEYRING_CLASS.HARDWARE.ONEKEY: {
+        return OneKeySVG;
+      }
       default: {
         return null;
       }
@@ -1309,7 +1313,7 @@ export const MiniApproval = ({
 
   useEffect(() => {
     if (
-      currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
+      supportedHardwareDirectSign(currentAccount?.type || '') &&
       isSigningLoading
     ) {
       setInnerVisible(true);
@@ -1375,7 +1379,7 @@ export const MiniApproval = ({
 
       {directSubmit &&
       canUseDirectSubmitTx &&
-      currentAccount?.type !== KEYRING_CLASS.HARDWARE.LEDGER ? (
+      !supportedHardwareDirectSign(currentAccount?.type || '') ? (
         <Modal
           transitionName=""
           visible={isSigningLoading || isPreparingSign}
