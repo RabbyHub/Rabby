@@ -426,7 +426,8 @@
           "doc2": "輸入 PIN 碼解鎖 imKey"
         },
         "howToConnectImKey": "如何連接 imKey",
-        "ledgerIsDisconnected": "您的 Ledger 未连接"
+        "ledgerIsDisconnected": "您的 Ledger 未连接",
+        "onekeyIsDisconnected": "你的 OneKey 尚未连接"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe 地址不支持 {{chain}}",
@@ -1381,7 +1382,8 @@
         "txFailed": "交易失敗",
         "unknownQRCode": "錯誤：無法識別二維碼",
         "txFailedBy": "無法 {{category}}",
-        "retryTxFailedBy": "無法 {{category}}：請重試"
+        "retryTxFailedBy": "無法 {{category}}：請重試",
+        "txFailedRetry": "創建失敗：請重試"
       },
       "keystone": {
         "signWith": "切換到{{method}}進行簽名",

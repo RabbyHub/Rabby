@@ -419,7 +419,8 @@
         "unknownQRCode": "エラー：そのQRコードは識別できませんでした",
         "afterSignDesc": "署名後、{{brand}}のQRコードをPCカメラの前に置いてください",
         "retryTxFailedBy": "{{category}}に失敗しました: 再試行してください",
-        "txFailedBy": "{{category}}に失敗しました"
+        "txFailedBy": "{{category}}に失敗しました",
+        "txFailedRetry": "作成に失敗しました：再試行してください"
       },
       "ledger": {
         "resent": "再送",
@@ -1438,7 +1439,8 @@
         },
         "ledgerIsDisconnected": "Ledger が接続されていません。",
         "howToConnectKeystone": "Keystone を接続する方法",
-        "howToConnectImKey": "imKeyを接続する方法"
+        "howToConnectImKey": "imKeyを接続する方法",
+        "onekeyIsDisconnected": "あなたのOneKeyは接続されていません"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}",

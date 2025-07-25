@@ -430,7 +430,8 @@
         "getSig": "서명 받기",
         "misMatchSignId": "불일치하는 거래 데이터입니다. 거래 세부 정보를 확인해 주세요.",
         "txFailedBy": "{{category}}에 실패했습니다.",
-        "retryTxFailedBy": "{{category}}에 실패했습니다: 다시 시도해 주세요"
+        "retryTxFailedBy": "{{category}}에 실패했습니다: 다시 시도해 주세요",
+        "txFailedRetry": "생성에 실패했습니다: 다시 시도해주세요"
       },
       "keystone": {
         "txRejected": "거래가 거부되었습니다",
@@ -1508,7 +1509,8 @@
         "userRejectedTheRequest": "사용자가 요청을 거부했습니다.",
         "ledgerIsDisconnected": "당신의 Ledger가 연결되어 있지 않습니다.",
         "howToConnectImKey": "imKey에 연결하는 방법",
-        "howToSwitch": "전환하는 방법"
+        "howToSwitch": "전환하는 방법",
+        "onekeyIsDisconnected": "당신의 OneKey가 연결되지 않았습니다."
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "당신의 Safe 주소는 이 체인에 배포되지 않았습니다."

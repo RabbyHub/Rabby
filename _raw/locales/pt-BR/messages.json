@@ -419,7 +419,8 @@
         "unknownQRCode": "Erro: Não conseguimos identificar esse código QR",
         "afterSignDesc": "Após a assinatura, coloque o código QR no {{brand}} na frente da câmera do seu PC",
         "txFailedBy": "Falha ao {{category}}",
-        "retryTxFailedBy": "Falha ao {{category}}: Por favor, tente novamente"
+        "retryTxFailedBy": "Falha ao {{category}}: Por favor, tente novamente",
+        "txFailedRetry": "Falha ao criar: Por favor, tente novamente"
       },
       "ledger": {
         "resent": "Reenviar",
@@ -1438,7 +1439,8 @@
         },
         "howToConnectKeystone": "Como conectar Keystone",
         "howToConnectImKey": "Como conectar imKey",
-        "ledgerIsDisconnected": "Seu Ledger não está conectado"
+        "ledgerIsDisconnected": "Seu Ledger não está conectado",
+        "onekeyIsDisconnected": "Seu OneKey não está conectado"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "O endereço seguro não suporta {{chain}}",

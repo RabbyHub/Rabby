@@ -419,7 +419,8 @@
         "unknownQRCode": "Hata: Bu QR kodunu tanımlayamadık",
         "afterSignDesc": "İmzaladıktan sonra bilgisayar kamerasının önüne {{brand}} QR kodunu yerleştirin",
         "txFailedBy": "{{category}} başarısız oldu",
-        "retryTxFailedBy": "{{category}} yapılamadı: Lütfen Yeniden Deneyin"
+        "retryTxFailedBy": "{{category}} yapılamadı: Lütfen Yeniden Deneyin",
+        "txFailedRetry": "Oluşturma başarısız: Lütfen yeniden deneyin"
       },
       "ledger": {
         "resent": "Yeniden gönderildi",
@@ -1438,7 +1439,8 @@
         },
         "howToConnectImKey": "imKey Nasıl Bağlanır",
         "howToConnectKeystone": "Keystone Nasıl Bağlanır",
-        "ledgerIsDisconnected": "Defteriniz bağlı değil"
+        "ledgerIsDisconnected": "Defteriniz bağlı değil",
+        "onekeyIsDisconnected": "OneKey'iniz bağlı değil"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Güvenli adres {{chain}} desteklemiyor",
