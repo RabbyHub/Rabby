@@ -8,13 +8,13 @@ import {
   Switch,
   Tooltip,
 } from 'antd';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import styled, { createGlobalStyle } from 'styled-components';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { padWatchAccount } from '@/ui/views/SendPoly/util';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { findAccountByPriority, pickKeyringThemeIcon } from '@/utils/account';
@@ -29,9 +29,12 @@ import { useAddressRisks } from '@/ui/hooks/useAddressRisk';
 import { RiskRow } from './RiskRow';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { IExchange } from '../CexSelect';
+import { Popup } from 'ui/component';
 
 import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/small-lock.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
+import { useForm } from 'antd/lib/form/Form';
 
 interface AddressRiskAlertProps {
   visible: boolean;
@@ -98,10 +101,14 @@ export const AddressTypeCard = ({
   inWhitelist,
   className = 'bg-r-neutral-card2 ',
   loading,
+  allowEditAlias,
+  address,
+  getContainer,
 }: {
   type: string;
   brandName: string;
   aliasName: string;
+  address: string;
   className?: string;
   inWhitelist?: boolean;
   loading?: boolean;
@@ -111,9 +118,15 @@ export const AddressTypeCard = ({
     logo?: string;
     isDeposit?: boolean;
   };
+  allowEditAlias?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   const { isDarkTheme } = useThemeMode();
   const { t } = useTranslation();
+
+  const [form] = useForm();
+  const [_alias, setAlias] = useAlias(address);
+  const inputRef = useRef<Input>(null);
   const showCexInfo = useMemo(() => {
     return cexInfo.id && cexInfo.isDeposit && type === KEYRING_CLASS.WATCH;
   }, [cexInfo, type]);
@@ -127,6 +140,89 @@ export const AddressTypeCard = ({
     }
     return false;
   }, [type, showCexInfo]);
+
+  const handleEditMemo = () => {
+    form.setFieldsValue({
+      memo: aliasName,
+    });
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 200);
+    const { destroy } = Popup.info({
+      title: t('page.addressDetail.edit-memo-title'),
+      isSupportDarkMode: true,
+      height: 215,
+      isNew: true,
+      getContainer,
+      content: (
+        <div className="pt-[4px]">
+          <Form
+            form={form}
+            onFinish={async () => {
+              form
+                .validateFields()
+                .then((values) => {
+                  return setAlias(values.memo);
+                })
+                .then(() => {
+                  destroy();
+                });
+            }}
+            initialValues={{
+              memo: aliasName,
+            }}
+          >
+            <Form.Item
+              name="memo"
+              className="h-[80px] mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: t('page.addressDetail.please-input-address-note'),
+                },
+              ]}
+            >
+              <Input
+                ref={inputRef}
+                className="popup-input h-[48px] bg-r-neutral-card-1"
+                size="large"
+                placeholder={t('page.addressDetail.please-input-address-note')}
+                autoFocus
+                allowClear
+                spellCheck={false}
+                autoComplete="off"
+                maxLength={50}
+              ></Input>
+            </Form.Item>
+            <div className="text-center flex gap-x-16">
+              <Button
+                size="large"
+                type="ghost"
+                onClick={() => destroy()}
+                className={clsx(
+                  'w-[200px]',
+                  'text-blue-light',
+                  'border-blue-light',
+                  'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                  'before:content-none'
+                )}
+              >
+                {t('global.Cancel')}
+              </Button>
+              <Button
+                type="primary"
+                size="large"
+                className="w-[200px]"
+                htmlType="submit"
+              >
+                {t('global.confirm')}
+              </Button>
+            </div>
+          </Form>
+        </div>
+      ),
+    });
+  };
 
   return (
     <div className="flex gap-[8px] items-center justify-center">
@@ -184,9 +280,24 @@ export const AddressTypeCard = ({
                   showSideDesc ? 'max-w-[100px]  truncate' : ''
                 )}
               >
-                {aliasName}
+                {allowEditAlias ? _alias || aliasName : aliasName}
               </div>
             </Tooltip>
+            {allowEditAlias && (
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditMemo();
+                }}
+                className={`
+                        edit-pen
+                        text-r-neutral-body transition-opacity duration-100 cursor-pointer
+                        hover:text-r-blue-default
+                      `}
+              >
+                <IconEditPen />
+              </div>
+            )}
           </>
         )}
       </div>
@@ -375,6 +486,7 @@ export const AddressRiskAlert = ({
           ) : (
             <AddressTypeCard
               type={targetAccount.type}
+              address={address}
               cexInfo={{
                 id: editCex?.id || riskInfos.addressDesc?.cex?.id,
                 name: editCex?.name || riskInfos.addressDesc?.cex?.name,
@@ -383,6 +495,8 @@ export const AddressRiskAlert = ({
                   ? true
                   : riskInfos.addressDesc?.cex?.is_deposit,
               }}
+              getContainer={getContainer}
+              allowEditAlias={!forWhitelist}
               brandName={targetAccount.brandName}
               aliasName={
                 editAlias ||
