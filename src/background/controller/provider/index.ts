@@ -37,7 +37,7 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
 
         const isSpeedUpOrCancel =
           method === 'eth_sendTransaction' &&
-          (req.data?.params?.isSpeedUp || req.data?.params?.isCancel);
+          (req.data?.params?.[0]?.isSpeedUp || req.data?.params?.[0]?.isCancel);
 
         if (site?.isConnected) {
           account =
