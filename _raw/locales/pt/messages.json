@@ -918,7 +918,7 @@
       "InsufficientBalance": "Não há saldo suficiente no endereço do contrato do Rabby para a cadeia atual. Por favor, tente novamente mais tarde.",
       "hightGasFees": "Esse valor de recarga é muito pequeno porque a rede alvo exige altas taxas de gas.",
       "title": "Recarga Instantânea de Gas",
-      "Deposit-tip": "",
+      "Deposit-tip": "Deposite com USDC/USDT",
       "description": "Recarregue gás enviando-nos tokens disponíveis em outra cadeia. Transferência instantânea assim que seu pagamento for confirmado, sem esperar que seja irreversível.",
       "service-fee-tip": "Ao fornecer o serviço de recarga de Gas, a Rabby tem que suportar a perda da flutuação de tokens e a taxa de gás para a recarga. Portanto, uma taxa de serviço de 20% é cobrada.",
       "Including-service-fee": "Incluindo {{fee}} taxa de serviço",

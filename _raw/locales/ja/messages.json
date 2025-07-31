@@ -919,7 +919,7 @@
       "Including-service-fee": "{{fee}} サービス料金を含む",
       "service-fee-tip": "ガストップアップのサービスを提供するため、Rabbyはトークンの変動とトップアップのガス手数料を負担しなければなりません。そのため、サービス料金として20％が請求されます。",
       "Confirm": "確認",
-      "Deposit-tip": "",
+      "Deposit-tip": "USDC/USDTで入金",
       "Value": "値",
       "Payment-Token": "支払いトークン",
       "Select-payment-token": "支払いトークンを選択",

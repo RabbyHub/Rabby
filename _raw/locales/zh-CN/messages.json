@@ -1091,7 +1091,7 @@
       "InsufficientBalanceTips": "余额不足",
       "Loading_Tokens": "正在加载代币...",
       "No_Tokens": "没有代币",
-      "Deposit-tip": "",
+      "Deposit-tip": "使用 USDC/USDT 存款",
       "Payment-Token": "支付代币",
       "Select-payment-token": "选择支付代币",
       "Token": "代币",
