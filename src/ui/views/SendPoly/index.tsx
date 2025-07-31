@@ -299,6 +299,7 @@ const SendPoly = () => {
                         />
                       </div>
                       <AccountItem
+                        getContainer={getContainer}
                         className="group whitelist-item"
                         balance={0}
                         showWhitelistIcon

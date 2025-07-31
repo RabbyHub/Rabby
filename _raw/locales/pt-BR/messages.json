@@ -919,7 +919,7 @@
       "Including-service-fee": "Incluindo taxa de serviço de {{fee}}",
       "service-fee-tip": "Ao fornecer o serviço de Recarga de Gás, a Rabby precisa suportar a perda de flutuação do token e a taxa de gás para a recarga. Portanto, uma taxa de serviço de 20% é cobrada.",
       "Confirm": "Confirmar",
-      "Select-from-supported-tokens": "Selecionar entre os tokens suportados",
+      "Deposit-tip": "Depositar com USDC/USDT",
       "Value": "Valor",
       "Payment-Token": "Token de Pagamento",
       "Select-payment-token": "Selecionar token de pagamento",

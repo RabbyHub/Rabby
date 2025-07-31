@@ -921,7 +921,7 @@
       "topUpChain": "Nạp Tiền Chuỗi",
       "Token": "Token",
       "InsufficientBalance": "Không đủ số dư trong địa chỉ hợp đồng của Rabby cho chuỗi hiện tại. Vui lòng thử lại sau.",
-      "Select-from-supported-tokens": "Chọn từ các token được hỗ trợ",
+      "Deposit-tip": "Nạp với USDC/USDT",
       "description": "Nạp gas bằng cách gửi cho chúng tôi các token có sẵn trên chuỗi khác. Chuyển tiền ngay khi thanh toán của bạn được xác nhận, không cần phải chờ đợi cho đến khi nó không thể đảo ngược.",
       "service-fee-tip": "Bằng cách cung cấp dịch vụ Nạp Gas, Rabby phải chịu mất mát từ sự biến động của token và phí gas cho việc nạp. Do đó, một khoản phí dịch vụ 20% sẽ được tính.",
       "Balance": "Số dư"
