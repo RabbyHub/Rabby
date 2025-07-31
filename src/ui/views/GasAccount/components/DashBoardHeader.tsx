@@ -1,8 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { ReactComponent as IconRcGasAccount } from '@/ui/assets/gas-account/gas-account-cc.svg';
+import { ReactComponent as IconGift } from '@/ui/assets/gift.svg';
 import clsx from 'clsx';
 import { useGasAccountInfo } from '../hooks';
 import { formatTokenAmount } from '@/ui/utils';
+import { useRabbySelector } from 'ui/store';
+import { useWallet } from 'ui/utils';
 
 const formatUsdValue = (usd: string | number) => {
   const v = Number(usd);
@@ -17,8 +20,30 @@ const formatUsdValue = (usd: string | number) => {
   return `$${Number(fixDown).toFixed(2)}`;
 };
 
-export const GasAccountDashBoardHeader = () => {
+export const GasAccountDashBoardHeader: React.FC = () => {
   const { value, loading } = useGasAccountInfo();
+  const wallet = useWallet();
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+  const [hasGiftEligibility, setHasGiftEligibility] = useState(false);
+
+  // 检查gift资格（只从缓存读取，不调用API）
+  useEffect(() => {
+    const checkGiftEligibilityFromCache = () => {
+      if (currentAccount?.address) {
+        try {
+          // 只从缓存中获取结果，不调用API
+          const cache = wallet.getGiftEligibilityCache();
+          const cachedResult = cache[currentAccount.address.toLowerCase()];
+          setHasGiftEligibility(cachedResult?.isEligible || false);
+        } catch (error) {
+          console.error('Failed to get gift eligibility from cache:', error);
+          setHasGiftEligibility(false);
+        }
+      }
+    };
+
+    checkGiftEligibilityFromCache();
+  }, [currentAccount?.address, wallet]);
 
   const usd = useMemo(() => {
     if (loading) {
@@ -39,7 +64,11 @@ export const GasAccountDashBoardHeader = () => {
         'bg-light-r-neutral-title-2 bg-opacity-10 hover:bg-opacity-20'
       )}
     >
-      <IconRcGasAccount viewBox="0 0 16 16" className="w-16 h-16" />
+      {hasGiftEligibility ? (
+        <IconGift viewBox="0 0 16 16" className="w-16 h-16" />
+      ) : (
+        <IconRcGasAccount viewBox="0 0 16 16" className="w-16 h-16" />
+      )}
       <>{usd}</>
     </div>
   );

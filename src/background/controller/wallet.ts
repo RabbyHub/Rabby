@@ -145,6 +145,7 @@ import {
   SendTxHistoryItem,
   SwapTxHistoryItem,
 } from '../service/transactionHistory';
+import giftEligibilityService from '../service/giftEligibility';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -5509,6 +5510,92 @@ export class WalletController extends BaseController {
     ...args
   ) => {
     return preferenceService.setRateGuideLastExposure(...args);
+  };
+
+  /**
+   * 检查gift资格
+   * @param address 地址
+   * @returns 是否有资格
+   */
+  checkGiftEligibility = async (address: string): Promise<boolean> => {
+    try {
+      // 检查gas account登录状态
+      const gasAccountData = gasAccountService.getGasAccountSig();
+      const hasGasAccountLogin = !!(gasAccountData.sig && gasAccountData.accountId);
+
+      // 如果前端已登录gas account，直接返回false
+      if (hasGasAccountLogin) {
+        return false;
+      }
+
+      // 检查缓存，如果缓存中有不可领取的数据，则直接返回不可领取
+      const cache = giftEligibilityService.getCache();
+      const cachedResult = cache[address.toLowerCase()];
+      if (cachedResult && !cachedResult.isEligible) {
+        return false;
+      }
+
+      // 如果缓存中有可领取的数据，直接返回
+      if (cachedResult && cachedResult.isEligible) {
+        return true;
+      }
+
+      // 调用API检查
+      try {
+        console.log('checkGasAccountGiftEligibility', address);
+        const apiResult = await this.openapi.checkGasAccountGiftEligibility({
+          id: address,
+        });
+        console.log('apiResult', apiResult);
+        // 缓存结果
+        giftEligibilityService.setEligibilityResult(
+          address,
+          apiResult.has_eligibility,
+          hasGasAccountLogin,
+        );
+        return apiResult.has_eligibility;
+      } catch (error) {
+        console.log(
+          'Failed to check gift eligibility from API:',
+          address,
+          error,
+        );
+        // API调用失败时，缓存为false避免重复调用
+        giftEligibilityService.setEligibilityResult(
+          address,
+          false,
+          hasGasAccountLogin,
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to check gift eligibility:', error);
+      return false;
+    }
+  };
+
+  /**
+   * 标记地址已领取gift
+   * @param address 地址
+   */
+  markGiftAsClaimed = (address: string) => {
+    giftEligibilityService.markAsClaimed(address);
+  };
+
+  /**
+   * 清除gift资格缓存
+   * @param address 地址
+   */
+  clearGiftEligibilityCache = (address: string) => {
+    giftEligibilityService.clearCache(address);
+  };
+
+  /**
+   * 获取gift资格缓存
+   * @returns 缓存对象
+   */
+  getGiftEligibilityCache = () => {
+    return giftEligibilityService.getCache();
   };
 }
 

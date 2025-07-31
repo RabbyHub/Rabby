@@ -29,6 +29,20 @@ export const useGasAccountSign = () => {
   return { sig, accountId };
 };
 
+export const claimGift = () => {
+  const { sig, accountId } = useGasAccountSign();
+  const wallet = useWallet();
+  const { value, loading } = useAsync(async () => {
+    if (!sig || !accountId) return undefined;
+    return wallet.openapi.claimGasAccountGift({
+      sig,
+      id: accountId,
+    });
+  }, [sig, accountId]);
+
+  return { value, loading };
+};
+
 export const useGasAccountInfo = () => {
   const wallet = useWallet();
 

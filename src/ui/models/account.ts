@@ -250,6 +250,19 @@ export const account = createModel<RootModel>()({
 
       await store.app.wallet.changeAccount(nextVal);
       dispatch.account.setCurrentAccount({ currentAccount: nextVal });
+
+      // 检查gift资格：只在切换到新地址且前端没有登录gas account时检查
+      try {
+        const isEligible = await store.app.wallet.checkGiftEligibility(address);
+        if (isEligible) {
+          // 给予奖励并存入缓存
+          // await store.app.wallet.markGiftAsClaimed(address);
+          console.log('Gift claimed for address:', address);
+        }
+        // 不需要时间戳，UI组件会在地址切换后自动重新检查缓存
+              } catch (error) {
+          console.error('Failed to check gift eligibility:', error);
+        }
     },
 
     async resetTokenList() {
