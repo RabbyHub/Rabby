@@ -919,7 +919,7 @@
       "Including-service-fee": "Einschließlich {{fee}} Servicegebühr",
       "service-fee-tip": "Durch die Bereitstellung des Dienstes zum Gas-Aufladen muss Rabby den Verlust durch Preisschwankungen und die Gasgebühr für das Aufladen tragen. Daher wird eine Servicegebühr von 20% berechnet.",
       "Confirm": "Bestätigen",
-      "Select-from-supported-tokens": "Wählen Sie aus unterstützten Token",
+      "Deposit-tip": "",
       "Value": "Wert",
       "Payment-Token": "Zahlungs-Token",
       "Select-payment-token": "Wählen Sie den Zahlungs-Token",
