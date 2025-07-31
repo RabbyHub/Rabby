@@ -1036,7 +1036,7 @@
       "Loading_Tokens": "Chargement des tokens...",
       "No_Tokens": "Aucun token",
       "Payment-Token": "Token de paiement",
-      "Select-from-supported-tokens": "Sélectionner parmi les tokens pris en charge",
+      "Deposit-tip": "Déposer avec USDC/USDT",
       "Select-payment-token": "Sélectionner le token de paiement",
       "Token": "Token",
       "Value": "Valeur",
