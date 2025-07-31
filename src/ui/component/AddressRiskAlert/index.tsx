@@ -528,6 +528,11 @@ export const AddressRiskAlert = ({
                       checked={inWhiteList}
                       onChange={(v) => {
                         setInWhiteList(!!v);
+                        if (!v) {
+                          form.resetFields();
+                          setHasInputPassword(false);
+                          setPasswordError(false);
+                        }
                       }}
                     />
                   </div>
