@@ -183,12 +183,15 @@ export const ToAddressCard = ({
 
       <AddressTypeCard
         type={targetAccount.type}
+        address={targetAccount.address}
+        getContainer={getContainer}
         cexInfo={{
           id: cexInfo?.id,
           name: cexInfo?.name,
           logo: cexInfo?.logo_url,
           isDeposit: !!cexInfo?.is_deposit,
         }}
+        allowEditAlias
         loading={loading}
         inWhitelist={whitelist?.some((w) =>
           isSameAddress(w, targetAccount.address)
