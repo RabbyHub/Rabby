@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react';
 import { ReactComponent as IconRcGasAccount } from '@/ui/assets/gas-account/gas-account-cc.svg';
+import { ReactComponent as IconGift } from '@/ui/assets/gift-14.svg';
 import clsx from 'clsx';
 import { useGasAccountInfo } from '../hooks';
 import { formatTokenAmount } from '@/ui/utils';
+import { useRabbySelector } from 'ui/store';
 
 const formatUsdValue = (usd: string | number) => {
   const v = Number(usd);
@@ -17,8 +19,17 @@ const formatUsdValue = (usd: string | number) => {
   return `$${Number(fixDown).toFixed(2)}`;
 };
 
-export const GasAccountDashBoardHeader = () => {
+export const GasAccountDashBoardHeader: React.FC = () => {
   const { value, loading } = useGasAccountInfo();
+  const { currentAccount, currentGiftEligible } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+    currentGiftEligible: s.gift.currentGiftEligible,
+  }));
+
+  // 检查当前账号是否有gift资格
+  const hasGiftEligibility = useMemo(() => {
+    return currentGiftEligible;
+  }, [currentGiftEligible]);
 
   const usd = useMemo(() => {
     if (loading) {
@@ -35,12 +46,22 @@ export const GasAccountDashBoardHeader = () => {
         'flex gap-2 items-center justify-center',
         'px-8 py-6 rounded-[4px]',
         'text-13 leading-normal text-light-r-neutral-title-2',
-        'text-opacity-60 hover:text-opacity-100',
-        'bg-light-r-neutral-title-2 bg-opacity-10 hover:bg-opacity-20'
+        hasGiftEligibility
+          ? 'bg-green border-white'
+          : 'bg-light-r-neutral-title-2 bg-opacity-10 hover:bg-opacity-20'
       )}
     >
-      <IconRcGasAccount viewBox="0 0 16 16" className="w-16 h-16" />
-      <>{usd}</>
+      {hasGiftEligibility ? (
+        <>
+          <IconGift viewBox="0 0 14 14" className="w-14 h-14" />
+          $5.00
+        </>
+      ) : (
+        <>
+          <IconRcGasAccount viewBox="0 0 16 16" className="w-16 h-16" />
+          {usd}
+        </>
+      )}
     </div>
   );
 };

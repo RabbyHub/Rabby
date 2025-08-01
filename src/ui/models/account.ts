@@ -74,6 +74,7 @@ type MatteredChainBalancesResult = {
   testnet: TotalBalanceResponse | null;
 };
 const symLoaderMatteredBalance = Symbol('uiHelperMateeredChainBalancesPromise');
+
 export const account = createModel<RootModel>()({
   name: 'account',
 
@@ -219,12 +220,18 @@ export const account = createModel<RootModel>()({
 
       dispatch.account.onAccountChanged(account?.address);
 
+      // 初始化gift状态
+      await dispatch.gift.initGiftStateAsync();
+
       return account;
     },
     async onAccountChanged(currentAccountAddress?: string, store?) {
       try {
-        currentAccountAddress =
-          currentAccountAddress || store?.account.currentAccount?.address;
+        // 避免循环引用，直接使用传入的地址
+        if (!currentAccountAddress && store) {
+          const currentAccount = await store.app.wallet.getCurrentAccount();
+          currentAccountAddress = currentAccount?.address;
+        }
         // trigger once when account fetched;
         await dispatch.account.getMatteredChainBalance({
           currentAccountAddress,
@@ -250,6 +257,12 @@ export const account = createModel<RootModel>()({
 
       await store.app.wallet.changeAccount(nextVal);
       dispatch.account.setCurrentAccount({ currentAccount: nextVal });
+
+      // 切换账号时也查询是否有资格
+      await dispatch.gift.checkGiftEligibilityAsync({
+        address,
+        currentAccount: nextVal,
+      });
     },
 
     async resetTokenList() {
@@ -277,6 +290,13 @@ export const account = createModel<RootModel>()({
       });
 
       return alianName;
+    },
+
+    async checkGiftEligibilityAsync(address?: string, store?) {
+      if (!store) {
+        return false;
+      }
+      return false; // Removed checkGiftEligibilityHelper
     },
 
     async getAllClassAccountsAsync(_: void, store) {

@@ -29,6 +29,20 @@ export const useGasAccountSign = () => {
   return { sig, accountId };
 };
 
+export const claimGift = () => {
+  const { sig, accountId } = useGasAccountSign();
+  const wallet = useWallet();
+  const { value, loading } = useAsync(async () => {
+    if (!sig || !accountId) return undefined;
+    return wallet.openapi.claimGasAccountGift({
+      sig,
+      id: accountId,
+    });
+  }, [sig, accountId]);
+
+  return { value, loading };
+};
+
 export const useGasAccountInfo = () => {
   const wallet = useWallet();
 
@@ -94,6 +108,8 @@ export const useGasAccountMethods = () => {
         if (result?.success) {
           dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
           refresh();
+          // 任意账号登录gas account后，更新全局gift状态为已领取
+          dispatch.gift.markGiftAsClaimed({ address: account.address });
         }
       } catch (e) {
         message.error('Login in error, Please retry');
@@ -282,6 +298,7 @@ export const useGasAccountHistory = () => {
     txList,
     loadingMore,
     ref,
+    refreshListTx,
   };
 };
 

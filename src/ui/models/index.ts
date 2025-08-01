@@ -24,6 +24,7 @@ import { newUserGuide } from './newUserGuide';
 import { rateGuidance } from './rateGuidance';
 import { exchange } from './exchange';
 import { directSubmitTx } from './directSubmitTx';
+import { gift } from './gift';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -50,6 +51,7 @@ export interface RootModel extends Models<RootModel> {
   rateGuidance: typeof rateGuidance;
   exchange: typeof exchange;
   directSubmitTx: typeof directSubmitTx;
+  gift: typeof gift;
 }
 
 export const models: RootModel = {
@@ -77,6 +79,7 @@ export const models: RootModel = {
   rateGuidance,
   exchange,
   directSubmitTx,
+  gift,
 };
 
 export type RabbyDispatch = RematchDispatch<RootModel>;
