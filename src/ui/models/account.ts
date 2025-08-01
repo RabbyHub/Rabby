@@ -74,6 +74,7 @@ type MatteredChainBalancesResult = {
   testnet: TotalBalanceResponse | null;
 };
 const symLoaderMatteredBalance = Symbol('uiHelperMateeredChainBalancesPromise');
+
 export const account = createModel<RootModel>()({
   name: 'account',
 
@@ -219,12 +220,18 @@ export const account = createModel<RootModel>()({
 
       dispatch.account.onAccountChanged(account?.address);
 
+      // 初始化gift状态
+      await dispatch.gift.initGiftStateAsync();
+
       return account;
     },
     async onAccountChanged(currentAccountAddress?: string, store?) {
       try {
-        currentAccountAddress =
-          currentAccountAddress || store?.account.currentAccount?.address;
+        // 避免循环引用，直接使用传入的地址
+        if (!currentAccountAddress && store) {
+          const currentAccount = await store.app.wallet.getCurrentAccount();
+          currentAccountAddress = currentAccount?.address;
+        }
         // trigger once when account fetched;
         await dispatch.account.getMatteredChainBalance({
           currentAccountAddress,
@@ -251,18 +258,11 @@ export const account = createModel<RootModel>()({
       await store.app.wallet.changeAccount(nextVal);
       dispatch.account.setCurrentAccount({ currentAccount: nextVal });
 
-      // 检查gift资格：只在切换到新地址且前端没有登录gas account时检查
-      try {
-        const isEligible = await store.app.wallet.checkGiftEligibility(address);
-        if (isEligible) {
-          // 给予奖励并存入缓存
-          // await store.app.wallet.markGiftAsClaimed(address);
-          console.log('Gift claimed for address:', address);
-        }
-        // 不需要时间戳，UI组件会在地址切换后自动重新检查缓存
-              } catch (error) {
-          console.error('Failed to check gift eligibility:', error);
-        }
+      // 切换账号时也查询是否有资格
+      await dispatch.gift.checkGiftEligibilityAsync({
+        address,
+        currentAccount: nextVal,
+      });
     },
 
     async resetTokenList() {
@@ -290,6 +290,13 @@ export const account = createModel<RootModel>()({
       });
 
       return alianName;
+    },
+
+    async checkGiftEligibilityAsync(address?: string, store?) {
+      if (!store) {
+        return false;
+      }
+      return false; // Removed checkGiftEligibilityHelper
     },
 
     async getAllClassAccountsAsync(_: void, store) {

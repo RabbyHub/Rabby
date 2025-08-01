@@ -37,7 +37,7 @@ class GiftEligibilityService {
    */
   async checkEligibility(
     address: string,
-    hasGasAccountLogin: boolean,
+    hasGasAccountLogin: boolean
   ): Promise<boolean> {
     const normalizedAddress = address.toLowerCase();
     // 如果已经领取过gift，直接返回false
@@ -75,10 +75,10 @@ class GiftEligibilityService {
   setEligibilityResult(
     address: string,
     isEligible: boolean,
-    hasGasAccountLogin: boolean,
+    hasGasAccountLogin: boolean
   ) {
     const normalizedAddress = address.toLowerCase();
-    
+
     this.store.eligibilityCache[normalizedAddress] = {
       isEligible,
       timestamp: Date.now(),
@@ -95,8 +95,21 @@ class GiftEligibilityService {
     if (!this.store.claimedAddresses.includes(normalizedAddress)) {
       this.store.claimedAddresses.push(normalizedAddress);
     }
-    // 清除该地址的缓存
-    delete this.store.eligibilityCache[normalizedAddress];
+    // 领取后将缓存中的数据标记为无资格，保留这个信息
+    const existingCache = this.store.eligibilityCache[normalizedAddress];
+    if (existingCache) {
+      this.store.eligibilityCache[normalizedAddress] = {
+        ...existingCache,
+        isEligible: false, // 标记为无资格
+      };
+    } else {
+      // 如果缓存不存在，创建一个标记为无资格的缓存
+      this.store.eligibilityCache[normalizedAddress] = {
+        isEligible: false,
+        timestamp: Date.now(),
+        hasGasAccountLogin: false,
+      };
+    }
   }
 
   /**
@@ -106,6 +119,15 @@ class GiftEligibilityService {
   clearCache(address: string) {
     const normalizedAddress = address.toLowerCase();
     delete this.store.eligibilityCache[normalizedAddress];
+  }
+
+  /**
+   * 清除全部缓存（测试用）
+   */
+  clearAllCache() {
+    console.log('Clearing all gift eligibility cache for testing...');
+    this.store.eligibilityCache = {};
+    this.store.claimedAddresses = []; // 重置全局标记
   }
 
   /**
@@ -120,17 +142,6 @@ class GiftEligibilityService {
    */
   getClaimedAddresses() {
     return this.store.claimedAddresses;
-  }
-
-  /**
-   * 移除已领取地址（主要用于测试）
-   * @param address 地址
-   */
-  removeClaimedAddress(address: string) {
-    const normalizedAddress = address.toLowerCase();
-    this.store.claimedAddresses = this.store.claimedAddresses.filter(
-      (addr) => addr !== normalizedAddress,
-    );
   }
 }
 

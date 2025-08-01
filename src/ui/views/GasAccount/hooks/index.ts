@@ -108,6 +108,8 @@ export const useGasAccountMethods = () => {
         if (result?.success) {
           dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
           refresh();
+          // 任意账号登录gas account后，更新全局gift状态为已领取
+          dispatch.gift.markGiftAsClaimed({ address: account.address });
         }
       } catch (e) {
         message.error('Login in error, Please retry');
@@ -296,6 +298,7 @@ export const useGasAccountHistory = () => {
     txList,
     loadingMore,
     ref,
+    refreshListTx,
   };
 };
 
