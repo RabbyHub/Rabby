@@ -53,6 +53,7 @@
 
 .ant-btn-primary {
   background-color: var(--r-blue-default, #7084ff);
+  border-color: var(--r-blue-default);
   &:hover,
   &:focus {
     background-color: var(--r-blue-default, #7084ff);
@@ -176,6 +177,7 @@
 }
 
 .ant-modal-content {
+  border: 1.5px solid var(--r-neutral-line);
   border-radius: 6px;
   overflow: hidden;
 
@@ -427,6 +429,9 @@ textarea {
       Drawer
 ---------------------*/
 .ant-drawer {
+  .ant-drawer-content {
+    border-top: 1.5px solid var(--r-neutral-line);
+  }
   .ant-drawer-close {
     font-size: 19px;
     line-height: 0;
