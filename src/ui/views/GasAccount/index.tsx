@@ -156,6 +156,7 @@ const GasAccountInner = () => {
             }
             setWithdrawVisible(true);
           }}
+          onRefreshHistory={handleRefreshHistory}
           gasAccountInfo={gasAccount?.account}
         />
 
@@ -186,6 +187,7 @@ const GasAccountInner = () => {
         onCancel={() => setWithdrawVisible(false)}
         handleRefreshHistory={handleRefreshHistory}
         balance={balance}
+        gasAccountInfo={gasAccount?.account}
       />
 
       <SwitchLoginAddrBeforeDepositModal
