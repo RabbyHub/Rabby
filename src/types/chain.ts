@@ -23,6 +23,7 @@ export type Chain = ChainRaw & {
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
+  BITROCK = 'BITROCK',
   GNOSIS = 'GNOSIS',
   HECO = 'HECO',
   POLYGON = 'POLYGON',
