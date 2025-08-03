@@ -371,6 +371,7 @@ export function supportedChainToChain(item: SupportedChain): Chain {
     eth: 'ETH',
     bsc: 'BSC',
     xdai: 'GNOSIS',
+    brock: 'BITROCK',
     matic: 'POLYGON',
     ftm: 'FTM',
     okt: 'OKT',
