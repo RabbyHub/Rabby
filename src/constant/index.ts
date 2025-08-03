@@ -1135,6 +1135,7 @@ export const GASPRICE_RANGE = ensureChainHashValid({
   [CHAINS_ENUM.ERA]: [0, 20000],
   [CHAINS_ENUM.KAVA]: [0, 20000],
   [CHAINS_ENUM.ARBITRUM]: [0, 20000],
+  [CHAINS_ENUM.BITROCK]: [0, 20000],
   [CHAINS_ENUM.AURORA]: [0, 20000],
   [CHAINS_ENUM.BSC]: [0, 20000],
   [CHAINS_ENUM.AVAX]: [0, 40000],
@@ -1214,6 +1215,7 @@ export const GAS_TOP_UP_SUPPORT_TOKENS: Record<string, string[]> = {
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
     'arb',
   ],
+  bitrock: ['brock'],
   astar: ['astar'],
   aurora: ['aurora'],
   avax: ['avax'],
@@ -1281,6 +1283,7 @@ export const ALIAS_ADDRESS = {
 // non-opstack L2 chains
 export const L2_ENUMS = [
   CHAINS_ENUM.ARBITRUM,
+  CHAINS_ENUM.BITROCK,
   CHAINS_ENUM.AURORA,
   CHAINS_ENUM.NOVA,
   CHAINS_ENUM.BOBA,
@@ -1413,6 +1416,7 @@ export const GNOSIS_SUPPORT_CHAINS = [
   CHAINS_ENUM.AVAX,
   CHAINS_ENUM.OP,
   CHAINS_ENUM.ARBITRUM,
+  CHAINS_ENUM.BITROCK,
   CHAINS_ENUM.AURORA,
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.CELO,
