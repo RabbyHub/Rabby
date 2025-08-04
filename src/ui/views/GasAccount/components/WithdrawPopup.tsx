@@ -162,13 +162,13 @@ const Selector = ({
                   src={chainEnum.logo}
                   className="w-[20px] h-[20px] rounded-full"
                 />
-                <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
+                <span className="text-r-neutral-title-1 text-[14px] leading-[17px] font-medium">
                   {chainEnum.name}
                 </span>
               </div>
             }
             right={
-              <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
+              <span className="text-r-neutral-title-1 text-[14px] leading-[17px] font-medium">
                 {`$${item.withdraw_limit}`}
               </span>
             }
@@ -260,7 +260,7 @@ const Selector = ({
       <div className="flex flex-col h-full pt-20">
         <div>
           <div className="relative flex justify-center items-center text-center">
-            <div className="text-14 font-medium text-center text-r-neutral-title-1 ">
+            <div className="text-20 font-medium text-center text-r-neutral-title-1 ">
               {isSelectChain
                 ? t('page.gasAccount.withdrawPopup.selectDestinationChain')
                 : t('page.gasAccount.withdrawPopup.selectRecipientAddress')}
