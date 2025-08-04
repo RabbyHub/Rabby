@@ -102,7 +102,8 @@ const TokenSelector = ({
             className={clsx(
               'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent  rounded-[6px]',
               'text-13 font-medium text-r-neutral-title-1',
-              !disabled && 'hover:border-blue-light',
+              !disabled && 'hover:border-rabby-blue-default',
+              !disabled && 'hover:bg-r-blue-light-1',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
             onClick={() => {
@@ -304,7 +305,7 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
                   'text-18 font-medium',
                   'bg-r-neutral-card2',
                   'border border-solid border-transparent',
-                  'hover:bg-r-blue-light-1 hover:border-rabby-blue-default',
+                  'hover:bg-r-blue-light-2 hover:border-rabby-blue-default',
                   selectedAmount === amount
                     ? 'bg-r-blue-light-1 border-rabby-blue-default text-r-blue-default'
                     : 'text-r-neutral-title1'
@@ -319,7 +320,7 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
                 'rounded-[6px] w-[114px] h-[52px]',
                 'text-18 font-medium text-center',
                 'border border-solid border-rabby-neutral-line',
-                'hover:bg-r-blue-light-1 hover:border-rabby-blue-default',
+                'hover:bg-r-blue-light-2 hover:border-rabby-blue-default',
                 'input',
                 selectedAmount === CUSTOM_AMOUNT
                   ? 'bg-r-blue-light-1 border-rabby-blue-default'
