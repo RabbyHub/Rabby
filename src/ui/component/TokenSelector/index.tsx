@@ -560,7 +560,7 @@ const TokenSelector = ({
                       className={clsx(
                         'flex items-center justify-center gap-6',
                         'cursor-pointer py-8 px-12 rounded-[8px]',
-                        'bg-r-neutral-card1 hover:bg-r-blue-light-2',
+                        'bg-r-neutral-card1 hover:bg-r-blue-light-1',
                         'text-15 text-r-neutral-title1 font-medium'
                       )}
                       onClick={() => onConfirm(token)}

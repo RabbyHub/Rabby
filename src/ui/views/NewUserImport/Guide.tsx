@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '@/ui/component/NewUserImport';
-import { ReactComponent as RcIconRabbyLogo } from '@/ui/assets/new-user-import/logo.svg';
+import rabbyLogo from '@/ui/assets/unlock/rabby.svg';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
@@ -35,10 +35,7 @@ export const Guide = () => {
       }
     >
       <div className="flex flex-col items-center">
-        <RcIconRabbyLogo
-          viewBox="0 0 100 100"
-          className="mt-[100px] w-[100px] h-[100px]"
-        />
+        <img src={rabbyLogo} className="mt-[100px] w-[100px] h-[100px]" />
         <div className="my-12 text-24 font-medium text-r-neutral-title1">
           {t('page.newUserImport.guide.title')}
         </div>
