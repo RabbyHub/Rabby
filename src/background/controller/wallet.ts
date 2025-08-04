@@ -5135,10 +5135,33 @@ export class WalletController extends BaseController {
           path: '/gas-account',
           states: {},
         });
+
+        // 任意账号登录gas account后，更新全局gift状态为已领取
+        gasAccountService.markGiftAsClaimed(account.address);
       }
     }
 
     await resumeAccount();
+  };
+
+  /**
+   * 登录Gas Account并领取gift
+   * @param account 账户信息
+   * @returns 是否成功领取gift
+   */
+  signGasAccountAndClaimGift = async (account: Account): Promise<boolean> => {
+    try {
+      // 先执行正常的Gas Account登录流程
+      await this.signGasAccount(account);
+
+      // 登录成功后，尝试领取gift
+      const claimSuccess = await this.claimGasAccountGift(account.address);
+
+      return claimSuccess;
+    } catch (error) {
+      console.error('Failed to sign gas account and claim gift:', error);
+      return false;
+    }
   };
 
   topUpGasAccount = async ({
@@ -5510,6 +5533,131 @@ export class WalletController extends BaseController {
     ...args
   ) => {
     return preferenceService.setRateGuideLastExposure(...args);
+  };
+
+  /**
+   * 检查gift资格
+   * @param address 地址
+   * @returns 是否有资格
+   */
+  checkGiftEligibility = async (address: string): Promise<boolean> => {
+    try {
+      const gasAccountData = gasAccountService.getGasAccountSig();
+      const hasGasAccountLogin = !!(
+        gasAccountData.sig && gasAccountData.accountId
+      );
+      if (hasGasAccountLogin) {
+        return false;
+      }
+
+      const cache = gasAccountService.getGiftCache();
+      const cachedResult = cache[address.toLowerCase()];
+      if (cachedResult && !cachedResult.isEligible) {
+        return false;
+      }
+
+      if (cachedResult && cachedResult.isEligible) {
+        return true;
+      }
+
+      try {
+        const apiResult = await this.openapi.checkGasAccountGiftEligibility({
+          id: address,
+        });
+        if (!apiResult.has_eligibility) {
+          gasAccountService.setGiftEligibilityResult(
+            address,
+            false,
+            hasGasAccountLogin
+          );
+        }
+        return apiResult.has_eligibility;
+      } catch (error) {
+        console.log(
+          'Failed to check gift eligibility from API:',
+          address,
+          error
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to check gift eligibility:', error);
+      return false;
+    }
+  };
+
+  /**
+   * 领取gift奖励
+   * @param address 地址
+   * @returns 是否成功领取
+   */
+  claimGasAccountGift = async (address: string): Promise<boolean> => {
+    try {
+      // 获取gas account的签名信息
+      const { sig, accountId } = this.getGasAccountSig();
+
+      if (!sig || !accountId) {
+        console.error('Gas account not logged in, cannot claim gift');
+        return false;
+      }
+
+      // 调用API领取gift
+      const result = await this.openapi.claimGasAccountGift({
+        sig,
+        id: accountId,
+      });
+
+      if (result.success) {
+        // 标记为已领取
+        gasAccountService.markGiftAsClaimed(address);
+        return true;
+      } else {
+        console.error('API returned success: false for gift claim');
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to claim gas account gift:', error);
+      return false;
+    }
+  };
+
+  /**
+   * 标记地址已领取gift（内部使用）
+   * @param address 地址
+   */
+  markGiftAsClaimed = (address: string) => {
+    gasAccountService.markGiftAsClaimed(address);
+  };
+
+  /**
+   * 清除gift资格缓存
+   * @param address 地址
+   */
+  clearGiftEligibilityCache = (address: string) => {
+    gasAccountService.clearGiftCache(address);
+  };
+
+  /**
+   * 清除全部gift资格缓存（测试用）
+   */
+  clearAllGiftEligibilityCache = () => {
+    gasAccountService.clearAllGiftCache();
+  };
+
+  /**
+   * 获取gift资格缓存
+   * @returns 缓存对象
+   */
+  getGiftEligibilityCache = () => {
+    return gasAccountService.getGiftCache();
+  };
+
+  /**
+   * 获取已领取gift的地址列表
+   * @returns 已领取地址列表
+   */
+  getClaimedGiftAddresses = () => {
+    return gasAccountService.getClaimedGiftAddresses();
   };
 }
 

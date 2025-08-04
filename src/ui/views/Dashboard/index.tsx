@@ -145,6 +145,11 @@ const Dashboard = () => {
           dispatch.account.setField({ alianName: name });
           setDisplayName(name!);
         });
+      // 初始化时查询当前账号是否有资格
+      dispatch.gift.checkGiftEligibilityAsync({
+        address: currentAccount.address,
+        currentAccount,
+      });
     }
   }, [currentAccount]);
 
