@@ -54,7 +54,7 @@ export const GasAccountDashBoardHeader: React.FC = () => {
       {hasGiftEligibility ? (
         <>
           <IconGift viewBox="0 0 14 14" className="w-14 h-14" />
-          $5.00
+          $2.00
         </>
       ) : (
         <>

@@ -27,7 +27,6 @@ import {
   bridgeService,
   contactBookService,
   gasAccountService,
-  giftEligibilityService,
   HDKeyRingLastAddAddrTimeService,
   keyringService,
   openapiService,
@@ -118,7 +117,6 @@ async function restoreAppState() {
   await metamaskModeService.init();
   await OfflineChainsService.init();
   await syncChainService.init();
-  await giftEligibilityService.init();
 
   await walletController.tryUnlock();
 
