@@ -5541,42 +5541,35 @@ export class WalletController extends BaseController {
    */
   checkGiftEligibility = async (address: string): Promise<boolean> => {
     try {
-      // 检查gas account登录状态
       const gasAccountData = gasAccountService.getGasAccountSig();
       const hasGasAccountLogin = !!(
         gasAccountData.sig && gasAccountData.accountId
       );
-
-      // 如果前端已登录gas account，直接返回false
       if (hasGasAccountLogin) {
         return false;
       }
 
-      // 检查缓存，如果缓存中有不可领取的数据，则直接返回不可领取
       const cache = gasAccountService.getGiftCache();
       const cachedResult = cache[address.toLowerCase()];
       if (cachedResult && !cachedResult.isEligible) {
         return false;
       }
 
-      // 如果缓存中有可领取的数据，直接返回
       if (cachedResult && cachedResult.isEligible) {
         return true;
       }
 
-      // 调用API检查
       try {
-        console.log('checkGasAccountGiftEligibility', address);
         const apiResult = await this.openapi.checkGasAccountGiftEligibility({
           id: address,
         });
-        console.log('apiResult', apiResult);
-        // 缓存结果
-        gasAccountService.setGiftEligibilityResult(
-          address,
-          apiResult.has_eligibility,
-          hasGasAccountLogin
-        );
+        if (!apiResult.has_eligibility) {
+          gasAccountService.setGiftEligibilityResult(
+            address,
+            false,
+            hasGasAccountLogin
+          );
+        }
         return apiResult.has_eligibility;
       } catch (error) {
         console.log(

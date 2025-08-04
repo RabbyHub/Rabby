@@ -1,4 +1,5 @@
 import { createPersistStore } from 'background/utils';
+import { is } from 'immer/dist/internal';
 
 export type GasAccountRecord = {
   chain_id: string;
@@ -121,7 +122,6 @@ class GasAccountService {
     hasGasAccountLogin: boolean
   ) {
     const normalizedAddress = address.toLowerCase();
-
     this.store.giftEligibilityCache[normalizedAddress] = {
       isEligible,
       timestamp: Date.now(),
