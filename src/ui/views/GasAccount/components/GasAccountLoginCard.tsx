@@ -7,7 +7,11 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import { useRabbySelector, useRabbyDispatch } from 'ui/store';
 import { useWallet } from 'ui/utils';
-import { useGasAccountMethods, useGasAccountSign } from '../hooks'; // 添加useGasAccountSign
+import {
+  useGasAccountMethods,
+  useGasAccountSign,
+  useGasAccountRefresh,
+} from '../hooks';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
 import { KEYRING_CLASS } from '@/constant'; // 导入KEYRING_CLASS常量
 import clsx from 'clsx';
@@ -26,6 +30,7 @@ export const GasAccountLoginCard = ({
   const [shouldClaimAfterLogin, setShouldClaimAfterLogin] = useState(false); // 跟踪是否需要在登录后claim
   const { login } = useGasAccountMethods();
   const { sig: currentSig, accountId: currentAccountId } = useGasAccountSign(); // 添加当前签名状态
+  const { refresh } = useGasAccountRefresh();
   const { currentGiftEligible, currentAccount } = useRabbySelector((s) => ({
     currentGiftEligible: s.gift.currentGiftEligible,
     currentAccount: s.account.currentAccount,
@@ -38,7 +43,6 @@ export const GasAccountLoginCard = ({
     };
   }, []);
 
-  // 监听登录状态变化，在登录成功后自动claim
   useEffect(() => {
     const handleLoginSuccess = async () => {
       if (
@@ -47,9 +51,7 @@ export const GasAccountLoginCard = ({
         currentAccountId &&
         currentAccount?.address
       ) {
-        console.log('Gas account login detected, proceeding to claim gift');
-        setShouldClaimAfterLogin(false); // 重置标志
-
+        setShouldClaimAfterLogin(false);
         try {
           const success = await dispatch.gift.claimGiftAsync({
             address: currentAccount.address,
@@ -57,7 +59,7 @@ export const GasAccountLoginCard = ({
           });
 
           if (success) {
-            console.log('Gift claimed successfully after login!');
+            refresh();
             onRefreshHistory?.();
           } else {
             console.error('Failed to claim gift after login');
@@ -96,12 +98,8 @@ export const GasAccountLoginCard = ({
         // 私钥/助记词账户：使用现有的监听机制
         setShouldClaimAfterLogin(true);
         await login(currentAccount);
-        // useEffect会监听状态变化并自动claim
       } else {
         // 其他账户类型：直接调用signGasAccountAndClaimGift
-        console.log(
-          'Using hardware wallet or other account type for login and claim...'
-        );
 
         try {
           // 调用新的方法，一次性完成登录和claim
@@ -110,17 +108,12 @@ export const GasAccountLoginCard = ({
           );
 
           if (success) {
-            console.log(
-              'Gift claimed successfully after hardware wallet login!'
-            );
+            refresh();
             onRefreshHistory?.();
           } else {
             console.error('Failed to claim gift after hardware wallet login');
           }
         } catch (error) {
-          // 处理硬件钱包登录错误（用户取消、设备未连接等）
-          console.log('Hardware wallet login error:', error);
-
           // 检查是否是用户取消操作
           if (
             error?.message?.includes('User rejected') ||

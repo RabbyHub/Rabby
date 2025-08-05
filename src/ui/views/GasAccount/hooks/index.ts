@@ -110,6 +110,8 @@ export const useGasAccountMethods = () => {
           refresh();
           // 任意账号登录gas account后，更新全局gift状态为已领取
           dispatch.gift.markGiftAsClaimed({ address: account.address });
+          // 同时更新持久化的全局标记
+          wallet.setHasAnyAccountClaimedGift(true);
         }
       } catch (e) {
         message.error('Login in error, Please retry');

@@ -5137,6 +5137,8 @@ export class WalletController extends BaseController {
 
         // 任意账号登录gas account后，更新全局gift状态为已领取
         gasAccountService.markGiftAsClaimed(account.address);
+        // 同时更新持久化的全局标记
+        gasAccountService.setHasAnyAccountClaimedGift(true);
       }
     }
 
@@ -5541,6 +5543,14 @@ export class WalletController extends BaseController {
    */
   checkGiftEligibility = async (address: string): Promise<boolean> => {
     try {
+      const currentAccount = await preferenceService.getCurrentAccount();
+      if (!currentAccount) {
+        return false;
+      }
+      if (currentAccount.type === KEYRING_CLASS.WATCH) {
+        return false;
+      }
+
       const gasAccountData = gasAccountService.getGasAccountSig();
       const hasGasAccountLogin = !!(
         gasAccountData.sig && gasAccountData.accountId
@@ -5657,6 +5667,22 @@ export class WalletController extends BaseController {
    */
   getClaimedGiftAddresses = () => {
     return gasAccountService.getClaimedGiftAddresses();
+  };
+
+  /**
+   * 获取全局标记：是否有任何账号已经领取过gift
+   * @returns 是否有任何账号已经领取过gift
+   */
+  getHasAnyAccountClaimedGift = () => {
+    return gasAccountService.getHasAnyAccountClaimedGift();
+  };
+
+  /**
+   * 设置全局标记：是否有任何账号已经领取过gift
+   * @param hasClaimed 是否有任何账号已经领取过gift
+   */
+  setHasAnyAccountClaimedGift = (hasClaimed: boolean) => {
+    gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
   };
 }
 

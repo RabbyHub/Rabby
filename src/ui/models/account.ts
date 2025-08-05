@@ -292,13 +292,6 @@ export const account = createModel<RootModel>()({
       return alianName;
     },
 
-    async checkGiftEligibilityAsync(address?: string, store?) {
-      if (!store) {
-        return false;
-      }
-      return false; // Removed checkGiftEligibilityHelper
-    },
-
     async getAllClassAccountsAsync(_: void, store) {
       const keyrings = await store.app.wallet.getAllClassAccounts<
         DisplayedKeryring[]

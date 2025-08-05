@@ -4834,7 +4834,7 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.12.tgz#6cbde496e5d36e4b0e5efc894e6ce4acf8ecab7d"
   integrity sha512-fUtqYyVrauzugoRZw0cq8iSfvQ5FhX0O5F/Jk/j62oSicdJpgO2XgRM4HFoevYKa9ZD+3CnEjE0fY9D2YpXMZw==
 
-"@rabby-wallet/rabby-api@^0.9.30-beta.4":
+"@rabby-wallet/rabby-api@0.9.30-beta.4":
   version "0.9.30-beta.4"
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.30-beta.4.tgz#0531a596ca8b1648a57abf37330f43ea711cb6b2"
   integrity sha512-Y1UmEnZYtLKBREj+dAh5KX86AdG+m6jAInLyd+fN0dNV1xKmv6VEWQ3b8pHXNeanTK+ZV8RzG5gH/V3VQPRELg==

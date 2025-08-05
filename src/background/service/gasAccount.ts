@@ -1,5 +1,4 @@
 import { createPersistStore } from 'background/utils';
-import { is } from 'immer/dist/internal';
 
 export type GasAccountRecord = {
   chain_id: string;
@@ -25,6 +24,7 @@ export type GasAccountServiceStore = {
   };
   giftEligibilityCache: GiftEligibilityCache;
   claimedGiftAddresses: string[]; // 已经领取过gift的地址列表
+  hasAnyAccountClaimedGift: boolean; // 全局标记：是否有任何账号已经领取过gift
 };
 
 class GasAccountService {
@@ -33,18 +33,23 @@ class GasAccountService {
     accountId: undefined,
     giftEligibilityCache: {},
     claimedGiftAddresses: [],
+    hasAnyAccountClaimedGift: false,
   };
 
+  private persistStore?: GasAccountServiceStore;
+
   init = async () => {
-    const storage = await createPersistStore<GasAccountServiceStore>({
+    this.persistStore = await createPersistStore<GasAccountServiceStore>({
       name: 'gasAccount',
       template: {
         giftEligibilityCache: {},
         claimedGiftAddresses: [],
+        hasAnyAccountClaimedGift: false,
       },
     });
-
-    this.store = storage || this.store;
+    if (this.persistStore) {
+      this.store = { ...this.store, ...this.persistStore };
+    }
   };
 
   getGasAccountData = (key?: keyof GasAccountServiceStore) => {
@@ -122,11 +127,13 @@ class GasAccountService {
     hasGasAccountLogin: boolean
   ) {
     const normalizedAddress = address.toLowerCase();
-    this.store.giftEligibilityCache[normalizedAddress] = {
+    const cacheData = {
       isEligible,
       timestamp: Date.now(),
       hasGasAccountLogin,
     };
+    this.persistStore!.giftEligibilityCache[normalizedAddress] = cacheData;
+    this.store.giftEligibilityCache[normalizedAddress] = cacheData;
   }
 
   /**
@@ -135,23 +142,51 @@ class GasAccountService {
    */
   markGiftAsClaimed(address: string) {
     const normalizedAddress = address.toLowerCase();
-    if (!this.store.claimedGiftAddresses.includes(normalizedAddress)) {
-      this.store.claimedGiftAddresses.push(normalizedAddress);
-    }
-    // 领取后将缓存中的数据标记为无资格，保留这个信息
-    const existingCache = this.store.giftEligibilityCache[normalizedAddress];
-    if (existingCache) {
-      this.store.giftEligibilityCache[normalizedAddress] = {
-        ...existingCache,
-        isEligible: false, // 标记为无资格
-      };
+
+    if (this.persistStore) {
+      if (!this.persistStore.claimedGiftAddresses.includes(normalizedAddress)) {
+        this.persistStore.claimedGiftAddresses.push(normalizedAddress);
+      }
+      // 领取后将缓存中的数据标记为无资格，保留这个信息
+      const existingCache = this.persistStore.giftEligibilityCache[
+        normalizedAddress
+      ];
+      if (existingCache) {
+        this.persistStore.giftEligibilityCache[normalizedAddress] = {
+          ...existingCache,
+          isEligible: false, // 标记为无资格
+        };
+      } else {
+        // 如果缓存不存在，创建一个标记为无资格的缓存
+        this.persistStore.giftEligibilityCache[normalizedAddress] = {
+          isEligible: false,
+          timestamp: Date.now(),
+          hasGasAccountLogin: false,
+        };
+      }
+      // 设置全局标记：已有账号领取过gift
+      this.persistStore.hasAnyAccountClaimedGift = true;
     } else {
-      // 如果缓存不存在，创建一个标记为无资格的缓存
-      this.store.giftEligibilityCache[normalizedAddress] = {
-        isEligible: false,
-        timestamp: Date.now(),
-        hasGasAccountLogin: false,
-      };
+      if (!this.store.claimedGiftAddresses.includes(normalizedAddress)) {
+        this.store.claimedGiftAddresses.push(normalizedAddress);
+      }
+      // 领取后将缓存中的数据标记为无资格，保留这个信息
+      const existingCache = this.store.giftEligibilityCache[normalizedAddress];
+      if (existingCache) {
+        this.store.giftEligibilityCache[normalizedAddress] = {
+          ...existingCache,
+          isEligible: false, // 标记为无资格
+        };
+      } else {
+        // 如果缓存不存在，创建一个标记为无资格的缓存
+        this.store.giftEligibilityCache[normalizedAddress] = {
+          isEligible: false,
+          timestamp: Date.now(),
+          hasGasAccountLogin: false,
+        };
+      }
+      // 设置全局标记：已有账号领取过gift
+      this.store.hasAnyAccountClaimedGift = true;
     }
   }
 
@@ -167,10 +202,18 @@ class GasAccountService {
   /**
    * 清除全部gift缓存（测试用）
    */
-  clearAllGiftCache() {
-    console.log('Clearing all gift eligibility cache for testing...');
-    this.store.giftEligibilityCache = {};
-    this.store.claimedGiftAddresses = []; // 重置全局标记
+  async clearAllGiftCache() {
+    // 直接设置持久化全局标记为false
+    if (this.persistStore) {
+      this.persistStore.hasAnyAccountClaimedGift = false;
+      // 同步到内存中的store
+      this.store.hasAnyAccountClaimedGift = false;
+
+      // 强制触发一次持久化存储的更新
+      this.persistStore.hasAnyAccountClaimedGift = false;
+    } else {
+      this.store.hasAnyAccountClaimedGift = false;
+    }
   }
 
   /**
@@ -185,6 +228,30 @@ class GasAccountService {
    */
   getClaimedGiftAddresses() {
     return this.store.claimedGiftAddresses;
+  }
+
+  /**
+   * 获取全局标记：是否有任何账号已经领取过gift
+   */
+  getHasAnyAccountClaimedGift() {
+    // 优先使用持久化存储的值，如果没有则使用内存中的值
+    const result =
+      this.persistStore?.hasAnyAccountClaimedGift ??
+      this.store.hasAnyAccountClaimedGift;
+    return result;
+  }
+
+  /**
+   * 设置全局标记：是否有任何账号已经领取过gift
+   */
+  setHasAnyAccountClaimedGift(hasClaimed: boolean) {
+    if (this.persistStore) {
+      // 通过持久化存储对象更新，确保触发持久化
+      this.persistStore.hasAnyAccountClaimedGift = hasClaimed;
+    } else {
+      // 如果没有持久化存储对象，直接更新内存中的store
+      this.store.hasAnyAccountClaimedGift = hasClaimed;
+    }
   }
 }
 

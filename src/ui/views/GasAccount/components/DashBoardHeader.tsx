@@ -21,15 +21,15 @@ const formatUsdValue = (usd: string | number) => {
 
 export const GasAccountDashBoardHeader: React.FC = () => {
   const { value, loading } = useGasAccountInfo();
-  const { currentAccount, currentGiftEligible } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
+  const { currentGiftEligible, hasClaimedGift } = useRabbySelector((s) => ({
     currentGiftEligible: s.gift.currentGiftEligible,
+    hasClaimedGift: s.gift.hasClaimedGift,
   }));
 
   // 检查当前账号是否有gift资格
   const hasGiftEligibility = useMemo(() => {
-    return currentGiftEligible;
-  }, [currentGiftEligible]);
+    return currentGiftEligible && !hasClaimedGift;
+  }, [currentGiftEligible, hasClaimedGift]);
 
   const usd = useMemo(() => {
     if (loading) {
