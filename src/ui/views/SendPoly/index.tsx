@@ -165,7 +165,7 @@ const SendPoly = () => {
     } else {
       query.delete('type');
     }
-    history.push(`/send-token?${query.toString()}`);
+    history.replace(`/send-token?${query.toString()}`);
   };
 
   const handleGotoSendNFT = (address: string) => {

@@ -466,7 +466,7 @@ const SendNFT = () => {
                         encodeURIComponent(JSON.stringify(nftItem))
                       );
                       query.set('to', toAddress);
-                      history.push(`/send-poly?${query.toString()}`);
+                      history.replace(`/send-poly?${query.toString()}`);
                     }}
                   >
                     <RcIconSwitchCC width={20} height={20} />
