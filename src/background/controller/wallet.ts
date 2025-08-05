@@ -83,7 +83,11 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
-import { generateAliasName, isSameAccount } from '@/utils/account';
+import {
+  generateAliasName,
+  isFullVersionAccountType,
+  isSameAccount,
+} from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
@@ -5089,7 +5093,18 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  signGasAccount = async (account: Account) => {
+  /**
+   * 执行Gas Account登录的核心流程
+   * @param account 账户信息
+   * @returns 登录结果，包含签名和是否成功
+   */
+  private async executeGasAccountLogin(
+    account: Account
+  ): Promise<{
+    signature: string;
+    success: boolean;
+    result?: any;
+  }> {
     const currentAccount = await preferenceService.getCurrentAccount();
     if (!currentAccount) {
       throw new Error(t('background.error.noCurrentAccount'));
@@ -5115,54 +5130,43 @@ export class WalletController extends BaseController {
       params: [text, account.address],
     });
 
-    if (signature) {
-      const result = await pRetry(
-        async () =>
-          wallet.openapi.loginGasAccount({
-            sig: signature,
-            account_id: account.address,
-          }),
-        {
-          retries: 2,
-        }
-      );
-
-      if (result?.success) {
-        await gasAccountService.setGasAccountSig(signature, account);
-        await pageStateCacheService.clear();
-        await pageStateCacheService.set({
-          path: '/gas-account',
-          states: {},
-        });
-
-        // 任意账号登录gas account后，更新全局gift状态为已领取
-        gasAccountService.markGiftAsClaimed(account.address);
-        // 同时更新持久化的全局标记
-        gasAccountService.setHasAnyAccountClaimedGift(true);
-      }
+    if (!signature) {
+      await resumeAccount();
+      return { signature: '', success: false };
     }
+
+    const result = await pRetry(
+      async () =>
+        wallet.openapi.loginGasAccount({
+          sig: signature,
+          account_id: account.address,
+        }),
+      {
+        retries: 2,
+      }
+    );
 
     await resumeAccount();
-  };
+    return { signature, success: result?.success || false, result };
+  }
 
-  /**
-   * 登录Gas Account并领取gift
-   * @param account 账户信息
-   * @returns 是否成功领取gift
-   */
-  signGasAccountAndClaimGift = async (account: Account): Promise<boolean> => {
-    try {
-      // 先执行正常的Gas Account登录流程
-      await this.signGasAccount(account);
+  private async saveGasAccountLoginState(signature: string, account: Account) {
+    await gasAccountService.setGasAccountSig(signature, account);
+    await pageStateCacheService.clear();
+    await pageStateCacheService.set({
+      path: '/gas-account',
+      states: {},
+    });
+  }
 
-      // 登录成功后，尝试领取gift
-      const claimSuccess = await this.claimGasAccountGift(account.address);
+  signGasAccount = async (account: Account) => {
+    const { signature, success } = await this.executeGasAccountLogin(account);
 
-      return claimSuccess;
-    } catch (error) {
-      console.error('Failed to sign gas account and claim gift:', error);
-      return false;
+    if (success && signature) {
+      await this.saveGasAccountLoginState(signature, account);
     }
+
+    return signature;
   };
 
   topUpGasAccount = async ({
@@ -5547,7 +5551,7 @@ export class WalletController extends BaseController {
       if (!currentAccount) {
         return false;
       }
-      if (currentAccount.type === KEYRING_CLASS.WATCH) {
+      if (!isFullVersionAccountType(currentAccount)) {
         return false;
       }
 
