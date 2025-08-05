@@ -412,8 +412,15 @@ const WithdrawContent = ({
 
     try {
       setBtnLoading(true);
+      const chainWithdrawLimit =
+        selectAddressChainList.recharge_chain_list?.find(
+          (item) => item.chain_id === chain.chain_id
+        )?.withdraw_limit || 0;
 
-      const amount = gasAccountInfo.withdrawable_balance;
+      const amount = Math.min(
+        gasAccountInfo.withdrawable_balance,
+        chainWithdrawLimit
+      );
 
       const res: any = await wallet.openapi.withdrawGasAccount({
         sig: sig!,
@@ -463,13 +470,22 @@ const WithdrawContent = ({
     ) {
       return '';
     } else {
-      const usdValue = formatUsdValue(
+      const chainWithdrawLimit =
+        selectAddressChainList?.recharge_chain_list?.find(
+          (item) => item.chain_id === chain.chain_id
+        )?.withdraw_limit || 0;
+
+      const actualWithdrawableAmount = Math.min(
         gasAccountInfo.withdrawable_balance,
+        chainWithdrawLimit
+      );
+      const usdValue = formatUsdValue(
+        actualWithdrawableAmount,
         BigNumber.ROUND_DOWN
       );
       return `${usdValue}`;
     }
-  }, [chain, gasAccountInfo?.withdrawable_balance]);
+  }, [chain, gasAccountInfo?.withdrawable_balance, selectAddressChainList]);
   const selectedAccount = useMemo(() => {
     return accountsList.find(
       (i) => i.address === selectAddressChainList?.recharge_addr
@@ -500,7 +516,12 @@ const WithdrawContent = ({
                 <span className="text-14 text-r-neutral-title1">
                   {gasAccountInfo?.withdrawable_balance
                     ? formatUsdValue(
-                        gasAccountInfo.withdrawable_balance,
+                        Math.min(
+                          gasAccountInfo.withdrawable_balance,
+                          selectAddressChainList?.recharge_chain_list?.find(
+                            (item) => item.chain_id === chain?.chain_id
+                          )?.withdraw_limit || 0
+                        ),
                         BigNumber.ROUND_DOWN
                       )
                     : '$0.00'}
@@ -678,6 +699,13 @@ export const WithdrawPopup = (
     gasAccountInfo?: GasAccountInfo;
   }
 ) => {
+  const {
+    balance,
+    handleRefreshHistory,
+    gasAccountInfo,
+    ...popupProps
+  } = props;
+
   return (
     <>
       <Popup
@@ -691,13 +719,13 @@ export const WithdrawPopup = (
         destroyOnClose
         push={false}
         closeIcon={<GasAccountCloseIcon />}
-        {...props}
+        {...popupProps}
       >
         <WithdrawContent
           onClose={props.onCancel || props.onClose || noop}
-          balance={props.balance}
-          handleRefreshHistory={props.handleRefreshHistory}
-          gasAccountInfo={props.gasAccountInfo}
+          balance={balance}
+          handleRefreshHistory={handleRefreshHistory}
+          gasAccountInfo={gasAccountInfo}
         />
       </Popup>
     </>

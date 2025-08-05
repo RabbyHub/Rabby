@@ -103,6 +103,13 @@ export const gift = createModel<RootModel>()({
           return false;
         }
 
+        const hasAnyAccountClaimedGift = await store.app.wallet.getHasAnyAccountClaimedGift();
+        if (hasAnyAccountClaimedGift) {
+          dispatch.gift.setField({ hasClaimedGift: true });
+          dispatch.gift.setCurrentGiftEligible({ isEligible: false });
+          return false;
+        }
+
         // 调用wallet检查资格
         const isEligible = await store.app.wallet.checkGiftEligibility(
           targetAddress
@@ -130,6 +137,7 @@ export const gift = createModel<RootModel>()({
       store?
     ) {
       try {
+        console.log('🔍 claimGiftAsync - 开始执行');
         if (!store) {
           return false;
         }
@@ -147,6 +155,8 @@ export const gift = createModel<RootModel>()({
         if (success) {
           // 领取成功，更新UI状态
           dispatch.gift.markGiftAsClaimed({ address: targetAddress });
+          // 同时更新持久化的全局标记
+          store.app.wallet.setHasAnyAccountClaimedGift(true);
           return true;
         } else {
           return false;
@@ -162,9 +172,9 @@ export const gift = createModel<RootModel>()({
         return;
       }
       try {
-        const claimedAddresses = await store.app.wallet.getClaimedGiftAddresses();
-        // 根据已领取地址列表设置全局标记
-        dispatch.gift.setField({ hasClaimedGift: claimedAddresses.length > 0 });
+        // 使用持久化的全局标记
+        const hasAnyAccountClaimedGift = await store.app.wallet.getHasAnyAccountClaimedGift();
+        dispatch.gift.setField({ hasClaimedGift: hasAnyAccountClaimedGift });
       } catch (error) {
         console.error('Failed to check claimed gift status:', error);
       }
