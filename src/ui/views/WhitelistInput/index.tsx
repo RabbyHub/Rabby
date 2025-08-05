@@ -42,7 +42,7 @@ const StyledInputWrapper = styled.div`
   border-radius: 8px;
   overflow: hidden;
   .ant-input {
-    font-size: 15px;
+    font-size: 15px !important;
     background: var(--r-neutral-card1, #ffffff) !important;
     &:hover,
     &:focus {
@@ -56,6 +56,12 @@ const StyledInputWrapper = styled.div`
       width: 20px;
       height: 20px;
     }
+  }
+`;
+
+const AliasInputWrapper = styled.div`
+  .ant-input {
+    font-size: 15px !important;
   }
 `;
 
@@ -273,7 +279,7 @@ const WhitelistInput = () => {
           </div>
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>{t('page.whitelist.name')}</SectionHeader>
-            <div className="relative rounded-[8px] overflow-hidden">
+            <AliasInputWrapper className="relative rounded-[8px] overflow-hidden">
               <Input
                 placeholder={t('page.whitelist.nameYourAddress')}
                 allowClear={false}
@@ -297,7 +303,7 @@ const WhitelistInput = () => {
                   )}
                 />
               </div>
-            </div>
+            </AliasInputWrapper>
           </div>
           <div className="flex flex-col gap-[10px]">
             <div className="flex justify-between items-center">
