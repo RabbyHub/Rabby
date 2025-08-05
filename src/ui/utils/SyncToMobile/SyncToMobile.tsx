@@ -33,10 +33,10 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
 
   return (
     <section
-      className={clsx('h-full overflow-y-auto', 'flex flex-col')}
-      style={{
-        background: 'linear-gradient(114deg, #708AFF 9.12%, #6177FF 93.25%)',
-      }}
+      className={clsx(
+        'h-full overflow-y-auto',
+        'flex flex-col bg-r-blue-default'
+      )}
     >
       <header className="flex flex-col items-center justify-center mt-[42px] text-center">
         <h1 className="text-r-neutral-title2 text-[40px] leading-[48px] font-bold">
