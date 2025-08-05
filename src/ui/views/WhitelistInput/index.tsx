@@ -17,7 +17,6 @@ import { PageHeader } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
-import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
@@ -25,6 +24,7 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { IconClearCC } from '@/ui/assets/component/IconClear';
+import { ReactComponent as RcIconContactCC } from '@/ui/assets/contact-cc.svg';
 
 import './styles.less';
 
@@ -203,7 +203,12 @@ const WhitelistInput = () => {
         </PageHeader>
         <main className="flex-1 flex flex-col gap-[20px] mt-[20px]">
           <div className="flex flex-col gap-[8px]">
-            <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
+            <div className="flex justify-between items-center">
+              <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
+              <div className="text-r-neutral-body cursor-pointer">
+                <RcIconContactCC width={20} height={20} />
+              </div>
+            </div>
             <StyledInputWrapper className="relative">
               <Input.TextArea
                 maxLength={44}
