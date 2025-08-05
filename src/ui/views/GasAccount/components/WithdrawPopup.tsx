@@ -169,7 +169,7 @@ const Selector = ({
             }
             right={
               <span className="text-r-neutral-title-1 text-[14px] leading-[17px] font-medium">
-                {`$${item.withdraw_limit}`}
+                {formatUsdValue(item.withdraw_limit, BigNumber.ROUND_DOWN)}
               </span>
             }
             onClick={() => {
@@ -221,7 +221,10 @@ const Selector = ({
             left={<AddressRightAreaInItem account={account} />}
             right={
               <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
-                {`$${item.total_withdraw_limit}`}
+                {formatUsdValue(
+                  item.total_withdraw_limit,
+                  BigNumber.ROUND_DOWN
+                )}
               </span>
             }
             onClick={() => {
@@ -497,62 +500,39 @@ const WithdrawContent = ({
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[12px]">
         {t('page.gasAccount.withdrawPopup.title')}
       </div>
+      <div className="text-13 text-r-neutral-body text-center flex gap-4 items-center justify-center">
+        {t('page.gasAccount.withdrawPopup.withdrawalTip', {
+          amount: formatUsdValue(
+            gasAccountInfo?.withdrawable_balance || 0,
+            BigNumber.ROUND_DOWN
+          ),
+        })}
+        {gasAccountInfo?.non_withdrawable_balance &&
+        gasAccountInfo.non_withdrawable_balance > 0 ? (
+          <Tooltip
+            overlayClassName={clsx('rectangle')}
+            placement="topLeft"
+            title={
+              <span>
+                {formatUsdValue(
+                  gasAccountInfo.non_withdrawable_balance,
+                  BigNumber.ROUND_DOWN
+                )}{' '}
+                of your gas balance is non-withdrawable:
+                <br />
+                1. Apple Pay / Google Pay
+                <br />
+                2. Gas Rewards
+              </span>
+            }
+            align={{ targetOffset: [12, 0] }}
+          >
+            <RcIconHelp className="text-rabby-neutral-foot w-14 h-14" />
+          </Tooltip>
+        ) : null}
+      </div>
 
       <div className="w-full px-20">
-        <Item
-          px={16}
-          py={0}
-          hoverBorder={false}
-          className="rounded-[6px] w-full h-[52px] mt-12 flex justify-between cursor-default"
-          bgColor="var(--r-neutral-card2, #F2F4F7)"
-          left={
-            <span className="text-14 text-r-neutral-body">
-              {t('page.gasAccount.withdrawPopup.WithdrawalAmount')}
-            </span>
-          }
-          right={
-            <div className="flex items-center gap-8 ml-auto">
-              <div className="flex items-center">
-                <span className="text-14 text-r-neutral-title1">
-                  {gasAccountInfo?.withdrawable_balance
-                    ? formatUsdValue(
-                        Math.min(
-                          gasAccountInfo.withdrawable_balance,
-                          selectAddressChainList?.recharge_chain_list?.find(
-                            (item) => item.chain_id === chain?.chain_id
-                          )?.withdraw_limit || 0
-                        ),
-                        BigNumber.ROUND_DOWN
-                      )
-                    : '$0.00'}
-                </span>
-              </div>
-              {gasAccountInfo?.non_withdrawable_balance &&
-              gasAccountInfo.non_withdrawable_balance > 0 ? (
-                <Tooltip
-                  overlayClassName={clsx('rectangle')}
-                  placement="topLeft"
-                  title={
-                    <span>
-                      {formatUsdValue(
-                        gasAccountInfo.non_withdrawable_balance,
-                        BigNumber.ROUND_DOWN
-                      )}{' '}
-                      of your gas balance is non-withdrawable:
-                      <br />
-                      1. Apple Pay / Google Pay
-                      <br />
-                      2. Gas Rewards
-                    </span>
-                  }
-                  align={{ targetOffset: [0, 0] }}
-                >
-                  <RcIconHelp className="text-rabby-neutral-foot w-14 h-14" />
-                </Tooltip>
-              ) : null}
-            </div>
-          }
-        />
         <Item
           px={16}
           py={0}
@@ -674,7 +654,7 @@ const WithdrawContent = ({
           loading={btnLoading}
         >
           {t('page.gasAccount.withdrawPopup.title')}
-          {BalanceSuffix}
+          {` ${BalanceSuffix}`}
         </Button>
       </WrapperDiv>
       {

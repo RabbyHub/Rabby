@@ -2532,6 +2532,7 @@
         "selectRecipientAddress": "Select recipient address",
         "withdrawalLimit": "Withdrawal limit",
         "WithdrawalAmount": "Withdrawal Amount",
+        "withdrawalTip": "Available withdrawal balance: {{amount}}",
         "noBalance": "No balance",
         "title": "Withdraw",
         "desc": "You can withdraw your GasAccount balance to your DeBank L2 Wallet. Log in to your DeBank L2 Wallet to transfer the funds to a supported blockchain as needed.",
