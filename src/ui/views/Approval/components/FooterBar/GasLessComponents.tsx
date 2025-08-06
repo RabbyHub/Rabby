@@ -428,6 +428,14 @@ export function GasAccountTips({
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
 
   const { tip, btnText, loginGasAccount, depositGasAccount } = useMemo(() => {
+    if (gasAccountCost?.err_msg) {
+      return {
+        tip: gasAccountCost.err_msg,
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
+    }
     if (!noCustomRPC) {
       return {
         tip: t('page.signFooterBar.gasAccount.customRPC'),
