@@ -269,7 +269,7 @@ const Selector = ({
                 : t('page.gasAccount.withdrawPopup.selectRecipientAddress')}
             </div>
           </div>
-          <div className="px-20 py-10">
+          <div className="px-20">
             <div className="flex justify-between text-14 text-r-neutral-body pt-[24px] pb-8">
               <div>
                 {isSelectChain
@@ -532,7 +532,7 @@ const WithdrawContent = ({
         ) : null}
       </div>
 
-      <div className="w-full px-20">
+      <div className="w-full px-20 py-10">
         <Item
           px={16}
           py={0}
