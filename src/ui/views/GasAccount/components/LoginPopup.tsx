@@ -95,7 +95,7 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
   const { sig } = useGasAccountSign();
 
   const [loading, setLoading] = useState(false);
-  
+
   // 获取 wallet 实例
   const wallet = useRabbySelector((state) => state.app.wallet);
 
