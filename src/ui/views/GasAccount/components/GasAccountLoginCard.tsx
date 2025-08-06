@@ -40,13 +40,13 @@ export const GasAccountLoginCard = ({
       } else {
         signature = await wallet.signGasAccount(currentAccount);
       }
-      await dispatch.gift.claimGiftAsync({
-        address: currentAccount.address,
-        currentAccount,
-      });
       dispatch.gasAccount.setGasAccountSig({
         sig: signature,
         account: currentAccount,
+      });
+      await dispatch.gift.claimGiftAsync({
+        address: currentAccount.address,
+        currentAccount,
       });
       eventBus.emit(EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK);
     } catch (error) {
