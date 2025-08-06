@@ -124,6 +124,15 @@
         "title": "Swap Token Limit Pay",
         "maxPay": "Maximum pay"
       },
+      "addLiquidity": {
+        "title": "Add Liquidity",
+        "token0": "Add Token 1",
+        "token1": "Add Token 2",
+        "poolPrice": "Pool Price",
+        "marketPrice": "Market Price",
+        "priceDiff": "Price Diff",
+        "receiver": "Receiver"
+      },
       "send": {
         "title": "Send Token",
         "sendToken": "Send token",

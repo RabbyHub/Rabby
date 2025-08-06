@@ -15,6 +15,7 @@ import {
   SwapRequireData,
   WrapTokenRequireData,
   TransferOwnerRequireData,
+  AddLiquidityRequireData,
 } from '@rabby-wallet/rabby-action';
 import React from 'react';
 import { CommonAction } from '../../CommonAction';
@@ -43,6 +44,7 @@ import MultiSwap from '../MultiSwap';
 import SwapLimitPay from '../SwapLimitPay';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Chain } from '@debank/common';
+import AddLiquidity from '../AddLiquidity';
 
 const SingleAction: React.FC<{
   data: ParsedTransactionActionData;
@@ -256,6 +258,14 @@ const SingleAction: React.FC<{
         <BatchRevokePermit2
           data={data.permit2BatchRevokeToken}
           requireData={requireData as BatchRevokePermit2RequireData}
+          chain={chain}
+          engineResults={engineResults}
+        />
+      )}
+      {data.addLiquidity && (
+        <AddLiquidity
+          data={data.addLiquidity}
+          requireData={requireData as AddLiquidityRequireData}
           chain={chain}
           engineResults={engineResults}
         />
