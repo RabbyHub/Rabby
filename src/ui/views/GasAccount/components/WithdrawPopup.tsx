@@ -500,7 +500,7 @@ const WithdrawContent = ({
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[12px]">
         {t('page.gasAccount.withdrawPopup.title')}
       </div>
-      <div className="text-13 text-r-neutral-body text-center flex gap-4 items-center justify-center">
+      <div className="text-13 text-r-neutral-body text-center flex gap-4 items-center justify-center mb-20">
         {t('page.gasAccount.withdrawPopup.withdrawalTip', {
           amount: formatUsdValue(
             gasAccountInfo?.withdrawable_balance || 0,

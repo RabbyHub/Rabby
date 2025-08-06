@@ -33,7 +33,6 @@ export const GasAccountCard = ({
   onLoginPress,
   onDepositPress,
   onWithdrawPress,
-  onRefreshHistory,
   gasAccountInfo,
 }: Props) => {
   const isRisk = useAml();
@@ -65,12 +64,7 @@ export const GasAccountCard = ({
   const withdrawDisabled = !balance;
 
   if (!isLogin) {
-    return (
-      <GasAccountLoginCard
-        onLoginPress={onLoginPress}
-        onRefreshHistory={onRefreshHistory}
-      />
-    );
+    return <GasAccountLoginCard onLoginPress={onLoginPress} />;
   }
 
   return (

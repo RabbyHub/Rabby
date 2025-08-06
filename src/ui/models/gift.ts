@@ -4,16 +4,15 @@ import { RootModel } from '.';
 export interface GiftEligibilityState {
   [address: string]: {
     isEligible: boolean;
-    isChecked: boolean; // 是否已经检查过该地址
-    isClaimed: boolean; // 是否已经领取过gift
+    isChecked: boolean;
+    isClaimed: boolean;
   };
 }
 
 export interface GiftState {
-  // Gift eligibility state
   giftEligibility: GiftEligibilityState;
-  currentGiftEligible: boolean; // 当前账号是否有资格显示gift
-  hasClaimedGift: boolean; // 是否有任何账号已经领取过gift（一旦为true，所有账号都不再显示gift）
+  currentGiftEligible: boolean;
+  hasClaimedGift: boolean;
 }
 
 export const gift = createModel<RootModel>()({
@@ -53,7 +52,6 @@ export const gift = createModel<RootModel>()({
             isClaimed: isClaimed || existingData?.isClaimed || false,
           },
         },
-        // 只有在没有任何账号领取过gift的情况下，才显示当前账号的gift资格
         currentGiftEligible: !state.hasClaimedGift && isEligible,
       };
     },
@@ -110,11 +108,9 @@ export const gift = createModel<RootModel>()({
           return false;
         }
 
-        // 调用wallet检查资格
         const isEligible = await store.app.wallet.checkGiftEligibility(
           targetAddress
         );
-        // 更新缓存
         dispatch.gift.setGiftEligibility({
           address: targetAddress,
           isEligible,
@@ -137,7 +133,6 @@ export const gift = createModel<RootModel>()({
       store?
     ) {
       try {
-        console.log('🔍 claimGiftAsync - 开始执行');
         if (!store) {
           return false;
         }
@@ -153,9 +148,8 @@ export const gift = createModel<RootModel>()({
           targetAddress
         );
         if (success) {
-          // 领取成功，更新UI状态
           dispatch.gift.markGiftAsClaimed({ address: targetAddress });
-          // 同时更新持久化的全局标记
+          store.app.wallet.markGiftAsClaimed(targetAddress);
           store.app.wallet.setHasAnyAccountClaimedGift(true);
           return true;
         } else {
@@ -172,7 +166,6 @@ export const gift = createModel<RootModel>()({
         return;
       }
       try {
-        // 使用持久化的全局标记
         const hasAnyAccountClaimedGift = await store.app.wallet.getHasAnyAccountClaimedGift();
         dispatch.gift.setField({ hasClaimedGift: hasAnyAccountClaimedGift });
       } catch (error) {

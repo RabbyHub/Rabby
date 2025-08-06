@@ -12,6 +12,9 @@ import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { KEYRING_CLASS } from '@/constant';
 import pRetry from 'p-retry';
 import { Account } from '@/background/service/preference';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
+import { isNoSignAccount } from '@/utils/account';
 
 export const useGasAccountRefresh = () => {
   const refreshId = useGasAccountRefreshId();
@@ -82,8 +85,10 @@ export const useGasAccountMethods = () => {
   const { sig, accountId } = useGasAccountSign();
   const { refresh } = useGasAccountRefresh();
 
-  const handleNoSignLogin = useCallback(async (account: Account) => {
-    if (account) {
+  const handleNoSignLogin = useCallback(
+    async (account: Account) => {
+      if (!account) return '';
+
       try {
         const { text } = await wallet.openapi.getGasAccountSignText(
           account.address
@@ -101,37 +106,43 @@ export const useGasAccountMethods = () => {
               sig: signature,
               account_id: account.address,
             }),
-          {
-            retries: 2,
-          }
+          { retries: 2 }
         );
+
         if (result?.success) {
           dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
           refresh();
-          // 任意账号登录gas account后，更新全局gift状态为已领取
-          dispatch.gift.markGiftAsClaimed({ address: account.address });
-          // 同时更新持久化的全局标记
-          wallet.setHasAnyAccountClaimedGift(true);
+          return signature;
         }
       } catch (e) {
         message.error('Login in error, Please retry');
       }
-    }
-  }, []);
+      return '';
+    },
+    [wallet, dispatch, refresh]
+  );
+
+  const handleHardwareLogin = useCallback(
+    async (account: Account) => {
+      const signature = await wallet.signGasAccount(account);
+      dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK,
+      });
+      return signature;
+    },
+    [wallet]
+  );
 
   const login = useCallback(
     async (account: Account) => {
-      const noSignType =
-        account?.type === KEYRING_CLASS.PRIVATE_KEY ||
-        account?.type === KEYRING_CLASS.MNEMONIC;
-      if (noSignType) {
-        handleNoSignLogin(account);
+      if (isNoSignAccount(account)) {
+        return await handleNoSignLogin(account);
       } else {
-        wallet.signGasAccount(account);
-        window.close();
+        return await handleHardwareLogin(account);
       }
     },
-    [handleNoSignLogin]
+    [handleNoSignLogin, handleHardwareLogin]
   );
 
   const logout = useCallback(async () => {
