@@ -133,7 +133,6 @@ export const gift = createModel<RootModel>()({
       store?
     ) {
       try {
-        console.log('🔍 claimGiftAsync - 开始执行', params);
         if (!store) {
           return false;
         }
@@ -147,7 +146,6 @@ export const gift = createModel<RootModel>()({
         const success = await store.app.wallet.claimGasAccountGift(
           targetAddress
         );
-        console.log('🔍 claimGiftAsync - 领取成功', success);
         if (success) {
           dispatch.gift.markGiftAsClaimed({ address: targetAddress });
           store.app.wallet.markGiftAsClaimed(targetAddress);

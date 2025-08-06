@@ -5608,7 +5608,6 @@ export class WalletController extends BaseController {
     try {
       // 获取gas account的签名信息
       const { sig, accountId } = this.getGasAccountSig();
-      console.log('🔍 claimGasAccountGift - 开始执行', sig, accountId);
       if (!sig || !accountId) {
         console.error('Gas account not logged in, cannot claim gift');
         return false;
@@ -5619,7 +5618,6 @@ export class WalletController extends BaseController {
         sig,
         id: accountId,
       });
-      console.log('🔍 claimGasAccountGift - 领取成功', result);
       if (result.success) {
         // 标记为已领取
         gasAccountService.markGiftAsClaimed(address);
