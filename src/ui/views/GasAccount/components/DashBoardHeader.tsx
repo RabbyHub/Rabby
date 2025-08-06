@@ -47,7 +47,7 @@ export const GasAccountDashBoardHeader: React.FC = () => {
         'px-8 py-6 rounded-[4px]',
         'text-13 leading-normal text-light-r-neutral-title-2',
         hasGiftEligibility
-          ? 'bg-green border-white'
+          ? 'bg-green border-white border'
           : 'bg-light-r-neutral-title-2 bg-opacity-10 hover:bg-opacity-20'
       )}
     >
