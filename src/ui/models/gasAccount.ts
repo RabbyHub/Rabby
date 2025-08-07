@@ -69,9 +69,7 @@ export const gasAccount = createModel<RootModel>()({
         account,
         accountId: account?.address,
       });
-      const time = Date.now();
       await store.app.wallet.setGasAccountSig(sig, account);
-      console.log('setGasAccountSig', Date.now() - time);
     },
   }),
 });
