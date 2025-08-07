@@ -67,13 +67,15 @@ export const useGasAccountInfo = () => {
       });
   }, [sig, accountId, refreshId]);
 
-  if (
-    error?.message?.includes('gas account verified failed') &&
-    sig &&
-    accountId
-  ) {
-    dispatch.gasAccount.setGasAccountSig({});
-  }
+  useEffect(() => {
+    if (
+      error?.message?.includes('gas account verified failed') &&
+      sig &&
+      accountId
+    ) {
+      dispatch.gasAccount.setGasAccountSig({});
+    }
+  }, [error?.message, sig, accountId]);
 
   return { loading, value };
 };
