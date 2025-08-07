@@ -147,13 +147,13 @@ const TokenSelector = ({
         <div>
           <div className="relative flex justify-center items-center text-center">
             <div className="text-20 font-medium text-center text-r-neutral-title-1 ">
-              {t('page.gasTopUp.Select-from-supported-tokens')}
+              {t('page.gasTopUp.Deposit-tip')}
             </div>
           </div>
           <div className="px-20">
             <div className="flex justify-between border-b-[0.5px] border-rabby-neutral-line text-12 text-r-neutral-body pt-[24px] pb-8">
               <div>{t('page.gasTopUp.Token')}</div>
-              <div>{t('page.gasTopUp.Value')}</div>
+              <div>{t('page.gasTopUp.Balance')}</div>
             </div>
           </div>
         </div>

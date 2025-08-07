@@ -979,7 +979,7 @@
       "Including-service-fee": "Including {{fee}} service fee",
       "service-fee-tip": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged.",
       "Confirm": "Confirm",
-      "Select-from-supported-tokens": "Select from supported tokens",
+      "Deposit-tip": "Deposit with USDC/USDT",
       "Value": "Value",
       "Payment-Token": "Payment Token",
       "Select-payment-token": "Select payment token",

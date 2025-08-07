@@ -48,7 +48,7 @@ export const SubmitActions: React.FC<Props> = ({
       {isSign ? (
         <div
           className={clsx(
-            'bg-blue-light',
+            'bg-blue-light w-[246px]',
             'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
@@ -80,7 +80,7 @@ export const SubmitActions: React.FC<Props> = ({
           <button
             className={clsx(
               'hover:bg-[#00000033]',
-              'w-[60px] h-full',
+              'flex-1 h-full',
               'flex justify-center items-center'
             )}
             onClick={handleClickCancel}

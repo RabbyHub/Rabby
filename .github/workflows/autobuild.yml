@@ -32,10 +32,10 @@ jobs:
           echo "shell is $(echo $0)"
           echo "which node $(which node)"
 
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22.17.1'
+      # - name: Setup node
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '22.17.1'
 
       - name: Use NPM Token with organization read access
         uses: heisenberg-2077/use-npm-token-action@v1
@@ -52,10 +52,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22.17.1'
+      # - name: Setup node
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '22.17.1'
 
       # - name: Get yarn cache directory path
       #   id: yarn-cache-dir-path
