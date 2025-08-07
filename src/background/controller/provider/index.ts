@@ -34,9 +34,18 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
           req.account || preferenceService.getCurrentAccount() || undefined;
       } else {
         const site = permissionService.getConnectedSite(origin);
+
+        const isSpeedUpOrCancel =
+          method === 'eth_sendTransaction' &&
+          (req.data?.params?.[0]?.isSpeedUp || req.data?.params?.[0]?.isCancel);
+
         if (site?.isConnected) {
           account =
-            site.account || preferenceService.getCurrentAccount() || undefined;
+            (isSpeedUpOrCancel
+              ? preferenceService.getCurrentAccount()
+              : site.account) ||
+            preferenceService.getCurrentAccount() ||
+            undefined;
         }
       }
     }

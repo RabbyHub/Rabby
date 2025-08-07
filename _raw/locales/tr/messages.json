@@ -919,7 +919,7 @@
       "Including-service-fee": "{{fee}} dahil hizmet ücreti",
       "service-fee-tip": "Gas Yükleme hizmeti için Rabby, token değişimindeki kaybı ve yükleme için gas ücretini karşılamak zorundadır. Bu nedenle %20 hizmet ücreti alınır.",
       "Confirm": "Onayla",
-      "Select-from-supported-tokens": "Desteklenen tokenlerden seçin",
+      "Deposit-tip": "USDC/USDT ile Depozito Yapın",
       "Value": "Değer",
       "Payment-Token": "Ödeme Tokeni",
       "Select-payment-token": "Ödeme tokeni seçin",

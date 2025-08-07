@@ -1,4 +1,4 @@
-import { Button, Form, Input, Tooltip } from 'antd';
+import { Button, DrawerProps, Form, Input, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
@@ -47,6 +47,7 @@ export interface AddressItemProps {
   allowEditAlias?: boolean;
   hideBalance?: boolean;
   longEllipsis?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const HoverShowEditPenWrapper = styled.div<{ hideBalance?: boolean }>`
@@ -91,6 +92,7 @@ export const AccountItem = memo(
     hideBalance,
     tmpCexInfo,
     longEllipsis,
+    getContainer,
   }: AddressItemProps) => {
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
@@ -163,16 +165,21 @@ export const AccountItem = memo(
       form.setFieldsValue({
         memo: alias,
       });
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
       const { destroy } = Popup.info({
         title: t('page.addressDetail.edit-memo-title'),
         isSupportDarkMode: true,
         height: 215,
         isNew: true,
+        getContainer,
         content: (
-          <div className="pt-[4px]">
+          <div
+            ref={() => {
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 200);
+            }}
+            className="pt-[4px]"
+          >
             <Form
               form={form}
               onFinish={async () => {

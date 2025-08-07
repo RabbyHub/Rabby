@@ -226,15 +226,16 @@ export class WalletController extends BaseController {
     options?: {
       isBuild?: boolean;
       account?: Account;
+      session?: typeof INTERNAL_REQUEST_SESSION;
     }
   ) => {
-    const { isBuild = false, account } = options || {};
+    const { isBuild = false, account, session } = options || {};
     if (isBuild) {
       return Promise.resolve<T>(data as T);
     }
     return provider<T>({
       data,
-      session: INTERNAL_REQUEST_SESSION,
+      session: session || INTERNAL_REQUEST_SESSION,
       account,
     });
   };

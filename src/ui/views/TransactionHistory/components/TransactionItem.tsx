@@ -6,7 +6,7 @@ import {
   TransactionHistoryItem,
 } from 'background/service/transactionHistory';
 import clsx from 'clsx';
-import { CANCEL_TX_TYPE } from 'consts';
+import { CANCEL_TX_TYPE, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { intToHex } from '@ethereumjs/util';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
@@ -153,6 +153,16 @@ export const TransactionItem = ({
       message.error(e.message);
     }
   };
+
+  const originSession =
+    originTx?.site && originTx?.site?.origin !== INTERNAL_REQUEST_ORIGIN
+      ? {
+          name: originTx?.site?.name,
+          icon: originTx?.site?.icon,
+          origin: originTx?.site?.origin,
+        }
+      : undefined;
+
   const handleOnChainCancel = async () => {
     if (!canCancel) return;
     const maxGasTx = findMaxGasTx(item.txs)!;
@@ -175,21 +185,26 @@ export const TransactionItem = ({
           tx: maxGasTx.rawTx,
         });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
-    await wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [
-        {
-          from: maxGasTx.rawTx.from,
-          to: maxGasTx.rawTx.from,
-          gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
-          value: '0x0',
-          chainId: item.chainId,
-          nonce: intToHex(item.nonce),
-          isCancel: true,
-          reqId: maxGasTx.reqId,
-        },
-      ],
-    });
+    await wallet.sendRequest(
+      {
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: maxGasTx.rawTx.from,
+            to: maxGasTx.rawTx.from,
+            gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
+            value: '0x0',
+            chainId: item.chainId,
+            nonce: intToHex(item.nonce),
+            isCancel: true,
+            reqId: maxGasTx.reqId,
+          },
+        ],
+      },
+      {
+        session: originSession,
+      }
+    );
     window.close();
   };
 
@@ -216,30 +231,35 @@ export const TransactionItem = ({
         });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     const is7702 = is7702Tx(originTx.rawTx);
-    await wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [
-        omit(
-          {
-            from: originTx.rawTx.from,
-            value: originTx.rawTx.value,
-            data: originTx.rawTx.data,
-            nonce: originTx.rawTx.nonce,
-            chainId: originTx.rawTx.chainId,
-            to: originTx.rawTx.to,
-            gasPrice: intToHex(
-              Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
-            ),
-            isSpeedUp: true,
-            reqId: maxGasTx.reqId,
-            authorizationList: is7702
-              ? (originTx?.rawTx as any)?.authorizationList
-              : [],
-          },
-          is7702 ? [] : ['authorizationList']
-        ),
-      ],
-    });
+    await wallet.sendRequest(
+      {
+        method: 'eth_sendTransaction',
+        params: [
+          omit(
+            {
+              from: originTx.rawTx.from,
+              value: originTx.rawTx.value,
+              data: originTx.rawTx.data,
+              nonce: originTx.rawTx.nonce,
+              chainId: originTx.rawTx.chainId,
+              to: originTx.rawTx.to,
+              gasPrice: intToHex(
+                Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
+              ),
+              isSpeedUp: true,
+              reqId: maxGasTx.reqId,
+              authorizationList: is7702
+                ? (originTx?.rawTx as any)?.authorizationList
+                : [],
+            },
+            is7702 ? [] : ['authorizationList']
+          ),
+        ],
+      },
+      {
+        session: originSession,
+      }
+    );
     window.close();
   };
 
