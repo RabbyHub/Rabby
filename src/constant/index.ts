@@ -522,6 +522,7 @@ export const EVENTS = {
   GAS_ACCOUNT: {
     LOG_IN: 'LOG_IN',
     LOG_OUT: 'LOG_OUT',
+    LOGIN_CALLBACK: 'LOGIN_CALLBACK',
   },
 };
 

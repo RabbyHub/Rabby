@@ -55,7 +55,6 @@ import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHom
 import { GasAccountDashBoardHeader } from '../GasAccount/components/DashBoardHeader';
 import { useGnosisPendingCount } from '@/ui/hooks/useGnosisPendingCount';
 import { ga4 } from '@/utils/ga4';
-
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -145,6 +144,11 @@ const Dashboard = () => {
           dispatch.account.setField({ alianName: name });
           setDisplayName(name!);
         });
+      // 初始化时查询当前账号是否有资格
+      dispatch.gift.checkGiftEligibilityAsync({
+        address: currentAccount.address,
+        currentAccount,
+      });
     }
   }, [currentAccount]);
 
@@ -165,6 +169,8 @@ const Dashboard = () => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
       const pendingCount = await wallet.getPendingApprovalCount();
       setPendingApprovalCount(pendingCount);
+      const hasAnyAccountClaimedGift = await wallet.getHasAnyAccountClaimedGift();
+      dispatch.gift.setField({ hasClaimedGift: hasAnyAccountClaimedGift });
     })();
   }, []);
 
@@ -371,7 +377,6 @@ const Dashboard = () => {
                   });
                 }}
               />
-
               <div className="ml-auto cursor-pointer" onClick={gotoGasAccount}>
                 <GasAccountDashBoardHeader />
               </div>
