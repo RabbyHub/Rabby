@@ -67,13 +67,15 @@ export const useGasAccountInfo = () => {
       });
   }, [sig, accountId, refreshId]);
 
-  if (
-    error?.message?.includes('gas account verified failed') &&
-    sig &&
-    accountId
-  ) {
-    dispatch.gasAccount.setGasAccountSig({});
-  }
+  useEffect(() => {
+    if (
+      error?.message?.includes('gas account verified failed') &&
+      sig &&
+      accountId
+    ) {
+      dispatch.gasAccount.setGasAccountSig({});
+    }
+  }, [error?.message, sig, accountId]);
 
   return { loading, value };
 };
@@ -130,7 +132,7 @@ export const useGasAccountMethods = () => {
   const handleHardwareLogin = useCallback(
     async (account: Account, isClaimGift: boolean = false) => {
       const signature = await wallet.signGasAccount(account, isClaimGift);
-      dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+      // dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK,
       });
