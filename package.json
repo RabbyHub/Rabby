@@ -63,7 +63,7 @@
     "@rabby-wallet/gnosis-sdk": "1.4.4",
     "@rabby-wallet/page-provider": "0.4.10",
     "@rabby-wallet/rabby-action": "0.1.13-beta.0",
-    "@rabby-wallet/rabby-api": "0.9.31-beta.0",
+    "@rabby-wallet/rabby-api": "0.9.31-beta.1",
     "@rabby-wallet/rabby-security-engine": "2.0.11-beta.2",
     "@rabby-wallet/rabby-swap": "0.0.63",
     "@rabby-wallet/widgets": "1.0.9",
