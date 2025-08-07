@@ -5160,13 +5160,16 @@ export class WalletController extends BaseController {
     });
   }
 
-  signGasAccount = async (account: Account) => {
+  signGasAccount = async (account: Account, isClaimGift: boolean = false) => {
     const { signature, success } = await this.executeGasAccountLogin(account);
-
     if (success && signature) {
       await this.saveGasAccountLoginState(signature, account);
     }
-
+    if (isClaimGift) {
+      this.claimGasAccountGift(account.address);
+    }
+    this.markGiftAsClaimed(account.address);
+    this.setHasAnyAccountClaimedGift(true);
     return signature;
   };
 
@@ -5621,7 +5624,8 @@ export class WalletController extends BaseController {
       });
       if (result.success) {
         // 标记为已领取
-        gasAccountService.markGiftAsClaimed(address);
+        this.markGiftAsClaimed(address);
+        this.setHasAnyAccountClaimedGift(true);
         return true;
       } else {
         console.error('API returned success: false for gift claim');

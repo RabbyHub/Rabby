@@ -148,8 +148,6 @@ export const gift = createModel<RootModel>()({
         );
         if (success) {
           dispatch.gift.markGiftAsClaimed({ address: targetAddress });
-          store.app.wallet.markGiftAsClaimed(targetAddress);
-          store.app.wallet.setHasAnyAccountClaimedGift(true);
           return true;
         } else {
           return false;

@@ -20,7 +20,6 @@ interface Props {
   onLoginPress?(): void;
   onDepositPress?(): void;
   onWithdrawPress?(): void;
-  onRefreshHistory?(): void;
   gasAccountInfo?: NonNullable<
     Awaited<ReturnType<typeof openapi.getGasAccountInfo>>
   >['account'];

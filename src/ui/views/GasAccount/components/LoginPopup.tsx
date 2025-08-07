@@ -109,11 +109,8 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
       if (isSwitch) {
         await logout();
       }
-      await login(account);
+      await login(account, false);
       await onLogin?.();
-      dispatch.gift.markGiftAsClaimed({ address: account.address });
-      wallet.markGiftAsClaimed(account.address);
-      wallet.setHasAnyAccountClaimedGift(true);
     } catch (error) {
       console.error(error);
     }

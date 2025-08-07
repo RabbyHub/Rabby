@@ -36,9 +36,9 @@ export const GasAccountLoginCard = ({
     try {
       let signature: string = '';
       if (isNoSignAccount(currentAccount)) {
-        signature = await login(currentAccount);
+        signature = await login(currentAccount, true);
       } else {
-        signature = await wallet.signGasAccount(currentAccount);
+        signature = await wallet.signGasAccount(currentAccount, true);
       }
       dispatch.gasAccount.setGasAccountSig({
         sig: signature,

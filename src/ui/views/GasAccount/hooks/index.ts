@@ -86,7 +86,7 @@ export const useGasAccountMethods = () => {
   const { refresh } = useGasAccountRefresh();
 
   const handleNoSignLogin = useCallback(
-    async (account: Account) => {
+    async (account: Account, isClaimGift: boolean = false) => {
       if (!account) return '';
 
       try {
@@ -111,6 +111,11 @@ export const useGasAccountMethods = () => {
 
         if (result?.success) {
           dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+          if (isClaimGift) {
+            wallet.claimGasAccountGift(account.address);
+          }
+          wallet.markGiftAsClaimed(account.address);
+          wallet.setHasAnyAccountClaimedGift(true);
           refresh();
           return signature;
         }
@@ -123,8 +128,8 @@ export const useGasAccountMethods = () => {
   );
 
   const handleHardwareLogin = useCallback(
-    async (account: Account) => {
-      const signature = await wallet.signGasAccount(account);
+    async (account: Account, isClaimGift: boolean = false) => {
+      const signature = await wallet.signGasAccount(account, isClaimGift);
       dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK,
@@ -135,11 +140,11 @@ export const useGasAccountMethods = () => {
   );
 
   const login = useCallback(
-    async (account: Account) => {
+    async (account: Account, isClaimGift: boolean = false) => {
       if (isNoSignAccount(account)) {
-        return await handleNoSignLogin(account);
+        return await handleNoSignLogin(account, isClaimGift);
       } else {
-        return await handleHardwareLogin(account);
+        return await handleHardwareLogin(account, isClaimGift);
       }
     },
     [handleNoSignLogin, handleHardwareLogin]
