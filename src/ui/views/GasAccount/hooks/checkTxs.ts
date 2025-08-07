@@ -74,7 +74,8 @@ export const useGasAccountTxsCheck = ({
     noCustomRPC &&
     !!gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
-    !!gasAccountCost.is_gas_account;
+    !!gasAccountCost.is_gas_account &&
+    !gasAccountCost.err_msg;
 
   const canGotoUseGasAccount =
     isSupportedAddr &&
