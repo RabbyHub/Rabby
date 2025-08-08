@@ -59,6 +59,7 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
 
         '#/import/hardware/ledger-connect',
         '#/import/hardware/keystone',
+        '#/import/hardware/onekey',
         '#/import/hardware/qrcode',
 
         '#/dapp-search',

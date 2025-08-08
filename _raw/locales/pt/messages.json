@@ -1681,7 +1681,10 @@
       "onekey": {
         "onekeyPermission1": "Conectar a um dispositivo USB",
         "allowRabbyPermissionsTitle": "Permitir permissões do Rabby para:",
-        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela pop-up a seguir."
+        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela pop-up a seguir.",
+        "whyOneKey": "Por que OneKey?",
+        "buyOneKey": "Comprar OneKey",
+        "haveOneKey": "Ainda não tem um OneKey?"
       },
       "walletConnect": {
         "status": {
@@ -2579,11 +2582,13 @@
         "title": "Importar Frase Semente"
       },
       "importOneKey": {
-        "connect": "Conectar OneKey",
-        "tip3": "3. Desbloqueie seu dispositivo",
-        "tip2": "2. Conecte seu dispositivo OneKey",
+        "qrcode": {
+          "desc": "Escaneie o código QR na carteira hardware OneKey"
+        },
         "title": "OneKey",
-        "tip1": "1. Instale <1>OneKey Bridge<1/>"
+        "tip1": "1. Conecte seu dispositivo OneKey",
+        "tip2": "2. Desbloqueie seu dispositivo",
+        "connect": "Conectar OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3070,7 +3075,8 @@
         "thisMethodNeedUpgradeFirmware": "Este recurso requer atualização de firmware, atualize o firmware no aplicativo OneKey",
         "notAllowInBootloaderMode": "Use no modo normal",
         "deviceCheckPassphraseStateError": "A passphrase ou attach pin não correspondem",
-        "actionCancel": "Operação cancelada"
+        "actionCancel": "Operação cancelada",
+        "deviceNeedsWebHIDPermission": "Dispositivo não encontrado ou precisa de permissão WebHID"
       }
     }
   },
