@@ -1,6 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  openInternalPageInTab,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import {
   CHAINS,
   EVENTS,
@@ -165,6 +170,13 @@ export const CommonWaiting = ({
       setErrorMessage(data);
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
     });
+
+    eventBus.addEventListener(
+      EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB,
+      async () => {
+        openInternalPageInTab('request-permission?type=onekey&from=approval');
+      }
+    );
 
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);

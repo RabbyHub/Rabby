@@ -19,6 +19,8 @@ import PillsSwitch from '@/ui/component/PillsSwitch';
 import { query2obj } from '@/ui/utils/url';
 import { findEthAccountByMultiAccounts } from './utils';
 import { StrayPageWithButton } from 'ui/component';
+import { ImageCarousel } from './ImageCarousel';
+import { OneKeyBanner } from './OnekeyBanner';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 const BRAND_TYPES = WALLET_BRAND_TYPES.ONEKEY;
@@ -202,7 +204,11 @@ export const OneKeyConnect = () => {
             <p className="text-15 opacity-80 mt-16">
               {t('page.newUserImport.importOneKey.qrcode.desc')}
             </p>
-          ) : null}
+          ) : (
+            <p className="text-15 opacity-80 mt-16">
+              {t('page.newUserImport.importOneKey.title')}
+            </p>
+          )}
         </div>
         {connectType === ConnectType.QRCode ? (
           <div className="mt-[24px]">
@@ -224,7 +230,7 @@ export const OneKeyConnect = () => {
                   />
                 )}
               </div>
-              <ImageCarousel images={CAROUSEL_IMAGES} />
+              <ImageCarousel />
             </div>
 
             {progress > 0 && (
@@ -245,165 +251,21 @@ export const OneKeyConnect = () => {
             )}
           </div>
         ) : (
-          <div className="connect-onekey mt-[6px]">
-            <p className="text-r-neutral-title1 text-14 leading-[20px] mb-[20px]">
-              {t('page.newUserImport.importOneKey.title')}
-            </p>
-            <ul className="w-[240px] pl-[20px] m-auto text-r-neutral-title1 text-14 leading-[20px] mb-[35px]">
+          <div className="connect-onekey mt-[20px]">
+            <ul className="w-[240px] pl-[20px] m-auto text-r-neutral-title1 text-[20px] leading-[28px] mb-[35px] font-medium">
               <li>{t('page.newUserImport.importOneKey.tip1')}</li>
               <li>{t('page.newUserImport.importOneKey.tip2')}</li>
+              <li>{t('page.newUserImport.importOneKey.tip3')}</li>
             </ul>
-            <img src="/images/onekey-usb-connect.png" className="onekey-plug" />
+            <img
+              src="/images/onekey-usb-connect.png"
+              className="onekey-plug pt-[20px] w-[240px] mx-auto"
+            />
           </div>
         )}
+
+        <OneKeyBanner className="onekey-banner" />
       </main>
     </StrayPageWithButton>
-  );
-};
-
-const CAROUSEL_IMAGES = [
-  '/images/onekey-usb-connect-step1.png',
-  '/images/onekey-usb-connect-step2.png',
-  '/images/onekey-usb-connect-step3.png',
-];
-
-interface ImageCarouselProps {
-  images: string[];
-  className?: string;
-}
-
-const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [startX, setStartX] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [images.length]);
-
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
-        e.preventDefault();
-      }
-    };
-
-    const handleGlobalMouseUp = (e: MouseEvent) => {
-      if (isDragging) {
-        handleDragEnd(e.clientX);
-      }
-    };
-
-    const handleGlobalTouchMove = (e: TouchEvent) => {
-      if (isDragging) {
-        e.preventDefault();
-      }
-    };
-
-    const handleGlobalTouchEnd = (e: TouchEvent) => {
-      if (isDragging) {
-        handleDragEnd(e.changedTouches[0].clientX);
-      }
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-      document.addEventListener('touchmove', handleGlobalTouchMove);
-      document.addEventListener('touchend', handleGlobalTouchEnd);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
-      document.removeEventListener('touchmove', handleGlobalTouchMove);
-      document.removeEventListener('touchend', handleGlobalTouchEnd);
-    };
-  }, [isDragging, startX]);
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
-
-  const handleDragStart = (clientX: number) => {
-    setStartX(clientX);
-    setIsDragging(true);
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-  };
-
-  const handleDragEnd = (clientX: number) => {
-    if (!isDragging) return;
-
-    const diff = startX - clientX;
-    if (Math.abs(diff) > 20) {
-      if (diff > 0) {
-        setCurrentIndex((prev) => (prev + 1) % images.length);
-      } else {
-        setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-      }
-    }
-
-    setIsDragging(false);
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
-  };
-
-  return (
-    <div className={clsx('onekey-carousel', className)}>
-      <div className="absolute">
-        <img src="images/onekey-usb-connect-background.svg" />
-      </div>
-      <div
-        className="onekey-carousel-bubble"
-        onMouseDown={(e) => handleDragStart(e.clientX)}
-        onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
-      >
-        <div className="onekey-carousel-content">
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className={clsx(
-                'onekey-carousel-slide',
-                `onekey-carousel-slide-${index + 1}`,
-                {
-                  active: index === currentIndex,
-                  prev: index < currentIndex,
-                  next: index > currentIndex,
-                }
-              )}
-            >
-              <img
-                src={image}
-                alt={`OneKey step ${index + 1}`}
-                draggable={false}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="onekey-carousel-dots">
-          {images.map((_, index) => (
-            <div
-              key={index}
-              className={clsx('onekey-carousel-dot', {
-                active: index === currentIndex,
-              })}
-              onClick={() => goToSlide(index)}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
   );
 };

@@ -1763,7 +1763,10 @@
       "onekey": {
         "onekeyPermission1": "Connect to an USB device",
         "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
-        "onekeyPermissionTip": "Please click \"Allow\" below to authorize access to your OneKey in the following pop-up window."
+        "onekeyPermissionTip": "Please click \"Allow\" below to authorize access to your OneKey in the following pop-up window.",
+        "whyOneKey": "Why OneKey?",
+        "buyOneKey": "Buy OneKey",
+        "haveOneKey": "Don't have a OneKey yet?"
       },
       "walletConnect": {
         "connectYour": "Connect your",
@@ -2657,9 +2660,10 @@
         "qrcode": {
           "desc": "Scan the QR code on the OneKey hardware wallet"
         },
-        "title": "OneKey",
+        "title": "Connect your OneKey hardware wallet via USB",
         "tip1": "1. Plug in your OneKey device",
         "tip2": "2. Unlock your device",
+        "tip3": "3. Please ensure only one OneKey device is connected",
         "connect": "Connect OneKey"
       },
       "importTrezor": {
@@ -3087,7 +3091,8 @@
         "thisMethodNeedUpgradeFirmware": "This feature requires firmware upgrade, please upgrade firmware in OneKey app",
         "notAllowInBootloaderMode": "Please use in normal mode",
         "deviceCheckPassphraseStateError": "Passphrase or attach pin does not match",
-        "actionCancel": "Operation cancelled"
+        "actionCancel": "Operation cancelled",
+        "deviceNeedsWebHIDPermission": "Device not found or needs WebHID permission"
       }
     }
   },

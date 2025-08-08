@@ -1814,7 +1814,10 @@
       "onekey": {
         "onekeyPermission1": "Conectar a un dispositivo USB",
         "allowRabbyPermissionsTitle": "Permitir permisos de Rabby para:",
-        "onekeyPermissionTip": "Haga clic en \"Permitir\" a continuación para autorizar el acceso a su OneKey en la siguiente ventana emergente."
+        "onekeyPermissionTip": "Haga clic en \"Permitir\" a continuación para autorizar el acceso a su OneKey en la siguiente ventana emergente.",
+        "whyOneKey": "¿Por qué OneKey?",
+        "buyOneKey": "Comprar OneKey",
+        "haveOneKey": "¿Aún no tienes un OneKey?"
       },
       "coboSafe": {
         "findTheAssociatedSafeAddress": "Encuentra la dirección segura asociada",
@@ -2597,11 +2600,14 @@
         "title": "Importar Seed Phrase"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "connect": "Conectar OneKey",
-        "tip3": "3. Desbloquea tu dispositivo",
-        "tip1": "1. Instalar <1>OneKey Bridge<1/>",
-        "tip2": "2. Conecta tu dispositivo OneKey"
+        "qrcode": {
+          "desc": "Escanea el código QR en la billetera hardware OneKey"
+        },
+        "title": "Conecta tu billetera hardware OneKey vía USB",
+        "tip1": "1. Conecta tu dispositivo OneKey",
+        "tip2": "2. Desbloquea tu dispositivo",
+        "tip3": "3. Por favor, asegúrate de que solo esté conectado un dispositivo OneKey",
+        "connect": "Conectar OneKey"
       },
       "importTrezor": {
         "connect": "Conectar Trezor",
@@ -3088,7 +3094,8 @@
         "thisMethodNeedUpgradeFirmware": "Esta función requiere actualización de firmware, actualice el firmware en la aplicación OneKey",
         "notAllowInBootloaderMode": "Use en modo normal",
         "deviceCheckPassphraseStateError": "La frase de contraseña o el pin de conexión no coinciden",
-        "actionCancel": "Operación cancelada"
+        "actionCancel": "Operación cancelada",
+        "deviceNeedsWebHIDPermission": "Dispositivo no encontrado o necesita permiso WebHID"
       }
     }
   },

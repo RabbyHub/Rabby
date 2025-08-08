@@ -13,7 +13,8 @@
         "thisMethodNeedUpgradeFirmware": "Cette fonctionnalité nécessite une mise à jour du firmware, veuillez mettre à jour le firmware dans l'application OneKey",
         "notAllowInBootloaderMode": "Veuillez utiliser en mode normal",
         "deviceCheckPassphraseStateError": "La phrase secrète ou le pin d'attachement ne correspondent pas",
-        "actionCancel": "Opération annulée"
+        "actionCancel": "Opération annulée",
+        "deviceNeedsWebHIDPermission": "Périphérique non trouvé ou besoin de permission WebHID"
       }
     },
     "error": {
@@ -1457,7 +1458,10 @@
       "onekey": {
         "onekeyPermission1": "Se connecter à un périphérique USB",
         "allowRabbyPermissionsTitle": "Autoriser Rabby à :",
-        "onekeyPermissionTip": "Veuillez cliquer sur « Autoriser » ci-dessous pour autoriser l'accès à votre OneKey dans la fenêtre pop-up suivante."
+        "onekeyPermissionTip": "Veuillez cliquer sur « Autoriser » ci-dessous pour autoriser l'accès à votre OneKey dans la fenêtre pop-up suivante.",
+        "whyOneKey": "Pourquoi OneKey ?",
+        "buyOneKey": "Acheter OneKey",
+        "haveOneKey": "Vous n'avez pas encore de OneKey ?"
       },
       "imkey": {
         "title": "Connecter imKey",
@@ -2885,11 +2889,14 @@
         "title": "Importer Seed Phrase"
       },
       "importOneKey": {
-        "connect": "Connecter OneKey",
-        "tip2": "2. Branchez votre appareil OneKey",
-        "title": "OneKey",
-        "tip3": "3. Déverrouillez votre device",
-        "tip1": "1. Installez <1>OneKey Bridge<1/>"
+        "qrcode": {
+          "desc": "Scannez le code QR sur le portefeuille matériel OneKey"
+        },
+        "title": "Connectez votre portefeuille matériel OneKey via USB",
+        "tip1": "1. Branchez votre appareil OneKey",
+        "tip2": "2. Déverrouillez votre appareil",
+        "tip3": "3. Veuillez vous assurer qu'un seul appareil OneKey est connecté",
+        "connect": "Connecter OneKey"
       },
       "importTrezor": {
         "tip2": "2. Déverrouillez votre appareil",

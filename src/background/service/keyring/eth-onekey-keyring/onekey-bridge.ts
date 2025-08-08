@@ -6,7 +6,7 @@ const { HardwareWebSdk } = HardwareSDK;
 export default class OneKeyBridge implements OneKeyBridgeInterface {
   init: OneKeyBridgeInterface['init'] = async () => {
     await HardwareWebSdk.init({
-      debug: true,
+      debug: false,
       // The official iframe page deployed by OneKey
       // of course you can also deploy it yourself
       connectSrc: 'https://jssdk.onekey.so/1.1.0/',

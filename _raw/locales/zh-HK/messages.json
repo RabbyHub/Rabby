@@ -611,9 +611,12 @@
         "unknowError": "未知錯誤，請再試一次"
       },
       "onekey": {
-        "onekeyPermission1": "連接至USB設備",
-        "allowRabbyPermissionsTitle": "允許Rabby訪問以下權限：",
-        "onekeyPermissionTip": "請在下方點擊「允許」，以在彈出視窗中授權訪問您的OneKey。"
+        "onekeyPermission1": "連接至USB裝置",
+        "allowRabbyPermissionsTitle": "允許Rabby存取以下權限：",
+        "onekeyPermissionTip": "請在下方點擊「允許」，以在彈出視窗中授權存取您的OneKey。",
+        "whyOneKey": "為什麼選擇 OneKey？",
+        "buyOneKey": "購買 OneKey",
+        "haveOneKey": "還沒有 OneKey？"
       },
       "walletConnect": {
         "connectYour": "連接你的",
@@ -2635,11 +2638,14 @@
         "title": "導入種子片語"
       },
       "importOneKey": {
-        "tip2": "2. 插入你的 OneKey 裝置",
-        "tip3": "3. 解锁你的设备",
-        "tip1": "1. 安裝 <1>OneKey Bridge<1/>",
-        "connect": "連接 OneKey",
-        "title": "OneKey"
+        "qrcode": {
+          "desc": "掃描 OneKey 硬體錢包上的 QR 碼"
+        },
+        "title": "OneKey",
+        "tip1": "1. 插入您的 OneKey 裝置",
+        "tip2": "2. 解鎖您的裝置",
+        "tip3": "3. 請確保只連接一台 OneKey 設備",
+        "connect": "連接 OneKey"
       },
       "importTrezor": {
         "tip2": "2. 解鎖你的設備",
@@ -3090,7 +3096,8 @@
         "thisMethodNeedUpgradeFirmware": "使用該功能需要升級韌體，請在 OneKey 應用程式中升級韌體",
         "notAllowInBootloaderMode": "請在正常模式下使用",
         "deviceCheckPassphraseStateError": "輸入的 passphrase 或 attach pin 不匹配",
-        "actionCancel": "操作已取消"
+        "actionCancel": "操作已取消",
+        "deviceNeedsWebHIDPermission": "未找到設備或需要 WebHID 權限"
       }
     }
   },

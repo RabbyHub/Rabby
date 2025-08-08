@@ -1690,7 +1690,10 @@
       "onekey": {
         "onekeyPermission1": "Kết nối với thiết bị USB",
         "allowRabbyPermissionsTitle": "Cho phép Rabby các quyền để:",
-        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo."
+        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo.",
+        "whyOneKey": "Tại sao chọn OneKey?",
+        "buyOneKey": "Mua OneKey",
+        "haveOneKey": "Chưa có OneKey?"
       },
       "walletConnect": {
         "status": {
@@ -2594,10 +2597,13 @@
         "title": "Nhập cụm từ khôi phục"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip1": "1. Cài đặt <1>OneKey Bridge<1/>",
-        "tip3": "3. Mở khóa thiết bị của bạn",
-        "tip2": "2. Cắm thiết bị OneKey của bạn vào.",
+        "qrcode": {
+          "desc": "Quét mã QR trên ví cứng OneKey"
+        },
+        "title": "Kết nối ví cứng OneKey của bạn qua USB",
+        "tip1": "1. Cắm thiết bị OneKey của bạn",
+        "tip2": "2. Mở khóa thiết bị của bạn",
+        "tip3": "3. Hãy đảm bảo chỉ có một thiết bị OneKey được kết nối",
         "connect": "Kết nối OneKey"
       },
       "importTrezor": {
@@ -3085,7 +3091,8 @@
         "thisMethodNeedUpgradeFirmware": "Tính năng này yêu cầu nâng cấp firmware, vui lòng nâng cấp firmware trong ứng dụng OneKey",
         "notAllowInBootloaderMode": "Vui lòng sử dụng ở chế độ bình thường",
         "deviceCheckPassphraseStateError": "Passphrase hoặc attach pin không khớp",
-        "actionCancel": "Thao tác đã được hủy"
+        "actionCancel": "Thao tác đã được hủy",
+        "deviceNeedsWebHIDPermission": "Không tìm thấy thiết bị hoặc cần quyền WebHID"
       }
     }
   },

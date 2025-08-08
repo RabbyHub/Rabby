@@ -1825,7 +1825,10 @@
       "onekey": {
         "onekeyPermission1": "Bir USB cihazına bağlan",
         "allowRabbyPermissionsTitle": "Rabby izinlerini ver:",
-        "onekeyPermissionTip": "Lütfen aşağıdaki açılır pencerede OneKey erişimini yetkilendirmek için \"İzin Ver\" düğmesine tıklayın ve OneKey 'nuzun ana sayfada olduğundan emin olun."
+        "onekeyPermissionTip": "Lütfen aşağıdaki açılır pencerede OneKey erişimini yetkilendirmek için \"İzin Ver\" düğmesine tıklayın ve OneKey 'nuzun ana sayfada olduğundan emin olun.",
+        "whyOneKey": "Neden OneKey?",
+        "buyOneKey": "OneKey Satın Al",
+        "haveOneKey": "Henüz OneKey yok mu?"
       },
       "firefoxLedgerDisableTips": "Ledger, Firefox ile uyumlu değil",
       "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle",
@@ -2600,11 +2603,14 @@
         "title": "Seed Phrase İçe Aktar"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip3": "3. Cihazınızı açın",
-        "tip2": "2. OneKey cihazınızı takın",
-        "connect": "OneKey bağla",
-        "tip1": "1. <1>OneKey Bridge<1/> yükleyin"
+        "qrcode": {
+          "desc": "OneKey donanım cüzdanındaki QR kodunu tarayın"
+        },
+        "title": "OneKey donanım cüzdanınızı USB ile bağlayın",
+        "tip1": "1. OneKey cihazınızı bağlayın",
+        "tip2": "2. Cihazınızın kilidini açın",
+        "tip3": "3. Lütfen yalnızca bir OneKey cihazının bağlı olduğundan emin olun",
+        "connect": "OneKey bağla"
       },
       "importTrezor": {
         "connect": "Trezor'a Bağlan",
@@ -3091,7 +3097,8 @@
         "thisMethodNeedUpgradeFirmware": "Bu özellik firmware güncellemesi gerektirir, OneKey uygulamasında firmware'i güncelleyin",
         "notAllowInBootloaderMode": "Normal modda kullanın",
         "deviceCheckPassphraseStateError": "Parola veya attach pin eşleşmiyor",
-        "actionCancel": "İşlem iptal edildi"
+        "actionCancel": "İşlem iptal edildi",
+        "deviceNeedsWebHIDPermission": "Cihaz bulunamadı veya WebHID izni gerekiyor"
       }
     }
   },

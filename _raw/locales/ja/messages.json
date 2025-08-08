@@ -1822,7 +1822,10 @@
       "onekey": {
         "onekeyPermission1": "USBデバイスに接続",
         "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可する：",
-        "onekeyPermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、OneKey へのアクセスを承認し。"
+        "onekeyPermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、OneKey へのアクセスを承認し。",
+        "whyOneKey": "OneKeyを選ぶ理由？",
+        "buyOneKey": "OneKeyを購入",
+        "haveOneKey": "OneKeyをお持ちでない方は？"
       },
       "firefoxLedgerDisableTips": "Ledger は Firefox と互換性がありません。",
       "addFromCurrentSeedPhrase": "現在のシードフレーズから追加",
@@ -2597,11 +2600,14 @@
         "title": "シードフレーズをインポート"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "connect": "OneKeyに接続",
-        "tip2": "2. OneKeyデバイスを接続する",
-        "tip1": "1. <1>OneKey Bridge<1/>をインストール",
-        "tip3": "3. デバイスをアンロック"
+        "qrcode": {
+          "desc": "OneKeyハードウェアウォレットのQRコードをスキャンしてください"
+        },
+        "title": "USB経由でOneKeyハードウェアウォレットを接続",
+        "tip1": "1. OneKeyデバイスを接続してください",
+        "tip2": "2. デバイスのロックを解除してください",
+        "tip3": "3. OneKeyデバイスが1台だけ接続されていることを確認してください",
+        "connect": "OneKeyに接続"
       },
       "importTrezor": {
         "connect": "Trezor に接続",
@@ -3088,7 +3094,8 @@
         "thisMethodNeedUpgradeFirmware": "この機能にはファームウェアのアップグレードが必要です。OneKeyアプリでファームウェアをアップグレードしてください",
         "notAllowInBootloaderMode": "通常モードで使用してください",
         "deviceCheckPassphraseStateError": "パスフレーズまたはattach pinが一致しません",
-        "actionCancel": "操作がキャンセルされました"
+        "actionCancel": "操作がキャンセルされました",
+        "deviceNeedsWebHIDPermission": "デバイスが見つからないか、WebHIDの権限が必要です"
       }
     }
   },

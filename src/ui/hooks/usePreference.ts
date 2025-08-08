@@ -61,6 +61,7 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
         '#/import/hardware/trezor-connect',
         '#/import/hardware/onekey-connect',
         '#/import/hardware/keystone',
+        '#/import/hardware/onekey',
         '#/import/hardware/qrcode',
 
         '#/dapp-search',

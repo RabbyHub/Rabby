@@ -1834,7 +1834,10 @@
       "onekey": {
         "onekeyPermission1": "Підключіться до USB пристрою",
         "allowRabbyPermissionsTitle": "Дозволити Rabby дозволи на:",
-        "onekeyPermissionTip": "Будь ласка, натисніть \"Дозволити\" нижче, щоб авторизувати доступ до вашого OneKey у наступному спливаючому вікні, та переконайтесь."
+        "onekeyPermissionTip": "Будь ласка, натисніть \"Дозволити\" нижче, щоб авторизувати доступ до вашого OneKey у наступному спливаючому вікні, та переконайтесь.",
+        "whyOneKey": "Чому OneKey?",
+        "buyOneKey": "Купити OneKey",
+        "haveOneKey": "Ще немає OneKey?"
       },
       "firefoxLedgerDisableTips": "Ledger не сумісний із Firefox",
       "addFromCurrentSeedPhrase": "Додати з поточної Seed Phrase",
@@ -2609,11 +2612,14 @@
         "title": "Імпорт Seed Phrase"
       },
       "importOneKey": {
-        "connect": "Підключити OneKey",
-        "title": "OneKey",
-        "tip3": "3. Розблокуйте ваш пристрій",
-        "tip2": "2. Підключіть ваш пристрій OneKey",
-        "tip1": "1. Встановити <1>OneKey Bridge<1/>"
+        "qrcode": {
+          "desc": "Скануйте QR-код на апаратному гаманці OneKey"
+        },
+        "title": "Підключіть ваш апаратний гаманець OneKey через USB",
+        "tip1": "1. Підключіть ваш пристрій OneKey",
+        "tip2": "2. Розблокуйте ваш пристрій",
+        "tip3": "3. Переконайтеся, що підключено лише один пристрій OneKey",
+        "connect": "Підключити OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3108,7 +3114,8 @@
         "thisMethodNeedUpgradeFirmware": "Ця функція потребує оновлення прошивки, оновіть прошивку в додатку OneKey",
         "notAllowInBootloaderMode": "Використовуйте в звичайному режимі",
         "deviceCheckPassphraseStateError": "Парольна фраза або attach pin не збігаються",
-        "actionCancel": "Операція скасована"
+        "actionCancel": "Операція скасована",
+        "deviceNeedsWebHIDPermission": "Пристрій не знайдено або потрібен дозвіл WebHID"
       }
     }
   },

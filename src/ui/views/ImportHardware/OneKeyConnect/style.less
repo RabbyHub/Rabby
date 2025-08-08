@@ -33,9 +33,39 @@
 
 .onekey-page {
   @media (min-width: 600px) {
-    top: calc(50%) !important;
+    top: calc(50% - 80px) !important;
     width: 880px !important;
-    height: 680px !important;
+    height: 700px !important;
+  }
+
+  .onekey-banner {
+    position: absolute;
+    top: 665px;
+    left: 0;
+
+    @media (max-width: 600px) {
+      width: 100% !important;
+    }
+
+    .onekey-banner-content {
+      @media (max-width: 600px) {
+        img {
+          display: none;
+        }
+        width: 100% !important;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      width: 880px !important;
+      height: 100px !important;
+      padding: 0px 96px !important;
+    }
+
+    .onekey-buy-button {
+      background-color: #00FF33 !important;
+      color: #000000 !important;
+    }
   }
 
   .stray-footer-nav {

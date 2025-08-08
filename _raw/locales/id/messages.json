@@ -1690,7 +1690,10 @@
       "onekey": {
         "onekeyPermission1": "Sambungkan ke perangkat USB",
         "allowRabbyPermissionsTitle": "Izinkan Rabby untuk:",
-        "onekeyPermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke OneKey Anda di jendela pop-up berikut."
+        "onekeyPermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke OneKey Anda di jendela pop-up berikut.",
+        "whyOneKey": "Mengapa OneKey?",
+        "buyOneKey": "Beli OneKey",
+        "haveOneKey": "Belum memiliki OneKey?"
       },
       "walletConnect": {
         "status": {
@@ -2594,11 +2597,14 @@
         "title": "Impor Kata Sandi Seed"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip2": "2. Colokkan perangkat OneKey Anda",
-        "connect": "Hubungkan OneKey",
-        "tip3": "3. Buka kunci perangkat Anda",
-        "tip1": "1. Pasang <1>OneKey Bridge<1/>"
+        "qrcode": {
+          "desc": "Pindai kode QR pada dompet hardware OneKey"
+        },
+        "title": "Hubungkan dompet hardware OneKey Anda via USB",
+        "tip1": "1. Colokkan perangkat OneKey Anda",
+        "tip2": "2. Buka kunci perangkat Anda",
+        "tip3": "3. Pastikan hanya satu perangkat OneKey yang terhubung",
+        "connect": "Hubungkan OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3085,7 +3091,8 @@
         "thisMethodNeedUpgradeFirmware": "Fitur ini memerlukan pembaruan firmware, silakan perbarui firmware di aplikasi OneKey",
         "notAllowInBootloaderMode": "Silakan gunakan dalam mode normal",
         "deviceCheckPassphraseStateError": "Passphrase atau attach pin tidak cocok",
-        "actionCancel": "Operasi dibatalkan"
+        "actionCancel": "Operasi dibatalkan",
+        "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebHID"
       }
     }
   },

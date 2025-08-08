@@ -614,7 +614,10 @@
       "onekey": {
         "onekeyPermission1": "连接至USB设备",
         "allowRabbyPermissionsTitle": "允许Rabby访问以下权限：",
-        "onekeyPermissionTip": "请在下方点击“允许”，以在弹出窗口中授权访问您的OneKey。"
+        "onekeyPermissionTip": "请在下方点击“允许”，以在弹出窗口中授权访问您的OneKey。",
+        "whyOneKey": "为什么用 OneKey？",
+        "buyOneKey": "购买 OneKey",
+        "haveOneKey": "还没有 OneKey 硬件？"
       },
       "walletConnect": {
         "connectYour": "连接你的",
@@ -2675,9 +2678,10 @@
       },
       "importOneKey": {
         "connect": "连接 OneKey",
-        "title": "使用 USB 连接 OneKey",
-        "tip1": "1. 插入你的 OneKey 设备",
+        "title": "使用 USB 连接 OneKey 硬件钱包",
+        "tip1": "1. 插入您的 OneKey 设备",
         "tip2": "2. 解锁您的设备",
+        "tip3": "3. 请确保只连接一台 OneKey 设备",
         "qrcode": {
           "desc": "扫描 OneKey 硬件钱包上的二维码"
         }
@@ -3092,7 +3096,8 @@
         "thisMethodNeedUpgradeFirmware": "使用该功能需要升级固件，请在 OneKey 应用中升级固件",
         "notAllowInBootloaderMode": "请在正常模式下使用",
         "deviceCheckPassphraseStateError": "输入的 passphrase 或 attach pin 不匹配",
-        "actionCancel": "操作已取消"
+        "actionCancel": "操作已取消",
+        "deviceNeedsWebHIDPermission": "未找到设备或需要 WebHID 权限"
       }
     }
   },

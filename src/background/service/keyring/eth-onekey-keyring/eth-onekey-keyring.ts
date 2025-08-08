@@ -15,6 +15,8 @@ import { isManifestV3 } from '@/utils/env';
 import browser from 'webextension-polyfill';
 import { t } from 'i18next';
 import { HardwareErrorCode } from '@onekeyfe/hd-shared';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
@@ -71,6 +73,11 @@ function handleDeviceError(
   switch (errorCode?.toString()) {
     case HardwareErrorCode.DeviceNotFound.toString():
       return t('background.keyring.onekey.notFoundDevice');
+    case HardwareErrorCode.WebDeviceNotFoundOrNeedsPermission.toString():
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB,
+      });
+      return t('background.keyring.onekey.deviceNeedsWebHIDPermission');
     case HardwareErrorCode.DeviceInterruptedFromOutside.toString():
     case HardwareErrorCode.DeviceInterruptedFromUser.toString():
     case HardwareErrorCode.ActionCancelled.toString():
@@ -125,7 +132,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   async init() {
-    this.bridge.init();
+    await this.bridge.init();
     if (isManifestV3) {
       // resume passphrase state from session after sw inactive
       const value = await browser.storage.session.get(ONEKEY_SESSION_STATE_KEY);
@@ -168,7 +175,6 @@ class OneKeyKeyring extends EventEmitter {
 
   cleanUp() {
     this.hdk = new HDKey();
-    this.passphraseState = undefined;
   }
 
   unlock(): Promise<string> {
@@ -448,6 +454,7 @@ class OneKeyKeyring extends EventEmitter {
           );
           const correctAddress = toChecksumAddress(address);
           if (addressSignedWith !== correctAddress) {
+            this.cleanUp();
             throw new Error('signature doesnt match the right address');
           }
 
@@ -483,6 +490,7 @@ class OneKeyKeyring extends EventEmitter {
                       response.payload.address !==
                       toChecksumAddress(withAccount)
                     ) {
+                      this.cleanUp();
                       reject(
                         new Error('signature doesnt match the right address')
                       );
@@ -584,6 +592,7 @@ class OneKeyKeyring extends EventEmitter {
                       if (
                         response.payload.address !== toChecksumAddress(address)
                       ) {
+                        this.cleanUp();
                         reject(
                           new Error('signature doesnt match the right address')
                         );

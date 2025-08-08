@@ -67,6 +67,7 @@ import { NewUserSetPassword } from './NewUserImport/SetPassword';
 import { NewUserImportGnosisAddress } from './NewUserImport/ImportGnosisAddress';
 import { NewUserImportLedger } from './NewUserImport/ImportLedger';
 import { NewUserImportKeystone } from './NewUserImport/ImportKeystone';
+import { NewUserImportOneKey } from './NewUserImport/ImportOnekey';
 import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
 import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
@@ -207,6 +208,13 @@ const Main = () => {
           path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.KEYSTONE}`}
         >
           <NewUserImportKeystone />
+        </Route>
+
+        <Route
+          exact
+          path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.ONEKEY}`}
+        >
+          <NewUserImportOneKey />
         </Route>
 
         <Route exact path="/new-user/import/hardware/:type">
