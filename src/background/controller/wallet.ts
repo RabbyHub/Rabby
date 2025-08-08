@@ -83,7 +83,11 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
-import { generateAliasName, isSameAccount } from '@/utils/account';
+import {
+  generateAliasName,
+  isFullVersionAccountType,
+  isSameAccount,
+} from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
@@ -5090,7 +5094,18 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  signGasAccount = async (account: Account) => {
+  /**
+   * 执行Gas Account登录的核心流程
+   * @param account 账户信息
+   * @returns 登录结果，包含签名和是否成功
+   */
+  private async executeGasAccountLogin(
+    account: Account
+  ): Promise<{
+    signature: string;
+    success: boolean;
+    result?: any;
+  }> {
     const currentAccount = await preferenceService.getCurrentAccount();
     if (!currentAccount) {
       throw new Error(t('background.error.noCurrentAccount'));
@@ -5116,29 +5131,43 @@ export class WalletController extends BaseController {
       params: [text, account.address],
     });
 
-    if (signature) {
-      const result = await pRetry(
-        async () =>
-          wallet.openapi.loginGasAccount({
-            sig: signature,
-            account_id: account.address,
-          }),
-        {
-          retries: 2,
-        }
-      );
-
-      if (result?.success) {
-        await gasAccountService.setGasAccountSig(signature, account);
-        await pageStateCacheService.clear();
-        await pageStateCacheService.set({
-          path: '/gas-account',
-          states: {},
-        });
-      }
+    if (!signature) {
+      await resumeAccount();
+      return { signature: '', success: false };
     }
 
+    const result = await pRetry(
+      async () =>
+        wallet.openapi.loginGasAccount({
+          sig: signature,
+          account_id: account.address,
+        }),
+      {
+        retries: 2,
+      }
+    );
+
     await resumeAccount();
+    return { signature, success: result?.success || false, result };
+  }
+
+  private async saveGasAccountLoginState(signature: string, account: Account) {
+    await gasAccountService.setGasAccountSig(signature, account);
+    await pageStateCacheService.clear();
+    await pageStateCacheService.set({
+      path: '/gas-account',
+      states: {},
+    });
+  }
+
+  signGasAccount = async (account: Account) => {
+    const { signature, success } = await this.executeGasAccountLogin(account);
+
+    if (success && signature) {
+      await this.saveGasAccountLoginState(signature, account);
+    }
+
+    return signature;
   };
 
   topUpGasAccount = async ({
@@ -5510,6 +5539,153 @@ export class WalletController extends BaseController {
     ...args
   ) => {
     return preferenceService.setRateGuideLastExposure(...args);
+  };
+
+  /**
+   * 检查gift资格
+   * @param address 地址
+   * @returns 是否有资格
+   */
+  checkGiftEligibility = async (address: string): Promise<boolean> => {
+    try {
+      const currentAccount = await preferenceService.getCurrentAccount();
+      if (!currentAccount) {
+        return false;
+      }
+      if (!isFullVersionAccountType(currentAccount)) {
+        return false;
+      }
+
+      const gasAccountData = gasAccountService.getGasAccountSig();
+      const hasGasAccountLogin = !!(
+        gasAccountData.sig && gasAccountData.accountId
+      );
+      if (hasGasAccountLogin) {
+        return false;
+      }
+
+      const cache = gasAccountService.getGiftCache();
+      const cachedResult = cache[address.toLowerCase()];
+      if (cachedResult && !cachedResult.isEligible) {
+        return false;
+      }
+
+      if (cachedResult && cachedResult.isEligible) {
+        return true;
+      }
+
+      try {
+        const apiResult = await this.openapi.checkGasAccountGiftEligibility({
+          id: address,
+        });
+        if (!apiResult.has_eligibility) {
+          gasAccountService.setGiftEligibilityResult(
+            address,
+            false,
+            hasGasAccountLogin
+          );
+        }
+        return apiResult.has_eligibility;
+      } catch (error) {
+        console.log(
+          'Failed to check gift eligibility from API:',
+          address,
+          error
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to check gift eligibility:', error);
+      return false;
+    }
+  };
+
+  /**
+   * 领取gift奖励
+   * @param address 地址
+   * @returns 是否成功领取
+   */
+  claimGasAccountGift = async (address: string): Promise<boolean> => {
+    try {
+      // 获取gas account的签名信息
+      const { sig, accountId } = this.getGasAccountSig();
+      if (!sig || !accountId) {
+        console.error('Gas account not logged in, cannot claim gift');
+        return false;
+      }
+
+      // 调用API领取gift
+      const result = await this.openapi.claimGasAccountGift({
+        sig,
+        id: accountId,
+      });
+      if (result.success) {
+        // 标记为已领取
+        gasAccountService.markGiftAsClaimed(address);
+        return true;
+      } else {
+        console.error('API returned success: false for gift claim');
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to claim gas account gift:', error);
+      return false;
+    }
+  };
+
+  /**
+   * 标记地址已领取gift（内部使用）
+   * @param address 地址
+   */
+  markGiftAsClaimed = (address: string) => {
+    gasAccountService.markGiftAsClaimed(address);
+  };
+
+  /**
+   * 清除gift资格缓存
+   * @param address 地址
+   */
+  clearGiftEligibilityCache = (address: string) => {
+    gasAccountService.clearGiftCache(address);
+  };
+
+  /**
+   * 清除全部gift资格缓存（测试用）
+   */
+  clearAllGiftEligibilityCache = () => {
+    gasAccountService.clearAllGiftCache();
+  };
+
+  /**
+   * 获取gift资格缓存
+   * @returns 缓存对象
+   */
+  getGiftEligibilityCache = () => {
+    return gasAccountService.getGiftCache();
+  };
+
+  /**
+   * 获取已领取gift的地址列表
+   * @returns 已领取地址列表
+   */
+  getClaimedGiftAddresses = () => {
+    return gasAccountService.getClaimedGiftAddresses();
+  };
+
+  /**
+   * 获取全局标记：是否有任何账号已经领取过gift
+   * @returns 是否有任何账号已经领取过gift
+   */
+  getHasAnyAccountClaimedGift = () => {
+    return gasAccountService.getHasAnyAccountClaimedGift();
+  };
+
+  /**
+   * 设置全局标记：是否有任何账号已经领取过gift
+   * @param hasClaimed 是否有任何账号已经领取过gift
+   */
+  setHasAnyAccountClaimedGift = (hasClaimed: boolean) => {
+    gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
   };
 }
 

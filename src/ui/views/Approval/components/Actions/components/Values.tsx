@@ -68,7 +68,12 @@ const TimeSpan = ({
   const timeSpan = useMemo(() => {
     const from = value;
     if (!from) return '-';
-    const { d, h, m } = getTimeSpan(Math.floor(to / 1000) - from);
+    const timeDiff = Math.floor(to / 1000) - from;
+    if (timeDiff < 0) {
+      return 'just now';
+    }
+
+    const { d, h, m } = getTimeSpan(timeDiff);
     if (d > 0) {
       return `${d} day${d > 1 ? 's' : ''} ago`;
     }
@@ -92,7 +97,13 @@ const TimeSpanFuture = ({
 }) => {
   const timeSpan = useMemo(() => {
     if (!to) return '-';
-    const { d, h, m } = getTimeSpan(to - from);
+    const timeDiff = to - from;
+
+    if (timeDiff < 0) {
+      return 'just now';
+    }
+
+    const { d, h, m } = getTimeSpan(timeDiff);
     if (d >= 365000) {
       return 'Forever';
     }

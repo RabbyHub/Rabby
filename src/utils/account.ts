@@ -203,3 +203,20 @@ export function findAccountByPriority(accounts: Account[]) {
     return (SORT_WEIGHT[item1.type] || 100) - (SORT_WEIGHT[item2.type] || 100);
   })[0];
 }
+
+export const isNoSignAccount = (account: Account) => {
+  return (
+    account.type === KEYRING_CLASS.PRIVATE_KEY ||
+    account.type === KEYRING_CLASS.MNEMONIC
+  );
+};
+
+export const isFullVersionAccountType = (account: Account) => {
+  return ![
+    KEYRING_TYPE.WatchAddressKeyring,
+    KEYRING_TYPE.WalletConnectKeyring,
+    KEYRING_TYPE.GnosisKeyring,
+    KEYRING_TYPE.CoboArgusKeyring,
+    KEYRING_TYPE.CoinbaseKeyring,
+  ].includes(account.type as any);
+};

@@ -2508,6 +2508,7 @@
         "title": "Deposit USDC / USDT",
         "desc": "Pay Gas Fees on All Chains",
         "login": "Log in GasAccount",
+        "loginAndClaim": "Log in and Claim $2.00",
         "gotIt": "Got it"
       },
       "loginConfirmModal": {
@@ -2539,6 +2540,9 @@
         "selectDestinationChain": "Select destination chain",
         "selectRecipientAddress": "Select recipient address",
         "withdrawalLimit": "Withdrawal limit",
+        "WithdrawalAmount": "Withdrawal Amount",
+        "withdrawalTip": "Available withdrawal balance: {{amount}}",
+        "noBalance": "No balance",
         "title": "Withdraw",
         "desc": "You can withdraw your GasAccount balance to your DeBank L2 Wallet. Log in to your DeBank L2 Wallet to transfer the funds to a supported blockchain as needed.",
         "amount": "Amount",

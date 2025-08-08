@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { formatGasAccountUSDValue, sinceTime } from '@/ui/utils';
 import clsx from 'clsx';
 import { useGasAccountHistory } from '../hooks';
-import { Skeleton } from 'antd';
+import { Skeleton, Tooltip } from 'antd';
 import { ReactComponent as RcIconPendingCC } from '@/ui/assets/pending-cc.svg';
 import { ReactComponent as RcIconOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { findChainByServerID } from '@/utils/chain';
+import { ReactComponent as IconGift } from '@/ui/assets/gift-green.svg';
 
 const HistoryItem = ({
   time,
@@ -19,6 +20,7 @@ const HistoryItem = ({
   chainServerId,
   txId,
   isWithdraw = false,
+  source = '',
 }: {
   time: number;
   value: number;
@@ -29,6 +31,7 @@ const HistoryItem = ({
   isWithdraw?: boolean;
   chainServerId?: string;
   txId?: string;
+  source?: string;
 }) => {
   const { t } = useTranslation();
 
@@ -79,7 +82,19 @@ const HistoryItem = ({
       ) : (
         <div className="text-14 text-r-neutral-foot">{sinceTime(time)}</div>
       )}
-      <div className="text-14 font-medium text-r-neutral-title-1">
+      <div className="text-14 font-medium text-r-neutral-title-1 flex items-center gap-4 justify-center">
+        {source === 'gas_account_airdrop' && (
+          <Tooltip
+            overlayClassName={clsx('rectangle')}
+            align={{ targetOffset: [0, 0] }}
+            title="Gas Reward for active users"
+          >
+            <IconGift
+              viewBox="0 0 24 24"
+              className="w-24 h-24 text-r-neutral-title-1"
+            />
+          </Tooltip>
+        )}
         {sign}
         {formatGasAccountUSDValue(value)}{' '}
       </div>
@@ -166,6 +181,7 @@ export const GasAccountHistory = () => {
                 ? index !== 0
                 : true
             }
+            source={item.source}
           />
         ))}
 

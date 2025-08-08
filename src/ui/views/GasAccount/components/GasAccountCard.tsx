@@ -20,6 +20,7 @@ interface Props {
   onLoginPress?(): void;
   onDepositPress?(): void;
   onWithdrawPress?(): void;
+  onRefreshHistory?(): void;
   gasAccountInfo?: NonNullable<
     Awaited<ReturnType<typeof openapi.getGasAccountInfo>>
   >['account'];
@@ -60,7 +61,7 @@ export const GasAccountCard = ({
     return '';
   }, [isRisk, balance, t, isGnosisSafe]);
 
-  const withdrawDisabled = !balance || gasAccountInfo?.has_iap_order;
+  const withdrawDisabled = !balance;
 
   if (!isLogin) {
     return <GasAccountLoginCard onLoginPress={onLoginPress} />;
@@ -77,11 +78,7 @@ export const GasAccountCard = ({
         <TooltipWithMagnetArrow
           className="rectangle w-[max-content]"
           visible={withdrawDisabled ? undefined : false}
-          title={t(
-            gasAccountInfo?.has_iap_order
-              ? 'page.gasAccount.withdrawDisabledIAP'
-              : 'page.gasAccount.noBalance'
-          )}
+          title={t('page.gasAccount.noBalance')}
         >
           <GasAccountBlueBorderedButton
             block
