@@ -34,21 +34,7 @@ export const GasAccountLoginCard = ({
     setIsLoading(true);
 
     try {
-      let signature: string = '';
-      if (isNoSignAccount(currentAccount)) {
-        signature = await login(currentAccount);
-      } else {
-        signature = await wallet.signGasAccount(currentAccount);
-      }
-      dispatch.gasAccount.setGasAccountSig({
-        sig: signature,
-        account: currentAccount,
-      });
-      await dispatch.gift.claimGiftAsync({
-        address: currentAccount.address,
-        currentAccount,
-      });
-      eventBus.emit(EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK);
+      await login(currentAccount, true);
     } catch (error) {
       console.error('🔍 handleLoginAndClaim - 登录失败:', error);
     } finally {

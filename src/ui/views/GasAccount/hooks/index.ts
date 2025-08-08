@@ -6,7 +6,12 @@ import { uniqBy } from 'lodash';
 import React, { useRef } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
-import { useGasAccountRefreshId, useGasAccountSetRefreshId } from './context';
+import {
+  useGasAccountRefreshId,
+  useGasAccountSetRefreshId,
+  useGasAccountHistoryRefreshId,
+  useGasAccountSetHistoryRefreshId,
+} from './context';
 import { preferenceService } from '@/background/service';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { KEYRING_CLASS } from '@/constant';
@@ -23,6 +28,17 @@ export const useGasAccountRefresh = () => {
   const refresh = () => setRefreshId((e) => e + 1);
 
   return { refreshId, refresh };
+};
+
+export const useGasAccountHistoryRefresh = () => {
+  const refreshHistoryId = useGasAccountHistoryRefreshId();
+  const setRefreshHistoryId = useGasAccountSetHistoryRefreshId();
+
+  const refreshHistory = useCallback(() => {
+    setRefreshHistoryId((e) => e + 1);
+  }, [setRefreshHistoryId]);
+
+  return { refreshHistoryId, refreshHistory };
 };
 
 export const useGasAccountSign = () => {
@@ -86,9 +102,9 @@ export const useGasAccountMethods = () => {
 
   const { sig, accountId } = useGasAccountSign();
   const { refresh } = useGasAccountRefresh();
-
+  const { refreshHistory } = useGasAccountHistoryRefresh();
   const handleNoSignLogin = useCallback(
-    async (account: Account) => {
+    async (account: Account, isClaimGift: boolean = false) => {
       if (!account) return '';
 
       try {
@@ -113,7 +129,13 @@ export const useGasAccountMethods = () => {
 
         if (result?.success) {
           dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+          if (isClaimGift) {
+            wallet.claimGasAccountGift(account.address);
+          }
+          dispatch.gift.markGiftAsClaimed({ address: account.address });
+          wallet.markGiftAsClaimed();
           refresh();
+          refreshHistory();
           return signature;
         }
       } catch (e) {
@@ -125,23 +147,19 @@ export const useGasAccountMethods = () => {
   );
 
   const handleHardwareLogin = useCallback(
-    async (account: Account) => {
-      const signature = await wallet.signGasAccount(account);
-      dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK,
-      });
+    async (account: Account, isClaimGift: boolean = false) => {
+      const signature = await wallet.signGasAccount(account, isClaimGift);
       return signature;
     },
     [wallet]
   );
 
   const login = useCallback(
-    async (account: Account) => {
+    async (account: Account, isClaimGift: boolean = false) => {
       if (isNoSignAccount(account)) {
-        return await handleNoSignLogin(account);
+        return await handleNoSignLogin(account, isClaimGift);
       } else {
-        return await handleHardwareLogin(account);
+        return await handleHardwareLogin(account, isClaimGift);
       }
     },
     [handleNoSignLogin, handleHardwareLogin]
@@ -191,6 +209,7 @@ export const useGasAccountHistory = () => {
   }, []);
 
   const { refresh: refreshGasAccountBalance } = useGasAccountRefresh();
+  const { refreshHistoryId } = useGasAccountHistoryRefresh();
 
   type History = Awaited<
     ReturnType<typeof wallet.openapi.getGasAccountHistory>
@@ -230,7 +249,7 @@ export const useGasAccountHistory = () => {
     },
 
     {
-      reloadDeps: [sig],
+      reloadDeps: [sig, refreshHistoryId],
       isNoMore(data) {
         if (data) {
           return (

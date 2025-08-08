@@ -8,14 +8,21 @@ import { Dropdown, Menu } from 'antd';
 import { GasAccountHistory } from './components/History';
 import { GasAccountLoginPopup } from './components/LoginPopup';
 import { GasAccountDepositPopup } from './components/DepositPopup';
-import { useGasAccountInfo, useGasAccountLogin } from './hooks';
+import {
+  useGasAccountInfo,
+  useGasAccountLogin,
+  useGasAccountHistoryRefresh,
+} from './hooks';
 import { ReactComponent as RcIconLogout } from '@/ui/assets/gas-account/logout.svg';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/gas-account/switch-cc.svg';
 
 import { GasAccountLogoutPopup } from './components/LogoutPopop';
 import { WithdrawPopup } from './components/WithdrawPopup';
 import { useHistory } from 'react-router-dom';
-import { GasAccountRefreshIdProvider } from './hooks/context';
+import {
+  GasAccountRefreshIdProvider,
+  GasAccountHistoryRefreshIdProvider,
+} from './hooks/context';
 import { useRabbyDispatch } from '@/ui/store';
 import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
 import { GasAccountCard } from './components/GasAccountCard';
@@ -48,10 +55,6 @@ const GasAccountInner = () => {
     }
   };
 
-  const handleRefreshHistory = useCallback(() => {
-    setRefreshHistoryKey((prevKey) => prevKey + 1);
-  }, [setRefreshHistoryKey]);
-
   const { value: gasAccount, loading } = useGasAccountInfo();
   const { isLogin } = useGasAccountLogin({ value: gasAccount, loading });
 
@@ -65,22 +68,27 @@ const GasAccountInner = () => {
 
   const dispatch = useRabbyDispatch();
   const { refresh } = useGasAccountRefresh();
+  const { refreshHistory } = useGasAccountHistoryRefresh();
+
+  const handleRefreshHistory = useCallback(() => {
+    setRefreshHistoryKey((prevKey) => prevKey + 1);
+    refreshHistory();
+  }, [setRefreshHistoryKey, refreshHistory]);
 
   // 监听 Gas Account 登录回调事件
   useEffect(() => {
-    const handleLoginCallback = () => {
-      refresh();
-      handleRefreshHistory();
+    const handleCloseWindow = () => {
+      window.close();
     };
     eventBus.addEventListener(
-      EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK,
-      handleLoginCallback
+      EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
+      handleCloseWindow
     );
 
     return () => {
       eventBus.removeEventListener(
-        EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK,
-        handleLoginCallback
+        EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
+        handleCloseWindow
       );
     };
   }, [dispatch, refresh, handleRefreshHistory]);
@@ -218,7 +226,9 @@ const GasAccountInner = () => {
 export const GasAccount = () => {
   return (
     <GasAccountRefreshIdProvider>
-      <GasAccountInner />
+      <GasAccountHistoryRefreshIdProvider>
+        <GasAccountInner />
+      </GasAccountHistoryRefreshIdProvider>
     </GasAccountRefreshIdProvider>
   );
 };
