@@ -29,6 +29,16 @@ export function getTimeSpan(times: number) {
   if (isNaN(+times)) {
     times = 0;
   }
+
+  if (times < 0) {
+    return {
+      d: 0,
+      h: 0,
+      m: 0,
+      s: 0,
+    };
+  }
+
   const int = Math.floor(times);
   let d = Math.floor(int / 60 / 60 / 24);
   const h = Math.floor((int / 60 / 60) % 24);
@@ -38,14 +48,16 @@ export function getTimeSpan(times: number) {
     d = 365000;
   }
   return {
-    d,
-    h,
-    m,
-    s,
+    d: Math.max(0, d),
+    h: Math.max(0, h),
+    m: Math.max(0, m),
+    s: Math.max(0, s),
   };
 }
 
 export const formatTimeReadable = (timeElapse: number) => {
+  if (timeElapse < 0) return 'just now';
+
   let timeStr = '';
   const { d, h, m, s } = getTimeSpan(timeElapse);
 
@@ -61,8 +73,16 @@ export const getTimeFromNow = (create_at: number) =>
 
 export function fromNow(time: number, currTime?: number) {
   let successTimeView = '';
-  const successTime = getTimeSpan((currTime || Date.now() / 1000) - time);
-  if (successTime.h <= 0 && successTime.m <= 0) successTime.m = 1; // At least 1 mins
+  const timeDiff = (currTime || Date.now() / 1000) - time;
+
+  if (timeDiff < 0) return 'just now';
+
+  const successTime = getTimeSpan(timeDiff);
+
+  if (timeDiff > 0 && successTime.h <= 0 && successTime.m <= 0) {
+    successTime.m = 1; // At least 1 mins
+  }
+
   const { d, h, m } = successTime;
   let str = '';
   let flag = 0;
@@ -84,7 +104,11 @@ export function fromNow(time: number, currTime?: number) {
 
 export function fromNowWithSecs(time: number, currTime?: number) {
   let successTimeView = '';
-  const successTime = getTimeSpan((currTime || Date.now() / 1000) - time);
+  const timeDiff = (currTime || Date.now() / 1000) - time;
+
+  if (timeDiff < 0) return 'just now';
+
+  const successTime = getTimeSpan(timeDiff);
   const { d, h, m, s } = successTime;
   let str = '';
   let flag = 0;
@@ -108,13 +132,19 @@ export function fromNowWithSecs(time: number, currTime?: number) {
 }
 
 export const sinceTime = (time: number) => {
-  return Date.now() / 1000 - time < 3600 * 24
+  const timeDiff = Date.now() / 1000 - time;
+  if (timeDiff < 0) return 'just now';
+
+  return timeDiff < 3600 * 24
     ? `${fromNow(time)} ago`
     : dayjs(time * 1000).format('YYYY/MM/DD HH:mm');
 };
 
 export const sinceTimeWithSecs = (time: number) => {
-  return Date.now() / 1000 - time < 3600 * 24
+  const timeDiff = Date.now() / 1000 - time;
+  if (timeDiff < 0) return 'just now';
+
+  return timeDiff < 3600 * 24
     ? `${fromNowWithSecs(time)} ago`
     : dayjs(time * 1000).format('YYYY/MM/DD HH:mm');
 };

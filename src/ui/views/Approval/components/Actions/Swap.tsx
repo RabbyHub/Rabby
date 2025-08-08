@@ -182,14 +182,12 @@ const Swap = ({
               id="1012"
               dangerText={
                 <>
-                  {t('page.signTx.swap.valueDiff')}{' '}
                   <Values.Percentage value={usdValuePercentage!} /> (
                   {formatUsdValue(usdValueDiff || '')})
                 </>
               }
               warningText={
                 <>
-                  {t('page.signTx.swap.valueDiff')}{' '}
                   <Values.Percentage value={usdValuePercentage!} /> (
                   {formatUsdValue(usdValueDiff || '')})
                 </>
