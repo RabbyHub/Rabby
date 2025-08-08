@@ -85,6 +85,7 @@ import dayjs from 'dayjs';
 import { PreferenceStore } from '@/background/service/preference';
 import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
+import { OneKeyConnect } from './ImportHardware/OneKeyConnect';
 
 declare global {
   interface Window {
@@ -283,6 +284,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/keystone">
           <KeystoneConnect />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/onekey">
+          <OneKeyConnect />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/qrcode">
           <QRCodeConnect />

@@ -13,6 +13,8 @@ import { isSameAddress } from '@/background/utils';
 import { OneKeyBridgeInterface } from './onekey-bridge-interface';
 import { isManifestV3 } from '@/utils/env';
 import browser from 'webextension-polyfill';
+import { t } from 'i18next';
+import { HardwareErrorCode } from '@onekeyfe/hd-shared';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
@@ -42,11 +44,52 @@ interface Account {
   index: number;
 }
 
+/**
+ * Version 1:
+ * - hdPathBasePublicKey
+ * - hdPath
+ * - hdPathType
+ * - index
+ *
+ * Version 2:
+ * added:
+ * - passphraseState
+ */
 interface AccountDetail {
+  version?: number;
   hdPathBasePublicKey?: string;
   hdPath: string;
   hdPathType: HDPathType;
+  passphraseState?: string;
   index: number;
+}
+
+function handleDeviceError(
+  errorCode: string | number | undefined,
+  errorMessage: string
+) {
+  switch (errorCode?.toString()) {
+    case HardwareErrorCode.DeviceNotFound.toString():
+      return t('background.keyring.onekey.notFoundDevice');
+    case HardwareErrorCode.DeviceInterruptedFromOutside.toString():
+    case HardwareErrorCode.DeviceInterruptedFromUser.toString():
+    case HardwareErrorCode.ActionCancelled.toString():
+    case HardwareErrorCode.PinCancelled.toString():
+      return t('background.keyring.onekey.actionCancel');
+    case HardwareErrorCode.DeviceInitializeFailed.toString():
+      return t('background.keyring.onekey.deviceInitializeFailed');
+    case HardwareErrorCode.NewFirmwareForceUpdate.toString():
+      return t('background.keyring.onekey.needUpgradeFirmware');
+    case HardwareErrorCode.CallMethodNeedUpgradeFirmware.toString():
+      return t('background.keyring.onekey.thisMethodNeedUpgradeFirmware');
+    case HardwareErrorCode.NotAllowInBootloaderMode.toString():
+      return t('background.keyring.onekey.notAllowInBootloaderMode');
+    case HardwareErrorCode.DeviceCheckPassphraseStateError.toString():
+    case HardwareErrorCode.DeviceCheckUnlockTypeError.toString():
+      return t('background.keyring.onekey.deviceCheckPassphraseStateError');
+    default:
+      return errorMessage;
+  }
 }
 
 class OneKeyKeyring extends EventEmitter {
@@ -125,6 +168,7 @@ class OneKeyKeyring extends EventEmitter {
 
   cleanUp() {
     this.hdk = new HDKey();
+    this.passphraseState = undefined;
   }
 
   unlock(): Promise<string> {
@@ -177,10 +221,7 @@ class OneKeyKeyring extends EventEmitter {
               })
               .then(async (res) => {
                 if (res.success) {
-                  this.hdk.publicKey = Buffer.from(
-                    res.payload.publicKey,
-                    'hex'
-                  );
+                  this.hdk.publicKey = Buffer.from(res.payload.pub, 'hex');
                   this.hdk.chainCode = Buffer.from(
                     res.payload.node.chain_code,
                     'hex'
@@ -188,7 +229,7 @@ class OneKeyKeyring extends EventEmitter {
                   if (isManifestV3) {
                     const sessionState: OneKeySessionState = {
                       passphraseState: passphraseState.payload,
-                      publicKey: res.payload.publicKey,
+                      publicKey: res.payload.pub,
                       chainCode: res.payload.node.chain_code,
                       deviceId,
                       connectId,
@@ -199,7 +240,9 @@ class OneKeyKeyring extends EventEmitter {
                   }
                   resolve('just unlocked');
                 } else {
-                  reject('getPublicKey failed');
+                  reject(
+                    handleDeviceError(res.payload.code, res.payload.error)
+                  );
                 }
               });
           }
@@ -226,9 +269,11 @@ class OneKeyKeyring extends EventEmitter {
             if (!this.accounts.includes(address)) {
               this.accounts.push(address);
               this.accountDetails[toChecksumAddress(address)] = {
+                version: 2,
                 hdPath: this._pathFromAddress(address),
                 hdPathType: LedgerHDPathType.BIP44,
                 hdPathBasePublicKey: this.getPathBasePublicKey(),
+                passphraseState: this.passphraseState,
                 index: i,
               };
             }
@@ -332,11 +377,12 @@ class OneKeyKeyring extends EventEmitter {
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address: string, tx: TypedTransaction): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.unlock()
-        .then((status) => {
+      this._requestPassphraseParams(address)
+        .then((param) => {
           setTimeout(
             (_) => {
               this._signTransaction(
+                param.params,
                 address,
                 Number(tx.common.chainId()),
                 tx,
@@ -365,7 +411,7 @@ class OneKeyKeyring extends EventEmitter {
               // This is necessary to avoid popup collision
               // between the unlock & sign trezor popups
             },
-            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+            param.status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
           );
         })
         .catch((e) => {
@@ -375,6 +421,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   async _signTransaction(
+    params,
     address,
     chainId,
     tx: TypedTransaction,
@@ -390,7 +437,7 @@ class OneKeyKeyring extends EventEmitter {
     return this.bridge
       .evmSignTransaction(this.connectId!, this.deviceId!, {
         path: this._pathFromAddress(address),
-        passphraseState: this.passphraseState,
+        ...params,
         transaction: transaction as any,
       })
       .then((res) => {
@@ -407,7 +454,7 @@ class OneKeyKeyring extends EventEmitter {
           return newOrMutatedTx;
         } else {
           throw new Error(
-            (res.payload && res.payload.error) || 'Unknown error'
+            handleDeviceError(res.payload.code, res.payload.error)
           );
         }
       });
@@ -420,15 +467,15 @@ class OneKeyKeyring extends EventEmitter {
   // For personal_sign, we need to prefix the message:
   signPersonalMessage(withAccount: string, message: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.unlock()
-        .then((status) => {
+      this._requestPassphraseParams(withAccount)
+        .then((param) => {
           setTimeout(
             (_) => {
               this.bridge
                 .evmSignMessage(this.connectId!, this.deviceId!, {
                   path: this._pathFromAddress(withAccount),
+                  ...param.params,
                   messageHex: stripHexPrefix(message),
-                  passphraseState: this.passphraseState,
                 })
                 .then((response) => {
                   if (response.success) {
@@ -445,8 +492,10 @@ class OneKeyKeyring extends EventEmitter {
                   } else {
                     reject(
                       new Error(
-                        (response.payload && response.payload.error) ||
-                          'Unknown error'
+                        handleDeviceError(
+                          response.payload.code,
+                          response.payload.error
+                        )
                       )
                     );
                   }
@@ -458,7 +507,7 @@ class OneKeyKeyring extends EventEmitter {
               // This is necessary to avoid popup collision
               // between the unlock & sign trezor popups
             },
-            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+            param.status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
           );
         })
         .catch((e) => {
@@ -512,16 +561,17 @@ class OneKeyKeyring extends EventEmitter {
         types,
         isV4 ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3
       ).toString('hex');
-      this.unlock()
-        .then((status) => {
+
+      this._requestPassphraseParams(address)
+        .then((param) => {
           setTimeout(
             (_) => {
               try {
                 this.bridge
                   .evmSignTypedData(this.connectId!, this.deviceId!, {
                     path: this._pathFromAddress(address),
+                    ...param.params,
                     data: typedData,
-                    passphraseState: this.passphraseState,
                     metamaskV4Compat: isV4,
                     domainHash: domainSeparatorHex,
                     messageHash: hashStructMessageHex,
@@ -543,19 +593,18 @@ class OneKeyKeyring extends EventEmitter {
                     } else {
                       let code =
                         (response.payload && response.payload.code) || '';
-                      const message =
-                        (response.payload && response.payload.error) || '';
-                      let errorMsg =
-                        (response.payload && response.payload.error) ||
-                        'Unknown error';
+
+                      let errorMsg = handleDeviceError(
+                        response.payload.code,
+                        response.payload.error
+                      );
 
                       let errorUrl = '';
-                      if (message.includes('EIP712Domain')) {
+                      if (errorMsg.includes('EIP712Domain')) {
                         code = 'EIP712_DOMAIN_NOT_SUPPORT';
-                      } else if (message.includes('EIP712')) {
+                      } else if (errorMsg.includes('EIP712')) {
                         code = 'EIP712_BLIND_SIGN_DISABLED';
-                        errorUrl =
-                          'https://help.onekey.so/hc/zh-cn/articles/4406637762959';
+                        errorUrl = 'https://help.onekey.so/articles/11461131';
                       }
                       if (code === 'Failure_UnexpectedMessage') {
                         code = 'EIP712_FIRMWARE_NOT_SUPPORT';
@@ -581,7 +630,7 @@ class OneKeyKeyring extends EventEmitter {
               // This is necessary to avoid popup collision
               // between the unlock & sign trezor popups
             },
-            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+            param.status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
           );
         })
         .catch((e) => {
@@ -705,6 +754,47 @@ class OneKeyKeyring extends EventEmitter {
       hdPathType: LedgerHDPathType.BIP44,
       hdPathBasePublicKey: this.getPathBasePublicKey(),
     };
+  }
+
+  private async _requestPassphraseParams(address: string) {
+    const accountDetail = this._accountDetailsFromAddress(address);
+    if (accountDetail.version === 2) {
+      return {
+        status: 'already unlocked',
+        params: {
+          passphraseState: accountDetail.passphraseState,
+          useEmptyPassphrase: this._isEmptyPassphrase(
+            accountDetail.passphraseState
+          ),
+        },
+      };
+    }
+
+    // version 1
+    const status = await this.unlock();
+    return {
+      status,
+      params: {
+        passphraseState: this.passphraseState,
+      },
+    };
+  }
+
+  private _accountDetailsFromAddress(address: string) {
+    const checksummedAddress = toChecksumAddress(address);
+    const accountDetails = this.accountDetails[checksummedAddress];
+    if (typeof accountDetails === 'undefined') {
+      throw new Error('Unknown address');
+    }
+    return accountDetails;
+  }
+
+  private _isEmptyPassphrase(passphraseState: string | undefined) {
+    return (
+      passphraseState === null ||
+      passphraseState === undefined ||
+      passphraseState === ''
+    );
   }
 }
 

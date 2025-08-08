@@ -1760,6 +1760,11 @@
         "exportAddressJustAllowedOnHomePage": "Export address just allowed on home page",
         "unknowError": "Unknown error, please try again"
       },
+      "onekey": {
+        "onekeyPermission1": "Connect to an USB device",
+        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
+        "onekeyPermissionTip": "Please click \"Allow\" below to authorize access to your OneKey in the following pop-up window."
+      },
       "walletConnect": {
         "connectYour": "Connect your",
         "viaWalletConnect": "via Wallet Connect",
@@ -2649,10 +2654,12 @@
         "title": "Import Seed Phrase"
       },
       "importOneKey": {
+        "qrcode": {
+          "desc": "Scan the QR code on the OneKey hardware wallet"
+        },
         "title": "OneKey",
-        "tip1": "1. Install <1>OneKey Bridge<1/>",
-        "tip2": "2. Plug in your OneKey device",
-        "tip3": "3. Unlock your device",
+        "tip1": "1. Plug in your OneKey device",
+        "tip2": "2. Unlock your device",
         "connect": "Connect OneKey"
       },
       "importTrezor": {
@@ -3071,6 +3078,17 @@
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
       "watchAddressKeyring": "Contact"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Device not found",
+        "deviceInitializeFailed": "Device error, please restart and try again",
+        "needUpgradeFirmware": "Firmware must be upgraded to use the device",
+        "thisMethodNeedUpgradeFirmware": "This feature requires firmware upgrade, please upgrade firmware in OneKey app",
+        "notAllowInBootloaderMode": "Please use in normal mode",
+        "deviceCheckPassphraseStateError": "Passphrase or attach pin does not match",
+        "actionCancel": "Operation cancelled"
+      }
     }
   },
   "constant": {

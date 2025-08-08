@@ -1831,6 +1831,11 @@
         "unknowError": "Невідома помилка, будь ласка, спробуйте ще раз",
         "keystonePermissionTip": "Будь ласка, натисніть \"Дозволити\" нижче, щоб авторизувати доступ до вашого Keystone у наступному спливаючому вікні, та переконайтесь, що ваш Keystone 3 Pro знаходиться на головній сторінці."
       },
+      "onekey": {
+        "onekeyPermission1": "Підключіться до USB пристрою",
+        "allowRabbyPermissionsTitle": "Дозволити Rabby дозволи на:",
+        "onekeyPermissionTip": "Будь ласка, натисніть \"Дозволити\" нижче, щоб авторизувати доступ до вашого OneKey у наступному спливаючому вікні, та переконайтесь."
+      },
       "firefoxLedgerDisableTips": "Ledger не сумісний із Firefox",
       "addFromCurrentSeedPhrase": "Додати з поточної Seed Phrase",
       "trezor": {
@@ -3094,6 +3099,17 @@
       "HdKeyring": "Початкова фраза",
       "simpleKeyring": "Приватний ключ",
       "watchAddressKeyring": "Контакт"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Пристрій не знайдено",
+        "deviceInitializeFailed": "Помилка пристрою, перезапустіть та спробуйте знову",
+        "needUpgradeFirmware": "Необхідно оновити прошивку для використання пристрою",
+        "thisMethodNeedUpgradeFirmware": "Ця функція потребує оновлення прошивки, оновіть прошивку в додатку OneKey",
+        "notAllowInBootloaderMode": "Використовуйте в звичайному режимі",
+        "deviceCheckPassphraseStateError": "Парольна фраза або attach pin не збігаються",
+        "actionCancel": "Операція скасована"
+      }
     }
   },
   "constant": {

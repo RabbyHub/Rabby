@@ -1819,6 +1819,11 @@
         "unknowError": "Unbekannter Fehler, bitte versuche es erneut",
         "keystonePermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren Keystone im folgenden Popup-Fenster zu autorisieren, und stellen Sie sicher, dass sich Ihr Keystone 3 Pro auf der Startseite befindet."
       },
+      "onekey": {
+        "onekeyPermission1": "Verbinden Sie mit einem USB-Gerät",
+        "allowRabbyPermissionsTitle": "Erlaube Rabby-Berechtigungen, um:",
+        "onekeyPermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren Keystone im folgenden Popup-Fenster zu autorisieren."
+      },
       "firefoxLedgerDisableTips": "Ledger ist nicht mit Firefox kompatibel",
       "addFromCurrentSeedPhrase": "Aus aktuellem Seed-Phrase hinzufügen",
       "trezor": {
@@ -3074,6 +3079,17 @@
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
       "watchAddressKeyring": "Kontakt"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Gerät nicht gefunden",
+        "deviceInitializeFailed": "Gerätfehler, bitte neu starten und erneut versuchen",
+        "needUpgradeFirmware": "Firmware muss aktualisiert werden, um das Gerät zu verwenden",
+        "thisMethodNeedUpgradeFirmware": "Diese Funktion erfordert ein Firmware-Update, bitte aktualisieren Sie die Firmware in der OneKey-App",
+        "notAllowInBootloaderMode": "Bitte im normalen Modus verwenden",
+        "deviceCheckPassphraseStateError": "Passphrase oder Attach-Pin stimmt nicht überein",
+        "actionCancel": "Vorgang abgebrochen"
+      }
     }
   },
   "constant": {

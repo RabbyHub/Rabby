@@ -610,6 +610,11 @@
         "exportAddressJustAllowedOnHomePage": "僅在 Keystone 主頁上允許導出地址",
         "unknowError": "未知錯誤，請再試一次"
       },
+      "onekey": {
+        "onekeyPermission1": "連接至USB設備",
+        "allowRabbyPermissionsTitle": "允許Rabby訪問以下權限：",
+        "onekeyPermissionTip": "請在下方點擊「允許」，以在彈出視窗中授權訪問您的OneKey。"
+      },
       "walletConnect": {
         "connectYour": "連接你的",
         "viaWalletConnect": "通過 Wallet Connect",
@@ -3076,6 +3081,17 @@
       "HdKeyring": "助記詞",
       "simpleKeyring": "私鑰",
       "watchAddressKeyring": "聯系人"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "未找到裝置",
+        "deviceInitializeFailed": "裝置異常，請重新啟動後重試",
+        "needUpgradeFirmware": "必須升級韌體才能使用裝置",
+        "thisMethodNeedUpgradeFirmware": "使用該功能需要升級韌體，請在 OneKey 應用程式中升級韌體",
+        "notAllowInBootloaderMode": "請在正常模式下使用",
+        "deviceCheckPassphraseStateError": "輸入的 passphrase 或 attach pin 不匹配",
+        "actionCancel": "操作已取消"
+      }
     }
   },
   "constant": {

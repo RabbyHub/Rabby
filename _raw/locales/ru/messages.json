@@ -1627,6 +1627,11 @@
         "exportAddressJustAllowedOnHomePage": "Экспорт адреса разрешен на домашней странице",
         "unknowError": "Неизвестная ошибка, попробуйте еще раз"
       },
+      "onekey": {
+        "onekeyPermission1": "Подключение к USB устройству",
+        "allowRabbyPermissionsTitle": "Дать Rabby разрешение на:",
+        "onekeyPermissionTip": "Пожалуйста, нажмите «Разрешить» ниже, чтобы авторизовать доступ к вашему OneKey в следующем всплывающем окне, и убедитесь."
+      },
       "walletConnect": {
         "connectYour": "Подключите ваш",
         "viaWalletConnect": "через Wallet Connect",
@@ -3076,6 +3081,17 @@
       "HdKeyring": "Секретная фраза",
       "simpleKeyring": "Приватный ключ",
       "watchAddressKeyring": "Контакт"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Устройство не найдено",
+        "deviceInitializeFailed": "Ошибка устройства, перезапустите и повторите попытку",
+        "needUpgradeFirmware": "Необходимо обновить прошивку для использования устройства",
+        "thisMethodNeedUpgradeFirmware": "Для этой функции требуется обновление прошивки, обновите прошивку в приложении OneKey",
+        "notAllowInBootloaderMode": "Используйте в обычном режиме",
+        "deviceCheckPassphraseStateError": "Парольная фраза или attach pin не совпадают",
+        "actionCancel": "Операция отменена"
+      }
     }
   },
   "constant": {

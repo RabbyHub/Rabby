@@ -805,7 +805,8 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoOnekey,
     rcSvg: RcLogoOnekey,
     maybeSvg: LogoOnekey,
-    connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
+    // connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.TP]: {
@@ -1392,6 +1393,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
+  [WALLET_BRAND_TYPES.ONEKEY]: 'Onekey QR',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
   [KEYRING_CLASS.GNOSIS]: 'Safe',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',

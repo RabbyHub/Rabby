@@ -212,6 +212,10 @@ const AddAddressOptions = () => {
             openInternalPageInTab('import/hardware/keystone');
             return;
           }
+          if (item.brand === WALLET_BRAND_TYPES.ONEKEY) {
+            openInternalPageInTab('import/hardware/onekey');
+            return;
+          }
           openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
         });
       } else if (

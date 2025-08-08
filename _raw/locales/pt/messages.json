@@ -1687,6 +1687,11 @@
         "deviceIsBusy": "Dispositivo está ocupado",
         "keystonePermissionTip": "Por favor, clique em \"Allow\" abaixo para autorizar o acesso ao seu Keystone na janela pop-up a seguir e assegure-se de que seu Keystone 3 Pro esteja na página inicial."
       },
+      "onekey": {
+        "onekeyPermission1": "Conectar a um dispositivo USB",
+        "allowRabbyPermissionsTitle": "Permitir permissões do Rabby para:",
+        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela pop-up a seguir."
+      },
       "walletConnect": {
         "status": {
           "accountError": "Endereço não corresponde.",
@@ -3071,6 +3076,17 @@
       "simpleKeyring": "Chave Privada",
       "HdKeyring": "Frase Semente",
       "watchAddressKeyring": "Contato"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Dispositivo não encontrado",
+        "deviceInitializeFailed": "Erro do dispositivo, reinicie e tente novamente",
+        "needUpgradeFirmware": "O firmware deve ser atualizado para usar o dispositivo",
+        "thisMethodNeedUpgradeFirmware": "Este recurso requer atualização de firmware, atualize o firmware no aplicativo OneKey",
+        "notAllowInBootloaderMode": "Use no modo normal",
+        "deviceCheckPassphraseStateError": "A passphrase ou attach pin não correspondem",
+        "actionCancel": "Operação cancelada"
+      }
     }
   },
   "constant": {

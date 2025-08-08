@@ -1819,6 +1819,11 @@
         "deviceIsBusy": "デバイスは使用中です",
         "unknowError": "不明なエラーが発生しました。再試行してください。"
       },
+      "onekey": {
+        "onekeyPermission1": "USBデバイスに接続",
+        "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可する：",
+        "onekeyPermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、OneKey へのアクセスを承認し。"
+      },
       "firefoxLedgerDisableTips": "Ledger は Firefox と互換性がありません。",
       "addFromCurrentSeedPhrase": "現在のシードフレーズから追加",
       "trezor": {
@@ -3074,6 +3079,17 @@
       "HdKeyring": "シードフレーズによって作成",
       "simpleKeyring": "プライベートキーによってインポート",
       "watchAddressKeyring": "コンタクト"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "デバイスが見つかりません",
+        "deviceInitializeFailed": "デバイスエラー、再起動して再試行してください",
+        "needUpgradeFirmware": "デバイスを使用するにはファームウェアをアップグレードする必要があります",
+        "thisMethodNeedUpgradeFirmware": "この機能にはファームウェアのアップグレードが必要です。OneKeyアプリでファームウェアをアップグレードしてください",
+        "notAllowInBootloaderMode": "通常モードで使用してください",
+        "deviceCheckPassphraseStateError": "パスフレーズまたはattach pinが一致しません",
+        "actionCancel": "操作がキャンセルされました"
+      }
     }
   },
   "constant": {

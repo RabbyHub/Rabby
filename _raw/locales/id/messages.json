@@ -1687,6 +1687,11 @@
         "keystonePermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke Keystone Anda di jendela pop-up berikut, dan pastikan Keystone 3 Pro Anda ada di halaman utama.",
         "noDeviceFoundError": "Colokkan satu Keystone"
       },
+      "onekey": {
+        "onekeyPermission1": "Sambungkan ke perangkat USB",
+        "allowRabbyPermissionsTitle": "Izinkan Rabby untuk:",
+        "onekeyPermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke OneKey Anda di jendela pop-up berikut."
+      },
       "walletConnect": {
         "status": {
           "brandError": "Aplikasi dompet salah.",
@@ -3071,6 +3076,17 @@
       "watchAddressKeyring": "Kontak",
       "simpleKeyring": "Kunci Pribadi",
       "HdKeyring": "Frasa Benih"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Perangkat tidak ditemukan",
+        "deviceInitializeFailed": "Kesalahan perangkat, silakan restart dan coba lagi",
+        "needUpgradeFirmware": "Firmware harus diperbarui untuk menggunakan perangkat",
+        "thisMethodNeedUpgradeFirmware": "Fitur ini memerlukan pembaruan firmware, silakan perbarui firmware di aplikasi OneKey",
+        "notAllowInBootloaderMode": "Silakan gunakan dalam mode normal",
+        "deviceCheckPassphraseStateError": "Passphrase atau attach pin tidak cocok",
+        "actionCancel": "Operasi dibatalkan"
+      }
     }
   },
   "constant": {

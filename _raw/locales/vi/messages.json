@@ -1687,6 +1687,11 @@
         "deviceIsLockedError": "Nhập mật khẩu để mở khóa",
         "exportAddressJustAllowedOnHomePage": "Xuất khẩu địa chỉ chỉ được phép trên trang chủ"
       },
+      "onekey": {
+        "onekeyPermission1": "Kết nối với thiết bị USB",
+        "allowRabbyPermissionsTitle": "Cho phép Rabby các quyền để:",
+        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo."
+      },
       "walletConnect": {
         "status": {
           "default": "Quét với {{brand}}",
@@ -3071,6 +3076,17 @@
       "watchAddressKeyring": "Liên hệ",
       "simpleKeyring": "Khóa riêng",
       "HdKeyring": "Câu cụt đầu tiên"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Không tìm thấy thiết bị",
+        "deviceInitializeFailed": "Lỗi thiết bị, vui lòng khởi động lại và thử lại",
+        "needUpgradeFirmware": "Phải nâng cấp firmware để sử dụng thiết bị",
+        "thisMethodNeedUpgradeFirmware": "Tính năng này yêu cầu nâng cấp firmware, vui lòng nâng cấp firmware trong ứng dụng OneKey",
+        "notAllowInBootloaderMode": "Vui lòng sử dụng ở chế độ bình thường",
+        "deviceCheckPassphraseStateError": "Passphrase hoặc attach pin không khớp",
+        "actionCancel": "Thao tác đã được hủy"
+      }
     }
   },
   "constant": {

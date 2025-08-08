@@ -1822,6 +1822,11 @@
         "keystonePermissionTip": "Lütfen aşağıdaki açılır pencerede Keystone erişimini yetkilendirmek için \"İzin Ver\" düğmesine tıklayın ve Keystone 3 Pro'nuzun ana sayfada olduğundan emin olun.",
         "title": "Keystone'u Bağla"
       },
+      "onekey": {
+        "onekeyPermission1": "Bir USB cihazına bağlan",
+        "allowRabbyPermissionsTitle": "Rabby izinlerini ver:",
+        "onekeyPermissionTip": "Lütfen aşağıdaki açılır pencerede OneKey erişimini yetkilendirmek için \"İzin Ver\" düğmesine tıklayın ve OneKey 'nuzun ana sayfada olduğundan emin olun."
+      },
       "firefoxLedgerDisableTips": "Ledger, Firefox ile uyumlu değil",
       "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle",
       "trezor": {
@@ -3077,6 +3082,17 @@
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Özel Anahtar",
       "watchAddressKeyring": "Kişi"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Cihaz bulunamadı",
+        "deviceInitializeFailed": "Cihaz hatası, yeniden başlatıp tekrar deneyin",
+        "needUpgradeFirmware": "Cihazı kullanmak için firmware güncellenmeli",
+        "thisMethodNeedUpgradeFirmware": "Bu özellik firmware güncellemesi gerektirir, OneKey uygulamasında firmware'i güncelleyin",
+        "notAllowInBootloaderMode": "Normal modda kullanın",
+        "deviceCheckPassphraseStateError": "Parola veya attach pin eşleşmiyor",
+        "actionCancel": "İşlem iptal edildi"
+      }
     }
   },
   "constant": {

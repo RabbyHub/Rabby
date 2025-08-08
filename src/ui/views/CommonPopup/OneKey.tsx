@@ -6,7 +6,7 @@ import {
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { message } from 'antd';
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 export const OneKey: React.FC<{
   isModalContent?: boolean;
@@ -46,21 +46,8 @@ export const OneKey: React.FC<{
   return (
     <div className="pt-[4px]">
       <div className="pl-[20px] m-auto text-r-neutral-title1 text-14 leading-[20px]">
-        <p>
-          <Trans i18nKey="page.newUserImport.importOneKey.tip1" t={t}>
-            1. Install
-            <a
-              className="ml-2 underline text-r-blue-default"
-              href="https://onekey.so/download/?client=bridge"
-              target="_blank"
-              rel="noreferrer"
-            >
-              OneKey Bridge
-            </a>
-          </Trans>
-        </p>
+        <p>{t('page.newUserImport.importOneKey.tip1')}</p>
         <p>{t('page.newUserImport.importOneKey.tip2')}</p>
-        <p>{t('page.newUserImport.importOneKey.tip3')}</p>
       </div>
       {/* <img
         src="/images/ledger-plug.png"
