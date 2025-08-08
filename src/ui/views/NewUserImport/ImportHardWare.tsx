@@ -22,19 +22,8 @@ export const NewUserImportHardware = () => {
   const { t } = useTranslation();
   const oneKeyTips = React.useMemo(
     () => [
-      <Trans i18nKey="page.newUserImport.importOneKey.tip1" t={t}>
-        1. Install
-        <a
-          className="ml-2 underline text-r-blue-default"
-          href="https://onekey.so/download/?client=bridge"
-          target="_blank"
-          rel="noreferrer"
-        >
-          OneKey Bridge
-        </a>
-      </Trans>,
+      t('page.newUserImport.importOneKey.tip1'),
       t('page.newUserImport.importOneKey.tip2'),
-      t('page.newUserImport.importOneKey.tip3'),
     ],
     [t]
   );

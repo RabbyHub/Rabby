@@ -193,8 +193,8 @@ const AddAddressOptions = () => {
         openInternalPageInTab('import/hardware?connectType=TREZOR');
       } else if (item.connectType === 'LedgerConnect') {
         openInternalPageInTab('import/hardware/ledger-connect');
-      } else if (item.connectType === 'OneKeyConnect') {
-        openInternalPageInTab('import/hardware?connectType=ONEKEY');
+        // } else if (item.connectType === 'OneKeyConnect') {
+        //   openInternalPageInTab('import/hardware?connectType=ONEKEY');
       } else if (item.connectType === 'GnosisConnect') {
         history.push({
           pathname: '/import/gnosis',
@@ -208,6 +208,10 @@ const AddAddressOptions = () => {
            */
           if (item.brand === WALLET_BRAND_TYPES.KEYSTONE) {
             openInternalPageInTab('import/hardware/keystone');
+            return;
+          }
+          if (item.brand === WALLET_BRAND_TYPES.ONEKEY) {
+            openInternalPageInTab('import/hardware/onekey');
             return;
           }
           openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
