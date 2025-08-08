@@ -154,7 +154,7 @@ const AddressItem = memo(
         )}
         <div
           className={clsx({
-            'bg-blue-light hover:bg-blue-light rounded-[8px] overflow-hidden': isCurrentAccount,
+            'bg-blue-light rounded-[8px] overflow-hidden': isCurrentAccount,
           })}
         >
           <div
@@ -165,7 +165,7 @@ const AddressItem = memo(
                 : 'group',
               !isCurrentAccount &&
                 !enableSwitch &&
-                'hover:bg-blue-light hover:bg-opacity-[0.1]',
+                'hover:bg-r-blue-light-1 hover:bg-opacity-[0.1]',
               {
                 'is-switch': enableSwitch,
               }
@@ -185,7 +185,7 @@ const AddressItem = memo(
                 'rabby-address-item-left',
                 !isCurrentAccount &&
                   enableSwitch &&
-                  'hover:bg-blue-light hover:bg-opacity-[0.1]',
+                  'hover:bg-r-blue-light-1 hover:bg-opacity-[0.1]',
                 isCurrentAccount && 'w-[calc(100%-34px)] pr-0'
               )}
             >

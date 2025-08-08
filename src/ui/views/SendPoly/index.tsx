@@ -335,7 +335,7 @@ const SendPoly = () => {
                   type="primary"
                   className={`
                   bg-r-neutral-card1 mt-[12px] w-full shadow-none h-[48px] border-transparent 
-                  hover:border-rabby-blue-default hover:bg-r-blue-light-2 hover:before:hidden`}
+                  hover:border-rabby-blue-default hover:bg-r-blue-light-1 hover:before:hidden`}
                 >
                   <div className="flex items-center justify-center space-x-6 text-r-blue-default">
                     <IconAdd />
