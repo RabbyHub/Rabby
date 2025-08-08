@@ -19,6 +19,9 @@ import { GasAccountRefreshIdProvider } from './hooks/context';
 import { useRabbyDispatch } from '@/ui/store';
 import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
 import { GasAccountCard } from './components/GasAccountCard';
+import { EVENTS } from '@/constant';
+import { useGasAccountRefresh } from './hooks';
+import eventBus from '@/eventBus';
 
 const GasAccountInner = () => {
   const { t } = useTranslation();
@@ -61,6 +64,26 @@ const GasAccountInner = () => {
   const [switchAddrVisible, setSwitchAddrVisible] = useState(false);
 
   const dispatch = useRabbyDispatch();
+  const { refresh } = useGasAccountRefresh();
+
+  // 监听 Gas Account 登录回调事件
+  useEffect(() => {
+    const handleLoginCallback = () => {
+      refresh();
+      handleRefreshHistory();
+    };
+    eventBus.addEventListener(
+      EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK,
+      handleLoginCallback
+    );
+
+    return () => {
+      eventBus.removeEventListener(
+        EVENTS.GAS_ACCOUNT.LOGIN_CALLBACK,
+        handleLoginCallback
+      );
+    };
+  }, [dispatch, refresh, handleRefreshHistory]);
 
   useEffect(() => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
@@ -69,13 +92,6 @@ const GasAccountInner = () => {
   }, []);
 
   const openDepositPopup = () => {
-    // if (
-    //   gasAccount?.address &&
-    //   currentAccount?.address !== gasAccount?.address
-    // ) {
-    //   setSwitchAddrVisible(true);
-    //   return;
-    // }
     setDepositVisible(true);
   };
 
@@ -186,6 +202,7 @@ const GasAccountInner = () => {
         onCancel={() => setWithdrawVisible(false)}
         handleRefreshHistory={handleRefreshHistory}
         balance={balance}
+        gasAccountInfo={gasAccount?.account}
       />
 
       <SwitchLoginAddrBeforeDepositModal

@@ -64,13 +64,12 @@ export const gasAccount = createModel<RootModel>()({
       },
       store
     ) {
-      await store.app.wallet.setGasAccountSig(sig, account);
-
       this.setField({
         sig,
         account,
         accountId: account?.address,
       });
+      await store.app.wallet.setGasAccountSig(sig, account);
     },
   }),
 });
