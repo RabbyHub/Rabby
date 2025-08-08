@@ -2119,6 +2119,15 @@
         "insufficient": "Votre solde de gaz n'est pas suffisant pour couvrir les frais de gaz du réseau. Ajoutez des fonds pour le gaz et réessayez.",
         "nonceTooLow": "Nonce trop bas. Nous allons le mettre à jour à {{nonce}}. Cliquez sur \"Réessayer\" pour confirmer et réessayer.",
         "gasPriceTooLow": "Le prix du gaz est trop bas. Nous allons l'ajuster de 30 % pour aider votre transaction à être confirmée. Cliquez sur « Réessayer » pour confirmer et réessayer."
+      },
+      "addLiquidity": {
+        "token1": "Ajouter un jeton 2",
+        "receiver": "Receveur",
+        "marketPrice": "Prix du marché",
+        "token0": "Ajouter le jeton 1",
+        "priceDiff": "Diff de prix",
+        "poolPrice": "Prix du POOL",
+        "title": "Ajouter de la liquidité"
       }
     },
     "signTypedData": {
@@ -2709,7 +2718,8 @@
         "title": "Déposez USDC / USDT",
         "login": "Se connecter à GasAccount",
         "gotIt": "Compris",
-        "desc": "Payer les frais de Gas sur toutes les chaînes"
+        "desc": "Payer les frais de Gas sur toutes les chaînes",
+        "loginAndClaim": "Connectez-vous et réclamez 2,00 $"
       },
       "loginConfirmModal": {
         "title": "Se connecter avec l'adresse actuelle",
@@ -2746,7 +2756,10 @@
         "noEligibleChain": "Aucune chaîne éligible pour le retrait",
         "destinationChain": "Chaîne de destination",
         "deductGasFees": "Le montant reçu déduira les frais de gaz",
-        "noEligibleAddr": "Aucune adresse éligible pour le retrait"
+        "noEligibleAddr": "Aucune adresse éligible pour le retrait",
+        "WithdrawalAmount": "Montant de retrait",
+        "noBalance": "Pas de solde",
+        "withdrawalTip": "Solde disponible pour le retrait : {{amount}}"
       },
       "withdrawConfirmModal": {
         "title": "Transféré à votre portefeuille DeBank L2",

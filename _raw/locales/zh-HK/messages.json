@@ -1772,6 +1772,15 @@
         "nonceTooLow": "Nonce 太低。我們將更新為 {{nonce}}。請點擊“重試”確認並再試一次。",
         "gasPriceTooLow": "Gas 價格太低。我們將調整它 30% 以幫助您的交易確認。點擊 “Retry” 來確認並重試。",
         "insufficient": "您的 gas 餘額不足以支付網絡 gas 費。請添加資金以支付 gas，然後再試一次。"
+      },
+      "addLiquidity": {
+        "receiver": "接收者",
+        "title": "添加流动性",
+        "marketPrice": "市場價格",
+        "token0": "添加 Token 1",
+        "token1": "添加令牌 2",
+        "priceDiff": "價格差異",
+        "poolPrice": "POOL 價格"
       }
     },
     "signTypedData": {
@@ -2470,7 +2479,8 @@
         "gotIt": "明白",
         "login": "登入 GasAccount",
         "title": "儲存 USDC / USDT",
-        "desc": "支付所有链上的 Gas 费用"
+        "desc": "支付所有链上的 Gas 费用",
+        "loginAndClaim": "登入並領取 $2.00"
       },
       "loginConfirmModal": {
         "title": "使用當前地址登入",
@@ -2507,7 +2517,10 @@
         "noEligibleChain": "沒有合資格的鏈可供提取",
         "noEligibleAddr": "沒有合資格的地址進行提取",
         "desc": "您可以將您的 GasAccount 餘額提取到您的 DeBank L2 錢包。登錄您的 DeBank L2 錢包，根據需要將資金轉至支持的區塊鏈。",
-        "to": "至"
+        "to": "至",
+        "WithdrawalAmount": "提款金額",
+        "noBalance": "没有余额",
+        "withdrawalTip": "可提取餘額: {{amount}}"
       },
       "withdrawConfirmModal": {
         "button": "查看 DeBank",

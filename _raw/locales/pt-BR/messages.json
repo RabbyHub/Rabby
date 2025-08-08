@@ -363,6 +363,15 @@
         "nonceTooLow": "Nonce muito baixo. Vamos atualizá-lo para {{nonce}}. Clique em \"Tentar novamente\" para confirmar e tentar novamente.",
         "gasPriceTooLow": "Preço do gás muito baixo. Vamos ajustá-lo em 30% para ajudar sua transação a ser confirmada. Clique em “Tentar novamente” para confirmar e tentar outra vez.",
         "insufficient": "Seu saldo de gas não é suficiente para cobrir a taxa de rede. Adicione fundos para gas e tente novamente."
+      },
+      "addLiquidity": {
+        "receiver": "Receptor",
+        "poolPrice": "Preço do Pool",
+        "marketPrice": "Preço de Mercado",
+        "token1": "Adicionar Token 2",
+        "priceDiff": "Diferença de Preço",
+        "token0": "Adicionar Token 1",
+        "title": "Adicionar Liquidez"
       }
     },
     "signFooterBar": {
@@ -2432,7 +2441,8 @@
         "login": "Fazer login no GasAccount",
         "title": "Depositar USDC / USDT",
         "desc": "Pague Taxas de Gas em Todas as Chains",
-        "gotIt": "Entendi"
+        "gotIt": "Entendi",
+        "loginAndClaim": "Faça login e reivindique $2,00"
       },
       "loginConfirmModal": {
         "title": "Fazer login com o Endereço Atual",
@@ -2469,7 +2479,10 @@
         "desc": "Você pode retirar o saldo da sua GasAccount para sua DeBank L2 Wallet. Faça login na sua DeBank L2 Wallet para transferir os fundos para uma blockchain compatível conforme necessário.",
         "destinationChain": "Cadeia de destino",
         "recipientAddress": "Endereço do destinatário",
-        "noEligibleAddr": "Nenhum endereço elegível para retirada"
+        "noEligibleAddr": "Nenhum endereço elegível para retirada",
+        "noBalance": "Sem saldo",
+        "withdrawalTip": "Saldo de retirada disponível: {{amount}}",
+        "WithdrawalAmount": "Valor da Retirada"
       },
       "withdrawConfirmModal": {
         "title": "Transferido para sua Wallet DeBank L2",

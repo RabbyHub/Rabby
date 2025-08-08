@@ -363,6 +363,15 @@
         "insufficient": "Ihr Gasbilanz reicht nicht aus, um die Netzwerk-Gebühr zu decken. Fügen Sie Mittel für Gas hinzu und versuchen Sie es erneut.",
         "nonceTooHigh": "Nonce zu hoch. Bitte passen Sie den Nonce an und versuchen Sie es erneut.",
         "defaultTips": "Etwas stimmt nicht. Bitte versuchen Sie es später erneut."
+      },
+      "addLiquidity": {
+        "poolPrice": "Pool Preis",
+        "receiver": "Empfänger",
+        "priceDiff": "Preis-Diff",
+        "token1": "Token 2 hinzufügen",
+        "title": "Liquidität hinzufügen",
+        "marketPrice": "Marktpreis",
+        "token0": "Token 1 hinzufügen"
       }
     },
     "signFooterBar": {
@@ -2432,7 +2441,8 @@
         "desc": "Auf allen Chains Gasgebühren zahlen",
         "title": "Einzahlung USDC / USDT",
         "login": "In GasAccount einloggen",
-        "gotIt": "Verstanden"
+        "gotIt": "Verstanden",
+        "loginAndClaim": "Melden Sie sich an und beanspruchen Sie $2,00"
       },
       "loginConfirmModal": {
         "desc": "Nach der Bestätigung können Sie es nur an dieser Adresse einzahlen。",
@@ -2469,7 +2479,10 @@
         "desc": "Sie können Ihr GasAccount-Guthaben auf Ihr DeBank L2 Wallet abheben. Melden Sie sich in Ihrem DeBank L2 Wallet an, um die Gelder bei Bedarf auf eine unterstützte Blockchain zu übertragen.",
         "riskMessageFromChain": "Aufgrund der Risikokontrolle hängt das Auszahlungslimit von der insgesamt aus dieser Kette eingezahlten Menge ab.",
         "noEligibleChain": "Keine berechtigte Kette für Abhebungen",
-        "riskMessageFromAddress": "Aufgrund der Risikokontrolle hängt das Auszahlungslimit von der Gesamtsumme ab, die diese Adresse eingezahlt hat."
+        "riskMessageFromAddress": "Aufgrund der Risikokontrolle hängt das Auszahlungslimit von der Gesamtsumme ab, die diese Adresse eingezahlt hat.",
+        "WithdrawalAmount": "Abhebungsbetrag",
+        "noBalance": "Kein Saldo",
+        "withdrawalTip": "Verfügbares Abhebungs saldo: {{amount}}"
       },
       "withdrawConfirmModal": {
         "button": "Auf DeBank anzeigen",

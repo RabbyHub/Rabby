@@ -1772,6 +1772,15 @@
         "gasPriceTooLow": "Gas价格太低。我们将其调整30%以帮助您的交易确认。点击“重试”以确认并再次尝试。",
         "nonceTooLow": "Nonce 太低了。我们将更新为 {{nonce}}。点击“Retry”以确认并重试。",
         "gasLimitTooLow": "Gas 限制过低"
+      },
+      "addLiquidity": {
+        "priceDiff": "价格差异",
+        "poolPrice": "池价格",
+        "receiver": "接收者",
+        "marketPrice": "市场价格",
+        "token0": "添加 Token 1",
+        "title": "添加流动性",
+        "token1": "添加 Token 2"
       }
     },
     "signTypedData": {
@@ -2509,7 +2518,8 @@
         "gotIt": "知道了",
         "title": "存入 USDC / USDT",
         "desc": "在所有链上支付 Gas Fees",
-        "login": "登录 GasAccount"
+        "login": "登录 GasAccount",
+        "loginAndClaim": "登录并领取 $2.00"
       },
       "loginConfirmModal": {
         "title": "使用当前地址登录",
@@ -2546,7 +2556,10 @@
         "amount": "金额",
         "destinationChain": "目标链",
         "selectDestinationChain": "选择目标链",
-        "desc": "您可以将您的 GasAccount 余额提取到您的 DeBank L2 Wallet。请登录到您的 DeBank L2 Wallet，根据需要将资金转移到支持的区块链。"
+        "desc": "您可以将您的 GasAccount 余额提取到您的 DeBank L2 Wallet。请登录到您的 DeBank L2 Wallet，根据需要将资金转移到支持的区块链。",
+        "noBalance": "没有余额",
+        "WithdrawalAmount": "提现金额",
+        "withdrawalTip": "可提取余额: {{amount}}"
       },
       "withdrawConfirmModal": {
         "title": "已转移至您的 DeBank L2 钱包",

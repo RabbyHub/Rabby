@@ -363,6 +363,15 @@
         "insufficient": "あなたのガス残高は、ネットワークガス料金をカバーするには不十分です。ガスのために資金を追加して、もう一度お試しください。",
         "gasPriceTooLow": "ガス価格が低すぎます。取引が確認できるように30％調整します。「再試行」をクリックして確認し、再度お試しください。",
         "alreadySubmitted": "取引はすでに提出されています。重複する取引が検出されました。"
+      },
+      "addLiquidity": {
+        "receiver": "受信者",
+        "title": "流動性の追加",
+        "marketPrice": "市場価格",
+        "priceDiff": "価格差",
+        "token0": "トークンを追加 1",
+        "token1": "トークンを追加 2",
+        "poolPrice": "プール価格"
       }
     },
     "signFooterBar": {
@@ -2432,7 +2441,8 @@
         "title": "USDC / USDTを入金",
         "gotIt": "了解しました",
         "login": "GasAccount にログイン",
-        "desc": "すべてのチェーンでガス料金を支払う"
+        "desc": "すべてのチェーンでガス料金を支払う",
+        "loginAndClaim": "ログインして$2.00を受け取る"
       },
       "loginConfirmModal": {
         "title": "現在のアドレスでログイン",
@@ -2469,7 +2479,10 @@
         "noEnoughGas": "ガス料金をカバーするには金額が低すぎます",
         "deductGasFees": "受け取った金額からガス料金が差し引かれます",
         "riskMessageFromAddress": "リスク管理のため、引き出し制限はこのアドレスが預けた総額に依存します",
-        "desc": "GasAccountの残高をDeBank L2ウォレットに引き出すことができます。必要に応じてサポートされているブロックチェーンに資金を転送するために、DeBank L2ウォレットにログインしてください。"
+        "desc": "GasAccountの残高をDeBank L2ウォレットに引き出すことができます。必要に応じてサポートされているブロックチェーンに資金を転送するために、DeBank L2ウォレットにログインしてください。",
+        "noBalance": "残高なし",
+        "WithdrawalAmount": "出金額",
+        "withdrawalTip": "利用可能な出金残高: {{amount}}"
       },
       "withdrawConfirmModal": {
         "button": "DeBankで表示",

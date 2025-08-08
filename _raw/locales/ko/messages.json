@@ -363,6 +363,15 @@
         "nonceTooLow": "Nonce가 너무 낮습니다. {{nonce}}로 업데이트하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
         "gasPriceTooLow": "가스 가격이 너무 낮습니다. 트랜잭션이 확인되도록 30% 조정하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
         "insufficient": "당신의 가스 잔액이 네트워크 가스 요금을 충당하기에 충분하지 않습니다. 가스를 위한 자금을 추가하고 다시 시도하세요."
+      },
+      "addLiquidity": {
+        "token0": "토큰 1 추가",
+        "poolPrice": "풀 가격",
+        "marketPrice": "시장 가격",
+        "token1": "토큰 추가 2",
+        "title": "유동성 추가",
+        "priceDiff": "가격 차이",
+        "receiver": "수신자"
       }
     },
     "signFooterBar": {
@@ -2429,7 +2438,8 @@
         "gotIt": "알겠어요",
         "title": "USDC / USDT 입금",
         "desc": "모든 체인에서 가스 요금 지불",
-        "login": "GasAccount에 로그인"
+        "login": "GasAccount에 로그인",
+        "loginAndClaim": "로그인하고 $2.00를 받으세요."
       },
       "loginConfirmModal": {
         "desc": "확인되면 이 주소로만 입금할 수 있습니다.",
@@ -2470,7 +2480,10 @@
         "desc": "GasAccount 잔액을 DeBank L2 Wallet으로 인출할 수 있습니다. 필요에 따라 지원되는 블록체인으로 자금을 이체하려면 DeBank L2 Wallet에 로그인하세요.",
         "deductGasFees": "수신 금액은 가스 수수료를 차감합니다.",
         "noEligibleChain": "출금할 수 있는 유효한 체인이 없습니다.",
-        "riskMessageFromAddress": "위험 관리로 인해 출금 한도는 이 주소가 예치한 총 금액에 따라 달라집니다."
+        "riskMessageFromAddress": "위험 관리로 인해 출금 한도는 이 주소가 예치한 총 금액에 따라 달라집니다.",
+        "WithdrawalAmount": "출금 금액",
+        "noBalance": "잔액 없음",
+        "withdrawalTip": "사용 가능한 출금 잔액: {{amount}}"
       },
       "withdrawConfirmModal": {
         "title": "DeBank L2 지갑으로 전송됨",

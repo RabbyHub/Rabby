@@ -363,6 +363,15 @@
         "insufficient": "Saldo gas Anda tidak cukup untuk menutupi biaya gas jaringan. Tambahkan dana untuk gas dan coba lagi.",
         "nonceTooLow": "Nonce terlalu rendah. Kami akan memperbaruinya menjadi {{nonce}}. Klik “Retry” untuk mengonfirmasi dan mencoba lagi.",
         "gasPriceTooLow": "Harga gas terlalu rendah. Kami akan menyesuaikannya sebesar 30% untuk membantu konfirmasi transaksi Anda. Klik \"Coba Lagi\" untuk mengonfirmasi dan mencoba lagi."
+      },
+      "addLiquidity": {
+        "poolPrice": "Harga Pool",
+        "receiver": "Penerima",
+        "token0": "Tambahkan Token 1",
+        "title": "Tambahkan Likuiditas",
+        "marketPrice": "Harga Pasar",
+        "priceDiff": "Harga Selisih",
+        "token1": "Tambahkan Token 2"
       }
     },
     "signFooterBar": {
@@ -2429,7 +2438,8 @@
         "gotIt": "Dapatkan itu",
         "login": "Masuk GasAccount",
         "desc": "Bayar Biaya Gas di Semua Rantai",
-        "title": "Setor USDC / USDT"
+        "title": "Setor USDC / USDT",
+        "loginAndClaim": "Masuk dan Klaim $2.00"
       },
       "loginConfirmModal": {
         "title": "Pilih alamat untuk masuk",
@@ -2470,7 +2480,10 @@
         "selectDestinationChain": "Pilih rantai tujuan",
         "noEnoughValuetBalance": "Saldo Vault tidak cukup. Alihkan rantai atau coba lagi nanti.",
         "desc": "Anda dapat menarik saldo GasAccount Anda ke Dompet DeBank L2 Anda. Masuk ke Dompet DeBank L2 Anda untuk mentransfer dana ke blockchain yang didukung sesuai kebutuhan.",
-        "riskMessageFromChain": "Karena pengendalian risiko, batas penarikan tergantung pada total jumlah yang disetor dari rantai ini."
+        "riskMessageFromChain": "Karena pengendalian risiko, batas penarikan tergantung pada total jumlah yang disetor dari rantai ini.",
+        "noBalance": "Tidak ada saldo",
+        "withdrawalTip": "Saldo penarikan yang tersedia: {{amount}}",
+        "WithdrawalAmount": "Jumlah Penarikan"
       },
       "withdrawConfirmModal": {
         "title": "Dipindahkan ke Dompet DeBank L2 Anda",

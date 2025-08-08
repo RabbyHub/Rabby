@@ -363,6 +363,15 @@
         "nonceTooLow": "Nonce muito baixo. Vamos atualizá-lo para {{nonce}}. Clique em “Tentar novamente” para confirmar e tentar de novo.",
         "defaultTips": "Algo está errado. Por favor, tente novamente mais tarde.",
         "gasPriceTooLow": "Preço do gás muito baixo. Iremos ajustá-lo em 30% para ajudar na confirmação da sua transação. Clique em \"Tentar novamente\" para confirmar e tentar outra vez."
+      },
+      "addLiquidity": {
+        "token0": "Adicionar Token 1",
+        "receiver": "Receptor",
+        "poolPrice": "Preço do POOL",
+        "marketPrice": "Preço de Mercado",
+        "token1": "Adicionar Token 2",
+        "title": "Adicionar Liquidez",
+        "priceDiff": "Diferença de Preço"
       }
     },
     "signFooterBar": {
@@ -2429,7 +2438,8 @@
         "login": "Entrar no GasAccount",
         "desc": "Pague as Taxas de Gas em Todas as Cadeias",
         "title": "Depositar USDC / USDT",
-        "gotIt": "Entendi"
+        "gotIt": "Entendi",
+        "loginAndClaim": "Faça login e reivindique $2,00"
       },
       "loginConfirmModal": {
         "desc": "Uma vez confirmado, você só pode depositá-lo neste endereço.",
@@ -2470,7 +2480,10 @@
         "noEnoughGas": "Valor muito baixo para cobrir as taxas de gás",
         "riskMessageFromChain": "Devido ao controle de risco, o limite de retirada depende da quantia total depositada a partir desta cadeia.",
         "title": "Retirar",
-        "desc": "Você pode retirar o saldo da sua GasAccount para a sua carteira DeBank L2. Faça login na sua carteira DeBank L2 para transferir os fundos para uma blockchain suportada, conforme necessário."
+        "desc": "Você pode retirar o saldo da sua GasAccount para a sua carteira DeBank L2. Faça login na sua carteira DeBank L2 para transferir os fundos para uma blockchain suportada, conforme necessário.",
+        "noBalance": "Sem saldo",
+        "WithdrawalAmount": "Valor de Retirada",
+        "withdrawalTip": "Saldo de retirada disponível: {{amount}}"
       },
       "withdrawConfirmModal": {
         "button": "Veja no DeBank",

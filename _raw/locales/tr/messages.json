@@ -363,6 +363,15 @@
         "gasPriceTooLow": "Gaz fiyatı çok düşük. İşleminizin onaylanmasına yardımcı olmak için %30 artıracağız. Onaylamak ve tekrar denemek için “Tekrar Dene”ye tıklayın.",
         "defaultTips": "Bir şeyler yanlış. Lütfen daha sonra tekrar deneyin.",
         "InvalidTx": "Geçersiz işlem."
+      },
+      "addLiquidity": {
+        "marketPrice": "Piyasa Fiyatı",
+        "token0": "Token 1 Ekle",
+        "priceDiff": "Fiyat Farkı",
+        "token1": "Token Ekle 2",
+        "title": "Likidite Ekle",
+        "poolPrice": "Havuz Fiyatı",
+        "receiver": "Alıcı"
       }
     },
     "signFooterBar": {
@@ -2435,7 +2444,8 @@
         "login": "GasAccount ile giriş yap",
         "gotIt": "Anladım",
         "desc": "Tüm Zincirlerde Gas Ücretlerini Ödeyin",
-        "title": "USDC / USDT Yatırın"
+        "title": "USDC / USDT Yatırın",
+        "loginAndClaim": "Giriş yap ve $2.00 al"
       },
       "loginConfirmModal": {
         "title": "Mevcut Adres ile Giriş Yap",
@@ -2472,7 +2482,10 @@
         "recipientAddress": "Alıcı adresi",
         "noEligibleAddr": "Para çekim için uygun adres yok",
         "noEligibleChain": "Çekim için uygun zincir yok",
-        "deductGasFees": "Alınan tutardan gas ücretleri düşülecektir"
+        "deductGasFees": "Alınan tutardan gas ücretleri düşülecektir",
+        "noBalance": "Bakiyesi yok",
+        "WithdrawalAmount": "Çıkış Tutarı",
+        "withdrawalTip": "Mevcut çekim bakiyesi: {{amount}}"
       },
       "withdrawConfirmModal": {
         "title": "DeBank L2 Cüzdanınıza aktarıldı",

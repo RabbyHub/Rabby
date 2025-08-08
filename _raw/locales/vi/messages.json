@@ -363,6 +363,15 @@
         "nonceTooHigh": "Nonce quá cao. Vui lòng điều chỉnh nonce và thử lại.",
         "gasPriceTooLow": "Giá gas quá thấp. Chúng tôi sẽ điều chỉnh nó tăng 30% để giúp giao dịch của bạn được xác nhận. Nhấn “Retry” để xác nhận và thử lại.",
         "InvalidTx": "Giao dịch không hợp lệ."
+      },
+      "addLiquidity": {
+        "token1": "Thêm Token 2",
+        "marketPrice": "Giá Thị Trường",
+        "title": "Thêm Thanh Khoản",
+        "poolPrice": "Giá Pool",
+        "priceDiff": "Sự chênh lệch giá",
+        "receiver": "Người nhận",
+        "token0": "Thêm Token 1"
       }
     },
     "signFooterBar": {
@@ -2429,7 +2438,8 @@
         "login": "Đăng nhập GasAccount",
         "gotIt": "Đã hiểu",
         "title": "Nạp USDC / USDT",
-        "desc": "Thanh toán phí Gas trên tất cả các chuỗi"
+        "desc": "Thanh toán phí Gas trên tất cả các chuỗi",
+        "loginAndClaim": "Đăng nhập và Nhận $2.00"
       },
       "loginConfirmModal": {
         "title": "Chọn một địa chỉ để đăng nhập",
@@ -2470,7 +2480,10 @@
         "riskMessageFromChain": "Do hạn chế rủi ro, giới hạn rút tiền phụ thuộc vào tổng số tiền đã gửi từ chuỗi này.",
         "selectRecipientAddress": "Chọn địa chỉ người nhận",
         "desc": "Bạn có thể rút số dư GasAccount của mình vào ví DeBank L2. Đăng nhập vào ví DeBank L2 của bạn để chuyển tiền vào blockchain được hỗ trợ khi cần.",
-        "selectAddr": "Chọn Địa chỉ"
+        "selectAddr": "Chọn Địa chỉ",
+        "WithdrawalAmount": "Số tiền rút",
+        "withdrawalTip": "Số dư rút tiền khả dụng: {{amount}}",
+        "noBalance": "Không có số dư"
       },
       "withdrawConfirmModal": {
         "button": "Xem trên DeBank",

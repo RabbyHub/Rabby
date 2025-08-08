@@ -363,6 +363,15 @@
         "nonceTooHigh": "Nonce demasiado alto. Por favor, ajusta el nonce y vuelve a intentarlo.",
         "insufficient": "Su saldo de gas no es suficiente para cubrir la tarifa de gas de la red. Agregue fondos para el gas e intente nuevamente.",
         "gasPriceTooLow": "El precio del gas es demasiado bajo. Lo ajustaremos en un 30% para ayudar a que su transacción se confirme. Haga clic en “Retry” para confirmar y volver a intentarlo."
+      },
+      "addLiquidity": {
+        "priceDiff": "Diferencia de Precio",
+        "token0": "Agregar Token 1",
+        "receiver": "Receptor",
+        "token1": "Añadir Token 2",
+        "marketPrice": "Precio de Mercado",
+        "title": "Agregar Liquidez",
+        "poolPrice": "Precio de POOL"
       }
     },
     "signFooterBar": {
@@ -2432,7 +2441,8 @@
         "login": "Iniciar sesión en GasAccount",
         "title": "Depósito USDC / USDT",
         "desc": "Paga tarifas de gas en todas las cadenas",
-        "gotIt": "Entendido"
+        "gotIt": "Entendido",
+        "loginAndClaim": "Inicia sesión y reclama $2.00"
       },
       "loginConfirmModal": {
         "title": "Iniciar sesión con la dirección actual",
@@ -2469,7 +2479,10 @@
         "deductGasFees": "El monto recibido deducirá las tarifas de gas",
         "riskMessageFromAddress": "Debido al control de riesgos, el límite de retiro depende del monto total que esta dirección ha depositado.",
         "riskMessageFromChain": "Debido al control de riesgos, el límite de retiro depende del monto total depositado desde esta cadena.",
-        "desc": "Puede retirar el saldo de su GasAccount a su billetera DeBank L2. Inicie sesión en su billetera DeBank L2 para transferir los fondos a una blockchain compatible según sea necesario."
+        "desc": "Puede retirar el saldo de su GasAccount a su billetera DeBank L2. Inicie sesión en su billetera DeBank L2 para transferir los fondos a una blockchain compatible según sea necesario.",
+        "noBalance": "Sin saldo",
+        "WithdrawalAmount": "Cantidad de Retiro",
+        "withdrawalTip": "Saldo de retiro disponible: {{amount}}"
       },
       "withdrawConfirmModal": {
         "button": "Ver en DeBank",
