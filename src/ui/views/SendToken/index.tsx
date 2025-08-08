@@ -163,7 +163,7 @@ export const ToAddressCard = ({
   return (
     <header
       className={clsx(
-        'header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]',
+        'header bg-r-neutral-card1 rounded-[8px] px-[28px] py-[20px]',
         'flex flex-col items-center gap-[8px]'
       )}
     >
@@ -1577,7 +1577,7 @@ const SendToken = () => {
                 <div
                   className="cursor-pointer text-r-neutral-title1"
                   onClick={() => {
-                    history.push(`/send-poly${history.location.search}`);
+                    history.replace(`/send-poly${history.location.search}`);
                   }}
                 >
                   <RcIconSwitchCC width={20} height={20} />

@@ -9,8 +9,8 @@ html.dark,
 html.dark > body,
 body.dark {
   background: var(--r-neutral-bg-1);
-  --rabby-custom-ant-drawer-mask: rgba(0, 0, 0, 0.8);
-  --rabby-custom-ant-modal-mask: rgba(0, 0, 0, 0.8);
+  --rabby-custom-ant-drawer-mask: rgba(0, 0, 0, 0.5);
+  --rabby-custom-ant-modal-mask: rgba(0, 0, 0, 0.5);
 
   --rabby-custom-box-shadow__gas-top-up: 0px 16px 20px 0px rgba(0, 0, 0, 0.20);
 }

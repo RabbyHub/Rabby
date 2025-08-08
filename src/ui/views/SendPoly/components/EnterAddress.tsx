@@ -60,6 +60,7 @@ const WhitelistAddressTypeCard = ({
         address={address}
         type={type}
         brandName={brandName}
+        allowEditAlias
         aliasName={aliasName || ellipsisAddress(address)}
         className="bg-r-neutral-card1"
         cexInfo={{

@@ -76,6 +76,9 @@ export const getActionTypeText = (data: ParsedTransactionActionData) => {
   if (data.multiSwap) {
     return t('page.signTx.swap.title');
   }
+  if (data.addLiquidity) {
+    return t('page.signTx.addLiquidity.title');
+  }
   return t('page.signTx.unknownAction');
 };
 
