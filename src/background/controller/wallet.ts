@@ -5126,6 +5126,9 @@ export class WalletController extends BaseController {
     const { text } = await wallet.openapi.getGasAccountSignText(
       account.address
     );
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
+    });
     const signature = await this.sendRequest<string>({
       method: 'personal_sign',
       params: [text, account.address],
@@ -5146,7 +5149,6 @@ export class WalletController extends BaseController {
         retries: 2,
       }
     );
-
     await resumeAccount();
     return { signature, success: result?.success || false, result };
   }
@@ -5160,13 +5162,15 @@ export class WalletController extends BaseController {
     });
   }
 
-  signGasAccount = async (account: Account) => {
+  signGasAccount = async (account: Account, isClaimGift: boolean = false) => {
     const { signature, success } = await this.executeGasAccountLogin(account);
-
     if (success && signature) {
       await this.saveGasAccountLoginState(signature, account);
     }
-
+    if (isClaimGift) {
+      await this.claimGasAccountGift(account.address);
+    }
+    this.markGiftAsClaimed();
     return signature;
   };
 
@@ -5542,65 +5546,6 @@ export class WalletController extends BaseController {
   };
 
   /**
-   * 检查gift资格
-   * @param address 地址
-   * @returns 是否有资格
-   */
-  checkGiftEligibility = async (address: string): Promise<boolean> => {
-    try {
-      const currentAccount = await preferenceService.getCurrentAccount();
-      if (!currentAccount) {
-        return false;
-      }
-      if (!isFullVersionAccountType(currentAccount)) {
-        return false;
-      }
-
-      const gasAccountData = gasAccountService.getGasAccountSig();
-      const hasGasAccountLogin = !!(
-        gasAccountData.sig && gasAccountData.accountId
-      );
-      if (hasGasAccountLogin) {
-        return false;
-      }
-
-      const cache = gasAccountService.getGiftCache();
-      const cachedResult = cache[address.toLowerCase()];
-      if (cachedResult && !cachedResult.isEligible) {
-        return false;
-      }
-
-      if (cachedResult && cachedResult.isEligible) {
-        return true;
-      }
-
-      try {
-        const apiResult = await this.openapi.checkGasAccountGiftEligibility({
-          id: address,
-        });
-        if (!apiResult.has_eligibility) {
-          gasAccountService.setGiftEligibilityResult(
-            address,
-            false,
-            hasGasAccountLogin
-          );
-        }
-        return apiResult.has_eligibility;
-      } catch (error) {
-        console.log(
-          'Failed to check gift eligibility from API:',
-          address,
-          error
-        );
-        return false;
-      }
-    } catch (error) {
-      console.error('Failed to check gift eligibility:', error);
-      return false;
-    }
-  };
-
-  /**
    * 领取gift奖励
    * @param address 地址
    * @returns 是否成功领取
@@ -5609,7 +5554,6 @@ export class WalletController extends BaseController {
     try {
       // 获取gas account的签名信息
       const { sig, accountId } = this.getGasAccountSig();
-      console.log('🔍 claimGasAccountGift - 开始执行', sig, accountId);
       if (!sig || !accountId) {
         console.error('Gas account not logged in, cannot claim gift');
         return false;
@@ -5620,10 +5564,10 @@ export class WalletController extends BaseController {
         sig,
         id: accountId,
       });
-      console.log('🔍 claimGasAccountGift - 领取成功', result);
       if (result.success) {
         // 标记为已领取
-        gasAccountService.markGiftAsClaimed(address);
+        this.markGiftAsClaimed();
+        this.setHasAnyAccountClaimedGift(true);
         return true;
       } else {
         console.error('API returned success: false for gift claim');
@@ -5637,41 +5581,9 @@ export class WalletController extends BaseController {
 
   /**
    * 标记地址已领取gift（内部使用）
-   * @param address 地址
    */
-  markGiftAsClaimed = (address: string) => {
-    gasAccountService.markGiftAsClaimed(address);
-  };
-
-  /**
-   * 清除gift资格缓存
-   * @param address 地址
-   */
-  clearGiftEligibilityCache = (address: string) => {
-    gasAccountService.clearGiftCache(address);
-  };
-
-  /**
-   * 清除全部gift资格缓存（测试用）
-   */
-  clearAllGiftEligibilityCache = () => {
-    gasAccountService.clearAllGiftCache();
-  };
-
-  /**
-   * 获取gift资格缓存
-   * @returns 缓存对象
-   */
-  getGiftEligibilityCache = () => {
-    return gasAccountService.getGiftCache();
-  };
-
-  /**
-   * 获取已领取gift的地址列表
-   * @returns 已领取地址列表
-   */
-  getClaimedGiftAddresses = () => {
-    return gasAccountService.getClaimedGiftAddresses();
+  markGiftAsClaimed = () => {
+    gasAccountService.markGiftAsClaimed();
   };
 
   /**

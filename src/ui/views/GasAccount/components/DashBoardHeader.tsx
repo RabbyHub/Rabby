@@ -21,10 +21,10 @@ const formatUsdValue = (usd: string | number) => {
 
 export const GasAccountDashBoardHeader: React.FC = () => {
   const { value, loading } = useGasAccountInfo();
-  const { currentGiftEligible, hasClaimedGift } = useRabbySelector((s) => ({
-    currentGiftEligible: s.gift.currentGiftEligible,
-    hasClaimedGift: s.gift.hasClaimedGift,
-  }));
+  const currentGiftEligible = useRabbySelector(
+    (s) => s.gift.currentGiftEligible
+  );
+  const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
 
   // 检查当前账号是否有gift资格
   const hasGiftEligibility = useMemo(() => {
