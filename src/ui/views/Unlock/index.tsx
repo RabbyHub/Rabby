@@ -9,11 +9,10 @@ import {
   getUiType,
   openInternalPageInTab,
 } from 'ui/utils';
-import { ReactComponent as RabbySVG } from '@/ui/assets/unlock/rabby.svg';
+import rabbyLogo from '@/ui/assets/unlock/rabby.svg';
 import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
 import clsx from 'clsx';
 import styled from 'styled-components';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import qs from 'qs';
 import { isString } from 'lodash';
@@ -96,7 +95,7 @@ const Unlock = () => {
       <div className="unlock page-has-ant-input relative h-full min-h-[550px]">
         <BackgroundSVG className="absolute inset-0 z-[-1]" />
         <div className="pt-80">
-          <RabbySVG className="m-auto" />
+          <img src={rabbyLogo} className="m-auto w-[100px] h-[100px]" />
           <h1
             className={clsx(
               'text-[24px] font-semibold',

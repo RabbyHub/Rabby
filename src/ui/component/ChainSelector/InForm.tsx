@@ -113,7 +113,7 @@ const ChainWrapper = styled.div`
     }
   }
   &:hover {
-    background: var(--r-blue-light1, #eef1ff);
+    background: var(--r-blue-light2, #eef1ff);
   }
   & > {
     .down {
