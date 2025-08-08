@@ -462,7 +462,7 @@ export const AddressRiskAlert = ({
       <div className="flex flex-col h-full">
         <header
           className={clsx(
-            'header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]',
+            'header bg-r-neutral-card1 rounded-[8px] px-[28px] py-[20px]',
             'flex flex-col items-center gap-[8px]',
             {
               'pb-0': riskInfos.hasNotRisk,

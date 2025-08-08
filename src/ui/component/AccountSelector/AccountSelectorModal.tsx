@@ -3,7 +3,7 @@
 import { Drawer, DrawerProps, Input } from 'antd';
 import React, { ReactNode, useEffect, useMemo } from 'react';
 
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import { KEYRING_TYPE } from 'consts';
 import IconSearch from 'ui/assets/search.svg';
@@ -22,6 +22,7 @@ import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.s
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { AccountItem } from './AccountItem';
+import { isSameAddress } from '@/ui/utils';
 
 const Warper = styled.div`
   height: 100%;
@@ -70,6 +71,7 @@ interface ChainSelectorModalProps {
   height?: number | string;
   zIndex?: number;
   showClosableIcon?: boolean;
+  showWhitelistIcon?: boolean;
   getContainer?: DrawerProps['getContainer'];
 }
 
@@ -83,6 +85,7 @@ export const AccountSelectorModal = ({
   height = 540,
   zIndex,
   showClosableIcon = true,
+  showWhitelistIcon = false,
   getContainer,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
@@ -184,11 +187,18 @@ export const AccountSelectorModal = ({
     sortedAccountsList,
   ]);
 
+  const { whitelist } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+  }));
+
   useEffect(() => {
     fetchAllAccounts();
   }, [fetchAllAccounts]);
 
   const dispatch = useRabbyDispatch();
+  useEffect(() => {
+    dispatch.whitelist.getWhitelist();
+  }, [dispatch.whitelist]);
 
   useEffect(() => {
     if (!visible) {
@@ -285,6 +295,12 @@ export const AccountSelectorModal = ({
                       onClick={() => {
                         onChange?.(item);
                       }}
+                      showWhitelistIcon={
+                        showWhitelistIcon &&
+                        whitelist.some((addr) =>
+                          isSameAddress(addr, item.address)
+                        )
+                      }
                       isSelected={!!value && isSameAccount(item, value)}
                       extra={
                         <div
