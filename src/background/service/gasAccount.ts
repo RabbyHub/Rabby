@@ -50,7 +50,6 @@ class GasAccountService {
     sig?: string,
     account?: GasAccountServiceStore['account']
   ) => {
-    const time = Date.now();
     if (!sig || !account) {
       this.store.sig = undefined;
       this.store.accountId = undefined;
