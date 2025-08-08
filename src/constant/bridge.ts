@@ -1,5 +1,6 @@
 export const DEFAULT_BRIDGE_SUPPORTED_CHAIN = [
   'arb',
+  'brock',
   'matic',
   'era',
   'base',
