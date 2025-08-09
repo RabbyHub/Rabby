@@ -37,6 +37,7 @@ import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { Cex, GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
+import Checkbox from 'ui/component/Checkbox';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -76,6 +77,7 @@ import { copyAddress } from '@/ui/utils/clipboard';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
+import { Unlink } from './UnlinkSDK';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -89,6 +91,10 @@ function findInstanceLevel(gasList: GasLevel[]) {
 }
 
 const DEFAULT_GAS_USED = 21000;
+
+// TODO: replace with real config when integrating Unlink SDK
+const unlinkConfig = {} as any;
+const unlink = new Unlink(unlinkConfig);
 
 const DEFAULT_TOKEN = {
   id: 'eth',
@@ -217,6 +223,7 @@ const SendToken = () => {
   // UI States
   const [reserveGasOpen, setReserveGasOpen] = useState(false);
   const [refreshId, setRefreshId] = useState(0);
+  const [isPrivate, setIsPrivate] = useState(false);
 
   // Core States
   const [form] = useForm<FormSendToken>();
@@ -577,6 +584,56 @@ const SendToken = () => {
       if (!currentToken) {
         return;
       }
+
+      // Private Mode branch
+      if (isPrivate) {
+        try {
+          const chainInfo = findChain({ serverId: currentToken.chain })!;
+          const amountNum = new BigNumber(amount || 0);
+          const amountInUSDC = amountNum
+            .multipliedBy(new BigNumber(currentToken.price || 0))
+            .toNumber();
+
+          await unlink.sendPrivate({
+            from: currentAccount!.address,
+            to: toAddress,
+            amount: amountInUSDC,
+            chainId: chainInfo.id,
+          });
+
+          wallet.addCacheHistoryData(
+            `${chainInfo.enum}-${'0x'}`,
+            {
+              address: currentAccount!.address,
+              chainId: chainInfo.id,
+              from: currentAccount!.address,
+              to: `${toAddress} (Private)`,
+              token: currentToken,
+              amount: Number(amount),
+              status: 'pending',
+              createdAt: Date.now(),
+            } as SendTxHistoryItem,
+            'send'
+          );
+
+          message.success(
+            t('page.sendToken.privateSentSuccess', {
+              defaultValue: 'Private transfer submitted',
+            })
+          );
+
+          if (isTab) {
+            form.setFieldsValue({ amount: '' });
+          } else {
+            window.close();
+          }
+          return;
+        } catch (e: any) {
+          message.error(e?.message || 'Private transfer failed');
+          throw e;
+        }
+      }
+
       if (canUseDirectSubmitTx && !forceSignPage) {
         startDirectSigning();
         return;
@@ -1652,6 +1709,14 @@ const SendToken = () => {
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
+            <div className="w-[100%] px-[16px] flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Checkbox checked={isPrivate} onChange={setIsPrivate} />
+                <span className="text-[14px] text-r-neutral-title1">
+                  {t('page.sendToken.privateMode', 'Private Mode')}
+                </span>
+              </div>
+            </div>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
               {canUseDirectSubmitTx ? (
                 <DirectSignToConfirmBtn
