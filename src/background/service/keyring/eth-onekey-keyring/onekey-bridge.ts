@@ -5,11 +5,12 @@ const { HardwareWebSdk } = HardwareSDK;
 
 export default class OneKeyBridge implements OneKeyBridgeInterface {
   init: OneKeyBridgeInterface['init'] = async () => {
-    HardwareWebSdk.init({
-      debug: false,
+    await HardwareWebSdk.init({
+      debug: true,
       // The official iframe page deployed by OneKey
       // of course you can also deploy it yourself
-      connectSrc: 'https://jssdk.onekey.so/0.3.48/',
+      connectSrc: 'https://jssdk.onekey.so/1.1.0/',
+      env: 'webusb',
     });
     HardwareWebSdk.on(UI_EVENT, (e) => {
       switch (e.type) {

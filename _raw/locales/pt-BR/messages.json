@@ -1810,6 +1810,14 @@
         "keystonePermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu Keystone na janela pop-up a seguir, e certifique-se de que seu Keystone 3 Pro esteja na página inicial.",
         "deviceIsBusy": "Dispositivo está ocupado"
       },
+      "onekey": {
+        "onekeyPermission1": "Conectar a um dispositivo USB",
+        "allowRabbyPermissionsTitle": "Permitir permissões do Rabby para:",
+        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela pop-up a seguir.",
+        "whyOneKey": "Por que OneKey?",
+        "buyOneKey": "Comprar OneKey",
+        "haveOneKey": "Ainda não tem um OneKey?"
+      },
       "firefoxLedgerDisableTips": "Ledger não é compatível com Firefox",
       "addFromCurrentSeedPhrase": "Adicionar da Seed Phrase Atual"
     },
@@ -2577,11 +2585,13 @@
         "title": "Importar Seed Phrase"
       },
       "importOneKey": {
-        "tip2": "2. Conecte seu dispositivo OneKey",
-        "tip1": "1. Instale o <1>OneKey Bridge<1/>",
-        "connect": "Conectar OneKey",
-        "tip3": "3. Desbloqueie seu dispositivo",
-        "title": "OneKey"
+        "qrcode": {
+          "desc": "Escaneie o código QR na carteira hardware OneKey"
+        },
+        "title": "OneKey",
+        "tip1": "1. Conecte seu dispositivo OneKey",
+        "tip2": "2. Desbloqueie seu dispositivo",
+        "connect": "Conectar OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3062,6 +3072,18 @@
       "WatchAddressKeyring": "Contato",
       "watchAddressKeyring": "Contato",
       "simpleKeyring": "Chave Privada"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Dispositivo não encontrado",
+        "deviceInitializeFailed": "Erro do dispositivo, reinicie e tente novamente",
+        "needUpgradeFirmware": "O firmware deve ser atualizado para usar o dispositivo",
+        "thisMethodNeedUpgradeFirmware": "Este recurso requer atualização de firmware, atualize o firmware no aplicativo OneKey",
+        "notAllowInBootloaderMode": "Use no modo normal",
+        "deviceCheckPassphraseStateError": "A passphrase ou attach pin não correspondem",
+        "actionCancel": "Operação cancelada",
+        "deviceNeedsWebHIDPermission": "Dispositivo não encontrado ou precisa de permissão WebHID"
+      }
     }
   },
   "constant": {

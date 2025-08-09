@@ -1678,6 +1678,14 @@
         "deviceIsLockedError": "Nhập mật khẩu để mở khóa",
         "exportAddressJustAllowedOnHomePage": "Xuất khẩu địa chỉ chỉ được phép trên trang chủ"
       },
+      "onekey": {
+        "onekeyPermission1": "Kết nối với thiết bị USB",
+        "allowRabbyPermissionsTitle": "Cho phép Rabby các quyền để:",
+        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo.",
+        "whyOneKey": "Tại sao chọn OneKey?",
+        "buyOneKey": "Mua OneKey",
+        "haveOneKey": "Chưa có OneKey?"
+      },
       "walletConnect": {
         "status": {
           "default": "Quét với {{brand}}",
@@ -2574,10 +2582,12 @@
         "title": "Nhập cụm từ khôi phục"
       },
       "importOneKey": {
+        "qrcode": {
+          "desc": "Quét mã QR trên ví cứng OneKey"
+        },
         "title": "OneKey",
-        "tip1": "1. Cài đặt <1>OneKey Bridge<1/>",
-        "tip3": "3. Mở khóa thiết bị của bạn",
-        "tip2": "2. Cắm thiết bị OneKey của bạn vào.",
+        "tip1": "1. Cắm thiết bị OneKey của bạn",
+        "tip2": "2. Mở khóa thiết bị của bạn",
         "connect": "Kết nối OneKey"
       },
       "importTrezor": {
@@ -3056,6 +3066,18 @@
       "watchAddressKeyring": "Liên hệ",
       "simpleKeyring": "Khóa riêng",
       "HdKeyring": "Câu cụt đầu tiên"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Không tìm thấy thiết bị",
+        "deviceInitializeFailed": "Lỗi thiết bị, vui lòng khởi động lại và thử lại",
+        "needUpgradeFirmware": "Phải nâng cấp firmware để sử dụng thiết bị",
+        "thisMethodNeedUpgradeFirmware": "Tính năng này yêu cầu nâng cấp firmware, vui lòng nâng cấp firmware trong ứng dụng OneKey",
+        "notAllowInBootloaderMode": "Vui lòng sử dụng ở chế độ bình thường",
+        "deviceCheckPassphraseStateError": "Passphrase hoặc attach pin không khớp",
+        "actionCancel": "Thao tác đã được hủy",
+        "deviceNeedsWebHIDPermission": "Không tìm thấy thiết bị hoặc cần quyền WebHID"
+      }
     }
   },
   "constant": {
