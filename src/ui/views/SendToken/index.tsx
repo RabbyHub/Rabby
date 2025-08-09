@@ -37,7 +37,7 @@ import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { Cex, GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
-import Checkbox from 'ui/component/Checkbox';
+import PillsSwitch from 'ui/component/PillsSwitch';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -1710,11 +1710,21 @@ const SendToken = () => {
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="w-[100%] px-[16px] flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Checkbox checked={isPrivate} onChange={setIsPrivate} />
+              <div className="flex items-center gap-3">
                 <span className="text-[14px] text-r-neutral-title1">
                   {t('page.sendToken.privateMode', 'Private Mode')}
                 </span>
+                <PillsSwitch
+                  options={[
+                    { key: 'off', label: t('global.off', 'Off') },
+                    { key: 'on', label: t('global.on', 'On') },
+                  ]}
+                  value={isPrivate ? 'on' : 'off'}
+                  onTabChange={(key) => setIsPrivate(key === 'on')}
+                  itemClassname="px-3 py-1 rounded-[999px] text-12"
+                  itemClassnameActive="bg-r-blue-default text-white"
+                  itemClassnameInActive="bg-r-neutral-card2 text-r-neutral-body"
+                />
               </div>
             </div>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
