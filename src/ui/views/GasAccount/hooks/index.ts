@@ -130,7 +130,7 @@ export const useGasAccountMethods = () => {
         if (result?.success) {
           dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
           if (isClaimGift) {
-            wallet.claimGasAccountGift(account.address);
+            await wallet.claimGasAccountGift(account.address);
           }
           dispatch.gift.markGiftAsClaimed({ address: account.address });
           wallet.markGiftAsClaimed();
