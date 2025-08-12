@@ -25,6 +25,7 @@ export const gift = createModel<RootModel>()({
     claimedGiftAddresses: [] as string[],
     giftUsdValue: 0,
     hasClaimedGift: false,
+    _pendingRequests: {} as Record<string, Promise<boolean>>,
   },
 
   reducers: {
@@ -277,24 +278,55 @@ export const gift = createModel<RootModel>()({
 
         // 调用API检查gift资格
         try {
-          const apiResult = await store.app.wallet.openapi.checkGasAccountGiftEligibility(
-            {
+          const requestKey = `gift_eligibility_${addressKey}`;
+          const giftStore = store.gift as any;
+          if (
+            giftStore._pendingRequests &&
+            giftStore._pendingRequests[requestKey] !== undefined
+          ) {
+            const result = await giftStore._pendingRequests[requestKey];
+            return result;
+          }
+
+          // 创建新的请求 Promise
+          if (!giftStore._pendingRequests) {
+            giftStore._pendingRequests = {};
+          }
+
+          const requestPromise = store.app.wallet.openapi
+            .checkGasAccountGiftEligibility({
               id: targetAddress,
-            }
-          );
-          const isEligible = apiResult.has_eligibility || false;
-          const giftUsdValue = apiResult.can_claimed_usd_value || 0;
+            })
+            .then((apiResult) => {
+              const isEligible = apiResult.has_eligibility || false;
+              const giftUsdValue = apiResult.can_claimed_usd_value || 0;
 
-          dispatch.gift.setGiftEligibility({
-            address: targetAddress,
-            isEligible,
-            isChecked: true,
-            isClaimed: currentState.claimedGiftAddresses.includes(addressKey),
-            hasGasAccountLogin: !isEligible ? hasGasAccountLogin : undefined,
-            giftUsdValue: isEligible ? giftUsdValue : 0, // 只有当有资格时才设置 giftUsdValue
-          });
+              dispatch.gift.setGiftEligibility({
+                address: targetAddress,
+                isEligible,
+                isChecked: true,
+                isClaimed: currentState.claimedGiftAddresses.includes(
+                  addressKey
+                ),
+                hasGasAccountLogin: !isEligible
+                  ? hasGasAccountLogin
+                  : undefined,
+                giftUsdValue: isEligible ? giftUsdValue : 0, // 只有当有资格时才设置 giftUsdValue
+              });
 
-          return isEligible;
+              delete giftStore._pendingRequests[requestKey];
+              return isEligible;
+            })
+            .catch((error) => {
+              delete giftStore._pendingRequests[requestKey];
+              throw error;
+            });
+
+          // 存储请求 Promise
+          giftStore._pendingRequests[requestKey] = requestPromise;
+
+          const result = await requestPromise;
+          return result;
         } catch (error) {
           console.error('Failed to check gift eligibility from API:', error);
           dispatch.gift.setGiftUsdValue({ giftUsdValue: 0 });
