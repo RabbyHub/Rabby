@@ -297,6 +297,7 @@ export const gift = createModel<RootModel>()({
           return isEligible;
         } catch (error) {
           console.error('Failed to check gift eligibility from API:', error);
+          dispatch.gift.setGiftUsdValue({ giftUsdValue: 0 });
           return false;
         }
       } catch (error) {
