@@ -6,7 +6,7 @@ import { ReactComponent as RcIconQuoteEnd } from '@/ui/assets/gas-account/quote-
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import { useRabbySelector, useRabbyDispatch } from 'ui/store';
-import { useWallet } from 'ui/utils';
+import { formatUsdValue, useWallet } from 'ui/utils';
 import { useGasAccountMethods } from '../hooks';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
 import { EVENTS } from '@/constant';
@@ -24,8 +24,8 @@ export const GasAccountLoginCard = ({
   const wallet = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useGasAccountMethods();
-  const { currentGiftEligible, currentAccount } = useRabbySelector((s) => ({
-    currentGiftEligible: s.gift.currentGiftEligible,
+  const { giftUsdValue, currentAccount } = useRabbySelector((s) => ({
+    giftUsdValue: s.gift.giftUsdValue,
     currentAccount: s.account.currentAccount,
   }));
 
@@ -43,7 +43,7 @@ export const GasAccountLoginCard = ({
   };
 
   const handleClick = () => {
-    if (currentGiftEligible) {
+    if (giftUsdValue > 0) {
       handleLoginAndClaim();
     } else if (onLoginPress) {
       onLoginPress();
@@ -76,13 +76,17 @@ export const GasAccountLoginCard = ({
           className={clsx(
             'h-[48px] text-15 font-medium leading-normal text-r-neutral-title2',
             'flex items-center justify-center',
-            currentGiftEligible ? 'bg-green border-green gap-6' : ''
+            giftUsdValue > 0 ? 'bg-green border-green gap-6' : ''
           )}
         >
-          {currentGiftEligible ? (
+          {giftUsdValue > 0 ? (
             <>
               <IconGift viewBox="0 0 18 18" className="w-18 h-18" />
-              <span>{t('page.gasAccount.loginInTip.loginAndClaim')}</span>
+              <span>
+                {t('page.gasAccount.loginInTip.loginAndClaim', {
+                  usdValue: formatUsdValue(giftUsdValue),
+                })}
+              </span>
             </>
           ) : (
             t('page.gasAccount.loginInTip.login')

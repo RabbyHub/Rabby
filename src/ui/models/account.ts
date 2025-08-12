@@ -257,12 +257,6 @@ export const account = createModel<RootModel>()({
 
       await store.app.wallet.changeAccount(nextVal);
       dispatch.account.setCurrentAccount({ currentAccount: nextVal });
-
-      // 切换账号时也查询是否有资格
-      await dispatch.gift.checkGiftEligibilityAsync({
-        address,
-        currentAccount: nextVal,
-      });
     },
 
     async resetTokenList() {
