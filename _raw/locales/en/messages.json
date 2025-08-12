@@ -1579,7 +1579,16 @@
         },
         "howToConnectImKey": "How to Connect imKey",
         "ledgerIsDisconnected": "Your ledger is not connected",
-        "onekeyIsDisconnected": "Your OneKey is not connected"
+        "onekeyIsDisconnected": "Your OneKey is not connected",
+        "trezor": {
+          "doc1": "Plug in your Trezor device",
+          "doc2": "Unlock your device"
+        },
+        "onekey": {
+          "doc1": "Install <1>OneKey Bridge<1/>",
+          "doc2": "Plug in your OneKey device",
+          "doc3": "Unlock your device"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Your Safe address is not deployed on this chain"
@@ -1940,7 +1949,13 @@
         "findTheAssociatedSafeAddress": "Find the associated safe address",
         "import": "Import"
       },
-      "addFromCurrentSeedPhrase": "Add from Current Seed Phrase"
+      "addFromCurrentSeedPhrase": "Add from Current Seed Phrase",
+      "trezor": {
+        "title": "Connect Trezor"
+      },
+      "onekey": {
+        "title": "Connect OneKey"
+      }
     },
     "unlock": {
       "btn": {
