@@ -2508,7 +2508,7 @@
         "title": "Deposit USDC / USDT",
         "desc": "Pay Gas Fees on All Chains",
         "login": "Log in GasAccount",
-        "loginAndClaim": "Log in and Claim $2.00",
+        "loginAndClaim": "Log in and Claim {{usdValue}}",
         "gotIt": "Got it"
       },
       "loginConfirmModal": {

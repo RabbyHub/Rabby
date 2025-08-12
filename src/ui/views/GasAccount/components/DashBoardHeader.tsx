@@ -21,15 +21,13 @@ const formatUsdValue = (usd: string | number) => {
 
 export const GasAccountDashBoardHeader: React.FC = () => {
   const { value, loading } = useGasAccountInfo();
-  const currentGiftEligible = useRabbySelector(
-    (s) => s.gift.currentGiftEligible
-  );
+  const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
   const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
 
   // 检查当前账号是否有gift资格
   const hasGiftEligibility = useMemo(() => {
-    return currentGiftEligible && !hasClaimedGift;
-  }, [currentGiftEligible, hasClaimedGift]);
+    return giftUsdValue > 0 && !hasClaimedGift;
+  }, [giftUsdValue, hasClaimedGift]);
 
   const usd = useMemo(() => {
     if (loading) {
@@ -54,7 +52,7 @@ export const GasAccountDashBoardHeader: React.FC = () => {
       {hasGiftEligibility ? (
         <>
           <IconGift viewBox="0 0 14 14" className="w-14 h-14" />
-          $2.00
+          {formatUsdValue(giftUsdValue)}
         </>
       ) : (
         <>
