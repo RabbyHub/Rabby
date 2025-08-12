@@ -10,7 +10,7 @@ export const TrezorBanner: React.FC<Props> = ({ className }) => {
     <div className={className}>
       <div
         className={clsx(
-          'bg-r-neutral-card-2 rounded-[12px]',
+          // 'bg-r-neutral-card-2 rounded-[12px]',
           'w-[800px] h-[100px] px-[50px]',
           'flex items-center justify-between'
         )}
