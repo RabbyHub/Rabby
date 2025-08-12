@@ -2,6 +2,8 @@ import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { isFullVersionAccountType } from '@/utils/account';
 
+const CACHE_VALIDITY_PERIOD = 60 * 60 * 1000;
+
 interface GiftEligibilityItem {
   isEligible: boolean;
   isChecked: boolean;
@@ -21,7 +23,7 @@ export const gift = createModel<RootModel>()({
     giftEligibility: {} as Record<string, GiftEligibilityItem>,
     giftEligibilityCache: {} as Record<string, GiftEligibilityCacheItem>,
     claimedGiftAddresses: [] as string[],
-    currentGiftEligible: false,
+    giftUsdValue: 0,
     hasClaimedGift: false,
   },
 
@@ -38,6 +40,7 @@ export const gift = createModel<RootModel>()({
         isChecked: boolean;
         isClaimed?: boolean;
         hasGasAccountLogin?: boolean;
+        giftUsdValue?: number;
       }
     ) {
       const {
@@ -46,6 +49,7 @@ export const gift = createModel<RootModel>()({
         isChecked,
         isClaimed = false,
         hasGasAccountLogin,
+        giftUsdValue,
       } = payload;
       const addressKey = address.toLowerCase();
       const existingData = state.giftEligibility[addressKey];
@@ -60,27 +64,33 @@ export const gift = createModel<RootModel>()({
             isClaimed: isClaimed || existingData?.isClaimed || false,
           },
         },
-        currentGiftEligible: !state.hasClaimedGift && isEligible && !isClaimed,
+        // 更新 giftUsdValue，只有当没有领取过gift且当前地址有资格时才设置值
+        giftUsdValue:
+          !state.hasClaimedGift && isEligible && !isClaimed
+            ? giftUsdValue || 0
+            : 0,
       };
 
       if (hasGasAccountLogin !== undefined) {
+        const cacheItem = {
+          isEligible,
+          timestamp: Date.now(),
+          hasGasAccountLogin,
+        };
+
         newState.giftEligibilityCache = {
           ...state.giftEligibilityCache,
-          [addressKey]: {
-            isEligible,
-            timestamp: Date.now(),
-            hasGasAccountLogin,
-          },
+          [addressKey]: cacheItem,
         };
       }
 
       return newState;
     },
 
-    setCurrentGiftEligible(state, payload: { isEligible: boolean }) {
+    setGiftUsdValue(state, payload: { giftUsdValue: number }) {
       return {
         ...state,
-        currentGiftEligible: payload.isEligible,
+        giftUsdValue: payload.giftUsdValue,
       };
     },
 
@@ -113,7 +123,7 @@ export const gift = createModel<RootModel>()({
         },
         claimedGiftAddresses: newClaimedGiftAddresses,
         hasClaimedGift: true, // 标记全局已有账号领取过gift
-        currentGiftEligible: false, // 领取后不再显示gift
+        giftUsdValue: 0, // 领取后不再显示gift
       };
     },
 
@@ -127,6 +137,26 @@ export const gift = createModel<RootModel>()({
       return {
         ...state,
         giftEligibilityCache: restCache,
+      };
+    },
+
+    clearExpiredGiftCache(state) {
+      const now = Date.now();
+      const validCache: Record<string, GiftEligibilityCacheItem> = {};
+
+      // 只保留未过期的缓存
+      Object.entries(state.giftEligibilityCache).forEach(
+        ([address, cacheItem]) => {
+          const cacheAge = now - cacheItem.timestamp;
+          if (cacheAge <= CACHE_VALIDITY_PERIOD) {
+            validCache[address] = cacheItem;
+          }
+        }
+      );
+
+      return {
+        ...state,
+        giftEligibilityCache: validCache,
       };
     },
   },
@@ -177,33 +207,44 @@ export const gift = createModel<RootModel>()({
         }
 
         const cachedResult = currentState.giftEligibilityCache[addressKey];
+
         if (cachedResult) {
-          // 如果缓存显示不满足条件，直接返回false
-          if (!cachedResult.isEligible) {
-            dispatch.gift.setGiftEligibility({
-              address: targetAddress,
-              isEligible: false,
-              isChecked: true,
-              isClaimed: currentState.claimedGiftAddresses.includes(addressKey),
-            });
-            return false;
-          }
+          const now = Date.now();
+          const cacheAge = now - cachedResult.timestamp;
 
-          const gasAccountData = await store.app.wallet.getGasAccountSig();
-          const hasGasAccountLogin = !!(
-            gasAccountData.sig && gasAccountData.accountId
-          );
-
-          if (cachedResult.hasGasAccountLogin === hasGasAccountLogin) {
-            dispatch.gift.setGiftEligibility({
-              address: targetAddress,
-              isEligible: cachedResult.isEligible,
-              isChecked: true,
-              isClaimed: currentState.claimedGiftAddresses.includes(addressKey),
-            });
-            return cachedResult.isEligible;
-          } else {
+          if (cacheAge > CACHE_VALIDITY_PERIOD) {
             dispatch.gift.clearGiftCache({ address: targetAddress });
+          } else {
+            if (!cachedResult.isEligible) {
+              dispatch.gift.setGiftEligibility({
+                address: targetAddress,
+                isEligible: false,
+                isChecked: true,
+                isClaimed: currentState.claimedGiftAddresses.includes(
+                  addressKey
+                ),
+              });
+              return false;
+            }
+
+            const gasAccountData = await store.app.wallet.getGasAccountSig();
+            const hasGasAccountLogin = !!(
+              gasAccountData.sig && gasAccountData.accountId
+            );
+
+            if (cachedResult.hasGasAccountLogin === hasGasAccountLogin) {
+              dispatch.gift.setGiftEligibility({
+                address: targetAddress,
+                isEligible: cachedResult.isEligible,
+                isChecked: true,
+                isClaimed: currentState.claimedGiftAddresses.includes(
+                  addressKey
+                ),
+              });
+              return cachedResult.isEligible;
+            } else {
+              dispatch.gift.clearGiftCache({ address: targetAddress });
+            }
           }
         }
 
@@ -242,6 +283,7 @@ export const gift = createModel<RootModel>()({
             }
           );
           const isEligible = apiResult.has_eligibility || false;
+          const giftUsdValue = apiResult.can_claimed_usd_value || 0;
 
           dispatch.gift.setGiftEligibility({
             address: targetAddress,
@@ -249,6 +291,7 @@ export const gift = createModel<RootModel>()({
             isChecked: true,
             isClaimed: currentState.claimedGiftAddresses.includes(addressKey),
             hasGasAccountLogin: !isEligible ? hasGasAccountLogin : undefined,
+            giftUsdValue: isEligible ? giftUsdValue : 0, // 只有当有资格时才设置 giftUsdValue
           });
 
           return isEligible;
