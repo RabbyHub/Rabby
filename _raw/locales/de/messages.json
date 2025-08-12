@@ -1449,7 +1449,16 @@
         "howToConnectKeystone": "So verbinden Sie Keystone",
         "ledgerIsDisconnected": "Ihr Ledger ist nicht verbunden",
         "howToConnectImKey": "So verbinden Sie imKey",
-        "onekeyIsDisconnected": "Ihre OneKey ist nicht verbunden."
+        "onekeyIsDisconnected": "Ihre OneKey ist nicht verbunden.",
+        "trezor": {
+          "doc1": "Schließen Sie Ihr Trezor-Gerät an.",
+          "doc2": "Entsperren Sie Ihr Gerät"
+        },
+        "onekey": {
+          "doc3": "Entsperren Sie Ihr Gerät",
+          "doc1": "Install <1>OneKey Bridge<1/>",
+          "doc2": "Schließen Sie Ihr OneKey-Gerät an."
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Die Safe-Adresse unterstützt {{chain}} nicht",
@@ -1811,7 +1820,13 @@
         "keystonePermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren Keystone im folgenden Popup-Fenster zu autorisieren, und stellen Sie sicher, dass sich Ihr Keystone 3 Pro auf der Startseite befindet."
       },
       "firefoxLedgerDisableTips": "Ledger ist nicht mit Firefox kompatibel",
-      "addFromCurrentSeedPhrase": "Aus aktuellem Seed-Phrase hinzufügen"
+      "addFromCurrentSeedPhrase": "Aus aktuellem Seed-Phrase hinzufügen",
+      "trezor": {
+        "title": "Verbinde Trezor"
+      },
+      "onekey": {
+        "title": "Verbinde OneKey"
+      }
     },
     "unlock": {
       "btn": {

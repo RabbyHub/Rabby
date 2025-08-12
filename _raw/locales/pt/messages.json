@@ -1519,7 +1519,16 @@
         "howToConnectImKey": "Como Conectar imKey",
         "ledgerIsDisconnected": "Seu ledger não está conectado.",
         "howToSwitch": "Como mudar",
-        "onekeyIsDisconnected": "Seu OneKey não está conectado"
+        "onekeyIsDisconnected": "Seu OneKey não está conectado",
+        "trezor": {
+          "doc1": "Conecte seu dispositivo Trezor",
+          "doc2": "Desbloqueie seu dispositivo"
+        },
+        "onekey": {
+          "doc3": "Desbloqueie seu dispositivo",
+          "doc2": "Conecte seu dispositivo OneKey",
+          "doc1": "Instale <1>OneKey Bridge<1/>"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Seu endereço Safe não está implantado nesta rede."
@@ -1880,7 +1889,13 @@
       "importedSuccessfully": "Importado com sucesso",
       "incorrectPassword": "senha incorreta",
       "importYourKeystore": "Importar Seu KeyStore",
-      "addFromCurrentSeedPhrase": "Adicionar a partir da frase-semente atual"
+      "addFromCurrentSeedPhrase": "Adicionar a partir da frase-semente atual",
+      "trezor": {
+        "title": "Conectar Trezor"
+      },
+      "onekey": {
+        "title": "Conectar OneKey"
+      }
     },
     "unlock": {
       "btn": {

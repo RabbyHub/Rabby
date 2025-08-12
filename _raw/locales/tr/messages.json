@@ -1449,7 +1449,16 @@
         "howToConnectImKey": "imKey Nasıl Bağlanır",
         "howToConnectKeystone": "Keystone Nasıl Bağlanır",
         "ledgerIsDisconnected": "Defteriniz bağlı değil",
-        "onekeyIsDisconnected": "OneKey'iniz bağlı değil"
+        "onekeyIsDisconnected": "OneKey'iniz bağlı değil",
+        "trezor": {
+          "doc2": "Cihazınızı açın",
+          "doc1": "Trezor cihazınızı bağlayın"
+        },
+        "onekey": {
+          "doc2": "OneKey cihazınızı takın",
+          "doc3": "Cihazınızı açın",
+          "doc1": "<1>OneKey Bridge<1/> kurun"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Güvenli adres {{chain}} desteklemiyor",
@@ -1814,7 +1823,13 @@
         "title": "Keystone'u Bağla"
       },
       "firefoxLedgerDisableTips": "Ledger, Firefox ile uyumlu değil",
-      "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle"
+      "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle",
+      "trezor": {
+        "title": "Trezor'u Bağla"
+      },
+      "onekey": {
+        "title": "OneKey'i Bağlayın"
+      }
     },
     "unlock": {
       "btn": {

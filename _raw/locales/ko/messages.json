@@ -1519,7 +1519,16 @@
         "ledgerIsDisconnected": "당신의 Ledger가 연결되어 있지 않습니다.",
         "howToConnectImKey": "imKey에 연결하는 방법",
         "howToSwitch": "전환하는 방법",
-        "onekeyIsDisconnected": "당신의 OneKey가 연결되지 않았습니다."
+        "onekeyIsDisconnected": "당신의 OneKey가 연결되지 않았습니다.",
+        "trezor": {
+          "doc2": "장치를 잠금 해제하세요",
+          "doc1": "Trezor 장치를 플러그인하세요"
+        },
+        "onekey": {
+          "doc2": "OneKey 장치를 연결하세요.",
+          "doc1": "<1>OneKey Bridge<1/> 설치하세요",
+          "doc3": "장치를 잠금 해제하세요"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "당신의 Safe 주소는 이 체인에 배포되지 않았습니다."
@@ -1880,7 +1889,13 @@
       "importedSuccessfully": "성공적으로 가져왔습니다",
       "incorrectPassword": "비밀번호가 올바르지 않습니다",
       "importYourKeystore": "키스토어 가져오기",
-      "addFromCurrentSeedPhrase": "현재 시드 문구에서 추가"
+      "addFromCurrentSeedPhrase": "현재 시드 문구에서 추가",
+      "trezor": {
+        "title": "Trezor 연결하기"
+      },
+      "onekey": {
+        "title": "OneKey 연결하기"
+      }
     },
     "unlock": {
       "btn": {

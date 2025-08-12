@@ -1449,7 +1449,16 @@
         "ledgerIsDisconnected": "Ledger が接続されていません。",
         "howToConnectKeystone": "Keystone を接続する方法",
         "howToConnectImKey": "imKeyを接続する方法",
-        "onekeyIsDisconnected": "あなたのOneKeyは接続されていません"
+        "onekeyIsDisconnected": "あなたのOneKeyは接続されていません",
+        "trezor": {
+          "doc1": "Trezorデバイスを接続してください。",
+          "doc2": "デバイスのロックを解除してください"
+        },
+        "onekey": {
+          "doc2": "OneKeyデバイスを接続してください。",
+          "doc3": "デバイスのロックを解除してください",
+          "doc1": "インストール <1>OneKey Bridge<1/>"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}",
@@ -1811,7 +1820,13 @@
         "unknowError": "不明なエラーが発生しました。再試行してください。"
       },
       "firefoxLedgerDisableTips": "Ledger は Firefox と互換性がありません。",
-      "addFromCurrentSeedPhrase": "現在のシードフレーズから追加"
+      "addFromCurrentSeedPhrase": "現在のシードフレーズから追加",
+      "trezor": {
+        "title": "Trezorに接続する"
+      },
+      "onekey": {
+        "title": "OneKeyを接続する"
+      }
     },
     "unlock": {
       "btn": {

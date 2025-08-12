@@ -427,7 +427,16 @@
         },
         "howToConnectImKey": "如何連接 imKey",
         "ledgerIsDisconnected": "您的 Ledger 未连接",
-        "onekeyIsDisconnected": "你的 OneKey 尚未连接"
+        "onekeyIsDisconnected": "你的 OneKey 尚未连接",
+        "trezor": {
+          "doc2": "解鎖你的設備",
+          "doc1": "請插入你的 Trezor 設備"
+        },
+        "onekey": {
+          "doc1": "安裝 <1>OneKey Bridge<1/>",
+          "doc3": "解鎖你的設備",
+          "doc2": "將您的 OneKey 設備插入。"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe 地址不支持 {{chain}}",
@@ -795,7 +804,13 @@
         "imkeyPermissionTip": "請點擊下方的「允許」，並在隨後的彈出窗口中授權訪問你的 imKey。"
       },
       "addFromCurrentSeedPhrase": "從當前助記詞添加",
-      "firefoxLedgerDisableTips": "Ledger 不兼容 Firefox"
+      "firefoxLedgerDisableTips": "Ledger 不兼容 Firefox",
+      "trezor": {
+        "title": "連接 Trezor"
+      },
+      "onekey": {
+        "title": "連接 OneKey"
+      }
     },
     "activities": {
       "signedText": {

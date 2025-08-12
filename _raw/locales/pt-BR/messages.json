@@ -1449,7 +1449,16 @@
         "howToConnectKeystone": "Como conectar Keystone",
         "howToConnectImKey": "Como conectar imKey",
         "ledgerIsDisconnected": "Seu Ledger não está conectado",
-        "onekeyIsDisconnected": "Seu OneKey não está conectado"
+        "onekeyIsDisconnected": "Seu OneKey não está conectado",
+        "trezor": {
+          "doc2": "Desbloqueie seu dispositivo",
+          "doc1": "Conecte seu dispositivo Trezor"
+        },
+        "onekey": {
+          "doc2": "Conecte seu dispositivo OneKey",
+          "doc1": "Instale <1>OneKey Bridge<1/>",
+          "doc3": "Desbloqueie seu dispositivo"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "O endereço seguro não suporta {{chain}}",
@@ -1811,7 +1820,13 @@
         "deviceIsBusy": "Dispositivo está ocupado"
       },
       "firefoxLedgerDisableTips": "Ledger não é compatível com Firefox",
-      "addFromCurrentSeedPhrase": "Adicionar da Seed Phrase Atual"
+      "addFromCurrentSeedPhrase": "Adicionar da Seed Phrase Atual",
+      "trezor": {
+        "title": "Conectar Trezor"
+      },
+      "onekey": {
+        "title": "Conectar OneKey"
+      }
     },
     "unlock": {
       "btn": {

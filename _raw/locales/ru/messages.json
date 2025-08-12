@@ -1450,7 +1450,16 @@
         },
         "howToConnectImKey": "How to Connect imKey",
         "ledgerIsDisconnected": "Ваш Ledger не подключен",
-        "onekeyIsDisconnected": "Ваш OneKey не подключен"
+        "onekeyIsDisconnected": "Ваш OneKey не подключен",
+        "trezor": {
+          "doc1": "Подключите ваше устройство Trezor",
+          "doc2": "Разблокируйте ваше устройство"
+        },
+        "onekey": {
+          "doc3": "Разблокируйте ваше устройство",
+          "doc2": "Подключите ваше устройство OneKey",
+          "doc1": "Установите <1>OneKey Bridge<1/>"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe адрес не поддерживается в сети {{chain}}",
@@ -1812,7 +1821,13 @@
         "imkeyPermissionTip": "Пожалуйста, нажмите «Разрешить» ниже и подтвердите доступ к вашему imKey в следующем всплывающем окне."
       },
       "addFromCurrentSeedPhrase": "Добавить из текущей сид фразы",
-      "firefoxLedgerDisableTips": "Ledger не совместим с Firefox"
+      "firefoxLedgerDisableTips": "Ledger не совместим с Firefox",
+      "trezor": {
+        "title": "Подключить Trezor"
+      },
+      "onekey": {
+        "title": "Подключить OneKey"
+      }
     },
     "unlock": {
       "btn": {

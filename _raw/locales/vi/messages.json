@@ -1519,7 +1519,16 @@
         "howToConnectLedger": "Cách Kết Nối Ledger",
         "ledgerIsDisconnected": "Ví của bạn không được kết nối",
         "howToConnectImKey": "Cách kết nối imKey",
-        "onekeyIsDisconnected": "OneKey của bạn chưa được kết nối"
+        "onekeyIsDisconnected": "OneKey của bạn chưa được kết nối",
+        "trezor": {
+          "doc1": "Cắm thiết bị Trezor của bạn vào.",
+          "doc2": "Mở khóa thiết bị của bạn"
+        },
+        "onekey": {
+          "doc3": "Mở khóa thiết bị của bạn",
+          "doc1": "Cài đặt <1>OneKey Bridge<1/>",
+          "doc2": "Cắm thiết bị OneKey của bạn vào."
+        }
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Địa chỉ Safe của bạn chưa được triển khai trên chuỗi này."
@@ -1880,7 +1889,13 @@
       "importedSuccessfully": "Nhập khẩu thành công",
       "importYourKeystore": "Nhập KeyStore của bạn",
       "incorrectPassword": "mật khẩu không chính xác",
-      "addFromCurrentSeedPhrase": "Thêm từ Câu Châm Ngôn Hiện Tại"
+      "addFromCurrentSeedPhrase": "Thêm từ Câu Châm Ngôn Hiện Tại",
+      "trezor": {
+        "title": "Kết nối Trezor"
+      },
+      "onekey": {
+        "title": "Kết nối OneKey"
+      }
     },
     "unlock": {
       "btn": {

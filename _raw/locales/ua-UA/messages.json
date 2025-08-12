@@ -1453,7 +1453,16 @@
         "howToConnectImKey": "Як підключити imKey",
         "ledgerIsDisconnected": "Ваш Ledger не підключено",
         "howToConnectKeystone": "Як підключити Keystone",
-        "onekeyIsDisconnected": "Ваш OneKey не підключено"
+        "onekeyIsDisconnected": "Ваш OneKey не підключено",
+        "trezor": {
+          "doc1": "Підключіть ваш Trezor пристрій",
+          "doc2": "Розблокуйте ваш пристрій"
+        },
+        "onekey": {
+          "doc3": "Розблокуйте ваш пристрій",
+          "doc2": "Підключіть ваш пристрій OneKey",
+          "doc1": "Встановіть <1>OneKey Bridge<1/>"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}",
@@ -1823,7 +1832,13 @@
         "keystonePermissionTip": "Будь ласка, натисніть \"Дозволити\" нижче, щоб авторизувати доступ до вашого Keystone у наступному спливаючому вікні, та переконайтесь, що ваш Keystone 3 Pro знаходиться на головній сторінці."
       },
       "firefoxLedgerDisableTips": "Ledger не сумісний із Firefox",
-      "addFromCurrentSeedPhrase": "Додати з поточної Seed Phrase"
+      "addFromCurrentSeedPhrase": "Додати з поточної Seed Phrase",
+      "trezor": {
+        "title": "Підключіть Trezor"
+      },
+      "onekey": {
+        "title": "Підключити OneKey"
+      }
     },
     "unlock": {
       "btn": {

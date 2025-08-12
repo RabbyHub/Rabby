@@ -427,7 +427,16 @@
         },
         "howToConnectImKey": "如何连接 imKey",
         "ledgerIsDisconnected": "您的 Ledger 已断开连接",
-        "onekeyIsDisconnected": "您的 OneKey 未连接"
+        "onekeyIsDisconnected": "您的 OneKey 未连接",
+        "trezor": {
+          "doc2": "解锁您的设备",
+          "doc1": "插入您的 Trezor 设备"
+        },
+        "onekey": {
+          "doc3": "解锁您的设备",
+          "doc2": "插入你的 OneKey 设备",
+          "doc1": "安装 <1>OneKey Bridge<1/>"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe 地址不支持 {{chain}}",
@@ -795,7 +804,13 @@
         "title": "连接 imKey",
         "imkeyPermissionTip": "请点击下方的“允许”并在接下来的弹出窗口中授权访问您的 imKey。"
       },
-      "addFromCurrentSeedPhrase": "从当前助记词添加"
+      "addFromCurrentSeedPhrase": "从当前助记词添加",
+      "trezor": {
+        "title": "连接 Trezor"
+      },
+      "onekey": {
+        "title": "连接 OneKey"
+      }
     },
     "activities": {
       "signedText": {

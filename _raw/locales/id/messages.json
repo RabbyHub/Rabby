@@ -1519,7 +1519,16 @@
         "howToSwitch": "Cara untuk beralih",
         "ledgerIsDisconnected": "Ledger Anda tidak terhubung",
         "howToConnectImKey": "Cara Menghubungkan imKey",
-        "onekeyIsDisconnected": "OneKey Anda tidak terhubung"
+        "onekeyIsDisconnected": "OneKey Anda tidak terhubung",
+        "trezor": {
+          "doc2": "Buka perangkat Anda",
+          "doc1": "Sambungkan perangkat Trezor Anda"
+        },
+        "onekey": {
+          "doc2": "Colokkan perangkat OneKey Anda",
+          "doc1": "Instal <1>OneKey Bridge<1/>",
+          "doc3": "Buka perangkat Anda"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Alamat Safe Anda tidak diterapkan di rantai ini"
@@ -1880,7 +1889,13 @@
       "importedSuccessfully": "Diimpor Berhasil",
       "incorrectPassword": "kata sandi salah",
       "addFromCurrentSeedPhrase": "Tambahkan dari Seed Phrase Saat Ini",
-      "importYourKeystore": "Impor KeyStore Anda"
+      "importYourKeystore": "Impor KeyStore Anda",
+      "trezor": {
+        "title": "Connect Trezor"
+      },
+      "onekey": {
+        "title": "Sambungkan OneKey"
+      }
     },
     "unlock": {
       "btn": {

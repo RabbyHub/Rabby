@@ -756,7 +756,16 @@
         },
         "howToConnectImKey": "Comment connecter imKey",
         "ledgerIsDisconnected": "Votre Ledger n'est pas connecté",
-        "onekeyIsDisconnected": "Votre OneKey n'est pas connecté"
+        "onekeyIsDisconnected": "Votre OneKey n'est pas connecté",
+        "trezor": {
+          "doc1": "Branchez votre appareil Trezor",
+          "doc2": "Déverrouillez votre appareil"
+        },
+        "onekey": {
+          "doc3": "Déverrouillez votre appareil",
+          "doc2": "Brancher votre appareil OneKey",
+          "doc1": "Installez <1>OneKey Bridge<1/>"
+        }
       },
       "home": {
         "comingSoon": "À venir",
@@ -1439,7 +1448,13 @@
         "imkeyPermissionTip": "Veuillez cliquer sur \"Autoriser\" ci-dessous et autoriser l'accès à votre imKey dans la fenêtre contextuelle suivante."
       },
       "firefoxLedgerDisableTips": "Ledger n'est pas compatible avec Firefox",
-      "addFromCurrentSeedPhrase": "Ajouter à partir de la phrase secrète actuelle"
+      "addFromCurrentSeedPhrase": "Ajouter à partir de la phrase secrète actuelle",
+      "trezor": {
+        "title": "Connect Trezor"
+      },
+      "onekey": {
+        "title": "Connect OneKey"
+      }
     },
     "nft": {
       "all": "Tous",
