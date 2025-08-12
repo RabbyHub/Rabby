@@ -195,7 +195,7 @@ const AddAddressOptions = () => {
       } else if (item.connectType === 'LedgerConnect') {
         openInternalPageInTab('import/hardware/ledger-connect');
       } else if (item.connectType === 'OneKeyConnect') {
-        openInternalPageInTab('import/hardware/oneky-connect');
+        openInternalPageInTab('import/hardware/onekey-connect');
         // openInternalPageInTab('import/hardware?connectType=ONEKEY');
       } else if (item.connectType === 'GnosisConnect') {
         history.push({
