@@ -190,11 +190,13 @@ const AddAddressOptions = () => {
       } else if (item.connectType === 'GridPlusConnect') {
         openInternalPageInTab('import/hardware?connectType=GRIDPLUS');
       } else if (item.connectType === 'TrezorConnect') {
-        openInternalPageInTab('import/hardware?connectType=TREZOR');
+        openInternalPageInTab('import/hardware/trezor-connect');
+        // openInternalPageInTab('import/hardware?connectType=TREZOR');
       } else if (item.connectType === 'LedgerConnect') {
         openInternalPageInTab('import/hardware/ledger-connect');
       } else if (item.connectType === 'OneKeyConnect') {
-        openInternalPageInTab('import/hardware?connectType=ONEKEY');
+        openInternalPageInTab('import/hardware/oneky-connect');
+        // openInternalPageInTab('import/hardware?connectType=ONEKEY');
       } else if (item.connectType === 'GnosisConnect') {
         history.push({
           pathname: '/import/gnosis',
