@@ -13,6 +13,8 @@ import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportGnosis from './ImportGnosisAddress';
 import ConnectLedger from './ImportHardware/LedgerConnect';
+import ConnectTrezor from './ImportHardware/TrezorConnect';
+import ConnectOneKey from './ImportHardware/OneKeyConnect';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import TokenApproval from './TokenApproval';
@@ -269,6 +271,12 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger-connect">
           <ConnectLedger />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/trezor-connect">
+          <ConnectTrezor />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/onekey-connect">
+          <ConnectOneKey />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/imkey-connect">
           <ImKeyConnect />
