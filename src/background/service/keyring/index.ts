@@ -1419,6 +1419,22 @@ export class KeyringService extends EventEmitter {
 
     return { vault: encryptedString, accounts };
   }
+
+  async encryptWithPassword(content: string) {
+    const encrypted = await passwordEncrypt({
+      data: content,
+      password: this.password,
+    });
+    return encrypted;
+  }
+
+  async decryptWithPassword(str: string) {
+    const decrypted = await passwordDecrypt({
+      encryptedData: str,
+      password: this.password,
+    });
+    return decrypted;
+  }
 }
 
 export default new KeyringService();

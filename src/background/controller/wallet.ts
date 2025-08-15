@@ -31,6 +31,7 @@ import {
   gasAccountService,
   uninstalledService,
   OfflineChainsService,
+  perpsService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -5600,6 +5601,10 @@ export class WalletController extends BaseController {
    */
   setHasAnyAccountClaimedGift = (hasClaimed: boolean) => {
     gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
+  };
+
+  createPerpsAgentWallet = (masterWallet: string) => {
+    perpsService.createAgentWallet(masterWallet);
   };
 }
 
