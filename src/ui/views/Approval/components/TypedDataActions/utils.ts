@@ -98,13 +98,15 @@ function parseSignTypedData(typedData: {
     } else if (types[dataType]) {
       for (const field of types[dataType]) {
         const { name, type } = field;
-        if (!type.startsWith('bytes')) {
-          // bytes type is complex and no need to normalize
-          data[name] = parseAndDecode(data[name], type);
-        }
+        data[name] = parseAndDecode(data[name], type);
       }
       return data;
     } else {
+      if (dataType.startsWith('bytes')) {
+        // bytes type is complex and no need to normalize
+        return data;
+      }
+
       const encodedBuffer = encodeSingle(dataType, data);
       let encodedHexValue = bytesToHex(encodedBuffer);
       switch (dataType) {
