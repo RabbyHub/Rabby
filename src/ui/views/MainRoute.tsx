@@ -67,6 +67,7 @@ import { NewUserSetPassword } from './NewUserImport/SetPassword';
 import { NewUserImportGnosisAddress } from './NewUserImport/ImportGnosisAddress';
 import { NewUserImportLedger } from './NewUserImport/ImportLedger';
 import { NewUserImportKeystone } from './NewUserImport/ImportKeystone';
+import { NewUserImportOneKey } from './NewUserImport/ImportOnekey';
 import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
 import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
@@ -85,6 +86,7 @@ import dayjs from 'dayjs';
 import { PreferenceStore } from '@/background/service/preference';
 import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
+import { OneKeyConnect } from './ImportHardware/OneKeyConnect';
 
 declare global {
   interface Window {
@@ -208,6 +210,13 @@ const Main = () => {
           <NewUserImportKeystone />
         </Route>
 
+        <Route
+          exact
+          path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.ONEKEY}`}
+        >
+          <NewUserImportOneKey />
+        </Route>
+
         <Route exact path="/new-user/import/hardware/:type">
           <NewUserImportHardware />
         </Route>
@@ -283,6 +292,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/keystone">
           <KeystoneConnect />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/onekey">
+          <OneKeyConnect />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/qrcode">
           <QRCodeConnect />

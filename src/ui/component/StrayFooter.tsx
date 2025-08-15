@@ -17,6 +17,7 @@ export interface StrayFooterNavProps {
   nextLoading?: boolean;
   hasBack?: boolean;
   hasDivider?: boolean;
+  hideNextButton?: boolean;
   className?: string;
   NextButtonContent?: React.ReactNode;
   BackButtonContent?: React.ReactNode;
@@ -56,6 +57,7 @@ const StrayFooterNav = memo(
     nextLoading,
     hasBack = false,
     hasDivider = false,
+    hideNextButton = false,
     NextButtonContent = 'Next',
     BackButtonContent = 'Back',
     className,
@@ -90,17 +92,19 @@ const StrayFooterNav = memo(
               {BackButtonContent}
             </Button>
           )}
-          <Button
-            disabled={nextDisabled}
-            htmlType="submit"
-            onClick={onNextClick}
-            size="large"
-            className={cx('lg:h-[52px]', 'flex-1')}
-            type="primary"
-            loading={nextLoading}
-          >
-            {NextButtonContent}
-          </Button>
+          {!hideNextButton && (
+            <Button
+              disabled={nextDisabled}
+              htmlType="submit"
+              onClick={onNextClick}
+              size="large"
+              className={cx('lg:h-[52px]', 'flex-1')}
+              type="primary"
+              loading={nextLoading}
+            >
+              {NextButtonContent}
+            </Button>
+          )}
         </div>
       </StrayFooter>
     );
