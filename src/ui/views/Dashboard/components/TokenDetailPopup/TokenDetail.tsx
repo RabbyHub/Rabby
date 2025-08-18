@@ -10,45 +10,26 @@ import { last } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
-import { Copy, TokenWithChain } from 'ui/component';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
-import {
-  splitNumberByStep,
-  useWallet,
-  openInTab,
-  useCommonPopupView,
-  getUITypeName,
-} from 'ui/utils';
-import { getAddressScanLink, getChain } from '@/utils';
-import ChainIcon from '../NFT/ChainIcon';
+import { splitNumberByStep, useWallet, useCommonPopupView } from 'ui/utils';
+import { getChain } from '@/utils';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
-import { CHAINS } from 'consts';
 import { ellipsisOverflowedText } from 'ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { SWAP_SUPPORT_CHAINS } from '@/constant';
-import { CustomizedSwitch } from './CustomizedButton';
 import { BlockedButton } from './BlockedButton';
-import { useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { findChain } from '@/utils/chain';
 import TokenChainAndContract from './TokenInfo';
 import { TokenCharts } from '@/ui/component/TokenChart';
 import { BlockedTopTips } from './BlockedTopTips';
 import { ScamTokenTips } from './ScamTokenTips';
 import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
-import { useExternalSwapBridgeDapps } from '@/ui/component/ExternalSwapBridgeDappPopup/hooks';
 import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const PAGE_COUNT = 10;
-const ellipsis = (text: string) => {
-  return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
-};
 
 interface TokenDetailProps {
   onClose?(): void;
@@ -86,29 +67,6 @@ const TokenDetail = ({
   const [tokenEntity, setTokenEntity] = React.useState<TokenEntityDetail>();
   const _currentAccount = useCurrentAccount();
   const currentAccount = account || _currentAccount;
-
-  const bridgeSupportedChains = useRabbySelector(
-    (s) => s.bridge.supportedChains
-  );
-
-  const tokenChain = useMemo(() => {
-    return getChain(token?.chain);
-  }, [token?.chain]);
-
-  const {
-    isSupportedChain,
-    data: externalSwapDapps,
-  } = useExternalSwapBridgeDapps(tokenChain!.enum, 'swap');
-
-  const tokenSupportSwap = useMemo(
-    () => isSupportedChain || externalSwapDapps.length > 0,
-    [isSupportedChain, externalSwapDapps]
-  );
-
-  const tokenSupportBridge = useMemo(() => {
-    const tokenChain = getChain(token?.chain)?.enum;
-    return !!tokenChain && bridgeSupportedChains.includes(tokenChain as any);
-  }, [token]);
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -303,28 +261,19 @@ const TokenDetail = ({
 
     return (
       <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
-        <TooltipWithMagnetArrow
-          overlayClassName="rectangle w-[max-content]"
-          placement="top"
-          arrowPointAtCenter
-          title={t('component.externalSwapBrideDappPopup.chainNotSupported')}
-          visible={tokenSupportSwap ? false : undefined}
+        <Button
+          type="primary"
+          size="large"
+          onClick={goToSwap}
+          className="w-[114px] h-[40px] leading-[18px]"
+          style={{
+            width: 114,
+            height: 40,
+            lineHeight: '18px',
+          }}
         >
-          <Button
-            type="primary"
-            size="large"
-            onClick={goToSwap}
-            disabled={!tokenSupportSwap}
-            className="w-[114px] h-[40px] leading-[18px]"
-            style={{
-              width: 114,
-              height: 40,
-              lineHeight: '18px',
-            }}
-          >
-            {t('page.dashboard.tokenDetail.swap')}
-          </Button>
-        </TooltipWithMagnetArrow>
+          {t('page.dashboard.tokenDetail.swap')}
+        </Button>
 
         <Button
           type="primary"
@@ -358,7 +307,6 @@ const TokenDetail = ({
     gotoBridge,
     isSend,
     tipsFromTokenSelect,
-    tokenSupportSwap,
   ]);
 
   const chain = useMemo(() => getChain(token?.chain), [token?.chain]);
