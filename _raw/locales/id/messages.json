@@ -1900,9 +1900,6 @@
       "importYourKeystore": "Impor KeyStore Anda",
       "trezor": {
         "title": "Connect Trezor"
-      },
-      "onekey": {
-        "title": "Sambungkan OneKey"
       }
     },
     "unlock": {
@@ -3090,7 +3087,7 @@
         "needUpgradeFirmware": "Firmware harus diperbarui untuk menggunakan perangkat",
         "thisMethodNeedUpgradeFirmware": "Fitur ini memerlukan pembaruan firmware, silakan perbarui firmware di aplikasi OneKey",
         "notAllowInBootloaderMode": "Silakan gunakan dalam mode normal",
-        "deviceCheckPassphraseStateError": "Passphrase atau attach pin tidak cocok",
+        "deviceCheckPassphraseStateError": "Akun tidak cocok dengan alamat buka kunci perangkat saat ini. Silakan konfirmasi bahwa perangkat dan alamat akun konsisten dan coba lagi",
         "actionCancel": "Operasi dibatalkan",
         "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebHID"
       }

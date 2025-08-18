@@ -1834,9 +1834,6 @@
       "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle",
       "trezor": {
         "title": "Trezor'u Bağla"
-      },
-      "onekey": {
-        "title": "OneKey'i Bağlayın"
       }
     },
     "unlock": {
@@ -3096,7 +3093,7 @@
         "needUpgradeFirmware": "Cihazı kullanmak için firmware güncellenmeli",
         "thisMethodNeedUpgradeFirmware": "Bu özellik firmware güncellemesi gerektirir, OneKey uygulamasında firmware'i güncelleyin",
         "notAllowInBootloaderMode": "Normal modda kullanın",
-        "deviceCheckPassphraseStateError": "Parola veya attach pin eşleşmiyor",
+        "deviceCheckPassphraseStateError": "Hesap, mevcut cihaz kilit açma adresi ile eşleşmiyor. Cihaz ve hesap adresinin tutarlı olduğunu doğrulayın ve tekrar deneyin",
         "actionCancel": "İşlem iptal edildi",
         "deviceNeedsWebHIDPermission": "Cihaz bulunamadı veya WebHID izni gerekiyor"
       }

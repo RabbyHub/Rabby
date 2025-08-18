@@ -1832,9 +1832,6 @@
       "firefoxLedgerDisableTips": "Ledger не совместим с Firefox",
       "trezor": {
         "title": "Подключить Trezor"
-      },
-      "onekey": {
-        "title": "Подключить OneKey"
       }
     },
     "unlock": {
@@ -3095,7 +3092,7 @@
         "needUpgradeFirmware": "Необходимо обновить прошивку для использования устройства",
         "thisMethodNeedUpgradeFirmware": "Для этой функции требуется обновление прошивки, обновите прошивку в приложении OneKey",
         "notAllowInBootloaderMode": "Используйте в обычном режиме",
-        "deviceCheckPassphraseStateError": "Парольная фраза или attach pin не совпадают",
+        "deviceCheckPassphraseStateError": "Аккаунт не соответствует текущему адресу разблокировки устройства. Пожалуйста, подтвердите, что устройство и адрес аккаунта согласованы, и попробуйте снова",
         "actionCancel": "Операция отменена",
         "deviceNeedsWebHIDPermission": "Устройство не найдено или требует разрешения WebHID"
       }

@@ -1843,9 +1843,6 @@
       "addFromCurrentSeedPhrase": "Додати з поточної Seed Phrase",
       "trezor": {
         "title": "Підключіть Trezor"
-      },
-      "onekey": {
-        "title": "Підключити OneKey"
       }
     },
     "unlock": {
@@ -3113,7 +3110,7 @@
         "needUpgradeFirmware": "Необхідно оновити прошивку для використання пристрою",
         "thisMethodNeedUpgradeFirmware": "Ця функція потребує оновлення прошивки, оновіть прошивку в додатку OneKey",
         "notAllowInBootloaderMode": "Використовуйте в звичайному режимі",
-        "deviceCheckPassphraseStateError": "Парольна фраза або attach pin не збігаються",
+        "deviceCheckPassphraseStateError": "Обліковий запис не відповідає поточній адресі розблокування пристрою. Підтвердіть, що пристрій і адреса облікового запису узгоджуються, і спробуйте знову",
         "actionCancel": "Операція скасована",
         "deviceNeedsWebHIDPermission": "Пристрій не знайдено або потрібен дозвіл WebHID"
       }

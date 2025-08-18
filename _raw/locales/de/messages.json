@@ -1831,9 +1831,6 @@
       "addFromCurrentSeedPhrase": "Aus aktuellem Seed-Phrase hinzufügen",
       "trezor": {
         "title": "Verbinde Trezor"
-      },
-      "onekey": {
-        "title": "Verbinde OneKey"
       }
     },
     "unlock": {
@@ -3093,7 +3090,7 @@
         "needUpgradeFirmware": "Firmware muss aktualisiert werden, um das Gerät zu verwenden",
         "thisMethodNeedUpgradeFirmware": "Diese Funktion erfordert ein Firmware-Update, bitte aktualisieren Sie die Firmware in der OneKey-App",
         "notAllowInBootloaderMode": "Bitte im normalen Modus verwenden",
-        "deviceCheckPassphraseStateError": "Passphrase oder Attach-Pin stimmt nicht überein",
+        "deviceCheckPassphraseStateError": "Das Konto stimmt nicht mit der aktuellen Gerät-Entsperradresse überein. Bitte bestätigen Sie, dass Gerät und Kontoadresse übereinstimmen und versuchen Sie es erneut",
         "actionCancel": "Vorgang abgebrochen",
         "deviceNeedsWebHIDPermission": "Gerät nicht gefunden oder Zugriff erforderlich"
       }

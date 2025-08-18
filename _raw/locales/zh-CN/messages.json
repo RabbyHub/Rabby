@@ -815,9 +815,6 @@
       "addFromCurrentSeedPhrase": "从当前助记词添加",
       "trezor": {
         "title": "连接 Trezor"
-      },
-      "onekey": {
-        "title": "连接 OneKey"
       }
     },
     "activities": {
@@ -3095,7 +3092,7 @@
         "needUpgradeFirmware": "必须升级固件才能使用设备",
         "thisMethodNeedUpgradeFirmware": "使用该功能需要升级固件，请在 OneKey 应用中升级固件",
         "notAllowInBootloaderMode": "请在正常模式下使用",
-        "deviceCheckPassphraseStateError": "输入的 passphrase 或 attach pin 不匹配",
+        "deviceCheckPassphraseStateError": "账户与当前设备解锁地址不匹配，请确认设备与账户地址一致后重试",
         "actionCancel": "操作已取消",
         "deviceNeedsWebHIDPermission": "未找到设备或需要 WebHID 权限"
       }

@@ -1831,9 +1831,6 @@
       "addFromCurrentSeedPhrase": "Añadir desde la frase de recuperación actual",
       "trezor": {
         "title": "Conectar Trezor"
-      },
-      "onekey": {
-        "title": "Conectar OneKey"
       }
     },
     "unlock": {
@@ -3093,7 +3090,7 @@
         "needUpgradeFirmware": "Se debe actualizar el firmware para usar el dispositivo",
         "thisMethodNeedUpgradeFirmware": "Esta función requiere actualización de firmware, actualice el firmware en la aplicación OneKey",
         "notAllowInBootloaderMode": "Use en modo normal",
-        "deviceCheckPassphraseStateError": "La frase de contraseña o el pin de conexión no coinciden",
+        "deviceCheckPassphraseStateError": "La cuenta no coincide con la dirección de desbloqueo del dispositivo actual. Por favor, confirme que el dispositivo y la dirección de la cuenta sean consistentes e inténtelo de nuevo",
         "actionCancel": "Operación cancelada",
         "deviceNeedsWebHIDPermission": "Dispositivo no encontrado o necesita permiso WebHID"
       }

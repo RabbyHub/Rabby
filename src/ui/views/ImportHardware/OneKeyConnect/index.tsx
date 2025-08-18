@@ -30,7 +30,7 @@ enum ConnectType {
   USB = 'usb',
 }
 
-export const OneKeyConnect = () => {
+const OneKeyConnect = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -269,3 +269,5 @@ export const OneKeyConnect = () => {
     </StrayPageWithButton>
   );
 };
+
+export default OneKeyConnect;

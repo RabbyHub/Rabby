@@ -1831,9 +1831,6 @@
       "addFromCurrentSeedPhrase": "現在のシードフレーズから追加",
       "trezor": {
         "title": "Trezorに接続する"
-      },
-      "onekey": {
-        "title": "OneKeyを接続する"
       }
     },
     "unlock": {
@@ -3093,7 +3090,7 @@
         "needUpgradeFirmware": "デバイスを使用するにはファームウェアをアップグレードする必要があります",
         "thisMethodNeedUpgradeFirmware": "この機能にはファームウェアのアップグレードが必要です。OneKeyアプリでファームウェアをアップグレードしてください",
         "notAllowInBootloaderMode": "通常モードで使用してください",
-        "deviceCheckPassphraseStateError": "パスフレーズまたはattach pinが一致しません",
+        "deviceCheckPassphraseStateError": "アカウントと現在のデバイスのロック解除アドレスが一致しません。デバイスとアカウントアドレスが一致していることを確認してから再試行してください",
         "actionCancel": "操作がキャンセルされました",
         "deviceNeedsWebHIDPermission": "デバイスが見つからないか、WebHIDの権限が必要です"
       }

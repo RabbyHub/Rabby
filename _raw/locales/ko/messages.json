@@ -1900,9 +1900,6 @@
       "addFromCurrentSeedPhrase": "현재 시드 문구에서 추가",
       "trezor": {
         "title": "Trezor 연결하기"
-      },
-      "onekey": {
-        "title": "OneKey 연결하기"
       }
     },
     "unlock": {
@@ -3090,7 +3087,7 @@
         "needUpgradeFirmware": "장치를 사용하려면 펌웨어를 업그레이드해야 합니다",
         "thisMethodNeedUpgradeFirmware": "이 기능을 사용하려면 펌웨어 업그레이드가 필요합니다. OneKey 앱에서 펌웨어를 업그레이드하세요",
         "notAllowInBootloaderMode": "일반 모드에서 사용하세요",
-        "deviceCheckPassphraseStateError": "패스프레이즈 또는 attach pin이 일치하지 않습니다",
+        "deviceCheckPassphraseStateError": "계정이 현재 장치의 잠금 해제 주소와 일치하지 않습니다. 장치와 계정 주소가 일치하는지 확인한 후 다시 시도하십시오",
         "actionCancel": "작업이 취소되었습니다",
         "deviceNeedsWebHIDPermission": "장치를 찾을 수 없거나 WebHID 권한이 필요합니다"
       }

@@ -815,9 +815,6 @@
       "firefoxLedgerDisableTips": "Ledger 不兼容 Firefox",
       "trezor": {
         "title": "連接 Trezor"
-      },
-      "onekey": {
-        "title": "連接 OneKey"
       }
     },
     "activities": {
@@ -3095,7 +3092,7 @@
         "needUpgradeFirmware": "必須升級韌體才能使用裝置",
         "thisMethodNeedUpgradeFirmware": "使用該功能需要升級韌體，請在 OneKey 應用程式中升級韌體",
         "notAllowInBootloaderMode": "請在正常模式下使用",
-        "deviceCheckPassphraseStateError": "輸入的 passphrase 或 attach pin 不匹配",
+        "deviceCheckPassphraseStateError": "帳戶與當前裝置解鎖地址不匹配，請確認裝置與帳戶地址一致後重試",
         "actionCancel": "操作已取消",
         "deviceNeedsWebHIDPermission": "未找到設備或需要 WebHID 權限"
       }

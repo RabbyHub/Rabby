@@ -1960,9 +1960,6 @@
       "addFromCurrentSeedPhrase": "Add from Current Seed Phrase",
       "trezor": {
         "title": "Connect Trezor"
-      },
-      "onekey": {
-        "title": "Connect OneKey"
       }
     },
     "unlock": {
@@ -3090,7 +3087,7 @@
         "needUpgradeFirmware": "Firmware must be upgraded to use the device",
         "thisMethodNeedUpgradeFirmware": "This feature requires firmware upgrade, please upgrade firmware in OneKey app",
         "notAllowInBootloaderMode": "Please use in normal mode",
-        "deviceCheckPassphraseStateError": "Passphrase or attach pin does not match",
+        "deviceCheckPassphraseStateError": "Account does not match the current device unlock address. Please confirm the device and account address are consistent and try again",
         "actionCancel": "Operation cancelled",
         "deviceNeedsWebHIDPermission": "Device not found or needs WebHID permission"
       }

@@ -12,7 +12,7 @@
         "needUpgradeFirmware": "Le firmware doit être mis à jour pour utiliser le périphérique",
         "thisMethodNeedUpgradeFirmware": "Cette fonctionnalité nécessite une mise à jour du firmware, veuillez mettre à jour le firmware dans l'application OneKey",
         "notAllowInBootloaderMode": "Veuillez utiliser en mode normal",
-        "deviceCheckPassphraseStateError": "La phrase secrète ou le pin d'attachement ne correspondent pas",
+        "deviceCheckPassphraseStateError": "Le compte ne correspond pas à l'adresse de déverrouillage de l'appareil actuel. Veuillez confirmer que l'appareil et l'adresse du compte sont cohérents et réessayer",
         "actionCancel": "Opération annulée",
         "deviceNeedsWebHIDPermission": "Périphérique non trouvé ou besoin de permission WebHID"
       }
@@ -1471,9 +1471,6 @@
       "addFromCurrentSeedPhrase": "Ajouter à partir de la phrase secrète actuelle",
       "trezor": {
         "title": "Connect Trezor"
-      },
-      "onekey": {
-        "title": "Connect OneKey"
       }
     },
     "nft": {

@@ -1900,9 +1900,6 @@
       "addFromCurrentSeedPhrase": "Thêm từ Câu Châm Ngôn Hiện Tại",
       "trezor": {
         "title": "Kết nối Trezor"
-      },
-      "onekey": {
-        "title": "Kết nối OneKey"
       }
     },
     "unlock": {
@@ -3090,7 +3087,7 @@
         "needUpgradeFirmware": "Phải nâng cấp firmware để sử dụng thiết bị",
         "thisMethodNeedUpgradeFirmware": "Tính năng này yêu cầu nâng cấp firmware, vui lòng nâng cấp firmware trong ứng dụng OneKey",
         "notAllowInBootloaderMode": "Vui lòng sử dụng ở chế độ bình thường",
-        "deviceCheckPassphraseStateError": "Passphrase hoặc attach pin không khớp",
+        "deviceCheckPassphraseStateError": "Tài khoản không khớp với địa chỉ mở khóa thiết bị hiện tại. Vui lòng xác nhận thiết bị và địa chỉ tài khoản nhất quán và thử lại",
         "actionCancel": "Thao tác đã được hủy",
         "deviceNeedsWebHIDPermission": "Không tìm thấy thiết bị hoặc cần quyền WebHID"
       }
