@@ -69,6 +69,7 @@ class PerpsService {
     this.addAgentWallet(masterAddress, bytesToHex(privateKey), {
       agentAddress,
     });
+    return agentAddress;
   };
 
   addAgentWallet = async (
