@@ -11,6 +11,9 @@ import clsx from 'clsx';
 import { useAsync } from 'react-use';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { KEYRING_CLASS, CHAINS_ENUM } from '@/constant';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { ShowMoreOnSend } from '@/ui/views/SendToken/components/SendShowMore';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import { getTokenSymbol } from '@/ui/utils/token';
@@ -18,6 +21,22 @@ import { findChainByServerID } from '@/utils/chain';
 import { L2_DEPOSIT_ADDRESS_MAP } from '@/constant/gas-account';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
 import { Input } from 'antd';
+import {
+  useStartDirectSigning,
+  useDirectSigning,
+  useSetDirectSigning,
+  // useMiniApprovalGas,
+  DirectSubmitProvider,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useRef } from 'react';
+import { MiniApproval } from '../../Approval/components/MiniSignTx';
+import { useRbiSource } from '@/ui/utils/ga-event';
+import { useSetRefreshId } from '../../Swap/hooks/context';
+import { useTokenPair } from '../../Swap/hooks';
+import { useRequest } from 'ahooks';
+import { AbiCoder } from 'web3-eth-abi';
+import { addHexPrefix } from 'ethereumjs-util';
+import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 const amountList = [10, 100];
 
@@ -196,37 +215,90 @@ const TokenSelector = ({
 
 const CUSTOM_AMOUNT = 0;
 
-const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
+const GasAccountDepositContent = ({
+  onClose,
+  handleRefreshHistory,
+}: {
+  onClose: () => void;
+  handleRefreshHistory: () => void;
+}) => {
+  console.log('GasAccountDepositContent render');
   const { t } = useTranslation();
   const [selectedAmount, setAmount] = useState(amountList[0]);
   const [tokenListVisible, setTokenListVisible] = useState(false);
   const [token, setToken] = useState<TokenItem | undefined>(undefined);
   const [formattedValue, setFormattedValue] = useState('');
   const [rawValue, setRawValue] = useState(0);
+  const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
 
+  const miniSignTxs = useMemo(() => {
+    console.log('miniSignTxs', { miniSignTx });
+    return miniSignTx ? [miniSignTx] : [];
+  }, [miniSignTx]);
   const wallet = useWallet();
+  const currentAccount = useCurrentAccount();
+  const rbiSource = useRbiSource();
+  const [isShowSign, setIsShowSign] = useState(false);
+  const isDirectSignAccount =
+    currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
+    currentAccount?.type === KEYRING_CLASS.MNEMONIC;
+  const startDirectSigning = useStartDirectSigning();
 
   const depositAmount = useMemo(() => {
+    console.log('depositAmount', { selectedAmount, rawValue });
     if (selectedAmount === CUSTOM_AMOUNT && rawValue) {
       return rawValue;
     }
     return selectedAmount;
   }, [selectedAmount, rawValue]);
 
+  // const miniApprovalGas = useMiniApprovalGas();
+
+  const canUseDirectSubmitTx = useMemo(() => {
+    console.log('canUseDirectSubmitTx', { isDirectSignAccount, token });
+    // 检查账户类型
+    if (!isDirectSignAccount || !token?.chain) return false;
+    return true;
+    // // 如果没有 gas 信息，暂时允许（后续会在 gas 计算完成后重新判断）
+    // if (!miniApprovalGas?.gasCostUsdStr) {
+    //   return true;
+    // }
+
+    // // 检查 gas 费用是否过高
+    // const chainEnum = findChainByServerID(token.chain);
+    // if (!chainEnum) return false;
+
+    // const gasCostUsd = new BigNumber(
+    //   miniApprovalGas.gasCostUsdStr.replace(/\$/g, '')
+    // );
+    // const gasTooHigh = gasCostUsd.gt(
+    //   chainEnum.enum === CHAINS_ENUM.ETH ? 10 : 1
+    // );
+
+    // return !gasTooHigh;
+  }, [isDirectSignAccount, token?.chain]);
+
+  const refresh = useSetRefreshId();
+  const handleNoSignConfirm = async () => {
+    console.log('handleNoSignConfirm');
+    // if (depositBtnDisabled || !canUseDirectSubmitTx) return;
+    clearExpiredTimer();
+    startDirectSigning();
+    // await runBuildMiniSignTx();
+  };
   const topUpGasAccount = () => {
-    if (token) {
-      const chainEnum = findChainByServerID(token.chain)!;
-      wallet.topUpGasAccount({
-        to: L2_DEPOSIT_ADDRESS_MAP[chainEnum.enum],
-        chainServerId: chainEnum.serverId,
-        tokenId: token.id,
-        amount: depositAmount,
-        rawAmount: new BigNumber(depositAmount)
-          .times(10 ** token.decimals)
-          .toFixed(0),
-      });
-      window.close();
-    }
+    if (!token || !amountPass) return;
+    const chainEnum = findChainByServerID(token.chain)!;
+    wallet.topUpGasAccount({
+      to: L2_DEPOSIT_ADDRESS_MAP[chainEnum.enum],
+      chainServerId: chainEnum.serverId,
+      tokenId: token.id,
+      amount: Number(depositAmount),
+      rawAmount: new BigNumber(depositAmount)
+        .times(10 ** token.decimals)
+        .toFixed(0),
+    });
+    window.close();
   };
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,33 +324,161 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
+  const { handleAmountChange, clearExpiredTimer } = useTokenPair(
+    currentAccount?.address || ''
+  );
+
   const selectCustomAmount = () => {
     setAmount(CUSTOM_AMOUNT);
   };
 
+  // 处理签名完成后的逻辑
+  const handleSignResolve = async (txHash: string) => {
+    try {
+      console.log('handleSignResolve txHash', txHash);
+      if (!txHash || !token || !currentAccount) {
+        console.error('Missing required data for rechargeGasAccount');
+        return;
+      }
+
+      // 获取gas account签名信息
+      const gasAccountData = await wallet.getGasAccountSig();
+      const { sig, accountId } = gasAccountData || {};
+
+      if (!sig || !accountId) {
+        console.error('Gas account not logged in');
+        return;
+      }
+
+      // 获取链信息
+      const chainEnum = findChainByServerID(token.chain);
+      if (!chainEnum) {
+        console.error('Invalid chain');
+        return;
+      }
+
+      // 获取nonce
+      const nonce = await wallet.getNonceByChain(
+        currentAccount.address,
+        chainEnum.id
+      );
+
+      if (typeof nonce !== 'number') {
+        console.error('Failed to get nonce');
+        return;
+      }
+
+      // 计算充值金额
+      const depositAmountNumber = Number(depositAmount);
+
+      // 调用rechargeGasAccount接口
+      console.log('rechargeGasAccount', txHash);
+      await wallet.openapi.rechargeGasAccount({
+        sig: sig,
+        account_id: accountId,
+        tx_id: txHash,
+        chain_id: chainEnum.serverId,
+        amount: depositAmountNumber,
+        user_addr: currentAccount.address,
+        nonce: nonce - 1,
+      });
+
+      console.log('Gas account recharged successfully with tx hash:', txHash);
+    } catch (error) {
+      console.error('Failed to recharge gas account:', error);
+    } finally {
+      setTimeout(() => {
+        refresh((e) => e + 1);
+        setIsShowSign(false);
+        setMiniSignTx(null);
+        handleAmountChange('');
+        handleRefreshHistory();
+        onClose();
+      }, 500);
+    }
+  };
+
   const errorTips = useMemo(() => {
+    console.log('errorTips', { selectedAmount, rawValue });
     if (selectedAmount === CUSTOM_AMOUNT && rawValue && rawValue > 500) {
       return t('page.gasAccount.depositPopup.invalidAmount');
     }
   }, [rawValue, selectedAmount]);
 
   const amountPass = useMemo(() => {
+    console.log('amountPass', { selectedAmount, rawValue });
     if (selectedAmount === CUSTOM_AMOUNT) {
       return rawValue >= 1 && rawValue <= 500;
     }
     return true;
   }, [rawValue, selectedAmount]);
 
+  const depositBtnDisabled = useMemo(() => {
+    console.log('depositBtnDisabled', { token, amountPass });
+    return !token || !amountPass;
+  }, [token, amountPass]);
+
   const openTokenList = () => {
     if (!amountPass) return;
     setTokenListVisible(true);
   };
 
+  // const runBuildMiniSignTx = async () => {
+  //   if (!token || !amountPass || !currentAccount) {
+  //     setMiniSignTx(null);
+  //     return;
+  //   }
+  //   const chainEnum = findChainByServerID(token.chain)!;
+  //   const rawAmount = new BigNumber(depositAmount)
+  //     .times(10 ** token.decimals)
+  //     .toFixed(0);
+  //   const txs = await wallet.buildDepositTxs({
+  //     to: L2_DEPOSIT_ADDRESS_MAP[chainEnum.enum],
+  //     chainServerId: chainEnum.serverId,
+  //     tokenId: token.id,
+  //     rawAmount,
+  //     account: currentAccount,
+  //   });
+  //   console.log('setMiniSignTx', txs[0]);
+  //   setMiniSignTx(txs[0] as Tx);
+  // }
+
   useEffect(() => {
+    console.log('useEffect token depositAmount', { token, depositAmount });
     if (token && depositAmount && token.amount < depositAmount) {
       setToken(undefined);
     }
   }, [depositAmount]);
+  const {
+    data: txs = [],
+    runAsync: runBuildDepositTxs,
+    mutate: mutateTxs,
+  } = useRequest(
+    async () => {
+      if (!token || !amountPass || !currentAccount) return [];
+      const chainEnum = findChainByServerID(token.chain)!;
+      const rawAmount = new BigNumber(depositAmount)
+        .times(10 ** token.decimals)
+        .toFixed(0);
+      return ((await wallet.buildDepositTxs({
+        to: L2_DEPOSIT_ADDRESS_MAP[chainEnum.enum],
+        chainServerId: chainEnum.serverId,
+        tokenId: token.id,
+        rawAmount,
+        account: currentAccount,
+      })) as unknown) as Tx[];
+    },
+    { manual: true }
+  );
+  useEffect(() => {
+    console.log('runBuildDepositTxs');
+    if (depositBtnDisabled || !canUseDirectSubmitTx) return;
+    // mutateTxs([]);
+    runBuildDepositTxs().then((txs) => {
+      console.log('runBuildDepositTxs', txs);
+      setMiniSignTx(txs[0]);
+    });
+  }, [depositBtnDisabled, canUseDirectSubmitTx]);
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center leading-normal">
@@ -373,18 +573,25 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
           onClick={openTokenList}
         />
       </div>
-
       <div className="w-full mt-auto px-20 py-16 border-t-[0.5px] border-solid border-rabby-neutral-line flex items-center justify-center">
-        <Button
-          onClick={topUpGasAccount}
-          block
-          size="large"
-          type="primary"
-          className="h-[48px] text-r-neutral-title2 text-15 font-medium"
-          disabled={!token || !amountPass}
-        >
-          {t('global.Confirm')}
-        </Button>
+        {isDirectSignAccount ? (
+          <DirectSignToConfirmBtn
+            title={t('global.Confirm')}
+            onConfirm={handleNoSignConfirm}
+            disabled={depositBtnDisabled}
+          />
+        ) : (
+          <Button
+            onClick={topUpGasAccount}
+            block
+            size="large"
+            type="primary"
+            className="h-[48px] text-r-neutral-title2 text-15 font-medium"
+            disabled={depositBtnDisabled}
+          >
+            {t('global.Confirm')}
+          </Button>
+        )}
       </div>
 
       <TokenSelector
@@ -393,28 +600,61 @@ const GasAccountDepositContent = ({ onClose }: { onClose: () => void }) => {
         cost={depositAmount}
         onChange={setToken}
       />
+      <MiniApproval
+        visible={isShowSign}
+        txs={miniSignTxs}
+        ga={{
+          category: 'Send',
+          source: 'gasAccount',
+          trigger: rbiSource,
+        }}
+        onClose={() => {
+          setIsShowSign(false);
+          refresh((e) => e + 1);
+          setTimeout(() => {
+            setMiniSignTx(null);
+          }, 500);
+        }}
+        onReject={() => {
+          setIsShowSign(false);
+          refresh((e) => e + 1);
+          setMiniSignTx(null);
+        }}
+        onResolve={handleSignResolve}
+        onPreExecError={topUpGasAccount}
+        directSubmit
+        canUseDirectSubmitTx={canUseDirectSubmitTx}
+      />
     </div>
   );
 };
 
-export const GasAccountDepositPopup = (props: PopupProps) => {
+interface GasAccountDepositPopupProps extends PopupProps {
+  handleRefreshHistory: () => void;
+}
+
+export const GasAccountDepositPopup = (props: GasAccountDepositPopupProps) => {
+  console.log('DepositPopup render');
   return (
-    <Popup
-      placement="bottom"
-      height={410}
-      isSupportDarkMode
-      bodyStyle={{
-        padding: 0,
-      }}
-      closable
-      destroyOnClose
-      push={false}
-      closeIcon={<GasAccountCloseIcon />}
-      {...props}
-    >
-      <GasAccountDepositContent
-        onClose={props.onCancel || props.onClose || noop}
-      />
-    </Popup>
+    <DirectSubmitProvider>
+      <Popup
+        placement="bottom"
+        height={410}
+        isSupportDarkMode
+        bodyStyle={{
+          padding: 0,
+        }}
+        closable
+        destroyOnClose
+        push={false}
+        closeIcon={<GasAccountCloseIcon />}
+        {...props}
+      >
+        <GasAccountDepositContent
+          onClose={props.onCancel || props.onClose || noop}
+          handleRefreshHistory={props.handleRefreshHistory}
+        />
+      </Popup>
+    </DirectSubmitProvider>
   );
 };
