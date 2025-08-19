@@ -54,7 +54,9 @@ class GasAccountService {
       this.store.sig = sig;
       this.store.accountId = account?.address;
       this.store.account = {
-        ...account!,
+        address: account.address,
+        brandName: account.brandName,
+        type: account.type,
       };
     }
   };
