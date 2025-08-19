@@ -3829,7 +3829,7 @@ export class WalletController extends BaseController {
   signTypedData = async (
     type: string,
     from: string,
-    data: string,
+    data: any,
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);

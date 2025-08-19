@@ -101,7 +101,7 @@ export const Perps: React.FC = () => {
     const signature = await wallet.signTypedData(
       account.type,
       account.address,
-      JSON.stringify(action),
+      action as any,
       { version: 'V4' }
     );
     console.log('signMessage signature', signature);
