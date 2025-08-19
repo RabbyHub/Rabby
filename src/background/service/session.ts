@@ -29,6 +29,9 @@ export class Session {
   }
 
   setPortMessage(pm: PortMessage) {
+    if (this.pms.find((p) => p === pm)) {
+      return;
+    }
     this.pms.push(pm);
   }
 
