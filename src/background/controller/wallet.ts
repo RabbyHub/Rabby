@@ -5392,6 +5392,12 @@ export class WalletController extends BaseController {
     return providerController.personalSign(...args);
   };
 
+  ethSignTypedDataV4 = async (
+    ...args: Parameters<typeof providerController.ethSignTypedDataV4>
+  ) => {
+    return providerController.ethSignTypedDataV4(...args);
+  };
+
   tryOpenOrActiveUserGuide = async () => {
     if (this.isBooted()) {
       return false;
@@ -5603,8 +5609,11 @@ export class WalletController extends BaseController {
     gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
   };
 
-  createPerpsAgentWallet = (masterWallet: string) => {
-    perpsService.createAgentWallet(masterWallet);
+  createPerpsAgentWallet = async (masterWallet: string) => {
+    return perpsService.createAgentWallet(masterWallet);
+  };
+  setPerpsCurrentAddress = async (address: string) => {
+    perpsService.updateCurrentAddress(address);
   };
 }
 

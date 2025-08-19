@@ -15,6 +15,7 @@ export interface PerpsServiceStore {
   agentWallets: {
     [address: string]: AgentWalletInfo;
   };
+  currentAddress: string;
 }
 
 export interface PerpsServiceMemoryState {
@@ -22,12 +23,14 @@ export interface PerpsServiceMemoryState {
     // key is master wallet address
     [address: string]: AgentWalletInfo;
   };
+  currentAddress: string;
 }
 
 class PerpsService {
   private store?: PerpsServiceStore;
   private memoryState: PerpsServiceMemoryState = {
     agentWallets: {},
+    currentAddress: '',
   };
 
   init = async () => {
@@ -35,6 +38,7 @@ class PerpsService {
       name: 'perps',
       template: {
         agentWallets: {},
+        currentAddress: '',
       },
     });
 
@@ -45,6 +49,7 @@ class PerpsService {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
+    this.memoryState.currentAddress = this.store.currentAddress;
     for (const masterAddress in this.store.agentWallets) {
       const cur = this.store.agentWallets[masterAddress];
       const privateKey = (await keyringService.decryptWithPassword(
@@ -69,7 +74,7 @@ class PerpsService {
     this.addAgentWallet(masterAddress, bytesToHex(privateKey), {
       agentAddress,
     });
-    return agentAddress;
+    return { agentAddress, vault: bytesToHex(privateKey) };
   };
 
   addAgentWallet = async (
@@ -140,6 +145,14 @@ class PerpsService {
     if (this.memoryState.agentWallets[normalizedAddress]) {
       this.memoryState.agentWallets[normalizedAddress].preference = preference;
     }
+  };
+
+  updateCurrentAddress = async (address: string) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.currentAddress = address;
+    this.memoryState.currentAddress = address;
   };
 
   removeAgentWallet = async (address: string) => {

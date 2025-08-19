@@ -751,6 +751,19 @@
       "selectFromAddress": "Select From Address",
       "selectToken": "Select Token"
     },
+    "perps": {
+      "title": "Perps",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "positions": "Positions",
+      "logInTips": "Log in with your address and deposit funds to start trading perps.",
+      "logInPerpsAccount": "Log in to my Perps account",
+      "learnAboutPerps": "Learn about Perps",
+      "explorePerps": "Explore Perps",
+      "seeMore": "See More",
+      "selectAnAddressToLogIn": "Select an Address to Log In",
+      "tradePerps": "Trade Perps"
+    },
     "sendPoly": {
       "title": "Send to",
       "enterAddress": "Enter address",
@@ -1239,6 +1252,7 @@
           "nft": "NFT",
           "ecology": "Ecosystem",
           "bridge": "Bridge",
+          "perps": "Perps",
           "mobile": "Mobile Sync"
         },
         "comingSoon": "Coming soon",
