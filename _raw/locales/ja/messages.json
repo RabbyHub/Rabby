@@ -1822,7 +1822,7 @@
       "onekey": {
         "onekeyPermission1": "USBデバイスに接続",
         "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可する：",
-        "onekeyPermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、OneKey へのアクセスを承認し。",
+        "onekeyPermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、OneKey へのアクセスを承認してください。ポップアップにOneKeyが表示されない場合は、デバイスがコンピューターに正しく接続されているかご確認ください。",
         "whyOneKey": "OneKeyを選ぶ理由？",
         "buyOneKey": "OneKeyを購入",
         "haveOneKey": "OneKeyをお持ちでない方は？"

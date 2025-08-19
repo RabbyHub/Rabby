@@ -1763,7 +1763,7 @@
       "onekey": {
         "onekeyPermission1": "Connect to an USB device",
         "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
-        "onekeyPermissionTip": "Please click \"Allow\" below to authorize access to your OneKey in the following pop-up window.",
+        "onekeyPermissionTip": "Please click \"Allow\" below to authorize access to your OneKey in the following pop-up window. If OneKey doesn't appear in the popup, please check if your device is properly connected to the computer.",
         "whyOneKey": "Why OneKey?",
         "buyOneKey": "Buy OneKey",
         "haveOneKey": "Don't have a OneKey yet?"

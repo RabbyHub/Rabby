@@ -1690,7 +1690,7 @@
       "onekey": {
         "onekeyPermission1": "Kết nối với thiết bị USB",
         "allowRabbyPermissionsTitle": "Cho phép Rabby các quyền để:",
-        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo.",
+        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo. Nếu OneKey không xuất hiện trong popup, vui lòng kiểm tra xem thiết bị của bạn đã kết nối đúng với máy tính chưa.",
         "whyOneKey": "Tại sao chọn OneKey?",
         "buyOneKey": "Mua OneKey",
         "haveOneKey": "Chưa có OneKey?"

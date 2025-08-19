@@ -614,7 +614,7 @@
       "onekey": {
         "onekeyPermission1": "连接至USB设备",
         "allowRabbyPermissionsTitle": "允许Rabby访问以下权限：",
-        "onekeyPermissionTip": "请在下方点击“允许”，以在弹出窗口中授权访问您的OneKey。",
+        "onekeyPermissionTip": "请在下方点击“允许”，以在弹出窗口中授权访问您的OneKey。如果弹窗中没有出现OneKey，请检查是否设备是否正确连接电脑。",
         "whyOneKey": "为什么用 OneKey？",
         "buyOneKey": "购买 OneKey",
         "haveOneKey": "还没有 OneKey 硬件？"

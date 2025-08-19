@@ -1458,7 +1458,7 @@
       "onekey": {
         "onekeyPermission1": "Se connecter à un périphérique USB",
         "allowRabbyPermissionsTitle": "Autoriser Rabby à :",
-        "onekeyPermissionTip": "Veuillez cliquer sur « Autoriser » ci-dessous pour autoriser l'accès à votre OneKey dans la fenêtre pop-up suivante.",
+        "onekeyPermissionTip": "Veuillez cliquer sur « Autoriser » ci-dessous pour autoriser l'accès à votre OneKey dans la fenêtre pop-up suivante. Si OneKey n'apparaît pas dans la fenêtre pop-up, veuillez vérifier si votre appareil est correctement connecté à l'ordinateur.",
         "whyOneKey": "Pourquoi OneKey ?",
         "buyOneKey": "Acheter OneKey",
         "haveOneKey": "Vous n'avez pas encore de OneKey ?"

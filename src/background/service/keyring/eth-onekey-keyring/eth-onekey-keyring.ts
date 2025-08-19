@@ -70,33 +70,44 @@ function handleDeviceError(
   errorCode: string | number | undefined,
   errorMessage: string
 ) {
+  let msg = errorMessage;
   switch (errorCode?.toString()) {
     case HardwareErrorCode.DeviceNotFound.toString():
-      return t('background.keyring.onekey.notFoundDevice');
+      msg = t('background.keyring.onekey.notFoundDevice');
+      break;
     case HardwareErrorCode.WebDeviceNotFoundOrNeedsPermission.toString():
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB,
       });
-      return t('background.keyring.onekey.deviceNeedsWebHIDPermission');
+      msg = t('background.keyring.onekey.deviceNeedsWebHIDPermission');
+      break;
     case HardwareErrorCode.DeviceInterruptedFromOutside.toString():
     case HardwareErrorCode.DeviceInterruptedFromUser.toString():
     case HardwareErrorCode.ActionCancelled.toString():
     case HardwareErrorCode.PinCancelled.toString():
-      return t('background.keyring.onekey.actionCancel');
+      msg = t('background.keyring.onekey.actionCancel');
+      break;
     case HardwareErrorCode.DeviceInitializeFailed.toString():
-      return t('background.keyring.onekey.deviceInitializeFailed');
+      msg = t('background.keyring.onekey.deviceInitializeFailed');
+      break;
     case HardwareErrorCode.NewFirmwareForceUpdate.toString():
-      return t('background.keyring.onekey.needUpgradeFirmware');
+      msg = t('background.keyring.onekey.needUpgradeFirmware');
+      break;
     case HardwareErrorCode.CallMethodNeedUpgradeFirmware.toString():
-      return t('background.keyring.onekey.thisMethodNeedUpgradeFirmware');
+      msg = t('background.keyring.onekey.thisMethodNeedUpgradeFirmware');
+      break;
     case HardwareErrorCode.NotAllowInBootloaderMode.toString():
-      return t('background.keyring.onekey.notAllowInBootloaderMode');
+      msg = t('background.keyring.onekey.notAllowInBootloaderMode');
+      break;
     case HardwareErrorCode.DeviceCheckPassphraseStateError.toString():
     case HardwareErrorCode.DeviceCheckUnlockTypeError.toString():
-      return t('background.keyring.onekey.deviceCheckPassphraseStateError');
+      msg = t('background.keyring.onekey.deviceCheckPassphraseStateError');
+      break;
     default:
-      return errorMessage;
+      msg = errorMessage;
   }
+
+  return `${errorCode}: ${msg}`;
 }
 
 class OneKeyKeyring extends EventEmitter {
@@ -185,12 +196,23 @@ class OneKeyKeyring extends EventEmitter {
       this.bridge
         .searchDevices()
         .then(async (result) => {
-          if (!result.success) {
-            reject('searchDevices failed');
-            return;
-          } else {
+          if (result.success) {
             if (result.payload.length <= 0) {
-              reject('No OneKey Device found');
+              const features = await this.bridge.getFeatures();
+              if (!features.success) {
+                if (
+                  features.payload.code === HardwareErrorCode.DeviceNotFound
+                ) {
+                  reject('No OneKey Device found');
+                } else {
+                  reject(
+                    handleDeviceError(
+                      features.payload.code,
+                      features.payload.error
+                    )
+                  );
+                }
+              }
             }
             const device = result.payload[0];
             const { deviceId, connectId } = device;
@@ -214,7 +236,9 @@ class OneKeyKeyring extends EventEmitter {
               connectId
             );
             if (!passphraseState.success) {
-              reject('getPassphraseState failed');
+              reject(
+                passphraseState.payload.error ?? 'getPassphraseState failed'
+              );
               return;
             }
             this.passphraseState = passphraseState.payload;
@@ -251,6 +275,10 @@ class OneKeyKeyring extends EventEmitter {
                   );
                 }
               });
+          } else {
+            reject(
+              handleDeviceError(result.payload.code, result.payload.error)
+            );
           }
         })
         .catch((e) => {

@@ -1690,7 +1690,7 @@
       "onekey": {
         "onekeyPermission1": "Sambungkan ke perangkat USB",
         "allowRabbyPermissionsTitle": "Izinkan Rabby untuk:",
-        "onekeyPermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke OneKey Anda di jendela pop-up berikut.",
+        "onekeyPermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke OneKey Anda di jendela pop-up berikut. Jika OneKey tidak muncul di popup, silakan periksa apakah perangkat Anda terhubung dengan benar ke komputer.",
         "whyOneKey": "Mengapa OneKey?",
         "buyOneKey": "Beli OneKey",
         "haveOneKey": "Belum memiliki OneKey?"

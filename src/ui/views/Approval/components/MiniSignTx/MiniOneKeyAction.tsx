@@ -168,7 +168,7 @@ export const MiniOneKeyAction: React.FC<Props> = ({
           <OneKeySVG
             width={22}
             height={22}
-            viewBox="0 0 28 28"
+            viewBox="0 0 80 80"
             className="mr-6"
           />
 

@@ -613,7 +613,7 @@
       "onekey": {
         "onekeyPermission1": "連接至USB裝置",
         "allowRabbyPermissionsTitle": "允許Rabby存取以下權限：",
-        "onekeyPermissionTip": "請在下方點擊「允許」，以在彈出視窗中授權存取您的OneKey。",
+        "onekeyPermissionTip": "請在下方點擊「允許」，以在彈出視窗中授權存取您的OneKey。如果彈出視窗中沒有出現OneKey，請檢查您的裝置是否正確連接到電腦。",
         "whyOneKey": "為什麼選擇 OneKey？",
         "buyOneKey": "購買 OneKey",
         "haveOneKey": "還沒有 OneKey？"

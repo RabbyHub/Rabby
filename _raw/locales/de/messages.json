@@ -1822,7 +1822,7 @@
       "onekey": {
         "onekeyPermission1": "Verbinden Sie mit einem USB-Gerät",
         "allowRabbyPermissionsTitle": "Erlaube Rabby-Berechtigungen, um:",
-        "onekeyPermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren OneKey im folgenden Popup-Fenster zu autorisieren.",
+        "onekeyPermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren OneKey im folgenden Popup-Fenster zu autorisieren. Wenn OneKey nicht im Popup erscheint, prüfen Sie bitte, ob Ihr Gerät ordnungsgemäß mit dem Computer verbunden ist.",
         "whyOneKey": "Warum OneKey?",
         "buyOneKey": "OneKey kaufen",
         "haveOneKey": "Haben Sie noch kein OneKey?"

@@ -1,6 +1,7 @@
-import { useWallet } from '@/ui/utils';
+import { openInternalPageInTab, useWallet } from '@/ui/utils';
 import { sendTransaction } from '@/ui/utils/sendTransaction';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { HardwareErrorCode } from '@onekeyfe/hd-shared';
 import { useMemoizedFn } from 'ahooks';
 import React, { useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
@@ -180,6 +181,17 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
             }
 
             setError(msg);
+          }
+
+          // retry webusb permission
+          if (
+            msg.startsWith(
+              HardwareErrorCode.WebDeviceNotFoundOrNeedsPermission.toString()
+            )
+          ) {
+            openInternalPageInTab(
+              'request-permission?type=onekey&from=approval'
+            );
           }
           throw e;
         }

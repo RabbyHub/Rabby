@@ -1690,7 +1690,7 @@
       "onekey": {
         "onekeyPermission1": "Conectar a um dispositivo USB",
         "allowRabbyPermissionsTitle": "Permitir permissões do Rabby para:",
-        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela pop-up a seguir.",
+        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela pop-up a seguir. Se OneKey não aparecer no popup, verifique se seu dispositivo está conectado corretamente ao computador.",
         "whyOneKey": "Por que OneKey?",
         "buyOneKey": "Comprar OneKey",
         "haveOneKey": "Ainda não tem um OneKey?"
