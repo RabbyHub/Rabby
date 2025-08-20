@@ -63,6 +63,7 @@ const Wrapper = styled.section`
   border-radius: 16px 16px 0px 0px;
   background: var(--r-neutral-bg-1, #3d4251);
   box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--r-neutral-line);
 
   &.is-darkmode {
     box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.3);
