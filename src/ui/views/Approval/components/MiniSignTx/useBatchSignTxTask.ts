@@ -210,7 +210,8 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
 
   const handleRetry = useMemoizedFn(async () => {
     setError('');
-    await start(true);
+    const hash = await start(true);
+    return hash;
   });
 
   const stop = useMemoizedFn(() => {
