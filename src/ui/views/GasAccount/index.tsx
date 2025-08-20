@@ -202,6 +202,7 @@ const GasAccountInner = () => {
       />
       <GasAccountDepositPopup
         visible={depositVisible}
+        handleRefreshHistory={handleRefreshHistory}
         onCancel={() => setDepositVisible(false)}
       />
 
