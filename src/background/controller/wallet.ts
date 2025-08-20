@@ -5615,6 +5615,28 @@ export class WalletController extends BaseController {
   setPerpsCurrentAddress = async (address: string) => {
     perpsService.updateCurrentAddress(address);
   };
+  getPerpsCurrentAddress = async () => {
+    return perpsService.getCurrentAddress();
+  };
+  saveApproveAgentAfterDeposit = async (
+    masterAddress: string,
+    action: any,
+    nonce: number,
+    signature: string
+  ) => {
+    perpsService.saveApproveAgentAfterDeposit(
+      masterAddress,
+      action,
+      nonce,
+      signature
+    );
+  };
+  getApproveAgentAfterDeposit = async (masterAddress: string) => {
+    return perpsService.getApproveAgentAfterDeposit(masterAddress);
+  };
+  getPerpsAgentWallet = async (masterWallet: string) => {
+    return perpsService.getAgentWallet(masterWallet);
+  };
 }
 
 const wallet = new WalletController();

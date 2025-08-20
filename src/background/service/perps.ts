@@ -24,6 +24,13 @@ export interface PerpsServiceMemoryState {
     [address: string]: AgentWalletInfo;
   };
   currentAddress: string;
+  approveAgentAfterDeposit: {
+    [address: string]: {
+      action: any;
+      nonce: number;
+      signature: string;
+    }; // address is master address
+  };
 }
 
 class PerpsService {
@@ -31,6 +38,7 @@ class PerpsService {
   private memoryState: PerpsServiceMemoryState = {
     agentWallets: {},
     currentAddress: '',
+    approveAgentAfterDeposit: {},
   };
 
   init = async () => {
@@ -43,6 +51,26 @@ class PerpsService {
     });
 
     this.memoryState.agentWallets = {};
+    this.memoryState.approveAgentAfterDeposit = {};
+  };
+
+  saveApproveAgentAfterDeposit = async (
+    masterAddress: string,
+    action: any,
+    nonce: number,
+    signature: string
+  ) => {
+    this.memoryState.approveAgentAfterDeposit[masterAddress] = {
+      action,
+      nonce,
+      signature,
+    };
+  };
+
+  getApproveAgentAfterDeposit = async (masterAddress: string) => {
+    const res = this.memoryState.approveAgentAfterDeposit[masterAddress];
+    delete this.memoryState.approveAgentAfterDeposit[masterAddress];
+    return res;
   };
 
   unlockAgentWallets = async () => {
@@ -153,6 +181,13 @@ class PerpsService {
     }
     this.store.currentAddress = address;
     this.memoryState.currentAddress = address;
+  };
+
+  getCurrentAddress = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.memoryState.currentAddress;
   };
 
   removeAgentWallet = async (address: string) => {
