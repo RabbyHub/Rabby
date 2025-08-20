@@ -1,7 +1,13 @@
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Empty, Item, Popup, TokenWithChain } from '@/ui/component';
-import { Button, Space, Tooltip } from 'antd';
+import { Space, Tooltip } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
 import { SvgIconLoading } from 'ui/assets';
 import { FixedSizeList } from 'react-window';
@@ -11,9 +17,7 @@ import clsx from 'clsx';
 import { useAsync } from 'react-use';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { KEYRING_CLASS, CHAINS_ENUM } from '@/constant';
-import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
-import { ShowMoreOnSend } from '@/ui/views/SendToken/components/SendShowMore';
+import { KEYRING_CLASS } from '@/constant';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import { getTokenSymbol } from '@/ui/utils/token';
@@ -23,20 +27,11 @@ import { GasAccountCloseIcon } from './PopupCloseIcon';
 import { Input } from 'antd';
 import {
   useStartDirectSigning,
-  useDirectSigning,
-  useSetDirectSigning,
-  // useMiniApprovalGas,
   DirectSubmitProvider,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { useRef } from 'react';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
-import { useRbiSource } from '@/ui/utils/ga-event';
-import { useSetRefreshId } from '../../Swap/hooks/context';
-import { useTokenPair } from '../../Swap/hooks';
-import { useRequest } from 'ahooks';
-import { AbiCoder } from 'web3-eth-abi';
-import { addHexPrefix } from 'ethereumjs-util';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { GasAccountDepositButton } from './GasAccountDepositButton';
 
 const amountList = [10, 100];
 
@@ -228,19 +223,15 @@ const GasAccountDepositContent = ({
   const [token, setToken] = useState<TokenItem | undefined>(undefined);
   const [formattedValue, setFormattedValue] = useState('');
   const [rawValue, setRawValue] = useState(0);
-  const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
-  const [gasAmount, setGasAmount] = useState<number>(0);
 
-  const miniSignTxs = useMemo(() => {
-    return miniSignTx ? [miniSignTx] : [];
-  }, [miniSignTx]);
   const wallet = useWallet();
   const currentAccount = useCurrentAccount();
-  const rbiSource = useRbiSource();
-  const [isShowSign, setIsShowSign] = useState(false);
+  const [isPreparingSign, setIsPreparingSign] = useState(false);
+
   const isDirectSignAccount =
     currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
     currentAccount?.type === KEYRING_CLASS.MNEMONIC;
+
   const startDirectSigning = useStartDirectSigning();
 
   const depositAmount = useMemo(() => {
@@ -258,29 +249,23 @@ const GasAccountDepositContent = ({
   }, [rawValue, selectedAmount]);
 
   const depositBtnDisabled = useMemo(() => {
-    return !token || !amountPass;
-  }, [token, amountPass]);
+    return !token || !amountPass || isPreparingSign;
+  }, [token, amountPass, isPreparingSign]);
+
   const canUseDirectSubmitTx = useMemo(() => {
     if (!isDirectSignAccount || !token || !depositAmount) return false;
-    if (!gasAmount) {
-      return true;
-    }
+
     const chainEnum = findChainByServerID(token.chain);
     if (!chainEnum) return false;
 
-    const gasTooHigh = new BigNumber(gasAmount).gt(
-      chainEnum.enum === CHAINS_ENUM.ETH ? 10 : 1
-    );
+    return true;
+  }, [isDirectSignAccount, token, depositAmount]);
 
-    return !gasTooHigh;
-  }, [isDirectSignAccount, token, gasAmount, depositAmount]);
-
-  const refresh = useSetRefreshId();
+  const [forceRefresh, refresh] = useState(0);
   const handleNoSignConfirm = async () => {
-    clearExpiredTimer();
-    startDirectSigning();
+    setIsPreparingSign(true);
   };
-  const topUpGasAccount = () => {
+  const topUpGasAccount = useCallback(() => {
     if (!token || !amountPass) return;
     const chainEnum = findChainByServerID(token.chain)!;
     wallet.topUpGasAccount({
@@ -293,7 +278,7 @@ const GasAccountDepositContent = ({
         .toFixed(0),
     });
     window.close();
-  };
+  }, [token?.chain, token?.id, amountPass, depositAmount]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value.replace(/[^0-9]/g, '');
@@ -317,10 +302,6 @@ const GasAccountDepositContent = ({
       setRawValue(numericValue ? parseInt(numericValue, 10) : 0);
     }
   };
-
-  const { handleAmountChange, clearExpiredTimer } = useTokenPair(
-    currentAccount?.address || ''
-  );
 
   const selectCustomAmount = () => {
     setAmount(CUSTOM_AMOUNT);
@@ -368,9 +349,6 @@ const GasAccountDepositContent = ({
     } finally {
       setTimeout(() => {
         refresh((e) => e + 1);
-        setIsShowSign(false);
-        setMiniSignTx(null);
-        handleAmountChange('');
         handleRefreshHistory();
         onClose();
       }, 500);
@@ -388,10 +366,9 @@ const GasAccountDepositContent = ({
     setTokenListVisible(true);
   };
 
-  const runBuildDepositTxs = async () => {
-    if (!token || !amountPass || !currentAccount) {
-      setMiniSignTx(null);
-      return;
+  const { value: txs, loading } = useAsync(async () => {
+    if (!token || !amountPass || !currentAccount || !isDirectSignAccount) {
+      return [] as Tx[];
     }
     const chainEnum = findChainByServerID(token.chain)!;
     const rawAmount = new BigNumber(depositAmount)
@@ -404,18 +381,16 @@ const GasAccountDepositContent = ({
       rawAmount,
       account: currentAccount,
     });
-    setMiniSignTx(txs[0] as Tx);
-  };
+    return txs as Tx[];
+  }, [token, amountPass, currentAccount, depositAmount, forceRefresh]);
+
+  const miniSignTxs = useMemo(() => (loading ? [] : txs), [loading, txs]);
 
   useEffect(() => {
     if (token && depositAmount && token.amount < depositAmount) {
       setToken(undefined);
     }
   }, [depositAmount]);
-  useEffect(() => {
-    if (depositBtnDisabled || !canUseDirectSubmitTx) return;
-    runBuildDepositTxs();
-  }, [depositBtnDisabled, canUseDirectSubmitTx, depositAmount]);
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center leading-normal">
@@ -511,24 +486,18 @@ const GasAccountDepositContent = ({
         />
       </div>
       <div className="w-full mt-auto px-20 py-16 border-t-[0.5px] border-solid border-rabby-neutral-line flex items-center justify-center">
-        {canUseDirectSubmitTx ? (
-          <DirectSignToConfirmBtn
-            title={t('global.Confirm')}
-            onConfirm={handleNoSignConfirm}
-            disabled={depositBtnDisabled}
-          />
-        ) : (
-          <Button
-            onClick={topUpGasAccount}
-            block
-            size="large"
-            type="primary"
-            className="h-[48px] text-r-neutral-title2 text-15 font-medium"
-            disabled={depositBtnDisabled}
-          >
-            {t('global.Confirm')}
-          </Button>
-        )}
+        <GasAccountDepositButton
+          isPreparingSign={isPreparingSign}
+          setIsPreparingSign={setIsPreparingSign}
+          startDirectSigning={startDirectSigning}
+          canUseDirectSubmitTx={canUseDirectSubmitTx}
+          disabled={depositBtnDisabled}
+          topUpOnSignPage={topUpGasAccount}
+          topUpDirect={handleNoSignConfirm}
+          isDirectSignAccount={isDirectSignAccount}
+          chainServerId={token?.chain}
+          miniSignTxs={miniSignTxs}
+        />
       </div>
 
       <TokenSelector
@@ -538,29 +507,29 @@ const GasAccountDepositContent = ({
         onChange={setToken}
       />
       <MiniApproval
-        visible={isShowSign}
+        isPreparingSign={isPreparingSign}
+        setIsPreparingSign={setIsPreparingSign}
         txs={miniSignTxs}
-        ga={{
-          category: 'Send',
-          source: 'gasAccount',
-          trigger: rbiSource,
-        }}
         onClose={() => {
-          setIsShowSign(false);
+          setIsPreparingSign(false);
           refresh((e) => e + 1);
-          setTimeout(() => {
-            setMiniSignTx(null);
-          }, 500);
         }}
         onReject={() => {
-          setIsShowSign(false);
           refresh((e) => e + 1);
-          setMiniSignTx(null);
+          setIsPreparingSign(false);
         }}
-        onResolve={handleNoSignResolve}
-        onPreExecError={topUpGasAccount}
+        onResolve={(tx) => {
+          handleNoSignResolve(tx);
+          refresh((e) => e + 1);
+          setIsPreparingSign(false);
+        }}
+        onPreExecError={() => {
+          setIsPreparingSign(false);
+          topUpGasAccount();
+          refresh((e) => e + 1);
+        }}
         directSubmit
-        onGasAmountChange={setGasAmount}
+        // onGasAmountChange={setGasAmount}
         canUseDirectSubmitTx={canUseDirectSubmitTx}
       />
     </div>

@@ -425,15 +425,6 @@ export const MiniSignTx = ({
     gasAccountCanPay,
   ]);
 
-  useEffect(() => {
-    if (onGasAmountChange && txsResult.length) {
-      const totalGasCost = txsResult.reduce((acc, item) => {
-        return acc.plus(item.gasCost.gasCostAmount);
-      }, new BigNumber(0));
-      onGasAmountChange(totalGasCost.toNumber());
-    }
-  }, [txsResult, onGasAmountChange]);
-
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = useMemoizedFn(async () => {
@@ -444,12 +435,8 @@ export const MiniSignTx = ({
     if (!txsResult?.length || !selectedGas) {
       return;
     }
-    try {
-      const hash = await task.start();
-      onResolve?.(hash);
-    } catch (error) {
-      console.error('handleAllow error', error);
-    }
+    const hash = await task.start();
+    onResolve?.(hash);
   });
 
   const handleGasChange = (gas: GasSelectorResponse) => {
@@ -1141,9 +1128,8 @@ export const MiniSignTx = ({
           onCancel={onReject}
           onRetry={async () => {
             await wallet.setRetryTxType(retryUpdateType);
-            await task.retry();
-            const firstTxHash = task.list[0]?.hash || '';
-            onResolve?.(firstTxHash);
+            const hash = await task.retry();
+            onResolve?.(hash);
           }}
           retryUpdateType={retryUpdateType}
         />
@@ -1376,9 +1362,7 @@ export const MiniApproval = ({
             }}
             onPreExecError={onPreExecError}
             onReject={onReject}
-            onResolve={(hash) => {
-              onResolve?.(hash);
-            }}
+            onResolve={onResolve}
             onGasAmountChange={onGasAmountChange}
             getContainer={getContainer}
           />

@@ -1,0 +1,105 @@
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { useMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { findChainByServerID } from '@/utils/chain';
+import { CHAINS_ENUM } from '@debank/common';
+import { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { Button } from 'antd';
+import BigNumber from 'bignumber.js';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'react-use';
+
+export const GasAccountDepositButton = ({
+  canUseDirectSubmitTx,
+  disabled,
+  topUpDirect,
+  topUpOnSignPage,
+  isDirectSignAccount,
+  isPreparingSign,
+  setIsPreparingSign,
+  miniSignTxs,
+  chainServerId,
+  startDirectSigning,
+}: {
+  miniSignTxs?: Tx[];
+  isPreparingSign: boolean;
+  setIsPreparingSign: (isPreparing: boolean) => void;
+  startDirectSigning: () => void;
+  canUseDirectSubmitTx: boolean;
+  disabled: boolean;
+  topUpOnSignPage: () => void;
+  topUpDirect: () => void;
+  isDirectSignAccount: boolean;
+  chainServerId?: string;
+}) => {
+  const { t } = useTranslation();
+
+  const miniApprovalGas = useMiniApprovalGas();
+
+  const gasReadyContent =
+    !!miniApprovalGas &&
+    !miniApprovalGas.loading &&
+    !!miniApprovalGas.gasCostUsdStr;
+
+  useDebounce(
+    () => {
+      if (
+        isDirectSignAccount &&
+        isPreparingSign &&
+        miniSignTxs?.length &&
+        chainServerId
+      ) {
+        if (gasReadyContent) {
+          const gasError =
+            gasReadyContent && miniApprovalGas?.showGasLevelPopup;
+          const chainInfo = findChainByServerID(chainServerId)!;
+          const gasTooHigh =
+            !!gasReadyContent &&
+            !!miniApprovalGas?.gasCostUsdStr &&
+            new BigNumber(
+              miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
+            ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
+
+          if (gasError || gasTooHigh) {
+            topUpOnSignPage();
+          } else {
+            startDirectSigning();
+          }
+        }
+      } else {
+        setIsPreparingSign(false);
+      }
+    },
+    300,
+    [
+      startDirectSigning,
+      isDirectSignAccount,
+      gasReadyContent,
+      chainServerId,
+      topUpOnSignPage,
+      isPreparingSign,
+      miniSignTxs,
+      setIsPreparingSign,
+    ]
+  );
+
+  return canUseDirectSubmitTx ? (
+    <DirectSignToConfirmBtn
+      title={t('global.Confirm')}
+      onConfirm={topUpDirect}
+      disabled={disabled}
+      overwriteDisabled
+    />
+  ) : (
+    <Button
+      onClick={topUpOnSignPage}
+      block
+      size="large"
+      type="primary"
+      className="h-[48px] text-r-neutral-title2 text-15 font-medium"
+      disabled={disabled}
+    >
+      {t('global.Confirm')}
+    </Button>
+  );
+};
