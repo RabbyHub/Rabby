@@ -93,6 +93,7 @@ export const MiniSignTx = ({
   ga,
   getContainer,
   directSubmit,
+  onGasAmountChange,
 }: {
   txs: Tx[];
   onReject?: () => void;
@@ -102,6 +103,7 @@ export const MiniSignTx = ({
   ga?: Record<string, any>;
   getContainer?: DrawerProps['getContainer'];
   directSubmit?: boolean;
+  onGasAmountChange?: (gasAmount: number) => void;
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -386,7 +388,6 @@ export const MiniSignTx = ({
   }, [task.status]);
 
   const handleInitTask = useMemoizedFn(() => {
-    console.log('handleInitTask', txsResult);
     task.init(
       txsResult.map((item) => {
         return {
@@ -414,7 +415,6 @@ export const MiniSignTx = ({
   });
 
   useEffect(() => {
-    console.log('useEffect handleInitTask', txsResult);
     handleInitTask();
   }, [
     txsResult,
@@ -425,15 +425,18 @@ export const MiniSignTx = ({
     gasAccountCanPay,
   ]);
 
+  useEffect(() => {
+    if (onGasAmountChange && txsResult.length) {
+      const totalGasCost = txsResult.reduce((acc, item) => {
+        return acc.plus(item.gasCost.gasCostAmount);
+      }, new BigNumber(0));
+      onGasAmountChange(totalGasCost.toNumber());
+    }
+  }, [txsResult, onGasAmountChange]);
+
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = useMemoizedFn(async () => {
-    console.log(
-      'handleAllow',
-      currentAccount?.type,
-      txsResult.length,
-      selectedGas
-    );
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
     }
@@ -443,7 +446,6 @@ export const MiniSignTx = ({
     }
     try {
       const hash = await task.start();
-      console.log('handleAllow hash', hash);
       onResolve?.(hash);
     } catch (error) {
       console.error('handleAllow error', error);
@@ -920,7 +922,6 @@ export const MiniSignTx = ({
     );
 
     setIsReady(true);
-    console.log('prepareTxs setTxsResult', res);
     setTxsResult(res);
     setInitdTxs(res);
   });
@@ -1258,6 +1259,7 @@ export const MiniApproval = ({
   onResolve,
   onReject,
   onPreExecError,
+  onGasAmountChange,
   ga,
   getContainer,
   directSubmit,
@@ -1276,6 +1278,7 @@ export const MiniApproval = ({
   directSubmit?: boolean;
   canUseDirectSubmitTx?: boolean;
   isPreparingSign?: boolean;
+  onGasAmountChange?: (gasAmount: number) => void;
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
@@ -1291,11 +1294,6 @@ export const MiniApproval = ({
   const [innerVisible, setInnerVisible] = useState(false);
 
   useEffect(() => {
-    console.log(
-      'useEffect isSigningLoading',
-      isSigningLoading,
-      disabledProcess
-    );
     if (isSigningLoading && disabledProcess) {
       setDirectSigning(false);
       setIsPreparingSign?.(false);
@@ -1304,31 +1302,23 @@ export const MiniApproval = ({
   }, [isSigningLoading, disabledProcess, setDirectSigning]);
 
   useEffect(() => {
-    console.log('useEffect txs', txs);
     resetDirectSigning();
     setInnerVisible(false);
   }, [txs]);
 
   useEffect(() => {
-    console.log('useEffect visible', visible);
     if (visible) {
       setStatus('idle');
     }
   }, [visible]);
 
   useEffect(() => {
-    console.log('useEffect innerVisible', innerVisible);
     if (innerVisible) {
       setStatus('idle');
     }
   }, [innerVisible]);
 
   useEffect(() => {
-    console.log(
-      'useEffect isSigningLoading',
-      isSigningLoading,
-      currentAccount?.type
-    );
     if (
       supportedHardwareDirectSign(currentAccount?.type || '') &&
       isSigningLoading
@@ -1340,7 +1330,6 @@ export const MiniApproval = ({
   }, [currentAccount?.type, isSigningLoading]);
 
   const handleClose = useCallback(() => {
-    console.log('handleClose');
     onClose?.();
     setInnerVisible(false);
     setDirectSigning(false);
@@ -1350,7 +1339,6 @@ export const MiniApproval = ({
   const [key, setKey] = useState(0);
 
   useEffect(() => {
-    console.log('useEffect txs setkey', txs);
     setKey((e) => e + 1);
   }, [txs]);
 
@@ -1391,6 +1379,7 @@ export const MiniApproval = ({
             onResolve={(hash) => {
               onResolve?.(hash);
             }}
+            onGasAmountChange={onGasAmountChange}
             getContainer={getContainer}
           />
         ) : null}
