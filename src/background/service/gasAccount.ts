@@ -24,18 +24,14 @@ class GasAccountService {
     hasAnyAccountClaimedGift: false,
   };
 
-  private persistStore?: GasAccountServiceStore;
-
   init = async () => {
-    this.persistStore = await createPersistStore<GasAccountServiceStore>({
+    const store = await createPersistStore<GasAccountServiceStore>({
       name: 'gasAccount',
       template: {
         hasAnyAccountClaimedGift: false,
       },
     });
-    if (this.persistStore) {
-      this.store = { ...this.store, ...this.persistStore };
-    }
+    this.store = store || this.store;
   };
 
   getGasAccountData = (key?: keyof GasAccountServiceStore) => {
@@ -58,7 +54,9 @@ class GasAccountService {
       this.store.sig = sig;
       this.store.accountId = account?.address;
       this.store.account = {
-        ...account!,
+        address: account.address,
+        brandName: account.brandName,
+        type: account.type,
       };
     }
   };
@@ -68,9 +66,6 @@ class GasAccountService {
    * @param address 地址
    */
   markGiftAsClaimed() {
-    if (this.persistStore) {
-      this.persistStore.hasAnyAccountClaimedGift = true;
-    }
     this.store.hasAnyAccountClaimedGift = true;
   }
 
@@ -85,9 +80,6 @@ class GasAccountService {
    * 设置是否有任何账号已经领取过gift
    */
   setHasAnyAccountClaimedGift(hasClaimed: boolean) {
-    if (this.persistStore) {
-      this.persistStore.hasAnyAccountClaimedGift = hasClaimed;
-    }
     this.store.hasAnyAccountClaimedGift = hasClaimed;
   }
 }
