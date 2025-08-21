@@ -12,13 +12,11 @@ import {
   CHAINS,
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
-  KEYRING_TYPE,
   SecurityEngineLevel,
 } from 'consts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
 import {
   GasAccountTips,
@@ -32,14 +30,12 @@ import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { DrawerProps } from 'antd';
 import {
-  useDirectSigning,
   useSetDisableProcessDirectSign,
-  // useSetCanDirectSign,
   useSetGasTipsComponent,
   useSetMiniApprovalGas,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { useDebounce } from 'react-use';
 import { MiniOneKeyAction } from './MiniOneKeyAction';
+import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -296,35 +292,24 @@ export const MiniFooterBar: React.FC<Props> = ({
       return;
     }
 
+    const showGasLessToSign =
+      showGasLess && !canGotoUseGasAccount && canUseGasLess;
+
     setGasTipsComponent(
       !isInited ? null : (
         <GasTipsWrapper>
-          {showGasLess &&
-          !canGotoUseGasAccount &&
-          (!securityLevel || !hasUnProcessSecurityResult) ? (
-            canUseGasLess ? (
-              <GasLessActivityToSign
-                directSubmit
-                gasLessEnable={useGasLess}
-                handleFreeGas={() => {
-                  enableGasLess?.();
-                }}
-                gasLessConfig={gasLessConfig}
-              />
-            ) : isWatchAddr ||
-              account?.type === KEYRING_TYPE.GnosisKeyring ? null : null
+          {showGasLessToSign ? (
+            <GasLessActivityToSign
+              directSubmit
+              gasLessEnable={useGasLess}
+              handleFreeGas={() => {
+                enableGasLess?.();
+              }}
+              gasLessConfig={gasLessConfig}
+            />
           ) : null}
 
-          {showGasLess &&
-          !canUseGasLess &&
-          (!securityLevel || !hasUnProcessSecurityResult) &&
-          !gasAccountCanPay &&
-          !isWalletConnect &&
-          gasAccountCost &&
-          !gasAccountCost?.balance_is_enough &&
-          !gasAccountCost?.chain_not_support &&
-          noCustomRPC &&
-          !(isWatchAddr || account?.type === KEYRING_TYPE.GnosisKeyring) ? (
+          {showGasLess && !payGasByGasAccount && !canUseGasLess ? (
             <GasLessNotEnough
               directSubmit
               gasLessFailedReason={gasLessFailedReason}
@@ -336,20 +321,14 @@ export const MiniFooterBar: React.FC<Props> = ({
           ) : null}
 
           {payGasByGasAccount && !gasAccountCanPay ? (
-            isWatchAddr ||
-            account?.type ===
-              KEYRING_TYPE.GnosisKeyring ? null : gasAccountCost?.chain_not_support ||
-              !noCustomRPC ||
-              isWalletConnect ? (
-              <GasAccountTips
-                directSubmit
-                gasAccountCost={gasAccountCost}
-                isGasAccountLogin={isGasAccountLogin}
-                isWalletConnect={isWalletConnect}
-                noCustomRPC={noCustomRPC}
-                miniFooter
-              />
-            ) : null
+            <GasAccountTips
+              directSubmit
+              gasAccountCost={gasAccountCost}
+              isGasAccountLogin={isGasAccountLogin}
+              isWalletConnect={isWalletConnect}
+              noCustomRPC={noCustomRPC}
+              miniFooter
+            />
           ) : null}
         </GasTipsWrapper>
       )
@@ -393,7 +372,16 @@ export const MiniFooterBar: React.FC<Props> = ({
         onChangeGasAccount?.();
       }
 
-      if (showGasLess && directSubmit && canGotoUseGasAccount) {
+      const otherGasAccountError =
+        !!gasAccountCost?.err_msg &&
+        gasAccountCost?.err_msg?.toLowerCase() !==
+          GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase();
+
+      if (
+        showGasLess &&
+        directSubmit &&
+        (canGotoUseGasAccount || otherGasAccountError)
+      ) {
         onChangeGasAccount?.();
       }
 
@@ -407,6 +395,7 @@ export const MiniFooterBar: React.FC<Props> = ({
     isFirstGasLessLoading,
     onChangeGasAccount,
     showGasLess,
+    gasAccountCost?.err_msg,
   ]);
 
   useEffect(() => {
