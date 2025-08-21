@@ -1525,6 +1525,11 @@ const SendToken = () => {
 
   const [gasFeeOpen, setGasFeeOpen] = useState(false);
   const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+  const handleFulfilled = useMemoizedFn(() => {
+    if (currentToken) {
+      handleCurrentTokenChange(currentToken);
+    }
+  });
 
   return (
     <FullscreenContainer className="h-[700px]">
@@ -1646,7 +1651,11 @@ const SendToken = () => {
             ) : null}
             {!canSubmit && (
               <div className="mt-20">
-                <PendingTxItem type="send" ref={pendingTxRef} />
+                <PendingTxItem
+                  onFulfilled={handleFulfilled}
+                  type="send"
+                  ref={pendingTxRef}
+                />
               </div>
             )}
           </div>
