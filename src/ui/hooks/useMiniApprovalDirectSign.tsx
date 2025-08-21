@@ -52,6 +52,7 @@ export const [
         gas_cost: number;
         estimate_tx_cost: number;
       };
+      gasAccountError?: boolean;
     }
   | undefined
 >(undefined);
