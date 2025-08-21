@@ -12,6 +12,9 @@ import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
 import { useRequest } from 'ahooks';
 
+export const GAS_ACCOUNT_INSUFFICIENT_TIP =
+  'Gas balance is not enough for transaction';
+
 export const useGasAccountTxsCheck = ({
   isReady,
   txs,
