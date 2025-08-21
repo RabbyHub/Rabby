@@ -153,9 +153,13 @@ export const useTokenPair = (userAddress: string) => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    expiredTimer.current = setTimeout(() => {
-      setRefreshId((e) => e + 1);
-    }, 1000 * 20);
+
+    if (p) {
+      expiredTimer.current = setTimeout(() => {
+        setRefreshId((e) => e + 1);
+      }, 1000 * 20);
+    }
+
     setOriActiveProvider(p);
   }, []);
 

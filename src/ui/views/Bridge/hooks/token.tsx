@@ -285,7 +285,7 @@ export const useBridge = () => {
     if (!quote?.manualClick && expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    if (!quote?.manualClick) {
+    if (!quote?.manualClick && quote) {
       expiredTimer.current = setTimeout(() => {
         setRefreshId((e) => e + 1);
       }, 1000 * 30);
