@@ -413,6 +413,10 @@ export const MiniFooterBar: React.FC<Props> = ({
         noCustomRPC,
         disabledProcess,
         showGasLevelPopup: disabledProcess,
+        gasAccountError:
+          !!gasAccountCost?.err_msg &&
+          gasAccountCost?.err_msg?.toLowerCase() !==
+            GAS_ACCOUNT_INSUFFICIENT_TIP.toLowerCase(),
       }));
     }
   }, [
