@@ -468,14 +468,24 @@ const WithdrawContent = ({
     }
   }, [chain, gasAccountInfo?.withdrawable_balance, selectAddressChainList]);
 
-  const withdrawLimitTooLowToCoverFee = useMemo(() => {
-    if (!chain || !selectAddressChainList) return false;
-    const chainWithdrawLimit =
-      selectAddressChainList?.recharge_chain_list?.find(
-        (item) => item.chain_id === chain.chain_id
-      )?.withdraw_limit || 0;
-    return chainWithdrawLimit <= (chain?.withdraw_fee || 0);
-  }, [chain, selectAddressChainList]);
+  const withdrawBtnDisabledTips = useMemo(() => {
+    if (!chain) {
+      return '';
+    }
+
+    const withdrawTotal = Math.min(balance, chain.withdraw_limit);
+    if (withdrawTotal < chain.withdraw_fee) {
+      return `${t(
+        'page.gasAccount.withdrawPopup.noEnoughGas'
+      )} (~$${chain?.withdraw_fee.toFixed(2)})`;
+    }
+
+    if (withdrawTotal > chain.l1_balance) {
+      return t('page.gasAccount.withdrawPopup.noEnoughValueBalance');
+    }
+
+    return '';
+  }, [t, chain, balance]);
   const selectedAccount = useMemo(() => {
     return accountsList.find(
       (i) => i.address === selectAddressChainList?.recharge_addr
@@ -634,11 +644,7 @@ const WithdrawContent = ({
         <Tooltip
           overlayClassName={clsx('rectangle')}
           placement="top"
-          title={
-            withdrawLimitTooLowToCoverFee
-              ? t('page.gasAccount.withdrawPopup.amountTooLowCoverFee')
-              : undefined
-          }
+          title={withdrawBtnDisabledTips ? withdrawBtnDisabledTips : undefined}
           align={{ targetOffset: [0, 0] }}
         >
           <Button
@@ -652,7 +658,7 @@ const WithdrawContent = ({
             disabled={
               !chain ||
               !gasAccountInfo?.withdrawable_balance ||
-              withdrawLimitTooLowToCoverFee
+              !!withdrawBtnDisabledTips
             }
             loading={btnLoading}
           >
