@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useState,
   forwardRef,
+  useRef,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInterval, useMemoizedFn } from 'ahooks';
@@ -177,8 +178,9 @@ export const PendingTxItem = forwardRef<
     type: 'send' | 'swap' | 'bridge' | 'sendNft';
     bridgeHistoryList?: BridgeHistory[];
     openBridgeHistory?: () => void;
+    onFulfilled?: () => void;
   }
->(({ type, bridgeHistoryList, openBridgeHistory }, ref) => {
+>(({ type, bridgeHistoryList, openBridgeHistory, onFulfilled }, ref) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
@@ -186,6 +188,7 @@ export const PendingTxItem = forwardRef<
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
   }));
+  const preFulfilledRef = useRef<boolean>(true);
 
   const fetchHistory = useCallback(async () => {
     if (!userAddress) return;
@@ -288,6 +291,14 @@ export const PendingTxItem = forwardRef<
     data?.status === 'pending' || data?.status === 'fromSuccess';
   const isFailed = data?.status === 'failed';
   const isSuccess = data?.status === 'success' || data?.status === 'allSuccess';
+
+  useEffect(() => {
+    const isCurrentFulfilled = !isPending;
+    if (isCurrentFulfilled && !preFulfilledRef.current) {
+      onFulfilled?.();
+    }
+    preFulfilledRef.current = isCurrentFulfilled;
+  }, [isPending, onFulfilled]);
 
   const handlePress = useMemoizedFn(async () => {
     if (!isPending) {
