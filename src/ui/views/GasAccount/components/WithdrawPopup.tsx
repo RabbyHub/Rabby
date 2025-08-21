@@ -1,33 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Popup,
-  Item,
-  TokenWithChain,
-  AddressViewer,
-  Empty,
-} from '@/ui/component';
+import { Popup, Item, Empty } from '@/ui/component';
 import { Button, message, Skeleton, Tooltip } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
-import { noop, set } from 'lodash';
+import { noop } from 'lodash';
 import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useGasAccountRefresh, useGasAccountSign } from '../hooks';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconHelp } from 'ui/assets/tokenDetail/IconHelp.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
-import { formatUsdValue, openInTab, useAlias, useWallet } from '@/ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { formatUsdValue, useAlias, useWallet } from '@/ui/utils';
+import { useRabbySelector } from '@/ui/store';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
-import { findChainByEnum, findChainByServerID } from '@/utils/chain';
+import { findChainByServerID } from '@/utils/chain';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useAsync } from 'react-use';
 import { CSSProperties } from 'styled-components';
 import styled from 'styled-components';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { CopyChecked } from '@/ui/component/CopyChecked';
 import {
   GasAccountInfo,
   RechargeChainItem,
@@ -35,18 +26,6 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-
-// export interface RechargeChainItem {
-//   chain_id: string;
-//   withdraw_limit: number;
-//   withdraw_fee: number;
-// }
-
-// export interface WithdrawListAddressItem {
-//   recharge_addr: string;
-//   total_withdraw_limit: number;
-//   recharge_chain_list: RechargeChainItem[];
-// }
 
 enum SelectorStatus {
   Hidden,
@@ -180,7 +159,6 @@ const Selector = ({
             }}
           />
         </div>
-        // </div>
       );
     },
     [isSelectChain]
@@ -489,6 +467,15 @@ const WithdrawContent = ({
       return `${usdValue}`;
     }
   }, [chain, gasAccountInfo?.withdrawable_balance, selectAddressChainList]);
+
+  const withdrawLimitTooLowToCoverFee = useMemo(() => {
+    if (!chain || !selectAddressChainList) return false;
+    const chainWithdrawLimit =
+      selectAddressChainList?.recharge_chain_list?.find(
+        (item) => item.chain_id === chain.chain_id
+      )?.withdraw_limit || 0;
+    return chainWithdrawLimit <= (chain?.withdraw_fee || 0);
+  }, [chain, selectAddressChainList]);
   const selectedAccount = useMemo(() => {
     return accountsList.find(
       (i) => i.address === selectAddressChainList?.recharge_addr
@@ -644,18 +631,35 @@ const WithdrawContent = ({
             {` ~$${chain?.withdraw_fee.toFixed(2)}`}
           </div>
         )}
-        <Button
-          type="primary"
-          className="h-[48px] text-14 font-medium text-r-neutral-title-2"
-          onClick={withdraw}
-          block
-          size="large"
-          disabled={!chain || !gasAccountInfo?.withdrawable_balance}
-          loading={btnLoading}
+        <Tooltip
+          overlayClassName={clsx('rectangle')}
+          placement="top"
+          title={
+            withdrawLimitTooLowToCoverFee
+              ? t('page.gasAccount.withdrawPopup.amountTooLowCoverFee')
+              : undefined
+          }
+          align={{ targetOffset: [0, 0] }}
         >
-          {t('page.gasAccount.withdrawPopup.title')}
-          {` ${BalanceSuffix}`}
-        </Button>
+          <Button
+            type="primary"
+            className={clsx(
+              'h-[48px] text-14 font-medium text-r-neutral-title-2'
+            )}
+            onClick={withdraw}
+            block
+            size="large"
+            disabled={
+              !chain ||
+              !gasAccountInfo?.withdrawable_balance ||
+              withdrawLimitTooLowToCoverFee
+            }
+            loading={btnLoading}
+          >
+            {t('page.gasAccount.withdrawPopup.title')}
+            {` ${BalanceSuffix}`}
+          </Button>
+        </Tooltip>
       </WrapperDiv>
       {
         <Selector
