@@ -2,13 +2,14 @@ import React from 'react';
 import clsx from 'clsx';
 import { AssetPosition } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValue } from '@/ui/utils';
-
+import { MarketData } from '@/ui/models/perps';
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 export const PositionItem: React.FC<{
   position: AssetPosition['position'];
+  marketData?: MarketData;
   onClick?: () => void;
-}> = ({ position, onClick }) => {
+}> = ({ position, onClick, marketData }) => {
   const {
     coin,
     szi,
@@ -30,6 +31,7 @@ export const PositionItem: React.FC<{
   const pnlText = `${sign}${formatUsdValue(absPnlUsd)} (${sign}${formatPct(
     absPnlPct
   )})`;
+  const logoUrl = marketData?.logoUrl || '';
   const leverageText = `${leverage.value}x`;
 
   return (
@@ -42,7 +44,7 @@ export const PositionItem: React.FC<{
       )}
     >
       <div className="flex items-center gap-12">
-        <div className="w-28 h-28 rounded-full bg-black/10" />
+        <img src={logoUrl} alt={coin} className="w-32 h-32 rounded-full mr-4" />
         <div className="text-left">
           <div className="text-15 font-medium text-r-neutral-title-1 mb-2">
             {coin} - USD

@@ -31,8 +31,8 @@ import {
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PositionItem } from './components/PositionItem';
-
-const DEFAULT_PERPS = ['BTC', 'ETH', 'SOL'];
+import BigNumber from 'bignumber.js';
+import { AssetItem } from './components/AssetMetaItem';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -42,9 +42,12 @@ export const Perps: React.FC = () => {
   const currentAccount = useCurrentAccount();
   // 使用全局状态
   const {
-    clearinghouseState,
+    positionAndOpenOrders,
+    accountSummary,
     currentPerpsAccount,
     isLogin,
+    marketData,
+    marketDataMap,
     logout,
     loginPerpsAccount,
   } = usePerpsState();
@@ -81,7 +84,7 @@ export const Perps: React.FC = () => {
   console.log('miniTxs', miniTxs);
 
   const canUseDirectSubmitTx = supportedDirectSign(currentAccount?.type || '');
-  const withdrawDisabled = !clearinghouseState?.withdrawable;
+  const withdrawDisabled = !accountSummary?.withdrawable;
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
@@ -105,15 +108,17 @@ export const Perps: React.FC = () => {
         {isLogin ? (
           <div className="bg-r-neutral-card1 rounded-[12px] p-20 flex flex-col items-center">
             <RcIconPerps className="w-40 h-40" />
-            <div className="text-20 font-medium text-r-neutral-title-1 mt-16">
+            <div className="text-[32px] font-bold text-r-neutral-title-1 mt-16">
               {formatUsdValue(
-                Number(clearinghouseState?.marginSummary.accountValue)
+                Number(accountSummary?.accountValue),
+                BigNumber.ROUND_DOWN
               )}
             </div>
-            <div className="text-13 text-r-neutral-body mt-8">
+            <div className="text-15 text-r-neutral-body mt-8">
               {t('page.perps.availableBalance', {
                 balance: formatUsdValue(
-                  Number(clearinghouseState?.withdrawable)
+                  Number(accountSummary?.withdrawable),
+                  BigNumber.ROUND_DOWN
                 ),
               })}
             </div>
@@ -158,7 +163,7 @@ export const Perps: React.FC = () => {
           />
         )}
 
-        {Boolean(clearinghouseState?.assetPositions?.length) && (
+        {Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20">
             <div className="flex items-center mb-8">
               <div className="text-13 font-medium text-r-neutral-title-1">
@@ -166,11 +171,12 @@ export const Perps: React.FC = () => {
               </div>
               <div />
             </div>
-            <div className="flex flex-col">
-              {clearinghouseState?.assetPositions.map((asset) => (
+            <div className="flex flex-col gap-8">
+              {positionAndOpenOrders.map((asset) => (
                 <PositionItem
                   key={asset.position.coin}
                   position={asset.position}
+                  marketData={marketDataMap[asset.position.coin.toUpperCase()]}
                   onClick={() => {
                     history.push(`/perps/single-coin/${asset.position.coin}`);
                   }}
@@ -185,7 +191,12 @@ export const Perps: React.FC = () => {
             <div className="text-13 font-medium text-r-neutral-title-1">
               {t('page.perps.explorePerps')}
             </div>
-            <div className="text-13 text-r-neutral-foot flex items-center cursor-pointer">
+            <div
+              className="text-13 text-r-neutral-foot flex items-center cursor-pointer"
+              onClick={() => {
+                history.push('/perps/explore');
+              }}
+            >
               {t('page.perps.seeMore')}
               <ThemeIcon
                 className="icon icon-arrow-right"
@@ -193,18 +204,12 @@ export const Perps: React.FC = () => {
               />
             </div>
           </div>
-          <div className="bg-r-neutral-card1 rounded-[12px] p-20 gap-12 flex flex-col">
-            {DEFAULT_PERPS.map((perp) => (
-              <div
-                className="text-20 font-medium text-r-neutral-title-1 border border-transparent hover:border-rabby-blue-default cursor-pointer"
-                onClick={() => {
-                  history.push(`/perps/single-coin/${perp}`);
-                }}
-              >
-                {`${perp} - USD`}
-              </div>
+          <div className="bg-r-neutral-card1 rounded-[12px] flex flex-col mb-20">
+            {marketData.slice(0, 3).map((item) => (
+              <AssetItem key={item.name} item={item} />
             ))}
           </div>
+          <div>history</div>
         </div>
       </div>
 

@@ -3,7 +3,7 @@ import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue } from '@/ui/utils';
-import { Button } from 'antd';
+import { Button, Switch } from 'antd';
 import clsx from 'clsx';
 import { usePerpsState } from '../usePerpsState';
 import Chart from './Chart';
@@ -13,8 +13,12 @@ import { useMemoizedFn } from 'ahooks';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/utils';
 import { useRabbySelector } from '@/ui/store';
+import { PerpsOpenPositionPopup } from './OpenPositionPopup';
+import { ClosePositionPopup } from './ClosePositionPopup';
+import BigNumber from 'bignumber.js';
+import { usePerpsPosition } from '../usePerpsPosition';
 
-const formatPercent = (value: number) => {
+export const formatPercent = (value: number) => {
   return `${value * 100}%`;
 };
 
@@ -22,22 +26,74 @@ export const PerpsSingleCoin = () => {
   const { coin } = useParams<{ coin: string }>();
   const history = useHistory();
   const { t } = useTranslation();
-  const { clearinghouseState } = useRabbySelector((state) => state.perps);
+  const {
+    positionAndOpenOrders,
+    accountSummary,
+    marketDataMap,
+    perpFee,
+  } = useRabbySelector((state) => state.perps);
   const [
     selectedInterval,
     setSelectedInterval,
   ] = React.useState<CANDLE_MENU_KEY>(CANDLE_MENU_KEY.ONE_DAY);
 
+  const { handleOpenPosition, handleClosePosition } = usePerpsPosition();
+
   const [activeAssetCtx, setActiveAssetCtx] = React.useState<
     WsActiveAssetCtx['ctx'] | null
   >(null);
 
+  const [openPositionVisible, setOpenPositionVisible] = React.useState(false);
+  const [positionDirection, setPositionDirection] = React.useState<
+    'Long' | 'Short'
+  >('Long');
+  const [closePositionVisible, setClosePositionVisible] = React.useState(false);
+
   // 查找当前币种的仓位信息
   const currentPosition = useMemo(() => {
-    return clearinghouseState?.assetPositions?.find(
+    return positionAndOpenOrders?.find(
       (asset) => asset.position.coin.toLowerCase() === coin?.toLowerCase()
     );
-  }, [clearinghouseState?.assetPositions, coin]);
+  }, [positionAndOpenOrders, coin]);
+
+  const providerFee = React.useMemo(() => {
+    return perpFee;
+  }, [perpFee]);
+
+  const currentAssetCtx = useMemo(() => {
+    return marketDataMap[coin.toUpperCase()];
+  }, [marketDataMap, coin]);
+
+  console.log('currentPosition', currentPosition);
+  const { tpPrice, slPrice } = useMemo(() => {
+    if (
+      !currentPosition ||
+      !currentPosition.openOrders ||
+      !currentPosition.openOrders.length
+    ) {
+      return {
+        tpPrice: undefined,
+        slPrice: undefined,
+      };
+    }
+
+    const tpItem = currentPosition.openOrders.find(
+      (order) =>
+        order.orderType === 'Take Profit Market' &&
+        order.isTrigger &&
+        order.reduceOnly
+    );
+
+    const slItem = currentPosition.openOrders.find(
+      (order) =>
+        order.orderType === 'Stop Market' && order.isTrigger && order.reduceOnly
+    );
+
+    return {
+      tpPrice: tpItem?.triggerPx,
+      slPrice: slItem?.triggerPx,
+    };
+  }, [currentPosition]);
 
   const hasPosition = !!currentPosition;
 
@@ -94,21 +150,27 @@ export const PerpsSingleCoin = () => {
   }, [subscribeActiveAssetCtx]);
 
   // Available balance for trading
-  const availableBalance = Number(clearinghouseState?.withdrawable || 0);
-  const dayDelta = useMemo(() => {
-    const prevDayPx = Number(activeAssetCtx?.prevDayPx || 0);
-    const markPx = Number(activeAssetCtx?.markPx || 0);
-    return markPx - prevDayPx;
+  const availableBalance = Number(accountSummary?.withdrawable || 0);
+
+  const markPrice = useMemo(() => {
+    return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
   }, [activeAssetCtx]);
+  const dayDelta = useMemo(() => {
+    const prevDayPx = Number(
+      activeAssetCtx?.prevDayPx || currentAssetCtx?.prevDayPx || 0
+    );
+    return markPrice - prevDayPx;
+  }, [activeAssetCtx, markPrice, currentAssetCtx]);
   const isPositiveChange = useMemo(() => {
     return dayDelta >= 0;
   }, [dayDelta]);
 
   const dayDeltaPercent = useMemo(() => {
-    const prevDayPx = Number(activeAssetCtx?.prevDayPx || 0);
-    const markPx = Number(activeAssetCtx?.markPx || 0);
-    return ((markPx - prevDayPx) / prevDayPx) * 100;
-  }, [activeAssetCtx]);
+    const prevDayPx = Number(
+      activeAssetCtx?.prevDayPx || currentAssetCtx?.prevDayPx || 0
+    );
+    return (dayDelta / prevDayPx) * 100;
+  }, [activeAssetCtx, currentAssetCtx, dayDelta]);
 
   // Position data if exists
   const positionData = currentPosition
@@ -120,7 +182,9 @@ export const PerpsSingleCoin = () => {
         side: Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
         leverage: Number(currentPosition.position.leverage.value || 1),
         entryPrice: Number(currentPosition.position.entryPx || 0),
-        liquidationPrice: Number(currentPosition.position.liquidationPx || 0),
+        liquidationPrice: Number(
+          currentPosition.position.liquidationPx || 0
+        ).toFixed(currentAssetCtx?.pxDecimals || 2),
         autoClose: false, // This would come from SDK
         direction:
           Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
@@ -131,19 +195,27 @@ export const PerpsSingleCoin = () => {
       }
     : null;
 
+  const hasAutoClose = useMemo(() => {
+    return Boolean(tpPrice || slPrice);
+  }, [tpPrice, slPrice]);
+
+  const handleAutoCloseSwitch = useMemoizedFn((e: boolean) => {
+    console.log('handleAutoClose', e);
+  });
+
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
       <PageHeader className="mx-[20px] pt-[20px] mb-[20px]" forceShowBack>
         {coin}-USD
       </PageHeader>
 
-      <div className="flex-1 overflow-auto mx-20">
+      <div className="flex-1 overflow-auto mx-20 pb-[80px]">
         {/* Price Chart Section */}
         <div className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20')}>
           {/* Price Display */}
           <div className="text-center mb-8">
             <div className="text-[32px] font-bold text-r-neutral-title-1">
-              ${activeAssetCtx?.markPx}
+              ${markPrice}
             </div>
             <div
               className={clsx(
@@ -186,7 +258,7 @@ export const PerpsSingleCoin = () => {
           <div className="flex justify-between items-center text-15 text-r-neutral-title-1 font-medium pt-12 bg-r-neutral-card1 rounded-[12px] p-16">
             <span>
               {t('page.perps.availableToTrade')}:{' '}
-              {formatUsdValue(availableBalance)}
+              {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
             </span>
             <div className="text-r-blue-default text-13 cursor-pointer px-16 py-10 rounded-[8px] bg-r-blue-light-1">
               {t('page.perps.deposit')}
@@ -207,15 +279,15 @@ export const PerpsSingleCoin = () => {
                 <span
                   className={clsx(
                     'font-medium',
-                    positionData!.pnl >= 0
+                    positionData && positionData.pnl >= 0
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
                   )}
                 >
-                  {positionData!.pnl >= 0 ? '+' : ''}$
-                  {Math.abs(positionData!.pnl).toFixed(2)} (
-                  {positionData!.pnl >= 0 ? '+' : ''}
-                  {positionData!.pnlPercent.toFixed(2)}%)
+                  {positionData && positionData.pnl >= 0 ? '+' : ''}$
+                  {Math.abs(positionData?.pnl || 0).toFixed(2)} (
+                  {positionData && positionData.pnl >= 0 ? '+' : ''}
+                  {positionData?.pnlPercent.toFixed(2)}%)
                 </span>
               </div>
 
@@ -224,7 +296,7 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.size')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${positionData!.positionValue} ={positionData!.size} {coin}
+                  ${positionData?.positionValue} ={positionData?.size} {coin}
                 </span>
               </div>
 
@@ -233,7 +305,10 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.marginIsolated')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  {formatUsdValue(positionData!.marginUsed)}
+                  {formatUsdValue(
+                    positionData!.marginUsed,
+                    BigNumber.ROUND_DOWN
+                  )}
                 </span>
               </div>
 
@@ -242,7 +317,7 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.direction')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  {positionData!.direction} {positionData!.leverage}x
+                  {positionData?.direction} {positionData?.leverage}x
                 </span>
               </div>
 
@@ -251,8 +326,25 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.entryPrice')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${positionData!.entryPrice}
+                  ${positionData?.entryPrice}
                 </span>
+              </div>
+
+              <div className="flex justify-between text-13 py-16">
+                <div className="text-r-neutral-body">
+                  <div className="text-13 font-medium text-r-neutral-title-1">
+                    {t('page.perps.autoClose')}
+                  </div>
+                  {hasAutoClose && (
+                    <div className="text-r-neutral-title-1 font-medium">
+                      ${tpPrice} / ${slPrice}
+                    </div>
+                  )}
+                </div>
+                <Switch
+                  checked={hasAutoClose}
+                  onChange={handleAutoCloseSwitch}
+                />
               </div>
 
               <div className="flex justify-between text-13 py-16">
@@ -260,7 +352,7 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.liquidationPrice')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${positionData!.liquidationPrice}
+                  ${positionData?.liquidationPrice}
                 </span>
               </div>
 
@@ -269,7 +361,10 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.fundingPayments')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${positionData!.fundingPayments}
+                  {positionData && positionData?.fundingPayments >= 0
+                    ? '+'
+                    : '-'}
+                  ${positionData?.fundingPayments}
                 </span>
               </div>
             </div>
@@ -286,7 +381,7 @@ export const PerpsSingleCoin = () => {
               {t('page.perps.dailyVolume')}
             </span>
             <span className="text-r-neutral-title-1 font-medium">
-              {formatUsdValueKMB(Number(activeAssetCtx?.dayNtlVlm || 0))}
+              {formatUsdValueKMB(Number(currentAssetCtx?.dayNtlVlm || 0))}
             </span>
           </div>
 
@@ -296,8 +391,8 @@ export const PerpsSingleCoin = () => {
             </span>
             <span className="text-r-neutral-title-1 font-medium">
               {formatUsdValueKMB(
-                Number(activeAssetCtx?.openInterest || 0) *
-                  Number(activeAssetCtx?.markPx || 0)
+                Number(currentAssetCtx?.openInterest || 0) *
+                  Number(currentAssetCtx?.markPx || 0)
               )}
             </span>
           </div>
@@ -307,7 +402,7 @@ export const PerpsSingleCoin = () => {
               {t('page.perps.funding')}
             </span>
             <span className="text-r-neutral-title-1 font-medium">
-              {formatPercent(Number(activeAssetCtx?.funding || 0))}
+              {formatPercent(Number(currentAssetCtx?.funding || 0))}
             </span>
           </div>
         </div>
@@ -340,25 +435,34 @@ export const PerpsSingleCoin = () => {
         <div className="text-12 text-r-neutral-foot mt-12">
           {t('page.perps.openPositionTips')}
         </div>
-        {/* Position Button */}
-        <div className="pb-20">
+
+        <div className="h-[80px]"></div>
+        {/* Position Button - Fixed at bottom */}
+        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
           {hasPosition ? (
             <Button
               block
               type="primary"
               size="large"
               className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
+              onClick={() => {
+                setClosePositionVisible(true);
+              }}
             >
-              {positionData!.direction === 'Long'
+              {positionData?.direction === 'Long'
                 ? t('page.perps.closeLong')
                 : t('page.perps.closeShort')}
             </Button>
           ) : (
-            <div className="flex gap-12 justify-center mt-24">
+            <div className="flex gap-12 justify-center">
               <Button
                 size="large"
                 type="primary"
                 className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px] flex-1"
+                onClick={() => {
+                  setPositionDirection('Long');
+                  setOpenPositionVisible(true);
+                }}
               >
                 {t('page.perps.long')}
               </Button>
@@ -366,6 +470,10 @@ export const PerpsSingleCoin = () => {
                 size="large"
                 type="primary"
                 className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px] flex-1"
+                onClick={() => {
+                  setPositionDirection('Short');
+                  setOpenPositionVisible(true);
+                }}
               >
                 {t('page.perps.short')}
               </Button>
@@ -373,6 +481,44 @@ export const PerpsSingleCoin = () => {
           )}
         </div>
       </div>
+
+      <PerpsOpenPositionPopup
+        visible={openPositionVisible}
+        direction={positionDirection}
+        providerFee={providerFee}
+        coin={coin}
+        pxDecimals={currentAssetCtx?.pxDecimals || 2}
+        szDecimals={currentAssetCtx?.szDecimals || 0}
+        leverageRang={[1, currentAssetCtx?.maxLeverage || 5]}
+        markPrice={markPrice}
+        availableBalance={Number(accountSummary?.withdrawable || 0)}
+        onCancel={() => setOpenPositionVisible(false)}
+        handleOpenPosition={handleOpenPosition}
+        onConfirm={() => {
+          setOpenPositionVisible(false);
+        }}
+      />
+
+      <ClosePositionPopup
+        visible={closePositionVisible}
+        coin={coin}
+        providerFee={providerFee}
+        direction={positionDirection}
+        positionSize={currentPosition?.position.szi || '0'}
+        pnl={positionData?.pnl || 0}
+        onCancel={() => setClosePositionVisible(false)}
+        onConfirm={() => {
+          setClosePositionVisible(false);
+        }}
+        handleClosePosition={async () => {
+          await handleClosePosition({
+            coin,
+            size: currentPosition?.position.szi || '0',
+            direction: positionData?.direction as 'Long' | 'Short',
+            price: ((activeAssetCtx?.markPx as unknown) as string) || '0',
+          });
+        }}
+      />
     </div>
   );
 };

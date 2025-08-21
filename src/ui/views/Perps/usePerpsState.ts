@@ -12,17 +12,10 @@ import { useMemoizedFn } from 'ahooks';
 export const usePerpsState = () => {
   const dispatch = useRabbyDispatch();
   const perpsState = useRabbySelector((state) => state.perps);
-  const { currentPerpsAccount, isInitialized } = perpsState;
+  const { isInitialized } = perpsState;
   const { accountsList } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
   }));
-
-  const fetchClearinghouseState = useCallback(
-    (address: string) => {
-      return dispatch.perps.fetchClearinghouseState(address);
-    },
-    [dispatch]
-  );
 
   const wallet = useWallet();
 
@@ -86,12 +79,16 @@ export const usePerpsState = () => {
 
         dispatch.perps.setCurrentPerpsAccount(targetTypeAccount);
 
-        await dispatch.perps.fetchClearinghouseState(currentAddress);
+        await dispatch.perps.refreshData();
 
         await checkIsNeedAutoLoginOut(
           currentAddress,
           res.preference.agentAddress
         );
+
+        dispatch.perps.fetchMarketData();
+
+        dispatch.perps.fetchPerpFee();
 
         dispatch.perps.setInitialized(true);
       } catch (error) {
@@ -101,12 +98,6 @@ export const usePerpsState = () => {
 
     init();
   }, [wallet, dispatch, isInitialized]);
-
-  useEffect(() => {
-    if (currentPerpsAccount?.address) {
-      fetchClearinghouseState(currentPerpsAccount.address);
-    }
-  }, [currentPerpsAccount?.address, fetchClearinghouseState]);
 
   const loginPerpsAccount = useCallback(
     async (account: Account) => {
@@ -177,7 +168,7 @@ export const usePerpsState = () => {
         dispatch.perps.setCurrentPerpsAccount(account);
         await wallet.setPerpsCurrentAddress(account.address);
 
-        await dispatch.perps.fetchClearinghouseState(account.address);
+        await dispatch.perps.refreshData();
       } catch (error: any) {
         console.error('Failed to login Perps account:', error);
         dispatch.perps.setError(error.message || 'Login failed');
@@ -188,21 +179,10 @@ export const usePerpsState = () => {
     [dispatch, wallet]
   );
 
-  const refreshData = useCallback(() => {
-    return dispatch.perps.refreshData(undefined);
-  }, [dispatch]);
-
   const logout = useCallback(() => {
     dispatch.perps.logout();
     wallet.setPerpsCurrentAddress('');
   }, [dispatch, wallet]);
-
-  const setClearinghouseState = useCallback(
-    (state: any) => {
-      dispatch.perps.setClearinghouseState(state);
-    },
-    [dispatch]
-  );
 
   const setCurrentPerpsAccount = useCallback(
     (account: Account | null) => {
@@ -213,7 +193,10 @@ export const usePerpsState = () => {
 
   return {
     // State
-    clearinghouseState: perpsState.clearinghouseState,
+    marketData: perpsState.marketData,
+    marketDataMap: perpsState.marketDataMap,
+    positionAndOpenOrders: perpsState.positionAndOpenOrders,
+    accountSummary: perpsState.accountSummary,
     currentPerpsAccount: perpsState.currentPerpsAccount,
     isLogin: perpsState.isLogin,
     loading: perpsState.loading,
@@ -221,11 +204,8 @@ export const usePerpsState = () => {
     isInitialized: perpsState.isInitialized,
 
     // Actions
-    fetchClearinghouseState,
     loginPerpsAccount,
-    refreshData,
     logout,
-    setClearinghouseState,
     setCurrentPerpsAccount,
   };
 };

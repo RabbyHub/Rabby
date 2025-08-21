@@ -26,6 +26,7 @@ import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
 import { PerpsSingleCoin } from './Perps/components/SingleCoin';
+import ExploreMore from './Perps/components/ExploreMore';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -433,6 +434,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/perps/single-coin/:coin">
           <PerpsSingleCoin />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/explore">
+          <ExploreMore />
         </PrivateRoute>
       </Switch>
 

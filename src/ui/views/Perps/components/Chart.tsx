@@ -159,9 +159,9 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
         secondsVisible: false,
         borderVisible: false,
       },
-      localization: {
-        timeFormatter: formatTime,
-      },
+      // localization: {
+      //   timeFormatter: formatTime,
+      // },
     });
 
     const series = chart.addSeries(CandlestickSeries, {

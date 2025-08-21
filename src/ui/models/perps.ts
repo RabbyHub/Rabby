@@ -1,12 +1,60 @@
 import { createModel } from '@rematch/core';
-import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
+import {
+  AssetPosition,
+  MarginSummary,
+  OpenOrder,
+} from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
 import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { formatMarkData } from '../views/Perps/utils';
+import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
+
+export interface PositionAndOpenOrder extends AssetPosition {
+  openOrders: OpenOrder[];
+}
+
+export interface AccountSummary extends MarginSummary {
+  withdrawable: string;
+}
+
+export interface MarketData {
+  index: number;
+  logoUrl: string;
+  name: string;
+  maxLeverage: number;
+  minLeverage: number;
+  maxUsdValueSize: string;
+  szDecimals: number;
+  pxDecimals: number;
+  dayBaseVlm: string;
+  dayNtlVlm: string;
+  funding: string;
+  markPx: string;
+  midPx: string;
+  openInterest: string;
+  oraclePx: string;
+  premium: string;
+  prevDayPx: string;
+}
+
+export type MarketDataMap = Record<string, MarketData>;
+
+const buildMarketDataMap = (list: MarketData[]): MarketDataMap => {
+  return list.reduce((acc, item) => {
+    acc[item.name.toUpperCase()] = item;
+    return acc;
+  }, {} as MarketDataMap);
+};
 
 export interface PerpsState {
-  clearinghouseState: ClearinghouseState | null;
+  // clearinghouseState: ClearinghouseState | null;
+  positionAndOpenOrders: PositionAndOpenOrder[];
+  accountSummary: AccountSummary | null;
   currentPerpsAccount: Account | null;
+  marketData: MarketData[];
+  marketDataMap: MarketDataMap;
+  perpFee: number;
   isLogin: boolean;
   loading: boolean;
   error: string | null;
@@ -15,8 +63,14 @@ export interface PerpsState {
 
 export const perps = createModel<RootModel>()({
   state: {
-    clearinghouseState: null,
+    // clearinghouseState: null,
+    positionAndOpenOrders: [],
+    accountSummary: null,
+    withdrawable: null,
+    perpFee: 0.00045,
     currentPerpsAccount: null,
+    marketData: [],
+    marketDataMap: {},
     isLogin: false,
     loading: false,
     error: null,
@@ -24,10 +78,40 @@ export const perps = createModel<RootModel>()({
   } as PerpsState,
 
   reducers: {
-    setClearinghouseState(state, payload: ClearinghouseState | null) {
+    setPerpFee(state, payload: number) {
       return {
         ...state,
-        clearinghouseState: payload,
+        perpFee: payload,
+      };
+    },
+
+    setMarketData(state, payload: MarketData[] | []) {
+      const list = payload || [];
+      return {
+        ...state,
+        marketData: list,
+        marketDataMap: buildMarketDataMap(list as MarketData[]),
+      };
+    },
+
+    setPositionAndOpenOrders(state, payload: PositionAndOpenOrder[] | []) {
+      return {
+        ...state,
+        positionAndOpenOrders: payload,
+      };
+    },
+
+    setAccountSummary(state, payload: AccountSummary | null) {
+      return {
+        ...state,
+        accountSummary: payload,
+      };
+    },
+
+    setWithdrawable(state, payload: string | null) {
+      return {
+        ...state,
+        withdrawable: payload,
       };
     },
 
@@ -63,7 +147,7 @@ export const perps = createModel<RootModel>()({
     resetState(state) {
       return {
         ...state,
-        clearinghouseState: null,
+        positionAndOpenOrders: [],
         currentPerpsAccount: null,
         isLogin: false,
         loading: false,
@@ -74,21 +158,35 @@ export const perps = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    async fetchClearinghouseState(address: string) {
+    async fetchPositionAndOpenOrders(_address?: string) {
+      const sdk = getPerpsSDK();
       try {
         dispatch.perps.setLoading(true);
         dispatch.perps.setError(null);
 
-        const sdk = getPerpsSDK();
+        const address = _address || '';
+        const [clearinghouseState, openOrders] = await Promise.all([
+          sdk.info.getClearingHouseState(address),
+          sdk.info.getFrontendOpenOrders(address),
+        ]);
 
-        if (!sdk) {
-          throw new Error('Perps SDK not initialized');
-        }
-
-        const clearinghouseState = await sdk.info.getClearingHouseState(
-          address
+        const positionAndOpenOrders = clearinghouseState.assetPositions.map(
+          (position) => {
+            return {
+              ...position,
+              openOrders: openOrders.filter(
+                (order) => order.coin === position.position.coin
+              ),
+            };
+          }
         );
-        dispatch.perps.setClearinghouseState(clearinghouseState);
+
+        dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
+
+        dispatch.perps.setAccountSummary({
+          ...clearinghouseState.marginSummary,
+          withdrawable: clearinghouseState.withdrawable,
+        });
       } catch (error: any) {
         console.error('Failed to fetch clearinghouse state:', error);
         dispatch.perps.setError(error.message || 'Failed to fetch data');
@@ -97,13 +195,28 @@ export const perps = createModel<RootModel>()({
       }
     },
 
-    async refreshData(_, rootState) {
-      const { currentPerpsAccount } = rootState.perps;
-      if (currentPerpsAccount?.address) {
-        await dispatch.perps.fetchClearinghouseState(
-          currentPerpsAccount.address
-        );
-      }
+    async refreshData() {
+      await dispatch.perps.fetchPositionAndOpenOrders(undefined);
+    },
+
+    async fetchMarketData() {
+      const sdk = getPerpsSDK();
+      const marketData = await sdk.info.metaAndAssetCtxs(true);
+      dispatch.perps.setMarketData(formatMarkData(marketData));
+    },
+
+    async fetchPerpFee() {
+      // is not very matter, just wait for the other query api
+      setTimeout(async () => {
+        const sdk = getPerpsSDK();
+        const res = await sdk.info.getUsersFees();
+
+        const perpFee =
+          Number(res.userCrossRate) * (1 - Number(res.activeReferralDiscount));
+
+        dispatch.perps.setPerpFee(perpFee);
+        return perpFee;
+      }, 2000);
     },
 
     logout() {
