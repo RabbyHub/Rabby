@@ -1699,7 +1699,6 @@
           "accountError": "Địa chỉ không khớp.",
           "received": "Quét thành công. Đang chờ xác nhận."
         },
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Kết nối nhưng không thể ký.",
@@ -2498,7 +2497,9 @@
         "selectAddr": "Chọn Địa chỉ",
         "WithdrawalAmount": "Số tiền rút",
         "withdrawalTip": "Số dư rút tiền khả dụng: {{amount}}",
-        "noBalance": "Không có số dư"
+        "noBalance": "Không có số dư",
+        "amountTooLowCoverFee": "Số tiền quá thấp để trang trải phí gas",
+        "noEnoughValueBalance": "Số dư Vault không đủ. Chuyển đổi chuỗi hoặc thử lại sau."
       },
       "withdrawConfirmModal": {
         "button": "Xem trên DeBank",

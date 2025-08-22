@@ -1635,7 +1635,6 @@
         },
         "title": "Verbinden Sie sich mit {{brandName}}",
         "disconnected": "Getrennt",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Verbunden, aber kann nicht signieren.",
@@ -2497,7 +2496,9 @@
         "riskMessageFromAddress": "Aufgrund der Risikokontrolle hängt das Auszahlungslimit von der Gesamtsumme ab, die diese Adresse eingezahlt hat.",
         "WithdrawalAmount": "Abhebungsbetrag",
         "noBalance": "Kein Saldo",
-        "withdrawalTip": "Verfügbares Abhebungs saldo: {{amount}}"
+        "withdrawalTip": "Verfügbares Abhebungs saldo: {{amount}}",
+        "noEnoughValueBalance": "Vault-Bilanz unzureichend. Wechseln Sie die Kette oder versuchen Sie es später erneut.",
+        "amountTooLowCoverFee": "Betrag zu niedrig, um die Gasgebühren zu decken"
       },
       "withdrawConfirmModal": {
         "button": "Auf DeBank anzeigen",

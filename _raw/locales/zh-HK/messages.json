@@ -631,7 +631,6 @@
         },
         "title": "與 {{brandName}} 連接",
         "disconnected": "已斷開連接",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "已連接但無法簽名",
@@ -2535,7 +2534,9 @@
         "to": "至",
         "WithdrawalAmount": "提款金額",
         "noBalance": "没有余额",
-        "withdrawalTip": "可提取餘額: {{amount}}"
+        "withdrawalTip": "可提取餘額: {{amount}}",
+        "amountTooLowCoverFee": "金額太低，無法支付 Gas 費用",
+        "noEnoughValueBalance": "Vault Balance不足。請切換鏈或稍後再試。"
       },
       "withdrawConfirmModal": {
         "button": "查看 DeBank",

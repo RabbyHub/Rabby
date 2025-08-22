@@ -1699,7 +1699,6 @@
           "duplicate": "O endereço que você está tentando importar é duplicado.",
           "brandErrorDesc": "Por favor, use {{brandName}} para se conectar"
         },
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip2": "Por favor, mude para o endereço correto na carteira móvel.",
@@ -2498,7 +2497,9 @@
         "desc": "Você pode retirar o saldo da sua GasAccount para a sua carteira DeBank L2. Faça login na sua carteira DeBank L2 para transferir os fundos para uma blockchain suportada, conforme necessário.",
         "noBalance": "Sem saldo",
         "WithdrawalAmount": "Valor de Retirada",
-        "withdrawalTip": "Saldo de retirada disponível: {{amount}}"
+        "withdrawalTip": "Saldo de retirada disponível: {{amount}}",
+        "noEnoughValueBalance": "Saldo do Vault insuficiente. Mude de cadeias ou tente novamente mais tarde.",
+        "amountTooLowCoverFee": "Valor muito baixo para cobrir as taxas de gás"
       },
       "withdrawConfirmModal": {
         "button": "Veja no DeBank",
