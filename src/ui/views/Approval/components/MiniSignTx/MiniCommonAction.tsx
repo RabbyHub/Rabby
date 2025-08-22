@@ -72,13 +72,6 @@ export const MiniCommonAction: React.FC<Props> = ({
 
   useDebounce(
     () => {
-      console.log('MiniCommonAction useDebounce', {
-        autoSigned: autoSigned.current,
-        isMiniSignTx: props.isMiniSignTx,
-        disabledProcess: props.disabledProcess,
-        directSubmit: props.directSubmit,
-        directSigning,
-      });
       if (
         !autoSigned.current &&
         props.isMiniSignTx &&
@@ -87,7 +80,6 @@ export const MiniCommonAction: React.FC<Props> = ({
         props.directSubmit
       ) {
         autoSigned.current = true;
-        console.log('MiniCommonAction useDebounce submit');
         props.onSubmit();
       }
     },

@@ -294,12 +294,50 @@ export class WalletController extends BaseController {
     rawAmount: string;
     $ctx?: any;
   }) => {
-    const [params] = await this.buildDepositTxs({
-      to,
-      chainServerId,
-      tokenId,
-      rawAmount,
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+    const chain = findChain({
+      serverId: chainServerId,
     });
+    const chainId = chain?.id;
+    if (!chainId) throw new Error(t('background.error.invalidChainId'));
+    const params: Record<string, any> = {
+      chainId: chain.id,
+      from: account!.address,
+      to: tokenId,
+      value: '0x0',
+      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+        {
+          name: 'transfer',
+          type: 'function',
+          inputs: [
+            {
+              type: 'address',
+              name: 'to',
+            },
+            {
+              type: 'uint256',
+              name: 'value',
+            },
+          ],
+        },
+        [to, rawAmount]
+      ),
+      isSend: true,
+    };
+    const isNativeToken = tokenId === chain.nativeTokenAddress;
+
+    if (isNativeToken) {
+      params.to = to;
+      delete params.data;
+      params.value = addHexPrefix(
+        ((abiCoder as unknown) as AbiCoder).encodeParameter(
+          'uint256',
+          rawAmount
+        )
+      );
+    }
+
     return await this.sendRequest<string>({
       method: 'eth_sendTransaction',
       params: [params],

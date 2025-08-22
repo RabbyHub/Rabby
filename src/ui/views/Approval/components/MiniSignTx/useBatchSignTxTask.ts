@@ -144,7 +144,6 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
               }
             },
           });
-          console.log('start result', result);
           // 保存交易 hash
           if (result) {
             txHash = result.txHash || '';

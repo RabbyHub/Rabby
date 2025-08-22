@@ -21,7 +21,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { findChainByServerID } from '@/utils/chain';
+import { findChain, findChainByServerID } from '@/utils/chain';
 import { L2_DEPOSIT_ADDRESS_MAP } from '@/constant/gas-account';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
 import { Input } from 'antd';
@@ -32,6 +32,9 @@ import {
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { GasAccountDepositButton } from './GasAccountDepositButton';
+import { addHexPrefix } from '@ethereumjs/util';
+import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import { Account } from '@/background/service/preference';
 
 const amountList = [10, 100];
 
@@ -210,6 +213,52 @@ const TokenSelector = ({
 
 const CUSTOM_AMOUNT = 0;
 
+const buildDepositTxs = ({
+  to,
+  chainServerId,
+  tokenId,
+  rawAmount,
+  account,
+}: {
+  to: string;
+  chainServerId: string;
+  tokenId: string;
+  rawAmount: string;
+  account: Account;
+}) => {
+  if (!account) throw new Error('No current account');
+  const chain = findChain({ serverId: chainServerId });
+  if (!chain) throw new Error('Invalid chain');
+  const isNativeToken = tokenId === chain.nativeTokenAddress;
+
+  const params: Record<string, any> = {
+    chainId: chain.id,
+    from: account.address,
+    to: tokenId,
+    value: '0x0',
+    data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+      {
+        name: 'transfer',
+        type: 'function',
+        inputs: [
+          { type: 'address', name: 'to' },
+          { type: 'uint256', name: 'value' },
+        ],
+      },
+      [to, rawAmount]
+    ),
+    isSend: true,
+  };
+
+  if (isNativeToken) {
+    params.to = to;
+    delete params.data;
+    params.value = addHexPrefix(new BigNumber(rawAmount).toString(16));
+  }
+
+  return [params];
+};
+
 const GasAccountDepositContent = ({
   onClose,
   handleRefreshHistory,
@@ -374,7 +423,8 @@ const GasAccountDepositContent = ({
     const rawAmount = new BigNumber(depositAmount)
       .times(10 ** token.decimals)
       .toFixed(0);
-    const txs = await wallet.buildDepositTxs({
+
+    const txs = buildDepositTxs({
       to: L2_DEPOSIT_ADDRESS_MAP[chainEnum.enum],
       chainServerId: chainEnum.serverId,
       tokenId: token.id,
