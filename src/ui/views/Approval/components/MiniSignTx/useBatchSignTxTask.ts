@@ -18,6 +18,7 @@ type ListItemType = {
   >;
   status: TxStatus;
   message?: string;
+  hash?: string;
 };
 
 export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
@@ -54,6 +55,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
   const setDirectSigning = useSetDirectSigning();
 
   const start = useMemoizedFn(async (isRetry = false) => {
+    let txHash = '';
     try {
       setDirectSigning(true);
       setStatus('active');
@@ -142,6 +144,10 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
               }
             },
           });
+          // 保存交易 hash
+          if (result) {
+            txHash = result.txHash || '';
+          }
         } catch (e) {
           console.error(e);
           const msg = e.message || e.name;
@@ -187,6 +193,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
       retryTxReset();
       setStatus('completed');
       // eventBus.emit(EVENTS.DIRECT_SIGN, {});
+      return txHash;
     } catch (e) {
       console.error(e);
       const msg = e.message || e.name;
@@ -202,7 +209,8 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
 
   const handleRetry = useMemoizedFn(async () => {
     setError('');
-    await start(true);
+    const hash = await start(true);
+    return hash;
   });
 
   const stop = useMemoizedFn(() => {
