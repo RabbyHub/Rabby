@@ -113,6 +113,10 @@ export default function ShowMoreGasSelectModal({
                   ? miniApprovalGas?.gasIsNotEnough?.[gas.level]
                   : miniApprovalGas?.gasAccountIsNotEnough?.[gas.level]?.[0];
 
+              const errorOnGasAccount =
+                miniApprovalGas.gasMethod === 'gasAccount' &&
+                !!miniApprovalGas?.gasAccountError;
+
               costUsd = isActive
                 ? miniApprovalGas.gasMethod === 'gasAccount'
                   ? calcGasAccountUsd(
@@ -167,7 +171,7 @@ export default function ShowMoreGasSelectModal({
                     <span
                       className={clsx(
                         'text-[13px] font-medium',
-                        isNotEnough
+                        isNotEnough || errorOnGasAccount
                           ? 'text-r-red-default'
                           : 'text-r-neutral-title-1'
                       )}

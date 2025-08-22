@@ -109,9 +109,18 @@ export const DirectSignToConfirmBtn = (props: {
   title: React.ReactNode;
   onConfirm: () => void;
   disabled?: boolean;
+  overwriteDisabled?: boolean;
 }) => {
   const disabledProcess = useGetDisableProcessDirectSign();
+
   return (
-    <ToConfirmBtn {...props} disabled={props.disabled || disabledProcess} />
+    <ToConfirmBtn
+      {...props}
+      disabled={
+        props.overwriteDisabled
+          ? props.disabled
+          : props.disabled || disabledProcess
+      }
+    />
   );
 };
