@@ -1635,7 +1635,6 @@
         },
         "title": "Conectar con {{brandName}}",
         "disconnected": "Desconectado",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Conectado pero no es posible firmar.",
@@ -2497,7 +2496,9 @@
         "desc": "Puede retirar el saldo de su GasAccount a su billetera DeBank L2. Inicie sesión en su billetera DeBank L2 para transferir los fondos a una blockchain compatible según sea necesario.",
         "noBalance": "Sin saldo",
         "WithdrawalAmount": "Cantidad de Retiro",
-        "withdrawalTip": "Saldo de retiro disponible: {{amount}}"
+        "withdrawalTip": "Saldo de retiro disponible: {{amount}}",
+        "amountTooLowCoverFee": "Cantidad demasiado baja para cubrir las tarifas de gas",
+        "noEnoughValueBalance": "Saldo de la bóveda insuficiente. Cambia de cadena o inténtalo de nuevo más tarde."
       },
       "withdrawConfirmModal": {
         "button": "Ver en DeBank",

@@ -634,8 +634,8 @@ export const MiniSignTx = ({
       let gas: GasLevel | null = null;
 
       if (
-        (customGasPrice || lastTimeGas?.lastTimeSelect === 'gasPrice') &&
-        !directSubmit
+        customGasPrice ||
+        (lastTimeGas?.lastTimeSelect === 'gasPrice' && !directSubmit)
       ) {
         gas = gasList.find((item) => item.level === 'custom')!;
       } else if (

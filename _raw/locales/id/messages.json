@@ -1699,7 +1699,6 @@
           "accountErrorDesc": "Silakan ganti alamat di dompet seluler Anda",
           "connected": "Terkoneksi"
         },
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Tersambung tetapi tidak dapat menandatangani.",
@@ -2498,7 +2497,9 @@
         "riskMessageFromChain": "Karena pengendalian risiko, batas penarikan tergantung pada total jumlah yang disetor dari rantai ini.",
         "noBalance": "Tidak ada saldo",
         "withdrawalTip": "Saldo penarikan yang tersedia: {{amount}}",
-        "WithdrawalAmount": "Jumlah Penarikan"
+        "WithdrawalAmount": "Jumlah Penarikan",
+        "amountTooLowCoverFee": "Jumlah terlalu rendah untuk menutupi biaya gas",
+        "noEnoughValueBalance": "Vault Balance tidak cukup. Ganti rantai atau coba lagi nanti."
       },
       "withdrawConfirmModal": {
         "title": "Dipindahkan ke Dompet DeBank L2 Anda",

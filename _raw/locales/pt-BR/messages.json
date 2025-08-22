@@ -1635,7 +1635,6 @@
         },
         "title": "Conectar com {{brandName}}",
         "disconnected": "Desconectado",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Conectado, mas incapaz de assinar.",
@@ -2497,7 +2496,9 @@
         "noEligibleAddr": "Nenhum endereço elegível para retirada",
         "noBalance": "Sem saldo",
         "withdrawalTip": "Saldo de retirada disponível: {{amount}}",
-        "WithdrawalAmount": "Valor da Retirada"
+        "WithdrawalAmount": "Valor da Retirada",
+        "noEnoughValueBalance": "Saldo do Vault insuficiente. Altere a cadeia ou tente novamente mais tarde.",
+        "amountTooLowCoverFee": "Valor muito baixo para cobrir as taxas de gás"
       },
       "withdrawConfirmModal": {
         "title": "Transferido para sua Wallet DeBank L2",

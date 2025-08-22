@@ -1428,8 +1428,7 @@
         },
         "title": "Se connecter avec {{brandName}}",
         "url": "URL",
-        "viaWalletConnect": "via Wallet Connect",
-        "accountError": {}
+        "viaWalletConnect": "via Wallet Connect"
       },
       "keystone": {
         "allowRabbyPermissionsTitle": "Autoriser Rabby à :",
@@ -2774,7 +2773,9 @@
         "noEligibleAddr": "Aucune adresse éligible pour le retrait",
         "WithdrawalAmount": "Montant de retrait",
         "noBalance": "Pas de solde",
-        "withdrawalTip": "Solde disponible pour le retrait : {{amount}}"
+        "withdrawalTip": "Solde disponible pour le retrait : {{amount}}",
+        "noEnoughValueBalance": "Solde du coffre insuffisant. Changez de chaîne ou réessayez plus tard.",
+        "amountTooLowCoverFee": "Montant trop faible pour couvrir les frais de gaz"
       },
       "withdrawConfirmModal": {
         "title": "Transféré à votre portefeuille DeBank L2",
