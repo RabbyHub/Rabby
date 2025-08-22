@@ -5601,53 +5601,6 @@ export class WalletController extends BaseController {
   setHasAnyAccountClaimedGift = (hasClaimed: boolean) => {
     gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
   };
-
-  buildDepositTxs = async ({
-    to,
-    chainServerId,
-    tokenId,
-    rawAmount,
-    account: _account,
-  }: {
-    to: string;
-    chainServerId: string;
-    tokenId: string;
-    rawAmount: string;
-    account?: Account;
-  }) => {
-    const account = _account || (await preferenceService.getCurrentAccount());
-    if (!account) throw new Error('No current account');
-    const chain = findChain({ serverId: chainServerId });
-    if (!chain) throw new Error('Invalid chain');
-    const isNativeToken = tokenId === chain.nativeTokenAddress;
-
-    const params: Record<string, any> = {
-      chainId: chain.id,
-      from: account.address,
-      to: tokenId,
-      value: '0x0',
-      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-        {
-          name: 'transfer',
-          type: 'function',
-          inputs: [
-            { type: 'address', name: 'to' },
-            { type: 'uint256', name: 'value' },
-          ],
-        },
-        [to, rawAmount]
-      ),
-      isSend: true,
-    };
-
-    if (isNativeToken) {
-      params.to = to;
-      delete params.data;
-      params.value = addHexPrefix(new BigNumber(rawAmount).toString(16));
-    }
-
-    return [params];
-  };
 }
 
 const wallet = new WalletController();
