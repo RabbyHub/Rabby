@@ -21,13 +21,18 @@ export const initPerpsSDK = (params: InitPerpsSDKParams) => {
     return sdkInstance;
   }
 
+  if (sdkInstance) {
+    sdkInstance.ws?.disconnect();
+  }
+
   sdkInstance = new HyperliquidSDK({
     masterAddress,
     agentPrivateKey,
     agentPublicKey,
     agentName,
   });
-  sdkInstance.ws.connect();
+  // connect when subscribe
+  // sdkInstance.ws.connect();
   currentMasterAddress = masterAddress;
   (window as any).__HyperliquidSDK = sdkInstance;
   return sdkInstance;

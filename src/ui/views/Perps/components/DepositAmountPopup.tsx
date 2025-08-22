@@ -6,7 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/perps/IconInfo.svg';
-import { queryTokensCache } from '@/ui/utils/portfolio/tokenUtils';
+import {
+  batchQueryTokens,
+  queryTokensCache,
+} from '@/ui/utils/portfolio/tokenUtils';
 import { useWallet } from '@/ui/utils';
 import { ARB_USDC_TOKEN_ID, ARB_USDC_TOKEN_ITEM } from '../constants';
 import { ARB_USDC_TOKEN_SERVER_CHAIN } from '../constants';
@@ -49,7 +52,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const { value: list, loading } = useAsync(async () => {
     if (!account?.address || !visible) return [];
-    const res = await queryTokensCache(account.address, wallet, false);
+    const res = await batchQueryTokens(account.address, wallet);
     const usdcToken = res.find(
       (t) =>
         t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN

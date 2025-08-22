@@ -72,6 +72,7 @@ const PerpsLoginContent = ({
 export const PerpsLoginPopup = (
   props: PopupProps & { onLogin?: (account: Account) => void }
 ) => {
+  const { onLogin, ...rest } = props;
   return (
     <Popup
       placement="bottom"
@@ -81,8 +82,9 @@ export const PerpsLoginPopup = (
         padding: 0,
       }}
       destroyOnClose
+      push={false}
       closable
-      {...props}
+      {...rest}
     >
       <PerpsLoginContent
         onLogin={(account) => {

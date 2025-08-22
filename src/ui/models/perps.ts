@@ -58,8 +58,6 @@ export interface PerpsState {
   marketDataMap: MarketDataMap;
   perpFee: number;
   isLogin: boolean;
-  loading: boolean;
-  error: string | null;
   isInitialized: boolean;
   approveData: ApproveData;
 }
@@ -75,8 +73,6 @@ export const perps = createModel<RootModel>()({
     marketData: [],
     marketDataMap: {},
     isLogin: false,
-    loading: false,
-    error: null,
     isInitialized: false,
     approveData: [],
   } as PerpsState,
@@ -120,20 +116,6 @@ export const perps = createModel<RootModel>()({
       };
     },
 
-    setLoading(state, payload: boolean) {
-      return {
-        ...state,
-        loading: payload,
-      };
-    },
-
-    setError(state, payload: string | null) {
-      return {
-        ...state,
-        error: payload,
-      };
-    },
-
     setInitialized(state, payload: boolean) {
       return {
         ...state,
@@ -154,24 +136,42 @@ export const perps = createModel<RootModel>()({
         positionAndOpenOrders: [],
         currentPerpsAccount: null,
         isLogin: false,
-        loading: false,
-        error: null,
         isInitialized: false,
+        approveData: [],
       };
     },
   },
 
   effects: (dispatch) => ({
-    async saveApproveData(payload: ApproveData) {
-      dispatch.perps.setApproveData(payload);
+    async saveApproveData(
+      payload: {
+        approveData: ApproveData;
+        address: string;
+      },
+      rootState
+    ) {
+      dispatch.perps.setApproveData(payload.approveData);
+      // rootState.app.wallet.saveSendApproveAfterDeposit(
+      //   payload.address,
+      //   JSON.stringify(payload.approveData)
+      // );
+      const preferenceData = await rootState.app.wallet.getAgentWalletPreference(
+        payload.address
+      );
+      if (preferenceData) {
+        await rootState.app.wallet.updatePerpsAgentWalletPreference(
+          payload.address,
+          {
+            ...preferenceData,
+            approveData: payload.approveData,
+          }
+        );
+      }
     },
 
     async fetchPositionAndOpenOrders(_address?: string) {
       const sdk = getPerpsSDK();
       try {
-        dispatch.perps.setLoading(true);
-        dispatch.perps.setError(null);
-
         const address = _address || '';
         const [clearinghouseState, openOrders] = await Promise.all([
           sdk.info.getClearingHouseState(address),
@@ -197,10 +197,14 @@ export const perps = createModel<RootModel>()({
         });
       } catch (error: any) {
         console.error('Failed to fetch clearinghouse state:', error);
-        dispatch.perps.setError(error.message || 'Failed to fetch data');
-      } finally {
-        dispatch.perps.setLoading(false);
       }
+    },
+
+    async loginPerpsAccount(payload: Account, rootState) {
+      await rootState.app.wallet.setPerpsCurrentAddress(payload.address);
+      dispatch.perps.setCurrentPerpsAccount(payload);
+      dispatch.perps.refreshData();
+      console.log('loginPerpsAccount success', payload.address);
     },
 
     async fetchClearinghouseState(_, rootState) {

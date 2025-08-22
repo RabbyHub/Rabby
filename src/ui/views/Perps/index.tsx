@@ -92,9 +92,11 @@ export const Perps: React.FC = () => {
         isShowAccount={currentPerpsAccount ? true : false}
         disableSwitchAccount={true}
         rightSlot={
-          <div className="cursor-pointer p-4" onClick={logout}>
-            <ThemeIcon src={RcIconLogout} />
-          </div>
+          isLogin ? (
+            <div className="cursor-pointer p-4" onClick={logout}>
+              <ThemeIcon src={RcIconLogout} />
+            </div>
+          ) : null
         }
         showCurrentAccount={currentPerpsAccount || undefined}
       >
