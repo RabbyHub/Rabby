@@ -14,7 +14,7 @@ import { PerpsLoginPopup } from './components/LoginPopup';
 import { CHAINS_ENUM } from '@debank/common';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { Account } from '@/background/service/preference';
-import { usePerpsDeposit } from './hook';
+import { usePerpsDeposit } from './usePerpsDeposit';
 import { usePerpsState } from './usePerpsState';
 import { HeaderAddress } from './components/headerAddress';
 import { PerpsLoginContent } from './components/LoginContent';
@@ -50,6 +50,7 @@ export const Perps: React.FC = () => {
     marketDataMap,
     logout,
     loginPerpsAccount,
+    handleWithdraw,
   } = usePerpsState();
 
   const {
@@ -61,6 +62,7 @@ export const Perps: React.FC = () => {
     currentPerpsAccount,
   });
 
+  const [popupType, setPopupType] = useState<'deposit' | 'withdraw'>('deposit');
   const startDirectSigning = useStartDirectSigning();
   const [loginVisible, setLoginVisible] = useState(false);
 
@@ -74,14 +76,9 @@ export const Perps: React.FC = () => {
     history.push('/dashboard');
   };
 
-  const handleWithdraw = async () => {
-    console.log('handleWithdraw');
-  };
-
   const miniTxs = useMemo(() => {
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
-  console.log('miniTxs', miniTxs);
 
   const canUseDirectSubmitTx = supportedDirectSign(currentAccount?.type || '');
   const withdrawDisabled = !accountSummary?.withdrawable;
@@ -133,7 +130,10 @@ export const Perps: React.FC = () => {
                   className={clsx(
                     withdrawDisabled && 'opacity-50 cursor-not-allowed'
                   )}
-                  onClick={handleWithdraw}
+                  onClick={() => {
+                    setPopupType('withdraw');
+                    setAmountVisible(true);
+                  }}
                   disabled={withdrawDisabled}
                 >
                   {t('page.gasAccount.withdraw')}
@@ -148,6 +148,7 @@ export const Perps: React.FC = () => {
                   height: 44,
                 }}
                 onClick={() => {
+                  setPopupType('deposit');
                   setAmountVisible(true);
                 }}
               >
@@ -226,18 +227,28 @@ export const Perps: React.FC = () => {
 
       <PerpsDepositAmountPopup
         visible={amountVisible}
+        type={popupType}
+        availableBalance={accountSummary?.withdrawable || '0'}
         onChange={(amount) => {
-          updateMiniSignTx(amount);
+          if (popupType === 'deposit') {
+            updateMiniSignTx(amount);
+          }
         }}
         onCancel={() => {
           setAmountVisible(false);
           clearMiniSignTx();
         }}
-        onDeposit={() => {
-          if (canUseDirectSubmitTx) {
-            startDirectSigning();
+        onConfirm={async (amount) => {
+          if (popupType === 'deposit') {
+            if (canUseDirectSubmitTx) {
+              wallet.changeAccount(currentPerpsAccount!);
+              startDirectSigning();
+            } else {
+              handleDeposit();
+            }
+            return true;
           } else {
-            handleDeposit();
+            return await handleWithdraw(amount);
           }
         }}
       />
@@ -259,12 +270,14 @@ export const Perps: React.FC = () => {
           setIsShowMiniSign(false);
         }}
         onResolve={() => {
+          setAmountVisible(false);
           setTimeout(() => {
             setIsShowMiniSign(false);
             clearMiniSignTx();
           }, 500);
         }}
         onPreExecError={() => {
+          setAmountVisible(false);
           // fallback to normal sign
           handleDeposit();
         }}

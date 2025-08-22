@@ -2,7 +2,13 @@ import { MarketData } from '@/ui/models/perps';
 import { Meta, AssetCtx, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
 
 export const formatMarkData = (
-  marketData: [Meta, AssetCtx[]]
+  marketData: [Meta, AssetCtx[]],
+  topAssets: {
+    id: number;
+    name: string;
+    full_logo_url: string | null;
+    daily_volume: number;
+  }[]
 ): MarketData[] => {
   try {
     if (!Array.isArray(marketData) || marketData.length < 2) {
@@ -29,11 +35,17 @@ export const formatMarkData = (
       }
     }
 
-    const result: MarketData[] = meta.universe
-      .map((asset, index: number) => {
-        if (asset.isDelisted) return null;
+    const result: MarketData[] = topAssets
+      .map((topAsset) => {
+        const index = topAsset.id;
+        const hlDataAsset = meta.universe[index];
+
+        if (!hlDataAsset) return null;
+
+        if (hlDataAsset.isDelisted) return null;
+
         const m = metrics[index] || {};
-        const table = marginTableMap[asset?.marginTableId];
+        const table = marginTableMap[hlDataAsset?.marginTableId];
         const tiers = table?.marginTiers || [];
         const firstTier =
           Array.isArray(tiers) && tiers.length > 0 ? tiers[0] : undefined;
@@ -42,13 +54,15 @@ export const formatMarkData = (
 
         const item: MarketData = {
           index,
-          name: String(asset.name ?? ''),
+          name: String(topAsset.name ?? ''),
           // 取保证金表第一档的最大杠杆；若无表则回退 asset.maxLeverage
-          maxLeverage: Number(firstTier?.maxLeverage ?? asset?.maxLeverage),
+          maxLeverage: Number(
+            firstTier?.maxLeverage ?? hlDataAsset?.maxLeverage
+          ),
           minLeverage: 1,
           // 第一档的最大名义值 = 下一档的 lowerBound；若不存在下一档则为兜底1000000
           maxUsdValueSize: String(nextTier?.lowerBound ?? 1000000),
-          szDecimals: Number(asset.szDecimals ?? 0),
+          szDecimals: Number(hlDataAsset.szDecimals ?? 0),
           // 根据 markPx 推断价格精度
           pxDecimals: (() => {
             const markPx = m?.markPx;
@@ -65,7 +79,9 @@ export const formatMarkData = (
           oraclePx: String(m?.oraclePx ?? ''),
           premium: String(m?.premium ?? '0'),
           prevDayPx: String(m?.prevDayPx ?? ''),
-          logoUrl: `https://app.hyperliquid.xyz/coins/${asset.name}.svg`,
+          logoUrl:
+            topAsset.full_logo_url ||
+            `https://app.hyperliquid.xyz/coins/${topAsset.name}.svg`,
         };
         return item;
       })

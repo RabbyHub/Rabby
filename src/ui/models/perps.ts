@@ -1,6 +1,7 @@
 import { createModel } from '@rematch/core';
 import {
   AssetPosition,
+  InfoClient,
   MarginSummary,
   OpenOrder,
 } from '@rabby-wallet/hyperliquid-sdk';
@@ -9,6 +10,7 @@ import { RootModel } from '.';
 import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { formatMarkData } from '../views/Perps/utils';
 import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
+import { ApproveData } from '@/background/service/perps';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -59,6 +61,7 @@ export interface PerpsState {
   loading: boolean;
   error: string | null;
   isInitialized: boolean;
+  approveData: ApproveData;
 }
 
 export const perps = createModel<RootModel>()({
@@ -75,6 +78,7 @@ export const perps = createModel<RootModel>()({
     loading: false,
     error: null,
     isInitialized: false,
+    approveData: [],
   } as PerpsState,
 
   reducers: {
@@ -108,13 +112,6 @@ export const perps = createModel<RootModel>()({
       };
     },
 
-    setWithdrawable(state, payload: string | null) {
-      return {
-        ...state,
-        withdrawable: payload,
-      };
-    },
-
     setCurrentPerpsAccount(state, payload: Account | null) {
       return {
         ...state,
@@ -144,6 +141,13 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    setApproveData(state, payload: ApproveData) {
+      return {
+        ...state,
+        approveData: payload,
+      };
+    },
+
     resetState(state) {
       return {
         ...state,
@@ -158,6 +162,10 @@ export const perps = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
+    async saveApproveData(payload: ApproveData) {
+      dispatch.perps.setApproveData(payload);
+    },
+
     async fetchPositionAndOpenOrders(_address?: string) {
       const sdk = getPerpsSDK();
       try {
@@ -195,28 +203,67 @@ export const perps = createModel<RootModel>()({
       }
     },
 
+    async fetchClearinghouseState(_, rootState) {
+      const sdk = getPerpsSDK();
+
+      const clearinghouseState = await sdk.info.getClearingHouseState();
+
+      dispatch.perps.setAccountSummary({
+        ...clearinghouseState.marginSummary,
+        withdrawable: clearinghouseState.withdrawable,
+      });
+
+      const openOrders = rootState.perps.positionAndOpenOrders.flatMap(
+        (order) => order.openOrders
+      );
+
+      const positionAndOpenOrders = clearinghouseState.assetPositions.map(
+        (position) => {
+          return {
+            ...position,
+            openOrders: openOrders.filter(
+              (order) => order.coin === position.position.coin
+            ),
+          };
+        }
+      );
+
+      dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
+    },
+
     async refreshData() {
       await dispatch.perps.fetchPositionAndOpenOrders(undefined);
     },
 
-    async fetchMarketData() {
+    async fetchMarketData(noLogin?: boolean) {
+      if (noLogin) {
+        const sdk = new InfoClient({
+          masterAddress: '',
+        });
+        const marketData = await sdk.metaAndAssetCtxs(true);
+        dispatch.perps.setMarketData(
+          formatMarkData(marketData, DEFAULT_TOP_ASSET)
+        );
+        return;
+      }
+
       const sdk = getPerpsSDK();
       const marketData = await sdk.info.metaAndAssetCtxs(true);
-      dispatch.perps.setMarketData(formatMarkData(marketData));
+      dispatch.perps.setMarketData(
+        formatMarkData(marketData, DEFAULT_TOP_ASSET)
+      );
     },
 
     async fetchPerpFee() {
       // is not very matter, just wait for the other query api
-      setTimeout(async () => {
-        const sdk = getPerpsSDK();
-        const res = await sdk.info.getUsersFees();
+      const sdk = getPerpsSDK();
+      const res = await sdk.info.getUsersFees();
 
-        const perpFee =
-          Number(res.userCrossRate) * (1 - Number(res.activeReferralDiscount));
+      const perpFee =
+        Number(res.userCrossRate) * (1 - Number(res.activeReferralDiscount));
 
-        dispatch.perps.setPerpFee(perpFee);
-        return perpFee;
-      }, 2000);
+      dispatch.perps.setPerpFee(perpFee);
+      return perpFee;
     },
 
     logout() {

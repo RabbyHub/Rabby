@@ -764,6 +764,14 @@
         "ytd": "YTD",
         "all": "ALL"
       },
+      "depositAmountPopup": {
+        "payWith": "Pay With",
+        "feeTip": "$1 Fee",
+        "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
+        "receiveToken": "Receive Token",
+        "minimumDepositSize": "The minimum deposit amount is $5",
+        "minimumWithdrawSize": "The minimum withdraw amount is $2"
+      },
       "logInTips": "Log in with your address and deposit funds to start trading perps.",
       "logInPerpsAccount": "Log in to my Perps account",
       "learnAboutPerps": "Learn about Perps",

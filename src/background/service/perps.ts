@@ -3,6 +3,7 @@ import { getRandomBytesSync } from 'ethereum-cryptography/random.js';
 import { secp256k1 } from 'ethereum-cryptography/secp256k1.js';
 import { bytesToHex, publicToAddress } from '@ethereumjs/util';
 import { keyringService } from '.';
+import { SendApproveParams } from '@rabby-wallet/hyperliquid-sdk';
 
 export interface AgentWalletInfo {
   vault: string;
@@ -11,25 +12,24 @@ export interface AgentWalletInfo {
   };
 }
 
+export type ApproveData = (SendApproveParams & {
+  type: 'approveAgent' | 'approveBuilderFee';
+})[];
+
 export interface PerpsServiceStore {
   agentWallets: {
     [address: string]: AgentWalletInfo;
   };
   currentAddress: string;
 }
-
 export interface PerpsServiceMemoryState {
   agentWallets: {
     // key is master wallet address
     [address: string]: AgentWalletInfo;
   };
   currentAddress: string;
-  approveAgentAfterDeposit: {
-    [address: string]: {
-      action: any;
-      nonce: number;
-      signature: string;
-    }; // address is master address
+  sendApproveAfterDepositObj: {
+    [address: string]: ApproveData; // address is master address
   };
 }
 
@@ -38,7 +38,7 @@ class PerpsService {
   private memoryState: PerpsServiceMemoryState = {
     agentWallets: {},
     currentAddress: '',
-    approveAgentAfterDeposit: {},
+    sendApproveAfterDepositObj: {},
   };
 
   init = async () => {
@@ -51,25 +51,22 @@ class PerpsService {
     });
 
     this.memoryState.agentWallets = {};
-    this.memoryState.approveAgentAfterDeposit = {};
+    this.memoryState.sendApproveAfterDepositObj = {};
   };
 
-  saveApproveAgentAfterDeposit = async (
+  saveSendApproveAfterDeposit = async (
     masterAddress: string,
-    action: any,
-    nonce: number,
-    signature: string
+    approveDataStr: string
   ) => {
-    this.memoryState.approveAgentAfterDeposit[masterAddress] = {
-      action,
-      nonce,
-      signature,
+    this.memoryState.sendApproveAfterDepositObj = {
+      ...this.memoryState.sendApproveAfterDepositObj,
+      [masterAddress]: JSON.parse(approveDataStr),
     };
   };
 
-  getApproveAgentAfterDeposit = async (masterAddress: string) => {
-    const res = this.memoryState.approveAgentAfterDeposit[masterAddress];
-    delete this.memoryState.approveAgentAfterDeposit[masterAddress];
+  getSendApproveAfterDeposit = async (masterAddress: string) => {
+    const res = this.memoryState.sendApproveAfterDepositObj[masterAddress];
+    delete this.memoryState.sendApproveAfterDepositObj[masterAddress];
     return res;
   };
 

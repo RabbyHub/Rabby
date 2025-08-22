@@ -38,6 +38,7 @@ export const PerpsSingleCoin = () => {
   ] = React.useState<CANDLE_MENU_KEY>(CANDLE_MENU_KEY.ONE_DAY);
 
   const { handleOpenPosition, handleClosePosition } = usePerpsPosition();
+  usePerpsState();
 
   const [activeAssetCtx, setActiveAssetCtx] = React.useState<
     WsActiveAssetCtx['ctx'] | null

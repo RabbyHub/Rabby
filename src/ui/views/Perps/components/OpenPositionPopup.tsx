@@ -85,11 +85,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const estimatedLiquidationPrice = React.useMemo(() => {
     if (!markPrice || !leverage) return 0;
     const maxLeverage = leverageRang[1];
-    console.log('markPrice', markPrice);
-    console.log('margin', margin);
-    console.log('direction', direction);
-    console.log('tradeSize', tradeSize);
-    console.log('maxLeverage', maxLeverage);
     return calLiquidationPrice(
       markPrice,
       Number(margin),
@@ -202,7 +197,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         <div className="bg-r-neutral-bg1 rounded-[8px] p-16 h-[168px] mb-12 items-center">
           <div className="text-13 text-r-neutral-body text-center">
             {t('page.perps.margin')}
-          </div>
+        </div>
           <input
             className={`text-[40px] bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor()}`}
             style={{
@@ -211,9 +206,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               outline: 'none',
               boxShadow: 'none',
             }}
-            placeholder="$0"
+              placeholder="$0"
             value={margin}
-            onChange={(e) => {
+              onChange={(e) => {
               const value = e.target.value;
               // 只允许数字和小数点
               if (/^\d*\.?\d*$/.test(value)) {
@@ -230,8 +225,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <div className="text-13 text-r-red-default text-center mt-8">
               {marginValidation.errorMessage}
             </div>
-          )}
-        </div>
+                  )}
+                </div>
 
         <div className="mb-20 bg-r-neutral-bg1 rounded-[8px] flex items-center flex-col px-16">
           <div className="flex w-full py-16 justify-between items-center">
@@ -245,11 +240,11 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               }}
             >
               {leverage}x
-              <ThemeIcon
-                className="icon icon-arrow-right ml-4"
-                src={RcIconArrowRight}
-              />
-            </div>
+                <ThemeIcon
+                  className="icon icon-arrow-right ml-4"
+                  src={RcIconArrowRight}
+                />
+              </div>
           </div>
           <div className="flex w-full py-16 justify-between items-center">
             <div className="text-13 text-r-neutral-title-1 mb-8">

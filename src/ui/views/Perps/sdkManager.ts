@@ -35,7 +35,13 @@ export const initPerpsSDK = (params: InitPerpsSDKParams) => {
 
 export const getPerpsSDK = () => {
   if (!sdkInstance) {
-    throw new Error('sdkInstance is not initialized');
+    console.warn('sdkInstance is not initialized, init use fake address');
+    return initPerpsSDK({
+      masterAddress: '',
+      agentPrivateKey: '',
+      agentPublicKey: '',
+      agentName: '',
+    });
   }
 
   return sdkInstance;
