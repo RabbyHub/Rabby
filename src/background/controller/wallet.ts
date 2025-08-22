@@ -4582,6 +4582,7 @@ export class WalletController extends BaseController {
             to: account.address,
             chainId: chainId,
             type: 4,
+            nonce: _nonce,
           };
           await this.sendRequest({
             $ctx: {
