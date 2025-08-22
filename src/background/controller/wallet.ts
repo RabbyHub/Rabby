@@ -3828,7 +3828,7 @@ export class WalletController extends BaseController {
   signTypedData = async (
     type: string,
     from: string,
-    data: string,
+    data: Record<string, any>,
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
@@ -3858,7 +3858,7 @@ export class WalletController extends BaseController {
   ) => {
     const fn = () =>
       waitSignComponentAmounted().then(() => {
-        this.signTypedData(type, from, data as any, options);
+        return this.signTypedData(type, from, data as any, options);
       });
 
     notificationService.setCurrentRequestDeferFn(fn);
@@ -5601,6 +5601,12 @@ export class WalletController extends BaseController {
    */
   setHasAnyAccountClaimedGift = (hasClaimed: boolean) => {
     gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
+  };
+
+  signTextCreateHistory = (
+    params: Parameters<typeof signTextHistoryService.createHistory>[0]
+  ) => {
+    signTextHistoryService.createHistory(params);
   };
 }
 
