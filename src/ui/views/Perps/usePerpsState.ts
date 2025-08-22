@@ -74,11 +74,6 @@ export const usePerpsState = () => {
   useInterval(() => {
     if (isInitialized && isLogin) {
       dispatch.perps.fetchClearinghouseState(undefined);
-    } else {
-      // need to check if send approve data
-      if (perpsState.approveData.length > 0) {
-        dispatch.perps.fetchClearinghouseState(undefined);
-      }
     }
   }, 5000);
 
