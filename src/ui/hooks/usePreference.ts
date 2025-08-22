@@ -59,7 +59,7 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
 
         '#/import/hardware/ledger-connect',
         '#/import/hardware/trezor-connect',
-        '#/import/hardware/onekey-connect',
+        '#/import/hardware/onekey',
         '#/import/hardware/keystone',
         '#/import/hardware/qrcode',
 

@@ -1687,6 +1687,14 @@
         "keystonePermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke Keystone Anda di jendela pop-up berikut, dan pastikan Keystone 3 Pro Anda ada di halaman utama.",
         "noDeviceFoundError": "Colokkan satu Keystone"
       },
+      "onekey": {
+        "onekeyPermission1": "Sambungkan ke perangkat USB",
+        "allowRabbyPermissionsTitle": "Izinkan Rabby untuk:",
+        "onekeyPermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke OneKey Anda di jendela pop-up berikut. Jika OneKey tidak muncul di popup, silakan periksa apakah perangkat Anda terhubung dengan benar ke komputer.",
+        "whyOneKey": "Mengapa OneKey?",
+        "buyOneKey": "Beli OneKey",
+        "haveOneKey": "Belum memiliki OneKey?"
+      },
       "walletConnect": {
         "status": {
           "brandError": "Aplikasi dompet salah.",
@@ -1891,9 +1899,6 @@
       "importYourKeystore": "Impor KeyStore Anda",
       "trezor": {
         "title": "Connect Trezor"
-      },
-      "onekey": {
-        "title": "Sambungkan OneKey"
       }
     },
     "unlock": {
@@ -2590,11 +2595,14 @@
         "title": "Impor Kata Sandi Seed"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip2": "2. Colokkan perangkat OneKey Anda",
-        "connect": "Hubungkan OneKey",
-        "tip3": "3. Buka kunci perangkat Anda",
-        "tip1": "1. Pasang <1>OneKey Bridge<1/>"
+        "qrcode": {
+          "desc": "Pindai kode QR pada dompet hardware OneKey"
+        },
+        "title": "Hubungkan dompet hardware OneKey Anda via USB",
+        "tip1": "1. Colokkan perangkat OneKey Anda",
+        "tip2": "2. Buka kunci perangkat Anda",
+        "tip3": "3. Pastikan hanya satu perangkat OneKey yang terhubung",
+        "connect": "Hubungkan OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3072,6 +3080,18 @@
       "watchAddressKeyring": "Kontak",
       "simpleKeyring": "Kunci Pribadi",
       "HdKeyring": "Frasa Benih"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Perangkat tidak ditemukan",
+        "deviceInitializeFailed": "Kesalahan perangkat, silakan restart dan coba lagi",
+        "needUpgradeFirmware": "Firmware harus diperbarui untuk menggunakan perangkat",
+        "thisMethodNeedUpgradeFirmware": "Fitur ini memerlukan pembaruan firmware, silakan perbarui firmware di aplikasi OneKey",
+        "notAllowInBootloaderMode": "Silakan gunakan dalam mode normal",
+        "deviceCheckPassphraseStateError": "Akun tidak cocok dengan alamat buka kunci perangkat saat ini. Silakan konfirmasi bahwa perangkat dan alamat akun konsisten dan coba lagi",
+        "actionCancel": "Operasi dibatalkan",
+        "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebHID"
+      }
     }
   },
   "constant": {

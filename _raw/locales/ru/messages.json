@@ -1627,6 +1627,14 @@
         "exportAddressJustAllowedOnHomePage": "Экспорт адреса разрешен на домашней странице",
         "unknowError": "Неизвестная ошибка, попробуйте еще раз"
       },
+      "onekey": {
+        "onekeyPermission1": "Подключение к USB устройству",
+        "allowRabbyPermissionsTitle": "Дать Rabby разрешение на:",
+        "onekeyPermissionTip": "Пожалуйста, нажмите «Разрешить» ниже, чтобы авторизовать доступ к вашему OneKey в следующем всплывающем окне. Если OneKey не появляется в всплывающем окне, пожалуйста, проверьте, подключено ли ваше устройство к компьютеру правильно.",
+        "whyOneKey": "Почему OneKey?",
+        "buyOneKey": "Купить OneKey",
+        "haveOneKey": "Еще нет OneKey?"
+      },
       "walletConnect": {
         "connectYour": "Подключите ваш",
         "viaWalletConnect": "через Wallet Connect",
@@ -1823,9 +1831,6 @@
       "firefoxLedgerDisableTips": "Ledger не совместим с Firefox",
       "trezor": {
         "title": "Подключить Trezor"
-      },
-      "onekey": {
-        "title": "Подключить OneKey"
       }
     },
     "unlock": {
@@ -2595,11 +2600,14 @@
         "title": "Импортировать Seed Phrase"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip3": "3. Разблокируйте ваше устройство",
-        "connect": "Подключите OneKey",
-        "tip1": "1. Установите <1>OneKey Bridge<1/>",
-        "tip2": "2. Подключите ваше устройство OneKey"
+        "qrcode": {
+          "desc": "Сканируйте QR-код на аппаратном кошельке OneKey"
+        },
+        "title": "Подключите аппаратный кошелек OneKey через USB",
+        "tip1": "1. Подключите ваше устройство OneKey",
+        "tip2": "2. Разблокируйте ваше устройство",
+        "tip3": "3. Убедитесь, что подключено только одно устройство OneKey",
+        "connect": "Подключить OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3077,6 +3085,18 @@
       "HdKeyring": "Секретная фраза",
       "simpleKeyring": "Приватный ключ",
       "watchAddressKeyring": "Контакт"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Устройство не найдено",
+        "deviceInitializeFailed": "Ошибка устройства, перезапустите и повторите попытку",
+        "needUpgradeFirmware": "Необходимо обновить прошивку для использования устройства",
+        "thisMethodNeedUpgradeFirmware": "Для этой функции требуется обновление прошивки, обновите прошивку в приложении OneKey",
+        "notAllowInBootloaderMode": "Используйте в обычном режиме",
+        "deviceCheckPassphraseStateError": "Аккаунт не соответствует текущему адресу разблокировки устройства. Пожалуйста, подтвердите, что устройство и адрес аккаунта согласованы, и попробуйте снова",
+        "actionCancel": "Операция отменена",
+        "deviceNeedsWebHIDPermission": "Устройство не найдено или требует разрешения WebHID"
+      }
     }
   },
   "constant": {

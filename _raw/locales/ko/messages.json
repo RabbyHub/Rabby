@@ -1687,6 +1687,14 @@
         "deviceIsBusy": "장치가 바쁩니다",
         "keystonePermissionTip": "아래 \"허용\"을 클릭하여 다음 팝업 창에서 Keystone에 대한 액세스를 승인하고, Keystone 3 Pro가 홈페이지에 있는지 확인하세요."
       },
+      "onekey": {
+        "onekeyPermission1": "USB 장치에 연결하세요.",
+        "allowRabbyPermissionsTitle": "Rabby에 대한 권한 허용:",
+        "onekeyPermissionTip": "아래 \"허용\"을 클릭하여 다음 팝업 창에서 OneKey에 대한 액세스를 승인하고, OneKey가 홈페이지에 있는지 확인하세요.",
+        "whyOneKey": "왜 OneKey인가요?",
+        "buyOneKey": "OneKey 구매하기",
+        "haveOneKey": "아직 OneKey가 없으신가요?"
+      },
       "walletConnect": {
         "status": {
           "accountError": "주소가 일치하지 않습니다.",
@@ -1891,9 +1899,6 @@
       "addFromCurrentSeedPhrase": "현재 시드 문구에서 추가",
       "trezor": {
         "title": "Trezor 연결하기"
-      },
-      "onekey": {
-        "title": "OneKey 연결하기"
       }
     },
     "unlock": {
@@ -2590,11 +2595,14 @@
         "title": "시드 문구 가져오기"
       },
       "importOneKey": {
-        "connect": "OneKey 연결하기",
-        "tip2": "2. OneKey 장치의 전원을 연결하세요.",
-        "tip3": "3. 기기를 잠금 해제하세요",
-        "tip1": "1. <1>OneKey Bridge<1/>를 설치하세요.",
-        "title": "OneKey"
+        "qrcode": {
+          "desc": "OneKey 하드웨어 지갑의 QR 코드를 스캔하세요"
+        },
+        "title": "USB를 통해 OneKey 하드웨어 지갑 연결",
+        "tip1": "1. OneKey 장치를 연결하세요",
+        "tip2": "2. 장치의 잠금을 해제하세요",
+        "tip3": "3. OneKey 장치가 하나만 연결되어 있는지 확인하세요",
+        "connect": "OneKey 연결하기"
       },
       "importTrezor": {
         "connect": "Trezor 연결",
@@ -3072,6 +3080,18 @@
       "simpleKeyring": "개인 키",
       "watchAddressKeyring": "연락처",
       "HdKeyring": "시드 구문"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "장치를 찾을 수 없습니다",
+        "deviceInitializeFailed": "장치 오류, 재시작 후 다시 시도하십시오",
+        "needUpgradeFirmware": "장치를 사용하려면 펌웨어를 업그레이드해야 합니다",
+        "thisMethodNeedUpgradeFirmware": "이 기능을 사용하려면 펌웨어 업그레이드가 필요합니다. OneKey 앱에서 펌웨어를 업그레이드하세요",
+        "notAllowInBootloaderMode": "일반 모드에서 사용하세요",
+        "deviceCheckPassphraseStateError": "계정이 현재 장치의 잠금 해제 주소와 일치하지 않습니다. 장치와 계정 주소가 일치하는지 확인한 후 다시 시도하십시오",
+        "actionCancel": "작업이 취소되었습니다",
+        "deviceNeedsWebHIDPermission": "장치를 찾을 수 없거나 WebHID 권한이 필요합니다"
+      }
     }
   },
   "constant": {

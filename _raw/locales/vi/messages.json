@@ -1687,6 +1687,14 @@
         "deviceIsLockedError": "Nhập mật khẩu để mở khóa",
         "exportAddressJustAllowedOnHomePage": "Xuất khẩu địa chỉ chỉ được phép trên trang chủ"
       },
+      "onekey": {
+        "onekeyPermission1": "Kết nối với thiết bị USB",
+        "allowRabbyPermissionsTitle": "Cho phép Rabby các quyền để:",
+        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo. Nếu OneKey không xuất hiện trong popup, vui lòng kiểm tra xem thiết bị của bạn đã kết nối đúng với máy tính chưa.",
+        "whyOneKey": "Tại sao chọn OneKey?",
+        "buyOneKey": "Mua OneKey",
+        "haveOneKey": "Chưa có OneKey?"
+      },
       "walletConnect": {
         "status": {
           "default": "Quét với {{brand}}",
@@ -1891,9 +1899,6 @@
       "addFromCurrentSeedPhrase": "Thêm từ Câu Châm Ngôn Hiện Tại",
       "trezor": {
         "title": "Kết nối Trezor"
-      },
-      "onekey": {
-        "title": "Kết nối OneKey"
       }
     },
     "unlock": {
@@ -2590,10 +2595,13 @@
         "title": "Nhập cụm từ khôi phục"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip1": "1. Cài đặt <1>OneKey Bridge<1/>",
-        "tip3": "3. Mở khóa thiết bị của bạn",
-        "tip2": "2. Cắm thiết bị OneKey của bạn vào.",
+        "qrcode": {
+          "desc": "Quét mã QR trên ví cứng OneKey"
+        },
+        "title": "Kết nối ví cứng OneKey của bạn qua USB",
+        "tip1": "1. Cắm thiết bị OneKey của bạn",
+        "tip2": "2. Mở khóa thiết bị của bạn",
+        "tip3": "3. Hãy đảm bảo chỉ có một thiết bị OneKey được kết nối",
         "connect": "Kết nối OneKey"
       },
       "importTrezor": {
@@ -3072,6 +3080,18 @@
       "watchAddressKeyring": "Liên hệ",
       "simpleKeyring": "Khóa riêng",
       "HdKeyring": "Câu cụt đầu tiên"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Không tìm thấy thiết bị",
+        "deviceInitializeFailed": "Lỗi thiết bị, vui lòng khởi động lại và thử lại",
+        "needUpgradeFirmware": "Phải nâng cấp firmware để sử dụng thiết bị",
+        "thisMethodNeedUpgradeFirmware": "Tính năng này yêu cầu nâng cấp firmware, vui lòng nâng cấp firmware trong ứng dụng OneKey",
+        "notAllowInBootloaderMode": "Vui lòng sử dụng ở chế độ bình thường",
+        "deviceCheckPassphraseStateError": "Tài khoản không khớp với địa chỉ mở khóa thiết bị hiện tại. Vui lòng xác nhận thiết bị và địa chỉ tài khoản nhất quán và thử lại",
+        "actionCancel": "Thao tác đã được hủy",
+        "deviceNeedsWebHIDPermission": "Không tìm thấy thiết bị hoặc cần quyền WebHID"
+      }
     }
   },
   "constant": {

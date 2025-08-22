@@ -1818,13 +1818,18 @@
         "unknowError": "Unbekannter Fehler, bitte versuche es erneut",
         "keystonePermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren Keystone im folgenden Popup-Fenster zu autorisieren, und stellen Sie sicher, dass sich Ihr Keystone 3 Pro auf der Startseite befindet."
       },
+      "onekey": {
+        "onekeyPermission1": "Verbinden Sie mit einem USB-Gerät",
+        "allowRabbyPermissionsTitle": "Erlaube Rabby-Berechtigungen, um:",
+        "onekeyPermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren OneKey im folgenden Popup-Fenster zu autorisieren. Wenn OneKey nicht im Popup erscheint, prüfen Sie bitte, ob Ihr Gerät ordnungsgemäß mit dem Computer verbunden ist.",
+        "whyOneKey": "Warum OneKey?",
+        "buyOneKey": "OneKey kaufen",
+        "haveOneKey": "Haben Sie noch kein OneKey?"
+      },
       "firefoxLedgerDisableTips": "Ledger ist nicht mit Firefox kompatibel",
       "addFromCurrentSeedPhrase": "Aus aktuellem Seed-Phrase hinzufügen",
       "trezor": {
         "title": "Verbinde Trezor"
-      },
-      "onekey": {
-        "title": "Verbinde OneKey"
       }
     },
     "unlock": {
@@ -2593,11 +2598,14 @@
         "title": "Seed Phrase importieren"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip1": "1. Installiere <1>OneKey Bridge<1/>",
-        "tip3": "3. Entsperren Sie Ihr Gerät",
-        "connect": "Verbinden Sie OneKey",
-        "tip2": "2. Schließen Sie Ihr OneKey-Gerät an"
+        "qrcode": {
+          "desc": "Scannen Sie den QR-Code auf der OneKey Hardware-Wallet"
+        },
+        "title": "Verbinden Sie Ihre OneKey Hardware-Wallet über USB",
+        "tip1": "1. Schließen Sie Ihr OneKey-Gerät an",
+        "tip2": "2. Entsperren Sie Ihr Gerät",
+        "tip3": "3. Bitte stellen Sie sicher, dass nur ein OneKey-Gerät angeschlossen ist",
+        "connect": "OneKey verbinden"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3075,6 +3083,18 @@
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
       "watchAddressKeyring": "Kontakt"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Gerät nicht gefunden",
+        "deviceInitializeFailed": "Gerätfehler, bitte neu starten und erneut versuchen",
+        "needUpgradeFirmware": "Firmware muss aktualisiert werden, um das Gerät zu verwenden",
+        "thisMethodNeedUpgradeFirmware": "Diese Funktion erfordert ein Firmware-Update, bitte aktualisieren Sie die Firmware in der OneKey-App",
+        "notAllowInBootloaderMode": "Bitte im normalen Modus verwenden",
+        "deviceCheckPassphraseStateError": "Das Konto stimmt nicht mit der aktuellen Gerät-Entsperradresse überein. Bitte bestätigen Sie, dass Gerät und Kontoadresse übereinstimmen und versuchen Sie es erneut",
+        "actionCancel": "Vorgang abgebrochen",
+        "deviceNeedsWebHIDPermission": "Gerät nicht gefunden oder Zugriff erforderlich"
+      }
     }
   },
   "constant": {

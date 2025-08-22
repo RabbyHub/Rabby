@@ -40,6 +40,15 @@ export function initOneKey() {
             });
           break;
 
+        case OneKeyAction.getFeatures:
+          bridge
+            .getFeatures()
+            .then(sendResponse)
+            .catch((err) => {
+              sendResponse({ error: err });
+            });
+          break;
+
         case OneKeyAction.evmGetPublicKey:
           bridge
             .evmGetPublicKey(...(msg.params as [string, string, any]))

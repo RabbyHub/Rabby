@@ -27,6 +27,7 @@ export enum OneKeyAction {
   searchDevices = 'onekey-search-devices',
   getPassphraseState = 'onekey-get-passphrase-state',
   evmGetPublicKey = 'onekey-evm-get-public-key',
+  getFeatures = 'onekey-get-device-features',
 }
 
 export enum BitBox02Action {
