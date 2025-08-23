@@ -9,6 +9,7 @@ export interface AgentWalletInfo {
   vault: string;
   preference: {
     agentAddress: string;
+    approveData: ApproveData;
   };
 }
 
@@ -24,6 +25,9 @@ export interface PerpsServiceStore {
     };
   };
   currentAddress: string;
+  sendApproveAfterDepositObj: {
+    [address: string]: ApproveData; // address is master address
+  };
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -51,11 +55,14 @@ class PerpsService {
         agentVaults: '',
         agentPreferences: {},
         currentAddress: '',
+        sendApproveAfterDepositObj: {},
       },
     });
 
     this.memoryState.agentWallets = {};
-    this.memoryState.sendApproveAfterDepositObj = {};
+    this.memoryState.currentAddress = this.store?.currentAddress || '';
+    this.memoryState.sendApproveAfterDepositObj =
+      this.store?.sendApproveAfterDepositObj || {};
   };
 
   saveSendApproveAfterDeposit = async (
@@ -64,6 +71,13 @@ class PerpsService {
   ) => {
     this.memoryState.sendApproveAfterDepositObj = {
       ...this.memoryState.sendApproveAfterDepositObj,
+      [masterAddress]: JSON.parse(approveDataStr),
+    };
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.sendApproveAfterDepositObj = {
+      ...this.store.sendApproveAfterDepositObj,
       [masterAddress]: JSON.parse(approveDataStr),
     };
   };
@@ -117,6 +131,7 @@ class PerpsService {
     ).toLowerCase();
     this.addAgentWallet(masterAddress, bytesToHex(privateKey), {
       agentAddress,
+      approveData: [],
     });
     return { agentAddress, vault: bytesToHex(privateKey) };
   };

@@ -151,7 +151,7 @@ import {
   SwapTxHistoryItem,
 } from '../service/transactionHistory';
 import { SendApproveParams } from '@rabby-wallet/hyperliquid-sdk';
-import { ApproveData } from '../service/perps';
+import { AgentWalletInfo, ApproveData } from '../service/perps';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -5620,12 +5620,11 @@ export class WalletController extends BaseController {
   getPerpsCurrentAddress = async () => {
     return perpsService.getCurrentAddress();
   };
-  saveSendApproveAfterDeposit = async (
-    masterAddress: string,
-    approveData: string
-  ) => {
-    return perpsService.saveSendApproveAfterDeposit(masterAddress, approveData);
+  getAgentWalletPreference = async (masterWallet: string) => {
+    return perpsService.getAgentWalletPreference(masterWallet);
   };
+  updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
+  saveSendApproveAfterDeposit = perpsService.saveSendApproveAfterDeposit;
   getSendApproveAfterDeposit = async (masterAddress: string) => {
     return perpsService.getSendApproveAfterDeposit(masterAddress);
   };

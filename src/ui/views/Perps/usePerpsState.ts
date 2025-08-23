@@ -79,16 +79,35 @@ export const usePerpsState = () => {
 
   useEffect(() => {
     if (isInitialized && isLogin) {
+      // 已经初始化完成 且 已经登录
       dispatch.perps.fetchClearinghouseState(undefined);
       return;
     }
 
-    const init = async () => {
+    if (isInitialized) {
+      return;
+    }
+
+    const initIsLogin = async () => {
       try {
-        const currentAddress = await wallet.getPerpsCurrentAddress();
-        if (!currentAddress) {
+        const noLoginAction = () => {
+          wallet.setPerpsCurrentAddress('');
           dispatch.perps.fetchMarketData(true);
-          return;
+          dispatch.perps.setInitialized(true);
+          initPerpsSDK({
+            masterAddress: '',
+            agentPrivateKey: '',
+            agentPublicKey: '',
+            agentName: '',
+          });
+        };
+
+        const currentAddress = await wallet.getPerpsCurrentAddress();
+        console.log(' init currentAddress', currentAddress);
+        if (!currentAddress) {
+          // 如果没有登录状态，则只获取市场数据即可
+          noLoginAction();
+          return false;
         }
 
         const list = accountsList.filter(
@@ -101,11 +120,20 @@ export const usePerpsState = () => {
           list.filter((acc: any) => isSameAddress(acc.address, currentAddress))
         );
 
-        if (!targetTypeAccount) return;
+        if (!targetTypeAccount) {
+          // 地址列表没找到
+          noLoginAction();
+          return false;
+        }
 
-        const res = await wallet.getPerpsAgentWallet(targetTypeAccount.address);
-        if (!res) return;
+        const res = await wallet.getPerpsAgentWallet(currentAddress);
+        if (!res) {
+          // 没有找到store对应的 agent wallet
+          noLoginAction();
+          return false;
+        }
 
+        // 开始恢复登录态
         initPerpsSDK({
           masterAddress: currentAddress,
           agentPrivateKey: res.vault,
@@ -113,13 +141,13 @@ export const usePerpsState = () => {
           agentName: PERPS_AGENT_NAME,
         });
 
-        dispatch.perps.setCurrentPerpsAccount(targetTypeAccount);
+        dispatch.perps.fetchMarketData(true);
+        await dispatch.perps.loginPerpsAccount(targetTypeAccount);
 
-        await dispatch.perps.refreshData();
-
-        checkIsNeedAutoLoginOut(currentAddress, res.preference.agentAddress);
-
-        await dispatch.perps.fetchMarketData(true);
+        setTimeout(() => {
+          // is not very matter, just wait for the other query api
+          checkIsNeedAutoLoginOut(currentAddress, res.preference.agentAddress);
+        }, 1000);
 
         setTimeout(() => {
           // is not very matter, just wait for the other query api
@@ -127,33 +155,14 @@ export const usePerpsState = () => {
         }, 2000);
 
         dispatch.perps.setInitialized(true);
+        return true;
       } catch (error) {
         console.error('Failed to init Perps state:', error);
       }
     };
 
-    init();
+    initIsLogin();
   }, [wallet, dispatch, isInitialized]);
-
-  const getOrCreateAgentWallet = useMemoizedFn(
-    async (account: Account): Promise<AgentWallet> => {
-      const res = await wallet.getPerpsAgentWallet(account.address);
-      if (res) {
-        return {
-          privateKey: res.vault,
-          publicKey: res.preference.agentAddress,
-        };
-      }
-
-      const { agentAddress, vault } = await wallet.createPerpsAgentWallet(
-        account.address
-      );
-      return {
-        privateKey: vault,
-        publicKey: agentAddress,
-      };
-    }
-  );
 
   const prepareSignActions = useMemoizedFn(
     async (): Promise<SignAction[]> => {
@@ -209,16 +218,6 @@ export const usePerpsState = () => {
     }
   );
 
-  const createApproveData = (actionObj: SignAction): ApproveData | null => {
-    if (!actionObj.action?.signature) return null;
-
-    return {
-      action: actionObj.action,
-      nonce: actionObj.action?.nonce || 0,
-      signature: actionObj.signature,
-    };
-  };
-
   useEffect(() => {
     if (
       perpsState.accountSummary?.withdrawable &&
@@ -226,12 +225,12 @@ export const usePerpsState = () => {
       currentPerpsAccount?.address &&
       perpsState.approveData.length > 0
     ) {
-      const init = async () => {
+      const directSendApprove = async () => {
         const data = perpsState.approveData;
         dispatch.perps.setApproveData([]);
         await handleDirectApprove(data);
       };
-      init();
+      directSendApprove();
     }
   }, [perpsState.accountSummary]);
 
@@ -269,74 +268,80 @@ export const usePerpsState = () => {
     []
   );
 
+  const handleLoginWithSignApprove = useMemoizedFn(async (account: Account) => {
+    const { agentAddress, vault } = await wallet.createPerpsAgentWallet(
+      account.address
+    );
+    const sdk = initPerpsSDK({
+      masterAddress: account.address,
+      agentPrivateKey: vault,
+      agentPublicKey: agentAddress,
+      agentName: PERPS_AGENT_NAME,
+    });
+
+    const signActions = await prepareSignActions();
+
+    await executeSignatures(signActions, account);
+
+    const { role } = await sdk.info.getUserRole();
+    const isNeedDepositBeforeApprove = role === 'missing';
+
+    if (isNeedDepositBeforeApprove) {
+      // 新地址，需要先deposit后才能 send approve
+      const approveData = signActions.map((action) => {
+        return {
+          action: action.action,
+          nonce: action.action?.nonce || 0,
+          signature: action.signature,
+          type: action.type,
+        };
+      });
+      dispatch.perps.saveApproveData({
+        approveData,
+        address: account.address,
+      });
+    } else {
+      await handleDirectApprove(signActions);
+    }
+
+    await dispatch.perps.loginPerpsAccount(account);
+  });
+
   const loginPerpsAccount = useMemoizedFn(async (account: Account) => {
     try {
-      dispatch.perps.setLoading(true);
-      dispatch.perps.setError(null);
-
-      const { privateKey, publicKey } = await getOrCreateAgentWallet(account);
-
-      const sdk = initPerpsSDK({
-        masterAddress: account.address,
-        agentPrivateKey: privateKey,
-        agentPublicKey: publicKey,
-        agentName: PERPS_AGENT_NAME,
-      });
-      console.log('loginPerpsAccount sdk', sdk);
-
-      const isExpired = await checkIsExtraAgentIsExpired(
-        account.address,
-        publicKey
-      );
-      if (!isExpired) {
-        dispatch.perps.setCurrentPerpsAccount(account);
-        await wallet.setPerpsCurrentAddress(account.address);
-        await dispatch.perps.refreshData();
-        return true;
-      } else {
-        const { agentAddress, vault } = await wallet.createPerpsAgentWallet(
-          account.address
+      // const { privateKey, publicKey } = await getOrCreateAgentWallet(account);
+      const res = await wallet.getPerpsAgentWallet(account.address);
+      if (res) {
+        // 如果存在 agent wallet, 则检查是否过期
+        const isExpired = await checkIsExtraAgentIsExpired(
+          account.address,
+          res.preference.agentAddress
         );
-        const sdk = initPerpsSDK({
-          masterAddress: account.address,
-          agentPrivateKey: vault,
-          agentPublicKey: agentAddress,
-          agentName: PERPS_AGENT_NAME,
-        });
-        const signActions = await prepareSignActions();
-
-        await executeSignatures(signActions, account);
-
-        const { role } = await sdk.info.getUserRole();
-        const isNeedDepositBeforeApprove = role === 'missing';
-
-        if (isNeedDepositBeforeApprove) {
-          const approveData = signActions.map((action) => {
-            return {
-              action: action.action,
-              nonce: action.action?.nonce || 0,
-              signature: action.signature,
-              type: action.type,
-            };
+        if (!isExpired) {
+          initPerpsSDK({
+            masterAddress: account.address,
+            agentPrivateKey: res.vault,
+            agentPublicKey: res.preference.agentAddress,
+            agentName: PERPS_AGENT_NAME,
           });
-          dispatch.perps.saveApproveData(approveData);
+          // 未到过期时间无需签名直接登录即可
+          await dispatch.perps.loginPerpsAccount(account);
         } else {
-          await handleDirectApprove(signActions);
+          // 过期或者没sendApprove过，需要创建新的agent，同时签名
+          await handleLoginWithSignApprove(account);
+
+          await dispatch.perps.loginPerpsAccount(account);
         }
+      } else {
+        // 不存在agent wallet,，需要创建新的，同时签名
+        await handleLoginWithSignApprove(account);
 
-        console.log('loginPerpsAccount success');
-        dispatch.perps.setCurrentPerpsAccount(account);
-        await wallet.setPerpsCurrentAddress(account.address);
-        await dispatch.perps.refreshData();
-
-        return true;
+        await dispatch.perps.loginPerpsAccount(account);
       }
+      return true;
     } catch (error: any) {
       console.error('Failed to login Perps account:', error);
-      dispatch.perps.setError(error.message || 'Login failed');
       message.error(error.message || 'Login failed');
-    } finally {
-      dispatch.perps.setLoading(false);
     }
   });
 
@@ -410,8 +415,6 @@ export const usePerpsState = () => {
     accountSummary: perpsState.accountSummary,
     currentPerpsAccount: perpsState.currentPerpsAccount,
     isLogin: perpsState.isLogin,
-    loading: perpsState.loading,
-    error: perpsState.error,
     isInitialized: perpsState.isInitialized,
 
     // Actions
