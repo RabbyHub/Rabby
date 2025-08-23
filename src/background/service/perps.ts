@@ -17,8 +17,11 @@ export type ApproveData = (SendApproveParams & {
 })[];
 
 export interface PerpsServiceStore {
-  agentWallets: {
-    [address: string]: AgentWalletInfo;
+  agentVaults: string; // encrypted JSON string of {[address: string]: string}
+  agentPreferences: {
+    [address: string]: {
+      agentAddress: string;
+    };
   };
   currentAddress: string;
 }
@@ -45,7 +48,8 @@ class PerpsService {
     this.store = await createPersistStore<PerpsServiceStore>({
       name: 'perps',
       template: {
-        agentWallets: {},
+        agentVaults: '',
+        agentPreferences: {},
         currentAddress: '',
       },
     });
@@ -75,15 +79,30 @@ class PerpsService {
       throw new Error('PerpsService not initialized');
     }
     this.memoryState.currentAddress = this.store.currentAddress;
-    for (const masterAddress in this.store.agentWallets) {
-      const cur = this.store.agentWallets[masterAddress];
-      const privateKey = (await keyringService.decryptWithPassword(
-        cur.vault
-      )) as string;
-      this.memoryState.agentWallets[masterAddress] = {
-        vault: privateKey,
-        preference: cur.preference,
-      };
+
+    // Decrypt and load agent vaults
+    if (this.store.agentVaults) {
+      const vaultsMap: {
+        [address: string]: string;
+      } = await keyringService.decryptWithPassword(
+        this.store.agentVaults,
+        true,
+        'perps'
+      );
+
+      console.log(vaultsMap);
+
+      // Format data for memory state
+      for (const masterAddress in vaultsMap) {
+        const privateKey = vaultsMap[masterAddress];
+        const preference = this.store.agentPreferences[masterAddress] || {
+          agentAddress: '',
+        };
+        this.memoryState.agentWallets[masterAddress] = {
+          vault: privateKey,
+          preference,
+        };
+      }
     }
   };
 
@@ -113,24 +132,36 @@ class PerpsService {
 
     const normalizedAddress = masterAddress.toLowerCase();
 
-    const encryptedVault = await keyringService.encryptWithPassword(vault);
-
-    const walletInfo: AgentWalletInfo = {
-      vault: encryptedVault,
-      preference,
-    };
-
-    this.store.agentWallets = {
-      ...this.store.agentWallets,
-      [normalizedAddress]: walletInfo,
-    };
-
     this.memoryState.agentWallets = {
       ...this.memoryState.agentWallets,
       [normalizedAddress]: {
         vault,
         preference,
       },
+    };
+
+    let vaultsMap: { [address: string]: string } = {};
+    if (this.store.agentVaults) {
+      vaultsMap = await keyringService.decryptWithPassword(
+        this.store.agentVaults,
+        true,
+        'perps'
+      );
+    }
+
+    vaultsMap[normalizedAddress] = vault;
+
+    const encryptedVaults = await keyringService.encryptWithPassword(
+      vaultsMap,
+      true,
+      'perps'
+    );
+
+    // Update store
+    this.store.agentVaults = encryptedVaults;
+    this.store.agentPreferences = {
+      ...this.store.agentPreferences,
+      [normalizedAddress]: preference,
     };
   };
 
@@ -153,18 +184,15 @@ class PerpsService {
     }
 
     const normalizedAddress = address.toLowerCase();
-    const existingWallet = this.store.agentWallets[normalizedAddress];
+    const existingPreference = this.store.agentPreferences[normalizedAddress];
 
-    if (!existingWallet) {
+    if (!existingPreference) {
       throw new Error(`Agent wallet not found for address: ${address}`);
     }
 
-    this.store.agentWallets = {
-      ...this.store.agentWallets,
-      [normalizedAddress]: {
-        ...existingWallet,
-        preference,
-      },
+    this.store.agentPreferences = {
+      ...this.store.agentPreferences,
+      [normalizedAddress]: preference,
     };
 
     if (this.memoryState.agentWallets[normalizedAddress]) {
@@ -194,9 +222,27 @@ class PerpsService {
 
     const normalizedAddress = address.toLowerCase();
 
-    const updatedWallets = { ...this.store.agentWallets };
-    delete updatedWallets[normalizedAddress];
-    this.store.agentWallets = updatedWallets;
+    let vaultsMap: { [address: string]: string } = {};
+    if (this.store.agentVaults) {
+      vaultsMap = await keyringService.decryptWithPassword(
+        this.store.agentVaults,
+        true,
+        'perps'
+      );
+    }
+
+    delete vaultsMap[normalizedAddress];
+
+    const encryptedVaults = await keyringService.encryptWithPassword(
+      vaultsMap,
+      true,
+      'perps'
+    );
+
+    this.store.agentVaults = encryptedVaults;
+    const updatedPreferences = { ...this.store.agentPreferences };
+    delete updatedPreferences[normalizedAddress];
+    this.store.agentPreferences = updatedPreferences;
 
     const updatedMemoryWallets = { ...this.memoryState.agentWallets };
     delete updatedMemoryWallets[normalizedAddress];
@@ -209,7 +255,7 @@ class PerpsService {
     }
 
     const normalizedAddress = address.toLowerCase();
-    return !!this.store.agentWallets[normalizedAddress];
+    return !!this.memoryState.agentWallets[normalizedAddress];
   };
 
   getAgentWalletPreference = (address: string) => {
@@ -218,13 +264,13 @@ class PerpsService {
     }
 
     const normalizedAddress = address.toLowerCase();
-    const wallet = this.store.agentWallets[normalizedAddress];
+    const preference = this.store.agentPreferences[normalizedAddress];
 
-    if (!wallet) {
+    if (!preference) {
       return null;
     }
 
-    return wallet.preference;
+    return preference;
   };
 }
 

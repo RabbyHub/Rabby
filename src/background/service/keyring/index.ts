@@ -49,6 +49,7 @@ import {
   passwordEncrypt,
   passwordDecrypt,
   passwordClearKey,
+  PersistType,
 } from 'background/utils/password';
 import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
@@ -1420,18 +1421,30 @@ export class KeyringService extends EventEmitter {
     return { vault: encryptedString, accounts };
   }
 
-  async encryptWithPassword(content: string) {
+  async encryptWithPassword(
+    content: any,
+    persisted?: boolean,
+    persistType?: PersistType
+  ) {
     const encrypted = await passwordEncrypt({
       data: content,
       password: this.password,
+      persisted,
+      persistType,
     });
     return encrypted;
   }
 
-  async decryptWithPassword(str: string) {
+  async decryptWithPassword(
+    str: string,
+    persisted?: boolean,
+    persistType?: PersistType
+  ) {
     const decrypted = await passwordDecrypt({
       encryptedData: str,
       password: this.password,
+      persisted,
+      persistType,
     });
     return decrypted;
   }
