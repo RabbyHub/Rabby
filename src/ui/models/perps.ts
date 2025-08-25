@@ -10,7 +10,7 @@ import { RootModel } from '.';
 import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { formatMarkData } from '../views/Perps/utils';
 import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
-import { ApproveData } from '@/background/service/perps';
+import { ApproveSignatures } from '@/background/service/perps';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -59,7 +59,7 @@ export interface PerpsState {
   perpFee: number;
   isLogin: boolean;
   isInitialized: boolean;
-  approveData: ApproveData;
+  approveSignatures: ApproveSignatures;
 }
 
 export const perps = createModel<RootModel>()({
@@ -74,7 +74,7 @@ export const perps = createModel<RootModel>()({
     marketDataMap: {},
     isLogin: false,
     isInitialized: false,
-    approveData: [],
+    approveSignatures: [],
   } as PerpsState,
 
   reducers: {
@@ -123,10 +123,10 @@ export const perps = createModel<RootModel>()({
       };
     },
 
-    setApproveData(state, payload: ApproveData) {
+    setApproveSignatures(state, payload: ApproveSignatures) {
       return {
         ...state,
-        approveData: payload,
+        approveSignatures: payload,
       };
     },
 
@@ -137,23 +137,23 @@ export const perps = createModel<RootModel>()({
         currentPerpsAccount: null,
         isLogin: false,
         isInitialized: false,
-        approveData: [],
+        approveSignatures: [],
       };
     },
   },
 
   effects: (dispatch) => ({
-    async saveApproveData(
+    async saveApproveSignatures(
       payload: {
-        approveData: ApproveData;
+        approveSignatures: ApproveSignatures;
         address: string;
       },
       rootState
     ) {
-      dispatch.perps.setApproveData(payload.approveData);
+      dispatch.perps.setApproveSignatures(payload.approveSignatures);
       // rootState.app.wallet.saveSendApproveAfterDeposit(
       //   payload.address,
-      //   JSON.stringify(payload.approveData)
+      //   JSON.stringify(payload.approveSignatures)
       // );
       const preferenceData = await rootState.app.wallet.getAgentWalletPreference(
         payload.address
@@ -163,7 +163,7 @@ export const perps = createModel<RootModel>()({
           payload.address,
           {
             ...preferenceData,
-            approveData: payload.approveData,
+            approveSignatures: payload.approveSignatures,
           }
         );
       }

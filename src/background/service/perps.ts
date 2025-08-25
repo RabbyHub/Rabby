@@ -9,11 +9,11 @@ export interface AgentWalletInfo {
   vault: string;
   preference: {
     agentAddress: string;
-    approveData: ApproveData;
+    approveSignatures: ApproveSignatures;
   };
 }
 
-export type ApproveData = (SendApproveParams & {
+export type ApproveSignatures = (SendApproveParams & {
   type: 'approveAgent' | 'approveBuilderFee';
 })[];
 
@@ -22,12 +22,10 @@ export interface PerpsServiceStore {
   agentPreferences: {
     [address: string]: {
       agentAddress: string;
+      approveSignatures: ApproveSignatures;
     };
   };
   currentAddress: string;
-  sendApproveAfterDepositObj: {
-    [address: string]: ApproveData; // address is master address
-  };
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -35,9 +33,6 @@ export interface PerpsServiceMemoryState {
     [address: string]: AgentWalletInfo;
   };
   currentAddress: string;
-  sendApproveAfterDepositObj: {
-    [address: string]: ApproveData; // address is master address
-  };
 }
 
 class PerpsService {
@@ -45,7 +40,6 @@ class PerpsService {
   private memoryState: PerpsServiceMemoryState = {
     agentWallets: {},
     currentAddress: '',
-    sendApproveAfterDepositObj: {},
   };
 
   init = async () => {
@@ -55,37 +49,64 @@ class PerpsService {
         agentVaults: '',
         agentPreferences: {},
         currentAddress: '',
-        sendApproveAfterDepositObj: {},
       },
     });
 
     this.memoryState.agentWallets = {};
     this.memoryState.currentAddress = this.store?.currentAddress || '';
-    this.memoryState.sendApproveAfterDepositObj =
-      this.store?.sendApproveAfterDepositObj || {};
   };
 
   saveSendApproveAfterDeposit = async (
     masterAddress: string,
     approveDataStr: string
   ) => {
-    this.memoryState.sendApproveAfterDepositObj = {
-      ...this.memoryState.sendApproveAfterDepositObj,
-      [masterAddress]: JSON.parse(approveDataStr),
-    };
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
-    this.store.sendApproveAfterDepositObj = {
-      ...this.store.sendApproveAfterDepositObj,
-      [masterAddress]: JSON.parse(approveDataStr),
+
+    const normalizedAddress = masterAddress.toLowerCase();
+    const approveData = JSON.parse(approveDataStr);
+
+    // Update store preferences
+    const existingPreference = this.store.agentPreferences[
+      normalizedAddress
+    ] || {
+      agentAddress: '',
+      approveSignatures: [],
     };
+
+    this.store.agentPreferences[normalizedAddress] = {
+      ...existingPreference,
+      approveSignatures: approveData,
+    };
+
+    // Update memory state if wallet exists
+    if (this.memoryState.agentWallets[normalizedAddress]) {
+      this.memoryState.agentWallets[
+        normalizedAddress
+      ].preference.approveSignatures = approveData;
+    }
   };
 
   getSendApproveAfterDeposit = async (masterAddress: string) => {
-    const res = this.memoryState.sendApproveAfterDepositObj[masterAddress];
-    delete this.memoryState.sendApproveAfterDepositObj[masterAddress];
-    return res;
+    const normalizedAddress = masterAddress.toLowerCase();
+    const agentWallet = this.memoryState.agentWallets[normalizedAddress];
+
+    if (!agentWallet) {
+      return null;
+    }
+
+    const approveData = agentWallet.preference.approveSignatures;
+
+    // Clear approve data after retrieval
+    agentWallet.preference.approveSignatures = [];
+
+    // Also clear from store
+    if (this.store?.agentPreferences[normalizedAddress]) {
+      this.store.agentPreferences[normalizedAddress].approveSignatures = [];
+    }
+
+    return approveData;
   };
 
   unlockAgentWallets = async () => {
@@ -104,8 +125,6 @@ class PerpsService {
         'perps'
       );
 
-      console.log(vaultsMap);
-
       // Format data for memory state
       for (const masterAddress in vaultsMap) {
         const privateKey = vaultsMap[masterAddress];
@@ -114,7 +133,10 @@ class PerpsService {
         };
         this.memoryState.agentWallets[masterAddress] = {
           vault: privateKey,
-          preference,
+          preference: {
+            ...preference,
+            approveSignatures: preference.approveSignatures || [],
+          },
         };
       }
     }
@@ -131,7 +153,7 @@ class PerpsService {
     ).toLowerCase();
     this.addAgentWallet(masterAddress, bytesToHex(privateKey), {
       agentAddress,
-      approveData: [],
+      approveSignatures: [],
     });
     return { agentAddress, vault: bytesToHex(privateKey) };
   };
@@ -176,7 +198,10 @@ class PerpsService {
     this.store.agentVaults = encryptedVaults;
     this.store.agentPreferences = {
       ...this.store.agentPreferences,
-      [normalizedAddress]: preference,
+      [normalizedAddress]: {
+        agentAddress: preference.agentAddress,
+        approveSignatures: preference.approveSignatures,
+      },
     };
   };
 
@@ -207,7 +232,10 @@ class PerpsService {
 
     this.store.agentPreferences = {
       ...this.store.agentPreferences,
-      [normalizedAddress]: preference,
+      [normalizedAddress]: {
+        agentAddress: preference.agentAddress,
+        approveSignatures: preference.approveSignatures,
+      },
     };
 
     if (this.memoryState.agentWallets[normalizedAddress]) {

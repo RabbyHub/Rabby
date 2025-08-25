@@ -150,8 +150,6 @@ import {
   SendTxHistoryItem,
   SwapTxHistoryItem,
 } from '../service/transactionHistory';
-import { SendApproveParams } from '@rabby-wallet/hyperliquid-sdk';
-import { AgentWalletInfo, ApproveData } from '../service/perps';
 
 const stashKeyrings: Record<string | number, any> = {};
 

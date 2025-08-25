@@ -18,7 +18,7 @@ interface SignAction {
   signature: string;
 }
 
-interface ApproveData {
+interface ApproveDataItem {
   action: any;
   nonce: number;
   signature: string;
@@ -223,11 +223,11 @@ export const usePerpsState = () => {
       perpsState.accountSummary?.withdrawable &&
       Number(perpsState.accountSummary.withdrawable) > 0 &&
       currentPerpsAccount?.address &&
-      perpsState.approveData.length > 0
+      perpsState.approveSignatures.length > 0
     ) {
       const directSendApprove = async () => {
-        const data = perpsState.approveData;
-        dispatch.perps.setApproveData([]);
+        const data = perpsState.approveSignatures;
+        dispatch.perps.setApproveSignatures([]);
         await handleDirectApprove(data);
       };
       directSendApprove();
@@ -288,7 +288,7 @@ export const usePerpsState = () => {
 
     if (isNeedDepositBeforeApprove) {
       // 新地址，需要先deposit后才能 send approve
-      const approveData = signActions.map((action) => {
+      const approveSignatures = signActions.map((action) => {
         return {
           action: action.action,
           nonce: action.action?.nonce || 0,
@@ -296,8 +296,8 @@ export const usePerpsState = () => {
           type: action.type,
         };
       });
-      dispatch.perps.saveApproveData({
-        approveData,
+      dispatch.perps.saveApproveSignatures({
+        approveSignatures,
         address: account.address,
       });
     } else {
