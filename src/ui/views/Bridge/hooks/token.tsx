@@ -227,6 +227,7 @@ export const useBridge = () => {
         user_addr: userAddress,
         start: 0,
         limit: 1,
+        is_all: true,
       });
       const latestToToken = latestTx?.history_list?.[0]?.to_token;
       if (latestToToken) {
