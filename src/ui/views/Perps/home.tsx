@@ -11,6 +11,7 @@ import { ReactComponent as RcIconLogout } from '@/ui/assets/perps/IconLogout.svg
 import { HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { Button } from 'antd';
 import { PerpsLoginPopup } from './components/LoginPopup';
+import { PerpsLogoutPopup } from './components/LogoutPopup';
 import { CHAINS_ENUM } from '@debank/common';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { Account } from '@/background/service/preference';
@@ -18,6 +19,7 @@ import { usePerpsDeposit } from './usePerpsDeposit';
 import { usePerpsState } from './usePerpsState';
 import { HeaderAddress } from './components/headerAddress';
 import { PerpsLoginContent } from './components/LoginContent';
+import { HistoryPage } from './components/HistoryPage';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import clsx from 'clsx';
 import { PerpsBlueBorderedButton } from './components/BlueBorderedButton';
@@ -47,10 +49,12 @@ export const Perps: React.FC = () => {
     currentPerpsAccount,
     isLogin,
     marketData,
+    userFills,
     marketDataMap,
     logout,
     loginPerpsAccount,
     handleWithdraw,
+    homeHistoryList,
   } = usePerpsState();
 
   const {
@@ -65,6 +69,7 @@ export const Perps: React.FC = () => {
   const [popupType, setPopupType] = useState<'deposit' | 'withdraw'>('deposit');
   const startDirectSigning = useStartDirectSigning();
   const [loginVisible, setLoginVisible] = useState(false);
+  const [logoutVisible, setLogoutVisible] = useState(false);
 
   const [amountVisible, setAmountVisible] = useState(false);
 
@@ -93,7 +98,10 @@ export const Perps: React.FC = () => {
         disableSwitchAccount={true}
         rightSlot={
           isLogin ? (
-            <div className="cursor-pointer p-4" onClick={logout}>
+            <div
+              className="cursor-pointer p-4"
+              onClick={() => setLogoutVisible(true)}
+            >
               <ThemeIcon src={RcIconLogout} />
             </div>
           ) : null
@@ -207,12 +215,15 @@ export const Perps: React.FC = () => {
               />
             </div>
           </div>
-          <div className="bg-r-neutral-card1 rounded-[12px] flex flex-col mb-20">
+          <div className="bg-r-neutral-card1 rounded-[12px] flex flex-col">
             {marketData.slice(0, 3).map((item) => (
               <AssetItem key={item.name} item={item} />
             ))}
           </div>
-          <div>history</div>
+          <HistoryPage
+            marketData={marketDataMap}
+            historyData={homeHistoryList}
+          />
         </div>
       </div>
 
@@ -224,6 +235,18 @@ export const Perps: React.FC = () => {
         }}
         onCancel={() => {
           setLoginVisible(false);
+        }}
+      />
+
+      <PerpsLogoutPopup
+        visible={logoutVisible}
+        account={currentPerpsAccount}
+        onLogout={() => {
+          logout(currentPerpsAccount?.address || '');
+          setLogoutVisible(false);
+        }}
+        onCancel={() => {
+          setLogoutVisible(false);
         }}
       />
 

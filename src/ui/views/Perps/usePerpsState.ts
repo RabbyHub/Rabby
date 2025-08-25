@@ -1,9 +1,13 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useWallet } from '@/ui/utils';
 import { getPerpsSDK, initPerpsSDK } from './sdkManager';
-import { PERPS_AGENT_NAME, PERPS_BUILD_FEE_RECEIVE_ADDRESS } from './constants';
+import {
+  PERPS_AGENT_NAME,
+  PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+  PERPS_REFERENCE_CODE,
+} from './constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
 import { KEYRING_CLASS } from '@/constant';
@@ -18,21 +22,15 @@ interface SignAction {
   signature: string;
 }
 
-interface ApproveDataItem {
-  action: any;
-  nonce: number;
-  signature: string;
-}
-
-interface AgentWallet {
-  privateKey: string;
-  publicKey: string;
-}
-
 export const usePerpsState = () => {
   const dispatch = useRabbyDispatch();
   const perpsState = useRabbySelector((state) => state.perps);
-  const { isInitialized, currentPerpsAccount, isLogin } = perpsState;
+  const {
+    isInitialized,
+    currentPerpsAccount,
+    isLogin,
+    positionAndOpenOrders,
+  } = perpsState;
   const currentAccount = useCurrentAccount();
   const { accountsList } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
@@ -57,25 +55,62 @@ export const usePerpsState = () => {
     }
   );
 
-  const checkIsNeedAutoLoginOut = useMemoizedFn(
-    async (masterAddress: string, agentAddress: string) => {
-      const isExpired = await checkIsExtraAgentIsExpired(
-        masterAddress,
-        agentAddress
+  // return bool if can use approveSignatures
+  const restoreApproveSignatures = useMemoizedFn(
+    async (payload: { address: string }) => {
+      const approveSignatures = await wallet.getSendApproveAfterDeposit(
+        payload.address
       );
-      if (isExpired) {
-        console.warn('masterAddress isExpired, update agent, next auto login');
-        // need to update agent for send new approve agent api avoid error
-        wallet.createPerpsAgentWallet(masterAddress);
+
+      console.log('getSendApproveAfterDeposit res', approveSignatures);
+      if (approveSignatures?.length) {
+        const item = approveSignatures[0];
+        const expiredTime = item.nonce + 1000 * 60 * 60 * 24;
+        const now = Date.now();
+        if (expiredTime > now) {
+          dispatch.perps.setApproveSignatures(approveSignatures);
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
       }
     }
   );
 
-  useInterval(() => {
-    if (isInitialized && isLogin) {
-      dispatch.perps.fetchClearinghouseState(undefined);
+  console.log('approveSignatures', perpsState.approveSignatures);
+
+  const checkIsNeedAutoLoginOut = useMemoizedFn(
+    async (masterAddress: string, agentAddress: string) => {
+      const sdk = getPerpsSDK();
+      const extraAgents = await sdk.info.extraAgents(masterAddress);
+      const item = extraAgents.find((agent) =>
+        isSameAddress(agent.address, agentAddress)
+      );
+      if (!item) {
+        const res = await restoreApproveSignatures({
+          address: masterAddress,
+        });
+        if (!res) {
+          console.warn(
+            'masterAddress isExpired, no restore approve signature, logout'
+          );
+          logout(masterAddress);
+        }
+      } else {
+        const expiredAt = item?.validUntil;
+        const oneDayAfter = Date.now() + 24 * 60 * 60 * 1000;
+        const isExpired = expiredAt ? expiredAt < oneDayAfter : true;
+        if (isExpired) {
+          console.warn('masterAddress isExpired, update agent, auto login out');
+          // need to update agent for send new approve agent api avoid error
+          wallet.createPerpsAgentWallet(masterAddress);
+          logout(masterAddress);
+        }
+      }
     }
-  }, 5000);
+  );
 
   useEffect(() => {
     if (isInitialized && isLogin) {
@@ -142,12 +177,10 @@ export const usePerpsState = () => {
         });
 
         dispatch.perps.fetchMarketData(true);
+
         await dispatch.perps.loginPerpsAccount(targetTypeAccount);
 
-        setTimeout(() => {
-          // is not very matter, just wait for the other query api
-          checkIsNeedAutoLoginOut(currentAddress, res.preference.agentAddress);
-        }, 1000);
+        checkIsNeedAutoLoginOut(currentAddress, res.preference.agentAddress);
 
         setTimeout(() => {
           // is not very matter, just wait for the other query api
@@ -229,10 +262,21 @@ export const usePerpsState = () => {
         const data = perpsState.approveSignatures;
         dispatch.perps.setApproveSignatures([]);
         await handleDirectApprove(data);
+        wallet.setSendApproveAfterDeposit(currentPerpsAccount.address, []);
       };
       directSendApprove();
     }
   }, [perpsState.accountSummary]);
+
+  const handleSafeSetReference = useCallback(async () => {
+    try {
+      const sdk = getPerpsSDK();
+      const res = await sdk.exchange?.setReferrer(PERPS_REFERENCE_CODE);
+      console.log('setReference res', res);
+    } catch (e) {
+      console.error('Failed to set reference:', e);
+    }
+  }, []);
 
   const handleDirectApprove = useCallback(
     async (signActions: SignAction[]): Promise<void> => {
@@ -251,21 +295,23 @@ export const usePerpsState = () => {
               signature,
             });
           } else if (type === 'approveBuilderFee') {
-            // return sdk.exchange?.sendApproveBuilderFee({
-            //   action: action?.message,
-            //   nonce: action?.nonce || 0,
-            //   signature,
-            // });
-            return Promise.resolve(true);
+            return sdk.exchange?.sendApproveBuilderFee({
+              action: action?.message,
+              nonce: action?.nonce || 0,
+              signature,
+            });
           }
         })
       );
 
+      setTimeout(() => {
+        handleSafeSetReference();
+      }, 500);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
       console.log('sendApproveBuilderFeeRes', approveBuilderFeeRes);
     },
-    []
+    [handleSafeSetReference]
   );
 
   const handleLoginWithSignApprove = useMemoizedFn(async (account: Account) => {
@@ -345,9 +391,10 @@ export const usePerpsState = () => {
     }
   });
 
-  const logout = useMemoizedFn(() => {
+  const logout = useMemoizedFn((address: string) => {
     dispatch.perps.logout();
     wallet.setPerpsCurrentAddress('');
+    wallet.setSendApproveAfterDeposit(address, []);
   });
 
   const setCurrentPerpsAccount = useMemoizedFn((account: Account | null) => {
@@ -407,6 +454,12 @@ export const usePerpsState = () => {
     }
   );
 
+  const homeHistoryList = useMemo(() => {
+    const list = [...perpsState.userAccountHistory, ...perpsState.userFills];
+
+    return list.sort((a, b) => b.time - a.time);
+  }, [perpsState.userAccountHistory, perpsState.userFills]);
+
   return {
     // State
     marketData: perpsState.marketData,
@@ -416,12 +469,15 @@ export const usePerpsState = () => {
     currentPerpsAccount: perpsState.currentPerpsAccount,
     isLogin: perpsState.isLogin,
     isInitialized: perpsState.isInitialized,
+    userFills: perpsState.userFills,
+    homeHistoryList,
 
     // Actions
     loginPerpsAccount,
     logout,
     setCurrentPerpsAccount,
     handleWithdraw,
+    refreshData: dispatch.perps.refreshData,
   };
 };
 

@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 export type TokenSelectPopupProps = PopupProps & {
   onSelect: (token: TokenItem) => void;
   list: TokenItem[];
+  usdcTokenInfo: TokenItem | null | undefined;
 };
 
 export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
@@ -29,6 +30,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   onCancel,
   onSelect,
   list,
+  usdcTokenInfo,
   ...rest
 }) => {
   const { t } = useTranslation();
@@ -104,7 +106,13 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
                 </div>
               )}
           </Space>
-          <div>{formatUsdValue(item.amount * item.price || 0)}</div>
+          <div>
+            {item.id === ARB_USDC_TOKEN_ID && usdcTokenInfo?.amount
+              ? formatUsdValue(
+                  usdcTokenInfo?.amount * usdcTokenInfo?.price || 0
+                )
+              : formatUsdValue(item.amount * item.price || 0)}
+          </div>
         </div>
       );
     },

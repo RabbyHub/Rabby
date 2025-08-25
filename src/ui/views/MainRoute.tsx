@@ -61,7 +61,7 @@ import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
 import { GnosisQueue } from './GnosisQueue';
-import Perps from './Perps';
+import Perps from './Perps/home';
 import { Guide } from './NewUserImport/Guide';
 import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';

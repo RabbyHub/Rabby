@@ -2,13 +2,32 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { getPerpsSDK } from './sdkManager';
+import { usePerpsState } from './usePerpsState';
 
 export const usePerpsPosition = () => {
-  const dispatch = useRabbyDispatch();
+  const { refreshData, userFills } = usePerpsState();
 
-  const refreshData = useMemoizedFn(() => {
-    return dispatch.perps.refreshData();
-  });
+  const handleSetAutoClose = useMemoizedFn(
+    async (params: {
+      coin: string;
+      tpTriggerPx: string;
+      slTriggerPx: string;
+      direction: 'Long' | 'Short';
+    }) => {
+      console.log('handleSetAutoClose', params);
+      const sdk = getPerpsSDK();
+      const { coin, tpTriggerPx, slTriggerPx, direction } = params;
+      const res = await sdk.exchange?.bindTpslByOrderId({
+        coin,
+        isBuy: direction === 'Long',
+        tpTriggerPx,
+        slTriggerPx,
+      });
+
+      refreshData();
+      message.success('Auto close position set successfully');
+    }
+  );
 
   const handleClosePosition = useMemoizedFn(
     async (params: {
@@ -20,11 +39,11 @@ export const usePerpsPosition = () => {
       console.log('handleClosePosition', params);
       try {
         const sdk = getPerpsSDK();
-        const { coin, size, direction, price } = params;
+        const { coin, direction, price, size } = params;
         const res = await sdk.exchange?.marketOrderClose({
           coin,
           isBuy: direction === 'Short',
-          size: size,
+          size,
           midPx: price,
         });
 
@@ -113,5 +132,8 @@ export const usePerpsPosition = () => {
   return {
     handleOpenPosition,
     handleClosePosition,
+    handleSetAutoClose,
+    refreshData,
+    userFills,
   };
 };

@@ -50,9 +50,19 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const wallet = useWallet();
   const account = useCurrentAccount();
 
+  const { value: usdcTokenInfo, loading: usdcLoading } = useAsync(async () => {
+    if (!account?.address || !visible) return null;
+    const info = await wallet.openapi.getToken(
+      account.address,
+      ARB_USDC_TOKEN_SERVER_CHAIN,
+      ARB_USDC_TOKEN_ID
+    );
+    return info;
+  }, [account?.address, visible]);
+
   const { value: list, loading } = useAsync(async () => {
     if (!account?.address || !visible) return [];
-    const res = await batchQueryTokens(account.address, wallet);
+    const res = await queryTokensCache(account.address, wallet);
     const usdcToken = res.find(
       (t) =>
         t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
@@ -64,7 +74,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   React.useEffect(() => {
     if (!visible) {
       setAmount('');
-      // 保留已选 token，避免每次重置选择
     }
   }, [visible]);
 
@@ -100,7 +109,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         };
       }
 
-      if (amountValue > (selectedToken?.amount || 0)) {
+      if (amountValue > (usdcTokenInfo?.amount || 0)) {
         return {
           isValid: false,
           error: 'insufficient_balance',
@@ -109,7 +118,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       }
       return { isValid: true, error: null };
     }
-  }, [amount, t, selectedToken?.amount]);
+  }, [amount, t, usdcTokenInfo?.amount]);
 
   const isValidAmount = useMemo(() => amountValidation.isValid, [
     amountValidation.isValid,
@@ -210,13 +219,15 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   />
                   <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
                     {formatUsdValue(
-                      (selectedToken?.amount || 0) * (selectedToken?.price || 0)
+                      (usdcTokenInfo?.amount || 0) * (usdcTokenInfo?.price || 0)
                     )}
                   </div>
-                  <ThemeIcon
-                    className="icon icon-arrow-right ml-4"
-                    src={RcIconArrowRight}
-                  />
+                  {type === 'deposit' && (
+                    <ThemeIcon
+                      className="icon icon-arrow-right ml-4"
+                      src={RcIconArrowRight}
+                    />
+                  )}
                 </div>
               ) : null}
             </div>
@@ -277,6 +288,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
       <TokenSelectPopup
         visible={tokenVisible}
+        usdcTokenInfo={usdcTokenInfo}
         list={list || []}
         onCancel={() => setTokenVisible(false)}
         onSelect={(t) => {

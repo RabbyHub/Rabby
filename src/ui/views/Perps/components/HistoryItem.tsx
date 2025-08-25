@@ -1,0 +1,156 @@
+import React from 'react';
+import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
+import { formatUsdValue, sinceTime } from '@/ui/utils';
+import clsx from 'clsx';
+import BigNumber from 'bignumber.js';
+import { ReactComponent as RcIconDeposit } from '@/ui/assets/perps/IconDeposit.svg';
+import { ReactComponent as RcIconWithdraw } from '@/ui/assets/perps/IconWithdraw.svg';
+import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useTranslation } from 'react-i18next';
+
+interface HistoryItemProps {
+  fill: WsFill;
+  marketData: Record<string, MarketData>;
+  onClick?: (fill: WsFill) => void;
+}
+
+interface HistoryAccountItemProps {
+  data: AccountHistoryItem;
+}
+
+const getPnlColor = (pnl: string) => {
+  const pnlValue = Number(pnl);
+  if (pnlValue >= 0) return 'text-r-green-default';
+  if (pnlValue < 0) return 'text-r-red-default';
+};
+
+export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
+  data,
+}) => {
+  const { time, type, status, usdValue } = data;
+  const { t } = useTranslation();
+  const ImgAvatar = () => {
+    if (type === 'deposit') {
+      return (
+        <ThemeIcon
+          src={RcIconDeposit}
+          className="w-32 h-32 rounded-full mr-4"
+        />
+      );
+    } else {
+      return (
+        <ThemeIcon
+          src={RcIconWithdraw}
+          className="w-32 h-32 rounded-full mr-4"
+        />
+      );
+    }
+  };
+
+  return (
+    <div
+      className={clsx(
+        'w-full bg-r-neutral-card1 rounded-[12px] px-16 py-12 flex items-center justify-between mb-8 h-[60px]'
+      )}
+    >
+      <div className="flex items-center">
+        <ImgAvatar />
+        <div className="flex flex-col ml-12">
+          <div className="text-13 text-r-neutral-title-1 font-medium">
+            {type === 'deposit'
+              ? t('page.perps.deposit')
+              : t('page.perps.withdraw')}
+          </div>
+          <div className="text-13 text-r-neutral-foot font-medium">
+            {t('page.perps.completed')}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-end">
+        {status === 'success' ? (
+          <>
+            <div
+              className={clsx(
+                'text-14 font-medium',
+                type === 'deposit'
+                  ? 'text-r-green-default'
+                  : 'text-r-red-default'
+              )}
+            >
+              {type === 'deposit' ? '+' : '-'}
+              {`$${usdValue}`}
+            </div>
+            <div className="text-13 text-r-neutral-foot">
+              {sinceTime(time / 1000)}
+            </div>
+          </>
+        ) : (
+          <div className="text-13 text-r-neutral-foot">
+            {sinceTime(time / 1000)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const HistoryItem: React.FC<HistoryItemProps> = ({
+  fill,
+  marketData,
+  onClick,
+}) => {
+  const { coin, side, sz, px, closedPnl, time } = fill as WsFill;
+
+  const itemData = marketData[coin.toUpperCase()];
+  const logoUrl = itemData?.logoUrl;
+  const isClose = closedPnl && Number(closedPnl) !== 0;
+  const pnlValue = closedPnl ? Number(closedPnl) : 0;
+  const tradeValue = Number(sz) * Number(px);
+
+  return (
+    <div
+      className={clsx(
+        'w-full bg-r-neutral-card1 rounded-[12px] px-16 py-12 flex items-center justify-between mb-8 h-[60px]',
+        'border border-transparent',
+        'hover:border-rabby-blue-default cursor-pointer'
+      )}
+      onClick={() => onClick?.(fill)}
+    >
+      <div className="flex items-center">
+        <img src={logoUrl} className="w-32 h-32 rounded-full mr-4" />
+        <div className="flex flex-col ml-12">
+          <div className="text-13 text-r-neutral-title-1 font-medium">
+            {fill.dir}
+          </div>
+          <div className="text-13 text-r-neutral-foot font-medium">
+            {coin}-USD
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-end">
+        {isClose ? (
+          <>
+            <div
+              className={clsx('text-14 font-medium', getPnlColor(closedPnl!))}
+            >
+              {pnlValue > 0 ? '+' : '-'}
+              {formatUsdValue(Math.abs(pnlValue), BigNumber.ROUND_DOWN)}
+            </div>
+            <div className="text-13 text-r-neutral-foot">
+              {sinceTime(fill.time / 1000)}
+            </div>
+          </>
+        ) : (
+          <div className="text-13 text-r-neutral-foot">
+            {sinceTime(fill.time / 1000)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default HistoryItem;

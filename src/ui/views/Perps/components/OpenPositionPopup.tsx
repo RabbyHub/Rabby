@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Input, Button, Slider, Switch, Tooltip, message } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { LeverageSelectionPopup } from './LeverageSelectionPopup';
 import { formatPercent } from './SingleCoin';
 import { useMemoizedFn } from 'ahooks';
 import { calLiquidationPrice } from '../utils';
+import { AutoClosePositionPopup } from './AutoClosePositionPopup';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -64,9 +65,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const openLeveragePopup = () => {
     setLeveragePopupVisible(true);
   };
+  const [autoCloseVisible, setAutoCloseVisible] = React.useState(false);
   const [margin, setMargin] = React.useState<string>('');
   const [leverage, setLeverage] = React.useState<number>(5);
-  const [autoClose, setAutoClose] = React.useState<boolean>(false);
+  const [autoClose, setAutoClose] = React.useState({
+    isOpen: false,
+    tpTriggerPx: '',
+    slTriggerPx: '',
+  });
   const [loading, setLoading] = React.useState<boolean>(false);
 
   // 计算交易金额
@@ -97,7 +103,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
   const bothFee = React.useMemo(() => {
     return providerFee + 0.0005;
-  }, []);
+  }, [providerFee]);
 
   // 验证 margin 输入
   const marginValidation = React.useMemo(() => {
@@ -143,7 +149,11 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     if (!visible) {
       setMargin('');
       setLeverage(5);
-      setAutoClose(false);
+      setAutoClose({
+        isOpen: false,
+        tpTriggerPx: '',
+        slTriggerPx: '',
+      });
       setLeveragePopupVisible(false);
       setIsReviewMode(false);
     }
@@ -180,11 +190,61 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       leverage,
       direction,
       midPx: markPrice.toString(),
+      tpTriggerPx:
+        autoClose.isOpen && autoClose.tpTriggerPx
+          ? autoClose.tpTriggerPx
+          : undefined,
+      slTriggerPx:
+        autoClose.isOpen && autoClose.slTriggerPx
+          ? autoClose.slTriggerPx
+          : undefined,
     });
     setLoading(false);
     onConfirm();
     return res;
   });
+
+  const handleAutoCloseSwitch = useMemoizedFn((e: boolean) => {
+    if (e) {
+      setAutoCloseVisible(true);
+    } else {
+      setAutoClose({
+        isOpen: false,
+        tpTriggerPx: '',
+        slTriggerPx: '',
+      });
+    }
+  });
+
+  const AutoCloseInfo = useMemo(() => {
+    if (autoClose.isOpen) {
+      if (autoClose.tpTriggerPx && autoClose.slTriggerPx) {
+        const Line = (
+          <span className="text-r-neutral-line text-13 mr-4 ml-4">|</span>
+        );
+        return (
+          <div className="text-r-neutral-title-1 font-medium text-13">
+            ${autoClose.tpTriggerPx} {t('page.perps.takeProfit')} {Line}$
+            {autoClose.slTriggerPx} {t('page.perps.stopLoss')}
+          </div>
+        );
+      } else if (autoClose.tpTriggerPx) {
+        return (
+          <div className="text-r-neutral-title-1 font-medium text-13">
+            ${autoClose.tpTriggerPx} {t('page.perps.takeProfit')}
+          </div>
+        );
+      } else if (autoClose.slTriggerPx) {
+        return (
+          <div className="text-r-neutral-title-1 font-medium text-13">
+            ${autoClose.slTriggerPx} {t('page.perps.stopLoss')}
+          </div>
+        );
+      } else {
+        return null;
+      }
+    }
+  }, [autoClose.isOpen, autoClose.tpTriggerPx, autoClose.slTriggerPx]);
 
   // 渲染编辑模式UI
   const renderEditMode = useMemoizedFn(() => (
@@ -257,8 +317,12 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           <div className="flex w-full py-16 items-center justify-between">
             <div className="text-13 text-r-neutral-title-1">
               {t('page.perps.autoClose')}
+              {AutoCloseInfo}
             </div>
-            <Switch checked={autoClose} onChange={setAutoClose} />
+            <Switch
+              checked={autoClose.isOpen}
+              onChange={handleAutoCloseSwitch}
+            />
           </div>
         </div>
 
@@ -329,14 +393,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {formatUsdValue(tradeAmount)} = {tradeSize} {coin}
               </div>
             </div>
-            <div className="flex justify-between items-center">
-              <div className="text-13 text-r-neutral-body">
-                {t('page.perps.autoClose')}
+            {autoClose.isOpen && (
+              <div className="flex justify-between items-center">
+                <div className="text-13 text-r-neutral-body">
+                  {t('page.perps.autoClose')}
+                </div>
+                {AutoCloseInfo}
               </div>
-              <div className="text-13 text-r-neutral-title-1 font-medium">
-                {autoClose ? <>$5,000 take profit | $3,000 stop loss</> : 'Off'}
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -380,7 +444,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                       </div>
                       <div className="text-13 text-r-neutral-title-2">
                         {t('page.perps.providerFeeTips', {
-                          fee: formatPercent(providerFee),
+                          fee: formatPercent(providerFee, 4),
                         })}
                       </div>
                     </div>
@@ -391,7 +455,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </Tooltip>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                {formatPercent(bothFee)}
+                {formatPercent(bothFee, 4)}
               </div>
             </div>
           </div>
@@ -443,6 +507,27 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         leverageRange={leverageRang}
         onCancel={() => setLeveragePopupVisible(false)}
         onConfirm={handleLeverageConfirm}
+      />
+
+      <AutoClosePositionPopup
+        visible={autoCloseVisible}
+        coin={coin}
+        type="openPosition"
+        price={markPrice}
+        direction={direction}
+        size={Number(tradeSize)}
+        pxDecimals={szDecimals}
+        onClose={() => setAutoCloseVisible(false)}
+        handleSetAutoClose={async (params: {
+          tpPrice: string;
+          slPrice: string;
+        }) => {
+          setAutoClose({
+            isOpen: true,
+            tpTriggerPx: params.tpPrice,
+            slTriggerPx: params.slPrice,
+          });
+        }}
       />
     </>
   );

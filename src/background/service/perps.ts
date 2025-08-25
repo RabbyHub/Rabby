@@ -56,16 +56,20 @@ class PerpsService {
     this.memoryState.currentAddress = this.store?.currentAddress || '';
   };
 
-  saveSendApproveAfterDeposit = async (
+  setSendApproveAfterDeposit = async (
     masterAddress: string,
-    approveDataStr: string
+    approveSignatures: ApproveSignatures
   ) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
 
+    if (!masterAddress) {
+      console.error('masterAddress is required');
+      return;
+    }
+
     const normalizedAddress = masterAddress.toLowerCase();
-    const approveData = JSON.parse(approveDataStr);
 
     // Update store preferences
     const existingPreference = this.store.agentPreferences[
@@ -77,14 +81,14 @@ class PerpsService {
 
     this.store.agentPreferences[normalizedAddress] = {
       ...existingPreference,
-      approveSignatures: approveData,
+      approveSignatures,
     };
 
     // Update memory state if wallet exists
     if (this.memoryState.agentWallets[normalizedAddress]) {
       this.memoryState.agentWallets[
         normalizedAddress
-      ].preference.approveSignatures = approveData;
+      ].preference.approveSignatures = approveSignatures;
     }
   };
 
@@ -93,20 +97,11 @@ class PerpsService {
     const agentWallet = this.memoryState.agentWallets[normalizedAddress];
 
     if (!agentWallet) {
+      console.error('agentWallet not found');
       return null;
     }
 
-    const approveData = agentWallet.preference.approveSignatures;
-
-    // Clear approve data after retrieval
-    agentWallet.preference.approveSignatures = [];
-
-    // Also clear from store
-    if (this.store?.agentPreferences[normalizedAddress]) {
-      this.store.agentPreferences[normalizedAddress].approveSignatures = [];
-    }
-
-    return approveData;
+    return agentWallet.preference.approveSignatures;
   };
 
   unlockAgentWallets = async () => {

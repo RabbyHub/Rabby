@@ -7,7 +7,6 @@ import clsx from 'clsx';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { useMemoizedFn } from 'ahooks';
 import { formatPercent } from './SingleCoin';
-
 interface ClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   visible: boolean;
   coin: string;
@@ -51,10 +50,14 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
     }
   }, [visible]);
 
+  const bothFee = React.useMemo(() => {
+    return providerFee + 0.0005;
+  }, []);
+
   return (
     <Popup
       placement="bottom"
-      height={300}
+      height={280}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -94,7 +97,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
           </div>
 
           {/* Action Button */}
-          <div className="mb-20">
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 flex flex-col gap-12">
             <Button
               block
               size="large"
@@ -105,30 +108,30 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             >
               Close {direction}
             </Button>
-          </div>
 
-          {/* Fee Information */}
-          <div className="flex items-center justify-center gap-8 text-13 text-r-neutral-body">
-            <span>0.0932% fee</span>
-            <Tooltip
-              overlayClassName={clsx('rectangle')}
-              placement="top"
-              title={
-                <div>
-                  <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.rabbyFeeTips')}
+            {/* Fee Information */}
+            <div className="flex items-center justify-center gap-8 text-13 text-r-neutral-body">
+              <span>{formatPercent(bothFee, 4)} fee</span>
+              <Tooltip
+                overlayClassName={clsx('rectangle')}
+                placement="top"
+                title={
+                  <div>
+                    <div className="text-13 text-r-neutral-title-2">
+                      {t('page.perps.rabbyFeeTips')}
+                    </div>
+                    <div className="text-13 text-r-neutral-title-2">
+                      {t('page.perps.providerFeeTips', {
+                        fee: formatPercent(providerFee, 4),
+                      })}
+                    </div>
                   </div>
-                  <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.providerFeeTips', {
-                      fee: formatPercent(providerFee),
-                    })}
-                  </div>
-                </div>
-              }
-              align={{ targetOffset: [0, 0] }}
-            >
-              <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-            </Tooltip>
+                }
+                align={{ targetOffset: [0, 0] }}
+              >
+                <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+              </Tooltip>
+            </div>
           </div>
         </div>
       </div>

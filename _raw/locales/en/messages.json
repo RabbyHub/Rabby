@@ -764,6 +764,18 @@
         "ytd": "YTD",
         "all": "ALL"
       },
+      "historyDetail": {
+        "date": "Date",
+        "price": "Price",
+        "size": "Size",
+        "tradeValue": "Trade Value",
+        "fee": "Fee",
+        "provider": "Provider"
+      },
+      "logoutConfirmModal": {
+        "title": "Log Out Current Address",
+        "desc": "You are logging out of your current Perps account. You can restore it anytime by logging in with this address."
+      },
       "depositAmountPopup": {
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
@@ -797,6 +809,7 @@
       "openLong": "Open Long",
       "openShort": "Open Short",
       "closeLong": "Close Long",
+      "completed": "Completed",
       "closeShort": "Close Short",
       "long": "Long",
       "short": "Short",
@@ -805,13 +818,19 @@
       "funding": "Funding",
       "availableToTrade": "Available to trade",
       "takeProfit": "take profit",
+      "takeProfitWhen": "Take-Profit When",
       "stopLoss": "stop loss",
+      "stopLossWhen": "Stop-Loss When",
       "openPositionTips": "Trading perpetual contracts involves significant risk, outweighing potential for sudden and total loss of your investment expenditure due to high leverage and market volatility, and beyond the suitable for all users. Please bear the estimated fees might affect your profits/losses and provided responsibly.",
       "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
       "sizeTips": "The total value or quantity of your trade, set by margin and leverage.",
       "rabbyFeeTips": "Rabby fee: 0.05%",
       "providerFeeTips": "Provider fee: {{fee}}",
       "timeAgo": "{{time}} ago",
+      "takeProfitTipsLong": "Take profit price must be higher than current price",
+      "takeProfitTipsShort": "Take profit price must be lower than current price",
+      "stopLossTipsLong": "Stop loss price must be lower than current price",
+      "stopLossTipsShort": "Stop loss price must be higher than current price",
       "review": "Review",
       "confirm": "Confirm",
       "insufficientBalance": "Insufficient balance",

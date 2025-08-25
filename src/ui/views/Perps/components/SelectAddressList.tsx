@@ -100,12 +100,12 @@ function AccountItem(props: {
           <CopyChecked
             addr={account.address}
             className={clsx(
-              'w-[14px] h-[14px] ml-4 text-14 textgre cursor-pointer'
+              'w-[14px] h-[14px] ml-4 mr-4 text-14 cursor-pointer'
             )}
             // copyClassName={clsx()}
             checkedClassName={clsx('text-[#00C087]')}
           />
-          <div className="ml-auto">${formatUsdValue(account.balance)}</div>
+          <div className="ml-auto">{formatUsdValue(account.balance)}</div>
         </div>
       </div>
     </Item>

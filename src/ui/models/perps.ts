@@ -4,6 +4,9 @@ import {
   InfoClient,
   MarginSummary,
   OpenOrder,
+  UserFill,
+  WsFill,
+  WsUserFills,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { RootModel } from '.';
@@ -49,6 +52,14 @@ const buildMarketDataMap = (list: MarketData[]): MarketDataMap => {
   }, {} as MarketDataMap);
 };
 
+export interface AccountHistoryItem {
+  time: number;
+  hash: string;
+  type: 'deposit' | 'withdraw';
+  status: 'pending' | 'success' | 'failed';
+  usdValue: string;
+}
+
 export interface PerpsState {
   // clearinghouseState: ClearinghouseState | null;
   positionAndOpenOrders: PositionAndOpenOrder[];
@@ -60,6 +71,10 @@ export interface PerpsState {
   isLogin: boolean;
   isInitialized: boolean;
   approveSignatures: ApproveSignatures;
+  userFills: WsFill[];
+  userAccountHistory: AccountHistoryItem[];
+  wsSubscriptions: (() => void)[];
+  pollingTimer: NodeJS.Timeout | null;
 }
 
 export const perps = createModel<RootModel>()({
@@ -71,13 +86,31 @@ export const perps = createModel<RootModel>()({
     perpFee: 0.00045,
     currentPerpsAccount: null,
     marketData: [],
+    userAccountHistory: [],
     marketDataMap: {},
     isLogin: false,
     isInitialized: false,
+    userFills: [],
     approveSignatures: [],
+    wsSubscriptions: [],
+    pollingTimer: null,
   } as PerpsState,
 
   reducers: {
+    setUserAccountHistory(state, payload: AccountHistoryItem[]) {
+      return {
+        ...state,
+        userAccountHistory: payload,
+      };
+    },
+
+    setUserFills(state, payload: WsFill[]) {
+      return {
+        ...state,
+        userFills: payload,
+      };
+    },
+
     setPerpFee(state, payload: number) {
       return {
         ...state,
@@ -136,7 +169,9 @@ export const perps = createModel<RootModel>()({
         positionAndOpenOrders: [],
         currentPerpsAccount: null,
         isLogin: false,
-        isInitialized: false,
+        userAccountHistory: [],
+        userFills: [],
+        perpFee: 0.00045,
         approveSignatures: [],
       };
     },
@@ -151,22 +186,10 @@ export const perps = createModel<RootModel>()({
       rootState
     ) {
       dispatch.perps.setApproveSignatures(payload.approveSignatures);
-      // rootState.app.wallet.saveSendApproveAfterDeposit(
-      //   payload.address,
-      //   JSON.stringify(payload.approveSignatures)
-      // );
-      const preferenceData = await rootState.app.wallet.getAgentWalletPreference(
-        payload.address
+      rootState.app.wallet.setSendApproveAfterDeposit(
+        payload.address,
+        payload.approveSignatures
       );
-      if (preferenceData) {
-        await rootState.app.wallet.updatePerpsAgentWalletPreference(
-          payload.address,
-          {
-            ...preferenceData,
-            approveSignatures: payload.approveSignatures,
-          }
-        );
-      }
     },
 
     async fetchPositionAndOpenOrders(_address?: string) {
@@ -178,16 +201,16 @@ export const perps = createModel<RootModel>()({
           sdk.info.getFrontendOpenOrders(address),
         ]);
 
-        const positionAndOpenOrders = clearinghouseState.assetPositions.map(
-          (position) => {
+        const positionAndOpenOrders = clearinghouseState.assetPositions
+          .filter((position) => position.position.leverage.type === 'isolated')
+          .map((position) => {
             return {
               ...position,
               openOrders: openOrders.filter(
                 (order) => order.coin === position.position.coin
               ),
             };
-          }
-        );
+          });
 
         dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
 
@@ -204,6 +227,13 @@ export const perps = createModel<RootModel>()({
       await rootState.app.wallet.setPerpsCurrentAddress(payload.address);
       dispatch.perps.setCurrentPerpsAccount(payload);
       dispatch.perps.refreshData();
+
+      // 订阅实时数据更新
+      dispatch.perps.subscribeToUserData(undefined);
+
+      // 开始轮询获取ClearingHouseState
+      dispatch.perps.startPolling(undefined);
+
       console.log('loginPerpsAccount success', payload.address);
     },
 
@@ -221,22 +251,60 @@ export const perps = createModel<RootModel>()({
         (order) => order.openOrders
       );
 
-      const positionAndOpenOrders = clearinghouseState.assetPositions.map(
-        (position) => {
+      const positionAndOpenOrders = clearinghouseState.assetPositions
+        .filter((position) => position.position.leverage.type === 'isolated')
+        .map((position) => {
           return {
             ...position,
             openOrders: openOrders.filter(
               (order) => order.coin === position.position.coin
             ),
           };
-        }
-      );
+        });
 
       dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
     },
 
+    async fetchUserNonFundingLedgerUpdates() {
+      const sdk = getPerpsSDK();
+      const res = await sdk.info.getUserNonFundingLedgerUpdates();
+
+      const list = res
+        .filter((item) => {
+          if (
+            item.delta.type === 'deposit' ||
+            item.delta.type === 'withdraw' ||
+            item.delta.type === 'accountClassTransfer'
+          ) {
+            return true;
+          }
+          return false;
+        })
+        .map((item) => {
+          const type =
+            item.delta.type === 'accountClassTransfer'
+              ? item.delta.toPerp
+                ? 'deposit'
+                : 'withdraw'
+              : item.delta.type;
+
+          return {
+            time: item.time,
+            hash: item.hash,
+            type: type as 'deposit' | 'withdraw',
+            status: 'success' as const,
+            usdValue: item.delta.usdc || '0',
+          };
+        });
+
+      dispatch.perps.setUserAccountHistory(list);
+
+      console.log('fetchUserNonFundingLedgerUpdates', list);
+    },
+
     async refreshData() {
       await dispatch.perps.fetchPositionAndOpenOrders(undefined);
+      await dispatch.perps.fetchUserNonFundingLedgerUpdates();
     },
 
     async fetchMarketData(noLogin?: boolean) {
@@ -266,13 +334,97 @@ export const perps = createModel<RootModel>()({
       const perpFee =
         Number(res.userCrossRate) * (1 - Number(res.activeReferralDiscount));
 
-      dispatch.perps.setPerpFee(perpFee);
-      return perpFee;
+      const fee = perpFee.toFixed(6);
+
+      dispatch.perps.setPerpFee(Number(fee));
+      return Number(fee);
+    },
+
+    subscribeToUserData(_, rootState) {
+      const sdk = getPerpsSDK();
+      const subscriptions: (() => void)[] = [];
+
+      // 订阅用户成交记录
+      const { unsubscribe: unsubscribeFills } = sdk.ws.subscribeToUserFills(
+        (data) => {
+          console.log('User fills update:', data);
+          const { fills, isSnapshot, user } = data;
+          if (user !== rootState.perps.currentPerpsAccount?.address) {
+            return;
+          }
+
+          if (isSnapshot) {
+            dispatch.perps.setUserFills(fills.slice(0, 2000));
+          } else {
+            dispatch.perps.setUserFills([
+              ...rootState.perps.userFills,
+              ...fills,
+            ]);
+          }
+        }
+      );
+
+      // 订阅用户订单更新 no use , set auto close isn't update this callback
+      // const { unsubscribe: unsubscribeOrders } = sdk.ws.subscribeToUserOrders(
+      //   (orders) => {
+      //     console.log('User orders update:', orders);
+      //     // 订单状态变化时自动刷新数据
+      //     // dispatch.perps.refreshData();
+      //     // const positionAndOpenOrders = rootState.perps.positionAndOpenOrders.map(
+      //     //   (position) => {
+      //     //     if (
+      //     //       orders.some((order) => order.coin === position.position.coin)
+      //     //     ) {
+      //     //       const openOrders = position.openOrders;
+      //     //       return {
+      //     //         ...position,
+      //     //         openOrders: orders.filter(
+      //     //           (order) => order.coin === position.position.coin
+      //     //         ),
+      //     //       };
+      //     //     }
+      //     //   }
+      //     // );
+      //     // dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
+      //   }
+      // );
+
+      subscriptions.push(unsubscribeFills);
+
+      // 保存取消订阅的函数
+      rootState.perps.wsSubscriptions.push(...subscriptions);
+    },
+
+    startPolling(_, rootState) {
+      dispatch.perps.stopPolling(undefined);
+
+      const timer = setInterval(() => {
+        dispatch.perps.fetchClearinghouseState(undefined);
+      }, 5000);
+
+      rootState.perps.pollingTimer = timer;
+      console.log('开始轮询ClearingHouseState, 间隔5秒');
+    },
+
+    stopPolling(_, rootState) {
+      if (rootState.perps.pollingTimer) {
+        clearInterval(rootState.perps.pollingTimer);
+        rootState.perps.pollingTimer = null;
+        console.log('停止轮询ClearingHouseState');
+      }
+    },
+
+    unsubscribeAll(_, rootState) {
+      rootState.perps.wsSubscriptions.forEach((unsubscribe) => {
+        unsubscribe();
+      });
+      rootState.perps.wsSubscriptions = [];
     },
 
     logout() {
       destroyPerpsSDK();
-
+      dispatch.perps.stopPolling(undefined);
+      dispatch.perps.unsubscribeAll(undefined);
       dispatch.perps.resetState();
     },
   }),
