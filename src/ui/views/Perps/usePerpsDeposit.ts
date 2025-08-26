@@ -4,8 +4,8 @@ import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useCallback, useEffect, useState } from 'react';
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useMemoizedFn } from 'ahooks';
-import { useRabbySelector } from '@/ui/store';
 import { findAccountByPriority } from '@/utils/account';
+import { useInterval } from 'react-use';
 import {
   ARB_USDC_TOKEN_ID,
   ARB_USDC_TOKEN_ITEM,
@@ -18,6 +18,7 @@ import { findChain } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
 import { Tx } from 'background/service/openapi';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
 export const usePerpsDeposit = ({
@@ -25,8 +26,11 @@ export const usePerpsDeposit = ({
 }: {
   currentPerpsAccount: Account | null;
 }) => {
+  const dispatch = useRabbyDispatch();
   const wallet = useWallet();
+  const perpsState = useRabbySelector((state) => state.perps);
   const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
+  const [cacheAmount, setCacheAmount] = useState<number>(0);
   const updateMiniSignTx = useMemoizedFn((amount: number) => {
     const token = ARB_USDC_TOKEN_ITEM;
     const to = PERPS_SEND_ARB_USDC_ADDRESS;
@@ -63,6 +67,7 @@ export const usePerpsDeposit = ({
       isSend: true,
     };
 
+    setCacheAmount(amount);
     setMiniSignTx(params as Tx);
     return params;
   });
@@ -90,10 +95,34 @@ export const usePerpsDeposit = ({
     console.log('fallback res tx', tx);
   });
 
+  useInterval(
+    () => {
+      dispatch.perps.fetchUserNonFundingLedgerUpdates(undefined);
+    },
+    perpsState.localLoadingHistory.length > 0 ? 5000 : null
+  );
+
+  const handleSignDepositDirect = useMemoizedFn(async (hash: string) => {
+    if (!hash) {
+      throw new Error('No hash tx');
+    }
+
+    dispatch.perps.setLocalLoadingHistory([
+      {
+        time: Date.now(),
+        hash,
+        type: 'deposit',
+        status: 'pending',
+        usdValue: cacheAmount.toString(),
+      },
+    ]);
+  });
+
   return {
     miniSignTx,
     clearMiniSignTx,
     updateMiniSignTx,
     handleDeposit,
+    handleSignDepositDirect,
   };
 };

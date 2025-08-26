@@ -5629,7 +5629,7 @@ export class WalletController extends BaseController {
   };
   getPerpsAgentWallet = async (masterWallet: string) => {
     return perpsService.getAgentWallet(masterWallet);
-  }
+  };
   signTextCreateHistory = (
     params: Parameters<typeof signTextHistoryService.createHistory>[0]
   ) => {

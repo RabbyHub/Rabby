@@ -257,13 +257,22 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
             </div>
           )}
           {type === 'deposit' ? (
-            <ToConfirmBtn
+            <Button
+              block
               disabled={!isValidAmount}
-              title={t('page.perps.deposit')}
-              onConfirm={async () => {
-                await onConfirm(Number(amount));
+              size="large"
+              type="primary"
+              loading={isSigningLoading}
+              className="h-[48px] text-r-neutral-title2 text-15 font-medium"
+              style={{
+                height: 48,
               }}
-            />
+              onClick={() => {
+                onConfirm(Number(amount));
+              }}
+            >
+              {t('page.perps.deposit')}
+            </Button>
           ) : (
             <Button
               block

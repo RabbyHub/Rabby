@@ -73,6 +73,7 @@ export interface PerpsState {
   approveSignatures: ApproveSignatures;
   userFills: WsFill[];
   userAccountHistory: AccountHistoryItem[];
+  localLoadingHistory: AccountHistoryItem[];
   wsSubscriptions: (() => void)[];
   pollingTimer: NodeJS.Timeout | null;
 }
@@ -87,6 +88,7 @@ export const perps = createModel<RootModel>()({
     currentPerpsAccount: null,
     marketData: [],
     userAccountHistory: [],
+    localLoadingHistory: [],
     marketDataMap: {},
     isLogin: false,
     isInitialized: false,
@@ -97,6 +99,13 @@ export const perps = createModel<RootModel>()({
   } as PerpsState,
 
   reducers: {
+    setLocalLoadingHistory(state, payload: AccountHistoryItem[]) {
+      return {
+        ...state,
+        localLoadingHistory: payload,
+      };
+    },
+
     setUserAccountHistory(state, payload: AccountHistoryItem[]) {
       return {
         ...state,
@@ -265,7 +274,7 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
     },
 
-    async fetchUserNonFundingLedgerUpdates() {
+    async fetchUserNonFundingLedgerUpdates(_, rootState) {
       const sdk = getPerpsSDK();
       const res = await sdk.info.getUserNonFundingLedgerUpdates();
 
@@ -299,12 +308,21 @@ export const perps = createModel<RootModel>()({
 
       dispatch.perps.setUserAccountHistory(list);
 
+      const localLoadingHistory = rootState.perps.localLoadingHistory.filter(
+        (item) => !list.some((l) => l.hash === item.hash)
+      );
+      dispatch.perps.setLocalLoadingHistory(localLoadingHistory);
+
       console.log('fetchUserNonFundingLedgerUpdates', list);
+      console.log(
+        'fetchUserNonFundingLedgerUpdates localLoadingHistory',
+        localLoadingHistory
+      );
     },
 
     async refreshData() {
       await dispatch.perps.fetchPositionAndOpenOrders(undefined);
-      await dispatch.perps.fetchUserNonFundingLedgerUpdates();
+      await dispatch.perps.fetchUserNonFundingLedgerUpdates(undefined);
     },
 
     async fetchMarketData(noLogin?: boolean) {

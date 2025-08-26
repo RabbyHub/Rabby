@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValue, sinceTime } from '@/ui/utils';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconDeposit } from '@/ui/assets/perps/IconDeposit.svg';
+import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { ReactComponent as RcIconWithdraw } from '@/ui/assets/perps/IconWithdraw.svg';
 import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -30,7 +31,13 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
 }) => {
   const { time, type, status, usdValue } = data;
   const { t } = useTranslation();
-  const ImgAvatar = () => {
+  const ImgAvatar = useMemo(() => {
+    if (status === 'pending') {
+      return (
+        <RcIconPending className="w-32 h-32 rounded-full mr-4 animate-spin" />
+      );
+    }
+
     if (type === 'deposit') {
       return (
         <ThemeIcon
@@ -46,7 +53,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
         />
       );
     }
-  };
+  }, [status, type]);
 
   return (
     <div
@@ -55,16 +62,22 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
       )}
     >
       <div className="flex items-center">
-        <ImgAvatar />
+        {ImgAvatar}
         <div className="flex flex-col ml-12">
           <div className="text-13 text-r-neutral-title-1 font-medium">
             {type === 'deposit'
               ? t('page.perps.deposit')
               : t('page.perps.withdraw')}
           </div>
-          <div className="text-13 text-r-neutral-foot font-medium">
-            {t('page.perps.completed')}
-          </div>
+          {status === 'pending' ? (
+            <div className="text-13 text-r-orange-default font-medium">
+              {t('page.perps.pending')}
+            </div>
+          ) : (
+            <div className="text-13 text-r-neutral-foot font-medium">
+              {t('page.perps.completed')}
+            </div>
+          )}
         </div>
       </div>
 
@@ -87,8 +100,14 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
             </div>
           </>
         ) : (
-          <div className="text-13 text-r-neutral-foot">
-            {sinceTime(time / 1000)}
+          <div
+            className={clsx(
+              'text-14 font-medium',
+              type === 'deposit' ? 'text-r-green-default' : 'text-r-red-default'
+            )}
+          >
+            {type === 'deposit' ? '+' : '-'}
+            {`$${usdValue}`}
           </div>
         )}
       </div>

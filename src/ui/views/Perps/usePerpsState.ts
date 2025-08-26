@@ -455,10 +455,18 @@ export const usePerpsState = () => {
   );
 
   const homeHistoryList = useMemo(() => {
-    const list = [...perpsState.userAccountHistory, ...perpsState.userFills];
+    const list = [
+      ...perpsState.localLoadingHistory,
+      ...perpsState.userAccountHistory,
+      ...perpsState.userFills,
+    ];
 
     return list.sort((a, b) => b.time - a.time);
-  }, [perpsState.userAccountHistory, perpsState.userFills]);
+  }, [
+    perpsState.userAccountHistory,
+    perpsState.userFills,
+    perpsState.localLoadingHistory,
+  ]);
 
   return {
     // State

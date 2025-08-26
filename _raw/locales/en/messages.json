@@ -772,6 +772,7 @@
         "fee": "Fee",
         "provider": "Provider"
       },
+      "pending": "Pending",
       "logoutConfirmModal": {
         "title": "Log Out Current Address",
         "desc": "You are logging out of your current Perps account. You can restore it anytime by logging in with this address."

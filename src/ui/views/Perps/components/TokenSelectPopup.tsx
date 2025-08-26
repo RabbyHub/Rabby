@@ -116,7 +116,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         </div>
       );
     },
-    [handleClickToken]
+    [handleClickToken, usdcTokenInfo]
   );
 
   return (

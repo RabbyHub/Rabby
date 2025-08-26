@@ -61,6 +61,7 @@ export const Perps: React.FC = () => {
     clearMiniSignTx,
     updateMiniSignTx,
     handleDeposit,
+    handleSignDepositDirect,
   } = usePerpsDeposit({
     currentPerpsAccount,
   });
@@ -287,6 +288,7 @@ export const Perps: React.FC = () => {
       <MiniApproval
         txs={miniTxs}
         visible={isShowMiniSign}
+        noShowModalLoading={true}
         ga={{
           category: 'Perps',
           source: 'Perps',
@@ -300,7 +302,8 @@ export const Perps: React.FC = () => {
           clearMiniSignTx();
           setIsShowMiniSign(false);
         }}
-        onResolve={() => {
+        onResolve={(hash) => {
+          handleSignDepositDirect(hash);
           setAmountVisible(false);
           setTimeout(() => {
             setIsShowMiniSign(false);
