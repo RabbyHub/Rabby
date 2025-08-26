@@ -1,6 +1,7 @@
 import { createModel } from '@rematch/core';
 import {
   AssetPosition,
+  ClearinghouseState,
   InfoClient,
   MarginSummary,
   OpenOrder,
@@ -120,6 +121,66 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    addUserFills(
+      state,
+      payload: { fills: WsFill[]; isSnapshot?: boolean; user: string }
+    ) {
+      const { fills, isSnapshot } = payload;
+      if (isSnapshot) {
+        return {
+          ...state,
+          userFills: fills.slice(0, 2000),
+        };
+      } else {
+        return {
+          ...state,
+          userFills: [...fills, ...state.userFills],
+        };
+      }
+    },
+
+    updatePositionsWithClearinghouse(state, payload: ClearinghouseState) {
+      const openOrders = state.positionAndOpenOrders.flatMap(
+        (order) => order.openOrders
+      );
+
+      const positionAndOpenOrders = payload.assetPositions
+        .filter((position) => position.position.leverage.type === 'isolated')
+        .map((position) => {
+          return {
+            ...position,
+            openOrders: openOrders.filter(
+              (order) => order.coin === position.position.coin
+            ),
+          };
+        });
+
+      return {
+        ...state,
+        accountSummary: {
+          ...payload.marginSummary,
+          withdrawable: payload.withdrawable,
+        },
+        positionAndOpenOrders,
+      };
+    },
+
+    updateUserAccountHistory(
+      state,
+      payload: { newHistoryList: AccountHistoryItem[] }
+    ) {
+      const { newHistoryList } = payload;
+      // 使用当前userAccountHistory过滤 localLoadingHistory
+      const filteredLocalHistory = state.localLoadingHistory.filter(
+        (item) => !newHistoryList.some((l) => l.hash === item.hash)
+      );
+      return {
+        ...state,
+        userAccountHistory: newHistoryList,
+        localLoadingHistory: filteredLocalHistory,
+      };
+    },
+
     setPerpFee(state, payload: number) {
       return {
         ...state,
@@ -202,13 +263,12 @@ export const perps = createModel<RootModel>()({
       );
     },
 
-    async fetchPositionAndOpenOrders(_address?: string) {
+    async fetchPositionAndOpenOrders() {
       const sdk = getPerpsSDK();
       try {
-        const address = _address || '';
         const [clearinghouseState, openOrders] = await Promise.all([
-          sdk.info.getClearingHouseState(address),
-          sdk.info.getFrontendOpenOrders(address),
+          sdk.info.getClearingHouseState(),
+          sdk.info.getFrontendOpenOrders(),
         ]);
 
         const positionAndOpenOrders = clearinghouseState.assetPositions
@@ -239,7 +299,7 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.refreshData();
 
       // 订阅实时数据更新
-      dispatch.perps.subscribeToUserData(undefined);
+      dispatch.perps.subscribeToUserData(payload.address);
 
       // 开始轮询获取ClearingHouseState
       dispatch.perps.startPolling(undefined);
@@ -247,35 +307,15 @@ export const perps = createModel<RootModel>()({
       console.log('loginPerpsAccount success', payload.address);
     },
 
-    async fetchClearinghouseState(_, rootState) {
+    async fetchClearinghouseState() {
       const sdk = getPerpsSDK();
 
       const clearinghouseState = await sdk.info.getClearingHouseState();
 
-      dispatch.perps.setAccountSummary({
-        ...clearinghouseState.marginSummary,
-        withdrawable: clearinghouseState.withdrawable,
-      });
-
-      const openOrders = rootState.perps.positionAndOpenOrders.flatMap(
-        (order) => order.openOrders
-      );
-
-      const positionAndOpenOrders = clearinghouseState.assetPositions
-        .filter((position) => position.position.leverage.type === 'isolated')
-        .map((position) => {
-          return {
-            ...position,
-            openOrders: openOrders.filter(
-              (order) => order.coin === position.position.coin
-            ),
-          };
-        });
-
-      dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
+      dispatch.perps.updatePositionsWithClearinghouse(clearinghouseState);
     },
 
-    async fetchUserNonFundingLedgerUpdates(_, rootState) {
+    async fetchUserNonFundingLedgerUpdates() {
       const sdk = getPerpsSDK();
       const res = await sdk.info.getUserNonFundingLedgerUpdates();
 
@@ -307,37 +347,17 @@ export const perps = createModel<RootModel>()({
           };
         });
 
-      dispatch.perps.setUserAccountHistory(list);
-
-      const localLoadingHistory = rootState.perps.localLoadingHistory.filter(
-        (item) => !list.some((l) => l.hash === item.hash)
-      );
-      dispatch.perps.setLocalLoadingHistory(localLoadingHistory);
+      dispatch.perps.updateUserAccountHistory({ newHistoryList: list });
 
       console.log('fetchUserNonFundingLedgerUpdates', list);
-      console.log(
-        'fetchUserNonFundingLedgerUpdates localLoadingHistory',
-        localLoadingHistory
-      );
     },
 
     async refreshData() {
-      await dispatch.perps.fetchPositionAndOpenOrders(undefined);
-      await dispatch.perps.fetchUserNonFundingLedgerUpdates(undefined);
+      await dispatch.perps.fetchPositionAndOpenOrders();
+      await dispatch.perps.fetchUserNonFundingLedgerUpdates();
     },
 
-    async fetchMarketData(noLogin?: boolean) {
-      if (noLogin) {
-        const sdk = new InfoClient({
-          masterAddress: '',
-        });
-        const marketData = await sdk.metaAndAssetCtxs(true);
-        dispatch.perps.setMarketData(
-          formatMarkData(marketData, DEFAULT_TOP_ASSET)
-        );
-        return;
-      }
-
+    async fetchMarketData() {
       const sdk = getPerpsSDK();
       const marketData = await sdk.info.metaAndAssetCtxs(true);
       dispatch.perps.setMarketData(
@@ -346,7 +366,6 @@ export const perps = createModel<RootModel>()({
     },
 
     async fetchPerpFee() {
-      // is not very matter, just wait for the other query api
       const sdk = getPerpsSDK();
       const res = await sdk.info.getUsersFees();
 
@@ -359,58 +378,28 @@ export const perps = createModel<RootModel>()({
       return Number(fee);
     },
 
-    subscribeToUserData(_, rootState) {
+    subscribeToUserData(address, rootState) {
       const sdk = getPerpsSDK();
       const subscriptions: (() => void)[] = [];
 
-      // 订阅用户成交记录
       const { unsubscribe: unsubscribeFills } = sdk.ws.subscribeToUserFills(
         (data) => {
           console.log('User fills update:', data);
           const { fills, isSnapshot, user } = data;
-          if (user !== rootState.perps.currentPerpsAccount?.address) {
+          if (user !== address) {
             return;
           }
 
-          if (isSnapshot) {
-            dispatch.perps.setUserFills(fills.slice(0, 2000));
-          } else {
-            dispatch.perps.setUserFills([
-              ...rootState.perps.userFills,
-              ...fills,
-            ]);
-          }
+          dispatch.perps.addUserFills({
+            fills,
+            isSnapshot: isSnapshot || false,
+            user,
+          });
         }
       );
 
-      // 订阅用户订单更新 no use , set auto close isn't update this callback
-      // const { unsubscribe: unsubscribeOrders } = sdk.ws.subscribeToUserOrders(
-      //   (orders) => {
-      //     console.log('User orders update:', orders);
-      //     // 订单状态变化时自动刷新数据
-      //     // dispatch.perps.refreshData();
-      //     // const positionAndOpenOrders = rootState.perps.positionAndOpenOrders.map(
-      //     //   (position) => {
-      //     //     if (
-      //     //       orders.some((order) => order.coin === position.position.coin)
-      //     //     ) {
-      //     //       const openOrders = position.openOrders;
-      //     //       return {
-      //     //         ...position,
-      //     //         openOrders: orders.filter(
-      //     //           (order) => order.coin === position.position.coin
-      //     //         ),
-      //     //       };
-      //     //     }
-      //     //   }
-      //     // );
-      //     // dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
-      //   }
-      // );
-
       subscriptions.push(unsubscribeFills);
 
-      // 保存取消订阅的函数
       rootState.perps.wsSubscriptions.push(...subscriptions);
     },
 
@@ -418,7 +407,7 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.stopPolling(undefined);
 
       const timer = setInterval(() => {
-        dispatch.perps.fetchClearinghouseState(undefined);
+        dispatch.perps.fetchClearinghouseState();
       }, 5000);
 
       rootState.perps.pollingTimer = timer;

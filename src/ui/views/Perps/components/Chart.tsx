@@ -395,14 +395,6 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     [coin, candleMenuKey]
   );
 
-  useEffect(() => {
-    const sdk = getPerpsSDK();
-    sdk.ws?.connect();
-    return () => {
-      sdk.ws?.disconnect();
-    };
-  }, []);
-
   // Fetch and set data
   useEffect(() => {
     let aborted = false;
