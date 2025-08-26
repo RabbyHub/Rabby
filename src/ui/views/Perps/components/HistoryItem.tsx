@@ -120,11 +120,11 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
   marketData,
   onClick,
 }) => {
-  const { coin, side, sz, px, closedPnl, time } = fill as WsFill;
+  const { coin, side, sz, px, closedPnl, time, dir } = fill as WsFill;
 
   const itemData = marketData[coin.toUpperCase()];
   const logoUrl = itemData?.logoUrl;
-  const isClose = closedPnl && Number(closedPnl) !== 0;
+  const isClose = dir === 'Close Long' && closedPnl;
   const pnlValue = closedPnl ? Number(closedPnl) : 0;
   const tradeValue = Number(sz) * Number(px);
 

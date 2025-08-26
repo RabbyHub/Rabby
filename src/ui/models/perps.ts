@@ -179,6 +179,7 @@ export const perps = createModel<RootModel>()({
         currentPerpsAccount: null,
         isLogin: false,
         userAccountHistory: [],
+        localLoadingHistory: [],
         userFills: [],
         perpFee: 0.00045,
         approveSignatures: [],

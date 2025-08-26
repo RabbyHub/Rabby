@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +35,7 @@ import {
 import { PositionItem } from './components/PositionItem';
 import BigNumber from 'bignumber.js';
 import { AssetItem } from './components/AssetMetaItem';
+import { NewUserProcess } from './components/NewUserProcess';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -70,6 +71,15 @@ export const Perps: React.FC = () => {
   const startDirectSigning = useStartDirectSigning();
   const [loginVisible, setLoginVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
+  const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
+
+  useEffect(() => {
+    wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
+      if (!hasDoneNewUserProcess) {
+        setNewUserProcessVisible(true);
+      }
+    });
+  }, [wallet]);
 
   const [amountVisible, setAmountVisible] = useState(false);
 
@@ -171,6 +181,9 @@ export const Perps: React.FC = () => {
           </div>
         ) : (
           <PerpsLoginContent
+            onLearnAboutPerps={() => {
+              setNewUserProcessVisible(true);
+            }}
             clickLoginBtn={() => {
               setLoginVisible(true);
             }}
@@ -317,6 +330,14 @@ export const Perps: React.FC = () => {
         }}
         directSubmit
         canUseDirectSubmitTx={canUseDirectSubmitTx}
+      />
+
+      <NewUserProcess
+        visible={newUserProcessVisible}
+        onCancel={() => setNewUserProcessVisible(false)}
+        onComplete={() => {
+          wallet.setHasDoneNewUserProcess(true);
+        }}
       />
     </div>
   );

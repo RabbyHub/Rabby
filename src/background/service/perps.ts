@@ -26,6 +26,7 @@ export interface PerpsServiceStore {
     };
   };
   currentAddress: string;
+  hasDoneNewUserProcess: boolean;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -49,11 +50,26 @@ class PerpsService {
         agentVaults: '',
         agentPreferences: {},
         currentAddress: '',
+        hasDoneNewUserProcess: false,
       },
     });
 
     this.memoryState.agentWallets = {};
     this.memoryState.currentAddress = this.store?.currentAddress || '';
+  };
+
+  setHasDoneNewUserProcess = async (hasDone: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.hasDoneNewUserProcess = hasDone;
+  };
+
+  getHasDoneNewUserProcess = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.hasDoneNewUserProcess;
   };
 
   setSendApproveAfterDeposit = async (

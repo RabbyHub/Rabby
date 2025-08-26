@@ -65,6 +65,7 @@ export const PerpsSingleCoin = () => {
     clearMiniSignTx,
     updateMiniSignTx,
     handleDeposit,
+    handleSignDepositDirect,
   } = usePerpsDeposit({
     currentPerpsAccount,
   });
@@ -658,6 +659,7 @@ export const PerpsSingleCoin = () => {
       <MiniApproval
         txs={miniTxs}
         visible={isShowMiniSign}
+        noShowModalLoading={true}
         ga={{
           category: 'Perps',
           source: 'Perps',
@@ -671,7 +673,8 @@ export const PerpsSingleCoin = () => {
           clearMiniSignTx();
           setIsShowMiniSign(false);
         }}
-        onResolve={() => {
+        onResolve={(hash) => {
+          handleSignDepositDirect(hash);
           setAmountVisible(false);
           setTimeout(() => {
             setIsShowMiniSign(false);

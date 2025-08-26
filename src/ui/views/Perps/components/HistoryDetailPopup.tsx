@@ -17,8 +17,9 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
 }) => {
   const { t } = useTranslation();
   if (!fill) return null;
-  const { coin, side, sz, px, closedPnl, time, fee } = fill || {};
+  const { coin, side, sz, px, closedPnl, time, fee, dir } = fill || {};
   const tradeValue = Number(sz) * Number(px);
+  const isClose = dir === 'Close Long' && closedPnl;
   const logoUrl = fill?.logoUrl;
   return (
     <Popup
@@ -34,12 +35,12 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
         {/* Header */}
-        <div className="text-18 font-medium text-r-neutral-title-1 text-center pt-16 pb-16">
+        <div className="text-18 font-medium text-r-neutral-title-1 text-center pt-16 pb-12">
           {fill.dir}
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-20 pb-20 mt-8">
+        <div className="flex-1 px-20 pb-20 mt-4">
           <div className="rounded-[8px] px-16 bg-r-neutral-card-1">
             {/* Perps */}
             <div className="flex justify-between items-center py-16">
@@ -63,6 +64,17 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 {sinceTime(time / 1000)}
               </span>
             </div>
+
+            {Boolean(closedPnl) && (
+              <div className="flex justify-between items-center py-16">
+                <span className="text-13 text-r-neutral-body">
+                  {t('page.perps.historyDetail.closedPnl')}
+                </span>
+                <span className="text-13 text-r-neutral-title-1 font-medium">
+                  {formatUsdValue(closedPnl, BigNumber.ROUND_DOWN)}
+                </span>
+              </div>
+            )}
 
             {/* Price */}
             <div className="flex justify-between items-center py-16">
