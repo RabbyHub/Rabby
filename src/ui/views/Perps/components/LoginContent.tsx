@@ -5,8 +5,10 @@ import React from 'react';
 
 export const PerpsLoginContent = ({
   clickLoginBtn,
+  onLearnAboutPerps,
 }: {
   clickLoginBtn: () => void;
+  onLearnAboutPerps: () => void;
 }) => {
   const { t } = useTranslation();
 
@@ -42,6 +44,7 @@ export const PerpsLoginContent = ({
           style={{
             height: 48,
           }}
+          onClick={onLearnAboutPerps}
         >
           {t('page.perps.learnAboutPerps')}
         </Button>

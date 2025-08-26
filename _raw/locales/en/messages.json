@@ -764,13 +764,36 @@
         "ytd": "YTD",
         "all": "ALL"
       },
+      "newUserProcess": {
+        "gotIt": "Got it",
+        "next": "Next",
+        "firstTitle": "Master Perpetual Futures",
+        "firstDescription": "With perpetual futures, you're not just trading assets. You're trading what you think will happen next.",
+        "secondTitle": "Go Long",
+        "secondDescription": "When you expect the price to rise, you open a long. If the price rises, you gain. If it falls, you lose.",
+        "thirdTitle": "Go Short",
+        "thirdDescription": "When you expect the price to fall, you open a short. If the price falls, you gain. If it rises, you lose.",
+        "fourthTitle": "Adjusting Leverage",
+        "fourthDescription": "Leverage lets you trade with more than you put in. It can increase both your gains and your losses.",
+        "fifthTitle": "Liquidation Price",
+        "fifthDescription": "Every position has a liquidation price. If the market price reaches it, your position will be closed. Using high leverage increases the risk of liquidation."
+      },
       "historyDetail": {
         "date": "Date",
         "price": "Price",
         "size": "Size",
         "tradeValue": "Trade Value",
         "fee": "Fee",
-        "provider": "Provider"
+        "closedPnl": "Closed PNL",
+        "provider": "Provider",
+        "title": {
+          "openLong": "Open Long",
+          "openShort": "Open Short",
+          "closeLong": "Close Long",
+          "closeShort": "Close Short",
+          "closeLongLiquidation": "Close Long Liquidation",
+          "closeShortLiquidation": "Close Short Liquidation"
+        }
       },
       "pending": "Pending",
       "logoutConfirmModal": {
@@ -840,7 +863,8 @@
       "reviewOrder": "Review Order",
       "back": "Back",
       "estimatedLiquidationPrice": "Estimated Liquidation Price",
-      "fee": "Fee"
+      "fee": "Fee",
+      "liquidation":"Liquidation"
     },
     "sendPoly": {
       "title": "Send to",

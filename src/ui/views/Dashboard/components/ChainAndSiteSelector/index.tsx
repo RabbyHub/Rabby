@@ -281,15 +281,15 @@ export default function ChainAndSiteSelector({
         setIsShowEcologyModal(true);
       },
     } as IPanelItem,
-    mobile: {
-      icon: RCIconRabbyMobile,
-      eventKey: 'Rabby Mobile',
-      content: t('page.dashboard.home.panel.mobile'),
-      iconClassName: 'icon-rabby-mobile',
-      onClick: () => {
-        openInternalPageInTab('sync');
-      },
-    } as IPanelItem,
+    // mobile: {
+    //   icon: RCIconRabbyMobile,
+    //   eventKey: 'Rabby Mobile',
+    //   content: t('page.dashboard.home.panel.mobile'),
+    //   iconClassName: 'icon-rabby-mobile',
+    //   onClick: () => {
+    //     openInternalPageInTab('sync');
+    //   },
+    // } as IPanelItem,
     perps: {
       icon: RcIconPerps,
       eventKey: 'Perps',
