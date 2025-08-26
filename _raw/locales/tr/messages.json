@@ -1635,7 +1635,6 @@
         },
         "title": "{{brandName}} ile Bağlan",
         "disconnected": "Bağlantı Kesildi",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Bağlandı ancak imzalama yapılamıyor.",
@@ -2500,7 +2499,9 @@
         "deductGasFees": "Alınan tutardan gas ücretleri düşülecektir",
         "noBalance": "Bakiyesi yok",
         "WithdrawalAmount": "Çıkış Tutarı",
-        "withdrawalTip": "Mevcut çekim bakiyesi: {{amount}}"
+        "withdrawalTip": "Mevcut çekim bakiyesi: {{amount}}",
+        "amountTooLowCoverFee": "Gas ücretlerini karşılayacak kadar düşük bir miktar",
+        "noEnoughValueBalance": "Vault Bakiyesi yetersiz. Zinciri değiştirin veya daha sonra tekrar deneyin."
       },
       "withdrawConfirmModal": {
         "title": "DeBank L2 Cüzdanınıza aktarıldı",

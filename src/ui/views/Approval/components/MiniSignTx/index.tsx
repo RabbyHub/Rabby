@@ -93,15 +93,17 @@ export const MiniSignTx = ({
   ga,
   getContainer,
   directSubmit,
+  onGasAmountChange,
 }: {
   txs: Tx[];
   onReject?: () => void;
-  onResolve?: () => void;
+  onResolve?: (hash: string) => void;
   onPreExecError?: () => void;
   onStatusChange?: (status: BatchSignTxTaskType['status']) => void;
   ga?: Record<string, any>;
   getContainer?: DrawerProps['getContainer'];
   directSubmit?: boolean;
+  onGasAmountChange?: (gasAmount: number) => void;
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -176,13 +178,7 @@ export const MiniSignTx = ({
       contract_protocol_name: '',
     },
   });
-  const [actionData, setActionData] = useState<ParsedActionData>({});
-  const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
-    null
-  );
   const { t } = useTranslation();
-  const [preprocessSuccess, setPreprocessSuccess] = useState(true);
-
   const [inited, setInited] = useState(false);
   const [isHardware, setIsHardware] = useState(false);
   const [manuallyChangeGasLimit, setManuallyChangeGasLimit] = useState(false);
@@ -236,13 +232,6 @@ export const MiniSignTx = ({
   const [useGasLess, setUseGasLess] = useState(false);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [gnosisFooterBarVisible, setGnosisFooterBarVisible] = useState(false);
-  const [currentGnosisAdmin, setCurrentGnosisAdmin] = useState<Account | null>(
-    null
-  );
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
@@ -446,8 +435,8 @@ export const MiniSignTx = ({
     if (!txsResult?.length || !selectedGas) {
       return;
     }
-    await task.start();
-    onResolve?.();
+    const hash = await task.start();
+    onResolve?.(hash);
   });
 
   const handleGasChange = (gas: GasSelectorResponse) => {
@@ -645,8 +634,8 @@ export const MiniSignTx = ({
       let gas: GasLevel | null = null;
 
       if (
-        (customGasPrice || lastTimeGas?.lastTimeSelect === 'gasPrice') &&
-        !directSubmit
+        customGasPrice ||
+        (lastTimeGas?.lastTimeSelect === 'gasPrice' && !directSubmit)
       ) {
         gas = gasList.find((item) => item.level === 'custom')!;
       } else if (
@@ -1106,6 +1095,14 @@ export const MiniSignTx = ({
       }
     }
   }, [currentAccount?.type]);
+  const disabledProcess = useMemo(() => {
+    const isDisabled =
+      !isReady ||
+      (selectedGas ? selectedGas.price < 0 : true) ||
+      !canProcess ||
+      !!checkErrors.find((item) => item.level === 'forbidden');
+    return isDisabled;
+  }, [isReady, selectedGas, canProcess, checkErrors]);
 
   return (
     <>
@@ -1131,13 +1128,12 @@ export const MiniSignTx = ({
           onCancel={onReject}
           onRetry={async () => {
             await wallet.setRetryTxType(retryUpdateType);
-            await task.retry();
-            onResolve?.();
+            const hash = await task.retry();
+            onResolve?.(hash);
           }}
           retryUpdateType={retryUpdateType}
         />
       </Popup>
-
       <MiniFooterBar
         directSubmit={directSubmit}
         task={task}
@@ -1233,12 +1229,7 @@ export const MiniSignTx = ({
             ? checkErrors.find((item) => item.level === 'forbidden')!.msg
             : cantProcessReason
         }
-        disabledProcess={
-          !isReady ||
-          (selectedGas ? selectedGas.price < 0 : true) ||
-          !canProcess ||
-          !!checkErrors.find((item) => item.level === 'forbidden')
-        }
+        disabledProcess={disabledProcess}
         isFirstGasLessLoading={isFirstGasLessLoading}
         isFirstGasCostLoading={isFirstGasCostLoading}
         getContainer={getContainer}
@@ -1254,6 +1245,7 @@ export const MiniApproval = ({
   onResolve,
   onReject,
   onPreExecError,
+  onGasAmountChange,
   ga,
   getContainer,
   directSubmit,
@@ -1265,13 +1257,14 @@ export const MiniApproval = ({
   visible?: boolean;
   onClose?: () => void;
   onReject?: () => void;
-  onResolve?: () => void;
+  onResolve?: (hash: string) => void;
   onPreExecError?: () => void;
   ga?: Record<string, any>;
   getContainer?: DrawerProps['getContainer'];
   directSubmit?: boolean;
   canUseDirectSubmitTx?: boolean;
   isPreparingSign?: boolean;
+  onGasAmountChange?: (gasAmount: number) => void;
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
@@ -1369,9 +1362,8 @@ export const MiniApproval = ({
             }}
             onPreExecError={onPreExecError}
             onReject={onReject}
-            onResolve={() => {
-              onResolve?.();
-            }}
+            onResolve={onResolve}
+            onGasAmountChange={onGasAmountChange}
             getContainer={getContainer}
           />
         ) : null}

@@ -202,6 +202,7 @@ const GasAccountInner = () => {
       />
       <GasAccountDepositPopup
         visible={depositVisible}
+        handleRefreshHistory={handleRefreshHistory}
         onCancel={() => setDepositVisible(false)}
       />
 
@@ -209,7 +210,7 @@ const GasAccountInner = () => {
         visible={withdrawVisible}
         onCancel={() => setWithdrawVisible(false)}
         handleRefreshHistory={handleRefreshHistory}
-        balance={balance}
+        balance={gasAccount?.account.withdrawable_balance || 0}
         gasAccountInfo={gasAccount?.account}
       />
 

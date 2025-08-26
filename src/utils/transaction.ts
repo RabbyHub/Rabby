@@ -327,7 +327,6 @@ export const explainGas = async ({
     maxGasCostAmount = new BigNumber(res).div(1e18).plus(maxGasCostAmount);
   }
   const gasCostUsd = new BigNumber(gasCostTokenAmount).times(nativeTokenPrice);
-
   return {
     gasCostUsd,
     gasCostAmount: gasCostTokenAmount,

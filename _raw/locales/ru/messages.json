@@ -1648,7 +1648,6 @@
         },
         "title": "Подключиться с {{brandName}}",
         "disconnected": "Отключено",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Подключено, но не может подписать.",
@@ -2499,7 +2498,9 @@
         "recipientAddress": "Адрес получателя",
         "noBalance": "Нет баланса",
         "withdrawalTip": "Доступный баланс для вывода: {{amount}}",
-        "WithdrawalAmount": "Сумма вывода"
+        "WithdrawalAmount": "Сумма вывода",
+        "amountTooLowCoverFee": "Сумма слишком мала, чтобы покрыть газовые сборы",
+        "noEnoughValueBalance": "Недостаточно средств на счете Vault. Переключите цепочку или попробуйте позже."
       },
       "withdrawConfirmModal": {
         "button": "Просмотр в DeBank",

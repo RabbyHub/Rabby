@@ -1647,7 +1647,6 @@
         },
         "title": "З'єднатися з {{brandName}}",
         "disconnected": "Від'єднано",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Підключений, але не може підписати.",
@@ -2509,7 +2508,9 @@
         "desc": "Ви можете зняти баланс вашого GasAccount на ваш гаманець DeBank L2. Увійдіть у ваш гаманець DeBank L2, щоб перевести кошти на підтримуваний блокчейн за потреби.",
         "noBalance": "Немає балансу",
         "WithdrawalAmount": "Сума зняття",
-        "withdrawalTip": "Доступний баланс для виведення: {{amount}}"
+        "withdrawalTip": "Доступний баланс для виведення: {{amount}}",
+        "amountTooLowCoverFee": "Сума занадто мала, щоб покрити газові збори",
+        "noEnoughValueBalance": "Немає достатньо балансу у сховищі. Переключіть ланцюг або спробуйте пізніше."
       },
       "withdrawConfirmModal": {
         "button": "Переглянути на DeBank",

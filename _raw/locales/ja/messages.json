@@ -1635,7 +1635,6 @@
         },
         "title": "{{brandName}}と接続",
         "disconnected": "切断済み",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "接続済みですが、サインできません。",
@@ -2497,7 +2496,9 @@
         "desc": "GasAccountの残高をDeBank L2ウォレットに引き出すことができます。必要に応じてサポートされているブロックチェーンに資金を転送するために、DeBank L2ウォレットにログインしてください。",
         "noBalance": "残高なし",
         "WithdrawalAmount": "出金額",
-        "withdrawalTip": "利用可能な出金残高: {{amount}}"
+        "withdrawalTip": "利用可能な出金残高: {{amount}}",
+        "amountTooLowCoverFee": "ガス代をカバーするには金額が低すぎます",
+        "noEnoughValueBalance": "ボールト残高が不足しています。チェーンを切り替えるか、後でもう一度お試しください。"
       },
       "withdrawConfirmModal": {
         "button": "DeBankで表示",

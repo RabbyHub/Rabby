@@ -632,7 +632,6 @@
         },
         "title": "与 {{brandName}} 连接",
         "disconnected": "已断开连接",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "已连接但无法签名",
@@ -2574,7 +2573,9 @@
         "desc": "您可以将您的 GasAccount 余额提取到您的 DeBank L2 Wallet。请登录到您的 DeBank L2 Wallet，根据需要将资金转移到支持的区块链。",
         "noBalance": "没有余额",
         "WithdrawalAmount": "提现金额",
-        "withdrawalTip": "可提取余额: {{amount}}"
+        "withdrawalTip": "可提取余额: {{amount}}",
+        "amountTooLowCoverFee": "金额过低，无法支付 gas 费用",
+        "noEnoughValueBalance": "保险库余额不足。请切换链或稍后重试。"
       },
       "withdrawConfirmModal": {
         "title": "已转移至您的 DeBank L2 钱包",

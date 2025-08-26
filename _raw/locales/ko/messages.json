@@ -1699,7 +1699,6 @@
           "rejected": "연결이 취소되었습니다. QR 코드를 스캔하여 다시 시도해 주십시오.",
           "duplicate": "입력하려는 주소가 중복되었습니다."
         },
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "연결되었지만 서명할 수 없습니다.",
@@ -2498,7 +2497,9 @@
         "riskMessageFromAddress": "위험 관리로 인해 출금 한도는 이 주소가 예치한 총 금액에 따라 달라집니다.",
         "WithdrawalAmount": "출금 금액",
         "noBalance": "잔액 없음",
-        "withdrawalTip": "사용 가능한 출금 잔액: {{amount}}"
+        "withdrawalTip": "사용 가능한 출금 잔액: {{amount}}",
+        "amountTooLowCoverFee": "가스 요금을 충당하기에는 금액이 너무 낮습니다.",
+        "noEnoughValueBalance": "Vault Balance가 부족합니다. 체인을 전환하거나 나중에 다시 시도하십시오."
       },
       "withdrawConfirmModal": {
         "title": "DeBank L2 지갑으로 전송됨",
