@@ -8,6 +8,7 @@ import {
   CandlestickSeries,
   ColorType,
   IPriceLine,
+  CrosshairMode,
 } from 'lightweight-charts';
 import {
   Candle,
@@ -33,6 +34,7 @@ export type ChartProps = {
     entryPrice: number;
   };
   onHoverData?: (data: ChartHoverData) => void;
+  pxDecimals: number;
 };
 
 export interface ChartHoverData {
@@ -113,13 +115,19 @@ const getThemeColors = (isDark: boolean) =>
         horzLineColor: 'rgba(255, 255, 255, 0.06)',
         textColor: 'rgba(255, 255, 255, 0.8)',
         priceLineColor: 'rgba(255, 255, 255, 1)',
+        crosshairVertLineColor: 'rgba(186, 190, 197, 1)',
         bgColor: '#111214',
+        redLineColor: 'rgba(227, 73, 53, 1)',
+        greenLineColor: 'rgba(42, 187, 127, 1)',
       }
     : {
         vertLineColor: 'rgba(46, 46, 46, 0.06)',
         horzLineColor: 'rgba(46, 46, 46, 0.06)',
         textColor: '#1f1f1f',
         priceLineColor: 'rgba(12, 15, 31, 1)',
+        crosshairVertLineColor: 'rgba(106, 117, 135, 1)',
+        redLineColor: 'rgba(227, 73, 53, 1)',
+        greenLineColor: 'rgba(42, 187, 127, 1)',
         bgColor: '#ffffff',
       };
 
@@ -127,6 +135,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
   coin = 'ETH',
   candleMenuKey = CANDLE_MENU_KEY.ONE_DAY,
   lineTagInfo,
+  pxDecimals,
   onHoverData,
 }) => {
   const { isDarkTheme } = useThemeMode();
@@ -158,7 +167,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     if (lineTagInfo.tpPrice && lineTagInfo.tpPrice > 0) {
       const tpLine = seriesRef.current.createPriceLine({
         price: lineTagInfo.tpPrice,
-        color: 'rgba(42, 187, 127, 1)',
+        color: colors.greenLineColor,
         lineWidth: 1,
         lineStyle: 2, // Dashed
         axisLabelVisible: true,
@@ -171,7 +180,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     if (lineTagInfo.entryPrice && lineTagInfo.entryPrice > 0) {
       const entryLine = seriesRef.current.createPriceLine({
         price: lineTagInfo.entryPrice,
-        color: 'rgba(42, 187, 127, 1)',
+        color: colors.greenLineColor,
         lineWidth: 1,
         lineStyle: 2, // Dashed
         axisLabelVisible: true,
@@ -184,7 +193,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     if (lineTagInfo.slPrice && lineTagInfo.slPrice > 0) {
       const slLine = seriesRef.current.createPriceLine({
         price: lineTagInfo.slPrice,
-        color: 'rgba(227, 73, 53, 1)',
+        color: colors.redLineColor,
         lineWidth: 1,
         lineStyle: 2, // Dashed
         axisLabelVisible: true,
@@ -197,7 +206,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     if (lineTagInfo.liquidationPrice && lineTagInfo.liquidationPrice > 0) {
       const liquidationLine = seriesRef.current.createPriceLine({
         price: lineTagInfo.liquidationPrice,
-        color: 'rgba(227, 73, 53, 1)',
+        color: colors.redLineColor,
         lineWidth: 1,
         lineStyle: 2, // Dashed
         axisLabelVisible: true,
@@ -221,7 +230,20 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       layout: {
         background: { type: ColorType.Solid, color: colors.bgColor },
         textColor: colors.textColor,
-        attributionLogo: false,
+        attributionLogo: true,
+      },
+      crosshair: {
+        mode: CrosshairMode.Normal,
+        vertLine: {
+          visible: true,
+          color: colors.crosshairVertLineColor,
+          width: 1,
+          style: 0,
+        },
+        horzLine: {
+          visible: false,
+          labelVisible: false,
+        },
       },
       grid: {
         vertLines: { color: colors.vertLineColor },
@@ -239,9 +261,11 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
         secondsVisible: false,
         borderVisible: false,
       },
-      // localization: {
-      //   timeFormatter: formatTime,
-      // },
+      localization: {
+        priceFormatter: (price: number) => {
+          return Number(price).toFixed(pxDecimals);
+        },
+      },
     });
 
     const series = chart.addSeries(CandlestickSeries, {
@@ -256,8 +280,13 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       priceLineVisible: true,
       priceLineSource: 0,
       priceLineWidth: 1,
-      priceLineColor: colors.priceLineColor, // 白色价格线
+      priceLineColor: colors.priceLineColor,
       priceLineStyle: 2, // 虚线
+      priceFormat: {
+        type: 'price',
+        precision: pxDecimals,
+        minMove: 0.0000001,
+      },
     });
 
     chartRef.current = chart;
@@ -530,25 +559,25 @@ export const PerpsChart = ({
             <div className="flex justify-between items-center h-[52px]">
               <div className="flex flex-1 flex-col items-center">
                 <div className="text-15 font-medium text-r-neutral-title-1">
-                  {chartHoverData.open?.toFixed(decimals)}
+                  {chartHoverData.open}
                 </div>
                 <div className="text-13 text-r-neutral-foot">Open</div>
               </div>
               <div className="flex flex-1 flex-col items-center">
                 <div className="text-15 font-medium text-r-neutral-title-1">
-                  {chartHoverData.high?.toFixed(decimals)}
+                  {chartHoverData.high}
                 </div>
                 <div className="text-13 text-r-neutral-foot">High</div>
               </div>
               <div className="flex flex-1 flex-col items-center">
                 <div className="text-15 font-medium text-r-neutral-title-1">
-                  {chartHoverData.low?.toFixed(decimals)}
+                  {chartHoverData.low}
                 </div>
                 <div className="text-13 text-r-neutral-foot">Low</div>
               </div>
               <div className="flex flex-1 flex-col items-center">
                 <div className="text-15 font-medium text-r-neutral-title-1">
-                  {chartHoverData.close?.toFixed(decimals)}
+                  {chartHoverData.close}
                 </div>
                 <div className="text-13 text-r-neutral-foot">Close</div>
               </div>
@@ -592,6 +621,7 @@ export const PerpsChart = ({
           candleMenuKey={selectedInterval}
           lineTagInfo={lineTagInfo}
           onHoverData={setChartHoverData}
+          pxDecimals={decimals}
         />
       </div>
 
