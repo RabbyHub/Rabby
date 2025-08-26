@@ -35,7 +35,7 @@ import {
 import { PositionItem } from './components/PositionItem';
 import BigNumber from 'bignumber.js';
 import { AssetItem } from './components/AssetMetaItem';
-import { NewUserProcess } from './components/NewUserProcess';
+import NewUserProcessPopup from './components/NewUserProcessPopup';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -52,7 +52,7 @@ export const Perps: React.FC = () => {
     userFills,
     marketDataMap,
     logout,
-    loginPerpsAccount,
+    login,
     handleWithdraw,
     homeHistoryList,
   } = usePerpsState();
@@ -171,6 +171,9 @@ export const Perps: React.FC = () => {
                   height: 44,
                 }}
                 onClick={() => {
+                  if (currentPerpsAccount) {
+                    wallet.changeAccount(currentPerpsAccount);
+                  }
                   setPopupType('deposit');
                   setAmountVisible(true);
                 }}
@@ -236,17 +239,21 @@ export const Perps: React.FC = () => {
               <AssetItem key={item.name} item={item} />
             ))}
           </div>
+        </div>
+        {isLogin ? (
           <HistoryPage
             marketData={marketDataMap}
             historyData={homeHistoryList}
           />
-        </div>
+        ) : (
+          <div className="h-[20px]" />
+        )}
       </div>
 
       <PerpsLoginPopup
         visible={loginVisible}
         onLogin={async (account) => {
-          await loginPerpsAccount(account);
+          await login(account);
           setLoginVisible(false);
         }}
         onCancel={() => {
@@ -332,7 +339,7 @@ export const Perps: React.FC = () => {
         canUseDirectSubmitTx={canUseDirectSubmitTx}
       />
 
-      <NewUserProcess
+      <NewUserProcessPopup
         visible={newUserProcessVisible}
         onCancel={() => setNewUserProcessVisible(false)}
         onComplete={() => {

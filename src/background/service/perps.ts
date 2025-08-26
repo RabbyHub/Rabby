@@ -4,7 +4,7 @@ import { secp256k1 } from 'ethereum-cryptography/secp256k1.js';
 import { bytesToHex, publicToAddress } from '@ethereumjs/util';
 import { keyringService } from '.';
 import { SendApproveParams } from '@rabby-wallet/hyperliquid-sdk';
-
+import { Account } from '@/background/service/preference';
 export interface AgentWalletInfo {
   vault: string;
   preference: {
@@ -25,7 +25,8 @@ export interface PerpsServiceStore {
       approveSignatures: ApproveSignatures;
     };
   };
-  currentAddress: string;
+  currentAccount: Account | null;
+  lastUsedAccount: Account | null;
   hasDoneNewUserProcess: boolean;
 }
 export interface PerpsServiceMemoryState {
@@ -33,14 +34,12 @@ export interface PerpsServiceMemoryState {
     // key is master wallet address
     [address: string]: AgentWalletInfo;
   };
-  currentAddress: string;
 }
 
 class PerpsService {
   private store?: PerpsServiceStore;
   private memoryState: PerpsServiceMemoryState = {
     agentWallets: {},
-    currentAddress: '',
   };
 
   init = async () => {
@@ -49,13 +48,14 @@ class PerpsService {
       template: {
         agentVaults: '',
         agentPreferences: {},
-        currentAddress: '',
+        currentAccount: null,
+        // no clear account , just cache for last used
+        lastUsedAccount: null,
         hasDoneNewUserProcess: false,
       },
     });
 
     this.memoryState.agentWallets = {};
-    this.memoryState.currentAddress = this.store?.currentAddress || '';
   };
 
   setHasDoneNewUserProcess = async (hasDone: boolean) => {
@@ -124,7 +124,6 @@ class PerpsService {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
-    this.memoryState.currentAddress = this.store.currentAddress;
 
     // Decrypt and load agent vaults
     if (this.store.agentVaults) {
@@ -254,19 +253,28 @@ class PerpsService {
     }
   };
 
-  updateCurrentAddress = async (address: string) => {
+  setCurrentAccount = async (account: Account | null) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
-    this.store.currentAddress = address;
-    this.memoryState.currentAddress = address;
+    this.store.currentAccount = account;
+    if (account) {
+      this.store.lastUsedAccount = account;
+    }
   };
 
-  getCurrentAddress = async () => {
+  getLastUsedAccount = async () => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
-    return this.memoryState.currentAddress;
+    return this.store.lastUsedAccount;
+  };
+
+  getCurrentAccount = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.currentAccount;
   };
 
   removeAgentWallet = async (address: string) => {

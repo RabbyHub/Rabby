@@ -5,7 +5,12 @@ import { getPerpsSDK } from './sdkManager';
 import { usePerpsState } from './usePerpsState';
 
 export const usePerpsPosition = () => {
-  const { refreshData, userFills, currentPerpsAccount } = usePerpsState();
+  const {
+    refreshData,
+    userFills,
+    currentPerpsAccount,
+    isLogin,
+  } = usePerpsState();
 
   const handleSetAutoClose = useMemoizedFn(
     async (params: {
@@ -135,6 +140,7 @@ export const usePerpsPosition = () => {
     handleSetAutoClose,
     refreshData,
     userFills,
+    isLogin,
     currentPerpsAccount,
   };
 };

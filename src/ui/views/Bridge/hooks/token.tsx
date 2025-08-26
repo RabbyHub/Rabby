@@ -701,21 +701,29 @@ export const useBridge = () => {
   const { search } = useLocation();
   const [searchObj] = useState<{
     fromChain?: CHAINS_ENUM;
+    fromChainServerId?: string;
     fromTokenId?: string;
     inputAmount?: string;
+    toChainServerId?: string;
     toChain?: CHAINS_ENUM;
     toTokenId?: string;
     maxNativeTokenGasPrice?: string;
   }>(query2obj(search));
+
+  console.log('searchObj', searchObj);
 
   useEffect(() => {
     let active = true;
     if (!searchObj) {
       return;
     }
-    if (searchObj.fromChain && searchObj.fromTokenId) {
+    if (
+      (searchObj.fromChain || searchObj.fromChainServerId) &&
+      searchObj.fromTokenId
+    ) {
       const fromChain = findChain({
         enum: searchObj.fromChain,
+        serverId: searchObj.fromChainServerId,
       });
       if (userAddress && fromChain) {
         wallet.openapi
@@ -731,9 +739,13 @@ export const useBridge = () => {
         handleAmountChange(searchObj.inputAmount);
       }
     }
-    if (searchObj.toChain && searchObj.toTokenId) {
+    if (
+      (searchObj.toChain || searchObj.toChainServerId) &&
+      searchObj.toTokenId
+    ) {
       const toChain = findChain({
         enum: searchObj.toChain,
+        serverId: searchObj.toChainServerId,
       });
       if (userAddress && toChain) {
         wallet.openapi
