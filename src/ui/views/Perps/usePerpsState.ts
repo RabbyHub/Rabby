@@ -2,7 +2,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useWallet } from '@/ui/utils';
-import { getPerpsSDK } from './sdkManager';
+import { destroyPerpsSDK, getPerpsSDK } from './sdkManager';
 import {
   PERPS_AGENT_NAME,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
@@ -124,27 +124,23 @@ export const usePerpsState = () => {
     const initIsLogin = async () => {
       try {
         const noLoginAction = () => {
-          wallet.setPerpsCurrentAddress('');
+          wallet.setPerpsCurrentAccount(null);
           dispatch.perps.fetchMarketData();
           dispatch.perps.setInitialized(true);
         };
 
-        const currentAddress = await wallet.getPerpsCurrentAddress();
-        console.log(' init currentAddress', currentAddress);
-        if (!currentAddress) {
+        const currentAccount = await wallet.getPerpsCurrentAccount();
+        console.log(' init currentAccount', currentAccount);
+        if (!currentAccount || !currentAccount.address) {
           // 如果没有登录状态，则只获取市场数据即可
           noLoginAction();
           return false;
         }
 
-        const list = accountsList.filter(
-          (acc: any) =>
-            acc.type !== KEYRING_CLASS.WATCH &&
-            acc.type !== KEYRING_CLASS.GNOSIS
-        );
-
-        const targetTypeAccount = findAccountByPriority(
-          list.filter((acc: any) => isSameAddress(acc.address, currentAddress))
+        const targetTypeAccount = accountsList.find(
+          (acc) =>
+            isSameAddress(acc.address, currentAccount.address) &&
+            acc.type === currentAccount.type
         );
 
         if (!targetTypeAccount) {
@@ -153,7 +149,7 @@ export const usePerpsState = () => {
           return false;
         }
 
-        const res = await wallet.getPerpsAgentWallet(currentAddress);
+        const res = await wallet.getPerpsAgentWallet(currentAccount.address);
         if (!res) {
           // 没有找到store对应的 agent wallet
           noLoginAction();
@@ -163,7 +159,7 @@ export const usePerpsState = () => {
         const sdk = getPerpsSDK();
         // 开始恢复登录态
         sdk.initAccount(
-          currentAddress,
+          currentAccount.address,
           res.vault,
           res.preference.agentAddress,
           PERPS_AGENT_NAME
@@ -171,9 +167,12 @@ export const usePerpsState = () => {
 
         dispatch.perps.fetchMarketData();
 
-        await dispatch.perps.loginPerpsAccount(targetTypeAccount);
+        await dispatch.perps.loginPerpsAccount(currentAccount);
 
-        checkIsNeedAutoLoginOut(currentAddress, res.preference.agentAddress);
+        checkIsNeedAutoLoginOut(
+          currentAccount.address,
+          res.preference.agentAddress
+        );
 
         setTimeout(() => {
           // is not very matter, just wait for the other query api
@@ -342,7 +341,7 @@ export const usePerpsState = () => {
     await dispatch.perps.loginPerpsAccount(account);
   });
 
-  const loginPerpsAccount = useMemoizedFn(async (account: Account) => {
+  const login = useMemoizedFn(async (account: Account) => {
     try {
       // const { privateKey, publicKey } = await getOrCreateAgentWallet(account);
       const sdk = getPerpsSDK();
@@ -383,7 +382,8 @@ export const usePerpsState = () => {
 
   const logout = useMemoizedFn((address: string) => {
     dispatch.perps.logout();
-    wallet.setPerpsCurrentAddress('');
+    destroyPerpsSDK();
+    wallet.setPerpsCurrentAccount(null);
     wallet.setSendApproveAfterDeposit(address, []);
   });
 
@@ -471,7 +471,7 @@ export const usePerpsState = () => {
     homeHistoryList,
 
     // Actions
-    loginPerpsAccount,
+    login,
     logout,
     setCurrentPerpsAccount,
     handleWithdraw,

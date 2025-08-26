@@ -1,8 +1,10 @@
 import React, { CSSProperties } from 'react';
-import { message, Spin } from 'antd';
+import { message, Modal, Spin } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import ImgSwap from 'ui/assets/perps/ImgSwap.png';
+import ImgBridge from 'ui/assets/perps/ImgBridge.png';
 import { useAsync } from 'react-use';
 import { Button, Space, Tooltip } from 'antd';
 import clsx from 'clsx';
@@ -18,6 +20,7 @@ import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 
 export type TokenSelectPopupProps = PopupProps & {
   onSelect: (token: TokenItem) => void;
@@ -34,6 +37,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation();
+  const history = useHistory();
 
   const sortedList = React.useMemo(() => {
     const items = [...(list || [])];
@@ -57,14 +61,58 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       token.id !== ARB_USDC_TOKEN_ID
     ) {
       // show modal go swap page
-      message.info('go swap page');
-      return;
+      return Modal.confirm({
+        width: 360,
+        closable: false,
+        centered: true,
+        // className: twoStepApproveCn,
+        title: null,
+        content: (
+          <>
+            <div className="flex items-center justify-center mb-24">
+              <img src={ImgSwap} />
+            </div>
+            <div className="text-15 font-medium text-r-neutral-title-1 mb-18 text-center">
+              {t('page.perps.depositAmountPopup.goSwapTips')}
+            </div>
+          </>
+        ),
+        okText: t('page.swap.title'),
+
+        onOk() {
+          history.push(
+            `/dex-swap?rbisource=perps&payTokenId=${token.id}&chain=${token.chain}&receiveTokenId=${ARB_USDC_TOKEN_ID}`
+          );
+        },
+      });
     }
 
     if (token.chain !== ARB_USDC_TOKEN_SERVER_CHAIN) {
       // show modal go bridge page
-      message.info('go bridge page');
-      return;
+      return Modal.confirm({
+        width: 360,
+        closable: false,
+        centered: true,
+        // className: twoStepApproveCn,
+        title: null,
+        content: (
+          <>
+            <div className="flex items-center justify-center mb-24">
+              <img src={ImgBridge} />
+            </div>
+            <div className="text-15 font-medium text-r-neutral-title-1 mb-18 text-center">
+              {t('page.perps.depositAmountPopup.goBridgeTips')}
+            </div>
+          </>
+        ),
+        okText: t('page.bridge.title'),
+
+        onOk() {
+          history.push(
+            `/bridge?fromTokenId=${token.id}&fromChainServerId=${token.chain}&toTokenId=${ARB_USDC_TOKEN_ID}&toChainServerId=${ARB_USDC_TOKEN_SERVER_CHAIN}`
+          );
+        },
+      });
     }
 
     onSelect(token);

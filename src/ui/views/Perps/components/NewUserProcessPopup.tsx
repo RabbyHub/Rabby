@@ -16,7 +16,7 @@ interface NewUserProcessProps extends Omit<PopupProps, 'onConfirm'> {
 
 const STEPS_LENGTH = 5;
 
-export const NewUserProcess: React.FC<NewUserProcessProps> = ({
+export const NewUserProcessPopup: React.FC<NewUserProcessProps> = ({
   visible,
   onCancel,
   onComplete,
@@ -196,4 +196,4 @@ export const NewUserProcess: React.FC<NewUserProcessProps> = ({
   );
 };
 
-export default NewUserProcess;
+export default NewUserProcessPopup;

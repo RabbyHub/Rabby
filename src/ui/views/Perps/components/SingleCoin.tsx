@@ -3,13 +3,14 @@ import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, useWallet } from '@/ui/utils';
-import { Button, Switch, Input, message } from 'antd';
+import { Button, Switch, Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { usePerpsState } from '../usePerpsState';
 import Chart, { PerpsChart } from './Chart';
 import { CANDLE_MENU_KEY } from '../constants';
 import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import {
   CancelOrderParams,
   WsActiveAssetCtx,
@@ -30,6 +31,7 @@ import {
   supportedDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -52,6 +54,7 @@ export const PerpsSingleCoin = () => {
     handleClosePosition,
     handleSetAutoClose,
     currentPerpsAccount,
+    isLogin,
     userFills,
   } = usePerpsPosition();
   const [amountVisible, setAmountVisible] = useState(false);
@@ -267,7 +270,7 @@ export const PerpsSingleCoin = () => {
         {coin}-USD
       </PageHeader>
 
-      <div className="flex-1 overflow-auto mx-20 pb-[80px]">
+      <div className="flex-1 overflow-auto mx-20 pb-[40px]">
         {/* Price Chart Section */}
         <PerpsChart
           lineTagInfo={{
@@ -285,7 +288,7 @@ export const PerpsSingleCoin = () => {
         />
 
         {/* Available to Trade */}
-        {!hasPosition && (
+        {!hasPosition && isLogin && (
           <div className="flex justify-between items-center text-15 text-r-neutral-title-1 font-medium pt-12 bg-r-neutral-card1 rounded-[12px] p-16">
             <span>
               {t('page.perps.availableToTrade')}:{' '}
@@ -302,7 +305,7 @@ export const PerpsSingleCoin = () => {
           </div>
         )}
 
-        {hasPosition && (
+        {hasPosition && isLogin && (
           <>
             <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
               {t('page.perps.yourPosition')}
@@ -380,18 +383,32 @@ export const PerpsSingleCoin = () => {
               </div>
 
               <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
+                <div className="text-r-neutral-body flex items-center gap-4 relative">
                   {t('page.perps.liquidationPrice')}
-                </span>
+                  <TooltipWithMagnetArrow
+                    overlayClassName="rectangle w-[max-content]"
+                    placement="top"
+                    title={t('page.perps.liquidationPriceTips')}
+                  >
+                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+                  </TooltipWithMagnetArrow>
+                </div>
                 <span className="text-r-neutral-title-1 font-medium">
                   ${positionData?.liquidationPrice}
                 </span>
               </div>
 
               <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
+                <div className="text-r-neutral-body flex items-center gap-4 relative">
                   {t('page.perps.fundingPayments')}
-                </span>
+                  <TooltipWithMagnetArrow
+                    overlayClassName="rectangle w-[max-content]"
+                    placement="top"
+                    title={t('page.perps.singleCoin.fundingPaymentsTips')}
+                  >
+                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+                  </TooltipWithMagnetArrow>
+                </div>
                 <span className="text-r-neutral-title-1 font-medium">
                   ${positionData?.fundingPayments}
                 </span>
@@ -415,9 +432,16 @@ export const PerpsSingleCoin = () => {
           </div>
 
           <div className="flex justify-between text-13 py-16">
-            <span className="text-r-neutral-body">
+            <div className="text-r-neutral-body flex items-center gap-4 relative">
               {t('page.perps.openInterest')}
-            </span>
+              <TooltipWithMagnetArrow
+                overlayClassName="rectangle w-[max-content]"
+                placement="top"
+                title={t('page.perps.singleCoin.openInterestTips')}
+              >
+                <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+              </TooltipWithMagnetArrow>
+            </div>
             <span className="text-r-neutral-title-1 font-medium">
               {formatUsdValueKMB(
                 Number(currentAssetCtx?.openInterest || 0) *
@@ -427,68 +451,85 @@ export const PerpsSingleCoin = () => {
           </div>
 
           <div className="flex justify-between text-13 py-16">
-            <span className="text-r-neutral-body">
+            <div className="text-r-neutral-body flex items-center gap-4 relative">
               {t('page.perps.funding')}
-            </span>
+              <TooltipWithMagnetArrow
+                overlayClassName="rectangle w-[max-content]"
+                placement="top"
+                title={t('page.perps.singleCoin.fundingTips')}
+              >
+                <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+              </TooltipWithMagnetArrow>
+            </div>
             <span className="text-r-neutral-title-1 font-medium">
-              {formatPercent(Number(currentAssetCtx?.funding || 0))}
+              {formatPercent(Number(currentAssetCtx?.funding || 0), 6)}
             </span>
           </div>
         </div>
 
-        <HistoryPage
-          marketData={marketDataMap}
-          historyData={singleCoinHistoryList}
-        />
+        {isLogin ? (
+          <HistoryPage
+            marketData={marketDataMap}
+            historyData={singleCoinHistoryList}
+          />
+        ) : (
+          <div className="h-[20px]" />
+        )}
 
-        <div className="text-12 text-r-neutral-foot mt-12">
+        <div
+          className="text-r-neutral-foot"
+          style={{ fontSize: '11px', lineHeight: '16px' }}
+        >
           {t('page.perps.openPositionTips')}
         </div>
 
-        <div className="h-[40px]"></div>
-        {/* Position Button - Fixed at bottom */}
-        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
-          {hasPosition ? (
-            <Button
-              block
-              type="primary"
-              size="large"
-              className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
-              onClick={() => {
-                setClosePositionVisible(true);
-              }}
-            >
-              {positionData?.direction === 'Long'
-                ? t('page.perps.closeLong')
-                : t('page.perps.closeShort')}
-            </Button>
-          ) : (
-            <div className="flex gap-12 justify-center">
-              <Button
-                size="large"
-                type="primary"
-                className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px] flex-1"
-                onClick={() => {
-                  setPositionDirection('Long');
-                  setOpenPositionVisible(true);
-                }}
-              >
-                {t('page.perps.long')}
-              </Button>
-              <Button
-                size="large"
-                type="primary"
-                className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px] flex-1"
-                onClick={() => {
-                  setPositionDirection('Short');
-                  setOpenPositionVisible(true);
-                }}
-              >
-                {t('page.perps.short')}
-              </Button>
+        {isLogin && (
+          <>
+            <div className="h-[40px]"></div>
+            <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
+              {hasPosition ? (
+                <Button
+                  block
+                  type="primary"
+                  size="large"
+                  className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
+                  onClick={() => {
+                    setClosePositionVisible(true);
+                  }}
+                >
+                  {positionData?.direction === 'Long'
+                    ? t('page.perps.closeLong')
+                    : t('page.perps.closeShort')}
+                </Button>
+              ) : (
+                <div className="flex gap-12 justify-center">
+                  <Button
+                    size="large"
+                    type="primary"
+                    className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px] flex-1"
+                    onClick={() => {
+                      setPositionDirection('Long');
+                      setOpenPositionVisible(true);
+                    }}
+                  >
+                    {t('page.perps.long')}
+                  </Button>
+                  <Button
+                    size="large"
+                    type="primary"
+                    className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px] flex-1"
+                    onClick={() => {
+                      setPositionDirection('Short');
+                      setOpenPositionVisible(true);
+                    }}
+                  >
+                    {t('page.perps.short')}
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
 
       <PerpsOpenPositionPopup

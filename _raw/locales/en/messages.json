@@ -805,6 +805,8 @@
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
         "receiveToken": "Receive Token",
+        "goSwapTips": "Only USDC on Arbitrum is supported for direct deposit. Please swap your current token to USDC before depositing.",
+        "goBridgeTips": "Only USDC on Arbitrum is supported for direct deposit. Please bridge your current token to USDC on Arbitrum before depositing.",
         "minimumDepositSize": "The minimum deposit amount is $5",
         "minimumWithdrawSize": "The minimum withdraw amount is $2"
       },
@@ -816,8 +818,8 @@
       "margin": "Margin",
       "leverage": "Leverage",
       "availableBalance": "Available: {{balance}}",
+      "lastUsed": "Last used",
       "selectTokenToDeposit": "Select Token to Deposit",
-      "selectAnAddressToLogIn": "Select an Address to Log In",
       "tradePerps": "Trade Perps",
       "yourPosition": "Your Position",
       "pnl": "PNL",
@@ -864,7 +866,12 @@
       "back": "Back",
       "estimatedLiquidationPrice": "Estimated Liquidation Price",
       "fee": "Fee",
-      "liquidation":"Liquidation"
+      "singleCoin": {
+        "fundingPaymentsTips": "This is the net funding payments since the position was opened. Funding is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token.",
+        "openInterestTips": "The total outstanding position of all users on this contract.",
+        "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long."
+      },
+      "liquidation": "Liquidation"
     },
     "sendPoly": {
       "title": "Send to",

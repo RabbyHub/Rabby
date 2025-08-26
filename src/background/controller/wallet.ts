@@ -5613,12 +5613,9 @@ export class WalletController extends BaseController {
   createPerpsAgentWallet = async (masterWallet: string) => {
     return perpsService.createAgentWallet(masterWallet);
   };
-  setPerpsCurrentAddress = async (address: string) => {
-    perpsService.updateCurrentAddress(address);
-  };
-  getPerpsCurrentAddress = async () => {
-    return perpsService.getCurrentAddress();
-  };
+  setPerpsCurrentAccount = perpsService.setCurrentAccount;
+  getPerpsCurrentAccount = perpsService.getCurrentAccount;
+  getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
   getAgentWalletPreference = async (masterWallet: string) => {
     return perpsService.getAgentWalletPreference(masterWallet);
   };

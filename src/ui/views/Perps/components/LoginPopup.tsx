@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddressViewer, Popup } from '@/ui/component';
 import { PopupProps } from '@/ui/component/Popup';
@@ -53,24 +53,26 @@ export const GasACcountCurrentAddress = ({
 
 const PerpsLoginContent = ({
   onLogin,
+  visible,
 }: {
-  onLogin: (account: Account) => void;
+  visible: boolean;
+  onLogin: (account: Account) => Promise<void>;
 }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
+    <div className="w-full h-full flex flex-col justify-center items-center bg-r-neutral-bg2 rounded-[12px]">
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[24px]">
         {t('page.gasAccount.loginConfirmModal.title')}
       </div>
 
-      <SelectAddressList onChange={onLogin} />
+      <SelectAddressList onChange={onLogin} visible={visible} />
     </div>
   );
 };
 
 export const PerpsLoginPopup = (
-  props: PopupProps & { onLogin?: (account: Account) => void }
+  props: PopupProps & { onLogin?: (account: Account) => Promise<void> }
 ) => {
   const { onLogin, ...rest } = props;
   return (
@@ -87,8 +89,9 @@ export const PerpsLoginPopup = (
       {...rest}
     >
       <PerpsLoginContent
-        onLogin={(account) => {
-          props.onLogin?.(account);
+        visible={rest.visible || false}
+        onLogin={async (account) => {
+          await props.onLogin?.(account);
         }}
       />
     </Popup>

@@ -294,7 +294,7 @@ export const perps = createModel<RootModel>()({
     },
 
     async loginPerpsAccount(payload: Account, rootState) {
-      await rootState.app.wallet.setPerpsCurrentAddress(payload.address);
+      await rootState.app.wallet.setPerpsCurrentAccount(payload);
       dispatch.perps.setCurrentPerpsAccount(payload);
       dispatch.perps.refreshData();
 
@@ -430,7 +430,6 @@ export const perps = createModel<RootModel>()({
     },
 
     logout() {
-      destroyPerpsSDK();
       dispatch.perps.stopPolling(undefined);
       dispatch.perps.unsubscribeAll(undefined);
       dispatch.perps.resetState();
