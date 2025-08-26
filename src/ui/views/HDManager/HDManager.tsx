@@ -19,7 +19,7 @@ import { MnemonicManager } from './MnemonicManager';
 import { GridPlusManager } from './GridPlusManager';
 import { QRCodeManager } from './QRCodeManager';
 import { ReactComponent as TrezorSVG } from 'ui/assets/walletlogo/trezor.svg';
-import OneKeySVG from 'ui/assets/walletlogo/onekey.svg';
+import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as ImKeySVG } from 'ui/assets/walletlogo/imkey.svg';
 import { ReactComponent as RcMnemonicSVG } from '@/ui/assets/walletlogo/mnemonic-ink-cc.svg';

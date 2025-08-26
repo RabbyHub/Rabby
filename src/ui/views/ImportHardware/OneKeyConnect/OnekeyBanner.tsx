@@ -43,7 +43,7 @@ export const OneKeyBanner: React.FC<Props> = ({ className }) => {
               <span>{t('page.newAddress.onekey.whyOneKey')}</span>
             </a>
             <a
-              href="https://onekey.so/shop/"
+              href="https://onekey.so/r/1L7FNM"
               target="_blank"
               className={clsx(
                 'py-6 rounded-[12px] text-center',
