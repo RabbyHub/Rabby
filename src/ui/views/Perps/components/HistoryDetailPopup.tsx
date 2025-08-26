@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
@@ -16,15 +16,39 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
-  if (!fill) return null;
   const { coin, side, sz, px, closedPnl, time, fee, dir } = fill || {};
   const tradeValue = Number(sz) * Number(px);
+  const pnlValue = Number(closedPnl) - Number(fee);
   const isClose = dir === 'Close Long' && closedPnl;
   const logoUrl = fill?.logoUrl;
+
+  const titleString = useMemo(() => {
+    const isLiquidation = Boolean(fill?.liquidation);
+    if (fill?.dir === 'Close Long') {
+      return isLiquidation
+        ? t('page.perps.historyDetail.title.closeLongLiquidation')
+        : t('page.perps.historyDetail.title.closeLong');
+    }
+    if (fill?.dir === 'Close Short') {
+      return isLiquidation
+        ? t('page.perps.historyDetail.title.closeShortLiquidation')
+        : t('page.perps.historyDetail.title.closeShort');
+    }
+    if (fill?.dir === 'Open Long') {
+      return t('page.perps.historyDetail.title.openLong');
+    }
+    if (fill?.dir === 'Open Short') {
+      return t('page.perps.historyDetail.title.openShort');
+    }
+    return fill?.dir;
+  }, [fill]);
+
+  if (!fill) return null;
+
   return (
     <Popup
       placement="bottom"
-      height={480}
+      height={500}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -36,7 +60,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
         {/* Header */}
         <div className="text-18 font-medium text-r-neutral-title-1 text-center pt-16 pb-12">
-          {fill.dir}
+          {titleString}
         </div>
 
         {/* Content */}
@@ -61,17 +85,18 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 {t('page.perps.historyDetail.date')}
               </span>
               <span className="text-13 text-r-neutral-title-1 font-medium">
-                {sinceTime(time / 1000)}
+                {sinceTime(time || Date.now() / 1000)}
               </span>
             </div>
 
-            {Boolean(closedPnl) && (
+            {Boolean(isClose) && (
               <div className="flex justify-between items-center py-16">
                 <span className="text-13 text-r-neutral-body">
                   {t('page.perps.historyDetail.closedPnl')}
                 </span>
                 <span className="text-13 text-r-neutral-title-1 font-medium">
-                  {formatUsdValue(closedPnl, BigNumber.ROUND_DOWN)}
+                  {pnlValue > 0 ? '+' : '-'}
+                  {formatUsdValue(Math.abs(pnlValue))}
                 </span>
               </div>
             )}

@@ -20,7 +20,7 @@ interface HistoryAccountItemProps {
   data: AccountHistoryItem;
 }
 
-const getPnlColor = (pnl: string) => {
+const getPnlColor = (pnl: string | number) => {
   const pnlValue = Number(pnl);
   if (pnlValue >= 0) return 'text-r-green-default';
   if (pnlValue < 0) return 'text-r-red-default';
@@ -120,13 +120,35 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
   marketData,
   onClick,
 }) => {
-  const { coin, side, sz, px, closedPnl, time, dir } = fill as WsFill;
+  const { t } = useTranslation();
+  const { coin, closedPnl: _closedPnl, dir, fee } = fill as WsFill;
+
+  const titleString = useMemo(() => {
+    const isLiquidation = Boolean(fill?.liquidation);
+    if (fill?.dir === 'Close Long') {
+      return isLiquidation
+        ? t('page.perps.historyDetail.title.closeLongLiquidation')
+        : t('page.perps.historyDetail.title.closeLong');
+    }
+    if (fill?.dir === 'Close Short') {
+      return isLiquidation
+        ? t('page.perps.historyDetail.title.closeShortLiquidation')
+        : t('page.perps.historyDetail.title.closeShort');
+    }
+    if (fill?.dir === 'Open Long') {
+      return t('page.perps.historyDetail.title.openLong');
+    }
+    if (fill?.dir === 'Open Short') {
+      return t('page.perps.historyDetail.title.openShort');
+    }
+    return fill?.dir;
+  }, [fill]);
 
   const itemData = marketData[coin.toUpperCase()];
   const logoUrl = itemData?.logoUrl;
-  const isClose = dir === 'Close Long' && closedPnl;
-  const pnlValue = closedPnl ? Number(closedPnl) : 0;
-  const tradeValue = Number(sz) * Number(px);
+  const isClose = dir === 'Close Long' && _closedPnl;
+  const closedPnl = Number(_closedPnl) - Number(fee);
+  const pnlValue = closedPnl ? closedPnl : 0;
 
   return (
     <div
@@ -141,7 +163,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
         <img src={logoUrl} className="w-32 h-32 rounded-full mr-4" />
         <div className="flex flex-col ml-12">
           <div className="text-13 text-r-neutral-title-1 font-medium">
-            {fill.dir}
+            {titleString}
           </div>
           <div className="text-13 text-r-neutral-foot font-medium">
             {coin}-USD
@@ -152,11 +174,9 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       <div className="flex flex-col items-end">
         {isClose ? (
           <>
-            <div
-              className={clsx('text-14 font-medium', getPnlColor(closedPnl!))}
-            >
+            <div className={clsx('text-14 font-medium', getPnlColor(pnlValue))}>
               {pnlValue > 0 ? '+' : '-'}
-              {formatUsdValue(Math.abs(pnlValue), BigNumber.ROUND_DOWN)}
+              {formatUsdValue(Math.abs(pnlValue))}
             </div>
             <div className="text-13 text-r-neutral-foot">
               {sinceTime(fill.time / 1000)}

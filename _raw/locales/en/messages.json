@@ -785,7 +785,15 @@
         "tradeValue": "Trade Value",
         "fee": "Fee",
         "closedPnl": "Closed PNL",
-        "provider": "Provider"
+        "provider": "Provider",
+        "title": {
+          "openLong": "Open Long",
+          "openShort": "Open Short",
+          "closeLong": "Close Long",
+          "closeShort": "Close Short",
+          "closeLongLiquidation": "Close Long Liquidation",
+          "closeShortLiquidation": "Close Short Liquidation"
+        }
       },
       "pending": "Pending",
       "logoutConfirmModal": {
@@ -855,7 +863,8 @@
       "reviewOrder": "Review Order",
       "back": "Back",
       "estimatedLiquidationPrice": "Estimated Liquidation Price",
-      "fee": "Fee"
+      "fee": "Fee",
+      "liquidation":"Liquidation"
     },
     "sendPoly": {
       "title": "Send to",

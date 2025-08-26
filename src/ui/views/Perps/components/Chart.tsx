@@ -7,38 +7,51 @@ import {
   UTCTimestamp,
   CandlestickSeries,
   ColorType,
+  IPriceLine,
 } from 'lightweight-charts';
-import { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
+import {
+  Candle,
+  CandleSnapshot,
+  WsActiveAssetCtx,
+} from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { CANDLE_MENU_KEY } from '../constants';
+import clsx from 'clsx';
+import { MarketData } from '@/ui/models/perps';
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
+import { formatPercent } from './SingleCoin';
 
 export type ChartProps = {
   coin: string;
   candleMenuKey: CANDLE_MENU_KEY;
+  lineTagInfo: {
+    tpPrice: number;
+    slPrice: number;
+    liquidationPrice: number;
+    entryPrice: number;
+  };
+  onHoverData?: (data: ChartHoverData) => void;
 };
+
+export interface ChartHoverData {
+  time?: string;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  isPositiveChange?: boolean;
+  delta?: number;
+  deltaPercent?: number;
+  visible: boolean;
+}
 
 const containerStyle: React.CSSProperties = {
   width: '100%',
   height: '160px',
   position: 'relative',
 };
-
-// CSS to hide TradingView watermark
-const hideWatermarkStyles = `
-  .tv-lightweight-charts table tr td div[style*="pointer-events"] {
-    display: none !important;
-  }
-  .tv-lightweight-charts a[href*="tradingview"] {
-    display: none !important;
-  }
-  .tv-lightweight-charts [class*="watermark"] {
-    display: none !important;
-  }
-  .tv-lightweight-charts div[style*="z-index: 1000"] {
-    display: none !important;
-  }
-`;
 
 const getInterval = (candleMenuKey: CANDLE_MENU_KEY): string => {
   switch (candleMenuKey) {
@@ -99,26 +112,100 @@ const getThemeColors = (isDark: boolean) =>
         vertLineColor: 'rgba(255, 255, 255, 0.06)',
         horzLineColor: 'rgba(255, 255, 255, 0.06)',
         textColor: 'rgba(255, 255, 255, 0.8)',
+        priceLineColor: 'rgba(255, 255, 255, 1)',
         bgColor: '#111214',
       }
     : {
         vertLineColor: 'rgba(46, 46, 46, 0.06)',
         horzLineColor: 'rgba(46, 46, 46, 0.06)',
         textColor: '#1f1f1f',
+        priceLineColor: 'rgba(12, 15, 31, 1)',
         bgColor: '#ffffff',
       };
 
 const LightweightKlineChart: React.FC<ChartProps> = ({
   coin = 'ETH',
   candleMenuKey = CANDLE_MENU_KEY.ONE_DAY,
+  lineTagInfo,
+  onHoverData,
 }) => {
   const { isDarkTheme } = useThemeMode();
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const priceLineRefs = useRef<{
+    tp?: IPriceLine;
+    sl?: IPriceLine;
+    liquidation?: IPriceLine;
+    entry?: IPriceLine;
+  }>({});
   const isMountedRef = useRef(true);
-
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
+
+  // Update price lines function
+  const updatePriceLines = useCallback(() => {
+    if (!seriesRef.current || !chartRef.current) return;
+
+    // Clear existing price lines
+    Object.values(priceLineRefs.current).forEach((line) => {
+      if (line) {
+        seriesRef.current!.removePriceLine(line);
+      }
+    });
+    priceLineRefs.current = {};
+
+    // Add Take Profit line
+    if (lineTagInfo.tpPrice && lineTagInfo.tpPrice > 0) {
+      const tpLine = seriesRef.current.createPriceLine({
+        price: lineTagInfo.tpPrice,
+        color: 'rgba(42, 187, 127, 1)',
+        lineWidth: 1,
+        lineStyle: 2, // Dashed
+        axisLabelVisible: true,
+        title: 'TP',
+      });
+      priceLineRefs.current.tp = tpLine;
+    }
+
+    // Add Entry line
+    if (lineTagInfo.entryPrice && lineTagInfo.entryPrice > 0) {
+      const entryLine = seriesRef.current.createPriceLine({
+        price: lineTagInfo.entryPrice,
+        color: 'rgba(42, 187, 127, 1)',
+        lineWidth: 1,
+        lineStyle: 2, // Dashed
+        axisLabelVisible: true,
+        title: 'Entry',
+      });
+      priceLineRefs.current.entry = entryLine;
+    }
+
+    // Add Stop Loss line
+    if (lineTagInfo.slPrice && lineTagInfo.slPrice > 0) {
+      const slLine = seriesRef.current.createPriceLine({
+        price: lineTagInfo.slPrice,
+        color: 'rgba(227, 73, 53, 1)',
+        lineWidth: 1,
+        lineStyle: 2, // Dashed
+        axisLabelVisible: true,
+        title: 'SL',
+      });
+      priceLineRefs.current.sl = slLine;
+    }
+
+    // Add Liquidation line
+    if (lineTagInfo.liquidationPrice && lineTagInfo.liquidationPrice > 0) {
+      const liquidationLine = seriesRef.current.createPriceLine({
+        price: lineTagInfo.liquidationPrice,
+        color: 'rgba(227, 73, 53, 1)',
+        lineWidth: 1,
+        lineStyle: 2, // Dashed
+        axisLabelVisible: true,
+        title: 'LIQ',
+      });
+      priceLineRefs.current.liquidation = liquidationLine;
+    }
+  }, [lineTagInfo, t]);
 
   // Initialize chart
   useEffect(() => {
@@ -128,20 +215,13 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       chartRef.current.remove();
     }
 
-    // Inject CSS to hide watermark
-    if (!document.getElementById('hide-watermark-styles')) {
-      const style = document.createElement('style');
-      style.id = 'hide-watermark-styles';
-      style.textContent = hideWatermarkStyles;
-      document.head.appendChild(style);
-    }
-
     const chart = createChart(containerRef.current, {
       width: containerRef.current.clientWidth,
       height: containerRef.current.clientHeight,
       layout: {
         background: { type: ColorType.Solid, color: colors.bgColor },
         textColor: colors.textColor,
+        attributionLogo: false,
       },
       grid: {
         vertLines: { color: colors.vertLineColor },
@@ -171,12 +251,59 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       borderUpColor: '#0ECB81',
       wickDownColor: '#F6465D',
       wickUpColor: '#0ECB81',
+      // 设置最新价格线样式
+      lastValueVisible: true,
+      priceLineVisible: true,
+      priceLineSource: 0,
+      priceLineWidth: 1,
+      priceLineColor: colors.priceLineColor, // 白色价格线
+      priceLineStyle: 2, // 虚线
     });
 
     chartRef.current = chart;
     seriesRef.current = series;
 
+    // 订阅十字线移动事件来获取鼠标悬停数据
+    chart.subscribeCrosshairMove((param) => {
+      if (param.point === undefined || !param.time || param.paneIndex !== 0) {
+        // 鼠标不在图表上或没有时间信息
+        const hoverData = { visible: false };
+        onHoverData?.(hoverData);
+        return;
+      }
+
+      // 获取当前时间点的蜡烛数据
+      const data = param.seriesData.get(series);
+      if (data) {
+        const candleData = data as CandlestickData;
+        const timeStr = new Date(
+          (param.time as number) * 1000
+        ).toLocaleString();
+
+        const hoverData = {
+          time: timeStr,
+          open: candleData.open,
+          high: candleData.high,
+          low: candleData.low,
+          close: candleData.close,
+          visible: true,
+          isPositiveChange: candleData.close - candleData.open > 0,
+          delta: candleData.close - candleData.open,
+          deltaPercent: (candleData.close - candleData.open) / candleData.open,
+        };
+
+        onHoverData?.(hoverData);
+      }
+    });
+
     return () => {
+      // Clear price lines
+      Object.values(priceLineRefs.current).forEach((line) => {
+        if (line && seriesRef.current) {
+          seriesRef.current.removePriceLine(line);
+        }
+      });
+      priceLineRefs.current = {};
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
@@ -232,6 +359,8 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       if (candles.length > 0 && seriesRef.current) {
         seriesRef.current.setData(candles);
         chartRef.current?.timeScale().fitContent();
+        // Update price lines after data is loaded
+        updatePriceLines();
       }
     },
     [coin, candleMenuKey]
@@ -292,6 +421,13 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     };
   }, [subscribeCandle]);
 
+  // Update price lines when lineTagInfo changes
+  useEffect(() => {
+    if (seriesRef.current && chartRef.current) {
+      updatePriceLines();
+    }
+  }, [updatePriceLines]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -299,7 +435,184 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     };
   }, []);
 
-  return <div ref={containerRef} style={containerStyle} />;
+  return (
+    <div style={{ position: 'relative' }}>
+      <div ref={containerRef} style={containerStyle} />
+    </div>
+  );
 };
 
-export default LightweightKlineChart;
+export const PerpsChart = ({
+  coin,
+  markPrice,
+  currentAssetCtx,
+  activeAssetCtx,
+  lineTagInfo,
+}: {
+  coin: string;
+  markPrice: number;
+  currentAssetCtx: MarketData;
+  activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
+  lineTagInfo: {
+    tpPrice: number;
+    slPrice: number;
+    liquidationPrice: number;
+    entryPrice: number;
+  };
+}) => {
+  const { t } = useTranslation();
+  const [
+    selectedInterval,
+    setSelectedInterval,
+  ] = React.useState<CANDLE_MENU_KEY>(CANDLE_MENU_KEY.ONE_DAY);
+
+  // 状态用于存储图表的悬停数据
+  const [chartHoverData, setChartHoverData] = React.useState<ChartHoverData>({
+    visible: false,
+  });
+  const CANDLE_MENU_ITEM = useMemo(
+    () => [
+      {
+        label: t('page.perps.candleMenuKey.oneHour'),
+        key: CANDLE_MENU_KEY.ONE_HOUR,
+      },
+      {
+        label: t('page.perps.candleMenuKey.oneDay'),
+        key: CANDLE_MENU_KEY.ONE_DAY,
+      },
+      {
+        label: t('page.perps.candleMenuKey.oneWeek'),
+        key: CANDLE_MENU_KEY.ONE_WEEK,
+      },
+      {
+        label: t('page.perps.candleMenuKey.oneMonth'),
+        key: CANDLE_MENU_KEY.ONE_MONTH,
+      },
+      {
+        label: t('page.perps.candleMenuKey.ytd'),
+        key: CANDLE_MENU_KEY.YTD,
+      },
+      {
+        label: t('page.perps.candleMenuKey.all'),
+        key: CANDLE_MENU_KEY.ALL,
+      },
+    ],
+    [t]
+  );
+
+  const dayDelta = useMemo(() => {
+    const prevDayPx = Number(
+      activeAssetCtx?.prevDayPx || currentAssetCtx?.prevDayPx || 0
+    );
+    return markPrice - prevDayPx;
+  }, [activeAssetCtx, markPrice, currentAssetCtx]);
+
+  const isPositiveChange = useMemo(() => {
+    return dayDelta >= 0;
+  }, [dayDelta]);
+
+  const dayDeltaPercent = useMemo(() => {
+    const prevDayPx = Number(
+      activeAssetCtx?.prevDayPx || currentAssetCtx?.prevDayPx || 0
+    );
+    return dayDelta / prevDayPx;
+  }, [activeAssetCtx, currentAssetCtx, dayDelta]);
+
+  const decimals = useMemo(() => {
+    return currentAssetCtx?.pxDecimals || 2;
+  }, [currentAssetCtx]);
+
+  return (
+    <div className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20')}>
+      <div className="text-center mb-8">
+        {chartHoverData.visible ? (
+          <div>
+            <div className="flex justify-between items-center h-[52px]">
+              <div className="flex flex-1 flex-col items-center">
+                <div className="text-15 font-medium text-r-neutral-title-1">
+                  {chartHoverData.open?.toFixed(decimals)}
+                </div>
+                <div className="text-13 text-r-neutral-foot">Open</div>
+              </div>
+              <div className="flex flex-1 flex-col items-center">
+                <div className="text-15 font-medium text-r-neutral-title-1">
+                  {chartHoverData.high?.toFixed(decimals)}
+                </div>
+                <div className="text-13 text-r-neutral-foot">High</div>
+              </div>
+              <div className="flex flex-1 flex-col items-center">
+                <div className="text-15 font-medium text-r-neutral-title-1">
+                  {chartHoverData.low?.toFixed(decimals)}
+                </div>
+                <div className="text-13 text-r-neutral-foot">Low</div>
+              </div>
+              <div className="flex flex-1 flex-col items-center">
+                <div className="text-15 font-medium text-r-neutral-title-1">
+                  {chartHoverData.close?.toFixed(decimals)}
+                </div>
+                <div className="text-13 text-r-neutral-foot">Close</div>
+              </div>
+            </div>
+            <div
+              className={clsx(
+                'text-14 font-medium',
+                chartHoverData.isPositiveChange
+                  ? 'text-r-green-default'
+                  : 'text-r-red-default'
+              )}
+            >
+              {chartHoverData.isPositiveChange ? '+' : ''}
+              {chartHoverData.delta?.toFixed(decimals)} (
+              {chartHoverData.isPositiveChange ? '+' : ''}
+              {formatPercent(chartHoverData.deltaPercent || 0, 2)})
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="text-[32px] font-bold text-r-neutral-title-1 h-[52px] flex items-center justify-center text-center">
+              ${markPrice}
+            </div>
+            <div
+              className={clsx(
+                'text-14 font-medium',
+                isPositiveChange ? 'text-r-green-default' : 'text-r-red-default'
+              )}
+            >
+              {isPositiveChange ? '+' : ''}
+              {dayDelta.toFixed(decimals)} ({isPositiveChange ? '+' : ''}
+              {formatPercent(dayDeltaPercent, 2)}%)
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="h-[160px]">
+        <LightweightKlineChart
+          coin={coin}
+          candleMenuKey={selectedInterval}
+          lineTagInfo={lineTagInfo}
+          onHoverData={setChartHoverData}
+        />
+      </div>
+
+      <div className="flex justify-center gap-12 mt-10">
+        {CANDLE_MENU_ITEM.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setSelectedInterval(key)}
+            className={clsx(
+              'px-12 py-4 text-12 rounded-[4px]',
+              key === selectedInterval
+                ? 'bg-r-blue-default text-white'
+                : 'text-r-neutral-body hover:bg-r-neutral-bg3'
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default PerpsChart;

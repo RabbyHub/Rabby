@@ -6,7 +6,7 @@ import { formatUsdValue, useWallet } from '@/ui/utils';
 import { Button, Switch, Input, message } from 'antd';
 import clsx from 'clsx';
 import { usePerpsState } from '../usePerpsState';
-import Chart from './Chart';
+import Chart, { PerpsChart } from './Chart';
 import { CANDLE_MENU_KEY } from '../constants';
 import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
@@ -45,10 +45,6 @@ export const PerpsSingleCoin = () => {
     marketDataMap,
     perpFee,
   } = useRabbySelector((state) => state.perps);
-  const [
-    selectedInterval,
-    setSelectedInterval,
-  ] = React.useState<CANDLE_MENU_KEY>(CANDLE_MENU_KEY.ONE_DAY);
 
   const {
     refreshData,
@@ -142,36 +138,6 @@ export const PerpsSingleCoin = () => {
     return !!currentPosition;
   }, [currentPosition]);
 
-  const CANDLE_MENU_ITEM = useMemo(
-    () => [
-      {
-        label: t('page.perps.candleMenuKey.oneHour'),
-        key: CANDLE_MENU_KEY.ONE_HOUR,
-      },
-      {
-        label: t('page.perps.candleMenuKey.oneDay'),
-        key: CANDLE_MENU_KEY.ONE_DAY,
-      },
-      {
-        label: t('page.perps.candleMenuKey.oneWeek'),
-        key: CANDLE_MENU_KEY.ONE_WEEK,
-      },
-      {
-        label: t('page.perps.candleMenuKey.oneMonth'),
-        key: CANDLE_MENU_KEY.ONE_MONTH,
-      },
-      {
-        label: t('page.perps.candleMenuKey.ytd'),
-        key: CANDLE_MENU_KEY.YTD,
-      },
-      {
-        label: t('page.perps.candleMenuKey.all'),
-        key: CANDLE_MENU_KEY.ALL,
-      },
-    ],
-    [t]
-  );
-
   const subscribeActiveAssetCtx = useMemoizedFn(() => {
     const sdk = getPerpsSDK();
     const { unsubscribe } = sdk.ws.subscribeToActiveAssetCtx(coin, (data) => {
@@ -201,7 +167,6 @@ export const PerpsSingleCoin = () => {
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
   );
-  const withdrawDisabled = !accountSummary?.withdrawable;
 
   // Available balance for trading
   const availableBalance = Number(accountSummary?.withdrawable || 0);
@@ -209,22 +174,6 @@ export const PerpsSingleCoin = () => {
   const markPrice = useMemo(() => {
     return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
   }, [activeAssetCtx]);
-  const dayDelta = useMemo(() => {
-    const prevDayPx = Number(
-      activeAssetCtx?.prevDayPx || currentAssetCtx?.prevDayPx || 0
-    );
-    return markPrice - prevDayPx;
-  }, [activeAssetCtx, markPrice, currentAssetCtx]);
-  const isPositiveChange = useMemo(() => {
-    return dayDelta >= 0;
-  }, [dayDelta]);
-
-  const dayDeltaPercent = useMemo(() => {
-    const prevDayPx = Number(
-      activeAssetCtx?.prevDayPx || currentAssetCtx?.prevDayPx || 0
-    );
-    return (dayDelta / prevDayPx) * 100;
-  }, [activeAssetCtx, currentAssetCtx, dayDelta]);
 
   // Position data if exists
   const positionData = currentPosition
@@ -320,48 +269,20 @@ export const PerpsSingleCoin = () => {
 
       <div className="flex-1 overflow-auto mx-20 pb-[80px]">
         {/* Price Chart Section */}
-        <div className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20')}>
-          {/* Price Display */}
-          <div className="text-center mb-8">
-            <div className="text-[32px] font-bold text-r-neutral-title-1">
-              ${markPrice}
-            </div>
-            <div
-              className={clsx(
-                'text-14 font-medium',
-                isPositiveChange ? 'text-r-green-default' : 'text-r-red-default'
-              )}
-            >
-              {isPositiveChange ? '+' : ''}
-              {dayDelta.toFixed(currentAssetCtx?.pxDecimals || 2)} (
-              {isPositiveChange ? '+' : ''}
-              {dayDeltaPercent.toFixed(2)}%)
-            </div>
-          </div>
-
-          {/* TradingView Chart */}
-          <div className="h-[160px]">
-            <Chart coin={coin} candleMenuKey={selectedInterval} />
-          </div>
-
-          {/* Time Range Selector */}
-          <div className="flex justify-center gap-12 mt-10">
-            {CANDLE_MENU_ITEM.map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setSelectedInterval(key)}
-                className={clsx(
-                  'px-12 py-4 text-12 rounded-[4px]',
-                  key === selectedInterval
-                    ? 'bg-r-blue-default text-white'
-                    : 'text-r-neutral-body hover:bg-r-neutral-bg3'
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <PerpsChart
+          lineTagInfo={{
+            tpPrice: Number(tpPrice || 0),
+            slPrice: Number(slPrice || 0),
+            liquidationPrice: Number(
+              currentPosition?.position.liquidationPx || 0
+            ),
+            entryPrice: Number(currentPosition?.position.entryPx || 0),
+          }}
+          coin={coin}
+          markPrice={markPrice}
+          activeAssetCtx={activeAssetCtx}
+          currentAssetCtx={currentAssetCtx}
+        />
 
         {/* Available to Trade */}
         {!hasPosition && (
