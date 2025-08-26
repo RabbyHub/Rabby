@@ -1243,6 +1243,7 @@ export const MiniApproval = ({
   visible,
   onClose,
   onResolve,
+  noShowModalLoading,
   onReject,
   onPreExecError,
   onGasAmountChange,
@@ -1266,6 +1267,7 @@ export const MiniApproval = ({
   isPreparingSign?: boolean;
   onGasAmountChange?: (gasAmount: number) => void;
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
+  noShowModalLoading?: boolean;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1372,6 +1374,7 @@ export const MiniApproval = ({
       {isPreparingSign ||
       (directSubmit &&
         canUseDirectSubmitTx &&
+        !noShowModalLoading &&
         !supportedHardwareDirectSign(currentAccount?.type || '')) ? (
         <Modal
           transitionName=""

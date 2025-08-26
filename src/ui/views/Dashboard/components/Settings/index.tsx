@@ -1109,6 +1109,15 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconSettingsGitForkCC,
+          content: <span>CreateAgent Wallet</span>,
+          onClick: async () => {
+            const currentAddress =
+              (await wallet.getCurrentAccount())?.address || '';
+            await wallet.createPerpsAgentWallet(currentAddress);
+          },
+        },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
           content: 'Test sendPersonalMessage',
           onClick: async () => {
             const currentAddress =

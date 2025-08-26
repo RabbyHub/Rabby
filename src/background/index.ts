@@ -45,6 +45,7 @@ import {
   uninstalledService,
   whitelistService,
   OfflineChainsService,
+  perpsService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -117,6 +118,7 @@ async function restoreAppState() {
   await metamaskModeService.init();
   await OfflineChainsService.init();
   await syncChainService.init();
+  await perpsService.init();
 
   await walletController.tryUnlock();
 
@@ -184,6 +186,7 @@ restoreAppState();
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
     contactBookService.detectWhiteListCex();
+    perpsService.unlockAgentWallets();
 
     if (interval) {
       clearInterval(interval);

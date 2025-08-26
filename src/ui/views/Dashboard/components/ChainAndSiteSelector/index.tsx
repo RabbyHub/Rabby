@@ -17,6 +17,7 @@ import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 import { ReactComponent as RcIconMoreSettings } from 'ui/assets/dashboard/more-settings.svg';
 import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
+import { ReactComponent as RcIconPerps } from 'ui/assets/dashboard/IconPerps.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import {
   getCurrentConnectSite,
@@ -289,6 +290,15 @@ export default function ChainAndSiteSelector({
         openInternalPageInTab('sync');
       },
     } as IPanelItem,
+    perps: {
+      icon: RcIconPerps,
+      eventKey: 'Perps',
+      iconClassName: 'icon-perps',
+      content: t('page.dashboard.home.panel.perps'),
+      onClick: () => {
+        history.push('/perps');
+      },
+    } as IPanelItem,
   };
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
@@ -302,7 +312,7 @@ export default function ChainAndSiteSelector({
       'transactions',
       'nft',
       'security',
-      'mobile',
+      'perps',
       'more',
     ];
   } else {
@@ -314,7 +324,7 @@ export default function ChainAndSiteSelector({
       'transactions',
       'nft',
       'security',
-      'mobile',
+      'perps',
       'more',
     ];
   }

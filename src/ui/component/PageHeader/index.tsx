@@ -33,6 +33,7 @@ const PageHeader = ({
   closeCn,
   isShowAccount,
   disableSwitchAccount,
+  showCurrentAccount,
 }: {
   children: ReactNode;
   canBack?: boolean;
@@ -49,6 +50,7 @@ const PageHeader = ({
   closeCn?: string;
   isShowAccount?: boolean;
   disableSwitchAccount?: boolean;
+  showCurrentAccount?: Account;
 }) => {
   const history = useHistory();
 
@@ -75,7 +77,7 @@ const PageHeader = ({
           {isShowAccount && currentAccount ? (
             <AccountSwitchInner
               disableSwitch={disableSwitchAccount}
-              currentAccount={currentAccount}
+              currentAccount={showCurrentAccount || currentAccount}
             />
           ) : null}
         </div>
