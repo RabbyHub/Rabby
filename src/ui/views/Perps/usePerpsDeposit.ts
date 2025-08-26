@@ -12,8 +12,6 @@ import {
   PERPS_AGENT_NAME,
   PERPS_SEND_ARB_USDC_ADDRESS,
 } from './constants';
-import { getPerpsSDK, initPerpsSDK } from './sdkManager';
-import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { findChain } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
 import { Tx } from 'background/service/openapi';
@@ -97,7 +95,7 @@ export const usePerpsDeposit = ({
 
   useInterval(
     () => {
-      dispatch.perps.fetchUserNonFundingLedgerUpdates(undefined);
+      dispatch.perps.fetchUserNonFundingLedgerUpdates();
     },
     perpsState.localLoadingHistory.length > 0 ? 5000 : null
   );

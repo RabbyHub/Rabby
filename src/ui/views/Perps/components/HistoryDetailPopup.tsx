@@ -43,8 +43,6 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
     return fill?.dir;
   }, [fill]);
 
-  if (!fill) return null;
-
   return (
     <Popup
       placement="bottom"
@@ -80,14 +78,16 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
             </div>
 
             {/* Date */}
-            <div className="flex justify-between items-center py-16">
-              <span className="text-13 text-r-neutral-body">
-                {t('page.perps.historyDetail.date')}
-              </span>
-              <span className="text-13 text-r-neutral-title-1 font-medium">
-                {sinceTime(time || Date.now() / 1000)}
-              </span>
-            </div>
+            {time && (
+              <div className="flex justify-between items-center py-16">
+                <span className="text-13 text-r-neutral-body">
+                  {t('page.perps.historyDetail.date')}
+                </span>
+                <span className="text-13 text-r-neutral-title-1 font-medium">
+                  {sinceTime(time / 1000)}
+                </span>
+              </div>
+            )}
 
             {Boolean(isClose) && (
               <div className="flex justify-between items-center py-16">

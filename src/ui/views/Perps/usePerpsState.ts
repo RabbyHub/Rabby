@@ -2,7 +2,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useWallet } from '@/ui/utils';
-import { getPerpsSDK, initPerpsSDK } from './sdkManager';
+import { getPerpsSDK } from './sdkManager';
 import {
   PERPS_AGENT_NAME,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
@@ -79,8 +79,6 @@ export const usePerpsState = () => {
     }
   );
 
-  console.log('approveSignatures', perpsState.approveSignatures);
-
   const checkIsNeedAutoLoginOut = useMemoizedFn(
     async (masterAddress: string, agentAddress: string) => {
       const sdk = getPerpsSDK();
@@ -115,7 +113,7 @@ export const usePerpsState = () => {
   useEffect(() => {
     if (isInitialized && isLogin) {
       // 已经初始化完成 且 已经登录
-      dispatch.perps.fetchClearinghouseState(undefined);
+      dispatch.perps.fetchClearinghouseState();
       return;
     }
 
@@ -127,14 +125,8 @@ export const usePerpsState = () => {
       try {
         const noLoginAction = () => {
           wallet.setPerpsCurrentAddress('');
-          dispatch.perps.fetchMarketData(true);
+          dispatch.perps.fetchMarketData();
           dispatch.perps.setInitialized(true);
-          initPerpsSDK({
-            masterAddress: '',
-            agentPrivateKey: '',
-            agentPublicKey: '',
-            agentName: '',
-          });
         };
 
         const currentAddress = await wallet.getPerpsCurrentAddress();
@@ -168,15 +160,16 @@ export const usePerpsState = () => {
           return false;
         }
 
+        const sdk = getPerpsSDK();
         // 开始恢复登录态
-        initPerpsSDK({
-          masterAddress: currentAddress,
-          agentPrivateKey: res.vault,
-          agentPublicKey: res.preference.agentAddress || '',
-          agentName: PERPS_AGENT_NAME,
-        });
+        sdk.initAccount(
+          currentAddress,
+          res.vault,
+          res.preference.agentAddress,
+          PERPS_AGENT_NAME
+        );
 
-        dispatch.perps.fetchMarketData(true);
+        dispatch.perps.fetchMarketData();
 
         await dispatch.perps.loginPerpsAccount(targetTypeAccount);
 
@@ -318,12 +311,8 @@ export const usePerpsState = () => {
     const { agentAddress, vault } = await wallet.createPerpsAgentWallet(
       account.address
     );
-    const sdk = initPerpsSDK({
-      masterAddress: account.address,
-      agentPrivateKey: vault,
-      agentPublicKey: agentAddress,
-      agentName: PERPS_AGENT_NAME,
-    });
+    const sdk = getPerpsSDK();
+    sdk.initAccount(account.address, vault, agentAddress, PERPS_AGENT_NAME);
 
     const signActions = await prepareSignActions();
 
@@ -356,6 +345,7 @@ export const usePerpsState = () => {
   const loginPerpsAccount = useMemoizedFn(async (account: Account) => {
     try {
       // const { privateKey, publicKey } = await getOrCreateAgentWallet(account);
+      const sdk = getPerpsSDK();
       const res = await wallet.getPerpsAgentWallet(account.address);
       if (res) {
         // 如果存在 agent wallet, 则检查是否过期
@@ -364,12 +354,12 @@ export const usePerpsState = () => {
           res.preference.agentAddress
         );
         if (!isExpired) {
-          initPerpsSDK({
-            masterAddress: account.address,
-            agentPrivateKey: res.vault,
-            agentPublicKey: res.preference.agentAddress,
-            agentName: PERPS_AGENT_NAME,
-          });
+          sdk.initAccount(
+            account.address,
+            res.vault,
+            res.preference.agentAddress,
+            PERPS_AGENT_NAME
+          );
           // 未到过期时间无需签名直接登录即可
           await dispatch.perps.loginPerpsAccount(account);
         } else {
@@ -444,7 +434,7 @@ export const usePerpsState = () => {
           signature: signature as string,
         });
         console.log('withdraw res', res);
-        dispatch.perps.fetchClearinghouseState(undefined);
+        dispatch.perps.fetchClearinghouseState();
         return true;
       } catch (error) {
         console.error('Failed to withdraw:', error);
