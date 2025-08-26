@@ -3829,7 +3829,7 @@ export class WalletController extends BaseController {
   signTypedData = async (
     type: string,
     from: string,
-    data: any,
+    data: Record<string, any>,
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
@@ -3859,7 +3859,7 @@ export class WalletController extends BaseController {
   ) => {
     const fn = () =>
       waitSignComponentAmounted().then(() => {
-        this.signTypedData(type, from, data as any, options);
+        return this.signTypedData(type, from, data as any, options);
       });
 
     notificationService.setCurrentRequestDeferFn(fn);
@@ -4583,6 +4583,7 @@ export class WalletController extends BaseController {
             to: account.address,
             chainId: chainId,
             type: 4,
+            nonce: _nonce,
           };
           await this.sendRequest({
             $ctx: {
@@ -5628,6 +5629,11 @@ export class WalletController extends BaseController {
   };
   getPerpsAgentWallet = async (masterWallet: string) => {
     return perpsService.getAgentWallet(masterWallet);
+  }
+  signTextCreateHistory = (
+    params: Parameters<typeof signTextHistoryService.createHistory>[0]
+  ) => {
+    signTextHistoryService.createHistory(params);
   };
 }
 
