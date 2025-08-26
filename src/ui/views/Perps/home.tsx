@@ -42,7 +42,6 @@ export const Perps: React.FC = () => {
   const wallet = useWallet();
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const currentAccount = useCurrentAccount();
-  // 使用全局状态
   const {
     positionAndOpenOrders,
     accountSummary,
@@ -85,7 +84,10 @@ export const Perps: React.FC = () => {
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
 
-  const canUseDirectSubmitTx = supportedDirectSign(currentAccount?.type || '');
+  const canUseDirectSubmitTx = useMemo(
+    () => supportedDirectSign(currentPerpsAccount?.type || ''),
+    [currentPerpsAccount?.type]
+  );
   const withdrawDisabled = !accountSummary?.withdrawable;
 
   return (
@@ -253,6 +255,7 @@ export const Perps: React.FC = () => {
       <PerpsDepositAmountPopup
         visible={amountVisible}
         type={popupType}
+        currentPerpsAccount={currentPerpsAccount}
         availableBalance={accountSummary?.withdrawable || '0'}
         onChange={(amount) => {
           if (popupType === 'deposit') {
@@ -266,14 +269,17 @@ export const Perps: React.FC = () => {
         onConfirm={async (amount) => {
           if (popupType === 'deposit') {
             if (canUseDirectSubmitTx) {
-              wallet.changeAccount(currentPerpsAccount!);
+              if (currentPerpsAccount) {
+                await wallet.changeAccount(currentPerpsAccount);
+              }
               startDirectSigning();
             } else {
               handleDeposit();
             }
             return true;
           } else {
-            return await handleWithdraw(amount);
+            await handleWithdraw(amount);
+            return true;
           }
         }}
       />

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, useWallet } from '@/ui/utils';
 import { Button, Switch, Input, message } from 'antd';
 import clsx from 'clsx';
 import { usePerpsState } from '../usePerpsState';
@@ -22,6 +22,14 @@ import { AutoClosePositionPopup } from './AutoClosePositionPopup';
 import BigNumber from 'bignumber.js';
 import { usePerpsPosition } from '../usePerpsPosition';
 import { HistoryPage } from './HistoryPage';
+import { usePerpsDeposit } from '../usePerpsDeposit';
+import { MiniApproval } from '../../Approval/components/MiniSignTx';
+import { PerpsDepositAmountPopup } from './DepositAmountPopup';
+import {
+  DirectSubmitProvider,
+  supportedDirectSign,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -47,8 +55,21 @@ export const PerpsSingleCoin = () => {
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,
+    currentPerpsAccount,
     userFills,
   } = usePerpsPosition();
+  const [amountVisible, setAmountVisible] = useState(false);
+  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
+  const {
+    miniSignTx,
+    clearMiniSignTx,
+    updateMiniSignTx,
+    handleDeposit,
+  } = usePerpsDeposit({
+    currentPerpsAccount,
+  });
+  const wallet = useWallet();
+  const startDirectSigning = useStartDirectSigning();
 
   const singleCoinHistoryList = useMemo(() => {
     return userFills
@@ -170,6 +191,16 @@ export const PerpsSingleCoin = () => {
       unsubscribe?.();
     };
   }, [subscribeActiveAssetCtx]);
+
+  const miniTxs = useMemo(() => {
+    return miniSignTx ? [miniSignTx] : [];
+  }, [miniSignTx]);
+
+  const canUseDirectSubmitTx = useMemo(
+    () => supportedDirectSign(currentPerpsAccount?.type || ''),
+    [currentPerpsAccount?.type]
+  );
+  const withdrawDisabled = !accountSummary?.withdrawable;
 
   // Available balance for trading
   const availableBalance = Number(accountSummary?.withdrawable || 0);
@@ -338,7 +369,12 @@ export const PerpsSingleCoin = () => {
               {t('page.perps.availableToTrade')}:{' '}
               {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
             </span>
-            <div className="text-r-blue-default text-13 cursor-pointer px-16 py-10 rounded-[8px] bg-r-blue-light-1">
+            <div
+              className="text-r-blue-default text-13 cursor-pointer px-16 py-10 rounded-[8px] bg-r-blue-light-1"
+              onClick={() => {
+                setAmountVisible(true);
+              }}
+            >
               {t('page.perps.deposit')}
             </div>
           </div>
@@ -593,8 +629,73 @@ export const PerpsSingleCoin = () => {
           });
         }}
       />
+
+      <PerpsDepositAmountPopup
+        visible={amountVisible}
+        currentPerpsAccount={currentPerpsAccount}
+        type={'deposit'}
+        availableBalance={accountSummary?.withdrawable || '0'}
+        onChange={(amount) => {
+          updateMiniSignTx(amount);
+        }}
+        onCancel={() => {
+          setAmountVisible(false);
+          clearMiniSignTx();
+        }}
+        onConfirm={async (amount) => {
+          if (canUseDirectSubmitTx) {
+            if (currentPerpsAccount) {
+              await wallet.changeAccount(currentPerpsAccount);
+            }
+            startDirectSigning();
+          } else {
+            handleDeposit();
+          }
+          return true;
+        }}
+      />
+
+      <MiniApproval
+        txs={miniTxs}
+        visible={isShowMiniSign}
+        ga={{
+          category: 'Perps',
+          source: 'Perps',
+          trigger: 'Perps',
+        }}
+        onClose={() => {
+          clearMiniSignTx();
+          setIsShowMiniSign(false);
+        }}
+        onReject={() => {
+          clearMiniSignTx();
+          setIsShowMiniSign(false);
+        }}
+        onResolve={() => {
+          setAmountVisible(false);
+          setTimeout(() => {
+            setIsShowMiniSign(false);
+            clearMiniSignTx();
+          }, 500);
+        }}
+        onPreExecError={() => {
+          setAmountVisible(false);
+          // fallback to normal sign
+          handleDeposit();
+        }}
+        directSubmit
+        canUseDirectSubmitTx={canUseDirectSubmitTx}
+      />
     </div>
   );
 };
 
-export default PerpsSingleCoin;
+const PerpsSingleCoinWrapper = () => {
+  return (
+    <DirectSubmitProvider>
+      <PerpsSingleCoin />
+    </DirectSubmitProvider>
+  );
+};
+
+export default PerpsSingleCoinWrapper;

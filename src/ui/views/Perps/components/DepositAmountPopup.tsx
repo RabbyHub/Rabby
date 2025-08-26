@@ -22,12 +22,14 @@ import BigNumber from 'bignumber.js';
 import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
+import { Account } from '@/background/service/preference';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
   onConfirm: (amount: number) => Promise<boolean>;
   onChange: (amount: number) => void;
   availableBalance: string;
+  currentPerpsAccount: Account | null;
 };
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
@@ -36,6 +38,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   onCancel,
   onConfirm,
   onChange,
+  currentPerpsAccount,
   availableBalance,
 }) => {
   const { t } = useTranslation();
@@ -48,28 +51,27 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   );
 
   const wallet = useWallet();
-  const account = useCurrentAccount();
 
   const { value: usdcTokenInfo, loading: usdcLoading } = useAsync(async () => {
-    if (!account?.address || !visible) return null;
+    if (!currentPerpsAccount?.address || !visible) return null;
     const info = await wallet.openapi.getToken(
-      account.address,
+      currentPerpsAccount.address,
       ARB_USDC_TOKEN_SERVER_CHAIN,
       ARB_USDC_TOKEN_ID
     );
     return info;
-  }, [account?.address, visible]);
+  }, [currentPerpsAccount?.address, visible]);
 
   const { value: list, loading } = useAsync(async () => {
-    if (!account?.address || !visible) return [];
-    const res = await queryTokensCache(account.address, wallet);
+    if (!currentPerpsAccount?.address || !visible) return [];
+    const res = await queryTokensCache(currentPerpsAccount.address, wallet);
     const usdcToken = res.find(
       (t) =>
         t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
     );
     setSelectedToken(usdcToken || ARB_USDC_TOKEN_ITEM);
     return res;
-  }, [account?.address, visible]);
+  }, [currentPerpsAccount?.address, visible]);
 
   React.useEffect(() => {
     if (!visible) {
