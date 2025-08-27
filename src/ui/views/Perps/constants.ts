@@ -73,12 +73,7 @@ export const DEFAULT_TOP_ASSET = [
       'https://static.debank.com/image/hyper_liquid/logo_url/LINK/d4d3c2c5dbd014a03e36442e2c31a9a2.png',
     daily_volume: 188894542,
   },
-  {
-    id: 202,
-    name: 'YZY',
-    full_logo_url: null,
-    daily_volume: 155996789,
-  },
+  { id: 202, name: 'YZY', full_logo_url: null, daily_volume: 155996789 },
   {
     id: 25,
     name: 'XRP',
@@ -86,6 +81,7 @@ export const DEFAULT_TOP_ASSET = [
       'https://static.debank.com/image/hyper_liquid/logo_url/XRP/b0abed5f6d58330a233bc7c244a6dd5d.png',
     daily_volume: 138440367,
   },
+  { id: 204, name: 'WLFI', full_logo_url: null, daily_volume: 108655457 },
   {
     id: 165,
     name: 'FARTCOIN',
@@ -100,6 +96,7 @@ export const DEFAULT_TOP_ASSET = [
       'https://static.debank.com/image/hyper_liquid/logo_url/ENA/1d3a2258ecb310f52a33a87810c72a13.png',
     daily_volume: 87638043,
   },
+  { id: 203, name: 'XPL', full_logo_url: null, daily_volume: 84741560 },
   {
     id: 200,
     name: 'PUMP',
@@ -142,18 +139,8 @@ export const DEFAULT_TOP_ASSET = [
       'https://static.debank.com/image/hyper_liquid/logo_url/PENGU/7de952f2680865214557bb2df7494cb5.png',
     daily_volume: 23462136,
   },
-  {
-    id: 15,
-    name: 'kPEPE',
-    full_logo_url: null,
-    daily_volume: 19655025,
-  },
-  {
-    id: 85,
-    name: 'kBONK',
-    full_logo_url: null,
-    daily_volume: 19088608,
-  },
+  { id: 15, name: 'kPEPE', full_logo_url: null, daily_volume: 19655025 },
+  { id: 85, name: 'kBONK', full_logo_url: null, daily_volume: 19088608 },
   {
     id: 11,
     name: 'ARB',
@@ -476,12 +463,7 @@ export const DEFAULT_TOP_ASSET = [
       'https://static.debank.com/image/hyper_liquid/logo_url/HBAR/652de1ec78938668e4b684b8999dc765.png',
     daily_volume: 1278198,
   },
-  {
-    id: 38,
-    name: 'kSHIB',
-    full_logo_url: null,
-    daily_volume: 1274234,
-  },
+  { id: 38, name: 'kSHIB', full_logo_url: null, daily_volume: 1274234 },
   {
     id: 152,
     name: 'PURR',
@@ -510,12 +492,7 @@ export const DEFAULT_TOP_ASSET = [
       'https://static.debank.com/image/hyper_liquid/logo_url/OM/70a3483325dd0df63ac2fb0e7a0816b2.png',
     daily_volume: 1052915,
   },
-  {
-    id: 119,
-    name: 'kFLOKI',
-    full_logo_url: null,
-    daily_volume: 1052337,
-  },
+  { id: 119, name: 'kFLOKI', full_logo_url: null, daily_volume: 1052337 },
   {
     id: 21,
     name: 'CFX',
@@ -718,19 +695,6 @@ export const DEFAULT_TOP_ASSET = [
     full_logo_url:
       'https://static.debank.com/image/hyper_liquid/logo_url/ENS/ab162afbfc83427a854017777f4eebf4.png',
     daily_volume: 468333,
-  },
-  {
-    id: 185,
-    name: 'KAITO',
-    full_logo_url:
-      'https://static.debank.com/image/hyper_liquid/logo_url/KAITO/bcea2bf670392ef8f802ce3057badb74.png',
-    daily_volume: 464125,
-  },
-  {
-    id: 148,
-    name: 'kNEIRO',
-    full_logo_url: null,
-    daily_volume: 460201,
   },
 ] as {
   id: number;
