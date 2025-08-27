@@ -43,6 +43,7 @@ const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: TrezorSVG,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: OneKeySVG,
+  [WALLET_BRAND_TYPES.ONEKEY]: OneKeySVG,
   [KEYRING_CLASS.MNEMONIC]: RcMnemonicSVG,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: GridPlusSVG,
   [WALLET_BRAND_TYPES.KEYSTONE]: KeyStoneSVG,
@@ -99,6 +100,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
     [HARDWARE_KEYRING_TYPES.Onekey.type]: t(
       'page.newAddress.hd.connectedToOnekey'
     ),
+    [WALLET_BRAND_TYPES.ONEKEY]: t('page.newAddress.hd.connectedToOnekey'),
     [KEYRING_CLASS.MNEMONIC]: t('page.newAddress.hd.manageSeedPhrase'),
     [HARDWARE_KEYRING_TYPES.GridPlus.type]: t(
       'page.newAddress.hd.manageGridplus'
