@@ -102,7 +102,7 @@ export const Main = () => {
     slippageState,
     isSlippageHigh,
     isSlippageLow,
-    slippage,
+    slippage: _slippage,
     setSlippage,
     autoSlippage,
     isCustomSlippage,
@@ -139,6 +139,11 @@ export const Main = () => {
     data: externalDapps,
     loading: externalDappsLoading,
   } = useExternalSwapBridgeDapps(chain, 'swap');
+
+  const slippage = useMemo(
+    () => (autoSlippage ? autoSuggestSlippage : _slippage),
+    [autoSlippage, autoSuggestSlippage, _slippage]
+  );
 
   const refresh = useSetRefreshId();
 
