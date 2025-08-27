@@ -1,8 +1,8 @@
 import { MarketData } from '@/ui/models/perps';
-import { formatUsdValue } from '@/ui/utils/number';
 import clsx from 'clsx';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { TokenImg } from './TokenImg';
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 export const AssetItem: React.FC<{
@@ -30,11 +30,7 @@ export const AssetItem: React.FC<{
       }}
     >
       <div className="flex items-center gap-12">
-        <img
-          src={item.logoUrl}
-          alt={item.name}
-          className="w-32 h-32 rounded-full mr-4"
-        />
+        <TokenImg size={32} logoUrl={item.logoUrl} />
         <div className="text-left">
           <div className="text-15 font-medium text-r-neutral-title-1 mb-2">
             {item.name} - USD

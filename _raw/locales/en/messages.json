@@ -857,6 +857,8 @@
       "takeProfitTipsShort": "Take profit price must be lower than current price",
       "stopLossTipsLong": "Stop loss price must be lower than current price",
       "stopLossTipsShort": "Stop loss price must be higher than current price",
+      "stopLossTipsLongLiquidation": "Price is lower than the liquidation price ({{price}})",
+      "stopLossTipsShortLiquidation": "Price is higher than the liquidation price ({{price}})",
       "review": "Review",
       "confirm": "Confirm",
       "insufficientBalance": "Insufficient balance",

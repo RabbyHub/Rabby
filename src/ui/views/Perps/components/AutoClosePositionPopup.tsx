@@ -11,6 +11,7 @@ interface AutoClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   price: number;
   direction: 'Long' | 'Short';
   size: number;
+  liqPrice: number;
   pxDecimals: number;
   onClose: () => void;
   type: 'openPosition' | 'hasPosition';
@@ -26,6 +27,7 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
   price,
   direction,
   size,
+  liqPrice,
   pxDecimals,
   onClose,
   type,
@@ -67,7 +69,12 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
       },
     } as Record<
       string,
-      { isValid: boolean; error: string; errorMessage: string }
+      {
+        isValid: boolean;
+        error: string;
+        errorMessage: string;
+        isWarning?: boolean;
+      }
     >;
 
     if (!tpPrice && !slPrice) {
@@ -96,16 +103,32 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
         resObj.sl.isValid = false;
         resObj.sl.error = 'invalid_sl_long';
         resObj.sl.errorMessage = t('page.perps.stopLossTipsLong');
+      } else if (direction === 'Long' && slValue < liqPrice) {
+        // warning
+        resObj.sl.isValid = true;
+        resObj.sl.isWarning = true;
+        resObj.sl.error = '';
+        resObj.sl.errorMessage = t('page.perps.stopLossTipsLongLiquidation', {
+          price: `$${liqPrice}`,
+        });
       }
       if (direction === 'Short' && slValue <= price) {
         resObj.sl.isValid = false;
         resObj.sl.error = 'invalid_sl_short';
         resObj.sl.errorMessage = t('page.perps.stopLossTipsShort');
+      } else if (direction === 'Short' && slValue > liqPrice) {
+        // warning
+        resObj.sl.isValid = true;
+        resObj.sl.isWarning = true;
+        resObj.sl.error = '';
+        resObj.sl.errorMessage = t('page.perps.stopLossTipsShortLiquidation', {
+          price: `$${liqPrice}`,
+        });
       }
     }
 
     return resObj;
-  }, [tpPrice, slPrice, price, direction]);
+  }, [tpPrice, slPrice, price, direction, liqPrice]);
 
   React.useEffect(() => {
     if (!visible) {
@@ -120,6 +143,9 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
   const getMarginTextColor = (type: 'tp' | 'sl') => {
     if (priceValidation[type].error) {
       return 'text-r-red-default';
+    }
+    if (priceValidation[type].isWarning) {
+      return 'text-r-orange-default';
     }
     return 'text-r-neutral-title-1';
   };
@@ -235,6 +261,10 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
             <div className="h-[20px]">
               {priceValidation.sl.error ? (
                 <div className="text-13 text-r-red-default text-center">
+                  {priceValidation.sl.errorMessage}
+                </div>
+              ) : priceValidation.sl.isWarning ? (
+                <div className="text-13 text-r-orange-default text-center">
                   {priceValidation.sl.errorMessage}
                 </div>
               ) : (

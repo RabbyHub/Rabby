@@ -5,6 +5,7 @@ import { useWallet } from '@/ui/utils';
 import { destroyPerpsSDK, getPerpsSDK } from './sdkManager';
 import {
   PERPS_AGENT_NAME,
+  PERPS_BUILD_FEE,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
 } from './constants';
@@ -22,38 +23,17 @@ interface SignAction {
   signature: string;
 }
 
-export const usePerpsState = () => {
+export const usePerpsInitial = () => {
   const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
   const perpsState = useRabbySelector((state) => state.perps);
   const {
     isInitialized,
     currentPerpsAccount,
     isLogin,
+    accountSummary,
     positionAndOpenOrders,
   } = perpsState;
-  const currentAccount = useCurrentAccount();
-  const { accountsList } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-  }));
-
-  const wallet = useWallet();
-
-  const checkIsExtraAgentIsExpired = useMemoizedFn(
-    async (masterAddress: string, agentAddress: string) => {
-      const sdk = getPerpsSDK();
-      const extraAgents = await sdk.info.extraAgents(masterAddress);
-      const item = extraAgents.find((agent) =>
-        isSameAddress(agent.address, agentAddress)
-      );
-      if (!item) {
-        return true;
-      }
-      const expiredAt = item?.validUntil;
-      const oneDayAfter = Date.now() + 24 * 60 * 60 * 1000;
-      const isExpired = expiredAt ? expiredAt < oneDayAfter : true;
-      return isExpired;
-    }
-  );
 
   // return bool if can use approveSignatures
   const restoreApproveSignatures = useMemoizedFn(
@@ -133,10 +113,12 @@ export const usePerpsState = () => {
         console.log(' init currentAccount', currentAccount);
         if (!currentAccount || !currentAccount.address) {
           // 如果没有登录状态，则只获取市场数据即可
+          console.log('noLoginAction no currentAccount');
           noLoginAction();
           return false;
         }
 
+        const accountsList = await wallet.getAllVisibleAccountsArray();
         const targetTypeAccount = accountsList.find(
           (acc) =>
             isSameAddress(acc.address, currentAccount.address) &&
@@ -145,6 +127,7 @@ export const usePerpsState = () => {
 
         if (!targetTypeAccount) {
           // 地址列表没找到
+          console.log('noLoginAction no targetTypeAccount');
           noLoginAction();
           return false;
         }
@@ -152,6 +135,7 @@ export const usePerpsState = () => {
         const res = await wallet.getPerpsAgentWallet(currentAccount.address);
         if (!res) {
           // 没有找到store对应的 agent wallet
+          console.log('noLoginAction no PerpsAgentWallet');
           noLoginAction();
           return false;
         }
@@ -164,6 +148,10 @@ export const usePerpsState = () => {
           res.preference.agentAddress,
           PERPS_AGENT_NAME
         );
+        sdk.exchange?.updateBuilder(
+          PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+          PERPS_BUILD_FEE
+        );
 
         dispatch.perps.fetchMarketData();
 
@@ -174,11 +162,6 @@ export const usePerpsState = () => {
           res.preference.agentAddress
         );
 
-        setTimeout(() => {
-          // is not very matter, just wait for the other query api
-          dispatch.perps.fetchPerpFee();
-        }, 2000);
-
         dispatch.perps.setInitialized(true);
         return true;
       } catch (error) {
@@ -188,6 +171,72 @@ export const usePerpsState = () => {
 
     initIsLogin();
   }, [wallet, dispatch, isInitialized]);
+
+  const logout = useMemoizedFn((address: string) => {
+    dispatch.perps.logout();
+    destroyPerpsSDK();
+    wallet.setPerpsCurrentAccount(null);
+    wallet.setSendApproveAfterDeposit(address, []);
+  });
+
+  const perpsPositionInfo = useMemo(() => {
+    if (
+      !isLogin ||
+      !positionAndOpenOrders ||
+      positionAndOpenOrders.length === 0
+    ) {
+      return {
+        pnl: 0,
+        show: false,
+      };
+    }
+
+    const pnl = positionAndOpenOrders.reduce((acc, order) => {
+      return acc + Number(order.position.unrealizedPnl);
+    }, 0);
+
+    return {
+      pnl,
+      show: true,
+    };
+  }, [positionAndOpenOrders]);
+
+  return {
+    accountSummary,
+    positionAndOpenOrders,
+    isLogin,
+    perpsPositionInfo,
+  };
+};
+
+export const usePerpsState = () => {
+  const dispatch = useRabbyDispatch();
+  const perpsState = useRabbySelector((state) => state.perps);
+  const {
+    isInitialized,
+    currentPerpsAccount,
+    isLogin,
+    positionAndOpenOrders,
+  } = perpsState;
+
+  const wallet = useWallet();
+
+  const checkIsExtraAgentIsExpired = useMemoizedFn(
+    async (masterAddress: string, agentAddress: string) => {
+      const sdk = getPerpsSDK();
+      const extraAgents = await sdk.info.extraAgents(masterAddress);
+      const item = extraAgents.find((agent) =>
+        isSameAddress(agent.address, agentAddress)
+      );
+      if (!item) {
+        return true;
+      }
+      const expiredAt = item?.validUntil;
+      const oneDayAfter = Date.now() + 24 * 60 * 60 * 1000;
+      const isExpired = expiredAt ? expiredAt < oneDayAfter : true;
+      return isExpired;
+    }
+  );
 
   const prepareSignActions = useMemoizedFn(
     async (): Promise<SignAction[]> => {
@@ -296,6 +345,7 @@ export const usePerpsState = () => {
         })
       );
 
+      sdk.exchange?.updateBuilder(PERPS_BUILD_FEE_RECEIVE_ADDRESS, 50);
       setTimeout(() => {
         handleSafeSetReference();
       }, 500);
@@ -312,6 +362,10 @@ export const usePerpsState = () => {
     );
     const sdk = getPerpsSDK();
     sdk.initAccount(account.address, vault, agentAddress, PERPS_AGENT_NAME);
+    sdk.exchange?.updateBuilder(
+      PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+      PERPS_BUILD_FEE
+    );
 
     const signActions = await prepareSignActions();
 
@@ -358,6 +412,10 @@ export const usePerpsState = () => {
             res.vault,
             res.preference.agentAddress,
             PERPS_AGENT_NAME
+          );
+          sdk.exchange?.updateBuilder(
+            PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+            PERPS_BUILD_FEE
           );
           // 未到过期时间无需签名直接登录即可
           await dispatch.perps.loginPerpsAccount(account);

@@ -36,11 +36,13 @@ import { PositionItem } from './components/PositionItem';
 import BigNumber from 'bignumber.js';
 import { AssetItem } from './components/AssetMetaItem';
 import NewUserProcessPopup from './components/NewUserProcessPopup';
+import { useRabbyDispatch } from '@/ui/store';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const currentAccount = useCurrentAccount();
   const {
@@ -80,6 +82,14 @@ export const Perps: React.FC = () => {
       }
     });
   }, [wallet]);
+
+  useEffect(() => {
+    dispatch.perps.fetchMarketData();
+    dispatch.perps.refreshData();
+    setTimeout(() => {
+      dispatch.perps.fetchPerpFee();
+    }, 1000);
+  }, []);
 
   const [amountVisible, setAmountVisible] = useState(false);
 

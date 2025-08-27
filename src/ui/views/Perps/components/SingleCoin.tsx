@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { Button, Switch, Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
-import { usePerpsState } from '../usePerpsState';
 import Chart, { PerpsChart } from './Chart';
 import { CANDLE_MENU_KEY } from '../constants';
 import { getPerpsSDK } from '../sdkManager';
@@ -32,6 +31,7 @@ import {
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { TokenImg } from './TokenImg';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -267,7 +267,12 @@ export const PerpsSingleCoin = () => {
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
       <PageHeader className="mx-[20px] pt-[20px] mb-[20px]" forceShowBack>
-        {coin}-USD
+        <div className="flex items-center justify-center gap-8">
+          <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
+          <span className="text-20 font-medium text-r-neutral-title-1">
+            {coin}-USD
+          </span>
+        </div>
       </PageHeader>
 
       <div className="flex-1 overflow-auto mx-20 pb-[40px]">
@@ -335,7 +340,8 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.size')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${positionData?.positionValue} = {positionData?.size} {coin}
+                  {formatUsdValue(positionData?.positionValue || 0)} ={' '}
+                  {positionData?.size} {coin}
                 </span>
               </div>
 
@@ -477,7 +483,7 @@ export const PerpsSingleCoin = () => {
         )}
 
         <div
-          className="text-r-neutral-foot"
+          className="text-r-neutral-foot mb-20"
           style={{ fontSize: '11px', lineHeight: '16px' }}
         >
           {t('page.perps.openPositionTips')}
@@ -574,6 +580,7 @@ export const PerpsSingleCoin = () => {
       <AutoClosePositionPopup
         visible={autoCloseVisible}
         coin={coin}
+        liqPrice={Number(currentPosition?.position.liquidationPx || 0)}
         type="hasPosition"
         price={positionData?.entryPrice || markPrice}
         direction={(positionData?.direction || 'Long') as 'Long' | 'Short'}
