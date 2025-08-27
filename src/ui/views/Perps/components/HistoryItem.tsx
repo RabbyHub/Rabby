@@ -9,6 +9,7 @@ import { ReactComponent as RcIconWithdraw } from '@/ui/assets/perps/IconWithdraw
 import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useTranslation } from 'react-i18next';
+import { TokenImg } from './TokenImg';
 
 interface HistoryItemProps {
   fill: WsFill;
@@ -147,6 +148,8 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
   const itemData = marketData[coin.toUpperCase()];
   const logoUrl = itemData?.logoUrl;
   const isClose = (dir === 'Close Long' || dir === 'Close Short') && _closedPnl;
+  const direction =
+    dir === 'Close Long' || dir === 'Open Long' ? 'Long' : 'Short';
   const closedPnl = Number(_closedPnl) - Number(fee);
   const pnlValue = closedPnl ? closedPnl : 0;
 
@@ -160,7 +163,11 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       onClick={() => onClick?.(fill)}
     >
       <div className="flex items-center">
-        <img src={logoUrl} className="w-32 h-32 rounded-full mr-4" />
+        <TokenImg
+          logoUrl={logoUrl}
+          direction={direction}
+          withDirection={true}
+        />
         <div className="flex flex-col ml-12">
           <div className="text-13 text-r-neutral-title-1 font-medium">
             {titleString}

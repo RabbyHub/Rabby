@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import { formatNumber, formatUsdValue, sinceTime } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
+import { TokenImg } from './TokenImg';
 
 interface HistoryDetailPopupProps extends Omit<PopupProps, 'onCancel'> {
   fill: (WsFill & { logoUrl: string }) | null;
@@ -15,7 +16,6 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   fill,
   onCancel,
 }) => {
-  console.log('detail fill', fill);
   const { t } = useTranslation();
   const { coin, side, sz, px, closedPnl, time, fee, dir } = fill || {};
   const tradeValue = Number(sz) * Number(px);
@@ -71,7 +71,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 {t('page.perps.title')}
               </span>
               <div className="flex items-center space-x-8">
-                <img src={logoUrl} className="w-20 h-20 rounded-full" />
+                <TokenImg logoUrl={logoUrl} size={20} />
                 <span className="text-13 text-r-neutral-title-1 font-medium">
                   {coin} - USD
                 </span>

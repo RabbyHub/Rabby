@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { AssetPosition } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValue } from '@/ui/utils';
 import { MarketData } from '@/ui/models/perps';
+import { TokenImg } from './TokenImg';
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 export const PositionItem: React.FC<{
@@ -44,7 +45,7 @@ export const PositionItem: React.FC<{
       )}
     >
       <div className="flex items-center gap-12">
-        <img src={logoUrl} alt={coin} className="w-32 h-32 rounded-full mr-4" />
+        <TokenImg logoUrl={logoUrl} direction={side} withDirection={true} />
         <div className="text-left">
           <div className="text-15 font-medium text-r-neutral-title-1 mb-2">
             {coin} - USD

@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useRabbySelector } from '@/ui/store';
 import { PageHeader } from '@/ui/component';
 import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
+import { TokenImg } from './TokenImg';
 
 const Row: React.FC<{
   index: number;
@@ -25,11 +26,7 @@ const Row: React.FC<{
     >
       <div className="flex items-center gap-[12px]">
         <div className="w-[20px] text-13 text-r-neutral-foot">{index}</div>
-        <img
-          src={logoUrl}
-          alt={name}
-          className="w-[28px] h-[28px] rounded-full"
-        />
+        <TokenImg size={28} logoUrl={logoUrl} />
         <div className="flex flex-col leading-[18px]">
           <div className="text-15 text-r-neutral-title font-medium">
             {name} - USD
