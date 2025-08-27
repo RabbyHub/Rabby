@@ -5,6 +5,7 @@ import { useWallet } from '@/ui/utils';
 import { destroyPerpsSDK, getPerpsSDK } from './sdkManager';
 import {
   PERPS_AGENT_NAME,
+  PERPS_BUILD_FEE,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
 } from './constants';
@@ -164,6 +165,10 @@ export const usePerpsState = () => {
           res.preference.agentAddress,
           PERPS_AGENT_NAME
         );
+        sdk.exchange?.updateBuilder(
+          PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+          PERPS_BUILD_FEE
+        );
 
         dispatch.perps.fetchMarketData();
 
@@ -296,6 +301,7 @@ export const usePerpsState = () => {
         })
       );
 
+      sdk.exchange?.updateBuilder(PERPS_BUILD_FEE_RECEIVE_ADDRESS, 50);
       setTimeout(() => {
         handleSafeSetReference();
       }, 500);
@@ -312,6 +318,10 @@ export const usePerpsState = () => {
     );
     const sdk = getPerpsSDK();
     sdk.initAccount(account.address, vault, agentAddress, PERPS_AGENT_NAME);
+    sdk.exchange?.updateBuilder(
+      PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+      PERPS_BUILD_FEE
+    );
 
     const signActions = await prepareSignActions();
 
@@ -358,6 +368,10 @@ export const usePerpsState = () => {
             res.vault,
             res.preference.agentAddress,
             PERPS_AGENT_NAME
+          );
+          sdk.exchange?.updateBuilder(
+            PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+            PERPS_BUILD_FEE
           );
           // 未到过期时间无需签名直接登录即可
           await dispatch.perps.loginPerpsAccount(account);

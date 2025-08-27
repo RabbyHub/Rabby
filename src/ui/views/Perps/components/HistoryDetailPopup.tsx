@@ -15,11 +15,12 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   fill,
   onCancel,
 }) => {
+  console.log('detail fill', fill);
   const { t } = useTranslation();
   const { coin, side, sz, px, closedPnl, time, fee, dir } = fill || {};
   const tradeValue = Number(sz) * Number(px);
   const pnlValue = Number(closedPnl) - Number(fee);
-  const isClose = dir === 'Close Long' && closedPnl;
+  const isClose = (dir === 'Close Long' || dir === 'Close Short') && closedPnl;
   const logoUrl = fill?.logoUrl;
 
   const titleString = useMemo(() => {

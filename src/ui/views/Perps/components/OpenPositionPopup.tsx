@@ -514,6 +514,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         coin={coin}
         type="openPosition"
         price={markPrice}
+        liqPrice={Number(estimatedLiquidationPrice)}
         direction={direction}
         size={Number(tradeSize)}
         pxDecimals={szDecimals}

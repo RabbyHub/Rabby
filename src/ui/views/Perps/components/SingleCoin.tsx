@@ -574,6 +574,7 @@ export const PerpsSingleCoin = () => {
       <AutoClosePositionPopup
         visible={autoCloseVisible}
         coin={coin}
+        liqPrice={Number(currentPosition?.position.liquidationPx || 0)}
         type="hasPosition"
         price={positionData?.entryPrice || markPrice}
         direction={(positionData?.direction || 'Long') as 'Long' | 'Short'}

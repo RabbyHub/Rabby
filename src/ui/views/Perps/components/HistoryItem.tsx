@@ -146,7 +146,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
 
   const itemData = marketData[coin.toUpperCase()];
   const logoUrl = itemData?.logoUrl;
-  const isClose = dir === 'Close Long' && _closedPnl;
+  const isClose = (dir === 'Close Long' || dir === 'Close Short') && _closedPnl;
   const closedPnl = Number(_closedPnl) - Number(fee);
   const pnlValue = closedPnl ? closedPnl : 0;
 
