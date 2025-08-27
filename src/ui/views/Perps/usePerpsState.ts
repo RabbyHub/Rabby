@@ -1,6 +1,6 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWallet } from '@/ui/utils';
 import { destroyPerpsSDK, getPerpsSDK } from './sdkManager';
 import {
@@ -15,6 +15,8 @@ import { KEYRING_CLASS } from '@/constant';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { message } from 'antd';
+import { MiniTypedData } from '../Approval/components/MiniSignTypedData/useTypedDataTask';
+import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
 interface SignAction {
@@ -211,6 +213,41 @@ export const usePerpsInitial = () => {
 
 export const usePerpsState = () => {
   const dispatch = useRabbyDispatch();
+  const [miniSignTypeData, setMiniSignTypeData] = useState<MiniTypedData[]>([]);
+  const startDirectSigning = useStartDirectSigning();
+
+  const clearMiniSignTypeData = useMemoizedFn(() => {
+    setMiniSignTypeData([]);
+  });
+
+  const miniSignPromiseRef = useRef<{
+    resolve: (result: string[]) => void;
+    reject: (error: any) => void;
+  } | null>(null);
+
+  const waitForMiniSignResult = useMemoizedFn(
+    (): Promise<string[]> => {
+      return new Promise((resolve, reject) => {
+        miniSignPromiseRef.current = { resolve, reject };
+      });
+    }
+  );
+
+  const handleMiniSignResolve = useMemoizedFn((result: string[]) => {
+    if (miniSignPromiseRef.current) {
+      clearMiniSignTypeData();
+      miniSignPromiseRef.current.resolve(result);
+      miniSignPromiseRef.current = null;
+    }
+  });
+
+  const handleMiniSignReject = useMemoizedFn((error?: any) => {
+    if (miniSignPromiseRef.current) {
+      clearMiniSignTypeData();
+      miniSignPromiseRef.current.reject(error || new Error('User rejected'));
+      miniSignPromiseRef.current = null;
+    }
+  });
   const perpsState = useRabbySelector((state) => state.perps);
   const {
     isInitialized,
@@ -270,24 +307,56 @@ export const usePerpsState = () => {
 
   const executeSignatures = useMemoizedFn(
     async (signActions: SignAction[], account: Account): Promise<void> => {
+      await wallet.changeAccount(account);
       const isLocalWallet =
         account.type === KEYRING_CLASS.PRIVATE_KEY ||
         account.type === KEYRING_CLASS.MNEMONIC;
 
-      for (const actionObj of signActions) {
-        const signature = isLocalWallet
-          ? await wallet.signTypedData(
+      const useMiniApprovalSign =
+        account.type === KEYRING_CLASS.HARDWARE.ONEKEY ||
+        account.type === KEYRING_CLASS.HARDWARE.LEDGER;
+
+      if (useMiniApprovalSign) {
+        setMiniSignTypeData(
+          signActions.map((item) => {
+            return {
+              data: item.action,
+              from: account.address,
+              version: 'V4',
+            };
+          })
+        );
+        startDirectSigning();
+        // await MiniTypedDataApproval in home page
+        try {
+          const result = await waitForMiniSignResult();
+          console.log('Mini sign result', result);
+          result.forEach((item, idx) => {
+            signActions[idx].signature = item;
+          });
+        } catch (error) {
+          console.log('Mini sign rejected or failed:', error);
+          throw error;
+        }
+      } else {
+        for (const actionObj of signActions) {
+          let signature = '';
+
+          if (isLocalWallet) {
+            signature = await wallet.signTypedData(
               account.type,
               account.address,
               actionObj.action,
               { version: 'V4' }
-            )
-          : await wallet.sendRequest({
+            );
+          } else {
+            signature = await wallet.sendRequest({
               method: 'eth_signTypedDataV4',
-              params: [account.address, actionObj.action],
+              params: [account.address, JSON.stringify(actionObj.action)],
             });
-
-        actionObj.signature = signature as string;
+          }
+          actionObj.signature = signature;
+        }
       }
     }
   );
@@ -534,6 +603,12 @@ export const usePerpsState = () => {
     setCurrentPerpsAccount,
     handleWithdraw,
     refreshData: dispatch.perps.refreshData,
+
+    // hard ware sign typeData
+    miniSignTypeData,
+    clearMiniSignTypeData,
+    handleMiniSignResolve,
+    handleMiniSignReject,
   };
 };
 

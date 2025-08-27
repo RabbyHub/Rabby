@@ -27,6 +27,7 @@ import { PerpsDepositAmountPopup } from './components/DepositAmountPopup';
 import { TokenSelectPopup } from './components/TokenSelectPopup';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { MiniApproval } from '../Approval/components/MiniSignTx';
+import { MiniTypedDataApproval } from '../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
@@ -44,7 +45,6 @@ export const Perps: React.FC = () => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
-  const currentAccount = useCurrentAccount();
   const {
     positionAndOpenOrders,
     accountSummary,
@@ -57,6 +57,11 @@ export const Perps: React.FC = () => {
     login,
     handleWithdraw,
     homeHistoryList,
+
+    miniSignTypeData,
+    clearMiniSignTypeData,
+    handleMiniSignResolve,
+    handleMiniSignReject,
   } = usePerpsState();
 
   const {
@@ -84,11 +89,13 @@ export const Perps: React.FC = () => {
   }, [wallet]);
 
   useEffect(() => {
-    dispatch.perps.fetchMarketData();
-    dispatch.perps.refreshData();
-    setTimeout(() => {
-      dispatch.perps.fetchPerpFee();
-    }, 1000);
+    if (isLogin) {
+      dispatch.perps.fetchMarketData();
+      dispatch.perps.refreshData();
+      setTimeout(() => {
+        dispatch.perps.fetchPerpFee();
+      }, 1000);
+    }
   }, []);
 
   const [amountVisible, setAmountVisible] = useState(false);
@@ -104,6 +111,8 @@ export const Perps: React.FC = () => {
   const miniTxs = useMemo(() => {
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
+
+  console.log('miniSignTypeData', miniSignTypeData, miniTxs);
 
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
@@ -313,6 +322,25 @@ export const Perps: React.FC = () => {
             return true;
           }
         }}
+      />
+
+      <MiniTypedDataApproval
+        txs={miniSignTypeData}
+        noShowModalLoading={true}
+        onResolve={(txs) => {
+          handleMiniSignResolve(txs);
+        }}
+        onReject={() => {
+          handleMiniSignReject();
+        }}
+        onClose={() => {
+          handleMiniSignReject(new Error('User closed'));
+        }}
+        onPreExecError={() => {
+          handleMiniSignReject(new Error('Pre execution error'));
+        }}
+        directSubmit
+        canUseDirectSubmitTx
       />
 
       <MiniApproval
