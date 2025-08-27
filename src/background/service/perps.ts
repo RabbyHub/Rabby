@@ -34,12 +34,14 @@ export interface PerpsServiceMemoryState {
     // key is master wallet address
     [address: string]: AgentWalletInfo;
   };
+  unlockPromise: Promise<void> | null;
 }
 
 class PerpsService {
   private store?: PerpsServiceStore;
   private memoryState: PerpsServiceMemoryState = {
     agentWallets: {},
+    unlockPromise: null,
   };
 
   init = async () => {
@@ -121,35 +123,44 @@ class PerpsService {
   };
 
   unlockAgentWallets = async () => {
-    if (!this.store) {
-      throw new Error('PerpsService not initialized');
-    }
-
-    // Decrypt and load agent vaults
-    if (this.store.agentVaults) {
-      const vaultsMap: {
-        [address: string]: string;
-      } = await keyringService.decryptWithPassword(
-        this.store.agentVaults,
-        true,
-        'perps'
-      );
-
-      // Format data for memory state
-      for (const masterAddress in vaultsMap) {
-        const privateKey = vaultsMap[masterAddress];
-        const preference = this.store.agentPreferences[masterAddress] || {
-          agentAddress: '',
-        };
-        this.memoryState.agentWallets[masterAddress] = {
-          vault: privateKey,
-          preference: {
-            ...preference,
-            approveSignatures: preference.approveSignatures || [],
-          },
-        };
+    const unlock = async () => {
+      if (!this.store) {
+        throw new Error('PerpsService not initialized');
       }
-    }
+      // Decrypt and load agent vaults
+      if (this.store.agentVaults) {
+        const vaultsMap: {
+          [address: string]: string;
+        } = await keyringService.decryptWithPassword(
+          this.store.agentVaults,
+          true,
+          'perps'
+        );
+
+        // Format data for memory state
+        for (const masterAddress in vaultsMap) {
+          const privateKey = vaultsMap[masterAddress];
+          const preference = this.store.agentPreferences[masterAddress] || {
+            agentAddress: '',
+          };
+          this.memoryState.agentWallets[masterAddress] = {
+            vault: privateKey,
+            preference: {
+              ...preference,
+              approveSignatures: preference.approveSignatures || [],
+            },
+          };
+        }
+      }
+    };
+    this.memoryState.unlockPromise = unlock();
+    /**
+     *  unlock 是一个耗时比较长的任务，所以如果在解锁时立即尝试获取 agentWallet 可能会碰到解锁没有完成的情况
+     *  所以这里把 promise 放到内存里，如果有立即读取的需求需要先读一下 promise 的状态
+     * */
+    this.memoryState.unlockPromise.finally(() => {
+      this.memoryState.unlockPromise = null;
+    });
   };
 
   createAgentWallet = async (masterAddress: string) => {
@@ -218,6 +229,9 @@ class PerpsService {
   getAgentWallet = async (address: string) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
+    }
+    if (this.memoryState.unlockPromise) {
+      await this.memoryState.unlockPromise;
     }
 
     const normalizedAddress = address.toLowerCase();
