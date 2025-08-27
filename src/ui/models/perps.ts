@@ -15,6 +15,7 @@ import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { formatMarkData } from '../views/Perps/utils';
 import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
+import { openapi } from './openapi';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -68,6 +69,7 @@ export interface PerpsState {
   currentPerpsAccount: Account | null;
   marketData: MarketData[];
   marketDataMap: MarketDataMap;
+  hasPermission: boolean;
   perpFee: number;
   isLogin: boolean;
   isInitialized: boolean;
@@ -84,7 +86,7 @@ export const perps = createModel<RootModel>()({
     // clearinghouseState: null,
     positionAndOpenOrders: [],
     accountSummary: null,
-    withdrawable: null,
+    hasPermission: true,
     perpFee: 0.00045,
     currentPerpsAccount: null,
     marketData: [],
@@ -100,6 +102,13 @@ export const perps = createModel<RootModel>()({
   } as PerpsState,
 
   reducers: {
+    setHasPermission(state, payload: boolean) {
+      return {
+        ...state,
+        hasPermission: payload,
+      };
+    },
+
     setLocalLoadingHistory(state, payload: AccountHistoryItem[]) {
       return {
         ...state,
@@ -357,12 +366,24 @@ export const perps = createModel<RootModel>()({
       await dispatch.perps.fetchUserNonFundingLedgerUpdates();
     },
 
-    async fetchMarketData() {
+    async fetchMarketData(_, rootState) {
       const sdk = getPerpsSDK();
-      const marketData = await sdk.info.metaAndAssetCtxs(true);
-      dispatch.perps.setMarketData(
-        formatMarkData(marketData, DEFAULT_TOP_ASSET)
-      );
+
+      const fetchTopTokenList = async () => {
+        try {
+          const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenList();
+          return topAssets || DEFAULT_TOP_ASSET;
+        } catch (error) {
+          console.error('Failed to fetch top assets:', error);
+          return DEFAULT_TOP_ASSET;
+        }
+      };
+
+      const [topAssets, marketData] = await Promise.all([
+        fetchTopTokenList(),
+        sdk.info.metaAndAssetCtxs(true),
+      ]);
+      dispatch.perps.setMarketData(formatMarkData(marketData, topAssets));
     },
 
     async fetchPerpFee() {

@@ -8,15 +8,17 @@ import {
   PERPS_BUILD_FEE,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
+  DELETE_AGENT_EMPTY_ADDRESS,
 } from './constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
 import { KEYRING_CLASS } from '@/constant';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 import { MiniTypedData } from '../Approval/components/MiniSignTypedData/useTypedDataTask';
 import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { create, maxBy, minBy } from 'lodash';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
 interface SignAction {
@@ -107,7 +109,7 @@ export const usePerpsInitial = () => {
       try {
         const noLoginAction = () => {
           wallet.setPerpsCurrentAccount(null);
-          dispatch.perps.fetchMarketData();
+          dispatch.perps.fetchMarketData(undefined);
           dispatch.perps.setInitialized(true);
         };
 
@@ -155,7 +157,7 @@ export const usePerpsInitial = () => {
           PERPS_BUILD_FEE
         );
 
-        dispatch.perps.fetchMarketData();
+        dispatch.perps.fetchMarketData(undefined);
 
         await dispatch.perps.loginPerpsAccount(currentAccount);
 
@@ -211,10 +213,15 @@ export const usePerpsInitial = () => {
   };
 };
 
-export const usePerpsState = () => {
+export const usePerpsState = ({
+  setDeleteAgentModalVisible,
+}: {
+  setDeleteAgentModalVisible?: (visible: boolean) => void;
+}) => {
   const dispatch = useRabbyDispatch();
   const [miniSignTypeData, setMiniSignTypeData] = useState<MiniTypedData[]>([]);
   const startDirectSigning = useStartDirectSigning();
+  const deleteAgentCbRef = useRef<(() => Promise<void>) | null>(null);
 
   const clearMiniSignTypeData = useMemoizedFn(() => {
     setMiniSignTypeData([]);
@@ -254,24 +261,82 @@ export const usePerpsState = () => {
     currentPerpsAccount,
     isLogin,
     positionAndOpenOrders,
+    hasPermission,
   } = perpsState;
 
   const wallet = useWallet();
 
+  useEffect(() => {
+    wallet.openapi
+      .getPerpPermission({ id: currentPerpsAccount?.address || '' })
+      .then(({ has_permission }) => {
+        dispatch.perps.setHasPermission(has_permission);
+      })
+      .catch((error) => {
+        console.error('Failed to get perp permission:', error);
+      });
+  }, [currentPerpsAccount?.address]);
+
+  const handleDeleteAgent = useMemoizedFn(async () => {
+    if (deleteAgentCbRef.current) {
+      await deleteAgentCbRef.current();
+      deleteAgentCbRef.current = null;
+    }
+  });
+
   const checkIsExtraAgentIsExpired = useMemoizedFn(
-    async (masterAddress: string, agentAddress: string) => {
+    async (account, agentAddress: string) => {
       const sdk = getPerpsSDK();
-      const extraAgents = await sdk.info.extraAgents(masterAddress);
+      const extraAgents = await sdk.info.extraAgents(account.address);
       const item = extraAgents.find((agent) =>
         isSameAddress(agent.address, agentAddress)
       );
       if (!item) {
-        return true;
+        if (extraAgents.length >= 3) {
+          // 超过3个，需要删除一个
+          deleteAgentCbRef.current = async () => {
+            const deleteItem = minBy(extraAgents, (agent) => agent.validUntil);
+            if (deleteItem) {
+              sdk.initAccount(
+                account.address,
+                DELETE_AGENT_EMPTY_ADDRESS,
+                DELETE_AGENT_EMPTY_ADDRESS,
+                deleteItem.name
+              );
+              const action = sdk.exchange?.prepareApproveAgent();
+              const signActions: SignAction[] = [
+                {
+                  action,
+                  type: 'approveAgent',
+                  signature: '',
+                },
+              ];
+              await executeSignatures(signActions, account);
+              const res = await sdk.exchange?.sendApproveAgent({
+                action: action?.message,
+                nonce: action?.nonce || 0,
+                signature: signActions[0].signature,
+              });
+              console.log('deleteAgent res', res);
+            }
+          };
+          setDeleteAgentModalVisible?.(true);
+          return {
+            needDelete: true,
+            isExpired: true,
+          };
+        }
+        return {
+          isExpired: true,
+        };
       }
+
       const expiredAt = item?.validUntil;
       const oneDayAfter = Date.now() + 24 * 60 * 60 * 1000;
       const isExpired = expiredAt ? expiredAt < oneDayAfter : true;
-      return isExpired;
+      return {
+        isExpired,
+      };
     }
   );
 
@@ -471,10 +536,14 @@ export const usePerpsState = () => {
       const res = await wallet.getPerpsAgentWallet(account.address);
       if (res) {
         // 如果存在 agent wallet, 则检查是否过期
-        const isExpired = await checkIsExtraAgentIsExpired(
-          account.address,
+        const { isExpired, needDelete } = await checkIsExtraAgentIsExpired(
+          account,
           res.preference.agentAddress
         );
+        if (needDelete) {
+          // 先不登录，防止hl服务状态不同步
+          return false;
+        }
         if (!isExpired) {
           sdk.initAccount(
             account.address,
@@ -595,6 +664,7 @@ export const usePerpsState = () => {
     isLogin: perpsState.isLogin,
     isInitialized: perpsState.isInitialized,
     userFills: perpsState.userFills,
+    hasPermission: perpsState.hasPermission,
     homeHistoryList,
 
     // Actions
@@ -609,6 +679,8 @@ export const usePerpsState = () => {
     clearMiniSignTypeData,
     handleMiniSignResolve,
     handleMiniSignReject,
+
+    handleDeleteAgent,
   };
 };
 

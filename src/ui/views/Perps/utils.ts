@@ -1,14 +1,10 @@
 import { MarketData } from '@/ui/models/perps';
 import { Meta, AssetCtx, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
+import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
 
 export const formatMarkData = (
   marketData: [Meta, AssetCtx[]],
-  topAssets: {
-    id: number;
-    name: string;
-    full_logo_url: string | null;
-    daily_volume: number;
-  }[]
+  topAssets: PerpTopToken[]
 ): MarketData[] => {
   try {
     if (!Array.isArray(marketData) || marketData.length < 2) {
@@ -103,6 +99,8 @@ export const calLiquidationPrice = (
   leverage: number,
   maxLeverage: number
 ) => {
+  if (margin === 0) return 0;
+
   const MMR = 1 / maxLeverage / 2;
   const side = direction === 'Long' ? 1 : -1;
   const nationalValue = margin * leverage;

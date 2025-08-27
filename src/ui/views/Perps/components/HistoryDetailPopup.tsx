@@ -2,7 +2,12 @@ import React, { useMemo } from 'react';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
-import { formatNumber, formatUsdValue, sinceTime } from '@/ui/utils';
+import {
+  formatNumber,
+  formatUsdValue,
+  sinceTime,
+  splitNumberByStep,
+} from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { TokenImg } from './TokenImg';
 
@@ -96,8 +101,8 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                   {t('page.perps.historyDetail.closedPnl')}
                 </span>
                 <span className="text-13 text-r-neutral-title-1 font-medium">
-                  {pnlValue > 0 ? '+' : '-'}
-                  {formatUsdValue(Math.abs(pnlValue))}
+                  {pnlValue > 0 ? '+' : '-'}$
+                  {splitNumberByStep(Math.abs(pnlValue).toFixed(2))}
                 </span>
               </div>
             )}
@@ -108,7 +113,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 {t('page.perps.price')}
               </span>
               <span className="text-13 text-r-neutral-title-1 font-medium">
-                ${px}
+                ${splitNumberByStep(px || 0)}
               </span>
             </div>
 
@@ -128,7 +133,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 {t('page.perps.historyDetail.tradeValue')}
               </span>
               <span className="text-13 text-r-neutral-title-1 font-medium">
-                {formatUsdValue(tradeValue, BigNumber.ROUND_DOWN)}
+                ${splitNumberByStep(tradeValue.toFixed(2))}
               </span>
             </div>
 
@@ -139,7 +144,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                   {t('page.perps.fee')}
                 </span>
                 <span className="text-13 text-r-neutral-title-1 font-medium">
-                  ${formatNumber(Number(fee), 4)}
+                  ${splitNumberByStep(Number(fee).toFixed(4))}
                 </span>
               </div>
             )}

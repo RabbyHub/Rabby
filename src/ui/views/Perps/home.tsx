@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue, useWallet } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { findChainByEnum } from '@/utils/chain';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
@@ -38,12 +38,15 @@ import BigNumber from 'bignumber.js';
 import { AssetItem } from './components/AssetMetaItem';
 import NewUserProcessPopup from './components/NewUserProcessPopup';
 import { useRabbyDispatch } from '@/ui/store';
+import { TopPermissionTips } from './components/TopPermissionTips';
+import { PerpsModal } from './components/Modal';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
   const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+  const [deleteAgentModalVisible, setDeleteAgentModalVisible] = useState(false);
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const {
     positionAndOpenOrders,
@@ -57,12 +60,17 @@ export const Perps: React.FC = () => {
     login,
     handleWithdraw,
     homeHistoryList,
+    hasPermission,
 
     miniSignTypeData,
     clearMiniSignTypeData,
     handleMiniSignResolve,
     handleMiniSignReject,
-  } = usePerpsState();
+
+    handleDeleteAgent,
+  } = usePerpsState({
+    setDeleteAgentModalVisible,
+  });
 
   const {
     miniSignTx,
@@ -90,7 +98,7 @@ export const Perps: React.FC = () => {
 
   useEffect(() => {
     if (isLogin) {
-      dispatch.perps.fetchMarketData();
+      dispatch.perps.fetchMarketData(undefined);
       dispatch.perps.refreshData();
       setTimeout(() => {
         dispatch.perps.fetchPerpFee();
@@ -112,8 +120,6 @@ export const Perps: React.FC = () => {
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
 
-  console.log('miniSignTypeData', miniSignTypeData, miniTxs);
-
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
@@ -123,7 +129,9 @@ export const Perps: React.FC = () => {
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
       <PageHeader
-        className="mx-[20px] pt-[20px] mb-[20px]"
+        className={`mx-[20px] pt-[20px] ${
+          currentPerpsAccount ? 'mb-0' : 'mb-[8px]'
+        }`}
         forceShowBack
         onBack={goBack}
         isShowAccount={currentPerpsAccount ? true : false}
@@ -142,23 +150,23 @@ export const Perps: React.FC = () => {
       >
         Perps
       </PageHeader>
+      {!hasPermission ? <TopPermissionTips /> : null}
 
       <div className="flex-1 overflow-auto mx-20">
         {isLogin ? (
           <div className="bg-r-neutral-card1 rounded-[12px] p-20 flex flex-col items-center">
             <RcIconPerps className="w-40 h-40" />
             <div className="text-[32px] font-bold text-r-neutral-title-1 mt-16">
-              {formatUsdValue(
-                Number(accountSummary?.accountValue),
-                BigNumber.ROUND_DOWN
+              $
+              {splitNumberByStep(
+                Number(accountSummary?.accountValue).toFixed(2)
               )}
             </div>
             <div className="text-15 text-r-neutral-body mt-8">
               {t('page.perps.availableBalance', {
-                balance: formatUsdValue(
-                  Number(accountSummary?.withdrawable),
-                  BigNumber.ROUND_DOWN
-                ),
+                balance: `$${splitNumberByStep(
+                  Number(accountSummary?.withdrawable).toFixed(2)
+                )}`,
               })}
             </div>
             <div className="w-full flex gap-12 items-center justify-center relative mt-32">
@@ -383,6 +391,14 @@ export const Perps: React.FC = () => {
         onComplete={() => {
           wallet.setHasDoneNewUserProcess(true);
         }}
+      />
+
+      <PerpsModal
+        visible={deleteAgentModalVisible}
+        onClose={() => {
+          setDeleteAgentModalVisible(false);
+        }}
+        onConfirm={handleDeleteAgent}
       />
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue, useWallet } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
 import { Button, Switch, Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import Chart, { PerpsChart } from './Chart';
@@ -32,6 +32,7 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { TokenImg } from './TokenImg';
+import { TopPermissionTips } from './TopPermissionTips';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -56,6 +57,7 @@ export const PerpsSingleCoin = () => {
     currentPerpsAccount,
     isLogin,
     userFills,
+    hasPermission,
   } = usePerpsPosition();
   const [amountVisible, setAmountVisible] = useState(false);
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
@@ -266,7 +268,7 @@ export const PerpsSingleCoin = () => {
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
-      <PageHeader className="mx-[20px] pt-[20px] mb-[20px]" forceShowBack>
+      <PageHeader className="mx-[20px] pt-[20px] mb-[8px]" forceShowBack>
         <div className="flex items-center justify-center gap-8">
           <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
           <span className="text-20 font-medium text-r-neutral-title-1">
@@ -275,6 +277,7 @@ export const PerpsSingleCoin = () => {
         </div>
       </PageHeader>
 
+      {!hasPermission ? <TopPermissionTips /> : null}
       <div className="flex-1 overflow-auto mx-20 pb-[40px]">
         {/* Price Chart Section */}
         <PerpsChart
@@ -340,8 +343,11 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.size')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  {formatUsdValue(positionData?.positionValue || 0)} ={' '}
-                  {positionData?.size} {coin}
+                  $
+                  {splitNumberByStep(
+                    Number(positionData?.positionValue || 0).toFixed(2)
+                  )}{' '}
+                  = {positionData?.size} {coin}
                 </span>
               </div>
 
@@ -350,9 +356,9 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.marginIsolated')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  {formatUsdValue(
-                    positionData!.marginUsed,
-                    BigNumber.ROUND_DOWN
+                  $
+                  {splitNumberByStep(
+                    Number(positionData?.marginUsed || 0).toFixed(2)
                   )}
                 </span>
               </div>
@@ -371,7 +377,7 @@ export const PerpsSingleCoin = () => {
                   {t('page.perps.entryPrice')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${positionData?.entryPrice}
+                  ${splitNumberByStep(positionData?.entryPrice || 0)}
                 </span>
               </div>
 
@@ -400,7 +406,7 @@ export const PerpsSingleCoin = () => {
                   </TooltipWithMagnetArrow>
                 </div>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${positionData?.liquidationPrice}
+                  ${splitNumberByStep(positionData?.liquidationPrice || 0)}
                 </span>
               </div>
 
@@ -507,7 +513,7 @@ export const PerpsSingleCoin = () => {
                     ? t('page.perps.closeLong')
                     : t('page.perps.closeShort')}
                 </Button>
-              ) : (
+              ) : hasPermission ? (
                 <div className="flex gap-12 justify-center">
                   <Button
                     size="large"
@@ -531,6 +537,10 @@ export const PerpsSingleCoin = () => {
                   >
                     {t('page.perps.short')}
                   </Button>
+                </div>
+              ) : (
+                <div className="flex gap-12 items-center text-13 justify-center text-r-neutral-body font-medium bg-r-neutral-line rounded-[8px] h-[48px]">
+                  {t('page.perps.permissionTips')}
                 </div>
               )}
             </div>

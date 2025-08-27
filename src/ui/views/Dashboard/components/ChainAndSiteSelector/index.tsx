@@ -23,6 +23,7 @@ import {
   formatUsdValue,
   getCurrentConnectSite,
   openInternalPageInTab,
+  splitNumberByStep,
   useWallet,
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
@@ -308,7 +309,8 @@ export default function ChainAndSiteSelector({
                 : 'text-r-red-default'
             }`}
           >
-            {formatUsdValue(perpsPositionInfo.pnl, BigNumber.ROUND_DOWN)}
+            {perpsPositionInfo.pnl >= 0 ? '+' : '-'}$
+            {splitNumberByStep(Math.abs(perpsPositionInfo.pnl).toFixed(2))}
           </div>
         ) : null,
         content: t('page.dashboard.home.panel.perps'),

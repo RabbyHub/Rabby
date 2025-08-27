@@ -1,3 +1,5 @@
+import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
+
 // must be a USDC token and more than 5 usdc
 export const PERPS_SEND_ARB_USDC_ADDRESS =
   '0x2df1c51e09aecf9cacb7bc98cb1742757f163df7';
@@ -696,12 +698,7 @@ export const DEFAULT_TOP_ASSET = [
       'https://static.debank.com/image/hyper_liquid/logo_url/ENS/ab162afbfc83427a854017777f4eebf4.png',
     daily_volume: 468333,
   },
-] as {
-  id: number;
-  name: string;
-  full_logo_url: string | null;
-  daily_volume: number;
-}[];
+] as PerpTopToken[];
 
 const INIT_PERPS_BUILD_FEE_RECEIVE_ADDRESS =
   '0x341a1fBD51825E5a107DB54cCb3166DeBA145479';
@@ -710,3 +707,6 @@ export const PERPS_BUILD_FEE_RECEIVE_ADDRESS = INIT_PERPS_BUILD_FEE_RECEIVE_ADDR
 export const PERPS_BUILD_FEE = 50; // '0.05%'
 
 export const PERPS_REFERENCE_CODE = 'RABBYTEST';
+
+export const DELETE_AGENT_EMPTY_ADDRESS =
+  '0x0000000000000000000000000000000000000000';

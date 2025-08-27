@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
-import { formatUsdValue, sinceTime } from '@/ui/utils';
+import { formatUsdValue, sinceTime, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconDeposit } from '@/ui/assets/perps/IconDeposit.svg';
@@ -182,8 +182,8 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
         {isClose ? (
           <>
             <div className={clsx('text-14 font-medium', getPnlColor(pnlValue))}>
-              {pnlValue > 0 ? '+' : '-'}
-              {formatUsdValue(Math.abs(pnlValue))}
+              {pnlValue > 0 ? '+' : '-'}$
+              {splitNumberByStep(Math.abs(pnlValue).toFixed(2))}
             </div>
             <div className="text-13 text-r-neutral-foot">
               {sinceTime(fill.time / 1000)}

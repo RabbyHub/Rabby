@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Input, Button, Slider, Switch, Tooltip, message } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -99,7 +99,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       leverage,
       maxLeverage
     ).toFixed(pxDecimals);
-  }, [markPrice, leverage, leverageRang]);
+  }, [markPrice, leverage, leverageRang, margin, tradeSize]);
 
   const bothFee = React.useMemo(() => {
     return providerFee + 0.0005;
@@ -224,20 +224,24 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         );
         return (
           <div className="text-r-neutral-title-1 font-medium text-13">
-            ${autoClose.tpTriggerPx} {t('page.perps.takeProfit')} {Line}$
-            {autoClose.slTriggerPx} {t('page.perps.stopLoss')}
+            ${splitNumberByStep(autoClose.tpTriggerPx)}{' '}
+            {t('page.perps.takeProfit')} {Line}$
+            {splitNumberByStep(autoClose.slTriggerPx)}{' '}
+            {t('page.perps.stopLoss')}
           </div>
         );
       } else if (autoClose.tpTriggerPx) {
         return (
           <div className="text-r-neutral-title-1 font-medium text-13">
-            ${autoClose.tpTriggerPx} {t('page.perps.takeProfit')}
+            ${splitNumberByStep(autoClose.tpTriggerPx)}{' '}
+            {t('page.perps.takeProfit')}
           </div>
         );
       } else if (autoClose.slTriggerPx) {
         return (
           <div className="text-r-neutral-title-1 font-medium text-13">
-            ${autoClose.slTriggerPx} {t('page.perps.stopLoss')}
+            ${splitNumberByStep(autoClose.slTriggerPx)}{' '}
+            {t('page.perps.stopLoss')}
           </div>
         );
       } else {
@@ -311,7 +315,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               {t('page.perps.size')}
             </div>
             <div className="text-15 text-r-neutral-title-1">
-              {formatUsdValue(tradeAmount)} = {tradeSize} {coin}
+              ${splitNumberByStep(Number(tradeAmount).toFixed(2))} = {tradeSize}{' '}
+              {coin}
             </div>
           </div>
           <div className="flex w-full py-16 items-center justify-between">
@@ -366,7 +371,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perps.margin')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                ${margin}
+                ${splitNumberByStep(Number(margin).toFixed(2))}
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -390,7 +395,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </Tooltip>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                {formatUsdValue(tradeAmount)} = {tradeSize} {coin}
+                ${splitNumberByStep(tradeAmount.toFixed(2))} = {tradeSize}{' '}
+                {coin}
               </div>
             </div>
             {autoClose.isOpen && (
@@ -412,7 +418,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {coin}-USD {t('page.perps.price')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                ${markPrice}
+                ${splitNumberByStep(markPrice)}
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -428,7 +434,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </Tooltip>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                ${estimatedLiquidationPrice}
+                $
+                {splitNumberByStep(
+                  Number(estimatedLiquidationPrice).toFixed(2)
+                )}
               </div>
             </div>
             <div className="flex justify-between items-center">
