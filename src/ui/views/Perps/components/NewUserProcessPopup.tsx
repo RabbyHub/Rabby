@@ -143,7 +143,7 @@ export const NewUserProcessPopup: React.FC<NewUserProcessProps> = ({
             <div className="text-20 font-medium text-r-neutral-title-1">
               {t('page.perps.newUserProcess.fifthTitle')}
             </div>
-            <div className="text-14 text-r-neutral-body mt-12 mb-12">
+            <div className="text-14 text-r-neutral-body mt-12">
               {t('page.perps.newUserProcess.fifthDescription')}
             </div>
             <div className="flex items-center justify-center mb-8 h-[220px]">
@@ -164,7 +164,7 @@ export const NewUserProcessPopup: React.FC<NewUserProcessProps> = ({
   return (
     <Popup
       placement="bottom"
-      height={440}
+      height={460}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose

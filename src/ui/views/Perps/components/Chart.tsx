@@ -23,6 +23,7 @@ import { MarketData } from '@/ui/models/perps';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { formatPercent } from './SingleCoin';
+import { splitNumberByStep } from '@/ui/utils';
 
 export type ChartProps = {
   coin: string;
@@ -551,25 +552,25 @@ export const PerpsChart = ({
             <div className="flex justify-between items-center h-[52px]">
               <div className="flex flex-1 flex-col items-center">
                 <div className="text-15 font-medium text-r-neutral-title-1">
-                  {chartHoverData.open}
+                  {splitNumberByStep(chartHoverData.open || 0)}
                 </div>
                 <div className="text-13 text-r-neutral-foot">Open</div>
               </div>
               <div className="flex flex-1 flex-col items-center">
                 <div className="text-15 font-medium text-r-neutral-title-1">
-                  {chartHoverData.high}
+                  {splitNumberByStep(chartHoverData.high || 0)}
                 </div>
                 <div className="text-13 text-r-neutral-foot">High</div>
               </div>
               <div className="flex flex-1 flex-col items-center">
                 <div className="text-15 font-medium text-r-neutral-title-1">
-                  {chartHoverData.low}
+                  {splitNumberByStep(chartHoverData.low || 0)}
                 </div>
                 <div className="text-13 text-r-neutral-foot">Low</div>
               </div>
               <div className="flex flex-1 flex-col items-center">
                 <div className="text-15 font-medium text-r-neutral-title-1">
-                  {chartHoverData.close}
+                  {splitNumberByStep(chartHoverData.close || 0)}
                 </div>
                 <div className="text-13 text-r-neutral-foot">Close</div>
               </div>
@@ -591,7 +592,7 @@ export const PerpsChart = ({
         ) : (
           <div>
             <div className="text-[32px] font-bold text-r-neutral-title-1 h-[52px] flex items-center justify-center text-center">
-              ${markPrice}
+              ${splitNumberByStep(markPrice)}
             </div>
             <div
               className={clsx(

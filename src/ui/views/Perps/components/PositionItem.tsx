@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { AssetPosition } from '@rabby-wallet/hyperliquid-sdk';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { MarketData } from '@/ui/models/perps';
 import { TokenImg } from './TokenImg';
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
@@ -58,7 +58,7 @@ export const PositionItem: React.FC<{
 
       <div className="text-right">
         <div className="text-15 font-medium  text-r-neutral-title-1 mb-2">
-          {formatUsdValue(Number(marginUsed))}
+          ${splitNumberByStep(Number(marginUsed).toFixed(2))}
         </div>
         <div
           className={clsx(

@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { TokenImg } from './TokenImg';
+import { splitNumberByStep } from '@/ui/utils';
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 export const AssetItem: React.FC<{
@@ -40,7 +41,7 @@ export const AssetItem: React.FC<{
       </div>
       <div className="text-right">
         <div className="text-15 font-medium  text-r-neutral-title-1 mb-2">
-          {`$${item.markPx}`}
+          ${splitNumberByStep(item.markPx)}
         </div>
         <div
           className={clsx(

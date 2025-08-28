@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { useMemoizedFn } from 'ahooks';
@@ -90,7 +90,8 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                     pnl >= 0 ? 'text-r-green-default' : 'text-r-red-default'
                   )}
                 >
-                  {pnl >= 0 ? '+' : '-'}${Math.abs(pnl).toFixed(4)}
+                  {pnl >= 0 ? '+' : '-'}$
+                  {splitNumberByStep(Math.abs(pnl).toFixed(2))}
                 </div>
               </div>
             </div>

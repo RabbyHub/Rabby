@@ -10,7 +10,8 @@ export const usePerpsPosition = () => {
     userFills,
     currentPerpsAccount,
     isLogin,
-  } = usePerpsState();
+    hasPermission,
+  } = usePerpsState({});
 
   const handleSetAutoClose = useMemoizedFn(
     async (params: {
@@ -142,5 +143,6 @@ export const usePerpsPosition = () => {
     userFills,
     isLogin,
     currentPerpsAccount,
+    hasPermission,
   };
 };

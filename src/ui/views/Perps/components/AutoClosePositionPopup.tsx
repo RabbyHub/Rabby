@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, message, Switch } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { useMemoizedFn } from 'ahooks';
 
@@ -109,7 +109,7 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
         resObj.sl.isWarning = true;
         resObj.sl.error = '';
         resObj.sl.errorMessage = t('page.perps.stopLossTipsLongLiquidation', {
-          price: `$${liqPrice}`,
+          price: `$${splitNumberByStep(liqPrice)}`,
         });
       }
       if (direction === 'Short' && slValue <= price) {
@@ -122,7 +122,7 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
         resObj.sl.isWarning = true;
         resObj.sl.error = '';
         resObj.sl.errorMessage = t('page.perps.stopLossTipsShortLiquidation', {
-          price: `$${liqPrice}`,
+          price: `$${splitNumberByStep(liqPrice)}`,
         });
       }
     }
@@ -185,11 +185,11 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
         </div>
         {type === 'openPosition' ? (
           <div className="text-15 text-r-neutral-title-1 text-center mt-16 mb-16">
-            {coin}-USD {t('page.perps.price')}: ${price}
+            {coin}-USD {t('page.perps.price')}: ${splitNumberByStep(price)}
           </div>
         ) : (
           <div className="text-15 text-r-neutral-title-1 text-center mt-16 mb-16">
-            {t('page.perps.entryPrice')}: ${price}
+            {t('page.perps.entryPrice')}: ${splitNumberByStep(price)}
           </div>
         )}
 

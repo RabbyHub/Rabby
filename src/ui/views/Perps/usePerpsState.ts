@@ -1,6 +1,6 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWallet } from '@/ui/utils';
 import { destroyPerpsSDK, getPerpsSDK } from './sdkManager';
 import {
@@ -8,13 +8,17 @@ import {
   PERPS_BUILD_FEE,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
+  DELETE_AGENT_EMPTY_ADDRESS,
 } from './constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
 import { KEYRING_CLASS } from '@/constant';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
+import { MiniTypedData } from '../Approval/components/MiniSignTypedData/useTypedDataTask';
+import { useStartDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { create, maxBy, minBy } from 'lodash';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
 interface SignAction {
@@ -90,6 +94,19 @@ export const usePerpsInitial = () => {
     }
   );
 
+  const safeSetBuilderFee = useMemoizedFn(async () => {
+    const sdk = getPerpsSDK();
+    const res = await sdk.info.getMaxBuilderFee(
+      PERPS_BUILD_FEE_RECEIVE_ADDRESS
+    );
+    if (res) {
+      sdk.exchange?.updateBuilder(
+        PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+        PERPS_BUILD_FEE
+      );
+    }
+  });
+
   useEffect(() => {
     if (isInitialized && isLogin) {
       // 已经初始化完成 且 已经登录
@@ -105,7 +122,7 @@ export const usePerpsInitial = () => {
       try {
         const noLoginAction = () => {
           wallet.setPerpsCurrentAccount(null);
-          dispatch.perps.fetchMarketData();
+          dispatch.perps.fetchMarketData(undefined);
           dispatch.perps.setInitialized(true);
         };
 
@@ -148,12 +165,9 @@ export const usePerpsInitial = () => {
           res.preference.agentAddress,
           PERPS_AGENT_NAME
         );
-        sdk.exchange?.updateBuilder(
-          PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-          PERPS_BUILD_FEE
-        );
+        safeSetBuilderFee();
 
-        dispatch.perps.fetchMarketData();
+        dispatch.perps.fetchMarketData(undefined);
 
         await dispatch.perps.loginPerpsAccount(currentAccount);
 
@@ -205,36 +219,136 @@ export const usePerpsInitial = () => {
     accountSummary,
     positionAndOpenOrders,
     isLogin,
+    safeSetBuilderFee,
     perpsPositionInfo,
   };
 };
 
-export const usePerpsState = () => {
+export const usePerpsState = ({
+  setDeleteAgentModalVisible,
+}: {
+  setDeleteAgentModalVisible?: (visible: boolean) => void;
+}) => {
   const dispatch = useRabbyDispatch();
+  const [miniSignTypeData, setMiniSignTypeData] = useState<MiniTypedData[]>([]);
+  const startDirectSigning = useStartDirectSigning();
+  const deleteAgentCbRef = useRef<(() => Promise<void>) | null>(null);
+  const { safeSetBuilderFee } = usePerpsInitial();
+
+  const clearMiniSignTypeData = useMemoizedFn(() => {
+    setMiniSignTypeData([]);
+  });
+
+  const miniSignPromiseRef = useRef<{
+    resolve: (result: string[]) => void;
+    reject: (error: any) => void;
+  } | null>(null);
+
+  const waitForMiniSignResult = useMemoizedFn(
+    (): Promise<string[]> => {
+      return new Promise((resolve, reject) => {
+        miniSignPromiseRef.current = { resolve, reject };
+      });
+    }
+  );
+
+  const handleMiniSignResolve = useMemoizedFn((result: string[]) => {
+    if (miniSignPromiseRef.current) {
+      clearMiniSignTypeData();
+      miniSignPromiseRef.current.resolve(result);
+      miniSignPromiseRef.current = null;
+    }
+  });
+
+  const handleMiniSignReject = useMemoizedFn((error?: any) => {
+    if (miniSignPromiseRef.current) {
+      clearMiniSignTypeData();
+      miniSignPromiseRef.current.reject(error || new Error('User rejected'));
+      miniSignPromiseRef.current = null;
+    }
+  });
   const perpsState = useRabbySelector((state) => state.perps);
   const {
     isInitialized,
     currentPerpsAccount,
     isLogin,
     positionAndOpenOrders,
+    hasPermission,
   } = perpsState;
 
   const wallet = useWallet();
 
+  useEffect(() => {
+    wallet.openapi
+      .getPerpPermission({ id: currentPerpsAccount?.address || '' })
+      .then(({ has_permission }) => {
+        dispatch.perps.setHasPermission(has_permission);
+      })
+      .catch((error) => {
+        console.error('Failed to get perp permission:', error);
+      });
+  }, [currentPerpsAccount?.address]);
+
+  const handleDeleteAgent = useMemoizedFn(async () => {
+    if (deleteAgentCbRef.current) {
+      await deleteAgentCbRef.current();
+      deleteAgentCbRef.current = null;
+    }
+  });
+
   const checkIsExtraAgentIsExpired = useMemoizedFn(
-    async (masterAddress: string, agentAddress: string) => {
+    async (account, agentAddress: string) => {
       const sdk = getPerpsSDK();
-      const extraAgents = await sdk.info.extraAgents(masterAddress);
+      const extraAgents = await sdk.info.extraAgents(account.address);
       const item = extraAgents.find((agent) =>
         isSameAddress(agent.address, agentAddress)
       );
       if (!item) {
-        return true;
+        if (extraAgents.length >= 3) {
+          // 超过3个，需要删除一个
+          deleteAgentCbRef.current = async () => {
+            const deleteItem = minBy(extraAgents, (agent) => agent.validUntil);
+            if (deleteItem) {
+              sdk.initAccount(
+                account.address,
+                DELETE_AGENT_EMPTY_ADDRESS,
+                DELETE_AGENT_EMPTY_ADDRESS,
+                deleteItem.name
+              );
+              const action = sdk.exchange?.prepareApproveAgent();
+              const signActions: SignAction[] = [
+                {
+                  action,
+                  type: 'approveAgent',
+                  signature: '',
+                },
+              ];
+              await executeSignatures(signActions, account);
+              const res = await sdk.exchange?.sendApproveAgent({
+                action: action?.message,
+                nonce: action?.nonce || 0,
+                signature: signActions[0].signature,
+              });
+              console.log('deleteAgent res', res);
+            }
+          };
+          setDeleteAgentModalVisible?.(true);
+          return {
+            needDelete: true,
+            isExpired: true,
+          };
+        }
+        return {
+          isExpired: true,
+        };
       }
+
       const expiredAt = item?.validUntil;
       const oneDayAfter = Date.now() + 24 * 60 * 60 * 1000;
       const isExpired = expiredAt ? expiredAt < oneDayAfter : true;
-      return isExpired;
+      return {
+        isExpired,
+      };
     }
   );
 
@@ -262,6 +376,11 @@ export const usePerpsState = () => {
           type: 'approveBuilderFee',
           signature: '',
         });
+      } else {
+        sdk.exchange?.updateBuilder(
+          PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+          PERPS_BUILD_FEE
+        );
       }
 
       return signActions;
@@ -270,24 +389,56 @@ export const usePerpsState = () => {
 
   const executeSignatures = useMemoizedFn(
     async (signActions: SignAction[], account: Account): Promise<void> => {
+      await wallet.changeAccount(account);
       const isLocalWallet =
         account.type === KEYRING_CLASS.PRIVATE_KEY ||
         account.type === KEYRING_CLASS.MNEMONIC;
 
-      for (const actionObj of signActions) {
-        const signature = isLocalWallet
-          ? await wallet.signTypedData(
+      const useMiniApprovalSign =
+        account.type === KEYRING_CLASS.HARDWARE.ONEKEY ||
+        account.type === KEYRING_CLASS.HARDWARE.LEDGER;
+
+      if (useMiniApprovalSign) {
+        setMiniSignTypeData(
+          signActions.map((item) => {
+            return {
+              data: item.action,
+              from: account.address,
+              version: 'V4',
+            };
+          })
+        );
+        startDirectSigning();
+        // await MiniTypedDataApproval in home page
+        try {
+          const result = await waitForMiniSignResult();
+          console.log('Mini sign result', result);
+          result.forEach((item, idx) => {
+            signActions[idx].signature = item;
+          });
+        } catch (error) {
+          console.log('Mini sign rejected or failed:', error);
+          throw error;
+        }
+      } else {
+        for (const actionObj of signActions) {
+          let signature = '';
+
+          if (isLocalWallet) {
+            signature = await wallet.signTypedData(
               account.type,
               account.address,
               actionObj.action,
               { version: 'V4' }
-            )
-          : await wallet.sendRequest({
+            );
+          } else {
+            signature = await wallet.sendRequest({
               method: 'eth_signTypedDataV4',
-              params: [account.address, actionObj.action],
+              params: [account.address, JSON.stringify(actionObj.action)],
             });
-
-        actionObj.signature = signature as string;
+          }
+          actionObj.signature = signature;
+        }
       }
     }
   );
@@ -323,8 +474,6 @@ export const usePerpsState = () => {
     async (signActions: SignAction[]): Promise<void> => {
       const sdk = getPerpsSDK();
 
-      console.log('handleDirectApprove', sdk.exchange);
-
       const results = await Promise.all(
         signActions.map(async (actionObj) => {
           const { action, type, signature } = actionObj;
@@ -336,16 +485,21 @@ export const usePerpsState = () => {
               signature,
             });
           } else if (type === 'approveBuilderFee') {
-            return sdk.exchange?.sendApproveBuilderFee({
+            const res = await sdk.exchange?.sendApproveBuilderFee({
               action: action?.message,
               nonce: action?.nonce || 0,
-              signature,
+              signature: signature || '',
             });
+            res &&
+              sdk.exchange?.updateBuilder(
+                PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+                PERPS_BUILD_FEE
+              );
+            return res;
           }
         })
       );
 
-      sdk.exchange?.updateBuilder(PERPS_BUILD_FEE_RECEIVE_ADDRESS, 50);
       setTimeout(() => {
         handleSafeSetReference();
       }, 500);
@@ -362,10 +516,6 @@ export const usePerpsState = () => {
     );
     const sdk = getPerpsSDK();
     sdk.initAccount(account.address, vault, agentAddress, PERPS_AGENT_NAME);
-    sdk.exchange?.updateBuilder(
-      PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-      PERPS_BUILD_FEE
-    );
 
     const signActions = await prepareSignActions();
 
@@ -402,10 +552,14 @@ export const usePerpsState = () => {
       const res = await wallet.getPerpsAgentWallet(account.address);
       if (res) {
         // 如果存在 agent wallet, 则检查是否过期
-        const isExpired = await checkIsExtraAgentIsExpired(
-          account.address,
+        const { isExpired, needDelete } = await checkIsExtraAgentIsExpired(
+          account,
           res.preference.agentAddress
         );
+        if (needDelete) {
+          // 先不登录，防止hl服务状态不同步
+          return false;
+        }
         if (!isExpired) {
           sdk.initAccount(
             account.address,
@@ -413,10 +567,7 @@ export const usePerpsState = () => {
             res.preference.agentAddress,
             PERPS_AGENT_NAME
           );
-          sdk.exchange?.updateBuilder(
-            PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-            PERPS_BUILD_FEE
-          );
+          safeSetBuilderFee();
           // 未到过期时间无需签名直接登录即可
           await dispatch.perps.loginPerpsAccount(account);
         } else {
@@ -526,6 +677,7 @@ export const usePerpsState = () => {
     isLogin: perpsState.isLogin,
     isInitialized: perpsState.isInitialized,
     userFills: perpsState.userFills,
+    hasPermission: perpsState.hasPermission,
     homeHistoryList,
 
     // Actions
@@ -534,6 +686,14 @@ export const usePerpsState = () => {
     setCurrentPerpsAccount,
     handleWithdraw,
     refreshData: dispatch.perps.refreshData,
+
+    // hard ware sign typeData
+    miniSignTypeData,
+    clearMiniSignTypeData,
+    handleMiniSignResolve,
+    handleMiniSignReject,
+
+    handleDeleteAgent,
   };
 };
 

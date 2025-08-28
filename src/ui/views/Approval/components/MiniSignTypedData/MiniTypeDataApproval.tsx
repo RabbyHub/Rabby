@@ -27,6 +27,7 @@ export const MiniTypedDataApproval = ({
   canUseDirectSubmitTx,
   isPreparingSign,
   setIsPreparingSign,
+  noShowModalLoading,
 }: {
   txs?: MiniTypedData[];
   visible?: boolean;
@@ -40,6 +41,7 @@ export const MiniTypedDataApproval = ({
   canUseDirectSubmitTx?: boolean;
   isPreparingSign?: boolean;
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
+  noShowModalLoading?: boolean;
 }) => {
   const [status, setStatus] = useState<BatchSignTypedDataTaskType['status']>(
     'idle'
@@ -112,6 +114,7 @@ export const MiniTypedDataApproval = ({
         className="is-support-darkmode"
         visible={innerVisible}
         onClose={handleClose}
+        zIndex={1001}
         maskClosable={status === 'idle'}
         closable={false}
         bodyStyle={{
@@ -147,6 +150,7 @@ export const MiniTypedDataApproval = ({
       {isPreparingSign ||
       (directSubmit &&
         canUseDirectSubmitTx &&
+        !noShowModalLoading &&
         !supportedHardwareDirectSign(currentAccount?.type || '')) ? (
         <Modal
           transitionName=""

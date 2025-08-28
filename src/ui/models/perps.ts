@@ -68,6 +68,7 @@ export interface PerpsState {
   currentPerpsAccount: Account | null;
   marketData: MarketData[];
   marketDataMap: MarketDataMap;
+  hasPermission: boolean;
   perpFee: number;
   isLogin: boolean;
   isInitialized: boolean;
@@ -77,6 +78,11 @@ export interface PerpsState {
   localLoadingHistory: AccountHistoryItem[];
   wsSubscriptions: (() => void)[];
   pollingTimer: NodeJS.Timeout | null;
+  fillsOrderTpOrSl: Record<string, 'tp' | 'sl'>;
+  homePositionPnl: {
+    pnl: number;
+    show: boolean;
+  };
 }
 
 export const perps = createModel<RootModel>()({
@@ -84,7 +90,7 @@ export const perps = createModel<RootModel>()({
     // clearinghouseState: null,
     positionAndOpenOrders: [],
     accountSummary: null,
-    withdrawable: null,
+    hasPermission: true,
     perpFee: 0.00045,
     currentPerpsAccount: null,
     marketData: [],
@@ -97,9 +103,35 @@ export const perps = createModel<RootModel>()({
     approveSignatures: [],
     wsSubscriptions: [],
     pollingTimer: null,
+    homePositionPnl: {
+      pnl: 0,
+      show: false,
+    },
+    fillsOrderTpOrSl: {},
   } as PerpsState,
 
   reducers: {
+    setFillsOrderTpOrSl(state, payload: Record<string, 'tp' | 'sl'>) {
+      return {
+        ...state,
+        fillsOrderTpOrSl: payload,
+      };
+    },
+
+    setHomePositionPnl(state, payload: { pnl: number; show: boolean }) {
+      return {
+        ...state,
+        homePositionPnl: payload,
+      };
+    },
+
+    setHasPermission(state, payload: boolean) {
+      return {
+        ...state,
+        hasPermission: payload,
+      };
+    },
+
     setLocalLoadingHistory(state, payload: AccountHistoryItem[]) {
       return {
         ...state,
@@ -244,6 +276,11 @@ export const perps = createModel<RootModel>()({
         userFills: [],
         perpFee: 0.00045,
         approveSignatures: [],
+        fillsOrderTpOrSl: {},
+        homePositionPnl: {
+          pnl: 0,
+          show: false,
+        },
       };
     },
   },
@@ -352,17 +389,60 @@ export const perps = createModel<RootModel>()({
       console.log('fetchUserNonFundingLedgerUpdates', list);
     },
 
+    async fetchUserHistoricalOrders() {
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.info.getUserHistoricalOrders(
+          undefined, // use sdk inner address
+          Date.now() - 1000 * 60 * 60 * 24 * 7, // 7 days ago
+          0
+        );
+        const listOrderTpOrSl = {} as Record<string, 'tp' | 'sl'>;
+        res.forEach((item) => {
+          if (item.status !== 'triggered') {
+            return null;
+          }
+          if (item.order.reduceOnly && item.order.isTrigger) {
+            if (
+              item.order.orderType === 'Take Profit Market' ||
+              item.order.orderType === 'Stop Market'
+            ) {
+              listOrderTpOrSl[item.order.oid] =
+                item.order.orderType === 'Stop Market' ? 'sl' : 'tp';
+            }
+          }
+        });
+
+        dispatch.perps.setFillsOrderTpOrSl(listOrderTpOrSl);
+      } catch (error) {
+        console.error('Failed to fetch user historical orders:', error);
+      }
+    },
+
     async refreshData() {
       await dispatch.perps.fetchPositionAndOpenOrders();
       await dispatch.perps.fetchUserNonFundingLedgerUpdates();
+      dispatch.perps.fetchUserHistoricalOrders();
     },
 
-    async fetchMarketData() {
+    async fetchMarketData(_, rootState) {
       const sdk = getPerpsSDK();
-      const marketData = await sdk.info.metaAndAssetCtxs(true);
-      dispatch.perps.setMarketData(
-        formatMarkData(marketData, DEFAULT_TOP_ASSET)
-      );
+
+      const fetchTopTokenList = async () => {
+        try {
+          const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenList();
+          return topAssets || DEFAULT_TOP_ASSET;
+        } catch (error) {
+          console.error('Failed to fetch top assets:', error);
+          return DEFAULT_TOP_ASSET;
+        }
+      };
+
+      const [topAssets, marketData] = await Promise.all([
+        fetchTopTokenList(),
+        sdk.info.metaAndAssetCtxs(true),
+      ]);
+      dispatch.perps.setMarketData(formatMarkData(marketData, topAssets));
     },
 
     async fetchPerpFee() {

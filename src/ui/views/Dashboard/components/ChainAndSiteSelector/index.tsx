@@ -23,6 +23,7 @@ import {
   formatUsdValue,
   getCurrentConnectSite,
   openInternalPageInTab,
+  splitNumberByStep,
   useWallet,
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
@@ -41,8 +42,7 @@ import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';
 import { findChainByID } from '@/utils/chain';
 import RateModal from '@/ui/component/RateModal/RateModal';
-import { usePerpsInitial } from '@/ui/views/Perps/usePerpsState';
-import BigNumber from 'bignumber.js';
+import { usePerpsHomePnl } from '@/ui/views/Perps/usePerpsHomePnl';
 
 export default function ChainAndSiteSelector({
   gnosisPendingCount,
@@ -66,7 +66,7 @@ export default function ChainAndSiteSelector({
 }) {
   const { t } = useTranslation();
   const history = useHistory();
-  const { perpsPositionInfo } = usePerpsInitial();
+  const { perpsPositionInfo } = usePerpsHomePnl();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
     CHAINS_ENUM.ETH
   );
@@ -308,7 +308,8 @@ export default function ChainAndSiteSelector({
                 : 'text-r-red-default'
             }`}
           >
-            {formatUsdValue(perpsPositionInfo.pnl, BigNumber.ROUND_DOWN)}
+            {perpsPositionInfo.pnl >= 0 ? '+' : '-'}$
+            {splitNumberByStep(Math.abs(perpsPositionInfo.pnl).toFixed(2))}
           </div>
         ) : null,
         content: t('page.dashboard.home.panel.perps'),
