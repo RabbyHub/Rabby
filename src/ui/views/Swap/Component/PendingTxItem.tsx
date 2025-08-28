@@ -276,15 +276,17 @@ export const PendingTxItem = forwardRef<
           (findTx.status === 'completed' || findTx.status === 'failed') &&
           data
         ) {
+          const status =
+            findTx.status === 'completed' ? 'allSuccess' : 'failed';
           setData({
             ...data,
-            status: findTx.status === 'completed' ? 'allSuccess' : 'failed',
+            status,
             completedAt: Date.now(),
           });
           wallet.completeBridgeTxHistory(
             recentlyTxHash,
             data.fromChainId,
-            'allSuccess'
+            status
           );
         }
       }
