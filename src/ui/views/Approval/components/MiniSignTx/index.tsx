@@ -1,9 +1,8 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { isLedgerLockError, useLedgerDeviceConnected } from '@/ui/utils/ledger';
+import { isLedgerLockError } from '@/ui/utils/ledger';
 import { findChain } from '@/utils/chain';
-import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
 import {
   calcGasLimit,
   calcMaxPriorityFee,
@@ -22,10 +21,10 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { useMemoizedFn, useRequest, useSetState, useSize } from 'ahooks';
-import { Drawer, DrawerProps, Modal } from 'antd';
+import { useMemoizedFn } from 'ahooks';
+import { DrawerProps, Modal } from 'antd';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
-import { Account, ChainGas } from 'background/service/preference';
+import { ChainGas } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
 import {
   HARDWARE_KEYRING_TYPES,
@@ -44,37 +43,26 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAsync, useScroll } from 'react-use';
-import { useApproval } from 'ui/utils';
+import { useAsync } from 'react-use';
 import { intToHex } from 'ui/utils/number';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
-import {
-  ActionRequireData,
-  ParsedActionData,
-} from '@rabby-wallet/rabby-action';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import GasSelectorHeader, {
   GasSelectorResponse,
 } from '../TxComponents/GasSelectorHeader';
 import clsx from 'clsx';
-import { Ledger } from '../../../CommonPopup/Ledger';
 import { Popup } from '@/ui/component';
-import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import _ from 'lodash';
 import { normalizeTxParams } from '../SignTx';
-import { Dots } from '../Popup/Dots';
 import { BatchSignTxTaskType, useBatchSignTxTask } from './useBatchSignTxTask';
 import { MiniFooterBar } from './MiniFooterBar';
-import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { useGasAccountTxsCheck } from '@/ui/views/GasAccount/hooks/checkTxs';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import {
   supportedHardwareDirectSign,
   useDirectSigning,
   useGetDisableProcessDirectSign,
-  useMiniApprovalGas,
   useResetDirectSignState,
   useSetDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -84,6 +72,7 @@ import { MiniApprovalPopupContainer } from '../Popup/MiniApprovalPopupContainer'
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 import { SpeedUpCancelHeader } from './SpeedUpCancalHeader';
+import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
 
 export const MiniSignTx = ({
   txs,
@@ -397,7 +386,30 @@ export const MiniSignTx = ({
     onStatusChange?.(task.status);
   }, [task.status]);
 
+  const {
+    updateMiniCustomPrice,
+    setMiniGasLevel,
+    miniGasLevel,
+    miniCustomPrice,
+  } = useMiniSignGasStore();
+
   const handleInitTask = useMemoizedFn(() => {
+    if (selectedGas && txsResult[0] && txsResult[0]) {
+      const lastGasLevel = selectedGas?.level || 'normal';
+      setMiniGasLevel(lastGasLevel as any);
+
+      if (selectedGas?.level === 'custom') {
+        updateMiniCustomPrice(
+          chain.serverId,
+          parseInt(
+            support1559
+              ? txsResult[0].tx.maxFeePerGas!
+              : txsResult[0].tx.gasPrice!
+          )
+        );
+      }
+    }
+
     task.init(
       txsResult.map((item) => {
         return {
@@ -623,18 +635,16 @@ export const MiniSignTx = ({
       }
 
       checkCanProcess();
-      const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
-        chainId
-      );
+      const lastTimeGas: ChainGas = {
+        lastTimeSelect: miniGasLevel === 'custom' ? 'gasPrice' : 'gasLevel',
+        gasLevel: miniGasLevel,
+        gasPrice: miniCustomPrice[chain.serverId] || 0,
+      };
       let customGasPrice = 0;
-      // if (
-      //   lastTimeGas?.lastTimeSelect === 'gasPrice' &&
-      //   lastTimeGas.gasPrice &&
-      //   !directSubmit
-      // ) {
-      //   // use cached gasPrice if exist
-      //   customGasPrice = lastTimeGas.gasPrice;
-      // }
+      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+        // use cached gasPrice if exist
+        customGasPrice = lastTimeGas.gasPrice;
+      }
       const gasPrice = txs[0].gasPrice || txs[0].maxFeePerGas;
       if (
         isSpeedUp ||
@@ -649,16 +659,15 @@ export const MiniSignTx = ({
       let gas: GasLevel | null = null;
 
       if (
+        ((isSend || isSwap || isBridge) && customGasPrice) ||
         isSpeedUp ||
         isCancel ||
-        customGasPrice ||
-        (lastTimeGas?.lastTimeSelect === 'gasPrice' && !directSubmit)
+        lastTimeGas?.lastTimeSelect === 'gasPrice'
       ) {
         gas = gasList.find((item) => item.level === 'custom')!;
       } else if (
         lastTimeGas?.lastTimeSelect &&
-        lastTimeGas?.lastTimeSelect === 'gasLevel' &&
-        !directSubmit
+        lastTimeGas?.lastTimeSelect === 'gasLevel'
       ) {
         const target = gasList.find(
           (item) => item.level === lastTimeGas?.gasLevel

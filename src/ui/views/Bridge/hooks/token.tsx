@@ -16,6 +16,7 @@ import { useBridgeSlippage } from './slippage';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import eventBus from '@/eventBus';
+import { useClearMiniGasStateEffect } from '@/ui/hooks/miniSignGasStore';
 
 export const enableInsufficientQuote = true;
 
@@ -768,6 +769,12 @@ export const useBridge = () => {
       isSetMaxRef.current = true;
     }
   }, [amount, searchObj.inputAmount, searchObj.maxNativeTokenGasPrice]);
+
+  useClearMiniGasStateEffect({
+    chainServerId: findChainByEnum(fromChain)?.serverId || '',
+    fromTokenId: `${fromToken?.id}-${fromChain}`,
+    toTokenId: `${toToken?.id}-${toChain}`,
+  });
 
   return {
     clearExpiredTimer,
