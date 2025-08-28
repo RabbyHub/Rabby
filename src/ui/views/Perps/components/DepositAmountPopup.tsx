@@ -166,7 +166,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         </div>
         <div className="px-16">
           <div
-            className={`flex flex-col bg-r-neutral-bg1 rounded-[8px] ${
+            className={`flex flex-col bg-r-neutral-card1 rounded-[8px] ${
               type === 'withdraw' ? 'h-[180px]' : 'h-[200px]'
             }`}
           >

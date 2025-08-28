@@ -183,16 +183,16 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           )}
           onClick={(e) => handleClickToken(item)}
         >
-          <Space size={12}>
+          <div className="flex items-center gap-6">
             <TokenWithChain token={item} hideConer />
             <span>{getTokenSymbol(item)}</span>
             {item.id === ARB_USDC_TOKEN_ID &&
               item.chain === ARB_USDC_TOKEN_SERVER_CHAIN && (
-                <div className="text-13 font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-8 py-4 ml-4">
-                  Direct Deposit
+                <div className="text-13 font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-8 py-4">
+                  {t('page.perps.directDeposit')}
                 </div>
               )}
-          </Space>
+          </div>
           <div>
             {item.id === ARB_USDC_TOKEN_ID && usdcTokenInfo?.amount
               ? formatUsdValue(

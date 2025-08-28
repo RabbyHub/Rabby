@@ -382,7 +382,13 @@ export const Perps: React.FC = () => {
 
       <NewUserProcessPopup
         visible={newUserProcessVisible}
-        onCancel={() => setNewUserProcessVisible(false)}
+        onCancel={async () => {
+          setNewUserProcessVisible(false);
+          const hasDoneNewUserProcess = await wallet.getHasDoneNewUserProcess();
+          if (!hasDoneNewUserProcess) {
+            history.push('/dashboard');
+          }
+        }}
         onComplete={() => {
           wallet.setHasDoneNewUserProcess(true);
         }}

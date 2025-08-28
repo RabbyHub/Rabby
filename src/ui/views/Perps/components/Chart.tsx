@@ -112,24 +112,26 @@ const parseCandles = (data: CandleSnapshot): CandleBar[] => {
 const getThemeColors = (isDark: boolean) =>
   isDark
     ? {
-        vertLineColor: 'rgba(255, 255, 255, 0.06)',
-        horzLineColor: 'rgba(255, 255, 255, 0.06)',
-        textColor: 'rgba(255, 255, 255, 0.8)',
+        vertLineColor: 'rgba(255, 255, 255, 0.1)',
+        horzLineColor: 'rgba(255, 255, 255, 0.1)',
+        textColor: 'rgba(247, 250, 252, 1)',
         priceLineColor: 'rgba(255, 255, 255, 1)',
         crosshairVertLineColor: 'rgba(186, 190, 197, 1)',
-        bgColor: '#111214',
+        bgColor: 'transparent',
         redLineColor: 'rgba(227, 73, 53, 1)',
+        timeLabelBackgroundColor: 'rgba(12, 15, 31, 1)',
         greenLineColor: 'rgba(42, 187, 127, 1)',
       }
     : {
-        vertLineColor: 'rgba(46, 46, 46, 0.06)',
-        horzLineColor: 'rgba(46, 46, 46, 0.06)',
-        textColor: '#1f1f1f',
+        vertLineColor: 'rgba(46, 46, 46, 0.1)',
+        horzLineColor: 'rgba(46, 46, 46, 0.1)',
+        textColor: 'rgba(25, 41, 69, 1)',
         priceLineColor: 'rgba(12, 15, 31, 1)',
         crosshairVertLineColor: 'rgba(106, 117, 135, 1)',
         redLineColor: 'rgba(227, 73, 53, 1)',
         greenLineColor: 'rgba(42, 187, 127, 1)',
-        bgColor: '#ffffff',
+        timeLabelBackgroundColor: 'rgba(255, 255, 255, 1)',
+        bgColor: 'transparent',
       };
 
 const LightweightKlineChart: React.FC<ChartProps> = ({
@@ -238,6 +240,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
         vertLine: {
           visible: true,
           color: colors.crosshairVertLineColor,
+          labelBackgroundColor: colors.timeLabelBackgroundColor,
           width: 1,
           style: 0,
         },

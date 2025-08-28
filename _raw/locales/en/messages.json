@@ -776,7 +776,7 @@
         "thirdDescription": "When you expect the price to fall, you open a short. If the price falls, you gain. If it rises, you lose.",
         "fourthTitle": "Adjusting Leverage",
         "fourthDescription": "Leverage lets you trade with more than you put in. It can increase both your gains and your losses.",
-        "fifthTitle": "Liquidation Price",
+        "fifthTitle": "Liquidation",
         "fifthDescription": "Every position has a liquidation price. If the market price reaches it, your position will be closed. Using high leverage increases the risk of liquidation."
       },
       "historyDetail": {
@@ -815,6 +815,7 @@
         "minimumDepositSize": "The minimum deposit amount is $5",
         "minimumWithdrawSize": "The minimum withdraw amount is $2"
       },
+      "directDeposit": "Direct Deposit",
       "logInTips": "Log in with your address and deposit funds to start trading perps.",
       "logInPerpsAccount": "Log in to my Perps account",
       "learnAboutPerps": "Learn about Perps",

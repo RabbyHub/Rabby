@@ -269,7 +269,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       </div>
 
       <div className="flex-1 px-20">
-        <div className="bg-r-neutral-bg1 rounded-[8px] p-16 h-[168px] mb-12 items-center">
+        <div className="bg-r-neutral-card1 rounded-[8px] p-16 h-[168px] mb-12 items-center">
           <div className="text-13 text-r-neutral-body text-center">
             {t('page.perps.margin')}
           </div>
@@ -309,17 +309,17 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           )}
         </div>
 
-        <div className="mb-20 bg-r-neutral-bg1 rounded-[8px] flex items-center flex-col px-16">
-          <div className="flex w-full py-16 justify-between items-center">
+        <div className="mb-20 bg-r-neutral-card1 rounded-[8px] flex items-center flex-col px-16">
+          <div
+            className="flex w-full py-16 justify-between items-center cursor-pointer"
+            onClick={() => {
+              openLeveragePopup();
+            }}
+          >
             <div className="text-13 text-r-neutral-title-1">
               {t('page.perps.leverage')}
             </div>
-            <div
-              className="text-14 font-medium text-r-neutral-title-1 text-center flex items-center cursor-pointer"
-              onClick={() => {
-                openLeveragePopup();
-              }}
-            >
+            <div className="text-14 font-medium text-r-neutral-title-1 text-center flex items-center">
               {leverage}x
               <ThemeIcon
                 className="icon icon-arrow-right ml-4"
@@ -372,7 +372,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
       <div className="flex-1 px-20">
         {/* Order Details Section */}
-        <div className="bg-r-neutral-bg1 rounded-[8px] p-16 mb-12">
+        <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-12">
           <div className="space-y-16">
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
@@ -426,7 +426,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         </div>
 
         {/* Price and Fee Section */}
-        <div className="bg-r-neutral-bg1 rounded-[8px] p-16 mb-20">
+        <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-20">
           <div className="space-y-16">
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
