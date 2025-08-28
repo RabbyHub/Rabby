@@ -142,17 +142,19 @@ function AccountItem(props: {
           <AddressViewer
             address={account.address}
             showArrow={false}
-            className={'text-r-neutral-body'}
+            className={'text-r-neutral-body font-[12px]'}
           />
           <CopyChecked
             addr={account.address}
             className={clsx(
-              'w-[14px] h-[14px] ml-4 mr-4 text-14 cursor-pointer'
+              'w-[14px] h-[14px] ml-4 mr-8 text-14 cursor-pointer'
             )}
             // copyClassName={clsx()}
             checkedClassName={clsx('text-[#00C087]')}
           />
-          <div className="ml-auto">{formatUsdValue(account.balance)}</div>
+          <div className="font-13 ml-auto text-r-neutral-body">
+            {formatUsdValue(account.balance)}
+          </div>
         </div>
       </div>
     </Item>

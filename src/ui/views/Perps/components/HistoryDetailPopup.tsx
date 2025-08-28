@@ -170,7 +170,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
               <span className="text-13 text-r-neutral-body">
                 {t('page.perps.historyDetail.provider')}
               </span>
-              <span className="text-13 text-blue-500 font-medium">
+              <span className="text-13 text-r-neutral-title-1 font-medium">
                 Hyperliquid
               </span>
             </div>

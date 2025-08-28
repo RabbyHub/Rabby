@@ -29,13 +29,13 @@ const Row: React.FC<{
         <div className="w-[20px] text-13 text-r-neutral-foot">{index}</div>
         <TokenImg size={28} logoUrl={logoUrl} />
         <div className="flex flex-col leading-[18px]">
-          <div className="text-15 text-r-neutral-title font-medium">
+          <div className="text-15 text-r-neutral-title-1 font-medium">
             {name} - USD
           </div>
           <div className="text-12 text-r-neutral-foot">{leverage}x</div>
         </div>
       </div>
-      <div className="text-15 text-r-neutral-title font-medium">
+      <div className="text-15 text-r-neutral-title-1 font-medium">
         {formatUsdValueKMB(volume)}
       </div>
     </div>

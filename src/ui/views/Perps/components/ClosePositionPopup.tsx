@@ -74,7 +74,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
 
         <div className="flex-1 px-20">
           {/* Position Details Section */}
-          <div className="bg-white rounded-[8px] p-16 mb-20">
+          <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-20">
             <div className="space-y-16">
               <div className="flex justify-between items-center">
                 <div className="text-13 text-r-neutral-body">Position Size</div>
