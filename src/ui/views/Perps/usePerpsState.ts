@@ -596,10 +596,6 @@ export const usePerpsState = ({
     wallet.setSendApproveAfterDeposit(address, []);
   });
 
-  const setCurrentPerpsAccount = useMemoizedFn((account: Account | null) => {
-    dispatch.perps.setCurrentPerpsAccount(account);
-  });
-
   const handleWithdraw = useMemoizedFn(
     async (amount: number): Promise<boolean> => {
       try {
@@ -683,7 +679,6 @@ export const usePerpsState = ({
     // Actions
     login,
     logout,
-    setCurrentPerpsAccount,
     handleWithdraw,
     refreshData: dispatch.perps.refreshData,
 

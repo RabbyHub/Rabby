@@ -601,8 +601,9 @@ export const PerpsChart = ({
               )}
             >
               {isPositiveChange ? '+' : ''}
-              {dayDelta.toFixed(decimals)} ({isPositiveChange ? '+' : ''}
-              {formatPercent(dayDeltaPercent, 2)}%)
+              {splitNumberByStep(dayDelta.toFixed(decimals))} (
+              {isPositiveChange ? '+' : ''}
+              {formatPercent(dayDeltaPercent, 2)})
             </div>
           </div>
         )}

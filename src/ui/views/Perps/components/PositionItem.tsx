@@ -41,10 +41,11 @@ export const PositionItem: React.FC<{
       className={clsx(
         'w-full bg-r-neutral-card1 rounded-[12px] px-16 py-12 flex items-center justify-between',
         'border border-transparent',
+        'hover:bg-r-blue-light1',
         'hover:border-rabby-blue-default cursor-pointer'
       )}
     >
-      <div className="flex items-center gap-12">
+      <div className="flex items-center gap-10">
         <TokenImg logoUrl={logoUrl} direction={side} withDirection={true} />
         <div className="text-left">
           <div className="text-15 font-medium text-r-neutral-title-1 mb-2">

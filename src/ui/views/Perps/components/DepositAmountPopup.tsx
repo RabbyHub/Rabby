@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Input, Button, Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { TokenSelectPopup } from './TokenSelectPopup';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,7 @@ import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
@@ -49,7 +50,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const [selectedToken, setSelectedToken] = React.useState<TokenItem | null>(
     ARB_USDC_TOKEN_ITEM
   );
-
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const wallet = useWallet();
 
   const { value: usdcTokenInfo, loading: usdcLoading } = useAsync(async () => {
@@ -76,6 +77,17 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   React.useEffect(() => {
     if (!visible) {
       setAmount('');
+    }
+  }, [visible]);
+
+  React.useEffect(() => {
+    if (visible && inputRef.current) {
+      // 使用 setTimeout 确保弹窗完全渲染后再聚焦
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 200);
+
+      return () => clearTimeout(timer);
     }
   }, [visible]);
 
@@ -167,14 +179,22 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   outline: 'none',
                   boxShadow: 'none',
                 }}
+                ref={inputRef}
+                autoFocus
                 placeholder="$0"
-                value={amount}
+                value={amount ? `$${amount}` : ''}
                 onChange={(e) => {
-                  const value = e.target.value;
+                  let value = e.target.value;
+
+                  // 移除美元符号
+                  if (value.startsWith('$')) {
+                    value = value.slice(1);
+                  }
+
                   // 只允许数字和小数点
-                  if (/^\d*\.?\d*$/.test(value)) {
+                  if (/^\d*\.?\d*$/.test(value) || value === '') {
                     setAmount(value);
-                    onChange(Number(value));
+                    onChange(Number(value) || 0);
                   }
                 }}
               />
@@ -193,9 +213,14 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               </div>
             </div>
             <div
-              className="w-full flex items-center justify-between text-13 text-r-neutral-body px-16 h-[48px]
-            border-t-[0.5px] border-solid border-rabby-neutral-line
-            "
+              onClick={() => {
+                if (type === 'deposit') {
+                  setTokenVisible(true);
+                }
+              }}
+              className={`w-full flex items-center justify-between text-13 text-r-neutral-body px-16 h-[48px] border-t-[0.5px] border-solid border-rabby-neutral-line ${
+                type === 'withdraw' ? '' : 'cursor-pointer'
+              }`}
             >
               <div className="text-r-neutral-title-1 font-medium text-13">
                 {type === 'deposit'
@@ -203,16 +228,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   : t('page.perps.depositAmountPopup.receiveToken')}
               </div>
               {selectedToken ? (
-                <div
-                  className={`flex items-center ${
-                    type === 'withdraw' ? '' : 'cursor-pointer'
-                  }`}
-                  onClick={() => {
-                    if (type === 'deposit') {
-                      setTokenVisible(true);
-                    }
-                  }}
-                >
+                <div className={'flex items-center'}>
                   <TokenWithChain
                     token={selectedToken}
                     hideConer
@@ -220,9 +236,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                     height="20px"
                   />
                   <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
-                    {formatUsdValue(
-                      (usdcTokenInfo?.amount || 0) * (usdcTokenInfo?.price || 0)
-                    )}
+                    {type === 'withdraw'
+                      ? getTokenSymbol(selectedToken)
+                      : formatUsdValue(
+                          (usdcTokenInfo?.amount || 0) *
+                            (usdcTokenInfo?.price || 0)
+                        )}
                   </div>
                   {type === 'deposit' && (
                     <ThemeIcon

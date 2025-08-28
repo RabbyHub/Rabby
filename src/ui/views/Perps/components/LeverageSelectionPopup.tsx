@@ -22,6 +22,17 @@ export const LeverageSelectionPopup: React.FC<LeverageSelectionPopupProps> = ({
   const [selectedLeverage, setSelectedLeverage] = React.useState(
     currentLeverage
   );
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  React.useEffect(() => {
+    if (visible && inputRef.current) {
+      // 使用 setTimeout 确保弹窗完全渲染后再聚焦
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
 
   React.useEffect(() => {
     if (visible) {
@@ -83,6 +94,8 @@ export const LeverageSelectionPopup: React.FC<LeverageSelectionPopupProps> = ({
             </div>
             <input
               className="text-[32px] bg-transparent border-none p-0 text-r-neutral-title-1 text-center w-full outline-none focus:outline-none h-[50px]"
+              ref={inputRef}
+              autoFocus
               style={{
                 background: 'transparent',
                 border: 'none',
