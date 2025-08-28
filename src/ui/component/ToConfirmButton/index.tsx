@@ -13,6 +13,7 @@ export const ToConfirmBtn = (props: {
   onConfirm: () => void;
   disabled?: boolean;
   htmlType?: 'button' | 'submit' | 'reset';
+  isHardWallet?: boolean;
 }) => {
   const { t } = useTranslation();
   const [toConfirm, setToConfirm] = useState(false);
@@ -20,6 +21,10 @@ export const ToConfirmBtn = (props: {
     e.stopPropagation();
     if (props.disabled) {
       return;
+    }
+
+    if (props.isHardWallet) {
+      props.onConfirm();
     }
 
     if (toConfirm) {
@@ -55,7 +60,7 @@ export const ToConfirmBtn = (props: {
       ref={divRef}
       onClick={handle}
     >
-      {!toConfirm ? (
+      {!toConfirm || props.isHardWallet ? (
         <Button
           htmlType={props.htmlType || 'button'}
           type="primary"
@@ -113,6 +118,7 @@ export const DirectSignToConfirmBtn = (props: {
   overwriteDisabled?: boolean;
   showRiskTips?: boolean;
   riskLabel?: React.ReactNode;
+  isHardWallet?: boolean;
 }) => {
   const disabledProcess = useGetDisableProcessDirectSign();
   const { t } = useTranslation();

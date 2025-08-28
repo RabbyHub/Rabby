@@ -46,6 +46,7 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import {
   supportedDirectSign,
+  supportedHardwareDirectSign,
   useGetDisableProcessDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -471,10 +472,12 @@ export const BridgeContent = () => {
     !isSlippageLow &&
     !showLoss;
 
+  const showRiskTips = isSlippageHigh || isSlippageLow || showLoss;
+
   const [isPreparingSign, setIsPreparingSign] = useState(false);
 
   const handleBridge = useMemoizedFn(async () => {
-    if (canUseDirectSubmitTx && noRiskSign) {
+    if (canUseDirectSubmitTx) {
       setIsPreparingSign(true);
       setFetchingBridgeQuote(true);
       const txs = await runBuildSwapTxsRef.current;
@@ -718,11 +721,15 @@ export const BridgeContent = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx && noRiskSign && isSupportedChain ? (
+            {canUseDirectSubmitTx && isSupportedChain ? (
               <DirectSignToConfirmBtn
                 disabled={btnDisabled}
                 title={t('page.bridge.title')}
                 onConfirm={handleBridge}
+                showRiskTips={showRiskTips && !btnDisabled}
+                isHardWallet={supportedHardwareDirectSign(
+                  currentAccount?.type || ''
+                )}
               />
             ) : (
               <Button

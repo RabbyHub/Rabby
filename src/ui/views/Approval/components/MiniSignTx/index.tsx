@@ -1428,6 +1428,9 @@ export const MiniApproval = ({
           width={'auto'}
           closable={false}
           bodyStyle={{ padding: 0 }}
+          maskStyle={{
+            backgroundColor: 'rgba(0,0,0,0.1)',
+          }}
         >
           <div className="w-[52px] h-[52px] p-[14px] flex items-center justify-center">
             <RCIconLoadingCC className="text-r-neutral-body animate-spin" />
