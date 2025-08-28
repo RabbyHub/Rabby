@@ -83,6 +83,7 @@ import { RetryUpdateType } from '@/background/utils/errorTxRetry';
 import { MiniApprovalPopupContainer } from '../Popup/MiniApprovalPopupContainer';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
+import { SpeedUpCancelHeader } from './SpeedUpCancalHeader';
 
 export const MiniSignTx = ({
   txs,
@@ -94,6 +95,8 @@ export const MiniSignTx = ({
   getContainer,
   directSubmit,
   onGasAmountChange,
+  originGasPrice,
+  session,
 }: {
   txs: Tx[];
   onReject?: () => void;
@@ -104,6 +107,8 @@ export const MiniSignTx = ({
   getContainer?: DrawerProps['getContainer'];
   directSubmit?: boolean;
   onGasAmountChange?: (gasAmount: number) => void;
+  originGasPrice?: string;
+  session?: typeof INTERNAL_REQUEST_SESSION;
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -276,9 +281,14 @@ export const MiniSignTx = ({
     });
   };
 
-  const { swapPreferMEVGuarded, isSwap, isBridge, isSend } = normalizeTxParams(
-    txs[0]
-  );
+  const {
+    swapPreferMEVGuarded,
+    isSwap,
+    isBridge,
+    isSend,
+    isSpeedUp,
+    isCancel,
+  } = normalizeTxParams(txs[0]);
 
   const [pushInfo, setPushInfo] = useState<{
     type: TxPushType;
@@ -407,6 +417,7 @@ export const MiniSignTx = ({
               preExecResult: item.preExecResult,
               actionData: item.actionData,
             },
+            session,
           },
           status: 'idle',
         };
@@ -616,16 +627,20 @@ export const MiniSignTx = ({
         chainId
       );
       let customGasPrice = 0;
-      if (
-        lastTimeGas?.lastTimeSelect === 'gasPrice' &&
-        lastTimeGas.gasPrice &&
-        !directSubmit
-      ) {
-        // use cached gasPrice if exist
-        customGasPrice = lastTimeGas.gasPrice;
-      }
+      // if (
+      //   lastTimeGas?.lastTimeSelect === 'gasPrice' &&
+      //   lastTimeGas.gasPrice &&
+      //   !directSubmit
+      // ) {
+      //   // use cached gasPrice if exist
+      //   customGasPrice = lastTimeGas.gasPrice;
+      // }
       const gasPrice = txs[0].gasPrice || txs[0].maxFeePerGas;
-      if ((isSend || isSwap || isBridge) && gasPrice) {
+      if (
+        isSpeedUp ||
+        isCancel ||
+        ((isSend || isSwap || isBridge) && gasPrice)
+      ) {
         // use gasPrice set by dapp when it's a speedup or cancel tx
         customGasPrice = parseInt(gasPrice!);
       }
@@ -634,6 +649,8 @@ export const MiniSignTx = ({
       let gas: GasLevel | null = null;
 
       if (
+        isSpeedUp ||
+        isCancel ||
         customGasPrice ||
         (lastTimeGas?.lastTimeSelect === 'gasPrice' && !directSubmit)
       ) {
@@ -740,9 +757,9 @@ export const MiniSignTx = ({
                 tx: item.tx,
                 gasLimit: item.gasLimit,
                 nonce: item.tx.nonce,
-                isCancel: false,
+                isCancel: isCancel,
                 gasExplainResponse: item.gasCost,
-                isSpeedUp: false,
+                isSpeedUp: isSpeedUp,
                 isGnosisAccount: false,
                 nativeTokenBalance: balance,
               });
@@ -970,9 +987,9 @@ export const MiniSignTx = ({
         tx: item.tx,
         gasLimit: item.gasLimit,
         nonce: item.tx.nonce,
-        isCancel: false,
+        isCancel: isCancel,
         gasExplainResponse: item.gasCost,
-        isSpeedUp: false,
+        isSpeedUp: isSpeedUp,
         isGnosisAccount: false,
         nativeTokenBalance: balance,
       });
@@ -1135,16 +1152,27 @@ export const MiniSignTx = ({
         />
       </Popup>
       <MiniFooterBar
+        account={currentAccount || undefined}
         directSubmit={directSubmit}
         task={task}
         Header={
           <div
             className={clsx(
-              'fixed left-[99999px] top-[99999px] z-[-1]',
+              directSubmit && 'fixed left-[99999px] top-[99999px] z-[-1]',
               task.status !== 'idle' && 'pointer-events-none'
             )}
             key={task.status}
           >
+            <SpeedUpCancelHeader
+              isSpeedUp={isSpeedUp}
+              isCancel={isCancel}
+              originGasPrice={originGasPrice || '0'}
+              currentGasPrice={
+                txsResult?.[0]?.tx?.gasPrice ||
+                txsResult?.[0]?.tx?.maxFeePerGas ||
+                ''
+              }
+            />
             <GasSelectorHeader
               tx={txs[0]}
               gasAccountCost={gasAccountCost}
@@ -1164,8 +1192,8 @@ export const MiniSignTx = ({
               onChange={handleGasChange}
               nonce={realNonce}
               disableNonce={true}
-              isSpeedUp={false}
-              isCancel={false}
+              isSpeedUp={isSpeedUp}
+              isCancel={isCancel}
               is1559={support1559}
               isHardware={isHardware}
               manuallyChangeGasLimit={manuallyChangeGasLimit}
@@ -1252,6 +1280,8 @@ export const MiniApproval = ({
   canUseDirectSubmitTx,
   isPreparingSign,
   setIsPreparingSign,
+  originGasPrice,
+  session,
 }: {
   txs?: Tx[];
   visible?: boolean;
@@ -1266,6 +1296,9 @@ export const MiniApproval = ({
   isPreparingSign?: boolean;
   onGasAmountChange?: (gasAmount: number) => void;
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
+  noShowModalLoading?: boolean;
+  originGasPrice?: string;
+  session?: typeof INTERNAL_REQUEST_SESSION;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1334,7 +1367,7 @@ export const MiniApproval = ({
         placement="bottom"
         height="fit-content"
         className="is-support-darkmode"
-        visible={innerVisible}
+        visible={directSubmit ? innerVisible : visible}
         onClose={handleClose}
         maskClosable={status === 'idle'}
         closable={false}
@@ -1365,6 +1398,8 @@ export const MiniApproval = ({
             onResolve={onResolve}
             onGasAmountChange={onGasAmountChange}
             getContainer={getContainer}
+            originGasPrice={originGasPrice}
+            session={session}
           />
         ) : null}
       </Popup>
