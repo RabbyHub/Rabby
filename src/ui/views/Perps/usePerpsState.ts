@@ -94,6 +94,19 @@ export const usePerpsInitial = () => {
     }
   );
 
+  const safeSetBuilderFee = useMemoizedFn(async () => {
+    const sdk = getPerpsSDK();
+    const res = await sdk.info.getMaxBuilderFee(
+      PERPS_BUILD_FEE_RECEIVE_ADDRESS
+    );
+    if (res) {
+      sdk.exchange?.updateBuilder(
+        PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+        PERPS_BUILD_FEE
+      );
+    }
+  });
+
   useEffect(() => {
     if (isInitialized && isLogin) {
       // 已经初始化完成 且 已经登录
@@ -152,10 +165,7 @@ export const usePerpsInitial = () => {
           res.preference.agentAddress,
           PERPS_AGENT_NAME
         );
-        sdk.exchange?.updateBuilder(
-          PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-          PERPS_BUILD_FEE
-        );
+        safeSetBuilderFee();
 
         dispatch.perps.fetchMarketData(undefined);
 
@@ -209,6 +219,7 @@ export const usePerpsInitial = () => {
     accountSummary,
     positionAndOpenOrders,
     isLogin,
+    safeSetBuilderFee,
     perpsPositionInfo,
   };
 };
@@ -222,6 +233,7 @@ export const usePerpsState = ({
   const [miniSignTypeData, setMiniSignTypeData] = useState<MiniTypedData[]>([]);
   const startDirectSigning = useStartDirectSigning();
   const deleteAgentCbRef = useRef<(() => Promise<void>) | null>(null);
+  const { safeSetBuilderFee } = usePerpsInitial();
 
   const clearMiniSignTypeData = useMemoizedFn(() => {
     setMiniSignTypeData([]);
@@ -364,6 +376,11 @@ export const usePerpsState = ({
           type: 'approveBuilderFee',
           signature: '',
         });
+      } else {
+        sdk.exchange?.updateBuilder(
+          PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+          PERPS_BUILD_FEE
+        );
       }
 
       return signActions;
@@ -457,8 +474,6 @@ export const usePerpsState = ({
     async (signActions: SignAction[]): Promise<void> => {
       const sdk = getPerpsSDK();
 
-      console.log('handleDirectApprove', sdk.exchange);
-
       const results = await Promise.all(
         signActions.map(async (actionObj) => {
           const { action, type, signature } = actionObj;
@@ -470,16 +485,21 @@ export const usePerpsState = ({
               signature,
             });
           } else if (type === 'approveBuilderFee') {
-            return sdk.exchange?.sendApproveBuilderFee({
+            const res = await sdk.exchange?.sendApproveBuilderFee({
               action: action?.message,
               nonce: action?.nonce || 0,
-              signature,
+              signature: signature || '',
             });
+            res &&
+              sdk.exchange?.updateBuilder(
+                PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+                PERPS_BUILD_FEE
+              );
+            return res;
           }
         })
       );
 
-      sdk.exchange?.updateBuilder(PERPS_BUILD_FEE_RECEIVE_ADDRESS, 50);
       setTimeout(() => {
         handleSafeSetReference();
       }, 500);
@@ -496,10 +516,6 @@ export const usePerpsState = ({
     );
     const sdk = getPerpsSDK();
     sdk.initAccount(account.address, vault, agentAddress, PERPS_AGENT_NAME);
-    sdk.exchange?.updateBuilder(
-      PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-      PERPS_BUILD_FEE
-    );
 
     const signActions = await prepareSignActions();
 
@@ -551,10 +567,7 @@ export const usePerpsState = ({
             res.preference.agentAddress,
             PERPS_AGENT_NAME
           );
-          sdk.exchange?.updateBuilder(
-            PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-            PERPS_BUILD_FEE
-          );
+          safeSetBuilderFee();
           // 未到过期时间无需签名直接登录即可
           await dispatch.perps.loginPerpsAccount(account);
         } else {

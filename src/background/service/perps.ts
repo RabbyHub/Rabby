@@ -13,6 +13,12 @@ export interface AgentWalletInfo {
   };
 }
 
+interface StoreAccount {
+  address: string;
+  type: string;
+  brandName: string;
+}
+
 export type ApproveSignatures = (SendApproveParams & {
   type: 'approveAgent' | 'approveBuilderFee';
 })[];
@@ -25,8 +31,8 @@ export interface PerpsServiceStore {
       approveSignatures: ApproveSignatures;
     };
   };
-  currentAccount: Account | null;
-  lastUsedAccount: Account | null;
+  currentAccount: StoreAccount | null;
+  lastUsedAccount: StoreAccount | null;
   hasDoneNewUserProcess: boolean;
 }
 export interface PerpsServiceMemoryState {
@@ -271,9 +277,19 @@ class PerpsService {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
-    this.store.currentAccount = account;
     if (account) {
-      this.store.lastUsedAccount = account;
+      this.store.lastUsedAccount = {
+        address: account?.address,
+        type: account?.type,
+        brandName: account?.brandName,
+      };
+      this.store.currentAccount = {
+        address: account.address,
+        type: account.type,
+        brandName: account.brandName,
+      };
+    } else {
+      this.store.currentAccount = null;
     }
   };
 

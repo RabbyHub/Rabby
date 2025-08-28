@@ -35,7 +35,6 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation();
-  console.log('liqPrice', liqPrice);
   const [tpPrice, setTpPrice] = React.useState<string>('');
   const [slPrice, setSlPrice] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);

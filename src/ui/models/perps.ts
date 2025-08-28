@@ -15,7 +15,6 @@ import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { formatMarkData } from '../views/Perps/utils';
 import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
-import { openapi } from './openapi';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -79,6 +78,10 @@ export interface PerpsState {
   localLoadingHistory: AccountHistoryItem[];
   wsSubscriptions: (() => void)[];
   pollingTimer: NodeJS.Timeout | null;
+  homePositionPnl: {
+    pnl: number;
+    show: boolean;
+  };
 }
 
 export const perps = createModel<RootModel>()({
@@ -99,9 +102,20 @@ export const perps = createModel<RootModel>()({
     approveSignatures: [],
     wsSubscriptions: [],
     pollingTimer: null,
+    homePositionPnl: {
+      pnl: 0,
+      show: false,
+    },
   } as PerpsState,
 
   reducers: {
+    setHomePositionPnl(state, payload: { pnl: number; show: boolean }) {
+      return {
+        ...state,
+        homePositionPnl: payload,
+      };
+    },
+
     setHasPermission(state, payload: boolean) {
       return {
         ...state,
@@ -253,6 +267,10 @@ export const perps = createModel<RootModel>()({
         userFills: [],
         perpFee: 0.00045,
         approveSignatures: [],
+        homePositionPnl: {
+          pnl: 0,
+          show: false,
+        },
       };
     },
   },
