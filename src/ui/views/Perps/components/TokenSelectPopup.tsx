@@ -21,6 +21,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import { PerpsBlueBorderedButton } from './BlueBorderedButton';
 
 export type TokenSelectPopupProps = PopupProps & {
   onSelect: (token: TokenItem) => void;
@@ -61,58 +62,96 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       token.id !== ARB_USDC_TOKEN_ID
     ) {
       // show modal go swap page
-      return Modal.confirm({
+      const modal = Modal.confirm({
         width: 360,
         closable: false,
         centered: true,
-        // className: twoStepApproveCn,
         title: null,
+        className: 'perps-bridge-swap-modal',
         content: (
           <>
-            <div className="flex items-center justify-center mb-24">
+            <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
               <img src={ImgSwap} />
-            </div>
-            <div className="text-15 font-medium text-r-neutral-title-1 mb-18 text-center">
-              {t('page.perps.depositAmountPopup.goSwapTips')}
+              <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+                {t('page.perps.depositAmountPopup.goSwapTips')}
+              </div>
+              <div className="flex items-center justify-center w-full gap-12 mt-20">
+                <Button
+                  size="large"
+                  block
+                  type="primary"
+                  onClick={async () => {
+                    history.push(
+                      `/dex-swap?rbisource=perps&payTokenId=${token.id}&chain=${token.chain}&receiveTokenId=${ARB_USDC_TOKEN_ID}`
+                    );
+                    modal.destroy();
+                  }}
+                >
+                  {t('page.swap.title')}
+                </Button>
+              </div>
+              <div className="flex items-center justify-center w-full gap-12">
+                <PerpsBlueBorderedButton
+                  block
+                  onClick={() => {
+                    modal.destroy();
+                  }}
+                >
+                  {t('page.manageAddress.cancel')}
+                </PerpsBlueBorderedButton>
+              </div>
             </div>
           </>
         ),
-        okText: t('page.swap.title'),
-
-        onOk() {
-          history.push(
-            `/dex-swap?rbisource=perps&payTokenId=${token.id}&chain=${token.chain}&receiveTokenId=${ARB_USDC_TOKEN_ID}`
-          );
-        },
       });
+      return;
     }
 
     if (token.chain !== ARB_USDC_TOKEN_SERVER_CHAIN) {
       // show modal go bridge page
-      return Modal.confirm({
+      const modal = Modal.info({
         width: 360,
         closable: false,
         centered: true,
-        // className: twoStepApproveCn,
         title: null,
+        className: 'perps-bridge-swap-modal',
         content: (
           <>
-            <div className="flex items-center justify-center mb-24">
+            <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
               <img src={ImgBridge} />
-            </div>
-            <div className="text-15 font-medium text-r-neutral-title-1 mb-18 text-center">
-              {t('page.perps.depositAmountPopup.goBridgeTips')}
+              <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+                {t('page.perps.depositAmountPopup.goBridgeTips')}
+              </div>
+              <div className="flex items-center justify-center w-full gap-12 mt-20">
+                <Button
+                  size="large"
+                  block
+                  type="primary"
+                  onClick={async () => {
+                    history.push(
+                      `/bridge?fromTokenId=${token.id}&fromChainServerId=${token.chain}&toTokenId=${ARB_USDC_TOKEN_ID}&toChainServerId=${ARB_USDC_TOKEN_SERVER_CHAIN}`
+                    );
+                    modal.destroy();
+                  }}
+                >
+                  {t('page.bridge.title')}
+                </Button>
+              </div>
+              <div className="flex items-center justify-center w-full gap-12">
+                <PerpsBlueBorderedButton
+                  block
+                  onClick={() => {
+                    modal.destroy();
+                  }}
+                >
+                  {t('page.manageAddress.cancel')}
+                </PerpsBlueBorderedButton>
+              </div>
             </div>
           </>
         ),
-        okText: t('page.bridge.title'),
-
-        onOk() {
-          history.push(
-            `/bridge?fromTokenId=${token.id}&fromChainServerId=${token.chain}&toTokenId=${ARB_USDC_TOKEN_ID}&toChainServerId=${ARB_USDC_TOKEN_SERVER_CHAIN}`
-          );
-        },
       });
+      return;
     }
 
     onSelect(token);
