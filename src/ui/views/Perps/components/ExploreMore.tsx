@@ -20,7 +20,8 @@ const Row: React.FC<{
         border-[1px]
         border-solid
         border-transparent
-        hover:border-rabby-blue-default 
+        hover:bg-r-blue-light1
+        hover:border-rabby-blue-default
       "
       onClick={onClick}
     >
@@ -58,7 +59,7 @@ export const ExploreMore: React.FC = () => {
       </PageHeader>
 
       <div className="flex-1 overflow-auto mx-20">
-        <div className="px-[16px] text-13 text-r-neutral-body py-[8px] flex items-center">
+        <div className="px-[16px] text-13 text-r-neutral-body pb-[8px] flex items-center">
           <div className="w-[38px]">#</div>
           <div className="flex-1">Perps</div>
           <div className="w-[100px] text-right">24h Volume</div>

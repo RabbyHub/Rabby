@@ -24,13 +24,14 @@ export const AssetItem: React.FC<{
         border-[1px]
         border-solid
         border-transparent
+        hover:bg-r-blue-light1
         hover:border-rabby-blue-default 
       "
       onClick={() => {
         history.push(`/perps/single-coin/${item.name}`);
       }}
     >
-      <div className="flex items-center gap-12">
+      <div className="flex items-center gap-10">
         <TokenImg size={32} logoUrl={item.logoUrl} />
         <div className="text-left">
           <div className="text-15 font-medium text-r-neutral-title-1 mb-2">

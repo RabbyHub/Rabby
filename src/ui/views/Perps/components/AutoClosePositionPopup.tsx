@@ -38,6 +38,18 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
   const [tpPrice, setTpPrice] = React.useState<string>('');
   const [slPrice, setSlPrice] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
+  const tpInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (visible && tpInputRef.current) {
+      // 使用 setTimeout 确保弹窗完全渲染后再聚焦
+      const timer = setTimeout(() => {
+        tpInputRef.current?.focus();
+      }, 200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
 
   const { tpProfit, slLoss } = React.useMemo(() => {
     const tp = Number(tpPrice) - price;
@@ -200,9 +212,11 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
               {t('page.perps.takeProfitWhen')}
             </div>
             <input
+              ref={tpInputRef}
               className={`text-[48px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor(
                 'tp'
               )}`}
+              autoFocus
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -210,10 +224,13 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
                 boxShadow: 'none',
               }}
               placeholder="$0"
-              value={tpPrice}
+              value={tpPrice ? `$${tpPrice}` : ''}
               onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*\.?\d*$/.test(value)) {
+                let value = e.target.value;
+                if (value.startsWith('$')) {
+                  value = value.slice(1);
+                }
+                if (/^\d*\.?\d*$/.test(value) || value === '') {
                   setTpPrice(value);
                 }
               }}
@@ -250,10 +267,13 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
                 boxShadow: 'none',
               }}
               placeholder="$0"
-              value={slPrice}
+              value={slPrice ? `$${slPrice}` : ''}
               onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*\.?\d*$/.test(value)) {
+                let value = e.target.value;
+                if (value.startsWith('$')) {
+                  value = value.slice(1);
+                }
+                if (/^\d*\.?\d*$/.test(value) || value === '') {
                   setSlPrice(value);
                 }
               }}

@@ -61,7 +61,7 @@ const PerpsLoginContent = ({
   const { t } = useTranslation();
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center bg-r-neutral-bg2 rounded-[12px]">
+    <div className="w-full h-full flex flex-col justify-center items-center bg-r-neutral-bg2 rounded-t-[16px]">
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[24px]">
         {t('page.gasAccount.loginConfirmModal.title')}
       </div>

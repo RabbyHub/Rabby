@@ -36,18 +36,20 @@ export const PerpsLoginContent = ({
         >
           {t('page.perps.logInPerpsAccount')}
         </Button>
-        <Button
-          block
-          size="large"
-          type="ghost"
-          className="h-[48px] text-r-neutral-body text-15 font-medium mt-16"
+        <div
+          className="h-[48px] text-r-neutral-body text-15 font-medium mt-16 bg-r-neutral-card2 flex items-center justify-center w-full rounded-[6px]
+          border-transparent
+          cursor-pointer
+          border-[1px]
+          border-solid
+          hover:bg-r-blue-light1 hover:border-rabby-blue-default"
           style={{
             height: 48,
           }}
           onClick={onLearnAboutPerps}
         >
           {t('page.perps.learnAboutPerps')}
-        </Button>
+        </div>
       </div>
     </div>
   );

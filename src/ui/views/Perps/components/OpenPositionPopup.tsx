@@ -74,7 +74,18 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     slTriggerPx: '',
   });
   const [loading, setLoading] = React.useState<boolean>(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
+  React.useEffect(() => {
+    if (visible && inputRef.current) {
+      // 使用 setTimeout 确保弹窗完全渲染后再聚焦
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
   // 计算交易金额
   const tradeAmount = React.useMemo(() => {
     const marginValue = Number(margin) || 0;
@@ -270,12 +281,18 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               outline: 'none',
               boxShadow: 'none',
             }}
+            ref={inputRef}
+            autoFocus
             placeholder="$0"
-            value={margin}
+            value={margin ? `$${margin}` : ''}
             onChange={(e) => {
-              const value = e.target.value;
+              let value = e.target.value;
+              // 移除美元符号
+              if (value.startsWith('$')) {
+                value = value.slice(1);
+              }
               // 只允许数字和小数点
-              if (/^\d*\.?\d*$/.test(value)) {
+              if (/^\d*\.?\d*$/.test(value) || value === '') {
                 setMargin(value);
               }
             }}
@@ -315,8 +332,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               {t('page.perps.size')}
             </div>
             <div className="text-15 text-r-neutral-title-1">
-              ${splitNumberByStep(Number(tradeAmount).toFixed(2))} = {tradeSize}{' '}
-              {coin}
+              ${formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
             </div>
           </div>
           <div className="flex w-full py-16 items-center justify-between">
@@ -371,7 +387,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perps.margin')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(Number(margin).toFixed(2))}
+                ${formatUsdValue(Number(margin))}
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -395,8 +411,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </Tooltip>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(tradeAmount.toFixed(2))} = {tradeSize}{' '}
-                {coin}
+                ${formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
               </div>
             </div>
             {autoClose.isOpen && (

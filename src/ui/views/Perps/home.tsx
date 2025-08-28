@@ -129,17 +129,15 @@ export const Perps: React.FC = () => {
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
       <PageHeader
-        className={`mx-[20px] pt-[20px] ${
-          currentPerpsAccount ? 'mb-0' : 'mb-[8px]'
-        }`}
+        className={`mx-[20px] pt-[20px] ${isLogin ? 'mb-0' : ''}`}
         forceShowBack
         onBack={goBack}
-        isShowAccount={currentPerpsAccount ? true : false}
+        isShowAccount={isLogin ? true : false}
         disableSwitchAccount={true}
         rightSlot={
           isLogin ? (
             <div
-              className="cursor-pointer p-4"
+              className="cursor-pointer mb-12 p-4"
               onClick={() => setLogoutVisible(true)}
             >
               <ThemeIcon src={RcIconLogout} />
@@ -157,16 +155,13 @@ export const Perps: React.FC = () => {
           <div className="bg-r-neutral-card1 rounded-[12px] p-20 flex flex-col items-center">
             <RcIconPerps className="w-40 h-40" />
             <div className="text-[32px] font-bold text-r-neutral-title-1 mt-16">
-              $
-              {splitNumberByStep(
-                Number(accountSummary?.accountValue).toFixed(2)
-              )}
+              {formatUsdValue(Number(accountSummary?.accountValue || 0))}
             </div>
             <div className="text-15 text-r-neutral-body mt-8">
               {t('page.perps.availableBalance', {
-                balance: `$${splitNumberByStep(
-                  Number(accountSummary?.withdrawable).toFixed(2)
-                )}`,
+                balance: formatUsdValue(
+                  Number(accountSummary?.withdrawable || 0)
+                ),
               })}
             </div>
             <div className="w-full flex gap-12 items-center justify-center relative mt-32">
