@@ -1232,7 +1232,8 @@
       "lowCreditModal": {
         "title": "This token has a low credit value",
         "desc": "A low credit value often signals high risk, such as a honeypot token or very low liquidity."
-      }
+      },
+      "understandRisks": "I understand the risks and want to continue"
     },
     "bridge": {
       "From": "From",
@@ -2642,7 +2643,11 @@
         "txSigned": "Signed. Creating transaction",
         "txSending": "Sending signing request",
         "txSendings": "Sending signing request({{current}}/{{total}})"
-      }
+      },
+      "speedUpTitle": "Speed Up",
+      "cancelTitle": "On-chain Cancel",
+      "cancleDesc": "Gas price increased by {{percent}} to cancel transaction",
+      "speedUpDesc": "Gas price increased by {{percent}} to speed up"
     },
     "gasAccount": {
       "title": "GasAccount",

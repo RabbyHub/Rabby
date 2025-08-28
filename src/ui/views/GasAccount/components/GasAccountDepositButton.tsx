@@ -3,7 +3,7 @@ import { useMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import BigNumber from 'bignumber.js';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,8 @@ export const GasAccountDepositButton = ({
   miniSignTxs,
   chainServerId,
   startDirectSigning,
+  setDirectSubmit,
+  setMiniApprovalVisible,
 }: {
   miniSignTxs?: Tx[];
   isPreparingSign: boolean;
@@ -31,6 +33,8 @@ export const GasAccountDepositButton = ({
   topUpDirect: () => void;
   isDirectSignAccount: boolean;
   chainServerId?: string;
+  setDirectSubmit: (p: boolean) => void;
+  setMiniApprovalVisible: (p: boolean) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -60,8 +64,12 @@ export const GasAccountDepositButton = ({
               miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
             ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
 
-          if (gasError || gasTooHigh) {
+          if (gasError) {
             topUpOnSignPage();
+          } else if (gasTooHigh) {
+            setDirectSubmit(false);
+            setMiniApprovalVisible(true);
+            setIsPreparingSign(false);
           } else {
             startDirectSigning();
           }
@@ -72,6 +80,7 @@ export const GasAccountDepositButton = ({
     },
     300,
     [
+      setDirectSubmit,
       startDirectSigning,
       isDirectSignAccount,
       gasReadyContent,
@@ -84,12 +93,14 @@ export const GasAccountDepositButton = ({
   );
 
   return canUseDirectSubmitTx ? (
-    <DirectSignToConfirmBtn
-      title={t('global.Confirm')}
-      onConfirm={topUpDirect}
-      disabled={disabled}
-      overwriteDisabled
-    />
+    <>
+      <DirectSignToConfirmBtn
+        title={t('global.Confirm')}
+        onConfirm={topUpDirect}
+        disabled={disabled}
+        overwriteDisabled
+      />
+    </>
   ) : (
     <Button
       onClick={topUpOnSignPage}

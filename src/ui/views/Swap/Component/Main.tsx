@@ -52,6 +52,7 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import {
   supportedDirectSign,
+  supportedHardwareDirectSign,
   useGetDisableProcessDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -411,32 +412,19 @@ export const Main = () => {
 
   const canUseDirectSubmitTx = useMemo(
     () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
-    // &&
-    // !receiveToken?.low_credit_score &&
-    // !receiveToken?.is_suspicious &&
-    // receiveToken?.is_verified !== false,
-    // &&
-    // !isSlippageHigh &&
-    // !isSlippageLow &&
-    // !showLoss,
-    [
-      // isShowMoreVisible,
-      // receiveToken,
-      // isSlippageHigh,
-      // isSlippageLow,
-      // showLoss,
-      isSupportedChain,
-      currentAccount?.type,
-    ]
+
+    [isSupportedChain, currentAccount?.type]
   );
 
-  const noRiskSign =
-    !receiveToken?.low_credit_score &&
-    !receiveToken?.is_suspicious &&
-    receiveToken?.is_verified !== false &&
-    !isSlippageHigh &&
-    !isSlippageLow &&
-    !showLoss;
+  // const noRiskSign =
+  //   !receiveToken?.low_credit_score &&
+  //   !receiveToken?.is_suspicious &&
+  //   receiveToken?.is_verified !== false &&
+  //   !isSlippageHigh &&
+  //   !isSlippageLow &&
+  //   !showLoss;
+
+  const showRiskTips = isSlippageLow || isSlippageHigh || showLoss;
 
   const [swapDappOpen, setSwapDappOpen] = useState(false);
 
@@ -449,7 +437,7 @@ export const Main = () => {
       return;
     }
 
-    if (canUseDirectSubmitTx && noRiskSign) {
+    if (canUseDirectSubmitTx) {
       clearExpiredTimer();
       startDirectSigning();
       return;
@@ -812,13 +800,17 @@ export const Main = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx && noRiskSign ? (
+            {canUseDirectSubmitTx ? (
               <DirectSignToConfirmBtn
                 // disabled
                 key={refreshId}
                 disabled={swapBtnDisabled}
                 title={btnText}
                 onConfirm={handleSwap}
+                showRiskTips={showRiskTips && !swapBtnDisabled}
+                isHardWallet={supportedHardwareDirectSign(
+                  currentAccount?.type || ''
+                )}
               />
             ) : (
               <Button

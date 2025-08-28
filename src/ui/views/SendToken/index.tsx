@@ -76,6 +76,7 @@ import { copyAddress } from '@/ui/utils/clipboard';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
+import { useClearMiniGasStateEffect } from '@/ui/hooks/miniSignGasStore';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -1529,6 +1530,12 @@ const SendToken = () => {
     if (currentToken) {
       handleCurrentTokenChange(currentToken);
     }
+  });
+
+  useClearMiniGasStateEffect({
+    chainServerId: chainItem?.serverId || '',
+    fromTokenId: '',
+    toTokenId: '',
   });
 
   return (

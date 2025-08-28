@@ -89,6 +89,7 @@ import dayjs from 'dayjs';
 import { PreferenceStore } from '@/background/service/preference';
 import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
+import { PortalHost } from '../component/PortalHost';
 
 declare global {
   interface Window {
@@ -449,6 +450,7 @@ const Main = () => {
       </Switch>
 
       <CommonPopup />
+      <PortalHost />
     </>
   );
 };

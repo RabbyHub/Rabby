@@ -12,14 +12,14 @@ import {
   useGasAccountHistoryRefreshId,
   useGasAccountSetHistoryRefreshId,
 } from './context';
-import { preferenceService } from '@/background/service';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
-import { KEYRING_CLASS } from '@/constant';
 import pRetry from 'p-retry';
 import { Account } from '@/background/service/preference';
-import eventBus from '@/eventBus';
-import { EVENTS } from '@/constant';
-import { isNoSignAccount } from '@/utils/account';
+import { personalMessagePromise } from '../../Approval/components/MiniPersonalMessgae/MiniSignPersonalMessage';
+import {
+  supportedDirectSign,
+  supportedHardwareDirectSign,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 
 export const useGasAccountRefresh = () => {
   const refreshId = useGasAccountRefreshId();
@@ -103,6 +103,7 @@ export const useGasAccountMethods = () => {
   const { sig, accountId } = useGasAccountSign();
   const { refresh } = useGasAccountRefresh();
   const { refreshHistory } = useGasAccountHistoryRefresh();
+
   const handleNoSignLogin = useCallback(
     async (account: Account, isClaimGift: boolean = false) => {
       if (!account) return '';
@@ -112,11 +113,27 @@ export const useGasAccountMethods = () => {
           account.address
         );
 
-        const { txHash: signature } = await sendPersonalMessage({
-          data: [text, account.address],
-          wallet,
-          account,
-        });
+        const miniSign = supportedHardwareDirectSign(account.type);
+        let signature = '';
+        if (miniSign) {
+          // startDirectSigning(true);
+          const [hash] = (await personalMessagePromise.present({
+            autoSign: true,
+            account,
+            directSubmit: true,
+            canUseDirectSubmitTx: true,
+            txs: [{ data: [text, account.address] }],
+          })) as string[];
+
+          signature = hash;
+        } else {
+          const { txHash } = await sendPersonalMessage({
+            data: [text, account.address],
+            wallet,
+            account,
+          });
+          signature = txHash;
+        }
 
         const result = await pRetry(
           async () =>
@@ -154,9 +171,46 @@ export const useGasAccountMethods = () => {
     [wallet]
   );
 
+  const getSignMessage = useCallback(
+    async (account: Account) => {
+      const { text } = await wallet.openapi.getGasAccountSignText(
+        account.address
+      );
+
+      return text;
+    },
+    [wallet, dispatch, refresh, refreshHistory]
+  );
+
+  const handleLoginOnSig = useCallback(
+    async (account: Account, signature: string, isClaimGift: boolean) => {
+      const result = await pRetry(
+        async () =>
+          wallet.openapi.loginGasAccount({
+            sig: signature,
+            account_id: account.address,
+          }),
+        { retries: 2 }
+      );
+
+      if (result?.success) {
+        dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+        if (isClaimGift) {
+          await wallet.claimGasAccountGift(account.address);
+        }
+        dispatch.gift.markGiftAsClaimed({ address: account.address });
+        wallet.markGiftAsClaimed();
+        refresh();
+        refreshHistory();
+        return signature;
+      }
+    },
+    [wallet, refresh, refreshHistory]
+  );
+
   const login = useCallback(
     async (account: Account, isClaimGift: boolean = false) => {
-      if (isNoSignAccount(account)) {
+      if (account && supportedDirectSign(account.type)) {
         return await handleNoSignLogin(account, isClaimGift);
       } else {
         return await handleHardwareLogin(account, isClaimGift);
@@ -179,7 +233,7 @@ export const useGasAccountMethods = () => {
     }
   }, []);
 
-  return { login, logout };
+  return { login, logout, getSignMessage, handleLoginOnSig };
 };
 
 export const useGasAccountLogin = ({
