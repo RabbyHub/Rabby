@@ -271,10 +271,14 @@ export const PendingTxItem = forwardRef<
             return;
           }
         }
-        if (findTx && findTx.status === 'completed' && data) {
+        if (
+          findTx &&
+          (findTx.status === 'completed' || findTx.status === 'failed') &&
+          data
+        ) {
           setData({
             ...data,
-            status: 'allSuccess',
+            status: findTx.status === 'completed' ? 'allSuccess' : 'failed',
             completedAt: Date.now(),
           });
           wallet.completeBridgeTxHistory(
