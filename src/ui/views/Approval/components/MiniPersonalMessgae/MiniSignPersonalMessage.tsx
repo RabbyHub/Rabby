@@ -9,26 +9,15 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { DrawerProps, Modal } from 'antd';
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  ComponentPropsWithoutRef,
-} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ReactComponent as RCIconLoadingCC } from '@/ui/assets/loading-cc.svg';
 import {
   BatchSignPersonalMessageTaskType,
   MiniPersonalMessage,
 } from './useBatchPersonalMessageTask';
 import { MiniSignPersonalMessage } from '.';
-import {
-  wrapModalPromise,
-  wrapPromise,
-} from '@/ui/component/Modal/WrapPromise';
-import ReactDOM from 'react-dom';
 import { wrapPromiseOnPortal } from '@/ui/component/PortalHost/wrapPromiseOnPortalHost';
 import { Account } from '@/background/service/preference';
-import { transform } from 'lodash';
 
 export const MiniPersonalMessageApproval = ({
   txs,
@@ -120,23 +109,6 @@ export const MiniPersonalMessageApproval = ({
   useEffect(() => {
     setKey((e) => e + 1);
   }, [txs]);
-
-  console.log('txs?.length', txs, {
-    txs,
-    visible,
-    onClose,
-    onResolve,
-    onReject,
-    //   ga,
-    getContainer,
-    directSubmit,
-    canUseDirectSubmitTx,
-    isPreparingSign,
-    setIsPreparingSign,
-    isSigningLoading,
-    disabledProcess,
-    see: directSubmit ? innerVisible : visible,
-  });
 
   useEffect(() => {
     if (!isSigningLoading && autoSign && txs) {
