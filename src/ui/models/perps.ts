@@ -78,6 +78,7 @@ export interface PerpsState {
   localLoadingHistory: AccountHistoryItem[];
   wsSubscriptions: (() => void)[];
   pollingTimer: NodeJS.Timeout | null;
+  fillsOrderTpOrSl: Record<string, 'tp' | 'sl'>;
   homePositionPnl: {
     pnl: number;
     show: boolean;
@@ -106,9 +107,17 @@ export const perps = createModel<RootModel>()({
       pnl: 0,
       show: false,
     },
+    fillsOrderTpOrSl: {},
   } as PerpsState,
 
   reducers: {
+    setFillsOrderTpOrSl(state, payload: Record<string, 'tp' | 'sl'>) {
+      return {
+        ...state,
+        fillsOrderTpOrSl: payload,
+      };
+    },
+
     setHomePositionPnl(state, payload: { pnl: number; show: boolean }) {
       return {
         ...state,
@@ -267,6 +276,7 @@ export const perps = createModel<RootModel>()({
         userFills: [],
         perpFee: 0.00045,
         approveSignatures: [],
+        fillsOrderTpOrSl: {},
         homePositionPnl: {
           pnl: 0,
           show: false,
@@ -379,9 +389,40 @@ export const perps = createModel<RootModel>()({
       console.log('fetchUserNonFundingLedgerUpdates', list);
     },
 
+    async fetchUserHistoricalOrders() {
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.info.getUserHistoricalOrders(
+          undefined, // use sdk inner address
+          Date.now() - 1000 * 60 * 60 * 24 * 7, // 7 days ago
+          0
+        );
+        const listOrderTpOrSl = {} as Record<string, 'tp' | 'sl'>;
+        res.forEach((item) => {
+          if (item.status !== 'triggered') {
+            return null;
+          }
+          if (item.order.reduceOnly && item.order.isTrigger) {
+            if (
+              item.order.orderType === 'Take Profit Market' ||
+              item.order.orderType === 'Stop Market'
+            ) {
+              listOrderTpOrSl[item.order.oid] =
+                item.order.orderType === 'Stop Market' ? 'sl' : 'tp';
+            }
+          }
+        });
+
+        dispatch.perps.setFillsOrderTpOrSl(listOrderTpOrSl);
+      } catch (error) {
+        console.error('Failed to fetch user historical orders:', error);
+      }
+    },
+
     async refreshData() {
       await dispatch.perps.fetchPositionAndOpenOrders();
       await dispatch.perps.fetchUserNonFundingLedgerUpdates();
+      dispatch.perps.fetchUserHistoricalOrders();
     },
 
     async fetchMarketData(_, rootState) {

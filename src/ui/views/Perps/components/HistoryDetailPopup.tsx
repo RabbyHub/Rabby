@@ -13,6 +13,7 @@ import { TokenImg } from './TokenImg';
 
 interface HistoryDetailPopupProps extends Omit<PopupProps, 'onCancel'> {
   fill: (WsFill & { logoUrl: string }) | null;
+  orderTpOrSl?: 'tp' | 'sl';
   onCancel: () => void;
 }
 
@@ -20,6 +21,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   visible,
   fill,
   onCancel,
+  orderTpOrSl,
 }) => {
   const { t } = useTranslation();
   const { coin, side, sz, px, closedPnl, time, fee, dir } = fill || {};
@@ -31,11 +33,25 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   const titleString = useMemo(() => {
     const isLiquidation = Boolean(fill?.liquidation);
     if (fill?.dir === 'Close Long') {
+      if (orderTpOrSl === 'tp') {
+        return t('page.perps.historyDetail.title.closeLongTp');
+      }
+      if (orderTpOrSl === 'sl') {
+        return t('page.perps.historyDetail.title.closeLongSl');
+      }
+
       return isLiquidation
         ? t('page.perps.historyDetail.title.closeLongLiquidation')
         : t('page.perps.historyDetail.title.closeLong');
     }
     if (fill?.dir === 'Close Short') {
+      if (orderTpOrSl === 'tp') {
+        return t('page.perps.historyDetail.title.closeShortTp');
+      }
+      if (orderTpOrSl === 'sl') {
+        return t('page.perps.historyDetail.title.closeShortSl');
+      }
+
       return isLiquidation
         ? t('page.perps.historyDetail.title.closeShortLiquidation')
         : t('page.perps.historyDetail.title.closeShort');
@@ -47,7 +63,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
       return t('page.perps.historyDetail.title.openShort');
     }
     return fill?.dir;
-  }, [fill]);
+  }, [fill, orderTpOrSl]);
 
   return (
     <Popup

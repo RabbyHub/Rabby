@@ -19,6 +19,9 @@ export const HistoryPage: React.FC<{
     (WsFill & { logoUrl: string }) | null
   >(null);
   const [detailVisible, setDetailVisible] = useState(false);
+  const fillsOrderTpOrSl = useRabbySelector(
+    (state) => state.perps.fillsOrderTpOrSl
+  );
 
   const handleItemClick = (fill: WsFill) => {
     const obj = {
@@ -48,6 +51,7 @@ export const HistoryPage: React.FC<{
             ) : (
               <HistoryItem
                 fill={item}
+                orderTpOrSl={fillsOrderTpOrSl[item.oid]}
                 onClick={handleItemClick}
                 marketData={marketData}
                 key={item.hash}
@@ -84,6 +88,11 @@ export const HistoryPage: React.FC<{
 
       <HistoryDetailPopup
         visible={detailVisible}
+        orderTpOrSl={
+          selectedFill?.oid && fillsOrderTpOrSl[selectedFill.oid]
+            ? fillsOrderTpOrSl[selectedFill.oid]
+            : undefined
+        }
         fill={selectedFill}
         onCancel={handleCloseDetail}
       />

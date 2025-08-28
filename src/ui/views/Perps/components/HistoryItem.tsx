@@ -15,6 +15,7 @@ interface HistoryItemProps {
   fill: WsFill;
   marketData: Record<string, MarketData>;
   onClick?: (fill: WsFill) => void;
+  orderTpOrSl?: 'tp' | 'sl';
 }
 
 interface HistoryAccountItemProps {
@@ -118,6 +119,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
 
 export const HistoryItem: React.FC<HistoryItemProps> = ({
   fill,
+  orderTpOrSl,
   marketData,
   onClick,
 }) => {
@@ -127,11 +129,25 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
   const titleString = useMemo(() => {
     const isLiquidation = Boolean(fill?.liquidation);
     if (fill?.dir === 'Close Long') {
+      if (orderTpOrSl === 'tp') {
+        return t('page.perps.historyDetail.title.closeLongTp');
+      }
+      if (orderTpOrSl === 'sl') {
+        return t('page.perps.historyDetail.title.closeLongSl');
+      }
+
       return isLiquidation
         ? t('page.perps.historyDetail.title.closeLongLiquidation')
         : t('page.perps.historyDetail.title.closeLong');
     }
     if (fill?.dir === 'Close Short') {
+      if (orderTpOrSl === 'tp') {
+        return t('page.perps.historyDetail.title.closeShortTp');
+      }
+      if (orderTpOrSl === 'sl') {
+        return t('page.perps.historyDetail.title.closeShortSl');
+      }
+
       return isLiquidation
         ? t('page.perps.historyDetail.title.closeShortLiquidation')
         : t('page.perps.historyDetail.title.closeShort');
@@ -143,7 +159,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       return t('page.perps.historyDetail.title.openShort');
     }
     return fill?.dir;
-  }, [fill]);
+  }, [fill, orderTpOrSl]);
 
   const itemData = marketData[coin.toUpperCase()];
   const logoUrl = itemData?.logoUrl;

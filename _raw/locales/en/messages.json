@@ -792,8 +792,12 @@
           "openShort": "Open Short",
           "closeLong": "Close Long",
           "closeShort": "Close Short",
+          "closeLongTp": "Close Long Take Profit",
+          "closeLongSl": "Close Long Stop Loss",
           "closeLongLiquidation": "Close Long Liquidation",
-          "closeShortLiquidation": "Close Short Liquidation"
+          "closeShortLiquidation": "Close Short Liquidation",
+          "closeShortTp": "Close Short Take Profit",
+          "closeShortSl": "Close Short Stop Loss"
         }
       },
       "pending": "Pending",
