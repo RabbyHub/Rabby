@@ -177,7 +177,7 @@ const OneKeyConnect = () => {
               stashKeyringId
             );
             const { allowed } = await wallet.checkQRHardwareAllowImport(
-              WALLET_BRAND_TYPES.KEYSTONE
+              BRAND_TYPES
             );
             if (qrcodeAccounts.length > 0 && allowed) {
               goToSelectAddress(stashKeyringId);
