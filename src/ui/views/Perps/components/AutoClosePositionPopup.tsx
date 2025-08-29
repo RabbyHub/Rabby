@@ -121,7 +121,7 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
         resObj.sl.isWarning = true;
         resObj.sl.error = '';
         resObj.sl.errorMessage = t('page.perps.stopLossTipsLongLiquidation', {
-          price: `$${splitNumberByStep(liqPrice)}`,
+          price: `$${splitNumberByStep(liqPrice.toFixed(pxDecimals))}`,
         });
       }
       if (direction === 'Short' && slValue <= price) {
@@ -134,13 +134,13 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
         resObj.sl.isWarning = true;
         resObj.sl.error = '';
         resObj.sl.errorMessage = t('page.perps.stopLossTipsShortLiquidation', {
-          price: `$${splitNumberByStep(liqPrice)}`,
+          price: `$${splitNumberByStep(liqPrice.toFixed(pxDecimals))}`,
         });
       }
     }
 
     return resObj;
-  }, [tpPrice, slPrice, price, direction, liqPrice]);
+  }, [tpPrice, slPrice, price, direction, liqPrice, pxDecimals]);
 
   React.useEffect(() => {
     if (!visible) {
