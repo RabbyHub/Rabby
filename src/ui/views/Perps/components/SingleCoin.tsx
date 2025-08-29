@@ -7,6 +7,7 @@ import { Button, Switch, Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import Chart, { PerpsChart } from './Chart';
 import { CANDLE_MENU_KEY } from '../constants';
+import * as Sentry from '@sentry/browser';
 import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
@@ -209,29 +210,57 @@ export const PerpsSingleCoin = () => {
     if (e) {
       setAutoCloseVisible(true);
     } else {
-      // 取消所有止盈止损订单
-      const sdk = getPerpsSDK();
-      if (!tpOid && !slOid) {
-        console.error('no find auto close order id');
-        return;
-      }
+      try {
+        // 取消所有止盈止损订单
+        const sdk = getPerpsSDK();
+        if (!tpOid && !slOid) {
+          console.error('no find auto close order id');
+          return;
+        }
 
-      const cancelOrders: CancelOrderParams[] = [];
-      if (tpOid) {
-        cancelOrders.push({
-          oid: tpOid,
-          coin,
-        });
+        const cancelOrders: CancelOrderParams[] = [];
+        if (tpOid) {
+          cancelOrders.push({
+            oid: tpOid,
+            coin,
+          });
+        }
+        if (slOid) {
+          cancelOrders.push({
+            oid: slOid,
+            coin,
+          });
+        }
+        const res = await sdk.exchange?.cancelOrder(cancelOrders);
+        if (
+          res?.response.data.statuses.every(
+            (item) => ((item as unknown) as string) === 'success'
+          )
+        ) {
+          message.success('Auto close position canceled successfully');
+          refreshData();
+        } else {
+          message.error('Auto close position cancel error');
+          Sentry.captureException(
+            new Error(
+              'Auto close position cancel error' +
+                'cancelOrders: ' +
+                JSON.stringify(cancelOrders) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
+        }
+      } catch (error) {
+        message.error('Auto close position cancel error');
+        Sentry.captureException(
+          new Error(
+            'Auto close position cancel error' +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
       }
-      if (slOid) {
-        cancelOrders.push({
-          oid: slOid,
-          coin,
-        });
-      }
-      await sdk.exchange?.cancelOrder(cancelOrders);
-      message.success('Auto close position canceled successfully');
-      refreshData();
     }
   });
 
@@ -596,7 +625,7 @@ export const PerpsSingleCoin = () => {
         price={positionData?.entryPrice || markPrice}
         direction={(positionData?.direction || 'Long') as 'Long' | 'Short'}
         size={Math.abs(positionData?.size || 0)}
-        pxDecimals={currentAssetCtx?.szDecimals || 2}
+        pxDecimals={currentAssetCtx?.pxDecimals || 2}
         onClose={() => setAutoCloseVisible(false)}
         handleSetAutoClose={async (params: {
           tpPrice: string;

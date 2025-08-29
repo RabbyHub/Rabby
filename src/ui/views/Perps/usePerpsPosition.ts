@@ -21,18 +21,51 @@ export const usePerpsPosition = () => {
       slTriggerPx: string;
       direction: 'Long' | 'Short';
     }) => {
-      console.log('handleSetAutoClose', params);
-      const sdk = getPerpsSDK();
-      const { coin, tpTriggerPx, slTriggerPx, direction } = params;
-      const res = await sdk.exchange?.bindTpslByOrderId({
-        coin,
-        isBuy: direction === 'Long',
-        tpTriggerPx,
-        slTriggerPx,
-      });
+      try {
+        console.log('handleSetAutoClose', params);
+        const sdk = getPerpsSDK();
+        const { coin, tpTriggerPx, slTriggerPx, direction } = params;
+        const res = await sdk.exchange?.bindTpslByOrderId({
+          coin,
+          isBuy: direction === 'Long',
+          tpTriggerPx,
+          slTriggerPx,
+        });
 
-      refreshData();
-      message.success('Auto close position set successfully');
+        refreshData();
+        message.success('Auto close position set successfully');
+
+        // if (
+        //   res?.response.data.statuses.every(
+        //     (item) => ((item as unknown) as string) === 'waitingForTrigger'
+        //   )
+        // ) {
+        //   refreshData();
+        //   message.success('Auto close position set successfully');
+        // } else {
+        //   message.error('Set auto close error');
+        //   Sentry.captureException(
+        //     new Error(
+        //       'Set auto close error' +
+        //         'params: ' +
+        //         JSON.stringify(params) +
+        //         'res: ' +
+        //         JSON.stringify(res)
+        //     )
+        //   );
+        // }
+      } catch (error) {
+        message.error('Set auto close error');
+        Sentry.captureException(
+          new Error(
+            'Set auto close error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
+      }
     }
   );
 

@@ -350,6 +350,7 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.startPolling(undefined);
 
       dispatch.perps.fetchPerpPermission(payload.address);
+      dispatch.perps.fetchPerpFee();
       console.log('loginPerpsAccount success', payload.address);
     },
 

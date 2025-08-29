@@ -355,7 +355,7 @@ export const Perps: React.FC = () => {
       {Boolean(miniSignTypeData.length) && (
         <MiniTypedDataApproval
           txs={miniSignTypeData}
-          // noShowModalLoading={true}
+          noShowModalLoading={true}
           onResolve={(txs) => {
             handleMiniSignResolve(txs);
           }}
