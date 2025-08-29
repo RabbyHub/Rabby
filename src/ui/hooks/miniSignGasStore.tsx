@@ -1,10 +1,10 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createGlobalState } from 'react-use';
 
 const useGasLevel = createGlobalState<'normal' | 'slow' | 'fast' | 'custom'>(
   'normal'
 );
-const useCustomPrice = createGlobalState<Record<string, number>>({});
+const useCustomPrice = createGlobalState<number>(0);
 
 export const useMiniSignGasStore = () => {
   const [miniGasLevel, setMiniGasLevel] = useGasLevel();
@@ -12,22 +12,17 @@ export const useMiniSignGasStore = () => {
 
   const reset = useCallback(() => {
     setMiniGasLevel('normal');
-    setMiniCustomPrice({});
+    setMiniCustomPrice(0);
   }, [setMiniGasLevel, setMiniCustomPrice]);
 
-  const updateMiniCustomPrice = (chainServerId: string, value: number) => {
-    setMiniCustomPrice((pre) => ({
-      ...pre,
-      [chainServerId]: value,
-    }));
-  };
+  // const updateMiniCustomPrice = setMiniCustomPrice
 
   return {
     miniGasLevel,
     setMiniGasLevel,
     miniCustomPrice,
     setMiniCustomPrice,
-    updateMiniCustomPrice,
+    updateMiniCustomPrice: setMiniCustomPrice,
     reset,
   };
 };
@@ -37,15 +32,24 @@ export const useMiniSignGasStore = () => {
 // - 每次重进页面重置为默认档位 Fast。
 export const useClearMiniGasStateEffect = ({
   chainServerId,
-  fromTokenId,
-  toTokenId,
 }: {
   chainServerId?: string;
-  fromTokenId: string;
-  toTokenId: string;
 }) => {
-  const { reset } = useMiniSignGasStore();
+  const { reset, miniGasLevel } = useMiniSignGasStore();
   useEffect(() => {
     reset();
+
+    return reset;
   }, []);
+
+  const [previousChainServerId, setPreviousChainServerId] = useState(
+    chainServerId
+  );
+
+  if (previousChainServerId !== chainServerId) {
+    setPreviousChainServerId(chainServerId);
+    if (miniGasLevel === 'custom') {
+      reset();
+    }
+  }
 };

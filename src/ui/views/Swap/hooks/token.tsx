@@ -523,8 +523,6 @@ export const useTokenPair = (userAddress: string) => {
 
   useClearMiniGasStateEffect({
     chainServerId: findChainByEnum(chain)?.serverId || '',
-    fromTokenId: payToken?.id || '',
-    toTokenId: receiveToken?.id || '',
   });
 
   const fetchIdRef = useRef(0);

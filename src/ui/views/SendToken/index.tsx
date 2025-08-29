@@ -1534,8 +1534,6 @@ const SendToken = () => {
 
   useClearMiniGasStateEffect({
     chainServerId: chainItem?.serverId || '',
-    fromTokenId: '',
-    toTokenId: '',
   });
 
   return (

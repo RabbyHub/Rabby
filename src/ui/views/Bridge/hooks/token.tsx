@@ -785,8 +785,6 @@ export const useBridge = () => {
 
   useClearMiniGasStateEffect({
     chainServerId: findChainByEnum(fromChain)?.serverId || '',
-    fromTokenId: `${fromToken?.id}-${fromChain}`,
-    toTokenId: `${toToken?.id}-${toChain}`,
   });
 
   return {
