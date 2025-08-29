@@ -277,6 +277,7 @@ export const perps = createModel<RootModel>()({
         perpFee: 0.00045,
         approveSignatures: [],
         fillsOrderTpOrSl: {},
+        hasPermission: true,
         homePositionPnl: {
           pnl: 0,
           show: false,
@@ -330,6 +331,13 @@ export const perps = createModel<RootModel>()({
       }
     },
 
+    async fetchPerpPermission(address: string, rootState) {
+      const {
+        has_permission,
+      } = await rootState.app.wallet.openapi.getPerpPermission({ id: address });
+      dispatch.perps.setHasPermission(has_permission);
+    },
+
     async loginPerpsAccount(payload: Account, rootState) {
       await rootState.app.wallet.setPerpsCurrentAccount(payload);
       dispatch.perps.setCurrentPerpsAccount(payload);
@@ -341,6 +349,7 @@ export const perps = createModel<RootModel>()({
       // 开始轮询获取ClearingHouseState
       dispatch.perps.startPolling(undefined);
 
+      dispatch.perps.fetchPerpPermission(payload.address);
       console.log('loginPerpsAccount success', payload.address);
     },
 
@@ -431,7 +440,11 @@ export const perps = createModel<RootModel>()({
       const fetchTopTokenList = async () => {
         try {
           const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenList();
-          return topAssets || DEFAULT_TOP_ASSET;
+          if (topAssets.length > 0) {
+            return topAssets;
+          } else {
+            return DEFAULT_TOP_ASSET;
+          }
         } catch (error) {
           console.error('Failed to fetch top assets:', error);
           return DEFAULT_TOP_ASSET;

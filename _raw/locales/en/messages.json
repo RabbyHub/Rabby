@@ -853,7 +853,7 @@
       "takeProfitWhen": "Take-Profit When",
       "stopLoss": "stop loss",
       "stopLossWhen": "Stop-Loss When",
-      "openPositionTips": "Trading perpetual contracts involves significant risk, outweighing potential for sudden and total loss of your investment expenditure due to high leverage and market volatility, and beyond the suitable for all users. Please bear the estimated fees might affect your profits/losses and provided responsibly.",
+      "openPositionTips": "Trading perpetual contracts involves significant risk, including the potential for sudden and total loss of your investment and collateral due to high leverage and market volatility, and may not be suitable for all users. Prices may be influenced by funding rates and liquidity and you may be subject to automatic liquidations without notice. Market data provided by Hyperliquid.",
       "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
       "sizeTips": "The total value or quantity of your trade, set by margin and leverage.",
       "rabbyFeeTips": "Rabby fee: 0.05%",

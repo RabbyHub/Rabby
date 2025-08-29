@@ -3,6 +3,7 @@ import { Account } from '@/background/service/preference';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWallet } from '@/ui/utils';
 import { destroyPerpsSDK, getPerpsSDK } from './sdkManager';
+import * as Sentry from '@sentry/browser';
 import {
   PERPS_AGENT_NAME,
   PERPS_BUILD_FEE,
@@ -79,6 +80,12 @@ export const usePerpsInitial = () => {
             'masterAddress isExpired, no restore approve signature, logout'
           );
           logout(masterAddress);
+          Sentry.captureException(
+            new Error(
+              'masterAddress isExpired, no restore approve signature, logout' +
+                masterAddress
+            )
+          );
         }
       } else {
         const expiredAt = item?.validUntil;
@@ -89,6 +96,12 @@ export const usePerpsInitial = () => {
           // need to update agent for send new approve agent api avoid error
           wallet.createPerpsAgentWallet(masterAddress);
           logout(masterAddress);
+          Sentry.captureException(
+            new Error(
+              'masterAddress isExpired, update agent, auto login out' +
+                masterAddress
+            )
+          );
         }
       }
     }
@@ -108,12 +121,6 @@ export const usePerpsInitial = () => {
   });
 
   useEffect(() => {
-    if (isInitialized && isLogin) {
-      // 已经初始化完成 且 已经登录
-      dispatch.perps.fetchClearinghouseState();
-      return;
-    }
-
     if (isInitialized) {
       return;
     }
@@ -123,6 +130,7 @@ export const usePerpsInitial = () => {
         const noLoginAction = () => {
           wallet.setPerpsCurrentAccount(null);
           dispatch.perps.fetchMarketData(undefined);
+          dispatch.perps.fetchPerpPermission('');
           dispatch.perps.setInitialized(true);
         };
 
@@ -166,7 +174,6 @@ export const usePerpsInitial = () => {
           PERPS_AGENT_NAME
         );
         safeSetBuilderFee();
-
         dispatch.perps.fetchMarketData(undefined);
 
         await dispatch.perps.loginPerpsAccount(currentAccount);
@@ -278,17 +285,6 @@ export const usePerpsState = ({
 
   const wallet = useWallet();
 
-  useEffect(() => {
-    wallet.openapi
-      .getPerpPermission({ id: currentPerpsAccount?.address || '' })
-      .then(({ has_permission }) => {
-        dispatch.perps.setHasPermission(has_permission);
-      })
-      .catch((error) => {
-        console.error('Failed to get perp permission:', error);
-      });
-  }, [currentPerpsAccount?.address]);
-
   const handleDeleteAgent = useMemoizedFn(async () => {
     if (deleteAgentCbRef.current) {
       await deleteAgentCbRef.current();
@@ -389,6 +385,10 @@ export const usePerpsState = ({
 
   const executeSignatures = useMemoizedFn(
     async (signActions: SignAction[], account: Account): Promise<void> => {
+      if (!signActions || signActions.length === 0) {
+        throw new Error('no signature, try later');
+      }
+
       await wallet.changeAccount(account);
       const isLocalWallet =
         account.type === KEYRING_CLASS.PRIVATE_KEY ||
@@ -518,7 +518,6 @@ export const usePerpsState = ({
     sdk.initAccount(account.address, vault, agentAddress, PERPS_AGENT_NAME);
 
     const signActions = await prepareSignActions();
-
     await executeSignatures(signActions, account);
 
     const { role } = await sdk.info.getUserRole();
@@ -586,6 +585,14 @@ export const usePerpsState = ({
     } catch (error: any) {
       console.error('Failed to login Perps account:', error);
       message.error(error.message || 'Login failed');
+      Sentry.captureException(
+        new Error(
+          'PERPS Login failed' +
+            JSON.stringify({
+              error,
+            })
+        )
+      );
     }
   });
 

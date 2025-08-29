@@ -58,7 +58,7 @@ export const usePerpsPosition = () => {
           refreshData();
           const { totalSz, avgPx } = filled;
           message.success(
-            `close ${direction} ${coin}, avgPx: ${avgPx}, size: ${totalSz}`
+            `close ${direction} ${coin}, avgPrice: ${avgPx}, size: ${totalSz}`
           );
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
@@ -118,7 +118,7 @@ export const usePerpsPosition = () => {
           refreshData();
           const { totalSz, avgPx } = filled;
           message.success(
-            `open ${direction} ${coin}, avgPx: ${avgPx}, size: ${totalSz}`
+            `open ${direction} ${coin}, avgPrice: ${avgPx}, size: ${totalSz}`
           );
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;

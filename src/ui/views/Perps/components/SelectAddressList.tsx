@@ -2,7 +2,13 @@ import { Account } from '@/background/service/preference';
 import { KEYRING_CLASS } from '@/constant';
 import { openapi } from '@/ui/models/openapi';
 import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue, isSameAddress, useAlias, useWallet } from '@/ui/utils';
+import {
+  formatUsdValue,
+  isSameAddress,
+  splitNumberByStep,
+  useAlias,
+  useWallet,
+} from '@/ui/utils';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { ReactComponent as RcIconLoginLoading } from 'ui/assets/perps/IconLoginLoading.svg';
 import { useRequest } from 'ahooks';
@@ -29,9 +35,11 @@ export const SelectAddressList = ({
   const wallet = useWallet();
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
   const [lastUsedAccount, setLastUsedAccount] = useState<Account | null>(null);
+  const [loadingAddress, setLoadingAddress] = useState('');
 
   useEffect(() => {
     if (visible) {
+      setLoadingAddress('');
       wallet
         .getPerpsLastUsedAccount()
         .then((account) => setLastUsedAccount(account));
@@ -49,6 +57,20 @@ export const SelectAddressList = ({
     [accounts]
   );
 
+  const handleChange = async (account: Account) => {
+    if (loadingAddress) {
+      return;
+    }
+
+    try {
+      setLoadingAddress(account.address);
+      await onChange(account);
+      setLoadingAddress('');
+    } catch (error) {
+      setLoadingAddress('');
+    }
+  };
+
   return (
     <>
       <div className="w-full flex flex-1 flex-col px-20 overflow-auto">
@@ -61,7 +83,8 @@ export const SelectAddressList = ({
             (_, account) => {
               return (
                 <AccountItem
-                  onChange={onChange}
+                  loading={loadingAddress === account.address}
+                  onChange={handleChange}
                   account={account}
                   isLastUsed={
                     isSameAddress(
@@ -72,7 +95,7 @@ export const SelectAddressList = ({
                 />
               );
             },
-            [accountsList, lastUsedAccount]
+            [accountsList, lastUsedAccount, loadingAddress, handleChange]
           )}
           components={{
             Footer: () => <div className="h-[36px] w-full" />,
@@ -86,11 +109,11 @@ export const SelectAddressList = ({
 function AccountItem(props: {
   account: IDisplayedAccountWithBalance;
   isLastUsed?: boolean;
+  loading: boolean;
   onChange?: (account: Account) => Promise<void>;
 }) {
   const { t } = useTranslation();
-  const { account, isLastUsed } = props;
-  const [loading, setLoading] = useState(false);
+  const { account, isLastUsed, loading } = props;
   const addressTypeIcon = useBrandIcon({
     address: account.address,
     brandName: account.brandName,
@@ -123,38 +146,43 @@ function AccountItem(props: {
   return (
     <Item
       onClick={async () => {
-        setLoading(true);
         await props?.onChange?.(account);
-        setLoading(false);
       }}
       px={16}
       py={0}
       right={RightArea}
       bgColor=" var(--r-neutral-card1, #FFF);"
       className="h-[56px] rounded-[6px] mb-12"
-      left={<img src={addressTypeIcon} className={'w-[24px] h-[24px]'} />}
+      left={
+        <img
+          src={addressTypeIcon}
+          className={'w-[28px] h-[28px] rounded-full'}
+        />
+      }
     >
       <div className="ml-10">
-        <div className="text-13 font-medium text-r-neutral-title-1">
+        <div
+          className={clsx(
+            'text-r-neutral-title1 font-medium leading-[18px] text-[15px]'
+          )}
+        >
           {alias}
         </div>
         <div className="flex items-center">
           <AddressViewer
             address={account.address}
             showArrow={false}
-            className={'text-r-neutral-body font-[12px]'}
+            className={clsx('text-[13px] text-r-neutral-body leading-[16px]')}
           />
           <CopyChecked
             addr={account.address}
-            className={clsx(
-              'w-[14px] h-[14px] ml-4 mr-8 text-14 cursor-pointer'
-            )}
+            className={clsx('copy-icon w-[14px] h-[14px] ml-4 text-14')}
             // copyClassName={clsx()}
             checkedClassName={clsx('text-[#00C087]')}
           />
-          <div className="font-13 ml-auto text-r-neutral-body">
-            {formatUsdValue(account.balance)}
-          </div>
+          <span className="ml-[12px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
+            ${splitNumberByStep(account.balance?.toFixed(2))}
+          </span>
         </div>
       </div>
     </Item>

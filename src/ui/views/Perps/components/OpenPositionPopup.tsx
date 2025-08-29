@@ -332,7 +332,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               {t('page.perps.size')}
             </div>
             <div className="text-15 text-r-neutral-title-1">
-              ${formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
+              {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
             </div>
           </div>
           <div className="flex w-full py-16 items-center justify-between">
@@ -387,7 +387,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perps.margin')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                ${formatUsdValue(Number(margin))}
+                {formatUsdValue(Number(margin))}
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -411,7 +411,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </Tooltip>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                ${formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
+                {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
               </div>
             </div>
             {autoClose.isOpen && (

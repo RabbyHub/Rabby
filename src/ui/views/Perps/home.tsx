@@ -19,7 +19,7 @@ import { usePerpsDeposit } from './usePerpsDeposit';
 import { usePerpsState } from './usePerpsState';
 import { HeaderAddress } from './components/headerAddress';
 import { PerpsLoginContent } from './components/LoginContent';
-import { HistoryPage } from './components/HistoryPage';
+import { HistoryContent } from './components/HistoryContent';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import clsx from 'clsx';
 import { PerpsBlueBorderedButton } from './components/BlueBorderedButton';
@@ -88,6 +88,7 @@ export const Perps: React.FC = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
 
+  console.log('miniSignTypeData', miniSignTypeData);
   useEffect(() => {
     wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
       if (!hasDoneNewUserProcess) {
@@ -98,15 +99,21 @@ export const Perps: React.FC = () => {
 
   useEffect(() => {
     if (isLogin) {
-      dispatch.perps.fetchMarketData(undefined);
+      // dispatch.perps.fetchMarketData(undefined);
       dispatch.perps.refreshData();
-      setTimeout(() => {
-        dispatch.perps.fetchPerpFee();
-      }, 1000);
+      // setTimeout(() => {
+      //   dispatch.perps.fetchPerpFee();
+      // }, 1000);
     }
   }, []);
 
   const [amountVisible, setAmountVisible] = useState(false);
+
+  const positionAllPnl = useMemo(() => {
+    return positionAndOpenOrders.reduce((acc, asset) => {
+      return acc + Number(asset.position.unrealizedPnl || 0);
+    }, 0);
+  }, [positionAndOpenOrders]);
 
   const goBack = () => {
     if (history.length > 1) {
@@ -137,7 +144,7 @@ export const Perps: React.FC = () => {
         rightSlot={
           isLogin ? (
             <div
-              className="cursor-pointer mb-12 p-4"
+              className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0 cursor-pointer"
               onClick={() => setLogoutVisible(true)}
             >
               <ThemeIcon src={RcIconLogout} />
@@ -217,23 +224,41 @@ export const Perps: React.FC = () => {
 
         {Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20">
-            <div className="flex items-center mb-8">
+            <div className="flex items-center justify-between mb-8">
               <div className="text-13 font-medium text-r-neutral-title-1">
                 {t('page.perps.positions')}
               </div>
-              <div />
+              <div
+                className={`text-15 font-medium ${
+                  positionAllPnl >= 0
+                    ? 'text-r-green-default'
+                    : 'text-r-red-default'
+                }`}
+              >
+                {positionAllPnl >= 0 ? '+' : '-'}$
+                {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
+              </div>
             </div>
             <div className="flex flex-col gap-8">
-              {positionAndOpenOrders.map((asset) => (
-                <PositionItem
-                  key={asset.position.coin}
-                  position={asset.position}
-                  marketData={marketDataMap[asset.position.coin.toUpperCase()]}
-                  onClick={() => {
-                    history.push(`/perps/single-coin/${asset.position.coin}`);
-                  }}
-                />
-              ))}
+              {positionAndOpenOrders
+                .sort((a, b) => {
+                  return (
+                    Number(b.position.marginUsed || 0) -
+                    Number(a.position.marginUsed || 0)
+                  );
+                })
+                .map((asset) => (
+                  <PositionItem
+                    key={asset.position.coin}
+                    position={asset.position}
+                    marketData={
+                      marketDataMap[asset.position.coin.toUpperCase()]
+                    }
+                    onClick={() => {
+                      history.push(`/perps/single-coin/${asset.position.coin}`);
+                    }}
+                  />
+                ))}
             </div>
           </div>
         )}
@@ -263,7 +288,7 @@ export const Perps: React.FC = () => {
           </div>
         </div>
         {isLogin ? (
-          <HistoryPage
+          <HistoryContent
             marketData={marketDataMap}
             historyData={homeHistoryList}
           />
@@ -327,24 +352,29 @@ export const Perps: React.FC = () => {
         }}
       />
 
-      <MiniTypedDataApproval
-        txs={miniSignTypeData}
-        noShowModalLoading={true}
-        onResolve={(txs) => {
-          handleMiniSignResolve(txs);
-        }}
-        onReject={() => {
-          handleMiniSignReject();
-        }}
-        onClose={() => {
-          handleMiniSignReject(new Error('User closed'));
-        }}
-        onPreExecError={() => {
-          handleMiniSignReject(new Error('Pre execution error'));
-        }}
-        directSubmit
-        canUseDirectSubmitTx
-      />
+      {Boolean(miniSignTypeData.length) && (
+        <MiniTypedDataApproval
+          txs={miniSignTypeData}
+          // noShowModalLoading={true}
+          onResolve={(txs) => {
+            handleMiniSignResolve(txs);
+          }}
+          onReject={() => {
+            handleMiniSignReject();
+            setLoginVisible(false);
+          }}
+          onClose={() => {
+            handleMiniSignReject(new Error('User closed'));
+            setLoginVisible(false);
+          }}
+          onPreExecError={() => {
+            handleMiniSignReject(new Error('Pre execution error'));
+            setLoginVisible(false);
+          }}
+          directSubmit
+          canUseDirectSubmitTx
+        />
+      )}
 
       <MiniApproval
         txs={miniTxs}
