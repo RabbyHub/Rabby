@@ -183,9 +183,11 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           )}
           onClick={(e) => handleClickToken(item)}
         >
-          <div className="flex items-center gap-6">
-            <TokenWithChain token={item} hideConer />
-            <span>{getTokenSymbol(item)}</span>
+          <div className="flex items-center gap-12">
+            <TokenWithChain token={item} hideConer width="24px" height="24px" />
+            <span className="text-13 text-r-neutral-title-1 font-medium">
+              {getTokenSymbol(item)}
+            </span>
             {item.id === ARB_USDC_TOKEN_ID &&
               item.chain === ARB_USDC_TOKEN_SERVER_CHAIN && (
                 <div className="text-13 font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-8 py-4">
@@ -193,7 +195,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
                 </div>
               )}
           </div>
-          <div>
+          <div className="text-13 text-r-neutral-title-1 font-medium">
             {item.id === ARB_USDC_TOKEN_ID && usdcTokenInfo?.amount
               ? formatUsdValue(
                   usdcTokenInfo?.amount * usdcTokenInfo?.price || 0

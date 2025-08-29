@@ -21,7 +21,7 @@ import { ClosePositionPopup } from './ClosePositionPopup';
 import { AutoClosePositionPopup } from './AutoClosePositionPopup';
 import BigNumber from 'bignumber.js';
 import { usePerpsPosition } from '../usePerpsPosition';
-import { HistoryPage } from './HistoryPage';
+import HistoryContent from './HistoryContent';
 import { usePerpsDeposit } from '../usePerpsDeposit';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { PerpsDepositAmountPopup } from './DepositAmountPopup';
@@ -480,9 +480,10 @@ export const PerpsSingleCoin = () => {
         </div>
 
         {isLogin ? (
-          <HistoryPage
+          <HistoryContent
             marketData={marketDataMap}
             historyData={singleCoinHistoryList}
+            coin={coin}
           />
         ) : (
           <div className="h-[20px]" />
