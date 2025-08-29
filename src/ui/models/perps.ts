@@ -194,6 +194,12 @@ export const perps = createModel<RootModel>()({
           withdrawable: payload.withdrawable,
         },
         positionAndOpenOrders,
+        homePositionPnl: {
+          pnl: payload.assetPositions.reduce((acc, asset) => {
+            return acc + Number(asset.position.unrealizedPnl);
+          }, 0),
+          show: payload.assetPositions.length > 0,
+        },
       };
     },
 
@@ -233,6 +239,12 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         positionAndOpenOrders: payload,
+        homePositionPnl: {
+          pnl: payload.reduce((acc, order) => {
+            return acc + Number(order.position.unrealizedPnl);
+          }, 0),
+          show: payload.length > 0,
+        },
       };
     },
 
@@ -350,6 +362,7 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.startPolling(undefined);
 
       dispatch.perps.fetchPerpPermission(payload.address);
+      dispatch.perps.fetchPerpFee();
       console.log('loginPerpsAccount success', payload.address);
     },
 

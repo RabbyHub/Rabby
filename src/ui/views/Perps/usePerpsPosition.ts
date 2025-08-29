@@ -3,6 +3,7 @@ import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { getPerpsSDK } from './sdkManager';
 import { usePerpsState } from './usePerpsState';
+import * as Sentry from '@sentry/browser';
 
 export const usePerpsPosition = () => {
   const {
@@ -20,18 +21,51 @@ export const usePerpsPosition = () => {
       slTriggerPx: string;
       direction: 'Long' | 'Short';
     }) => {
-      console.log('handleSetAutoClose', params);
-      const sdk = getPerpsSDK();
-      const { coin, tpTriggerPx, slTriggerPx, direction } = params;
-      const res = await sdk.exchange?.bindTpslByOrderId({
-        coin,
-        isBuy: direction === 'Long',
-        tpTriggerPx,
-        slTriggerPx,
-      });
+      try {
+        console.log('handleSetAutoClose', params);
+        const sdk = getPerpsSDK();
+        const { coin, tpTriggerPx, slTriggerPx, direction } = params;
+        const res = await sdk.exchange?.bindTpslByOrderId({
+          coin,
+          isBuy: direction === 'Long',
+          tpTriggerPx,
+          slTriggerPx,
+        });
 
-      refreshData();
-      message.success('Auto close position set successfully');
+        refreshData();
+        message.success('Auto close position set successfully');
+
+        // if (
+        //   res?.response.data.statuses.every(
+        //     (item) => ((item as unknown) as string) === 'waitingForTrigger'
+        //   )
+        // ) {
+        //   refreshData();
+        //   message.success('Auto close position set successfully');
+        // } else {
+        //   message.error('Set auto close error');
+        //   Sentry.captureException(
+        //     new Error(
+        //       'Set auto close error' +
+        //         'params: ' +
+        //         JSON.stringify(params) +
+        //         'res: ' +
+        //         JSON.stringify(res)
+        //     )
+        //   );
+        // }
+      } catch (error) {
+        message.error('Set auto close error');
+        Sentry.captureException(
+          new Error(
+            'Set auto close error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
+      }
     }
   );
 
@@ -67,11 +101,29 @@ export const usePerpsPosition = () => {
           };
         } else {
           message.error('close position error');
+          Sentry.captureException(
+            new Error(
+              'PERPS close position noFills' +
+                'params: ' +
+                JSON.stringify(params) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
           return null;
         }
       } catch (e) {
-        console.error(e);
-        message.error('close position error');
+        console.error('close position error', e);
+        message.error(e?.message || 'close position error');
+        Sentry.captureException(
+          new Error(
+            'PERPS close position error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(e)
+          )
+        );
         return null;
       }
     }
@@ -127,10 +179,28 @@ export const usePerpsPosition = () => {
           };
         } else {
           message.error('open position error');
+          Sentry.captureException(
+            new Error(
+              'PERPS open position noFills' +
+                'params: ' +
+                JSON.stringify(params) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
         }
       } catch (error) {
         console.error(error);
         message.error('open position error');
+        Sentry.captureException(
+          new Error(
+            'PERPS open position error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(error)
+          )
+        );
       }
     }
   );

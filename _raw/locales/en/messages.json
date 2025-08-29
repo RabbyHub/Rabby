@@ -876,6 +876,8 @@
       "back": "Back",
       "estimatedLiquidationPrice": "Estimated Liquidation Price",
       "fee": "Fee",
+      "leverageRangeMaxError": "The maximum leverage is {{max}}x",
+      "leverageRangeMinError": "The minimum leverage is {{min}}x",
       "singleCoin": {
         "fundingPaymentsTips": "This is the net funding payments since the position was opened. Funding is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token.",
         "openInterestTips": "The total outstanding position of all users on this contract.",

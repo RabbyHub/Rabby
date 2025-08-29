@@ -287,7 +287,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             value={margin ? `$${margin}` : ''}
             onChange={(e) => {
               let value = e.target.value;
-              // 移除美元符号
               if (value.startsWith('$')) {
                 value = value.slice(1);
               }
@@ -319,7 +318,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <div className="text-13 text-r-neutral-title-1">
               {t('page.perps.leverage')}
             </div>
-            <div className="text-14 font-medium text-r-neutral-title-1 text-center flex items-center">
+            <div className="text-13 text-r-neutral-title-1 font-medium text-center flex items-center">
               {leverage}x
               <ThemeIcon
                 className="icon icon-arrow-right ml-4"
@@ -331,18 +330,23 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <div className="text-13 text-r-neutral-title-1 mb-8">
               {t('page.perps.size')}
             </div>
-            <div className="text-15 text-r-neutral-title-1">
+            <div className="text-13 text-r-neutral-title-1 font-medium">
               {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
             </div>
           </div>
-          <div className="flex w-full py-16 items-center justify-between">
+          <div
+            className="flex w-full py-16 items-center justify-between cursor-pointer"
+            onClick={() => {
+              handleAutoCloseSwitch(!autoClose.isOpen);
+            }}
+          >
             <div className="text-13 text-r-neutral-title-1">
               {t('page.perps.autoClose')}
               {AutoCloseInfo}
             </div>
             <Switch
               checked={autoClose.isOpen}
-              onChange={handleAutoCloseSwitch}
+              // onChange={handleAutoCloseSwitch}
             />
           </div>
         </div>

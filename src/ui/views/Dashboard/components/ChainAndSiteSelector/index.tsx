@@ -302,7 +302,7 @@ export default function ChainAndSiteSelector({
         iconClassName: 'icon-perps',
         subContent: perpsPositionInfo.show ? (
           <div
-            className={`text-[10px] font-medium ${
+            className={`absolute bottom-[-4px] text-[10px] font-medium ${
               perpsPositionInfo.pnl > 0
                 ? 'text-r-green-default'
                 : 'text-r-red-default'
