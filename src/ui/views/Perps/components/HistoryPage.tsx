@@ -63,7 +63,7 @@ export const HistoryPage: React.FC = () => {
       </PageHeader>
 
       {list.length > 0 ? (
-        <div className="flex-1 overflow-auto mb-20 mx-20">
+        <div className="flex-1 overflow-auto mx-20">
           {list.map((item) =>
             'usdValue' in item ? (
               <HistoryAccountItem data={item} key={item.hash} />

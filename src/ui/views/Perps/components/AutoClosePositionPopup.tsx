@@ -207,7 +207,7 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
 
         <div className="flex-1 px-20">
           {/* Take Profit */}
-          <div className="mb-24 bg-r-neutral-bg1 rounded-[8px] py-20">
+          <div className="mb-24 bg-r-neutral-card1 rounded-[8px] py-20">
             <div className="text-13 text-r-neutral-title-1 text-center">
               {t('page.perps.takeProfitWhen')}
             </div>
@@ -252,7 +252,7 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
           </div>
 
           {/* Stop Loss */}
-          <div className="mb-32 bg-r-neutral-bg1 rounded-[8px] py-20">
+          <div className="mb-32 bg-r-neutral-card1 rounded-[8px] py-20">
             <div className="text-13 text-r-neutral-title-1 text-center">
               {t('page.perps.stopLossWhen')}
             </div>

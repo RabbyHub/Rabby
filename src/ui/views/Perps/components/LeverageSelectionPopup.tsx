@@ -48,6 +48,34 @@ export const LeverageSelectionPopup: React.FC<LeverageSelectionPopupProps> = ({
     setSelectedLeverage(value);
   };
 
+  const leverageRangeValidation = React.useMemo(() => {
+    if (selectedLeverage > leverageRange[1]) {
+      return {
+        error: true,
+        errorMessage: t('page.perps.leverageRangeMaxError', {
+          max: leverageRange[1],
+        }),
+      };
+    }
+
+    if (selectedLeverage < leverageRange[0]) {
+      return {
+        error: true,
+        errorMessage: t('page.perps.leverageRangeMinError', {
+          min: leverageRange[0],
+        }),
+      };
+    }
+    return { error: false, errorMessage: '' };
+  }, [selectedLeverage, leverageRange]);
+
+  const getLeverageTextColor = () => {
+    if (leverageRangeValidation.error) {
+      return 'text-r-red-default';
+    }
+    return 'text-r-neutral-title-1';
+  };
+
   return (
     <Popup
       placement="bottom"
@@ -93,7 +121,7 @@ export const LeverageSelectionPopup: React.FC<LeverageSelectionPopupProps> = ({
               Max
             </div>
             <input
-              className="text-[32px] bg-transparent border-none p-0 text-r-neutral-title-1 text-center w-full outline-none focus:outline-none h-[50px]"
+              className={`text-[32px] bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none h-[50px] ${getLeverageTextColor()}`}
               ref={inputRef}
               autoFocus
               style={{
@@ -105,27 +133,23 @@ export const LeverageSelectionPopup: React.FC<LeverageSelectionPopupProps> = ({
               value={selectedLeverage}
               onChange={(e) => {
                 const value = e.target.value;
-                // 允许空字符串或者在杠杆范围内的数字
                 if (value === '' || /^\d+$/.test(value)) {
                   const num = value === '' ? 0 : parseInt(value);
-                  if (
-                    value === '' ||
-                    (num >= leverageRange[0] && num <= leverageRange[1])
-                  ) {
-                    handleLeverageChange(num);
-                  }
+                  handleLeverageChange(num);
                 }
               }}
             />
+            {leverageRangeValidation.error && (
+              <div className="text-13 text-r-red-default text-center mt-8">
+                {leverageRangeValidation.errorMessage}
+              </div>
+            )}
           </div>
         </div>
 
         <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
           <Button
-            disabled={
-              selectedLeverage < leverageRange[0] ||
-              selectedLeverage > leverageRange[1]
-            }
+            disabled={leverageRangeValidation.error}
             block
             size="large"
             type="primary"

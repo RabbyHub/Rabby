@@ -22,6 +22,7 @@ import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export type TokenSelectPopupProps = PopupProps & {
   onSelect: (token: TokenItem) => void;
@@ -38,6 +39,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation();
+  const { isDarkTheme } = useThemeMode();
   const history = useHistory();
 
   const sortedList = React.useMemo(() => {
@@ -67,7 +69,12 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         closable: false,
         centered: true,
         title: null,
-        className: 'perps-bridge-swap-modal',
+        className: clsx(
+          'perps-bridge-swap-modal',
+          isDarkTheme
+            ? 'perps-bridge-swap-modal-dark'
+            : 'perps-bridge-swap-modal-light'
+        ),
         content: (
           <>
             <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
@@ -114,7 +121,12 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         closable: false,
         centered: true,
         title: null,
-        className: 'perps-bridge-swap-modal',
+        className: clsx(
+          'perps-bridge-swap-modal',
+          isDarkTheme
+            ? 'perps-bridge-swap-modal-dark'
+            : 'perps-bridge-swap-modal-light'
+        ),
         content: (
           <>
             <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">

@@ -37,7 +37,7 @@ import { PositionItem } from './components/PositionItem';
 import BigNumber from 'bignumber.js';
 import { AssetItem } from './components/AssetMetaItem';
 import NewUserProcessPopup from './components/NewUserProcessPopup';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { TopPermissionTips } from './components/TopPermissionTips';
 import { PerpsModal } from './components/Modal';
 
@@ -47,6 +47,7 @@ export const Perps: React.FC = () => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const [deleteAgentModalVisible, setDeleteAgentModalVisible] = useState(false);
+  const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const {
     positionAndOpenOrders,
@@ -56,6 +57,7 @@ export const Perps: React.FC = () => {
     marketData,
     userFills,
     marketDataMap,
+    isInitialized,
     logout,
     login,
     handleWithdraw,
@@ -159,19 +161,30 @@ export const Perps: React.FC = () => {
 
       <div className="flex-1 overflow-auto mx-20">
         {isLogin ? (
-          <div className="bg-r-neutral-card1 rounded-[12px] p-20 flex flex-col items-center">
-            <RcIconPerps className="w-40 h-40" />
-            <div className="text-[32px] font-bold text-r-neutral-title-1 mt-16">
+          <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-16 flex flex-col items-center">
+            <div className="text-[32px] font-bold text-r-neutral-title-1 mt-8">
               {formatUsdValue(Number(accountSummary?.accountValue || 0))}
             </div>
-            <div className="text-15 text-r-neutral-body mt-8">
+            {Boolean(positionAndOpenOrders?.length) && (
+              <div
+                className={`text-15 font-medium ${
+                  positionAllPnl >= 0
+                    ? 'text-r-green-default'
+                    : 'text-r-red-default'
+                }`}
+              >
+                {positionAllPnl >= 0 ? '+' : '-'}$
+                {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
+              </div>
+            )}
+            <div className="text-13 text-r-neutral-foot mt-10">
               {t('page.perps.availableBalance', {
                 balance: formatUsdValue(
                   Number(accountSummary?.withdrawable || 0)
                 ),
               })}
             </div>
-            <div className="w-full flex gap-12 items-center justify-center relative mt-32">
+            <div className="w-full flex gap-12 items-center justify-center relative mt-24">
               <TooltipWithMagnetArrow
                 className="rectangle w-[max-content]"
                 visible={withdrawDisabled ? undefined : false}
@@ -224,19 +237,9 @@ export const Perps: React.FC = () => {
 
         {Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center mb-8">
               <div className="text-13 font-medium text-r-neutral-title-1">
                 {t('page.perps.positions')}
-              </div>
-              <div
-                className={`text-15 font-medium ${
-                  positionAllPnl >= 0
-                    ? 'text-r-green-default'
-                    : 'text-r-red-default'
-                }`}
-              >
-                {positionAllPnl >= 0 ? '+' : '-'}$
-                {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
               </div>
             </div>
             <div className="flex flex-col gap-8">
@@ -295,6 +298,12 @@ export const Perps: React.FC = () => {
         ) : (
           <div className="h-[20px]" />
         )}
+        <div
+          className="text-r-neutral-foot mb-20"
+          style={{ fontSize: '11px', lineHeight: '16px' }}
+        >
+          {t('page.perps.openPositionTips')}
+        </div>
       </div>
 
       <PerpsLoginPopup

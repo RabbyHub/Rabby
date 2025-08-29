@@ -14,10 +14,15 @@ export const usePerpsHomePnl = () => {
     const account = await wallet.getPerpsCurrentAccount();
     if (account?.address) {
       const res = await sdk.info.getClearingHouseState(account.address);
-      if (res.assetPositions.length === 0 || !res?.assetPositions) {
+
+      const positionAndOpenOrders = res.assetPositions.filter(
+        (position) => position.position.leverage.type === 'isolated'
+      );
+
+      if (!positionAndOpenOrders || positionAndOpenOrders.length === 0) {
         dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });
       } else {
-        const pnl = res.assetPositions.reduce((acc, asset) => {
+        const pnl = positionAndOpenOrders.reduce((acc, asset) => {
           return acc + Number(asset.position.unrealizedPnl);
         }, 0);
         dispatch.perps.setHomePositionPnl({ pnl, show: true });
