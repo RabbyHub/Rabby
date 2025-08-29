@@ -353,7 +353,7 @@ export const perps = createModel<RootModel>()({
     async loginPerpsAccount(payload: Account, rootState) {
       await rootState.app.wallet.setPerpsCurrentAccount(payload);
       dispatch.perps.setCurrentPerpsAccount(payload);
-      dispatch.perps.refreshData();
+      await dispatch.perps.refreshData();
 
       // 订阅实时数据更新
       dispatch.perps.subscribeToUserData(payload.address);
@@ -443,7 +443,7 @@ export const perps = createModel<RootModel>()({
 
     async refreshData() {
       await dispatch.perps.fetchPositionAndOpenOrders();
-      await dispatch.perps.fetchUserNonFundingLedgerUpdates();
+      dispatch.perps.fetchUserNonFundingLedgerUpdates();
       dispatch.perps.fetchUserHistoricalOrders();
     },
 
