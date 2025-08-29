@@ -127,10 +127,10 @@ export const usePerpsInitial = () => {
 
     const initIsLogin = async () => {
       try {
-        const noLoginAction = () => {
+        const noLoginAction = async () => {
           wallet.setPerpsCurrentAccount(null);
-          dispatch.perps.fetchMarketData(undefined);
           dispatch.perps.fetchPerpPermission('');
+          await dispatch.perps.fetchMarketData(undefined);
           dispatch.perps.setInitialized(true);
         };
 
@@ -139,7 +139,7 @@ export const usePerpsInitial = () => {
         if (!currentAccount || !currentAccount.address) {
           // 如果没有登录状态，则只获取市场数据即可
           console.log('noLoginAction no currentAccount');
-          noLoginAction();
+          await noLoginAction();
           return false;
         }
 
@@ -153,7 +153,7 @@ export const usePerpsInitial = () => {
         if (!targetTypeAccount) {
           // 地址列表没找到
           console.log('noLoginAction no targetTypeAccount');
-          noLoginAction();
+          await noLoginAction();
           return false;
         }
 
@@ -161,7 +161,7 @@ export const usePerpsInitial = () => {
         if (!res) {
           // 没有找到store对应的 agent wallet
           console.log('noLoginAction no PerpsAgentWallet');
-          noLoginAction();
+          await noLoginAction();
           return false;
         }
 
@@ -174,9 +174,8 @@ export const usePerpsInitial = () => {
           PERPS_AGENT_NAME
         );
         safeSetBuilderFee();
-        dispatch.perps.fetchMarketData(undefined);
-
         await dispatch.perps.loginPerpsAccount(currentAccount);
+        await dispatch.perps.fetchMarketData(undefined);
 
         checkIsNeedAutoLoginOut(
           currentAccount.address,

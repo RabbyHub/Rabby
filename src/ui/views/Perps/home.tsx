@@ -40,6 +40,7 @@ import NewUserProcessPopup from './components/NewUserProcessPopup';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { TopPermissionTips } from './components/TopPermissionTips';
 import { PerpsModal } from './components/Modal';
+import { PerpsLoading } from './components/Loading';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -159,84 +160,90 @@ export const Perps: React.FC = () => {
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
 
-      <div className="flex-1 overflow-auto mx-20">
-        {isLogin ? (
-          <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-16 flex flex-col items-center">
-            <div className="text-[32px] font-bold text-r-neutral-title-1 mt-8">
-              {formatUsdValue(Number(accountSummary?.accountValue || 0))}
-            </div>
-            {Boolean(positionAndOpenOrders?.length) && (
-              <div
-                className={`text-15 font-medium ${
-                  positionAllPnl >= 0
-                    ? 'text-r-green-default'
-                    : 'text-r-red-default'
-                }`}
-              >
-                {positionAllPnl >= 0 ? '+' : '-'}$
-                {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
+      <div className="flex-1 overflow-auto">
+        {!isInitialized ? (
+          <PerpsLoading />
+        ) : isLogin ? (
+          <div className="mx-20">
+            <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-16 flex flex-col items-center">
+              <div className="text-[32px] font-bold text-r-neutral-title-1 mt-8">
+                {formatUsdValue(Number(accountSummary?.accountValue || 0))}
               </div>
-            )}
-            <div className="text-13 text-r-neutral-foot mt-10">
-              {t('page.perps.availableBalance', {
-                balance: formatUsdValue(
-                  Number(accountSummary?.withdrawable || 0)
-                ),
-              })}
-            </div>
-            <div className="w-full flex gap-12 items-center justify-center relative mt-24">
-              <TooltipWithMagnetArrow
-                className="rectangle w-[max-content]"
-                visible={withdrawDisabled ? undefined : false}
-                title={t('page.gasAccount.noBalance')}
-              >
-                <PerpsBlueBorderedButton
+              {Boolean(positionAndOpenOrders?.length) && (
+                <div
+                  className={`text-15 font-medium ${
+                    positionAllPnl >= 0
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  }`}
+                >
+                  {positionAllPnl >= 0 ? '+' : '-'}$
+                  {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
+                </div>
+              )}
+              <div className="text-13 text-r-neutral-foot mt-10">
+                {t('page.perps.availableBalance', {
+                  balance: formatUsdValue(
+                    Number(accountSummary?.withdrawable || 0)
+                  ),
+                })}
+              </div>
+              <div className="w-full flex gap-12 items-center justify-center relative mt-24">
+                <TooltipWithMagnetArrow
+                  className="rectangle w-[max-content]"
+                  visible={withdrawDisabled ? undefined : false}
+                  title={t('page.gasAccount.noBalance')}
+                >
+                  <PerpsBlueBorderedButton
+                    block
+                    className={clsx(
+                      withdrawDisabled && 'opacity-50 cursor-not-allowed'
+                    )}
+                    onClick={() => {
+                      setPopupType('withdraw');
+                      setAmountVisible(true);
+                    }}
+                    disabled={withdrawDisabled}
+                  >
+                    {t('page.gasAccount.withdraw')}
+                  </PerpsBlueBorderedButton>
+                </TooltipWithMagnetArrow>
+                <Button
                   block
-                  className={clsx(
-                    withdrawDisabled && 'opacity-50 cursor-not-allowed'
-                  )}
+                  size="large"
+                  type="primary"
+                  className="h-[44px] text-r-neutral-title2 text-15 font-medium"
+                  style={{
+                    height: 44,
+                  }}
                   onClick={() => {
-                    setPopupType('withdraw');
+                    if (currentPerpsAccount) {
+                      wallet.changeAccount(currentPerpsAccount);
+                    }
+                    setPopupType('deposit');
                     setAmountVisible(true);
                   }}
-                  disabled={withdrawDisabled}
                 >
-                  {t('page.gasAccount.withdraw')}
-                </PerpsBlueBorderedButton>
-              </TooltipWithMagnetArrow>
-              <Button
-                block
-                size="large"
-                type="primary"
-                className="h-[44px] text-r-neutral-title2 text-15 font-medium"
-                style={{
-                  height: 44,
-                }}
-                onClick={() => {
-                  if (currentPerpsAccount) {
-                    wallet.changeAccount(currentPerpsAccount);
-                  }
-                  setPopupType('deposit');
-                  setAmountVisible(true);
-                }}
-              >
-                {t('page.gasAccount.deposit')}
-              </Button>
+                  {t('page.gasAccount.deposit')}
+                </Button>
+              </div>
             </div>
           </div>
         ) : (
-          <PerpsLoginContent
-            onLearnAboutPerps={() => {
-              setNewUserProcessVisible(true);
-            }}
-            clickLoginBtn={() => {
-              setLoginVisible(true);
-            }}
-          />
+          <div className="mx-20">
+            <PerpsLoginContent
+              onLearnAboutPerps={() => {
+                setNewUserProcessVisible(true);
+              }}
+              clickLoginBtn={() => {
+                setLoginVisible(true);
+              }}
+            />
+          </div>
         )}
 
-        {Boolean(positionAndOpenOrders?.length) && (
-          <div className="mt-20">
+        {isInitialized && Boolean(positionAndOpenOrders?.length) && (
+          <div className="mt-20 mx-20">
             <div className="flex items-center mb-8">
               <div className="text-13 font-medium text-r-neutral-title-1">
                 {t('page.perps.positions')}
@@ -266,44 +273,50 @@ export const Perps: React.FC = () => {
           </div>
         )}
 
-        <div className="mt-20">
-          <div className="flex justify-between mb-8">
-            <div className="text-13 font-medium text-r-neutral-title-1">
-              {t('page.perps.explorePerps')}
+        {isInitialized && (
+          <div className="mt-20 mx-20">
+            <div className="flex justify-between mb-8">
+              <div className="text-13 font-medium text-r-neutral-title-1">
+                {t('page.perps.explorePerps')}
+              </div>
+              <div
+                className="text-13 text-r-neutral-foot flex items-center cursor-pointer"
+                onClick={() => {
+                  history.push('/perps/explore');
+                }}
+              >
+                {t('page.perps.seeMore')}
+                <ThemeIcon
+                  className="icon icon-arrow-right"
+                  src={RcIconArrowRight}
+                />
+              </div>
             </div>
-            <div
-              className="text-13 text-r-neutral-foot flex items-center cursor-pointer"
-              onClick={() => {
-                history.push('/perps/explore');
-              }}
-            >
-              {t('page.perps.seeMore')}
-              <ThemeIcon
-                className="icon icon-arrow-right"
-                src={RcIconArrowRight}
-              />
+            <div className="bg-r-neutral-card1 rounded-[12px] flex flex-col">
+              {marketData.slice(0, 3).map((item) => (
+                <AssetItem key={item.name} item={item} />
+              ))}
             </div>
           </div>
-          <div className="bg-r-neutral-card1 rounded-[12px] flex flex-col">
-            {marketData.slice(0, 3).map((item) => (
-              <AssetItem key={item.name} item={item} />
-            ))}
-          </div>
-        </div>
-        {isLogin ? (
-          <HistoryContent
-            marketData={marketDataMap}
-            historyData={homeHistoryList}
-          />
-        ) : (
-          <div className="h-[20px]" />
         )}
-        <div
-          className="text-r-neutral-foot mb-20"
-          style={{ fontSize: '11px', lineHeight: '16px' }}
-        >
-          {t('page.perps.openPositionTips')}
-        </div>
+        {isInitialized && isLogin ? (
+          <div className="mx-20">
+            <HistoryContent
+              marketData={marketDataMap}
+              historyData={homeHistoryList}
+            />
+          </div>
+        ) : isInitialized ? (
+          <div className="h-[20px]" />
+        ) : null}
+        {isInitialized && (
+          <div
+            className="text-r-neutral-foot mb-20 mx-20"
+            style={{ fontSize: '11px', lineHeight: '16px' }}
+          >
+            {t('page.perps.openPositionTips')}
+          </div>
+        )}
       </div>
 
       <PerpsLoginPopup
