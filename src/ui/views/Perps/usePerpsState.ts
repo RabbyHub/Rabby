@@ -621,6 +621,9 @@ export const usePerpsState = ({
           destination: currentPerpsAccount.address,
         });
         console.log('withdraw action', action);
+        const useMiniApprovalSign =
+          currentPerpsAccount.type === KEYRING_CLASS.HARDWARE.ONEKEY ||
+          currentPerpsAccount.type === KEYRING_CLASS.HARDWARE.LEDGER;
         let signature = '';
         if (
           currentPerpsAccount.type === KEYRING_CLASS.PRIVATE_KEY ||
@@ -632,6 +635,18 @@ export const usePerpsState = ({
             action as any,
             { version: 'V4' }
           );
+        } else if (useMiniApprovalSign) {
+          setMiniSignTypeData([
+            {
+              data: action,
+              from: currentPerpsAccount.address,
+              version: 'V4',
+            },
+          ]);
+          startDirectSigning();
+          const result = await waitForMiniSignResult();
+          console.log('handleWithdraw Mini sign result', result);
+          signature = result[0];
         } else {
           signature = await wallet.sendRequest({
             method: 'eth_signTypedDataV4',
@@ -650,6 +665,19 @@ export const usePerpsState = ({
       } catch (error) {
         console.error('Failed to withdraw:', error);
         message.error(error.message || 'Withdraw failed');
+        Sentry.captureException(
+          new Error(
+            'PERPS Withdraw failed' +
+              'account: ' +
+              JSON.stringify(currentPerpsAccount) +
+              'amount: ' +
+              amount +
+              'error: ' +
+              JSON.stringify({
+                error,
+              })
+          )
+        );
         return false;
       }
     }
