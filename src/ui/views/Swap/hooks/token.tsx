@@ -267,6 +267,7 @@ export const useTokenPair = (userAddress: string) => {
         setIsDraggingSlider(true);
         setSwapUseSlider(true);
         setSlider(v);
+        setUseGasPrice(false);
 
         if (syncAmount) {
           setIsDraggingSlider(false);
