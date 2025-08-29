@@ -44,12 +44,8 @@ export const useClearMiniGasStateEffect = ({
   fromTokenId: string;
   toTokenId: string;
 }) => {
-  const { setMiniGasLevel, reset } = useMiniSignGasStore();
+  const { reset } = useMiniSignGasStore();
   useEffect(() => {
     reset();
-  }, [reset]);
-
-  useEffect(() => {
-    setMiniGasLevel('normal');
-  }, [chainServerId, fromTokenId, toTokenId]);
+  }, []);
 };
