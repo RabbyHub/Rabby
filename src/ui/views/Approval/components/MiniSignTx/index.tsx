@@ -400,7 +400,6 @@ export const MiniSignTx = ({
 
       if (selectedGas?.level === 'custom') {
         updateMiniCustomPrice(
-          chain.serverId,
           parseInt(
             support1559
               ? txsResult[0].tx.maxFeePerGas!
