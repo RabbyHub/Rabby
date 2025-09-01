@@ -36,8 +36,6 @@ import {
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { TokenImg } from './TokenImg';
 import { TopPermissionTips } from './TopPermissionTips';
-import { findChainByServerID } from '@/utils/chain';
-import { CHAINS_ENUM } from '@/constant';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -149,57 +147,14 @@ export const PerpsSingleCoin = () => {
     return !!currentPosition;
   }, [currentPosition]);
 
-  const miniApprovalGas = useMiniApprovalGas();
-  const gasReadyContent = useMemo(() => {
-    return (
-      !!miniApprovalGas &&
-      !miniApprovalGas.loading &&
-      !!miniApprovalGas.gasCostUsdStr
-    );
-  }, [miniApprovalGas]);
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
   );
   const miniTxs = useMemo(() => {
+    console.log('miniTxs', miniTxs);
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
-  console.log('miniTxs', miniTxs);
-  useDebounce(
-    () => {
-      if (canUseDirectSubmitTx && miniTxs?.length && isPreparingSign) {
-        if (gasReadyContent) {
-          const gasError =
-            gasReadyContent && miniApprovalGas?.showGasLevelPopup;
-          const chainInfo = findChainByServerID(ARB_USDC_TOKEN_SERVER_CHAIN)!;
-          const gasTooHigh =
-            !!gasReadyContent &&
-            !!miniApprovalGas?.gasCostUsdStr &&
-            new BigNumber(
-              miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
-            ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
-
-          if (gasError || gasTooHigh) {
-            handleDeposit();
-          } else {
-            startDirectSigning();
-          }
-        }
-        console.log('gasReadyContent', gasReadyContent, miniApprovalGas);
-      } else {
-        setIsPreparingSign(false);
-      }
-    },
-    300,
-    [
-      startDirectSigning,
-      canUseDirectSubmitTx,
-      miniTxs,
-      gasReadyContent,
-      isPreparingSign,
-      handleDeposit,
-    ]
-  );
 
   const subscribeActiveAssetCtx = useMemoizedFn(() => {
     const sdk = getPerpsSDK();
@@ -694,27 +649,18 @@ export const PerpsSingleCoin = () => {
 
       <PerpsDepositAmountPopup
         visible={amountVisible}
+        miniTxs={miniTxs}
+        setIsPreparingSign={setIsPreparingSign}
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
         type={'deposit'}
         availableBalance={accountSummary?.withdrawable || '0'}
-        onChange={(amount) => {
-          updateMiniSignTx(amount);
-        }}
-        onCancel={() => {
+        updateMiniSignTx={updateMiniSignTx}
+        handleDeposit={handleDeposit}
+        onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();
-        }}
-        onConfirm={async (amount) => {
-          if (canUseDirectSubmitTx) {
-            if (currentPerpsAccount) {
-              await wallet.changeAccount(currentPerpsAccount);
-            }
-            setIsPreparingSign(true);
-          } else {
-            handleDeposit();
-          }
-          return true;
+          setIsPreparingSign(false);
         }}
       />
 
