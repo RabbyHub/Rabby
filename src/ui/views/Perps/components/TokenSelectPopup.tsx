@@ -3,11 +3,10 @@ import { message, Modal, Spin } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import ImgSwap from 'ui/assets/perps/ImgSwap.png';
-import ImgBridge from 'ui/assets/perps/ImgBridge.png';
 import { useAsync } from 'react-use';
 import { Button, Space, Tooltip } from 'antd';
 import clsx from 'clsx';
+import { ReactComponent as RcIconArrow } from 'ui/assets/perps/IconArrow.svg';
 import { batchQueryTokens } from '@/ui/utils/portfolio/tokenUtils';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import {
@@ -70,6 +69,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       const modal = Modal.confirm({
         width: 360,
         closable: false,
+        maskClosable: true,
         centered: true,
         title: null,
         className: clsx(
@@ -81,7 +81,23 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         content: (
           <>
             <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-              <img src={ImgSwap} />
+              <div className="flex items-center gap-[24px]">
+                <TokenWithChain
+                  token={token}
+                  hideConer
+                  width="40px"
+                  chainSize={20}
+                  height="40px"
+                />
+                <RcIconArrow />
+                <TokenWithChain
+                  token={ARB_USDC_TOKEN_ITEM}
+                  hideConer
+                  width="40px"
+                  chainSize={20}
+                  height="40px"
+                />
+              </div>
               <div className="text-15 font-medium text-r-neutral-title-1 text-center">
                 {t('page.perps.depositAmountPopup.goSwapTips')}
               </div>
@@ -123,6 +139,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       const modal = Modal.info({
         width: 360,
         closable: false,
+        maskClosable: true,
         centered: true,
         title: null,
         className: clsx(
@@ -134,7 +151,23 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         content: (
           <>
             <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-              <img src={ImgBridge} />
+              <div className="flex items-center gap-[24px]">
+                <TokenWithChain
+                  token={token}
+                  hideConer
+                  width="40px"
+                  chainSize={20}
+                  height="40px"
+                />
+                <RcIconArrow />
+                <TokenWithChain
+                  token={ARB_USDC_TOKEN_ITEM}
+                  hideConer
+                  width="40px"
+                  chainSize={20}
+                  height="40px"
+                />
+              </div>
               <div className="text-15 font-medium text-r-neutral-title-1 text-center">
                 {t('page.perps.depositAmountPopup.goBridgeTips')}
               </div>

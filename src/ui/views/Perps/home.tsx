@@ -104,8 +104,8 @@ export const Perps: React.FC = () => {
 
   useEffect(() => {
     if (isLogin) {
-      dispatch.perps.fetchClearinghouseState();
-      // dispatch.perps.fetchPositionAndOpenOrders();
+      // dispatch.perps.fetchClearinghouseState();
+      dispatch.perps.fetchPositionAndOpenOrders();
       // dispatch.perps.fetchUserHistoricalOrders();
     }
   }, []);

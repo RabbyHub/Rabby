@@ -16,6 +16,8 @@ import { formatMarkData } from '../views/Perps/utils';
 import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -565,6 +567,12 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.stopPolling(undefined);
       dispatch.perps.unsubscribeAll(undefined);
       dispatch.perps.resetState();
+    },
+
+    initEventBus() {
+      eventBus.addEventListener(EVENTS.PERPS.LOG_OUT, () => {
+        dispatch.perps.logout();
+      });
     },
   }),
 });

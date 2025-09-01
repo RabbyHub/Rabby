@@ -5,7 +5,11 @@ import { getPerpsSDK } from './sdkManager';
 import { usePerpsState } from './usePerpsState';
 import * as Sentry from '@sentry/browser';
 
-export const usePerpsPosition = () => {
+export const usePerpsPosition = ({
+  setCurrentTpOrSl,
+}: {
+  setCurrentTpOrSl: (params: { tpPrice?: string; slPrice?: string }) => void;
+}) => {
   const dispatch = useRabbyDispatch();
   const {
     userFills,
@@ -32,7 +36,13 @@ export const usePerpsPosition = () => {
           slTriggerPx,
         });
 
-        dispatch.perps.fetchPositionOpenOrders();
+        setCurrentTpOrSl({
+          tpPrice: tpTriggerPx,
+          slPrice: slTriggerPx,
+        });
+        setTimeout(() => {
+          dispatch.perps.fetchPositionOpenOrders();
+        }, 1000);
         message.success('Auto close position set successfully');
 
         // if (
@@ -92,10 +102,13 @@ export const usePerpsPosition = () => {
           dispatch.perps.fetchClearinghouseState();
           dispatch.perps.fetchUserHistoricalOrders();
           const { totalSz, avgPx } = filled;
-          // - Close long ETH-USD ,at Price:3382.1,Size:0.00047
           message.success(
-            `Close ${direction} ${coin}-USD, at price: ${avgPx}, Size: ${totalSz}`
+            `Closed ${direction} ${coin}-USD: Size ${totalSz} at Price ${avgPx}`
           );
+          setCurrentTpOrSl({
+            tpPrice: undefined,
+            slPrice: undefined,
+          });
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
             avgPx: string;
@@ -174,10 +187,13 @@ export const usePerpsPosition = () => {
           dispatch.perps.fetchUserHistoricalOrders();
 
           const { totalSz, avgPx } = filled;
-          // - Open long ETH-USD at price:3382.1,Size:0.00047
           message.success(
-            `Open ${direction} ${coin}-USD at price: ${avgPx}, Size: ${totalSz}`
+            `Opened ${direction} ${coin}-USD: Size ${totalSz} at Price ${avgPx}`
           );
+          setCurrentTpOrSl({
+            tpPrice: tpTriggerPx,
+            slPrice: slTriggerPx,
+          });
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
             avgPx: string;

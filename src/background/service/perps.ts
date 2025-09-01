@@ -17,7 +17,6 @@ interface StoreAccount {
   address: string;
   type: string;
   brandName: string;
-  alianName?: string;
 }
 
 export type ApproveSignatures = (SendApproveParams & {
@@ -282,13 +281,11 @@ class PerpsService {
       this.store.lastUsedAccount = {
         address: account?.address,
         type: account?.type,
-        alianName: account?.alianName,
         brandName: account?.brandName,
       };
       this.store.currentAccount = {
         address: account.address,
         type: account.type,
-        alianName: account.alianName,
         brandName: account.brandName,
       };
     } else {

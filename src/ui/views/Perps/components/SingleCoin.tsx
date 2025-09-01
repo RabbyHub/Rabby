@@ -53,35 +53,10 @@ export const PerpsSingleCoin = () => {
     perpFee,
   } = useRabbySelector((state) => state.perps);
 
-  const {
-    handleOpenPosition,
-    handleClosePosition,
-    handleSetAutoClose,
-    currentPerpsAccount,
-    isLogin,
-    userFills,
-    hasPermission,
-  } = usePerpsPosition();
   const [amountVisible, setAmountVisible] = useState(false);
-  const {
-    miniSignTx,
-    clearMiniSignTx,
-    updateMiniSignTx,
-    handleDeposit,
-    handleSignDepositDirect,
-  } = usePerpsDeposit({
-    currentPerpsAccount,
-    setAmountVisible,
-  });
   const wallet = useWallet();
   const startDirectSigning = useStartDirectSigning();
   const [isPreparingSign, setIsPreparingSign] = useState(false);
-
-  const singleCoinHistoryList = useMemo(() => {
-    return userFills
-      .filter((fill) => fill.coin.toLowerCase() === coin?.toLowerCase())
-      .sort((a, b) => b.time - a.time);
-  }, [userFills, coin]);
 
   const [activeAssetCtx, setActiveAssetCtx] = React.useState<
     WsActiveAssetCtx['ctx'] | null
@@ -142,12 +117,47 @@ export const PerpsSingleCoin = () => {
       slOid: slItem?.oid,
     };
   }, [currentPosition]);
+  const [currentTpOrSl, setCurrentTpOrSl] = useState<{
+    tpPrice?: string;
+    slPrice?: string;
+  }>({
+    tpPrice: tpPrice,
+    slPrice: slPrice,
+  });
+  const {
+    handleOpenPosition,
+    handleClosePosition,
+    handleSetAutoClose,
+    currentPerpsAccount,
+    isLogin,
+    userFills,
+    hasPermission,
+  } = usePerpsPosition({
+    setCurrentTpOrSl,
+  });
 
-  useEffect(() => {
-    if (isLogin) {
-      dispatch.perps.fetchPositionOpenOrders();
-    }
-  }, []);
+  const {
+    miniSignTx,
+    clearMiniSignTx,
+    updateMiniSignTx,
+    handleDeposit,
+    handleSignDepositDirect,
+  } = usePerpsDeposit({
+    currentPerpsAccount,
+    setAmountVisible,
+  });
+
+  const singleCoinHistoryList = useMemo(() => {
+    return userFills
+      .filter((fill) => fill.coin.toLowerCase() === coin?.toLowerCase())
+      .sort((a, b) => b.time - a.time);
+  }, [userFills, coin]);
+
+  // useEffect(() => {
+  //   if (isLogin) {
+  //     dispatch.perps.fetchPositionOpenOrders();
+  //   }
+  // }, []);
 
   const hasPosition = useMemo(() => {
     return !!currentPosition;
@@ -212,8 +222,8 @@ export const PerpsSingleCoin = () => {
     : null;
 
   const hasAutoClose = useMemo(() => {
-    return Boolean(tpPrice || slPrice);
-  }, [tpPrice, slPrice]);
+    return Boolean(currentTpOrSl.tpPrice || currentTpOrSl.slPrice);
+  }, [currentTpOrSl]);
 
   const handleAutoCloseSwitch = useMemoizedFn(async (e: boolean) => {
     if (e) {
@@ -247,7 +257,13 @@ export const PerpsSingleCoin = () => {
           )
         ) {
           message.success('Auto close position canceled successfully');
-          dispatch.perps.fetchPositionOpenOrders();
+          setCurrentTpOrSl({
+            tpPrice: undefined,
+            slPrice: undefined,
+          });
+          setTimeout(() => {
+            dispatch.perps.fetchPositionOpenOrders();
+          }, 1000);
         } else {
           message.error('Auto close position cancel error');
           Sentry.captureException(
@@ -275,33 +291,33 @@ export const PerpsSingleCoin = () => {
 
   const AutoCloseInfo = useMemo(() => {
     if (hasAutoClose) {
-      if (tpPrice && slPrice) {
+      if (currentTpOrSl.tpPrice && currentTpOrSl.slPrice) {
         const Line = (
           <span className="text-r-neutral-line text-13 mr-4 ml-4">|</span>
         );
         return (
           <div className="text-r-neutral-title-1 font-medium text-13">
-            ${tpPrice} {t('page.perps.takeProfit')}
-            {Line}${slPrice} {t('page.perps.stopLoss')}
+            ${currentTpOrSl.tpPrice} {t('page.perps.takeProfit')}
+            {Line}${currentTpOrSl.slPrice} {t('page.perps.stopLoss')}
           </div>
         );
-      } else if (tpPrice) {
+      } else if (currentTpOrSl.tpPrice) {
         return (
           <div className="text-r-neutral-title-1 font-medium text-13">
-            ${tpPrice} {t('page.perps.takeProfit')}
+            ${currentTpOrSl.tpPrice} {t('page.perps.takeProfit')}
           </div>
         );
-      } else if (slPrice) {
+      } else if (currentTpOrSl.slPrice) {
         return (
           <div className="text-r-neutral-title-1 font-medium text-13">
-            ${slPrice} {t('page.perps.stopLoss')}
+            ${currentTpOrSl.slPrice} {t('page.perps.stopLoss')}
           </div>
         );
       } else {
         return null;
       }
     }
-  }, [hasAutoClose, tpPrice, slPrice]);
+  }, [hasAutoClose, currentTpOrSl]);
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
@@ -319,8 +335,8 @@ export const PerpsSingleCoin = () => {
         {/* Price Chart Section */}
         <PerpsChart
           lineTagInfo={{
-            tpPrice: Number(tpPrice || 0),
-            slPrice: Number(slPrice || 0),
+            tpPrice: Number(currentTpOrSl.tpPrice || 0),
+            slPrice: Number(currentTpOrSl.slPrice || 0),
             liquidationPrice: Number(
               currentPosition?.position.liquidationPx || 0
             ),

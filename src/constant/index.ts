@@ -524,6 +524,9 @@ export const EVENTS = {
     LOG_OUT: 'LOG_OUT',
     CLOSE_WINDOW: 'CLOSE_WINDOW',
   },
+  PERPS: {
+    LOG_OUT: 'PERPS_LOG_OUT',
+  },
 };
 
 export const EVENTS_IN_BG = {

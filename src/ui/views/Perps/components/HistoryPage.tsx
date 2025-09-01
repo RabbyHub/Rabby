@@ -30,7 +30,9 @@ export const HistoryPage: React.FC = () => {
   }, [userAccountHistory, userFills, localLoadingHistory]);
   console.log('coin', coin);
   const coinHistoryList = useMemo(() => {
-    return userFills.filter((item) => item.coin === coin);
+    return userFills
+      .filter((item) => item.coin === coin)
+      .sort((a, b) => b.time - a.time);
   }, [coin, userFills]);
 
   const { t } = useTranslation();
