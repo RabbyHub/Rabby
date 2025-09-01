@@ -152,7 +152,7 @@ export const PerpsSingleCoin = () => {
     [currentPerpsAccount?.type]
   );
   const miniTxs = useMemo(() => {
-    console.log('miniTxs', miniTxs);
+    console.log('miniTxs', miniSignTx);
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
 
@@ -276,7 +276,7 @@ export const PerpsSingleCoin = () => {
         return (
           <div className="text-r-neutral-title-1 font-medium text-13">
             ${tpPrice} {t('page.perps.takeProfit')}
-            {Line}${slPrice}' '{t('page.perps.stopLoss')}
+            {Line}${slPrice} {t('page.perps.stopLoss')}
           </div>
         );
       } else if (tpPrice) {
@@ -419,7 +419,7 @@ export const PerpsSingleCoin = () => {
                 }}
               >
                 <div className="text-r-neutral-body">
-                  <div className="text-13 font-medium text-r-neutral-body">
+                  <div className="text-13 text-r-neutral-body">
                     {t('page.perps.autoClose')}
                   </div>
                   {AutoCloseInfo}

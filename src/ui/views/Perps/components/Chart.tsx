@@ -586,7 +586,7 @@ export const PerpsChart = ({
                   : 'text-r-red-default'
               )}
             >
-              {chartHoverData.isPositiveChange ? '+' : ''}
+              {chartHoverData.isPositiveChange ? '+' : ''}$
               {chartHoverData.delta?.toFixed(decimals)} (
               {chartHoverData.isPositiveChange ? '+' : ''}
               {formatPercent(chartHoverData.deltaPercent || 0, 2)})

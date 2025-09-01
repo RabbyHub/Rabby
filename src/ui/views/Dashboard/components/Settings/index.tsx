@@ -787,7 +787,7 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconRabbyMobileCC,
-          leftIconClassName: 'text-r-neutral-body',
+          leftIconClassName: 'text-r-neutral-body w-24 h-24',
           content: t('page.dashboard.home.panel.mobile'),
           onClick: () => {
             openInternalPageInTab('sync');

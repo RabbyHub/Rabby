@@ -15,6 +15,7 @@ import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { formatMarkData } from '../views/Perps/utils';
 import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
+import { maxBy } from 'lodash';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -207,10 +208,14 @@ export const perps = createModel<RootModel>()({
       state,
       payload: { newHistoryList: AccountHistoryItem[] }
     ) {
+      if (payload.newHistoryList.length === 0) {
+        return state;
+      }
       const { newHistoryList } = payload;
+      const maxTimeItem = maxBy(newHistoryList, 'time');
       // 使用当前userAccountHistory过滤 localLoadingHistory
       const filteredLocalHistory = state.localLoadingHistory.filter(
-        (item) => !newHistoryList.some((l) => l.hash === item.hash)
+        (item) => item.time >= (maxTimeItem?.time || 0)
       );
       return {
         ...state,

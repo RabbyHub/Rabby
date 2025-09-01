@@ -28,6 +28,7 @@ export type TokenSelectPopupProps = PopupProps & {
   onSelect: (token: TokenItem) => void;
   list: TokenItem[];
   usdcTokenInfo: TokenItem | null | undefined;
+  changeAccount: () => Promise<void>;
 };
 
 export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
@@ -36,11 +37,13 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   onSelect,
   list,
   usdcTokenInfo,
+  changeAccount,
   ...rest
 }) => {
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
   const history = useHistory();
+  const wallet = useWallet();
 
   const sortedList = React.useMemo(() => {
     const items = [...(list || [])];
@@ -88,6 +91,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
                   block
                   type="primary"
                   onClick={async () => {
+                    await changeAccount();
                     history.push(
                       `/dex-swap?rbisource=perps&payTokenId=${token.id}&chain=${token.chain}&receiveTokenId=${ARB_USDC_TOKEN_ID}`
                     );
@@ -140,6 +144,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
                   block
                   type="primary"
                   onClick={async () => {
+                    await changeAccount();
                     history.push(
                       `/bridge?fromTokenId=${token.id}&fromChainServerId=${token.chain}&toTokenId=${ARB_USDC_TOKEN_ID}&toChainServerId=${ARB_USDC_TOKEN_SERVER_CHAIN}`
                     );

@@ -68,7 +68,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   return (
     <Popup
       placement="bottom"
-      height={500}
+      height={460}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -139,19 +139,19 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 {t('page.perps.size')}
               </span>
               <span className="text-13 text-r-neutral-title-1 font-medium">
-                {sz} {coin}
+                ${splitNumberByStep(tradeValue.toFixed(2))} = {sz} {coin}
               </span>
             </div>
 
             {/* Trade Value */}
-            <div className="flex justify-between items-center py-16">
+            {/* <div className="flex justify-between items-center py-16">
               <span className="text-13 text-r-neutral-body">
                 {t('page.perps.historyDetail.tradeValue')}
               </span>
               <span className="text-13 text-r-neutral-title-1 font-medium">
                 ${splitNumberByStep(tradeValue.toFixed(2))}
               </span>
-            </div>
+            </div> */}
 
             {/* Fee */}
             {fee && (

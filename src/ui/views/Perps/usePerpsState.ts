@@ -406,7 +406,7 @@ export const usePerpsState = ({
         throw new Error('no signature, try later');
       }
 
-      await wallet.changeAccount(account);
+      await dispatch.account.changeAccountAsync(account);
       const isLocalWallet =
         account.type === KEYRING_CLASS.PRIVATE_KEY ||
         account.type === KEYRING_CLASS.MNEMONIC;
@@ -437,7 +437,7 @@ export const usePerpsState = ({
         for (const actionObj of signActions) {
           let signature = '';
 
-          if (isLocalWallet) {
+          if (!isLocalWallet) {
             signature = await wallet.signTypedData(
               account.type,
               account.address,
@@ -695,6 +695,15 @@ export const usePerpsState = ({
           signature: signature as string,
         });
         console.log('withdraw res', res);
+        dispatch.perps.setLocalLoadingHistory([
+          {
+            time: Date.now(),
+            hash: res.hash || '',
+            type: 'withdraw',
+            status: 'pending',
+            usdValue: (amount - 1).toString(),
+          },
+        ]);
         dispatch.perps.fetchClearinghouseState();
         return true;
       } catch (error) {
