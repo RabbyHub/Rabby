@@ -3,7 +3,7 @@ import { Button, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { TokenSelectPopup } from './TokenSelectPopup';
 import { useTranslation } from 'react-i18next';
-import { useAsync } from 'react-use';
+import { useAsync, useDebounce } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/perps/IconInfo.svg';
 import {
@@ -20,29 +20,44 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { formatUsdValue } from '../../../utils/number';
 import BigNumber from 'bignumber.js';
 import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
-import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+import {
+  supportedDirectSign,
+  useDirectSigning,
+  useMiniApprovalGas,
+  useStartDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { findChainByServerID } from '@/utils/chain';
+import { CHAINS_ENUM } from '@/types/chain';
+import { Tx } from 'background/service/openapi';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
-  onConfirm: (amount: number) => Promise<boolean>;
-  onChange: (amount: number) => void;
+  updateMiniSignTx: (amount: number) => void;
   availableBalance: string;
   currentPerpsAccount: Account | null;
   isPreparingSign: boolean;
+  setIsPreparingSign: (isPreparingSign: boolean) => void;
+  handleDeposit: () => void;
+  miniTxs: Tx[];
+  handleWithdraw?: (amount: number) => Promise<boolean>;
+  onClose: () => void;
 };
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
   visible,
   type,
   isPreparingSign,
-  onCancel,
-  onConfirm,
-  onChange,
+  onClose,
+  miniTxs,
+  updateMiniSignTx,
   currentPerpsAccount,
   availableBalance,
+  setIsPreparingSign,
+  handleDeposit,
+  handleWithdraw,
 }) => {
   const { t } = useTranslation();
   const isSigningLoading = useDirectSigning();
@@ -54,6 +69,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   );
   const inputRef = React.useRef<HTMLInputElement>(null);
   const wallet = useWallet();
+  const startDirectSigning = useStartDirectSigning();
 
   const { value: usdcTokenInfo, loading: usdcLoading } = useAsync(async () => {
     if (!currentPerpsAccount?.address || !visible) return null;
@@ -140,6 +156,56 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     amountValidation.isValid,
   ]);
 
+  const canUseDirectSubmitTx = useMemo(
+    () => supportedDirectSign(currentPerpsAccount?.type || ''),
+    [currentPerpsAccount?.type]
+  );
+
+  const miniApprovalGas = useMiniApprovalGas();
+  const gasReadyContent = useMemo(() => {
+    return (
+      !!miniApprovalGas &&
+      !miniApprovalGas.loading &&
+      !!miniApprovalGas.gasCostUsdStr
+    );
+  }, [miniApprovalGas]);
+
+  useDebounce(
+    () => {
+      if (canUseDirectSubmitTx && miniTxs?.length && isPreparingSign) {
+        if (gasReadyContent) {
+          const gasError =
+            gasReadyContent && miniApprovalGas?.showGasLevelPopup;
+          const chainInfo = findChainByServerID(ARB_USDC_TOKEN_SERVER_CHAIN)!;
+          const gasTooHigh =
+            !!gasReadyContent &&
+            !!miniApprovalGas?.gasCostUsdStr &&
+            new BigNumber(
+              miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
+            ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
+
+          if (gasError || gasTooHigh) {
+            handleDeposit();
+          } else {
+            startDirectSigning();
+          }
+        }
+        console.log('gasReadyContent', gasReadyContent);
+      } else {
+        setIsPreparingSign(false);
+      }
+    },
+    300,
+    [
+      startDirectSigning,
+      canUseDirectSubmitTx,
+      miniTxs,
+      gasReadyContent,
+      isPreparingSign,
+      handleDeposit,
+    ]
+  );
+
   // 获取错误状态下的文字颜色
   const getMarginTextColor = () => {
     if (amountValidation.error) {
@@ -158,7 +224,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       push={false}
       closable
       visible={visible}
-      onCancel={onCancel}
+      onCancel={onClose}
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
         <div className="text-20 font-medium text-r-neutral-title-1 mb-16 text-center mt-16">
@@ -196,7 +262,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   // 只允许数字和小数点
                   if (/^\d*\.?\d*$/.test(value) || value === '') {
                     setAmount(value);
-                    onChange(Number(value) || 0);
+                    updateMiniSignTx(Number(value) || 0);
                   }
                 }}
               />
@@ -288,8 +354,16 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               style={{
                 height: 48,
               }}
-              onClick={() => {
-                onConfirm(Number(amount));
+              onClick={async () => {
+                if (canUseDirectSubmitTx) {
+                  if (currentPerpsAccount) {
+                    await wallet.changeAccount(currentPerpsAccount);
+                  }
+                  setIsPreparingSign(true);
+                } else {
+                  handleDeposit();
+                }
+                return true;
               }}
             >
               {t('page.perps.deposit')}
@@ -307,9 +381,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               }}
               onClick={async () => {
                 setIsLoading(true);
-                await onConfirm(Number(amount));
+                await handleWithdraw?.(Number(amount));
                 setIsLoading(false);
-                onCancel?.();
+                onClose?.();
               }}
             >
               {t('page.perps.withdraw')}

@@ -90,13 +90,10 @@ export const Perps: React.FC = () => {
   });
 
   const [popupType, setPopupType] = useState<'deposit' | 'withdraw'>('deposit');
-  const startDirectSigning = useStartDirectSigning();
   const [loginVisible, setLoginVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
-
-  console.log('miniSignTypeData', miniSignTypeData);
   useEffect(() => {
     wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
       if (!hasDoneNewUserProcess) {
@@ -114,57 +111,14 @@ export const Perps: React.FC = () => {
       // }, 1000);
     }
   }, []);
-
-  const miniApprovalGas = useMiniApprovalGas();
-  const gasReadyContent = useMemo(() => {
-    return (
-      !!miniApprovalGas &&
-      !miniApprovalGas.loading &&
-      !!miniApprovalGas.gasCostUsdStr
-    );
-  }, [miniApprovalGas]);
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
   );
   const miniTxs = useMemo(() => {
+    console.log('miniSignTx', miniSignTx);
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
-  useDebounce(
-    () => {
-      if (canUseDirectSubmitTx && miniTxs?.length && isPreparingSign) {
-        if (gasReadyContent) {
-          const gasError =
-            gasReadyContent && miniApprovalGas?.showGasLevelPopup;
-          const chainInfo = findChainByServerID(ARB_USDC_TOKEN_SERVER_CHAIN)!;
-          const gasTooHigh =
-            !!gasReadyContent &&
-            !!miniApprovalGas?.gasCostUsdStr &&
-            new BigNumber(
-              miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
-            ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
-
-          if (gasError || gasTooHigh) {
-            handleDeposit();
-          } else {
-            startDirectSigning();
-          }
-        }
-        console.log('gasReadyContent', gasReadyContent);
-      } else {
-        setIsPreparingSign(false);
-      }
-    },
-    300,
-    [
-      startDirectSigning,
-      canUseDirectSubmitTx,
-      miniTxs,
-      gasReadyContent,
-      isPreparingSign,
-      handleDeposit,
-    ]
-  );
 
   const positionAllPnl = useMemo(() => {
     return positionAndOpenOrders.reduce((acc, asset) => {
@@ -391,34 +345,18 @@ export const Perps: React.FC = () => {
       <PerpsDepositAmountPopup
         visible={amountVisible}
         type={popupType}
+        miniTxs={miniTxs}
+        setIsPreparingSign={setIsPreparingSign}
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
+        handleDeposit={handleDeposit}
+        handleWithdraw={handleWithdraw}
+        updateMiniSignTx={updateMiniSignTx}
         availableBalance={accountSummary?.withdrawable || '0'}
-        onChange={(amount) => {
-          if (popupType === 'deposit') {
-            updateMiniSignTx(amount);
-          }
-        }}
-        onCancel={() => {
+        onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();
           setIsPreparingSign(false);
-        }}
-        onConfirm={async (amount) => {
-          if (popupType === 'deposit') {
-            if (canUseDirectSubmitTx) {
-              if (currentPerpsAccount) {
-                await wallet.changeAccount(currentPerpsAccount);
-              }
-              setIsPreparingSign(true);
-            } else {
-              handleDeposit();
-            }
-            return true;
-          } else {
-            await handleWithdraw(amount);
-            return true;
-          }
         }}
       />
 
