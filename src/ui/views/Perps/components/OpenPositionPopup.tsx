@@ -86,7 +86,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       return () => clearTimeout(timer);
     }
   }, [visible]);
-  // 计算交易金额
+
   const tradeAmount = React.useMemo(() => {
     const marginValue = Number(margin) || 0;
     return marginValue * leverage;
@@ -120,6 +120,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const marginValidation = React.useMemo(() => {
     const marginValue = Number(margin) || 0;
     const usdValue = marginValue * leverage;
+    const sizeValue = Number(tradeSize) * markPrice;
     const maxNtlValue = 10000000;
 
     if (marginValue === 0) {
@@ -134,7 +135,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       };
     }
 
-    if (usdValue < 10) {
+    if (usdValue < 10 || sizeValue < 10) {
       // 最小订单限制 $10
       return {
         isValid: false,
@@ -331,7 +332,11 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               {t('page.perps.size')}
             </div>
             <div className="text-13 text-r-neutral-title-1 font-medium">
-              {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
+              {formatUsdValue(
+                Number(tradeSize) * markPrice,
+                BigNumber.ROUND_DOWN
+              )}{' '}
+              = {tradeSize} {coin}
             </div>
           </div>
           <div

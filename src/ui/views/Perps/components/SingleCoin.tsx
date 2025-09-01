@@ -17,7 +17,7 @@ import {
   WsActiveAssetCtx,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/utils';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { PerpsOpenPositionPopup } from './OpenPositionPopup';
 import { ClosePositionPopup } from './ClosePositionPopup';
 import { AutoClosePositionPopup } from './AutoClosePositionPopup';
@@ -45,6 +45,7 @@ export const PerpsSingleCoin = () => {
   const { coin } = useParams<{ coin: string }>();
   const history = useHistory();
   const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
   const {
     positionAndOpenOrders,
     accountSummary,
@@ -53,7 +54,6 @@ export const PerpsSingleCoin = () => {
   } = useRabbySelector((state) => state.perps);
 
   const {
-    refreshData,
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,
@@ -142,6 +142,12 @@ export const PerpsSingleCoin = () => {
       slOid: slItem?.oid,
     };
   }, [currentPosition]);
+
+  useEffect(() => {
+    if (isLogin) {
+      dispatch.perps.fetchPositionOpenOrders();
+    }
+  }, []);
 
   const hasPosition = useMemo(() => {
     return !!currentPosition;
@@ -241,7 +247,7 @@ export const PerpsSingleCoin = () => {
           )
         ) {
           message.success('Auto close position canceled successfully');
-          refreshData();
+          dispatch.perps.fetchPositionOpenOrders();
         } else {
           message.error('Auto close position cancel error');
           Sentry.captureException(

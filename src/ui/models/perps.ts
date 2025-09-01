@@ -253,6 +253,21 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    updateOpenOrders(state, payload: OpenOrder[]) {
+      const positionAndOpenOrders = state.positionAndOpenOrders.map((order) => {
+        return {
+          ...order,
+          openOrders: payload.filter(
+            (item) => item.coin === order.position.coin
+          ),
+        };
+      });
+      return {
+        ...state,
+        positionAndOpenOrders,
+      };
+    },
+
     setAccountSummary(state, payload: AccountSummary | null) {
       return {
         ...state,
@@ -377,6 +392,12 @@ export const perps = createModel<RootModel>()({
       const clearinghouseState = await sdk.info.getClearingHouseState();
 
       dispatch.perps.updatePositionsWithClearinghouse(clearinghouseState);
+    },
+
+    async fetchPositionOpenOrders() {
+      const sdk = getPerpsSDK();
+      const openOrders = await sdk.info.getFrontendOpenOrders();
+      dispatch.perps.updateOpenOrders(openOrders);
     },
 
     async fetchUserNonFundingLedgerUpdates() {
@@ -519,7 +540,7 @@ export const perps = createModel<RootModel>()({
 
       const timer = setInterval(() => {
         dispatch.perps.fetchClearinghouseState();
-      }, 5000);
+      }, 30 * 1000);
 
       rootState.perps.pollingTimer = timer;
       console.log('开始轮询ClearingHouseState, 间隔5秒');

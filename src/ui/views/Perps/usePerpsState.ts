@@ -758,7 +758,6 @@ export const usePerpsState = ({
     login,
     logout,
     handleWithdraw,
-    refreshData: dispatch.perps.refreshData,
 
     // hard ware sign typeData
     miniSignTypeData,
