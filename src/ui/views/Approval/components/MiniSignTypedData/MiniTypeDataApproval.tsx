@@ -13,6 +13,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BatchSignTypedDataTaskType, MiniTypedData } from './useTypedDataTask';
 import { MiniSignTypedDate } from './index';
 import { ReactComponent as RCIconLoadingCC } from '@/ui/assets/loading-cc.svg';
+import { Account } from '@/background/service/preference';
 
 export const MiniTypedDataApproval = ({
   txs,
@@ -28,6 +29,7 @@ export const MiniTypedDataApproval = ({
   isPreparingSign,
   setIsPreparingSign,
   noShowModalLoading,
+  account,
 }: {
   txs?: MiniTypedData[];
   visible?: boolean;
@@ -42,12 +44,14 @@ export const MiniTypedDataApproval = ({
   isPreparingSign?: boolean;
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
   noShowModalLoading?: boolean;
+  account?: Account;
 }) => {
   const [status, setStatus] = useState<BatchSignTypedDataTaskType['status']>(
     'idle'
   );
   const { isDarkTheme } = useThemeMode();
-  const currentAccount = useCurrentAccount();
+  const _currentAccount = useCurrentAccount();
+  const currentAccount = account || _currentAccount;
 
   const isSigningLoading = useDirectSigning();
   const setDirectSigning = useSetDirectSigning();
@@ -142,6 +146,7 @@ export const MiniTypedDataApproval = ({
             onReject={onReject}
             onResolve={onResolve}
             getContainer={getContainer}
+            account={currentAccount || undefined}
           />
         ) : null}
       </Popup>

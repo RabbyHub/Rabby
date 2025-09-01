@@ -22,6 +22,7 @@ import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 import { useTranslation } from 'react-i18next';
 import { isLedgerLockError } from '@/ui/utils/ledger';
+import { Account } from '@/background/service/preference';
 
 export const MiniSignTypedDate = ({
   txs,
@@ -30,6 +31,7 @@ export const MiniSignTypedDate = ({
   onStatusChange,
   directSubmit,
   getContainer,
+  account,
 }: {
   txs: MiniTypedData[];
   onReject?: () => void;
@@ -38,9 +40,13 @@ export const MiniSignTypedDate = ({
   onStatusChange?: (status: BatchSignTypedDataTaskType['status']) => void;
   getContainer?: DrawerProps['getContainer'];
   directSubmit?: boolean;
+  account?: Account;
 }) => {
   const { t } = useTranslation();
-  const currentAccount = useCurrentAccount();
+  const _currentAccount = useCurrentAccount();
+  const currentAccount = useMemo(() => {
+    return account || _currentAccount;
+  }, [account, _currentAccount]);
 
   const task = useBatchSignTypedDataTask({});
 
@@ -77,6 +83,9 @@ export const MiniSignTypedDate = ({
       txs.map((item) => ({
         tx: item,
         status: 'idle',
+        options: {
+          account: currentAccount || undefined,
+        },
       }))
     );
   }, []);
@@ -149,6 +158,7 @@ export const MiniSignTypedDate = ({
         onIgnoreAllRules={noop}
         task={task as any}
         disabledProcess={false}
+        account={currentAccount || undefined}
       />
     </>
   );
