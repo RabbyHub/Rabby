@@ -389,7 +389,7 @@ export const Perps: React.FC = () => {
       )}
 
       <MiniApproval
-        zIndex={1001}
+        zIndex={miniSignTypeData.data.length ? 1001 : undefined}
         isPreparingSign={isPreparingSign}
         setIsPreparingSign={setIsPreparingSign}
         txs={miniTxs}

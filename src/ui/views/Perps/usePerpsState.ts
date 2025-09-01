@@ -437,7 +437,7 @@ export const usePerpsState = ({
         for (const actionObj of signActions) {
           let signature = '';
 
-          if (!isLocalWallet) {
+          if (isLocalWallet) {
             signature = await wallet.signTypedData(
               account.type,
               account.address,
