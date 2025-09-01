@@ -172,6 +172,16 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
   }, [miniApprovalGas]);
 
+  // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
+  useDebounce(
+    () => {
+      if (!visible) return;
+      updateMiniSignTx(Number(amount) || 0);
+    },
+    300,
+    [amount, visible, updateMiniSignTx]
+  );
+
   useDebounce(
     () => {
       if (canUseDirectSubmitTx && miniTxs?.length && isPreparingSign) {
@@ -264,7 +274,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   // 只允许数字和小数点
                   if (/^\d*\.?\d*$/.test(value) || value === '') {
                     setAmount(value);
-                    updateMiniSignTx(Number(value) || 0);
                   }
                 }}
               />
