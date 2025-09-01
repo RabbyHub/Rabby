@@ -25,7 +25,7 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
-import { PerpsSingleCoin } from './Perps/components/SingleCoin';
+import PerpsSingleCoin from './Perps/components/SingleCoin';
 import { HistoryPage as PerpsHistoryPage } from './Perps/components/HistoryPage';
 import ExploreMore from './Perps/components/ExploreMore';
 import AdvancedSettings from './AdvanceSettings';
