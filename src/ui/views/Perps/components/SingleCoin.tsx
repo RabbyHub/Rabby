@@ -276,7 +276,7 @@ export const PerpsSingleCoin = () => {
         return (
           <div className="text-r-neutral-title-1 font-medium text-13">
             ${tpPrice} {t('page.perps.takeProfit')}
-            {Line}${slPrice}' '{t('page.perps.stopLoss')}
+            {Line}${slPrice} {t('page.perps.stopLoss')}
           </div>
         );
       } else if (tpPrice) {

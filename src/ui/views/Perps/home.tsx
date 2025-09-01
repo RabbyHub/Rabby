@@ -134,7 +134,10 @@ export const Perps: React.FC = () => {
     history.push('/dashboard');
   };
 
-  const withdrawDisabled = !accountSummary?.withdrawable;
+  const withdrawDisabled = useMemo(
+    () => !Number(accountSummary?.withdrawable || 0),
+    [accountSummary?.withdrawable]
+  );
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
@@ -218,7 +221,7 @@ export const Perps: React.FC = () => {
                   }}
                   onClick={() => {
                     if (currentPerpsAccount) {
-                      wallet.changeAccount(currentPerpsAccount);
+                      dispatch.account.changeAccountAsync(currentPerpsAccount);
                     }
                     setPopupType('deposit');
                     setAmountVisible(true);

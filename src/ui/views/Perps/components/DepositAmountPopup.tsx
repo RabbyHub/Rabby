@@ -32,6 +32,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
+import { useRabbyDispatch } from '@/ui/store';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
@@ -60,6 +61,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   handleWithdraw,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
   const isSigningLoading = useDirectSigning();
   const [isLoading, setIsLoading] = React.useState(false);
   const [amount, setAmount] = React.useState<string>('');
@@ -357,7 +359,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               onClick={async () => {
                 if (canUseDirectSubmitTx) {
                   if (currentPerpsAccount) {
-                    await wallet.changeAccount(currentPerpsAccount);
+                    await dispatch.account.changeAccountAsync(
+                      currentPerpsAccount
+                    );
                   }
                   setIsPreparingSign(true);
                 } else {
@@ -395,6 +399,11 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       <TokenSelectPopup
         visible={tokenVisible}
         usdcTokenInfo={usdcTokenInfo}
+        changeAccount={async () => {
+          if (currentPerpsAccount) {
+            await dispatch.account.changeAccountAsync(currentPerpsAccount);
+          }
+        }}
         list={list || []}
         onCancel={() => setTokenVisible(false)}
         onSelect={(t) => {

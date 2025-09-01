@@ -35,11 +35,11 @@ export const SelectAddressList = ({
   const wallet = useWallet();
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
   const [lastUsedAccount, setLastUsedAccount] = useState<Account | null>(null);
-  const [loadingAddress, setLoadingAddress] = useState('');
+  const [loadingAddress, setLoadingAddress] = useState<Account | null>(null);
 
   useEffect(() => {
     if (visible) {
-      setLoadingAddress('');
+      setLoadingAddress(null);
       wallet
         .getPerpsLastUsedAccount()
         .then((account) => setLastUsedAccount(account));
@@ -63,11 +63,11 @@ export const SelectAddressList = ({
     }
 
     try {
-      setLoadingAddress(account.address);
+      setLoadingAddress(account);
       await onChange(account);
-      setLoadingAddress('');
+      setLoadingAddress(null);
     } catch (error) {
-      setLoadingAddress('');
+      setLoadingAddress(null);
     }
   };
 
@@ -83,7 +83,10 @@ export const SelectAddressList = ({
             (_, account) => {
               return (
                 <AccountItem
-                  loading={loadingAddress === account.address}
+                  loading={
+                    loadingAddress?.address === account.address &&
+                    loadingAddress?.type === account.type
+                  }
                   onChange={handleChange}
                   account={account}
                   isLastUsed={
