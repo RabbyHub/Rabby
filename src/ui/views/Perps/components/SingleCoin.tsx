@@ -419,7 +419,7 @@ export const PerpsSingleCoin = () => {
                 }}
               >
                 <div className="text-r-neutral-body">
-                  <div className="text-13 font-medium text-r-neutral-body">
+                  <div className="text-13 text-r-neutral-body">
                     {t('page.perps.autoClose')}
                   </div>
                   {AutoCloseInfo}

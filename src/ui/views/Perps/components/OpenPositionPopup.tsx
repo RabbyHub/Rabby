@@ -327,7 +327,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
           </div>
           <div className="flex w-full py-16 justify-between items-center">
-            <div className="text-13 text-r-neutral-title-1 mb-8">
+            <div className="text-13 text-r-neutral-title-1">
               {t('page.perps.size')}
             </div>
             <div className="text-13 text-r-neutral-title-1 font-medium">

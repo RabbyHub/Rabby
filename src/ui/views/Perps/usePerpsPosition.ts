@@ -91,8 +91,9 @@ export const usePerpsPosition = () => {
         if (filled) {
           refreshData();
           const { totalSz, avgPx } = filled;
+          // - Close long ETH-USD ,at Price:3382.1,Size:0.00047
           message.success(
-            `close ${direction} ${coin}, avgPrice: ${avgPx}, size: ${totalSz}`
+            `Close ${direction} ${coin}-USD, at price: ${avgPx}, Size: ${totalSz}`
           );
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
@@ -169,8 +170,9 @@ export const usePerpsPosition = () => {
         if (filled) {
           refreshData();
           const { totalSz, avgPx } = filled;
+          // - Open long ETH-USD at price:3382.1,Size:0.00047
           message.success(
-            `open ${direction} ${coin}, avgPrice: ${avgPx}, size: ${totalSz}`
+            `Open ${direction} ${coin}-USD at price: ${avgPx}, Size: ${totalSz}`
           );
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
