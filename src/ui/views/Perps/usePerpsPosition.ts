@@ -5,9 +5,13 @@ import { getPerpsSDK } from './sdkManager';
 import { usePerpsState } from './usePerpsState';
 import * as Sentry from '@sentry/browser';
 
-export const usePerpsPosition = () => {
+export const usePerpsPosition = ({
+  setCurrentTpOrSl,
+}: {
+  setCurrentTpOrSl: (params: { tpPrice?: string; slPrice?: string }) => void;
+}) => {
+  const dispatch = useRabbyDispatch();
   const {
-    refreshData,
     userFills,
     currentPerpsAccount,
     isLogin,
@@ -32,7 +36,13 @@ export const usePerpsPosition = () => {
           slTriggerPx,
         });
 
-        refreshData();
+        setCurrentTpOrSl({
+          tpPrice: tpTriggerPx,
+          slPrice: slTriggerPx,
+        });
+        setTimeout(() => {
+          dispatch.perps.fetchPositionOpenOrders();
+        }, 1000);
         message.success('Auto close position set successfully');
 
         // if (
@@ -55,7 +65,7 @@ export const usePerpsPosition = () => {
         //   );
         // }
       } catch (error) {
-        message.error('Set auto close error');
+        message.error(error?.message || 'Set auto close error');
         Sentry.captureException(
           new Error(
             'Set auto close error' +
@@ -89,19 +99,24 @@ export const usePerpsPosition = () => {
 
         const filled = res?.response?.data?.statuses[0]?.filled;
         if (filled) {
-          refreshData();
+          dispatch.perps.fetchClearinghouseState();
+          dispatch.perps.fetchUserHistoricalOrders();
           const { totalSz, avgPx } = filled;
-          // - Close long ETH-USD ,at Price:3382.1,Size:0.00047
           message.success(
-            `Close ${direction} ${coin}-USD, at price: ${avgPx}, Size: ${totalSz}`
+            `Closed ${direction} ${coin}-USD: Size ${totalSz} at Price ${avgPx}`
           );
+          setCurrentTpOrSl({
+            tpPrice: undefined,
+            slPrice: undefined,
+          });
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
             avgPx: string;
             oid: number;
           };
         } else {
-          message.error('close position error');
+          const msg = res?.response?.data?.statuses[0]?.error;
+          message.error(msg || 'close position error');
           Sentry.captureException(
             new Error(
               'PERPS close position noFills' +
@@ -168,19 +183,25 @@ export const usePerpsPosition = () => {
 
         const filled = res?.response?.data?.statuses[0]?.filled;
         if (filled) {
-          refreshData();
+          dispatch.perps.fetchClearinghouseState();
+          dispatch.perps.fetchUserHistoricalOrders();
+
           const { totalSz, avgPx } = filled;
-          // - Open long ETH-USD at price:3382.1,Size:0.00047
           message.success(
-            `Open ${direction} ${coin}-USD at price: ${avgPx}, Size: ${totalSz}`
+            `Opened ${direction} ${coin}-USD: Size ${totalSz} at Price ${avgPx}`
           );
+          setCurrentTpOrSl({
+            tpPrice: tpTriggerPx,
+            slPrice: slTriggerPx,
+          });
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
             avgPx: string;
             oid: number;
           };
         } else {
-          message.error('open position error');
+          const msg = res?.response?.data?.statuses[0]?.error;
+          message.error(msg || 'open position error');
           Sentry.captureException(
             new Error(
               'PERPS open position noFills' +
@@ -193,7 +214,7 @@ export const usePerpsPosition = () => {
         }
       } catch (error) {
         console.error(error);
-        message.error('open position error');
+        message.error(error?.message || 'open position error');
         Sentry.captureException(
           new Error(
             'PERPS open position error' +
@@ -211,7 +232,6 @@ export const usePerpsPosition = () => {
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,
-    refreshData,
     userFills,
     isLogin,
     currentPerpsAccount,

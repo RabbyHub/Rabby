@@ -116,7 +116,13 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 <span className="text-13 text-r-neutral-body">
                   {t('page.perps.historyDetail.closedPnl')}
                 </span>
-                <span className="text-13 text-r-neutral-title-1 font-medium">
+                <span
+                  className={`text-13 ${
+                    pnlValue >= 0
+                      ? 'text-r-green-default'
+                      : 'text-r-red-default'
+                  } font-medium`}
+                >
                   {pnlValue > 0 ? '+' : '-'}$
                   {splitNumberByStep(Math.abs(pnlValue).toFixed(2))}
                 </span>

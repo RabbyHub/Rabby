@@ -123,7 +123,7 @@ export const usePerpsDeposit = ({
     () => {
       dispatch.perps.fetchUserNonFundingLedgerUpdates();
     },
-    perpsState.localLoadingHistory.length > 0 ? 5000 : null
+    perpsState.localLoadingHistory.length > 0 ? 60 * 1000 : null
   );
 
   return {

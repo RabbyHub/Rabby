@@ -104,11 +104,9 @@ export const Perps: React.FC = () => {
 
   useEffect(() => {
     if (isLogin) {
-      // dispatch.perps.fetchMarketData(undefined);
-      dispatch.perps.refreshData();
-      // setTimeout(() => {
-      //   dispatch.perps.fetchPerpFee();
-      // }, 1000);
+      // dispatch.perps.fetchClearinghouseState();
+      dispatch.perps.fetchPositionAndOpenOrders();
+      // dispatch.perps.fetchUserHistoricalOrders();
     }
   }, []);
   const canUseDirectSubmitTx = useMemo(

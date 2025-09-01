@@ -16,6 +16,8 @@ import { formatMarkData } from '../views/Perps/utils';
 import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -253,6 +255,21 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    updateOpenOrders(state, payload: OpenOrder[]) {
+      const positionAndOpenOrders = state.positionAndOpenOrders.map((order) => {
+        return {
+          ...order,
+          openOrders: payload.filter(
+            (item) => item.coin === order.position.coin
+          ),
+        };
+      });
+      return {
+        ...state,
+        positionAndOpenOrders,
+      };
+    },
+
     setAccountSummary(state, payload: AccountSummary | null) {
       return {
         ...state,
@@ -377,6 +394,12 @@ export const perps = createModel<RootModel>()({
       const clearinghouseState = await sdk.info.getClearingHouseState();
 
       dispatch.perps.updatePositionsWithClearinghouse(clearinghouseState);
+    },
+
+    async fetchPositionOpenOrders() {
+      const sdk = getPerpsSDK();
+      const openOrders = await sdk.info.getFrontendOpenOrders();
+      dispatch.perps.updateOpenOrders(openOrders);
     },
 
     async fetchUserNonFundingLedgerUpdates() {
@@ -519,7 +542,7 @@ export const perps = createModel<RootModel>()({
 
       const timer = setInterval(() => {
         dispatch.perps.fetchClearinghouseState();
-      }, 5000);
+      }, 30 * 1000);
 
       rootState.perps.pollingTimer = timer;
       console.log('开始轮询ClearingHouseState, 间隔5秒');
@@ -544,6 +567,12 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.stopPolling(undefined);
       dispatch.perps.unsubscribeAll(undefined);
       dispatch.perps.resetState();
+    },
+
+    initEventBus() {
+      eventBus.addEventListener(EVENTS.PERPS.LOG_OUT, () => {
+        dispatch.perps.logout();
+      });
     },
   }),
 });

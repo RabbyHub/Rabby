@@ -261,23 +261,32 @@ restoreAppState();
       if (type !== KEYRING_TYPE.WatchAddressKeyring) {
         const restAddresses = await keyringService.getAllAdresses();
         const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
-        if (!gasAccount?.account?.address) return;
-        // check if there is another type address in wallet
-        const stillHasAddr = restAddresses.some((item) => {
-          return (
-            isSameAddress(item.address, gasAccount.account!.address) &&
-            item.type !== KEYRING_TYPE.WatchAddressKeyring
-          );
-        });
-        if (
-          !stillHasAddr &&
-          isSameAddress(address, gasAccount.account.address)
-        ) {
-          // if there is no another type address then reset signature
-          gasAccountService.setGasAccountSig();
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+        if (gasAccount?.account?.address) {
+          // check if there is another type address in wallet
+          const stillHasAddr = restAddresses.some((item) => {
+            return (
+              isSameAddress(item.address, gasAccount.account!.address) &&
+              item.type !== KEYRING_TYPE.WatchAddressKeyring
+            );
           });
+          if (
+            !stillHasAddr &&
+            isSameAddress(address, gasAccount.account.address)
+          ) {
+            // if there is no another type address then reset signature
+            gasAccountService.setGasAccountSig();
+            eventBus.emit(EVENTS.broadcastToUI, {
+              method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+            });
+          }
+        }
+
+        const perpsAccount = await perpsService.getCurrentAccount();
+        if (perpsAccount?.address === address && perpsAccount.type === type) {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.PERPS.LOG_OUT,
+          });
+          perpsService.setCurrentAccount(null);
         }
       }
     }
