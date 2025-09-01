@@ -31,11 +31,13 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   onChange: (amount: number) => void;
   availableBalance: string;
   currentPerpsAccount: Account | null;
+  isPreparingSign: boolean;
 };
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
   visible,
   type,
+  isPreparingSign,
   onCancel,
   onConfirm,
   onChange,
@@ -281,7 +283,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               disabled={!isValidAmount}
               size="large"
               type="primary"
-              loading={isSigningLoading}
+              loading={isSigningLoading || isPreparingSign}
               className="h-[48px] text-r-neutral-title2 text-15 font-medium"
               style={{
                 height: 48,

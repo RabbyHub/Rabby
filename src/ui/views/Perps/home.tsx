@@ -4,10 +4,11 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ReactComponent as RcIconPerps } from 'ui/assets/perps/imgPerps.svg';
 import { ReactComponent as RcIconLogout } from '@/ui/assets/perps/IconLogout.svg';
+import { useDebounce } from 'react-use';
 import { HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { Button } from 'antd';
 import { PerpsLoginPopup } from './components/LoginPopup';
@@ -31,6 +32,7 @@ import { MiniTypedDataApproval } from '../Approval/components/MiniSignTypedData/
 import {
   DirectSubmitProvider,
   supportedDirectSign,
+  useMiniApprovalGas,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PositionItem } from './components/PositionItem';
@@ -41,6 +43,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { TopPermissionTips } from './components/TopPermissionTips';
 import { PerpsModal } from './components/Modal';
 import { PerpsLoading } from './components/Loading';
+import { ARB_USDC_TOKEN_SERVER_CHAIN } from './constants';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -49,7 +52,6 @@ export const Perps: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const [deleteAgentModalVisible, setDeleteAgentModalVisible] = useState(false);
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
-  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const {
     positionAndOpenOrders,
     accountSummary,
@@ -75,6 +77,7 @@ export const Perps: React.FC = () => {
     setDeleteAgentModalVisible,
   });
 
+  const [amountVisible, setAmountVisible] = useState(false);
   const {
     miniSignTx,
     clearMiniSignTx,
@@ -83,12 +86,14 @@ export const Perps: React.FC = () => {
     handleSignDepositDirect,
   } = usePerpsDeposit({
     currentPerpsAccount,
+    setAmountVisible,
   });
 
   const [popupType, setPopupType] = useState<'deposit' | 'withdraw'>('deposit');
   const startDirectSigning = useStartDirectSigning();
   const [loginVisible, setLoginVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
+  const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
 
   console.log('miniSignTypeData', miniSignTypeData);
@@ -110,7 +115,56 @@ export const Perps: React.FC = () => {
     }
   }, []);
 
-  const [amountVisible, setAmountVisible] = useState(false);
+  const miniApprovalGas = useMiniApprovalGas();
+  const gasReadyContent = useMemo(() => {
+    return (
+      !!miniApprovalGas &&
+      !miniApprovalGas.loading &&
+      !!miniApprovalGas.gasCostUsdStr
+    );
+  }, [miniApprovalGas]);
+  const canUseDirectSubmitTx = useMemo(
+    () => supportedDirectSign(currentPerpsAccount?.type || ''),
+    [currentPerpsAccount?.type]
+  );
+  const miniTxs = useMemo(() => {
+    return miniSignTx ? [miniSignTx] : [];
+  }, [miniSignTx]);
+  useDebounce(
+    () => {
+      if (canUseDirectSubmitTx && miniTxs?.length && isPreparingSign) {
+        if (gasReadyContent) {
+          const gasError =
+            gasReadyContent && miniApprovalGas?.showGasLevelPopup;
+          const chainInfo = findChainByServerID(ARB_USDC_TOKEN_SERVER_CHAIN)!;
+          const gasTooHigh =
+            !!gasReadyContent &&
+            !!miniApprovalGas?.gasCostUsdStr &&
+            new BigNumber(
+              miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
+            ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
+
+          if (gasError || gasTooHigh) {
+            handleDeposit();
+          } else {
+            startDirectSigning();
+          }
+        }
+        console.log('gasReadyContent', gasReadyContent);
+      } else {
+        setIsPreparingSign(false);
+      }
+    },
+    300,
+    [
+      startDirectSigning,
+      canUseDirectSubmitTx,
+      miniTxs,
+      gasReadyContent,
+      isPreparingSign,
+      handleDeposit,
+    ]
+  );
 
   const positionAllPnl = useMemo(() => {
     return positionAndOpenOrders.reduce((acc, asset) => {
@@ -126,14 +180,6 @@ export const Perps: React.FC = () => {
     history.push('/dashboard');
   };
 
-  const miniTxs = useMemo(() => {
-    return miniSignTx ? [miniSignTx] : [];
-  }, [miniSignTx]);
-
-  const canUseDirectSubmitTx = useMemo(
-    () => supportedDirectSign(currentPerpsAccount?.type || ''),
-    [currentPerpsAccount?.type]
-  );
   const withdrawDisabled = !accountSummary?.withdrawable;
 
   return (
@@ -345,6 +391,7 @@ export const Perps: React.FC = () => {
       <PerpsDepositAmountPopup
         visible={amountVisible}
         type={popupType}
+        isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
         availableBalance={accountSummary?.withdrawable || '0'}
         onChange={(amount) => {
@@ -355,6 +402,7 @@ export const Perps: React.FC = () => {
         onCancel={() => {
           setAmountVisible(false);
           clearMiniSignTx();
+          setIsPreparingSign(false);
         }}
         onConfirm={async (amount) => {
           if (popupType === 'deposit') {
@@ -362,7 +410,7 @@ export const Perps: React.FC = () => {
               if (currentPerpsAccount) {
                 await wallet.changeAccount(currentPerpsAccount);
               }
-              startDirectSigning();
+              setIsPreparingSign(true);
             } else {
               handleDeposit();
             }
@@ -374,15 +422,16 @@ export const Perps: React.FC = () => {
         }}
       />
 
-      {Boolean(miniSignTypeData.length) && (
+      {Boolean(miniSignTypeData.data.length) && (
         <MiniTypedDataApproval
-          txs={miniSignTypeData}
+          txs={miniSignTypeData.data}
+          account={miniSignTypeData.account || undefined}
           noShowModalLoading={true}
           onResolve={(txs) => {
             handleMiniSignResolve(txs);
           }}
           onReject={() => {
-            handleMiniSignReject();
+            handleMiniSignReject(new Error('User Rejected'));
             setLoginVisible(false);
           }}
           onClose={() => {
@@ -399,8 +448,10 @@ export const Perps: React.FC = () => {
       )}
 
       <MiniApproval
+        zIndex={1001}
+        isPreparingSign={isPreparingSign}
+        setIsPreparingSign={setIsPreparingSign}
         txs={miniTxs}
-        visible={isShowMiniSign}
         noShowModalLoading={true}
         ga={{
           category: 'Perps',
@@ -409,22 +460,25 @@ export const Perps: React.FC = () => {
         }}
         onClose={() => {
           clearMiniSignTx();
-          setIsShowMiniSign(false);
+          setIsPreparingSign(false);
+          setAmountVisible(false);
         }}
         onReject={() => {
           clearMiniSignTx();
-          setIsShowMiniSign(false);
+          setIsPreparingSign(false);
+          setAmountVisible(false);
         }}
         onResolve={(hash) => {
           handleSignDepositDirect(hash);
           setAmountVisible(false);
           setTimeout(() => {
-            setIsShowMiniSign(false);
+            setIsPreparingSign(false);
             clearMiniSignTx();
           }, 500);
         }}
         onPreExecError={() => {
           setAmountVisible(false);
+          setIsPreparingSign(false);
           // fallback to normal sign
           handleDeposit();
         }}

@@ -6,10 +6,11 @@ import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
 import { Button, Switch, Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import Chart, { PerpsChart } from './Chart';
-import { CANDLE_MENU_KEY } from '../constants';
+import { ARB_USDC_TOKEN_SERVER_CHAIN, CANDLE_MENU_KEY } from '../constants';
 import * as Sentry from '@sentry/browser';
 import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
+import { useDebounce } from 'react-use';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import {
   CancelOrderParams,
@@ -29,11 +30,14 @@ import { PerpsDepositAmountPopup } from './DepositAmountPopup';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
+  useMiniApprovalGas,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { TokenImg } from './TokenImg';
 import { TopPermissionTips } from './TopPermissionTips';
+import { findChainByServerID } from '@/utils/chain';
+import { CHAINS_ENUM } from '@/constant';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -61,7 +65,6 @@ export const PerpsSingleCoin = () => {
     hasPermission,
   } = usePerpsPosition();
   const [amountVisible, setAmountVisible] = useState(false);
-  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const {
     miniSignTx,
     clearMiniSignTx,
@@ -70,9 +73,11 @@ export const PerpsSingleCoin = () => {
     handleSignDepositDirect,
   } = usePerpsDeposit({
     currentPerpsAccount,
+    setAmountVisible,
   });
   const wallet = useWallet();
   const startDirectSigning = useStartDirectSigning();
+  const [isPreparingSign, setIsPreparingSign] = useState(false);
 
   const singleCoinHistoryList = useMemo(() => {
     return userFills
@@ -144,6 +149,58 @@ export const PerpsSingleCoin = () => {
     return !!currentPosition;
   }, [currentPosition]);
 
+  const miniApprovalGas = useMiniApprovalGas();
+  const gasReadyContent = useMemo(() => {
+    return (
+      !!miniApprovalGas &&
+      !miniApprovalGas.loading &&
+      !!miniApprovalGas.gasCostUsdStr
+    );
+  }, [miniApprovalGas]);
+  const canUseDirectSubmitTx = useMemo(
+    () => supportedDirectSign(currentPerpsAccount?.type || ''),
+    [currentPerpsAccount?.type]
+  );
+  const miniTxs = useMemo(() => {
+    return miniSignTx ? [miniSignTx] : [];
+  }, [miniSignTx]);
+  console.log('miniTxs', miniTxs);
+  useDebounce(
+    () => {
+      if (canUseDirectSubmitTx && miniTxs?.length && isPreparingSign) {
+        if (gasReadyContent) {
+          const gasError =
+            gasReadyContent && miniApprovalGas?.showGasLevelPopup;
+          const chainInfo = findChainByServerID(ARB_USDC_TOKEN_SERVER_CHAIN)!;
+          const gasTooHigh =
+            !!gasReadyContent &&
+            !!miniApprovalGas?.gasCostUsdStr &&
+            new BigNumber(
+              miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
+            ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
+
+          if (gasError || gasTooHigh) {
+            handleDeposit();
+          } else {
+            startDirectSigning();
+          }
+        }
+        console.log('gasReadyContent', gasReadyContent, miniApprovalGas);
+      } else {
+        setIsPreparingSign(false);
+      }
+    },
+    300,
+    [
+      startDirectSigning,
+      canUseDirectSubmitTx,
+      miniTxs,
+      gasReadyContent,
+      isPreparingSign,
+      handleDeposit,
+    ]
+  );
+
   const subscribeActiveAssetCtx = useMemoizedFn(() => {
     const sdk = getPerpsSDK();
     const { unsubscribe } = sdk.ws.subscribeToActiveAssetCtx(coin, (data) => {
@@ -164,15 +221,6 @@ export const PerpsSingleCoin = () => {
       unsubscribe?.();
     };
   }, [subscribeActiveAssetCtx]);
-
-  const miniTxs = useMemo(() => {
-    return miniSignTx ? [miniSignTx] : [];
-  }, [miniSignTx]);
-
-  const canUseDirectSubmitTx = useMemo(
-    () => supportedDirectSign(currentPerpsAccount?.type || ''),
-    [currentPerpsAccount?.type]
-  );
 
   // Available balance for trading
   const availableBalance = Number(accountSummary?.withdrawable || 0);
@@ -646,6 +694,7 @@ export const PerpsSingleCoin = () => {
 
       <PerpsDepositAmountPopup
         visible={amountVisible}
+        isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
         type={'deposit'}
         availableBalance={accountSummary?.withdrawable || '0'}
@@ -661,7 +710,7 @@ export const PerpsSingleCoin = () => {
             if (currentPerpsAccount) {
               await wallet.changeAccount(currentPerpsAccount);
             }
-            startDirectSigning();
+            setIsPreparingSign(true);
           } else {
             handleDeposit();
           }
@@ -671,7 +720,9 @@ export const PerpsSingleCoin = () => {
 
       <MiniApproval
         txs={miniTxs}
-        visible={isShowMiniSign}
+        zIndex={1001}
+        isPreparingSign={isPreparingSign}
+        setIsPreparingSign={setIsPreparingSign}
         noShowModalLoading={true}
         ga={{
           category: 'Perps',
@@ -680,22 +731,25 @@ export const PerpsSingleCoin = () => {
         }}
         onClose={() => {
           clearMiniSignTx();
-          setIsShowMiniSign(false);
+          setIsPreparingSign(false);
+          setAmountVisible(false);
         }}
         onReject={() => {
           clearMiniSignTx();
-          setIsShowMiniSign(false);
+          setIsPreparingSign(false);
+          setAmountVisible(false);
         }}
         onResolve={(hash) => {
           handleSignDepositDirect(hash);
           setAmountVisible(false);
           setTimeout(() => {
-            setIsShowMiniSign(false);
+            setIsPreparingSign(false);
             clearMiniSignTx();
           }, 500);
         }}
         onPreExecError={() => {
           setAmountVisible(false);
+          setIsPreparingSign(false);
           // fallback to normal sign
           handleDeposit();
         }}

@@ -21,8 +21,10 @@ const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
 export const usePerpsDeposit = ({
   currentPerpsAccount,
+  setAmountVisible,
 }: {
   currentPerpsAccount: Account | null;
+  setAmountVisible: (visible: boolean) => void;
 }) => {
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
@@ -74,32 +76,6 @@ export const usePerpsDeposit = ({
     setMiniSignTx(null);
   });
 
-  const handleDeposit = useMemoizedFn(async () => {
-    if (!miniSignTx) {
-      throw new Error('No miniSignTx');
-    }
-
-    const tx = await wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [miniSignTx],
-      $ctx: {
-        ga: {
-          category: 'Perps',
-          source: 'Perps',
-          trigger: 'Perps',
-        },
-      },
-    });
-    console.log('fallback res tx', tx);
-  });
-
-  useInterval(
-    () => {
-      dispatch.perps.fetchUserNonFundingLedgerUpdates();
-    },
-    perpsState.localLoadingHistory.length > 0 ? 5000 : null
-  );
-
   const handleSignDepositDirect = useMemoizedFn(async (hash: string) => {
     if (!hash) {
       throw new Error('No hash tx');
@@ -115,6 +91,40 @@ export const usePerpsDeposit = ({
       },
     ]);
   });
+
+  const handleDeposit = useMemoizedFn(async () => {
+    if (!miniSignTx) {
+      throw new Error('No miniSignTx');
+    }
+
+    try {
+      const signature = await wallet.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [miniSignTx],
+        $ctx: {
+          ga: {
+            category: 'Perps',
+            source: 'Perps',
+            trigger: 'Perps',
+          },
+        },
+      });
+      console.log('fallback res tx', signature);
+      handleSignDepositDirect(signature as string);
+      setAmountVisible(false);
+      clearMiniSignTx();
+    } catch (error) {
+      setAmountVisible(false);
+      clearMiniSignTx();
+    }
+  });
+
+  useInterval(
+    () => {
+      dispatch.perps.fetchUserNonFundingLedgerUpdates();
+    },
+    perpsState.localLoadingHistory.length > 0 ? 5000 : null
+  );
 
   return {
     miniSignTx,

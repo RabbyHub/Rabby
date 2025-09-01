@@ -230,19 +230,33 @@ export const usePerpsInitial = () => {
   };
 };
 
+interface MiniTypedDataWithAccount {
+  data: MiniTypedData[];
+  account: Account | null;
+}
+
 export const usePerpsState = ({
   setDeleteAgentModalVisible,
 }: {
   setDeleteAgentModalVisible?: (visible: boolean) => void;
 }) => {
   const dispatch = useRabbyDispatch();
-  const [miniSignTypeData, setMiniSignTypeData] = useState<MiniTypedData[]>([]);
+  const [
+    miniSignTypeData,
+    setMiniSignTypeData,
+  ] = useState<MiniTypedDataWithAccount>({
+    data: [],
+    account: null,
+  });
   const startDirectSigning = useStartDirectSigning();
   const deleteAgentCbRef = useRef<(() => Promise<void>) | null>(null);
   const { safeSetBuilderFee } = usePerpsInitial();
 
   const clearMiniSignTypeData = useMemoizedFn(() => {
-    setMiniSignTypeData([]);
+    setMiniSignTypeData({
+      data: [],
+      account: null,
+    });
   });
 
   const miniSignPromiseRef = useRef<{
@@ -286,7 +300,11 @@ export const usePerpsState = ({
 
   const handleDeleteAgent = useMemoizedFn(async () => {
     if (deleteAgentCbRef.current) {
-      await deleteAgentCbRef.current();
+      try {
+        await deleteAgentCbRef.current();
+      } catch (error) {
+        message.error(error.message || 'Delete agent failed');
+      }
       deleteAgentCbRef.current = null;
     }
   });
@@ -398,27 +416,23 @@ export const usePerpsState = ({
         account.type === KEYRING_CLASS.HARDWARE.LEDGER;
 
       if (useMiniApprovalSign) {
-        setMiniSignTypeData(
-          signActions.map((item) => {
+        setMiniSignTypeData({
+          data: signActions.map((item) => {
             return {
               data: item.action,
               from: account.address,
               version: 'V4',
             };
-          })
-        );
+          }),
+          account,
+        });
         startDirectSigning();
         // await MiniTypedDataApproval in home page
-        try {
-          const result = await waitForMiniSignResult();
-          console.log('Mini sign result', result);
-          result.forEach((item, idx) => {
-            signActions[idx].signature = item;
-          });
-        } catch (error) {
-          console.log('Mini sign rejected or failed:', error);
-          throw error;
-        }
+        const result = await waitForMiniSignResult();
+        console.log('Mini sign result', result);
+        result.forEach((item, idx) => {
+          signActions[idx].signature = item;
+        });
       } else {
         for (const actionObj of signActions) {
           let signature = '';
@@ -517,7 +531,29 @@ export const usePerpsState = ({
     sdk.initAccount(account.address, vault, agentAddress, PERPS_AGENT_NAME);
 
     const signActions = await prepareSignActions();
-    await executeSignatures(signActions, account);
+
+    try {
+      await executeSignatures(signActions, account);
+    } catch (error) {
+      // catch the sign error and return
+      console.error('Failed to execute signatures:', error);
+      return;
+    }
+
+    if (signActions.some((action) => !action.signature)) {
+      Sentry.captureException(
+        new Error(
+          'PERPS Login failed, some signature is empty' +
+            'account: ' +
+            JSON.stringify(account) +
+            'signActions: ' +
+            JSON.stringify({
+              signActions,
+            })
+        )
+      );
+      return;
+    }
 
     const { role } = await sdk.info.getUserRole();
     const isNeedDepositBeforeApprove = role === 'missing';
@@ -571,14 +607,10 @@ export const usePerpsState = ({
         } else {
           // 过期或者没sendApprove过，需要创建新的agent，同时签名
           await handleLoginWithSignApprove(account);
-
-          await dispatch.perps.loginPerpsAccount(account);
         }
       } else {
         // 不存在agent wallet,，需要创建新的，同时签名
         await handleLoginWithSignApprove(account);
-
-        await dispatch.perps.loginPerpsAccount(account);
       }
       return true;
     } catch (error: any) {
@@ -636,13 +668,16 @@ export const usePerpsState = ({
             { version: 'V4' }
           );
         } else if (useMiniApprovalSign) {
-          setMiniSignTypeData([
-            {
-              data: action,
-              from: currentPerpsAccount.address,
-              version: 'V4',
-            },
-          ]);
+          setMiniSignTypeData({
+            data: [
+              {
+                data: action,
+                from: currentPerpsAccount.address,
+                version: 'V4',
+              },
+            ],
+            account: currentPerpsAccount,
+          });
           startDirectSigning();
           const result = await waitForMiniSignResult();
           console.log('handleWithdraw Mini sign result', result);

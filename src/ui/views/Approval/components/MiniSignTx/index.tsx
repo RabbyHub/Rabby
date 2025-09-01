@@ -1291,6 +1291,7 @@ export const MiniApproval = ({
   setIsPreparingSign,
   originGasPrice,
   session,
+  zIndex,
 }: {
   txs?: Tx[];
   visible?: boolean;
@@ -1308,6 +1309,7 @@ export const MiniApproval = ({
   noShowModalLoading?: boolean;
   originGasPrice?: string;
   session?: typeof INTERNAL_REQUEST_SESSION;
+  zIndex?: number;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1390,6 +1392,7 @@ export const MiniApproval = ({
         maskStyle={{
           backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
         }}
+        zIndex={zIndex}
         getContainer={getContainer}
         key={`${currentAccount?.address}-${currentAccount?.type}`}
       >
@@ -1413,7 +1416,7 @@ export const MiniApproval = ({
         ) : null}
       </Popup>
 
-      {isPreparingSign ||
+      {(isPreparingSign && !noShowModalLoading) ||
       (directSubmit &&
         canUseDirectSubmitTx &&
         !noShowModalLoading &&
