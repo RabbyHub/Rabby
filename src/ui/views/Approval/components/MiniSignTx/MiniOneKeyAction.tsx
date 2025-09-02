@@ -138,7 +138,7 @@ export const MiniOneKeyAction: React.FC<Props> = ({
             setDisconnectTipsModal(false);
             // props.onCancel?.();
           }}
-          title={t('page.dashboard.hd.ledgerIsDisconnected')}
+          title={t('page.dashboard.hd.onekeyIsDisconnected')}
           maskStyle={{
             backgroundColor: 'transparent',
           }}
@@ -157,7 +157,7 @@ export const MiniOneKeyAction: React.FC<Props> = ({
             >
               <div className="flex items-center gap-[8px] justify-center">
                 <OneKeySVG width={22} height={22} viewBox="0 0 28 28" />
-                {t('page.miniSignFooterBar.signWithLedger')}
+                {t('page.miniSignFooterBar.signWithOneKey')}
               </div>
             </ProcessActions>
 
@@ -243,7 +243,12 @@ export const MiniOneKeyAction: React.FC<Props> = ({
         </div>
       ) : (
         <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center flex items-center justify-center gap-2">
-          <OneKeySVG width={22} height={22} className="mr-6" />
+          <OneKeySVG
+            width={22}
+            height={22}
+            viewBox="0 0 28 28"
+            className="mr-6"
+          />
 
           {total > 1 ? (
             <div>

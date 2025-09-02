@@ -18,13 +18,6 @@ export const SpeedUpCancelHeader = ({
   currentGasPrice: string;
 }) => {
   const { t } = useTranslation();
-  //   const percent = calcPercent();
-  console.log('originGasPrice', {
-    originGasPrice,
-    currentGasPrice,
-    isSpeedUp,
-    isCancel,
-  });
 
   const percent = useMemo(() => {
     const originBn = new BigNumber(originGasPrice || '0');

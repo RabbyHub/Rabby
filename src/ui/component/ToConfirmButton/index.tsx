@@ -1,7 +1,10 @@
-import { useGetDisableProcessDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import {
+  supportedHardwareDirectSign,
+  useGetDisableProcessDirectSign,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { Button } from 'antd';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClickAway } from 'react-use';
@@ -14,6 +17,7 @@ export const ToConfirmBtn = (props: {
   disabled?: boolean;
   htmlType?: 'button' | 'submit' | 'reset';
   isHardWallet?: boolean;
+  onCancel?: () => void;
 }) => {
   const { t } = useTranslation();
   const [toConfirm, setToConfirm] = useState(false);
@@ -35,10 +39,14 @@ export const ToConfirmBtn = (props: {
     }
   };
 
-  const cancel: React.MouseEventHandler<HTMLDivElement> = useCallback((e) => {
-    e.stopPropagation();
-    setToConfirm(false);
-  }, []);
+  const cancel: React.MouseEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setToConfirm(false);
+      props.onCancel?.();
+    },
+    [props.onCancel]
+  );
   const divRef = useRef<HTMLDivElement>(null);
   useClickAway(divRef, () => setToConfirm(false));
 
@@ -118,13 +126,32 @@ export const DirectSignToConfirmBtn = (props: {
   overwriteDisabled?: boolean;
   showRiskTips?: boolean;
   riskLabel?: React.ReactNode;
-  isHardWallet?: boolean;
+  accountType?: string;
+  onCancel?: () => void;
+  riskReset?: boolean;
 }) => {
   const disabledProcess = useGetDisableProcessDirectSign();
   const { t } = useTranslation();
   const [riskChecked, setRiskChecked] = useState(false);
 
   const riskDisabled = props.showRiskTips ? !riskChecked : false;
+
+  const isHardWallet = useMemo(() => {
+    return supportedHardwareDirectSign(props.accountType || '');
+  }, [props.accountType]);
+
+  const onCancel = useCallback(() => {
+    setRiskChecked(false);
+    if (props.onCancel) {
+      props.onCancel();
+    }
+  }, [props.onCancel]);
+
+  useEffect(() => {
+    if (props.riskReset) {
+      setRiskChecked(false);
+    }
+  }, [props.riskReset]);
 
   return (
     <div className="w-full flex flex-col gap-[15px]">
@@ -163,12 +190,16 @@ export const DirectSignToConfirmBtn = (props: {
               ) : null
             }
           >
-            {props?.riskLabel || t('page.swap.understandRisks')}
+            <span className="text-rabby-neutral-body text-13 font-normal">
+              {props?.riskLabel || t('page.swap.understandRisks')}
+            </span>
           </Checkbox>
         </div>
       ) : null}
       <ToConfirmBtn
         {...props}
+        isHardWallet={isHardWallet}
+        onCancel={onCancel}
         disabled={
           (props.overwriteDisabled
             ? props.disabled

@@ -577,7 +577,7 @@ const SendNFT = () => {
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] flex justify-center">
-              {canUseDirectSubmitTx ? (
+              {canUseDirectSubmitTx && currentAccount?.type ? (
                 <DirectSignToConfirmBtn
                   title={t('page.sendToken.sendButton')}
                   onConfirm={() =>
@@ -586,6 +586,7 @@ const SendNFT = () => {
                     })
                   }
                   disabled={!canSubmit}
+                  accountType={currentAccount?.type}
                 />
               ) : (
                 <Button
