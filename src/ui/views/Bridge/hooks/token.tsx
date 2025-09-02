@@ -710,7 +710,6 @@ export const useBridge = () => {
     maxNativeTokenGasPrice?: string;
   }>(query2obj(search));
 
-
   useEffect(() => {
     let active = true;
     if (!searchObj) {
