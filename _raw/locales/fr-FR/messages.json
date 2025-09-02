@@ -693,7 +693,8 @@
           "useValue": "Valeur en USD",
           "lowValueAssets_0": "{{count}} jeton de faible valeur",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} low value tokens"
+          "lowValueAssets_other": "{{count}} low value tokens",
+          "review": "Revue"
         },
         "tokenButton": {
           "subTitle": "Le token de cette liste ne sera pas ajouté au solde total"
@@ -800,7 +801,8 @@
           "ecology": "Écosystème",
           "bridge": "Bridger",
           "rabbyPoints": "Rabby Points",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -2307,7 +2309,8 @@
       "no-fees-for-wrap": "Pas de frais Rabby pour Wrap",
       "price-impact": "Impact sur le prix",
       "source": "Source",
-      "max": "MAX"
+      "max": "MAX",
+      "understandRisks": "Je comprends les risques et je souhaite continuer"
     },
     "switchChain": {
       "chainNotSupport": "La chaîne demandée n'est pas encore prise en charge par Rabby",
@@ -2739,7 +2742,12 @@
         "txSending": "Envoi de la demande de signature",
         "txSigned": "Signé. Création de la transaction"
       },
-      "signWithLedger": "Signer avec Ledger"
+      "signWithLedger": "Signer avec Ledger",
+      "speedUpTitle": "Accélérer",
+      "signWithOneKey": "Signez avec OneKey",
+      "cancelTitle": "Annuler sur la chaîne",
+      "speedUpDesc": "Le prix du gaz a augmenté de {{percent}} pour accélérer.",
+      "cancleDesc": "Le prix du gaz a augmenté de {{percent}} pour annuler la transaction."
     },
     "gasAccount": {
       "history": {

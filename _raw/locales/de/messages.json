@@ -1040,7 +1040,8 @@
       "approve-and-swap": "Genehmigen und tauschen über {{name}}",
       "loss-tips": "Sie verlieren {{usd}}. Versuchen Sie es mit einem kleineren Betrag in einem kleinen Markt.",
       "two-step-approve-details": "Token USDT erfordert 2 Transaktionen, um die Freigabe zu ändern. Zuerst müssen Sie die Freigabe auf Null zurücksetzen und erst dann einen neuen Freigabewert festlegen.",
-      "preferMEVTip": "Aktivieren Sie die Funktion \"MEV Guarded\" für Ethereum-Swaps, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie eine benutzerdefinierte RPC- oder Wallet-Verbindungsadresse verwenden."
+      "preferMEVTip": "Aktivieren Sie die Funktion \"MEV Guarded\" für Ethereum-Swaps, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie eine benutzerdefinierte RPC- oder Wallet-Verbindungsadresse verwenden.",
+      "understandRisks": "Ich verstehe die Risiken und möchte fortfahren"
     },
     "manageAddress": {
       "no-address": "Keine Adresse",
@@ -1107,7 +1108,8 @@
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
           "ecology": "Ökosystem",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -1388,7 +1390,8 @@
           "lowValueAssets": "{{count}} Vermögenswerte mit geringem Wert",
           "lowValueAssets_other": "{{count}} niedrigwertige Token",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_0": "{{count}} Low-Value-Token"
+          "lowValueAssets_0": "{{count}} Low-Value-Token",
+          "review": "Überprüfung"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -2450,7 +2453,12 @@
         "txCreated": "Transaktion erstellt",
         "txSigned": "Signiert. Transaktion wird erstellt"
       },
-      "signWithLedger": "Mit Ledger signieren"
+      "signWithLedger": "Mit Ledger signieren",
+      "speedUpTitle": "Beschleunigen",
+      "cancelTitle": "On-chain Stornieren",
+      "speedUpDesc": "Der Gaspreis erhöhte sich um {{percent}}, um zu beschleunigen.",
+      "cancleDesc": "Der Gaspreis ist um {{percent}} gestiegen, um die Transaktion abzubrechen.",
+      "signWithOneKey": "Mit OneKey signieren"
     },
     "gasAccount": {
       "history": {

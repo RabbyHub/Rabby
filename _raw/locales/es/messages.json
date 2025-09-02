@@ -1040,7 +1040,8 @@
       "preferMEVTip": "Habilita la función \"MEV Guarded\" para intercambios de Ethereum y reducir los riesgos de ataques sandwich. Nota: esta función no es compatible si utilizas una dirección RPC personalizada o de conexión de wallet.",
       "price-impact": "Impacto de Precio",
       "no-quote-found": "No quote found",
-      "usd-after-fees": "≈ {{usd}}"
+      "usd-after-fees": "≈ {{usd}}",
+      "understandRisks": "Entiendo los riesgos y quiero continuar"
     },
     "manageAddress": {
       "no-address": "Sin dirección",
@@ -1107,7 +1108,8 @@
           "ecology": "Ecosystem",
           "bridge": "Puente",
           "rabbyPoints": "Rabby Points",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -1388,7 +1390,8 @@
           "lowValueAssets": "{{count}} activos de bajo valor",
           "lowValueAssets_other": "{{count}} low value tokens",
           "lowValueAssets_0": "{{count}} token de bajo valor",
-          "lowValueAssets_one": "{{count}} low value token"
+          "lowValueAssets_one": "{{count}} low value token",
+          "review": "Revisión"
         },
         "noAssets": "No hay activos",
         "blockLinkText": "Buscar dirección para bloquear token",
@@ -2450,7 +2453,12 @@
         "txCreated": "Transacción creada",
         "txSendings": "Enviando solicitud de firma ({{current}}/{{total}})"
       },
-      "signWithLedger": "Firmar con Ledger"
+      "signWithLedger": "Firmar con Ledger",
+      "speedUpTitle": "Acelerar",
+      "speedUpDesc": "El precio del gas aumentó en {{percent}} para acelerar.",
+      "cancleDesc": "El precio del gas aumentó en {{percent}} para cancelar la transacción.",
+      "cancelTitle": "Cancelación en cadena",
+      "signWithOneKey": "Firma con OneKey"
     },
     "gasAccount": {
       "history": {

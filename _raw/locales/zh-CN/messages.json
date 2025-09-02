@@ -115,7 +115,8 @@
           "rabbyPoints": "Rabby Points",
           "ecology": "生态系统",
           "bridge": "Bridge",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "永续合约"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -366,7 +367,8 @@
           "lowValueAssets": "{{count}} 个低价值资产",
           "lowValueAssets_one": "{{count}} 个低价值代币",
           "lowValueAssets_other": "{{count}} 个低价值代币",
-          "lowValueAssets_0": "{{count}} 个低价值代币"
+          "lowValueAssets_0": "{{count}} 个低价值代币",
+          "review": "审核"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
@@ -1948,7 +1950,8 @@
       "hidden-no-quote-rates_other": "{{count}} 费率不可用",
       "No-available-quote": "暂无报价",
       "fetch-best-quote": "正在获取最佳报价",
-      "two-step-approve-details": "Token USDT 需要 2 笔交易来更改 allowance。首先，您需要将 allowance 重置为零，然后才能设置新的 allowance 值。"
+      "two-step-approve-details": "Token USDT 需要 2 笔交易来更改 allowance。首先，您需要将 allowance 重置为零，然后才能设置新的 allowance 值。",
+      "understandRisks": "我了解风险并想继续"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
@@ -2527,7 +2530,12 @@
         "txCreated": "交易已创建",
         "txSigned": "已签名。创建交易中"
       },
-      "signWithLedger": "使用 Ledger 签名"
+      "signWithLedger": "使用 Ledger 签名",
+      "cancelTitle": "链上取消",
+      "speedUpTitle": "加速",
+      "signWithOneKey": "使用 OneKey 签名",
+      "cancleDesc": "Gas 价格增加了 {{percent}} 以取消交易",
+      "speedUpDesc": "Gas价格提高了{{percent}}以加快速度"
     },
     "gasAccount": {
       "history": {

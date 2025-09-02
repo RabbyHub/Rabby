@@ -1040,7 +1040,8 @@
       "No-available-quote": "Không có báo giá nào khả dụng",
       "source": "Nguồn",
       "loss-tips": "Bạn đang mất {{usd}}. Hãy thử một số tiền nhỏ hơn trong một thị trường nhỏ.",
-      "no-quote-found": "Không tìm thấy báo giá"
+      "no-quote-found": "Không tìm thấy báo giá",
+      "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục"
     },
     "bridge": {
       "showMore": {
@@ -1178,7 +1179,8 @@
           "manageAddress": "Quản lý Địa chỉ",
           "approvals": "Phê duyệt",
           "more": "Hơn nữa",
-          "feedback": "Phản hồi"
+          "feedback": "Phản hồi",
+          "perps": "Perps"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1457,7 +1459,8 @@
           "lowValueAssets_one": "{{count}} token giá thấp",
           "summaryTips": "Giá trị tài sản chia cho tổng giá trị ròng",
           "summaryDescription": "Tất cả tài sản trong các giao thức (ví dụ: LP tokens) đều được quy đổi thành tài sản cơ sở để thực hiện các phép tính thống kê.",
-          "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây"
+          "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
+          "review": "Xem lại"
         },
         "AddMainnetToken": {
           "title": "Thêm Token Tùy Chỉnh",
@@ -2447,7 +2450,12 @@
         "txSendings": "Gửi yêu cầu ký ({ {current}}/{{total}})",
         "txCreated": "Giao dịch đã được tạo"
       },
-      "signWithLedger": "Ký với Ledger"
+      "signWithLedger": "Ký với Ledger",
+      "cancelTitle": "Hủy trên chuỗi",
+      "speedUpTitle": "Tăng tốc",
+      "speedUpDesc": "Giá gas đã tăng {{percent}} để tăng tốc.",
+      "cancleDesc": "Giá gas tăng {{percent}} để hủy giao dịch",
+      "signWithOneKey": "Ký với OneKey"
     },
     "gasAccount": {
       "history": {

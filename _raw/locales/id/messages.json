@@ -1040,7 +1040,8 @@
       "gas-fee": "GasFee: {{gasUsed}}",
       "loss-tips": "Anda kehilangan {{usd}}. Cobalah jumlah yang lebih kecil di pasar kecil.",
       "two-step-approve-details": "Token USDT memerlukan 2 transaksi untuk mengubah allowance. Pertama, Anda perlu mengatur allowance ke nol, dan hanya kemudian menetapkan nilai allowance yang baru.",
-      "estimate": "Perkiraan:"
+      "estimate": "Perkiraan:",
+      "understandRisks": "Saya memahami risikonya dan ingin melanjutkan"
     },
     "bridge": {
       "showMore": {
@@ -1178,7 +1179,8 @@
           "bridge": "Jembatan",
           "send": "Kirim",
           "approvals": "Persetujuan",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps"
         },
         "queue": {
           "title": "Antrian",
@@ -1457,7 +1459,8 @@
           "lowValueAssets_one": "{{count}} token bernilai rendah",
           "lowValueAssets_other": "{{count}} token nilai rendah",
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
-          "price": "Harga"
+          "price": "Harga",
+          "review": "Tinjau"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -2447,7 +2450,12 @@
         "txSending": "Mengirim permintaan tanda tangan",
         "txSendings": "Mengirim permintaan tanda tangan ({{current}}/{{total}})"
       },
-      "signWithLedger": "Tandatangani dengan Ledger"
+      "signWithLedger": "Tandatangani dengan Ledger",
+      "cancelTitle": "On-chain Batalkan",
+      "speedUpTitle": "Percepat",
+      "signWithOneKey": "Tanda dengan OneKey",
+      "cancleDesc": "Harga gas meningkat sebesar {{percent}} untuk membatalkan transaksi",
+      "speedUpDesc": "Harga gas meningkat sebesar {{percent}} untuk mempercepat"
     },
     "gasAccount": {
       "history": {
