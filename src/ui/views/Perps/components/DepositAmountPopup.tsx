@@ -45,6 +45,8 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   miniTxs: Tx[];
   handleWithdraw?: (amount: number) => Promise<boolean>;
   onClose: () => void;
+  clearMiniSignTx: () => void;
+  clearMiniSignTypeData?: () => void;
 };
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
@@ -59,6 +61,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   setIsPreparingSign,
   handleDeposit,
   handleWithdraw,
+  clearMiniSignTx,
+  clearMiniSignTypeData,
 }) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -97,6 +101,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   React.useEffect(() => {
     if (!visible) {
       setAmount('');
+      setIsLoading(false);
     }
   }, [visible]);
 
@@ -175,11 +180,11 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
   useDebounce(
     () => {
-      if (!visible) return;
+      if (!visible || type === 'withdraw') return;
       updateMiniSignTx(Number(amount) || 0);
     },
     300,
-    [amount, visible, updateMiniSignTx]
+    [amount, visible, updateMiniSignTx, type]
   );
 
   useDebounce(
@@ -367,11 +372,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               }}
               onClick={async () => {
                 if (canUseDirectSubmitTx) {
-                  if (currentPerpsAccount) {
-                    await dispatch.account.changeAccountAsync(
-                      currentPerpsAccount
-                    );
-                  }
+                  clearMiniSignTypeData?.();
                   setIsPreparingSign(true);
                 } else {
                   handleDeposit();
@@ -394,6 +395,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               }}
               onClick={async () => {
                 setIsLoading(true);
+                clearMiniSignTx();
                 await handleWithdraw?.(Number(amount));
                 setIsLoading(false);
                 onClose?.();

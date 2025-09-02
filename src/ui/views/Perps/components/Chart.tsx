@@ -586,9 +586,11 @@ export const PerpsChart = ({
                   : 'text-r-red-default'
               )}
             >
-              {chartHoverData.isPositiveChange ? '+' : ''}$
-              {chartHoverData.delta?.toFixed(decimals)} (
-              {chartHoverData.isPositiveChange ? '+' : ''}
+              {chartHoverData.isPositiveChange ? '+' : '-'}$
+              {splitNumberByStep(
+                Math.abs(Number(chartHoverData.delta?.toFixed(decimals)))
+              )}{' '}
+              ({chartHoverData.isPositiveChange ? '+' : ''}
               {formatPercent(chartHoverData.deltaPercent || 0, 2)})
             </div>
           </div>
@@ -603,9 +605,9 @@ export const PerpsChart = ({
                 isPositiveChange ? 'text-r-green-default' : 'text-r-red-default'
               )}
             >
-              {isPositiveChange ? '+' : ''}
-              {splitNumberByStep(dayDelta.toFixed(decimals))} (
-              {isPositiveChange ? '+' : ''}
+              {isPositiveChange ? '+' : '-'}$
+              {splitNumberByStep(Math.abs(Number(dayDelta.toFixed(decimals))))}{' '}
+              ({isPositiveChange ? '+' : ''}
               {formatPercent(dayDeltaPercent, 2)})
             </div>
           </div>

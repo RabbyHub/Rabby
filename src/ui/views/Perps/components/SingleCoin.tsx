@@ -392,9 +392,16 @@ export const PerpsSingleCoin = () => {
               </div>
 
               <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
+                <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
                   {t('page.perps.size')}
-                </span>
+                  <TooltipWithMagnetArrow
+                    overlayClassName="rectangle w-[max-content]"
+                    placement="top"
+                    title={t('page.perps.sizeTips')}
+                  >
+                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+                  </TooltipWithMagnetArrow>
+                </div>
                 <span className="text-r-neutral-title-1 font-medium">
                   $
                   {splitNumberByStep(
@@ -416,24 +423,6 @@ export const PerpsSingleCoin = () => {
                 </span>
               </div>
 
-              <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
-                  {t('page.perps.direction')}
-                </span>
-                <span className="text-r-neutral-title-1 font-medium">
-                  {positionData?.direction} {positionData?.leverage}x
-                </span>
-              </div>
-
-              <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
-                  {t('page.perps.entryPrice')}
-                </span>
-                <span className="text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(positionData?.entryPrice || 0)}
-                </span>
-              </div>
-
               <div
                 className="flex justify-between text-13 py-16 cursor-pointer"
                 onClick={() => {
@@ -450,6 +439,24 @@ export const PerpsSingleCoin = () => {
                   checked={hasAutoClose}
                   // onChange={handleAutoCloseSwitch}
                 />
+              </div>
+
+              <div className="flex justify-between text-13 py-16">
+                <span className="text-r-neutral-body">
+                  {t('page.perps.direction')}
+                </span>
+                <span className="text-r-neutral-title-1 font-medium">
+                  {positionData?.direction} {positionData?.leverage}x
+                </span>
+              </div>
+
+              <div className="flex justify-between text-13 py-16">
+                <span className="text-r-neutral-body">
+                  {t('page.perps.entryPrice')}
+                </span>
+                <span className="text-r-neutral-title-1 font-medium">
+                  ${splitNumberByStep(positionData?.entryPrice || 0)}
+                </span>
               </div>
 
               <div className="flex justify-between text-13 py-16">
@@ -480,7 +487,8 @@ export const PerpsSingleCoin = () => {
                   </TooltipWithMagnetArrow>
                 </div>
                 <span className="text-r-neutral-title-1 font-medium">
-                  ${positionData?.fundingPayments}
+                  {Number(positionData?.fundingPayments || 0) > 0 ? '+' : '-'}$
+                  {Math.abs(Number(positionData?.fundingPayments || 0))}
                 </span>
               </div>
             </div>
@@ -679,6 +687,7 @@ export const PerpsSingleCoin = () => {
         availableBalance={accountSummary?.withdrawable || '0'}
         updateMiniSignTx={updateMiniSignTx}
         handleDeposit={handleDeposit}
+        clearMiniSignTx={clearMiniSignTx}
         onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();
