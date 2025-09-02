@@ -54,7 +54,6 @@ export const usePerpsPosition = ({
       direction: 'Long' | 'Short';
     }) => {
       try {
-        console.log('handleSetAutoClose', params);
         const sdk = getPerpsSDK();
         const { coin, tpTriggerPx, slTriggerPx, direction } = params;
         const res = await sdk.exchange?.bindTpslByOrderId({
