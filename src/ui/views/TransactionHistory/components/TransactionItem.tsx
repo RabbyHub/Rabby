@@ -87,7 +87,7 @@ export const TransactionItem = ({
   }, [account?.type]);
 
   const originGasPrice = useMemo(() => {
-    const maxGasTx = item.txs[0]!;
+    const maxGasTx = item.txs[item.txs.length - 1]!;
     const maxGasPrice =
       maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || '0';
     return maxGasPrice;
