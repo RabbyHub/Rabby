@@ -53,7 +53,6 @@ export const HistoryPage: React.FC = () => {
     setDetailVisible(false);
   };
 
-  console.log('homeHistoryList', homeHistoryList, Boolean(coin));
   const list = coin && coin !== 'undefined' ? coinHistoryList : homeHistoryList;
 
   return (
