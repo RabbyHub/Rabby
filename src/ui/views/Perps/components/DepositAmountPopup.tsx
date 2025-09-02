@@ -33,6 +33,7 @@ import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
 import { useRabbyDispatch } from '@/ui/store';
+import { formatTokenAmount } from '@debank/common';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
@@ -322,10 +323,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
                     {type === 'withdraw'
                       ? getTokenSymbol(selectedToken)
-                      : formatUsdValue(
-                          (usdcTokenInfo?.amount || 0) *
-                            (usdcTokenInfo?.price || 0)
-                        )}
+                      : formatTokenAmount(usdcTokenInfo?.amount || 0, 2)}
                   </div>
                   {type === 'deposit' && (
                     <ThemeIcon
