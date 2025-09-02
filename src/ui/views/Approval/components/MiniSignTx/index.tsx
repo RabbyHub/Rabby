@@ -86,6 +86,7 @@ export const MiniSignTx = ({
   onGasAmountChange,
   originGasPrice,
   session,
+  autoTriggerPreExecError,
 }: {
   txs: Tx[];
   onReject?: () => void;
@@ -98,6 +99,7 @@ export const MiniSignTx = ({
   onGasAmountChange?: (gasAmount: number) => void;
   originGasPrice?: string;
   session?: typeof INTERNAL_REQUEST_SESSION;
+  autoTriggerPreExecError?: boolean;
 }) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -949,6 +951,13 @@ export const MiniSignTx = ({
   }, [directSigning, directSubmit, preExecError, onPreExecError]);
 
   useEffect(() => {
+    if (onPreExecError && preExecError && autoTriggerPreExecError) {
+      onPreExecError?.();
+      setDirectSigning(false);
+    }
+  }, [preExecError, onPreExecError, autoTriggerPreExecError]);
+
+  useEffect(() => {
     if (
       isReady &&
       txsResult.length &&
@@ -974,19 +983,11 @@ export const MiniSignTx = ({
     isCoboArugsAccount,
   ]);
 
-  const directSubmitRef = useRef(directSubmit);
-
-  useEffect(() => {
-    directSubmitRef.current = directSubmit;
-  }, [directSubmit]);
-
   useEffect(() => {
     if (inited) {
       prepareTxs().catch((error) => {
-        if (directSubmitRef.current) {
-          setPreExecError(true);
-          //goto origin signTx
-        }
+        setPreExecError(true);
+        //goto origin signTx
       });
     }
   }, [inited, txs]);
@@ -1296,6 +1297,7 @@ export const MiniApproval = ({
   setIsPreparingSign,
   originGasPrice,
   session,
+  autoTriggerPreExecError,
 }: {
   txs?: Tx[];
   visible?: boolean;
@@ -1313,6 +1315,7 @@ export const MiniApproval = ({
   noShowModalLoading?: boolean;
   originGasPrice?: string;
   session?: typeof INTERNAL_REQUEST_SESSION;
+  autoTriggerPreExecError?: boolean;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1414,6 +1417,7 @@ export const MiniApproval = ({
             getContainer={getContainer}
             originGasPrice={originGasPrice}
             session={session}
+            autoTriggerPreExecError={autoTriggerPreExecError}
           />
         ) : null}
       </Popup>
