@@ -155,26 +155,6 @@ const AddAddressOptions = () => {
     };
   }, []);
 
-  const checkQRBasedWallet = async (item: IWalletBrandContent) => {
-    const { allowed, brand } = await wallet.checkQRHardwareAllowImport(
-      item.brand
-    );
-
-    if (!allowed) {
-      Modal.error({
-        title: t('page.newAddress.unableToImport.title'),
-        content: t('page.newAddress.unableToImport.description', [brand]),
-        okText: t('global.ok'),
-        centered: true,
-        maskClosable: true,
-        className: 'text-center modal-support-darkmode',
-      });
-      return false;
-    }
-
-    return true;
-  };
-
   type Valueof<T> = T[keyof T];
   const connectRouter1 = React.useCallback(
     (
@@ -202,22 +182,19 @@ const AddAddressOptions = () => {
           pathname: '/import/gnosis',
         });
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
-        checkQRBasedWallet(item).then((success) => {
-          if (!success) return;
-          /**
-           * Check if the wallet brand is Keystone. Although Keystone supports both USB signing and import,
-           * due to its dual-mode (QR and USB) design, it is still limited to import only one QR wallet at a time.
-           */
-          if (item.brand === WALLET_BRAND_TYPES.KEYSTONE) {
-            openInternalPageInTab('import/hardware/keystone');
-            return;
-          }
-          if (item.brand === WALLET_BRAND_TYPES.ONEKEY) {
-            openInternalPageInTab('import/hardware/onekey');
-            return;
-          }
-          openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
-        });
+        /**
+         * Check if the wallet brand is Keystone. Although Keystone supports both USB signing and import,
+         * due to its dual-mode (QR and USB) design, it is still limited to import only one QR wallet at a time.
+         */
+        if (item.brand === WALLET_BRAND_TYPES.KEYSTONE) {
+          openInternalPageInTab('import/hardware/keystone');
+          return;
+        }
+        if (item.brand === WALLET_BRAND_TYPES.ONEKEY) {
+          openInternalPageInTab('import/hardware/onekey');
+          return;
+        }
+        openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
       } else if (
         item.connectType === BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect
       ) {
