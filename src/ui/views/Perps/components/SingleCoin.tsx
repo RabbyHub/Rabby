@@ -6,7 +6,11 @@ import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
 import { Button, Switch, Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import Chart, { PerpsChart } from './Chart';
-import { ARB_USDC_TOKEN_SERVER_CHAIN, CANDLE_MENU_KEY } from '../constants';
+import {
+  ARB_USDC_TOKEN_SERVER_CHAIN,
+  CANDLE_MENU_KEY,
+  PERPS_MAX_NTL_VALUE,
+} from '../constants';
 import * as Sentry from '@sentry/browser';
 import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
@@ -619,6 +623,9 @@ export const PerpsSingleCoin = () => {
         visible={openPositionVisible}
         direction={positionDirection}
         providerFee={providerFee}
+        maxNtlValue={Number(
+          currentAssetCtx?.maxUsdValueSize || PERPS_MAX_NTL_VALUE
+        )}
         coin={coin}
         pxDecimals={currentAssetCtx?.pxDecimals || 2}
         szDecimals={currentAssetCtx?.szDecimals || 0}
