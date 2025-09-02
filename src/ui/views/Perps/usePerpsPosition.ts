@@ -118,7 +118,6 @@ export const usePerpsPosition = ({
       price: string;
       direction: 'Long' | 'Short';
     }) => {
-      console.log('handleClosePosition', params);
       try {
         const sdk = getPerpsSDK();
         const { coin, direction, price, size } = params;
