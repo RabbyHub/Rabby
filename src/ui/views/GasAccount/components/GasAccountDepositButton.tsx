@@ -1,4 +1,5 @@
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
@@ -20,6 +21,8 @@ export const GasAccountDepositButton = ({
   miniSignTxs,
   chainServerId,
   startDirectSigning,
+  setDirectSubmit,
+  setMiniApprovalVisible,
 }: {
   miniSignTxs?: Tx[];
   isPreparingSign: boolean;
@@ -31,15 +34,13 @@ export const GasAccountDepositButton = ({
   topUpDirect: () => void;
   isDirectSignAccount: boolean;
   chainServerId?: string;
+  setDirectSubmit: (p: boolean) => void;
+  setMiniApprovalVisible: (p: boolean) => void;
 }) => {
+  const currentAccount = useCurrentAccount();
   const { t } = useTranslation();
 
   const miniApprovalGas = useMiniApprovalGas();
-
-  const gasReadyContent =
-    !!miniApprovalGas &&
-    !miniApprovalGas.loading &&
-    !!miniApprovalGas.gasCostUsdStr;
 
   useDebounce(
     () => {
@@ -49,6 +50,11 @@ export const GasAccountDepositButton = ({
         miniSignTxs?.length &&
         chainServerId
       ) {
+        const gasReadyContent =
+          !!miniApprovalGas &&
+          !miniApprovalGas.loading &&
+          !!miniApprovalGas.gasCostUsdStr;
+
         if (gasReadyContent) {
           const gasError =
             gasReadyContent && miniApprovalGas?.showGasLevelPopup;
@@ -61,9 +67,12 @@ export const GasAccountDepositButton = ({
             ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
 
           if (gasError || gasTooHigh) {
-            topUpOnSignPage();
+            setDirectSubmit(false);
+            setMiniApprovalVisible(true);
+            setIsPreparingSign(false);
           } else {
             startDirectSigning();
+            setIsPreparingSign(false);
           }
         }
       } else {
@@ -72,9 +81,10 @@ export const GasAccountDepositButton = ({
     },
     300,
     [
+      miniApprovalGas,
+      setDirectSubmit,
       startDirectSigning,
       isDirectSignAccount,
-      gasReadyContent,
       chainServerId,
       topUpOnSignPage,
       isPreparingSign,
@@ -83,13 +93,16 @@ export const GasAccountDepositButton = ({
     ]
   );
 
-  return canUseDirectSubmitTx ? (
-    <DirectSignToConfirmBtn
-      title={t('global.Confirm')}
-      onConfirm={topUpDirect}
-      disabled={disabled}
-      overwriteDisabled
-    />
+  return canUseDirectSubmitTx && currentAccount?.type ? (
+    <>
+      <DirectSignToConfirmBtn
+        title={t('page.gasAccount.depositPopup.title')}
+        onConfirm={topUpDirect}
+        disabled={disabled}
+        overwriteDisabled
+        accountType={currentAccount.type}
+      />
+    </>
   ) : (
     <Button
       onClick={topUpOnSignPage}
@@ -99,7 +112,7 @@ export const GasAccountDepositButton = ({
       className="h-[48px] text-r-neutral-title2 text-15 font-medium"
       disabled={disabled}
     >
-      {t('global.Confirm')}
+      {t('page.gasAccount.depositPopup.title')}
     </Button>
   );
 };

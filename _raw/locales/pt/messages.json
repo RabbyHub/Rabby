@@ -1687,6 +1687,14 @@
         "deviceIsBusy": "Dispositivo está ocupado",
         "keystonePermissionTip": "Por favor, clique em \"Allow\" abaixo para autorizar o acesso ao seu Keystone na janela pop-up a seguir e assegure-se de que seu Keystone 3 Pro esteja na página inicial."
       },
+      "onekey": {
+        "onekeyPermission1": "Conectar a um dispositivo USB",
+        "allowRabbyPermissionsTitle": "Permitir permissões do Rabby para:",
+        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela pop-up a seguir. Se OneKey não aparecer no popup, verifique se seu dispositivo está conectado corretamente ao computador.",
+        "whyOneKey": "Por que OneKey?",
+        "buyOneKey": "Comprar OneKey",
+        "haveOneKey": "Ainda não tem um OneKey?"
+      },
       "walletConnect": {
         "status": {
           "accountError": "Endereço não corresponde.",
@@ -1891,9 +1899,6 @@
       "addFromCurrentSeedPhrase": "Adicionar a partir da frase-semente atual",
       "trezor": {
         "title": "Conectar Trezor"
-      },
-      "onekey": {
-        "title": "Conectar OneKey"
       }
     },
     "unlock": {
@@ -2590,11 +2595,14 @@
         "title": "Importar Frase Semente"
       },
       "importOneKey": {
-        "connect": "Conectar OneKey",
-        "tip3": "3. Desbloqueie seu dispositivo",
-        "tip2": "2. Conecte seu dispositivo OneKey",
-        "title": "OneKey",
-        "tip1": "1. Instale <1>OneKey Bridge<1/>"
+        "qrcode": {
+          "desc": "Escaneie o código QR na carteira hardware OneKey"
+        },
+        "title": "Conecte sua carteira hardware OneKey via USB",
+        "tip1": "1. Conecte seu dispositivo OneKey",
+        "tip2": "2. Desbloqueie seu dispositivo",
+        "tip3": "3. Certifique-se de que apenas um dispositivo OneKey esteja conectado",
+        "connect": "Conectar OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3072,6 +3080,18 @@
       "simpleKeyring": "Chave Privada",
       "HdKeyring": "Frase Semente",
       "watchAddressKeyring": "Contato"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Dispositivo não encontrado",
+        "deviceInitializeFailed": "Erro do dispositivo, reinicie e tente novamente",
+        "needUpgradeFirmware": "O firmware deve ser atualizado para usar o dispositivo",
+        "thisMethodNeedUpgradeFirmware": "Este recurso requer atualização de firmware, atualize o firmware no aplicativo OneKey",
+        "notAllowInBootloaderMode": "Use no modo normal",
+        "deviceCheckPassphraseStateError": "A conta não corresponde ao endereço de desbloqueio do dispositivo atual. Confirme se o dispositivo e o endereço da conta são consistentes e tente novamente",
+        "actionCancel": "Operação cancelada",
+        "deviceNeedsWebHIDPermission": "Dispositivo não encontrado ou precisa de permissão WebHID"
+      }
     }
   },
   "constant": {

@@ -14,6 +14,7 @@ export const useRabbyPoints = () => {
   const [userPointsCount, refreshUserPoints] = useRefresh();
   const [activitiesCount, refreshActivities] = useRefresh();
   const [topUsersCount, refreshTopUsers] = useRefresh();
+  const [forceUpdateCount, forceUpdate] = useRefresh();
 
   const {
     value: campaignIsEnded,
@@ -24,7 +25,7 @@ export const useRabbyPoints = () => {
       return data?.campaign_is_ended;
     }
     return;
-  }, [account?.address]);
+  }, [account?.address, forceUpdateCount]);
 
   const { value: signature, loading: signatureLoading } = useAsync(async () => {
     if (account?.address) {
@@ -32,7 +33,7 @@ export const useRabbyPoints = () => {
       return data;
     }
     return;
-  }, [account?.address]);
+  }, [account?.address, forceUpdateCount]);
 
   const { value: snapshot, loading: snapshotLoading } = useAsync(async () => {
     if (account?.address) {
@@ -42,7 +43,7 @@ export const useRabbyPoints = () => {
       return data;
     }
     return;
-  }, [account?.address]);
+  }, [account?.address, forceUpdateCount]);
 
   const {
     value: userPointsDetail,
@@ -55,7 +56,7 @@ export const useRabbyPoints = () => {
       return data;
     }
     return undefined;
-  }, [account?.address, userPointsCount]);
+  }, [account?.address, userPointsCount, forceUpdateCount]);
 
   const { value: topUsers, loading: topUsersLoading } = useAsync(async () => {
     if (account?.address) {
@@ -65,7 +66,7 @@ export const useRabbyPoints = () => {
       return data;
     }
     return undefined;
-  }, [account?.address, topUsersCount]);
+  }, [account?.address, topUsersCount, forceUpdateCount]);
 
   const {
     value: activities,
@@ -78,7 +79,7 @@ export const useRabbyPoints = () => {
       return data;
     }
     return undefined;
-  }, [account?.address, activitiesCount]);
+  }, [account?.address, activitiesCount, forceUpdateCount]);
 
   return {
     campaignIsEnded,
@@ -96,6 +97,7 @@ export const useRabbyPoints = () => {
     refreshUserPoints,
     refreshActivities,
     refreshTopUsers,
+    forceUpdate,
   };
 };
 

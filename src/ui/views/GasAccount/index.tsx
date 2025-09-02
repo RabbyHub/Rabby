@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { ReactComponent as RcIconMore } from '@/ui/assets/gas-account/more.svg';
 
@@ -18,7 +18,7 @@ import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/gas-account/switch
 
 import { GasAccountLogoutPopup } from './components/LogoutPopop';
 import { WithdrawPopup } from './components/WithdrawPopup';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   GasAccountRefreshIdProvider,
   GasAccountHistoryRefreshIdProvider,
@@ -225,10 +225,18 @@ const GasAccountInner = () => {
 };
 
 export const GasAccount = () => {
+  const { search } = useLocation<{
+    resetId: string;
+  }>();
+  const resetKey = useMemo(() => {
+    const query = new URLSearchParams(search || '');
+    return query.get('resetKey') || '';
+  }, [search]);
+
   return (
     <GasAccountRefreshIdProvider>
       <GasAccountHistoryRefreshIdProvider>
-        <GasAccountInner />
+        <GasAccountInner key={resetKey} />
       </GasAccountHistoryRefreshIdProvider>
     </GasAccountRefreshIdProvider>
   );

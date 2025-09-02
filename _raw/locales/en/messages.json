@@ -1237,7 +1237,8 @@
       "lowCreditModal": {
         "title": "This token has a low credit value",
         "desc": "A low credit value often signals high risk, such as a honeypot token or very low liquidity."
-      }
+      },
+      "understandRisks": "I understand the risks and want to continue"
     },
     "bridge": {
       "From": "From",
@@ -1899,6 +1900,14 @@
         "exportAddressJustAllowedOnHomePage": "Export address just allowed on home page",
         "unknowError": "Unknown error, please try again"
       },
+      "onekey": {
+        "onekeyPermission1": "Connect to an USB device",
+        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
+        "onekeyPermissionTip": "Please click \"Allow\" below to authorize access to your OneKey in the following pop-up window. If OneKey doesn't appear in the popup, please check if your device is properly connected to the computer.",
+        "whyOneKey": "Why OneKey?",
+        "buyOneKey": "Buy OneKey",
+        "haveOneKey": "Don't have a OneKey yet?"
+      },
       "walletConnect": {
         "connectYour": "Connect your",
         "viaWalletConnect": "via Wallet Connect",
@@ -2091,9 +2100,6 @@
       "addFromCurrentSeedPhrase": "Add from Current Seed Phrase",
       "trezor": {
         "title": "Connect Trezor"
-      },
-      "onekey": {
-        "title": "Connect OneKey"
       }
     },
     "unlock": {
@@ -2637,12 +2643,17 @@
     },
     "miniSignFooterBar": {
       "signWithLedger": "Sign with Ledger",
+      "signWithOneKey": "Sign with OneKey",
       "status": {
         "txCreated": "Transaction created",
         "txSigned": "Signed. Creating transaction",
         "txSending": "Sending signing request",
         "txSendings": "Sending signing request({{current}}/{{total}})"
-      }
+      },
+      "speedUpTitle": "Speed Up",
+      "cancelTitle": "On-chain Cancel",
+      "cancleDesc": "Gas price increased by {{percent}} to cancel transaction",
+      "speedUpDesc": "Gas price increased by {{percent}} to speed up"
     },
     "gasAccount": {
       "title": "GasAccount",
@@ -2790,10 +2801,13 @@
         "title": "Import Seed Phrase"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip1": "1. Install <1>OneKey Bridge<1/>",
-        "tip2": "2. Plug in your OneKey device",
-        "tip3": "3. Unlock your device",
+        "qrcode": {
+          "desc": "Scan the QR code on the OneKey hardware wallet"
+        },
+        "title": "Connect your OneKey hardware wallet via USB",
+        "tip1": "1. Plug in your OneKey device",
+        "tip2": "2. Unlock your device",
+        "tip3": "3. Please ensure only one OneKey device is connected",
         "connect": "Connect OneKey"
       },
       "importTrezor": {
@@ -3212,6 +3226,18 @@
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
       "watchAddressKeyring": "Contact"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Device not found",
+        "deviceInitializeFailed": "Device error, please restart and try again",
+        "needUpgradeFirmware": "Firmware must be upgraded to use the device",
+        "thisMethodNeedUpgradeFirmware": "This feature requires firmware upgrade, please upgrade firmware in OneKey app",
+        "notAllowInBootloaderMode": "Please use in normal mode",
+        "deviceCheckPassphraseStateError": "Account does not match the current device unlock address. Please confirm the device and account address are consistent and try again",
+        "actionCancel": "Operation cancelled",
+        "deviceNeedsWebHIDPermission": "Device not found or needs WebHID permission"
+      }
     }
   },
   "constant": {
