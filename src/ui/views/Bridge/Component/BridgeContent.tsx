@@ -730,6 +730,7 @@ export const BridgeContent = () => {
                 isHardWallet={supportedHardwareDirectSign(
                   currentAccount?.type || ''
                 )}
+                riskReset={btnDisabled}
               />
             ) : (
               <Button

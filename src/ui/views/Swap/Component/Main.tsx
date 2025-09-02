@@ -806,6 +806,7 @@ export const Main = () => {
                 isHardWallet={supportedHardwareDirectSign(
                   currentAccount?.type || ''
                 )}
+                riskReset={swapBtnDisabled}
               />
             ) : (
               <Button

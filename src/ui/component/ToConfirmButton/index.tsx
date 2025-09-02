@@ -14,6 +14,7 @@ export const ToConfirmBtn = (props: {
   disabled?: boolean;
   htmlType?: 'button' | 'submit' | 'reset';
   isHardWallet?: boolean;
+  onCancel?: () => void;
 }) => {
   const { t } = useTranslation();
   const [toConfirm, setToConfirm] = useState(false);
@@ -35,10 +36,14 @@ export const ToConfirmBtn = (props: {
     }
   };
 
-  const cancel: React.MouseEventHandler<HTMLDivElement> = useCallback((e) => {
-    e.stopPropagation();
-    setToConfirm(false);
-  }, []);
+  const cancel: React.MouseEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setToConfirm(false);
+      props.onCancel?.();
+    },
+    [props.onCancel]
+  );
   const divRef = useRef<HTMLDivElement>(null);
   useClickAway(divRef, () => setToConfirm(false));
 
@@ -119,12 +124,27 @@ export const DirectSignToConfirmBtn = (props: {
   showRiskTips?: boolean;
   riskLabel?: React.ReactNode;
   isHardWallet?: boolean;
+  onCancel?: () => void;
+  riskReset?: boolean;
 }) => {
   const disabledProcess = useGetDisableProcessDirectSign();
   const { t } = useTranslation();
   const [riskChecked, setRiskChecked] = useState(false);
 
   const riskDisabled = props.showRiskTips ? !riskChecked : false;
+
+  const onCancel = useCallback(() => {
+    setRiskChecked(false);
+    if (props.onCancel) {
+      props.onCancel();
+    }
+  }, [props.onCancel]);
+
+  useEffect(() => {
+    if (props.riskReset) {
+      setRiskChecked(false);
+    }
+  }, [props.riskReset]);
 
   return (
     <div className="w-full flex flex-col gap-[15px]">
@@ -163,12 +183,15 @@ export const DirectSignToConfirmBtn = (props: {
               ) : null
             }
           >
-            {props?.riskLabel || t('page.swap.understandRisks')}
+            <span className="text-rabby-neutral-body text-13 font-normal">
+              {props?.riskLabel || t('page.swap.understandRisks')}
+            </span>
           </Checkbox>
         </div>
       ) : null}
       <ToConfirmBtn
         {...props}
+        onCancel={onCancel}
         disabled={
           (props.overwriteDisabled
             ? props.disabled
