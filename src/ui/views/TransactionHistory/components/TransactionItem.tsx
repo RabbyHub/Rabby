@@ -87,11 +87,11 @@ export const TransactionItem = ({
   }, [account?.type]);
 
   const originGasPrice = useMemo(() => {
-    const maxGasTx = findMaxGasTx(item.txs)!;
+    const maxGasTx = item.txs[0]!;
     const maxGasPrice =
       maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || '0';
     return maxGasPrice;
-  }, []);
+  }, [item.txs]);
 
   const isCanceled =
     !item.isPending &&
