@@ -168,7 +168,7 @@ export const PerpsSingleCoin = () => {
     [currentPerpsAccount?.type]
   );
   const miniTxs = useMemo(() => {
-    console.log('miniTxs', miniSignTx);
+    console.log('miniSignTx', miniSignTx);
     return miniSignTx ? [miniSignTx] : [];
   }, [miniSignTx]);
 
