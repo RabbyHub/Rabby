@@ -21,7 +21,7 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   providerFee: number;
   coin: string;
   markPrice: number;
-  leverageRang: [number, number]; // [min, max]
+  leverageRange: [number, number]; // [min, max]
   pxDecimals: number;
   szDecimals: number;
   availableBalance: number;
@@ -52,7 +52,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   providerFee,
   coin,
   markPrice,
-  leverageRang,
+  leverageRange,
   pxDecimals,
   szDecimals,
   availableBalance,
@@ -105,7 +105,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   // 计算预估清算价格
   const estimatedLiquidationPrice = React.useMemo(() => {
     if (!markPrice || !leverage) return 0;
-    const maxLeverage = leverageRang[1];
+    const maxLeverage = leverageRange[1];
     return calLiquidationPrice(
       markPrice,
       Number(margin),
@@ -114,7 +114,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       leverage,
       maxLeverage
     ).toFixed(pxDecimals);
-  }, [markPrice, leverage, leverageRang, margin, tradeSize]);
+  }, [markPrice, leverage, leverageRange, margin, tradeSize]);
 
   const bothFee = React.useMemo(() => {
     return providerFee + 0.0005;
@@ -164,7 +164,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   React.useEffect(() => {
     if (!visible) {
       setMargin('');
-      setLeverage(5);
+      setLeverage(Math.min(leverageRange[1], 5));
       setAutoClose({
         isOpen: false,
         tpTriggerPx: '',
@@ -547,7 +547,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       <LeverageSelectionPopup
         visible={leveragePopupVisible}
         currentLeverage={leverage}
-        leverageRange={leverageRang}
+        leverageRange={leverageRange}
         onCancel={() => setLeveragePopupVisible(false)}
         onConfirm={handleLeverageConfirm}
       />

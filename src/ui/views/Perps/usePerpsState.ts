@@ -483,7 +483,7 @@ export const usePerpsState = ({
       const res = await sdk.exchange?.setReferrer(PERPS_REFERENCE_CODE);
       console.log('setReference res', res);
     } catch (e) {
-      console.error('Failed to set reference:', e);
+      console.log('Failed to set reference:', e);
     }
   }, []);
 
