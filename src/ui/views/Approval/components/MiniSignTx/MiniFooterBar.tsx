@@ -72,6 +72,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   isFirstGasCostLoading?: boolean;
   isFirstGasLessLoading?: boolean;
   directSubmit?: boolean;
+  account?: Account;
 }
 
 const Wrapper = styled.section`
@@ -212,6 +213,7 @@ export const MiniFooterBar: React.FC<Props> = ({
   isFirstGasLessLoading,
   isGasNotEnough,
   directSubmit,
+  account: propsAccount,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -263,7 +265,7 @@ export const MiniFooterBar: React.FC<Props> = ({
 
   const init = async () => {
     const currentAccount =
-      gnosisAccount || (await wallet.syncGetCurrentAccount());
+      propsAccount || gnosisAccount || (await wallet.syncGetCurrentAccount());
     if (currentAccount) setAccount(currentAccount);
   };
 

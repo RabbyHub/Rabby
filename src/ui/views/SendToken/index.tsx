@@ -62,6 +62,7 @@ import { MiniApproval } from '../Approval/components/MiniSignTx';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
+  supportedHardwareDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
@@ -76,6 +77,7 @@ import { copyAddress } from '@/ui/utils/clipboard';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
+import { useClearMiniGasStateEffect } from '@/ui/hooks/miniSignGasStore';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -1531,6 +1533,10 @@ const SendToken = () => {
     }
   });
 
+  useClearMiniGasStateEffect({
+    chainServerId: chainItem?.serverId || '',
+  });
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -1662,7 +1668,7 @@ const SendToken = () => {
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-              {canUseDirectSubmitTx ? (
+              {canUseDirectSubmitTx && currentAccount?.type ? (
                 <DirectSignToConfirmBtn
                   title={t('page.sendToken.sendButton')}
                   onConfirm={() => {
@@ -1672,6 +1678,7 @@ const SendToken = () => {
                     });
                   }}
                   disabled={!canSubmit}
+                  accountType={currentAccount?.type}
                 />
               ) : (
                 <Button

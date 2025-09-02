@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const useSlippageStore = () => {
   const { autoSlippage, isCustomSlippage } = useRabbySelector((store) => ({
