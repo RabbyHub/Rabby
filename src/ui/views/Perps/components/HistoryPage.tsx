@@ -28,7 +28,6 @@ export const HistoryPage: React.FC = () => {
 
     return list.sort((a, b) => b.time - a.time);
   }, [userAccountHistory, userFills, localLoadingHistory]);
-  console.log('coin', coin);
   const coinHistoryList = useMemo(() => {
     return userFills
       .filter((item) => item.coin === coin)
