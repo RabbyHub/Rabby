@@ -629,7 +629,7 @@ export const PerpsSingleCoin = () => {
         coin={coin}
         pxDecimals={currentAssetCtx?.pxDecimals || 2}
         szDecimals={currentAssetCtx?.szDecimals || 0}
-        leverageRang={[1, currentAssetCtx?.maxLeverage || 5]}
+        leverageRange={[1, currentAssetCtx?.maxLeverage || 5]}
         markPrice={markPrice}
         availableBalance={Number(accountSummary?.withdrawable || 0)}
         onCancel={() => setOpenPositionVisible(false)}

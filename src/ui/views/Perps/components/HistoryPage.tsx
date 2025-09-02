@@ -52,7 +52,6 @@ export const HistoryPage: React.FC = () => {
 
   const handleCloseDetail = () => {
     setDetailVisible(false);
-    setSelectedFill(null);
   };
 
   console.log('homeHistoryList', homeHistoryList, Boolean(coin));
