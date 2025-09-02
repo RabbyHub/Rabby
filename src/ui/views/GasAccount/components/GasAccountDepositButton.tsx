@@ -1,4 +1,5 @@
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
@@ -36,6 +37,7 @@ export const GasAccountDepositButton = ({
   setDirectSubmit: (p: boolean) => void;
   setMiniApprovalVisible: (p: boolean) => void;
 }) => {
+  const currentAccount = useCurrentAccount();
   const { t } = useTranslation();
 
   const miniApprovalGas = useMiniApprovalGas();
@@ -91,13 +93,14 @@ export const GasAccountDepositButton = ({
     ]
   );
 
-  return canUseDirectSubmitTx ? (
+  return canUseDirectSubmitTx && currentAccount?.type ? (
     <>
       <DirectSignToConfirmBtn
         title={t('page.gasAccount.depositPopup.title')}
         onConfirm={topUpDirect}
         disabled={disabled}
         overwriteDisabled
+        accountType={currentAccount.type}
       />
     </>
   ) : (
