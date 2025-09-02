@@ -1,6 +1,7 @@
 import { MarketData } from '@/ui/models/perps';
 import { Meta, AssetCtx, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
 import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
+import { PERPS_MAX_NTL_VALUE } from './constants';
 
 export const formatMarkData = (
   marketData: [Meta, AssetCtx[]],
@@ -57,7 +58,7 @@ export const formatMarkData = (
           ),
           minLeverage: 1,
           // 第一档的最大名义值 = 下一档的 lowerBound；若不存在下一档则为兜底1000000
-          maxUsdValueSize: String(nextTier?.lowerBound ?? 1000000),
+          maxUsdValueSize: String(nextTier?.lowerBound ?? PERPS_MAX_NTL_VALUE),
           szDecimals: Number(hlDataAsset.szDecimals ?? 0),
           // 根据 markPx 推断价格精度
           pxDecimals: (() => {

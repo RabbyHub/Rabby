@@ -76,7 +76,6 @@ export const Perps: React.FC = () => {
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
-  console.log('miniSignTypeData', miniSignTypeData);
 
   const [amountVisible, setAmountVisible] = useState(false);
   const {

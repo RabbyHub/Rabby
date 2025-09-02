@@ -14,6 +14,7 @@ import { useMemoizedFn } from 'ahooks';
 import { calLiquidationPrice } from '../utils';
 import { AutoClosePositionPopup } from './AutoClosePositionPopup';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { PERPS_MAX_NTL_VALUE } from '../constants';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -24,6 +25,7 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   pxDecimals: number;
   szDecimals: number;
   availableBalance: number;
+  maxNtlValue: number;
   onCancel: () => void;
   onConfirm: () => void;
   handleOpenPosition: (params: {
@@ -56,6 +58,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   availableBalance,
   onCancel,
   onConfirm,
+  maxNtlValue,
   handleOpenPosition,
   ...rest
 }) => {
@@ -122,7 +125,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     const marginValue = Number(margin) || 0;
     const usdValue = marginValue * leverage;
     const sizeValue = Number(tradeSize) * markPrice;
-    const maxNtlValue = 10000000;
+    const maxValue = maxNtlValue || PERPS_MAX_NTL_VALUE;
 
     if (marginValue === 0) {
       return { isValid: false, error: null };
@@ -145,18 +148,18 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       };
     }
 
-    if (usdValue > maxNtlValue) {
+    if (usdValue > maxValue) {
       return {
         isValid: false,
         error: 'maximum_limit',
         errorMessage: t('page.perps.maximumOrderSize', {
-          amount: `$${maxNtlValue}`,
+          amount: `$${maxValue}`,
         }),
       };
     }
 
     return { isValid: true, error: null };
-  }, [margin, availableBalance, t, leverage]);
+  }, [margin, availableBalance, t, leverage, maxNtlValue]);
 
   React.useEffect(() => {
     if (!visible) {

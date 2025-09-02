@@ -384,7 +384,10 @@ export const perps = createModel<RootModel>()({
       dispatch.perps.startPolling(undefined);
 
       dispatch.perps.fetchPerpPermission(payload.address);
-      dispatch.perps.fetchPerpFee();
+      setTimeout(() => {
+        // avoid 429 error
+        dispatch.perps.fetchPerpFee();
+      }, 1000);
       console.log('loginPerpsAccount success', payload.address);
     },
 
