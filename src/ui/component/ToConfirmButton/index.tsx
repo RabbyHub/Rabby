@@ -1,7 +1,10 @@
-import { useGetDisableProcessDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import {
+  supportedHardwareDirectSign,
+  useGetDisableProcessDirectSign,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { Button } from 'antd';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClickAway } from 'react-use';
@@ -123,7 +126,7 @@ export const DirectSignToConfirmBtn = (props: {
   overwriteDisabled?: boolean;
   showRiskTips?: boolean;
   riskLabel?: React.ReactNode;
-  isHardWallet?: boolean;
+  accountType?: string;
   onCancel?: () => void;
   riskReset?: boolean;
 }) => {
@@ -132,6 +135,10 @@ export const DirectSignToConfirmBtn = (props: {
   const [riskChecked, setRiskChecked] = useState(false);
 
   const riskDisabled = props.showRiskTips ? !riskChecked : false;
+
+  const isHardWallet = useMemo(() => {
+    return supportedHardwareDirectSign(props.accountType || '');
+  }, [props.accountType]);
 
   const onCancel = useCallback(() => {
     setRiskChecked(false);
@@ -191,6 +198,7 @@ export const DirectSignToConfirmBtn = (props: {
       ) : null}
       <ToConfirmBtn
         {...props}
+        isHardWallet={isHardWallet}
         onCancel={onCancel}
         disabled={
           (props.overwriteDisabled

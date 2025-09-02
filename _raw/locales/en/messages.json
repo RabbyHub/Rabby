@@ -2504,6 +2504,7 @@
     },
     "miniSignFooterBar": {
       "signWithLedger": "Sign with Ledger",
+      "signWithOneKey": "Sign with OneKey",
       "status": {
         "txCreated": "Transaction created",
         "txSigned": "Signed. Creating transaction",

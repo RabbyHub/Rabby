@@ -62,6 +62,7 @@ import { MiniApproval } from '../Approval/components/MiniSignTx';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
+  supportedHardwareDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
@@ -1667,7 +1668,7 @@ const SendToken = () => {
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-              {canUseDirectSubmitTx ? (
+              {canUseDirectSubmitTx && currentAccount?.type ? (
                 <DirectSignToConfirmBtn
                   title={t('page.sendToken.sendButton')}
                   onConfirm={() => {
@@ -1677,6 +1678,7 @@ const SendToken = () => {
                     });
                   }}
                   disabled={!canSubmit}
+                  accountType={currentAccount?.type}
                 />
               ) : (
                 <Button

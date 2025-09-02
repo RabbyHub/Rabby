@@ -795,7 +795,7 @@ export const Main = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx ? (
+            {canUseDirectSubmitTx && currentAccount?.type ? (
               <DirectSignToConfirmBtn
                 // disabled
                 key={refreshId}
@@ -803,9 +803,7 @@ export const Main = () => {
                 title={btnText}
                 onConfirm={handleSwap}
                 showRiskTips={showRiskTips && !swapBtnDisabled}
-                isHardWallet={supportedHardwareDirectSign(
-                  currentAccount?.type || ''
-                )}
+                accountType={currentAccount?.type}
                 riskReset={swapBtnDisabled}
               />
             ) : (

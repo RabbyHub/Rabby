@@ -721,15 +721,15 @@ export const BridgeContent = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx && isSupportedChain ? (
+            {canUseDirectSubmitTx &&
+            currentAccount?.type &&
+            isSupportedChain ? (
               <DirectSignToConfirmBtn
                 disabled={btnDisabled}
                 title={t('page.bridge.title')}
                 onConfirm={handleBridge}
                 showRiskTips={showRiskTips && !btnDisabled}
-                isHardWallet={supportedHardwareDirectSign(
-                  currentAccount?.type || ''
-                )}
+                accountType={currentAccount?.type}
                 riskReset={btnDisabled}
               />
             ) : (

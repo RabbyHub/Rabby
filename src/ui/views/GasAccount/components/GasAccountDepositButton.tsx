@@ -3,7 +3,7 @@ import { useMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import BigNumber from 'bignumber.js';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,11 +40,6 @@ export const GasAccountDepositButton = ({
 
   const miniApprovalGas = useMiniApprovalGas();
 
-  const gasReadyContent =
-    !!miniApprovalGas &&
-    !miniApprovalGas.loading &&
-    !!miniApprovalGas.gasCostUsdStr;
-
   useDebounce(
     () => {
       if (
@@ -53,6 +48,11 @@ export const GasAccountDepositButton = ({
         miniSignTxs?.length &&
         chainServerId
       ) {
+        const gasReadyContent =
+          !!miniApprovalGas &&
+          !miniApprovalGas.loading &&
+          !!miniApprovalGas.gasCostUsdStr;
+
         if (gasReadyContent) {
           const gasError =
             gasReadyContent && miniApprovalGas?.showGasLevelPopup;
@@ -64,14 +64,13 @@ export const GasAccountDepositButton = ({
               miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
             ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
 
-          if (gasError) {
-            topUpOnSignPage();
-          } else if (gasTooHigh) {
+          if (gasError || gasTooHigh) {
             setDirectSubmit(false);
             setMiniApprovalVisible(true);
             setIsPreparingSign(false);
           } else {
             startDirectSigning();
+            setIsPreparingSign(false);
           }
         }
       } else {
@@ -80,10 +79,10 @@ export const GasAccountDepositButton = ({
     },
     300,
     [
+      miniApprovalGas,
       setDirectSubmit,
       startDirectSigning,
       isDirectSignAccount,
-      gasReadyContent,
       chainServerId,
       topUpOnSignPage,
       isPreparingSign,
@@ -95,7 +94,7 @@ export const GasAccountDepositButton = ({
   return canUseDirectSubmitTx ? (
     <>
       <DirectSignToConfirmBtn
-        title={t('global.Confirm')}
+        title={t('page.gasAccount.depositPopup.title')}
         onConfirm={topUpDirect}
         disabled={disabled}
         overwriteDisabled
@@ -110,7 +109,7 @@ export const GasAccountDepositButton = ({
       className="h-[48px] text-r-neutral-title2 text-15 font-medium"
       disabled={disabled}
     >
-      {t('global.Confirm')}
+      {t('page.gasAccount.depositPopup.title')}
     </Button>
   );
 };
