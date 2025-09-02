@@ -1,4 +1,4 @@
-import { Badge, Tooltip } from 'antd';
+import { Badge, Skeleton, Tooltip } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -66,7 +66,7 @@ export default function ChainAndSiteSelector({
 }) {
   const { t } = useTranslation();
   const history = useHistory();
-  const { perpsPositionInfo } = usePerpsHomePnl();
+  const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
     CHAINS_ENUM.ETH
   );
@@ -311,6 +311,14 @@ export default function ChainAndSiteSelector({
             {perpsPositionInfo.pnl >= 0 ? '+' : '-'}$
             {splitNumberByStep(Math.abs(perpsPositionInfo.pnl).toFixed(2))}
           </div>
+        ) : isFetching ? (
+          <div className="absolute bottom-[-2px] text-[10px] font-medium">
+            <Skeleton.Button
+              active={true}
+              className="h-[10px] block rounded-[2px]"
+              style={{ width: 42 }}
+            />
+          </div>
         ) : null,
         content: t('page.dashboard.home.panel.perps'),
         onClick: () => {
@@ -318,7 +326,7 @@ export default function ChainAndSiteSelector({
         },
       } as IPanelItem,
     };
-  }, [perpsPositionInfo]);
+  }, [perpsPositionInfo, isFetching]);
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
 

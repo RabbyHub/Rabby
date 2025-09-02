@@ -8,8 +8,10 @@ export const usePerpsHomePnl = () => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const perpsState = useRabbySelector((state) => state.perps);
+  const [isFetching, setIsFetching] = useState(false);
 
   const fetch = useMemoizedFn(async () => {
+    setIsFetching(true);
     const sdk = getPerpsSDK();
     const account = await wallet.getPerpsCurrentAccount();
     if (account?.address) {
@@ -30,6 +32,7 @@ export const usePerpsHomePnl = () => {
     } else {
       dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });
     }
+    setIsFetching(false);
   });
 
   useEffect(() => {
@@ -38,5 +41,6 @@ export const usePerpsHomePnl = () => {
 
   return {
     perpsPositionInfo: perpsState.homePositionPnl,
+    isFetching,
   };
 };
