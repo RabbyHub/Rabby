@@ -10,7 +10,7 @@ import { CANCEL_TX_TYPE, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { intToHex } from '@ethereumjs/util';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { SvgPendingSpin } from 'ui/assets';
@@ -30,7 +30,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
 import { is7702Tx } from '@/utils/transaction';
-import { omit } from 'lodash';
+import { noop, omit } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
@@ -190,7 +190,9 @@ export const TransactionItem = ({
         }
       : undefined;
 
-  const handleOnChainCancel = async () => {
+  const originFn = useRef(noop);
+
+  const handleOnChainCancel = async (forceSignPage?: boolean) => {
     if (!canCancel) return;
     const maxGasTx = findMaxGasTx(item.txs)!;
     const maxGasPrice = Number(
@@ -204,7 +206,8 @@ export const TransactionItem = ({
       throw new Error('chainServerId not found');
     }
 
-    if (canUseMiniTx) {
+    if (canUseMiniTx && !forceSignPage) {
+      originFn.current = handleOnChainCancel;
       setIsPreparingSign(true);
     }
 
@@ -219,7 +222,7 @@ export const TransactionItem = ({
 
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
 
-    if (canUseMiniTx) {
+    if (canUseMiniTx && !forceSignPage) {
       setIsShowSign(true);
       setIsPreparingSign(false);
 
@@ -262,7 +265,7 @@ export const TransactionItem = ({
     window.close();
   };
 
-  const handleClickSpeedUp = async () => {
+  const handleClickSpeedUp = async (forceSignPage?: boolean) => {
     if (!canCancel) return;
     const maxGasTx = findMaxGasTx(item.txs);
     const maxGasPrice = Number(
@@ -278,7 +281,8 @@ export const TransactionItem = ({
 
     const is7702 = is7702Tx(originTx.rawTx);
 
-    if (canUseMiniTx && !is7702) {
+    if (canUseMiniTx && !is7702 && !forceSignPage) {
+      originFn.current = handleClickSpeedUp;
       setIsPreparingSign(true);
     }
 
@@ -292,7 +296,7 @@ export const TransactionItem = ({
         });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
 
-    if (canUseMiniTx && !is7702) {
+    if (canUseMiniTx && !is7702 && !forceSignPage) {
       setIsShowSign(true);
       setIsPreparingSign(false);
       mutateTxs([
@@ -364,6 +368,11 @@ export const TransactionItem = ({
 
   const isPending = checkIsPendingTxGroup(item);
 
+  const onPreExecError = useCallback(async () => {
+    mutateTxs([]);
+    await originFn.current(true);
+  }, [originFn, mutateTxs]);
+
   return (
     <div
       className={clsx('tx-history__item', {
@@ -428,7 +437,7 @@ export const TransactionItem = ({
                         'cursor-not-allowed': !canCancel,
                       })}
                       src={RcIconSpeedup}
-                      onClick={handleClickSpeedUp}
+                      onClick={() => handleClickSpeedUp()}
                     />
                   </Tooltip>
                   <div className="hr" />
@@ -580,7 +589,9 @@ export const TransactionItem = ({
               onClearPending?.();
             }, 500);
           }}
+          onPreExecError={onPreExecError}
           canUseDirectSubmitTx={true}
+          autoTriggerPreExecError
         />
       )}
     </div>
