@@ -21,13 +21,7 @@ export const SpeedUpCancelHeader = ({
 
   const percent = useMemo(() => {
     const originBn = new BigNumber(originGasPrice || '0');
-    return (
-      new BigNumber(currentGasPrice || '0')
-        .minus(originBn)
-        .div(originBn)
-        .times(100)
-        .toFixed(0) + '%'
-    );
+    return new BigNumber(currentGasPrice || '0').div(originBn).toFixed(1) + 'x';
   }, [originGasPrice, currentGasPrice]);
   if (!isSpeedUp && !isCancel) {
     return null;

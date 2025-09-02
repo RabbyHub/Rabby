@@ -560,13 +560,6 @@ export const TransactionItem = ({
           isPreparingSign={isPreparingSign}
           setIsPreparingSign={setIsPreparingSign}
           session={originSession}
-          // ga={{
-          //   // session:
-          //   // category: 'Swap',
-          //   // source: 'swap',
-          //   // trigger: rbiSource,
-          //   // swapUseSlider,
-          // }}
           onClose={() => {
             setIsShowSign(false);
             setIsPreparingSign(false);
@@ -584,11 +577,9 @@ export const TransactionItem = ({
               setIsShowSign(false);
               setIsPreparingSign(false);
               mutateTxs([]);
+              onClearPending?.();
             }, 500);
           }}
-          // onPreExecError={gotoSwap}
-          // getContainer={getContainer}
-          // directSubmit
           canUseDirectSubmitTx={true}
         />
       )}
