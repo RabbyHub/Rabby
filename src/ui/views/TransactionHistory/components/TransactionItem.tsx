@@ -369,6 +369,7 @@ export const TransactionItem = ({
   const isPending = checkIsPendingTxGroup(item);
 
   const onPreExecError = useCallback(async () => {
+    setIsPreparingSign(false);
     mutateTxs([]);
     await originFn.current(true);
   }, [originFn, mutateTxs]);
