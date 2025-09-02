@@ -109,7 +109,6 @@ export const usePerpsDeposit = ({
           },
         },
       });
-      console.log('fallback res tx', signature);
       handleSignDepositDirect(signature as string);
       setAmountVisible(false);
       clearMiniSignTx();
