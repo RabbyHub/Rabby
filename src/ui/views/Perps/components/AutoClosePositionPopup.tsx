@@ -208,12 +208,12 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
         <div className="flex-1 px-20">
           {/* Take Profit */}
           <div className="mb-24 bg-r-neutral-card1 rounded-[8px] py-20">
-            <div className="text-13 text-r-neutral-title-1 text-center">
+            <div className="text-15 font-medium text-r-neutral-title-1 text-center">
               {t('page.perps.takeProfitWhen')}
             </div>
             <input
               ref={tpInputRef}
-              className={`text-[48px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor(
+              className={`text-[40px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor(
                 'tp'
               )}`}
               autoFocus
@@ -237,13 +237,13 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
             />
             <div className="h-[20px]">
               {priceValidation.tp.error ? (
-                <div className="text-13 text-r-red-default text-center">
+                <div className="text-13 text-r-red-default text-center font-medium">
                   {priceValidation.tp.errorMessage}
                 </div>
               ) : (
                 tpPrice && (
-                  <div className="text-13 text-r-green-default text-center">
-                    {t('page.perps.takeProfit')}{' '}
+                  <div className="text-13 text-r-green-default text-center font-medium">
+                    {t('page.perps.TakeProfit')}{' '}
                     {formatUsdValue(Math.abs(tpProfit), BigNumber.ROUND_DOWN)}
                   </div>
                 )
@@ -253,11 +253,11 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
 
           {/* Stop Loss */}
           <div className="mb-32 bg-r-neutral-card1 rounded-[8px] py-20">
-            <div className="text-13 text-r-neutral-title-1 text-center">
+            <div className="text-15 font-medium text-r-neutral-title-1 text-center">
               {t('page.perps.stopLossWhen')}
             </div>
             <input
-              className={`text-[48px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor(
+              className={`text-[40px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor(
                 'sl'
               )}`}
               style={{
@@ -280,17 +280,17 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
             />
             <div className="h-[20px]">
               {priceValidation.sl.error ? (
-                <div className="text-13 text-r-red-default text-center">
+                <div className="text-13 text-r-red-default text-center font-medium">
                   {priceValidation.sl.errorMessage}
                 </div>
               ) : priceValidation.sl.isWarning ? (
-                <div className="text-13 text-r-orange-default text-center">
+                <div className="text-13 text-r-orange-default text-center font-medium">
                   {priceValidation.sl.errorMessage}
                 </div>
               ) : (
                 slPrice && (
-                  <div className="text-13 text-r-red-default text-center">
-                    {t('page.perps.stopLoss')}{' '}
+                  <div className="text-13 text-r-red-default text-center font-medium">
+                    {t('page.perps.StopLoss')}{' '}
                     {formatUsdValue(Math.abs(slLoss), BigNumber.ROUND_DOWN)}
                   </div>
                 )

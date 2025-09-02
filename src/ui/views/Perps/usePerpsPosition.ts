@@ -4,12 +4,14 @@ import { message } from 'antd';
 import { getPerpsSDK } from './sdkManager';
 import { usePerpsState } from './usePerpsState';
 import * as Sentry from '@sentry/browser';
+import { useWallet } from '@/ui/utils';
 
 export const usePerpsPosition = ({
   setCurrentTpOrSl,
 }: {
   setCurrentTpOrSl: (params: { tpPrice?: string; slPrice?: string }) => void;
 }) => {
+  const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const {
     userFills,
@@ -17,6 +19,32 @@ export const usePerpsPosition = ({
     isLogin,
     hasPermission,
   } = usePerpsState({});
+
+  const logout = useMemoizedFn((address: string) => {
+    dispatch.perps.logout();
+    wallet.setPerpsCurrentAccount(null);
+    wallet.setSendApproveAfterDeposit(address, []);
+  });
+
+  const judgeIsUserAgentIsExpired = useMemoizedFn(
+    async (errorMessage: string) => {
+      const masterAddress = currentPerpsAccount?.address;
+      if (!masterAddress) {
+        return false;
+      }
+
+      const agentWalletPreference = await wallet.getAgentWalletPreference(
+        masterAddress
+      );
+      const agentAddress = agentWalletPreference?.agentAddress;
+      if (agentAddress && errorMessage.includes(agentAddress)) {
+        console.warn('handle action agent is expired, logout');
+        message.error('Agent is expired, please login again');
+        logout(masterAddress);
+        return true;
+      }
+    }
+  );
 
   const handleSetAutoClose = useMemoizedFn(
     async (params: {
@@ -65,6 +93,10 @@ export const usePerpsPosition = ({
         //   );
         // }
       } catch (error) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return;
+        }
         message.error(error?.message || 'Set auto close error');
         Sentry.captureException(
           new Error(
@@ -103,7 +135,7 @@ export const usePerpsPosition = ({
           dispatch.perps.fetchUserHistoricalOrders();
           const { totalSz, avgPx } = filled;
           message.success(
-            `Closed ${direction} ${coin}-USD: Size ${totalSz} at Price ${avgPx}`
+            `Closed ${direction} ${coin}-USD: Size ${totalSz} at Price $${avgPx}`
           );
           setCurrentTpOrSl({
             tpPrice: undefined,
@@ -129,6 +161,10 @@ export const usePerpsPosition = ({
           return null;
         }
       } catch (e) {
+        const isExpired = await judgeIsUserAgentIsExpired(e?.message || '');
+        if (isExpired) {
+          return null;
+        }
         console.error('close position error', e);
         message.error(e?.message || 'close position error');
         Sentry.captureException(
@@ -188,7 +224,7 @@ export const usePerpsPosition = ({
 
           const { totalSz, avgPx } = filled;
           message.success(
-            `Opened ${direction} ${coin}-USD: Size ${totalSz} at Price ${avgPx}`
+            `Opened ${direction} ${coin}-USD: Size ${totalSz} at Price $${avgPx}`
           );
           setCurrentTpOrSl({
             tpPrice: tpTriggerPx,
@@ -213,6 +249,10 @@ export const usePerpsPosition = ({
           );
         }
       } catch (error) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return;
+        }
         console.error(error);
         message.error(error?.message || 'open position error');
         Sentry.captureException(
