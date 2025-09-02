@@ -572,6 +572,7 @@ const SwitchLangModal = ({
 type SettingItem = {
   leftIcon: ThemeIconType;
   leftIconClassName?: string;
+  leftIconStyle?: React.CSSProperties;
   content: React.ReactNode;
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -787,7 +788,8 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconRabbyMobileCC,
-          leftIconClassName: 'text-r-neutral-body w-24 h-24 ml-[-2px]',
+          leftIconClassName: 'text-r-neutral-body w-24 h-24',
+          leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
           content: t('page.dashboard.home.panel.mobile'),
           onClick: () => {
             openInternalPageInTab('sync');
@@ -1373,6 +1375,7 @@ const SettingsInner = ({
                       <ThemeIcon
                         src={data.leftIcon}
                         className={clsx('icon', data.leftIconClassName)}
+                        style={data.leftIconStyle}
                       />
                     }
                     rightIcon={
