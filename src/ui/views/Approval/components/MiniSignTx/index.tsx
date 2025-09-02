@@ -974,16 +974,22 @@ export const MiniSignTx = ({
     isCoboArugsAccount,
   ]);
 
+  const directSubmitRef = useRef(directSubmit);
+
+  useEffect(() => {
+    directSubmitRef.current = directSubmit;
+  }, [directSubmit]);
+
   useEffect(() => {
     if (inited) {
       prepareTxs().catch((error) => {
-        if (directSubmit) {
+        if (directSubmitRef.current) {
           setPreExecError(true);
           //goto origin signTx
         }
       });
     }
-  }, [inited, txs, directSubmit]);
+  }, [inited, txs]);
 
   const checkErrors = useMemo(() => {
     let balance = nativeTokenBalance;
