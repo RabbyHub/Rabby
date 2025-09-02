@@ -513,7 +513,13 @@ export const sendTransaction = async ({
         $ctx: {
           ga,
         },
-        params: [transaction],
+        params: [
+          {
+            ...transaction,
+            isSpeedUp: (tx as any)?.isSpeedUp,
+            isCancel: (tx as any)?.isCancel,
+          },
+        ],
       },
       session: session || INTERNAL_REQUEST_SESSION,
       approvalRes: {
