@@ -31,6 +31,9 @@ interface SignAction {
 export const usePerpsInitial = () => {
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
+  const { accountsList } = useRabbySelector((s) => ({
+    accountsList: s.accountToDisplay.accountsList,
+  }));
   const perpsState = useRabbySelector((state) => state.perps);
   const {
     isInitialized,
@@ -142,8 +145,6 @@ export const usePerpsInitial = () => {
           await noLoginAction();
           return false;
         }
-
-        const accountsList = await wallet.getAllVisibleAccountsArray();
         const targetTypeAccount = accountsList.find(
           (acc) =>
             isSameAddress(acc.address, currentAccount.address) &&
@@ -174,7 +175,7 @@ export const usePerpsInitial = () => {
           PERPS_AGENT_NAME
         );
         safeSetBuilderFee();
-        await dispatch.perps.loginPerpsAccount(currentAccount);
+        await dispatch.perps.loginPerpsAccount(targetTypeAccount);
         await dispatch.perps.fetchMarketData(undefined);
 
         checkIsNeedAutoLoginOut(
@@ -194,7 +195,6 @@ export const usePerpsInitial = () => {
 
   const logout = useMemoizedFn((address: string) => {
     dispatch.perps.logout();
-    destroyPerpsSDK();
     wallet.setPerpsCurrentAccount(null);
     wallet.setSendApproveAfterDeposit(address, []);
   });
@@ -427,6 +427,10 @@ export const usePerpsState = ({
           account,
         });
         startDirectSigning();
+        // avoid the mini sign modal is not shown
+        setTimeout(() => {
+          startDirectSigning();
+        }, 500);
         // await MiniTypedDataApproval in home page
         const result = await waitForMiniSignResult();
         console.log('Mini sign result', result);
@@ -629,7 +633,6 @@ export const usePerpsState = ({
 
   const logout = useMemoizedFn((address: string) => {
     dispatch.perps.logout();
-    destroyPerpsSDK();
     wallet.setPerpsCurrentAccount(null);
     wallet.setSendApproveAfterDeposit(address, []);
   });
@@ -679,13 +682,21 @@ export const usePerpsState = ({
             account: currentPerpsAccount,
           });
           startDirectSigning();
-          const result = await waitForMiniSignResult();
-          console.log('handleWithdraw Mini sign result', result);
-          signature = result[0];
+          // avoid the mini sign modal is not shown
+          setTimeout(() => {
+            startDirectSigning();
+          }, 500);
+          try {
+            const result = await waitForMiniSignResult();
+            signature = result[0];
+          } catch (error) {
+            console.error('Failed to get mini sign result:', error);
+            return false;
+          }
         } else {
           signature = await wallet.sendRequest({
             method: 'eth_signTypedDataV4',
-            params: [currentPerpsAccount.address, action],
+            params: [currentPerpsAccount.address, JSON.stringify(action)],
           });
         }
         console.log('withdraw signature', signature);

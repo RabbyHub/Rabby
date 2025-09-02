@@ -76,6 +76,7 @@ export const Perps: React.FC = () => {
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
+  console.log('miniSignTypeData', miniSignTypeData);
 
   const [amountVisible, setAmountVisible] = useState(false);
   const {
@@ -168,7 +169,10 @@ export const Perps: React.FC = () => {
           <div className="mx-20">
             <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-16 flex flex-col items-center">
               <div className="text-[32px] font-bold text-r-neutral-title-1 mt-8">
-                {formatUsdValue(Number(accountSummary?.accountValue || 0))}
+                {formatUsdValue(
+                  Number(accountSummary?.accountValue || 0),
+                  BigNumber.ROUND_DOWN
+                )}
               </div>
               {Boolean(positionAndOpenOrders?.length) && (
                 <div
@@ -185,7 +189,8 @@ export const Perps: React.FC = () => {
               <div className="text-13 text-r-neutral-foot mt-10">
                 {t('page.perps.availableBalance', {
                   balance: formatUsdValue(
-                    Number(accountSummary?.withdrawable || 0)
+                    Number(accountSummary?.withdrawable || 0),
+                    BigNumber.ROUND_DOWN
                   ),
                 })}
               </div>
@@ -201,6 +206,11 @@ export const Perps: React.FC = () => {
                       withdrawDisabled && 'opacity-50 cursor-not-allowed'
                     )}
                     onClick={() => {
+                      if (currentPerpsAccount) {
+                        dispatch.account.changeAccountAsync(
+                          currentPerpsAccount
+                        );
+                      }
                       setPopupType('withdraw');
                       setAmountVisible(true);
                     }}
@@ -352,11 +362,14 @@ export const Perps: React.FC = () => {
         currentPerpsAccount={currentPerpsAccount}
         handleDeposit={handleDeposit}
         handleWithdraw={handleWithdraw}
+        clearMiniSignTx={clearMiniSignTx}
+        clearMiniSignTypeData={clearMiniSignTypeData}
         updateMiniSignTx={updateMiniSignTx}
         availableBalance={accountSummary?.withdrawable || '0'}
         onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();
+          clearMiniSignTypeData();
           setIsPreparingSign(false);
         }}
       />
@@ -372,14 +385,17 @@ export const Perps: React.FC = () => {
           onReject={() => {
             handleMiniSignReject(new Error('User Rejected'));
             setLoginVisible(false);
+            setAmountVisible(false);
           }}
           onClose={() => {
             handleMiniSignReject(new Error('User closed'));
             setLoginVisible(false);
+            setAmountVisible(false);
           }}
           onPreExecError={() => {
             handleMiniSignReject(new Error('Pre execution error'));
             setLoginVisible(false);
+            setAmountVisible(false);
           }}
           directSubmit
           canUseDirectSubmitTx
@@ -387,7 +403,7 @@ export const Perps: React.FC = () => {
       )}
 
       <MiniApproval
-        zIndex={miniSignTypeData.data.length ? 1001 : undefined}
+        zIndex={miniSignTypeData.data.length ? undefined : 1001}
         isPreparingSign={isPreparingSign}
         setIsPreparingSign={setIsPreparingSign}
         txs={miniTxs}

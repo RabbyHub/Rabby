@@ -10,6 +10,8 @@ import {
 } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { TokenImg } from './TokenImg';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 interface HistoryDetailPopupProps extends Omit<PopupProps, 'onCancel'> {
   fill: (WsFill & { logoUrl: string }) | null;
@@ -141,9 +143,16 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
 
             {/* Size */}
             <div className="flex justify-between items-center py-16">
-              <span className="text-13 text-r-neutral-body">
+              <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
                 {t('page.perps.size')}
-              </span>
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle w-[max-content]"
+                  placement="top"
+                  title={t('page.perps.sizeTips')}
+                >
+                  <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+                </TooltipWithMagnetArrow>
+              </div>
               <span className="text-13 text-r-neutral-title-1 font-medium">
                 ${splitNumberByStep(tradeValue.toFixed(2))} = {sz} {coin}
               </span>

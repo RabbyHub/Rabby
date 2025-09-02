@@ -58,11 +58,13 @@ export const MiniTypedDataApproval = ({
 
   const resetDirectSigning = useResetDirectSignState();
   const disabledProcess = useGetDisableProcessDirectSign();
+  console.log('isSigningLoading', isSigningLoading);
 
   const [innerVisible, setInnerVisible] = useState(false);
 
   useEffect(() => {
     if (isSigningLoading && disabledProcess) {
+      console.log('disabledProcess exe', disabledProcess);
       setDirectSigning(false);
       setIsPreparingSign?.(false);
       setInnerVisible(false);
@@ -70,6 +72,7 @@ export const MiniTypedDataApproval = ({
   }, [isSigningLoading, disabledProcess, setDirectSigning]);
 
   useEffect(() => {
+    console.log('txs resetDirectSigning');
     resetDirectSigning();
     setInnerVisible(false);
   }, [txs]);

@@ -13,6 +13,7 @@ import { formatPercent } from './SingleCoin';
 import { useMemoizedFn } from 'ahooks';
 import { calLiquidationPrice } from '../utils';
 import { AutoClosePositionPopup } from './AutoClosePositionPopup';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -328,8 +329,15 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
           </div>
           <div className="flex w-full py-16 justify-between items-center">
-            <div className="text-13 text-r-neutral-title-1">
+            <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
               {t('page.perps.size')}
+              <TooltipWithMagnetArrow
+                overlayClassName="rectangle w-[max-content]"
+                placement="top"
+                title={t('page.perps.sizeTips')}
+              >
+                <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+              </TooltipWithMagnetArrow>
             </div>
             <div className="text-13 text-r-neutral-title-1 font-medium">
               {formatUsdValue(
@@ -410,14 +418,13 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
                 {t('page.perps.size')}
-                <Tooltip
-                  overlayClassName={clsx('rectangle')}
-                  placement="topRight"
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle w-[max-content]"
+                  placement="top"
                   title={t('page.perps.sizeTips')}
-                  align={{ targetOffset: [0, 0] }}
                 >
                   <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                </Tooltip>
+                </TooltipWithMagnetArrow>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
                 {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}

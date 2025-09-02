@@ -81,7 +81,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         content: (
           <>
             <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-              <div className="flex items-center gap-[24px]">
+              <div className="flex items-center gap-[24px] h-[44px]">
                 <TokenWithChain
                   token={token}
                   hideConer
@@ -151,7 +151,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         content: (
           <>
             <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-              <div className="flex items-center gap-[24px]">
+              <div className="flex items-center gap-[24px] h-[44px]">
                 <TokenWithChain
                   token={token}
                   hideConer
