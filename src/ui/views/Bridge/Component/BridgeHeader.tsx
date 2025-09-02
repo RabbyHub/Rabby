@@ -38,6 +38,10 @@ export const Header = ({
     setHistoryVisible(true);
   }, []);
 
+  const gotoDashboard = () => {
+    history.push('/dashboard');
+  };
+
   const closeFeePopup = useCallback(() => {
     setFeePopupVisible(false);
   }, []);
@@ -53,6 +57,7 @@ export const Header = ({
       <PageHeader
         className="mx-[20px] mb-[5px]"
         forceShowBack={!isTab}
+        onBack={gotoDashboard}
         canBack={!isTab}
         isShowAccount
         rightSlot={

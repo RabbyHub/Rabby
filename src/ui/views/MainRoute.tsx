@@ -25,6 +25,9 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
+import PerpsSingleCoin from './Perps/components/SingleCoin';
+import { HistoryPage as PerpsHistoryPage } from './Perps/components/HistoryPage';
+import ExploreMore from './Perps/components/ExploreMore';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -59,6 +62,7 @@ import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
 import { GnosisQueue } from './GnosisQueue';
+import Perps from './Perps/home';
 import { Guide } from './NewUserImport/Guide';
 import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
@@ -434,6 +438,18 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute path="/gas-account">
           <GasAccount />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps">
+          <Perps />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/single-coin/:coin">
+          <PerpsSingleCoin />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/explore">
+          <ExploreMore />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/history/:coin">
+          <PerpsHistoryPage />
         </PrivateRoute>
       </Switch>
 

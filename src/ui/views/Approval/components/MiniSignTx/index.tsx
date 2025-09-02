@@ -1285,6 +1285,7 @@ export const MiniApproval = ({
   visible,
   onClose,
   onResolve,
+  noShowModalLoading,
   onReject,
   onPreExecError,
   onGasAmountChange,
@@ -1294,6 +1295,7 @@ export const MiniApproval = ({
   canUseDirectSubmitTx,
   isPreparingSign,
   setIsPreparingSign,
+  zIndex,
   originGasPrice,
   session,
 }: {
@@ -1311,6 +1313,7 @@ export const MiniApproval = ({
   onGasAmountChange?: (gasAmount: number) => void;
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
   noShowModalLoading?: boolean;
+  zIndex?: number;
   originGasPrice?: string;
   session?: typeof INTERNAL_REQUEST_SESSION;
 }) => {
@@ -1395,6 +1398,7 @@ export const MiniApproval = ({
         maskStyle={{
           backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
         }}
+        zIndex={zIndex}
         getContainer={getContainer}
         key={`${currentAccount?.address}-${currentAccount?.type}`}
       >
@@ -1418,9 +1422,10 @@ export const MiniApproval = ({
         ) : null}
       </Popup>
 
-      {isPreparingSign ||
+      {(isPreparingSign && !noShowModalLoading) ||
       (directSubmit &&
         canUseDirectSubmitTx &&
+        !noShowModalLoading &&
         !supportedHardwareDirectSign(currentAccount?.type || '')) ? (
         <Modal
           transitionName=""
