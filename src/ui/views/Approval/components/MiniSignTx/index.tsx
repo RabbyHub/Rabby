@@ -414,7 +414,7 @@ export const MiniSignTx = ({
     task.init(
       txsResult.map((item) => {
         return {
-          tx: item.tx,
+          tx: { ...item.tx, isSpeedUp, isCancel },
           options: {
             chainServerId: chain.serverId,
             gasLevel: selectedGas || undefined,
