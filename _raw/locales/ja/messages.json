@@ -1040,7 +1040,8 @@
       "two-step-approve-details": "トークン USDT の許可変更には 2 つのトランザクションが必要です。まず、許可をゼロにリセットし、その後に新しい許可の値を設定する必要があります。",
       "No-available-quote": "利用できるレートはありません",
       "loss-tips": "{{usd}}を失っています。小さな市場で少額を試してください。",
-      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。"
+      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
+      "understandRisks": "リスクを理解しており、続けたいと思います。"
     },
     "manageAddress": {
       "no-address": "アドレスがありません",
@@ -1107,7 +1108,8 @@
           "ecology": "エコシステム",
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "パープス"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1388,7 +1390,8 @@
           "lowValueAssets": "{{count}}の低価値アセット",
           "lowValueAssets_0": "{{count}} 個の low value token",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} 個の低価値トークン"
+          "lowValueAssets_other": "{{count}} 個の低価値トークン",
+          "review": "レビュー"
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
@@ -1818,13 +1821,18 @@
         "deviceIsBusy": "デバイスは使用中です",
         "unknowError": "不明なエラーが発生しました。再試行してください。"
       },
+      "onekey": {
+        "onekeyPermission1": "USBデバイスに接続",
+        "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可する：",
+        "onekeyPermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、OneKey へのアクセスを承認してください。ポップアップにOneKeyが表示されない場合は、デバイスがコンピューターに正しく接続されているかご確認ください。",
+        "whyOneKey": "OneKeyを選ぶ理由？",
+        "buyOneKey": "OneKeyを購入",
+        "haveOneKey": "OneKeyをお持ちでない方は？"
+      },
       "firefoxLedgerDisableTips": "Ledger は Firefox と互換性がありません。",
       "addFromCurrentSeedPhrase": "現在のシードフレーズから追加",
       "trezor": {
         "title": "Trezorに接続する"
-      },
-      "onekey": {
-        "title": "OneKeyを接続する"
       }
     },
     "unlock": {
@@ -2445,7 +2453,12 @@
         "txCreated": "トランザクションが作成されました。",
         "txSendings": "署名リクエストを送信中（{{current}}/{{total}}）"
       },
-      "signWithLedger": "Ledgerで署名"
+      "signWithLedger": "Ledgerで署名",
+      "cancelTitle": "オンチェーンキャンセル",
+      "speedUpTitle": "スピードアップ",
+      "cancleDesc": "取引をキャンセルするためにガス価格が{{percent}}増加しました",
+      "signWithOneKey": "OneKeyで署名",
+      "speedUpDesc": "ガス価格が{{percent}}上昇して速度を上げました"
     },
     "gasAccount": {
       "history": {
@@ -2593,11 +2606,14 @@
         "title": "シードフレーズをインポート"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "connect": "OneKeyに接続",
-        "tip2": "2. OneKeyデバイスを接続する",
-        "tip1": "1. <1>OneKey Bridge<1/>をインストール",
-        "tip3": "3. デバイスをアンロック"
+        "qrcode": {
+          "desc": "OneKeyハードウェアウォレットのQRコードをスキャンしてください"
+        },
+        "title": "USB経由でOneKeyハードウェアウォレットを接続",
+        "tip1": "1. OneKeyデバイスを接続してください",
+        "tip2": "2. デバイスのロックを解除してください",
+        "tip3": "3. OneKeyデバイスが1台だけ接続されていることを確認してください",
+        "connect": "OneKeyに接続"
       },
       "importTrezor": {
         "connect": "Trezor に接続",
@@ -3075,6 +3091,18 @@
       "HdKeyring": "シードフレーズによって作成",
       "simpleKeyring": "プライベートキーによってインポート",
       "watchAddressKeyring": "コンタクト"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "デバイスが見つかりません",
+        "deviceInitializeFailed": "デバイスエラー、再起動して再試行してください",
+        "needUpgradeFirmware": "デバイスを使用するにはファームウェアをアップグレードする必要があります",
+        "thisMethodNeedUpgradeFirmware": "この機能にはファームウェアのアップグレードが必要です。OneKeyアプリでファームウェアをアップグレードしてください",
+        "notAllowInBootloaderMode": "通常モードで使用してください",
+        "deviceCheckPassphraseStateError": "アカウントと現在のデバイスのロック解除アドレスが一致しません。デバイスとアカウントアドレスが一致していることを確認してから再試行してください",
+        "actionCancel": "操作がキャンセルされました",
+        "deviceNeedsWebHIDPermission": "デバイスが見つからないか、WebHIDの権限が必要です"
+      }
     }
   },
   "constant": {

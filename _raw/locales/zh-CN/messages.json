@@ -115,7 +115,8 @@
           "rabbyPoints": "Rabby Points",
           "ecology": "生态系统",
           "bridge": "Bridge",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "永续合约"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -366,7 +367,8 @@
           "lowValueAssets": "{{count}} 个低价值资产",
           "lowValueAssets_one": "{{count}} 个低价值代币",
           "lowValueAssets_other": "{{count}} 个低价值代币",
-          "lowValueAssets_0": "{{count}} 个低价值代币"
+          "lowValueAssets_0": "{{count}} 个低价值代币",
+          "review": "审核"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
@@ -611,6 +613,14 @@
         "exportAddressJustAllowedOnHomePage": "仅在 Keystone 主页上允许导出地址",
         "unknowError": "未知错误，请再试一次"
       },
+      "onekey": {
+        "onekeyPermission1": "连接至USB设备",
+        "allowRabbyPermissionsTitle": "允许Rabby访问以下权限：",
+        "onekeyPermissionTip": "请在下方点击“允许”，以在弹出窗口中授权访问您的OneKey。如果弹窗中没有出现OneKey，请检查是否设备是否正确连接电脑。",
+        "whyOneKey": "为什么用 OneKey？",
+        "buyOneKey": "购买 OneKey",
+        "haveOneKey": "还没有 OneKey 硬件？"
+      },
       "walletConnect": {
         "connectYour": "连接你的",
         "viaWalletConnect": "通过 Wallet Connect",
@@ -806,9 +816,6 @@
       "addFromCurrentSeedPhrase": "从当前助记词添加",
       "trezor": {
         "title": "连接 Trezor"
-      },
-      "onekey": {
-        "title": "连接 OneKey"
       }
     },
     "activities": {
@@ -1943,7 +1950,8 @@
       "hidden-no-quote-rates_other": "{{count}} 费率不可用",
       "No-available-quote": "暂无报价",
       "fetch-best-quote": "正在获取最佳报价",
-      "two-step-approve-details": "Token USDT 需要 2 笔交易来更改 allowance。首先，您需要将 allowance 重置为零，然后才能设置新的 allowance 值。"
+      "two-step-approve-details": "Token USDT 需要 2 笔交易来更改 allowance。首先，您需要将 allowance 重置为零，然后才能设置新的 allowance 值。",
+      "understandRisks": "我了解风险并想继续"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
@@ -2522,7 +2530,12 @@
         "txCreated": "交易已创建",
         "txSigned": "已签名。创建交易中"
       },
-      "signWithLedger": "使用 Ledger 签名"
+      "signWithLedger": "使用 Ledger 签名",
+      "cancelTitle": "链上取消",
+      "speedUpTitle": "加速",
+      "signWithOneKey": "使用 OneKey 签名",
+      "cancleDesc": "Gas 价格增加了 {{percent}} 以取消交易",
+      "speedUpDesc": "Gas价格提高了{{percent}}以加快速度"
     },
     "gasAccount": {
       "history": {
@@ -2671,10 +2684,13 @@
       },
       "importOneKey": {
         "connect": "连接 OneKey",
-        "title": "OneKey",
-        "tip2": "2. 插入你的 OneKey 设备",
-        "tip3": "3. 解锁您的设备",
-        "tip1": "1. 安装 <1>OneKey Bridge<1/>"
+        "title": "使用 USB 连接 OneKey 硬件钱包",
+        "tip1": "1. 插入您的 OneKey 设备",
+        "tip2": "2. 解锁您的设备",
+        "tip3": "3. 请确保只连接一台 OneKey 设备",
+        "qrcode": {
+          "desc": "扫描 OneKey 硬件钱包上的二维码"
+        }
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3077,6 +3093,18 @@
       "HdKeyring": "助记词",
       "simpleKeyring": "私钥",
       "watchAddressKeyring": "联系人"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "未找到设备",
+        "deviceInitializeFailed": "设备异常，请重启后重试",
+        "needUpgradeFirmware": "必须升级固件才能使用设备",
+        "thisMethodNeedUpgradeFirmware": "使用该功能需要升级固件，请在 OneKey 应用中升级固件",
+        "notAllowInBootloaderMode": "请在正常模式下使用",
+        "deviceCheckPassphraseStateError": "账户与当前设备解锁地址不匹配，请确认设备与账户地址一致后重试",
+        "actionCancel": "操作已取消",
+        "deviceNeedsWebHIDPermission": "未找到设备或需要 WebHID 权限"
+      }
     }
   },
   "constant": {

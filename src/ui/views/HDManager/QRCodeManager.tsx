@@ -169,6 +169,8 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
         await removeAddressAndForgetDevice(true);
         if (brand === WALLET_BRAND_TYPES.KEYSTONE) {
           history.push('/import/hardware/keystone');
+        } else if (brand === WALLET_BRAND_TYPES.ONEKEY) {
+          history.push('/import/hardware/onekey');
         } else {
           history.push(`/import/hardware/qrcode?brand=${brand}`);
         }

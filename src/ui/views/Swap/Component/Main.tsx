@@ -52,6 +52,7 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import {
   supportedDirectSign,
+  supportedHardwareDirectSign,
   useGetDisableProcessDirectSign,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -102,7 +103,7 @@ export const Main = () => {
     slippageState,
     isSlippageHigh,
     isSlippageLow,
-    slippage,
+    slippage: _slippage,
     setSlippage,
     autoSlippage,
     isCustomSlippage,
@@ -139,6 +140,11 @@ export const Main = () => {
     data: externalDapps,
     loading: externalDappsLoading,
   } = useExternalSwapBridgeDapps(chain, 'swap');
+
+  const slippage = useMemo(
+    () => (autoSlippage ? autoSuggestSlippage : _slippage),
+    [autoSlippage, autoSuggestSlippage, _slippage]
+  );
 
   const refresh = useSetRefreshId();
 
@@ -406,32 +412,19 @@ export const Main = () => {
 
   const canUseDirectSubmitTx = useMemo(
     () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
-    // &&
-    // !receiveToken?.low_credit_score &&
-    // !receiveToken?.is_suspicious &&
-    // receiveToken?.is_verified !== false,
-    // &&
-    // !isSlippageHigh &&
-    // !isSlippageLow &&
-    // !showLoss,
-    [
-      // isShowMoreVisible,
-      // receiveToken,
-      // isSlippageHigh,
-      // isSlippageLow,
-      // showLoss,
-      isSupportedChain,
-      currentAccount?.type,
-    ]
+
+    [isSupportedChain, currentAccount?.type]
   );
 
-  const noRiskSign =
-    !receiveToken?.low_credit_score &&
-    !receiveToken?.is_suspicious &&
-    receiveToken?.is_verified !== false &&
-    !isSlippageHigh &&
-    !isSlippageLow &&
-    !showLoss;
+  // const noRiskSign =
+  //   !receiveToken?.low_credit_score &&
+  //   !receiveToken?.is_suspicious &&
+  //   receiveToken?.is_verified !== false &&
+  //   !isSlippageHigh &&
+  //   !isSlippageLow &&
+  //   !showLoss;
+
+  const showRiskTips = isSlippageLow || isSlippageHigh || showLoss;
 
   const [swapDappOpen, setSwapDappOpen] = useState(false);
 
@@ -444,7 +437,7 @@ export const Main = () => {
       return;
     }
 
-    if (canUseDirectSubmitTx && noRiskSign) {
+    if (canUseDirectSubmitTx) {
       clearExpiredTimer();
       startDirectSigning();
       return;
@@ -807,13 +800,16 @@ export const Main = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx && noRiskSign ? (
+            {canUseDirectSubmitTx && currentAccount?.type ? (
               <DirectSignToConfirmBtn
                 // disabled
                 key={refreshId}
                 disabled={swapBtnDisabled}
                 title={btnText}
                 onConfirm={handleSwap}
+                showRiskTips={showRiskTips && !swapBtnDisabled}
+                accountType={currentAccount?.type}
+                riskReset={swapBtnDisabled}
               />
             ) : (
               <Button

@@ -115,7 +115,8 @@
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
           "ecology": "生態系統",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "期货"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -366,7 +367,8 @@
           "lowValueAssets": "{{count}} 個低價值資產",
           "lowValueAssets_other": "{{count}} 低價值代幣",
           "lowValueAssets_one": "{{count}} 低價值代幣",
-          "lowValueAssets_0": "{{count}} 低價值代幣"
+          "lowValueAssets_0": "{{count}} 低價值代幣",
+          "review": "審查"
         },
         "noAssets": "沒有資產",
         "blockLinkText": "搜索代幣地址，隱藏代幣",
@@ -610,6 +612,14 @@
         "exportAddressJustAllowedOnHomePage": "僅在 Keystone 主頁上允許導出地址",
         "unknowError": "未知錯誤，請再試一次"
       },
+      "onekey": {
+        "onekeyPermission1": "連接至USB裝置",
+        "allowRabbyPermissionsTitle": "允許Rabby存取以下權限：",
+        "onekeyPermissionTip": "請在下方點擊「允許」，以在彈出視窗中授權存取您的OneKey。如果彈出視窗中沒有出現OneKey，請檢查您的裝置是否正確連接到電腦。",
+        "whyOneKey": "為什麼選擇 OneKey？",
+        "buyOneKey": "購買 OneKey",
+        "haveOneKey": "還沒有 OneKey？"
+      },
       "walletConnect": {
         "connectYour": "連接你的",
         "viaWalletConnect": "通過 Wallet Connect",
@@ -806,9 +816,6 @@
       "firefoxLedgerDisableTips": "Ledger 不兼容 Firefox",
       "trezor": {
         "title": "連接 Trezor"
-      },
-      "onekey": {
-        "title": "連接 OneKey"
       }
     },
     "activities": {
@@ -1943,7 +1950,8 @@
       "hidden-no-quote-rates_one": "{{count}} 匯率不可用",
       "No-available-quote": "沒有可用的報價",
       "loss-tips": "您正在损失 {{usd}}。嘗試在小型市場中投入較少的金額。",
-      "two-step-approve": "簽署 2 筆交易以更改允許額"
+      "two-step-approve": "簽署 2 筆交易以更改允許額",
+      "understandRisks": "我明白風險並想繼續"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持請求的鏈",
@@ -2483,7 +2491,12 @@
         "txSendings": "正在發送簽名請求（{{current}}/{{total}}）",
         "txSending": "發送簽署請求"
       },
-      "signWithLedger": "使用 Ledger 簽署"
+      "signWithLedger": "使用 Ledger 簽署",
+      "signWithOneKey": "使用 OneKey 签名",
+      "speedUpTitle": "加速",
+      "cancleDesc": "Gas價格上升了{{percent}}以取消交易",
+      "speedUpDesc": "Gas 價上升了 {{percent}} 以加快速度",
+      "cancelTitle": "鏈上取消"
     },
     "gasAccount": {
       "history": {
@@ -2631,11 +2644,14 @@
         "title": "導入種子片語"
       },
       "importOneKey": {
-        "tip2": "2. 插入你的 OneKey 裝置",
-        "tip3": "3. 解锁你的设备",
-        "tip1": "1. 安裝 <1>OneKey Bridge<1/>",
-        "connect": "連接 OneKey",
-        "title": "OneKey"
+        "qrcode": {
+          "desc": "掃描 OneKey 硬體錢包上的 QR 碼"
+        },
+        "title": "OneKey",
+        "tip1": "1. 插入您的 OneKey 裝置",
+        "tip2": "2. 解鎖您的裝置",
+        "tip3": "3. 請確保只連接一台 OneKey 設備",
+        "connect": "連接 OneKey"
       },
       "importTrezor": {
         "tip2": "2. 解鎖你的設備",
@@ -3077,6 +3093,18 @@
       "HdKeyring": "助記詞",
       "simpleKeyring": "私鑰",
       "watchAddressKeyring": "聯系人"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "未找到裝置",
+        "deviceInitializeFailed": "裝置異常，請重新啟動後重試",
+        "needUpgradeFirmware": "必須升級韌體才能使用裝置",
+        "thisMethodNeedUpgradeFirmware": "使用該功能需要升級韌體，請在 OneKey 應用程式中升級韌體",
+        "notAllowInBootloaderMode": "請在正常模式下使用",
+        "deviceCheckPassphraseStateError": "帳戶與當前裝置解鎖地址不匹配，請確認裝置與帳戶地址一致後重試",
+        "actionCancel": "操作已取消",
+        "deviceNeedsWebHIDPermission": "未找到設備或需要 WebHID 權限"
+      }
     }
   },
   "constant": {

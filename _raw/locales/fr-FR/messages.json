@@ -5,6 +5,18 @@
       "simpleKeyring": "Clé privée",
       "watchAddressKeyring": "Contact"
     },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Périphérique non trouvé",
+        "deviceInitializeFailed": "Erreur du périphérique, veuillez redémarrer et réessayer",
+        "needUpgradeFirmware": "Le firmware doit être mis à jour pour utiliser le périphérique",
+        "thisMethodNeedUpgradeFirmware": "Cette fonctionnalité nécessite une mise à jour du firmware, veuillez mettre à jour le firmware dans l'application OneKey",
+        "notAllowInBootloaderMode": "Veuillez utiliser en mode normal",
+        "deviceCheckPassphraseStateError": "Le compte ne correspond pas à l'adresse de déverrouillage de l'appareil actuel. Veuillez confirmer que l'appareil et l'adresse du compte sont cohérents et réessayer",
+        "actionCancel": "Opération annulée",
+        "deviceNeedsWebHIDPermission": "Périphérique non trouvé ou besoin de permission WebHID"
+      }
+    },
     "error": {
       "addKeyring404": "Échec de l'ajout du trousseau de clés, le trousseau n'est pas défini",
       "canNotUnlock": "Impossible de déverrouiller sans un coffre-fort antérieur",
@@ -681,7 +693,8 @@
           "useValue": "Valeur en USD",
           "lowValueAssets_0": "{{count}} jeton de faible valeur",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} low value tokens"
+          "lowValueAssets_other": "{{count}} low value tokens",
+          "review": "Revue"
         },
         "tokenButton": {
           "subTitle": "Le token de cette liste ne sera pas ajouté au solde total"
@@ -788,7 +801,8 @@
           "ecology": "Écosystème",
           "bridge": "Bridger",
           "rabbyPoints": "Rabby Points",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -1442,6 +1456,14 @@
         "title": "Connecter Keystone",
         "unknowError": "Erreur inconnue, veuillez réessayer"
       },
+      "onekey": {
+        "onekeyPermission1": "Se connecter à un périphérique USB",
+        "allowRabbyPermissionsTitle": "Autoriser Rabby à :",
+        "onekeyPermissionTip": "Veuillez cliquer sur « Autoriser » ci-dessous pour autoriser l'accès à votre OneKey dans la fenêtre pop-up suivante. Si OneKey n'apparaît pas dans la fenêtre pop-up, veuillez vérifier si votre appareil est correctement connecté à l'ordinateur.",
+        "whyOneKey": "Pourquoi OneKey ?",
+        "buyOneKey": "Acheter OneKey",
+        "haveOneKey": "Vous n'avez pas encore de OneKey ?"
+      },
       "imkey": {
         "title": "Connecter imKey",
         "imkeyPermissionTip": "Veuillez cliquer sur \"Autoriser\" ci-dessous et autoriser l'accès à votre imKey dans la fenêtre contextuelle suivante."
@@ -1450,9 +1472,6 @@
       "addFromCurrentSeedPhrase": "Ajouter à partir de la phrase secrète actuelle",
       "trezor": {
         "title": "Connect Trezor"
-      },
-      "onekey": {
-        "title": "Connect OneKey"
       }
     },
     "nft": {
@@ -2290,7 +2309,8 @@
       "no-fees-for-wrap": "Pas de frais Rabby pour Wrap",
       "price-impact": "Impact sur le prix",
       "source": "Source",
-      "max": "MAX"
+      "max": "MAX",
+      "understandRisks": "Je comprends les risques et je souhaite continuer"
     },
     "switchChain": {
       "chainNotSupport": "La chaîne demandée n'est pas encore prise en charge par Rabby",
@@ -2722,7 +2742,12 @@
         "txSending": "Envoi de la demande de signature",
         "txSigned": "Signé. Création de la transaction"
       },
-      "signWithLedger": "Signer avec Ledger"
+      "signWithLedger": "Signer avec Ledger",
+      "speedUpTitle": "Accélérer",
+      "signWithOneKey": "Signez avec OneKey",
+      "cancelTitle": "Annuler sur la chaîne",
+      "speedUpDesc": "Le prix du gaz a augmenté de {{percent}} pour accélérer.",
+      "cancleDesc": "Le prix du gaz a augmenté de {{percent}} pour annuler la transaction."
     },
     "gasAccount": {
       "history": {
@@ -2870,11 +2895,14 @@
         "title": "Importer Seed Phrase"
       },
       "importOneKey": {
-        "connect": "Connecter OneKey",
-        "tip2": "2. Branchez votre appareil OneKey",
-        "title": "OneKey",
-        "tip3": "3. Déverrouillez votre device",
-        "tip1": "1. Installez <1>OneKey Bridge<1/>"
+        "qrcode": {
+          "desc": "Scannez le code QR sur le portefeuille matériel OneKey"
+        },
+        "title": "Connectez votre portefeuille matériel OneKey via USB",
+        "tip1": "1. Branchez votre appareil OneKey",
+        "tip2": "2. Déverrouillez votre appareil",
+        "tip3": "3. Veuillez vous assurer qu'un seul appareil OneKey est connecté",
+        "connect": "Connecter OneKey"
       },
       "importTrezor": {
         "tip2": "2. Déverrouillez votre appareil",

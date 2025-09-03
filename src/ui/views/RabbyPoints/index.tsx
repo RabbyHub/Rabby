@@ -1,7 +1,13 @@
 import { PageHeader } from '@/ui/component';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ellipsisAddress } from '@/ui/utils/address';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import imgBg from 'ui/assets/rabby-points/rabby-points-bg.png';
@@ -12,12 +18,25 @@ import { TopUserItem } from './component/TopBoard';
 import { ClaimRabbyPointsModal } from './component/ClaimRabbyPointsModal';
 import { ClaimRabbyVerifyModal } from './component/VerifyAddressModal';
 import { useHistory } from 'react-router-dom';
-import { formatTokenAmount, isSameAddress, useWallet } from '@/ui/utils';
+import {
+  formatTokenAmount,
+  isSameAddress,
+  useWallet,
+  WalletControllerType,
+} from '@/ui/utils';
 import { useRabbyPoints } from './hooks';
 import { ClaimUserAvatar } from './component/ClaimUserAvatar';
 import CountUp from 'react-countup';
 import clsx from 'clsx';
 import { CodeAndShare } from './component/CodeAndShare';
+import {
+  supportedDirectSign,
+  supportedHardwareDirectSign,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { personalMessagePromise } from '../Approval/components/MiniPersonalMessgae/MiniSignPersonalMessage';
+import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
+import { Account } from '@/background/service/preference';
+import { t } from '@/utils';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -79,6 +98,89 @@ const Wrapper = styled.div`
   }
 `;
 
+const miniSignRabbyPointVerifyAddress = async (params: {
+  code?: string;
+  claimSnapshot?: boolean;
+  claimNumber?: number;
+  account?: Account;
+  wallet: WalletControllerType;
+  // text: string;
+}) => {
+  const { code, claimSnapshot, account, wallet } = params || {};
+  // const account = await preferenceService.getCurrentAccount();
+  if (!account) throw new Error(t('background.error.noCurrentAccount'));
+  let claimText = '';
+  let verifyText = '';
+
+  if (claimSnapshot) {
+    claimText = (
+      await wallet.openapi.getRabbyClaimTextV2({
+        id: account?.address,
+        invite_code: code,
+      })
+    )?.text; //`${account?.address} Claims Rabby Points`;
+  } else {
+    verifyText = (
+      await wallet!.openapi.getRabbySignatureTextV2({
+        id: account?.address,
+      })
+    )?.text; //`Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
+  }
+
+  const msg = `0x${Buffer.from(
+    claimSnapshot ? claimText : verifyText,
+    'utf-8'
+  ).toString('hex')}`;
+
+  // const signature = await this.sendRequest<string>({
+  //   method: 'personal_sign',
+  //   params: [msg, account.address],
+  // });
+
+  const miniSign = supportedHardwareDirectSign(account.type);
+  let signature = '';
+  if (miniSign) {
+    // startDirectSigning(true);
+    const [hash] = (await personalMessagePromise.present({
+      autoSign: true,
+      account,
+      directSubmit: true,
+      canUseDirectSubmitTx: true,
+      txs: [{ data: [msg, account.address] }],
+    })) as string[];
+
+    signature = hash;
+  } else {
+    const { txHash } = await sendPersonalMessage({
+      data: [msg, account.address],
+      wallet,
+      account,
+    });
+    signature = txHash;
+  }
+
+  wallet.setRabbyPointsSignature(account.address, signature);
+  if (claimSnapshot) {
+    try {
+      await wallet.openapi.claimRabbyPointsSnapshotV2({
+        id: account?.address,
+        invite_code: code,
+        signature,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    wallet.setPageStateCache({
+      path: '/rabby-points',
+      params: {},
+      states: {},
+    });
+  }
+
+  return signature;
+};
+
 const RabbyPoints = () => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -105,6 +207,7 @@ const RabbyPoints = () => {
     topUsersLoading,
     activities,
     activitiesLoading,
+    forceUpdate,
   } = useRabbyPoints();
 
   const avatar =
@@ -149,33 +252,53 @@ const RabbyPoints = () => {
 
   const lockRef = useRef(false);
 
+  const rabbyPointVerifyAddress = useCallback(
+    async (params?: {
+      code?: string;
+      claimSnapshot?: boolean;
+      claimNumber?: number;
+      // text: string;
+    }) => {
+      if (account && supportedDirectSign(account.type)) {
+        const sig = await miniSignRabbyPointVerifyAddress({
+          ...params,
+          account,
+          wallet,
+        });
+        if (sig) {
+          forceUpdate();
+          setVerifyVisible(false);
+        }
+      } else {
+        wallet.rabbyPointVerifyAddress(params);
+        window.close();
+      }
+    },
+    [wallet?.rabbyPointVerifyAddress, account]
+  );
+
   const claimSnapshot = React.useCallback(
     async (invite_code?: string) => {
       if (lockRef.current) return;
       lockRef.current = true;
       try {
-        wallet.rabbyPointVerifyAddress({
-          code: invite_code,
-          claimSnapshot: true,
-        });
-        window.close();
+        rabbyPointVerifyAddress();
       } catch (error) {
         console.error(error);
         message.error(String(error?.message || error));
       }
       lockRef.current = false;
     },
-    [account?.address, wallet?.openapi]
+    [account?.address, wallet?.openapi, rabbyPointVerifyAddress]
   );
 
   const verifyAddr = React.useCallback(() => {
     try {
-      wallet.rabbyPointVerifyAddress();
-      window.close();
+      rabbyPointVerifyAddress();
     } catch (error) {
       console.error(error);
     }
-  }, [wallet.rabbyPointVerifyAddress]);
+  }, [rabbyPointVerifyAddress]);
 
   const claimItem = React.useCallback(
     async (campaign_id: number, points: number) => {

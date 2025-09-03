@@ -11,6 +11,7 @@ import { Modal } from 'antd';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
 import { useRequest } from 'ahooks';
+import { nanoid } from 'nanoid';
 
 export const GAS_ACCOUNT_INSUFFICIENT_TIP =
   'Gas balance is not enough for transaction';
@@ -117,7 +118,11 @@ export const useLoginDepositConfirm = () => {
 
   const history = useHistory();
   const gotoGasAccount = React.useCallback(() => {
-    history.push('/gas-account');
+    console.log('gotoGasAccount');
+    history.push({
+      pathname: '/gas-account',
+      search: `?resetKey=${nanoid()}`,
+    });
   }, []);
 
   const depositCn = useCss({

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Form } from 'antd';
+import { Form, Modal } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { URDecoder } from '@ngraveio/bc-ur';
@@ -10,6 +10,7 @@ import './style.less';
 import * as Sentry from '@sentry/browser';
 import {
   HARDWARE_KEYRING_TYPES,
+  IWalletBrandContent,
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_TYPES,
 } from 'consts';
@@ -47,6 +48,36 @@ export const KeystoneConnect = () => {
   const showErrorChecker = useMemo(() => {
     return errorMessage !== '';
   }, [errorMessage]);
+
+  const checkQRBasedWallet = async (item: IWalletBrandContent) => {
+    const { allowed, brand } = await wallet.checkQRHardwareAllowImport(
+      item.brand
+    );
+
+    if (!allowed) {
+      Modal.error({
+        title: t('page.newAddress.unableToImport.title'),
+        content: t('page.newAddress.unableToImport.description', [brand]),
+        okText: t('global.ok'),
+        centered: true,
+        maskClosable: true,
+        className: 'text-center modal-support-darkmode',
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSwitchConnectType = async (type: ConnectType) => {
+    if (type === ConnectType.QRCode) {
+      const allowed = await checkQRBasedWallet(brandInfo);
+      if (!allowed) {
+        return;
+      }
+    }
+    setConnectType(type);
+  };
 
   const handleScanQRCodeSuccess = async (data) => {
     try {
@@ -121,9 +152,19 @@ export const KeystoneConnect = () => {
         stashKeyringIdRef.current = stashKeyringId;
         wallet
           .requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId)
-          .then((res) => {
+          .then(async (res) => {
             if (res) {
-              goToSelectAddress(stashKeyringId);
+              const qrcodeAccounts = await wallet.requestKeyring(
+                HARDWARE_KEYRING_TYPES.Keystone.type,
+                'getAccounts',
+                stashKeyringId
+              );
+              const { allowed } = await wallet.checkQRHardwareAllowImport(
+                WALLET_BRAND_TYPES.KEYSTONE
+              );
+              if (qrcodeAccounts.length > 0 && allowed) {
+                goToSelectAddress(stashKeyringId);
+              }
             }
             setScan(true);
           });
@@ -176,7 +217,7 @@ export const KeystoneConnect = () => {
                 },
               ] as const
             }
-            onTabChange={setConnectType}
+            onTabChange={handleSwitchConnectType}
             className="bg-r-neutral-line mt-[40px] mb-[8px]"
             itemClassname="text-[15px] w-[148px] h-[40px]"
             itemClassnameActive="bg-r-neutral-bg-1"

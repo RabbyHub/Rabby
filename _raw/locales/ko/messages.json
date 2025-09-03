@@ -1040,7 +1040,8 @@
       "source": "소스",
       "no-quote-found": "인용문을 찾을 수 없습니다.",
       "No-available-quote": "사용 가능한 인용이 없습니다",
-      "loss-tips": "당신은 {{usd}}를 잃고 있습니다. 작은 시장에서 더 적은 금액을 시도해 보세요."
+      "loss-tips": "당신은 {{usd}}를 잃고 있습니다. 작은 시장에서 더 적은 금액을 시도해 보세요.",
+      "understandRisks": "나는 위험을 이해하고 계속 진행하고 싶다."
     },
     "bridge": {
       "showMore": {
@@ -1178,7 +1179,8 @@
           "transactions": "거래",
           "approvals": "승인",
           "manageAddress": "주소 관리",
-          "ecology": "생태계"
+          "ecology": "생태계",
+          "perps": "퍼프"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -1457,7 +1459,8 @@
           "summaryTips": "자산 가치는 총 순자산으로 나뉩니다.",
           "endAt": "종료 시",
           "summaryDescription": "프로토콜의 모든 자산(예: LP tokens)은 통계 계산을 위해 기본 자산으로 해결됩니다.",
-          "balanceValue": "잔액 / 가치"
+          "balanceValue": "잔액 / 가치",
+          "review": "리뷰"
         },
         "AddMainnetToken": {
           "title": "맞춤형 토큰 추가",
@@ -1687,6 +1690,14 @@
         "deviceIsBusy": "장치가 바쁩니다",
         "keystonePermissionTip": "아래 \"허용\"을 클릭하여 다음 팝업 창에서 Keystone에 대한 액세스를 승인하고, Keystone 3 Pro가 홈페이지에 있는지 확인하세요."
       },
+      "onekey": {
+        "onekeyPermission1": "USB 장치에 연결하세요.",
+        "allowRabbyPermissionsTitle": "Rabby에 대한 권한 허용:",
+        "onekeyPermissionTip": "아래 \"허용\"을 클릭하여 다음 팝업 창에서 OneKey에 대한 액세스를 승인하고, OneKey가 홈페이지에 있는지 확인하세요.",
+        "whyOneKey": "왜 OneKey인가요?",
+        "buyOneKey": "OneKey 구매하기",
+        "haveOneKey": "아직 OneKey가 없으신가요?"
+      },
       "walletConnect": {
         "status": {
           "accountError": "주소가 일치하지 않습니다.",
@@ -1891,9 +1902,6 @@
       "addFromCurrentSeedPhrase": "현재 시드 문구에서 추가",
       "trezor": {
         "title": "Trezor 연결하기"
-      },
-      "onekey": {
-        "title": "OneKey 연결하기"
       }
     },
     "unlock": {
@@ -2442,7 +2450,12 @@
         "txSending": "서명 요청 전송 중",
         "txSendings": "서명 요청 전송 중 ({{current}}/{{total}})"
       },
-      "signWithLedger": "Ledger로 서명하기"
+      "signWithLedger": "Ledger로 서명하기",
+      "speedUpTitle": "속도 향상",
+      "cancelTitle": "온체인 취소",
+      "cancleDesc": "Gas 가격이 {{percent}}만큼 증가하여 거래가 취소되었습니다.",
+      "speedUpDesc": "가스 가격이 {{percent}}만큼 증가하여 빠르게 진행됩니다.",
+      "signWithOneKey": "OneKey으로 서명하십시오."
     },
     "gasAccount": {
       "history": {
@@ -2590,11 +2603,14 @@
         "title": "시드 문구 가져오기"
       },
       "importOneKey": {
-        "connect": "OneKey 연결하기",
-        "tip2": "2. OneKey 장치의 전원을 연결하세요.",
-        "tip3": "3. 기기를 잠금 해제하세요",
-        "tip1": "1. <1>OneKey Bridge<1/>를 설치하세요.",
-        "title": "OneKey"
+        "qrcode": {
+          "desc": "OneKey 하드웨어 지갑의 QR 코드를 스캔하세요"
+        },
+        "title": "USB를 통해 OneKey 하드웨어 지갑 연결",
+        "tip1": "1. OneKey 장치를 연결하세요",
+        "tip2": "2. 장치의 잠금을 해제하세요",
+        "tip3": "3. OneKey 장치가 하나만 연결되어 있는지 확인하세요",
+        "connect": "OneKey 연결하기"
       },
       "importTrezor": {
         "connect": "Trezor 연결",
@@ -3072,6 +3088,18 @@
       "simpleKeyring": "개인 키",
       "watchAddressKeyring": "연락처",
       "HdKeyring": "시드 구문"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "장치를 찾을 수 없습니다",
+        "deviceInitializeFailed": "장치 오류, 재시작 후 다시 시도하십시오",
+        "needUpgradeFirmware": "장치를 사용하려면 펌웨어를 업그레이드해야 합니다",
+        "thisMethodNeedUpgradeFirmware": "이 기능을 사용하려면 펌웨어 업그레이드가 필요합니다. OneKey 앱에서 펌웨어를 업그레이드하세요",
+        "notAllowInBootloaderMode": "일반 모드에서 사용하세요",
+        "deviceCheckPassphraseStateError": "계정이 현재 장치의 잠금 해제 주소와 일치하지 않습니다. 장치와 계정 주소가 일치하는지 확인한 후 다시 시도하십시오",
+        "actionCancel": "작업이 취소되었습니다",
+        "deviceNeedsWebHIDPermission": "장치를 찾을 수 없거나 WebHID 권한이 필요합니다"
+      }
     }
   },
   "constant": {

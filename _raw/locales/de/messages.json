@@ -1040,7 +1040,8 @@
       "approve-and-swap": "Genehmigen und tauschen über {{name}}",
       "loss-tips": "Sie verlieren {{usd}}. Versuchen Sie es mit einem kleineren Betrag in einem kleinen Markt.",
       "two-step-approve-details": "Token USDT erfordert 2 Transaktionen, um die Freigabe zu ändern. Zuerst müssen Sie die Freigabe auf Null zurücksetzen und erst dann einen neuen Freigabewert festlegen.",
-      "preferMEVTip": "Aktivieren Sie die Funktion \"MEV Guarded\" für Ethereum-Swaps, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie eine benutzerdefinierte RPC- oder Wallet-Verbindungsadresse verwenden."
+      "preferMEVTip": "Aktivieren Sie die Funktion \"MEV Guarded\" für Ethereum-Swaps, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie eine benutzerdefinierte RPC- oder Wallet-Verbindungsadresse verwenden.",
+      "understandRisks": "Ich verstehe die Risiken und möchte fortfahren"
     },
     "manageAddress": {
       "no-address": "Keine Adresse",
@@ -1107,7 +1108,8 @@
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
           "ecology": "Ökosystem",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -1388,7 +1390,8 @@
           "lowValueAssets": "{{count}} Vermögenswerte mit geringem Wert",
           "lowValueAssets_other": "{{count}} niedrigwertige Token",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_0": "{{count}} Low-Value-Token"
+          "lowValueAssets_0": "{{count}} Low-Value-Token",
+          "review": "Überprüfung"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -1818,13 +1821,18 @@
         "unknowError": "Unbekannter Fehler, bitte versuche es erneut",
         "keystonePermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren Keystone im folgenden Popup-Fenster zu autorisieren, und stellen Sie sicher, dass sich Ihr Keystone 3 Pro auf der Startseite befindet."
       },
+      "onekey": {
+        "onekeyPermission1": "Verbinden Sie mit einem USB-Gerät",
+        "allowRabbyPermissionsTitle": "Erlaube Rabby-Berechtigungen, um:",
+        "onekeyPermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren OneKey im folgenden Popup-Fenster zu autorisieren. Wenn OneKey nicht im Popup erscheint, prüfen Sie bitte, ob Ihr Gerät ordnungsgemäß mit dem Computer verbunden ist.",
+        "whyOneKey": "Warum OneKey?",
+        "buyOneKey": "OneKey kaufen",
+        "haveOneKey": "Haben Sie noch kein OneKey?"
+      },
       "firefoxLedgerDisableTips": "Ledger ist nicht mit Firefox kompatibel",
       "addFromCurrentSeedPhrase": "Aus aktuellem Seed-Phrase hinzufügen",
       "trezor": {
         "title": "Verbinde Trezor"
-      },
-      "onekey": {
-        "title": "Verbinde OneKey"
       }
     },
     "unlock": {
@@ -2445,7 +2453,12 @@
         "txCreated": "Transaktion erstellt",
         "txSigned": "Signiert. Transaktion wird erstellt"
       },
-      "signWithLedger": "Mit Ledger signieren"
+      "signWithLedger": "Mit Ledger signieren",
+      "speedUpTitle": "Beschleunigen",
+      "cancelTitle": "On-chain Stornieren",
+      "speedUpDesc": "Der Gaspreis erhöhte sich um {{percent}}, um zu beschleunigen.",
+      "cancleDesc": "Der Gaspreis ist um {{percent}} gestiegen, um die Transaktion abzubrechen.",
+      "signWithOneKey": "Mit OneKey signieren"
     },
     "gasAccount": {
       "history": {
@@ -2593,11 +2606,14 @@
         "title": "Seed Phrase importieren"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip1": "1. Installiere <1>OneKey Bridge<1/>",
-        "tip3": "3. Entsperren Sie Ihr Gerät",
-        "connect": "Verbinden Sie OneKey",
-        "tip2": "2. Schließen Sie Ihr OneKey-Gerät an"
+        "qrcode": {
+          "desc": "Scannen Sie den QR-Code auf der OneKey Hardware-Wallet"
+        },
+        "title": "Verbinden Sie Ihre OneKey Hardware-Wallet über USB",
+        "tip1": "1. Schließen Sie Ihr OneKey-Gerät an",
+        "tip2": "2. Entsperren Sie Ihr Gerät",
+        "tip3": "3. Bitte stellen Sie sicher, dass nur ein OneKey-Gerät angeschlossen ist",
+        "connect": "OneKey verbinden"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -3075,6 +3091,18 @@
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
       "watchAddressKeyring": "Kontakt"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Gerät nicht gefunden",
+        "deviceInitializeFailed": "Gerätfehler, bitte neu starten und erneut versuchen",
+        "needUpgradeFirmware": "Firmware muss aktualisiert werden, um das Gerät zu verwenden",
+        "thisMethodNeedUpgradeFirmware": "Diese Funktion erfordert ein Firmware-Update, bitte aktualisieren Sie die Firmware in der OneKey-App",
+        "notAllowInBootloaderMode": "Bitte im normalen Modus verwenden",
+        "deviceCheckPassphraseStateError": "Das Konto stimmt nicht mit der aktuellen Gerät-Entsperradresse überein. Bitte bestätigen Sie, dass Gerät und Kontoadresse übereinstimmen und versuchen Sie es erneut",
+        "actionCancel": "Vorgang abgebrochen",
+        "deviceNeedsWebHIDPermission": "Gerät nicht gefunden oder Zugriff erforderlich"
+      }
     }
   },
   "constant": {
