@@ -154,10 +154,7 @@ const ExternalTokenRow = memo(
     }, [data.identity, t]);
 
     const siteList = useMemo(() => {
-      return [
-        ...(data?.identity?.listed_sites || []),
-        ...(data?.identity?.cex_list || []),
-      ];
+      return data?.identity?.cex_list || [];
     }, [data]);
 
     return (
