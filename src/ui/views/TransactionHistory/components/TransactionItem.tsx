@@ -370,6 +370,7 @@ export const TransactionItem = ({
 
   const onPreExecError = useCallback(async () => {
     setIsPreparingSign(false);
+    setIsShowSign(false);
     mutateTxs([]);
     await originFn.current(true);
   }, [originFn, mutateTxs]);
