@@ -2657,6 +2657,7 @@
     },
     "gasAccount": {
       "title": "GasAccount",
+      "gasToken": "Gas Token",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
       "noBalance": "No balance",
