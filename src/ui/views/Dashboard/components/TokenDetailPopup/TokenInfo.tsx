@@ -458,10 +458,10 @@ const TokenChainAndContract = ({
         />
       ) : (
         <ListSiteAndCex
+          siteArr={tokenEntity?.cex_list}
+          title={t('page.dashboard.tokenDetail.SupportedExchanges')}
+          noSiteString={t('page.dashboard.tokenDetail.NoSupportedExchanges')}
           popupHeight={popupHeight}
-          siteArr={tokenEntity?.listed_sites}
-          title={t('page.dashboard.tokenDetail.ListedBy')}
-          noSiteString={t('page.dashboard.tokenDetail.NoListedBy')}
         ></ListSiteAndCex>
       )}
       {entityLoading ? (
@@ -471,10 +471,10 @@ const TokenChainAndContract = ({
         />
       ) : (
         <ListSiteAndCex
-          siteArr={tokenEntity?.cex_list}
-          title={t('page.dashboard.tokenDetail.SupportedExchanges')}
-          noSiteString={t('page.dashboard.tokenDetail.NoSupportedExchanges')}
           popupHeight={popupHeight}
+          siteArr={tokenEntity?.listed_sites}
+          title={t('page.dashboard.tokenDetail.ListedBy')}
+          noSiteString={t('page.dashboard.tokenDetail.NoListedBy')}
         ></ListSiteAndCex>
       )}
       <ChainAndName token={token} tokenEntity={tokenEntity}></ChainAndName>
