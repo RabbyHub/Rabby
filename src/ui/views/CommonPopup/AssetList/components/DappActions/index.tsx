@@ -1,4 +1,5 @@
 import {
+  ComplexProtocol,
   ExplainTxResponse,
   Tx,
   WithdrawAction,
@@ -73,16 +74,18 @@ const DappActions = ({
   data,
   chain,
   protocolLogo,
+  onRefreshProtocol,
 }: {
   data?: WithdrawAction[];
   chain?: string;
   protocolLogo?: string;
+  onRefreshProtocol: () => Promise<ComplexProtocol | undefined>;
 }) => {
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const [disabledSign, setDisabledSign] = useState(true);
+  const [disabledSign, setDisabledSign] = useState(false);
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const [miniSignTxs, setMiniSignTxs] = useState<Tx[]>([]);
   const [title, setTitle] = useState<string>('');
@@ -177,6 +180,7 @@ const DappActions = ({
           setTimeout(() => {
             setIsShowMiniSign(false);
             setMiniSignTxs([]);
+            onRefreshProtocol();
           }, 500);
         }}
         autoThrowPreExecError={false}

@@ -9,10 +9,12 @@ import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import PortfolioTemplate from './ProtocolTemplates';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
-import { openInTab, useCommonPopupView } from '@/ui/utils';
+import { openInTab, useCommonPopupView, useWallet } from '@/ui/utils';
 import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import DappActions from './components/DappActions';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -44,10 +46,12 @@ const PoolItem = ({
   item,
   chain,
   protocolLogo,
+  onRefreshProtocol,
 }: {
   item: AbstractPortfolio;
   chain?: string;
   protocolLogo?: string;
+  onRefreshProtocol: () => Promise<ComplexProtocol | undefined>;
 }) => {
   const types = item._originPortfolio.detail_types?.reverse();
   const type =
@@ -58,6 +62,7 @@ const PoolItem = ({
       <PortfolioDetail name={item._originPortfolio.name} data={item} />
       {!!item.withdrawActions?.length && (
         <DappActions
+          onRefreshProtocol={onRefreshProtocol}
           data={item.withdrawActions}
           chain={chain}
           protocolLogo={protocolLogo}
@@ -95,24 +100,62 @@ const ProtocolItemWrapper = styled.div`
   }
 `;
 const ProtocolItem = ({
-  protocol,
+  protocol: _protocol,
   enableDelayVisible,
   isAppChain,
   isSearch,
+  removeProtocol,
 }: {
   protocol: DisplayedProject;
   enableDelayVisible: boolean;
   isAppChain?: boolean;
   isSearch?: boolean;
+  removeProtocol?: (id: string) => void;
 }) => {
   const { t } = useTranslation();
   const [isExpand, setIsExpand] = useState(false);
   const { visible } = useCommonPopupView();
   const [delayVisible, setDelayVisible] = useState(false);
+  const currentAccount = useCurrentAccount();
+  const wallet = useWallet();
+  const [
+    realTimeProtocol,
+    setRealTimeProtocol,
+  ] = useState<DisplayedProject | null>(null);
+
+  const protocol = useMemo(() => realTimeProtocol || _protocol, [
+    realTimeProtocol,
+    _protocol,
+  ]);
+
+  const refreshRealTimeProtocol = useCallback(async () => {
+    if (!currentAccount?.address || !_protocol.id) {
+      return;
+    }
+    const res = await wallet.openapi.getProtocol({
+      addr: currentAccount?.address,
+      id: _protocol.id,
+    });
+    if (res.portfolio_item_list.length) {
+      setRealTimeProtocol(new DisplayedProject(res, res.portfolio_item_list));
+    } else {
+      removeProtocol?.(protocol.id);
+    }
+    return res;
+  }, [
+    _protocol.id,
+    currentAccount?.address,
+    protocol.id,
+    removeProtocol,
+    wallet.openapi,
+  ]);
 
   const onClickTitle = useCallback(() => {
     setIsExpand((prev) => !prev);
-  }, []);
+    if (!isExpand) {
+      refreshRealTimeProtocol();
+    }
+  }, [isExpand, refreshRealTimeProtocol]);
 
   useEffect(() => {
     setIsExpand(!!isSearch);
@@ -205,6 +248,7 @@ const ProtocolItem = ({
                 <PoolItem
                   protocolLogo={protocol.logo}
                   chain={protocol.chain}
+                  onRefreshProtocol={refreshRealTimeProtocol}
                   item={portfolio}
                 />
                 {index !== protocol._portfolios.length - 1 && (
@@ -223,13 +267,14 @@ interface Props {
   list: DisplayedProject[] | undefined;
   isSearch?: boolean;
   appIds?: string[];
+  removeProtocol?: (id: string) => void;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, isSearch, appIds }: Props) => {
+const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
   const enableDelayVisible = useMemo(() => {
     return (list || []).length > 100;
   }, [list]);
@@ -245,6 +290,7 @@ const ProtocolList = ({ list, isSearch, appIds }: Props) => {
           enableDelayVisible={enableDelayVisible}
           isAppChain={appIds?.includes(item.id)}
           isSearch={isSearch}
+          removeProtocol={removeProtocol}
         />
       ))}
     </ProtocolListWrapper>

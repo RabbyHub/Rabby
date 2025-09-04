@@ -48,6 +48,7 @@ export const AssetListContainer: React.FC<Props> = ({
     hasTokens,
     blockedTokens,
     customizeTokens,
+    removeProtocol,
   } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
   const {
     data: appPortfolios,
@@ -204,6 +205,7 @@ export const AssetListContainer: React.FC<Props> = ({
           <TokenListSkeleton />
         ) : (
           <ProtocolList
+            removeProtocol={removeProtocol}
             appIds={appIds}
             isSearch={!!search}
             list={filteredPortfolios}
