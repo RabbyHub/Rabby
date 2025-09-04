@@ -10,12 +10,14 @@ import { MiniApproval } from '@/ui/views/Approval/components/MiniSignTx';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useWallet } from '@/ui/utils';
+import { IconWithChain } from '@/ui/component/TokenWithChain';
 
 const Wrapper = styled.div`
   display: flex;
   gap: 12px;
   padding-left: 12px;
   padding-right: 12px;
+  padding-bottom: 16px;
 `;
 
 interface ActionButtonProps {
@@ -23,6 +25,7 @@ interface ActionButtonProps {
   text: string;
   onClick: () => void;
 }
+
 const ActionButton = ({ text, onClick, className }: ActionButtonProps) => {
   return (
     <div
@@ -39,12 +42,40 @@ const ActionButton = ({ text, onClick, className }: ActionButtonProps) => {
     </div>
   );
 };
+
+const DappActionHeader = ({
+  logo,
+  chain,
+  title,
+}: {
+  logo?: string;
+  chain?: string;
+  title?: string;
+}) => {
+  return (
+    <div className="flex items-center w-full justify-center">
+      <IconWithChain
+        iconUrl={logo}
+        chainServerId={chain || 'eth'}
+        width="24px"
+        height="24px"
+        isShowChainTooltip
+      />
+      <div className="ml-[8px] font-medium text-[20px] text-r-neutral-title-1">
+        {title}
+      </div>
+    </div>
+  );
+};
+
 const DappActions = ({
   data,
   chain,
+  protocolLogo,
 }: {
   data?: WithdrawAction[];
   chain?: string;
+  protocolLogo?: string;
 }) => {
   console.log('CUSTOM_LOGGER:=>: data', data, chain);
   const withdrawActions = data?.filter(
@@ -71,7 +102,7 @@ const DappActions = ({
   }, []);
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
   const [miniSignTxs, setMiniSignTxs] = useState<Tx[]>([]);
-
+  const [title, setTitle] = useState<string>('');
   const { showWithdraw, showClaim } = useMemo(() => {
     const hasWithdraw = data?.some((item) => item.type === 'withdraw');
     const hasClaim = data?.some((item) => item.type === 'claim');
@@ -82,14 +113,15 @@ const DappActions = ({
   }, [data, validWithdraw, validClaim]);
 
   const canDirectSign = useMemo(
-    () => supportedDirectSign(currentAccount?.type || ''),
+    () => true || supportedDirectSign(currentAccount?.type || ''),
     [currentAccount?.type]
   );
 
   const handleSubmit = useCallback(
-    async (action: () => Promise<Tx[]>) => {
+    async (action: () => Promise<Tx[]>, title?: string) => {
       const txs = await action();
       if (canDirectSign) {
+        setTitle(title);
         setMiniSignTxs(txs);
         setIsShowMiniSign(true);
       } else {
@@ -108,14 +140,14 @@ const DappActions = ({
         <ActionButton
           text="Withdraw"
           className={`${showClaim ? 'w-[216px]' : ''}`}
-          onClick={() => handleSubmit(actionWithdraw)}
+          onClick={() => handleSubmit(actionWithdraw, 'Withdraw')}
         />
       )}
       {showClaim && (
         <ActionButton
           text="Claim"
           className={`${showWithdraw ? 'w-[108px]' : ''}`}
-          onClick={() => handleSubmit(actionClaim)}
+          onClick={() => handleSubmit(actionClaim, 'Claim')}
         />
       )}
       <MiniApproval
@@ -140,6 +172,9 @@ const DappActions = ({
         showSimulateChange
         onPreExecChange={onPreExecChange}
         disableSignBtn={disabledSign}
+        title={
+          <DappActionHeader logo={protocolLogo} chain={chain} title={title} />
+        }
       />
     </Wrapper>
   );

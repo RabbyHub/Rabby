@@ -43,9 +43,11 @@ const PoolItemWrapper = styled.div`
 const PoolItem = ({
   item,
   chain,
+  protocolLogo,
 }: {
   item: AbstractPortfolio;
   chain?: string;
+  protocolLogo?: string;
 }) => {
   const types = item._originPortfolio.detail_types?.reverse();
   const type =
@@ -55,7 +57,11 @@ const PoolItem = ({
     <PoolItemWrapper>
       <PortfolioDetail name={item._originPortfolio.name} data={item} />
       {!!item.withdrawActions?.length && (
-        <DappActions data={item.withdrawActions} chain={chain} />
+        <DappActions
+          data={item.withdrawActions}
+          chain={chain}
+          protocolLogo={protocolLogo}
+        />
       )}
     </PoolItemWrapper>
   );
@@ -194,6 +200,7 @@ const ProtocolItem = ({
         {isExpand &&
           protocol._portfolios.map((portfolio) => (
             <PoolItem
+              protocolLogo={protocol.logo}
               chain={protocol.chain}
               item={portfolio}
               key={portfolio.id}
