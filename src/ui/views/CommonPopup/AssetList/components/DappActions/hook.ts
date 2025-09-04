@@ -118,7 +118,7 @@ export const useDappAction = (
 
     const normalizedFunc = getMethodDesc(data.func);
     const abi = parseAbiItem(normalizedFunc) as AbiFunction;
-    const params = data.params;
+    const params = data.str_params;
     console.log('CUSTOM_LOGGER:=>: params', params);
     const calldata = encodeFunctionData({
       abi: [abi],
