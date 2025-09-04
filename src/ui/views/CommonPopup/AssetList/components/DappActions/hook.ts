@@ -1,6 +1,6 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import { WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
+import { Tx, WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BLACKLIST_METHODS, WHITELIST_ADDRESS } from './constant';
 import {
@@ -66,7 +66,6 @@ export const useDappAction = (
   chain?: string
 ) => {
   const currentAccount = useCurrentAccount();
-  const wallet = useWallet();
   const [valid, setValid] = useState(false);
   // const isMyAccount = useMemo(() => {
   //   return currentAccount?.address === data.address;
@@ -115,7 +114,7 @@ export const useDappAction = (
     run();
   }, [chain, currentAccount?.address, data, isErc20Contract]);
 
-  const action = useCallback(async () => {
+  const action = useCallback(async (): Promise<Tx[]> => {
     console.log(
       'CUSTOM_LOGGER:=>: action',
       data,
@@ -123,9 +122,9 @@ export const useDappAction = (
       currentAccount?.address,
       chainId
     );
-    if (!data) return null;
-    if (!valid) return null;
-    if (!currentAccount?.address || !chainId) return null;
+    if (!data) return [];
+    if (!valid) return [];
+    if (!currentAccount?.address || !chainId) return [];
 
     const normalizedFunc = getMethodDesc(data.func);
     const abi = parseAbiItem(normalizedFunc) as AbiFunction;
@@ -145,14 +144,8 @@ export const useDappAction = (
       value: '0x0',
       data: calldata,
     } as any;
-    console.log('CUSTOM_LOGGER:=>: tx', tx);
-
-    const hash = await wallet.sendRequest<string>({
-      method: 'eth_sendTransaction',
-      params: [tx],
-    });
-    return hash;
-  }, [data, valid, currentAccount?.address, chainId, wallet]);
+    return [tx];
+  }, [data, valid, currentAccount?.address, chainId]);
   return {
     valid,
     action,

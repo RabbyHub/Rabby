@@ -1,7 +1,15 @@
-import { WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
-import React, { useMemo } from 'react';
+import {
+  ExplainTxResponse,
+  Tx,
+  WithdrawAction,
+} from '@rabby-wallet/rabby-api/dist/types';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useDappAction } from './hook';
+import { MiniApproval } from '@/ui/views/Approval/components/MiniSignTx';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useWallet } from '@/ui/utils';
 
 const Wrapper = styled.div`
   display: flex;
@@ -45,6 +53,8 @@ const DappActions = ({
   const claimActions = data?.filter(
     (item) => !item?.need_approve?.to && item.type === 'claim'
   );
+  const currentAccount = useCurrentAccount();
+  const wallet = useWallet();
   const { valid: validWithdraw, action: actionWithdraw } = useDappAction(
     withdrawActions?.[0],
     chain
@@ -53,6 +63,14 @@ const DappActions = ({
     claimActions?.[0],
     chain
   );
+  const [disabledSign, setDisabledSign] = useState(true);
+  const onPreExecChange = useCallback((r: ExplainTxResponse) => {
+    if (!r.pre_exec.success) {
+      setDisabledSign(true);
+    }
+  }, []);
+  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
+  const [miniSignTxs, setMiniSignTxs] = useState<Tx[]>([]);
 
   const { showWithdraw, showClaim } = useMemo(() => {
     const hasWithdraw = data?.some((item) => item.type === 'withdraw');
@@ -63,22 +81,66 @@ const DappActions = ({
     };
   }, [data, validWithdraw, validClaim]);
 
+  const canDirectSign = useMemo(
+    () => supportedDirectSign(currentAccount?.type || ''),
+    [currentAccount?.type]
+  );
+
+  const handleSubmit = useCallback(
+    async (action: () => Promise<Tx[]>) => {
+      const txs = await action();
+      if (canDirectSign) {
+        setMiniSignTxs(txs);
+        setIsShowMiniSign(true);
+      } else {
+        await wallet.sendRequest<string>({
+          method: 'eth_sendTransaction',
+          params: txs,
+        });
+      }
+    },
+    [canDirectSign, wallet]
+  );
+
   return (
     <Wrapper>
       {showWithdraw && (
         <ActionButton
           text="Withdraw"
           className={`${showClaim ? 'w-[216px]' : ''}`}
-          onClick={actionWithdraw}
+          onClick={() => handleSubmit(actionWithdraw)}
         />
       )}
       {showClaim && (
         <ActionButton
           text="Claim"
           className={`${showWithdraw ? 'w-[108px]' : ''}`}
-          onClick={actionClaim}
+          onClick={() => handleSubmit(actionClaim)}
         />
       )}
+      <MiniApproval
+        txs={miniSignTxs}
+        visible={isShowMiniSign}
+        onClose={() => {
+          setIsShowMiniSign(false);
+          setMiniSignTxs([]);
+        }}
+        onReject={() => {
+          setIsShowMiniSign(false);
+          setMiniSignTxs([]);
+        }}
+        onResolve={() => {
+          setTimeout(() => {
+            setIsShowMiniSign(false);
+            setMiniSignTxs([]);
+          }, 500);
+        }}
+        autoThrowPreExecError={false}
+        canUseDirectSubmitTx
+        showSimulateChange
+        onPreExecChange={onPreExecChange}
+        disableSignBtn={disabledSign}
+      />
     </Wrapper>
   );
 };
