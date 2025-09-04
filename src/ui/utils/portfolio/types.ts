@@ -1,6 +1,7 @@
 import {
   PortfolioItem,
   PortfolioItemToken,
+  WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 // curve
 export type ChartLine = {
@@ -45,6 +46,7 @@ export interface AbstractPortfolio {
   netWorthChange: number;
   _netWorthChange: string;
   _changePercentStr: string;
+  withdrawActions?: WithdrawAction[];
 }
 
 export type AbstractPortfolioToken = PortfolioItemToken & {

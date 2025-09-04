@@ -12,6 +12,7 @@ import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown
 import { openInTab, useCommonPopupView } from '@/ui/utils';
 import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
+import DappActions from './components/DappActions';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -39,7 +40,13 @@ const PoolItemWrapper = styled.div`
   }
 `;
 
-const PoolItem = ({ item }: { item: AbstractPortfolio }) => {
+const PoolItem = ({
+  item,
+  chain,
+}: {
+  item: AbstractPortfolio;
+  chain?: string;
+}) => {
   const types = item._originPortfolio.detail_types?.reverse();
   const type =
     types?.find((t) => (t in TemplateDict ? t : '')) || 'unsupported';
@@ -47,6 +54,9 @@ const PoolItem = ({ item }: { item: AbstractPortfolio }) => {
   return (
     <PoolItemWrapper>
       <PortfolioDetail name={item._originPortfolio.name} data={item} />
+      {!!item.withdrawActions?.length && (
+        <DappActions data={item.withdrawActions} chain={chain} />
+      )}
     </PoolItemWrapper>
   );
 };
@@ -183,7 +193,11 @@ const ProtocolItem = ({
         </div>
         {isExpand &&
           protocol._portfolios.map((portfolio) => (
-            <PoolItem item={portfolio} key={portfolio.id} />
+            <PoolItem
+              chain={protocol.chain}
+              item={portfolio}
+              key={portfolio.id}
+            />
           ))}
       </div>
     </ProtocolItemWrapper>
