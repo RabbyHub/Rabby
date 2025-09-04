@@ -3155,6 +3155,10 @@
     },
     "RiskTip": {
       "title": "Risk Warning"
+    },
+    "DappActions": {
+      "withdraw": "Withdraw",
+      "claim": "Claim"
     }
   },
   "global": {

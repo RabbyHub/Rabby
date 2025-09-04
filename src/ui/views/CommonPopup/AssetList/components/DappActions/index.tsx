@@ -11,6 +11,7 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
+import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   display: flex;
@@ -77,40 +78,43 @@ const DappActions = ({
   chain?: string;
   protocolLogo?: string;
 }) => {
-  console.log('CUSTOM_LOGGER:=>: data', data, chain);
-  const withdrawActions = data?.filter(
-    (item) => !item?.need_approve?.to && item.type === 'withdraw'
-  );
-  const claimActions = data?.filter(
-    (item) => !item?.need_approve?.to && item.type === 'claim'
-  );
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
-  const { valid: validWithdraw, action: actionWithdraw } = useDappAction(
+  const { t } = useTranslation();
+
+  const [disabledSign, setDisabledSign] = useState(true);
+  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
+  const [miniSignTxs, setMiniSignTxs] = useState<Tx[]>([]);
+  const [title, setTitle] = useState<string>('');
+
+  console.log('CUSTOM_LOGGER:=>: data', data, chain);
+  const withdrawActions = useMemo(
+    () =>
+      data?.filter(
+        (item) => !item?.need_approve?.to && item.type === 'withdraw'
+      ),
+    [data]
+  );
+  const claimActions = useMemo(
+    () =>
+      data?.filter((item) => !item?.need_approve?.to && item.type === 'claim'),
+    [data]
+  );
+
+  const { valid: showWithdraw, action: actionWithdraw } = useDappAction(
     withdrawActions?.[0],
     chain
   );
-  const { valid: validClaim, action: actionClaim } = useDappAction(
+  const { valid: showClaim, action: actionClaim } = useDappAction(
     claimActions?.[0],
     chain
   );
-  const [disabledSign, setDisabledSign] = useState(true);
+
   const onPreExecChange = useCallback((r: ExplainTxResponse) => {
     if (!r.pre_exec.success) {
       setDisabledSign(true);
     }
   }, []);
-  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
-  const [miniSignTxs, setMiniSignTxs] = useState<Tx[]>([]);
-  const [title, setTitle] = useState<string>('');
-  const { showWithdraw, showClaim } = useMemo(() => {
-    const hasWithdraw = data?.some((item) => item.type === 'withdraw');
-    const hasClaim = data?.some((item) => item.type === 'claim');
-    return {
-      showWithdraw: hasWithdraw && validWithdraw,
-      showClaim: hasClaim && validClaim,
-    };
-  }, [data, validWithdraw, validClaim]);
 
   const canDirectSign = useMemo(
     () => supportedDirectSign(currentAccount?.type || ''),
@@ -140,14 +144,18 @@ const DappActions = ({
         <ActionButton
           text="Withdraw"
           className={`${showClaim ? 'w-[216px]' : ''}`}
-          onClick={() => handleSubmit(actionWithdraw, 'Withdraw')}
+          onClick={() =>
+            handleSubmit(actionWithdraw, t('component.DappActions.withdraw'))
+          }
         />
       )}
       {showClaim && (
         <ActionButton
           text="Claim"
           className={`${showWithdraw ? 'w-[108px]' : ''}`}
-          onClick={() => handleSubmit(actionClaim, 'Claim')}
+          onClick={() =>
+            handleSubmit(actionClaim, t('component.DappActions.claim'))
+          }
         />
       )}
       <MiniApproval

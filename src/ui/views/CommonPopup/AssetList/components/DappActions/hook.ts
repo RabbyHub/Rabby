@@ -3,13 +3,7 @@ import { isSameAddress, useWallet } from '@/ui/utils';
 import { Tx, WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BLACKLIST_METHODS, WHITELIST_ADDRESS } from './constant';
-import {
-  AbiFunction,
-  encodeFunctionData,
-  parseAbiItem,
-  stringToHex,
-  parseUnits,
-} from 'viem';
+import { AbiFunction, encodeFunctionData, parseAbiItem } from 'viem';
 import { findChain } from '@/utils/chain';
 
 export const isBlacklistMethod = (method: string) => {
@@ -48,6 +42,7 @@ export const useIsContractBySymbol = () => {
     }
   };
 };
+
 export const getMethodDesc = (fncName: string) => {
   if (fncName.trim().startsWith('function ')) {
     return fncName;
@@ -67,10 +62,8 @@ export const useDappAction = (
 ) => {
   const currentAccount = useCurrentAccount();
   const [valid, setValid] = useState(false);
-  // const isMyAccount = useMemo(() => {
-  //   return currentAccount?.address === data.address;
-  // }, [currentAccount, data]);
   const isErc20Contract = useIsContractBySymbol();
+
   const chainId = useMemo(() => {
     return findChain({
       serverId: chain,
@@ -81,7 +74,6 @@ export const useDappAction = (
     if (!data) return;
     const normalizedFunc = getMethodDesc(data.func);
     const abi = parseAbiItem(normalizedFunc) as AbiFunction;
-    console.log('CUSTOM_LOGGER:=>: abi', abi);
     const isAddressArray = abi.inputs.map((item) => item.type === 'address');
     const addresses = data.params
       .map((item, index) => (isAddressArray[index] ? (item as string) : ''))
@@ -122,9 +114,7 @@ export const useDappAction = (
       currentAccount?.address,
       chainId
     );
-    if (!data) return [];
-    if (!valid) return [];
-    if (!currentAccount?.address || !chainId) return [];
+    if (!data || !valid || !currentAccount?.address || !chainId) return [];
 
     const normalizedFunc = getMethodDesc(data.func);
     const abi = parseAbiItem(normalizedFunc) as AbiFunction;
@@ -146,6 +136,7 @@ export const useDappAction = (
     } as any;
     return [tx];
   }, [data, valid, currentAccount?.address, chainId]);
+
   return {
     valid,
     action,
