@@ -113,7 +113,7 @@ const DappActions = ({
   }, [data, validWithdraw, validClaim]);
 
   const canDirectSign = useMemo(
-    () => true || supportedDirectSign(currentAccount?.type || ''),
+    () => supportedDirectSign(currentAccount?.type || ''),
     [currentAccount?.type]
   );
 
@@ -121,7 +121,7 @@ const DappActions = ({
     async (action: () => Promise<Tx[]>, title?: string) => {
       const txs = await action();
       if (canDirectSign) {
-        setTitle(title);
+        setTitle(title || '');
         setMiniSignTxs(txs);
         setIsShowMiniSign(true);
       } else {

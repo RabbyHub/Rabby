@@ -197,15 +197,23 @@ const ProtocolItem = ({
             />
           </div>
         </div>
-        {isExpand &&
-          protocol._portfolios.map((portfolio) => (
-            <PoolItem
-              protocolLogo={protocol.logo}
-              chain={protocol.chain}
-              item={portfolio}
-              key={portfolio.id}
-            />
-          ))}
+        {isExpand && (
+          <>
+            <div className="border-b-[0.5px] border-b-solid border-b-r-neutral-line" />
+            {protocol._portfolios.map((portfolio, index) => (
+              <div key={portfolio.id}>
+                <PoolItem
+                  protocolLogo={protocol.logo}
+                  chain={protocol.chain}
+                  item={portfolio}
+                />
+                {index !== protocol._portfolios.length - 1 && (
+                  <div className="border-b-[0.5px] border-dotted border-b-r-neutral-line ml-[8px] mr-[12px]" />
+                )}
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </ProtocolItemWrapper>
   );
