@@ -118,6 +118,7 @@ export const sendTransaction = async ({
   sig,
   ignoreSimulationFailed,
   extra,
+  session,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -140,6 +141,7 @@ export const sendTransaction = async ({
     preExecResult?: ExplainTxResponse;
     actionData?: ParseTxResponse;
   };
+  session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
 }) => {
   onProgress?.('building');
   const chain = findChain({
@@ -511,9 +513,15 @@ export const sendTransaction = async ({
         $ctx: {
           ga,
         },
-        params: [transaction],
+        params: [
+          {
+            ...transaction,
+            isSpeedUp: (tx as any)?.isSpeedUp,
+            isCancel: (tx as any)?.isCancel,
+          },
+        ],
       },
-      session: INTERNAL_REQUEST_SESSION,
+      session: session || INTERNAL_REQUEST_SESSION,
       approvalRes: {
         ...transaction,
         signingTxId,

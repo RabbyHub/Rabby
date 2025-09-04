@@ -115,7 +115,8 @@
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
           "ecology": "生態系統",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "期货"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -366,7 +367,8 @@
           "lowValueAssets": "{{count}} 個低價值資產",
           "lowValueAssets_other": "{{count}} 低價值代幣",
           "lowValueAssets_one": "{{count}} 低價值代幣",
-          "lowValueAssets_0": "{{count}} 低價值代幣"
+          "lowValueAssets_0": "{{count}} 低價值代幣",
+          "review": "審查"
         },
         "noAssets": "沒有資產",
         "blockLinkText": "搜索代幣地址，隱藏代幣",
@@ -1948,7 +1950,8 @@
       "hidden-no-quote-rates_one": "{{count}} 匯率不可用",
       "No-available-quote": "沒有可用的報價",
       "loss-tips": "您正在损失 {{usd}}。嘗試在小型市場中投入較少的金額。",
-      "two-step-approve": "簽署 2 筆交易以更改允許額"
+      "two-step-approve": "簽署 2 筆交易以更改允許額",
+      "understandRisks": "我明白風險並想繼續"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持請求的鏈",
@@ -2488,7 +2491,12 @@
         "txSendings": "正在發送簽名請求（{{current}}/{{total}}）",
         "txSending": "發送簽署請求"
       },
-      "signWithLedger": "使用 Ledger 簽署"
+      "signWithLedger": "使用 Ledger 簽署",
+      "signWithOneKey": "使用 OneKey 签名",
+      "speedUpTitle": "加速",
+      "cancleDesc": "Gas價格上升了{{percent}}以取消交易",
+      "speedUpDesc": "Gas 價上升了 {{percent}} 以加快速度",
+      "cancelTitle": "鏈上取消"
     },
     "gasAccount": {
       "history": {

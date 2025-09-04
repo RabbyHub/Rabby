@@ -3,7 +3,7 @@ import { ReactComponent as RcIconDownCC } from '@/ui/assets/arrow-down-cc.svg';
 import { useSceneAccountInfo } from '@/ui/hooks/backgroundState/useAccount';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useRabbyDispatch } from '@/ui/store';
-import { getUiType } from '@/ui/utils';
+import { getUiType, useAlias } from '@/ui/utils';
 import clsx from 'clsx';
 import React, { ReactNode, SVGProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,7 @@ const PageHeader = ({
   closeCn,
   isShowAccount,
   disableSwitchAccount,
+  showCurrentAccount,
 }: {
   children: ReactNode;
   canBack?: boolean;
@@ -49,6 +50,7 @@ const PageHeader = ({
   closeCn?: string;
   isShowAccount?: boolean;
   disableSwitchAccount?: boolean;
+  showCurrentAccount?: Account;
 }) => {
   const history = useHistory();
 
@@ -75,7 +77,7 @@ const PageHeader = ({
           {isShowAccount && currentAccount ? (
             <AccountSwitchInner
               disableSwitch={disableSwitchAccount}
-              currentAccount={currentAccount}
+              currentAccount={showCurrentAccount || currentAccount}
             />
           ) : null}
         </div>
@@ -142,6 +144,7 @@ const AccountSwitchInner = ({
     forceLight: false,
   });
 
+  const [alias] = useAlias(currentAccount.address);
   const { t } = useTranslation();
 
   const [isShowModal, setIsShowModal] = useState(false);
@@ -172,7 +175,7 @@ const AccountSwitchInner = ({
             <img className="w-[16px] h-[16px] mr-[4px]" src={addressTypeIcon} />
           )}
           <div className="text-r-neutral-body text-[13px] leading-[16px] font-medium">
-            {currentAccount?.alianName}
+            {alias}
           </div>
           {disableSwitch ? null : (
             <RcIconDownCC className="text-r-neutral-foot w-[16px] h-[16px]" />

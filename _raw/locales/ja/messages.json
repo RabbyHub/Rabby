@@ -1040,7 +1040,8 @@
       "two-step-approve-details": "トークン USDT の許可変更には 2 つのトランザクションが必要です。まず、許可をゼロにリセットし、その後に新しい許可の値を設定する必要があります。",
       "No-available-quote": "利用できるレートはありません",
       "loss-tips": "{{usd}}を失っています。小さな市場で少額を試してください。",
-      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。"
+      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
+      "understandRisks": "リスクを理解しており、続けたいと思います。"
     },
     "manageAddress": {
       "no-address": "アドレスがありません",
@@ -1107,7 +1108,8 @@
           "ecology": "エコシステム",
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "パープス"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1388,7 +1390,8 @@
           "lowValueAssets": "{{count}}の低価値アセット",
           "lowValueAssets_0": "{{count}} 個の low value token",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_other": "{{count}} 個の低価値トークン"
+          "lowValueAssets_other": "{{count}} 個の低価値トークン",
+          "review": "レビュー"
         },
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
@@ -2450,7 +2453,12 @@
         "txCreated": "トランザクションが作成されました。",
         "txSendings": "署名リクエストを送信中（{{current}}/{{total}}）"
       },
-      "signWithLedger": "Ledgerで署名"
+      "signWithLedger": "Ledgerで署名",
+      "cancelTitle": "オンチェーンキャンセル",
+      "speedUpTitle": "スピードアップ",
+      "cancleDesc": "取引をキャンセルするためにガス価格が{{percent}}増加しました",
+      "signWithOneKey": "OneKeyで署名",
+      "speedUpDesc": "ガス価格が{{percent}}上昇して速度を上げました"
     },
     "gasAccount": {
       "history": {

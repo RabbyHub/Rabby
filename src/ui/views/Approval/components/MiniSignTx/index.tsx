@@ -1,9 +1,8 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { isLedgerLockError, useLedgerDeviceConnected } from '@/ui/utils/ledger';
+import { isLedgerLockError } from '@/ui/utils/ledger';
 import { findChain } from '@/utils/chain';
-import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
 import {
   calcGasLimit,
   calcMaxPriorityFee,
@@ -22,10 +21,10 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { useMemoizedFn, useRequest, useSetState, useSize } from 'ahooks';
-import { Drawer, DrawerProps, Modal } from 'antd';
+import { useMemoizedFn } from 'ahooks';
+import { DrawerProps, Modal } from 'antd';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
-import { Account, ChainGas } from 'background/service/preference';
+import { ChainGas } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
 import {
   HARDWARE_KEYRING_TYPES,
@@ -44,37 +43,26 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAsync, useScroll } from 'react-use';
-import { useApproval } from 'ui/utils';
+import { useAsync } from 'react-use';
 import { intToHex } from 'ui/utils/number';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
-import {
-  ActionRequireData,
-  ParsedActionData,
-} from '@rabby-wallet/rabby-action';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import GasSelectorHeader, {
   GasSelectorResponse,
 } from '../TxComponents/GasSelectorHeader';
 import clsx from 'clsx';
-import { Ledger } from '../../../CommonPopup/Ledger';
 import { Popup } from '@/ui/component';
-import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import _ from 'lodash';
 import { normalizeTxParams } from '../SignTx';
-import { Dots } from '../Popup/Dots';
 import { BatchSignTxTaskType, useBatchSignTxTask } from './useBatchSignTxTask';
 import { MiniFooterBar } from './MiniFooterBar';
-import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { useGasAccountTxsCheck } from '@/ui/views/GasAccount/hooks/checkTxs';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import {
   supportedHardwareDirectSign,
   useDirectSigning,
   useGetDisableProcessDirectSign,
-  useMiniApprovalGas,
   useResetDirectSignState,
   useSetDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -83,6 +71,34 @@ import { RetryUpdateType } from '@/background/utils/errorTxRetry';
 import { MiniApprovalPopupContainer } from '../Popup/MiniApprovalPopupContainer';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
+import { SpeedUpCancelHeader } from './SpeedUpCancalHeader';
+import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
+import BalanceChange from '../TxComponents/BalanceChange';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { Divide } from '../Divide';
+import { OpenApiService } from '@rabby-wallet/rabby-api';
+
+interface MiniSignTxProps {
+  txs: Tx[];
+  onReject?: () => void;
+  onResolve?: (hash: string) => void;
+  onPreExecError?: () => void;
+  onStatusChange?: (status: BatchSignTxTaskType['status']) => void;
+  ga?: Record<string, any>;
+  getContainer?: DrawerProps['getContainer'];
+  directSubmit?: boolean;
+  onGasAmountChange?: (gasAmount: number) => void;
+  originGasPrice?: string;
+  session?: typeof INTERNAL_REQUEST_SESSION;
+  autoTriggerPreExecError?: boolean;
+  showSimulateChange?: boolean;
+  title?: ReactNode;
+  disableSignBtn?: boolean;
+  autoThrowPreExecError?: boolean;
+  onPreExecChange?: (
+    params: Awaited<ReturnType<OpenApiService['preExecTx']>>
+  ) => void;
+}
 
 export const MiniSignTx = ({
   txs,
@@ -94,17 +110,15 @@ export const MiniSignTx = ({
   getContainer,
   directSubmit,
   onGasAmountChange,
-}: {
-  txs: Tx[];
-  onReject?: () => void;
-  onResolve?: (hash: string) => void;
-  onPreExecError?: () => void;
-  onStatusChange?: (status: BatchSignTxTaskType['status']) => void;
-  ga?: Record<string, any>;
-  getContainer?: DrawerProps['getContainer'];
-  directSubmit?: boolean;
-  onGasAmountChange?: (gasAmount: number) => void;
-}) => {
+  originGasPrice,
+  session,
+  autoTriggerPreExecError,
+  showSimulateChange,
+  title,
+  onPreExecChange,
+  disableSignBtn = false,
+  autoThrowPreExecError = true,
+}: MiniSignTxProps) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
     id: chainId,
@@ -236,12 +250,13 @@ export const MiniSignTx = ({
   const wallet = useWallet();
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
-  const { currentTx } = useRabbySelector((s) => ({
+  const { currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
     tokenDetail: s.sign.tokenDetail,
   }));
+
   const [footerShowShadow, setFooterShowShadow] = useState(false);
 
   const [txsResult, setTxsResult] = useState<
@@ -276,9 +291,14 @@ export const MiniSignTx = ({
     });
   };
 
-  const { swapPreferMEVGuarded, isSwap, isBridge, isSend } = normalizeTxParams(
-    txs[0]
-  );
+  const {
+    swapPreferMEVGuarded,
+    isSwap,
+    isBridge,
+    isSend,
+    isSpeedUp,
+    isCancel,
+  } = normalizeTxParams(txs[0]);
 
   const [pushInfo, setPushInfo] = useState<{
     type: TxPushType;
@@ -387,11 +407,33 @@ export const MiniSignTx = ({
     onStatusChange?.(task.status);
   }, [task.status]);
 
+  const {
+    updateMiniCustomPrice,
+    setMiniGasLevel,
+    miniGasLevel,
+    miniCustomPrice,
+  } = useMiniSignGasStore();
+
   const handleInitTask = useMemoizedFn(() => {
+    if (selectedGas && txsResult[0] && txsResult[0]) {
+      const lastGasLevel = selectedGas?.level || 'normal';
+      setMiniGasLevel(lastGasLevel as any);
+
+      if (selectedGas?.level === 'custom') {
+        updateMiniCustomPrice(
+          parseInt(
+            support1559
+              ? txsResult[0].tx.maxFeePerGas!
+              : txsResult[0].tx.gasPrice!
+          )
+        );
+      }
+    }
+
     task.init(
       txsResult.map((item) => {
         return {
-          tx: item.tx,
+          tx: { ...item.tx, isSpeedUp, isCancel },
           options: {
             chainServerId: chain.serverId,
             gasLevel: selectedGas || undefined,
@@ -407,6 +449,7 @@ export const MiniSignTx = ({
               preExecResult: item.preExecResult,
               actionData: item.actionData,
             },
+            session,
           },
           status: 'idle',
         };
@@ -612,20 +655,22 @@ export const MiniSignTx = ({
       }
 
       checkCanProcess();
-      const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
-        chainId
-      );
+      const lastTimeGas: ChainGas = {
+        lastTimeSelect: miniGasLevel === 'custom' ? 'gasPrice' : 'gasLevel',
+        gasLevel: miniGasLevel,
+        gasPrice: miniCustomPrice || 0,
+      };
       let customGasPrice = 0;
-      if (
-        lastTimeGas?.lastTimeSelect === 'gasPrice' &&
-        lastTimeGas.gasPrice &&
-        !directSubmit
-      ) {
+      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
         // use cached gasPrice if exist
         customGasPrice = lastTimeGas.gasPrice;
       }
       const gasPrice = txs[0].gasPrice || txs[0].maxFeePerGas;
-      if ((isSend || isSwap || isBridge) && gasPrice) {
+      if (
+        isSpeedUp ||
+        isCancel ||
+        ((isSend || isSwap || isBridge) && gasPrice)
+      ) {
         // use gasPrice set by dapp when it's a speedup or cancel tx
         customGasPrice = parseInt(gasPrice!);
       }
@@ -634,14 +679,15 @@ export const MiniSignTx = ({
       let gas: GasLevel | null = null;
 
       if (
-        customGasPrice ||
-        (lastTimeGas?.lastTimeSelect === 'gasPrice' && !directSubmit)
+        ((isSend || isSwap || isBridge) && customGasPrice) ||
+        isSpeedUp ||
+        isCancel ||
+        lastTimeGas?.lastTimeSelect === 'gasPrice'
       ) {
         gas = gasList.find((item) => item.level === 'custom')!;
       } else if (
         lastTimeGas?.lastTimeSelect &&
-        lastTimeGas?.lastTimeSelect === 'gasLevel' &&
-        !directSubmit
+        lastTimeGas?.lastTimeSelect === 'gasLevel'
       ) {
         const target = gasList.find(
           (item) => item.level === lastTimeGas?.gasLevel
@@ -740,9 +786,9 @@ export const MiniSignTx = ({
                 tx: item.tx,
                 gasLimit: item.gasLimit,
                 nonce: item.tx.nonce,
-                isCancel: false,
+                isCancel: isCancel,
                 gasExplainResponse: item.gasCost,
-                isSpeedUp: false,
+                isSpeedUp: isSpeedUp,
                 isGnosisAccount: false,
                 nativeTokenBalance: balance,
               });
@@ -827,7 +873,11 @@ export const MiniSignTx = ({
         });
         let estimateGas = 0;
 
-        if (!preExecResult.pre_exec.success) {
+        if (index === txs.length - 1) {
+          onPreExecChange?.(preExecResult);
+        }
+
+        if (!preExecResult.pre_exec.success && autoThrowPreExecError) {
           throw new Error('Pre exec failed');
         }
         if (preExecResult.gas.success) {
@@ -924,6 +974,13 @@ export const MiniSignTx = ({
   }, [directSigning, directSubmit, preExecError, onPreExecError]);
 
   useEffect(() => {
+    if (onPreExecError && preExecError && autoTriggerPreExecError) {
+      onPreExecError?.();
+      setDirectSigning(false);
+    }
+  }, [preExecError, onPreExecError, autoTriggerPreExecError]);
+
+  useEffect(() => {
     if (
       isReady &&
       txsResult.length &&
@@ -952,13 +1009,11 @@ export const MiniSignTx = ({
   useEffect(() => {
     if (inited) {
       prepareTxs().catch((error) => {
-        if (directSubmit) {
-          setPreExecError(true);
-          //goto origin signTx
-        }
+        setPreExecError(true);
+        //goto origin signTx
       });
     }
-  }, [inited, txs, directSubmit]);
+  }, [inited, txs]);
 
   const checkErrors = useMemo(() => {
     let balance = nativeTokenBalance;
@@ -970,9 +1025,9 @@ export const MiniSignTx = ({
         tx: item.tx,
         gasLimit: item.gasLimit,
         nonce: item.tx.nonce,
-        isCancel: false,
+        isCancel: isCancel,
         gasExplainResponse: item.gasCost,
-        isSpeedUp: false,
+        isSpeedUp: isSpeedUp,
         isGnosisAccount: false,
         nativeTokenBalance: balance,
       });
@@ -1101,8 +1156,8 @@ export const MiniSignTx = ({
       (selectedGas ? selectedGas.price < 0 : true) ||
       !canProcess ||
       !!checkErrors.find((item) => item.level === 'forbidden');
-    return isDisabled;
-  }, [isReady, selectedGas, canProcess, checkErrors]);
+    return isDisabled || disableSignBtn;
+  }, [isReady, selectedGas, canProcess, checkErrors, disableSignBtn]);
 
   return (
     <>
@@ -1135,16 +1190,51 @@ export const MiniSignTx = ({
         />
       </Popup>
       <MiniFooterBar
+        account={currentAccount || undefined}
         directSubmit={directSubmit}
         task={task}
         Header={
           <div
             className={clsx(
-              'fixed left-[99999px] top-[99999px] z-[-1]',
+              directSubmit && 'fixed left-[99999px] top-[99999px] z-[-1]',
               task.status !== 'idle' && 'pointer-events-none'
             )}
             key={task.status}
           >
+            {showSimulateChange || isSpeedUp || isCancel || title ? (
+              <div className="flex flex-col gap-[22px] mb-16">
+                {title}
+
+                {showSimulateChange &&
+                txsResult?.[txsResult?.length - 1]?.preExecResult ? (
+                  <div className="bg-r-neutral-card-2 px-16 py-12 rounded-[8px]">
+                    <BalanceChange
+                      version={
+                        txsResult?.[txsResult?.length - 1].preExecResult
+                          .pre_exec_version
+                      }
+                      data={
+                        txsResult?.[txsResult?.length - 1].preExecResult
+                          .balance_change
+                      }
+                    />
+                  </div>
+                ) : null}
+
+                <SpeedUpCancelHeader
+                  isSpeedUp={isSpeedUp}
+                  isCancel={isCancel}
+                  originGasPrice={originGasPrice || '0'}
+                  currentGasPrice={
+                    txsResult?.[0]?.tx?.gasPrice ||
+                    txsResult?.[0]?.tx?.maxFeePerGas ||
+                    ''
+                  }
+                />
+
+                <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
+              </div>
+            ) : null}
             <GasSelectorHeader
               tx={txs[0]}
               gasAccountCost={gasAccountCost}
@@ -1164,8 +1254,8 @@ export const MiniSignTx = ({
               onChange={handleGasChange}
               nonce={realNonce}
               disableNonce={true}
-              isSpeedUp={false}
-              isCancel={false}
+              isSpeedUp={isSpeedUp}
+              isCancel={isCancel}
               is1559={support1559}
               isHardware={isHardware}
               manuallyChangeGasLimit={manuallyChangeGasLimit}
@@ -1234,6 +1324,16 @@ export const MiniSignTx = ({
         isFirstGasCostLoading={isFirstGasCostLoading}
         getContainer={getContainer}
       />
+
+      <TokenDetailPopup
+        token={tokenDetail.selectToken}
+        visible={tokenDetail.popupVisible}
+        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        canClickToken={false}
+        hideOperationButtons
+        variant="add"
+        account={currentAccount || undefined}
+      />
     </>
   );
 };
@@ -1243,6 +1343,7 @@ export const MiniApproval = ({
   visible,
   onClose,
   onResolve,
+  noShowModalLoading,
   onReject,
   onPreExecError,
   onGasAmountChange,
@@ -1252,20 +1353,24 @@ export const MiniApproval = ({
   canUseDirectSubmitTx,
   isPreparingSign,
   setIsPreparingSign,
-}: {
+  zIndex,
+  originGasPrice,
+  session,
+  autoTriggerPreExecError,
+  showSimulateChange,
+  title,
+  disableSignBtn,
+  onPreExecChange,
+  autoThrowPreExecError,
+}: Omit<MiniSignTxProps, 'txs'> & {
   txs?: Tx[];
   visible?: boolean;
   onClose?: () => void;
-  onReject?: () => void;
-  onResolve?: (hash: string) => void;
-  onPreExecError?: () => void;
-  ga?: Record<string, any>;
-  getContainer?: DrawerProps['getContainer'];
-  directSubmit?: boolean;
   canUseDirectSubmitTx?: boolean;
   isPreparingSign?: boolean;
-  onGasAmountChange?: (gasAmount: number) => void;
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
+  noShowModalLoading?: boolean;
+  zIndex?: number;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1334,7 +1439,7 @@ export const MiniApproval = ({
         placement="bottom"
         height="fit-content"
         className="is-support-darkmode"
-        visible={innerVisible}
+        visible={directSubmit ? innerVisible : visible}
         onClose={handleClose}
         maskClosable={status === 'idle'}
         closable={false}
@@ -1348,6 +1453,7 @@ export const MiniApproval = ({
         maskStyle={{
           backgroundColor: !isDarkTheme ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.6)',
         }}
+        zIndex={zIndex}
         getContainer={getContainer}
         key={`${currentAccount?.address}-${currentAccount?.type}`}
       >
@@ -1365,13 +1471,22 @@ export const MiniApproval = ({
             onResolve={onResolve}
             onGasAmountChange={onGasAmountChange}
             getContainer={getContainer}
+            originGasPrice={originGasPrice}
+            session={session}
+            autoTriggerPreExecError={autoTriggerPreExecError}
+            showSimulateChange={showSimulateChange}
+            title={title}
+            disableSignBtn={disableSignBtn}
+            onPreExecChange={onPreExecChange}
+            autoThrowPreExecError={autoThrowPreExecError}
           />
         ) : null}
       </Popup>
 
-      {isPreparingSign ||
+      {(isPreparingSign && !noShowModalLoading) ||
       (directSubmit &&
         canUseDirectSubmitTx &&
+        !noShowModalLoading &&
         !supportedHardwareDirectSign(currentAccount?.type || '')) ? (
         <Modal
           transitionName=""
@@ -1384,6 +1499,9 @@ export const MiniApproval = ({
           width={'auto'}
           closable={false}
           bodyStyle={{ padding: 0 }}
+          maskStyle={{
+            backgroundColor: 'rgba(0,0,0,0.1)',
+          }}
         >
           <div className="w-[52px] h-[52px] p-[14px] flex items-center justify-center">
             <RCIconLoadingCC className="text-r-neutral-body animate-spin" />

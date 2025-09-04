@@ -31,6 +31,7 @@ import {
   gasAccountService,
   uninstalledService,
   OfflineChainsService,
+  perpsService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -3836,7 +3837,7 @@ export class WalletController extends BaseController {
   signTypedData = async (
     type: string,
     from: string,
-    data: string,
+    data: Record<string, any>,
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
@@ -3866,7 +3867,7 @@ export class WalletController extends BaseController {
   ) => {
     const fn = () =>
       waitSignComponentAmounted().then(() => {
-        this.signTypedData(type, from, data as any, options);
+        return this.signTypedData(type, from, data as any, options);
       });
 
     notificationService.setCurrentRequestDeferFn(fn);
@@ -5400,6 +5401,12 @@ export class WalletController extends BaseController {
     return providerController.personalSign(...args);
   };
 
+  ethSignTypedDataV4 = async (
+    ...args: Parameters<typeof providerController.ethSignTypedDataV4>
+  ) => {
+    return providerController.ethSignTypedDataV4(...args);
+  };
+
   tryOpenOrActiveUserGuide = async () => {
     if (this.isBooted()) {
       return false;
@@ -5609,6 +5616,31 @@ export class WalletController extends BaseController {
    */
   setHasAnyAccountClaimedGift = (hasClaimed: boolean) => {
     gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
+  };
+
+  createPerpsAgentWallet = async (masterWallet: string) => {
+    return perpsService.createAgentWallet(masterWallet);
+  };
+  setPerpsCurrentAccount = perpsService.setCurrentAccount;
+  getPerpsCurrentAccount = perpsService.getCurrentAccount;
+  getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
+  getAgentWalletPreference = async (masterWallet: string) => {
+    return perpsService.getAgentWalletPreference(masterWallet);
+  };
+  updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
+  setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
+  getSendApproveAfterDeposit = async (masterAddress: string) => {
+    return perpsService.getSendApproveAfterDeposit(masterAddress);
+  };
+  setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
+  getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
+  getPerpsAgentWallet = async (masterWallet: string) => {
+    return perpsService.getAgentWallet(masterWallet);
+  };
+  signTextCreateHistory = (
+    params: Parameters<typeof signTextHistoryService.createHistory>[0]
+  ) => {
+    signTextHistoryService.createHistory(params);
   };
 }
 

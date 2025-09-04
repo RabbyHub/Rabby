@@ -1040,7 +1040,8 @@
       "approve-and-swap": "Aprovar e Trocar via {{name}}",
       "two-step-approve-details": "O token USDT requer 2 transações para alterar a permissão. Primeiro, você precisará redefinir a permissão para zero e, somente então, definir um novo valor de permissão.",
       "no-quote-found": "Nenhuma cotação encontrada",
-      "hidden-no-quote-rates_other": "{{count}} taxas indisponíveis"
+      "hidden-no-quote-rates_other": "{{count}} taxas indisponíveis",
+      "understandRisks": "Eu entendo os riscos e quero continuar"
     },
     "manageAddress": {
       "no-address": "Nenhum endereço",
@@ -1107,7 +1108,8 @@
           "ecology": "Ecossistema",
           "rabbyPoints": "Rabby Points",
           "bridge": "Ponte",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps"
         },
         "comingSoon": "Em breve",
         "soon": "Em breve",
@@ -1388,7 +1390,8 @@
           "lowValueAssets": "{{count}} ativos de baixo valor",
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} token de baixo valor",
-          "lowValueAssets_other": "{{count}} tokens de baixo valor"
+          "lowValueAssets_other": "{{count}} tokens de baixo valor",
+          "review": "Revisar"
         },
         "noAssets": "Sem ativos",
         "blockLinkText": "Pesquise o endereço para bloquear o token",
@@ -2450,7 +2453,12 @@
         "txSending": "Enviando solicitação de assinatura",
         "txCreated": "Transação criada"
       },
-      "signWithLedger": "Assinar com Ledger"
+      "signWithLedger": "Assinar com Ledger",
+      "cancelTitle": "Cancelamento On-chain",
+      "speedUpTitle": "Acelerar",
+      "speedUpDesc": "O preço do gás aumentou {{percent}} para acelerar.",
+      "signWithOneKey": "Assinar com OneKey",
+      "cancleDesc": "O preço do Gas aumentou {{percent}} para cancelar a transação."
     },
     "gasAccount": {
       "history": {

@@ -28,6 +28,7 @@ import { Input } from 'antd';
 import {
   useStartDirectSigning,
   DirectSubmitProvider,
+  supportedDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -277,11 +278,18 @@ const GasAccountDepositContent = ({
   const currentAccount = useCurrentAccount();
   const [isPreparingSign, setIsPreparingSign] = useState(false);
 
-  const isDirectSignAccount =
-    currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
-    currentAccount?.type === KEYRING_CLASS.MNEMONIC;
+  const [directSubmit, setDirectSubmit] = useState(true);
+  const [miniApprovalVisible, setMiniApprovalVisible] = useState(false);
+
+  const isDirectSignAccount = supportedDirectSign(currentAccount?.type || '');
 
   const startDirectSigning = useStartDirectSigning();
+
+  const resetMiniApproval = () => {
+    setDirectSubmit(true);
+    setMiniApprovalVisible(false);
+    setIsPreparingSign(false);
+  };
 
   const depositAmount = useMemo(() => {
     if (selectedAmount === CUSTOM_AMOUNT && rawValue) {
@@ -547,6 +555,8 @@ const GasAccountDepositContent = ({
           isDirectSignAccount={isDirectSignAccount}
           chainServerId={token?.chain}
           miniSignTxs={miniSignTxs}
+          setDirectSubmit={setDirectSubmit}
+          setMiniApprovalVisible={setMiniApprovalVisible}
         />
       </div>
 
@@ -557,28 +567,29 @@ const GasAccountDepositContent = ({
         onChange={setToken}
       />
       <MiniApproval
+        visible={miniApprovalVisible}
         isPreparingSign={isPreparingSign}
         setIsPreparingSign={setIsPreparingSign}
         txs={miniSignTxs}
         onClose={() => {
-          setIsPreparingSign(false);
+          resetMiniApproval();
           refresh((e) => e + 1);
         }}
         onReject={() => {
+          resetMiniApproval();
           refresh((e) => e + 1);
-          setIsPreparingSign(false);
         }}
         onResolve={(tx) => {
           handleNoSignResolve(tx);
-          refresh((e) => e + 1);
           setIsPreparingSign(false);
+          refresh((e) => e + 1);
         }}
         onPreExecError={() => {
-          setIsPreparingSign(false);
           topUpGasAccount();
+          setIsPreparingSign(false);
           refresh((e) => e + 1);
         }}
-        directSubmit
+        directSubmit={directSubmit}
         // onGasAmountChange={setGasAmount}
         canUseDirectSubmitTx={canUseDirectSubmitTx}
       />

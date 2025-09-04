@@ -1,4 +1,4 @@
-import { Badge, Tooltip } from 'antd';
+import { Badge, Skeleton, Tooltip } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -17,10 +17,13 @@ import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 import { ReactComponent as RcIconMoreSettings } from 'ui/assets/dashboard/more-settings.svg';
 import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
+import { ReactComponent as RcIconPerps } from 'ui/assets/dashboard/IconPerps.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import {
+  formatUsdValue,
   getCurrentConnectSite,
   openInternalPageInTab,
+  splitNumberByStep,
   useWallet,
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
@@ -39,6 +42,7 @@ import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';
 import { findChainByID } from '@/utils/chain';
 import RateModal from '@/ui/component/RateModal/RateModal';
+import { usePerpsHomePnl } from '@/ui/views/Perps/usePerpsHomePnl';
 
 export default function ChainAndSiteSelector({
   gnosisPendingCount,
@@ -62,6 +66,7 @@ export default function ChainAndSiteSelector({
 }) {
   const { t } = useTranslation();
   const history = useHistory();
+  const { perpsPositionInfo, isFetching } = usePerpsHomePnl();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
     CHAINS_ENUM.ETH
   );
@@ -190,106 +195,138 @@ export default function ChainAndSiteSelector({
     disableReason?: string;
     eventKey: string;
     iconClassName?: string;
+    subContent?: React.ReactNode;
   };
 
-  const panelItems = {
-    swap: {
-      icon: RcIconSwap,
-      eventKey: 'Swap',
-      content: t('page.dashboard.home.panel.swap'),
-      onClick: () => {
-        history.push('/dex-swap?rbisource=dashboard');
-      },
-    } as IPanelItem,
-    send: {
-      icon: RcIconSendToken,
-      eventKey: 'Send',
-      content: t('page.dashboard.home.panel.send'),
-      onClick: () => history.push('/send-poly?rbisource=dashboard'),
-    } as IPanelItem,
-    bridge: {
-      icon: RcIconBridge,
-      eventKey: 'Bridge',
-      content: t('page.dashboard.home.panel.bridge'),
-      onClick: () => {
-        history.push('/bridge');
-      },
-    } as IPanelItem,
-    receive: {
-      icon: RcIconReceive,
-      eventKey: 'Receive',
-      content: t('page.dashboard.home.panel.receive'),
-      onClick: () => {
-        setIsShowReceiveModal(true);
-      },
-    } as IPanelItem,
-    queue: {
-      icon: RcIconQuene,
-      eventKey: 'Queue',
-      content: t('page.dashboard.home.panel.queue'),
-      badge: gnosisPendingCount,
-      onClick: () => {
-        history.push('/gnosis-queue');
-      },
-    } as IPanelItem,
-    transactions: {
-      icon: RcIconTransactions,
-      eventKey: 'Transactions',
-      content: t('page.dashboard.home.panel.transactions'),
-      onClick: () => {
-        history.push('/history');
-      },
-    } as IPanelItem,
-    security: {
-      icon: RcIconSecurity,
-      eventKey: 'Approvals',
-      content: t('page.dashboard.home.panel.approvals'),
-      onClick: async (evt) => {
-        openInternalPageInTab('approval-manage');
-      },
-      badge: approvalRiskAlert,
-      badgeAlert: approvalRiskAlert > 0,
-    } as IPanelItem,
-    more: {
-      icon: RcIconMoreSettings,
-      eventKey: 'More',
-      content: t('page.dashboard.home.panel.more'),
-      onClick: toggleShowMoreSettings,
-    } as IPanelItem,
-    address: {
-      icon: RcIconAddresses,
-      eventKey: 'Manage Address',
-      content: t('page.dashboard.home.panel.manageAddress'),
-      onClick: () => {
-        history.push('/settings/address');
-      },
-    } as IPanelItem,
-    nft: {
-      icon: RcIconNFT,
-      eventKey: 'NFT',
-      content: t('page.dashboard.home.panel.nft'),
-      onClick: () => {
-        history.push('/nft');
-      },
-    } as IPanelItem,
-    ecology: {
-      icon: RcIconEco,
-      eventKey: 'Ecology',
-      content: t('page.dashboard.home.panel.ecology'),
-      onClick: () => {
-        setIsShowEcologyModal(true);
-      },
-    } as IPanelItem,
-    mobile: {
-      icon: RCIconRabbyMobile,
-      eventKey: 'Rabby Mobile',
-      content: t('page.dashboard.home.panel.mobile'),
-      iconClassName: 'icon-rabby-mobile',
-      onClick: () => {
-        openInternalPageInTab('sync');
-      },
-    } as IPanelItem,
-  };
+  const panelItems = useMemo(() => {
+    return {
+      swap: {
+        icon: RcIconSwap,
+        eventKey: 'Swap',
+        content: t('page.dashboard.home.panel.swap'),
+        onClick: () => {
+          history.push('/dex-swap?rbisource=dashboard');
+        },
+      } as IPanelItem,
+      send: {
+        icon: RcIconSendToken,
+        eventKey: 'Send',
+        content: t('page.dashboard.home.panel.send'),
+        onClick: () => history.push('/send-poly?rbisource=dashboard'),
+      } as IPanelItem,
+      bridge: {
+        icon: RcIconBridge,
+        eventKey: 'Bridge',
+        content: t('page.dashboard.home.panel.bridge'),
+        onClick: () => {
+          history.push('/bridge');
+        },
+      } as IPanelItem,
+      receive: {
+        icon: RcIconReceive,
+        eventKey: 'Receive',
+        content: t('page.dashboard.home.panel.receive'),
+        onClick: () => {
+          setIsShowReceiveModal(true);
+        },
+      } as IPanelItem,
+      queue: {
+        icon: RcIconQuene,
+        eventKey: 'Queue',
+        content: t('page.dashboard.home.panel.queue'),
+        badge: gnosisPendingCount,
+        onClick: () => {
+          history.push('/gnosis-queue');
+        },
+      } as IPanelItem,
+      transactions: {
+        icon: RcIconTransactions,
+        eventKey: 'Transactions',
+        content: t('page.dashboard.home.panel.transactions'),
+        onClick: () => {
+          history.push('/history');
+        },
+      } as IPanelItem,
+      security: {
+        icon: RcIconSecurity,
+        eventKey: 'Approvals',
+        content: t('page.dashboard.home.panel.approvals'),
+        onClick: async (evt) => {
+          openInternalPageInTab('approval-manage');
+        },
+        badge: approvalRiskAlert,
+        badgeAlert: approvalRiskAlert > 0,
+      } as IPanelItem,
+      more: {
+        icon: RcIconMoreSettings,
+        eventKey: 'More',
+        content: t('page.dashboard.home.panel.more'),
+        onClick: toggleShowMoreSettings,
+      } as IPanelItem,
+      address: {
+        icon: RcIconAddresses,
+        eventKey: 'Manage Address',
+        content: t('page.dashboard.home.panel.manageAddress'),
+        onClick: () => {
+          history.push('/settings/address');
+        },
+      } as IPanelItem,
+      nft: {
+        icon: RcIconNFT,
+        eventKey: 'NFT',
+        content: t('page.dashboard.home.panel.nft'),
+        onClick: () => {
+          history.push('/nft');
+        },
+      } as IPanelItem,
+      ecology: {
+        icon: RcIconEco,
+        eventKey: 'Ecology',
+        content: t('page.dashboard.home.panel.ecology'),
+        onClick: () => {
+          setIsShowEcologyModal(true);
+        },
+      } as IPanelItem,
+      // mobile: {
+      //   icon: RCIconRabbyMobile,
+      //   eventKey: 'Rabby Mobile',
+      //   content: t('page.dashboard.home.panel.mobile'),
+      //   iconClassName: 'icon-rabby-mobile',
+      //   onClick: () => {
+      //     openInternalPageInTab('sync');
+      //   },
+      // } as IPanelItem,
+      perps: {
+        icon: RcIconPerps,
+        eventKey: 'Perps',
+        iconClassName: 'icon-perps',
+        subContent: perpsPositionInfo.show ? (
+          <div
+            className={`absolute bottom-[-2px] text-[10px] font-medium ${
+              perpsPositionInfo.pnl > 0
+                ? 'text-r-green-default'
+                : 'text-r-red-default'
+            }`}
+          >
+            {perpsPositionInfo.pnl >= 0 ? '+' : '-'}$
+            {splitNumberByStep(Math.abs(perpsPositionInfo.pnl).toFixed(2))}
+          </div>
+        ) : isFetching ? (
+          <div className="absolute bottom-[-2px] text-[10px] font-medium">
+            <Skeleton.Button
+              active={true}
+              className="h-[10px] block rounded-[2px]"
+              style={{ width: 42 }}
+            />
+          </div>
+        ) : null,
+        content: t('page.dashboard.home.panel.perps'),
+        onClick: () => {
+          history.push('/perps');
+        },
+      } as IPanelItem,
+    };
+  }, [perpsPositionInfo, isFetching]);
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
 
@@ -302,7 +339,7 @@ export default function ChainAndSiteSelector({
       'transactions',
       'nft',
       'security',
-      'mobile',
+      'perps',
       'more',
     ];
   } else {
@@ -314,7 +351,7 @@ export default function ChainAndSiteSelector({
       'transactions',
       'nft',
       'security',
-      'mobile',
+      'perps',
       'more',
     ];
   }
@@ -392,7 +429,8 @@ export default function ChainAndSiteSelector({
                     className={clsx(['images', item.iconClassName])}
                   />
                 )}
-                <div>{item.content} </div>
+                <div>{item.content}</div>
+                {item.subContent}
                 {item.commingSoonBadge && (
                   <div className="coming-soon-badge">
                     {t('page.dashboard.home.soon')}

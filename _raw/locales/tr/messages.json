@@ -1040,7 +1040,8 @@
       "hidden-no-quote-rates_one": "{{count}} oranı kullanılamıyor",
       "hidden-no-quote-rates_other": "{{count}} oranları kullanılamıyor",
       "two-step-approve-details": "Token USDT, hakkı değiştirmek için 2 işlem gerektirir. Öncelikle, hakkı sıfıra ayarlamanız gerekir ve ardından yeni hakkı değeri belirleyebilirsiniz.",
-      "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez."
+      "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
+      "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum."
     },
     "manageAddress": {
       "no-address": "Adres yok",
@@ -1107,7 +1108,8 @@
           "rabbyPoints": "Rabby Points",
           "ecology": "Ekosistem",
           "bridge": "Köprü",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1388,7 +1390,8 @@
           "lowValueAssets": "{{count}} düşük değerli varlık",
           "lowValueAssets_other": "{{count}} düşük değerli tokenlar",
           "lowValueAssets_one": "{{count}} düşük değerli token",
-          "lowValueAssets_0": "{{count}} düşük değerli token"
+          "lowValueAssets_0": "{{count}} düşük değerli token",
+          "review": "Gözden Geçir"
         },
         "noAssets": "Varlık Yok",
         "blockLinkText": "Tokeni engellemek için adresi ara",
@@ -2453,7 +2456,12 @@
         "txSigned": "İmzalandı. İşlem oluşturuluyor",
         "txSendings": "İmzalama isteği gönderiliyor ({{current}}/{{total}})"
       },
-      "signWithLedger": "Ledger ile imzala"
+      "signWithLedger": "Ledger ile imzala",
+      "cancelTitle": "Zincir Üzerinde İptal",
+      "signWithOneKey": "OneKey ile İmza At",
+      "speedUpDesc": "Gas fiyatı hızlandırmak için {{percent}} arttı.",
+      "cancleDesc": "Gas fiyatı, işlemi iptal etmek için {{percent}} oranında arttı.",
+      "speedUpTitle": "Hızlandırmak"
     },
     "gasAccount": {
       "history": {

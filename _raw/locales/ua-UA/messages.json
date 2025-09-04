@@ -1043,7 +1043,8 @@
       "two-step-approve": "Підпишіть 2 транзакції, щоб змінити allowance",
       "loss-tips": "Ви втрачаєте {{usd}}. Спробуйте меншу суму на маленькому ринку.",
       "preferMEV": "Віддати перевагу MEV Guarded",
-      "from": "Від"
+      "from": "Від",
+      "understandRisks": "Я розумію ризики і хочу продовжити"
     },
     "manageAddress": {
       "no-address": "Немає адреси",
@@ -1110,7 +1111,8 @@
           "bridge": "Міст",
           "ecology": "Екосистема",
           "rabbyPoints": "Rabby Points",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Перпси"
         },
         "comingSoon": "Скоро",
         "soon": "Незабаром",
@@ -1391,7 +1393,8 @@
           "lowValueAssets": "{{count}} малоцінні активи",
           "lowValueAssets_0": "{{count}} токен з низькою вартістю",
           "lowValueAssets_one": "{{count}} токенів низької вартості",
-          "lowValueAssets_other": "{{count}} низьковартісних токенів"
+          "lowValueAssets_other": "{{count}} низьковартісних токенів",
+          "review": "Огляд"
         },
         "noAssets": "Немає активів",
         "blockLinkText": "Адреса для пошуку токена блоку",
@@ -2462,7 +2465,12 @@
         "txSendings": "Надсилання запиту на підпис({{current}}/{{total}})",
         "txSending": "Надсилання запиту на підписання"
       },
-      "signWithLedger": "Увійти за допомогою Ledger"
+      "signWithLedger": "Увійти за допомогою Ledger",
+      "speedUpTitle": "Прискорити",
+      "signWithOneKey": "Підпишіть за допомогою OneKey",
+      "cancelTitle": "На ланцюгу Скасувати",
+      "speedUpDesc": "Ціна газу збільшилася на {{percent}}, щоб прискорити.",
+      "cancleDesc": "Ціна газу зросла на {{percent}}, щоб скасувати транзакцію"
     },
     "gasAccount": {
       "history": {

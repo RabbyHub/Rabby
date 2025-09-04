@@ -16,6 +16,7 @@ import { useBridgeSlippage } from './slippage';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import eventBus from '@/eventBus';
+import { useClearMiniGasStateEffect } from '@/ui/hooks/miniSignGasStore';
 
 export const enableInsufficientQuote = true;
 
@@ -700,8 +701,10 @@ export const useBridge = () => {
   const { search } = useLocation();
   const [searchObj] = useState<{
     fromChain?: CHAINS_ENUM;
+    fromChainServerId?: string;
     fromTokenId?: string;
     inputAmount?: string;
+    toChainServerId?: string;
     toChain?: CHAINS_ENUM;
     toTokenId?: string;
     maxNativeTokenGasPrice?: string;
@@ -712,9 +715,13 @@ export const useBridge = () => {
     if (!searchObj) {
       return;
     }
-    if (searchObj.fromChain && searchObj.fromTokenId) {
+    if (
+      (searchObj.fromChain || searchObj.fromChainServerId) &&
+      searchObj.fromTokenId
+    ) {
       const fromChain = findChain({
         enum: searchObj.fromChain,
+        serverId: searchObj.fromChainServerId,
       });
       if (userAddress && fromChain) {
         wallet.openapi
@@ -730,9 +737,13 @@ export const useBridge = () => {
         handleAmountChange(searchObj.inputAmount);
       }
     }
-    if (searchObj.toChain && searchObj.toTokenId) {
+    if (
+      (searchObj.toChain || searchObj.toChainServerId) &&
+      searchObj.toTokenId
+    ) {
       const toChain = findChain({
         enum: searchObj.toChain,
+        serverId: searchObj.toChainServerId,
       });
       if (userAddress && toChain) {
         wallet.openapi
@@ -768,6 +779,10 @@ export const useBridge = () => {
       isSetMaxRef.current = true;
     }
   }, [amount, searchObj.inputAmount, searchObj.maxNativeTokenGasPrice]);
+
+  useClearMiniGasStateEffect({
+    chainServerId: findChainByEnum(fromChain)?.serverId || '',
+  });
 
   return {
     clearExpiredTimer,

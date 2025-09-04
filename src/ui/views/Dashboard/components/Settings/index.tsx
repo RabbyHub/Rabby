@@ -14,7 +14,7 @@ import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
 import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-
+import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconCustomRPC } from 'ui/assets/dashboard/custom-rpc.svg';
@@ -25,6 +25,7 @@ import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings
 import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
 import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
+import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -571,6 +572,7 @@ const SwitchLangModal = ({
 type SettingItem = {
   leftIcon: ThemeIconType;
   leftIconClassName?: string;
+  leftIconStyle?: React.CSSProperties;
   content: React.ReactNode;
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -782,6 +784,15 @@ const SettingsInner = ({
           content: t('page.dashboard.settings.features.ecosystem'),
           onClick: () => {
             setIsShowEcologyModal(true);
+          },
+        },
+        {
+          leftIcon: RcIconRabbyMobileCC,
+          leftIconClassName: 'text-r-neutral-body w-24 h-24',
+          leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
+          content: t('page.dashboard.home.panel.mobile'),
+          onClick: () => {
+            openInternalPageInTab('sync');
           },
         },
         {
@@ -1109,6 +1120,15 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconSettingsGitForkCC,
+          content: <span>CreateAgent Wallet</span>,
+          onClick: async () => {
+            const currentAddress =
+              (await wallet.getCurrentAccount())?.address || '';
+            await wallet.createPerpsAgentWallet(currentAddress);
+          },
+        },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
           content: 'Test sendPersonalMessage',
           onClick: async () => {
             const currentAddress =
@@ -1355,6 +1375,7 @@ const SettingsInner = ({
                       <ThemeIcon
                         src={data.leftIcon}
                         className={clsx('icon', data.leftIconClassName)}
+                        style={data.leftIconStyle}
                       />
                     }
                     rightIcon={

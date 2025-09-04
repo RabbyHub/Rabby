@@ -24,6 +24,8 @@ import { GasLevelType } from '../Component/ReserveGasPopup';
 import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
 import eventBus from '@/eventBus';
+import { useAutoSlippageEffect } from './autoSlippageEffect';
+import { useClearMiniGasStateEffect } from '@/ui/hooks/miniSignGasStore';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -265,6 +267,7 @@ export const useTokenPair = (userAddress: string) => {
         setIsDraggingSlider(true);
         setSwapUseSlider(true);
         setSlider(v);
+        setUseGasPrice(false);
 
         if (syncAmount) {
           setIsDraggingSlider(false);
@@ -507,6 +510,21 @@ export const useTokenPair = (userAddress: string) => {
   const [autoSuggestSlippage, setAutoSuggestSlippage] = useState(
     getSwapAutoSlippageValue(isStableCoin)
   );
+
+  const setAutoSlippage = useCallback(() => {
+    slippageObj.setAutoSlippage(true);
+  }, [slippageObj.setAutoSlippage]);
+
+  useAutoSlippageEffect({
+    chainServerId: findChainByEnum(chain)?.serverId || '',
+    fromTokenId: payToken?.id || '',
+    toTokenId: receiveToken?.id || '',
+    onSetAutoSlippage: setAutoSlippage,
+  });
+
+  useClearMiniGasStateEffect({
+    chainServerId: findChainByEnum(chain)?.serverId || '',
+  });
 
   const fetchIdRef = useRef(0);
   const { getAllQuotes, validSlippage } = useQuoteMethods();

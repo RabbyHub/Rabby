@@ -1040,7 +1040,8 @@
       "No-available-quote": "Nenhum orçamento disponível",
       "loss-tips": "Você está perdendo {{usd}}. Tente um valor menor em um mercado pequeno.",
       "price-impact": "Impacto de Preço",
-      "trade": "Negociar"
+      "trade": "Negociar",
+      "understandRisks": "Eu entendo os riscos e quero continuar"
     },
     "bridge": {
       "showMore": {
@@ -1178,7 +1179,8 @@
           "feedback": "Feedback",
           "transactions": "Transações",
           "bridge": "Ponte",
-          "queue": "Fila"
+          "queue": "Fila",
+          "perps": "Perps"
         },
         "queue": {
           "title": "Fila",
@@ -1457,7 +1459,8 @@
           "lowValueDescription": "Ativos de baixo valor serão exibidos aqui",
           "lowValueAssets_other": "{{count}} tokens de baixo valor",
           "side": "Lado",
-          "tradePair": "Par de negociação"
+          "tradePair": "Par de negociação",
+          "review": "Revisar"
         },
         "AddMainnetToken": {
           "title": "Adicionar Token Personalizado",
@@ -2447,7 +2450,12 @@
         "txSending": "Enviando solicitação de assinatura",
         "txSendings": "Enviando solicitação de assinatura ({{current}}/{{total}})"
       },
-      "signWithLedger": "Assine com Ledger"
+      "signWithLedger": "Assine com Ledger",
+      "speedUpTitle": "Acelerar",
+      "speedUpDesc": "O preço do gás aumentou {{percent}} para acelerar.",
+      "signWithOneKey": "Assine com OneKey",
+      "cancelTitle": "On-chain Cancel",
+      "cancleDesc": "O preço do gás aumentou {{percent}} para cancelar a transação."
     },
     "gasAccount": {
       "history": {

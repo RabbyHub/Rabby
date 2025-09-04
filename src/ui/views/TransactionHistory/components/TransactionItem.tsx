@@ -1,6 +1,6 @@
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Tooltip, message } from 'antd';
-import { GasLevel, TxRequest } from 'background/service/openapi';
+import { GasLevel, Tx, TxRequest } from 'background/service/openapi';
 import {
   TransactionGroup,
   TransactionHistoryItem,
@@ -10,7 +10,7 @@ import { CANCEL_TX_TYPE, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { intToHex } from '@ethereumjs/util';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { SvgPendingSpin } from 'ui/assets';
@@ -30,7 +30,10 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
 import { is7702Tx } from '@/utils/transaction';
-import { omit } from 'lodash';
+import { noop, omit } from 'lodash';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { MiniApproval } from '../../Approval/components/MiniSignTx';
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -65,6 +68,30 @@ export const TransactionItem = ({
   const completedTx = item.txs.find(
     (tx) => tx.isCompleted && !tx.isSubmitFailed && !tx.isWithdrawed
   );
+
+  const [isShowSign, setIsShowSign] = useState(false);
+  const [isPreparingSign, setIsPreparingSign] = useState(false);
+
+  const account = useCurrentAccount();
+
+  const [txs, mutateTxs] = useState<Tx[]>([]);
+
+  const canUseMiniTx = useMemo(() => {
+    const chain = findChain({
+      id: item.chainId,
+    });
+
+    return (
+      chain && !chain.isTestnet && supportedDirectSign(account?.type || '')
+    );
+  }, [account?.type]);
+
+  const originGasPrice = useMemo(() => {
+    const maxGasTx = item.txs[item.txs.length - 1]!;
+    const maxGasPrice =
+      maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || '0';
+    return maxGasPrice;
+  }, [item.txs]);
 
   const isCanceled =
     !item.isPending &&
@@ -163,7 +190,9 @@ export const TransactionItem = ({
         }
       : undefined;
 
-  const handleOnChainCancel = async () => {
+  const originFn = useRef(noop);
+
+  const handleOnChainCancel = async (forceSignPage?: boolean) => {
     if (!canCancel) return;
     const maxGasTx = findMaxGasTx(item.txs)!;
     const maxGasPrice = Number(
@@ -176,6 +205,12 @@ export const TransactionItem = ({
     if (!chain) {
       throw new Error('chainServerId not found');
     }
+
+    if (canUseMiniTx && !forceSignPage) {
+      originFn.current = handleOnChainCancel;
+      setIsPreparingSign(true);
+    }
+
     const gasLevels: GasLevel[] = chain.isTestnet
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
@@ -184,7 +219,29 @@ export const TransactionItem = ({
           chain,
           tx: maxGasTx.rawTx,
         });
+
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
+
+    if (canUseMiniTx && !forceSignPage) {
+      setIsShowSign(true);
+      setIsPreparingSign(false);
+
+      mutateTxs([
+        {
+          from: maxGasTx.rawTx.from,
+          to: maxGasTx.rawTx.from,
+          gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
+          value: '0x0',
+          chainId: item.chainId,
+          nonce: intToHex(item.nonce),
+          // @ts-expect-error add isCancel type on tx
+          isCancel: true,
+          reqId: maxGasTx.reqId,
+        },
+      ]);
+      return;
+    }
+
     await wallet.sendRequest(
       {
         method: 'eth_sendTransaction',
@@ -208,7 +265,7 @@ export const TransactionItem = ({
     window.close();
   };
 
-  const handleClickSpeedUp = async () => {
+  const handleClickSpeedUp = async (forceSignPage?: boolean) => {
     if (!canCancel) return;
     const maxGasTx = findMaxGasTx(item.txs);
     const maxGasPrice = Number(
@@ -221,6 +278,14 @@ export const TransactionItem = ({
     if (!chain) {
       throw new Error('chainServerId not found');
     }
+
+    const is7702 = is7702Tx(originTx.rawTx);
+
+    if (canUseMiniTx && !is7702 && !forceSignPage) {
+      originFn.current = handleClickSpeedUp;
+      setIsPreparingSign(true);
+    }
+
     const gasLevels: GasLevel[] = chain.isTestnet
       ? await wallet.getCustomTestnetGasMarket({
           chainId: chain.id,
@@ -230,7 +295,29 @@ export const TransactionItem = ({
           tx: originTx.rawTx,
         });
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
-    const is7702 = is7702Tx(originTx.rawTx);
+
+    if (canUseMiniTx && !is7702 && !forceSignPage) {
+      setIsShowSign(true);
+      setIsPreparingSign(false);
+      mutateTxs([
+        {
+          from: originTx.rawTx.from,
+          value: originTx.rawTx.value,
+          data: originTx.rawTx.data,
+          nonce: originTx.rawTx.nonce,
+          chainId: originTx.rawTx.chainId,
+          to: originTx.rawTx.to,
+          gasPrice: intToHex(
+            Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
+          ),
+          // @ts-expect-error add isSpeedUp type on tx
+          isSpeedUp: true,
+          reqId: maxGasTx.reqId,
+        },
+      ]);
+      return;
+    }
+
     await wallet.sendRequest(
       {
         method: 'eth_sendTransaction',
@@ -280,6 +367,13 @@ export const TransactionItem = ({
   };
 
   const isPending = checkIsPendingTxGroup(item);
+
+  const onPreExecError = useCallback(async () => {
+    setIsPreparingSign(false);
+    setIsShowSign(false);
+    mutateTxs([]);
+    await originFn.current(true);
+  }, [originFn, mutateTxs]);
 
   return (
     <div
@@ -345,7 +439,7 @@ export const TransactionItem = ({
                         'cursor-not-allowed': !canCancel,
                       })}
                       src={RcIconSpeedup}
-                      onClick={handleClickSpeedUp}
+                      onClick={() => handleClickSpeedUp()}
                     />
                   </Tooltip>
                   <div className="hr" />
@@ -468,6 +562,40 @@ export const TransactionItem = ({
         onCancelTx={handleCancelTx}
         tx={maxGasTx}
       ></CancelTxPopup>
+
+      {canUseMiniTx && (
+        <MiniApproval
+          visible={isShowSign}
+          txs={txs}
+          originGasPrice={originGasPrice}
+          isPreparingSign={isPreparingSign}
+          setIsPreparingSign={setIsPreparingSign}
+          session={originSession}
+          onClose={() => {
+            setIsShowSign(false);
+            setIsPreparingSign(false);
+            setTimeout(() => {
+              mutateTxs([]);
+            }, 500);
+          }}
+          onReject={() => {
+            setIsShowSign(false);
+            setIsPreparingSign(false);
+            mutateTxs([]);
+          }}
+          onResolve={() => {
+            setTimeout(() => {
+              setIsShowSign(false);
+              setIsPreparingSign(false);
+              mutateTxs([]);
+              onClearPending?.();
+            }, 500);
+          }}
+          onPreExecError={onPreExecError}
+          canUseDirectSubmitTx={true}
+          autoTriggerPreExecError
+        />
+      )}
     </div>
   );
 };

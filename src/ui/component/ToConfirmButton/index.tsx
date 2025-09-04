@@ -1,17 +1,23 @@
-import { useGetDisableProcessDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import {
+  supportedHardwareDirectSign,
+  useGetDisableProcessDirectSign,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { Button } from 'antd';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClickAway } from 'react-use';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import Checkbox from '../Checkbox';
 
 export const ToConfirmBtn = (props: {
   title: React.ReactNode;
   onConfirm: () => void;
   disabled?: boolean;
   htmlType?: 'button' | 'submit' | 'reset';
+  isHardWallet?: boolean;
+  onCancel?: () => void;
 }) => {
   const { t } = useTranslation();
   const [toConfirm, setToConfirm] = useState(false);
@@ -19,6 +25,10 @@ export const ToConfirmBtn = (props: {
     e.stopPropagation();
     if (props.disabled) {
       return;
+    }
+
+    if (props.isHardWallet) {
+      props.onConfirm();
     }
 
     if (toConfirm) {
@@ -29,10 +39,14 @@ export const ToConfirmBtn = (props: {
     }
   };
 
-  const cancel: React.MouseEventHandler<HTMLDivElement> = useCallback((e) => {
-    e.stopPropagation();
-    setToConfirm(false);
-  }, []);
+  const cancel: React.MouseEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setToConfirm(false);
+      props.onCancel?.();
+    },
+    [props.onCancel]
+  );
   const divRef = useRef<HTMLDivElement>(null);
   useClickAway(divRef, () => setToConfirm(false));
 
@@ -54,7 +68,7 @@ export const ToConfirmBtn = (props: {
       ref={divRef}
       onClick={handle}
     >
-      {!toConfirm ? (
+      {!toConfirm || props.isHardWallet ? (
         <Button
           htmlType={props.htmlType || 'button'}
           type="primary"
@@ -110,17 +124,88 @@ export const DirectSignToConfirmBtn = (props: {
   onConfirm: () => void;
   disabled?: boolean;
   overwriteDisabled?: boolean;
+  showRiskTips?: boolean;
+  riskLabel?: React.ReactNode;
+  accountType?: string;
+  onCancel?: () => void;
+  riskReset?: boolean;
 }) => {
   const disabledProcess = useGetDisableProcessDirectSign();
+  const { t } = useTranslation();
+  const [riskChecked, setRiskChecked] = useState(false);
+
+  const riskDisabled = props.showRiskTips ? !riskChecked : false;
+
+  const isHardWallet = useMemo(() => {
+    return supportedHardwareDirectSign(props.accountType || '');
+  }, [props.accountType]);
+
+  const onCancel = useCallback(() => {
+    setRiskChecked(false);
+    if (props.onCancel) {
+      props.onCancel();
+    }
+  }, [props.onCancel]);
+
+  useEffect(() => {
+    if (props.riskReset) {
+      setRiskChecked(false);
+    }
+  }, [props.riskReset]);
 
   return (
-    <ToConfirmBtn
-      {...props}
-      disabled={
-        props.overwriteDisabled
-          ? props.disabled
-          : props.disabled || disabledProcess
-      }
-    />
+    <div className="w-full flex flex-col gap-[15px]">
+      {props.showRiskTips ? (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={riskChecked}
+            type="square"
+            onChange={setRiskChecked}
+            unCheckBackground="transparent"
+            width="14px"
+            height="14px"
+            checkBoxClassName={clsx(
+              'rounded-[2px] border border-solid',
+              !riskChecked
+                ? 'border-rabby-neutral-body'
+                : 'border-rabby-blue-default'
+            )}
+            checkIcon={
+              riskChecked ? (
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect
+                    width="14"
+                    height="14"
+                    rx="2"
+                    fill="var(--r-blue-default, #4c65ff)"
+                  />
+                  <path
+                    d="M3 7L5.66667 10L11 4"
+                    stroke="white"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : null
+            }
+          >
+            <span className="text-rabby-neutral-body text-13 font-normal">
+              {props?.riskLabel || t('page.swap.understandRisks')}
+            </span>
+          </Checkbox>
+        </div>
+      ) : null}
+      <ToConfirmBtn
+        {...props}
+        isHardWallet={isHardWallet}
+        onCancel={onCancel}
+        disabled={
+          (props.overwriteDisabled
+            ? props.disabled
+            : props.disabled || disabledProcess) || riskDisabled
+        }
+      />
+    </div>
   );
 };

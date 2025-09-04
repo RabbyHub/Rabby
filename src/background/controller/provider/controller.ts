@@ -323,10 +323,15 @@ class ProviderController extends BaseController {
         session,
         account,
       } = req;
+      const isSpeedUp = !!tx.isSpeedUp;
+      const isCancel = !!tx.isCancel;
       const currentAddress = account?.address?.toLowerCase();
-      const currentChain = permissionService.isInternalOrigin(session.origin)
-        ? findChain({ id: tx.chainId })!.enum
-        : permissionService.getConnectedSite(session.origin)?.chain;
+      const currentChain =
+        permissionService.isInternalOrigin(session.origin) ||
+        isSpeedUp ||
+        isCancel
+          ? findChain({ id: tx.chainId })!.enum
+          : permissionService.getConnectedSite(session.origin)?.chain;
       if (tx.from.toLowerCase() !== currentAddress) {
         throw ethErrors.rpc.invalidParams(
           'from should be same as current address'
@@ -511,11 +516,12 @@ class ProviderController extends BaseController {
         console.log(e);
       }
     }
-    const chain = permissionService.isInternalOrigin(origin)
-      ? (findChain({
-          id: approvalRes.chainId,
-        })?.enum as CHAINS_ENUM)
-      : permissionService.getConnectedSite(origin)!.chain;
+    const chain =
+      permissionService.isInternalOrigin(origin) || isSpeedUp || isCancel
+        ? (findChain({
+            id: approvalRes.chainId,
+          })?.enum as CHAINS_ENUM)
+        : permissionService.getConnectedSite(origin)!.chain;
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
 

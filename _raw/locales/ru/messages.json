@@ -1040,7 +1040,8 @@
       "two-step-approve": "Подпишите 2 транзакции для изменения allowance",
       "two-step-approve-details": "Токен USDT требует 2 транзакции для изменения разрешения. Сначала вам нужно сбросить разрешение до нуля, а затем установить новое значение разрешения.",
       "No-available-quote": "Нет доступной котировки",
-      "no-slippage-for-wrap": "Отсутствие проскальзывания для Wrap"
+      "no-slippage-for-wrap": "Отсутствие проскальзывания для Wrap",
+      "understandRisks": "Я понимаю риски и хочу продолжить"
     },
     "manageAddress": {
       "no-address": "Нет адресов",
@@ -1107,7 +1108,8 @@
           "nft": "NFT",
           "bridge": "Мост",
           "ecology": "Экосистема",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Перпсы"
         },
         "comingSoon": "Скоро будет",
         "soon": "Скоро",
@@ -1389,7 +1391,8 @@
           "lowValueAssets": "{{count}} активов с низкой стоимостью",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_0": "{{count}} с низкой стоимостью token",
-          "lowValueAssets_other": "{{count}} токенов с низкой стоимостью"
+          "lowValueAssets_other": "{{count}} токенов с низкой стоимостью",
+          "review": "Обзор"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
@@ -2452,7 +2455,12 @@
         "txSendings": "Отправка запроса на подпись ({{current}}/{{total}})",
         "txCreated": "Транзакция создана"
       },
-      "signWithLedger": "Подписать с помощью Ledger"
+      "signWithLedger": "Подписать с помощью Ledger",
+      "cancelTitle": "В сети Отмена",
+      "cancleDesc": "Цена газа увеличилась на {{percent}}, чтобы отменить транзакцию",
+      "speedUpTitle": "Ускорить",
+      "speedUpDesc": "Цена газа увеличилась на {{percent}}, чтобы ускорить процесс.",
+      "signWithOneKey": "Подписать с OneKey"
     },
     "gasAccount": {
       "history": {
