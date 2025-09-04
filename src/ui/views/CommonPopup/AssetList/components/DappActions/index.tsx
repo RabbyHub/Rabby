@@ -138,12 +138,16 @@ const DappActions = ({
     [canDirectSign, wallet]
   );
 
+  if (!showWithdraw && !showClaim) {
+    return null;
+  }
+
   return (
     <Wrapper>
       {showWithdraw && (
         <ActionButton
           text="Withdraw"
-          className={`${showClaim ? 'w-[216px]' : ''}`}
+          className={`${showClaim ? 'w-[216px]' : 'flex-1'}`}
           onClick={() =>
             handleSubmit(actionWithdraw, t('component.DappActions.withdraw'))
           }
@@ -152,7 +156,7 @@ const DappActions = ({
       {showClaim && (
         <ActionButton
           text="Claim"
-          className={`${showWithdraw ? 'w-[108px]' : ''}`}
+          className={`${showWithdraw ? 'w-[108px]' : 'flex-1'}`}
           onClick={() =>
             handleSubmit(actionClaim, t('component.DappActions.claim'))
           }
