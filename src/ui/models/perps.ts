@@ -138,7 +138,7 @@ export const perps = createModel<RootModel>()({
     setLocalLoadingHistory(state, payload: AccountHistoryItem[]) {
       return {
         ...state,
-        localLoadingHistory: payload,
+        localLoadingHistory: [...payload, ...state.localLoadingHistory],
       };
     },
 
