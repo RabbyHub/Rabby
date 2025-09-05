@@ -98,6 +98,7 @@ interface MiniSignTxProps {
   onPreExecChange?: (
     params: Awaited<ReturnType<OpenApiService['preExecTx']>>
   ) => void;
+  onRedirectToDeposit?: () => void;
 }
 
 export const MiniSignTx = ({
@@ -118,6 +119,7 @@ export const MiniSignTx = ({
   onPreExecChange,
   disableSignBtn = false,
   autoThrowPreExecError = true,
+  onRedirectToDeposit,
 }: MiniSignTxProps) => {
   const chainId = txs[0].chainId;
   const chain = findChain({
@@ -1320,9 +1322,11 @@ export const MiniSignTx = ({
             : cantProcessReason
         }
         disabledProcess={disabledProcess}
+        disableSignBtn={disableSignBtn}
         isFirstGasLessLoading={isFirstGasLessLoading}
         isFirstGasCostLoading={isFirstGasCostLoading}
         getContainer={getContainer}
+        onRedirectToDeposit={onRedirectToDeposit}
       />
 
       <TokenDetailPopup
@@ -1362,6 +1366,7 @@ export const MiniApproval = ({
   disableSignBtn,
   onPreExecChange,
   autoThrowPreExecError,
+  onRedirectToDeposit,
 }: Omit<MiniSignTxProps, 'txs'> & {
   txs?: Tx[];
   visible?: boolean;
@@ -1479,6 +1484,7 @@ export const MiniApproval = ({
             disableSignBtn={disableSignBtn}
             onPreExecChange={onPreExecChange}
             autoThrowPreExecError={autoThrowPreExecError}
+            onRedirectToDeposit={onRedirectToDeposit}
           />
         ) : null}
       </Popup>

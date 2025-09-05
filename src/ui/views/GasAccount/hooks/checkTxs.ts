@@ -111,19 +111,21 @@ export const useGasAccountTxsCheck = ({
   };
 };
 
-export const useLoginDepositConfirm = () => {
+export const useLoginDepositConfirm = (params: {
+  onGotoGasAccount?: () => void;
+}) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
   const { login } = useGasAccountMethods();
 
   const history = useHistory();
   const gotoGasAccount = React.useCallback(() => {
-    console.log('gotoGasAccount');
+    params?.onGotoGasAccount?.();
     history.push({
       pathname: '/gas-account',
       search: `?resetKey=${nanoid()}`,
     });
-  }, []);
+  }, [params?.onGotoGasAccount]);
 
   const depositCn = useCss({
     '& .ant-modal-content': {
