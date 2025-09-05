@@ -10,7 +10,7 @@ import { useDappAction } from './hook';
 import { MiniApproval } from '@/ui/views/Approval/components/MiniSignTx';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useWallet } from '@/ui/utils';
+import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
 import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
@@ -85,6 +85,7 @@ const DappActions = ({
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
   const { t } = useTranslation();
+  const { setVisible } = useCommonPopupView();
 
   const [disabledSign, setDisabledSign] = useState(false);
   const [isShowMiniSign, setIsShowMiniSign] = useState(false);
@@ -197,6 +198,11 @@ const DappActions = ({
           }, 500);
         }}
         autoThrowPreExecError={false}
+        onRedirectToDeposit={() => {
+          setVisible(false);
+          setIsShowMiniSign(false);
+          setMiniSignTxs([]);
+        }}
         canUseDirectSubmitTx
         showSimulateChange
         onPreExecChange={onPreExecChange}

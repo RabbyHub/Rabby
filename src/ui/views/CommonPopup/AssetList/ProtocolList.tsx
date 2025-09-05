@@ -60,14 +60,15 @@ const PoolItem = ({
   return (
     <PoolItemWrapper>
       <PortfolioDetail name={item._originPortfolio.name} data={item} />
-      {!!item.withdrawActions?.length && (
-        <DappActions
-          onRefreshProtocol={onRefreshProtocol}
-          data={item.withdrawActions}
-          chain={chain}
-          protocolLogo={protocolLogo}
-        />
-      )}
+      {!!item.withdrawActions?.length &&
+        !item?._originPortfolio?.proxy_detail?.proxy_contract_id && (
+          <DappActions
+            onRefreshProtocol={onRefreshProtocol}
+            data={item.withdrawActions}
+            chain={chain}
+            protocolLogo={protocolLogo}
+          />
+        )}
     </PoolItemWrapper>
   );
 };
