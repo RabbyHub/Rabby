@@ -194,6 +194,7 @@ const DappActions = ({
             setIsShowMiniSign(false);
             setMiniSignTxs([]);
             resetGasCache();
+            setVisible(false);
             onRefreshProtocol();
           }, 500);
         }}
