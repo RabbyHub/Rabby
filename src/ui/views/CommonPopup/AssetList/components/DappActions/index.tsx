@@ -90,7 +90,6 @@ const DappActions = ({
   const [miniSignTxs, setMiniSignTxs] = useState<Tx[]>([]);
   const [title, setTitle] = useState<string>('');
 
-  console.log('CUSTOM_LOGGER:=>: data', data, chain);
   const withdrawActions = useMemo(
     () =>
       data?.filter(
@@ -115,6 +114,13 @@ const DappActions = ({
 
   const onPreExecChange = useCallback((r: ExplainTxResponse) => {
     if (!r.pre_exec.success) {
+      setDisabledSign(true);
+      return;
+    }
+    if (
+      !r?.balance_change?.receive_nft_list?.length &&
+      !r?.balance_change?.receive_token_list?.length
+    ) {
       setDisabledSign(true);
     }
   }, []);

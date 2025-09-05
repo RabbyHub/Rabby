@@ -6,6 +6,13 @@ import { BLACKLIST_METHODS, WHITELIST_ADDRESS } from './constant';
 import { AbiFunction, encodeFunctionData, parseAbiItem } from 'viem';
 import { findChain } from '@/utils/chain';
 import { isValidAddress } from '@ethereumjs/util';
+import PQueue from 'p-queue';
+
+const rpcQueue = new PQueue({
+  concurrency: 5,
+  interval: 1000,
+  intervalCap: 10,
+});
 
 export const isBlacklistMethod = (method: string) => {
   return BLACKLIST_METHODS.map((item) => item.toLowerCase()).includes(
@@ -25,19 +32,22 @@ export const useIsContractBySymbol = () => {
       if (!serverId) return false;
       if (!isValidAddress(address)) return false;
       const data = '0x95d89b41';
-      const ret = await wallet.requestETHRpc<string>(
-        {
-          method: 'eth_call',
-          params: [
-            {
-              to: address,
-              data,
-            },
-            'latest',
-          ],
-        },
-        serverId
+      const ret = await rpcQueue.add(() =>
+        wallet.requestETHRpc<string>(
+          {
+            method: 'eth_call',
+            params: [
+              {
+                to: address,
+                data,
+              },
+              'latest',
+            ],
+          },
+          serverId
+        )
       );
+
       return !!ret && ret !== '0x' && ret !== '0x0';
     } catch (e) {
       return false;
@@ -77,9 +87,13 @@ export const useDappAction = (
     const normalizedFunc = getMethodDesc(data.func);
     const abi = parseAbiItem(normalizedFunc) as AbiFunction;
     const isAddressArray = abi.inputs.map((item) => item.type === 'address');
-    const addresses = data.params
-      .map((item, index) => (isAddressArray[index] ? (item as string) : ''))
-      .filter((item) => !!item);
+    const addresses = data.str_params
+      ? data.str_params
+          ?.map((item, index) =>
+            isAddressArray[index] ? (item as string) : ''
+          )
+          ?.filter((item) => !!item)
+      : [];
 
     const validate = async (addr: string) => {
       if (
@@ -98,40 +112,31 @@ export const useDappAction = (
         setValid(false);
         return;
       }
+      if (!addresses?.length) {
+        setValid(true);
+        return;
+      }
       const results = await Promise.all(
         addresses.map((addr) => validate(addr))
       );
       const passed = results.every((item) => item);
-      console.log('CUSTOM_LOGGER:=>: valid addresses', {
-        passed,
-        isValidMethod,
-      });
-      setValid(passed && isValidMethod);
+      setValid(passed);
     };
 
     run();
   }, [chain, currentAccount?.address, data, isErc20Contract]);
 
   const action = useCallback(async (): Promise<Tx[]> => {
-    console.log(
-      'CUSTOM_LOGGER:=>: action',
-      data,
-      valid,
-      currentAccount?.address,
-      chainId
-    );
     if (!data || !valid || !currentAccount?.address || !chainId) return [];
 
     const normalizedFunc = getMethodDesc(data.func);
     const abi = parseAbiItem(normalizedFunc) as AbiFunction;
     const params = data.str_params;
-    console.log('CUSTOM_LOGGER:=>: params', params);
     const calldata = encodeFunctionData({
       abi: [abi],
       functionName: abi.name,
       args: params as any[],
     });
-    console.log('CUSTOM_LOGGER:=>: calldata', calldata);
 
     const tx = {
       chainId: chainId,
