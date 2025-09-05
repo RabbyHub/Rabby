@@ -13,6 +13,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
+import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
 
 const Wrapper = styled.div`
   display: flex;
@@ -130,11 +131,14 @@ const DappActions = ({
     [currentAccount?.type]
   );
 
+  const { reset: resetGasCache } = useMiniSignGasStore();
+
   const handleSubmit = useCallback(
     async (action: () => Promise<Tx[]>, title?: string) => {
       const txs = await action();
       if (canDirectSign) {
         setTitle(title || '');
+        resetGasCache();
         setMiniSignTxs(txs);
         setIsShowMiniSign(true);
       } else {
@@ -177,15 +181,18 @@ const DappActions = ({
         onClose={() => {
           setIsShowMiniSign(false);
           setMiniSignTxs([]);
+          resetGasCache();
         }}
         onReject={() => {
           setIsShowMiniSign(false);
           setMiniSignTxs([]);
+          resetGasCache();
         }}
         onResolve={() => {
           setTimeout(() => {
             setIsShowMiniSign(false);
             setMiniSignTxs([]);
+            resetGasCache();
             onRefreshProtocol();
           }, 500);
         }}
