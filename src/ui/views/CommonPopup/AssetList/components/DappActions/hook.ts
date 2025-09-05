@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BLACKLIST_METHODS, WHITELIST_ADDRESS } from './constant';
 import { AbiFunction, encodeFunctionData, parseAbiItem } from 'viem';
 import { findChain } from '@/utils/chain';
+import { isValidAddress } from '@ethereumjs/util';
 
 export const isBlacklistMethod = (method: string) => {
   return BLACKLIST_METHODS.map((item) => item.toLowerCase()).includes(
@@ -22,6 +23,7 @@ export const useIsContractBySymbol = () => {
     try {
       // symbol call
       if (!serverId) return false;
+      if (!isValidAddress(address)) return false;
       const data = '0x95d89b41';
       const ret = await wallet.requestETHRpc<string>(
         {
@@ -80,22 +82,26 @@ export const useDappAction = (
       .filter((item) => !!item);
 
     const validate = async (addr: string) => {
-      if (isWhitelistAddress(addr)) return true;
       if (
         currentAccount?.address &&
         isSameAddress(currentAccount.address, addr)
       )
         return true;
+      if (isWhitelistAddress(addr)) return true;
       const isErc20 = await isErc20Contract(addr, chain);
       return isErc20;
     };
 
     const run = async () => {
+      const isValidMethod = !isBlacklistMethod(data.func);
+      if (!isValidMethod) {
+        setValid(false);
+        return;
+      }
       const results = await Promise.all(
         addresses.map((addr) => validate(addr))
       );
       const passed = results.every((item) => item);
-      const isValidMethod = !isBlacklistMethod(data.func);
       console.log('CUSTOM_LOGGER:=>: valid addresses', {
         passed,
         isValidMethod,

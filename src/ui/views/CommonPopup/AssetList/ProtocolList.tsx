@@ -129,7 +129,7 @@ const ProtocolItem = ({
   ]);
 
   const refreshRealTimeProtocol = useCallback(async () => {
-    if (!currentAccount?.address || !_protocol.id) {
+    if (!currentAccount?.address || !_protocol.id || isAppChain) {
       return;
     }
     const res = await wallet.openapi.getProtocol({
