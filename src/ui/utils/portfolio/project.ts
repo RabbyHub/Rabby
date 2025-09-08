@@ -16,6 +16,7 @@ import {
 import {
   PortfolioItem,
   PortfolioItemToken,
+  WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 
 export class DisplayedProject implements AbstractProject {
@@ -169,6 +170,7 @@ class DisplayedPortfolio implements AbstractPortfolio {
   netWorthChange = 0;
   _netWorthChange = '-';
   _changePercentStr = '';
+  withdrawActions?: WithdrawAction[] = [];
 
   constructor(p: PortfolioItem) {
     this.id = `${p.pool?.id}${p.position_index || ''}`;
@@ -189,6 +191,7 @@ class DisplayedPortfolio implements AbstractPortfolio {
 
     this.netWorth = p.stats ? p.stats.net_usd_value : tokenNetWorth;
     this._netWorth = formatUsdValue(this.netWorth);
+    this.withdrawActions = p.withdraw_actions;
 
     this._tokenList = Object.values(this._tokenDict).sort((m, n) => {
       // debt 在最后面进行从大到小排序

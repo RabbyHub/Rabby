@@ -34,6 +34,7 @@ import { noop, omit } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
+import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -75,6 +76,8 @@ export const TransactionItem = ({
   const account = useCurrentAccount();
 
   const [txs, mutateTxs] = useState<Tx[]>([]);
+
+  const { reset: resetGasCache } = useMiniSignGasStore();
 
   const canUseMiniTx = useMemo(() => {
     const chain = findChain({
@@ -225,7 +228,7 @@ export const TransactionItem = ({
     if (canUseMiniTx && !forceSignPage) {
       setIsShowSign(true);
       setIsPreparingSign(false);
-
+      resetGasCache();
       mutateTxs([
         {
           from: maxGasTx.rawTx.from,
@@ -299,6 +302,7 @@ export const TransactionItem = ({
     if (canUseMiniTx && !is7702 && !forceSignPage) {
       setIsShowSign(true);
       setIsPreparingSign(false);
+      resetGasCache();
       mutateTxs([
         {
           from: originTx.rawTx.from,
@@ -370,9 +374,17 @@ export const TransactionItem = ({
 
   const onPreExecError = useCallback(async () => {
     setIsPreparingSign(false);
+    setIsShowSign(false);
     mutateTxs([]);
     await originFn.current(true);
   }, [originFn, mutateTxs]);
+
+  const resetMiniSign = useCallback(() => {
+    setIsPreparingSign(false);
+    setIsShowSign(false);
+    mutateTxs([]);
+    resetGasCache();
+  }, [resetGasCache]);
 
   return (
     <div
@@ -570,23 +582,11 @@ export const TransactionItem = ({
           isPreparingSign={isPreparingSign}
           setIsPreparingSign={setIsPreparingSign}
           session={originSession}
-          onClose={() => {
-            setIsShowSign(false);
-            setIsPreparingSign(false);
-            setTimeout(() => {
-              mutateTxs([]);
-            }, 500);
-          }}
-          onReject={() => {
-            setIsShowSign(false);
-            setIsPreparingSign(false);
-            mutateTxs([]);
-          }}
+          onClose={resetMiniSign}
+          onReject={resetMiniSign}
           onResolve={() => {
             setTimeout(() => {
-              setIsShowSign(false);
-              setIsPreparingSign(false);
-              mutateTxs([]);
+              resetMiniSign();
               onClearPending?.();
             }, 500);
           }}

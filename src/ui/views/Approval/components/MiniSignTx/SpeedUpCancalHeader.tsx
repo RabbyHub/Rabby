@@ -27,7 +27,7 @@ export const SpeedUpCancelHeader = ({
     return null;
   }
   return (
-    <div className="-mx-20 px-20 mb-16 border-b-[0.5px] border-solid border-rabby-neutral-line">
+    <div className="-mx-20 px-20">
       <div className="text-center text-20 font-medium text-r-neutral-title1">
         {isSpeedUp ? t('page.miniSignFooterBar.speedUpTitle') : ''}
         {isCancel ? t('page.miniSignFooterBar.cancelTitle') : ''}
@@ -47,7 +47,7 @@ export const SpeedUpCancelHeader = ({
       ) : (
         <div
           className={clsx(
-            'mt-16 mb-28',
+            'mt-16',
             'flex items-center justify-center text-13 font-medium text-r-green-default gap-2',
             'min-h-[52px] px-[12px] py-[18px] rounded-[8px] bg-r-green-light'
           )}

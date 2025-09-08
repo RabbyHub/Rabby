@@ -44,6 +44,7 @@ export const useQueryProjects = (
     hasValue: hasPortfolios,
     netWorth: portfolioNetWorth,
     updateData: updatePortfolio,
+    removeProtocol,
   } = usePortfolios(userAddr, historyTime, visible, isTestnet);
 
   const refreshPositions = useCallback(() => {
@@ -79,5 +80,6 @@ export const useQueryProjects = (
     blockedTokens,
     portfolios,
     walletProject,
+    removeProtocol,
   };
 };

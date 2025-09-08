@@ -3155,6 +3155,11 @@
     },
     "RiskTip": {
       "title": "Risk Warning"
+    },
+    "DappActions": {
+      "withdraw": "Withdraw",
+      "claim": "Claim",
+      "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
     }
   },
   "global": {

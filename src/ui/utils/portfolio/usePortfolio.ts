@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
 // import { atom, useSetAtom } from 'jotai';
@@ -311,6 +311,13 @@ export const usePortfolios = (
     // setPortfolioChangeLoading(false);
   };
 
+  const removeProtocol = useCallback(
+    (id: string) => {
+      setData((pre) => pre?.filter((item) => item.id !== id));
+    },
+    [setData]
+  );
+
   useEffect(() => {
     return () => {
       abortProcess.current?.abort();
@@ -323,5 +330,6 @@ export const usePortfolios = (
     hasValue,
     isLoading,
     updateData: loadProcess,
+    removeProtocol,
   };
 };

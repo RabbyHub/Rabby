@@ -73,6 +73,8 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   isFirstGasLessLoading?: boolean;
   directSubmit?: boolean;
   account?: Account;
+  disableSignBtn?: boolean;
+  onRedirectToDeposit?: () => void;
 }
 
 const Wrapper = styled.section`
@@ -214,6 +216,8 @@ export const MiniFooterBar: React.FC<Props> = ({
   isGasNotEnough,
   directSubmit,
   account: propsAccount,
+  disableSignBtn = false,
+  onRedirectToDeposit,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -319,6 +323,7 @@ export const MiniFooterBar: React.FC<Props> = ({
               onChangeGasAccount={onChangeGasAccount}
               canDepositUseGasAccount={canDepositUseGasAccount}
               miniFooter
+              onRedirectToDeposit={onRedirectToDeposit}
             />
           ) : null}
 
@@ -330,6 +335,7 @@ export const MiniFooterBar: React.FC<Props> = ({
               isWalletConnect={isWalletConnect}
               noCustomRPC={noCustomRPC}
               miniFooter
+              onRedirectToDeposit={onRedirectToDeposit}
             />
           ) : null}
         </GasTipsWrapper>
@@ -495,6 +501,7 @@ export const MiniFooterBar: React.FC<Props> = ({
             onChangeGasAccount={onChangeGasAccount}
             canDepositUseGasAccount={canDepositUseGasAccount}
             miniFooter
+            onRedirectToDeposit={onRedirectToDeposit}
           />
         )
       ) : null}
@@ -506,6 +513,7 @@ export const MiniFooterBar: React.FC<Props> = ({
           isWalletConnect={isWalletConnect}
           noCustomRPC={noCustomRPC}
           miniFooter
+          onRedirectToDeposit={onRedirectToDeposit}
         />
       ) : null}
     </>
@@ -515,6 +523,14 @@ export const MiniFooterBar: React.FC<Props> = ({
     account.type === KEYRING_CLASS.HARDWARE.LEDGER
       ? MiniLedgerAction
       : MiniOneKeyAction;
+
+  const overWriteDisabledProcess = disableSignBtn
+    ? true
+    : payGasByGasAccount
+    ? !gasAccountCanPay
+    : useGasLess
+    ? false
+    : props.disabledProcess;
 
   return (
     <div className="relative">
@@ -538,13 +554,7 @@ export const MiniFooterBar: React.FC<Props> = ({
               account={account}
               gasLess={useGasLess && !payGasByGasAccount}
               {...props}
-              disabledProcess={
-                payGasByGasAccount
-                  ? !gasAccountCanPay
-                  : useGasLess
-                  ? false
-                  : props.disabledProcess
-              }
+              disabledProcess={overWriteDisabledProcess}
               enableTooltip={
                 payGasByGasAccount
                   ? false
@@ -569,13 +579,7 @@ export const MiniFooterBar: React.FC<Props> = ({
               account={account}
               gasLess={useGasLess && !payGasByGasAccount}
               {...props}
-              disabledProcess={
-                payGasByGasAccount
-                  ? !gasAccountCanPay
-                  : useGasLess
-                  ? false
-                  : props.disabledProcess
-              }
+              disabledProcess={overWriteDisabledProcess}
               enableTooltip={
                 payGasByGasAccount
                   ? false
