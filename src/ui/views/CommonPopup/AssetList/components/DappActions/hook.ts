@@ -7,6 +7,8 @@ import { AbiFunction, encodeFunctionData, parseAbiItem } from 'viem';
 import { findChain } from '@/utils/chain';
 import { isValidAddress } from '@ethereumjs/util';
 import PQueue from 'p-queue';
+import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
+import BigNumber from 'bignumber.js';
 
 const rpcQueue = new PQueue({
   concurrency: 5,
@@ -73,13 +75,14 @@ export const useDappAction = (
   chain?: string
 ) => {
   const currentAccount = useCurrentAccount();
+  const wallet = useWallet();
   const [valid, setValid] = useState(false);
   const isErc20Contract = useIsContractBySymbol();
 
-  const chainId = useMemo(() => {
+  const chainInfo = useMemo(() => {
     return findChain({
       serverId: chain,
-    })?.id;
+    });
   }, [chain]);
 
   useEffect(() => {
@@ -126,8 +129,96 @@ export const useDappAction = (
     run();
   }, [chain, currentAccount?.address, data, isErc20Contract]);
 
+  const buildApproveTxs = useCallback(async (): Promise<Tx[]> => {
+    const resTxs: Tx[] = [];
+    if (
+      !data ||
+      !valid ||
+      !currentAccount?.address ||
+      !chainInfo?.id ||
+      !data?.need_approve?.to ||
+      !data?.need_approve?.token_id ||
+      !data?.need_approve?.str_raw_amount
+    ) {
+      return [];
+    }
+
+    let tokenApproved = false;
+    let allowance = '0';
+    if (data?.need_approve.to === chainInfo?.nativeTokenAddress) {
+      tokenApproved = true;
+    } else {
+      allowance = await wallet.getERC20Allowance(
+        chainInfo.serverId,
+        data?.need_approve?.token_id,
+        data?.need_approve?.to
+      );
+      tokenApproved = new BigNumber(allowance).gte(
+        new BigNumber(data.need_approve.str_raw_amount || '0')
+      );
+    }
+    let shouldTwoStepApprove = false;
+    if (
+      chainInfo?.enum === CHAINS_ENUM.ETH &&
+      isSameAddress(data?.need_approve?.to, ETH_USDT_CONTRACT) &&
+      Number(allowance) !== 0 &&
+      !tokenApproved
+    ) {
+      shouldTwoStepApprove = true;
+    }
+    if (shouldTwoStepApprove) {
+      const res = await wallet.approveToken(
+        chainInfo.serverId,
+        data?.need_approve?.token_id,
+        data?.need_approve?.to,
+        0,
+        {
+          ga: {
+            category: 'Security',
+            source: 'tokenApproval',
+          },
+        },
+        undefined,
+        undefined,
+        true
+      );
+      resTxs.push(res.params[0]);
+    }
+    if (!tokenApproved) {
+      const res = await wallet.approveToken(
+        chainInfo.serverId,
+        data?.need_approve?.token_id,
+        data?.need_approve?.to,
+        data?.need_approve?.str_raw_amount || '0',
+        {
+          ga: {
+            category: 'Security',
+            source: 'tokenApproval',
+          },
+        },
+        undefined,
+        undefined,
+        true
+      );
+      resTxs.push(res.params[0]);
+    }
+
+    return resTxs;
+  }, [
+    data,
+    valid,
+    currentAccount?.address,
+    chainInfo?.id,
+    chainInfo?.nativeTokenAddress,
+    chainInfo?.enum,
+    chainInfo?.serverId,
+    wallet,
+  ]);
+
   const action = useCallback(async (): Promise<Tx[]> => {
-    if (!data || !valid || !currentAccount?.address || !chainId) return [];
+    if (!data || !valid || !currentAccount?.address || !chainInfo?.id) {
+      return [];
+    }
 
     const normalizedFunc = getMethodDesc(data.func);
     const abi = parseAbiItem(normalizedFunc) as AbiFunction;
@@ -138,15 +229,18 @@ export const useDappAction = (
       args: params as any[],
     });
 
+    const approve_txs = await buildApproveTxs();
+
     const tx = {
-      chainId: chainId,
+      chainId: chainInfo.id,
       from: currentAccount.address,
       to: data.contract_id,
       value: '0x0',
       data: calldata,
     } as any;
-    return [tx];
-  }, [data, valid, currentAccount?.address, chainId]);
+
+    return [...approve_txs, tx];
+  }, [data, valid, currentAccount?.address, chainInfo?.id, buildApproveTxs]);
 
   return {
     valid,
