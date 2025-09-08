@@ -63,7 +63,7 @@ export default function ShowMoreGasSelectModal({
               }}
               ActiveComponent={RcIconGasActive}
               BlurComponent={RcIconGasBlurCC}
-              title={'Gas Token'}
+              title={t('page.gasAccount.gasToken')}
             />
 
             <Tooltip
@@ -91,7 +91,7 @@ export default function ShowMoreGasSelectModal({
                   }}
                   ActiveComponent={RcIconGasAccountActive}
                   BlurComponent={RcIconGasAccountBlurCC}
-                  title={'Gasaccount'}
+                  title={t('page.gasAccount.title')}
                 />
               </div>
             </Tooltip>
