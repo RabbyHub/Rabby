@@ -29,6 +29,12 @@ interface ActionButtonProps {
   onClick: () => void;
 }
 
+export const enum ActionType {
+  Withdraw = 'withdraw',
+  Claim = 'claim',
+  Queue = 'queue',
+}
+
 const ActionButton = ({ text, onClick, className }: ActionButtonProps) => {
   return (
     <div
@@ -50,23 +56,37 @@ const DappActionHeader = ({
   logo,
   chain,
   title,
+  description,
 }: {
   logo?: string;
   chain?: string;
   title?: string;
+  description?: string;
 }) => {
   return (
-    <div className="flex items-center w-full justify-center">
-      <IconWithChain
-        iconUrl={logo}
-        chainServerId={chain || 'eth'}
-        width="24px"
-        height="24px"
-        isShowChainTooltip
-      />
-      <div className="ml-[8px] font-medium text-[20px] text-r-neutral-title-1">
-        {title}
+    <div className="flex flex-col items-center w-full justify-center mb-[-6px]">
+      <div className="flex items-center justify-center w-full">
+        <IconWithChain
+          iconUrl={logo}
+          chainServerId={chain || 'eth'}
+          width="24px"
+          height="24px"
+          isShowChainTooltip
+        />
+        <div className="ml-[8px] font-medium text-[20px] text-r-neutral-title-1">
+          {title}
+        </div>
       </div>
+      {!!description && (
+        <div
+          className={`
+          text-[13px] font-medium text-r-blue-default text-center
+          px-[16px] py-[10px] mt-[16px] rounded-[8px] bg-r-blue-light1
+        `}
+        >
+          {description}
+        </div>
+      )}
     </div>
   );
 };
@@ -75,12 +95,10 @@ const DappActions = ({
   data,
   chain,
   protocolLogo,
-  onRefreshProtocol,
 }: {
   data?: WithdrawAction[];
   chain?: string;
   protocolLogo?: string;
-  onRefreshProtocol: () => Promise<ComplexProtocol | undefined>;
 }) => {
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
@@ -92,40 +110,50 @@ const DappActions = ({
   const [miniSignTxs, setMiniSignTxs] = useState<Tx[]>([]);
   const [title, setTitle] = useState<string>('');
 
-  const withdrawActions = useMemo(
+  const withdrawAction = useMemo(
     () =>
-      data?.filter(
-        (item) => !item?.need_approve?.to && item.type === 'withdraw'
+      data?.find(
+        (item) =>
+          item.type === ActionType.Withdraw || item.type === ActionType.Queue
       ),
     [data]
   );
-  const claimActions = useMemo(
-    () =>
-      data?.filter((item) => !item?.need_approve?.to && item.type === 'claim'),
+  const claimAction = useMemo(
+    () => data?.find((item) => item.type === ActionType.Claim),
     [data]
+  );
+  const isQueueWithdraw = useMemo(
+    () => withdrawAction?.type === ActionType.Queue,
+    [withdrawAction?.type]
   );
 
   const { valid: showWithdraw, action: actionWithdraw } = useDappAction(
-    withdrawActions?.[0],
+    withdrawAction,
     chain
   );
   const { valid: showClaim, action: actionClaim } = useDappAction(
-    claimActions?.[0],
+    claimAction,
     chain
   );
 
-  const onPreExecChange = useCallback((r: ExplainTxResponse) => {
-    if (!r.pre_exec.success) {
-      setDisabledSign(true);
-      return;
-    }
-    if (
-      !r?.balance_change?.receive_nft_list?.length &&
-      !r?.balance_change?.receive_token_list?.length
-    ) {
-      setDisabledSign(true);
-    }
-  }, []);
+  const onPreExecChange = useCallback(
+    (r: ExplainTxResponse) => {
+      if (!r.pre_exec.success) {
+        setDisabledSign(true);
+        return;
+      }
+      if (
+        !r?.balance_change?.receive_nft_list?.length &&
+        !r?.balance_change?.receive_token_list?.length
+      ) {
+        // queue withdraw not need to check balance change
+        if (!isQueueWithdraw) {
+          setDisabledSign(true);
+        }
+      }
+    },
+    [isQueueWithdraw]
+  );
 
   const canDirectSign = useMemo(
     () => supportedDirectSign(currentAccount?.type || ''),
@@ -149,7 +177,7 @@ const DappActions = ({
         });
       }
     },
-    [canDirectSign, wallet]
+    [canDirectSign, resetGasCache, wallet]
   );
 
   if (!showWithdraw && !showClaim) {
@@ -160,7 +188,7 @@ const DappActions = ({
     <Wrapper>
       {showWithdraw && (
         <ActionButton
-          text="Withdraw"
+          text={t('component.DappActions.withdraw')}
           className={`${showClaim ? 'w-[216px]' : 'flex-1'}`}
           onClick={() =>
             handleSubmit(actionWithdraw, t('component.DappActions.withdraw'))
@@ -169,7 +197,7 @@ const DappActions = ({
       )}
       {showClaim && (
         <ActionButton
-          text="Claim"
+          text={t('component.DappActions.claim')}
           className={`${showWithdraw ? 'w-[108px]' : 'flex-1'}`}
           onClick={() =>
             handleSubmit(actionClaim, t('component.DappActions.claim'))
@@ -195,7 +223,6 @@ const DappActions = ({
             setMiniSignTxs([]);
             resetGasCache();
             setVisible(false);
-            onRefreshProtocol();
           }, 500);
         }}
         autoThrowPreExecError={false}
@@ -209,7 +236,16 @@ const DappActions = ({
         onPreExecChange={onPreExecChange}
         disableSignBtn={disabledSign}
         title={
-          <DappActionHeader logo={protocolLogo} chain={chain} title={title} />
+          <DappActionHeader
+            logo={protocolLogo}
+            chain={chain}
+            title={title}
+            description={
+              isQueueWithdraw
+                ? t('component.DappActions.queueDescription')
+                : undefined
+            }
+          />
         }
       />
     </Wrapper>

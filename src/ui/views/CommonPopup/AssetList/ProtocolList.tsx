@@ -14,7 +14,6 @@ import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import DappActions from './components/DappActions';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -46,12 +45,10 @@ const PoolItem = ({
   item,
   chain,
   protocolLogo,
-  onRefreshProtocol,
 }: {
   item: AbstractPortfolio;
   chain?: string;
   protocolLogo?: string;
-  onRefreshProtocol: () => Promise<ComplexProtocol | undefined>;
 }) => {
   const types = item._originPortfolio.detail_types?.reverse();
   const type =
@@ -63,7 +60,6 @@ const PoolItem = ({
       {!!item.withdrawActions?.length &&
         !item?._originPortfolio?.proxy_detail?.proxy_contract_id && (
           <DappActions
-            onRefreshProtocol={onRefreshProtocol}
             data={item.withdrawActions}
             chain={chain}
             protocolLogo={protocolLogo}
@@ -146,6 +142,7 @@ const ProtocolItem = ({
   }, [
     _protocol.id,
     currentAccount?.address,
+    isAppChain,
     protocol.id,
     removeProtocol,
     wallet.openapi,
@@ -249,7 +246,6 @@ const ProtocolItem = ({
                 <PoolItem
                   protocolLogo={protocol.logo}
                   chain={protocol.chain}
-                  onRefreshProtocol={refreshRealTimeProtocol}
                   item={portfolio}
                 />
                 {index !== protocol._portfolios.length - 1 && (
