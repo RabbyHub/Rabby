@@ -2,7 +2,11 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { Tx, WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { BLACKLIST_METHODS, WHITELIST_ADDRESS } from './constant';
+import {
+  BLACKLIST_METHODS,
+  WHITELIST_ADDRESS,
+  WHITELIST_SPENDER,
+} from './constant';
 import { AbiFunction, encodeFunctionData, parseAbiItem } from 'viem';
 import { findChain } from '@/utils/chain';
 import { isValidAddress } from '@ethereumjs/util';
@@ -24,6 +28,14 @@ export const isBlacklistMethod = (method: string) => {
 
 export const isWhitelistAddress = (address: string) => {
   return WHITELIST_ADDRESS.some((item) => isSameAddress(item, address));
+};
+
+export const isWhitelistSpender = (address: string, chain: string) => {
+  return WHITELIST_SPENDER.some(
+    (item) =>
+      isSameAddress(item.address, address) &&
+      item.chain.toLowerCase() === chain.toLowerCase()
+  );
 };
 
 export const useIsContractBySymbol = () => {
@@ -86,47 +98,59 @@ export const useDappAction = (
   }, [chain]);
 
   useEffect(() => {
-    if (!data) return;
-    const normalizedFunc = getMethodDesc(data.func);
-    const abi = parseAbiItem(normalizedFunc) as AbiFunction;
-    const isAddressArray = abi.inputs.map((item) => item.type === 'address');
-    const addresses = data.str_params
-      ? data.str_params
-          ?.map((item, index) =>
-            isAddressArray[index] ? (item as string) : ''
-          )
-          ?.filter((item) => !!item)
-      : [];
+    if (!data || !chain) return;
+    try {
+      const normalizedFunc = getMethodDesc(data.func);
+      const abi = parseAbiItem(normalizedFunc) as AbiFunction;
+      const isAddressArray = abi.inputs.map((item) => item.type === 'address');
+      const addresses = data.str_params
+        ? data.str_params
+            ?.map((item, index) =>
+              isAddressArray[index] ? (item as string) : ''
+            )
+            ?.filter((item) => !!item)
+        : [];
 
-    const validate = async (addr: string) => {
-      if (
-        currentAccount?.address &&
-        isSameAddress(currentAccount.address, addr)
-      )
-        return true;
-      if (isWhitelistAddress(addr)) return true;
-      const isErc20 = await isErc20Contract(addr, chain);
-      return isErc20;
-    };
+      const validate = async (addr: string) => {
+        if (
+          currentAccount?.address &&
+          isSameAddress(currentAccount.address, addr)
+        )
+          return true;
+        if (isWhitelistAddress(addr)) return true;
+        const isErc20 = await isErc20Contract(addr, chain);
+        return isErc20;
+      };
 
-    const run = async () => {
-      const isValidMethod = !isBlacklistMethod(data.func);
-      if (!isValidMethod) {
-        setValid(false);
-        return;
-      }
-      if (!addresses?.length) {
-        setValid(true);
-        return;
-      }
-      const results = await Promise.all(
-        addresses.map((addr) => validate(addr))
-      );
-      const passed = results.every((item) => item);
-      setValid(passed);
-    };
+      const run = async () => {
+        if (
+          data?.need_approve?.to &&
+          !isWhitelistSpender(data.need_approve?.to, chain)
+        ) {
+          setValid(false);
+          return;
+        }
+        const isValidMethod = !isBlacklistMethod(data.func);
+        if (!isValidMethod) {
+          setValid(false);
+          return;
+        }
+        if (!addresses?.length) {
+          setValid(true);
+          return;
+        }
+        const results = await Promise.all(
+          addresses.map((addr) => validate(addr))
+        );
+        const passed = results.every((item) => item);
+        setValid(passed);
+      };
 
-    run();
+      run();
+    } catch (error) {
+      // ignore error and hide actions
+      setValid(false);
+    }
   }, [chain, currentAccount?.address, data, isErc20Contract]);
 
   const buildApproveTxs = useCallback(async (): Promise<Tx[]> => {
