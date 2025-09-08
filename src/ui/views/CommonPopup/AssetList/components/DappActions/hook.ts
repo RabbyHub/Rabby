@@ -172,14 +172,18 @@ export const useDappAction = (
     if (data?.need_approve.to === chainInfo?.nativeTokenAddress) {
       tokenApproved = true;
     } else {
-      allowance = await wallet.getERC20Allowance(
-        chainInfo.serverId,
-        data?.need_approve?.token_id,
-        data?.need_approve?.to
-      );
-      tokenApproved = new BigNumber(allowance).gte(
-        new BigNumber(data.need_approve.str_raw_amount || '0')
-      );
+      try {
+        allowance = await wallet.getERC20Allowance(
+          chainInfo.serverId,
+          data?.need_approve?.token_id,
+          data?.need_approve?.to
+        );
+        tokenApproved = new BigNumber(allowance).gte(
+          new BigNumber(data.need_approve.str_raw_amount || '0')
+        );
+      } catch (error) {
+        // ignore error, default to not approved
+      }
     }
     let shouldTwoStepApprove = false;
     if (
