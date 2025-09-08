@@ -491,7 +491,7 @@ export const PerpsSingleCoin = () => {
                   </TooltipWithMagnetArrow>
                 </div>
                 <span className="text-r-neutral-title-1 font-medium">
-                  {Number(positionData?.fundingPayments || 0) > 0 ? '+' : '-'}$
+                  {Number(positionData?.fundingPayments || 0) > 0 ? '-' : '+'}$
                   {Math.abs(Number(positionData?.fundingPayments || 0))}
                 </span>
               </div>
