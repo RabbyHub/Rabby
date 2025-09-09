@@ -25,4 +25,6 @@ export const WHITELIST_SPENDER = [
   { chain: 'avax', address: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24' },
   { chain: 'zora', address: '0xa00f34a632630efd15223b1968358ba4845beec7' },
   { chain: 'blast', address: '0xbb66eb1c5e875933d44dae661dbd80e5d9b03035' },
+  { chain: 'eth', address: '0x889edc2edab5f40e902b864ad4d7ade8e412f9b1' },
+  { chain: 'eth', address: '0xe39682c3c44b73285a2556d4869041e674d1a6b7' },
 ];
