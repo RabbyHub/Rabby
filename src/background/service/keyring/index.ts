@@ -681,6 +681,21 @@ export class KeyringService extends EventEmitter {
       });
   }
 
+  async persistUpdate() {
+    if (!this.isUnlocked()) {
+      return Promise.reject(
+        new Error('KeyringController - password is not a string')
+      );
+    }
+
+    return this.persistAllKeyrings()
+      .then(this._updateMemStoreKeyrings.bind(this))
+      .then(this.fullUpdate.bind(this))
+      .catch((e) => {
+        return Promise.reject(e);
+      });
+  }
+
   //
   // SIGNING METHODS
   //
