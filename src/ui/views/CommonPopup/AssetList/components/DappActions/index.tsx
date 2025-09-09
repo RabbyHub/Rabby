@@ -175,12 +175,14 @@ const DappActions = ({
         setIsShowMiniSign(true);
       } else {
         try {
-          for (const tx of txs) {
-            await wallet.sendRequest<string>({
-              method: 'eth_sendTransaction',
-              params: [tx],
-            });
-          }
+          await Promise.all(
+            txs.map(async (tx) => {
+              return wallet.sendRequest<string>({
+                method: 'eth_sendTransaction',
+                params: [tx],
+              });
+            })
+          );
           setVisible(false);
         } catch (error) {
           console.error('Transaction failed:', error);
