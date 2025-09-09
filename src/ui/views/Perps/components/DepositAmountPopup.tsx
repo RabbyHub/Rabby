@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Button, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { TokenSelectPopup } from './TokenSelectPopup';
@@ -34,6 +34,7 @@ import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
 import { useRabbyDispatch } from '@/ui/store';
 import { formatTokenAmount } from '@debank/common';
+import { useMemoizedFn } from 'ahooks';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
@@ -68,8 +69,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const isSigningLoading = useDirectSigning();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [amount, setAmount] = React.useState<string>('');
+  const [isWithdrawLoading, setIsWithdrawLoading] = React.useState(false);
+  const [usdValue, setUsdValue] = React.useState<string>('');
   const [tokenVisible, setTokenVisible] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState<TokenItem | null>(
     ARB_USDC_TOKEN_ITEM
@@ -77,18 +78,26 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const inputRef = React.useRef<HTMLInputElement>(null);
   const wallet = useWallet();
   const startDirectSigning = useStartDirectSigning();
+  const [tokenList, setTokenList] = React.useState<TokenItem[]>([]);
+  const [tokenListLoading, setTokenListLoading] = React.useState(false);
 
-  const { value: usdcTokenInfo, loading: usdcLoading } = useAsync(async () => {
-    if (!currentPerpsAccount?.address || !visible) return null;
+  const { value: _tokenInfo, loading: tokenLoading } = useAsync(async () => {
+    if (!currentPerpsAccount?.address || !visible || !selectedToken)
+      return null;
     const info = await wallet.openapi.getToken(
       currentPerpsAccount.address,
-      ARB_USDC_TOKEN_SERVER_CHAIN,
-      ARB_USDC_TOKEN_ID
+      selectedToken?.chain,
+      selectedToken?.id
     );
     return info;
-  }, [currentPerpsAccount?.address, visible]);
+  }, [currentPerpsAccount?.address, visible, selectedToken]);
 
-  const { value: list, loading } = useAsync(async () => {
+  const tokenInfo = useMemo(() => {
+    return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
+  }, [_tokenInfo, selectedToken]);
+
+  const fetchTokenList = useMemoizedFn(async () => {
+    setTokenListLoading(true);
     if (!currentPerpsAccount?.address || !visible) return [];
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
     const usdcToken = res.find(
@@ -96,15 +105,36 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
     );
     setSelectedToken(usdcToken || ARB_USDC_TOKEN_ITEM);
+    setTokenListLoading(false);
+    setTokenList(res);
+
+    const tokenRes = await batchQueryTokens(
+      currentPerpsAccount.address,
+      wallet,
+      undefined,
+      false
+    );
+    setTokenList(tokenRes);
     return res;
-  }, [currentPerpsAccount?.address, visible]);
+  });
+
+  useEffect(() => {
+    fetchTokenList();
+  }, [fetchTokenList]);
 
   React.useEffect(() => {
     if (!visible) {
-      setAmount('');
-      setIsLoading(false);
+      setUsdValue('');
+      setIsWithdrawLoading(false);
     }
   }, [visible]);
+
+  const isDirectDeposit = useMemo(() => {
+    return (
+      selectedToken?.id === ARB_USDC_TOKEN_ID &&
+      selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN
+    );
+  }, [selectedToken]);
 
   React.useEffect(() => {
     if (visible && inputRef.current) {
@@ -118,20 +148,20 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   }, [visible]);
 
   const amountValidation = React.useMemo(() => {
-    const amountValue = Number(amount) || 0;
-    if (amountValue === 0) {
+    const value = Number(usdValue) || 0;
+    if (value === 0) {
       return { isValid: false, error: null };
     }
 
     if (type === 'withdraw') {
-      if (amountValue > Number(availableBalance)) {
+      if (value > Number(availableBalance)) {
         return {
           isValid: false,
           error: 'insufficient_balance',
           errorMessage: t('page.perps.insufficientBalance'),
         };
       }
-      if (amountValue < 2) {
+      if (value < 2) {
         return {
           isValid: false,
           error: 'minimum_limit',
@@ -141,7 +171,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
       return { isValid: true, error: null };
     } else {
-      if (amountValue < 5) {
+      if (value < 5) {
         return {
           isValid: false,
           error: 'minimum_limit',
@@ -149,7 +179,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         };
       }
 
-      if (amountValue > (usdcTokenInfo?.amount || 0)) {
+      const tokenAmount = (tokenInfo?.amount || 0) * (tokenInfo?.price || 0);
+      if (value > tokenAmount) {
         return {
           isValid: false,
           error: 'insufficient_balance',
@@ -158,7 +189,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       }
       return { isValid: true, error: null };
     }
-  }, [amount, t, usdcTokenInfo?.amount]);
+  }, [usdValue, t, tokenInfo]);
 
   const isValidAmount = useMemo(() => amountValidation.isValid, [
     amountValidation.isValid,
@@ -182,10 +213,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   useDebounce(
     () => {
       if (!visible || type === 'withdraw') return;
-      updateMiniSignTx(Number(amount) || 0);
+      updateMiniSignTx(Number(usdValue) || 0);
     },
     300,
-    [amount, visible, updateMiniSignTx, type]
+    [usdValue, visible, updateMiniSignTx, type]
   );
 
   useDebounce(
@@ -268,7 +299,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 ref={inputRef}
                 autoFocus
                 placeholder="$0"
-                value={amount ? `$${amount}` : ''}
+                value={usdValue ? `$${usdValue}` : ''}
                 onChange={(e) => {
                   let value = e.target.value;
 
@@ -279,7 +310,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
                   // 只允许数字和小数点
                   if (/^\d*\.?\d*$/.test(value) || value === '') {
-                    setAmount(value);
+                    setUsdValue(value);
                   }
                 }}
               />
@@ -322,8 +353,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   />
                   <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
                     {type === 'withdraw'
-                      ? getTokenSymbol(selectedToken)
-                      : formatTokenAmount(usdcTokenInfo?.amount || 0, 2)}
+                      ? getTokenSymbol(ARB_USDC_TOKEN_ITEM)
+                      : isDirectDeposit
+                      ? formatTokenAmount(tokenInfo?.amount || 0, 2)
+                      : formatUsdValue(
+                          (tokenInfo?.amount || 0) * (tokenInfo?.price || 0),
+                          BigNumber.ROUND_DOWN
+                        )}
                   </div>
                   {type === 'deposit' && (
                     <ThemeIcon
@@ -386,16 +422,16 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               disabled={!isValidAmount}
               size="large"
               type="primary"
-              loading={isLoading}
+              loading={isWithdrawLoading}
               className="h-[48px] text-r-neutral-title2 text-15 font-medium"
               style={{
                 height: 48,
               }}
               onClick={async () => {
-                setIsLoading(true);
+                setIsWithdrawLoading(true);
                 clearMiniSignTx();
-                await handleWithdraw?.(Number(amount));
-                setIsLoading(false);
+                await handleWithdraw?.(Number(usdValue));
+                setIsWithdrawLoading(false);
                 onClose?.();
               }}
             >
@@ -407,13 +443,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
       <TokenSelectPopup
         visible={tokenVisible}
-        usdcTokenInfo={usdcTokenInfo}
         changeAccount={async () => {
           if (currentPerpsAccount) {
             await dispatch.account.changeAccountAsync(currentPerpsAccount);
           }
         }}
-        list={list || []}
+        list={tokenList || []}
         onCancel={() => setTokenVisible(false)}
         onSelect={(t) => {
           setSelectedToken(t);
