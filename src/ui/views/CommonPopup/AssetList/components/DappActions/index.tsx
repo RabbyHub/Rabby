@@ -168,6 +168,7 @@ const DappActions = ({
   const handleSubmit = useCallback(
     async (action: () => Promise<Tx[]>, title?: string) => {
       const txs = await action();
+      console.log('CUSTOM_LOGGER:=>: handleSubmit', txs);
       if (canDirectSign) {
         setTitle(title || '');
         resetGasCache();
