@@ -169,10 +169,10 @@ export const BridgeContent = () => {
     ) {
       try {
         setFetchingBridgeQuote(true);
-        const { tx } = await pRetry(
+        const tx = await pRetry(
           () =>
             wallet.openapi
-              .getBridgeQuoteTxV2({
+              .buildBridgeTx({
                 aggregator_id: selectedBridgeQuote.aggregator.id,
                 bridge_id: selectedBridgeQuote.bridge_id,
                 from_token_id: fromToken.id,
@@ -185,6 +185,7 @@ export const BridgeContent = () => {
                 to_chain_id: toToken.chain,
                 to_token_id: toToken.id,
                 slippage: new BigNumber(slippageState).div(100).toString(10),
+                quote_key: JSON.stringify(selectedBridgeQuote.quote_key || {}),
               })
               .catch((e) => {
                 throw new AbortError(e?.message || String(e));
@@ -307,10 +308,10 @@ export const BridgeContent = () => {
     ) {
       try {
         // setFetchingBridgeQuote(true);
-        const { tx } = await pRetry(
+        const tx = await pRetry(
           () =>
             wallet.openapi
-              .getBridgeQuoteTxV2({
+              .buildBridgeTx({
                 aggregator_id: selectedBridgeQuote.aggregator.id,
                 bridge_id: selectedBridgeQuote.bridge_id,
                 from_chain_id: fromToken.chain,
@@ -323,6 +324,7 @@ export const BridgeContent = () => {
                 to_chain_id: toToken.chain,
                 to_token_id: toToken.id,
                 slippage: new BigNumber(slippageState).div(100).toString(10),
+                quote_key: JSON.stringify(selectedBridgeQuote.quote_key || {}),
               })
               .catch((e) => {
                 throw new AbortError(e?.message || String(e));

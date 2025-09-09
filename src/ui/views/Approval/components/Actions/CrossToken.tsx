@@ -13,6 +13,7 @@ import {
 } from '@rabby-wallet/rabby-action';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
+import { findChain } from '@/utils/chain';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SecurityListItem } from './components/SecurityListItem';
@@ -79,6 +80,10 @@ const Swap = ({
   const hasReceiver = useMemo(() => {
     return !isSameAddress(receiver, requireData.sender);
   }, [requireData, receiver]);
+
+  const receiveChain = useMemo(() => {
+    return findChain({ serverId: receiveToken.chain }) || undefined;
+  }, [receiveToken.chain]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -208,7 +213,7 @@ const Swap = ({
                 <Values.AddressWithCopy
                   id="cross-token-receiver"
                   address={receiver}
-                  chain={chain}
+                  chain={receiveChain}
                 />
               </Row>
             </Col>
