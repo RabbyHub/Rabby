@@ -77,6 +77,7 @@ import {
   EIP7702RevokeMiniGasLimit,
   removeLeadingZeroes,
 } from '@/background/utils/7702';
+import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
 
 const reportSignText = (params: {
   method: string;
@@ -564,6 +565,10 @@ class ProviderController extends BaseController {
         txParams.from,
         opts
       );
+      await fixKeyringAccountOnSigned({
+        keyring,
+        address: txParams.from,
+      });
     } catch (e) {
       console.error(e);
       const errObj =
