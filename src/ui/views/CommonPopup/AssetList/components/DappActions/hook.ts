@@ -15,7 +15,7 @@ import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
 import BigNumber from 'bignumber.js';
 
 const rpcQueue = new PQueue({
-  concurrency: 5,
+  concurrency: 20,
   interval: 1000,
   intervalCap: 10,
 });
