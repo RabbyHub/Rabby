@@ -77,6 +77,7 @@ import BalanceChange from '../TxComponents/BalanceChange';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { Divide } from '../Divide';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
+import { BalanceChangeLoading } from './BalanceChangeLoanding';
 
 interface MiniSignTxProps {
   txs: Tx[];
@@ -1207,19 +1208,22 @@ export const MiniSignTx = ({
               <div className="flex flex-col gap-[22px] mb-16">
                 {title}
 
-                {showSimulateChange &&
-                txsResult?.[txsResult?.length - 1]?.preExecResult ? (
+                {showSimulateChange ? (
                   <div className="bg-r-neutral-card-2 px-16 py-12 rounded-[8px]">
-                    <BalanceChange
-                      version={
-                        txsResult?.[txsResult?.length - 1].preExecResult
-                          .pre_exec_version
-                      }
-                      data={
-                        txsResult?.[txsResult?.length - 1].preExecResult
-                          .balance_change
-                      }
-                    />
+                    {txsResult?.[txsResult?.length - 1]?.preExecResult ? (
+                      <BalanceChange
+                        version={
+                          txsResult?.[txsResult?.length - 1].preExecResult
+                            .pre_exec_version
+                        }
+                        data={
+                          txsResult?.[txsResult?.length - 1].preExecResult
+                            .balance_change
+                        }
+                      />
+                    ) : (
+                      <BalanceChangeLoading />
+                    )}
                   </div>
                 ) : null}
 
