@@ -22,7 +22,7 @@ export const fixKeyringAccountOnSigned = async ({
         passphraseState: currentKeyring.passphraseState,
       };
 
-      await keyringService.addNewAccount(currentKeyring);
+      await keyringService.persistUpdate();
     }
   }
 };
