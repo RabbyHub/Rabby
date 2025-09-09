@@ -23,6 +23,7 @@ export const usePollBridgePendingNumber = (timer = 10000) => {
       user_addr: account!.address,
       start: 0,
       limit: 10,
+      is_all: true,
     });
     // return (
     //   data?.history_list?.filter((item) => item?.status === 'pending')
@@ -77,6 +78,7 @@ export const useBridgeHistory = () => {
         user_addr: addr,
         start: start,
         limit: limit,
+        is_all: true,
       });
       return {
         list: data?.history_list,
@@ -152,7 +154,7 @@ export const useBridgeHistory = () => {
     if (
       !loading &&
       !loadingMore &&
-      txList?.list?.some((e) => e.status !== 'completed') &&
+      txList?.list?.some((e) => e.status === 'pending') &&
       isInBridge
     ) {
       timer = setTimeout(refreshBridgeListTx, 2000);
