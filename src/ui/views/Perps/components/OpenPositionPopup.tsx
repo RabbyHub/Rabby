@@ -560,7 +560,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         liqPrice={Number(estimatedLiquidationPrice)}
         direction={direction}
         size={Number(tradeSize)}
-        pxDecimals={szDecimals}
+        pxDecimals={pxDecimals}
         onClose={() => setAutoCloseVisible(false)}
         handleSetAutoClose={async (params: {
           tpPrice: string;
