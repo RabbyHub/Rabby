@@ -9,9 +9,11 @@ import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import PortfolioTemplate from './ProtocolTemplates';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
-import { openInTab, useCommonPopupView } from '@/ui/utils';
+import { openInTab, useCommonPopupView, useWallet } from '@/ui/utils';
 import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
+import DappActions from './components/DappActions';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -39,7 +41,15 @@ const PoolItemWrapper = styled.div`
   }
 `;
 
-const PoolItem = ({ item }: { item: AbstractPortfolio }) => {
+const PoolItem = ({
+  item,
+  chain,
+  protocolLogo,
+}: {
+  item: AbstractPortfolio;
+  chain?: string;
+  protocolLogo?: string;
+}) => {
   const types = item._originPortfolio.detail_types?.reverse();
   const type =
     types?.find((t) => (t in TemplateDict ? t : '')) || 'unsupported';
@@ -47,6 +57,14 @@ const PoolItem = ({ item }: { item: AbstractPortfolio }) => {
   return (
     <PoolItemWrapper>
       <PortfolioDetail name={item._originPortfolio.name} data={item} />
+      {!!item.withdrawActions?.length &&
+        !item?._originPortfolio?.proxy_detail?.proxy_contract_id && (
+          <DappActions
+            data={item.withdrawActions}
+            chain={chain}
+            protocolLogo={protocolLogo}
+          />
+        )}
     </PoolItemWrapper>
   );
 };
@@ -79,24 +97,63 @@ const ProtocolItemWrapper = styled.div`
   }
 `;
 const ProtocolItem = ({
-  protocol,
+  protocol: _protocol,
   enableDelayVisible,
   isAppChain,
   isSearch,
+  removeProtocol,
 }: {
   protocol: DisplayedProject;
   enableDelayVisible: boolean;
   isAppChain?: boolean;
   isSearch?: boolean;
+  removeProtocol?: (id: string) => void;
 }) => {
   const { t } = useTranslation();
   const [isExpand, setIsExpand] = useState(false);
   const { visible } = useCommonPopupView();
   const [delayVisible, setDelayVisible] = useState(false);
+  const currentAccount = useCurrentAccount();
+  const wallet = useWallet();
+  const [
+    realTimeProtocol,
+    setRealTimeProtocol,
+  ] = useState<DisplayedProject | null>(null);
+
+  const protocol = useMemo(() => realTimeProtocol || _protocol, [
+    realTimeProtocol,
+    _protocol,
+  ]);
+
+  const refreshRealTimeProtocol = useCallback(async () => {
+    if (!currentAccount?.address || !_protocol.id || isAppChain) {
+      return;
+    }
+    const res = await wallet.openapi.getProtocol({
+      addr: currentAccount?.address,
+      id: _protocol.id,
+    });
+    if (res.portfolio_item_list.length) {
+      setRealTimeProtocol(new DisplayedProject(res, res.portfolio_item_list));
+    } else {
+      removeProtocol?.(protocol.id);
+    }
+    return res;
+  }, [
+    _protocol.id,
+    currentAccount?.address,
+    isAppChain,
+    protocol.id,
+    removeProtocol,
+    wallet.openapi,
+  ]);
 
   const onClickTitle = useCallback(() => {
     setIsExpand((prev) => !prev);
-  }, []);
+    if (!isExpand) {
+      refreshRealTimeProtocol();
+    }
+  }, [isExpand, refreshRealTimeProtocol]);
 
   useEffect(() => {
     setIsExpand(!!isSearch);
@@ -181,10 +238,23 @@ const ProtocolItem = ({
             />
           </div>
         </div>
-        {isExpand &&
-          protocol._portfolios.map((portfolio) => (
-            <PoolItem item={portfolio} key={portfolio.id} />
-          ))}
+        {isExpand && (
+          <>
+            <div className="border-b-[0.5px] border-b-solid border-b-r-neutral-line" />
+            {protocol._portfolios.map((portfolio, index) => (
+              <div key={portfolio.id}>
+                <PoolItem
+                  protocolLogo={protocol.logo}
+                  chain={protocol.chain}
+                  item={portfolio}
+                />
+                {index !== protocol._portfolios.length - 1 && (
+                  <div className="border-b-[0.5px] border-dotted border-b-r-neutral-line ml-[8px] mr-[12px]" />
+                )}
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </ProtocolItemWrapper>
   );
@@ -194,13 +264,14 @@ interface Props {
   list: DisplayedProject[] | undefined;
   isSearch?: boolean;
   appIds?: string[];
+  removeProtocol?: (id: string) => void;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, isSearch, appIds }: Props) => {
+const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
   const enableDelayVisible = useMemo(() => {
     return (list || []).length > 100;
   }, [list]);
@@ -216,6 +287,7 @@ const ProtocolList = ({ list, isSearch, appIds }: Props) => {
           enableDelayVisible={enableDelayVisible}
           isAppChain={appIds?.includes(item.id)}
           isSearch={isSearch}
+          removeProtocol={removeProtocol}
         />
       ))}
     </ProtocolListWrapper>

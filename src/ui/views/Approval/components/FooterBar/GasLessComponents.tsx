@@ -36,6 +36,7 @@ export function GasLessNotEnough({
   canDepositUseGasAccount,
   miniFooter,
   directSubmit,
+  onRedirectToDeposit,
 }: {
   url?: string;
   gasLessFailedReason?: string;
@@ -44,15 +45,19 @@ export function GasLessNotEnough({
   canDepositUseGasAccount?: boolean;
   miniFooter?: boolean;
   directSubmit?: boolean;
+  onRedirectToDeposit?: () => void;
 }) {
   const { t } = useTranslation();
 
-  const modalConfirm = useLoginDepositConfirm();
+  const modalConfirm = useLoginDepositConfirm({
+    onGotoGasAccount: onRedirectToDeposit,
+  });
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
   const history = useHistory();
   const gotoGasAccount = React.useCallback(() => {
+    onRedirectToDeposit?.();
     history.push('/gas-account');
-  }, []);
+  }, [onRedirectToDeposit]);
 
   return (
     <div
@@ -419,6 +424,7 @@ export function GasAccountTips({
   noCustomRPC,
   miniFooter,
   directSubmit,
+  onRedirectToDeposit,
 }: {
   gasAccountCost?: GasAccountCheckResult;
   isGasAccountLogin?: boolean;
@@ -426,6 +432,7 @@ export function GasAccountTips({
   noCustomRPC?: boolean;
   miniFooter?: boolean;
   directSubmit?: boolean;
+  onRedirectToDeposit?: () => void;
 }) {
   const { t } = useTranslation();
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
@@ -511,7 +518,9 @@ export function GasAccountTips({
     return () => setTipPopupVisible(false);
   }, []);
 
-  const modalConfirm = useLoginDepositConfirm();
+  const modalConfirm = useLoginDepositConfirm({
+    onGotoGasAccount: onRedirectToDeposit,
+  });
 
   const history = useHistory();
   const gotoGasAccount = React.useCallback(() => {
