@@ -175,7 +175,7 @@ const DappActions = ({
         setIsShowMiniSign(true);
       } else {
         try {
-          for await (const tx of txs) {
+          for (const tx of txs) {
             await wallet.sendRequest<string>({
               method: 'eth_sendTransaction',
               params: [tx],
