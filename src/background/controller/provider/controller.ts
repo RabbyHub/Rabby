@@ -583,6 +583,12 @@ class ProviderController extends BaseController {
     transactionHistoryService.updateSigningTx(signingTxId!, {
       isSubmitted: true,
     });
+    const txDataWithRSV: any = {
+      ...txData,
+      r: addHexPrefix(signedTx.r),
+      s: addHexPrefix(signedTx.s),
+      v: addHexPrefix(signedTx.v),
+    };
 
     try {
       if (
@@ -754,34 +760,14 @@ class ProviderController extends BaseController {
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
       });
+
       try {
         validateGasPriceRange(approvalRes);
         let hash: string | undefined = undefined;
         let reqId: string | undefined = undefined;
         if (!findChain({ enum: chain })?.isTestnet) {
           if (RPCService.hasCustomRPC(chain)) {
-            const txData: any = {
-              ...approvalRes,
-              gasLimit: approvalRes.gas,
-              r: addHexPrefix(signedTx.r),
-              s: addHexPrefix(signedTx.s),
-              v: addHexPrefix(signedTx.v),
-            };
-            if (is1559) {
-              txData.type = '0x2';
-            }
-
-            if (approvalRes.authorizationList) {
-              txData.type = '0x4';
-              if (!txData.maxFeePerGas || !txData.maxPriorityFeePerGas) {
-                txData.maxFeePerGas = txData.maxFeePerGas || txData.gasPrice;
-                txData.maxPriorityFeePerGas =
-                  txData.maxPriorityFeePerGas || txData.gasPrice;
-                delete txData.gasPrice;
-              }
-            }
-
-            const tx = TransactionFactory.fromTxData(txData, { common });
+            const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
             const rawTx = bytesToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
@@ -850,18 +836,10 @@ class ProviderController extends BaseController {
             const defaultRPC = RPCService.getDefaultRPC(chainServerId);
             if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
               let fePushedFailed = false;
-              const txData: any = {
-                ...approvalRes,
-                gasLimit: approvalRes.gas,
-                r: addHexPrefix(signedTx.r),
-                s: addHexPrefix(signedTx.s),
-                v: addHexPrefix(signedTx.v),
-              };
-              if (is1559) {
-                txData.type = '0x2';
-              }
 
-              const tx = TransactionFactory.fromTxData(txData);
+              const tx = TransactionFactory.fromTxData(txDataWithRSV, {
+                common,
+              });
               const rawTx = bytesToHex(tx.serialize());
 
               try {
@@ -942,17 +920,8 @@ class ProviderController extends BaseController {
           const chainData = findChain({
             enum: chain,
           })!;
-          const txData: any = {
-            ...approvalRes,
-            gasLimit: approvalRes.gas,
-            r: addHexPrefix(signedTx.r),
-            s: addHexPrefix(signedTx.s),
-            v: addHexPrefix(signedTx.v),
-          };
-          if (is1559) {
-            txData.type = '0x2';
-          }
-          const tx = TransactionFactory.fromTxData(txData, { common });
+
+          const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
           const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
