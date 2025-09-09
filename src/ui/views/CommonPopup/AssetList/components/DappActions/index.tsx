@@ -6,6 +6,7 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { message } from 'antd';
 import { useDappAction } from './hook';
 import { MiniApproval } from '@/ui/views/Approval/components/MiniSignTx';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -149,8 +150,10 @@ const DappActions = ({
         // queue withdraw not need to check balance change
         if (!isQueueWithdraw) {
           setDisabledSign(true);
+          return;
         }
       }
+      setDisabledSign(false);
     },
     [isQueueWithdraw]
   );
@@ -171,10 +174,22 @@ const DappActions = ({
         setMiniSignTxs(txs);
         setIsShowMiniSign(true);
       } else {
-        await wallet.sendRequest<string>({
-          method: 'eth_sendTransaction',
-          params: txs,
-        });
+        try {
+          for await (const tx of txs) {
+            await wallet.sendRequest<string>({
+              method: 'eth_sendTransaction',
+              params: [tx],
+            });
+          }
+          setVisible(false);
+        } catch (error) {
+          console.error('Transaction failed:', error);
+          message.error(
+            typeof error?.message === 'string'
+              ? error?.message
+              : 'Transaction failed'
+          );
+        }
       }
     },
     [canDirectSign, resetGasCache, wallet]
