@@ -4,6 +4,7 @@ import { ReactComponent as ImgDeleteWarning } from 'ui/assets/perps/ImgDeleteWar
 import { Button, message, Modal } from 'antd';
 import clsx from 'clsx';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 interface PerpsModalProps {
   visible: boolean;
@@ -18,10 +19,16 @@ export const PerpsModal = ({
 }: PerpsModalProps) => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const { isDarkTheme } = useThemeMode();
   return (
     <Modal
       destroyOnClose
-      className="perp-delete-agent-modal"
+      className={clsx(
+        'perps-bridge-swap-modal',
+        isDarkTheme
+          ? 'perps-bridge-swap-modal-dark'
+          : 'perps-bridge-swap-modal-light'
+      )}
       visible={visible}
       centered
       closable={false}

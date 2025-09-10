@@ -4835,10 +4835,10 @@
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-action/-/rabby-action-0.1.13.tgz#6cb598189a3225bd532d5e3e69a8f964deab8a5d"
   integrity sha512-ugic/gbrl8pCyKfQZHOUKV8+S2D1CNN7675dumQUHAYzI8F1lL0cfo9ECN/HIPN5c2gd+StNnQz4bTgXTk4UvA==
 
-"@rabby-wallet/rabby-api@0.9.36":
-  version "0.9.36"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.36.tgz#a22e46127ee75d3dec63eecfcc6a9b08b5681cd7"
-  integrity sha512-ORRXxeS/mO7lWwBhPm2IhN5xh3zPpSL867PI75PpL5fhnGJENlxFyROhsKEuCy44o6uLO37WiW8EC4wh/IsxeA==
+"@rabby-wallet/rabby-api@0.9.41":
+  version "0.9.41"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.9.41.tgz#45d23645ff6449fe73e863d62ba570106841367d"
+  integrity sha512-hG/R0FCUHf2gGSxdk6lnGDepKorBuvVUKNFrK5QWYfK+ZC9BoS78kZ+SyJd6qiX5X2eEs4eF0D/WN+B7yUfZag==
   dependencies:
     "@rabby-wallet/rabby-sign" "0.4.0"
     axios "^0.27.2"
@@ -4862,10 +4862,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@0.0.63":
-  version "0.0.63"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.63.tgz#b2ae8af0176e87bdf6a6a2f6692a794f101c96bf"
-  integrity sha512-FYAeIc7kCt9dUDTfT+rekS48RVwPU9XldNzpGHVGjtADaJizqMEGJBqqkO3ZDGez31d0RYjLQoCMzcfLNJ/JxA==
+"@rabby-wallet/rabby-swap@0.0.64":
+  version "0.0.64"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.64.tgz#b592ead6a59975d5ee95599430f3c1acb9969d15"
+  integrity sha512-qyaviU2vJ8eSqcZiYlS/YcaXdRhzZDoTrYOt5D7g/6XlS8nkCtZrfIsDw3a84HxKMeDP8ExGoU1EA/Y2x2NzSw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"

@@ -337,7 +337,10 @@ export const usePerpsState = ({
         isSameAddress(agent.address, agentAddress)
       );
       if (!item) {
-        if (extraAgents.length >= 3) {
+        const existAgentName = extraAgents.find(
+          (agent) => agent.name === PERPS_AGENT_NAME
+        );
+        if (!existAgentName && extraAgents.length >= 3) {
           // 超过3个，需要删除一个
           deleteAgentCbRef.current = async () => {
             const deleteItem = minBy(extraAgents, (agent) => agent.validUntil);
@@ -654,6 +657,7 @@ export const usePerpsState = ({
   const logout = useMemoizedFn((address: string) => {
     dispatch.perps.logout();
     wallet.setPerpsCurrentAccount(null);
+    deleteAgentCbRef.current = null;
     wallet.setSendApproveAfterDeposit(address, []);
   });
 

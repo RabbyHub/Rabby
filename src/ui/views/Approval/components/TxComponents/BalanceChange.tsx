@@ -20,7 +20,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import styled from 'styled-components';
 import IconNFTDefault from '@/ui/assets/nft-default.svg';
 
-const HeadlineStyled = styled.div`
+export const HeadlineStyled = styled.div`
   font-size: 14px;
   line-height: 16px;
   font-weight: 500;

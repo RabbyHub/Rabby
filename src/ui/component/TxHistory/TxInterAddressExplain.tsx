@@ -35,7 +35,11 @@ export const TxInterAddressExplain = ({
   let interAddressExplain;
 
   if (isCancel) {
-    interAddressExplain = t('page.transactions.explain.cancel');
+    interAddressExplain = (
+      <div className="tx-explain-title">
+        {t('page.transactions.explain.cancel')}
+      </div>
+    );
   } else if (isApprove) {
     const tokenId = data.token_approve?.token_id || '';
     const tokenUUID = `${data.chain}_token:${tokenId}`;

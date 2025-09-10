@@ -140,7 +140,7 @@ export const perps = createModel<RootModel>()({
     setLocalLoadingHistory(state, payload: AccountHistoryItem[]) {
       return {
         ...state,
-        localLoadingHistory: payload,
+        localLoadingHistory: [...payload, ...state.localLoadingHistory],
       };
     },
 
@@ -214,11 +214,22 @@ export const perps = createModel<RootModel>()({
         return state;
       }
       const { newHistoryList } = payload;
-      const maxTimeItem = maxBy(newHistoryList, 'time');
-      // 使用当前userAccountHistory过滤 localLoadingHistory
-      const filteredLocalHistory = state.localLoadingHistory.filter(
-        (item) => item.time >= (maxTimeItem?.time || 0)
+      const depositList = newHistoryList.filter(
+        (item) => item.type === 'deposit'
       );
+      const withdrawList = newHistoryList.filter(
+        (item) => item.type === 'withdraw'
+      );
+      const depositMaxTime = maxBy(depositList, 'time')?.time || 0;
+      const withdrawMaxTime = maxBy(withdrawList, 'time')?.time || 0;
+      // 使用当前userAccountHistory过滤 localLoadingHistory
+      const filteredLocalHistory = state.localLoadingHistory.filter((item) => {
+        if (item.type === 'deposit') {
+          return item.time >= depositMaxTime;
+        } else {
+          return item.time >= withdrawMaxTime;
+        }
+      });
       return {
         ...state,
         userAccountHistory: newHistoryList,
