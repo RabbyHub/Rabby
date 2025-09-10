@@ -301,10 +301,18 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               }
             }}
           />
-          <div className="text-13 text-r-neutral-body text-center">
+          <div className="text-13 text-r-neutral-body text-center flex items-center justify-center gap-6">
             {t('page.perps.availableBalance', {
               balance: formatUsdValue(availableBalance, BigNumber.ROUND_DOWN),
             })}
+            <div
+              className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
+              onClick={() => {
+                setMargin(Number(availableBalance).toFixed(2));
+              }}
+            >
+              Max
+            </div>
           </div>
           {marginValidation.error && (
             <div className="text-13 text-r-red-default text-center mt-8">
@@ -314,21 +322,50 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         </div>
 
         <div className="mb-20 bg-r-neutral-card1 rounded-[8px] flex items-center flex-col px-16">
-          <div
-            className="flex w-full py-16 justify-between items-center cursor-pointer"
-            onClick={() => {
-              openLeveragePopup();
-            }}
-          >
+          <div className="flex w-full py-16 justify-between items-center">
             <div className="text-13 text-r-neutral-title-1">
-              {t('page.perps.leverage')}
+              {t('page.perps.leverage')}{' '}
+              <span className="text-r-neutral-foot">
+                ({leverageRange[0]} - {leverageRange[1]}x)
+              </span>
             </div>
-            <div className="text-13 text-r-neutral-title-1 font-medium text-center flex items-center">
-              {leverage}x
-              <ThemeIcon
-                className="icon icon-arrow-right ml-4"
-                src={RcIconArrowRight}
+            <div className="text-13 text-r-neutral-title-1 font-medium text-center flex items-center gap-6">
+              <div
+                className="text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-12 py-6 hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer"
+                onClick={() => {
+                  setLeverage(leverageRange[0]);
+                }}
+              >
+                Min
+              </div>
+              <input
+                className="text-15 text-r-neutral-title-1 font-medium text-center w-[68px] h-[32px] bg-transparent border-[0.5px] border-solid border-rabby-neutral-line rounded-[4px] outline-none focus:border-blue"
+                value={leverage}
+                onBlur={() => {
+                  if (leverage < leverageRange[0]) {
+                    setLeverage(leverageRange[0]);
+                  }
+                }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || /^\d+$/.test(value)) {
+                    const num = value === '' ? 0 : parseInt(value);
+                    if (num >= leverageRange[1]) {
+                      setLeverage(leverageRange[1]);
+                    } else {
+                      setLeverage(num);
+                    }
+                  }
+                }}
               />
+              <div
+                className="text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-12 py-6 hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer"
+                onClick={() => {
+                  setLeverage(leverageRange[1]);
+                }}
+              >
+                Max
+              </div>
             </div>
           </div>
           <div className="flex w-full py-16 justify-between items-center">

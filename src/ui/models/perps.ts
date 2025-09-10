@@ -1,5 +1,6 @@
 import { createModel } from '@rematch/core';
 import {
+  AssetCtx,
   AssetPosition,
   ClearinghouseState,
   InfoClient,
@@ -18,6 +19,7 @@ import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { isSameAddress } from '../utils';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -179,16 +181,14 @@ export const perps = createModel<RootModel>()({
         (order) => order.openOrders
       );
 
-      const positionAndOpenOrders = payload.assetPositions
-        .filter((position) => position.position.leverage.type === 'isolated')
-        .map((position) => {
-          return {
-            ...position,
-            openOrders: openOrders.filter(
-              (order) => order.coin === position.position.coin
-            ),
-          };
-        });
+      const positionAndOpenOrders = payload.assetPositions.map((position) => {
+        return {
+          ...position,
+          openOrders: openOrders.filter(
+            (order) => order.coin === position.position.coin
+          ),
+        };
+      });
 
       return {
         ...state,
@@ -238,19 +238,52 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         marketData: list,
-        marketDataMap: buildMarketDataMap(list as MarketData[]),
+        marketDataMap: buildMarketDataMap(list),
       };
     },
 
-    setPositionAndOpenOrders(state, payload: PositionAndOpenOrder[] | []) {
+    updateMarketData(state, payload: AssetCtx[]) {
+      const list = payload || [];
+      const newMarketData = state.marketData.map((item) => {
+        return {
+          ...item,
+          ...list[item.index],
+        };
+      });
       return {
         ...state,
-        positionAndOpenOrders: payload,
+        marketData: newMarketData,
+        marketDataMap: buildMarketDataMap(newMarketData),
+      };
+    },
+
+    setPositionAndOpenOrders(
+      state,
+      clearinghouseState: ClearinghouseState,
+      openOrders: OpenOrder[]
+    ) {
+      const positionAndOpenOrders = clearinghouseState.assetPositions.map(
+        (position) => {
+          return {
+            ...position,
+            openOrders: openOrders.filter(
+              (order) => order.coin === position.position.coin
+            ),
+          };
+        }
+      );
+      return {
+        ...state,
+        accountSummary: {
+          ...clearinghouseState.marginSummary,
+          withdrawable: clearinghouseState.withdrawable,
+        },
+        positionAndOpenOrders,
         homePositionPnl: {
-          pnl: payload.reduce((acc, order) => {
+          pnl: positionAndOpenOrders.reduce((acc, order) => {
             return acc + Number(order.position.unrealizedPnl);
           }, 0),
-          show: payload.length > 0,
+          show: positionAndOpenOrders.length > 0,
         },
       };
     },
@@ -343,18 +376,7 @@ export const perps = createModel<RootModel>()({
           sdk.info.getFrontendOpenOrders(),
         ]);
 
-        const positionAndOpenOrders = clearinghouseState.assetPositions
-          .filter((position) => position.position.leverage.type === 'isolated')
-          .map((position) => {
-            return {
-              ...position,
-              openOrders: openOrders.filter(
-                (order) => order.coin === position.position.coin
-              ),
-            };
-          });
-
-        dispatch.perps.setPositionAndOpenOrders(positionAndOpenOrders);
+        dispatch.perps.setPositionAndOpenOrders(clearinghouseState, openOrders);
 
         dispatch.perps.setAccountSummary({
           ...clearinghouseState.marginSummary,
@@ -380,8 +402,7 @@ export const perps = createModel<RootModel>()({
       // 订阅实时数据更新
       dispatch.perps.subscribeToUserData(payload.address);
 
-      // 开始轮询获取ClearingHouseState
-      dispatch.perps.startPolling(undefined);
+      // dispatch.perps.startPolling(undefined);
 
       dispatch.perps.fetchPerpPermission(payload.address);
       setTimeout(() => {
@@ -519,11 +540,33 @@ export const perps = createModel<RootModel>()({
       const sdk = getPerpsSDK();
       const subscriptions: (() => void)[] = [];
 
+      const { unsubscribe: unsubscribeWebData2 } = sdk.ws.subscribeToWebData2(
+        (data) => {
+          const {
+            clearinghouseState,
+            assetCtxs,
+            openOrders,
+            serverTime,
+            user,
+          } = data;
+          if (!isSameAddress(user, address)) {
+            return;
+          }
+
+          dispatch.perps.setPositionAndOpenOrders(
+            clearinghouseState,
+            openOrders
+          );
+
+          dispatch.perps.updateMarketData(assetCtxs);
+        }
+      );
+
       const { unsubscribe: unsubscribeFills } = sdk.ws.subscribeToUserFills(
         (data) => {
           console.log('User fills update:', data);
           const { fills, isSnapshot, user } = data;
-          if (user !== address) {
+          if (!isSameAddress(user, address)) {
             return;
           }
 
@@ -534,22 +577,22 @@ export const perps = createModel<RootModel>()({
           });
         }
       );
-
+      subscriptions.push(unsubscribeWebData2);
       subscriptions.push(unsubscribeFills);
 
       rootState.perps.wsSubscriptions.push(...subscriptions);
     },
 
-    startPolling(_, rootState) {
-      dispatch.perps.stopPolling(undefined);
+    // startPolling(_, rootState) {
+    //   dispatch.perps.stopPolling(undefined);
 
-      const timer = setInterval(() => {
-        dispatch.perps.fetchClearinghouseState();
-      }, 30 * 1000);
+    //   const timer = setInterval(() => {
+    //     dispatch.perps.fetchClearinghouseState();
+    //   }, 30 * 1000);
 
-      rootState.perps.pollingTimer = timer;
-      console.log('开始轮询ClearingHouseState, 间隔5秒');
-    },
+    //   rootState.perps.pollingTimer = timer;
+    //   console.log('开始轮询ClearingHouseState, 间隔5秒');
+    // },
 
     stopPolling(_, rootState) {
       if (rootState.perps.pollingTimer) {

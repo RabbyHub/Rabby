@@ -29,7 +29,8 @@ export const batchQueryTokens = async (
   user_id: string,
   wallet: WalletControllerType,
   chainId?: string,
-  isTestnet: boolean = !chainId ? false : checkIsTestnet(chainId)
+  isTestnet: boolean = !chainId ? false : checkIsTestnet(chainId),
+  isAll: boolean = true
 ) => {
   if (!chainId && !isTestnet) {
     const usedChains = await wallet.openapi.usedChainList(user_id);
@@ -38,7 +39,7 @@ export const batchQueryTokens = async (
       chainIdList.map((serverId) =>
         pQueue.add(() => {
           return requestOpenApiWithChainId(
-            ({ openapi }) => openapi.listToken(user_id, serverId, true),
+            ({ openapi }) => openapi.listToken(user_id, serverId, isAll),
             {
               wallet,
               isTestnet,
@@ -50,7 +51,7 @@ export const batchQueryTokens = async (
     return flatten(res);
   }
   return requestOpenApiWithChainId(
-    ({ openapi }) => openapi.listToken(user_id, chainId, true),
+    ({ openapi }) => openapi.listToken(user_id, chainId, isAll),
     {
       wallet,
       isTestnet,

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Button, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { TokenSelectPopup } from './TokenSelectPopup';
@@ -96,7 +96,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
   }, [_tokenInfo, selectedToken]);
 
-  const fetchTokenList = useMemoizedFn(async () => {
+  const fetchTokenList = useCallback(async () => {
     setTokenListLoading(true);
     if (!currentPerpsAccount?.address || !visible) return [];
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
@@ -112,11 +112,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       currentPerpsAccount.address,
       wallet,
       undefined,
+      false,
       false
     );
     setTokenList(tokenRes);
     return res;
-  });
+  }, [currentPerpsAccount?.address, visible]);
 
   useEffect(() => {
     fetchTokenList();
@@ -209,6 +210,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
   }, [miniApprovalGas]);
 
+  const depositMaxUsdValue = useMemo(() => {
+    return Number((tokenInfo?.amount || 0) * (tokenInfo?.price || 0));
+  }, [tokenInfo]);
+
   // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
   useDebounce(
     () => {
@@ -266,7 +271,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   return (
     <Popup
       placement="bottom"
-      height={368}
+      height={380}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -284,10 +289,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         <div className="px-16">
           <div
             className={`flex flex-col bg-r-neutral-card1 rounded-[8px] ${
-              type === 'withdraw' ? 'h-[180px]' : 'h-[200px]'
+              type === 'withdraw' ? 'h-[140px]' : 'h-[140px]'
             }`}
           >
-            <div className="h-[152px] flex items-center justify-center flex-col">
+            <div className="h-[140px] flex items-center justify-center flex-col">
               <input
                 className={`mt-12 text-[40px] bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor()}`}
                 style={{
@@ -314,61 +319,91 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   }
                 }}
               />
-              {type === 'withdraw' && (
-                <div className="text-13 text-r-neutral-body text-center">
+              {type === 'withdraw' ? (
+                <div className="text-13 text-r-neutral-body text-center flex items-center justify-center gap-6">
                   {t('page.perps.availableBalance', {
                     balance: formatUsdValue(
                       availableBalance,
                       BigNumber.ROUND_DOWN
                     ),
                   })}
+                  <div
+                    className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
+                    onClick={() => {
+                      setUsdValue(Number(availableBalance).toFixed(2));
+                    }}
+                  >
+                    Max
+                  </div>
+                </div>
+              ) : (
+                <div className="text-13 text-r-neutral-body text-center flex items-center justify-center gap-6">
+                  {t('page.perps.balanceAvailable', {
+                    balance: formatUsdValue(
+                      depositMaxUsdValue,
+                      BigNumber.ROUND_DOWN
+                    ),
+                  })}
+                  <div
+                    className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
+                    onClick={() => {
+                      setUsdValue(depositMaxUsdValue.toFixed(2));
+                    }}
+                  >
+                    Max
+                  </div>
                 </div>
               )}
               <div className="text-13 text-r-red-default text-center mt-8 h-[22px]">
                 {amountValidation.errorMessage || ''}
               </div>
             </div>
-            <div
-              onClick={() => {
-                if (type === 'deposit') {
-                  setTokenVisible(true);
-                }
-              }}
-              className={`w-full flex items-center justify-between text-13 text-r-neutral-body px-16 h-[48px] border-t-[0.5px] border-solid border-rabby-neutral-line ${
-                type === 'withdraw' ? '' : 'cursor-pointer'
-              }`}
-            >
-              <div className="text-r-neutral-title-1 font-medium text-13">
-                {type === 'deposit'
-                  ? t('page.perps.depositAmountPopup.payWith')
-                  : t('page.perps.depositAmountPopup.receiveToken')}
-              </div>
-              {selectedToken ? (
-                <div className={'flex items-center'}>
-                  <TokenWithChain
-                    token={selectedToken}
-                    hideConer
-                    width="20px"
-                    height="20px"
-                  />
-                  <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
-                    {type === 'withdraw'
+          </div>
+          <div
+            onClick={() => {
+              if (type === 'deposit') {
+                setTokenVisible(true);
+              }
+            }}
+            className={`mt-12 bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 text-r-neutral-body px-16 h-[48px] border border-transparent ${
+              type === 'withdraw'
+                ? ''
+                : 'hover:bg-r-blue-light1 hover:border-rabby-blue-default cursor-pointer'
+            }`}
+          >
+            <div className="text-r-neutral-title-1 font-medium text-13">
+              {type === 'deposit'
+                ? t('page.perps.depositAmountPopup.payWith')
+                : t('page.perps.depositAmountPopup.receiveToken')}
+            </div>
+            <div className={'flex items-center'}>
+              <TokenWithChain
+                token={selectedToken || ARB_USDC_TOKEN_ITEM}
+                hideConer
+                width="20px"
+                height="20px"
+              />
+              <div
+                className={'text-r-neutral-title-1 font-medium text-13 ml-4'}
+              >
+                {type === 'withdraw'
+                  ? getTokenSymbol(ARB_USDC_TOKEN_ITEM)
+                  : getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                {/* {type === 'withdraw'
                       ? getTokenSymbol(ARB_USDC_TOKEN_ITEM)
                       : isDirectDeposit
                       ? formatTokenAmount(tokenInfo?.amount || 0, 2)
                       : formatUsdValue(
                           (tokenInfo?.amount || 0) * (tokenInfo?.price || 0),
                           BigNumber.ROUND_DOWN
-                        )}
-                  </div>
-                  {type === 'deposit' && (
-                    <ThemeIcon
-                      className="icon icon-arrow-right ml-4"
-                      src={RcIconArrowRight}
-                    />
-                  )}
-                </div>
-              ) : null}
+                        )} */}
+              </div>
+              {type === 'deposit' && (
+                <ThemeIcon
+                  className="icon icon-arrow-right ml-4"
+                  src={RcIconArrowRight}
+                />
+              )}
             </div>
           </div>
         </div>

@@ -205,25 +205,32 @@ export const PerpsSingleCoin = () => {
   }, [activeAssetCtx]);
 
   // Position data if exists
-  const positionData = currentPosition
-    ? {
-        pnl: Number(currentPosition.position.unrealizedPnl || 0),
-        positionValue: Number(currentPosition.position.positionValue || 0),
-        size: Math.abs(Number(currentPosition.position.szi || 0)),
-        marginUsed: Number(currentPosition.position.marginUsed || 0),
-        side: Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
-        leverage: Number(currentPosition.position.leverage.value || 1),
-        entryPrice: Number(currentPosition.position.entryPx || 0),
-        liquidationPrice: Number(
-          currentPosition.position.liquidationPx || 0
-        ).toFixed(currentAssetCtx?.pxDecimals || 2),
-        autoClose: false, // This would come from SDK
-        direction:
-          Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
-        pnlPercent: Number(currentPosition.position.returnOnEquity || 0) * 100,
-        fundingPayments: currentPosition.position.cumFunding.sinceOpen,
-      }
-    : null;
+  const positionData = useMemo(
+    () =>
+      currentPosition
+        ? {
+            pnl: Number(currentPosition.position.unrealizedPnl || 0),
+            positionValue: Number(currentPosition.position.positionValue || 0),
+            size: Math.abs(Number(currentPosition.position.szi || 0)),
+            marginUsed: Number(currentPosition.position.marginUsed || 0),
+            side:
+              Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
+            type: currentPosition.position.leverage.type,
+            leverage: Number(currentPosition.position.leverage.value || 1),
+            entryPrice: Number(currentPosition.position.entryPx || 0),
+            liquidationPrice: Number(
+              currentPosition.position.liquidationPx || 0
+            ).toFixed(currentAssetCtx?.pxDecimals || 2),
+            autoClose: false, // This would come from SDK
+            direction:
+              Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
+            pnlPercent:
+              Number(currentPosition.position.returnOnEquity || 0) * 100,
+            fundingPayments: currentPosition.position.cumFunding.sinceOpen,
+          }
+        : null,
+    [currentPosition, currentAssetCtx]
+  );
 
   const hasAutoClose = useMemo(() => {
     return Boolean(currentTpOrSl.tpPrice || currentTpOrSl.slPrice);
@@ -417,7 +424,9 @@ export const PerpsSingleCoin = () => {
 
               <div className="flex justify-between text-13 py-16">
                 <span className="text-r-neutral-body">
-                  {t('page.perps.marginIsolated')}
+                  {positionData?.type === 'isolated'
+                    ? t('page.perps.marginIsolated')
+                    : t('page.perps.marginCross')}
                 </span>
                 <span className="text-r-neutral-title-1 font-medium">
                   $
