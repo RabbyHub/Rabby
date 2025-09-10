@@ -298,6 +298,26 @@ export const usePerpsState = ({
 
   const wallet = useWallet();
 
+  const judgeIsUserAgentIsExpired = useMemoizedFn(
+    async (errorMessage: string) => {
+      const masterAddress = currentPerpsAccount?.address;
+      if (!masterAddress) {
+        return false;
+      }
+
+      const agentWalletPreference = await wallet.getAgentWalletPreference(
+        masterAddress
+      );
+      const agentAddress = agentWalletPreference?.agentAddress;
+      if (agentAddress && errorMessage.includes(agentAddress)) {
+        console.warn('handle action agent is expired, logout');
+        message.error('Agent is expired, please login again');
+        logout(masterAddress);
+        return true;
+      }
+    }
+  );
+
   const handleDeleteAgent = useMemoizedFn(async () => {
     if (deleteAgentCbRef.current) {
       try {
@@ -768,6 +788,7 @@ export const usePerpsState = ({
     userFills: perpsState.userFills,
     hasPermission: perpsState.hasPermission,
     homeHistoryList,
+    perpFee: perpsState.perpFee,
 
     // Actions
     login,
@@ -781,6 +802,8 @@ export const usePerpsState = ({
     handleMiniSignReject,
 
     handleDeleteAgent,
+
+    judgeIsUserAgentIsExpired,
   };
 };
 

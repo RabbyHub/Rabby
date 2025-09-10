@@ -17,9 +17,7 @@ export const usePerpsHomePnl = () => {
     if (account?.address) {
       const res = await sdk.info.getClearingHouseState(account.address);
 
-      const positionAndOpenOrders = res.assetPositions.filter(
-        (position) => position.position.leverage.type === 'isolated'
-      );
+      const positionAndOpenOrders = res.assetPositions;
 
       if (!positionAndOpenOrders || positionAndOpenOrders.length === 0) {
         dispatch.perps.setHomePositionPnl({ pnl: 0, show: false });

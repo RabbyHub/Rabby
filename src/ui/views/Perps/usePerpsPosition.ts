@@ -18,6 +18,8 @@ export const usePerpsPosition = ({
     currentPerpsAccount,
     isLogin,
     hasPermission,
+
+    judgeIsUserAgentIsExpired,
   } = usePerpsState({});
 
   const logout = useMemoizedFn((address: string) => {
@@ -25,26 +27,6 @@ export const usePerpsPosition = ({
     wallet.setPerpsCurrentAccount(null);
     wallet.setSendApproveAfterDeposit(address, []);
   });
-
-  const judgeIsUserAgentIsExpired = useMemoizedFn(
-    async (errorMessage: string) => {
-      const masterAddress = currentPerpsAccount?.address;
-      if (!masterAddress) {
-        return false;
-      }
-
-      const agentWalletPreference = await wallet.getAgentWalletPreference(
-        masterAddress
-      );
-      const agentAddress = agentWalletPreference?.agentAddress;
-      if (agentAddress && errorMessage.includes(agentAddress)) {
-        console.warn('handle action agent is expired, logout');
-        message.error('Agent is expired, please login again');
-        logout(masterAddress);
-        return true;
-      }
-    }
-  );
 
   const handleSetAutoClose = useMemoizedFn(
     async (params: {
