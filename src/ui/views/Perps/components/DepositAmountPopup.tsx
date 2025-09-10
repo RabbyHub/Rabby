@@ -260,8 +260,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           if (gasError || gasTooHigh) {
             handleDeposit();
           } else {
-            handleDeposit();
-            // startDirectSigning();
+            startDirectSigning();
           }
         }
       } else {
@@ -432,14 +431,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 {type === 'withdraw'
                   ? getTokenSymbol(ARB_USDC_TOKEN_ITEM)
                   : getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
-                {/* {type === 'withdraw'
-                      ? getTokenSymbol(ARB_USDC_TOKEN_ITEM)
-                      : isDirectDeposit
-                      ? formatTokenAmount(tokenInfo?.amount || 0, 2)
-                      : formatUsdValue(
-                          (tokenInfo?.amount || 0) * (tokenInfo?.price || 0),
-                          BigNumber.ROUND_DOWN
-                        )} */}
               </div>
               {type === 'deposit' && (
                 <ThemeIcon
