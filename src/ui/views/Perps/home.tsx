@@ -95,6 +95,8 @@ export const Perps: React.FC = () => {
     updateMiniSignTx,
     handleDeposit,
     handleSignDepositDirect,
+    quoteLoading,
+    bridgeQuote,
   } = usePerpsDeposit({
     currentPerpsAccount,
     setAmountVisible,
@@ -126,7 +128,7 @@ export const Perps: React.FC = () => {
   );
   const miniTxs = useMemo(() => {
     console.log('miniSignTx', miniSignTx);
-    return miniSignTx ? [miniSignTx] : [];
+    return miniSignTx || [];
   }, [miniSignTx]);
 
   const positionAllPnl = useMemo(() => {
@@ -430,6 +432,8 @@ export const Perps: React.FC = () => {
         visible={amountVisible}
         type={popupType}
         miniTxs={miniTxs}
+        quoteLoading={quoteLoading}
+        bridgeQuote={bridgeQuote}
         setIsPreparingSign={setIsPreparingSign}
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}

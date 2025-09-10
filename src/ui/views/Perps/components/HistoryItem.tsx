@@ -33,6 +33,10 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
 }) => {
   const { time, type, status, usdValue } = data;
   const { t } = useTranslation();
+  const isRealDeposit = useMemo(
+    () => type === 'deposit' || type === 'receive',
+    [type]
+  );
   const ImgAvatar = useMemo(() => {
     if (status === 'pending') {
       return (
@@ -40,7 +44,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
       );
     }
 
-    if (type === 'deposit') {
+    if (isRealDeposit) {
       return (
         <ThemeIcon
           src={RcIconDeposit}
@@ -55,7 +59,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
         />
       );
     }
-  }, [status, type]);
+  }, [status, isRealDeposit]);
 
   return (
     <div
@@ -67,9 +71,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
         {ImgAvatar}
         <div className="flex flex-col ml-12">
           <div className="text-13 text-r-neutral-title-1 font-medium">
-            {type === 'deposit'
-              ? t('page.perps.deposit')
-              : t('page.perps.withdraw')}
+            {isRealDeposit ? t('page.perps.deposit') : t('page.perps.withdraw')}
           </div>
           {status === 'pending' ? (
             <div className="text-13 text-r-orange-default font-medium">
@@ -89,12 +91,10 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
             <div
               className={clsx(
                 'text-14 font-medium',
-                type === 'deposit'
-                  ? 'text-r-green-default'
-                  : 'text-r-red-default'
+                isRealDeposit ? 'text-r-green-default' : 'text-r-red-default'
               )}
             >
-              {type === 'deposit' ? '+' : '-'}
+              {isRealDeposit ? '+' : '-'}
               {`${formatUsdValue(usdValue)}`}
             </div>
             <div className="text-13 text-r-neutral-foot">
@@ -105,10 +105,10 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
           <div
             className={clsx(
               'text-14 font-medium',
-              type === 'deposit' ? 'text-r-green-default' : 'text-r-red-default'
+              isRealDeposit ? 'text-r-green-default' : 'text-r-red-default'
             )}
           >
-            {type === 'deposit' ? '+' : '-'}
+            {isRealDeposit ? '+' : '-'}
             {`${formatUsdValue(usdValue)}`}
           </div>
         )}

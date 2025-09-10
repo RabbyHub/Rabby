@@ -145,7 +145,9 @@ export const PerpsSingleCoin = () => {
     clearMiniSignTx,
     updateMiniSignTx,
     handleDeposit,
+    quoteLoading,
     handleSignDepositDirect,
+    bridgeQuote,
   } = usePerpsDeposit({
     currentPerpsAccount,
     setAmountVisible,
@@ -173,7 +175,7 @@ export const PerpsSingleCoin = () => {
   );
   const miniTxs = useMemo(() => {
     console.log('miniSignTx', miniSignTx);
-    return miniSignTx ? [miniSignTx] : [];
+    return miniSignTx || [];
   }, [miniSignTx]);
 
   const subscribeActiveAssetCtx = useMemoizedFn(() => {
@@ -695,6 +697,8 @@ export const PerpsSingleCoin = () => {
 
       <PerpsDepositAmountPopup
         visible={amountVisible}
+        quoteLoading={quoteLoading}
+        bridgeQuote={bridgeQuote}
         miniTxs={miniTxs}
         setIsPreparingSign={setIsPreparingSign}
         isPreparingSign={isPreparingSign}

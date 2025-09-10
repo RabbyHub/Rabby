@@ -73,149 +73,152 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         return;
       }
 
-      //  setClickLoading(true);
-      // const res = await wallet.openapi.isSupportToken(token.chain, token.id);
-      // if (res) {
-      //   // bridge token with liFi dex
-      //   onSelect(token);
-      //   onCancel?.();
-      //   setClickLoading(false);
-      //   return;
-      // }
-
-      if (token.chain === ARB_USDC_TOKEN_SERVER_CHAIN) {
-        // show modal go swap page
-        const modal = Modal.confirm({
-          width: 360,
-          closable: false,
-          maskClosable: true,
-          centered: true,
-          title: null,
-          className: clsx(
-            'perps-bridge-swap-modal',
-            isDarkTheme
-              ? 'perps-bridge-swap-modal-dark'
-              : 'perps-bridge-swap-modal-light'
-          ),
-          content: (
-            <>
-              <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-                <div className="flex items-center gap-[24px] h-[44px]">
-                  <TokenWithChain
-                    token={token}
-                    hideConer
-                    width="40px"
-                    chainSize={20}
-                    height="40px"
-                  />
-                  <RcIconArrow />
-                  <TokenWithChain
-                    token={ARB_USDC_TOKEN_ITEM}
-                    hideConer
-                    width="40px"
-                    chainSize={20}
-                    height="40px"
-                  />
-                </div>
-                <div className="text-15 font-medium text-r-neutral-title-1 text-center">
-                  {t('page.perps.depositAmountPopup.goSwapTips')}
-                </div>
-                <div className="flex items-center justify-center w-full gap-12 mt-20">
-                  <Button
-                    size="large"
-                    block
-                    type="primary"
-                    onClick={async () => {
-                      await changeAccount();
-                      history.push(
-                        `/dex-swap?rbisource=perps&payTokenId=${token.id}&chain=${token.chain}&receiveTokenId=${ARB_USDC_TOKEN_ID}`
-                      );
-                      modal.destroy();
-                    }}
-                  >
-                    {t('page.swap.title')}
-                  </Button>
-                </div>
-                <div className="flex items-center justify-center w-full gap-12">
-                  <PerpsBlueBorderedButton
-                    block
-                    onClick={() => {
-                      modal.destroy();
-                    }}
-                  >
-                    {t('page.manageAddress.cancel')}
-                  </PerpsBlueBorderedButton>
-                </div>
-              </div>
-            </>
-          ),
-        });
+      setClickLoading(true);
+      const res = await wallet.openapi.getPerpsBridgeIsSupportToken({
+        token_id: token.id,
+        chain_id: token.chain,
+      });
+      if (res?.success) {
+        // bridge token with liFi dex
+        onSelect(token);
+        onCancel?.();
+        setClickLoading(false);
+        return;
       } else {
-        const modal = Modal.info({
-          width: 360,
-          closable: false,
-          maskClosable: true,
-          centered: true,
-          title: null,
-          className: clsx(
-            'perps-bridge-swap-modal',
-            isDarkTheme
-              ? 'perps-bridge-swap-modal-dark'
-              : 'perps-bridge-swap-modal-light'
-          ),
-          content: (
-            <>
-              <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-                <div className="flex items-center gap-[24px] h-[44px]">
-                  <TokenWithChain
-                    token={token}
-                    hideConer
-                    width="40px"
-                    chainSize={20}
-                    height="40px"
-                  />
-                  <RcIconArrow />
-                  <TokenWithChain
-                    token={ARB_USDC_TOKEN_ITEM}
-                    hideConer
-                    width="40px"
-                    chainSize={20}
-                    height="40px"
-                  />
+        if (token.chain === ARB_USDC_TOKEN_SERVER_CHAIN) {
+          // show modal go swap page
+          const modal = Modal.confirm({
+            width: 360,
+            closable: false,
+            maskClosable: true,
+            centered: true,
+            title: null,
+            className: clsx(
+              'perps-bridge-swap-modal',
+              isDarkTheme
+                ? 'perps-bridge-swap-modal-dark'
+                : 'perps-bridge-swap-modal-light'
+            ),
+            content: (
+              <>
+                <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
+                  <div className="flex items-center gap-[24px] h-[44px]">
+                    <TokenWithChain
+                      token={token}
+                      hideConer
+                      width="40px"
+                      chainSize={20}
+                      height="40px"
+                    />
+                    <RcIconArrow />
+                    <TokenWithChain
+                      token={ARB_USDC_TOKEN_ITEM}
+                      hideConer
+                      width="40px"
+                      chainSize={20}
+                      height="40px"
+                    />
+                  </div>
+                  <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+                    {t('page.perps.depositAmountPopup.goSwapTips')}
+                  </div>
+                  <div className="flex items-center justify-center w-full gap-12 mt-20">
+                    <Button
+                      size="large"
+                      block
+                      type="primary"
+                      onClick={async () => {
+                        await changeAccount();
+                        history.push(
+                          `/dex-swap?rbisource=perps&payTokenId=${token.id}&chain=${token.chain}&receiveTokenId=${ARB_USDC_TOKEN_ID}`
+                        );
+                        modal.destroy();
+                      }}
+                    >
+                      {t('page.swap.title')}
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-center w-full gap-12">
+                    <PerpsBlueBorderedButton
+                      block
+                      onClick={() => {
+                        modal.destroy();
+                      }}
+                    >
+                      {t('page.manageAddress.cancel')}
+                    </PerpsBlueBorderedButton>
+                  </div>
                 </div>
-                <div className="text-15 font-medium text-r-neutral-title-1 text-center">
-                  {t('page.perps.depositAmountPopup.goBridgeTips')}
+              </>
+            ),
+          });
+        } else {
+          const modal = Modal.info({
+            width: 360,
+            closable: false,
+            maskClosable: true,
+            centered: true,
+            title: null,
+            className: clsx(
+              'perps-bridge-swap-modal',
+              isDarkTheme
+                ? 'perps-bridge-swap-modal-dark'
+                : 'perps-bridge-swap-modal-light'
+            ),
+            content: (
+              <>
+                <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
+                  <div className="flex items-center gap-[24px] h-[44px]">
+                    <TokenWithChain
+                      token={token}
+                      hideConer
+                      width="40px"
+                      chainSize={20}
+                      height="40px"
+                    />
+                    <RcIconArrow />
+                    <TokenWithChain
+                      token={ARB_USDC_TOKEN_ITEM}
+                      hideConer
+                      width="40px"
+                      chainSize={20}
+                      height="40px"
+                    />
+                  </div>
+                  <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+                    {t('page.perps.depositAmountPopup.goBridgeTips')}
+                  </div>
+                  <div className="flex items-center justify-center w-full gap-12 mt-20">
+                    <Button
+                      size="large"
+                      block
+                      type="primary"
+                      onClick={async () => {
+                        await changeAccount();
+                        history.push(
+                          `/bridge?fromTokenId=${token.id}&fromChainServerId=${token.chain}&toTokenId=${ARB_USDC_TOKEN_ID}&toChainServerId=${ARB_USDC_TOKEN_SERVER_CHAIN}`
+                        );
+                        modal.destroy();
+                      }}
+                    >
+                      {t('page.bridge.title')}
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-center w-full gap-12">
+                    <PerpsBlueBorderedButton
+                      block
+                      onClick={() => {
+                        modal.destroy();
+                      }}
+                    >
+                      {t('page.manageAddress.cancel')}
+                    </PerpsBlueBorderedButton>
+                  </div>
                 </div>
-                <div className="flex items-center justify-center w-full gap-12 mt-20">
-                  <Button
-                    size="large"
-                    block
-                    type="primary"
-                    onClick={async () => {
-                      await changeAccount();
-                      history.push(
-                        `/bridge?fromTokenId=${token.id}&fromChainServerId=${token.chain}&toTokenId=${ARB_USDC_TOKEN_ID}&toChainServerId=${ARB_USDC_TOKEN_SERVER_CHAIN}`
-                      );
-                      modal.destroy();
-                    }}
-                  >
-                    {t('page.bridge.title')}
-                  </Button>
-                </div>
-                <div className="flex items-center justify-center w-full gap-12">
-                  <PerpsBlueBorderedButton
-                    block
-                    onClick={() => {
-                      modal.destroy();
-                    }}
-                  >
-                    {t('page.manageAddress.cancel')}
-                  </PerpsBlueBorderedButton>
-                </div>
-              </div>
-            </>
-          ),
-        });
+              </>
+            ),
+          });
+        }
       }
       setClickLoading(false);
     } catch (error) {

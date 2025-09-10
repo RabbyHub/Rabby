@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Input, Button, Slider, Switch, Tooltip, message } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
+import { formatNumber, formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -308,7 +308,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <div
               className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
               onClick={() => {
-                setMargin(Number(availableBalance).toFixed(2));
+                setMargin(
+                  formatNumber(
+                    availableBalance,
+                    2,
+                    undefined,
+                    BigNumber.ROUND_DOWN
+                  )
+                );
               }}
             >
               Max

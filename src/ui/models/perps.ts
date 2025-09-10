@@ -61,7 +61,7 @@ const buildMarketDataMap = (list: MarketData[]): MarketDataMap => {
 export interface AccountHistoryItem {
   time: number;
   hash: string;
-  type: 'deposit' | 'withdraw';
+  type: 'deposit' | 'withdraw' | 'receive';
   status: 'pending' | 'success' | 'failed';
   usdValue: string;
 }
@@ -220,14 +220,20 @@ export const perps = createModel<RootModel>()({
       const withdrawList = newHistoryList.filter(
         (item) => item.type === 'withdraw'
       );
+      const receiveList = newHistoryList.filter(
+        (item) => item.type === 'receive'
+      );
+      const receiveMaxTime = maxBy(receiveList, 'time')?.time || 0;
       const depositMaxTime = maxBy(depositList, 'time')?.time || 0;
       const withdrawMaxTime = maxBy(withdrawList, 'time')?.time || 0;
       // 使用当前userAccountHistory过滤 localLoadingHistory
       const filteredLocalHistory = state.localLoadingHistory.filter((item) => {
         if (item.type === 'deposit') {
           return item.time >= depositMaxTime;
-        } else {
+        } else if (item.type === 'withdraw') {
           return item.time >= withdrawMaxTime;
+        } else {
+          return item.time >= receiveMaxTime;
         }
       });
       return {
@@ -446,6 +452,7 @@ export const perps = createModel<RootModel>()({
           if (
             item.delta.type === 'deposit' ||
             item.delta.type === 'withdraw' ||
+            item.delta.type === 'internalTransfer' ||
             item.delta.type === 'accountClassTransfer'
           ) {
             return true;
@@ -453,6 +460,16 @@ export const perps = createModel<RootModel>()({
           return false;
         })
         .map((item) => {
+          if (item.delta.type === 'internalTransfer') {
+            return {
+              time: item.time,
+              hash: item.hash,
+              type: 'receive' as const,
+              status: 'success' as const,
+              usdValue: item.delta.usdc || '0',
+            };
+          }
+
           const type =
             item.delta.type === 'accountClassTransfer'
               ? item.delta.toPerp
@@ -463,7 +480,7 @@ export const perps = createModel<RootModel>()({
           return {
             time: item.time,
             hash: item.hash,
-            type: type as 'deposit' | 'withdraw',
+            type: type as 'deposit' | 'withdraw' | 'receive',
             status: 'success' as const,
             usdValue: item.delta.usdc || '0',
           };

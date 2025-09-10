@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, Skeleton, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { TokenSelectPopup } from './TokenSelectPopup';
 import { useTranslation } from 'react-i18next';
@@ -13,11 +13,11 @@ import {
 import { useWallet } from '@/ui/utils';
 import { ARB_USDC_TOKEN_ID, ARB_USDC_TOKEN_ITEM } from '../constants';
 import { ARB_USDC_TOKEN_SERVER_CHAIN } from '../constants';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { formatUsdValue } from '../../../utils/number';
+import { formatNumber, formatUsdValue } from '../../../utils/number';
 import BigNumber from 'bignumber.js';
 import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import {
@@ -38,9 +38,11 @@ import { useMemoizedFn } from 'ahooks';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
-  updateMiniSignTx: (amount: number) => void;
+  updateMiniSignTx: (amount: number, token: TokenItem) => void;
   availableBalance: string;
   currentPerpsAccount: Account | null;
+  quoteLoading: boolean;
+  bridgeQuote: PerpBridgeQuote | null;
   isPreparingSign: boolean;
   setIsPreparingSign: (isPreparingSign: boolean) => void;
   handleDeposit: () => void;
@@ -54,6 +56,8 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
   visible,
   type,
+  quoteLoading,
+  bridgeQuote,
   isPreparingSign,
   onClose,
   miniTxs,
@@ -126,6 +130,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   React.useEffect(() => {
     if (!visible) {
       setUsdValue('');
+      setSelectedToken(ARB_USDC_TOKEN_ITEM);
       setIsWithdrawLoading(false);
     }
   }, [visible]);
@@ -218,11 +223,25 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   useDebounce(
     () => {
       if (!visible || type === 'withdraw') return;
-      updateMiniSignTx(Number(usdValue) || 0);
+      if (!isValidAmount) return;
+      updateMiniSignTx(Number(usdValue), selectedToken || ARB_USDC_TOKEN_ITEM);
     },
     300,
-    [usdValue, visible, updateMiniSignTx, type]
+    [usdValue, visible, updateMiniSignTx, type, selectedToken]
   );
+
+  useEffect(() => {
+    if (type === 'deposit' || visible) {
+      if (isValidAmount) {
+        // updateMiniSignTx(
+        //   Number(usdValue),
+        //   selectedToken || ARB_USDC_TOKEN_ITEM
+        // );
+      } else {
+        clearMiniSignTx();
+      }
+    }
+  }, [isValidAmount, type, visible, selectedToken]);
 
   useDebounce(
     () => {
@@ -241,10 +260,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           if (gasError || gasTooHigh) {
             handleDeposit();
           } else {
-            startDirectSigning();
+            handleDeposit();
+            // startDirectSigning();
           }
         }
-        console.log('gasReadyContent', gasReadyContent);
       } else {
         setIsPreparingSign(false);
       }
@@ -260,6 +279,16 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     ]
   );
 
+  const quoteError = useMemo(() => {
+    return type === 'deposit' &&
+      selectedToken?.id !== ARB_USDC_TOKEN_ID &&
+      isValidAmount &&
+      !quoteLoading &&
+      !bridgeQuote?.tx
+      ? t('page.perps.depositAmountPopup.fetchQuoteFailed')
+      : '';
+  }, [bridgeQuote, quoteLoading, type, selectedToken, t, isValidAmount]);
+
   // 获取错误状态下的文字颜色
   const getMarginTextColor = () => {
     if (amountValidation.error) {
@@ -271,7 +300,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   return (
     <Popup
       placement="bottom"
-      height={380}
+      height={400}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -330,7 +359,14 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   <div
                     className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
                     onClick={() => {
-                      setUsdValue(Number(availableBalance).toFixed(2));
+                      setUsdValue(
+                        formatNumber(
+                          availableBalance,
+                          2,
+                          undefined,
+                          BigNumber.ROUND_DOWN
+                        )
+                      );
                     }}
                   >
                     Max
@@ -347,7 +383,14 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   <div
                     className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
                     onClick={() => {
-                      setUsdValue(depositMaxUsdValue.toFixed(2));
+                      setUsdValue(
+                        formatNumber(
+                          depositMaxUsdValue,
+                          2,
+                          undefined,
+                          BigNumber.ROUND_DOWN
+                        )
+                      );
                     }}
                   >
                     Max
@@ -355,7 +398,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 </div>
               )}
               <div className="text-13 text-r-red-default text-center mt-8 h-[22px]">
-                {amountValidation.errorMessage || ''}
+                {amountValidation.errorMessage || quoteError || ''}
               </div>
             </div>
           </div>
@@ -428,10 +471,53 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               </Tooltip>
             </div>
           )}
+          {type === 'deposit' &&
+            isValidAmount &&
+            selectedToken?.id !== ARB_USDC_TOKEN_ID &&
+            !quoteError &&
+            (quoteLoading ? (
+              <div className="mb-10 h-[18px] flex flex-row items-center justify-center">
+                <Skeleton.Button
+                  active={true}
+                  className="h-[16px] mb-8 block rounded-[4px]"
+                  style={{ width: 128 }}
+                />
+              </div>
+            ) : (
+              <div className="mb-10 flex h-[18px] flex-row items-center justify-center">
+                <div className="text-[11px] text-r-neutral-foot text-center">
+                  {t('page.perps.depositAmountPopup.estReceive', {
+                    balance: formatUsdValue(
+                      (bridgeQuote?.to_token_amount || 0) *
+                        ARB_USDC_TOKEN_ITEM.price
+                    ),
+                  })}
+                </div>
+                <Tooltip
+                  overlayClassName={clsx('rectangle')}
+                  placement="top"
+                  title={t('page.perps.depositAmountPopup.estReceiveTooltip', {
+                    number: bridgeQuote?.duration || 0,
+                  })}
+                  align={{ targetOffset: [0, 0] }}
+                >
+                  <RcIconInfo
+                    viewBox="0 0 12 12"
+                    width={12}
+                    height={12}
+                    className="text-rabby-neutral-foot ml-4"
+                  />
+                </Tooltip>
+              </div>
+            ))}
           {type === 'deposit' ? (
             <Button
               block
-              disabled={!isValidAmount}
+              disabled={
+                !isValidAmount ||
+                Boolean(quoteError) ||
+                (!isDirectDeposit && quoteLoading)
+              }
               size="large"
               type="primary"
               loading={isSigningLoading || isPreparingSign}
