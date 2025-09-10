@@ -213,6 +213,15 @@ export const usePerpsDeposit = ({
     postPerpBridgeQuote(hash as string);
   });
 
+  // Cleanup AbortController on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   const postPerpBridgeQuote = useMemoizedFn(async (hash: string) => {
     if (!hash || !cacheBridgeHistory) {
       throw new Error('No hash tx');
