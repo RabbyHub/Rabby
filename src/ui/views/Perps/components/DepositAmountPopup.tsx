@@ -224,10 +224,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     () => {
       if (!visible || type === 'withdraw') return;
       if (!isValidAmount) return;
-      updateMiniSignTx(Number(usdValue), selectedToken || ARB_USDC_TOKEN_ITEM);
+      updateMiniSignTx(Number(usdValue), tokenInfo || ARB_USDC_TOKEN_ITEM);
     },
     300,
-    [usdValue, visible, updateMiniSignTx, type, selectedToken]
+    [usdValue, visible, updateMiniSignTx, type, tokenInfo]
   );
 
   useEffect(() => {
@@ -241,7 +241,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         clearMiniSignTx();
       }
     }
-  }, [isValidAmount, type, visible, selectedToken]);
+  }, [isValidAmount, type, visible]);
 
   useDebounce(
     () => {
