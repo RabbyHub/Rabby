@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Button, message } from 'antd';
 import { groupBy } from 'lodash';
+import PQueue from 'p-queue';
 
 import { findAccountByPriority } from '@/utils/account';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
@@ -26,6 +27,9 @@ import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-wh
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
+
+const unimportedBalancesCache: Record<string, number> = {};
+const queue = new PQueue({ interval: 1000, intervalCap: 8, concurrency: 8 }); // 每秒最多5个
 
 const OuterInput = styled.div`
   border: 1px solid var(--r-neutral-line);
@@ -105,10 +109,13 @@ const SendPoly = () => {
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
   const [selectedAddressType, setSelectedAddressType] = useState('');
+  const [unimportedBalances, setUnimportedBalances] = useState<
+    Record<string, number>
+  >({});
 
   const importWhitelistAccounts = useMemo(() => {
     const groupAccounts = groupBy(accountsList, (item) =>
-      item.address.toLocaleLowerCase()
+      item.address.toLowerCase()
     );
     const uniqueAccounts = Object.values(groupAccounts).map((item) =>
       findAccountByPriority(item)
@@ -118,22 +125,32 @@ const SendPoly = () => {
     );
   }, [accountsList, whitelist]);
 
+  const unimportedWhitelistAccounts = useMemo(() => {
+    return whitelist
+      ?.filter(
+        (w) => !importWhitelistAccounts.some((a) => isSameAddress(w, a.address))
+      )
+      .map((w) => padWatchAccount(w));
+  }, [importWhitelistAccounts, whitelist]);
+
   const nftItem = useMemo(() => {
     const query = new URLSearchParams(search);
     return query.get('nftItem') || null;
   }, [search]);
 
   const allAccounts = useMemo(() => {
-    return [...whitelist].reverse().map((addr) => {
-      const account = importWhitelistAccounts.find((a) =>
-        isSameAddress(a.address, addr)
-      );
-      if (account) {
-        return account;
-      }
-      return padWatchAccount(addr);
-    });
-  }, [importWhitelistAccounts, whitelist]);
+    return [
+      ...importWhitelistAccounts,
+      ...unimportedWhitelistAccounts.map((acc) => ({
+        ...acc,
+        balance: unimportedBalances[acc.address],
+      })),
+    ].sort((a, b) => (b.balance || 0) - (a.balance || 0));
+  }, [
+    importWhitelistAccounts,
+    unimportedWhitelistAccounts,
+    unimportedBalances,
+  ]);
 
   const fetchData = async () => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
@@ -181,6 +198,7 @@ const SendPoly = () => {
       return;
     }
     const inWhitelist = whitelist.some((item) => isSameAddress(address, item));
+    forceUpdateUnimportedBalances(address);
     if (inWhitelist) {
       handleGotoSend(address, type);
     } else {
@@ -211,9 +229,81 @@ const SendPoly = () => {
     });
   };
 
+  const forceUpdateUnimportedBalances = useCallback(
+    async (address: string) => {
+      const lowerAddress = address.toLowerCase();
+      try {
+        const res = await wallet.getInMemoryAddressBalance(lowerAddress);
+        const balance = res?.total_usd_value || 0;
+        unimportedBalancesCache[lowerAddress] = balance;
+        setUnimportedBalances((prev) => ({
+          ...prev,
+          [lowerAddress]: balance,
+        }));
+      } catch (e) {
+        unimportedBalancesCache[lowerAddress] = 0;
+        setUnimportedBalances((prev) => ({
+          ...prev,
+          [lowerAddress]: 0,
+        }));
+      }
+    },
+    [wallet]
+  );
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (
+      !unimportedWhitelistAccounts ||
+      unimportedWhitelistAccounts.length === 0
+    ) {
+      return;
+    }
+    const fetchBalances = async () => {
+      queue.clear();
+      await Promise.all(
+        unimportedWhitelistAccounts.map((acc) =>
+          queue.add(async () => {
+            if (cancelled) {
+              return;
+            }
+            if (unimportedBalancesCache[acc.address] !== undefined) {
+              // 已有缓存，直接set
+              setUnimportedBalances((prev) => ({
+                ...prev,
+                [acc.address]: unimportedBalancesCache[acc.address],
+              }));
+              return;
+            }
+            const cachedBalance = await wallet.getAddressCacheBalance(
+              acc.address
+            );
+            if (typeof cachedBalance?.total_usd_value === 'number') {
+              unimportedBalancesCache[acc.address] =
+                cachedBalance.total_usd_value;
+              setUnimportedBalances((prev) => ({
+                ...prev,
+                [acc.address]: cachedBalance.total_usd_value,
+              }));
+              return;
+            }
+            if (!cancelled) {
+              forceUpdateUnimportedBalances(acc.address);
+            }
+          })
+        )
+      );
+    };
+    fetchBalances();
+    return () => {
+      cancelled = true;
+      queue.clear();
+    };
+  }, [forceUpdateUnimportedBalances, unimportedWhitelistAccounts, wallet]);
 
   return (
     <FullscreenContainer className="h-[700px]">
