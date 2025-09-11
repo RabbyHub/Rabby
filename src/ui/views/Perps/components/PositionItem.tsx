@@ -12,12 +12,6 @@ import { useTranslation } from 'react-i18next';
 
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
-const PositionItemWrapper = styled.div`
-  &:hover {
-    background-color: #ffe2e2;
-  }
-`;
-
 export const PositionItem: React.FC<{
   position: AssetPosition['position'];
   marketData?: MarketData;
@@ -64,10 +58,9 @@ export const PositionItem: React.FC<{
         // 'hover:border-rabby-blue-default cursor-pointer'
       )}
     >
-      {/* 头部：代币信息 */}
-      <PositionItemWrapper
+      <div
         className={clsx(
-          'flex items-center mx-2 mt-4 justify-between px-16 py-12',
+          'flex items-center justify-between px-16 py-12',
           'rounded-[2px]',
           'cursor-pointer'
         )}
@@ -102,9 +95,8 @@ export const PositionItem: React.FC<{
         <div className="w-16 h-16 cursor-pointer">
           <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
         </div>
-      </PositionItemWrapper>
+      </div>
 
-      {/* 详细信息 */}
       <div className="gap-x-12 gap-y-8 text-13 border-t-[0.5px] py-8 border-rabby-neutral-line px-16">
         <div className="flex w-full flex-row">
           <div className="flex flex-col w-[140px]">
@@ -175,7 +167,6 @@ export const PositionItem: React.FC<{
         </div>
       </div>
 
-      {/* 关闭按钮 */}
       <div className="px-16 mt-8">
         <PerpsBlueBorderedButton
           block

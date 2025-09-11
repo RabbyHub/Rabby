@@ -55,7 +55,6 @@ export const usePerpsDeposit = ({
     setBridgeQuote(null);
   });
 
-  // 用于存储当前的AbortController
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const updateMiniSignTx = useMemoizedFn(
@@ -65,11 +64,10 @@ export const usePerpsDeposit = ({
         setQuoteLoading(true);
         const txs: Tx[] = [];
         try {
-          // 取消之前的请求
           if (abortControllerRef.current) {
             abortControllerRef.current.abort();
           }
-          // 创建新的AbortController
+
           const controller = new AbortController();
           abortControllerRef.current = controller;
 
