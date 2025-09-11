@@ -67,6 +67,7 @@
       "nativeTokenForGas": "Use {{tokenName}} token on {{chainName}} to pay for gas",
       "gasAccountForGas": "Use USD from my GasAccount to pay for gas",
       "gasAccount": {
+        "description": "Using GasAccount to pay for gas fees. View payment details below:",
         "totalCost": "Total cost: ",
         "currentTxCost": "Gas amount sent to your address: ",
         "gasCost": "Gas cost for transferring gas to your address: ",

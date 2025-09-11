@@ -88,7 +88,7 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
         className="rectangle w-[max-content]"
       >
         <img
-          className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
+          className="w-12 h-12 absolute right-[-4px] top-[-4px] rounded-full"
           src={chainItem?.logo || IconUnknown}
           alt={chainItem?.name}
         />
@@ -96,83 +96,6 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
     </div>
   );
 };
-
-// const mockData = {
-//   status: 'failed',
-//   hash: '0x1234567890',
-//   chainId: 78,
-//   address: '0x1234567890',
-//   slippage: 0.005,
-//   fromAmount: 0.025786,
-//   toAmount: 0.025786,
-//   dexId: '0x1234567890',
-//   createdAt: 1716800531,
-//   fromChainId: 1,
-//   fromToken: {
-//     amount: 0.025786,
-//     cex_ids: [],
-//     chain: 'taiko',
-//     credit_score: 98155.1364332469,
-//     decimals: 6,
-//     display_symbol: null,
-//     id: '0x07d83526730c7438048d55a4fc0b850e2aab6f0b',
-//     is_core: true,
-//     is_verified: true,
-//     is_wallet: true,
-//     logo_url:
-//       'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
-//     name: 'USD Coin',
-//     optimized_symbol: 'USDC',
-//     price: 0.9998000399920016,
-//     price_24h_change: -0.00019996000799837876,
-//     protocol_id: '',
-//     symbol: 'USDC',
-//     time_at: 1716800531,
-//   },
-//   amount: 123.456,
-//   toToken: {
-//     amount: 0.025786,
-//     cex_ids: [],
-//     chain: 'taiko',
-//     credit_score: 98155.1364332469,
-//     decimals: 6,
-//     display_symbol: null,
-//     id: '0x07d83526730c7438048d55a4fc0b850e2aab6f0b',
-//     is_core: true,
-//     is_verified: true,
-//     is_wallet: true,
-//     logo_url:
-//       'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
-//     name: 'USD Coin',
-//     optimized_symbol: 'USDC',
-//     price: 0.9998000399920016,
-//     price_24h_change: -0.00019996000799837876,
-//     protocol_id: '',
-//     symbol: 'USDC',
-//     time_at: 1716800531,
-//   },
-//   token: {
-//     amount: 0.025786,
-//     cex_ids: [],
-//     chain: 'taiko',
-//     credit_score: 98155.1364332469,
-//     decimals: 6,
-//     display_symbol: null,
-//     id: '0x07d83526730c7438048d55a4fc0b850e2aab6f0b',
-//     is_core: true,
-//     is_verified: true,
-//     is_wallet: true,
-//     logo_url:
-//       'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
-//     name: 'USD Coin',
-//     optimized_symbol: 'USDC',
-//     price: 0.9998000399920016,
-//     price_24h_change: -0.00019996000799837876,
-//     protocol_id: '',
-//     symbol: 'USDC',
-//     time_at: 1716800531,
-//   },
-// } as SwapTxHistoryItem;
 
 export const PendingTxItem = forwardRef<
   { fetchHistory: () => void },
@@ -407,7 +330,7 @@ export const PendingTxItem = forwardRef<
                       className="rectangle w-[max-content]"
                     >
                       <img
-                        className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
+                        className="w-12 h-12 absolute right-[-4px] top-[-4px] rounded-full"
                         src={sendChainItem?.logo || IconUnknown}
                         alt={sendChainItem?.name}
                       />
