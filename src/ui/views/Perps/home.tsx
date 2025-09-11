@@ -547,7 +547,7 @@ export const Perps: React.FC = () => {
           handleClosePosition={async () => {
             await handleClosePosition({
               coin: closePosition.coin,
-              size: closePosition.szi,
+              size: Math.abs(Number(closePosition.szi || 0)).toString() || '0',
               direction: Number(closePosition.szi || 0) > 0 ? 'Long' : 'Short',
               price: closePosition.entryPx || '0',
             });

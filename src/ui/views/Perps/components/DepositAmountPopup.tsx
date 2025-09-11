@@ -563,6 +563,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         list={tokenList || []}
         onCancel={() => setTokenVisible(false)}
         onSelect={(t) => {
+          setUsdValue('');
           setSelectedToken(t);
           setTokenVisible(false);
         }}
