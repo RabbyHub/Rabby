@@ -30,6 +30,7 @@ import type {
   SendTxHistoryItem,
   BridgeTxHistoryItem,
   SendNftTxHistoryItem,
+  ApproveTokenTxHistoryItem,
 } from '@/background/service/transactionHistory';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Image } from 'antd';
@@ -40,7 +41,8 @@ type PendingTxData =
   | SwapTxHistoryItem
   | SendNftTxHistoryItem
   | SendTxHistoryItem
-  | BridgeTxHistoryItem;
+  | BridgeTxHistoryItem
+  | ApproveTokenTxHistoryItem;
 
 const StatusIcon = ({ status }: { status: string }) => {
   if (status === 'pending' || status === 'fromSuccess') {
@@ -175,7 +177,13 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
 export const PendingTxItem = forwardRef<
   { fetchHistory: () => void },
   {
-    type: 'send' | 'swap' | 'bridge' | 'sendNft';
+    type:
+      | 'send'
+      | 'swap'
+      | 'bridge'
+      | 'sendNft'
+      | 'approveSwap'
+      | 'approveBridge';
     bridgeHistoryList?: BridgeHistory[];
     openBridgeHistory?: () => void;
     onFulfilled?: () => void;
@@ -206,7 +214,13 @@ export const PendingTxItem = forwardRef<
   const fetchRefreshLocalData = useMemoizedFn(
     async (
       data: PendingTxData,
-      type: 'swap' | 'send' | 'bridge' | 'sendNft'
+      type:
+        | 'send'
+        | 'swap'
+        | 'bridge'
+        | 'sendNft'
+        | 'approveSwap'
+        | 'approveBridge'
     ) => {
       if (data.status !== 'pending') {
         // has done
@@ -407,6 +421,24 @@ export const PendingTxItem = forwardRef<
                 )}
                 <span className="text-15 font-medium text-r-neutral-title-1">
                   {sendTitleTextStr}
+                </span>
+              </>
+            ) : ['approveBridge', 'approveSwap'].includes(type) ? (
+              <>
+                <TokenWithChain
+                  token={(data as ApproveTokenTxHistoryItem)?.token?.logo_url}
+                  chain={
+                    (data as ApproveTokenTxHistoryItem)?.token?.chain || ''
+                  }
+                />
+                <span className="text-15 font-medium text-r-neutral-title-1">
+                  {t('page.swap.approve-x-symbol', {
+                    symbol: `${
+                      (data as ApproveTokenTxHistoryItem).amount
+                    } ${getTokenSymbol(
+                      (data as ApproveTokenTxHistoryItem)?.token
+                    )}`,
+                  })}
                 </span>
               </>
             ) : type === 'swap' ? (

@@ -670,6 +670,20 @@ export class WalletController extends BaseController {
           { isSwap: true, swapPreferMEVGuarded },
           true
         );
+
+        transactionHistoryService.addCacheHistoryData(
+          `${chain}-${res.params[0].data}`,
+          {
+            address: addHistoryData.address,
+            chainId: addHistoryData.chainId,
+            amount: addHistoryData.fromAmount,
+            token: addHistoryData.fromToken,
+            status: 'pending',
+            createdAt: Date.now(),
+          },
+          'approveSwap'
+        );
+
         txs.push(res.params[0]);
         unTriggerTxCounter.decrease();
       }
@@ -4061,26 +4075,20 @@ export class WalletController extends BaseController {
 
   // getTxExplainCacheByApprovalId = (id: string) =>
   //   transactionHistoryService.getExplainCacheByApprovalId(id);
-  getRecentPendingTxHistory = (
-    address: string,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
+  getRecentPendingTxHistory: typeof transactionHistoryService.getRecentPendingTxHistory = (
+    address,
+    type
   ) => transactionHistoryService.getRecentPendingTxHistory(address, type);
-  addCacheHistoryData = (
-    key: string,
-    data: Omit<
-      | SwapTxHistoryItem
-      | SendTxHistoryItem
-      | BridgeTxHistoryItem
-      | SendNftTxHistoryItem,
-      'hash'
-    >,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
+  addCacheHistoryData: typeof transactionHistoryService.addCacheHistoryData = (
+    key,
+    data,
+    type
   ) => transactionHistoryService.addCacheHistoryData(key, data, type);
-  getRecentTxHistory = (
-    address: string,
-    hash: string,
-    chainId: number,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
+  getRecentTxHistory: typeof transactionHistoryService.getRecentTxHistory = (
+    address,
+    hash,
+    chainId,
+    type
   ) =>
     transactionHistoryService.getRecentTxHistory(address, hash, chainId, type);
   completeBridgeTxHistory = (

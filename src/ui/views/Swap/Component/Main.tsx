@@ -57,6 +57,7 @@ import {
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from './PendingTxItem';
+import { useTwoStepSwap } from '../hooks/twoStepSwap';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -180,26 +181,6 @@ export const Main = () => {
   const { t } = useTranslation();
 
   const amountAvailable = useMemo(() => Number(inputAmount) > 0, [inputAmount]);
-
-  const btnText = useMemo(() => {
-    if (!isSupportedChain) {
-      return t('component.externalSwapBrideDappPopup.swapOnDapp');
-    }
-    if (activeProvider?.shouldApproveToken) {
-      return t('page.swap.approve-swap');
-    }
-
-    if (quoteLoading) {
-      return t('page.swap.title');
-    }
-
-    return t('page.swap.title');
-  }, [
-    activeProvider?.shouldApproveToken,
-    quoteLoading,
-    isSupportedChain,
-    externalDapps,
-  ]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -416,6 +397,72 @@ export const Main = () => {
     [isSupportedChain, currentAccount?.type]
   );
 
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
+  const onApprovePending = useCallback(
+    () => pendingTxRef.current?.fetchHistory(),
+    []
+  );
+
+  const {
+    shouldTwoStep: shouldTwoStepSwap,
+    currentTxs,
+    next,
+    isApprove,
+    approvePending: approveTxPending,
+    setApprovePending,
+  } = useTwoStepSwap({
+    txs,
+    chain,
+    enable: !!canUseDirectSubmitTx && !!currentAccount?.type,
+    type: 'approveSwap',
+    onApprovePending,
+  });
+
+  const miniSignNextStep = (clearAmount?: boolean) => {
+    next();
+    setMiniSignLoading(false);
+    if (shouldTwoStepSwap && isApprove) {
+      setApprovePending(true);
+    }
+
+    if (!shouldTwoStepSwap || (shouldTwoStepSwap && !isApprove)) {
+      setApprovePending(false);
+      mutateTxs();
+      refresh((e) => e + 1);
+      clearAmount && handleAmountChange('');
+    }
+  };
+
+  const btnText = useMemo(() => {
+    if (!isSupportedChain) {
+      return t('component.externalSwapBrideDappPopup.swapOnDapp');
+    }
+    if (shouldTwoStepSwap) {
+      if (!isApprove && !approveTxPending) {
+        return t('page.swap.title');
+      }
+      return t('page.swap.approve');
+    }
+    if (activeProvider?.shouldApproveToken) {
+      return t('page.swap.approve-swap');
+    }
+
+    if (quoteLoading) {
+      return t('page.swap.title');
+    }
+
+    return t('page.swap.title');
+  }, [
+    activeProvider?.shouldApproveToken,
+    quoteLoading,
+    isSupportedChain,
+    externalDapps,
+    shouldTwoStepSwap,
+    isApprove,
+    approveTxPending,
+  ]);
+
   // const noRiskSign =
   //   !receiveToken?.low_credit_score &&
   //   !receiveToken?.is_suspicious &&
@@ -427,6 +474,8 @@ export const Main = () => {
   const showRiskTips = isSlippageLow || isSlippageHigh || showLoss;
 
   const [swapDappOpen, setSwapDappOpen] = useState(false);
+
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
 
   const handleSwap = useMemoizedFn(() => {
     if (!isTab) {
@@ -440,6 +489,7 @@ export const Main = () => {
     if (canUseDirectSubmitTx) {
       clearExpiredTimer();
       startDirectSigning();
+      setMiniSignLoading(true);
       return;
     } else {
       gotoSwap();
@@ -560,8 +610,6 @@ export const Main = () => {
     activeProvider?.name,
     activeProvider?.quote,
   ]);
-
-  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
 
   return (
     <>
@@ -772,11 +820,19 @@ export const Main = () => {
             />
           </div>
         )}
-        {Boolean(!isShowMoreVisible && !activeProvider?.quote) && (
+        {(shouldTwoStepSwap && currentTxs?.length) ||
+        Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
           <div className="mx-20 mt-20">
-            <PendingTxItem type="swap" ref={pendingTxRef} />
+            <PendingTxItem
+              type={
+                shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap'
+              }
+              ref={pendingTxRef}
+              key={currentTxs?.[0]?.data}
+            />
           </div>
-        )}
+        ) : null}
+
         <div
           className={clsx(
             'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
@@ -804,7 +860,8 @@ export const Main = () => {
               <DirectSignToConfirmBtn
                 // disabled
                 key={refreshId}
-                disabled={swapBtnDisabled}
+                disabled={swapBtnDisabled || approveTxPending}
+                loading={miniSignLoading}
                 title={btnText}
                 onConfirm={handleSwap}
                 showRiskTips={showRiskTips && !swapBtnDisabled}
@@ -888,8 +945,9 @@ export const Main = () => {
           />
         ) : null}
         <MiniApproval
+          transparentMask
           visible={isShowSign}
-          txs={txs}
+          txs={currentTxs}
           ga={{
             category: 'Swap',
             source: 'swap',
@@ -898,6 +956,10 @@ export const Main = () => {
           }}
           onClose={() => {
             setIsShowSign(false);
+            setMiniSignLoading(false);
+            if (shouldTwoStepSwap) {
+              setApprovePending(false);
+            }
             refresh((e) => e + 1);
             setTimeout(() => {
               mutateTxs([]);
@@ -905,15 +967,17 @@ export const Main = () => {
           }}
           onReject={() => {
             setIsShowSign(false);
+            setMiniSignLoading(false);
+            if (shouldTwoStepSwap) {
+              setApprovePending(false);
+            }
             refresh((e) => e + 1);
             mutateTxs([]);
           }}
           onResolve={() => {
             setTimeout(() => {
-              refresh((e) => e + 1);
               setIsShowSign(false);
-              mutateTxs([]);
-              handleAmountChange('');
+              miniSignNextStep(true);
             }, 500);
           }}
           onPreExecError={gotoSwap}
