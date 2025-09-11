@@ -306,7 +306,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               balance: formatUsdValue(availableBalance, BigNumber.ROUND_DOWN),
             })}
             <div
-              className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
+              className={clsx(
+                'text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer'
+              )}
               onClick={() => {
                 setMargin(
                   formatNumber(
@@ -338,7 +340,12 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
             <div className="text-13 text-r-neutral-title-1 font-medium text-center flex items-center gap-6">
               <div
-                className="text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-12 py-6 hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer"
+                className={clsx(
+                  'text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-12 py-6',
+                  leverageRange[0] === leverage
+                    ? 'opacity-50'
+                    : 'hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer'
+                )}
                 onClick={() => {
                   setLeverage(leverageRange[0]);
                 }}
@@ -366,7 +373,12 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 }}
               />
               <div
-                className="text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-12 py-6 hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer"
+                className={clsx(
+                  'text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-12 py-6',
+                  leverageRange[1] === leverage
+                    ? 'opacity-50'
+                    : 'hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer'
+                )}
                 onClick={() => {
                   setLeverage(leverageRange[1]);
                 }}
@@ -448,7 +460,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
-                {t('page.perps.margin')}
+                {t('page.perps.marginIsolated')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
                 {formatUsdValue(Number(margin))}

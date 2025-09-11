@@ -92,7 +92,7 @@ export const PositionItem: React.FC<{
             </span>
           </div>
         </div>
-        <div className="w-16 h-16 cursor-pointer">
+        <div className="w-16 h-16 cursor-pointer text-r-neutral-foot">
           <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
         </div>
       </div>
@@ -113,7 +113,7 @@ export const PositionItem: React.FC<{
             </span>
           </div>
           <div className="flex flex-col flex-1">
-            <span className="text-r-neutral-foot mb-4 text-[12px]">
+            <span className="text-r-neutral-foot text-[12px]">
               {t('page.perps.home.size')}
             </span>
             <span className="text-r-neutral-title-1 font-medium">
@@ -122,7 +122,7 @@ export const PositionItem: React.FC<{
           </div>
 
           <div className="flex flex-col text-right flex-1">
-            <span className="text-r-neutral-foot mb-4 text-[12px]">
+            <span className="text-r-neutral-foot text-[12px]">
               {t('page.perps.home.margin')}
             </span>
             <span className="text-r-neutral-title-1 font-medium">
@@ -131,9 +131,9 @@ export const PositionItem: React.FC<{
           </div>
         </div>
 
-        <div className="flex w-full flex-row">
+        <div className="flex w-full flex-row mt-8">
           <div className="flex flex-col w-[140px]">
-            <span className="text-r-neutral-foot mb-4 text-[12px]">
+            <span className="text-r-neutral-foot text-[12px]">
               {t('page.perps.home.entryPrice')}
             </span>
             <span className="text-r-neutral-title-1 font-medium">
@@ -144,7 +144,7 @@ export const PositionItem: React.FC<{
           </div>
 
           <div className="flex flex-col flex-1">
-            <span className="text-r-neutral-foot mb-4 text-[12px]">
+            <span className="text-r-neutral-foot text-[12px]">
               {t('page.perps.home.markPrice')}
             </span>
             <span className="text-r-neutral-title-1 font-medium">
@@ -155,7 +155,7 @@ export const PositionItem: React.FC<{
           </div>
 
           <div className="flex flex-col text-right flex-1">
-            <span className="text-r-neutral-foot mb-4 text-[12px]">
+            <span className="text-r-neutral-foot text-[12px]">
               {t('page.perps.home.liquidationPrice')}
             </span>
             <span className="text-r-neutral-title-1 font-medium">
