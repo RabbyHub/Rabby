@@ -2,7 +2,12 @@ import { Account } from '@/background/service/preference';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import {
+  CHAINS_ENUM,
+  ETH_USDT_CONTRACT,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+} from '@/constant';
 import { useMemoizedFn } from 'ahooks';
 import { findAccountByPriority } from '@/utils/account';
 import { useInterval } from 'react-use';
@@ -100,11 +105,41 @@ export const usePerpsDeposit = ({
               new BigNumber(amount).times(10 ** token.decimals)
             );
           }
+          let shouldTwoStepApprove = false;
+          if (
+            fromChain?.enum === CHAINS_ENUM.ETH &&
+            isSameAddress(token.id, ETH_USDT_CONTRACT) &&
+            Number(allowance) !== 0 &&
+            !tokenApproved
+          ) {
+            shouldTwoStepApprove = true;
+          }
+
           if (controller.signal.aborted) {
             return;
           }
           if (res.tx) {
             if (!tokenApproved) {
+              if (shouldTwoStepApprove) {
+                const resp = await wallet.approveToken(
+                  token.chain,
+                  token.id,
+                  res.approve_contract_id,
+                  0,
+                  {
+                    ga: {
+                      category: 'Perps',
+                      source: 'Perps',
+                      trigger: 'Perps',
+                    },
+                  },
+                  undefined,
+                  undefined,
+                  true
+                );
+                txs.push(resp.params[0]);
+              }
+
               const resp = await wallet.approveToken(
                 token.chain,
                 token.id,
@@ -127,7 +162,14 @@ export const usePerpsDeposit = ({
 
             setBridgeQuote(res);
             setCacheUsdValue(res.to_token_amount * ARB_USDC_TOKEN_ITEM.price);
-            txs.push(res.tx);
+            const bridgeTx = {
+              from: res.tx.from,
+              to: res.tx.to,
+              value: res.tx.value,
+              data: res.tx.data,
+              chainId: res.tx.chainId,
+            } as Tx;
+            txs.push(bridgeTx);
             setMiniSignTx(txs);
             setQuoteLoading(false);
             setCacheBridgeHistory({
