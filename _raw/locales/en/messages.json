@@ -1147,6 +1147,7 @@
     },
     "swap": {
       "title": "Swap",
+      "approve": "Approve",
       "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
       "Pending": "Pending",
       "completedTip": "Transaction on chain, decoding data to generate record",
