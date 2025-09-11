@@ -1371,6 +1371,7 @@ export const MiniApproval = ({
   onPreExecChange,
   autoThrowPreExecError,
   onRedirectToDeposit,
+  transparentMask: showTransparentMask,
 }: Omit<MiniSignTxProps, 'txs'> & {
   txs?: Tx[];
   visible?: boolean;
@@ -1380,6 +1381,7 @@ export const MiniApproval = ({
   setIsPreparingSign?: (isPreparingSign: boolean) => void;
   noShowModalLoading?: boolean;
   zIndex?: number;
+  transparentMask?: boolean;
 }) => {
   const [status, setStatus] = useState<BatchSignTxTaskType['status']>('idle');
   const { isDarkTheme } = useThemeMode();
@@ -1510,12 +1512,16 @@ export const MiniApproval = ({
           closable={false}
           bodyStyle={{ padding: 0 }}
           maskStyle={{
-            backgroundColor: 'rgba(0,0,0,0.1)',
+            backgroundColor: showTransparentMask
+              ? 'transparent'
+              : 'rgba(0,0,0,0.1)',
           }}
         >
-          <div className="w-[52px] h-[52px] p-[14px] flex items-center justify-center">
-            <RCIconLoadingCC className="text-r-neutral-body animate-spin" />
-          </div>
+          {showTransparentMask ? null : (
+            <div className="w-[52px] h-[52px] p-[14px] flex items-center justify-center">
+              <RCIconLoadingCC className="text-r-neutral-body animate-spin" />
+            </div>
+          )}
         </Modal>
       ) : null}
     </>

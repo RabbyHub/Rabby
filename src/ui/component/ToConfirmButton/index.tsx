@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useClickAway } from 'react-use';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import Checkbox from '../Checkbox';
-
+import { ReactComponent as RcIconCCLoading } from 'ui/assets/loading-cc.svg';
 export const ToConfirmBtn = (props: {
   title: React.ReactNode;
   onConfirm: () => void;
@@ -18,12 +18,13 @@ export const ToConfirmBtn = (props: {
   htmlType?: 'button' | 'submit' | 'reset';
   isHardWallet?: boolean;
   onCancel?: () => void;
+  loading?: boolean;
 }) => {
   const { t } = useTranslation();
   const [toConfirm, setToConfirm] = useState(false);
   const handle: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.stopPropagation();
-    if (props.disabled) {
+    if (props.disabled || props.loading) {
       return;
     }
 
@@ -63,12 +64,14 @@ export const ToConfirmBtn = (props: {
         'flex items-center justify-center',
         toConfirm ? 'bg-r-blue-default' : '',
         'text-r-neutral-title-2 text-[15px] font-medium',
-        props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'
+        props.loading || props.disabled
+          ? 'cursor-not-allowed'
+          : 'cursor-pointer'
       )}
       ref={divRef}
       onClick={handle}
     >
-      {!toConfirm || props.isHardWallet ? (
+      {props.loading || !toConfirm || props.isHardWallet ? (
         <Button
           htmlType={props.htmlType || 'button'}
           type="primary"
@@ -76,7 +79,15 @@ export const ToConfirmBtn = (props: {
           block
           className="h-[48px] rounded-[8px]"
         >
-          {props?.title}
+          <div className="flex items-center justify-center gap-6">
+            {props.loading ? (
+              <RcIconCCLoading
+                viewBox="0 0 24 24"
+                className="w-16 h-16 animate-spin text-r-neutral-title2"
+              />
+            ) : null}
+            {props?.title}
+          </div>
         </Button>
       ) : (
         <div className={clsx('w-full h-full flex items-center', 'group')}>
@@ -129,6 +140,7 @@ export const DirectSignToConfirmBtn = (props: {
   accountType?: string;
   onCancel?: () => void;
   riskReset?: boolean;
+  loading?: boolean;
 }) => {
   const disabledProcess = useGetDisableProcessDirectSign();
   const { t } = useTranslation();

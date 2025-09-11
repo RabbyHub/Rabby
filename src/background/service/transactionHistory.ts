@@ -138,6 +138,26 @@ export interface SendNftTxHistoryItem {
   completedAt?: number;
 }
 
+export interface ApproveTokenTxHistoryItem {
+  address: string;
+  chainId: number;
+  amount: number;
+  token: TokenItem;
+  status: 'pending' | 'success' | 'failed';
+  hash: string;
+  createdAt: number;
+  completedAt?: number;
+}
+
+type InnerTxHistoryMap = {
+  swap: SwapTxHistoryItem;
+  send: SendTxHistoryItem;
+  bridge: BridgeTxHistoryItem;
+  sendNft: SendNftTxHistoryItem;
+  approveSwap: ApproveTokenTxHistoryItem;
+  approveBridge: ApproveTokenTxHistoryItem;
+};
+
 interface TxHistoryStore {
   transactions: {
     [addr: string]: Record<string, TransactionGroup>;
@@ -146,6 +166,17 @@ interface TxHistoryStore {
   sendTxHistory: SendTxHistoryItem[];
   sendNftTxHistory: SendNftTxHistoryItem[];
   bridgeTxHistory: BridgeTxHistoryItem[];
+  approveSwapTxHistory: InnerTxHistoryMap['approveSwap'][];
+  approveBridgeTxHistory: InnerTxHistoryMap['approveBridge'][];
+}
+
+interface CacheHistoryData {
+  [key: string]: {
+    [K in keyof InnerTxHistoryMap]: {
+      type: K;
+      data: Omit<InnerTxHistoryMap[K], 'hash'>;
+    };
+  }[keyof InnerTxHistoryMap];
 }
 
 class TxHistory {
@@ -223,6 +254,8 @@ class TxHistory {
         sendTxHistory: [],
         bridgeTxHistory: [],
         sendNftTxHistory: [],
+        approveSwapTxHistory: [],
+        approveBridgeTxHistory: [],
       },
     });
 
@@ -307,35 +340,17 @@ class TxHistory {
     ).length;
   }
 
-  cacheHistoryData: Record<
-    string,
-    {
-      data: Omit<
-        | SwapTxHistoryItem
-        | SendTxHistoryItem
-        | BridgeTxHistoryItem
-        | SendNftTxHistoryItem,
-        'hash'
-      >;
-      type: 'swap' | 'send' | 'bridge' | 'sendNft';
-    }
-  > = {};
+  cacheHistoryData: CacheHistoryData = {};
 
-  addCacheHistoryData(
+  addCacheHistoryData<K extends keyof InnerTxHistoryMap>(
     key: string, //`${chain}-${tx.data}`;
-    data: Omit<
-      | SwapTxHistoryItem
-      | SendTxHistoryItem
-      | BridgeTxHistoryItem
-      | SendNftTxHistoryItem,
-      'hash'
-    >,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
+    data: Omit<InnerTxHistoryMap[K], 'hash'>,
+    type: K
   ) {
     this.cacheHistoryData[key] = {
       data,
       type,
-    };
+    } as CacheHistoryData[string];
   }
 
   postCacheHistoryData(key: string, txHash: string) {
@@ -343,6 +358,16 @@ class TxHistory {
       const { data, type } = this.cacheHistoryData[key];
       if (!data) return;
       delete this.cacheHistoryData[key];
+
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.INNER_HISTORY_ITEM_PENDING,
+        params: {
+          type,
+          key,
+          txHash,
+        },
+      });
+
       if (type === 'swap') {
         this.addSwapTxHistory({
           ...(data as SwapTxHistoryItem),
@@ -370,7 +395,35 @@ class TxHistory {
           hash: txHash,
         });
       }
+
+      if (type === 'approveSwap') {
+        this.addApproveSwapTokenTxHistory({
+          ...(data as InnerTxHistoryMap['approveSwap']),
+          hash: txHash,
+        });
+      }
+      if (type === 'approveBridge') {
+        this.addApproveBridgeTokenTxHistory({
+          ...(data as InnerTxHistoryMap['approveBridge']),
+          hash: txHash,
+        });
+      }
     }
+  }
+
+  addApproveSwapTokenTxHistory(tx: InnerTxHistoryMap['approveSwap']) {
+    this.store.approveSwapTxHistory = [...this.store.approveSwapTxHistory, tx]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
+  }
+
+  addApproveBridgeTokenTxHistory(tx: InnerTxHistoryMap['approveBridge']) {
+    this.store.approveBridgeTxHistory = [
+      ...this.store.approveBridgeTxHistory,
+      tx,
+    ]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 200);
   }
 
   addSwapTxHistory(tx: SwapTxHistoryItem) {
@@ -397,10 +450,7 @@ class TxHistory {
       .slice(0, 200);
   }
 
-  getRecentPendingTxHistory(
-    address: string,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
-  ) {
+  getRecentPendingTxHistory(address: string, type: keyof InnerTxHistoryMap) {
     const recentItem = this.store[`${type}TxHistory`]
       .filter((item) => {
         return isSameAddress(address, item.address);
@@ -417,7 +467,7 @@ class TxHistory {
     address: string,
     hash: string,
     chainId: number,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
+    type: keyof InnerTxHistoryMap
   ) {
     return this.store[`${type}TxHistory`].find(
       (item) =>
@@ -434,6 +484,14 @@ class TxHistory {
   ) {
     const hashArr = txs.map((item) => item.hash);
     const completedAt = Date.now();
+
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.INNER_HISTORY_ITEM_COMPLETE,
+      params: {
+        hashArr,
+        chainId,
+      },
+    });
 
     this.store.swapTxHistory = this.store.swapTxHistory.map((item) => {
       if (item.chainId === chainId && hashArr.includes(item.hash)) {
@@ -478,6 +536,32 @@ class TxHistory {
       }
       return item;
     });
+
+    this.store.approveSwapTxHistory = this.store.approveSwapTxHistory.map(
+      (item) => {
+        if (item.chainId === chainId && hashArr.includes(item.hash)) {
+          return {
+            ...item,
+            status,
+            completedAt,
+          };
+        }
+        return item;
+      }
+    );
+
+    this.store.approveBridgeTxHistory = this.store.approveBridgeTxHistory.map(
+      (item) => {
+        if (item.chainId === chainId && hashArr.includes(item.hash)) {
+          return {
+            ...item,
+            status,
+            completedAt,
+          };
+        }
+        return item;
+      }
+    );
   }
 
   completeBridgeTxHistory(

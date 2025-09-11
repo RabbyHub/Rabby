@@ -535,22 +535,23 @@ export const DirectSignGasInfo = ({
                     overlayClassName="rectangle w-[max-content]"
                     title={
                       <div onClick={(e) => e.stopPropagation()}>
+                        <div>{t('page.signTx.gasAccount.description')}</div>
                         <div>
-                          {t('page.signTx.gasAccount.estimatedGas')}
+                          {t('page.signTx.gasAccount.estimatedGas')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.estimate_tx_cost || 0
                           )}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.maxGas')}
+                          {t('page.signTx.gasAccount.maxGas')}{' '}
                           {calcGasAccountUsd(gasAccountCost?.total_cost || '0')}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.sendGas')}
+                          {t('page.signTx.gasAccount.sendGas')}{' '}
                           {calcGasAccountUsd(gasAccountCost?.total_cost || '0')}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.gasCost')}
+                          {t('page.signTx.gasAccount.gasCost')}{' '}
                           {calcGasAccountUsd(gasAccountCost?.gas_cost || '0')}
                         </div>
                       </div>
