@@ -487,8 +487,6 @@ export const perps = createModel<RootModel>()({
         });
 
       dispatch.perps.updateUserAccountHistory({ newHistoryList: list });
-
-      console.log('fetchUserNonFundingLedgerUpdates', list);
     },
 
     async fetchUserHistoricalOrders() {

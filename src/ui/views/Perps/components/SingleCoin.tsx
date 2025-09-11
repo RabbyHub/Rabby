@@ -439,7 +439,7 @@ export const PerpsSingleCoin = () => {
               </div>
 
               <div
-                className="flex justify-between text-13 py-16 cursor-pointer"
+                className="flex justify-between text-13 py-16 cursor-pointer items-center"
                 onClick={() => {
                   handleAutoCloseSwitch(!hasAutoClose);
                 }}
