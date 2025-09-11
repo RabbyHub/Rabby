@@ -439,7 +439,7 @@ export const PerpsSingleCoin = () => {
               </div>
 
               <div
-                className="flex justify-between text-13 py-16 cursor-pointer items-center"
+                className="flex justify-between text-13 py-16 cursor-pointer"
                 onClick={() => {
                   handleAutoCloseSwitch(!hasAutoClose);
                 }}
@@ -451,6 +451,7 @@ export const PerpsSingleCoin = () => {
                   {AutoCloseInfo}
                 </div>
                 <Switch
+                  className="mt-[2px]"
                   checked={hasAutoClose}
                   // onChange={handleAutoCloseSwitch}
                 />
