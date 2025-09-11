@@ -56,6 +56,7 @@ export const useGasAccountTxsCheck = ({
       return res;
     },
     {
+      debounceWait: 300,
       refreshDeps: [sig, accountId, isReady, txs],
       onFinally() {
         if (isReady) {
@@ -63,13 +64,6 @@ export const useGasAccountTxsCheck = ({
         }
       },
     }
-  );
-  useDebounce(
-    () => {
-      gasAccountCostFn();
-    },
-    300,
-    [sig, accountId, isReady, txs]
   );
 
   const gasAccountCanPay =
