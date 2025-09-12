@@ -1093,27 +1093,28 @@ const GasSelectorHeader = ({
                     visible={isGasAccountHovering}
                     title={
                       <>
+                        <div>{t('page.signTx.gasAccount.description')}</div>
                         <div>
-                          {t('page.signTx.gasAccount.estimatedGas')}
+                          {t('page.signTx.gasAccount.estimatedGas')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.gas_account_cost.estimate_tx_cost ||
                               0
                           )}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.maxGas')}
+                          {t('page.signTx.gasAccount.maxGas')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.gas_account_cost.total_cost || '0'
                           )}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.sendGas')}
+                          {t('page.signTx.gasAccount.sendGas')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.gas_account_cost.total_cost || '0'
                           )}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.gasCost')}
+                          {t('page.signTx.gasAccount.gasCost')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.gas_account_cost.gas_cost || '0'
                           )}

@@ -140,7 +140,7 @@ const AddressBackup = () => {
               <Slip39TextareaContainer data={data} />
             ) : (
               <WordsMatrix
-                className="w-full bg-r-neutral-card1"
+                className="w-full bg-r-neutral-card-2"
                 focusable={false}
                 closable={false}
                 words={data.split(' ')}
