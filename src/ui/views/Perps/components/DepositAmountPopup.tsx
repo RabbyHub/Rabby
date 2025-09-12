@@ -51,7 +51,7 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   onClose: () => void;
   clearMiniSignTx: () => void;
   clearMiniSignTypeData?: () => void;
-  resetBridgeQuote: () => void;
+  resetBridgeQuoteLoading: () => void;
 };
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
@@ -70,7 +70,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   handleWithdraw,
   clearMiniSignTx,
   clearMiniSignTypeData,
-  resetBridgeQuote,
+  resetBridgeQuoteLoading,
 }) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -235,7 +235,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   useEffect(() => {
     if (type === 'deposit' || visible) {
       if (isValidAmount) {
-        // resetBridgeQuote();
+        resetBridgeQuoteLoading();
       } else {
         clearMiniSignTx();
       }

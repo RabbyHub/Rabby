@@ -54,7 +54,7 @@ export const usePerpsDeposit = ({
   const [bridgeQuote, setBridgeQuote] = useState<PerpBridgeQuote | null>(null);
 
   const resetBridgeQuote = useMemoizedFn(() => {
-    setQuoteLoading(true);
+    setQuoteLoading(false);
     clearMiniSignTx();
     setCacheUsdValue(0);
     setBridgeQuote(null);
@@ -329,6 +329,8 @@ export const usePerpsDeposit = ({
     quoteLoading,
     handleSignDepositDirect,
     bridgeQuote,
-    resetBridgeQuote,
+    resetBridgeQuoteLoading: () => {
+      setQuoteLoading(true);
+    },
   };
 };
