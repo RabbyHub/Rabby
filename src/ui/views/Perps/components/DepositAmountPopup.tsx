@@ -257,7 +257,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
             ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
 
           if (gasError || gasTooHigh) {
-            resetBridgeQuote();
+            handleDeposit();
           } else {
             startDirectSigning();
           }
