@@ -291,8 +291,7 @@ export const usePerpsDeposit = ({
 
     try {
       const results: string[] = [];
-      for (let i = 0; i < miniSignTx.length; i++) {
-        const tx = miniSignTx[i];
+      for (const tx of miniSignTx) {
         const result = await wallet.sendRequest({
           method: 'eth_sendTransaction',
           params: [tx],
