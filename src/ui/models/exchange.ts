@@ -127,7 +127,7 @@ export const getCexInfo = async (
     }
     const cexId = await wallet.getCexId(address);
     const cexInfo = globalSupportCexList.find(
-      (item) => item.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+      (item) => item.id.toLowerCase() === cexId?.toLowerCase()
     );
     if (!cexInfo || !cexId) {
       return undefined;

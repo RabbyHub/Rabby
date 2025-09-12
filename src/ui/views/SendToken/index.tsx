@@ -360,7 +360,7 @@ const SendToken = () => {
       const toCexId = addressDesc?.cex?.id;
       if (toCexId) {
         const noSupportToken = token.cex_ids?.every?.(
-          (id) => id.toLocaleLowerCase() !== toCexId.toLocaleLowerCase()
+          (id) => id.toLowerCase() !== toCexId.toLowerCase()
         );
         if (!token?.cex_ids?.length || noSupportToken) {
           return {
@@ -375,10 +375,10 @@ const SendToken = () => {
           .filter(([, contract]) => {
             return contract.multisig;
           })
-          .map(([chain]) => chain?.toLocaleLowerCase());
+          .map(([chain]) => chain?.toLowerCase());
         if (
           safeChains.length > 0 &&
-          !safeChains.includes(token?.chain?.toLocaleLowerCase())
+          !safeChains.includes(token?.chain?.toLowerCase())
         ) {
           return {
             disable: true,
@@ -388,10 +388,10 @@ const SendToken = () => {
         }
         const contactChains = Object.entries(
           addressDesc?.contract || {}
-        ).map(([chain]) => chain?.toLocaleLowerCase());
+        ).map(([chain]) => chain?.toLowerCase());
         if (
           contactChains.length > 0 &&
-          !contactChains.includes(token?.chain?.toLocaleLowerCase())
+          !contactChains.includes(token?.chain?.toLowerCase())
         ) {
           return {
             disable: true,
@@ -425,11 +425,8 @@ const SendToken = () => {
         .filter(([, contract]) => {
           return contract.multisig;
         })
-        .map(([chain]) => chain?.toLocaleLowerCase());
-      if (
-        safeChains.length > 0 &&
-        !safeChains.includes(chain?.toLocaleLowerCase())
-      ) {
+        .map(([chain]) => chain?.toLowerCase());
+      if (safeChains.length > 0 && !safeChains.includes(chain?.toLowerCase())) {
         return {
           disable: true,
           reason: t('page.sendToken.noSupprotTokenForSafe'),
@@ -438,10 +435,10 @@ const SendToken = () => {
       }
       const contactChains = Object.entries(
         addressDesc?.contract || {}
-      ).map(([chain]) => chain?.toLocaleLowerCase());
+      ).map(([chain]) => chain?.toLowerCase());
       if (
         contactChains.length > 0 &&
-        !contactChains.includes(chain?.toLocaleLowerCase())
+        !contactChains.includes(chain?.toLowerCase())
       ) {
         return {
           disable: true,
