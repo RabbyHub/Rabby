@@ -635,6 +635,7 @@ export const useTokenPair = (userAddress: string) => {
     inSufficientCanGetQuote,
     slippageObj?.slippage,
     slippageObj.autoSlippage,
+    refreshId,
   ]);
 
   useDebounce(

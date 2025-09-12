@@ -24,7 +24,7 @@ import {
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useCss } from 'react-use';
+import { useCss, useDebounce } from 'react-use';
 import { DEX_WITH_WRAP } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
@@ -434,6 +434,8 @@ export const Main = () => {
     }
   };
 
+  const [latestQuoteBtnText, setLatestQuoteBtnText] = useState('');
+
   const btnText = useMemo(() => {
     if (!isSupportedChain) {
       return t('component.externalSwapBrideDappPopup.swapOnDapp');
@@ -462,6 +464,24 @@ export const Main = () => {
     isApprove,
     approveTxPending,
   ]);
+
+  useDebounce(
+    () => {
+      if (btnText && activeProvider && !quoteLoading) {
+        setLatestQuoteBtnText(btnText);
+      }
+    },
+    300,
+    [btnText, activeProvider, quoteLoading]
+  );
+
+  useDebounce(
+    () => {
+      setLatestQuoteBtnText(btnText);
+    },
+    300,
+    [chain, payToken?.id, receiveToken?.id]
+  );
 
   // const noRiskSign =
   //   !receiveToken?.low_credit_score &&
@@ -858,11 +878,10 @@ export const Main = () => {
           >
             {canUseDirectSubmitTx && currentAccount?.type ? (
               <DirectSignToConfirmBtn
-                // disabled
                 key={refreshId}
                 disabled={swapBtnDisabled || approveTxPending}
                 loading={miniSignLoading}
-                title={btnText}
+                title={latestQuoteBtnText || btnText}
                 onConfirm={handleSwap}
                 showRiskTips={showRiskTips && !swapBtnDisabled}
                 accountType={currentAccount?.type}
@@ -955,24 +974,22 @@ export const Main = () => {
             swapUseSlider,
           }}
           onClose={() => {
-            setIsShowSign(false);
-            setMiniSignLoading(false);
-            if (shouldTwoStepSwap) {
-              setApprovePending(false);
-            }
-            refresh((e) => e + 1);
-            setTimeout(() => {
-              mutateTxs([]);
-            }, 500);
-          }}
-          onReject={() => {
-            setIsShowSign(false);
-            setMiniSignLoading(false);
-            if (shouldTwoStepSwap) {
-              setApprovePending(false);
-            }
             refresh((e) => e + 1);
             mutateTxs([]);
+            setIsShowSign(false);
+            setMiniSignLoading(false);
+            if (shouldTwoStepSwap) {
+              setApprovePending(false);
+            }
+          }}
+          onReject={() => {
+            refresh((e) => e + 1);
+            mutateTxs([]);
+            setIsShowSign(false);
+            setMiniSignLoading(false);
+            if (shouldTwoStepSwap) {
+              setApprovePending(false);
+            }
           }}
           onResolve={() => {
             setTimeout(() => {

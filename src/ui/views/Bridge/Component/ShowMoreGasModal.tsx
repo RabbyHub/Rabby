@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as IconGasCustomRightArrowCC } from 'ui/assets/approval/edit-arrow-right.svg';
@@ -16,6 +16,13 @@ import { ReactComponent as RcIconGasAccountBlurCC } from 'ui/assets/sign/tx/gas-
 import { ReactComponent as RcIconGasAccountActive } from 'ui/assets/sign/tx/gas-account-active.svg';
 import { GasMethod } from '../../Approval/components/TxComponents/GasSelectorHeader';
 import clsx from 'clsx';
+import { createGlobalState } from 'react-use';
+import { ReactComponent as RcIconLoading } from 'ui/component/ChainSelector/icons/loading-cc.svg';
+
+export const useShowMoreGasSelectModalVisible = createGlobalState(false);
+
+export const useGetShowMoreGasSelectVisible = () =>
+  useShowMoreGasSelectModalVisible()[0];
 
 export default function ShowMoreGasSelectModal({
   visible,
@@ -37,10 +44,22 @@ export default function ShowMoreGasSelectModal({
 
   const hasCustomRpc = !miniApprovalGas?.noCustomRPC;
 
+  const [_, setVisible] = useShowMoreGasSelectModalVisible();
+
+  useEffect(() => {
+    setVisible(false);
+    return () => {
+      setVisible(false);
+    };
+  }, []);
+
   if (!miniApprovalGas) return null;
 
   return (
     <Dropdown
+      onVisibleChange={(v) => {
+        setVisible(v);
+      }}
       placement="topRight"
       trigger={['click']}
       overlay={
@@ -113,6 +132,14 @@ export default function ShowMoreGasSelectModal({
                   ? miniApprovalGas?.gasIsNotEnough?.[gas.level]
                   : miniApprovalGas?.gasAccountIsNotEnough?.[gas.level]?.[0];
 
+              const isGasAccountLoading =
+                !isActive &&
+                miniApprovalGas.gasMethod === 'gasAccount' &&
+                (miniApprovalGas?.gasAccountIsNotEnough?.[gas.level]?.[1] ===
+                  '' ||
+                  miniApprovalGas?.gasAccountIsNotEnough?.[gas.level]?.[1] ===
+                    0);
+
               const errorOnGasAccount =
                 miniApprovalGas.gasMethod === 'gasAccount' &&
                 !!miniApprovalGas?.gasAccountError;
@@ -171,12 +198,20 @@ export default function ShowMoreGasSelectModal({
                     <span
                       className={clsx(
                         'text-[13px] font-medium',
-                        isNotEnough || errorOnGasAccount
+                        (isNotEnough && !isGasAccountLoading) ||
+                          errorOnGasAccount
                           ? 'text-r-red-default'
                           : 'text-r-neutral-title-1'
                       )}
                     >
-                      {costUsd}
+                      {isGasAccountLoading ? (
+                        <RcIconLoading
+                          className="w-12 h-12 animate-spin"
+                          viewBox="0 0 20 20"
+                        />
+                      ) : (
+                        costUsd
+                      )}
                     </span>
                   )}
                 </div>

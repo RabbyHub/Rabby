@@ -726,9 +726,12 @@ export const MiniSignTx = ({
   const [initdTxs, setInitdTxs] = useState<typeof txsResult>([]);
 
   const checkGasLevelIsNotEnough = useCallback(
-    (gas: GasSelectorResponse): Promise<[number, boolean, boolean]> => {
+    (
+      gas: GasSelectorResponse,
+      type?: 'gasAccount' | 'native'
+    ): Promise<[boolean, number]> => {
       if (!isReady || !initdTxs.length) {
-        return Promise.resolve([0, false, true]);
+        return Promise.resolve([true, 0]);
       }
       let _txsResult = initdTxs;
       return Promise.all(
@@ -765,9 +768,35 @@ export const MiniSignTx = ({
         _txsResult = arr;
 
         if (!_txsResult.length) {
-          return [0, false, true];
+          return [true, 0];
         }
 
+        if (type === 'native') {
+          const checkResult = _txsResult.map((item, index) => {
+            const result = checkGasAndNonce({
+              recommendGasLimitRatio: item.recommendGasLimitRatio,
+              recommendGasLimit: item.gasLimit,
+              recommendNonce: item.tx.nonce,
+              tx: item.tx,
+              gasLimit: item.gasLimit,
+              nonce: item.tx.nonce,
+              isCancel: isCancel,
+              gasExplainResponse: item.gasCost,
+              isSpeedUp: isSpeedUp,
+              isGnosisAccount: false,
+              nativeTokenBalance: balance,
+            });
+            balance = new BigNumber(balance)
+              .minus(new BigNumber(item.tx.value || 0))
+              .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
+              .toFixed();
+            return result;
+          });
+          return [_.flatten(checkResult)?.some((e) => e.code === 3001), 0] as [
+            boolean,
+            number
+          ];
+        }
         return wallet.openapi
           .checkGasAccountTxs({
             sig: sig || '',
@@ -781,31 +810,10 @@ export const MiniSignTx = ({
             }),
           })
           .then((gasAccountRes) => {
-            const checkResult = _txsResult.map((item, index) => {
-              const result = checkGasAndNonce({
-                recommendGasLimitRatio: item.recommendGasLimitRatio,
-                recommendGasLimit: item.gasLimit,
-                recommendNonce: item.tx.nonce,
-                tx: item.tx,
-                gasLimit: item.gasLimit,
-                nonce: item.tx.nonce,
-                isCancel: isCancel,
-                gasExplainResponse: item.gasCost,
-                isSpeedUp: isSpeedUp,
-                isGnosisAccount: false,
-                nativeTokenBalance: balance,
-              });
-              balance = new BigNumber(balance)
-                .minus(new BigNumber(item.tx.value || 0))
-                .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
-                .toFixed();
-              return result;
-            });
             return [
+              !gasAccountRes.balance_is_enough,
               (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
                 (gasAccountRes.gas_account_cost?.gas_cost || 0),
-              gasAccountRes.balance_is_enough,
-              _.flatten(checkResult)?.some((e) => e.code === 3001),
             ];
           });
       });
