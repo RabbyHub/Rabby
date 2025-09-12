@@ -11,7 +11,12 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
+import {
+  getUiType,
+  isSameAddress,
+  openInternalPageInTab,
+  useWallet,
+} from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
 import {
@@ -24,7 +29,7 @@ import {
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useCss } from 'react-use';
+import { useCss, useDebounce } from 'react-use';
 import { DEX_WITH_WRAP } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
@@ -57,6 +62,7 @@ import {
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from './PendingTxItem';
+import { useTwoStepSwap } from '../hooks/twoStepSwap';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -180,26 +186,6 @@ export const Main = () => {
   const { t } = useTranslation();
 
   const amountAvailable = useMemo(() => Number(inputAmount) > 0, [inputAmount]);
-
-  const btnText = useMemo(() => {
-    if (!isSupportedChain) {
-      return t('component.externalSwapBrideDappPopup.swapOnDapp');
-    }
-    if (activeProvider?.shouldApproveToken) {
-      return t('page.swap.approve-swap');
-    }
-
-    if (quoteLoading) {
-      return t('page.swap.title');
-    }
-
-    return t('page.swap.title');
-  }, [
-    activeProvider?.shouldApproveToken,
-    quoteLoading,
-    isSupportedChain,
-    externalDapps,
-  ]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -416,6 +402,92 @@ export const Main = () => {
     [isSupportedChain, currentAccount?.type]
   );
 
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
+  const onApprovePending = useCallback(
+    () => pendingTxRef.current?.fetchHistory(),
+    []
+  );
+
+  const {
+    shouldTwoStep: shouldTwoStepSwap,
+    currentTxs,
+    next,
+    isApprove,
+    approvePending: approveTxPending,
+    setApprovePending,
+  } = useTwoStepSwap({
+    txs,
+    chain,
+    enable: !!canUseDirectSubmitTx && !!currentAccount?.type,
+    type: 'approveSwap',
+    onApprovePending,
+  });
+
+  const miniSignNextStep = (clearAmount?: boolean) => {
+    next();
+    setMiniSignLoading(false);
+    if (shouldTwoStepSwap && isApprove) {
+      setApprovePending(true);
+    }
+
+    if (!shouldTwoStepSwap || (shouldTwoStepSwap && !isApprove)) {
+      setApprovePending(false);
+      mutateTxs();
+      refresh((e) => e + 1);
+      clearAmount && handleAmountChange('');
+    }
+  };
+
+  const [latestQuoteBtnText, setLatestQuoteBtnText] = useState('');
+
+  const btnText = useMemo(() => {
+    if (!isSupportedChain) {
+      return t('component.externalSwapBrideDappPopup.swapOnDapp');
+    }
+    if (shouldTwoStepSwap) {
+      if (!isApprove && !approveTxPending) {
+        return t('page.swap.title');
+      }
+      return t('page.swap.approve');
+    }
+    if (activeProvider?.shouldApproveToken) {
+      return t('page.swap.approve-swap');
+    }
+
+    if (quoteLoading) {
+      return t('page.swap.title');
+    }
+
+    return t('page.swap.title');
+  }, [
+    activeProvider?.shouldApproveToken,
+    quoteLoading,
+    isSupportedChain,
+    externalDapps,
+    shouldTwoStepSwap,
+    isApprove,
+    approveTxPending,
+  ]);
+
+  useDebounce(
+    () => {
+      if (btnText && activeProvider && !quoteLoading) {
+        setLatestQuoteBtnText(btnText);
+      }
+    },
+    300,
+    [btnText, activeProvider, quoteLoading]
+  );
+
+  useDebounce(
+    () => {
+      setLatestQuoteBtnText(btnText);
+    },
+    300,
+    [chain, payToken?.id, receiveToken?.id]
+  );
+
   // const noRiskSign =
   //   !receiveToken?.low_credit_score &&
   //   !receiveToken?.is_suspicious &&
@@ -427,6 +499,8 @@ export const Main = () => {
   const showRiskTips = isSlippageLow || isSlippageHigh || showLoss;
 
   const [swapDappOpen, setSwapDappOpen] = useState(false);
+
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
 
   const handleSwap = useMemoizedFn(() => {
     if (!isTab) {
@@ -440,6 +514,7 @@ export const Main = () => {
     if (canUseDirectSubmitTx) {
       clearExpiredTimer();
       startDirectSigning();
+      setMiniSignLoading(true);
       return;
     } else {
       gotoSwap();
@@ -561,7 +636,35 @@ export const Main = () => {
     activeProvider?.quote,
   ]);
 
-  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+  const receiveTokenDisplayValue = useMemo(() => {
+    if (
+      !isSameAddress(
+        receiveToken?.id || '',
+        activeProvider?.quote?.toToken || ''
+      ) ||
+      !isSameAddress(payToken?.id || '', activeProvider?.quote?.fromToken || '')
+    ) {
+      return '';
+    }
+
+    if (!activeProvider) {
+      return '';
+    }
+
+    if (activeProvider?.actualReceiveAmount) {
+      return activeProvider?.actualReceiveAmount + '';
+    }
+    if (activeProvider?.name === 'WrapToken') {
+      return inputAmount;
+    }
+    return '0';
+  }, [
+    activeProvider,
+    inputAmount,
+    quoteLoading,
+    receiveToken?.id,
+    payToken?.id,
+  ]);
 
   return (
     <>
@@ -654,15 +757,7 @@ export const Main = () => {
               inSufficientCanGetQuote &&
               !activeProvider?.manualClick
             }
-            value={
-              !activeProvider
-                ? ''
-                : activeProvider?.actualReceiveAmount
-                ? activeProvider?.actualReceiveAmount + ''
-                : activeProvider?.name === 'WrapToken'
-                ? inputAmount
-                : '0'
-            }
+            value={receiveTokenDisplayValue}
             token={receiveToken}
             onTokenChange={(token) => {
               const chainItem = findChainByServerID(token.chain);
@@ -772,11 +867,19 @@ export const Main = () => {
             />
           </div>
         )}
-        {Boolean(!isShowMoreVisible && !activeProvider?.quote) && (
+        {(shouldTwoStepSwap && currentTxs?.length) ||
+        Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
           <div className="mx-20 mt-20">
-            <PendingTxItem type="swap" ref={pendingTxRef} />
+            <PendingTxItem
+              type={
+                shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap'
+              }
+              ref={pendingTxRef}
+              key={currentTxs?.[0]?.data}
+            />
           </div>
-        )}
+        ) : null}
+
         <div
           className={clsx(
             'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
@@ -802,10 +905,10 @@ export const Main = () => {
           >
             {canUseDirectSubmitTx && currentAccount?.type ? (
               <DirectSignToConfirmBtn
-                // disabled
                 key={refreshId}
-                disabled={swapBtnDisabled}
-                title={btnText}
+                disabled={swapBtnDisabled || approveTxPending}
+                loading={miniSignLoading}
+                title={latestQuoteBtnText || btnText}
                 onConfirm={handleSwap}
                 showRiskTips={showRiskTips && !swapBtnDisabled}
                 accountType={currentAccount?.type}
@@ -888,8 +991,9 @@ export const Main = () => {
           />
         ) : null}
         <MiniApproval
+          transparentMask
           visible={isShowSign}
-          txs={txs}
+          txs={currentTxs}
           ga={{
             category: 'Swap',
             source: 'swap',
@@ -897,23 +1001,27 @@ export const Main = () => {
             swapUseSlider,
           }}
           onClose={() => {
-            setIsShowSign(false);
-            refresh((e) => e + 1);
-            setTimeout(() => {
-              mutateTxs([]);
-            }, 500);
-          }}
-          onReject={() => {
-            setIsShowSign(false);
             refresh((e) => e + 1);
             mutateTxs([]);
+            setIsShowSign(false);
+            setMiniSignLoading(false);
+            if (shouldTwoStepSwap) {
+              setApprovePending(false);
+            }
+          }}
+          onReject={() => {
+            refresh((e) => e + 1);
+            mutateTxs([]);
+            setIsShowSign(false);
+            setMiniSignLoading(false);
+            if (shouldTwoStepSwap) {
+              setApprovePending(false);
+            }
           }}
           onResolve={() => {
             setTimeout(() => {
-              refresh((e) => e + 1);
               setIsShowSign(false);
-              mutateTxs([]);
-              handleAmountChange('');
+              miniSignNextStep(true);
             }, 500);
           }}
           onPreExecError={gotoSwap}
