@@ -2535,7 +2535,8 @@
       "logout": "현재 GasAccount에서 로그아웃하기",
       "gasExceed": "GasAccount 잔액은 $1000를 초과할 수 없습니다.",
       "risk": "현재 주소가 위험한 것으로 감지되어 이 기능을 사용할 수 없습니다.",
-      "withdrawDisabledIAP": "출금이 비활성화되었습니다. 이는 귀하의 잔고에 출금이 불가능한 법정 화폐가 포함되어 있기 때문입니다. 토큰 잔고를 출금하려면 지원팀에 문의하십시오."
+      "withdrawDisabledIAP": "출금이 비활성화되었습니다. 이는 귀하의 잔고에 출금이 불가능한 법정 화폐가 포함되어 있기 때문입니다. 토큰 잔고를 출금하려면 지원팀에 문의하십시오.",
+      "gasToken": "가스 토큰"
     },
     "safeMessageQueue": {
       "loading": "로드 중 메시지",
@@ -3017,6 +3018,9 @@
     },
     "RiskTip": {
       "title": "위험 경고"
+    },
+    "DappActions": {
+      "queueDescription": "현재 인출은 대기 열에 들어갑니다. 처리되면 귀하의 지갑으로 인출할 수 있습니다."
     }
   },
   "global": {

@@ -2541,7 +2541,8 @@
         "address": "Adres"
       },
       "switchAccount": "GasAccount Değiştir",
-      "withdrawDisabledIAP": "Para çekme işlemleri devre dışı bırakılmıştır çünkü bakiyeniz çekilemeyen fiat fonlarını içermektedir. Token bakiyenizi çekmek için destekle iletişime geçin."
+      "withdrawDisabledIAP": "Para çekme işlemleri devre dışı bırakılmıştır çünkü bakiyeniz çekilemeyen fiat fonlarını içermektedir. Token bakiyenizi çekmek için destekle iletişime geçin.",
+      "gasToken": "Gaz Token"
     },
     "safeMessageQueue": {
       "noData": "Mesaj yok",
@@ -3023,6 +3024,9 @@
     },
     "RiskTip": {
       "title": "Risk Uyarısı"
+    },
+    "DappActions": {
+      "queueDescription": "Mevcut çekim, bekleme kuyruğuna girecektir. İşlem tamamlandığında, cüzdanınıza çekilebilir."
     }
   },
   "global": {

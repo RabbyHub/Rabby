@@ -2615,7 +2615,8 @@
         "address": "地址"
       },
       "switchAccount": "切换 GasAccount",
-      "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。"
+      "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。",
+      "gasToken": "Gas Token"
     },
     "safeMessageQueue": {
       "loading": "加载消息",
@@ -3058,6 +3059,9 @@
     },
     "RiskTip": {
       "title": "风险提示"
+    },
+    "DappActions": {
+      "queueDescription": "当前提款将进入等待队列。一旦处理完成，可以提取到您的钱包。"
     }
   },
   "background": {

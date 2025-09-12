@@ -2538,7 +2538,8 @@
         "gasAccountBalance": "Gas Balance"
       },
       "switchAccount": "GasAccount を切り替える",
-      "withdrawDisabledIAP": "引き出しは無効になっています。これは、バランスに法定通貨が含まれており、それらを引き出すことができないためです。トークン残高を引き出すには、サポートにお問い合わせください。"
+      "withdrawDisabledIAP": "引き出しは無効になっています。これは、バランスに法定通貨が含まれており、それらを引き出すことができないためです。トークン残高を引き出すには、サポートにお問い合わせください。",
+      "gasToken": "ガストークン"
     },
     "safeMessageQueue": {
       "loading": "メッセージを読み込み中",
@@ -3020,6 +3021,9 @@
     },
     "RiskTip": {
       "title": "リスク警告"
+    },
+    "DappActions": {
+      "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。"
     }
   },
   "global": {
