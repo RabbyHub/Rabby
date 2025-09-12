@@ -286,24 +286,23 @@ export const usePerpsDeposit = ({
     }
 
     try {
-      const promise = Promise.all(
-        miniSignTx.map((tx) => {
-          return wallet.sendRequest({
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'Perps',
-                source: 'Perps',
-                trigger: 'Perps',
-              },
+      const results: string[] = [];
+      for (const tx of miniSignTx) {
+        const result = await wallet.sendRequest({
+          method: 'eth_sendTransaction',
+          params: [tx],
+          $ctx: {
+            ga: {
+              category: 'Perps',
+              source: 'Perps',
+              trigger: 'Perps',
             },
-          });
-        })
-      );
+          },
+        });
+        results.push(result as string);
+      }
 
-      const res = await promise;
-      const signature = last(res as Array<string>);
+      const signature = last(results);
       handleSignDepositDirect(signature as string);
       setAmountVisible(false);
       clearMiniSignTx();
