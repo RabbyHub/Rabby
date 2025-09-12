@@ -51,6 +51,7 @@ import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { noop } from 'lodash';
 import { useSetMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useGetShowMoreGasSelectVisible } from '@/ui/views/Bridge/Component/ShowMoreGasModal';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -117,8 +118,9 @@ interface GasSelectorProps {
   };
   directSubmit?: boolean;
   checkGasLevelIsNotEnough?: (
-    gas: GasSelectorResponse
-  ) => Promise<[number, boolean, boolean]>;
+    gas: GasSelectorResponse,
+    gasType: 'native' | 'gasAccount'
+  ) => Promise<[boolean, number]>;
   getContainer?: DrawerProps['getContainer'];
 }
 
@@ -489,34 +491,30 @@ const GasSelectorHeader = ({
         isReady
       ) {
         let init = true;
-        ['slow', 'normal', 'fast'].map((level) => {
+        ['slow', 'normal', 'fast'].forEach((level) => {
           const selectedGas = gasList.find((e) => e.level === level);
-          return checkGasLevelIsNotEnough({
-            ...gasList.find((e) => e.level === level),
-            gasLimit: Number(afterGasLimit),
-            nonce: Number(customNonce),
-            level: selectedGas!.level,
-            maxPriorityFee: calcMaxPriorityFee(
-              gasList,
-              selectedGas!,
-              chainId,
-              isCancel || isSpeedUp
-            ),
-          } as GasSelectorResponse)
+          checkGasLevelIsNotEnough(
+            {
+              ...gasList.find((e) => e.level === level),
+              gasLimit: Number(afterGasLimit),
+              nonce: Number(customNonce),
+              level: selectedGas!.level,
+              maxPriorityFee: calcMaxPriorityFee(
+                gasList,
+                selectedGas!,
+                chainId,
+                isCancel || isSpeedUp
+              ),
+            } as GasSelectorResponse,
+            'native'
+          )
             .then((arr) => {
               if (init) {
-                setGasAccountIsNotEnough((pre) => ({
-                  ...pre,
-                  [level]: [
-                    !arr[1],
-                    calcGasAccountUsd(((arr[0] as unknown) as number) || 0),
-                  ],
-                }));
-                setGasIsNotEnough((pre) => ({ ...pre, [level]: arr[2] }));
+                setGasIsNotEnough((pre) => ({ ...pre, [level]: arr[0] }));
               }
             })
             .catch((e) => {
-              console.log('checkGasLevelIsNotEnough error', e);
+              console.log('checkGasLevelIsNotEnough native gas error', e);
             });
         });
 
@@ -527,6 +525,76 @@ const GasSelectorHeader = ({
     },
     100,
     [
+      isReady,
+      directSubmit,
+      afterGasLimit,
+      checkGasLevelIsNotEnough,
+      customNonce,
+      gasList,
+      chainId,
+      isCancel,
+      isSpeedUp,
+    ]
+  );
+
+  const outGasModalIsOpen = useGetShowMoreGasSelectVisible();
+
+  const gasAccountStateInit = useRef(false);
+
+  useDebounce(
+    () => {
+      if (
+        checkGasLevelIsNotEnough &&
+        gasList.length &&
+        directSubmit &&
+        isReady &&
+        outGasModalIsOpen &&
+        !gasAccountStateInit.current
+      ) {
+        let init = true;
+        ['slow', 'normal', 'fast'].forEach((level) => {
+          const selectedGas = gasList.find((e) => e.level === level);
+          checkGasLevelIsNotEnough(
+            {
+              ...gasList.find((e) => e.level === level),
+              gasLimit: Number(afterGasLimit),
+              nonce: Number(customNonce),
+              level: selectedGas!.level,
+              maxPriorityFee: calcMaxPriorityFee(
+                gasList,
+                selectedGas!,
+                chainId,
+                isCancel || isSpeedUp
+              ),
+            } as GasSelectorResponse,
+            'gasAccount'
+          )
+            .then((arr) => {
+              if (init) {
+                gasAccountStateInit.current = true;
+                // setGasAccountIsNotEnough()
+                setGasAccountIsNotEnough((pre) => ({
+                  ...pre,
+                  [level]: [
+                    arr[0],
+                    calcGasAccountUsd(((arr[1] as unknown) as number) || 0),
+                  ],
+                }));
+              }
+            })
+            .catch((e) => {
+              console.log('checkGasLevelIsNotEnough gasAccount error', e);
+            });
+        });
+
+        return () => {
+          init = false;
+        };
+      }
+    },
+    100,
+    [
+      outGasModalIsOpen,
       isReady,
       directSubmit,
       afterGasLimit,
