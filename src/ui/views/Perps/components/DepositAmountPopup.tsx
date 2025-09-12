@@ -235,7 +235,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   useEffect(() => {
     if (type === 'deposit' || visible) {
       if (isValidAmount) {
-        resetBridgeQuote();
+        // resetBridgeQuote();
       } else {
         clearMiniSignTx();
       }
