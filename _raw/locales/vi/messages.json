@@ -2535,7 +2535,8 @@
       "safeAddressDepositTips": "Địa chỉ Multisig không được hỗ trợ cho việc gửi tiền.",
       "title": "GasAccount",
       "risk": "Địa chỉ hiện tại của bạn đã được phát hiện là có rủi ro, vì vậy tính năng này không khả dụng.",
-      "withdrawDisabledIAP": "Rút tiền bị vô hiệu hóa vì số dư của bạn bao gồm tiền fiat, không thể rút ra. Liên hệ với hỗ trợ để rút số dư token của bạn."
+      "withdrawDisabledIAP": "Rút tiền bị vô hiệu hóa vì số dư của bạn bao gồm tiền fiat, không thể rút ra. Liên hệ với hỗ trợ để rút số dư token của bạn.",
+      "gasToken": "Token Gas"
     },
     "safeMessageQueue": {
       "noData": "Không có tin nhắn",
@@ -3017,6 +3018,9 @@
     },
     "RiskTip": {
       "title": "Cảnh báo rủi ro"
+    },
+    "DappActions": {
+      "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn."
     }
   },
   "global": {

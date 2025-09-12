@@ -2576,7 +2576,8 @@
         "gasAccountBalance": "Gas Balance"
       },
       "switchAccount": "切换 GasAccount",
-      "withdrawDisabledIAP": "提款功能已停用，因為你的餘額中包含法幣資金，這些資金無法提取。如需提取你的代幣餘額，請聯繫支援。"
+      "withdrawDisabledIAP": "提款功能已停用，因為你的餘額中包含法幣資金，這些資金無法提取。如需提取你的代幣餘額，請聯繫支援。",
+      "gasToken": "Gas 代幣"
     },
     "safeMessageQueue": {
       "noData": "沒有訊息",
@@ -3058,6 +3059,9 @@
     },
     "RiskTip": {
       "title": "風險警告"
+    },
+    "DappActions": {
+      "queueDescription": "當前提取將進入等待隊列。一旦處理完成，可以提取到您的錢包。"
     }
   },
   "background": {

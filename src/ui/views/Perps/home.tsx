@@ -9,8 +9,8 @@ import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settin
 import { ReactComponent as RcIconPerps } from 'ui/assets/perps/imgPerps.svg';
 import { ReactComponent as RcIconLogout } from '@/ui/assets/perps/IconLogout.svg';
 import { useDebounce } from 'react-use';
-import { HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
-import { Button } from 'antd';
+import { AssetPosition, HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
+import { Button, message } from 'antd';
 import { PerpsLoginPopup } from './components/LoginPopup';
 import { PerpsLogoutPopup } from './components/LogoutPopup';
 import { CHAINS_ENUM } from '@debank/common';
@@ -44,6 +44,10 @@ import { TopPermissionTips } from './components/TopPermissionTips';
 import { PerpsModal } from './components/Modal';
 import { PerpsLoading } from './components/Loading';
 import { ARB_USDC_TOKEN_SERVER_CHAIN } from './constants';
+import { ClosePositionPopup } from './components/ClosePositionPopup';
+import { useMemoizedFn } from 'ahooks';
+import { getPerpsSDK } from './sdkManager';
+import * as Sentry from '@sentry/browser';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -73,17 +77,27 @@ export const Perps: React.FC = () => {
     handleMiniSignReject,
 
     handleDeleteAgent,
+    perpFee,
+
+    judgeIsUserAgentIsExpired,
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
 
+  const [closePositionVisible, setClosePositionVisible] = useState(false);
+  const [closePosition, setClosePosition] = useState<
+    AssetPosition['position'] | null
+  >(null);
   const [amountVisible, setAmountVisible] = useState(false);
   const {
     miniSignTx,
     clearMiniSignTx,
     updateMiniSignTx,
+    resetBridgeQuote,
     handleDeposit,
     handleSignDepositDirect,
+    quoteLoading,
+    bridgeQuote,
   } = usePerpsDeposit({
     currentPerpsAccount,
     setAmountVisible,
@@ -115,7 +129,7 @@ export const Perps: React.FC = () => {
   );
   const miniTxs = useMemo(() => {
     console.log('miniSignTx', miniSignTx);
-    return miniSignTx ? [miniSignTx] : [];
+    return miniSignTx || [];
   }, [miniSignTx]);
 
   const positionAllPnl = useMemo(() => {
@@ -135,6 +149,65 @@ export const Perps: React.FC = () => {
   const withdrawDisabled = useMemo(
     () => !Number(accountSummary?.withdrawable || 0),
     [accountSummary?.withdrawable]
+  );
+
+  const handleClosePosition = useMemoizedFn(
+    async (params: {
+      coin: string;
+      size: string;
+      direction: 'Long' | 'Short';
+      price: string;
+    }) => {
+      try {
+        const sdk = getPerpsSDK();
+        const { coin, direction, price, size } = params;
+        const res = await sdk.exchange?.marketOrderClose({
+          coin,
+          isBuy: direction === 'Short',
+          size,
+          midPx: price,
+        });
+
+        const filled = res?.response?.data?.statuses[0]?.filled;
+        if (filled) {
+          dispatch.perps.fetchClearinghouseState();
+          const { totalSz, avgPx } = filled;
+          message.success(
+            `Closed ${direction} ${coin}-USD: Size ${totalSz} at Price $${avgPx}`
+          );
+        } else {
+          const msg = res?.response?.data?.statuses[0]?.error;
+          message.error(msg || 'close position error');
+          Sentry.captureException(
+            new Error(
+              'PERPS close position noFills' +
+                'params: ' +
+                JSON.stringify(params) +
+                'res: ' +
+                JSON.stringify(res)
+            )
+          );
+          return null;
+        }
+      } catch (e) {
+        const isExpired = await judgeIsUserAgentIsExpired(e?.message || '');
+        if (isExpired) {
+          return null;
+        }
+        console.error('close position error', e);
+        message.error(e?.message || 'close position error');
+        Sentry.captureException(
+          new Error(
+            'PERPS close position error' +
+              'params: ' +
+              JSON.stringify(params) +
+              'error: ' +
+              JSON.stringify(e)
+          )
+        );
+        return null;
+      }
+    }
   );
 
   return (
@@ -263,8 +336,8 @@ export const Perps: React.FC = () => {
               {positionAndOpenOrders
                 .sort((a, b) => {
                   return (
-                    Number(b.position.marginUsed || 0) -
-                    Number(a.position.marginUsed || 0)
+                    Number(b.position.positionValue || 0) -
+                    Number(a.position.positionValue || 0)
                   );
                 })
                 .map((asset) => (
@@ -274,7 +347,11 @@ export const Perps: React.FC = () => {
                     marketData={
                       marketDataMap[asset.position.coin.toUpperCase()]
                     }
-                    onClick={() => {
+                    handleClosePosition={(position) => {
+                      setClosePosition(position);
+                      setClosePositionVisible(true);
+                    }}
+                    handleNavigate={() => {
                       history.push(`/perps/single-coin/${asset.position.coin}`);
                     }}
                   />
@@ -353,9 +430,12 @@ export const Perps: React.FC = () => {
       />
 
       <PerpsDepositAmountPopup
+        resetBridgeQuote={resetBridgeQuote}
         visible={amountVisible}
         type={popupType}
         miniTxs={miniTxs}
+        quoteLoading={quoteLoading}
+        bridgeQuote={bridgeQuote}
         setIsPreparingSign={setIsPreparingSign}
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
@@ -453,6 +533,29 @@ export const Perps: React.FC = () => {
           wallet.setHasDoneNewUserProcess(true);
         }}
       />
+
+      {closePosition && (
+        <ClosePositionPopup
+          visible={closePositionVisible}
+          coin={closePosition?.coin}
+          providerFee={perpFee}
+          direction={Number(closePosition.szi || 0) > 0 ? 'Long' : 'Short'}
+          positionSize={Math.abs(Number(closePosition.szi || 0)).toString()}
+          pnl={Number(closePosition.unrealizedPnl || 0)}
+          onCancel={() => setClosePositionVisible(false)}
+          onConfirm={() => {
+            setClosePositionVisible(false);
+          }}
+          handleClosePosition={async () => {
+            await handleClosePosition({
+              coin: closePosition.coin,
+              size: Math.abs(Number(closePosition.szi || 0)).toString() || '0',
+              direction: Number(closePosition.szi || 0) > 0 ? 'Long' : 'Short',
+              price: closePosition.entryPx || '0',
+            });
+          }}
+        />
+      )}
 
       <PerpsModal
         visible={deleteAgentModalVisible}

@@ -2538,7 +2538,8 @@
         "gasAccountBalance": "Gas Balance"
       },
       "withdrawDisabledIAP": "Abhebungen sind deaktiviert, da Ihr Guthaben Fiat-Mittel enthält, die nicht abgehoben werden können. Kontaktieren Sie den Support, um Ihr Token-Guthaben abzuheben.",
-      "switchAccount": "Wechseln Sie GasAccount"
+      "switchAccount": "Wechseln Sie GasAccount",
+      "gasToken": "Gas Token"
     },
     "safeMessageQueue": {
       "noData": "Keine Nachrichten",
@@ -3020,6 +3021,9 @@
     },
     "RiskTip": {
       "title": "Risiko Warnung"
+    },
+    "DappActions": {
+      "queueDescription": "Aktuelle Abhebungen gelangen in eine Warteschlange. Sobald sie bearbeitet sind, können sie in Ihr Wallet abgehoben werden."
     }
   },
   "global": {
