@@ -329,7 +329,7 @@ export const usePerpsState = ({
     }
   });
 
-  const checkIsExtraAgentIsExpired = useMemoizedFn(
+  const checkExtraAgent = useMemoizedFn(
     async (account, agentAddress: string) => {
       const sdk = getPerpsSDK();
       const extraAgents = await sdk.info.extraAgents(account.address);
@@ -608,19 +608,21 @@ export const usePerpsState = ({
 
   const login = useMemoizedFn(async (account: Account) => {
     try {
-      // const { privateKey, publicKey } = await getOrCreateAgentWallet(account);
       const sdk = getPerpsSDK();
       const res = await wallet.getPerpsAgentWallet(account.address);
+      const agentAddress = res?.preference?.agentAddress || '';
+      const { isExpired, needDelete } = await checkExtraAgent(
+        account,
+        agentAddress
+      );
+
+      if (needDelete) {
+        // 先不登录，防止hl服务状态不同步 return
+        return false;
+      }
+
       if (res) {
         // 如果存在 agent wallet, 则检查是否过期
-        const { isExpired, needDelete } = await checkIsExtraAgentIsExpired(
-          account,
-          res.preference.agentAddress
-        );
-        if (needDelete) {
-          // 先不登录，防止hl服务状态不同步
-          return false;
-        }
         if (!isExpired) {
           sdk.initAccount(
             account.address,
