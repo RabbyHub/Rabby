@@ -24,6 +24,7 @@ export const useTwoStepSwap = ({
     : false;
 
   const [index, setIndex] = useState(0);
+  const [approveHash, setApproveHash] = useState('');
 
   const currentTxs = useMemo(() => {
     if (shouldTwoStep) {
@@ -35,59 +36,46 @@ export const useTwoStepSwap = ({
   const isApprove = shouldTwoStep && !!_txs?.length && index < _txs?.length - 1;
 
   useEffect(() => {
+    setApproveHash('');
     setIndex(0);
     setApprovePending(false);
   }, [_txs]);
 
-  const next = useCallback(() => {
-    setIndex((e) => e + 1);
-  }, []);
+  const next = useCallback(
+    (hash: string) => {
+      if (hash && shouldTwoStep && currentTxs?.[0]) {
+        setApproveHash(hash);
+        onApprovePending?.();
+        setApprovePending(true);
+      }
+    },
+    [shouldTwoStep, currentTxs]
+  );
 
   const [approvePending, setApprovePending] = useState(false);
 
   useEffect(() => {
     if (shouldTwoStep) {
-      let approveHash = '';
-      const pending = (params: {
-        type: string;
-        key: string;
-        txHash: string;
-      }) => {
-        if (
-          type === params.type &&
-          _txs?.some((e) => `${chain}-${e.data}` === params.key)
-        ) {
-          onApprovePending?.();
-          setApprovePending(true);
-          approveHash = params.txHash;
-        }
-      };
-
       const complete = (params: { hashArr: string[]; chainId: number }) => {
         if (
           _txs?.[0]?.chainId === params.chainId &&
           params.hashArr.includes(approveHash)
         ) {
           setApprovePending(false);
+          setIndex((e) => e + 1);
         }
       };
-
-      eventBus.addEventListener(EVENTS.INNER_HISTORY_ITEM_PENDING, pending);
 
       eventBus.addEventListener(EVENTS.INNER_HISTORY_ITEM_COMPLETE, complete);
 
       return () => {
-        eventBus.removeEventListener(
-          EVENTS.INNER_HISTORY_ITEM_PENDING,
-          pending
-        );
         eventBus.removeEventListener(
           EVENTS.INNER_HISTORY_ITEM_COMPLETE,
           complete
         );
       };
     }
-  }, [_txs, type, shouldTwoStep, chain, onApprovePending]);
+  }, [_txs, type, shouldTwoStep, chain, onApprovePending, approveHash]);
 
   return {
     shouldTwoStep,
@@ -96,5 +84,6 @@ export const useTwoStepSwap = ({
     isApprove,
     approvePending,
     setApprovePending,
+    approveHash,
   };
 };

@@ -671,19 +671,6 @@ export class WalletController extends BaseController {
           true
         );
 
-        transactionHistoryService.addCacheHistoryData(
-          `${chain}-${res.params[0].data}`,
-          {
-            address: addHistoryData.address,
-            chainId: addHistoryData.chainId,
-            amount: addHistoryData.fromAmount,
-            token: addHistoryData.fromToken,
-            status: 'pending',
-            createdAt: Date.now(),
-          },
-          'approveSwap'
-        );
-
         txs.push(res.params[0]);
         unTriggerTxCounter.decrease();
       }

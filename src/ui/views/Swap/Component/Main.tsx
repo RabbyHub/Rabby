@@ -416,6 +416,7 @@ export const Main = () => {
     isApprove,
     approvePending: approveTxPending,
     setApprovePending,
+    approveHash,
   } = useTwoStepSwap({
     txs,
     chain,
@@ -424,8 +425,8 @@ export const Main = () => {
     onApprovePending,
   });
 
-  const miniSignNextStep = (clearAmount?: boolean) => {
-    next();
+  const miniSignNextStep = (hash: string) => {
+    next(hash);
     setMiniSignLoading(false);
     if (shouldTwoStepSwap && isApprove) {
       setApprovePending(true);
@@ -435,7 +436,7 @@ export const Main = () => {
       setApprovePending(false);
       mutateTxs();
       refresh((e) => e + 1);
-      clearAmount && handleAmountChange('');
+      handleAmountChange('');
     }
   };
 
@@ -512,6 +513,20 @@ export const Main = () => {
     }
 
     if (canUseDirectSubmitTx) {
+      if (shouldTwoStepSwap && isApprove && currentTxs?.[0]) {
+        wallet.addCacheHistoryData(
+          `${chain}-${currentTxs?.[0].data}`,
+          {
+            address: userAddress,
+            chainId: findChain({ enum: chain })?.id || 0,
+            amount: Number(inputAmount),
+            token: payToken,
+            status: 'pending',
+            createdAt: Date.now(),
+          } as any,
+          'approveSwap'
+        );
+      }
       clearExpiredTimer();
       startDirectSigning();
       setMiniSignLoading(true);
@@ -867,7 +882,7 @@ export const Main = () => {
             />
           </div>
         )}
-        {(shouldTwoStepSwap && currentTxs?.length) ||
+        {approveHash ||
         Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
           <div className="mx-20 mt-20">
             <PendingTxItem
@@ -875,7 +890,6 @@ export const Main = () => {
                 shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap'
               }
               ref={pendingTxRef}
-              key={currentTxs?.[0]?.data}
             />
           </div>
         ) : null}
@@ -1018,10 +1032,10 @@ export const Main = () => {
               setApprovePending(false);
             }
           }}
-          onResolve={() => {
+          onResolve={(res) => {
             setTimeout(() => {
               setIsShowSign(false);
-              miniSignNextStep(true);
+              miniSignNextStep(res);
             }, 500);
           }}
           onPreExecError={gotoSwap}
