@@ -248,7 +248,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         if (gasReadyContent) {
           const gasError =
             gasReadyContent && miniApprovalGas?.showGasLevelPopup;
-          const chainInfo = findChainByServerID(ARB_USDC_TOKEN_SERVER_CHAIN)!;
+          const chainInfo = findChainByServerID(
+            selectedToken?.chain || ARB_USDC_TOKEN_SERVER_CHAIN
+          )!;
           const gasTooHigh =
             !!gasReadyContent &&
             !!miniApprovalGas?.gasCostUsdStr &&
@@ -274,6 +276,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       gasReadyContent,
       isPreparingSign,
       handleDeposit,
+      selectedToken,
     ]
   );
 
