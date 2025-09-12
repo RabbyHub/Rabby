@@ -882,7 +882,7 @@ export const Main = () => {
             />
           </div>
         )}
-        {(shouldTwoStepSwap && approveHash) ||
+        {approveHash ||
         Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
           <div className="mx-20 mt-20">
             <PendingTxItem
@@ -890,7 +890,6 @@ export const Main = () => {
                 shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap'
               }
               ref={pendingTxRef}
-              key={currentTxs?.[0]?.data}
             />
           </div>
         ) : null}
