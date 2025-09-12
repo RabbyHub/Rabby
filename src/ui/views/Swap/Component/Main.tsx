@@ -11,7 +11,12 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
+import {
+  getUiType,
+  isSameAddress,
+  openInternalPageInTab,
+  useWallet,
+} from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
 import {
@@ -631,6 +636,36 @@ export const Main = () => {
     activeProvider?.quote,
   ]);
 
+  const receiveTokenDisplayValue = useMemo(() => {
+    if (
+      !isSameAddress(
+        receiveToken?.id || '',
+        activeProvider?.quote?.toToken || ''
+      ) ||
+      !isSameAddress(payToken?.id || '', activeProvider?.quote?.fromToken || '')
+    ) {
+      return '';
+    }
+
+    if (!activeProvider) {
+      return '';
+    }
+
+    if (activeProvider?.actualReceiveAmount) {
+      return activeProvider?.actualReceiveAmount + '';
+    }
+    if (activeProvider?.name === 'WrapToken') {
+      return inputAmount;
+    }
+    return '0';
+  }, [
+    activeProvider,
+    inputAmount,
+    quoteLoading,
+    receiveToken?.id,
+    payToken?.id,
+  ]);
+
   return (
     <>
       <Header
@@ -722,15 +757,7 @@ export const Main = () => {
               inSufficientCanGetQuote &&
               !activeProvider?.manualClick
             }
-            value={
-              !activeProvider
-                ? ''
-                : activeProvider?.actualReceiveAmount
-                ? activeProvider?.actualReceiveAmount + ''
-                : activeProvider?.name === 'WrapToken'
-                ? inputAmount
-                : '0'
-            }
+            value={receiveTokenDisplayValue}
             token={receiveToken}
             onTokenChange={(token) => {
               const chainItem = findChainByServerID(token.chain);
