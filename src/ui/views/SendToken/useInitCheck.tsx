@@ -36,10 +36,10 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
           .filter(([, contract]) => {
             return contract.multisig;
           })
-          .map(([chain]) => chain?.toLocaleLowerCase());
+          .map(([chain]) => chain?.toLowerCase());
         if (
           safeChains.length > 0 &&
-          !safeChains.includes(chain?.toLocaleLowerCase())
+          !safeChains.includes(chain?.toLowerCase())
         ) {
           return {
             disable: true,
@@ -48,10 +48,10 @@ export const useInitCheck = (addressDesc?: AddrDescResponse['desc']) => {
         }
         const contactChains = Object.entries(
           toDesc?.contract || {}
-        ).map(([chain]) => chain?.toLocaleLowerCase());
+        ).map(([chain]) => chain?.toLowerCase());
         if (
           contactChains.length > 0 &&
-          !contactChains.includes(chain?.toLocaleLowerCase())
+          !contactChains.includes(chain?.toLowerCase())
         ) {
           return {
             disable: true,
