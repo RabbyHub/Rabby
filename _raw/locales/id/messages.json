@@ -2535,7 +2535,8 @@
       "gasExceed": "Saldo GasAccount tidak boleh melebihi $1000",
       "withdrawDisabledIAP": "Penarikan dinonaktifkan karena saldo Anda termasuk dana fiat, yang tidak dapat ditarik. Hubungi dukungan untuk menarik saldo token Anda.",
       "risk": "Alamat Anda saat ini terdeteksi berisiko, jadi fitur ini tidak tersedia.",
-      "switchAccount": "Alihkan GasAccount"
+      "switchAccount": "Alihkan GasAccount",
+      "gasToken": "Gas Token"
     },
     "safeMessageQueue": {
       "loading": "Memuat pesan",
@@ -3017,6 +3018,9 @@
     },
     "RiskTip": {
       "title": "Peringatan Risiko"
+    },
+    "DappActions": {
+      "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda."
     }
   },
   "global": {

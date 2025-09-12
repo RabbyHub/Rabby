@@ -2535,7 +2535,8 @@
       "risk": "Seu endereço atual foi detectado como arriscado, então este recurso não está disponível.",
       "title": "GasAccount",
       "safeAddressDepositTips": "Endereços multisig não são suportados para depósitos.",
-      "withdrawDisabledIAP": "Os saques estão desabilitados porque seu saldo inclui fundos fiat, que não podem ser retirados. Entre em contato com o suporte para retirar seu saldo de tokens."
+      "withdrawDisabledIAP": "Os saques estão desabilitados porque seu saldo inclui fundos fiat, que não podem ser retirados. Entre em contato com o suporte para retirar seu saldo de tokens.",
+      "gasToken": "Token de Gás"
     },
     "safeMessageQueue": {
       "loading": "Carregando mensagens",
@@ -3017,6 +3018,9 @@
     },
     "RiskTip": {
       "title": "Aviso de Risco"
+    },
+    "DappActions": {
+      "queueDescription": "A retirada atual entrará em uma fila de espera. Assim que processada, poderá ser retirada para sua wallet."
     }
   },
   "global": {

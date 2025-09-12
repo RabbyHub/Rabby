@@ -2538,7 +2538,8 @@
         "gasAccountBalance": "Saldo de Gas"
       },
       "switchAccount": "Alternar GasAccount",
-      "withdrawDisabledIAP": "Os saques estão desativados porque seu saldo inclui fundos fiat, que não podem ser sacados. Entre em contato com o suporte para sacar o saldo dos seus tokens."
+      "withdrawDisabledIAP": "Os saques estão desativados porque seu saldo inclui fundos fiat, que não podem ser sacados. Entre em contato com o suporte para sacar o saldo dos seus tokens.",
+      "gasToken": "Token de Gas"
     },
     "safeMessageQueue": {
       "noData": "Sem mensagens",
@@ -3021,6 +3022,9 @@
     },
     "RiskTip": {
       "title": "Aviso de Risco"
+    },
+    "DappActions": {
+      "queueDescription": "O saque atual irá entrar em uma fila de espera. Uma vez processado, pode ser retirado para sua wallet."
     }
   },
   "global": {
