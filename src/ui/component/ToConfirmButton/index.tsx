@@ -77,7 +77,17 @@ export const ToConfirmBtn = (props: {
           type="primary"
           disabled={props.disabled}
           block
-          className="h-[48px] rounded-[8px]"
+          className={clsx(
+            'h-[48px] rounded-[8px]',
+            props.loading && 'border-[#3646d9] bg-[#3646d9]'
+          )}
+          style={
+            props.loading
+              ? {
+                  boxShadow: '0px 8px 16px rgba(134, 151, 255, 0.3)',
+                }
+              : {}
+          }
         >
           <div className="flex items-center justify-center gap-6">
             {props.loading ? (
