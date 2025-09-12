@@ -104,11 +104,11 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   }, [currentPerpsAccount?.address, visible, selectedToken]);
 
   const { value: isNeedDepositBeforeApprove } = useAsync(async () => {
-    if (!currentPerpsAccount?.address) return false;
+    if (!currentPerpsAccount?.address || !visible) return false;
     const sdk = getPerpsSDK();
     const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
     return role === 'missing';
-  }, [currentPerpsAccount?.address]);
+  }, [currentPerpsAccount?.address, visible]);
 
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
