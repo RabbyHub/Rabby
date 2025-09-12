@@ -148,6 +148,7 @@ export const PerpsSingleCoin = () => {
     quoteLoading,
     handleSignDepositDirect,
     bridgeQuote,
+    resetBridgeQuote,
   } = usePerpsDeposit({
     currentPerpsAccount,
     setAmountVisible,
@@ -698,6 +699,7 @@ export const PerpsSingleCoin = () => {
 
       <PerpsDepositAmountPopup
         visible={amountVisible}
+        resetBridgeQuote={resetBridgeQuote}
         quoteLoading={quoteLoading}
         bridgeQuote={bridgeQuote}
         miniTxs={miniTxs}

@@ -54,7 +54,7 @@ export const usePerpsDeposit = ({
   const [bridgeQuote, setBridgeQuote] = useState<PerpBridgeQuote | null>(null);
 
   const resetBridgeQuote = useMemoizedFn(() => {
-    setQuoteLoading(false);
+    setQuoteLoading(true);
     clearMiniSignTx();
     setCacheUsdValue(0);
     setBridgeQuote(null);
@@ -286,17 +286,23 @@ export const usePerpsDeposit = ({
     }
 
     try {
-      const res = await wallet.sendRequest({
-        method: 'eth_sendTransaction',
-        params: miniSignTx,
-        $ctx: {
-          ga: {
-            category: 'Perps',
-            source: 'Perps',
-            trigger: 'Perps',
-          },
-        },
-      });
+      const promise = Promise.all(
+        miniSignTx.map((tx) => {
+          return wallet.sendRequest({
+            method: 'eth_sendTransaction',
+            params: [tx],
+            $ctx: {
+              ga: {
+                category: 'Perps',
+                source: 'Perps',
+                trigger: 'Perps',
+              },
+            },
+          });
+        })
+      );
+
+      const res = await promise;
       const signature = last(res as Array<string>);
       handleSignDepositDirect(signature as string);
       setAmountVisible(false);
@@ -323,5 +329,6 @@ export const usePerpsDeposit = ({
     quoteLoading,
     handleSignDepositDirect,
     bridgeQuote,
+    resetBridgeQuote,
   };
 };

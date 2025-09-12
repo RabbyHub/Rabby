@@ -51,6 +51,7 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   onClose: () => void;
   clearMiniSignTx: () => void;
   clearMiniSignTypeData?: () => void;
+  resetBridgeQuote: () => void;
 };
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
@@ -69,6 +70,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   handleWithdraw,
   clearMiniSignTx,
   clearMiniSignTypeData,
+  resetBridgeQuote,
 }) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -155,7 +157,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const amountValidation = React.useMemo(() => {
     const value = Number(usdValue) || 0;
-    if (value === 0) {
+    if (!usdValue) {
       return { isValid: false, error: null };
     }
 
@@ -233,10 +235,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   useEffect(() => {
     if (type === 'deposit' || visible) {
       if (isValidAmount) {
-        // updateMiniSignTx(
-        //   Number(usdValue),
-        //   selectedToken || ARB_USDC_TOKEN_ITEM
-        // );
+        resetBridgeQuote();
       } else {
         clearMiniSignTx();
       }
@@ -258,7 +257,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
             ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
 
           if (gasError || gasTooHigh) {
-            handleDeposit();
+            resetBridgeQuote();
           } else {
             startDirectSigning();
           }
