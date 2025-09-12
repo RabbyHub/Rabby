@@ -4,11 +4,11 @@ import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
 import { formatNumber, formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
-import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
-import { LeverageSelectionPopup } from './LeverageSelectionPopup';
+import { ReactComponent as RcIconPerpsLeveragePlus } from 'ui/assets/perps/ImgLeveragePlus.svg';
+import { ReactComponent as RcIconPerpsLeverageMinus } from 'ui/assets/perps/ImgLeverageMinus.svg';
 import { formatPercent } from './SingleCoin';
 import { useMemoizedFn } from 'ahooks';
 import { calLiquidationPrice } from '../utils';
@@ -63,12 +63,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation();
-  const [leveragePopupVisible, setLeveragePopupVisible] = React.useState(false);
   const [isReviewMode, setIsReviewMode] = React.useState(false);
 
-  const openLeveragePopup = () => {
-    setLeveragePopupVisible(true);
-  };
   const [autoCloseVisible, setAutoCloseVisible] = React.useState(false);
   const [margin, setMargin] = React.useState<string>('');
   const [leverage, setLeverage] = React.useState<number>(5);
@@ -170,7 +166,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         tpTriggerPx: '',
         slTriggerPx: '',
       });
-      setLeveragePopupVisible(false);
       setIsReviewMode(false);
     }
   }, [visible]);
@@ -184,11 +179,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   };
 
   const isValidAmount = marginValidation.isValid;
-
-  const handleLeverageConfirm = (selectedLeverage: number) => {
-    setLeverage(selectedLeverage);
-    setLeveragePopupVisible(false);
-  };
 
   // 获取错误状态下的文字颜色
   const getMarginTextColor = () => {
@@ -341,19 +331,19 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <div className="text-13 text-r-neutral-title-1 font-medium text-center flex items-center gap-6">
               <div
                 className={clsx(
-                  'text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-12 py-6',
+                  'text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-6 py-4',
                   leverageRange[0] === leverage
                     ? 'opacity-50'
                     : 'hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer'
                 )}
                 onClick={() => {
-                  setLeverage(leverageRange[0]);
+                  setLeverage((v) => Math.max(v - 1, leverageRange[0]));
                 }}
               >
-                Min
+                <RcIconPerpsLeverageMinus />
               </div>
               <input
-                className="text-15 text-r-neutral-title-1 font-medium text-center w-[68px] h-[32px] bg-transparent border-[0.5px] border-solid border-rabby-neutral-line rounded-[4px] outline-none focus:border-blue"
+                className="text-15 text-r-neutral-title-1 font-medium text-center w-[68px] h-[28px] bg-transparent border-[0.5px] border-solid border-rabby-neutral-line rounded-[4px] outline-none focus:border-blue"
                 value={leverage}
                 onBlur={() => {
                   if (leverage < leverageRange[0]) {
@@ -374,16 +364,16 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               />
               <div
                 className={clsx(
-                  'text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-12 py-6',
+                  'text-r-neutral-title-1 bg-r-neutral-card2 rounded-[4px] px-6 py-4',
                   leverageRange[1] === leverage
                     ? 'opacity-50'
                     : 'hover:bg-r-blue-light-1 hover:text-r-blue-default cursor-pointer'
                 )}
                 onClick={() => {
-                  setLeverage(leverageRange[1]);
+                  setLeverage((v) => Math.min(v + 1, leverageRange[1]));
                 }}
               >
-                Max
+                <RcIconPerpsLeveragePlus />
               </div>
             </div>
           </div>
@@ -598,15 +588,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           {isReviewMode ? renderReviewMode() : renderEditMode()}
         </div>
       </Popup>
-
-      {/* Leverage Selection Popup */}
-      <LeverageSelectionPopup
-        visible={leveragePopupVisible}
-        currentLeverage={leverage}
-        leverageRange={leverageRange}
-        onCancel={() => setLeveragePopupVisible(false)}
-        onConfirm={handleLeverageConfirm}
-      />
 
       <AutoClosePositionPopup
         visible={autoCloseVisible}
