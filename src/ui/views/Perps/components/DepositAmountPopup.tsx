@@ -103,19 +103,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     return info;
   }, [currentPerpsAccount?.address, visible, selectedToken]);
 
-  const isDirectDeposit = useMemo(() => {
-    return (
-      selectedToken?.id === ARB_USDC_TOKEN_ID &&
-      selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN
-    );
-  }, [selectedToken]);
-
   const { value: isNeedDepositBeforeApprove } = useAsync(async () => {
     if (!currentPerpsAccount?.address || !visible) return false;
     const sdk = getPerpsSDK();
     const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
-    return role === 'missing' && !isDirectDeposit;
-  }, [currentPerpsAccount?.address, visible, isDirectDeposit]);
+    return role === 'missing';
+  }, [currentPerpsAccount?.address, visible]);
 
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
@@ -155,6 +148,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       setIsWithdrawLoading(false);
     }
   }, [visible]);
+
+  const isDirectDeposit = useMemo(() => {
+    return (
+      selectedToken?.id === ARB_USDC_TOKEN_ID &&
+      selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN
+    );
+  }, [selectedToken]);
 
   React.useEffect(() => {
     if (visible && inputRef.current) {
