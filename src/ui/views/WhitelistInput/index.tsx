@@ -111,7 +111,7 @@ const WhitelistInput = () => {
       }
       const cexId = await wallet.getCexId(address);
       const localCexInfo = exchanges.find(
-        (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+        (e) => e.id.toLowerCase() === cexId?.toLowerCase()
       );
       if (cexId && localCexInfo) {
         setIsCex(true);

@@ -374,9 +374,7 @@ export const AddressRiskAlert = ({
     const targetTypeAccounts = accountsList.filter(
       (acc) =>
         isSameAddress(acc.address, address) &&
-        (type
-          ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
-          : true)
+        (type ? type.toLowerCase() === acc.type.toLowerCase() : true)
     );
     if (targetTypeAccounts.length > 0) {
       return findAccountByPriority(targetTypeAccounts);

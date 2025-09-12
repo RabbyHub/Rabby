@@ -261,9 +261,7 @@ export const useCexId = (address: string) => {
   );
 
   return [
-    exchanges.find(
-      (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
-    ),
+    exchanges.find((e) => e.id.toLowerCase() === cexId?.toLowerCase()),
     updateCexId,
   ] as const;
 };

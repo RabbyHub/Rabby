@@ -108,7 +108,7 @@ const SendPoly = () => {
 
   const importWhitelistAccounts = useMemo(() => {
     const groupAccounts = groupBy(accountsList, (item) =>
-      item.address.toLocaleLowerCase()
+      item.address.toLowerCase()
     );
     const uniqueAccounts = Object.values(groupAccounts).map((item) =>
       findAccountByPriority(item)
