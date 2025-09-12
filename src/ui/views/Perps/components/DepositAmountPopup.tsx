@@ -35,10 +35,15 @@ import { Tx } from 'background/service/openapi';
 import { useRabbyDispatch } from '@/ui/store';
 import { formatTokenAmount } from '@debank/common';
 import { useMemoizedFn } from 'ahooks';
+import { getPerpsSDK } from '../sdkManager';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
-  updateMiniSignTx: (amount: number, token: TokenItem) => void;
+  updateMiniSignTx: (
+    amount: number,
+    token: TokenItem,
+    needMinusOne?: boolean
+  ) => void;
   availableBalance: string;
   currentPerpsAccount: Account | null;
   quoteLoading: boolean;
@@ -51,7 +56,7 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   onClose: () => void;
   clearMiniSignTx: () => void;
   clearMiniSignTypeData?: () => void;
-  resetBridgeQuote: () => void;
+  resetBridgeQuoteLoading: () => void;
 };
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
@@ -70,7 +75,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   handleWithdraw,
   clearMiniSignTx,
   clearMiniSignTypeData,
-  resetBridgeQuote,
+  resetBridgeQuoteLoading,
 }) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -97,6 +102,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
     return info;
   }, [currentPerpsAccount?.address, visible, selectedToken]);
+
+  const { value: isNeedDepositBeforeApprove } = useAsync(async () => {
+    if (!currentPerpsAccount?.address || !visible) return false;
+    const sdk = getPerpsSDK();
+    const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
+    return role === 'missing';
+  }, [currentPerpsAccount?.address, visible]);
 
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
@@ -226,16 +238,27 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     () => {
       if (!visible || type === 'withdraw') return;
       if (!isValidAmount) return;
-      updateMiniSignTx(Number(usdValue), tokenInfo || ARB_USDC_TOKEN_ITEM);
+      updateMiniSignTx(
+        Number(usdValue),
+        tokenInfo || ARB_USDC_TOKEN_ITEM,
+        isNeedDepositBeforeApprove
+      );
     },
     300,
-    [usdValue, visible, updateMiniSignTx, type, tokenInfo]
+    [
+      usdValue,
+      visible,
+      updateMiniSignTx,
+      type,
+      tokenInfo,
+      isNeedDepositBeforeApprove,
+    ]
   );
 
   useEffect(() => {
     if (type === 'deposit' || visible) {
       if (isValidAmount) {
-        resetBridgeQuote();
+        resetBridgeQuoteLoading();
       } else {
         clearMiniSignTx();
       }
@@ -248,7 +271,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         if (gasReadyContent) {
           const gasError =
             gasReadyContent && miniApprovalGas?.showGasLevelPopup;
-          const chainInfo = findChainByServerID(ARB_USDC_TOKEN_SERVER_CHAIN)!;
+          const chainInfo = findChainByServerID(
+            selectedToken?.chain || ARB_USDC_TOKEN_SERVER_CHAIN
+          )!;
           const gasTooHigh =
             !!gasReadyContent &&
             !!miniApprovalGas?.gasCostUsdStr &&
@@ -257,7 +282,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
             ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
 
           if (gasError || gasTooHigh) {
-            resetBridgeQuote();
+            handleDeposit();
           } else {
             startDirectSigning();
           }
@@ -274,8 +299,15 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       gasReadyContent,
       isPreparingSign,
       handleDeposit,
+      selectedToken,
     ]
   );
+
+  const estReceiveUsdValue = useMemo(() => {
+    const value =
+      (bridgeQuote?.to_token_amount || 0) * ARB_USDC_TOKEN_ITEM.price;
+    return isNeedDepositBeforeApprove ? value - 1 : value;
+  }, [bridgeQuote, tokenInfo, isNeedDepositBeforeApprove]);
 
   const quoteError = useMemo(() => {
     return type === 'deposit' &&
@@ -477,10 +509,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               <div className="mb-10 flex h-[18px] flex-row items-center justify-center">
                 <div className="text-[11px] text-r-neutral-foot text-center">
                   {t('page.perps.depositAmountPopup.estReceive', {
-                    balance: formatUsdValue(
-                      (bridgeQuote?.to_token_amount || 0) *
-                        ARB_USDC_TOKEN_ITEM.price
-                    ),
+                    balance: formatUsdValue(estReceiveUsdValue),
                   })}
                 </div>
                 <Tooltip

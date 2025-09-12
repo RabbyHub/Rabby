@@ -54,7 +54,7 @@ export const usePerpsDeposit = ({
   const [bridgeQuote, setBridgeQuote] = useState<PerpBridgeQuote | null>(null);
 
   const resetBridgeQuote = useMemoizedFn(() => {
-    setQuoteLoading(true);
+    setQuoteLoading(false);
     clearMiniSignTx();
     setCacheUsdValue(0);
     setBridgeQuote(null);
@@ -63,7 +63,7 @@ export const usePerpsDeposit = ({
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const updateMiniSignTx = useMemoizedFn(
-    async (usdValue: number, _token?: TokenItem) => {
+    async (usdValue: number, _token?: TokenItem, needMinusOne?: boolean) => {
       const token = _token || ARB_USDC_TOKEN_ITEM;
       if (token.id !== ARB_USDC_TOKEN_ID) {
         setQuoteLoading(true);
@@ -161,7 +161,11 @@ export const usePerpsDeposit = ({
             }
 
             setBridgeQuote(res);
-            setCacheUsdValue(res.to_token_amount * ARB_USDC_TOKEN_ITEM.price);
+            setCacheUsdValue(
+              needMinusOne
+                ? res.to_token_amount * ARB_USDC_TOKEN_ITEM.price - 1
+                : res.to_token_amount * ARB_USDC_TOKEN_ITEM.price
+            );
             const bridgeTx = {
               from: res.tx.from,
               to: res.tx.to,
@@ -329,6 +333,8 @@ export const usePerpsDeposit = ({
     quoteLoading,
     handleSignDepositDirect,
     bridgeQuote,
-    resetBridgeQuote,
+    resetBridgeQuoteLoading: () => {
+      setQuoteLoading(true);
+    },
   };
 };

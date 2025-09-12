@@ -93,7 +93,7 @@ export const Perps: React.FC = () => {
     miniSignTx,
     clearMiniSignTx,
     updateMiniSignTx,
-    resetBridgeQuote,
+    resetBridgeQuoteLoading,
     handleDeposit,
     handleSignDepositDirect,
     quoteLoading,
@@ -430,7 +430,7 @@ export const Perps: React.FC = () => {
       />
 
       <PerpsDepositAmountPopup
-        resetBridgeQuote={resetBridgeQuote}
+        resetBridgeQuoteLoading={resetBridgeQuoteLoading}
         visible={amountVisible}
         type={popupType}
         miniTxs={miniTxs}
