@@ -682,11 +682,7 @@ class PreferenceService {
   };
   getLastTimeGasSelection = (chainId: keyof GasCache): ChainGas | null => {
     const cache = this.store.gasCache[chainId];
-    if (cache && cache.lastTimeSelect === 'gasPrice') {
-      return cache;
-    } else {
-      return cache;
-    }
+    return cache;
   };
 
   updateLastTimeGasSelection = (chainId: keyof GasCache, gas: ChainGas) => {
