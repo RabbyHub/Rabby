@@ -224,7 +224,7 @@ export const SelectAddressList = ({
 
   useEffect(() => {
     if (visible) {
-      // runFetchPerpsInfo();
+      runFetchPerpsInfo();
     }
   }, [visible, runFetchPerpsInfo]);
 
