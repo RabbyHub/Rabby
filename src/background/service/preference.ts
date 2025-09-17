@@ -683,14 +683,7 @@ class PreferenceService {
   getLastTimeGasSelection = (chainId: keyof GasCache): ChainGas | null => {
     const cache = this.store.gasCache[chainId];
     if (cache && cache.lastTimeSelect === 'gasPrice') {
-      if (cache.gasLevel) {
-        return {
-          lastTimeSelect: 'gasLevel',
-          gasLevel: cache.gasLevel,
-        };
-      } else {
-        return null;
-      }
+      return cache;
     } else {
       return cache;
     }
