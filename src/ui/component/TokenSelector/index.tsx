@@ -45,6 +45,7 @@ import NetSwitchTabs, {
 } from 'ui/component/PillsSwitch/NetSwitchTabs';
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useHistory } from 'react-router-dom';
+import { ExchangeLogos } from './CexLogos';
 
 const isTab = getUiType().isTab;
 
@@ -729,6 +730,10 @@ function CommonTokenItem(props: {
     return disabled ? t('component.TokenSelector.chainNotSupport') : undefined;
   }, [value, token, supportChains]);
 
+  const showExchangeLogos = useMemo(() => {
+    return isBridgeTo && !!token.cex_ids?.length;
+  }, [isBridgeTo, token.cex_ids]);
+
   const handleTokenPress = useCallback(() => {
     if (disabled) {
       return;
@@ -784,8 +789,18 @@ function CommonTokenItem(props: {
               hideConer
             />
             <div className="flex flex-col">
-              <span className="symbol_click" onClick={onClickTokenSymbol}>
+              <span
+                className={`symbol_click ${
+                  showExchangeLogos
+                    ? 'overflow-visible flex flex-row'
+                    : 'overflow-hidden'
+                }`}
+                onClick={onClickTokenSymbol}
+              >
                 {getTokenSymbol(token)}
+                {showExchangeLogos && (
+                  <ExchangeLogos cexIds={token.cex_ids || []} />
+                )}
               </span>
               <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
                 {isSwapTo
