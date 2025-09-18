@@ -902,9 +902,9 @@
       },
       "liquidation": "Liquidation",
       "accountSelector": {
-        "activatedAddress": "Activated address",
-        "hyperliquidBalance": "HyperLiquid Balance",
-        "notActivatedAddress": "Not Activated address",
+        "activatedAddress": "Activated",
+        "hyperliquidBalance": "Perps Balance",
+        "notActivatedAddress": "Not Activated",
         "noPosition": "No Position"
       }
     },

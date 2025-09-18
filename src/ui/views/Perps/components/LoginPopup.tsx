@@ -87,7 +87,7 @@ export const PerpsLoginPopup = (
   return (
     <Popup
       placement="bottom"
-      height={440}
+      height={520}
       isSupportDarkMode
       bodyStyle={{
         padding: 0,

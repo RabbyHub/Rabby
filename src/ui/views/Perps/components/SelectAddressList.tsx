@@ -17,7 +17,7 @@ import { sortAccountsByBalance } from '@/ui/utils/account';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { useRequest } from 'ahooks';
 import clsx from 'clsx';
-import { keyBy, sortBy, uniqBy } from 'lodash';
+import { keyBy, range, sortBy, uniqBy } from 'lodash';
 import React, {
   ComponentType,
   useCallback,
@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso, TopItemListProps } from 'react-virtuoso';
 import { ReactComponent as RcIconLoginLoading } from 'ui/assets/perps/IconLoginLoading.svg';
 import { getPerpsSDK } from '../sdkManager';
+import { Skeleton } from 'antd';
 
 export const SelectAddressList = ({
   currentAccount,
@@ -65,7 +66,7 @@ export const SelectAddressList = ({
     [accounts]
   );
 
-  const { data: _data, runAsync: runFetchPerpsInfo } = useRequest(
+  const { data: _data, runAsync: runFetchPerpsInfo, loading } = useRequest(
     async () => {
       const sdk = getPerpsSDK();
       const list = uniqBy(accountsList, (i) => i.address.toLowerCase());
@@ -178,7 +179,11 @@ export const SelectAddressList = ({
           </div>
         );
       }
-      if (data.groups[index] === 'inactive' && data.dict?.active.length) {
+      if (
+        data.groups[index] === 'inactive' &&
+        data.dict?.active.length &&
+        data.dict?.inactive.length
+      ) {
         return (
           <div className="text-[12px] leading-[14px] text-r-neutral-body font-normal pb-[8px]">
             {t('page.perps.accountSelector.notActivatedAddress')}
@@ -212,6 +217,7 @@ export const SelectAddressList = ({
             account.type === currentAccount?.type
           }
           isLastUsed={
+            !loadingAddress &&
             isSameAddress(account.address, lastUsedAccount?.address || '') &&
             account.type === lastUsedAccount?.type
           }
@@ -231,17 +237,57 @@ export const SelectAddressList = ({
   return (
     <>
       <div className="w-full flex flex-1 flex-col px-20 overflow-auto">
-        <GroupedVirtuoso
-          style={{ height: '100%' }}
-          groupCounts={data.groupCounts}
-          // fixedItemHeight={56 + 12}
-          groupContent={renderGroupContent}
-          itemContent={renderItemContent}
-          components={{
-            TopItemList: GroupHeaderContainer,
-            Footer: () => <div className="h-[36px] w-full" />,
-          }}
-        />
+        {loading && !_data ? (
+          <div className="flex flex-col gap-[8px]">
+            {range(0, 5).map((i) => {
+              return (
+                <div
+                  className="flex justify-between items-center bg-r-neutral-card1 rounded-[6px] py-[13px] px-[16px]"
+                  key={i}
+                >
+                  <div className="gap-x-12 flex items-center">
+                    <Skeleton.Input
+                      active
+                      className="rounded-full w-[24px] h-[24px] bg-r-neutral-bg-1"
+                    />
+                    <div className="gap-y-[4px] flex flex-col">
+                      <Skeleton.Input
+                        active
+                        className="bg-r-neutral-bg-1 rounded-[2px] w-[84px] h-[13px]"
+                      />
+                      <Skeleton.Input
+                        active
+                        className="bg-r-neutral-bg-1 rounded-[2px] w-[52px] h-[13px]"
+                      />
+                    </div>
+                  </div>
+                  <div className="gap-y-[4px] flex flex-col items-end">
+                    <Skeleton.Input
+                      active
+                      className="bg-r-neutral-bg-1 rounded-[2px] w-[84px] h-[13px]"
+                    />
+                    <Skeleton.Input
+                      active
+                      className="bg-r-neutral-bg-1 rounded-[2px] w-[52px] h-[13px]"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <GroupedVirtuoso
+            style={{ height: '100%' }}
+            groupCounts={data.groupCounts}
+            // fixedItemHeight={56 + 12}
+            groupContent={renderGroupContent}
+            itemContent={renderItemContent}
+            components={{
+              TopItemList: GroupHeaderContainer,
+              Footer: () => <div className="h-[36px] w-full" />,
+            }}
+          />
+        )}
       </div>
     </>
   );
@@ -311,7 +357,7 @@ function AccountItem(props: {
     }
 
     return <div />;
-  }, [loading, isLastUsed, info]);
+  }, [loading, info]);
 
   return (
     <Item
