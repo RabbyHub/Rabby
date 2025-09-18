@@ -103,11 +103,14 @@ const BridgeToTokenSelect = ({
   }, [tokenList]);
 
   const availableToken = useMemo(() => {
+    if (tokenListLoading) {
+      return [];
+    }
     const allTokens = allDisplayTokens;
     return uniqBy(allTokens, (token) => {
       return `${token.chain}-${token.id}`;
     }).filter((e) => !excludeTokens.includes(e.id));
-  }, [allDisplayTokens, excludeTokens]);
+  }, [allDisplayTokens, excludeTokens, tokenListLoading]);
 
   const displayTokenList = useSortToken(availableToken);
 

@@ -789,19 +789,21 @@ function CommonTokenItem(props: {
               hideConer
             />
             <div className="flex flex-col">
-              <span
-                className={`symbol_click ${
-                  showExchangeLogos
-                    ? 'overflow-visible flex flex-row'
-                    : 'overflow-hidden'
-                }`}
-                onClick={onClickTokenSymbol}
-              >
-                {getTokenSymbol(token)}
-                {showExchangeLogos && (
+              {showExchangeLogos ? (
+                <div className="flex overflow-visible">
+                  <span
+                    className="symbol_click overflow-visible"
+                    onClick={onClickTokenSymbol}
+                  >
+                    {getTokenSymbol(token)}
+                  </span>
                   <ExchangeLogos cexIds={token.cex_ids || []} />
-                )}
-              </span>
+                </div>
+              ) : (
+                <span className="symbol_click" onClick={onClickTokenSymbol}>
+                  {getTokenSymbol(token)}
+                </span>
+              )}
               <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
                 {isSwapTo
                   ? `$${formatPrice(token.price || 0)}`
