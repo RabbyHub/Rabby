@@ -538,7 +538,7 @@ const SendToken = () => {
     }
   }, [clickedMax, loadGasList]);
 
-  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
+  const [miniSinLoading, setMiniSinLoading] = useState(false);
   const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
 
   const miniSignTxs = useMemo(() => {
@@ -577,6 +577,7 @@ const SendToken = () => {
         return;
       }
       if (canUseDirectSubmitTx && !forceSignPage) {
+        setMiniSinLoading(true);
         startDirectSigning();
         return;
       }
@@ -817,7 +818,7 @@ const SendToken = () => {
 
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
-      setIsShowMiniSign(false);
+      setMiniSinLoading(false);
       setMiniSignTx(null);
       form.setFieldsValue({ amount: '' });
       // persistPageStateCache();
@@ -1676,6 +1677,7 @@ const SendToken = () => {
                   }}
                   disabled={!canSubmit}
                   accountType={currentAccount?.type}
+                  loading={miniSinLoading}
                 />
               ) : (
                 <Button
@@ -1707,8 +1709,9 @@ const SendToken = () => {
           getContainer={getContainer}
         />
         <MiniApproval
+          transparentMask
           txs={miniSignTxs}
-          visible={isShowMiniSign}
+          // visible={miniSinLoading}
           ga={{
             category: 'Send',
             source: 'sendToken',
@@ -1717,15 +1720,16 @@ const SendToken = () => {
           onClose={() => {
             setMiniSignTx(null);
             setRefreshId((e) => e + 1);
-            setIsShowMiniSign(false);
+            setMiniSinLoading(false);
           }}
           onReject={() => {
             setMiniSignTx(null);
             setRefreshId((e) => e + 1);
-            setIsShowMiniSign(false);
+            setMiniSinLoading(false);
           }}
           onResolve={handleMiniSignResolve}
           onPreExecError={() => {
+            setMiniSinLoading(false);
             handleSubmit({
               to: form.getFieldValue('to'),
               amount: form.getFieldValue('amount'),
