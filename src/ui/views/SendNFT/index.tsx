@@ -76,7 +76,7 @@ const SendNFT = () => {
   const [form] = useForm<{ to: string; amount: number }>();
   const [inited, setInited] = useState(false);
 
-  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
   const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
   const [freshId, setRefreshId] = useState(0);
 
@@ -275,6 +275,7 @@ const SendNFT = () => {
         );
 
         if (canUseDirectSubmitTx && !forceSignPage) {
+          setMiniSignLoading(true);
           startDirectSigning();
           return;
         }
@@ -320,7 +321,7 @@ const SendNFT = () => {
 
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
-      setIsShowMiniSign(false);
+      setMiniSignLoading(false);
       setMiniSignTx(null);
       form.setFieldsValue({ amount: 0 });
       updateUrlAmount(0);
@@ -587,6 +588,7 @@ const SendNFT = () => {
                   }
                   disabled={!canSubmit}
                   accountType={currentAccount?.type}
+                  loading={miniSignLoading}
                 />
               ) : (
                 <Button
@@ -604,25 +606,27 @@ const SendNFT = () => {
           </div>
         </Form>
         <MiniApproval
+          transparentMask
           txs={miniSignTxs}
-          visible={isShowMiniSign}
+          // visible={miniSignLoading}
           ga={{
             category: 'Send',
             source: 'sendNFT',
             trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
           }}
           onClose={() => {
-            setIsShowMiniSign(false);
+            setMiniSignLoading(false);
             setMiniSignTx(null);
             setRefreshId((e) => e + 1);
           }}
           onReject={() => {
             setRefreshId((e) => e + 1);
-            setIsShowMiniSign(false);
+            setMiniSignLoading(false);
             setMiniSignTx(null);
           }}
           onResolve={handleMiniSignResolve}
           onPreExecError={() => {
+            setMiniSignLoading(false);
             handleSubmit({
               amount: form.getFieldValue('amount'),
               forceSignPage: true,
