@@ -15,7 +15,7 @@ export const PerpsLoginContent = ({
   return (
     <div className="flex-1 overflow-auto">
       <div className="bg-r-neutral-card1 rounded-[12px] p-20 flex flex-col items-center">
-        <RcIconPerps className="w-40 h-40" />
+        <RcIconPerps className="w-40 h-40 text-r-neutral-title1" />
         <div className="text-20 font-medium text-r-neutral-title-1 mt-8">
           {t('page.perps.tradePerps')}
         </div>
