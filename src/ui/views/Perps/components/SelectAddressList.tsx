@@ -196,7 +196,7 @@ export const SelectAddressList = ({
       const account = item?.account;
       const info = item?.info;
       if (!account) {
-        return null;
+        return <div className="h-[1px]" />;
       }
       return (
         <AccountItem
@@ -232,14 +232,12 @@ export const SelectAddressList = ({
     <>
       <div className="w-full flex flex-1 flex-col px-20 overflow-auto">
         <GroupedVirtuoso
-          data={accountsList}
           style={{ height: '100%' }}
           groupCounts={data.groupCounts}
           // fixedItemHeight={56 + 12}
           groupContent={renderGroupContent}
           itemContent={renderItemContent}
           components={{
-            // TopItemList: React.Fragment,
             TopItemList: GroupHeaderContainer,
             Footer: () => <div className="h-[36px] w-full" />,
           }}
@@ -305,7 +303,7 @@ function AccountItem(props: {
             </div>
           ) : (
             <div className="text-[12px] leading-[14px] font-normal text-r-neutral-foot">
-              {t('page.perps.accountSelector.noPosition')};
+              {t('page.perps.accountSelector.noPosition')}
             </div>
           )}
         </div>
