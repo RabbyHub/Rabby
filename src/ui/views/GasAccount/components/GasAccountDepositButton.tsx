@@ -1,6 +1,9 @@
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
+import {
+  useDirectSigning,
+  useMiniApprovalGas,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -41,6 +44,7 @@ export const GasAccountDepositButton = ({
   const { t } = useTranslation();
 
   const miniApprovalGas = useMiniApprovalGas();
+  const isDirectSigning = useDirectSigning();
 
   useDebounce(
     () => {
@@ -101,6 +105,7 @@ export const GasAccountDepositButton = ({
         disabled={disabled}
         overwriteDisabled
         accountType={currentAccount.type}
+        loading={isPreparingSign || isDirectSigning}
       />
     </>
   ) : (
