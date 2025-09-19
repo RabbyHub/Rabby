@@ -874,7 +874,7 @@
       "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
       "sizeTips": "The total value or quantity of your trade, set by margin and leverage.",
       "rabbyFeeTips": "Rabby fee: 0.05%",
-      "providerFeeTips": "Provider fee: {{fee}}",
+      "providerFeeTips": "Hyperliquid fee: {{fee}}",
       "timeAgo": "{{time}} ago",
       "takeProfitTipsLong": "Take profit price must be higher than current price",
       "takeProfitTipsShort": "Take profit price must be lower than current price",
