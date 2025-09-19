@@ -2085,7 +2085,8 @@
         "gasCost": "Frais de gas pour transférer le gas à votre adresse :",
         "estimatedGas": "Gaz estimé :",
         "maxGas": "Gaz max :",
-        "sendGas": "Le transfert de Gas pour votre transaction actuelle :"
+        "sendGas": "Le transfert de Gas pour votre transaction actuelle :",
+        "description": "Utiliser GasAccount pour payer les frais de gaz. Voir les détails du paiement ci-dessous :"
       },
       "customRPCErrorModal": {
         "button": "Désactiver Custom RPC",
@@ -2313,7 +2314,8 @@
       "price-impact": "Impact sur le prix",
       "source": "Source",
       "max": "MAX",
-      "understandRisks": "Je comprends les risques et je souhaite continuer"
+      "understandRisks": "Je comprends les risques et je souhaite continuer",
+      "approve": "Approuver"
     },
     "switchChain": {
       "chainNotSupport": "La chaîne demandée n'est pas encore prise en charge par Rabby",

@@ -42,7 +42,8 @@
         "totalCost": "Total cost: ",
         "maxGas": "Max Gas:",
         "gasCost": "Biaya gas untuk mentransfer gas ke alamat Anda:",
-        "sendGas": "Gas transfer ke Anda untuk transaksi saat ini:"
+        "sendGas": "Gas transfer ke Anda untuk transaksi saat ini:",
+        "description": "Menggunakan GasAccount untuk membayar biaya gas. Lihat detail pembayaran di bawah ini:"
       },
       "balanceChange": {
         "tokenIn": "Token in",
@@ -1041,7 +1042,8 @@
       "loss-tips": "Anda kehilangan {{usd}}. Cobalah jumlah yang lebih kecil di pasar kecil.",
       "two-step-approve-details": "Token USDT memerlukan 2 transaksi untuk mengubah allowance. Pertama, Anda perlu mengatur allowance ke nol, dan hanya kemudian menetapkan nilai allowance yang baru.",
       "estimate": "Perkiraan:",
-      "understandRisks": "Saya memahami risikonya dan ingin melanjutkan"
+      "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
+      "approve": "Setujui"
     },
     "bridge": {
       "showMore": {

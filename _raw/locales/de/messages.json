@@ -243,7 +243,8 @@
         "currentTxCost": "Die Gas-Menge, die an Ihre Adresse gesendet wurde:",
         "maxGas": "Max Gas: ",
         "gasCost": "Gaskosten für die Übertragung von Gas an Ihre Adresse:",
-        "sendGas": "Der Gastransfer für die aktuelle Transaktion an Sie:"
+        "sendGas": "Der Gastransfer für die aktuelle Transaktion an Sie:",
+        "description": "GasAccount verwenden, um Gasgebühren zu bezahlen. Siehe Zahlungsdetails unten:"
       },
       "customRPCErrorModal": {
         "content": "Ihr benutzerdefinierter RPC ist derzeit nicht verfügbar. Sie können ihn deaktivieren und weiterhin mit Rabby's offiziellem RPC signieren.",
@@ -1041,7 +1042,8 @@
       "loss-tips": "Sie verlieren {{usd}}. Versuchen Sie es mit einem kleineren Betrag in einem kleinen Markt.",
       "two-step-approve-details": "Token USDT erfordert 2 Transaktionen, um die Freigabe zu ändern. Zuerst müssen Sie die Freigabe auf Null zurücksetzen und erst dann einen neuen Freigabewert festlegen.",
       "preferMEVTip": "Aktivieren Sie die Funktion \"MEV Guarded\" für Ethereum-Swaps, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie eine benutzerdefinierte RPC- oder Wallet-Verbindungsadresse verwenden.",
-      "understandRisks": "Ich verstehe die Risiken und möchte fortfahren"
+      "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",
+      "approve": "Genehmigen"
     },
     "manageAddress": {
       "no-address": "Keine Adresse",

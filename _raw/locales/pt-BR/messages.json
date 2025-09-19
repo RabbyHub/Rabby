@@ -226,7 +226,8 @@
         "totalCost": "Custo total: ",
         "maxGas": "Máximo Gas:",
         "sendGas": "A transferência de Gas para você na transação atual:",
-        "currentTxCost": "Quantidade de Gas enviada para o seu endereço:"
+        "currentTxCost": "Quantidade de Gas enviada para o seu endereço:",
+        "description": "Usando GasAccount para pagar as taxas de gás. Veja os detalhes do pagamento abaixo:"
       },
       "customRPCErrorModal": {
         "title": "Erro RPC Personalizado",
@@ -1041,7 +1042,8 @@
       "two-step-approve-details": "O token USDT requer 2 transações para alterar a permissão. Primeiro, você precisará redefinir a permissão para zero e, somente então, definir um novo valor de permissão.",
       "no-quote-found": "Nenhuma cotação encontrada",
       "hidden-no-quote-rates_other": "{{count}} taxas indisponíveis",
-      "understandRisks": "Eu entendo os riscos e quero continuar"
+      "understandRisks": "Eu entendo os riscos e quero continuar",
+      "approve": "Aprovar"
     },
     "manageAddress": {
       "no-address": "Nenhum endereço",

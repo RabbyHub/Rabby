@@ -1758,7 +1758,8 @@
         "totalCost": "總成本：",
         "currentTxCost": "發送到你地址的 Gas 數量：",
         "maxGas": "最大 Gas：",
-        "gasCost": "將 gas 轉入您地址的 gas 費用："
+        "gasCost": "將 gas 轉入您地址的 gas 費用：",
+        "description": "使用 GasAccount 支付 gas 费用。查看以下付款详情："
       },
       "transferOwner": {
         "title": "轉移資產所有權",
@@ -1951,7 +1952,8 @@
       "No-available-quote": "沒有可用的報價",
       "loss-tips": "您正在损失 {{usd}}。嘗試在小型市場中投入較少的金額。",
       "two-step-approve": "簽署 2 筆交易以更改允許額",
-      "understandRisks": "我明白風險並想繼續"
+      "understandRisks": "我明白風險並想繼續",
+      "approve": "批准"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持請求的鏈",

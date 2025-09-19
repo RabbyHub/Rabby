@@ -226,7 +226,8 @@
         "sendGas": "Mevcut işlem için size aktarılan Gas:",
         "estimatedGas": "Tahmini Gas:",
         "maxGas": "Maksimum Gaz:",
-        "gasCost": "Adresinize gas aktarımı için gas maliyeti:"
+        "gasCost": "Adresinize gas aktarımı için gas maliyeti:",
+        "description": "GasAccount kullanarak gaz ücretlerini ödemek. Aşağıdaki ödeme detaylarını görüntüleyin:"
       },
       "customRPCErrorModal": {
         "title": "Özel RPC Hatası",
@@ -1041,7 +1042,8 @@
       "hidden-no-quote-rates_other": "{{count}} oranları kullanılamıyor",
       "two-step-approve-details": "Token USDT, hakkı değiştirmek için 2 işlem gerektirir. Öncelikle, hakkı sıfıra ayarlamanız gerekir ve ardından yeni hakkı değeri belirleyebilirsiniz.",
       "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
-      "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum."
+      "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
+      "approve": "Onayla"
     },
     "manageAddress": {
       "no-address": "Adres yok",

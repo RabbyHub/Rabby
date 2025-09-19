@@ -42,7 +42,8 @@
         "maxGas": "최대 가스:",
         "sendGas": "현재 거래를 위한 Gas 전송:",
         "currentTxCost": "귀하의 주소로 전송된 Gas 양:",
-        "totalCost": "총 비용:"
+        "totalCost": "총 비용:",
+        "description": "GasAccount를 사용하여 가스 요금을 지불합니다. 아래에서 결제 세부정보를 확인하세요:"
       },
       "balanceChange": {
         "tokenIn": "토큰 입금",
@@ -1041,7 +1042,8 @@
       "no-quote-found": "인용문을 찾을 수 없습니다.",
       "No-available-quote": "사용 가능한 인용이 없습니다",
       "loss-tips": "당신은 {{usd}}를 잃고 있습니다. 작은 시장에서 더 적은 금액을 시도해 보세요.",
-      "understandRisks": "나는 위험을 이해하고 계속 진행하고 싶다."
+      "understandRisks": "나는 위험을 이해하고 계속 진행하고 싶다.",
+      "approve": "승인"
     },
     "bridge": {
       "showMore": {

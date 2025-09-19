@@ -42,7 +42,8 @@
         "sendGas": "A transferência de Gas para você pela transação atual:",
         "gasCost": "Custo de gás para transferir gás para o seu endereço:",
         "maxGas": "Max Gas:",
-        "currentTxCost": "Quantidade de Gas enviada para o seu endereço:"
+        "currentTxCost": "Quantidade de Gas enviada para o seu endereço:",
+        "description": "Usando GasAccount para pagar as taxas de gás. Veja os detalhes do pagamento abaixo:"
       },
       "balanceChange": {
         "nftOut": "NFT fora",
@@ -1041,7 +1042,8 @@
       "loss-tips": "Você está perdendo {{usd}}. Tente um valor menor em um mercado pequeno.",
       "price-impact": "Impacto de Preço",
       "trade": "Negociar",
-      "understandRisks": "Eu entendo os riscos e quero continuar"
+      "understandRisks": "Eu entendo os riscos e quero continuar",
+      "approve": "Aprovar"
     },
     "bridge": {
       "showMore": {

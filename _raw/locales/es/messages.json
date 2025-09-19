@@ -223,7 +223,8 @@
         "gasCost": "Costo de gas por transferir gas a tu dirección:",
         "totalCost": "Costo total:",
         "maxGas": "Gas máximo:",
-        "sendGas": "El Gas transferido a ti para la transacción actual:"
+        "sendGas": "El Gas transferido a ti para la transacción actual:",
+        "description": "Usando GasAccount para pagar tarifas de gas. Ver detalles de pago a continuación:"
       },
       "customRPCErrorModal": {
         "button": "Desactivar Custom RPC",
@@ -1041,7 +1042,8 @@
       "price-impact": "Impacto de Precio",
       "no-quote-found": "No quote found",
       "usd-after-fees": "≈ {{usd}}",
-      "understandRisks": "Entiendo los riesgos y quiero continuar"
+      "understandRisks": "Entiendo los riesgos y quiero continuar",
+      "approve": "Aprobar"
     },
     "manageAddress": {
       "no-address": "Sin dirección",

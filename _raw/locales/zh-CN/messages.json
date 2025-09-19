@@ -1758,7 +1758,8 @@
         "totalCost": "总费用：",
         "maxGas": "最大 Gas:",
         "sendGas": "当前交易向您转移的Gas：",
-        "estimatedGas": "预估 Gas:"
+        "estimatedGas": "预估 Gas:",
+        "description": "使用 GasAccount 支付 gas 费用。查看以下支付详情："
       },
       "transferOwner": {
         "transferTo": "转移到",
@@ -1951,7 +1952,8 @@
       "No-available-quote": "暂无报价",
       "fetch-best-quote": "正在获取最佳报价",
       "two-step-approve-details": "Token USDT 需要 2 笔交易来更改 allowance。首先，您需要将 allowance 重置为零，然后才能设置新的 allowance 值。",
-      "understandRisks": "我了解风险并想继续"
+      "understandRisks": "我了解风险并想继续",
+      "approve": "批准"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
