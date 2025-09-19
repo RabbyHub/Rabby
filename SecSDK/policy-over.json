@@ -278,5 +278,37 @@
       },
       "disallow": []
     }
+  },
+  "node_modules/react-router/esm/react-router.js": {
+    "global": {
+      "allow": {
+        "__react_router_build__": "rw"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/readable-stream/lib/_stream_writable.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/dexs/uniswap.js": {
+    "global": {
+      "allow": {
+        "navigator": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/react-dom/cjs/react-dom.development.js": {
+    "global": {
+      "allow": {
+        "HTMLIFrameElement": "r"
+      },
+      "disallow": []
+    }
   }
 }

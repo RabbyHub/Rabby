@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+
 const SecSDK = require('supplychain_security_sdk').default;
 const useSecSDK = !!process.env.useSecSDK || false;
 
@@ -19,7 +20,7 @@ const config = {
 
     useSecSDK &&
       new SecSDK({ disableProtoAssets: ['pageProvider.js'], dev: true }),
-  ],
+  ].filter(Boolean),
 };
 
 module.exports = config;
