@@ -3,18 +3,13 @@ import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep, useWallet } from '@/ui/utils';
-import { Button, Switch, Input, message, Tooltip } from 'antd';
+import { Button, Switch, message } from 'antd';
 import clsx from 'clsx';
-import Chart, { PerpsChart } from './Chart';
-import {
-  ARB_USDC_TOKEN_SERVER_CHAIN,
-  CANDLE_MENU_KEY,
-  PERPS_MAX_NTL_VALUE,
-} from '../constants';
+import { PerpsChart } from './Chart';
+import { PERPS_MAX_NTL_VALUE } from '../constants';
 import * as Sentry from '@sentry/browser';
 import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
-import { useDebounce } from 'react-use';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import {
   CancelOrderParams,
@@ -34,7 +29,6 @@ import { PerpsDepositAmountPopup } from './DepositAmountPopup';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
-  useMiniApprovalGas,
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -160,12 +154,6 @@ export const PerpsSingleCoin = () => {
       .sort((a, b) => b.time - a.time);
   }, [userFills, coin]);
 
-  // useEffect(() => {
-  //   if (isLogin) {
-  //     dispatch.perps.fetchPositionOpenOrders();
-  //   }
-  // }, []);
-
   const hasPosition = useMemo(() => {
     return !!currentPosition;
   }, [currentPosition]);
@@ -175,7 +163,6 @@ export const PerpsSingleCoin = () => {
     [currentPerpsAccount?.type]
   );
   const miniTxs = useMemo(() => {
-    console.log('miniSignTx', miniSignTx);
     return miniSignTx || [];
   }, [miniSignTx]);
 

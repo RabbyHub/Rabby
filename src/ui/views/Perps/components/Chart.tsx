@@ -9,7 +9,9 @@ import {
   ColorType,
   IPriceLine,
   CrosshairMode,
+  TickMarkType,
 } from 'lightweight-charts';
+import type { Time } from 'lightweight-charts';
 import {
   Candle,
   CandleSnapshot,
@@ -79,15 +81,65 @@ type CandleBar = CandlestickData<UTCTimestamp>;
 
 const toUtc = (t: number): UTCTimestamp => Math.floor(t) as UTCTimestamp;
 
-// Custom time formatter for hover display
-const formatTime = (time: UTCTimestamp): string => {
-  const date = new Date(time * 1000);
+const padZero = (value: number) => String(value).padStart(2, '0');
+
+const timeToDate = (time: Time): Date => {
+  if (typeof time === 'number') {
+    return new Date(time * 1000);
+  }
+  if (typeof time === 'string') {
+    return new Date(time);
+  }
+
+  const { year, month, day } = time;
+  return new Date(year, (month || 1) - 1, day || 1);
+};
+
+const formatLocalDateTime = (time: Time): string => {
+  const date = timeToDate(time);
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const month = padZero(date.getMonth() + 1);
+  const day = padZero(date.getDate());
+  const hours = padZero(date.getHours());
+  const minutes = padZero(date.getMinutes());
   return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
+const formatTickLabel = (date: Date, tickMarkType: TickMarkType): string => {
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1);
+  const day = padZero(date.getDate());
+  const hours = padZero(date.getHours());
+  const minutes = padZero(date.getMinutes());
+  const seconds = padZero(date.getSeconds());
+
+  switch (tickMarkType) {
+    case TickMarkType.Year:
+      return String(year);
+    case TickMarkType.Month:
+      return `${year}-${month}`;
+    case TickMarkType.DayOfMonth:
+      return `${month}-${day}`;
+    case TickMarkType.TimeWithSeconds:
+      return `${hours}:${minutes}:${seconds}`;
+    case TickMarkType.Time:
+      return `${hours}:${minutes}`;
+    default:
+      return `${year}-${month}-${day}`;
+  }
+};
+
+const createTimeLocalization = () => {
+  const formatTick = (time: Time, tickMarkType: TickMarkType): string =>
+    formatTickLabel(timeToDate(time), tickMarkType);
+
+  const formatHover = (time: Time): string => formatLocalDateTime(time);
+
+  return {
+    locale: 'en-US',
+    formatHover,
+    formatTick,
+  };
 };
 
 const parseCandles = (data: CandleSnapshot): CandleBar[] => {
@@ -153,6 +205,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
   }>({});
   const isMountedRef = useRef(true);
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
+  const timeLocalization = useMemo(() => createTimeLocalization(), []);
 
   // Update price lines function
   const updatePriceLines = useCallback(() => {
@@ -264,11 +317,14 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
         timeVisible: true,
         secondsVisible: false,
         borderVisible: false,
+        tickMarkFormatter: (time, tickMarkType) =>
+          timeLocalization.formatTick(time, tickMarkType),
       },
       localization: {
         priceFormatter: (price: number) => {
           return Number(price).toFixed(pxDecimals);
         },
+        timeFormatter: (time) => timeLocalization.formatHover(time),
       },
     });
 
@@ -309,9 +365,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       const data = param.seriesData.get(series);
       if (data) {
         const candleData = data as CandlestickData;
-        const timeStr = new Date(
-          (param.time as number) * 1000
-        ).toLocaleString();
+        const timeStr = timeLocalization.formatHover(param.time as Time);
 
         const hoverData = {
           time: timeStr,
@@ -346,6 +400,8 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
     colors.horzLineColor,
     colors.textColor,
     colors.vertLineColor,
+    pxDecimals,
+    timeLocalization,
   ]);
 
   const fetchData = useCallback(
