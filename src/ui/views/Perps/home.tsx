@@ -217,17 +217,20 @@ export const Perps: React.FC = () => {
         forceShowBack
         onBack={goBack}
         isShowAccount={isLogin ? true : false}
-        disableSwitchAccount={true}
-        rightSlot={
-          isLogin ? (
-            <div
-              className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0 cursor-pointer"
-              onClick={() => setLogoutVisible(true)}
-            >
-              <ThemeIcon src={RcIconLogout} />
-            </div>
-          ) : null
-        }
+        disableSwitchAccount={false}
+        onSwitchAccountClick={() => {
+          setLoginVisible(true);
+        }}
+        // rightSlot={
+        //   isLogin ? (
+        //     <div
+        //       className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0 cursor-pointer"
+        //       onClick={() => setLogoutVisible(true)}
+        //     >
+        //       <ThemeIcon src={RcIconLogout} />
+        //     </div>
+        //   ) : null
+        // }
         showCurrentAccount={currentPerpsAccount || undefined}
       >
         Perps
@@ -409,12 +412,16 @@ export const Perps: React.FC = () => {
       <PerpsLoginPopup
         visible={loginVisible}
         onLogin={async (account) => {
+          if (currentPerpsAccount) {
+            logout(currentPerpsAccount?.address || '');
+          }
           await login(account);
           setLoginVisible(false);
         }}
         onCancel={() => {
           setLoginVisible(false);
         }}
+        perpsAccount={currentPerpsAccount}
       />
 
       <PerpsLogoutPopup

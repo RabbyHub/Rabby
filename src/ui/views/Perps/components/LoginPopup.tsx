@@ -54,9 +54,11 @@ export const GasACcountCurrentAddress = ({
 const PerpsLoginContent = ({
   onLogin,
   visible,
+  perpsAccount,
 }: {
   visible: boolean;
   onLogin: (account: Account) => Promise<void>;
+  perpsAccount?: Account | null;
 }) => {
   const { t } = useTranslation();
 
@@ -66,19 +68,26 @@ const PerpsLoginContent = ({
         {t('page.gasAccount.loginConfirmModal.title')}
       </div>
 
-      <SelectAddressList onChange={onLogin} visible={visible} />
+      <SelectAddressList
+        onChange={onLogin}
+        visible={visible}
+        currentAccount={perpsAccount}
+      />
     </div>
   );
 };
 
 export const PerpsLoginPopup = (
-  props: PopupProps & { onLogin?: (account: Account) => Promise<void> }
+  props: PopupProps & {
+    onLogin?: (account: Account) => Promise<void>;
+    perpsAccount?: Account | null;
+  }
 ) => {
-  const { onLogin, ...rest } = props;
+  const { onLogin, perpsAccount, ...rest } = props;
   return (
     <Popup
       placement="bottom"
-      height={440}
+      height={520}
       isSupportDarkMode
       bodyStyle={{
         padding: 0,
@@ -93,6 +102,7 @@ export const PerpsLoginPopup = (
         onLogin={async (account) => {
           await props.onLogin?.(account);
         }}
+        perpsAccount={perpsAccount}
       />
     </Popup>
   );

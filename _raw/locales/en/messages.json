@@ -900,7 +900,13 @@
         "openInterestTips": "The total outstanding position of all users on this contract.",
         "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long."
       },
-      "liquidation": "Liquidation"
+      "liquidation": "Liquidation",
+      "accountSelector": {
+        "activatedAddress": "Activated",
+        "hyperliquidBalance": "Perps Balance",
+        "notActivatedAddress": "Not Activated",
+        "noPosition": "No Position"
+      }
     },
     "sendPoly": {
       "title": "Send to",
@@ -1013,10 +1019,10 @@
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "No EIP-7702 Delegation",
             "loadingText": "Loading...",
             "noDataText": "No Approvals",
-            "noMatchText": "No Match",
-            "7702": "No EIP-7702 Delegation"
+            "noMatchText": "No Match"
           }
         },
         "ApprovalContractItem": {
@@ -3173,7 +3179,10 @@
       "title": "Risk Warning"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."

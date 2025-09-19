@@ -72,7 +72,7 @@ export const NewUserProcessPopup: React.FC<NewUserProcessProps> = ({
             </div>
             <div className="flex items-center justify-center mb-8">
               <RcIconPerps
-                className="w-[240px] h-[180px]"
+                className="w-[240px] h-[180px] text-r-neutral-title1"
                 width={240}
                 height={180}
               />
