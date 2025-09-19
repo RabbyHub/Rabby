@@ -69,7 +69,7 @@ import {
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
-import { hexToNumber, numberToHex, stringToHex, toHex } from 'viem';
+import { hexToNumber, isAddress, numberToHex, stringToHex, toHex } from 'viem';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
 import { add0x } from '@/ui/utils/address';
@@ -1411,7 +1411,29 @@ class ProviderController extends BaseController {
     return null;
   };
 
-  @Reflect.metadata('APPROVAL', ['AddAsset', () => null, { height: 600 }])
+  @Reflect.metadata('APPROVAL', [
+    'AddAsset',
+    ({ data, session }) => {
+      if (!data.params) {
+        throw ethErrors.rpc.invalidParams('params is required');
+      }
+      if (!data.params.type) {
+        throw ethErrors.rpc.invalidParams('Asset type is required');
+      }
+      if (
+        !data.params.options?.address ||
+        !isAddress(data.params.options?.address, {
+          strict: false,
+        })
+      ) {
+        throw ethErrors.rpc.invalidParams(
+          `Invalid address '${data.params.options?.address}'.`
+        );
+      }
+      return null;
+    },
+    { height: 600 },
+  ])
   walletWatchAsset = ({
     approvalRes,
   }: {
