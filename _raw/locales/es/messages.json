@@ -31,9 +31,9 @@
       }
     },
     "chainList": {
-      "title": "{{count}} chains Integrated",
-      "mainnet": "Mainnets",
-      "testnet": "Testnets"
+      "title": "{{count}} cadenas integradas",
+      "mainnet": "Redes principales",
+      "testnet": "Redes de prueba"
     },
     "signTx": {
       "nftIn": "NFT entrante",
@@ -428,7 +428,7 @@
         "misMatchSignId": "Datos de transacción incongruentes. Por favor, verifica los detalles de la transacción.",
         "unknownQRCode": "Error: No pudimos identificar ese código QR",
         "afterSignDesc": "Después de firmar, coloca el código QR en tu {{brand}} frente a la cámara de tu PC",
-        "txFailedBy": "Fail to {{category}}",
+        "txFailedBy": "Fallo en {{category}}",
         "retryTxFailedBy": "Fallo al {{category}}: Por favor, inténtalo de nuevo",
         "txFailedRetry": "Error al crear: Por favor, inténtelo de nuevo."
       },
@@ -465,7 +465,7 @@
         "deposit": "Depósito",
         "chainNotSupported": "Esta cadena no es compatible con GasAccount",
         "loginFirst": "Por favor, inicia sesión en GasAccount primero.",
-        "notEnough": "GasAccount is not enough",
+        "notEnough": "GasAccount no es suficiente",
         "login": "Iniciar sesión",
         "useGasAccount": "Usar GasAccount",
         "gotIt": "Entendido",
@@ -562,7 +562,7 @@
           "canNotCancel": "No se puede acelerar o cancelar: No es la primera transacción pendiente",
           "pendingBroadcastBtn": "Transmite ahora",
           "pendingBroadcast": "Modo de ahorro de Gas: esperando tarifas de red más bajas. Máximo {{deadline}}h de espera.",
-          "pendingBroadcastRetryBtn": "Re-broadcast",
+          "pendingBroadcastRetryBtn": "Retransmitir",
           "pendingBroadcastRetry": "Transmisión fallida. Último intento: {{pushAt}}"
         },
         "status": {
@@ -593,7 +593,7 @@
         "CancelTxPopup": {
           "options": {
             "quickCancel": {
-              "tips": "Only supported for transactions that haven't broadcast",
+              "tips": "Solo compatible con transacciones que no se han transmitido",
               "title": "Cancelación rápida",
               "desc": "Cancelar antes de transmitir, sin comisión de gas"
             },
@@ -613,7 +613,7 @@
           "title": "Cancelar transacción"
         },
         "MempoolList": {
-          "reBroadcastBtn": "Re-broadcast",
+          "reBroadcastBtn": "Retransmitir",
           "empty": "No encontrado en ningún nodo",
           "title": "Apareció en {{count}} nodos RPC"
         },
@@ -1111,7 +1111,7 @@
           "bridge": "Puente",
           "rabbyPoints": "Rabby Points",
           "mobile": "Mobile Sync",
-          "perps": "Perps"
+          "perps": "Perpetuos"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -2171,7 +2171,7 @@
       },
       "TxStatus": {
         "pendingBroadcast": "Pendiente: Para ser transmitido",
-        "reBroadcastBtn": "Re-broadcast",
+        "reBroadcastBtn": "Retransmitir",
         "completed": "Completado",
         "pendingBroadcasted": "Pendiente: Transmitido"
       },
@@ -2771,6 +2771,162 @@
         "noResult": "Sin resultados para"
       }
     },
+    "perps": {
+      "__skip_translation": true,
+      "title": "Perpetuos",
+      "deposit": "Depositar",
+      "withdraw": "Retiro",
+      "positions": "Posiciones",
+      "candleMenuKey": {
+        "oneHour": "1H",
+        "oneDay": "1D",
+        "oneWeek": "1W",
+        "oneMonth": "1M",
+        "ytd": "YTD",
+        "all": "ALL"
+      },
+      "permissionTips": "La apertura de posiciones no está disponible en tu región",
+      "newUserProcess": {
+        "gotIt": "Entendido",
+        "next": "Siguiente",
+        "firstTitle": "Domina los futuros perpetuos",
+        "firstDescription": "Con los futuros perpetuos no solo operas activos, operas tu expectativa de lo que pasará después.",
+        "secondTitle": "Abrir en largo",
+        "secondDescription": "Si esperas que el precio suba, abres una posición larga. Si el precio sube, ganas; si baja, pierdes.",
+        "thirdTitle": "Abrir en corto",
+        "thirdDescription": "Si esperas que el precio baje, abres una posición corta. Si el precio baja, ganas; si sube, pierdes.",
+        "fourthTitle": "Ajustar apalancamiento",
+        "fourthDescription": "El apalancamiento te permite operar con más de lo que depositas. Puede aumentar tus ganancias y también tus pérdidas.",
+        "fifthTitle": "Liquidación",
+        "fifthDescription": "Cada posición tiene un precio de liquidación. Si el precio de mercado lo alcanza, tu posición puede cerrarse. Usar alto apalancamiento aumenta el riesgo de liquidación."
+      },
+      "historyDetail": {
+        "date": "Fecha",
+        "price": "Precio",
+        "size": "Tamaño",
+        "tradeValue": "Valor de la operación",
+        "fee": "Comisión",
+        "closedPnl": "PNL cerrado",
+        "provider": "Proveedor",
+        "title": {
+          "openLong": "Abrir largo",
+          "openShort": "Abrir corto",
+          "closeLong": "Cerrar largo",
+          "closeShort": "Cerrar corto",
+          "closeLongTp": "Cerrar largo - Toma de ganancias",
+          "closeLongSl": "Cerrar largo - Stop loss",
+          "closeLongLiquidation": "Liquidación de largo",
+          "closeShortLiquidation": "Liquidación de corto",
+          "closeShortTp": "Cerrar corto - Toma de ganancias",
+          "closeShortSl": "Cerrar corto - Stop loss"
+        }
+      },
+      "pending": "Pendiente",
+      "logoutConfirmModal": {
+        "title": "Cerrar sesión de la dirección actual",
+        "desc": "Estás cerrando sesión en tu cuenta de Perpetuos. Puedes restaurarla en cualquier momento iniciando sesión con esta dirección."
+      },
+      "depositAmountPopup": {
+        "payWith": "Pagar con",
+        "feeTip": "Comisión de $1",
+        "feeTipTooltip": "Comisión de retiro cobrada por Hyperliquid: $1",
+        "receiveToken": "Token a recibir",
+        "estReceive": "Est. a recibir: {{balance}}",
+        "estReceiveTooltip": "El depósito entre cadenas se procesa vía LiFi y puede incurrir en deslizamiento. Llegada estimada en {{number}} s.",
+        "fetchQuoteFailed": "Error al obtener la cotización de depósito. Cambia de token.",
+        "goSwapTips": "Solo se admite USDC en Arbitrum para depósito directo. Cambia tu token actual a USDC antes de depositar.",
+        "goBridgeTips": "Solo se admite USDC en Arbitrum para depósito directo. Puentea tu token actual a USDC en Arbitrum antes de depositar.",
+        "minimumDepositSize": "El monto mínimo de depósito es $5",
+        "minimumWithdrawSize": "El monto mínimo de retiro es $2"
+      },
+      "home": {
+        "pnl": "PNL",
+        "size": "Tamaño",
+        "margin": "Margen",
+        "entryPrice": "Precio de entrada",
+        "markPrice": "Precio de marca",
+        "liquidationPrice": "Prec. Liq."
+      },
+      "directDeposit": "Depósito directo",
+      "logInTips": "Inicia sesión con tu dirección y deposita fondos para empezar a operar perpetuos.",
+      "logInPerpsAccount": "Iniciar sesión en mi cuenta de Perpetuos",
+      "learnAboutPerps": "Aprender sobre Perpetuos",
+      "explorePerps": "Explorar Perpetuos",
+      "seeMore": "Ver más",
+      "margin": "Margen",
+      "leverage": "Apalancamiento",
+      "availableBalance": "Disponible: {{balance}}",
+      "balanceAvailable": "Saldo: {{balance}}",
+      "lastUsed": "Usado por última vez",
+      "selectTokenToDeposit": "Selecciona token para depositar",
+      "tradePerps": "Operar perpetuos",
+      "yourPosition": "Tu posición",
+      "pnl": "PNL",
+      "size": "Tamaño",
+      "marginIsolated": "Margen (Aislado)",
+      "marginCross": "Margen (Cruzado)",
+      "autoClose": "Cierre automático",
+      "direction": "Dirección",
+      "liquidationPrice": "Precio de liquidación",
+      "entryPrice": "Precio de entrada",
+      "price": "Precio",
+      "fundingPayments": "Pagos de funding",
+      "history": "Historial",
+      "openLong": "Abrir largo",
+      "openShort": "Abrir corto",
+      "closeLong": "Cerrar largo",
+      "completed": "Completada",
+      "closeShort": "Cerrar corto",
+      "long": "Largo",
+      "short": "Corto",
+      "dailyVolume": "Volumen 24h",
+      "openInterest": "Interés abierto",
+      "funding": "Financiamiento (funding)",
+      "availableToTrade": "Disponible para operar",
+      "takeProfit": "toma de ganancias",
+      "TakeProfit": "Toma de ganancias",
+      "takeProfitWhen": "Establecer precio de toma de ganancias",
+      "stopLoss": "stop loss",
+      "StopLoss": "Stop loss",
+      "stopLossWhen": "Establecer precio de stop loss",
+      "openPositionTips": "Operar contratos perpetuos implica un riesgo significativo, incluidas pérdidas sustanciales y liquidaciones sin previo aviso. Datos de mercado proporcionados por Hyperliquid.",
+      "liquidationPriceTips": "El precio al que tu posición se cierra automáticamente para limitar pérdidas cuando tu margen cae por debajo del margen de mantenimiento.",
+      "sizeTips": "El valor o cantidad total de tu operación, determinado por el margen y el apalancamiento.",
+      "rabbyFeeTips": "Comisión de Rabby: 0.05%",
+      "providerFeeTips": "Comisión de Hyperliquid: {{fee}}",
+      "timeAgo": "hace {{time}}",
+      "takeProfitTipsLong": "El precio de toma de ganancias debe ser mayor que el precio actual",
+      "takeProfitTipsShort": "El precio de toma de ganancias debe ser menor que el precio actual",
+      "deleteAgentSuccess": "Agente eliminado correctamente",
+      "deleteAgentModal": "Has alcanzado el número máximo de agentes. ¿Quieres eliminar un agente existente para crear uno nuevo?",
+      "stopLossTipsLong": "El precio de stop loss debe ser menor que el precio actual",
+      "stopLossTipsShort": "El precio de stop loss debe ser mayor que el precio actual",
+      "stopLossTipsLongLiquidation": "El precio es menor que el precio de liquidación ({{price}})",
+      "stopLossTipsShortLiquidation": "El precio es mayor que el precio de liquidación ({{price}})",
+      "review": "Revisar",
+      "confirm": "Confirmar",
+      "insufficientBalance": "Saldo insuficiente",
+      "minimumOrderSize": "El tamaño mínimo de la orden es de $10",
+      "maximumOrderSize": "El tamaño máximo de la orden es {{amount}}",
+      "reviewOrder": "Revisar orden",
+      "back": "Volver",
+      "estimatedLiquidationPrice": "Precio de liquidación estimado",
+      "fee": "Comisión",
+      "leverageRangeMaxError": "El apalancamiento máximo es {{max}}x",
+      "leverageRangeMinError": "El apalancamiento mínimo es {{min}}x",
+      "singleCoin": {
+        "fundingPaymentsTips": "Este es el pago neto de funding desde que se abrió la posición.",
+        "openInterestTips": "La posición total pendiente de todos los usuarios en este contrato.",
+        "fundingTips": "Esta es una tarifa por hora que los traders pagan o reciben para mantener el precio del contrato perpetuo cercano al precio real del token. Si es positiva, los largos pagan a los cortos; si es negativa, los cortos pagan a los largos."
+      },
+      "liquidation": "Liquidación",
+      "accountSelector": {
+        "activatedAddress": "Activada",
+        "hyperliquidBalance": "Saldo de perpetuos",
+        "notActivatedAddress": "No activada",
+        "noPosition": "Sin posición"
+      }
+    },
     "sendPoly": {
       "emptyWhitelist": {
         "addNow": "Agregar ahora",
@@ -3025,7 +3181,13 @@
       "title": "Advertencia de Riesgo"
     },
     "DappActions": {
-      "queueDescription": "La retirada actual entrará en una cola de espera. Una vez procesada, se podrá retirar a su wallet."
+      "queueDescription": "La retirada actual entrará en una cola de espera. Una vez procesada, se podrá retirar a su wallet.",
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
+      "withdraw": "Withdraw",
+      "claim": "Claim"
     }
   },
   "global": {
