@@ -2774,7 +2774,7 @@
     "perps": {
       "__skip_translation": true,
       "title": "Perpetuos",
-      "deposit": "Depositar",
+      "deposit": "Depósito",
       "withdraw": "Retiro",
       "positions": "Posiciones",
       "candleMenuKey": {
