@@ -390,12 +390,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                     className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
                     onClick={() => {
                       setUsdValue(
-                        formatNumber(
-                          availableBalance,
-                          2,
-                          undefined,
-                          BigNumber.ROUND_DOWN
-                        )
+                        new BigNumber(availableBalance)
+                          .decimalPlaces(2, BigNumber.ROUND_DOWN)
+                          .toFixed()
                       );
                     }}
                   >
@@ -414,12 +411,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                     className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
                     onClick={() => {
                       setUsdValue(
-                        formatNumber(
-                          depositMaxUsdValue,
-                          2,
-                          undefined,
-                          BigNumber.ROUND_DOWN
-                        )
+                        new BigNumber(depositMaxUsdValue)
+                          .decimalPlaces(2, BigNumber.ROUND_DOWN)
+                          .toFixed()
                       );
                     }}
                   >
