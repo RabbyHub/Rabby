@@ -688,6 +688,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           setUsdValue('');
           setSelectedToken(t);
           setTokenVisible(false);
+          inputRef.current?.focus();
         }}
       />
     </Popup>
