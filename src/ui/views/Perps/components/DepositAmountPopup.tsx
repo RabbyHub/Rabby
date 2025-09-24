@@ -71,7 +71,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   updateMiniSignTx,
   currentPerpsAccount,
   availableBalance,
-setIsPreparingSign,
+  setIsPreparingSign,
   handleDeposit,
   handleWithdraw,
   clearMiniSignTx,
@@ -309,7 +309,13 @@ setIsPreparingSign,
           .toFixed()
       );
     }
-  }, [selectedToken, nativeTokenDecimals, gasList]);
+  }, [
+    selectedToken,
+    nativeTokenDecimals,
+    gasList,
+    gasLimit,
+    tokenIsNativeToken,
+  ]);
 
   // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
   useDebounce(
