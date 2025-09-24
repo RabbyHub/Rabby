@@ -10,7 +10,7 @@ import {
   batchQueryTokens,
   queryTokensCache,
 } from '@/ui/utils/portfolio/tokenUtils';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { ARB_USDC_TOKEN_ID, ARB_USDC_TOKEN_ITEM } from '../constants';
 import { ARB_USDC_TOKEN_SERVER_CHAIN } from '../constants';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -28,8 +28,8 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
-import { getTokenSymbol } from '@/ui/utils/token';
-import { findChainByServerID } from '@/utils/chain';
+import { getTokenSymbol, tokenAmountBn } from '@/ui/utils/token';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
 import { useRabbyDispatch } from '@/ui/store';
@@ -42,6 +42,7 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   updateMiniSignTx: (
     amount: number,
     token: TokenItem,
+    gasPrice: number,
     needMinusOne?: boolean
   ) => void;
   availableBalance: string;
@@ -91,6 +92,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const startDirectSigning = useStartDirectSigning();
   const [tokenList, setTokenList] = React.useState<TokenItem[]>([]);
   const [tokenListLoading, setTokenListLoading] = React.useState(false);
+  const [gasPrice, setGasPrice] = React.useState<number>(0);
 
   const { value: _tokenInfo, loading: tokenLoading } = useAsync(async () => {
     if (!currentPerpsAccount?.address || !visible || !selectedToken)
@@ -146,6 +148,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       setUsdValue('');
       setSelectedToken(ARB_USDC_TOKEN_ITEM);
       setIsWithdrawLoading(false);
+      setGasPrice(0);
     }
   }, [visible]);
 
@@ -233,6 +236,81 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     return Number((tokenInfo?.amount || 0) * (tokenInfo?.price || 0));
   }, [tokenInfo]);
 
+  const { value: gasList } = useAsync(async () => {
+    if (!selectedToken?.chain) {
+      return [];
+    }
+
+    return wallet.gasMarketV2({
+      chainId: selectedToken.chain,
+    });
+  }, [selectedToken?.chain]);
+
+  const chainInfo = useMemo(() => {
+    return (
+      findChainByServerID(
+        selectedToken?.chain || ARB_USDC_TOKEN_SERVER_CHAIN
+      ) || null
+    );
+  }, [selectedToken?.chain]);
+
+  const tokenIsNativeToken = useMemo(() => {
+    if (selectedToken && selectedToken.chain) {
+      return isSameAddress(
+        selectedToken.id,
+        chainInfo?.nativeTokenAddress || ''
+      );
+    }
+    return false;
+  }, [selectedToken]);
+
+  const nativeTokenDecimals = useMemo(
+    () => chainInfo?.nativeTokenDecimals || 1e18,
+    [chainInfo?.nativeTokenDecimals]
+  );
+
+  const gasLimit = useMemo(
+    () => (chainInfo?.enum === CHAINS_ENUM.ETH ? 1000000 : 2000000),
+    [chainInfo?.enum]
+  );
+
+  const handleMax = React.useCallback(() => {
+    if (selectedToken) {
+      if (tokenIsNativeToken && gasList) {
+        const checkGasIsEnough = (price: number) => {
+          return new BigNumber(selectedToken?.raw_amount_hex_str || 0, 16).gte(
+            new BigNumber(gasLimit).times(price)
+          );
+        };
+        const normalPrice =
+          gasList?.find((e) => e.level === 'normal')?.price || 0;
+        const isNormalEnough = checkGasIsEnough(normalPrice);
+        if (isNormalEnough) {
+          const val = tokenAmountBn(selectedToken).minus(
+            new BigNumber(gasLimit)
+              .times(normalPrice)
+              .div(10 ** nativeTokenDecimals)
+          );
+          setUsdValue(
+            val
+              .times(selectedToken?.price || 0)
+              .decimalPlaces(2, BigNumber.ROUND_DOWN)
+              .toFixed()
+          );
+          setGasPrice(normalPrice);
+          return;
+        }
+      }
+      setGasPrice(0);
+      setUsdValue(
+        tokenAmountBn(selectedToken)
+          ?.times(selectedToken?.price || 0)
+          .decimalPlaces(2, BigNumber.ROUND_DOWN)
+          .toFixed()
+      );
+    }
+  }, [selectedToken, nativeTokenDecimals, gasList]);
+
   // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
   useDebounce(
     () => {
@@ -241,11 +319,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       updateMiniSignTx(
         Number(usdValue),
         tokenInfo || ARB_USDC_TOKEN_ITEM,
+        gasPrice,
         isNeedDepositBeforeApprove
       );
     },
     300,
     [
+      gasPrice,
       usdValue,
       visible,
       updateMiniSignTx,
@@ -409,13 +489,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   })}
                   <div
                     className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
-                    onClick={() => {
-                      setUsdValue(
-                        new BigNumber(depositMaxUsdValue)
-                          .decimalPlaces(2, BigNumber.ROUND_DOWN)
-                          .toFixed()
-                      );
-                    }}
+                    onClick={handleMax}
                   >
                     Max
                   </div>
