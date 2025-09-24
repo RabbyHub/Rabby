@@ -71,7 +71,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   updateMiniSignTx,
   currentPerpsAccount,
   availableBalance,
-  setIsPreparingSign,
+setIsPreparingSign,
   handleDeposit,
   handleWithdraw,
   clearMiniSignTx,
@@ -262,7 +262,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       );
     }
     return false;
-  }, [selectedToken]);
+  }, [selectedToken, chainInfo?.nativeTokenAddress]);
 
   const nativeTokenDecimals = useMemo(
     () => chainInfo?.nativeTokenDecimals || 1e18,
