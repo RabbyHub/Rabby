@@ -694,6 +694,7 @@ export const PerpsSingleCoin = () => {
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
         type={'deposit'}
+        accountValue={accountSummary?.accountValue || '0'}
         availableBalance={accountSummary?.withdrawable || '0'}
         updateMiniSignTx={updateMiniSignTx}
         handleDeposit={handleDeposit}

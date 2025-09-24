@@ -45,6 +45,7 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
     gasPrice: number,
     needMinusOne?: boolean
   ) => void;
+  accountValue: string;
   availableBalance: string;
   currentPerpsAccount: Account | null;
   quoteLoading: boolean;
@@ -71,6 +72,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   updateMiniSignTx,
   currentPerpsAccount,
   availableBalance,
+  accountValue,
   setIsPreparingSign,
   handleDeposit,
   handleWithdraw,
@@ -85,7 +87,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const [usdValue, setUsdValue] = React.useState<string>('');
   const [tokenVisible, setTokenVisible] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState<TokenItem | null>(
-    ARB_USDC_TOKEN_ITEM
+    null
   );
   const inputRef = React.useRef<HTMLInputElement>(null);
   const wallet = useWallet();
@@ -105,12 +107,17 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     return info;
   }, [currentPerpsAccount?.address, visible, selectedToken]);
 
-  const { value: isNeedDepositBeforeApprove } = useAsync(async () => {
+  const { value: isMissingRole } = useAsync(async () => {
+    if (Number(accountValue)) {
+      // has account value no need fetch api to check
+      return false;
+    }
+
     if (!currentPerpsAccount?.address || !visible) return false;
     const sdk = getPerpsSDK();
     const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
     return role === 'missing';
-  }, [currentPerpsAccount?.address, visible]);
+  }, [currentPerpsAccount?.address, visible, accountValue]);
 
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
@@ -118,13 +125,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const fetchTokenList = useCallback(async () => {
     setTokenListLoading(true);
-    if (!currentPerpsAccount?.address || !visible) return [];
+    if (!currentPerpsAccount?.address) return [];
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
     const usdcToken = res.find(
       (t) =>
         t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
     );
-    setSelectedToken(usdcToken || ARB_USDC_TOKEN_ITEM);
+    // setSelectedToken(usdcToken || ARB_USDC_TOKEN_ITEM);
     setTokenListLoading(false);
     setTokenList(res);
 
@@ -137,7 +144,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
     setTokenList(tokenRes);
     return res;
-  }, [currentPerpsAccount?.address, visible]);
+  }, [currentPerpsAccount?.address]);
 
   useEffect(() => {
     fetchTokenList();
@@ -146,7 +153,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   React.useEffect(() => {
     if (!visible) {
       setUsdValue('');
-      setSelectedToken(ARB_USDC_TOKEN_ITEM);
+      setSelectedToken(null);
       setIsWithdrawLoading(false);
       setGasPrice(0);
     }
@@ -158,6 +165,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN
     );
   }, [selectedToken]);
+
+  useEffect(() => {
+    if (visible && type === 'deposit') {
+      setTokenVisible(true);
+    }
+  }, [visible, type]);
 
   React.useEffect(() => {
     if (visible && inputRef.current) {
@@ -326,7 +339,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         Number(usdValue),
         tokenInfo || ARB_USDC_TOKEN_ITEM,
         gasPrice,
-        isNeedDepositBeforeApprove
+        isMissingRole
       );
     },
     300,
@@ -337,7 +350,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       updateMiniSignTx,
       type,
       tokenInfo,
-      isNeedDepositBeforeApprove,
+      isMissingRole,
     ]
   );
 
@@ -392,8 +405,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const estReceiveUsdValue = useMemo(() => {
     const value =
       (bridgeQuote?.to_token_amount || 0) * ARB_USDC_TOKEN_ITEM.price;
-    return isNeedDepositBeforeApprove ? value - 1 : value;
-  }, [bridgeQuote, tokenInfo, isNeedDepositBeforeApprove]);
+    return isMissingRole ? value - 1 : value;
+  }, [bridgeQuote, tokenInfo, isMissingRole]);
 
   const quoteError = useMemo(() => {
     return type === 'deposit' &&
@@ -657,13 +670,20 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
       <TokenSelectPopup
         visible={tokenVisible}
+        tokenListLoading={tokenListLoading}
         changeAccount={async () => {
           if (currentPerpsAccount) {
             await dispatch.account.changeAccountAsync(currentPerpsAccount);
           }
         }}
         list={tokenList || []}
-        onCancel={() => setTokenVisible(false)}
+        onCancel={() => {
+          if (type === 'deposit' && !selectedToken) {
+            onClose();
+          }
+
+          setTokenVisible(false);
+        }}
         onSelect={(t) => {
           setUsdValue('');
           setSelectedToken(t);
