@@ -111,15 +111,24 @@ export const usePerpsInitial = () => {
   );
 
   const safeSetBuilderFee = useMemoizedFn(async () => {
-    const sdk = getPerpsSDK();
-    const res = await sdk.info.getMaxBuilderFee(
-      PERPS_BUILD_FEE_RECEIVE_ADDRESS
-    );
-    if (res) {
-      sdk.exchange?.updateBuilder(
-        PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-        PERPS_BUILD_FEE
+    try {
+      const sdk = getPerpsSDK();
+      const res = await sdk.info.getMaxBuilderFee(
+        PERPS_BUILD_FEE_RECEIVE_ADDRESS
       );
+      if (!res) {
+        currentPerpsAccount?.address && logout(currentPerpsAccount?.address);
+        console.error('Failed to set builder fee');
+        Sentry.captureException(
+          new Error(
+            'PERPS set builder fee error, no max builder fee' +
+              'account: ' +
+              JSON.stringify(currentPerpsAccount)
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to set builder fee:', error);
     }
   });
 
@@ -412,11 +421,6 @@ export const usePerpsState = ({
           type: 'approveBuilderFee',
           signature: '',
         });
-      } else {
-        sdk.exchange?.updateBuilder(
-          PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-          PERPS_BUILD_FEE
-        );
       }
 
       return signActions;
@@ -530,11 +534,6 @@ export const usePerpsState = ({
               nonce: action?.nonce || 0,
               signature: signature || '',
             });
-            res &&
-              sdk.exchange?.updateBuilder(
-                PERPS_BUILD_FEE_RECEIVE_ADDRESS,
-                PERPS_BUILD_FEE
-              );
             return res;
           }
         })
