@@ -175,7 +175,7 @@ const WhitelistInput = () => {
     );
     setShowAddressRiskAlert(false);
     await wallet.clearPageStateCache();
-    history.goBack();
+    handleClickBack();
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('page.whitelist.tips.added'),
@@ -243,10 +243,19 @@ const WhitelistInput = () => {
         /* empty */
       }
     })();
-    return () => {
+  }, [wallet, history, handleInputChangeAddress]);
+
+  useEffect(() => {
+    const handlePopState = () => {
       wallet.clearPageStateCache();
     };
-  }, [wallet, history, handleInputChangeAddress]);
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [wallet]);
 
   return (
     <FullscreenContainer className="h-[700px]">
