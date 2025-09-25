@@ -183,8 +183,8 @@ export const usePerpsInitial = () => {
           res.preference.agentAddress,
           PERPS_AGENT_NAME
         );
-        safeSetBuilderFee();
         await dispatch.perps.loginPerpsAccount(targetTypeAccount);
+        safeSetBuilderFee();
         await dispatch.perps.fetchMarketData(undefined);
 
         checkIsNeedAutoLoginOut(
@@ -629,9 +629,9 @@ export const usePerpsState = ({
             res.preference.agentAddress,
             PERPS_AGENT_NAME
           );
-          safeSetBuilderFee();
           // 未到过期时间无需签名直接登录即可
           await dispatch.perps.loginPerpsAccount(account);
+          safeSetBuilderFee();
         } else {
           // 过期或者没sendApprove过，需要创建新的agent，同时签名
           await handleLoginWithSignApprove(account);
