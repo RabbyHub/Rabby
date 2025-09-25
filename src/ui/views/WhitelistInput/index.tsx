@@ -95,7 +95,11 @@ const WhitelistInput = () => {
     setIsCex(false);
     setSelectedExchange(null);
     setIsValidAddr(true);
-  }, []);
+    wallet.setPageStateCache({
+      path: '/whitelist-input',
+      states: {},
+    });
+  }, [wallet]);
   const handleClickBack = useCallback(() => {
     if (history.length > 1) {
       history.goBack();
@@ -103,7 +107,8 @@ const WhitelistInput = () => {
       history.replace('/');
       history.push('/send-poly');
     }
-  }, [history]);
+    wallet.clearPageStateCache();
+  }, [history, wallet]);
 
   const detectAddress = useCallback(
     async (address: string) => {
@@ -138,18 +143,25 @@ const WhitelistInput = () => {
     [exchanges, wallet]
   );
 
-  const handleInputChangeAddress = (v) => {
-    if (!isValidAddress(v)) {
-      setInputAlias('');
-      setIsValidAddr(!v);
-      setIsCex(false);
-      setSelectedExchange(null);
-    } else {
-      setIsValidAddr(true);
-      detectAddress(v);
-    }
-    setInputAddress(v);
-  };
+  const handleInputChangeAddress = useCallback(
+    (v) => {
+      if (!isValidAddress(v)) {
+        setInputAlias('');
+        setIsValidAddr(!v);
+        setIsCex(false);
+        setSelectedExchange(null);
+      } else {
+        setIsValidAddr(true);
+        detectAddress(v);
+      }
+      setInputAddress(v);
+      wallet.setPageStateCache({
+        path: '/whitelist-input',
+        states: { inputAddress: v },
+      });
+    },
+    [detectAddress, wallet]
+  );
 
   const confirmToWhitelist = async (address: string) => {
     if (!isValidAddress(address)) {
@@ -197,20 +209,44 @@ const WhitelistInput = () => {
   }) => {
     resetState();
     setInputAddress(account.address);
+    wallet.setPageStateCache({
+      path: '/whitelist-input',
+      states: { inputAddress: account.address },
+    });
     setInputAlias(account.alianName || '');
     setShowAddressSelector(false);
     detectAddress(account.address);
   };
 
   useEffect(() => {
-    wallet.setPageStateCache({
-      path: '/whitelist-input',
-      states: {},
-    });
+    (async () => {
+      try {
+        const hasCache = await wallet.hasPageStateCache?.();
+        if (hasCache) {
+          const cache = await wallet.getPageStateCache?.();
+          if (
+            cache?.path === '/whitelist-input' &&
+            cache?.states?.inputAddress &&
+            history.length === 1
+          ) {
+            const cachedAddress = cache.states.inputAddress as string;
+            handleInputChangeAddress(cachedAddress);
+            return;
+          }
+        } else {
+          wallet.setPageStateCache({
+            path: '/whitelist-input',
+            states: {},
+          });
+        }
+      } catch (e) {
+        /* empty */
+      }
+    })();
     return () => {
       wallet.clearPageStateCache();
     };
-  }, [wallet]);
+  }, [wallet, history, handleInputChangeAddress]);
 
   return (
     <FullscreenContainer className="h-[700px]">
