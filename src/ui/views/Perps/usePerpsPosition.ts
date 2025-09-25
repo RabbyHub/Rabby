@@ -192,32 +192,29 @@ export const usePerpsPosition = ({
           isCross: false,
         });
 
-        const marketOrderPromise = sdk.exchange?.marketOrderOpen({
-          coin,
-          isBuy: direction === 'Long',
-          size,
-          midPx,
-          // tpTriggerPx,
-          // slTriggerPx,
-        });
-
-        const promises: Promise<OrderResponse | undefined>[] = [];
-
-        if (marketOrderPromise) {
-          promises.push(marketOrderPromise);
-        }
+        const promises = [
+          sdk.exchange?.marketOrderOpen({
+            coin,
+            isBuy: direction === 'Long',
+            size,
+            midPx,
+            // tpTriggerPx,
+            // slTriggerPx,
+          }),
+        ];
 
         if (tpTriggerPx || slTriggerPx) {
           promises.push(
             (async () => {
               await sleep(10); // little delay to ensure nonce is correct
-              return sdk.exchange?.bindTpslByOrderId({
+              const result = await sdk.exchange?.bindTpslByOrderId({
                 coin,
                 isBuy: direction === 'Long',
                 tpTriggerPx,
                 slTriggerPx,
                 builder: PERPS_BUILDER_INFO,
               });
+              return result as OrderResponse;
             })()
           );
         }
