@@ -555,11 +555,12 @@ export const Perps: React.FC = () => {
             setClosePositionVisible(false);
           }}
           handleClosePosition={async () => {
+            const marketData = marketDataMap[closePosition.coin.toUpperCase()];
             await handleClosePosition({
               coin: closePosition.coin,
               size: Math.abs(Number(closePosition.szi || 0)).toString() || '0',
               direction: Number(closePosition.szi || 0) > 0 ? 'Long' : 'Short',
-              price: closePosition.entryPx || '0',
+              price: marketData?.markPx || '0',
             });
           }}
         />
