@@ -100,7 +100,8 @@ const WhitelistInput = () => {
     if (history.length > 1) {
       history.goBack();
     } else {
-      history.replace('/send-poly');
+      history.replace('/');
+      history.push('/send-poly');
     }
   }, [history]);
 
