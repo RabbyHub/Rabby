@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { Button, Input, Switch, message } from 'antd';
@@ -161,6 +161,7 @@ const WhitelistInput = () => {
       isCex && selectedExchange?.id ? selectedExchange?.id : ''
     );
     setShowAddressRiskAlert(false);
+    await wallet.clearPageStateCache();
     history.goBack();
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
@@ -199,6 +200,16 @@ const WhitelistInput = () => {
     setShowAddressSelector(false);
     detectAddress(account.address);
   };
+
+  useEffect(() => {
+    wallet.setPageStateCache({
+      path: '/whitelist-input',
+      states: {},
+    });
+    return () => {
+      wallet.clearPageStateCache();
+    };
+  }, [wallet]);
 
   return (
     <FullscreenContainer className="h-[700px]">
