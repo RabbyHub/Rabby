@@ -33,7 +33,7 @@ const config = {
         authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
     ,
-    useSecSDK &&
+    false &&
       new SecSDK({
         disableProtoAssets: ['pageProvider.js']
       }),

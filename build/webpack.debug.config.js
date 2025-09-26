@@ -19,7 +19,7 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
       'process.env.DEBUG': true,
     }),
-    useSecSDK &&
+    false &&
       new SecSDK({
         disableProtoAssets: ['pageProvider.js'],
       }),
