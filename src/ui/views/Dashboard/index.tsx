@@ -110,27 +110,27 @@ const Dashboard = () => {
     getCurrentAccount();
   }, []);
 
-  useGnosisPendingCount(
-    {
-      address:
-        currentAccount?.address &&
-        currentAccount?.type === KEYRING_TYPE.GnosisKeyring
-          ? currentAccount.address
-          : '',
-    },
-    {
-      onBefore() {
-        dispatch.chains.setField({
-          gnosisPendingCount: 0,
-        });
-      },
-      onSuccess(total) {
-        dispatch.chains.setField({
-          gnosisPendingCount: total || 0,
-        });
-      },
-    }
-  );
+  // useGnosisPendingCount(
+  //   {
+  //     address:
+  //       currentAccount?.address &&
+  //       currentAccount?.type === KEYRING_TYPE.GnosisKeyring
+  //         ? currentAccount.address
+  //         : '',
+  //   },
+  //   {
+  //     onBefore() {
+  //       dispatch.chains.setField({
+  //         gnosisPendingCount: 0,
+  //       });
+  //     },
+  //     onSuccess(total) {
+  //       dispatch.chains.setField({
+  //         gnosisPendingCount: total || 0,
+  //       });
+  //     },
+  //   }
+  // );
 
   useEffect(() => {
     if (currentAccount) {
@@ -387,7 +387,8 @@ const Dashboard = () => {
           )}
           {isGnosis ? (
             <Queue
-              count={gnosisPendingCount || 0}
+              // count={gnosisPendingCount || 0}
+              count={0}
               className={clsx(
                 'transition-all',
                 showChain ? 'opacity-0 pointer-events-none' : 'opacity-100'
