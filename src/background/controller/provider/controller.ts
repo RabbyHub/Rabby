@@ -1580,17 +1580,17 @@ class ProviderController extends BaseController {
   };
 
   ethGetTransactionReceipt = async (req) => {
-    const res = await this.ethRpc(req);
-
-    if (res?.error?.message) {
-      const message = String(res.error.message).toLowerCase();
+    try {
+      const res = await this.ethRpc(req);
+      return res;
+    } catch (e) {
       const idxKeyPhrases = ['index', 'progress'];
-      if (idxKeyPhrases.some((phrase) => message.includes(phrase))) {
-        return { result: null, id: res.id, jsonrpc: res.jsonrpc };
+      if (idxKeyPhrases.some((phrase) => e.message?.includes(phrase))) {
+        return null;
+      } else {
+        throw e;
       }
     }
-
-    return res;
   };
 
   ethGetTransactionByHash = async (req) => {

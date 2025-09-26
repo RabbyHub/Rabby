@@ -1,4 +1,4 @@
-import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
+import { PerpTopToken, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 
 // must be a USDC token and more than 5 usdc
 export const PERPS_SEND_ARB_USDC_ADDRESS =
@@ -29,7 +29,7 @@ export const ARB_USDC_TOKEN_ITEM = {
   is_infinity: false,
   is_suspicious: false,
   time_at: 0,
-};
+} as TokenItem;
 export enum CANDLE_MENU_KEY {
   ONE_HOUR = '1H',
   ONE_DAY = '1D',

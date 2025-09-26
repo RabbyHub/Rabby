@@ -141,7 +141,7 @@ const ExternalTokenRow = memo(
             <div className="flex items-center gap-4">
               {isVerified &&
                 (isBridgeDomain ? <IconBridgeTo /> : <IconOrigin />)}
-              <span className="text-neutral-title-1">
+              <span className="text-neutral-title-1 max-w-[200px] truncate">
                 {data.identity?.domain_id}
               </span>
             </div>
