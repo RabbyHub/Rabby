@@ -2799,7 +2799,7 @@
         "cexDepositAddress": "{{cexName}} Địa chỉ Nạp tiền",
         "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục",
         "TransferBeforeValue": "Có",
-        "TransferBefore": "Chuyển trước",
+        "TransferBefore": "",
         "passwordPlaceholder": "Nhập mật khẩu để tiếp tục",
         "AddToWhitelist": "Thêm vào Danh sách Trắng"
       },

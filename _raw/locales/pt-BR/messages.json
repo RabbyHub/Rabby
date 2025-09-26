@@ -2802,7 +2802,7 @@
         "cexDepositAddress": "{{cexName}} Endereço de Depósito",
         "title": "Enviar para este Endereço",
         "TransferBeforeValue": "Sim",
-        "TransferBefore": "Transferir antes",
+        "TransferBefore": "",
         "AddToWhitelist": "Adicionar à Lista Branca",
         "passwordPlaceholder": "Digite a senha para continuar"
       },

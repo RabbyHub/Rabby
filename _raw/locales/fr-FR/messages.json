@@ -3093,7 +3093,7 @@
         "cexDepositAddress": "{{cexName}} Adresse de dépôt",
         "title": "Envoyer à cette adresse",
         "understandRisks": "Je comprends les risques et je souhaite continuer",
-        "TransferBefore": "Transférer avant",
+        "TransferBefore": "",
         "TransferBeforeValue": "Oui",
         "passwordPlaceholder": "Entrez le mot de passe pour continuer",
         "AddToWhitelist": "Ajouter à la liste blanche"

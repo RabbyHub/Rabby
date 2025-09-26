@@ -2814,7 +2814,7 @@
         "title": "Надіслати на цю адресу",
         "understandRisks": "Я розумію ризики і хочу продовжити",
         "TransferBeforeValue": "Так",
-        "TransferBefore": "Передайте до",
+        "TransferBefore": "",
         "passwordPlaceholder": "Введіть пароль для продовження",
         "AddToWhitelist": "Додати до білого списку"
       },

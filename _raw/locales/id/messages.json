@@ -2798,7 +2798,7 @@
         "cexDepositAddress": "{{cexName}} Alamat Deposit",
         "cexAddress": "{{cexName}} Alamat",
         "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
-        "TransferBefore": "Transfer sebelum",
+        "TransferBefore": "",
         "TransferBeforeValue": "Ya",
         "AddToWhitelist": "Tambahkan ke Daftar Putih",
         "passwordPlaceholder": "Masukkan kata sandi untuk melanjutkan"

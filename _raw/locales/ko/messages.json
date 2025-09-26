@@ -2798,7 +2798,7 @@
         "cexDepositAddress": "{{cexName}} 입금 주소",
         "understandRisks": "위험을 이해하며 계속 진행하고자 합니다.",
         "title": "이 주소로 보내기",
-        "TransferBefore": "이전 전송",
+        "TransferBefore": "",
         "AddToWhitelist": "화이트리스트에 추가",
         "passwordPlaceholder": "비밀번호를 입력하여 계속 진행하세요",
         "TransferBeforeValue": "네"
