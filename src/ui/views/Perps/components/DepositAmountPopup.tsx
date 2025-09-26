@@ -288,10 +288,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   );
 
   const handleMax = React.useCallback(() => {
-    if (selectedToken) {
+    if (tokenInfo) {
       if (tokenIsNativeToken && gasList) {
         const checkGasIsEnough = (price: number) => {
-          return new BigNumber(selectedToken?.raw_amount_hex_str || 0, 16).gte(
+          return new BigNumber(tokenInfo?.raw_amount_hex_str || 0, 16).gte(
             new BigNumber(gasLimit).times(price)
           );
         };
@@ -299,14 +299,14 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           gasList?.find((e) => e.level === 'normal')?.price || 0;
         const isNormalEnough = checkGasIsEnough(normalPrice);
         if (isNormalEnough) {
-          const val = tokenAmountBn(selectedToken).minus(
+          const val = tokenAmountBn(tokenInfo).minus(
             new BigNumber(gasLimit)
               .times(normalPrice)
               .div(10 ** nativeTokenDecimals)
           );
           setUsdValue(
             val
-              .times(selectedToken?.price || 0)
+              .times(tokenInfo?.price || 0)
               .decimalPlaces(2, BigNumber.ROUND_DOWN)
               .toFixed()
           );
@@ -316,19 +316,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       }
       setGasPrice(0);
       setUsdValue(
-        tokenAmountBn(selectedToken)
-          ?.times(selectedToken?.price || 0)
+        tokenAmountBn(tokenInfo)
+          ?.times(tokenInfo?.price || 0)
           .decimalPlaces(2, BigNumber.ROUND_DOWN)
           .toFixed()
       );
     }
-  }, [
-    selectedToken,
-    nativeTokenDecimals,
-    gasList,
-    gasLimit,
-    tokenIsNativeToken,
-  ]);
+  }, [tokenInfo, nativeTokenDecimals, gasList, gasLimit, tokenIsNativeToken]);
 
   // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
   useDebounce(
