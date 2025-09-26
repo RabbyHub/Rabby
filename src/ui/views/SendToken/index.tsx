@@ -1041,7 +1041,7 @@ const SendToken = () => {
   }, [cancelClickedMax]);
 
   const handleCurrentTokenChange = useCallback(
-    async (token: TokenItem) => {
+    async (token: TokenItem, ignoreCache = false) => {
       cancelClickedMax();
       if (showGasReserved) {
         setShowGasReserved(false);
@@ -1061,7 +1061,9 @@ const SendToken = () => {
       setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
       setCurrentToken(token);
       setEstimatedGas(0);
-      await persistPageStateCache({ currentToken: token });
+      if (!ignoreCache) {
+        await persistPageStateCache({ currentToken: token });
+      }
       setBalanceError(null);
       setIsLoading(true);
       loadCurrentToken(token.id, token.chain, account.address);
@@ -1527,7 +1529,7 @@ const SendToken = () => {
   const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
   const handleFulfilled = useMemoizedFn(() => {
     if (currentToken) {
-      handleCurrentTokenChange(currentToken);
+      handleCurrentTokenChange(currentToken, true);
     }
   });
 
