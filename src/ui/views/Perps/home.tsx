@@ -43,7 +43,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { TopPermissionTips } from './components/TopPermissionTips';
 import { PerpsModal } from './components/Modal';
 import { PerpsLoading } from './components/Loading';
-import { ARB_USDC_TOKEN_SERVER_CHAIN } from './constants';
+import { ARB_USDC_TOKEN_SERVER_CHAIN, PERPS_BUILDER_INFO } from './constants';
 import { ClosePositionPopup } from './components/ClosePositionPopup';
 import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from './sdkManager';
@@ -166,6 +166,7 @@ export const Perps: React.FC = () => {
           isBuy: direction === 'Short',
           size,
           midPx: price,
+          builder: PERPS_BUILDER_INFO,
         });
 
         const filled = res?.response?.data?.statuses[0]?.filled;
@@ -555,11 +556,12 @@ export const Perps: React.FC = () => {
             setClosePositionVisible(false);
           }}
           handleClosePosition={async () => {
+            const marketData = marketDataMap[closePosition.coin.toUpperCase()];
             await handleClosePosition({
               coin: closePosition.coin,
               size: Math.abs(Number(closePosition.szi || 0)).toString() || '0',
               direction: Number(closePosition.szi || 0) > 0 ? 'Long' : 'Short',
-              price: closePosition.entryPx || '0',
+              price: marketData?.markPx || '0',
             });
           }}
         />

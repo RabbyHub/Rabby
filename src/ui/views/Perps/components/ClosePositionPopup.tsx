@@ -51,7 +51,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
   }, [visible]);
 
   const bothFee = React.useMemo(() => {
-    return providerFee + 0.0005;
+    return providerFee + 0.0004;
   }, [providerFee]);
 
   return (

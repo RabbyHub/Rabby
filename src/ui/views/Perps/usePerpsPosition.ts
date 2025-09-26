@@ -4,7 +4,9 @@ import { message } from 'antd';
 import { getPerpsSDK } from './sdkManager';
 import { usePerpsState } from './usePerpsState';
 import * as Sentry from '@sentry/browser';
-import { useWallet } from '@/ui/utils';
+import { sleep, useWallet } from '@/ui/utils';
+import { PERPS_BUILDER_INFO } from './constants';
+import { OrderResponse } from '@rabby-wallet/hyperliquid-sdk';
 
 export const usePerpsPosition = ({
   setCurrentTpOrSl,
@@ -43,6 +45,7 @@ export const usePerpsPosition = ({
           isBuy: direction === 'Long',
           tpTriggerPx,
           slTriggerPx,
+          builder: PERPS_BUILDER_INFO,
         });
 
         setCurrentTpOrSl({
@@ -107,6 +110,7 @@ export const usePerpsPosition = ({
           isBuy: direction === 'Short',
           size,
           midPx: price,
+          builder: PERPS_BUILDER_INFO,
         });
 
         const filled = res?.response?.data?.statuses[0]?.filled;
@@ -188,19 +192,38 @@ export const usePerpsPosition = ({
           isCross: false,
         });
 
-        const res = await sdk.exchange?.marketOrderOpen({
-          coin,
-          isBuy: direction === 'Long',
-          size,
-          midPx,
-          tpTriggerPx,
-          slTriggerPx,
-        });
+        const promises = [
+          sdk.exchange?.marketOrderOpen({
+            coin,
+            isBuy: direction === 'Long',
+            size,
+            midPx,
+            // tpTriggerPx,
+            // slTriggerPx,
+          }),
+        ];
 
+        if (tpTriggerPx || slTriggerPx) {
+          promises.push(
+            (async () => {
+              await sleep(10); // little delay to ensure nonce is correct
+              const result = await sdk.exchange?.bindTpslByOrderId({
+                coin,
+                isBuy: direction === 'Long',
+                tpTriggerPx,
+                slTriggerPx,
+                builder: PERPS_BUILDER_INFO,
+              });
+              return result as OrderResponse;
+            })()
+          );
+        }
+
+        const results = await Promise.all(promises);
+        const res = results[0];
         const filled = res?.response?.data?.statuses[0]?.filled;
         if (filled) {
           dispatch.perps.fetchClearinghouseState();
-          dispatch.perps.fetchUserHistoricalOrders();
 
           const { totalSz, avgPx } = filled;
           message.success(
