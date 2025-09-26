@@ -2805,7 +2805,7 @@
         "cexDepositAddress": "{{cexName}} Yatırım Adresi",
         "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
         "TransferBeforeValue": "Evet",
-        "TransferBefore": "Transfer öncesi",
+        "TransferBefore": "Daha önce aktarıldı",
         "AddToWhitelist": "Beyaz Listeye Ekle",
         "passwordPlaceholder": "Şifreyi girin devam etmek için"
       },
