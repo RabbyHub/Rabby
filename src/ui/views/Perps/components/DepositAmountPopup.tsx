@@ -10,7 +10,7 @@ import {
   batchQueryTokens,
   queryTokensCache,
 } from '@/ui/utils/portfolio/tokenUtils';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { ARB_USDC_TOKEN_ID, ARB_USDC_TOKEN_ITEM } from '../constants';
 import { ARB_USDC_TOKEN_SERVER_CHAIN } from '../constants';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -28,8 +28,8 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
-import { getTokenSymbol } from '@/ui/utils/token';
-import { findChainByServerID } from '@/utils/chain';
+import { getTokenSymbol, tokenAmountBn } from '@/ui/utils/token';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
 import { useRabbyDispatch } from '@/ui/store';
@@ -42,8 +42,10 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   updateMiniSignTx: (
     amount: number,
     token: TokenItem,
+    gasPrice: number,
     needMinusOne?: boolean
   ) => void;
+  accountValue: string;
   availableBalance: string;
   currentPerpsAccount: Account | null;
   quoteLoading: boolean;
@@ -70,6 +72,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   updateMiniSignTx,
   currentPerpsAccount,
   availableBalance,
+  accountValue,
   setIsPreparingSign,
   handleDeposit,
   handleWithdraw,
@@ -84,13 +87,14 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const [usdValue, setUsdValue] = React.useState<string>('');
   const [tokenVisible, setTokenVisible] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState<TokenItem | null>(
-    ARB_USDC_TOKEN_ITEM
+    null
   );
   const inputRef = React.useRef<HTMLInputElement>(null);
   const wallet = useWallet();
   const startDirectSigning = useStartDirectSigning();
   const [tokenList, setTokenList] = React.useState<TokenItem[]>([]);
   const [tokenListLoading, setTokenListLoading] = React.useState(false);
+  const [gasPrice, setGasPrice] = React.useState<number>(0);
 
   const { value: _tokenInfo, loading: tokenLoading } = useAsync(async () => {
     if (!currentPerpsAccount?.address || !visible || !selectedToken)
@@ -103,12 +107,17 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     return info;
   }, [currentPerpsAccount?.address, visible, selectedToken]);
 
-  const { value: isNeedDepositBeforeApprove } = useAsync(async () => {
+  const { value: isMissingRole } = useAsync(async () => {
+    if (Number(accountValue)) {
+      // has account value no need fetch api to check
+      return false;
+    }
+
     if (!currentPerpsAccount?.address || !visible) return false;
     const sdk = getPerpsSDK();
     const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
     return role === 'missing';
-  }, [currentPerpsAccount?.address, visible]);
+  }, [currentPerpsAccount?.address, visible, accountValue]);
 
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
@@ -116,13 +125,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const fetchTokenList = useCallback(async () => {
     setTokenListLoading(true);
-    if (!currentPerpsAccount?.address || !visible) return [];
+    if (!currentPerpsAccount?.address) return [];
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
     const usdcToken = res.find(
       (t) =>
         t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
     );
-    setSelectedToken(usdcToken || ARB_USDC_TOKEN_ITEM);
+    // setSelectedToken(usdcToken || ARB_USDC_TOKEN_ITEM);
     setTokenListLoading(false);
     setTokenList(res);
 
@@ -135,7 +144,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
     setTokenList(tokenRes);
     return res;
-  }, [currentPerpsAccount?.address, visible]);
+  }, [currentPerpsAccount?.address]);
 
   useEffect(() => {
     fetchTokenList();
@@ -144,8 +153,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   React.useEffect(() => {
     if (!visible) {
       setUsdValue('');
-      setSelectedToken(ARB_USDC_TOKEN_ITEM);
+      setSelectedToken(null);
       setIsWithdrawLoading(false);
+      setGasPrice(0);
     }
   }, [visible]);
 
@@ -155,6 +165,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       selectedToken?.chain === ARB_USDC_TOKEN_SERVER_CHAIN
     );
   }, [selectedToken]);
+
+  useEffect(() => {
+    if (visible && type === 'deposit') {
+      setTokenVisible(true);
+    }
+  }, [visible, type]);
 
   React.useEffect(() => {
     if (visible && inputRef.current) {
@@ -233,6 +249,87 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     return Number((tokenInfo?.amount || 0) * (tokenInfo?.price || 0));
   }, [tokenInfo]);
 
+  const { value: gasList } = useAsync(async () => {
+    if (!selectedToken?.chain) {
+      return [];
+    }
+
+    return wallet.gasMarketV2({
+      chainId: selectedToken.chain,
+    });
+  }, [selectedToken?.chain]);
+
+  const chainInfo = useMemo(() => {
+    return (
+      findChainByServerID(
+        selectedToken?.chain || ARB_USDC_TOKEN_SERVER_CHAIN
+      ) || null
+    );
+  }, [selectedToken?.chain]);
+
+  const tokenIsNativeToken = useMemo(() => {
+    if (selectedToken && selectedToken.chain) {
+      return isSameAddress(
+        selectedToken.id,
+        chainInfo?.nativeTokenAddress || ''
+      );
+    }
+    return false;
+  }, [selectedToken, chainInfo?.nativeTokenAddress]);
+
+  const nativeTokenDecimals = useMemo(
+    () => chainInfo?.nativeTokenDecimals || 1e18,
+    [chainInfo?.nativeTokenDecimals]
+  );
+
+  const gasLimit = useMemo(
+    () => (chainInfo?.enum === CHAINS_ENUM.ETH ? 1000000 : 2000000),
+    [chainInfo?.enum]
+  );
+
+  const handleMax = React.useCallback(() => {
+    if (selectedToken) {
+      if (tokenIsNativeToken && gasList) {
+        const checkGasIsEnough = (price: number) => {
+          return new BigNumber(selectedToken?.raw_amount_hex_str || 0, 16).gte(
+            new BigNumber(gasLimit).times(price)
+          );
+        };
+        const normalPrice =
+          gasList?.find((e) => e.level === 'normal')?.price || 0;
+        const isNormalEnough = checkGasIsEnough(normalPrice);
+        if (isNormalEnough) {
+          const val = tokenAmountBn(selectedToken).minus(
+            new BigNumber(gasLimit)
+              .times(normalPrice)
+              .div(10 ** nativeTokenDecimals)
+          );
+          setUsdValue(
+            val
+              .times(selectedToken?.price || 0)
+              .decimalPlaces(2, BigNumber.ROUND_DOWN)
+              .toFixed()
+          );
+          setGasPrice(normalPrice);
+          return;
+        }
+      }
+      setGasPrice(0);
+      setUsdValue(
+        tokenAmountBn(selectedToken)
+          ?.times(selectedToken?.price || 0)
+          .decimalPlaces(2, BigNumber.ROUND_DOWN)
+          .toFixed()
+      );
+    }
+  }, [
+    selectedToken,
+    nativeTokenDecimals,
+    gasList,
+    gasLimit,
+    tokenIsNativeToken,
+  ]);
+
   // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
   useDebounce(
     () => {
@@ -241,17 +338,19 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       updateMiniSignTx(
         Number(usdValue),
         tokenInfo || ARB_USDC_TOKEN_ITEM,
-        isNeedDepositBeforeApprove
+        gasPrice,
+        isMissingRole
       );
     },
     300,
     [
+      gasPrice,
       usdValue,
       visible,
       updateMiniSignTx,
       type,
       tokenInfo,
-      isNeedDepositBeforeApprove,
+      isMissingRole,
     ]
   );
 
@@ -306,8 +405,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const estReceiveUsdValue = useMemo(() => {
     const value =
       (bridgeQuote?.to_token_amount || 0) * ARB_USDC_TOKEN_ITEM.price;
-    return isNeedDepositBeforeApprove ? value - 1 : value;
-  }, [bridgeQuote, tokenInfo, isNeedDepositBeforeApprove]);
+    return isMissingRole ? value - 1 : value;
+  }, [bridgeQuote, tokenInfo, isMissingRole]);
 
   const quoteError = useMemo(() => {
     return type === 'deposit' &&
@@ -390,12 +489,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                     className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
                     onClick={() => {
                       setUsdValue(
-                        formatNumber(
-                          availableBalance,
-                          2,
-                          undefined,
-                          BigNumber.ROUND_DOWN
-                        )
+                        new BigNumber(availableBalance)
+                          .decimalPlaces(2, BigNumber.ROUND_DOWN)
+                          .toFixed()
                       );
                     }}
                   >
@@ -412,16 +508,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   })}
                   <div
                     className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
-                    onClick={() => {
-                      setUsdValue(
-                        formatNumber(
-                          depositMaxUsdValue,
-                          2,
-                          undefined,
-                          BigNumber.ROUND_DOWN
-                        )
-                      );
-                    }}
+                    onClick={handleMax}
                   >
                     Max
                   </div>
@@ -583,17 +670,25 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
       <TokenSelectPopup
         visible={tokenVisible}
+        tokenListLoading={tokenListLoading}
         changeAccount={async () => {
           if (currentPerpsAccount) {
             await dispatch.account.changeAccountAsync(currentPerpsAccount);
           }
         }}
         list={tokenList || []}
-        onCancel={() => setTokenVisible(false)}
+        onCancel={() => {
+          if (type === 'deposit' && !selectedToken) {
+            onClose();
+          }
+
+          setTokenVisible(false);
+        }}
         onSelect={(t) => {
           setUsdValue('');
           setSelectedToken(t);
           setTokenVisible(false);
+          inputRef.current?.focus();
         }}
       />
     </Popup>

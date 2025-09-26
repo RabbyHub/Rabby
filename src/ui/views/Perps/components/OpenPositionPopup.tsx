@@ -301,12 +301,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               )}
               onClick={() => {
                 setMargin(
-                  formatNumber(
-                    availableBalance,
-                    2,
-                    undefined,
-                    BigNumber.ROUND_DOWN
-                  )
+                  new BigNumber(availableBalance)
+                    .decimalPlaces(2, BigNumber.ROUND_DOWN)
+                    .toFixed()
                 );
               }}
             >

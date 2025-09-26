@@ -63,8 +63,12 @@ export const usePerpsDeposit = ({
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const updateMiniSignTx = useMemoizedFn(
-    async (usdValue: number, _token?: TokenItem, needMinusOne?: boolean) => {
-      const token = _token || ARB_USDC_TOKEN_ITEM;
+    async (
+      usdValue: number,
+      token: TokenItem,
+      gasPrice: number,
+      needMinusOne?: boolean
+    ) => {
       if (token.id !== ARB_USDC_TOKEN_ID) {
         setQuoteLoading(true);
         const txs: Tx[] = [];
@@ -172,6 +176,7 @@ export const usePerpsDeposit = ({
               value: res.tx.value,
               data: res.tx.data,
               chainId: res.tx.chainId,
+              gasPrice: gasPrice || undefined,
             } as Tx;
             txs.push(bridgeTx);
             setMiniSignTx(txs);
