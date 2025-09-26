@@ -2839,7 +2839,7 @@
         "understandRisks": "我理解这些风险，并且想继续",
         "cexAddress": "{{cexName}} 地址",
         "cexDepositAddress": "{{cexName}} 存款地址",
-        "TransferBefore": "",
+        "TransferBefore": "之前已转移",
         "AddToWhitelist": "添加到白名单",
         "passwordPlaceholder": "输入密码以继续",
         "TransferBeforeValue": "是的"

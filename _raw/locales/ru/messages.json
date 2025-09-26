@@ -2804,7 +2804,7 @@
         "cexDepositAddress": "{{cexName}} Адрес депозита",
         "cexAddress": "{{cexName}} адрес",
         "passwordPlaceholder": "Введите пароль для продолжения",
-        "TransferBefore": "",
+        "TransferBefore": "Передано ранее",
         "TransferBeforeValue": "Да",
         "AddToWhitelist": "Добавить в белый список"
       },

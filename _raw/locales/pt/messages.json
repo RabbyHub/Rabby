@@ -2799,7 +2799,7 @@
         "cexDepositAddress": "{{cexName}} Endereço de Depósito",
         "understandRisks": "Eu entendo os riscos e quero continuar",
         "TransferBeforeValue": "Sim",
-        "TransferBefore": "",
+        "TransferBefore": "Transferido antes",
         "AddToWhitelist": "Adicionar à Lista Branca",
         "passwordPlaceholder": "Insira a senha para continuar"
       },
