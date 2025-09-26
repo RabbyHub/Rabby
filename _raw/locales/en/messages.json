@@ -938,7 +938,7 @@
         "cexDepositAddress": "{{cexName}} Deposit Address",
         "cexAddress": "{{cexName}} Address",
         "passwordPlaceholder": "Input password to continue",
-        "TransferBefore": "Transfer before",
+        "TransferBefore": "Transferred before",
         "TransferBeforeValue": "Yes",
         "AddToWhitelist": "Add to Whitelist",
         "riskType": {

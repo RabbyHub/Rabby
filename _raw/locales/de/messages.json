@@ -2804,7 +2804,7 @@
         "passwordPlaceholder": "Passwort eingeben, um fortzufahren",
         "AddToWhitelist": "Zur Whitelist hinzufügen",
         "TransferBeforeValue": "Ja",
-        "TransferBefore": "Übertragen Sie vorher"
+        "TransferBefore": "Vorher übertragen"
       },
       "selectImportedAddress": "Importierte Adresse auswählen",
       "sendToImportedAddress": "An eine importierte Adresse senden",

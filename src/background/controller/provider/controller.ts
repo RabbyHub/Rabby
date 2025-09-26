@@ -1579,6 +1579,20 @@ class ProviderController extends BaseController {
     return approvalRes.data;
   };
 
+  ethGetTransactionReceipt = async (req) => {
+    const res = await this.ethRpc(req);
+
+    if (res?.error?.message) {
+      const message = String(res.error.message).toLowerCase();
+      const idxKeyPhrases = ['index', 'progress'];
+      if (idxKeyPhrases.some((phrase) => message.includes(phrase))) {
+        return { result: null, id: res.id, jsonrpc: res.jsonrpc };
+      }
+    }
+
+    return res;
+  };
+
   ethGetTransactionByHash = async (req) => {
     const {
       data: {

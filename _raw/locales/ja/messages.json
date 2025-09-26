@@ -2803,7 +2803,7 @@
         "cexDepositAddress": "{{cexName}} 入金アドレス",
         "TransferBeforeValue": "はい",
         "passwordPlaceholder": "パスワードを入力して続けてください",
-        "TransferBefore": "転送前",
+        "TransferBefore": "以前に転送されました",
         "AddToWhitelist": "ホワイトリストに追加"
       },
       "title": "送信先",

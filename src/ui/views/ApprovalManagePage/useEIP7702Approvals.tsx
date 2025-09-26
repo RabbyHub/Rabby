@@ -17,6 +17,11 @@ const chains = [
   CHAINS_ENUM.BSC,
   CHAINS_ENUM.OP,
   CHAINS_ENUM.BASE,
+  CHAINS_ENUM.ARBITRUM,
+  CHAINS_ENUM.SCRL,
+  'BERA' as CHAINS_ENUM,
+  'UNI' as CHAINS_ENUM,
+  'INK' as CHAINS_ENUM,
 ] as CHAINS_ENUM[];
 
 const supportedAccountType = [

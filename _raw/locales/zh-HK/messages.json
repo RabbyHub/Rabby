@@ -2840,7 +2840,7 @@
         "cexDepositAddress": "{{cexName}} 存款地址",
         "understandRisks": "我明白風險並希望繼續",
         "AddToWhitelist": "加入白名单",
-        "TransferBefore": "轉移之前",
+        "TransferBefore": "之前已轉移",
         "TransferBeforeValue": "是的",
         "passwordPlaceholder": "輸入密碼以繼續"
       },
