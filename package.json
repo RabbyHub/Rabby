@@ -66,7 +66,7 @@
     "@rabby-wallet/rabby-action": "0.1.13",
     "@rabby-wallet/rabby-api": "0.9.42",
     "@rabby-wallet/rabby-security-engine": "2.0.11",
-    "@rabby-wallet/rabby-swap": "0.0.64",
+    "@rabby-wallet/rabby-swap": "0.0.65",
     "@rabby-wallet/widgets": "1.0.9",
     "@rematch/core": "2.2.0",
     "@rematch/select": "3.1.2",
