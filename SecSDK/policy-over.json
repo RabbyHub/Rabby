@@ -422,5 +422,8 @@
       },
       "disallow": []
     }
+  },
+  "node_modules/@metamask/post-message-stream/dist/window/WindowPostMessageStream.js": {
+    "enable": false
   }
 }

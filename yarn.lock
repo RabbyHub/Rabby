@@ -19895,10 +19895,10 @@ superstruct@^1.0.3:
   resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-1.0.3.tgz#de626a5b49c6641ff4d37da3c7598e7a87697046"
   integrity sha512-8iTn3oSS8nRGn+C2pgXSKPI3jmpm6FExNazNpjvqS6ZUJQCej3PUXEKM8NjHBOs54ExM+LPW/FBRhymrdcCiSg==
 
-supplychain_security_sdk@1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/supplychain_security_sdk/-/supplychain_security_sdk-1.1.4.tgz#6c32f59933385af0acbd89a3e1d0034811207819"
-  integrity sha512-RhNBSMawHpwLy+JpTa2ouRg2qqpYJO7EDtM04zLc05BjcqSzOMYPJaFdCMn/RIjfo+ZkYDqgHRTvkbHl6kH65w==
+supplychain_security_sdk@1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/supplychain_security_sdk/-/supplychain_security_sdk-1.1.5.tgz#5868775492dbbc3c6751dafad44d6f74a325084c"
+  integrity sha512-1Wq1NEFQ7qg63TrNIRwglkeasn0WnUg0J/jg+qvh1BFgBBl4QDMwnLyZw1qCvcJx4oXkkxh2V3EJeEDiS3Lsfg==
   dependencies:
     "@babel/generator" "7.28.0"
     "@babel/parser" "7.28.0"
