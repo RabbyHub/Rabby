@@ -1026,7 +1026,7 @@
             "noMatchText": "No Match"
           }
         },
-        "EIP7702SupportChains": "Supported Chains:",
+        "EIP7702SupportChains": "EIP-7702 Supported Chains:",
         "ApprovalContractItem": {
           "ApprovalCount_one": "Approval",
           "ApprovalCount_other": "Approvals"
