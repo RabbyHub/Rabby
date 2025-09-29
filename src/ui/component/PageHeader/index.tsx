@@ -34,6 +34,7 @@ const PageHeader = ({
   isShowAccount,
   disableSwitchAccount,
   showCurrentAccount,
+  onSwitchAccountClick,
 }: {
   children: ReactNode;
   canBack?: boolean;
@@ -51,6 +52,7 @@ const PageHeader = ({
   isShowAccount?: boolean;
   disableSwitchAccount?: boolean;
   showCurrentAccount?: Account;
+  onSwitchAccountClick?: () => void;
 }) => {
   const history = useHistory();
 
@@ -78,6 +80,7 @@ const PageHeader = ({
             <AccountSwitchInner
               disableSwitch={disableSwitchAccount}
               currentAccount={showCurrentAccount || currentAccount}
+              onSwitchAccountClick={onSwitchAccountClick}
             />
           ) : null}
         </div>
@@ -133,9 +136,11 @@ const WatchAddressLogo = (props: SVGProps<SVGSVGElement>) => (
 const AccountSwitchInner = ({
   currentAccount,
   disableSwitch,
+  onSwitchAccountClick,
 }: {
   currentAccount: Account;
   disableSwitch?: boolean;
+  onSwitchAccountClick?: () => void;
 }) => {
   const addressTypeIcon = useBrandIcon({
     address: currentAccount?.address,
@@ -164,6 +169,10 @@ const AccountSwitchInner = ({
           )}
           onClick={() => {
             if (disableSwitch) {
+              return;
+            }
+            if (typeof onSwitchAccountClick === 'function') {
+              onSwitchAccountClick();
               return;
             }
             setIsShowModal(true);

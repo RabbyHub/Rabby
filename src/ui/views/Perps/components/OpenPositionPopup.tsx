@@ -113,7 +113,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   }, [markPrice, leverage, leverageRange, margin, tradeSize]);
 
   const bothFee = React.useMemo(() => {
-    return providerFee + 0.0005;
+    return providerFee;
   }, [providerFee]);
 
   // 验证 margin 输入
@@ -301,12 +301,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               )}
               onClick={() => {
                 setMargin(
-                  formatNumber(
-                    availableBalance,
-                    2,
-                    undefined,
-                    BigNumber.ROUND_DOWN
-                  )
+                  new BigNumber(availableBalance)
+                    .decimalPlaces(2, BigNumber.ROUND_DOWN)
+                    .toFixed()
                 );
               }}
             >
@@ -529,7 +526,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                   title={
                     <div>
                       <div className="text-13 text-r-neutral-title-2">
-                        {t('page.perps.rabbyFeeTips')}
+                        {t('page.perps.rabbyFeeTipsZero')}
                       </div>
                       <div className="text-13 text-r-neutral-title-2">
                         {t('page.perps.providerFeeTips', {

@@ -567,6 +567,7 @@ const GasAccountDepositContent = ({
         onChange={setToken}
       />
       <MiniApproval
+        transparentMask
         visible={miniApprovalVisible}
         isPreparingSign={isPreparingSign}
         setIsPreparingSign={setIsPreparingSign}

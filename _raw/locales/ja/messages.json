@@ -226,7 +226,8 @@
         "estimatedGas": "推定Gas：",
         "sendGas": "現在のトランザクションに対するGasの送金:",
         "gasCost": "ガスをあなたのアドレスに転送する際のガスコスト：",
-        "maxGas": "Max Gas: "
+        "maxGas": "Max Gas: ",
+        "description": "GasAccountを使用してガス料金を支払います。支払いの詳細は以下をご覧ください："
       },
       "customRPCErrorModal": {
         "title": "カスタム RPC エラー",
@@ -1041,7 +1042,8 @@
       "No-available-quote": "利用できるレートはありません",
       "loss-tips": "{{usd}}を失っています。小さな市場で少額を試してください。",
       "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
-      "understandRisks": "リスクを理解しており、続けたいと思います。"
+      "understandRisks": "リスクを理解しており、続けたいと思います。",
+      "approve": "承認"
     },
     "manageAddress": {
       "no-address": "アドレスがありません",
@@ -2801,7 +2803,7 @@
         "cexDepositAddress": "{{cexName}} 入金アドレス",
         "TransferBeforeValue": "はい",
         "passwordPlaceholder": "パスワードを入力して続けてください",
-        "TransferBefore": "転送前",
+        "TransferBefore": "以前に転送されました",
         "AddToWhitelist": "ホワイトリストに追加"
       },
       "title": "送信先",

@@ -477,9 +477,11 @@ export const BridgeContent = () => {
   const showRiskTips = isSlippageHigh || isSlippageLow || showLoss;
 
   const [isPreparingSign, setIsPreparingSign] = useState(false);
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
 
   const handleBridge = useMemoizedFn(async () => {
     if (canUseDirectSubmitTx) {
+      setMiniSignLoading(true);
       setIsPreparingSign(true);
       setFetchingBridgeQuote(true);
       const txs = await runBuildSwapTxsRef.current;
@@ -733,6 +735,7 @@ export const BridgeContent = () => {
                 showRiskTips={showRiskTips && !btnDisabled}
                 accountType={currentAccount?.type}
                 riskReset={btnDisabled}
+                loading={miniSignLoading}
               />
             ) : (
               <Button
@@ -813,6 +816,7 @@ export const BridgeContent = () => {
           />
         ) : null}
         <MiniApproval
+          transparentMask
           directSubmit
           isPreparingSign={isPreparingSign}
           setIsPreparingSign={setIsPreparingSign}
@@ -825,6 +829,7 @@ export const BridgeContent = () => {
           }}
           txs={txs}
           onClose={() => {
+            setMiniSignLoading(false);
             setIsPreparingSign(false);
             setIsShowSign(false);
             refresh((e) => e + 1);
@@ -833,12 +838,14 @@ export const BridgeContent = () => {
             }, 500);
           }}
           onReject={() => {
+            setMiniSignLoading(false);
             setIsPreparingSign(false);
             setIsShowSign(false);
             refresh((e) => e + 1);
             mutateTxs([]);
           }}
           onResolve={() => {
+            setMiniSignLoading(false);
             setIsPreparingSign(false);
             setTimeout(() => {
               setIsShowSign(false);
@@ -847,6 +854,7 @@ export const BridgeContent = () => {
             }, 500);
           }}
           onPreExecError={() => {
+            setMiniSignLoading(false);
             setIsPreparingSign(false);
             gotoBridge();
           }}

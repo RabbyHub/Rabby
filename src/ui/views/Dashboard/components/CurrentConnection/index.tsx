@@ -57,6 +57,9 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   const handleRemove = async (origin: string) => {
     await wallet.removeConnectedSite(origin);
+    ga4.fireEvent('Click_DisconnectDapp', {
+      event_category: 'Front Page Click',
+    });
     getCurrentSite();
     message.success({
       icon: <i />,

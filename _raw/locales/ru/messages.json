@@ -328,7 +328,8 @@
         "maxGas": "Макс. Gas:",
         "gasCost": "Стоимость газа для перевода газа на ваш адрес:",
         "sendGas": "Перевод Gas для текущей транзакции:",
-        "estimatedGas": "Оценочная комиссия за газ:"
+        "estimatedGas": "Оценочная комиссия за газ:",
+        "description": "Используя GasAccount для оплаты газовых сборов. Посмотрите детали платежа ниже:"
       },
       "transferOwner": {
         "description": "Описание",
@@ -1041,7 +1042,8 @@
       "two-step-approve-details": "Токен USDT требует 2 транзакции для изменения разрешения. Сначала вам нужно сбросить разрешение до нуля, а затем установить новое значение разрешения.",
       "No-available-quote": "Нет доступной котировки",
       "no-slippage-for-wrap": "Отсутствие проскальзывания для Wrap",
-      "understandRisks": "Я понимаю риски и хочу продолжить"
+      "understandRisks": "Я понимаю риски и хочу продолжить",
+      "approve": "Одобрить"
     },
     "manageAddress": {
       "no-address": "Нет адресов",
@@ -2802,7 +2804,7 @@
         "cexDepositAddress": "{{cexName}} Адрес депозита",
         "cexAddress": "{{cexName}} адрес",
         "passwordPlaceholder": "Введите пароль для продолжения",
-        "TransferBefore": "Переведите прежде",
+        "TransferBefore": "Передано ранее",
         "TransferBeforeValue": "Да",
         "AddToWhitelist": "Добавить в белый список"
       },

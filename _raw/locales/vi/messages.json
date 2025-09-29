@@ -42,7 +42,8 @@
         "maxGas": "Max Gas:",
         "estimatedGas": "Dự kiến Gas:",
         "sendGas": "Gas chuyển cho bạn cho giao dịch hiện tại:",
-        "gasCost": "Chi phí gas để chuyển gas đến địa chỉ của bạn:"
+        "gasCost": "Chi phí gas để chuyển gas đến địa chỉ của bạn:",
+        "description": "Sử dụng GasAccount để thanh toán phí gas. Xem chi tiết thanh toán bên dưới:"
       },
       "balanceChange": {
         "successTitle": "Kết quả mô phỏng",
@@ -1041,7 +1042,8 @@
       "source": "Nguồn",
       "loss-tips": "Bạn đang mất {{usd}}. Hãy thử một số tiền nhỏ hơn trong một thị trường nhỏ.",
       "no-quote-found": "Không tìm thấy báo giá",
-      "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục"
+      "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục",
+      "approve": "Chấp thuận"
     },
     "bridge": {
       "showMore": {

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { Button, Input, Switch, message } from 'antd';
@@ -95,14 +95,20 @@ const WhitelistInput = () => {
     setIsCex(false);
     setSelectedExchange(null);
     setIsValidAddr(true);
-  }, []);
+    wallet.setPageStateCache({
+      path: '/whitelist-input',
+      states: {},
+    });
+  }, [wallet]);
   const handleClickBack = useCallback(() => {
     if (history.length > 1) {
       history.goBack();
     } else {
+      history.replace('/');
       history.push('/send-poly');
     }
-  }, [history]);
+    wallet.clearPageStateCache();
+  }, [history, wallet]);
 
   const detectAddress = useCallback(
     async (address: string) => {
@@ -137,18 +143,25 @@ const WhitelistInput = () => {
     [exchanges, wallet]
   );
 
-  const handleInputChangeAddress = (v) => {
-    if (!isValidAddress(v)) {
-      setInputAlias('');
-      setIsValidAddr(!v);
-      setIsCex(false);
-      setSelectedExchange(null);
-    } else {
-      setIsValidAddr(true);
-      detectAddress(v);
-    }
-    setInputAddress(v);
-  };
+  const handleInputChangeAddress = useCallback(
+    (v) => {
+      if (!isValidAddress(v)) {
+        setInputAlias('');
+        setIsValidAddr(!v);
+        setIsCex(false);
+        setSelectedExchange(null);
+      } else {
+        setIsValidAddr(true);
+        detectAddress(v);
+      }
+      setInputAddress(v);
+      wallet.setPageStateCache({
+        path: '/whitelist-input',
+        states: { inputAddress: v },
+      });
+    },
+    [detectAddress, wallet]
+  );
 
   const confirmToWhitelist = async (address: string) => {
     if (!isValidAddress(address)) {
@@ -161,7 +174,8 @@ const WhitelistInput = () => {
       isCex && selectedExchange?.id ? selectedExchange?.id : ''
     );
     setShowAddressRiskAlert(false);
-    history.goBack();
+    await wallet.clearPageStateCache();
+    handleClickBack();
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('page.whitelist.tips.added'),
@@ -195,10 +209,53 @@ const WhitelistInput = () => {
   }) => {
     resetState();
     setInputAddress(account.address);
+    wallet.setPageStateCache({
+      path: '/whitelist-input',
+      states: { inputAddress: account.address },
+    });
     setInputAlias(account.alianName || '');
     setShowAddressSelector(false);
     detectAddress(account.address);
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const hasCache = await wallet.hasPageStateCache?.();
+        if (hasCache) {
+          const cache = await wallet.getPageStateCache?.();
+          if (
+            cache?.path === '/whitelist-input' &&
+            cache?.states?.inputAddress &&
+            history.length === 1
+          ) {
+            const cachedAddress = cache.states.inputAddress as string;
+            handleInputChangeAddress(cachedAddress);
+            return;
+          }
+        } else {
+          wallet.setPageStateCache({
+            path: '/whitelist-input',
+            states: {},
+          });
+        }
+      } catch (e) {
+        /* empty */
+      }
+    })();
+  }, [wallet, history, handleInputChangeAddress]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      wallet.clearPageStateCache();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [wallet]);
 
   return (
     <FullscreenContainer className="h-[700px]">

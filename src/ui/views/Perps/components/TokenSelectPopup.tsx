@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { message, Modal, Spin } from 'antd';
+import { message, Modal, Skeleton, Spin } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -27,6 +27,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 export type TokenSelectPopupProps = PopupProps & {
   onSelect: (token: TokenItem) => void;
   list: TokenItem[];
+  tokenListLoading: boolean;
   changeAccount: () => Promise<void>;
 };
 
@@ -34,6 +35,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   visible,
   onCancel,
   onSelect,
+  tokenListLoading,
   list,
   changeAccount,
   ...rest
@@ -69,7 +71,6 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       ) {
         // direct deposit
         onSelect(token);
-        onCancel?.();
         return;
       }
 
@@ -81,7 +82,6 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       if (res?.success) {
         // bridge token with liFi dex
         onSelect(token);
-        onCancel?.();
         setClickLoading(false);
         return;
       } else {
@@ -278,7 +278,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
 
   return (
     <Popup
-      placement="right"
+      placement="bottom"
       width={'100%'}
       visible={visible}
       onClose={onCancel}
@@ -300,15 +300,42 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           {t('page.perps.selectTokenToDeposit')}
         </div>
         <div className="overflow-y-auto flex-1 relative mt-16">
-          <FixedSizeList
-            width={'100%'}
-            height={444}
-            itemCount={sortedList?.length || 0}
-            itemData={sortedList}
-            itemSize={56}
-          >
-            {Row}
-          </FixedSizeList>
+          {tokenListLoading ? (
+            <div className="flex flex-col items-center h-full w-full">
+              {new Array(7).fill(null).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center h-[48px] mb-8 border border-transparent bg-r-neutral-card1 rounded-[12px] p-16 w-full"
+                >
+                  <div className="flex items-center gap-12">
+                    <Skeleton.Avatar active={true} size={24} shape="circle" />
+                    <Skeleton.Button
+                      active={true}
+                      className="h-[16px] block rounded-[8px]"
+                      style={{ width: 80 }}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-4 items-end">
+                    <Skeleton.Button
+                      active={true}
+                      className="h-[16px] block rounded-[8px]"
+                      style={{ width: 80 }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <FixedSizeList
+              width={'100%'}
+              height={444}
+              itemCount={sortedList?.length || 0}
+              itemData={sortedList}
+              itemSize={56}
+            >
+              {Row}
+            </FixedSizeList>
+          )}
         </div>
       </div>
     </Popup>

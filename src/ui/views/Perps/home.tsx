@@ -43,7 +43,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { TopPermissionTips } from './components/TopPermissionTips';
 import { PerpsModal } from './components/Modal';
 import { PerpsLoading } from './components/Loading';
-import { ARB_USDC_TOKEN_SERVER_CHAIN } from './constants';
+import { ARB_USDC_TOKEN_SERVER_CHAIN, PERPS_BUILDER_INFO } from './constants';
 import { ClosePositionPopup } from './components/ClosePositionPopup';
 import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from './sdkManager';
@@ -166,6 +166,7 @@ export const Perps: React.FC = () => {
           isBuy: direction === 'Short',
           size,
           midPx: price,
+          builder: PERPS_BUILDER_INFO,
         });
 
         const filled = res?.response?.data?.statuses[0]?.filled;
@@ -217,17 +218,20 @@ export const Perps: React.FC = () => {
         forceShowBack
         onBack={goBack}
         isShowAccount={isLogin ? true : false}
-        disableSwitchAccount={true}
-        rightSlot={
-          isLogin ? (
-            <div
-              className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0 cursor-pointer"
-              onClick={() => setLogoutVisible(true)}
-            >
-              <ThemeIcon src={RcIconLogout} />
-            </div>
-          ) : null
-        }
+        disableSwitchAccount={false}
+        onSwitchAccountClick={() => {
+          setLoginVisible(true);
+        }}
+        // rightSlot={
+        //   isLogin ? (
+        //     <div
+        //       className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0 cursor-pointer"
+        //       onClick={() => setLogoutVisible(true)}
+        //     >
+        //       <ThemeIcon src={RcIconLogout} />
+        //     </div>
+        //   ) : null
+        // }
         showCurrentAccount={currentPerpsAccount || undefined}
       >
         Perps
@@ -409,12 +413,16 @@ export const Perps: React.FC = () => {
       <PerpsLoginPopup
         visible={loginVisible}
         onLogin={async (account) => {
+          if (currentPerpsAccount) {
+            logout(currentPerpsAccount?.address || '');
+          }
           await login(account);
           setLoginVisible(false);
         }}
         onCancel={() => {
           setLoginVisible(false);
         }}
+        perpsAccount={currentPerpsAccount}
       />
 
       <PerpsLogoutPopup
@@ -444,6 +452,7 @@ export const Perps: React.FC = () => {
         clearMiniSignTx={clearMiniSignTx}
         clearMiniSignTypeData={clearMiniSignTypeData}
         updateMiniSignTx={updateMiniSignTx}
+        accountValue={accountSummary?.accountValue || '0'}
         availableBalance={accountSummary?.withdrawable || '0'}
         onClose={() => {
           setAmountVisible(false);
@@ -547,11 +556,12 @@ export const Perps: React.FC = () => {
             setClosePositionVisible(false);
           }}
           handleClosePosition={async () => {
+            const marketData = marketDataMap[closePosition.coin.toUpperCase()];
             await handleClosePosition({
               coin: closePosition.coin,
               size: Math.abs(Number(closePosition.szi || 0)).toString() || '0',
               direction: Number(closePosition.szi || 0) > 0 ? 'Long' : 'Short',
-              price: closePosition.entryPx || '0',
+              price: marketData?.markPx || '0',
             });
           }}
         />

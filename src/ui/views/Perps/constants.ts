@@ -1,4 +1,4 @@
-import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
+import { PerpTopToken, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 
 // must be a USDC token and more than 5 usdc
 export const PERPS_SEND_ARB_USDC_ADDRESS =
@@ -29,7 +29,7 @@ export const ARB_USDC_TOKEN_ITEM = {
   is_infinity: false,
   is_suspicious: false,
   time_at: 0,
-};
+} as TokenItem;
 export enum CANDLE_MENU_KEY {
   ONE_HOUR = '1H',
   ONE_DAY = '1D',
@@ -704,7 +704,12 @@ const INIT_PERPS_BUILD_FEE_RECEIVE_ADDRESS =
   '0xAd9bE64fD7a35d99a138b87CB212BAefbCDCf045';
 export const PERPS_BUILD_FEE_RECEIVE_ADDRESS = INIT_PERPS_BUILD_FEE_RECEIVE_ADDRESS.toLowerCase();
 
-export const PERPS_BUILD_FEE = 50; // '0.05%'
+export const PERPS_BUILD_FEE = 40; // '0.04%'
+
+export const PERPS_BUILDER_INFO = {
+  address: PERPS_BUILD_FEE_RECEIVE_ADDRESS,
+  fee: PERPS_BUILD_FEE,
+};
 
 export const PERPS_MAX_NTL_VALUE = 1000000;
 

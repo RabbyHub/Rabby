@@ -873,8 +873,9 @@
       "openPositionTips": "Trading perpetual contracts involves significant risk, including the potential for sudden and total loss of your investment and collateral due to high leverage and market volatility, and may not be suitable for all users. Prices may be influenced by funding rates and liquidity and you may be subject to automatic liquidations without notice. Market data provided by Hyperliquid.",
       "liquidationPriceTips": "The price at which your position is automatically closed by the exchange to prevent further losses when your margin falls below the maintenance margin level.",
       "sizeTips": "The total value or quantity of your trade, set by margin and leverage.",
-      "rabbyFeeTips": "Rabby fee: 0.05%",
-      "providerFeeTips": "Provider fee: {{fee}}",
+      "rabbyFeeTips": "Rabby fee: 0.04%",
+      "rabbyFeeTipsZero": "Rabby fee: 0%",
+      "providerFeeTips": "Hyperliquid fee: {{fee}}",
       "timeAgo": "{{time}} ago",
       "takeProfitTipsLong": "Take profit price must be higher than current price",
       "takeProfitTipsShort": "Take profit price must be lower than current price",
@@ -900,7 +901,13 @@
         "openInterestTips": "The total outstanding position of all users on this contract.",
         "fundingTips": "This is an hourly fee that traders pay or receive to keep the price of the perp contract close to the actual price of the token. lf positive, long pays short. lf negative, short pays long."
       },
-      "liquidation": "Liquidation"
+      "liquidation": "Liquidation",
+      "accountSelector": {
+        "activatedAddress": "Activated",
+        "hyperliquidBalance": "Perps Balance",
+        "notActivatedAddress": "Not Activated",
+        "noPosition": "No Position"
+      }
     },
     "sendPoly": {
       "title": "Send to",
@@ -931,7 +938,7 @@
         "cexDepositAddress": "{{cexName}} Deposit Address",
         "cexAddress": "{{cexName}} Address",
         "passwordPlaceholder": "Input password to continue",
-        "TransferBefore": "Transfer before",
+        "TransferBefore": "Transferred before",
         "TransferBeforeValue": "Yes",
         "AddToWhitelist": "Add to Whitelist",
         "riskType": {
@@ -1013,10 +1020,10 @@
       "component": {
         "table": {
           "bodyEmpty": {
+            "7702": "No EIP-7702 Delegation",
             "loadingText": "Loading...",
             "noDataText": "No Approvals",
-            "noMatchText": "No Match",
-            "7702": "No EIP-7702 Delegation"
+            "noMatchText": "No Match"
           }
         },
         "ApprovalContractItem": {
@@ -3173,7 +3180,10 @@
       "title": "Risk Warning"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
