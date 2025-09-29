@@ -48,6 +48,7 @@ import { ClosePositionPopup } from './components/ClosePositionPopup';
 import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from './sdkManager';
 import * as Sentry from '@sentry/browser';
+import { sortBy } from 'lodash';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -150,6 +151,10 @@ export const Perps: React.FC = () => {
     () => !Number(accountSummary?.withdrawable || 0),
     [accountSummary?.withdrawable]
   );
+
+  const marketSectionList = useMemo(() => {
+    return sortBy(marketData, (item) => -(item.dayNtlVlm || 0)).slice(0, 3);
+  }, [marketData]);
 
   const handleClosePosition = useMemoizedFn(
     async (params: {
@@ -384,7 +389,7 @@ export const Perps: React.FC = () => {
               </div>
             </div>
             <div className="bg-r-neutral-card1 rounded-[12px] flex flex-col">
-              {marketData.slice(0, 3).map((item) => (
+              {marketSectionList.map((item) => (
                 <AssetItem key={item.name} item={item} />
               ))}
             </div>
