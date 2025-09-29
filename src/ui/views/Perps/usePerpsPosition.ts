@@ -40,17 +40,24 @@ export const usePerpsPosition = ({
       try {
         const sdk = getPerpsSDK();
         const { coin, tpTriggerPx, slTriggerPx, direction } = params;
+        // avoid '.15' input error from hy validator
+        const formattedTpTriggerPx = tpTriggerPx
+          ? Number(tpTriggerPx).toString()
+          : undefined;
+        const formattedSlTriggerPx = slTriggerPx
+          ? Number(slTriggerPx).toString()
+          : undefined;
         const res = await sdk.exchange?.bindTpslByOrderId({
           coin,
           isBuy: direction === 'Long',
-          tpTriggerPx,
-          slTriggerPx,
+          tpTriggerPx: formattedTpTriggerPx,
+          slTriggerPx: formattedSlTriggerPx,
           builder: PERPS_BUILDER_INFO,
         });
 
         setCurrentTpOrSl({
-          tpPrice: tpTriggerPx,
-          slPrice: slTriggerPx,
+          tpPrice: formattedTpTriggerPx,
+          slPrice: formattedSlTriggerPx,
         });
         setTimeout(() => {
           dispatch.perps.fetchPositionOpenOrders();
@@ -203,15 +210,23 @@ export const usePerpsPosition = ({
           }),
         ];
 
+        // avoid '.15' input error from hy validator
+        const formattedTpTriggerPx = tpTriggerPx
+          ? Number(tpTriggerPx).toString()
+          : undefined;
+        const formattedSlTriggerPx = slTriggerPx
+          ? Number(slTriggerPx).toString()
+          : undefined;
         if (tpTriggerPx || slTriggerPx) {
           promises.push(
             (async () => {
               await sleep(10); // little delay to ensure nonce is correct
+
               const result = await sdk.exchange?.bindTpslByOrderId({
                 coin,
                 isBuy: direction === 'Long',
-                tpTriggerPx,
-                slTriggerPx,
+                tpTriggerPx: formattedTpTriggerPx,
+                slTriggerPx: formattedSlTriggerPx,
                 builder: PERPS_BUILDER_INFO,
               });
               return result as OrderResponse;
@@ -230,8 +245,8 @@ export const usePerpsPosition = ({
             `Opened ${direction} ${coin}-USD: Size ${totalSz} at Price $${avgPx}`
           );
           setCurrentTpOrSl({
-            tpPrice: tpTriggerPx,
-            slPrice: slTriggerPx,
+            tpPrice: formattedTpTriggerPx,
+            slPrice: formattedSlTriggerPx,
           });
           return res?.response?.data?.statuses[0]?.filled as {
             totalSz: string;
