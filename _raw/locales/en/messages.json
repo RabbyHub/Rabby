@@ -1332,7 +1332,8 @@
         "tokenPair": "Token Pair",
         "balance": "Balance Value",
         "noData": "No Supported Token Pair"
-      }
+      },
+      "bridgeDbkBtn": "Bridge via DBK Official Service"
     },
     "manageAddress": {
       "no-address": "No address",
@@ -1639,7 +1640,9 @@
         "blockedListTitle": "blocked token",
         "blockedListTitles": "blocked tokens",
         "blockedButton": "blocked",
-        "blockedButtons": "blocked"
+        "blockedButtons": "blocked",
+        "bridgeToEth": "Bridge to Ethereum Chain",
+        "bridge": "Bridge"
       },
       "assets": {
         "usdValue": "USD VALUE",
