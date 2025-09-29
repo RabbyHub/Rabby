@@ -28,6 +28,8 @@ import { ScamTokenTips } from './ScamTokenTips';
 import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
 import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
+import { DBK_CHAIN_ID } from '@/constant';
 
 const PAGE_COUNT = 10;
 
@@ -431,6 +433,27 @@ const TokenDetail = ({
             </div>
           </div>
         </div>
+        {token?.chain === 'dbk' ? (
+          <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
+            <div className="flex items-center justify-between gap-8 px-16 py-10 ">
+              <div className="text-r-neutral-title1 text-[13px] font-medium leading-[16px]">
+                {t('page.dashboard.tokenDetail.bridgeToEth')}
+              </div>
+              <DbkButton
+                className="rounded-[6px] font-medium text-[13px] leading-[16px] py-[8px] px-[18px]"
+                onClick={() => {
+                  setVisible(false);
+                  onClose?.();
+                  history.push(
+                    `/ecology/${DBK_CHAIN_ID}/bridge?activeTab=withdraw`
+                  );
+                }}
+              >
+                {t('page.dashboard.tokenDetail.bridge')}
+              </DbkButton>
+            </div>
+          </div>
+        ) : null}
         <TokenChainAndContract
           entityLoading={entityLoading}
           token={token}
