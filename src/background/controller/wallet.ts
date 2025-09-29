@@ -155,6 +155,13 @@ const stashKeyrings: Record<string | number, any> = {};
 
 const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 
+const gnosisPQueue = new PQueue({
+  interval: 1000,
+  intervalCap: 5,
+  carryoverConcurrencyCount: false,
+  concurrency: 5,
+});
+
 export class WalletController extends BaseController {
   openapi = openapiService;
   testnetOpenapi = testnetOpenapiService;
@@ -2405,23 +2412,25 @@ export class WalletController extends BaseController {
     }
     const results = await Promise.all(
       networks.map(async (networkId) => {
-        try {
-          const safe = await createSafeService({
-            networkId: networkId,
-            address,
-          });
-          const { results } = await safe.getPendingTransactions();
-          return {
-            networkId,
-            txs: results,
-          };
-        } catch (e) {
-          console.error(e);
-          return {
-            networkId,
-            txs: [],
-          };
-        }
+        return gnosisPQueue.add(async () => {
+          try {
+            const safe = await createSafeService({
+              networkId: networkId,
+              address,
+            });
+            const { results } = await safe.getPendingTransactions();
+            return {
+              networkId,
+              txs: results,
+            };
+          } catch (e) {
+            console.error(e);
+            return {
+              networkId,
+              txs: [],
+            };
+          }
+        });
       })
     );
 
@@ -2447,26 +2456,28 @@ export class WalletController extends BaseController {
     const safeAddress = toChecksumAddress(address);
     const results = await Promise.all(
       networks.map(async (networkId) => {
-        try {
-          const safe = await createSafeService({
-            networkId: networkId,
-            address: safeAddress,
-          });
-          const threshold = await safe.getThreshold();
-          const { results } = await safe.apiKit.getMessages(safeAddress);
-          return {
-            networkId,
-            messages: results.filter(
-              (item) => item.confirmations.length < threshold
-            ),
-          };
-        } catch (e) {
-          console.error(e);
-          return {
-            networkId,
-            messages: [],
-          };
-        }
+        return gnosisPQueue.add(async () => {
+          try {
+            const safe = await createSafeService({
+              networkId: networkId,
+              address: safeAddress,
+            });
+            const threshold = await safe.getThreshold();
+            const { results } = await safe.apiKit.getMessages(safeAddress);
+            return {
+              networkId,
+              messages: results.filter(
+                (item) => item.confirmations.length < threshold
+              ),
+            };
+          } catch (e) {
+            console.error(e);
+            return {
+              networkId,
+              messages: [],
+            };
+          }
+        });
       })
     );
 
