@@ -81,10 +81,12 @@ import { SpenderRow } from './components/SpenderRow';
 import { CheckboxRow } from './components/CheckboxRow';
 import { ChainSelectorButton } from './components/ChainSelectorButton';
 import {
+  EIP7702_REVOKE_SUPPORTED_CHAINS,
   EIP7702Delegated,
   useEIP7702ApprovalsQuery,
 } from './useEIP7702Approvals';
 import { noop } from 'lodash';
+import ChainIcon from '@/ui/component/ChainIcon';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -1139,6 +1141,7 @@ function TableByEIP7702({
   toggleSelectAll,
   isSelectedAll,
   isIndeterminate,
+  isActive,
 }: {
   isDarkTheme?: boolean;
   isLoading: boolean;
@@ -1150,6 +1153,7 @@ function TableByEIP7702({
   vGridRef: React.RefObject<VGrid>;
   className?: string;
   toggleSelectAll: () => void;
+  isActive?: boolean;
 } & TableSelectResult) {
   const [sortedInfo, setSortedInfo] = useState<SorterResult<EIP7702Delegated>>({
     columnKey: 'address',
@@ -1161,34 +1165,62 @@ function TableByEIP7702({
   // const toggleSelectAll = toggleSelectAll;
 
   return (
-    <VirtualTable<EIP7702Delegated>
-      loading={isLoading}
-      vGridRef={vGridRef}
-      className={clsx(className, 'J_table_by_eip_7702')}
-      markHoverRow={false}
-      columns={getColumnsForEIP7702({
-        // sortedInfo,
-        selectedRows,
-        onChangeSelected: (item: EIP7702Delegated[]) => {},
-        toggleSelectAll,
-        isSelectedAll,
-        isIndeterminate,
-        t,
-      })}
-      sortedInfo={sortedInfo}
-      emptyText={
-        emptyStatus === '7702'
-          ? t('page.approvals.component.table.bodyEmpty.7702')
-          : emptyStatus === 'no-matched'
-          ? t('page.approvals.component.table.bodyEmpty.noMatchText')
-          : t('page.approvals.component.table.bodyEmpty.noDataText')
-      }
-      dataSource={dataSource}
-      scroll={{ y: containerHeight, x: '100%' }}
-      onClickRow={onClickRowInspection}
-      // getRowHeight={(row) => ROW_HEIGHT}
-      // onChange={handleChange}
-    />
+    <>
+      {isActive ? (
+        <div className="mb-20">
+          <div className="mt-20 mb-10 text-14 font-semibold text-r-neutral-body">
+            {t('page.approvals.component.EIP7702SupportChains')}
+          </div>
+          <div className="flex items-center flex-wrap gap-[12px]">
+            {EIP7702_REVOKE_SUPPORTED_CHAINS.map((e) => {
+              const chainInfo = findChainByEnum(e);
+              if (!chainInfo) return null;
+              return (
+                <div className="h-[36px] px-12 py-8 flex items-center justify-center gap-[8px] text-r-neutral-body font-medium bg-r-neutral-card1 rounded-[16px]">
+                  <ChainIcon
+                    chain={e}
+                    size="small"
+                    tooltipProps={{
+                      visible: false,
+                    }}
+                  />
+                  {chainInfo.name}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+      <VirtualTable<EIP7702Delegated>
+        loading={isLoading}
+        vGridRef={vGridRef}
+        className={clsx(className, 'J_table_by_eip_7702')}
+        markHoverRow={false}
+        columns={getColumnsForEIP7702({
+          // sortedInfo,
+          selectedRows,
+          onChangeSelected: (item: EIP7702Delegated[]) => {},
+          toggleSelectAll,
+          isSelectedAll,
+          isIndeterminate,
+          t,
+        })}
+        sortedInfo={sortedInfo}
+        emptyText={
+          emptyStatus === '7702'
+            ? t('page.approvals.component.table.bodyEmpty.7702')
+            : emptyStatus === 'no-matched'
+            ? t('page.approvals.component.table.bodyEmpty.noMatchText')
+            : t('page.approvals.component.table.bodyEmpty.noDataText')
+        }
+        dataSource={dataSource}
+        scroll={{ y: containerHeight, x: '100%' }}
+        onClickRow={onClickRowInspection}
+
+        // getRowHeight={(row) => ROW_HEIGHT}
+        // onChange={handleChange}
+      />
+    </>
   );
 }
 
@@ -1468,6 +1500,7 @@ const ApprovalManagePage = () => {
                 />
 
                 <TableByEIP7702
+                  isActive={tab === 'eip-7702'}
                   className={tab === 'eip-7702' ? '' : 'hidden'}
                   isLoading={eip7702Loading}
                   vGridRef={vGridRefEIP7702}
