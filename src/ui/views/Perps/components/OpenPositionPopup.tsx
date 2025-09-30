@@ -589,6 +589,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       <AutoClosePositionPopup
         visible={autoCloseVisible}
         coin={coin}
+        szDecimals={szDecimals}
         type="openPosition"
         price={markPrice}
         liqPrice={Number(estimatedLiquidationPrice)}
