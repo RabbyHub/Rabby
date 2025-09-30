@@ -669,6 +669,7 @@ export const PerpsSingleCoin = () => {
         price={positionData?.entryPrice || markPrice}
         direction={(positionData?.direction || 'Long') as 'Long' | 'Short'}
         size={Math.abs(positionData?.size || 0)}
+        szDecimals={currentAssetCtx?.szDecimals || 0}
         pxDecimals={currentAssetCtx?.pxDecimals || 2}
         onClose={() => setAutoCloseVisible(false)}
         handleSetAutoClose={async (params: {
