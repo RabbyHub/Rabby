@@ -4787,17 +4787,17 @@
     events "^3.3.0"
     web3-utils "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@1.4.4":
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.4.tgz#e91bd60cdfe06bbf0badb09ee2b2da9ab8febfd8"
-  integrity sha512-z/GKHZq+OfwsXFF1NkqEgzKAMeUC74YxSKvBr7s9K5hOjms5f/HQx9C0LYJKDN6HoPKZXelt5Zm9zgFryHoaBg==
+"@rabby-wallet/gnosis-sdk@1.4.5":
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.4.5.tgz#2be23706c1f39fb71a7962e96ea3a4ce95aa13e0"
+  integrity sha512-kr1DWbNVr6tgrRtJK82RCBTplxdly7aRINwsez4ZSK5FN3cukNIMiRrLN0QnMpKso2yXy7ABApHrqdRBHxhtug==
   dependencies:
     "@ethersproject/bignumber" "5.5.0"
     "@ethersproject/bytes" "5.5.0"
     "@ethersproject/contracts" "5.5.0"
     "@ethersproject/providers" "5.5.0"
     "@ethersproject/solidity" "5.5.0"
-    "@safe-global/api-kit" "2.5.8"
+    "@safe-global/api-kit" "4.0.0"
     "@safe-global/protocol-kit" "5.2.1"
     "@safe-global/safe-deployments" "1.37.36"
     "@safe-global/types-kit" "1.0.2"
@@ -4968,13 +4968,13 @@
   dependencies:
     reselect "^4.0.0"
 
-"@safe-global/api-kit@2.5.8":
-  version "2.5.8"
-  resolved "https://registry.yarnpkg.com/@safe-global/api-kit/-/api-kit-2.5.8.tgz#436cfcebc4fdf087c65cf0b7b8fd1d0444d700b0"
-  integrity sha512-+509+k/QAkqbCdR3XpD46b2Qy7gxKTeY+buNGzd35KgS+LaFbgj4b4fDH9xYgEXEFRlDAxmCmwAi8bc+9+ByOA==
+"@safe-global/api-kit@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@safe-global/api-kit/-/api-kit-4.0.0.tgz#7c686258041bc0db5c5eac6a8f33862d679e7b85"
+  integrity sha512-xtLLi6OXguLw8cLoYnzCxqmirzRK4sSORxaiBDXdxJfBXIZLLKvYwQyDjsPL+2W4jKlJVcSLCw5EfolJahNMYg==
   dependencies:
-    "@safe-global/protocol-kit" "^5.2.1"
-    "@safe-global/types-kit" "^1.0.2"
+    "@safe-global/protocol-kit" "^6.1.0"
+    "@safe-global/types-kit" "^3.0.0"
     node-fetch "^2.7.0"
     viem "^2.21.8"
 
@@ -5031,16 +5031,16 @@
     "@noble/curves" "^1.6.0"
     "@peculiar/asn1-schema" "^2.3.13"
 
-"@safe-global/protocol-kit@^5.2.1":
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/@safe-global/protocol-kit/-/protocol-kit-5.2.4.tgz#bac72cc5cf7c5ccbbe87b75e96fa5d1f3f5836c6"
-  integrity sha512-HqEIoclgeit1xsNyZfnscUA3q3uwr0VwoDAnLpVpOTY3y/oh8AEwsFFYs5UGZ05zfQb5t2yfvDSZt0ye+8y86g==
+"@safe-global/protocol-kit@^6.1.0":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@safe-global/protocol-kit/-/protocol-kit-6.1.1.tgz#f9c262f7b9fbafa0f58e2e9185b3e4cb28d43e26"
+  integrity sha512-SlRosKB52h1CV2gMlKG4UOvh2j4tXuzz1GZ/yQ1HD0Zvm5azUlaytFwKzHun9xNVvfe+vvSNHUEGX2Umy+rQ9A==
   dependencies:
-    "@safe-global/safe-deployments" "^1.37.28"
-    "@safe-global/safe-modules-deployments" "^2.2.5"
-    "@safe-global/types-kit" "^1.0.4"
+    "@safe-global/safe-deployments" "^1.37.42"
+    "@safe-global/safe-modules-deployments" "^2.2.14"
+    "@safe-global/types-kit" "^3.0.0"
     abitype "^1.0.2"
-    semver "^7.6.3"
+    semver "^7.7.2"
     viem "^2.21.8"
   optionalDependencies:
     "@noble/curves" "^1.6.0"
@@ -5078,12 +5078,24 @@
   dependencies:
     semver "^7.6.2"
 
-"@safe-global/safe-deployments@^1.37.26", "@safe-global/safe-deployments@^1.37.28":
+"@safe-global/safe-deployments@^1.37.26":
   version "1.37.30"
   resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.30.tgz#6b9654b429424a3081ec99e34753fe933bf59746"
   integrity sha512-fARm/2VkT4Om/EoaVG4G/TvxaXnVfJZQrsXi/3eDcIB0NwkjgTHoku7FfdY4Gl3EINCaUHnWT9t7CNMPJu/I5w==
   dependencies:
     semver "^7.6.2"
+
+"@safe-global/safe-deployments@^1.37.42":
+  version "1.37.45"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.45.tgz#1e017a5a6a237772b93255ac8cb6ac9ad2024d23"
+  integrity sha512-HLH8nJSVbDlx/p3Yzhspyz9q9pITSGvw2UqlmXfAyrz6VSM8zc9xUWlBeqaUEzvmgon9YUgfstUMz2MElRUCfQ==
+  dependencies:
+    semver "^7.6.2"
+
+"@safe-global/safe-modules-deployments@^2.2.14":
+  version "2.2.16"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-modules-deployments/-/safe-modules-deployments-2.2.16.tgz#909fbf1fca9c8a949b50aff6a3adf23b5dd2df9b"
+  integrity sha512-/pSkOy8GYCbrR7ZiV6uYTOcenP2JZiiQJSLt/Dd7ROpTL9B7KdSuB6sVIfNI+1hNPgXYj7kcfCZZgPloxFcuFw==
 
 "@safe-global/safe-modules-deployments@^2.2.4":
   version "2.2.4"
@@ -5127,10 +5139,17 @@
   dependencies:
     abitype "^1.0.2"
 
-"@safe-global/types-kit@^1.0.2", "@safe-global/types-kit@^1.0.4":
+"@safe-global/types-kit@^1.0.2":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@safe-global/types-kit/-/types-kit-1.0.4.tgz#b847ba4e67f3545ecc04b7722c27eae715aade57"
   integrity sha512-PTVgu+tNrC0km7J/vSZBDGyv0yAEc9IWgh6oWyBPsCysxuLUqyVA53K1qrzzGfJL2mzpC7Bj4bx+Bt6iP9m/yQ==
+  dependencies:
+    abitype "^1.0.2"
+
+"@safe-global/types-kit@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@safe-global/types-kit/-/types-kit-3.0.0.tgz#b35826af0e417fa02a540b874c109b5ddb5ed086"
+  integrity sha512-AZWIlR5MguDPdGiOj7BB4JQPY2afqmWQww1mu8m8Oi16HHBW99G01kFOu4NEHBwEU1cgwWOMY19hsI5KyL4W2w==
   dependencies:
     abitype "^1.0.2"
 
@@ -18853,6 +18872,11 @@ semver@^7.6.2, semver@^7.6.3:
   version "7.6.3"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
   integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==
+
+semver@^7.7.2:
+  version "7.7.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.2.tgz#67d99fdcd35cec21e6f8b87a7fd515a33f982b58"
+  integrity sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==
 
 send@0.18.0:
   version "0.18.0"
