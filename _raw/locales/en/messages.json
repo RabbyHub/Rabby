@@ -1026,6 +1026,7 @@
             "noMatchText": "No Match"
           }
         },
+        "EIP7702SupportChains": "EIP-7702 Supported Chains:",
         "ApprovalContractItem": {
           "ApprovalCount_one": "Approval",
           "ApprovalCount_other": "Approvals"
@@ -3180,10 +3181,7 @@
       "title": "Risk Warning"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."

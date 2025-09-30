@@ -12,7 +12,7 @@ import { VariableSizeGrid } from 'react-window';
 import { Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const chains = [
+export const EIP7702_REVOKE_SUPPORTED_CHAINS = [
   CHAINS_ENUM.ETH,
   CHAINS_ENUM.BSC,
   CHAINS_ENUM.OP,
@@ -122,7 +122,7 @@ export const useEIP7702ApprovalsQuery = ({
     }
     return await checkEIP7702Delegation(
       accountAddress,
-      chains,
+      EIP7702_REVOKE_SUPPORTED_CHAINS,
       wallet.requestETHRpc
     );
   }, [accountAddress]);
