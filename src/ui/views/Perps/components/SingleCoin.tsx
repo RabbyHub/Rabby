@@ -643,7 +643,7 @@ export const PerpsSingleCoin = () => {
         visible={closePositionVisible}
         coin={coin}
         providerFee={providerFee}
-        direction={positionDirection}
+        direction={positionData?.direction as 'Long' | 'Short'}
         positionSize={positionData?.size.toString() || '0'}
         pnl={positionData?.pnl || 0}
         onCancel={() => setClosePositionVisible(false)}
@@ -669,6 +669,7 @@ export const PerpsSingleCoin = () => {
         price={positionData?.entryPrice || markPrice}
         direction={(positionData?.direction || 'Long') as 'Long' | 'Short'}
         size={Math.abs(positionData?.size || 0)}
+        szDecimals={currentAssetCtx?.szDecimals || 0}
         pxDecimals={currentAssetCtx?.pxDecimals || 2}
         onClose={() => setAutoCloseVisible(false)}
         handleSetAutoClose={async (params: {

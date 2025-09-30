@@ -13,6 +13,7 @@ interface AutoClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   size: number;
   liqPrice: number;
   pxDecimals: number;
+  szDecimals: number;
   onClose: () => void;
   type: 'openPosition' | 'hasPosition';
   handleSetAutoClose: (params: {
@@ -29,6 +30,7 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
   size,
   liqPrice,
   pxDecimals,
+  szDecimals,
   onClose,
   type,
   handleSetAutoClose,
@@ -50,6 +52,35 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
       return () => clearTimeout(timer);
     }
   }, [visible]);
+
+  // Validate price input based on significant figures and decimal places
+  const validatePriceInput = useMemoizedFn(
+    (value: string, szDecimals: number): boolean => {
+      if (!value || value === '0' || value === '0.') return true;
+
+      // Check if it's an integer (no decimal point or ends with decimal point)
+      if (!value.includes('.') || value.endsWith('.')) {
+        return true; // Integers are always allowed
+      }
+
+      // Split integer and decimal parts
+      const [integerPart, decimalPart] = value.split('.');
+
+      // Check decimal places: max (6 - szDecimals)
+      const maxDecimals = 6 - szDecimals;
+      if (decimalPart.length > maxDecimals) {
+        return false;
+      }
+
+      // Calculate significant figures (remove leading zeros)
+      const allDigits = (integerPart + decimalPart).replace(/^0+/, '');
+      if (allDigits.length > 5) {
+        return false;
+      }
+
+      return true;
+    }
+  );
 
   const { tpProfit, slLoss } = React.useMemo(() => {
     const tp = Number(tpPrice) - price;
@@ -230,7 +261,10 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
                 if (value.startsWith('$')) {
                   value = value.slice(1);
                 }
-                if (/^\d*\.?\d*$/.test(value) || value === '') {
+                if (
+                  (/^\d*\.?\d*$/.test(value) || value === '') &&
+                  validatePriceInput(value, szDecimals)
+                ) {
                   setTpPrice(value);
                 }
               }}
@@ -273,7 +307,10 @@ export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
                 if (value.startsWith('$')) {
                   value = value.slice(1);
                 }
-                if (/^\d*\.?\d*$/.test(value) || value === '') {
+                if (
+                  (/^\d*\.?\d*$/.test(value) || value === '') &&
+                  validatePriceInput(value, szDecimals)
+                ) {
                   setSlPrice(value);
                 }
               }}
