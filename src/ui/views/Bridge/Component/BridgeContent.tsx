@@ -29,7 +29,7 @@ import stats from '@/stats';
 import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { CHAINS_ENUM, DBK_CHAIN_ID } from '@/constant';
 import { useHistory } from 'react-router-dom';
 import { BridgeToken } from './BridgeToken';
 import { BridgeShowMore, RecommendFromToken } from './BridgeShowMore';
@@ -51,6 +51,7 @@ import {
   useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from '../../Swap/Component/PendingTxItem';
+import { DbkButton } from '../../Ecology/dbk-chain/components/DbkButton';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -710,93 +711,106 @@ export const BridgeContent = () => {
             isTab ? 'rounded-b-[16px]' : ''
           )}
         >
-          <TooltipWithMagnetArrow
-            overlayClassName="rectangle w-[max-content]"
-            title={
-              !isSupportedChain && externalDapps.length < 1
-                ? t('component.externalSwapBrideDappPopup.noDapps')
-                : t('page.swap.insufficient-balance')
-            }
-            visible={
-              !isSupportedChain && externalDapps.length < 1
-                ? undefined
-                : inSufficient && selectedBridgeQuote
-                ? undefined
-                : false
-            }
-          >
-            {canUseDirectSubmitTx &&
-            currentAccount?.type &&
-            isSupportedChain ? (
-              <DirectSignToConfirmBtn
-                disabled={btnDisabled}
-                title={t('page.bridge.title')}
-                onConfirm={handleBridge}
-                showRiskTips={showRiskTips && !btnDisabled}
-                accountType={currentAccount?.type}
-                riskReset={btnDisabled}
-                loading={miniSignLoading}
-              />
-            ) : (
-              <Button
-                loading={fetchingBridgeQuote}
-                type="primary"
-                block
-                size="large"
-                className="h-[48px] text-white text-[16px] font-medium"
-                onClick={() => {
-                  if (showExternalDappTips && externalDapps.length > 0) {
-                    setExternalDappOpen(true);
-                    return;
-                  }
-                  if (fetchingBridgeQuote) return;
-                  if (!selectedBridgeQuote) {
-                    refresh((e) => e + 1);
+          {(fromChain as string) === 'DBK' ? (
+            <DbkButton
+              className="h-[48px] w-full text-[16px] font-medium bg-r-orange-DBK border-transparent rounded-[6px]"
+              onClick={() => {
+                history.push(
+                  `/ecology/${DBK_CHAIN_ID}/bridge?activeTab=withdraw`
+                );
+              }}
+            >
+              {t('page.bridge.bridgeDbkBtn')}
+            </DbkButton>
+          ) : (
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle w-[max-content]"
+              title={
+                !isSupportedChain && externalDapps.length < 1
+                  ? t('component.externalSwapBrideDappPopup.noDapps')
+                  : t('page.swap.insufficient-balance')
+              }
+              visible={
+                !isSupportedChain && externalDapps.length < 1
+                  ? undefined
+                  : inSufficient && selectedBridgeQuote
+                  ? undefined
+                  : false
+              }
+            >
+              {canUseDirectSubmitTx &&
+              currentAccount?.type &&
+              isSupportedChain ? (
+                <DirectSignToConfirmBtn
+                  disabled={btnDisabled}
+                  title={t('page.bridge.title')}
+                  onConfirm={handleBridge}
+                  showRiskTips={showRiskTips && !btnDisabled}
+                  accountType={currentAccount?.type}
+                  riskReset={btnDisabled}
+                  loading={miniSignLoading}
+                />
+              ) : (
+                <Button
+                  loading={fetchingBridgeQuote}
+                  type="primary"
+                  block
+                  size="large"
+                  className="h-[48px] text-white text-[16px] font-medium"
+                  onClick={() => {
+                    if (showExternalDappTips && externalDapps.length > 0) {
+                      setExternalDappOpen(true);
+                      return;
+                    }
+                    if (fetchingBridgeQuote) return;
+                    if (!selectedBridgeQuote) {
+                      refresh((e) => e + 1);
 
-                    return;
-                  }
-                  if (selectedBridgeQuote?.shouldTwoStepApprove) {
-                    return Modal.confirm({
-                      width: 360,
-                      closable: true,
-                      centered: true,
-                      className: twoStepApproveCn,
-                      title: null,
-                      content: (
-                        <>
-                          <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                            Sign 2 transactions to change allowance
-                          </div>
-                          <div className="text-13 leading-[17px]  text-r-neutral-body">
-                            Token USDT requires 2 transactions to change
-                            allowance. First you would need to reset allowance
-                            to zero, and only then set new allowance value.
-                          </div>
-                        </>
-                      ),
-                      okText: 'Proceed with two step approve',
+                      return;
+                    }
+                    if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                      return Modal.confirm({
+                        width: 360,
+                        closable: true,
+                        centered: true,
+                        className: twoStepApproveCn,
+                        title: null,
+                        content: (
+                          <>
+                            <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                              Sign 2 transactions to change allowance
+                            </div>
+                            <div className="text-13 leading-[17px]  text-r-neutral-body">
+                              Token USDT requires 2 transactions to change
+                              allowance. First you would need to reset allowance
+                              to zero, and only then set new allowance value.
+                            </div>
+                          </>
+                        ),
+                        okText: 'Proceed with two step approve',
 
-                      onOk() {
-                        // gotoBridge();
-                        handleBridge();
-                      },
-                    });
+                        onOk() {
+                          // gotoBridge();
+                          handleBridge();
+                        },
+                      });
+                    }
+                    // gotoBridge();
+                    handleBridge();
+                  }}
+                  disabled={
+                    !isSupportedChain && externalDapps.length > 0
+                      ? false
+                      : canUseDirectSubmitTx
+                      ? btnDisabled || disabledProcess
+                      : btnDisabled
                   }
-                  // gotoBridge();
-                  handleBridge();
-                }}
-                disabled={
-                  !isSupportedChain && externalDapps.length > 0
-                    ? false
-                    : canUseDirectSubmitTx
-                    ? btnDisabled || disabledProcess
-                    : btnDisabled
-                }
-              >
-                {btnText}
-              </Button>
-            )}
-          </TooltipWithMagnetArrow>
+                >
+                  {btnText}
+                </Button>
+              )}
+            </TooltipWithMagnetArrow>
+          )}
         </div>
         {fromToken && toToken ? (
           <QuoteList
