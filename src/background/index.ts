@@ -14,6 +14,7 @@ import {
   IS_FIREFOX,
   KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
+  SAFE_API_KEY,
 } from 'consts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -61,6 +62,7 @@ import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
 
 Safe.adapter = fetchAdapter as any;
+Safe.apiKey = SAFE_API_KEY;
 
 dayjs.extend(utc);
 
