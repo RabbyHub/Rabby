@@ -827,7 +827,8 @@
         },
         "ViewMore": {
           "text": "Daha fazla göster"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 Desteklenen Zincirler:"
       },
       "search": {
         "placeholder": "İsme/adrese göre {{ type }} ara"
@@ -1350,7 +1351,9 @@
         "customizedHasAddedTips": "Token Rabby tarafından listelenmemiştir. Bunu token listesine manuel olarak eklediniz.",
         "IssuerWebsite": "Yayımcının Web Sitesi",
         "blockedListTitle": "blokajlı token",
-        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez."
+        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez.",
+        "bridge": "Köprü",
+        "bridgeToEth": "Ethereum Zinciri'ne Köprü"
       },
       "assets": {
         "usdValue": "USD DEĞERİ",
@@ -2166,7 +2169,8 @@
       "slippage-adjusted-refresh-quote": "滑点已调整。刷新路线。",
       "select-chain": "Zincir Seç",
       "pendingTip": "Tx gönderildi. Tx uzun saatler boyunca beklemede kalırsa, ayarlardan beklemeyi temizlemeyi deneyebilirsiniz.",
-      "need-to-approve-token-before-bridge": "Bridge öncesinde token onayı gerekiyor"
+      "need-to-approve-token-before-bridge": "Bridge öncesinde token onayı gerekiyor",
+      "bridgeDbkBtn": "DBK Resmi Servisi Üzerinden Köprü"
     },
     "pendingDetail": {
       "Header": {
@@ -2833,6 +2837,162 @@
       "riskTitle": "Beyaz Liste Adresi Ekle",
       "exchangeAddress": "Değişim Adresi",
       "address": "Adres"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneHour": "1H",
+        "oneWeek": "1W",
+        "ytd": "YTD",
+        "oneDay": "1G",
+        "oneMonth": "1M",
+        "all": "TÜM"
+      },
+      "newUserProcess": {
+        "gotIt": "Tamam",
+        "fifthTitle": "Tasfiye",
+        "firstTitle": "Ana Sürekli Vadeli İşlemler",
+        "next": "Sonraki",
+        "secondTitle": "Uzun Veya Alış Yap",
+        "fourthTitle": "Kaldıraç Ayarlama",
+        "thirdTitle": "Kısa Git",
+        "firstDescription": "Sürekli vadeli işlemlerle sadece varlıkları işlemiyorsunuz. Gelecekte ne olacağını düşündüğünüzü işlemiyorsunuz.",
+        "fourthDescription": "Kaldıraç, yatırdığınızdan daha fazlasıyla ticaret yapmanızı sağlar. Hem kazançlarınızı hem de kayıplarınızı artırabilir.",
+        "secondDescription": "Fiyatın yükselmesini beklediğinizde, bir long açarsınız. Fiyat yükselirse, kazanç sağlarsınız. Eğer düşerse, kaybedersiniz.",
+        "thirdDescription": "Fiyatın düşmesini beklediğinizde, bir short pozisyonu açarsınız. Fiyat düşerse kazanırsınız. Fiyat yükselirse kaybedersiniz.",
+        "fifthDescription": "Her pozisyonun bir likidasyon fiyatı vardır. Piyasa fiyatı bu seviyeye ulaşırsa, pozisyonunuz kapatılacaktır. Yüksek kaldıraç kullanmak likidasyon riskini artırır."
+      },
+      "historyDetail": {
+        "title": {
+          "closeLongSl": "Kapat Long Stop Loss",
+          "openLong": "Uzun Pozisyon Aç",
+          "closeShort": "Kapat Short",
+          "closeLong": "Uzun Pozisyonu Kapat",
+          "openShort": "Açık Kısa",
+          "closeLongLiquidation": "Kapat Uzun Likidasyon",
+          "closeShortSl": "Kısa Poziyon Kapat, Zarar Durdur",
+          "closeShortTp": "Kapat Short Kar Al",
+          "closeShortLiquidation": "Kapat Kısa Tasfiye",
+          "closeLongTp": "Kapat Long Kar Al"
+        },
+        "price": "Fiyat",
+        "tradeValue": "Ticaret Değeri",
+        "fee": "Ücret",
+        "size": "Büyüklük",
+        "date": "Tarih",
+        "provider": "Sağlayıcı",
+        "closedPnl": "Kapandı PNL"
+      },
+      "logoutConfirmModal": {
+        "title": "Mevcut Adresten Çıkış Yap",
+        "desc": "Mevcut Perps hesabınızdan çıkış yapıyorsunuz. Bu adresle giriş yaparak istediğiniz zaman geri yükleyebilirsiniz."
+      },
+      "depositAmountPopup": {
+        "receiveToken": "Token Alın",
+        "payWith": "Öde ile",
+        "estReceive": "Tahmini Alım: {{balance}}",
+        "minimumDepositSize": "Minimum depozito miktarı 5 $'dır.",
+        "fetchQuoteFailed": "Yatırım alıntısını almakta başarısız olundu. Lütfen token'ı değiştirin.",
+        "minimumWithdrawSize": "Minimum çekim tutarı 2$'dır.",
+        "estReceiveTooltip": "Cross-chain deposit LiFi aracılığıyla işlenir, bazı kayıplara neden olabilir. Tahmini varış süresi {{number}}s.",
+        "goBridgeTips": "Sadece Arbitrum üzerindeki USDC doğrudan depozito için desteklenmektedir. Lütfen mevcut tokeninizi Arbitrum üzerindeki USDC'ye köprüleyin.",
+        "feeTipTooltip": "Hyperliquid tarafından alınan Çekim Ücreti: 1 $",
+        "goSwapTips": "Yalnızca Arbitrum'da USDC doğrudan yatırma için desteklenmektedir. Lütfen mevcut tokenınızı yatırmadan önce USDC ile değiştirin.",
+        "feeTip": "$1 Ücret"
+      },
+      "home": {
+        "pnl": "PNL",
+        "size": "Büyüklük",
+        "margin": "Marjinal",
+        "liquidationPrice": "Liq.Fiyat",
+        "markPrice": "İşaret Fiyatı",
+        "entryPrice": "Giriş Fiyatı"
+      },
+      "singleCoin": {
+        "openInterestTips": "Bu sözleşmedeki tüm kullanıcıların toplam açık pozisyonu.",
+        "fundingTips": "Bu, tüccarların perp sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için ödediği veya aldığı saatlik bir ücrettir. Eğer pozitifse, long short'a öder. Eğer negatifse, short long'a öder.",
+        "fundingPaymentsTips": "Bu, pozisyonun açıldığı tarihten itibaren net finansman ödemeleridir. Fonlama, türev sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için yatırımcıların ödeyip veya aldığı saatlik bir ücrettir."
+      },
+      "accountSelector": {
+        "hyperliquidBalance": "Perps Bakiyesi",
+        "notActivatedAddress": "Aktif Değil",
+        "noPosition": "Hiç Pozisyon Yok",
+        "activatedAddress": "Aktif Edildi"
+      },
+      "title": "Perps",
+      "deposit": "Yatırma",
+      "positions": "Pozisyonlar",
+      "permissionTips": "Pozisyon açma, bölgenizde desteklenmemektedir.",
+      "withdraw": "Çekmek",
+      "pending": "Beklemede",
+      "margin": "Marjinal",
+      "price": "Fiyat",
+      "logInPerpsAccount": "Perps hesabıma giriş yap",
+      "direction": "Yön",
+      "size": "Boyut",
+      "lastUsed": "Son kullanılma zamanı",
+      "yourPosition": "Pozisyonunuz",
+      "availableBalance": "Mevcut: {{balance}}",
+      "entryPrice": "Giriş Fiyatı",
+      "leverage": "Kaldıraç",
+      "tradePerps": "Perps Ticaret Yapın",
+      "explorePerps": "Perps'i Keşfedin",
+      "completed": "Tamamlandı",
+      "openShort": "Kısa Pozisyon Aç",
+      "seeMore": "Daha Fazla Göster",
+      "marginIsolated": "Marj (Yalıtılmış)",
+      "liquidationPrice": "Tasfiye Fiyatı",
+      "learnAboutPerps": "Perps hakkında bilgi edinin",
+      "autoClose": "Otomatik Kapat",
+      "closeLong": "Uzun Kapat",
+      "closeShort": "Kapat Short",
+      "history": "Geçmiş",
+      "logInTips": "Adresinizle giriş yapın ve perps ticaretine başlamak için fon yatırın.",
+      "openLong": "Uzun Pozisyon Aç",
+      "balanceAvailable": "Bakiyeniz: {{balance}}",
+      "directDeposit": "Doğrudan Yatırım",
+      "pnl": "PNL",
+      "marginCross": "Marj (Çapraz)",
+      "selectTokenToDeposit": "Token Yatırmak İçin Seçin",
+      "fundingPayments": "Fonlama Ödemeleri",
+      "funding": "Fonlama",
+      "timeAgo": "{{time}} önce",
+      "takeProfit": "kar al getir",
+      "review": "Gözden Geçir",
+      "deleteAgentSuccess": "Ajan başarıyla silindi",
+      "stopLossWhen": "Stop-Loss Fiyatı Belirle",
+      "long": "Uzun",
+      "StopLoss": "Zararı durdurma",
+      "short": "Kısa",
+      "stopLossTipsShort": "Stop loss fiyatı, mevcut fiyatın üzerinde olmalıdır.",
+      "TakeProfit": "Kar alınıp satılacak",
+      "availableToTrade": "Ticaret için mevcut",
+      "takeProfitWhen": "Kâr Alım Fiyatını Belirle",
+      "openInterest": "Açık Pozisyon",
+      "takeProfitTipsShort": "Kar alım fiyatı mevcut fiyatın altında olmalıdır.",
+      "providerFeeTips": "Hyperliquid ücreti: {{fee}}",
+      "dailyVolume": "24h Hacim",
+      "confirm": "Onayla",
+      "stopLoss": "zarar durdurma",
+      "insufficientBalance": "Yetersiz bakiyeniz var",
+      "takeProfitTipsLong": "Kar alım fiyatı mevcut fiyatın üzerinde olmalıdır.",
+      "rabbyFeeTips": "Rabby ücreti: 0.04%",
+      "rabbyFeeTipsZero": "Rabby ücreti: %0",
+      "sizeTips": "İşleminizin toplam değeri veya miktarı, marjin ve kaldıraç tarafından belirlenir.",
+      "stopLossTipsLong": "Zararı durdurma fiyatı mevcut fiyatın altında olmalıdır.",
+      "stopLossTipsLongLiquidation": "Fiyat likidite fiyatından ({{price}}) daha düşük.",
+      "deleteAgentModal": "Maksimum ajan sayısına ulaştınız. Yeni bir ajanın oluşturulması için mevcut bir ajanı silmek ister misiniz?",
+      "liquidationPriceTips": "Pozisyonunuzun marjınız bakım marjı seviyesinin altına düştüğünde daha fazla kaybı önlemek için borsa tarafından otomatik olarak kapandığı fiyat.",
+      "fee": "Ücret",
+      "estimatedLiquidationPrice": "Tahmin Edilen Tasfiye Fiyatı",
+      "stopLossTipsShortLiquidation": "Fiyat, tasfiye fiyatından ({{price}}) daha yüksektir.",
+      "liquidation": "Tasfiye",
+      "reviewOrder": "Sipariş İncelemesi",
+      "leverageRangeMinError": "Minimum kaldıraç {{min}}x'tir.",
+      "maximumOrderSize": "Maksimum emir boyutu {{amount}}’dır.",
+      "back": "Geri dön",
+      "leverageRangeMaxError": "Maksimum kaldıraç {{max}}x'dir.",
+      "minimumOrderSize": "Minimum sipariş boyutu $10'dur.",
+      "openPositionTips": "Sürekli sözleşmeler ticareti, yüksek kaldıraç ve piyasa volatilitesi nedeniyle yatırımınızın ve teminatınızın ani ve toplam kaybı da dahil olmak üzere önemli riskler içermektedir ve tüm kullanıcılar için uygun olmayabilir. Fiyatlar, finansman oranları ve likiditeden etkilenebilir ve bildirim olmaksızın otomatik likidasyonlara tabi olabilirsiniz. Piyasa verileri Hyperliquid tarafından sağlanmaktadır."
     }
   },
   "component": {

@@ -827,7 +827,8 @@
         },
         "ViewMore": {
           "text": "자세히 보기"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 지원 체인:"
       },
       "search": {
         "placeholder": "이름/주소로 {{ type }} 검색"
@@ -1115,7 +1116,8 @@
       "enable-it": " 활성화하십시오",
       "price-impact": "가격 영향",
       "max-tips": "이 값은 브리지를 위한 가스 비용을 빼서 계산됩니다.",
-      "loss-tips": "{{usd}}를 잃고 있습니다. 다른 금액을 시도해 보세요."
+      "loss-tips": "{{usd}}를 잃고 있습니다. 다른 금액을 시도해 보세요.",
+      "bridgeDbkBtn": "DBK 공식 서비스 통해 브리지"
     },
     "manageAddress": {
       "deleted": "삭제됨",
@@ -1422,7 +1424,9 @@
         "fdvTips": "시장에서 유통되고 있는 최대 공급량 기준의 시가총액. 완전 희석 가치(FDV) = 가격 x 최대 공급량. 만약 최대 공급량이 null이면, FDV = 가격 x 총 공급량. 만약 최대 공급량이나 총 공급량이 정의되지 않았거나 무한대인 경우, FDV는 표시되지 않습니다.",
         "ListedBy": "제목: Listed by",
         "verifyScamTips": "이것은 사기 토큰입니다.",
-        "BridgeProvider": "브리지 제공자"
+        "BridgeProvider": "브리지 제공자",
+        "bridge": "브리지",
+        "bridgeToEth": "Ethereum 체인으로 브릿지"
       },
       "assets": {
         "portfolio": {
@@ -2827,6 +2831,162 @@
       "invalidAddress": "이 주소는 유효하지 않습니다",
       "address": "주소",
       "name": "이름"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneDay": "1D",
+        "oneMonth": "1M",
+        "oneHour": "1H",
+        "oneWeek": "1W",
+        "ytd": "YTD",
+        "all": "모두"
+      },
+      "newUserProcess": {
+        "next": "다음",
+        "firstTitle": "마스터 영구 선물 계약",
+        "fifthTitle": "청산",
+        "thirdTitle": "숏 하기",
+        "secondTitle": "롱 포지션 진입",
+        "fourthTitle": "레버리지 조정",
+        "gotIt": "알겠어요",
+        "firstDescription": "영구 선물과 함께, 당신은 단순히 자산을 거래하는 것이 아닙니다. 당신은 다음에 일어날 것이라고 생각하는 것을 거래하고 있습니다.",
+        "fifthDescription": "모든 포지션에는 청산 가격이 있습니다. 시장 가격이 이 가격에 도달하면 귀하의 포지션이 청산됩니다. 높은 레버리지를 사용하면 청산 위험이 증가합니다.",
+        "secondDescription": "가격이 상승할 것으로 예상되면 롱 포지션을 엽니다. 가격이 상승하면 이익을 얻고, 하락하면 손실을 입습니다.",
+        "thirdDescription": "가격이 하락할 것으로 예상될 때, 당신은 숏 포지션을 엽니다. 가격이 하락하면 이익을 얻습니다. 가격이 상승하면 손실을 입습니다.",
+        "fourthDescription": "레버리지는 당신이 투자한 것보다 더 많은 자금으로 거래할 수 있게 해줍니다. 이것은 당신의 이익과 손실을 모두 증가시킬 수 있습니다."
+      },
+      "historyDetail": {
+        "title": {
+          "closeLongTp": "롱 포지션 청산 이익 실현",
+          "closeLongLiquidation": "롱 청산 닫기",
+          "closeLongSl": "Long 청산 손절매",
+          "closeShortTp": "숏 청산 전익 실현",
+          "closeLong": "롱 청산",
+          "openShort": "Open Short",
+          "closeShort": "Short 청산",
+          "closeShortSl": "숏 청산 손절",
+          "closeShortLiquidation": "숏 청산 마감",
+          "openLong": "롱 포지션 열기"
+        },
+        "price": "가격",
+        "size": "크기",
+        "fee": "수수료",
+        "provider": "제공자",
+        "date": "날짜",
+        "closedPnl": "닫힌 PNL",
+        "tradeValue": "거래 가치"
+      },
+      "logoutConfirmModal": {
+        "title": "현재 주소 로그아웃",
+        "desc": "현재 Perps 계정에서 로그아웃하고 있습니다. 이 주소로 로그인하면 언제든지 계정을 복구할 수 있습니다."
+      },
+      "depositAmountPopup": {
+        "payWith": "결제 방법",
+        "receiveToken": "토큰 수신",
+        "feeTipTooltip": "Hyperliquid의 출금 수수료: $1",
+        "feeTip": "$1 수수료",
+        "minimumDepositSize": "최소 입금 금액은 $5입니다.",
+        "fetchQuoteFailed": "입금 견적을 가져오는 데 실패했습니다. 토큰을 전환하세요.",
+        "estReceive": "예상 수령액: {{balance}}",
+        "goSwapTips": "Arbitrum에서 직접 입금이 지원되는 것은 오직 USDC만 가능합니다. 입금하기 전에 현재 토큰을 USDC로 교환해 주세요.",
+        "goBridgeTips": "Arbitrum에서 직접 입금을 위해서는 USDC만 지원됩니다. 입금 전에 현재 보유한 토큰을 Arbitrum의 USDC로 브릿지 해주세요.",
+        "estReceiveTooltip": "크로스 체인 입금은 LiFi를 통해 처리되며, 일부 슬리피지가 발생할 수 있습니다. 예상 도착 시간은 {{number}}초입니다.",
+        "minimumWithdrawSize": "최소 출금 금액은 $2입니다."
+      },
+      "home": {
+        "size": "사이즈",
+        "markPrice": "마크 가격",
+        "entryPrice": "진입 가격",
+        "pnl": "PNL",
+        "liquidationPrice": "Liq. 가격",
+        "margin": "마진"
+      },
+      "singleCoin": {
+        "openInterestTips": "이 계약에서 모든 사용자의 총 미결 포지션입니다.",
+        "fundingPaymentsTips": "이것은 포지션이 열릴 때부터의 순 펀딩 지급액입니다. 펀딩은 트레이더가 영구 계약의 가격을 실제 토큰 가격에 가깝게 유지하기 위해 지불하거나 받는 시간당 수수료입니다.",
+        "fundingTips": "이것은 거래자들이 perp 계약의 가격을 토큰의 실제 가격에 가깝게 유지하기 위해 지불하거나 수령하는 시간당 수수료입니다. 긍정적일 경우, 롱은 숏에게 지급합니다. 부정적일 경우, 숏은 롱에게 지급합니다."
+      },
+      "accountSelector": {
+        "activatedAddress": "활성화됨",
+        "hyperliquidBalance": "Perps 잔고",
+        "notActivatedAddress": "활성화되지 않음",
+        "noPosition": "포지션 없음"
+      },
+      "title": "퍼프스",
+      "deposit": "입금",
+      "positions": "포지션",
+      "permissionTips": "귀하의 지역에서는 포지션 오픈이 지원되지 않습니다.",
+      "pending": "보류 중",
+      "withdraw": "인출",
+      "margin": "마진",
+      "size": "사이즈",
+      "liquidationPrice": "청산 가격",
+      "direction": "방향",
+      "marginCross": "마진 (크로스)",
+      "availableBalance": "사용 가능: {{balance}}",
+      "closeLong": "롱 종료",
+      "autoClose": "자동 종료",
+      "lastUsed": "마지막 사용됨",
+      "history": "기록",
+      "yourPosition": "당신의 포지션",
+      "learnAboutPerps": "Perps에 대해 알아보기",
+      "seeMore": "더 보기",
+      "tradePerps": "Perps 거래하기",
+      "explorePerps": "Perps 탐색",
+      "closeShort": "쇼트 청산",
+      "leverage": "레버리지",
+      "balanceAvailable": "잔액: {{balance}}",
+      "directDeposit": "직접 입금",
+      "entryPrice": "진입 가격",
+      "selectTokenToDeposit": "토큰 선택하여 입금하기",
+      "fundingPayments": "자금 지급",
+      "completed": "완료되었습니다",
+      "price": "가격",
+      "openLong": "롱 포지션 열기",
+      "logInPerpsAccount": "내 Perps 계정에 로그인하세요",
+      "openShort": "짧게 열기",
+      "pnl": "PNL",
+      "long": "롱",
+      "takeProfit": "이익 실현",
+      "funding": "자금 조달",
+      "availableToTrade": "거래 가능",
+      "logInTips": "주소로 로그인하고 자금을 예치하여 영구계약 거래를 시작하세요.",
+      "TakeProfit": "이익 실현",
+      "openInterest": "미결제약정",
+      "stopLoss": "손절매",
+      "insufficientBalance": "잔액 부족",
+      "confirm": "확인",
+      "deleteAgentSuccess": "에이전트가 성공적으로 삭제되었습니다.",
+      "marginIsolated": "마진 (격리)",
+      "review": "리뷰",
+      "timeAgo": "{{time}} 전",
+      "dailyVolume": "24h 거래량",
+      "StopLoss": "손절매",
+      "short": "숏",
+      "stopLossTipsLongLiquidation": "가격이 청산 가격({{price}})보다 낮습니다.",
+      "takeProfitTipsLong": "이익 실현 가격은 현재 가격보다 높아야 합니다.",
+      "rabbyFeeTips": "Rabby 수수료: 0.04%",
+      "rabbyFeeTipsZero": "Rabby 수수료: 0%",
+      "stopLossWhen": "손절가 설정",
+      "takeProfitWhen": "이익 실현 가격 설정",
+      "stopLossTipsShort": "스톱 로스 가격은 현재 가격보다 높아야 합니다.",
+      "takeProfitTipsShort": "이익 실현 가격은 현재 가격보다 낮아야 합니다.",
+      "stopLossTipsShortLiquidation": "가격이 청산 가격 ({{price}})보다 높습니다.",
+      "providerFeeTips": "하이퍼유체 수수료: {{fee}}",
+      "deleteAgentModal": "최대 에이전트 수에 도달했습니다. 새 에이전트를 만들기 위해 기존 에이전트를 삭제하시겠습니까?",
+      "reviewOrder": "주문 검토",
+      "stopLossTipsLong": "스톱 로스 가격은 현재 가격보다 낮아야 합니다.",
+      "fee": "수수료",
+      "liquidationPriceTips": "마진이 유지 마진 수준 이하로 떨어질 때 추가 손실을 방지하기 위해 거래소가 귀하의 포지션을 자동으로 청산하는 가격입니다.",
+      "minimumOrderSize": "최소 주문 크기는 $10입니다.",
+      "back": "뒤로",
+      "liquidation": "청산",
+      "estimatedLiquidationPrice": "예상 청산 가격",
+      "sizeTips": "마진과 레버리지에 의해 설정된 거래의 총 가치 또는 수량.",
+      "maximumOrderSize": "최대 주문 규모는 {{amount}}입니다.",
+      "leverageRangeMaxError": "최대 레버리지는 {{max}}x입니다.",
+      "openPositionTips": "영구 계약 거래는 높은 레버리지와 시장 변동성으로 인해 투자 및 담보의 Sudden and total loss의 위험을 포함한 상당한 위험이 있으며, 모든 사용자에게 적합하지 않을 수 있습니다. 가격은 펀딩 비율 및 유동성의 영향을 받을 수 있으며, 통지 없이 자동 청산에 처해질 수 있습니다. 시장 데이터는 Hyperliquid에서 제공됩니다.",
+      "leverageRangeMinError": "최소 레버리지는 {{min}}x입니다."
     }
   },
   "component": {

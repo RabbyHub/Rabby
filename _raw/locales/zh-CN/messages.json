@@ -325,7 +325,9 @@
         "noIssuer": "没有可用的发行方信息",
         "BridgeIssue": "第三方桥接的 token",
         "ListedBy": "列出 by",
-        "fdvTips": "如果最大供应量在流通中，市场总值请参考以下公式。完全稀释估值（FDV）= 价格 x 最大供应量。如果最大供应量为零，则 FDV = 价格 x 总供应量。如果最大供应量和总供应量都没有定义或为无限，则不显示 FDV。"
+        "fdvTips": "如果最大供应量在流通中，市场总值请参考以下公式。完全稀释估值（FDV）= 价格 x 最大供应量。如果最大供应量为零，则 FDV = 价格 x 总供应量。如果最大供应量和总供应量都没有定义或为无限，则不显示 FDV。",
+        "bridge": "桥接",
+        "bridgeToEth": "桥接到 Ethereum Chain"
       },
       "assets": {
         "usdValue": "美元价值",
@@ -974,7 +976,8 @@
         },
         "ViewMore": {
           "text": "查看更多"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 支持的链："
       },
       "header": {
         "title": "{{ address }} 的授权"
@@ -2427,7 +2430,8 @@
       "max-tips": "此值通过减去桥接的 gas 成本来计算。",
       "duration": "{{duration}} 分钟",
       "recommendFromToken": "从 <1></1> 桥接以获取可用报价",
-      "est-receiving": "预计接收："
+      "est-receiving": "预计接收：",
+      "bridgeDbkBtn": "通过 DeBank 官方服务进行桥接"
     },
     "ecology": {
       "sonic": {
@@ -2868,6 +2872,162 @@
       "nameYourAddress": "命名您的地址",
       "address": "地址",
       "invalidAddress": "该地址无效"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "ytd": "年初至今",
+        "oneWeek": "1W",
+        "oneMonth": "1M",
+        "oneDay": "1天",
+        "oneHour": "1H",
+        "all": "所有"
+      },
+      "newUserProcess": {
+        "fourthTitle": "调整杠杆",
+        "fifthTitle": "清算",
+        "secondTitle": "做多",
+        "next": "下一步",
+        "thirdTitle": "做空",
+        "gotIt": "明白了",
+        "fourthDescription": "杠杆让你以超出你投入的资金进行交易。它可以同时增加你的收益和损失。",
+        "firstTitle": "主永续合约",
+        "thirdDescription": "当你预计价格会下跌时，你进行做空。如果价格下跌，你获利。如果价格上涨，你亏损。",
+        "firstDescription": "在永续合约中，您不仅仅是在交易资产。您是在交易您认为接下来会发生的事情。",
+        "fifthDescription": "每个头寸都有一个清算价格。如果市场价格达到该价格，您的头寸将被关闭。使用高杠杆会增加清算的风险。",
+        "secondDescription": "当你预计价格会上涨时，你开一个 Long。如果价格上涨，你获利。如果价格下跌，你亏损。"
+      },
+      "historyDetail": {
+        "title": {
+          "closeLong": "平仓多头",
+          "openShort": "开空头",
+          "openLong": "开多",
+          "closeLongTp": "平仓多头获利",
+          "closeShort": "平仓做空",
+          "closeShortTp": "平仓做空止盈",
+          "closeShortSl": "平仓做空止损",
+          "closeShortLiquidation": "平仓做空止损",
+          "closeLongLiquidation": "平仓做多强 liquidation",
+          "closeLongSl": "平仓多头止损"
+        },
+        "date": "日期",
+        "provider": "提供者",
+        "tradeValue": "交易价值",
+        "closedPnl": "已平仓盈亏",
+        "fee": "费用",
+        "price": "价格",
+        "size": "大小"
+      },
+      "logoutConfirmModal": {
+        "title": "登出当前地址",
+        "desc": "您正在退出当前的 Perps 账户。您可以通过使用此地址随时登录恢复它。"
+      },
+      "depositAmountPopup": {
+        "receiveToken": "接收代币",
+        "estReceive": "预计接收：{{balance}}",
+        "fetchQuoteFailed": "获取存款报价失败。请更换代币。",
+        "minimumDepositSize": "最低存款金额为 5 美元",
+        "payWith": "用...支付",
+        "feeTipTooltip": "Hyperliquid 收取的提款费：$1",
+        "feeTip": "$1 手续费",
+        "goSwapTips": "仅支持在 Arbitrum 上直接存入 USDC。请在存款前将您当前的代币兑换为 USDC。",
+        "minimumWithdrawSize": "最低提现金额为 $2",
+        "goBridgeTips": "仅支持在 Arbitrum 上直接存款的 USDC。请在存款前将您当前的代币桥接到 Arbitrum 上的 USDC。",
+        "estReceiveTooltip": "跨链存款通过 LiFi 处理，可能会产生一些滑点。预计将在 {{number}} 秒内到账。"
+      },
+      "home": {
+        "margin": "保证金",
+        "liquidationPrice": "清算价格",
+        "size": "大小",
+        "pnl": "盈亏",
+        "entryPrice": "入场价格",
+        "markPrice": "标记价格"
+      },
+      "singleCoin": {
+        "openInterestTips": "该合约上所有用户的总未平仓头寸。",
+        "fundingPaymentsTips": "这是自仓位开启以来的净资金费用。资金费用是交易者每小时支付或接收的费用，用以保持永续合约的价格接近代币的实际价格。",
+        "fundingTips": "这是一项交易者支付或接收的小时费用，用以保持永续合约的价格接近实际代币的价格。如果为正值，做多方支付做空方。如果为负值，做空方支付做多方。"
+      },
+      "accountSelector": {
+        "activatedAddress": "已激活",
+        "noPosition": "无头寸",
+        "hyperliquidBalance": "永续合约余额",
+        "notActivatedAddress": "未激活"
+      },
+      "positions": "头寸",
+      "withdraw": "提取",
+      "deposit": "存款",
+      "title": "永续合约",
+      "permissionTips": "在您的地区不支持开仓。",
+      "pending": "待处理",
+      "size": "规模",
+      "direction": "方向",
+      "pnl": "PNL",
+      "margin": "保证金",
+      "seeMore": "查看更多",
+      "yourPosition": "你的仓位",
+      "explorePerps": "探索永续合约",
+      "tradePerps": "交易永续合约",
+      "entryPrice": "入场价格",
+      "leverage": "杠杆",
+      "directDeposit": "直接存款",
+      "openLong": "开多",
+      "logInPerpsAccount": "登录我的 Perps 账户",
+      "selectTokenToDeposit": "选择要存入的 Token",
+      "autoClose": "自动平仓",
+      "availableBalance": "可用余额：{{balance}}",
+      "marginIsolated": "保证金（独立）",
+      "history": "历史",
+      "fundingPayments": "资金支付",
+      "lastUsed": "最后使用时间",
+      "price": "价格",
+      "marginCross": "保证金（交叉）",
+      "learnAboutPerps": "了解永续合约",
+      "completed": "完成",
+      "logInTips": "使用您的地址登录并存入资金以开始交易永续合约。",
+      "openShort": "开空单",
+      "closeLong": "平仓做多",
+      "liquidationPrice": "强平价格",
+      "closeShort": "平仓做空",
+      "TakeProfit": "止盈",
+      "insufficientBalance": "余额不足",
+      "short": "做空",
+      "takeProfit": "止盈",
+      "stopLossWhen": "设置止损价格",
+      "takeProfitWhen": "设置止盈价格",
+      "confirm": "确认",
+      "funding": "资金费用",
+      "deleteAgentSuccess": "代理已成功删除",
+      "stopLossTipsLong": "止损价格必须低于当前价格",
+      "review": "审查",
+      "stopLossTipsShort": "止损价必须高于当前价格",
+      "takeProfitTipsShort": "止盈价格必须低于当前价格",
+      "stopLossTipsLongLiquidation": "价格低于清算价 ({{price}})",
+      "long": "做多",
+      "availableToTrade": "可交易",
+      "StopLoss": "止损",
+      "rabbyFeeTipsZero": "Rabby费用：0%",
+      "stopLossTipsShortLiquidation": "价格高于清算价格 ({{price}})",
+      "openInterest": "未平仓合约",
+      "timeAgo": "{{time}} 之前",
+      "takeProfitTipsLong": "止盈价格必须高于当前价格",
+      "providerFeeTips": "Hyperliquid 费用：{{fee}}",
+      "rabbyFeeTips": "Rabby 费用：0.04%",
+      "deleteAgentModal": "您已达到代理的最大数量。是否要删除现有的代理以创建一个新代理？",
+      "liquidationPriceTips": "当您的保证金低于维持保证金水平时，交易所自动关闭您的持仓以防止进一步损失的价格。",
+      "fee": "费用",
+      "back": "返回",
+      "stopLoss": "止损",
+      "leverageRangeMaxError": "最大杠杆为 {{max}}x",
+      "liquidation": "清算",
+      "maximumOrderSize": "最大订单量为 {{amount}}",
+      "minimumOrderSize": "最小订单金额为 $10",
+      "leverageRangeMinError": "最低杠杆是 {{min}}x",
+      "estimatedLiquidationPrice": "预计清算价格",
+      "reviewOrder": "查看订单",
+      "sizeTips": "您交易的总价值或数量，由保证金和杠杆设置。",
+      "dailyVolume": "24小时交易量",
+      "openPositionTips": "交易永续合约涉及重大风险，包括由于高杠杆和市场波动可能导致您投资和抵押品的突然和全部损失，可能并不适合所有用户。价格可能受到资金费率和流动性的影响，您可能会在没有通知的情况下面临自动清算。市场数据由 Hyperliquid 提供。",
+      "balanceAvailable": "余额：{{balance}}"
     }
   },
   "component": {

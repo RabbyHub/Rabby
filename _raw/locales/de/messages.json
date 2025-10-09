@@ -827,7 +827,8 @@
         },
         "ViewMore": {
           "text": "Mehr anzeigen"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 Unterstützte Chains:"
       },
       "search": {
         "placeholder": "{{ type }} nach Name/Adresse suchen"
@@ -1350,7 +1351,9 @@
         "maybeScamTips": "Dies ist ein Token von geringer Qualität und könnte ein Betrug sein.",
         "Chain": "Kette",
         "BridgeIssue": "Token, die von einem Dritten überbrückt wurden",
-        "fdvTips": "Die Marktkapitalisierung, wenn das maximale Angebot im Umlauf ist. Vollständig verwässerte Bewertung (FDV) = Preis x maximales Angebot. Wenn das maximale Angebot null ist, FDV = Preis x Gesamtes Angebot. Wenn weder das maximale Angebot noch das gesamte Angebot definiert oder unendlich sind, wird die FDV nicht angezeigt."
+        "fdvTips": "Die Marktkapitalisierung, wenn das maximale Angebot im Umlauf ist. Vollständig verwässerte Bewertung (FDV) = Preis x maximales Angebot. Wenn das maximale Angebot null ist, FDV = Preis x Gesamtes Angebot. Wenn weder das maximale Angebot noch das gesamte Angebot definiert oder unendlich sind, wird die FDV nicht angezeigt.",
+        "bridge": "Brücke",
+        "bridgeToEth": "Brücke zur Ethereum-Kette"
       },
       "assets": {
         "usdValue": "USD WERT",
@@ -2163,7 +2166,8 @@
       "aggregator-not-enabled": "Dieser Aggregator ist von Ihnen nicht zum Handeln aktiviert.",
       "pendingTip": "Tx eingereicht. Wenn die Tx über mehrere Stunden aussteht, können Sie versuchen, das Ausstehende in den Einstellungen zu löschen.",
       "rabby-fee": "Rabby-Gebühr",
-      "max-tips": "Dieser Wert wird berechnet, indem die Gaskosten für die Brücke abgezogen werden."
+      "max-tips": "Dieser Wert wird berechnet, indem die Gaskosten für die Brücke abgezogen werden.",
+      "bridgeDbkBtn": "Bridge über den DBK Official Service"
     },
     "pendingDetail": {
       "Header": {
@@ -2830,6 +2834,162 @@
       "addSuccess": "Erfolgreich hinzugefügt",
       "nameYourAddress": "Benennen Sie Ihre Adresse",
       "enterAddress": "Adresse eingeben"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneHour": "1H",
+        "oneWeek": "1W",
+        "all": "ALLES",
+        "oneDay": "1D",
+        "oneMonth": "1M",
+        "ytd": "YTD"
+      },
+      "newUserProcess": {
+        "gotIt": "Verstanden",
+        "next": "Weiter",
+        "fifthTitle": "Liquidation",
+        "fourthTitle": "Hebung des Hebels",
+        "firstTitle": "Master Perpetual Futures",
+        "secondTitle": "Gehe Long",
+        "thirdTitle": "Gehe Short",
+        "secondDescription": "Wenn Sie erwarten, dass der Preis steigt, eröffnen Sie einen Long. Wenn der Preis steigt, gewinnen Sie. Wenn er fällt, verlieren Sie.",
+        "firstDescription": "Mit perpetual futures handelst du nicht nur mit Vermögenswerten. Du handelst mit dem, was du denkst, was als Nächstes passieren wird.",
+        "thirdDescription": "Wenn Sie erwarten, dass der Preis fällt, eröffnen Sie eine Short-Position. Wenn der Preis fällt, gewinnen Sie. Wenn er steigt, verlieren Sie.",
+        "fourthDescription": "Leverage ermöglicht es dir, mit mehr zu handeln, als du eingesetzt hast. Es kann sowohl deine Gewinne als auch deine Verluste erhöhen.",
+        "fifthDescription": "Jede Position hat einen Liquidationspreis. Wenn der Marktpreis diesen erreicht, wird Ihre Position geschlossen. Die Verwendung von hoher Hebelwirkung erhöht das Risiko einer Liquidation."
+      },
+      "historyDetail": {
+        "title": {
+          "closeLong": "Long schließen",
+          "closeShortSl": "Short schließen Stop Loss",
+          "closeShort": "Short schließen",
+          "openLong": "Long öffnen",
+          "openShort": "Short öffnen",
+          "closeLongTp": "Long schließen Gewinnmitnahme",
+          "closeShortTp": "Close Short Gewinnmitnahme",
+          "closeLongSl": "Close Long Stop Loss",
+          "closeShortLiquidation": "Close Short Liquidation",
+          "closeLongLiquidation": "Schließe Long Liquidation"
+        },
+        "provider": "Anbieter",
+        "price": "Preis",
+        "size": "Größe",
+        "fee": "Gebühr",
+        "tradeValue": "Handelswert",
+        "date": "Datum",
+        "closedPnl": "Geschlossenes PNL"
+      },
+      "logoutConfirmModal": {
+        "title": "Aktuelle Adresse abmelden",
+        "desc": "Sie melden sich von Ihrem aktuellen Perps-Konto ab. Sie können es jederzeit wiederherstellen, indem Sie sich mit dieser Adresse anmelden."
+      },
+      "depositAmountPopup": {
+        "feeTip": "$1 Gebühr",
+        "receiveToken": "Token empfangen",
+        "payWith": "Bezahlen mit",
+        "estReceive": "Geschätzter Erhalt: {{balance}}",
+        "minimumDepositSize": "Der Mindestbetrag für die Einzahlung beträgt 5 $.",
+        "feeTipTooltip": "Abhebungsgebühr, die von Hyperliquid erhoben wird: 1 $",
+        "goBridgeTips": "Nur USDC auf Arbitrum wird für die direkte Einzahlung unterstützt. Bitte überbrücken Sie Ihr aktuelles Token zu USDC auf Arbitrum, bevor Sie einzahlen.",
+        "minimumWithdrawSize": "Der Mindestbetrag für eine Auszahlung beträgt 2 $.",
+        "goSwapTips": "Nur USDC auf Arbitrum wird für die direkte Einzahlung unterstützt. Bitte tauschen Sie Ihr aktuelles Token gegen USDC, bevor Sie einzahlen.",
+        "fetchQuoteFailed": "Fehler beim Abrufen des Einzahlungsangebots. Bitte wechseln Sie das Token.",
+        "estReceiveTooltip": "Cross-Chain-Einzahlung wird über LiFi verarbeitet und kann mit einem gewissen Slippage verbunden sein. Geschätzte Ankunft in {{number}}s."
+      },
+      "home": {
+        "pnl": "PNL",
+        "liquidationPrice": "Liq.Preis",
+        "margin": "Marge",
+        "entryPrice": "Einstiegspreis",
+        "markPrice": "Markpreis",
+        "size": "Größe"
+      },
+      "singleCoin": {
+        "openInterestTips": "Die insgesamt ausstehenden Positionen aller Benutzer in diesem Vertrag.",
+        "fundingTips": "Dies ist eine stündliche Gebühr, die Händler zahlen oder erhalten, um den Preis des Perpetual Contracts nahe am tatsächlichen Preis des Tokens zu halten. Ist sie positiv, zahlt Long an Short. Ist sie negativ, zahlt Short an Long.",
+        "fundingPaymentsTips": "Dies sind die Nettofinanzierungszahlungen seit der Eröffnung der Position. Die Finanzierung ist eine stündliche Gebühr, die Trader zahlen oder erhalten, um den Preis des Perp-Vertrags nahe am tatsächlichen Preis des Tokens zu halten."
+      },
+      "accountSelector": {
+        "noPosition": "Keine Position",
+        "activatedAddress": "Aktiviert",
+        "notActivatedAddress": "Nicht aktiviert",
+        "hyperliquidBalance": "Perps Guthaben"
+      },
+      "title": "Perps",
+      "positions": "Positionen",
+      "withdraw": "Abheben",
+      "deposit": "Einzahlen",
+      "permissionTips": "Das Eröffnen von Positionen wird in Ihrer Region nicht unterstützt.",
+      "pending": "Ausstehend",
+      "autoClose": "Auto Close",
+      "learnAboutPerps": "Lerne mehr über Perps",
+      "margin": "Marge",
+      "pnl": "PNL",
+      "leverage": "Hebel",
+      "liquidationPrice": "Liquidationspreis",
+      "price": "Preis",
+      "lastUsed": "Zuletzt verwendet",
+      "directDeposit": "Direkte Einzahlung",
+      "fundingPayments": "Finanzierungszahlungen",
+      "tradePerps": "Handel mit Perps",
+      "direction": "Richtung",
+      "entryPrice": "Einstiegspreis",
+      "closeLong": "Long schließen",
+      "selectTokenToDeposit": "Wählen Sie Token zum Einzahlen",
+      "explorePerps": "Erkunde Perps",
+      "marginIsolated": "Margin (Isoliert)",
+      "size": "Größe",
+      "marginCross": "Margin (Kreuz)",
+      "seeMore": "Siehe mehr",
+      "closeShort": "Short schließen",
+      "openShort": "Open Short",
+      "logInPerpsAccount": "Melden Sie sich bei meinem Perps-Konto an",
+      "completed": "Abgeschlossen",
+      "openLong": "Long eröffnen",
+      "balanceAvailable": "Guthaben: {{balance}}",
+      "availableBalance": "Verfügbar: {{balance}}",
+      "history": "Geschichte",
+      "timeAgo": "vor {{time}}",
+      "funding": "Finanzierung",
+      "dailyVolume": "24h Volumen",
+      "insufficientBalance": "Unzureichendes Guthaben",
+      "logInTips": "Melden Sie sich mit Ihrer Adresse an und hinterlegen Sie Gelder, um mit dem Handel von perps zu beginnen.",
+      "review": "Überprüfung",
+      "long": "Long",
+      "availableToTrade": "Verfügbar zum Handel",
+      "TakeProfit": "Gewinnmitnahme",
+      "providerFeeTips": "Hyperliquid-Gebühr: {{fee}}",
+      "deleteAgentSuccess": "Agent erfolgreich gelöscht",
+      "short": "Short",
+      "StopLoss": "Stop-Loss",
+      "stopLoss": "Stop-Loss",
+      "takeProfit": "Gewinnmitnahme",
+      "rabbyFeeTipsZero": "Rabby Gebühr: 0%",
+      "takeProfitWhen": "Take-Profit-Preis festlegen",
+      "openInterest": "Offene Interessen",
+      "stopLossWhen": "Stop-Loss-Preis festlegen",
+      "confirm": "Bestätigen",
+      "takeProfitTipsLong": "Der Take-Profit-Preis muss höher sein als der aktuelle Preis.",
+      "stopLossTipsLongLiquidation": "Der Preis liegt unter dem Liquidationspreis ({{price}})",
+      "takeProfitTipsShort": "Der Take-Profit-Preis muss unter dem aktuellen Preis liegen.",
+      "stopLossTipsLong": "Der Stop-Loss-Preis muss unter dem aktuellen Preis liegen.",
+      "stopLossTipsShortLiquidation": "Der Preis liegt über dem Liquidationspreis ({{price}})",
+      "sizeTips": "Der Gesamtwert oder die Menge Ihres Handels, festgelegt durch Margin und Hebel.",
+      "rabbyFeeTips": "Rabby Gebühr: 0,04%",
+      "stopLossTipsShort": "Der Stop-Loss-Preis muss höher sein als der aktuelle Preis.",
+      "reviewOrder": "Bestellung überprüfen",
+      "liquidationPriceTips": "Der Preis, zu dem Ihre Position automatisch von der Börse geschlossen wird, um weitere Verluste zu vermeiden, wenn Ihr Margin unter das Niveau des Wartungsmargins fällt.",
+      "fee": "Gebühr",
+      "estimatedLiquidationPrice": "Geschätzter Liquidationspreis",
+      "minimumOrderSize": "Die Mindestbestellgröße beträgt 10 $.",
+      "back": "Zurück",
+      "liquidation": "Liquidation",
+      "maximumOrderSize": "Die maximale Bestellgröße beträgt {{amount}}.",
+      "leverageRangeMinError": "Der minimale Hebel beträgt {{min}}x",
+      "leverageRangeMaxError": "Der maximale Hebel beträgt {{max}}x",
+      "yourPosition": "Ihre Position",
+      "deleteAgentModal": "Sie haben die maximale Anzahl an Agenten erreicht. Möchten Sie einen vorhandenen Agenten löschen, um einen neuen zu erstellen?",
+      "openPositionTips": "Der Handel mit ewigen Verträgen birgt erhebliche Risiken, einschließlich der Möglichkeit eines plötzlichen und vollständigen Verlusts Ihrer Investition und Sicherheiten aufgrund von hoher Hebelwirkung und Marktvolatilität und ist möglicherweise nicht für alle Benutzer geeignet. Die Preise können von Finanzierungsraten und Liquidität beeinflusst werden, und Sie können ohne Vorankündigung automatischen Liquidationen unterworfen werden. Marktdaten bereitgestellt von Hyperliquid."
     }
   },
   "component": {
