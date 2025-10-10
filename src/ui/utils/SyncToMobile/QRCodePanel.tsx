@@ -23,6 +23,10 @@ export const QRCodePanel: React.FC = () => {
   const [qrCodeVisible, setQRCodeVisible] = React.useState(false);
   const [len, setLen] = React.useState(0);
 
+  const handleClickEdit = React.useCallback(() => {
+    setModalVisible(true);
+  }, []);
+
   const handleClickQRCode = React.useCallback(async () => {
     try {
       await AuthenticationModalPromise({
@@ -142,7 +146,7 @@ export const QRCodePanel: React.FC = () => {
                 'cursor-pointer',
                 'px-[4px]'
               )}
-              onClick={handleClickQRCode}
+              onClick={handleClickEdit}
             >
               {t('global.editButton')}
             </span>
