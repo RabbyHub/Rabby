@@ -75,7 +75,7 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
     <Modal
       visible={visible}
       centered
-      width={360}
+      width={400}
       onCancel={closeAndReject}
       destroyOnClose
       maskClosable={true}
