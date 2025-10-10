@@ -2961,7 +2961,8 @@
       "disableSelectAddressWithSlip39": "Sync not supported for {{type}} address with slip39",
       "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
       "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
-      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync"
+      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync",
+      "verifyPassword": "Verify Password"
     },
     "search": {
       "sectionHeader": {

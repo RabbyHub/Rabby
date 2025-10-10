@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { openInTab } from '../webapi';
 import { useWallet } from '../WalletContext';
 import clsx from 'clsx';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbySelector } from '@/ui/store';
 
 export interface Props {}
