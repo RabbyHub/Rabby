@@ -83,13 +83,13 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
       closable={false}
       className="custom-popup is-support-darkmode authentication-modal"
     >
-      <div className="mb-16 flex items-center">
+      <div className="mb-16 flex items-center relative">
         <div className="text-[20px] font-medium leading-[24px] text-r-neutral-title-1 text-center flex-1">
           {title || 'Enter Password'}
         </div>
         <button
           type="button"
-          className="flex h-[20px] w-[20px] items-center justify-center rounded-full border-none bg-transparent p-0 text-r-neutral-foot transition-colors hover:text-r-neutral-title-1"
+          className="flex h-[20px] w-[20px] items-center justify-center rounded-full border-none bg-transparent p-0 text-r-neutral-foot transition-colors hover:text-r-neutral-title-1 absolute right-0"
           onClick={closeAndReject}
         >
           <RcIconClose className="w-full h-full" />
