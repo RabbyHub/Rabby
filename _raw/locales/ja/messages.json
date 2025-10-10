@@ -827,7 +827,8 @@
         },
         "ViewMore": {
           "text": "詳細を表示"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 対応チェーン："
       },
       "search": {
         "placeholder": "{{ type }} を名前/アドレスで検索"
@@ -1350,7 +1351,9 @@
         "blockedTips": "ブロックされたトークンはトークンリストに表示されません。",
         "TokenName": "トークン名",
         "ListedBy": "リストされたのは",
-        "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。"
+        "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。",
+        "bridgeToEth": "Ethereumチェーンへのブリッジ",
+        "bridge": "ブリッジ"
       },
       "assets": {
         "usdValue": "USD 価値",
@@ -2163,7 +2166,8 @@
       "max-tips": "この値は、bridgeのガスコストを差し引いた額で計算されます。",
       "loss-tips": "損失しています {{usd}}。異なる金額を試してください。",
       "unlimited-allowance": "無制限の許可",
-      "no-quote-found": "見積もりが見つかりませんでした。他のトークンペアをお試しください。"
+      "no-quote-found": "見積もりが見つかりませんでした。他のトークンペアをお試しください。",
+      "bridgeDbkBtn": "DBK公式サービス経由でブリッジ"
     },
     "pendingDetail": {
       "Header": {
@@ -2830,6 +2834,176 @@
       "exchangeAddress": "交換アドレス",
       "addSuccess": "追加成功",
       "address": "アドレス"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneDay": "1D",
+        "ytd": "年初来",
+        "oneWeek": "1W",
+        "oneMonth": "1M",
+        "oneHour": "1H",
+        "all": "すべて"
+      },
+      "newUserProcess": {
+        "fifthTitle": "清算",
+        "next": "次へ",
+        "secondTitle": "ロングに行く",
+        "gotIt": "わかりました",
+        "thirdTitle": "ショートする",
+        "fourthTitle": "レバレッジの調整",
+        "firstTitle": "マスターパーペチュアルフューチャーズ",
+        "fourthDescription": "レバレッジを利用すると、投入した金額以上で取引できます。これにより、利益と損失の両方が増加する可能性があります。",
+        "fifthDescription": "すべてのポジションには清算価格があります。市場価格がそれに達すると、あなたのポジションは閉じられます。高いレバレッジを使用すると、清算のリスクが高まります。",
+        "secondDescription": "価格が上昇すると予想する場合は、ロングポジションを開きます。価格が上昇すれば利益が得られ、下落すれば損失が発生します。",
+        "firstDescription": "永続的な先物取引では、単に資産を売買するのではありません。次に何が起こると思うかを取引しています。",
+        "thirdDescription": "価格が下がると予想する場合は、ショートを開きます。価格が下がれば利益が得られ、上がれば損失が発生します。"
+      },
+      "historyDetail": {
+        "title": {
+          "closeLong": "ロングをクローズ",
+          "openShort": "ショートを開く",
+          "closeLongTp": "ロングをクローズして利確",
+          "openLong": "ロングをオープン",
+          "closeShortLiquidation": "ショートをクローズする清算",
+          "closeShortTp": "ショートをクローズして利益確定",
+          "closeLongSl": "ロングポジションのストップロスをクローズ",
+          "closeLongLiquidation": "ロング決済清算",
+          "closeShort": "ショートをクローズ",
+          "closeShortSl": "ショートをクローズ ストップロス"
+        },
+        "tradeValue": "取引額",
+        "date": "日付",
+        "price": "価格",
+        "provider": "提供者",
+        "fee": "手数料",
+        "size": "サイズ",
+        "closedPnl": "クローズドPNL"
+      },
+      "logoutConfirmModal": {
+        "title": "現在のアドレスからログアウト",
+        "desc": "現在のPerpsアカウントからログアウトしています。このアドレスでログインすることで、いつでも復元できます。"
+      },
+      "depositAmountPopup": {
+        "payWith": "支払い方法",
+        "feeTipTooltip": "Hyperliquid による出金手数料: $1",
+        "estReceive": "推定受取: {{balance}}",
+        "minimumDepositSize": "最低入金額は$5です。",
+        "receiveToken": "トークンを受け取る",
+        "fetchQuoteFailed": "預金見積もりの取得に失敗しました。トークンを切り替えてください。",
+        "feeTip": "$1 手数料",
+        "goSwapTips": "Arbitrumでは、直接入金にサポートされているのはUSDCのみです。入金する前に、現在のトークンをUSDCにスワップしてください。",
+        "estReceiveTooltip": "クロスチェーンサービスの入金はLiFiを介して処理され、スリッページが発生する可能性があります。推定到着時間は{{number}}秒です。",
+        "minimumWithdrawSize": "最低引き出し額は$2です。",
+        "goBridgeTips": "Arbitrumでは、直接入金に対応しているのはUSDCのみです。入金する前に、現在のトークンをArbitrumのUSDCにブリッジしてください。"
+      },
+      "home": {
+        "size": "サイズ",
+        "pnl": "PNL",
+        "markPrice": "マーク価格",
+        "margin": "マージン",
+        "entryPrice": "エントリー価格",
+        "liquidationPrice": "Liq.価格"
+      },
+      "singleCoin": {
+        "openInterestTips": "この契約における全ユーザーの総未決済ポジション。",
+        "fundingPaymentsTips": "これはポジションがオープンしてからのネット資金決済です。ファンディングは、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払ったり受け取ったりする時間単位の手数料です。",
+        "fundingTips": "これは、トレーダーが永続契約の価格をトークンの実際の価格に近づけるために支払うか受け取る時間ごとの手数料です。ポジティブな場合、ロングはショートに支払います。ネガティブな場合、ショートはロングに支払います。"
+      },
+      "accountSelector": {
+        "notActivatedAddress": "未アクティブ",
+        "noPosition": "ポジションなし",
+        "activatedAddress": "アクティブ化されました",
+        "hyperliquidBalance": "永续合約残高"
+      },
+      "deposit": "入金",
+      "withdraw": "引き出す",
+      "positions": "ポジション",
+      "permissionTips": "あなたの地域ではポジションのオープンはサポートされていません。",
+      "pending": "保留中",
+      "title": "パープス",
+      "price": "価格",
+      "direction": "方向",
+      "explorePerps": "Perpsを探る",
+      "availableBalance": "利用可能: {{balance}}",
+      "directDeposit": "直接入金",
+      "seeMore": "もっと見る",
+      "liquidationPrice": "清算価格",
+      "lastUsed": "最後に使用した",
+      "marginCross": "マージン (クロス)",
+      "margin": "マージン",
+      "leverage": "レバレッジ",
+      "autoClose": "自動クローズ",
+      "balanceAvailable": "残高: {{balance}}",
+      "marginIsolated": "マージン (アイソレイテッド)",
+      "selectTokenToDeposit": "トークンを選択して入金する",
+      "completed": "完了",
+      "fundingPayments": "資金支払い",
+      "history": "履歴",
+      "openShort": "ショートを解放",
+      "tradePerps": "永続契約を取引する",
+      "pnl": "PNL",
+      "yourPosition": "あなたのポジション",
+      "size": "サイズ",
+      "entryPrice": "エントリー価格",
+      "openLong": "ロングをオープン",
+      "logInTips": "アドレスでログインし、資金を入金して永続契約の取引を開始してください。",
+      "closeShort": "ショートをクローズ",
+      "logInPerpsAccount": "私のPerpsアカウントにログインする",
+      "closeLong": "ロングをクローズ",
+      "review": "レビュー",
+      "openInterest": "オープンインタレスト",
+      "short": "ショート",
+      "TakeProfit": "利益確定",
+      "timeAgo": "{{time}} 前",
+      "learnAboutPerps": "Perpsについて学ぶ",
+      "long": "ロング",
+      "funding": "資金調達",
+      "stopLossWhen": "ストップロス価格を設定する",
+      "deleteAgentSuccess": "エージェントが正常に削除されました",
+      "confirm": "確認",
+      "dailyVolume": "24時間の取引高",
+      "takeProfitTipsLong": "利益確定価格は現在の価格より高くなければなりません。",
+      "availableToTrade": "取引可能",
+      "stopLossTipsLong": "ストップロス価格は現在の価格よりも低くなければなりません。",
+      "rabbyFeeTips": "Rabby手数料：0.04%",
+      "StopLoss": "ストップロス",
+      "stopLoss": "ストップロス",
+      "rabbyFeeTipsZero": "Rabby手数料：0%",
+      "providerFeeTips": "ハイパーリキッド手数料: {{fee}}",
+      "takeProfitTipsShort": "利益確定価格は現在の価格よりも低くなければなりません。",
+      "stopLossTipsLongLiquidation": "価格は清算価格（{{price}}）よりも低いです。",
+      "stopLossTipsShortLiquidation": "価格は清算価格（{{price}}）よりも高いです。",
+      "insufficientBalance": "残高不足",
+      "takeProfit": "利確",
+      "stopLossTipsShort": "ストップロス価格は現在の価格よりも高くなければなりません。",
+      "sizeTips": "取引の総額または数量は、マージンとレバレッジによって設定されます。",
+      "takeProfitWhen": "利確価格を設定する",
+      "deleteAgentModal": "最大エージェント数に達しました。新しいエージェントを作成するために、既存のエージェントを削除しますか？",
+      "estimatedLiquidationPrice": "推定清算価格",
+      "back": "戻る",
+      "reviewOrder": "注文を確認する",
+      "liquidation": "清算",
+      "leverageRangeMaxError": "最大レバレッジは{{max}}xです",
+      "fee": "手数料",
+      "maximumOrderSize": "最大注文サイズは{{amount}}です。",
+      "liquidationPriceTips": "取引所があなたのマージンが維持マージンレベルを下回ったときに、さらなる損失を防ぐために自動的にポジションをクローズする価格。",
+      "leverageRangeMinError": "最小レバレッジは{{min}}xです。",
+      "minimumOrderSize": "最小注文サイズは10ドルです。",
+      "openPositionTips": "永続契約の取引には重大なリスクが伴い、高いレバレッジと市場のボラティリティにより、投資と担保の突然かつ完全な損失を被る可能性があり、すべてのユーザーに適しているわけではありません。価格はファンディングレートや流動性の影響を受ける可能性があり、通知なしに自動清算される場合があります。市場データはHyperliquid提供です。",
+      "toast": {
+        "setAutoCloseSuccess": "自動ポジションクローズ設定が成功しました",
+        "openPositionSuccess": "{{direction}} {{coin}}-USDをオープンしました: サイズ {{size}}、価格 ${{price}}",
+        "closePositionSuccess": "クローズ {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}} で"
+      },
+      "closePositionPopup": {
+        "closeShort": "ショートをクローズ",
+        "positionSize": "ポジションサイズ",
+        "pnl": "P&L",
+        "title": "{{coin}}-USD {{direction}}をクローズ",
+        "closeLong": "ロングをクローズ"
+      },
+      "cross": "クロス",
+      "isolated": "孤立"
     }
   },
   "component": {

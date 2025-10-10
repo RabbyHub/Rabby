@@ -179,7 +179,12 @@ export const Perps: React.FC = () => {
           dispatch.perps.fetchClearinghouseState();
           const { totalSz, avgPx } = filled;
           message.success(
-            `Closed ${direction} ${coin}-USD: Size ${totalSz} at Price $${avgPx}`
+            t('page.perps.toast.closePositionSuccess', {
+              direction,
+              coin,
+              size: totalSz,
+              price: avgPx,
+            })
           );
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
@@ -239,7 +244,7 @@ export const Perps: React.FC = () => {
         // }
         showCurrentAccount={currentPerpsAccount || undefined}
       >
-        Perps
+        {t('page.perps.title')}
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
 

@@ -753,11 +753,22 @@
       "selectToken": "Select Token"
     },
     "perps": {
-      "__skip_translation": true,
       "title": "Perps",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
       "positions": "Positions",
+      "toast": {
+        "setAutoCloseSuccess": "Auto close position set successfully",
+        "closePositionSuccess": "Closed {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}",
+        "openPositionSuccess": "Opened {{direction}} {{coin}}-USD: Size {{size}} at Price ${{price}}"
+      },
+      "closePositionPopup": {
+        "title": "Close {{coin}}-USD {{direction}}",
+        "positionSize": "Position Size",
+        "pnl": "P&L",
+        "closeLong": "Close Long",
+        "closeShort": "Close Short"
+      },
       "candleMenuKey": {
         "oneHour": "1H",
         "oneDay": "1D",
@@ -844,6 +855,8 @@
       "yourPosition": "Your Position",
       "pnl": "PNL",
       "size": "Size",
+      "isolated": "Isolated",
+      "cross": "Cross",
       "marginIsolated": "Margin (Isolated)",
       "marginCross": "Margin (Cross)",
       "autoClose": "Auto Close",

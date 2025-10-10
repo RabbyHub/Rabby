@@ -7,6 +7,7 @@ import * as Sentry from '@sentry/browser';
 import { sleep, useWallet } from '@/ui/utils';
 import { PERPS_BUILDER_INFO } from './constants';
 import { OrderResponse } from '@rabby-wallet/hyperliquid-sdk';
+import { useTranslation } from 'react-i18next';
 
 export const usePerpsPosition = ({
   setCurrentTpOrSl,
@@ -15,6 +16,7 @@ export const usePerpsPosition = ({
 }) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
   const {
     userFills,
     currentPerpsAccount,
@@ -63,7 +65,7 @@ export const usePerpsPosition = ({
         setTimeout(() => {
           dispatch.perps.fetchPositionOpenOrders();
         }, 1000);
-        message.success('Auto close position set successfully');
+        message.success(t('page.perps.toast.setAutoCloseSuccess'));
 
         // if (
         //   res?.response.data.statuses.every(
@@ -127,7 +129,12 @@ export const usePerpsPosition = ({
           dispatch.perps.fetchUserHistoricalOrders();
           const { totalSz, avgPx } = filled;
           message.success(
-            `Closed ${direction} ${coin}-USD: Size ${totalSz} at Price $${avgPx}`
+            t('page.perps.toast.closePositionSuccess', {
+              direction,
+              coin,
+              size: totalSz,
+              price: avgPx,
+            })
           );
           setCurrentTpOrSl({
             tpPrice: undefined,
@@ -239,7 +246,12 @@ export const usePerpsPosition = ({
 
           const { totalSz, avgPx } = filled;
           message.success(
-            `Opened ${direction} ${coin}-USD: Size ${totalSz} at Price $${avgPx}`
+            t('page.perps.toast.openPositionSuccess', {
+              direction,
+              coin,
+              size: totalSz,
+              price: avgPx,
+            })
           );
           setCurrentTpOrSl({
             tpPrice: formattedTpTriggerPx,

@@ -88,7 +88,9 @@ export const PositionItem: React.FC<{
               {side} {leverageText}
             </span>
             <span className="text-[12px] font-medium px-6 py-2 rounded-[2px] bg-r-neutral-card2 text-r-neutral-foot">
-              {leverageType === 'isolated' ? 'Isolated' : 'Cross'}
+              {leverageType === 'isolated'
+                ? t('page.perps.isolated')
+                : t('page.perps.cross')}
             </span>
           </div>
         </div>

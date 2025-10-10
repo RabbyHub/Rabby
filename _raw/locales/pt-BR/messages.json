@@ -827,7 +827,8 @@
         },
         "ViewMore": {
           "text": "Ver mais"
-        }
+        },
+        "EIP7702SupportChains": "Cadeias Suportadas pelo EIP-7702:"
       },
       "search": {
         "placeholder": "Pesquisar {{ type }} por nome/endereço"
@@ -1350,7 +1351,9 @@
         "OriginIssue": "Nativamente emitido nesta blockchain",
         "fdvTips": "A capitalização de mercado se o fornecimento máximo estivesse em circulação. Avaliação Totalmente Dilucionada (FDV) = Preço x Fornecimento Máximo. Se o Fornecimento Máximo for nulo, FDV = Preço x Fornecimento Total. Se nem o Fornecimento Máximo nem o Fornecimento Total forem definidos ou forem infinitos, o FDV não é exibido.",
         "myBalance": "Meu Saldo",
-        "BridgeProvider": "Provedor de Bridge"
+        "BridgeProvider": "Provedor de Bridge",
+        "bridge": "Ponte",
+        "bridgeToEth": "Ponte para a Ethereum Chain"
       },
       "assets": {
         "usdValue": "VALOR EM USD",
@@ -2163,7 +2166,8 @@
       "recommendFromToken": "Faça uma ponte de <1></1> para uma cotação disponível",
       "slippage-adjusted-refresh-quote": "Deslizamento ajustado. Atualizar rota.",
       "aggregator-not-enabled": "Este agregador não está habilitado para negociação por você.",
-      "unlimited-allowance": "Permissão ilimitada"
+      "unlimited-allowance": "Permissão ilimitada",
+      "bridgeDbkBtn": "Bridge via DBK Official Service"
     },
     "pendingDetail": {
       "Header": {
@@ -2830,6 +2834,176 @@
       "addSuccess": "Adicionado com sucesso",
       "riskTitle": "Adicionar Endereço à Lista Branca",
       "invalidAddress": "Este endereço é inválido"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "ytd": "YTD",
+        "oneDay": "1D",
+        "all": "TODOS",
+        "oneMonth": "1M",
+        "oneHour": "1H",
+        "oneWeek": "1W"
+      },
+      "newUserProcess": {
+        "secondTitle": "Ir para Long",
+        "gotIt": "Entendi",
+        "fifthTitle": "Liquidação",
+        "next": "Próximo",
+        "fourthTitle": "Ajustando a Alavancagem",
+        "thirdTitle": "Vá Curto",
+        "firstTitle": "Mestre de Futuros Perpetuais",
+        "fourthDescription": "A alavancagem permite que você negocie com mais do que você investiu. Isso pode aumentar tanto seus ganhos quanto suas perdas.",
+        "thirdDescription": "Quando você espera que o preço caia, você abre uma short. Se o preço cair, você ganha. Se subir, você perde.",
+        "firstDescription": "Com os contratos futuros perpétuos, você não está apenas negociando ativos. Você está negociando o que pensa que acontecerá a seguir.",
+        "secondDescription": "Quando você espera que o preço suba, você abre uma posição longa. Se o preço subir, você ganha. Se cair, você perde.",
+        "fifthDescription": "Cada posição tem um preço de liquidação. Se o preço de mercado atingi-lo, sua posição será fechada. Usar alta alavancagem aumenta o risco de liquidação."
+      },
+      "historyDetail": {
+        "title": {
+          "openLong": "Abrir Longo",
+          "closeLong": "Fechar Longo",
+          "closeLongSl": "Fechar Long Stop Loss",
+          "closeShortLiquidation": "Fechar Short Liquidação",
+          "closeShort": "Fechar Short",
+          "closeLongLiquidation": "Fechar Long Liquidation",
+          "closeShortTp": "Fechar Short Realizar Lucro",
+          "openShort": "Abrir Short",
+          "closeLongTp": "Fechar Long Levar Lucro",
+          "closeShortSl": "Fechar Short Stop Loss"
+        },
+        "size": "Tamanho",
+        "provider": "Fornecedor",
+        "fee": "Taxa",
+        "date": "Data",
+        "tradeValue": "Valor de Comércio",
+        "price": "Preço",
+        "closedPnl": "PNL Fechado"
+      },
+      "logoutConfirmModal": {
+        "title": "Sair do Endereço Atual",
+        "desc": "Você está desconectando da sua conta Perps atual. Você pode restaurá-la a qualquer momento fazendo login com este endereço."
+      },
+      "depositAmountPopup": {
+        "payWith": "Pagar com",
+        "estReceive": "Est. Receive: {{balance}}",
+        "receiveToken": "Receber Token",
+        "minimumWithdrawSize": "O valor mínimo para saque é de $2",
+        "minimumDepositSize": "O valor mínimo de depósito é de $5",
+        "feeTipTooltip": "Taxa de retirada cobrada pela Hyperliquid: $1",
+        "feeTip": "$1 taxa",
+        "fetchQuoteFailed": "Falha ao buscar citação de depósito. Por favor, troque o token.",
+        "goSwapTips": "Apenas USDC na Arbitrum é suportado para depósito direto. Por favor, troque seu token atual por USDC antes de depositar.",
+        "estReceiveTooltip": "O depósito cross-chain é processado via LiFi, podendo incorrer em algum slippage. Chegada estimada em {{number}}s.",
+        "goBridgeTips": "Apenas USDC na Arbitrum é suportado para depósito direto. Por favor, faça a ponte do seu token atual para USDC na Arbitrum antes de depositar."
+      },
+      "home": {
+        "entryPrice": "Preço de Entrada",
+        "size": "Tamanho",
+        "pnl": "PNL",
+        "margin": "Margem",
+        "markPrice": "Preço de Marca",
+        "liquidationPrice": "Preço de Liquidação"
+      },
+      "singleCoin": {
+        "openInterestTips": "A posição total em aberto de todos os usuários neste contrato.",
+        "fundingTips": "Esta é uma taxa horária que os traders pagam ou recebem para manter o preço do contrato perp próximo ao preço real do token. Se positivo, long paga short. Se negativo, short paga long.",
+        "fundingPaymentsTips": "Esse é o pagamento líquido de financiamento desde que a posição foi aberta. O financiamento é uma taxa horária que os traders pagam ou recebem para manter o preço do contrato perp próximo ao preço real do token."
+      },
+      "accountSelector": {
+        "hyperliquidBalance": "Saldo Perps",
+        "notActivatedAddress": "Não Ativado",
+        "noPosition": "Sem Posição",
+        "activatedAddress": "Ativado"
+      },
+      "deposit": "Depósito",
+      "withdraw": "Retirar",
+      "positions": "Posições",
+      "title": "Perps",
+      "permissionTips": "Abrir posições não é suportado na sua região.",
+      "pending": "Pendente",
+      "direction": "Direção",
+      "marginCross": "Margem (Cross)",
+      "learnAboutPerps": "Saiba mais sobre Perps",
+      "marginIsolated": "Margem (Isolada)",
+      "liquidationPrice": "Preço de Liquidação",
+      "leverage": "Alavancagem",
+      "tradePerps": "Negociar Perps",
+      "availableBalance": "Disponível: {{balance}}",
+      "pnl": "PNL",
+      "size": "Tamanho",
+      "logInPerpsAccount": "Faça login na minha conta de Perps",
+      "autoClose": "Fechar Automaticamente",
+      "closeLong": "Fechar Long",
+      "completed": "Concluído",
+      "lastUsed": "Último utilizado",
+      "selectTokenToDeposit": "Selecione o Token para Depositar",
+      "price": "Preço",
+      "history": "Histórico",
+      "seeMore": "Ver Mais",
+      "explorePerps": "Explore Perps",
+      "openShort": "Abrir Short",
+      "yourPosition": "Sua Posição",
+      "fundingPayments": "Pagamentos de Financiamento",
+      "closeShort": "Fechar Short",
+      "entryPrice": "Preço de Entrada",
+      "openLong": "Abrir Longo",
+      "logInTips": "Faça login com seu endereço e deposite fundos para começar a negociar perps.",
+      "directDeposit": "Depósito Direto",
+      "balanceAvailable": "Saldo: {{balance}}",
+      "long": "Long: comprar",
+      "openInterest": "Interesse em Aberto",
+      "availableToTrade": "Disponível para negociar",
+      "funding": "Financiamento",
+      "dailyVolume": "Volume de 24h",
+      "takeProfit": "realizar lucro",
+      "short": "Venda a descoberto",
+      "deleteAgentSuccess": "Agente excluído com sucesso",
+      "stopLoss": "ordem de stop loss",
+      "timeAgo": "{{time}} atrás",
+      "rabbyFeeTips": "Taxa do Rabby: 0,04%",
+      "stopLossWhen": "Definir Preço de Stop-Loss",
+      "stopLossTipsLong": "O preço de stop loss deve ser inferior ao preço atual.",
+      "insufficientBalance": "Saldo insuficiente",
+      "StopLoss": "Stop loss",
+      "TakeProfit": "Pegue lucro",
+      "takeProfitWhen": "Definir Preço de Take-Profit",
+      "deleteAgentModal": "Você atingiu o número máximo de agentes. Deseja excluir um agente existente para criar um novo?",
+      "confirm": "Confirmar",
+      "rabbyFeeTipsZero": "Taxa do Rabby: 0%",
+      "sizeTips": "O valor total ou a quantidade da sua negociação, definido por margem e alavancagem.",
+      "stopLossTipsLongLiquidation": "O preço está abaixo do preço de liquidação ({{price}})",
+      "stopLossTipsShort": "O preço de stop loss deve ser maior do que o preço atual.",
+      "takeProfitTipsShort": "O preço de realizar lucro deve ser menor que o preço atual.",
+      "providerFeeTips": "Taxa Hyperliquid: {{fee}}",
+      "stopLossTipsShortLiquidation": "O preço está acima do preço de liquidação ({{price}})",
+      "takeProfitTipsLong": "O preço de take profit deve ser maior que o preço atual.",
+      "review": "Revisar",
+      "fee": "Taxa",
+      "reviewOrder": "Revisar Pedido",
+      "liquidationPriceTips": "O preço em que sua posição é automaticamente fechada pela corretora para evitar perdas adicionais quando sua margem cai abaixo do nível de margem de manutenção.",
+      "maximumOrderSize": "O tamanho máximo do pedido é {{amount}}",
+      "back": "Voltar",
+      "estimatedLiquidationPrice": "Preço de Liquidação Estimado",
+      "leverageRangeMinError": "A alavancagem mínima é de {{min}}x",
+      "minimumOrderSize": "O tamanho mínimo do pedido é de $10",
+      "liquidation": "Liquidação",
+      "leverageRangeMaxError": "A alavancagem máxima é {{max}}x",
+      "margin": "Margem",
+      "openPositionTips": "Negociar contratos perpétuos envolve riscos significativos, incluindo a possibilidade de perda repentina e total do seu investimento e colateral devido à alta alavancagem e volatilidade do mercado, e pode não ser adequado para todos os usuários. Os preços podem ser influenciados por taxas de financiamento e liquidez e você pode estar sujeito a liquidações automáticas sem aviso prévio. Dados de mercado fornecidos pela Hyperliquid.",
+      "toast": {
+        "setAutoCloseSuccess": "Posição de fechamento automático definida com sucesso",
+        "openPositionSuccess": "Abrido {{direction}} {{coin}}-USD: Tamanho {{size}} a Preço ${{price}}",
+        "closePositionSuccess": "Fechado {{direction}} {{coin}}-USD: Tamanho {{size}} a Preço ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeShort": "Fechar Short",
+        "pnl": "P&L",
+        "closeLong": "Fechar Long",
+        "positionSize": "Tamanho da Posição",
+        "title": "Fechar {{coin}}-USD {{direction}}"
+      },
+      "cross": "Cruz",
+      "isolated": "Isolado"
     }
   },
   "component": {
