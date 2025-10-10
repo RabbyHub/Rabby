@@ -686,7 +686,7 @@ export const PerpsChart = ({
             key={key}
             onClick={() => setSelectedInterval(key)}
             className={clsx(
-              'px-12 py-4 text-12 rounded-[4px]',
+              'px-10 py-4 text-12 rounded-[4px]',
               key === selectedInterval
                 ? 'bg-r-blue-default text-white'
                 : 'text-r-neutral-body hover:bg-r-neutral-bg3'

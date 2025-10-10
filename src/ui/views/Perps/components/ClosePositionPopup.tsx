@@ -69,7 +69,10 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
         <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-12">
-          Close {coin}-USD {direction}
+          {t('page.perps.closePositionPopup.title', {
+            coin,
+            direction,
+          })}
         </div>
 
         <div className="flex-1 px-20">
@@ -77,13 +80,17 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
           <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-20">
             <div className="space-y-16">
               <div className="flex justify-between items-center">
-                <div className="text-13 text-r-neutral-body">Position Size</div>
+                <div className="text-13 text-r-neutral-body">
+                  {t('page.perps.closePositionPopup.positionSize')}
+                </div>
                 <div className="text-13 text-r-neutral-title-1 font-medium">
                   {positionSize} {coin}
                 </div>
               </div>
               <div className="flex justify-between items-center">
-                <div className="text-13 text-r-neutral-body">P&L</div>
+                <div className="text-13 text-r-neutral-body">
+                  {t('page.perps.closePositionPopup.pnl')}
+                </div>
                 <div
                   className={clsx(
                     'text-13 font-medium',
@@ -107,7 +114,9 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
               onClick={closePosition}
               loading={loading}
             >
-              Close {direction}
+              {direction === 'Long'
+                ? t('page.perps.closeLong')
+                : t('page.perps.closeShort')}
             </Button>
 
             {/* Fee Information */}
