@@ -2986,7 +2986,21 @@
       "entryPrice": "Giá Nhập",
       "leverageRangeMaxError": "Kích thước đòn bẩy tối đa là {{max}}x",
       "openPositionTips": "Giao dịch hợp đồng vĩnh viễn liên quan đến rủi ro đáng kể, bao gồm khả năng mất đột ngột và toàn bộ khoản đầu tư và tài sản đảm bảo của bạn do đòn bẩy cao và biến động thị trường, và có thể không phù hợp với tất cả người dùng. Giá có thể bị ảnh hưởng bởi tỷ lệ tài trợ và tính thanh khoản, và bạn có thể bị thanh lý tự động mà không có thông báo trước. Dữ liệu thị trường được cung cấp bởi Hyperliquid.",
-      "stopLossTipsLongLiquidation": "Giá thấp hơn giá thanh lý ({{price}})"
+      "stopLossTipsLongLiquidation": "Giá thấp hơn giá thanh lý ({{price}})",
+      "toast": {
+        "setAutoCloseSuccess": "Đã thiết lập tự động đóng vị trí thành công.",
+        "openPositionSuccess": "Mở {{direction}} {{coin}}-USD: Kích thước {{size}} tại giá ${{price}}",
+        "closePositionSuccess": "Đã đóng {{direction}} {{coin}}-USD: Kích thước {{size}} với giá ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeLong": "Đóng Long",
+        "closeShort": "Đóng Short",
+        "positionSize": "Kích thước vị trí",
+        "pnl": "Lợi nhuận & Thua lỗ",
+        "title": "Đóng {{coin}}-USD {{direction}}"
+      },
+      "isolated": "Isolated",
+      "cross": "Giao thoa"
     }
   },
   "component": {

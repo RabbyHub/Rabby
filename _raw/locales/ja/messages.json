@@ -2989,7 +2989,21 @@
       "liquidationPriceTips": "取引所があなたのマージンが維持マージンレベルを下回ったときに、さらなる損失を防ぐために自動的にポジションをクローズする価格。",
       "leverageRangeMinError": "最小レバレッジは{{min}}xです。",
       "minimumOrderSize": "最小注文サイズは10ドルです。",
-      "openPositionTips": "永続契約の取引には重大なリスクが伴い、高いレバレッジと市場のボラティリティにより、投資と担保の突然かつ完全な損失を被る可能性があり、すべてのユーザーに適しているわけではありません。価格はファンディングレートや流動性の影響を受ける可能性があり、通知なしに自動清算される場合があります。市場データはHyperliquid提供です。"
+      "openPositionTips": "永続契約の取引には重大なリスクが伴い、高いレバレッジと市場のボラティリティにより、投資と担保の突然かつ完全な損失を被る可能性があり、すべてのユーザーに適しているわけではありません。価格はファンディングレートや流動性の影響を受ける可能性があり、通知なしに自動清算される場合があります。市場データはHyperliquid提供です。",
+      "toast": {
+        "setAutoCloseSuccess": "自動ポジションクローズ設定が成功しました",
+        "openPositionSuccess": "{{direction}} {{coin}}-USDをオープンしました: サイズ {{size}}、価格 ${{price}}",
+        "closePositionSuccess": "クローズ {{direction}} {{coin}}-USD: サイズ {{size}} 価格 ${{price}} で"
+      },
+      "closePositionPopup": {
+        "closeShort": "ショートをクローズ",
+        "positionSize": "ポジションサイズ",
+        "pnl": "P&L",
+        "title": "{{coin}}-USD {{direction}}をクローズ",
+        "closeLong": "ロングをクローズ"
+      },
+      "cross": "クロス",
+      "isolated": "孤立"
     }
   },
   "component": {

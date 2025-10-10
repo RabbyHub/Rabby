@@ -2992,7 +2992,21 @@
       "back": "Geri dön",
       "leverageRangeMaxError": "Maksimum kaldıraç {{max}}x'dir.",
       "minimumOrderSize": "Minimum sipariş boyutu $10'dur.",
-      "openPositionTips": "Sürekli sözleşmeler ticareti, yüksek kaldıraç ve piyasa volatilitesi nedeniyle yatırımınızın ve teminatınızın ani ve toplam kaybı da dahil olmak üzere önemli riskler içermektedir ve tüm kullanıcılar için uygun olmayabilir. Fiyatlar, finansman oranları ve likiditeden etkilenebilir ve bildirim olmaksızın otomatik likidasyonlara tabi olabilirsiniz. Piyasa verileri Hyperliquid tarafından sağlanmaktadır."
+      "openPositionTips": "Sürekli sözleşmeler ticareti, yüksek kaldıraç ve piyasa volatilitesi nedeniyle yatırımınızın ve teminatınızın ani ve toplam kaybı da dahil olmak üzere önemli riskler içermektedir ve tüm kullanıcılar için uygun olmayabilir. Fiyatlar, finansman oranları ve likiditeden etkilenebilir ve bildirim olmaksızın otomatik likidasyonlara tabi olabilirsiniz. Piyasa verileri Hyperliquid tarafından sağlanmaktadır.",
+      "toast": {
+        "openPositionSuccess": "Açıldı {{direction}} {{coin}}-USD: Boyut {{size}} Fiyattan ${{price}}",
+        "setAutoCloseSuccess": "Otomatik pozisyon kapatma ayarı başarıyla oluşturuldu.",
+        "closePositionSuccess": "Kapandı {{direction}} {{coin}}-USD: Büyüklük {{size}} Fiyat ${{price}}'de"
+      },
+      "closePositionPopup": {
+        "closeShort": "Kapat Short",
+        "pnl": "Kar/Zarar",
+        "title": "Kapat {{coin}}-USD {{direction}}",
+        "closeLong": "Kapat Long",
+        "positionSize": "Pozisyon Boyutu"
+      },
+      "isolated": "Yalıtılmış",
+      "cross": "Çapraz"
     }
   },
   "component": {

@@ -3027,7 +3027,21 @@
       "sizeTips": "您交易的总价值或数量，由保证金和杠杆设置。",
       "dailyVolume": "24小时交易量",
       "openPositionTips": "交易永续合约涉及重大风险，包括由于高杠杆和市场波动可能导致您投资和抵押品的突然和全部损失，可能并不适合所有用户。价格可能受到资金费率和流动性的影响，您可能会在没有通知的情况下面临自动清算。市场数据由 Hyperliquid 提供。",
-      "balanceAvailable": "余额：{{balance}}"
+      "balanceAvailable": "余额：{{balance}}",
+      "toast": {
+        "openPositionSuccess": "已开 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
+        "setAutoCloseSuccess": "自动关闭头寸设置成功",
+        "closePositionSuccess": "已平仓 {{direction}} {{coin}}-USD：规模 {{size}}，价格 ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeShort": "平仓做空",
+        "closeLong": "平仓多头",
+        "pnl": "盈亏",
+        "title": "关闭 {{coin}}-USD {{direction}}",
+        "positionSize": "持仓规模"
+      },
+      "isolated": "逐仓",
+      "cross": "全仓"
     }
   },
   "component": {

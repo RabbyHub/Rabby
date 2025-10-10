@@ -2986,7 +2986,21 @@
       "leverageRangeMinError": "Leverage minimum adalah {{min}}x",
       "maximumOrderSize": "Ukuran pesanan maksimum adalah {{amount}}",
       "leverageRangeMaxError": "Maksimal leverage adalah {{max}}x",
-      "openPositionTips": "Perdagangan kontrak perpetual melibatkan risiko yang signifikan, termasuk potensi kehilangan investasi dan kolateral secara total dan mendadak akibat leverage tinggi dan volatilitas pasar, dan mungkin tidak cocok untuk semua pengguna. Harga dapat dipengaruhi oleh tingkat pendanaan dan likuiditas dan Anda mungkin mengalami likuidasi otomatis tanpa pemberitahuan. Data pasar disediakan oleh Hyperliquid."
+      "openPositionTips": "Perdagangan kontrak perpetual melibatkan risiko yang signifikan, termasuk potensi kehilangan investasi dan kolateral secara total dan mendadak akibat leverage tinggi dan volatilitas pasar, dan mungkin tidak cocok untuk semua pengguna. Harga dapat dipengaruhi oleh tingkat pendanaan dan likuiditas dan Anda mungkin mengalami likuidasi otomatis tanpa pemberitahuan. Data pasar disediakan oleh Hyperliquid.",
+      "toast": {
+        "setAutoCloseSuccess": "Pengaturan penutupan posisi otomatis berhasil",
+        "closePositionSuccess": "Tutup {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
+        "openPositionSuccess": "Dibuka {{direction}} {{coin}}-USD: Ukuran {{size}} dengan Harga ${{price}}"
+      },
+      "closePositionPopup": {
+        "positionSize": "Ukuran Posisi",
+        "closeShort": "Tutup Short",
+        "closeLong": "Tutup Long",
+        "title": "Tutup {{coin}}-USD {{direction}}",
+        "pnl": "P&L"
+      },
+      "cross": "Silang",
+      "isolated": "Terisolasi"
     }
   },
   "component": {

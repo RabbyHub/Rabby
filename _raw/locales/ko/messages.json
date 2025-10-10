@@ -2986,7 +2986,21 @@
       "maximumOrderSize": "최대 주문 규모는 {{amount}}입니다.",
       "leverageRangeMaxError": "최대 레버리지는 {{max}}x입니다.",
       "openPositionTips": "영구 계약 거래는 높은 레버리지와 시장 변동성으로 인해 투자 및 담보의 Sudden and total loss의 위험을 포함한 상당한 위험이 있으며, 모든 사용자에게 적합하지 않을 수 있습니다. 가격은 펀딩 비율 및 유동성의 영향을 받을 수 있으며, 통지 없이 자동 청산에 처해질 수 있습니다. 시장 데이터는 Hyperliquid에서 제공됩니다.",
-      "leverageRangeMinError": "최소 레버리지는 {{min}}x입니다."
+      "leverageRangeMinError": "최소 레버리지는 {{min}}x입니다.",
+      "toast": {
+        "setAutoCloseSuccess": "포지션 자동 종료가 성공적으로 설정되었습니다.",
+        "closePositionSuccess": "닫은 {{direction}} {{coin}}-USD: 크기 {{size}} 가격 ${{price}}에서",
+        "openPositionSuccess": "열린 {{direction}} {{coin}}-USD: 규모 {{size}} 가격 ${{price}}에서"
+      },
+      "closePositionPopup": {
+        "pnl": "손익",
+        "title": "{{coin}}-USD {{direction}} 닫기",
+        "closeLong": "롱 청산",
+        "positionSize": "포지션 크기",
+        "closeShort": "Short 매도 마감"
+      },
+      "cross": "교차",
+      "isolated": "격리된"
     }
   },
   "component": {

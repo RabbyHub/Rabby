@@ -2989,7 +2989,21 @@
       "maximumOrderSize": "El tamaño máximo del pedido es {{amount}}",
       "minimumOrderSize": "El tamaño mínimo de la orden es de $10",
       "leverageRangeMaxError": "El apalancamiento máximo es de {{max}}x",
-      "openPositionTips": "El comercio de contratos perpetuos implica un riesgo significativo, incluido el potencial de pérdida repentina y total de su inversión y colateral debido al alto apalancamiento y la volatilidad del mercado, y puede no ser adecuado para todos los usuarios. Los precios pueden verse influenciados por las tasas de financiación y la liquidez, y puede estar sujeto a liquidaciones automáticas sin previo aviso. Los datos del mercado son proporcionados por Hyperliquid."
+      "openPositionTips": "El comercio de contratos perpetuos implica un riesgo significativo, incluido el potencial de pérdida repentina y total de su inversión y colateral debido al alto apalancamiento y la volatilidad del mercado, y puede no ser adecuado para todos los usuarios. Los precios pueden verse influenciados por las tasas de financiación y la liquidez, y puede estar sujeto a liquidaciones automáticas sin previo aviso. Los datos del mercado son proporcionados por Hyperliquid.",
+      "toast": {
+        "setAutoCloseSuccess": "La posición de cierre automático se estableció con éxito.",
+        "closePositionSuccess": "Cerrado {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
+        "openPositionSuccess": "Abierto {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeLong": "Cerrar Long",
+        "positionSize": "Tamaño de la posición",
+        "closeShort": "Cerrar Corto",
+        "pnl": "P&L",
+        "title": "Cerrar {{coin}}-USD {{direction}}"
+      },
+      "cross": "Cruz",
+      "isolated": "Aislado"
     }
   },
   "component": {

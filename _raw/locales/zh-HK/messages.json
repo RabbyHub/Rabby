@@ -3027,7 +3027,21 @@
       "estimatedLiquidationPrice": "估计强制平仓价格",
       "openPositionTips": "交易永续合约涉及重大风险，包括由于高杠杆和市场波动而可能导致您投资和抵押品的突然和完全损失，可能不适合所有用户。价格可能受到资金费率和流动性的影响，您可能会在没有通知的情况下面临自动清算。市场数据由 Hyperliquid 提供。",
       "maximumOrderSize": "最大订单大小为 {{amount}}",
-      "minimumOrderSize": "最低订单大小是 $10"
+      "minimumOrderSize": "最低订单大小是 $10",
+      "toast": {
+        "setAutoCloseSuccess": "已成功设置自动平仓。",
+        "openPositionSuccess": "已开立 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
+        "closePositionSuccess": "已关闭 {{direction}} {{coin}}-USD: 数量 {{size}}，价格 ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeLong": "平仓做多",
+        "pnl": "盈亏",
+        "closeShort": "平仓做空",
+        "positionSize": "倉位大小",
+        "title": "關閉 {{coin}}-USD {{direction}}"
+      },
+      "isolated": "孤立",
+      "cross": "交叉"
     }
   },
   "component": {

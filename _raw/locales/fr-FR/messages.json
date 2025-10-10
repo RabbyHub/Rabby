@@ -3281,7 +3281,21 @@
       "liquidation": "Liquidation",
       "StopLoss": "Ordre de stop loss",
       "openPositionTips": "Le trading de contrats perpétuels comporte des risques significatifs, notamment la possibilité de perte soudaine et totale de votre investissement et de votre collatéral en raison d'un effet de levier élevé et de la volatilité du marché, et peut ne pas convenir à tous les utilisateurs. Les prix peuvent être influencés par les taux de financement et la liquidité, et vous pouvez être soumis à des liquidations automatiques sans préavis. Données de marché fournies par Hyperliquid.",
-      "leverageRangeMinError": "Le levier minimum est de {{min}}x"
+      "leverageRangeMinError": "Le levier minimum est de {{min}}x",
+      "toast": {
+        "setAutoCloseSuccess": "Position de fermeture automatique définie avec succès",
+        "openPositionSuccess": "Ouvert {{direction}} {{coin}}-USD : Taille {{size}} au Prix ${{price}}",
+        "closePositionSuccess": "Fermé {{direction}} {{coin}}-USD : Taille {{size}} au prix de ${{price}}"
+      },
+      "closePositionPopup": {
+        "pnl": "P&L",
+        "positionSize": "Taille de Position",
+        "closeShort": "Fermer Short",
+        "title": "Fermer {{coin}}-USD {{direction}}",
+        "closeLong": "Fermer Long"
+      },
+      "isolated": "Isolé",
+      "cross": "Cross"
     }
   }
 }

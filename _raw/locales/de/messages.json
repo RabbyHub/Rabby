@@ -2989,7 +2989,21 @@
       "leverageRangeMaxError": "Der maximale Hebel beträgt {{max}}x",
       "yourPosition": "Ihre Position",
       "deleteAgentModal": "Sie haben die maximale Anzahl an Agenten erreicht. Möchten Sie einen vorhandenen Agenten löschen, um einen neuen zu erstellen?",
-      "openPositionTips": "Der Handel mit ewigen Verträgen birgt erhebliche Risiken, einschließlich der Möglichkeit eines plötzlichen und vollständigen Verlusts Ihrer Investition und Sicherheiten aufgrund von hoher Hebelwirkung und Marktvolatilität und ist möglicherweise nicht für alle Benutzer geeignet. Die Preise können von Finanzierungsraten und Liquidität beeinflusst werden, und Sie können ohne Vorankündigung automatischen Liquidationen unterworfen werden. Marktdaten bereitgestellt von Hyperliquid."
+      "openPositionTips": "Der Handel mit ewigen Verträgen birgt erhebliche Risiken, einschließlich der Möglichkeit eines plötzlichen und vollständigen Verlusts Ihrer Investition und Sicherheiten aufgrund von hoher Hebelwirkung und Marktvolatilität und ist möglicherweise nicht für alle Benutzer geeignet. Die Preise können von Finanzierungsraten und Liquidität beeinflusst werden, und Sie können ohne Vorankündigung automatischen Liquidationen unterworfen werden. Marktdaten bereitgestellt von Hyperliquid.",
+      "toast": {
+        "setAutoCloseSuccess": "Auto close position erfolgreich festgelegt",
+        "closePositionSuccess": "Geschlossen {{direction}} {{coin}}-USD: Größe {{size}} zu einem Preis von ${{price}}",
+        "openPositionSuccess": "Eröffnet {{direction}} {{coin}}-USD: Größe {{size}} zu einem Preis von ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeLong": "Long schließen",
+        "positionSize": "Positionsgröße",
+        "closeShort": "Short schließen",
+        "pnl": "P&L",
+        "title": "Schließe {{coin}}-USD {{direction}}"
+      },
+      "isolated": "Isoliert",
+      "cross": "Cross"
     }
   },
   "component": {

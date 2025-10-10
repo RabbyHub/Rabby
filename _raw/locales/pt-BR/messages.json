@@ -2989,7 +2989,21 @@
       "liquidation": "Liquidação",
       "leverageRangeMaxError": "A alavancagem máxima é {{max}}x",
       "margin": "Margem",
-      "openPositionTips": "Negociar contratos perpétuos envolve riscos significativos, incluindo a possibilidade de perda repentina e total do seu investimento e colateral devido à alta alavancagem e volatilidade do mercado, e pode não ser adequado para todos os usuários. Os preços podem ser influenciados por taxas de financiamento e liquidez e você pode estar sujeito a liquidações automáticas sem aviso prévio. Dados de mercado fornecidos pela Hyperliquid."
+      "openPositionTips": "Negociar contratos perpétuos envolve riscos significativos, incluindo a possibilidade de perda repentina e total do seu investimento e colateral devido à alta alavancagem e volatilidade do mercado, e pode não ser adequado para todos os usuários. Os preços podem ser influenciados por taxas de financiamento e liquidez e você pode estar sujeito a liquidações automáticas sem aviso prévio. Dados de mercado fornecidos pela Hyperliquid.",
+      "toast": {
+        "setAutoCloseSuccess": "Posição de fechamento automático definida com sucesso",
+        "openPositionSuccess": "Abrido {{direction}} {{coin}}-USD: Tamanho {{size}} a Preço ${{price}}",
+        "closePositionSuccess": "Fechado {{direction}} {{coin}}-USD: Tamanho {{size}} a Preço ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeShort": "Fechar Short",
+        "pnl": "P&L",
+        "closeLong": "Fechar Long",
+        "positionSize": "Tamanho da Posição",
+        "title": "Fechar {{coin}}-USD {{direction}}"
+      },
+      "cross": "Cruz",
+      "isolated": "Isolado"
     }
   },
   "component": {
