@@ -76,10 +76,17 @@ export default function ShowMoreGasSelectModal({
   const { t } = useTranslation();
 
   const state = useSignatureStore();
-  const { ctx, config } = state;
+  const { ctx, config, status } = state;
   const gasInfoByUI = useGetGasInfoByUI();
+  const setGasInfoByUI = useSetGasInfoByUI();
 
   console.log('gasInfoByUI state', gasInfoByUI);
+
+  useEffect(() => {
+    if (['idle', 'prefetching'].includes(status) || !ctx?.txsCalc?.length) {
+      setGasInfoByUI(undefined);
+    }
+  }, [setGasInfoByUI, status, ctx?.txsCalc?.length]);
 
   const calcGasAccountUsd = useCallback((n) => {
     const v = Number(n);

@@ -24,6 +24,7 @@ export const MINI_SIGN_ERROR = {
   GAS_FEE_TOO_HIGH: 'selectedGasCost too high',
   PREFETCH_FAILURE: 'prepare failure',
   USER_CANCELLED: 'User cancelled',
+  CANT_PROCESS: 'Can not process',
 };
 
 type Subscriber = (state: SignatureFlowState) => void;
@@ -170,6 +171,50 @@ class SignatureManager {
     };
   }
 
+  private canProcess() {
+    const { ctx, status } = this.state;
+    const gasMethod = ctx?.gasMethod;
+    const gasAccountCanPay =
+      ctx?.gasMethod === 'gasAccount' &&
+      // isSupportedAddr &&
+      ctx?.noCustomRPC &&
+      !!ctx?.gasAccount?.balance_is_enough &&
+      !ctx?.gasAccount.chain_not_support &&
+      !!ctx?.gasAccount.is_gas_account &&
+      !(ctx?.gasAccount as any).err_msg;
+
+    const canUseGasLess = !!ctx?.gasless?.is_gasless;
+    let gasLessConfig =
+      canUseGasLess && ctx?.gasless?.promotion
+        ? ctx?.gasless?.promotion?.config
+        : undefined;
+    if (
+      gasLessConfig &&
+      ctx?.gasless?.promotion?.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
+    ) {
+      gasLessConfig = { ...gasLessConfig, dark_color: '', theme_color: '' };
+    }
+
+    const useGasLess =
+      (ctx?.isGasNotEnough || !!gasLessConfig) &&
+      !!canUseGasLess &&
+      !!ctx?.useGasless;
+    const loading =
+      status === 'prefetching' || status === 'signing' || !ctx?.txsCalc?.length;
+
+    const disabledProcess = ctx?.txsCalc?.length
+      ? gasMethod === 'gasAccount'
+        ? !gasAccountCanPay
+        : useGasLess
+        ? false
+        : !!loading ||
+          !ctx?.txsCalc?.length ||
+          !!ctx.checkErrors?.some((e) => e.level === 'forbidden')
+      : false;
+
+    return !disabledProcess;
+  }
+
   public getState() {
     return this.state;
   }
@@ -272,6 +317,10 @@ class SignatureManager {
     const { ctx, config, fingerprint } = this.state;
     if (!ctx || !config || !fingerprint) {
       throw new Error('Signature is not ready');
+    }
+    if (!this.canProcess()) {
+      this.rejectPending(MINI_SIGN_ERROR.CANT_PROCESS);
+      throw MINI_SIGN_ERROR.CANT_PROCESS;
     }
     const opId = this.markRun(fingerprint);
     this.dispatch({ type: 'SEND_START', fingerprint });

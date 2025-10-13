@@ -77,7 +77,6 @@ import { copyAddress } from '@/ui/utils/clipboard';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
-import { useClearMiniGasStateEffect } from '@/ui/hooks/miniSignGasStore';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -237,7 +236,7 @@ const SendToken = () => {
   const { openDirect, prefetch } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainItem?.serverId,
-    resetGasStore: true,
+    autoResetGasStoreOnChainChange: true,
   });
   const [currentToken, setCurrentToken] = useState<TokenItem | null>(
     DEFAULT_TOKEN
@@ -545,7 +544,6 @@ const SendToken = () => {
   }, [clickedMax, loadGasList]);
 
   const [miniSinLoading, setMiniSinLoading] = useState(false);
-  const [, setMiniSignTx] = useState<Tx | null>(null);
 
   const canUseDirectSubmitTx = useMemo(() => {
     let sendToOtherChainContract = false;
@@ -605,9 +603,13 @@ const SendToken = () => {
           console.error('send token direct sign error', error);
 
           setMiniSinLoading(false);
-          if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+          if (
+            error === MINI_SIGN_ERROR.USER_CANCELLED ||
+            error === MINI_SIGN_ERROR.CANT_PROCESS
+          ) {
             return;
           }
+
           shouldForceSignPage = true;
         }
       }
@@ -809,7 +811,6 @@ const SendToken = () => {
           );
 
         if (isCurrent) {
-          setMiniSignTx(params as Tx);
           prefetch({
             txs: [params as Tx],
             ga: {
@@ -826,14 +827,18 @@ const SendToken = () => {
         }
       } else {
         if (isCurrent) {
-          setMiniSignTx(null);
+          prefetch({
+            txs: [],
+          });
         }
       }
     };
     setMiniTx();
     return () => {
       isCurrent = false;
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
     };
   }, [
     refreshId,
@@ -861,7 +866,9 @@ const SendToken = () => {
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
       setMiniSinLoading(false);
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
       form.setFieldsValue({ amount: '' });
       // persistPageStateCache();
       wallet.clearPageStateCache();
@@ -1573,10 +1580,6 @@ const SendToken = () => {
     if (currentToken) {
       handleCurrentTokenChange(currentToken, true);
     }
-  });
-
-  useClearMiniGasStateEffect({
-    chainServerId: chainItem?.serverId || '',
   });
 
   return (

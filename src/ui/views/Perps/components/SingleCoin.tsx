@@ -153,7 +153,6 @@ export const PerpsSingleCoin = () => {
 
   const { openDirect, close: closeSign, resetGasStore } = useMiniSigner({
     account: signerAccount!,
-    resetGasStore: true,
   });
 
   const singleCoinHistoryList = useMemo(() => {

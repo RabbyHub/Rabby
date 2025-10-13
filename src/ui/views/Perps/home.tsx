@@ -32,8 +32,6 @@ import {
   DirectSubmitProvider,
   supportedDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
-import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { PositionItem } from './components/PositionItem';
 import BigNumber from 'bignumber.js';
 import { AssetItem } from './components/AssetMetaItem';

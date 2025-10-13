@@ -472,6 +472,8 @@ export const BridgeContent = () => {
 
   const { openDirect, prefetch } = useMiniSigner({
     account: currentAccount!,
+    chainServerId: findChainByEnum(fromChain)?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
   });
 
   const handleBridge = useMemoizedFn(async () => {
@@ -506,8 +508,12 @@ export const BridgeContent = () => {
         if (error == MINI_SIGN_ERROR.USER_CANCELLED) {
           refresh((e) => e + 1);
           mutateTxs([]);
+        } else if (error === MINI_SIGN_ERROR.CANT_PROCESS) {
+          setTimeout(() => {
+            refresh((e) => e + 1);
+          }, 10 * 1000);
         } else {
-          await gotoBridge();
+          gotoBridge();
         }
         console.error('bridge direct sign error', error);
       } finally {

@@ -108,7 +108,6 @@ const DappActions = ({
 
   const { openUI, resetGasStore, close, updateConfig } = useMiniSigner({
     account: currentAccount!,
-    chainServerId: chain,
   });
 
   const withdrawAction = useMemo(

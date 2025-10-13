@@ -25,7 +25,6 @@ import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
 import eventBus from '@/eventBus';
 import { useAutoSlippageEffect } from './autoSlippageEffect';
-import { useClearMiniGasStateEffect } from '@/ui/hooks/miniSignGasStore';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -520,10 +519,6 @@ export const useTokenPair = (userAddress: string) => {
     fromTokenId: payToken?.id || '',
     toTokenId: receiveToken?.id || '',
     onSetAutoSlippage: setAutoSlippage,
-  });
-
-  useClearMiniGasStateEffect({
-    chainServerId: findChainByEnum(chain)?.serverId || '',
   });
 
   const fetchIdRef = useRef(0);

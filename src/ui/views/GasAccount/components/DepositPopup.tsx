@@ -283,7 +283,6 @@ const GasAccountDepositContent = ({
   const { openDirect, openUI, close: closeSign, resetGasStore } = useMiniSigner(
     {
       account: currentAccount!,
-      chainServerId: token?.chain,
     }
   );
 

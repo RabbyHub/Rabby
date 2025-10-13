@@ -32,6 +32,7 @@ import { signatureStore } from '@/ui/component/MiniSignV2/state';
 import { MiniSecurityHeader } from '@/ui/component/MiniSignV2/components';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 const MiniSignTxV2 = () => {
   const { t } = useTranslation();
@@ -46,7 +47,7 @@ const MiniSignTxV2 = () => {
 
   const { ctx, config, error, status } = state;
   const currentAccount = config?.account;
-  const visible = React.useMemo(() => {
+  const _visible = React.useMemo(() => {
     const isDirectSignAccount = [
       KEYRING_CLASS.MNEMONIC,
       KEYRING_CLASS.PRIVATE_KEY,
@@ -55,11 +56,13 @@ const MiniSignTxV2 = () => {
     if (ctx?.mode === 'ui') {
       return ['ui-open', 'signing', 'error'].includes(status);
     }
-    if (ctx?.mode === 'direct') {
+    if (ctx?.mode === 'direct' && status !== 'ready') {
       return isDirectSignAccount ? false : true;
     }
     return false;
   }, [status, ctx?.mode]);
+  const visible = useDebounceValue(_visible, 100);
+
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
 

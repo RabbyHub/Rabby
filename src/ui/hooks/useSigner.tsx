@@ -42,18 +42,18 @@ const useLocalMiniSignGasStore = () => {
 export const useMiniSigner = ({
   account,
   chainServerId,
-  resetGasStore,
+  autoResetGasStoreOnChainChange,
 }: {
   account: Account;
   chainServerId?: string;
-  resetGasStore?: boolean;
+  autoResetGasStoreOnChainChange?: boolean;
 }) => {
   const {
     miniGasLevel,
     setMiniGasLevel,
     miniCustomPrice,
     updateMiniCustomPrice: setMiniCustomPrice,
-    reset,
+    reset: resetGasStore,
   } = useLocalMiniSignGasStore();
 
   console.log('miniGasLevel', {
@@ -62,18 +62,21 @@ export const useMiniSigner = ({
   });
 
   useEffect(() => {
-    reset();
-    return reset;
+    resetGasStore();
+    return resetGasStore;
   }, []);
 
   const [previousChainServerId, setPreviousChainServerId] = useState(
     chainServerId
   );
 
-  if (previousChainServerId !== chainServerId && resetGasStore) {
+  if (
+    previousChainServerId !== chainServerId &&
+    autoResetGasStoreOnChainChange
+  ) {
     setPreviousChainServerId(chainServerId);
     if (miniGasLevel === 'custom') {
-      reset();
+      resetGasStore();
     }
   }
 
@@ -248,6 +251,6 @@ export const useMiniSigner = ({
     prefetch,
     close,
     updateConfig,
-    resetGasStore: reset,
+    resetGasStore,
   } as const;
 };

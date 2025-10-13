@@ -77,7 +77,6 @@ const SendNFT = () => {
   const [inited, setInited] = useState(false);
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
-  const [, setMiniSignTx] = useState<Tx | null>(null);
   const [freshId, setRefreshId] = useState(0);
 
   const chainInfo = useMemo(() => {
@@ -86,8 +85,8 @@ const SendNFT = () => {
 
   const { openDirect, prefetch } = useMiniSigner({
     account: currentAccount!,
-    chainServerId: chainInfo?.serverId,
-    resetGasStore: true,
+    chainServerId: chainInfo?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
   });
 
   const nftItem = useMemo(() => {
@@ -215,7 +214,6 @@ const SendNFT = () => {
   useEffect(() => {
     if (canUseDirectSubmitTx) {
       const params = getNFTTransferParams(amount);
-      setMiniSignTx(params as Tx);
       if (params) {
         prefetch({
           txs: [params as Tx],
@@ -232,11 +230,15 @@ const SendNFT = () => {
         });
       }
     } else {
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
     }
 
     return () => {
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
     };
   }, [
     canUseDirectSubmitTx,
@@ -320,7 +322,11 @@ const SendNFT = () => {
             console.error('send nft direct sign error', error);
 
             setMiniSignLoading(false);
-            if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+
+            if (
+              error === MINI_SIGN_ERROR.USER_CANCELLED ||
+              error === MINI_SIGN_ERROR.CANT_PROCESS
+            ) {
               return;
             }
             shouldForceSignPage = true;
@@ -375,7 +381,9 @@ const SendNFT = () => {
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
       setMiniSignLoading(false);
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
       form.setFieldsValue({ amount: 0 });
       updateUrlAmount(0);
       wallet.setPageStateCache({

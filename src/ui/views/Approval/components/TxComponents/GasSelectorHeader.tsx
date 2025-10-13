@@ -966,6 +966,7 @@ const GasSelectorHeader = ({
       !selectedGas ||
       !directSubmit
     ) {
+      setGasInfoByUI(undefined);
       return;
     }
 
