@@ -1,116 +1,37 @@
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import {
-  useDirectSigning,
-  useMiniApprovalGas,
-} from '@/ui/hooks/useMiniApprovalDirectSign';
-import { findChainByServerID } from '@/utils/chain';
-import { CHAINS_ENUM } from '@debank/common';
-import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { Button } from 'antd';
-import BigNumber from 'bignumber.js';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
 
 export const GasAccountDepositButton = ({
   canUseDirectSubmitTx,
   disabled,
-  topUpDirect,
-  topUpOnSignPage,
-  isDirectSignAccount,
-  isPreparingSign,
-  setIsPreparingSign,
-  miniSignTxs,
-  chainServerId,
-  startDirectSigning,
-  setDirectSubmit,
-  setMiniApprovalVisible,
+  onDirectSubmit,
+  onSignPage,
+  loading,
 }: {
-  miniSignTxs?: Tx[];
-  isPreparingSign: boolean;
-  setIsPreparingSign: (isPreparing: boolean) => void;
-  startDirectSigning: () => void;
   canUseDirectSubmitTx: boolean;
   disabled: boolean;
-  topUpOnSignPage: () => void;
-  topUpDirect: () => void;
-  isDirectSignAccount: boolean;
-  chainServerId?: string;
-  setDirectSubmit: (p: boolean) => void;
-  setMiniApprovalVisible: (p: boolean) => void;
+  onDirectSubmit: () => void;
+  onSignPage: () => void;
+  loading?: boolean;
 }) => {
   const currentAccount = useCurrentAccount();
   const { t } = useTranslation();
 
-  const miniApprovalGas = useMiniApprovalGas();
-  const isDirectSigning = useDirectSigning();
-
-  useDebounce(
-    () => {
-      if (
-        isDirectSignAccount &&
-        isPreparingSign &&
-        miniSignTxs?.length &&
-        chainServerId
-      ) {
-        const gasReadyContent =
-          !!miniApprovalGas &&
-          !miniApprovalGas.loading &&
-          !!miniApprovalGas.gasCostUsdStr;
-
-        if (gasReadyContent) {
-          const gasError =
-            gasReadyContent && miniApprovalGas?.showGasLevelPopup;
-          const chainInfo = findChainByServerID(chainServerId)!;
-          const gasTooHigh =
-            !!gasReadyContent &&
-            !!miniApprovalGas?.gasCostUsdStr &&
-            new BigNumber(
-              miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
-            ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
-
-          if (gasError || gasTooHigh) {
-            setDirectSubmit(false);
-            setMiniApprovalVisible(true);
-            setIsPreparingSign(false);
-          } else {
-            startDirectSigning();
-            setIsPreparingSign(false);
-          }
-        }
-      } else {
-        setIsPreparingSign(false);
-      }
-    },
-    300,
-    [
-      miniApprovalGas,
-      setDirectSubmit,
-      startDirectSigning,
-      isDirectSignAccount,
-      chainServerId,
-      topUpOnSignPage,
-      isPreparingSign,
-      miniSignTxs,
-      setIsPreparingSign,
-    ]
-  );
-
   return canUseDirectSubmitTx && currentAccount?.type ? (
-    <>
-      <DirectSignToConfirmBtn
-        title={t('page.gasAccount.depositPopup.title')}
-        onConfirm={topUpDirect}
-        disabled={disabled}
-        overwriteDisabled
-        accountType={currentAccount.type}
-        loading={isPreparingSign || isDirectSigning}
-      />
-    </>
+    <DirectSignToConfirmBtn
+      title={t('page.gasAccount.depositPopup.title')}
+      onConfirm={onDirectSubmit}
+      disabled={disabled}
+      overwriteDisabled
+      accountType={currentAccount.type}
+      loading={loading}
+    />
   ) : (
     <Button
-      onClick={topUpOnSignPage}
+      onClick={onSignPage}
       block
       size="large"
       type="primary"

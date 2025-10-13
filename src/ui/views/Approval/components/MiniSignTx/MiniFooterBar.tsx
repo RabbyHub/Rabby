@@ -29,11 +29,6 @@ import { MiniLedgerAction } from './MiniLedgerAction';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { DrawerProps } from 'antd';
-import {
-  useSetDisableProcessDirectSign,
-  useSetGasTipsComponent,
-  useSetMiniApprovalGas,
-} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { MiniOneKeyAction } from './MiniOneKeyAction';
 import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
 
@@ -273,10 +268,6 @@ export const MiniFooterBar: React.FC<Props> = ({
     if (currentAccount) setAccount(currentAccount);
   };
 
-  const setMiniApprovalGasState = useSetMiniApprovalGas();
-  const setDisableProcessDirectSign = useSetDisableProcessDirectSign();
-  // const setCanDirectSign = useSetCanDirectSign();
-  const setGasTipsComponent = useSetGasTipsComponent();
   const isSetGasMethodRef = useRef(false);
   const [isInited, setIsInited] = useState(false);
 
@@ -291,83 +282,6 @@ export const MiniFooterBar: React.FC<Props> = ({
   React.useEffect(() => {
     init();
   }, []);
-
-  useEffect(() => {
-    if (!account || !directSubmit) {
-      setGasTipsComponent(null);
-      return;
-    }
-
-    const showGasLessToSign =
-      showGasLess && !canGotoUseGasAccount && canUseGasLess;
-
-    setGasTipsComponent(
-      !isInited ? null : (
-        <GasTipsWrapper>
-          {showGasLessToSign ? (
-            <GasLessActivityToSign
-              directSubmit
-              gasLessEnable={useGasLess}
-              handleFreeGas={() => {
-                enableGasLess?.();
-              }}
-              gasLessConfig={gasLessConfig}
-            />
-          ) : null}
-
-          {showGasLess && !payGasByGasAccount && !canUseGasLess ? (
-            <GasLessNotEnough
-              directSubmit
-              gasLessFailedReason={gasLessFailedReason}
-              canGotoUseGasAccount={canGotoUseGasAccount}
-              onChangeGasAccount={onChangeGasAccount}
-              canDepositUseGasAccount={canDepositUseGasAccount}
-              miniFooter
-              onRedirectToDeposit={onRedirectToDeposit}
-            />
-          ) : null}
-
-          {payGasByGasAccount && !gasAccountCanPay ? (
-            <GasAccountTips
-              directSubmit
-              gasAccountCost={gasAccountCost}
-              isGasAccountLogin={isGasAccountLogin}
-              isWalletConnect={isWalletConnect}
-              noCustomRPC={noCustomRPC}
-              miniFooter
-              onRedirectToDeposit={onRedirectToDeposit}
-            />
-          ) : null}
-        </GasTipsWrapper>
-      )
-    );
-    return () => {
-      setGasTipsComponent(null);
-    };
-  }, [
-    isInited,
-    directSubmit,
-    account,
-    account?.type,
-    canDepositUseGasAccount,
-    canGotoUseGasAccount,
-    canUseGasLess,
-    enableGasLess,
-    gasAccountCanPay,
-    gasAccountCost,
-    gasLessConfig,
-    hasUnProcessSecurityResult,
-    isGasAccountLogin,
-    isWalletConnect,
-    isWatchAddr,
-    noCustomRPC,
-    onChangeGasAccount,
-    payGasByGasAccount,
-    securityLevel,
-    setGasTipsComponent,
-    showGasLess,
-    useGasLess,
-  ]);
 
   useEffect(() => {
     if (isSetGasMethodRef.current) {
@@ -404,44 +318,6 @@ export const MiniFooterBar: React.FC<Props> = ({
     onChangeGasAccount,
     showGasLess,
     gasAccountCost?.err_msg,
-  ]);
-
-  useEffect(() => {
-    if (isInited && directSubmit) {
-      const disabledProcess = payGasByGasAccount
-        ? !gasAccountCanPay
-        : useGasLess
-        ? false
-        : props.disabledProcess;
-
-      setDisableProcessDirectSign(disabledProcess);
-
-      setMiniApprovalGasState((pre) => ({
-        ...pre,
-        noCustomRPC,
-        disabledProcess,
-        showGasLevelPopup: disabledProcess,
-        gasAccountError:
-          !!gasAccountCost?.err_msg &&
-          gasAccountCost?.err_msg?.toLowerCase() !==
-            GAS_ACCOUNT_INSUFFICIENT_TIP.toLowerCase(),
-      }));
-    }
-  }, [
-    canGotoUseGasAccount,
-    gasAccountCanPay,
-    isInited,
-    payGasByGasAccount,
-    setMiniApprovalGasState,
-    setDisableProcessDirectSign,
-    showGasLess,
-    noCustomRPC,
-    isWalletConnect,
-    gasAccountCost?.balance_is_enough,
-    gasAccountCost?.chain_not_support,
-    useGasLess,
-    directSubmit,
-    props.disabledProcess,
   ]);
 
   const { isDarkTheme } = useThemeMode();

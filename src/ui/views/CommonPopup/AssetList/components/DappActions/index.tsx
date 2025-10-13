@@ -4,17 +4,17 @@ import {
   Tx,
   WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { message } from 'antd';
 import { useDappAction } from './hook';
-import { MiniApproval } from '@/ui/views/Approval/components/MiniSignTx';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
-import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const Wrapper = styled.div`
   display: flex;
@@ -106,10 +106,10 @@ const DappActions = ({
   const { t } = useTranslation();
   const { setVisible } = useCommonPopupView();
 
-  const [disabledSign, setDisabledSign] = useState(false);
-  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
-  const [miniSignTxs, setMiniSignTxs] = useState<Tx[]>([]);
-  const [title, setTitle] = useState<string>('');
+  const { openUI, resetGasStore, close, updateConfig } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: chain,
+  });
 
   const withdrawAction = useMemo(
     () =>
@@ -140,7 +140,9 @@ const DappActions = ({
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse) => {
       if (!r.pre_exec.success) {
-        setDisabledSign(true);
+        updateConfig({
+          disableSignBtn: true,
+        });
         return;
       }
       if (
@@ -149,11 +151,15 @@ const DappActions = ({
       ) {
         // queue withdraw not need to check balance change
         if (!isQueueWithdraw) {
-          setDisabledSign(true);
+          updateConfig({
+            disableSignBtn: true,
+          });
           return;
         }
       }
-      setDisabledSign(false);
+      updateConfig({
+        disableSignBtn: false,
+      });
     },
     [isQueueWithdraw]
   );
@@ -163,36 +169,93 @@ const DappActions = ({
     [currentAccount?.type]
   );
 
-  const { reset: resetGasCache } = useMiniSignGasStore();
-
   const handleSubmit = useCallback(
     async (action: () => Promise<Tx[]>, title?: string) => {
       const txs = await action();
-      if (canDirectSign) {
-        setTitle(title || '');
-        resetGasCache();
-        setMiniSignTxs(txs);
-        setIsShowMiniSign(true);
-      } else {
+      if (!txs?.length) return;
+
+      const runFallback = async () => {
+        for (const tx of txs) {
+          await wallet.sendRequest<string>({
+            method: 'eth_sendTransaction',
+            params: [tx],
+          });
+        }
+        setVisible(false);
+      };
+
+      if (canDirectSign && currentAccount) {
+        resetGasStore();
+        close();
+        const signerConfig = {
+          txs,
+          title: (
+            <DappActionHeader
+              logo={protocolLogo}
+              chain={chain}
+              title={title}
+              description={
+                isQueueWithdraw
+                  ? t('component.DappActions.queueDescription')
+                  : undefined
+              }
+            />
+          ),
+          showSimulateChange: true,
+          disableSignBtn: false,
+          onPreExecChange,
+          onRedirectToDeposit: () => {
+            setVisible(false);
+          },
+          ga: {
+            category: 'DappActions',
+            action: title,
+          },
+        } as const;
         try {
-          for await (const tx of txs) {
-            await wallet.sendRequest<string>({
-              method: 'eth_sendTransaction',
-              params: [tx],
+          await openUI(signerConfig);
+          setVisible(false);
+          return;
+        } catch (error) {
+          console.log('Dapp actions openUI error', error);
+          if (error !== MINI_SIGN_ERROR.USER_CANCELLED) {
+            console.error('Dapp action direct sign error', error);
+            await runFallback().catch((fallbackError) => {
+              console.error('Dapp action fallback error', fallbackError);
+              const fallbackMsg =
+                typeof (fallbackError as any)?.message === 'string'
+                  ? (fallbackError as any).message
+                  : 'Transaction failed';
+              message.error(fallbackMsg);
             });
           }
-          setVisible(false);
-        } catch (error) {
-          console.error('Transaction failed:', error);
-          message.error(
-            typeof error?.message === 'string'
-              ? error?.message
-              : 'Transaction failed'
-          );
+          return;
         }
       }
+
+      try {
+        await runFallback();
+      } catch (error) {
+        console.error('Transaction failed:', error);
+        message.error(
+          typeof error?.message === 'string'
+            ? error?.message
+            : 'Transaction failed'
+        );
+      }
     },
-    [canDirectSign, resetGasCache, wallet]
+    [
+      canDirectSign,
+      currentAccount,
+      openUI,
+      protocolLogo,
+      chain,
+      isQueueWithdraw,
+      t,
+      onPreExecChange,
+      setVisible,
+      wallet,
+    ]
   );
 
   if (!showWithdraw && !showClaim) {
@@ -219,50 +282,6 @@ const DappActions = ({
           }
         />
       )}
-      <MiniApproval
-        txs={miniSignTxs}
-        visible={isShowMiniSign}
-        onClose={() => {
-          setIsShowMiniSign(false);
-          setMiniSignTxs([]);
-          resetGasCache();
-        }}
-        onReject={() => {
-          setIsShowMiniSign(false);
-          setMiniSignTxs([]);
-          resetGasCache();
-        }}
-        onResolve={() => {
-          setTimeout(() => {
-            setIsShowMiniSign(false);
-            setMiniSignTxs([]);
-            resetGasCache();
-            setVisible(false);
-          }, 500);
-        }}
-        autoThrowPreExecError={false}
-        onRedirectToDeposit={() => {
-          setVisible(false);
-          setIsShowMiniSign(false);
-          setMiniSignTxs([]);
-        }}
-        canUseDirectSubmitTx
-        showSimulateChange
-        onPreExecChange={onPreExecChange}
-        disableSignBtn={disabledSign}
-        title={
-          <DappActionHeader
-            logo={protocolLogo}
-            chain={chain}
-            title={title}
-            description={
-              isQueueWithdraw
-                ? t('component.DappActions.queueDescription')
-                : undefined
-            }
-          />
-        }
-      />
     </Wrapper>
   );
 };

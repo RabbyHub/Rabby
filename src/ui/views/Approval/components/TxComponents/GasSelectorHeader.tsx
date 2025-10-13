@@ -50,8 +50,10 @@ import { calcGasEstimated } from '@/utils/time';
 import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { noop } from 'lodash';
-import { useSetMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { useGetShowMoreGasSelectVisible } from '@/ui/views/Bridge/Component/ShowMoreGasModal';
+import {
+  useGetShowMoreGasSelectVisible,
+  useSetGasInfoByUI,
+} from '@/ui/views/Bridge/Component/ShowMoreGasModal';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -543,6 +545,15 @@ const GasSelectorHeader = ({
 
   useDebounce(
     () => {
+      console.log(
+        'gasaccount enough',
+        checkGasLevelIsNotEnough &&
+          gasList.length &&
+          directSubmit &&
+          isReady &&
+          outGasModalIsOpen &&
+          !gasAccountStateInit.current
+      );
       if (
         checkGasLevelIsNotEnough &&
         gasList.length &&
@@ -551,6 +562,8 @@ const GasSelectorHeader = ({
         outGasModalIsOpen &&
         !gasAccountStateInit.current
       ) {
+        console.log('setGasAccountIsNotEnough init start');
+
         let init = true;
         ['slow', 'normal', 'fast'].forEach((level) => {
           const selectedGas = gasList.find((e) => e.level === level);
@@ -570,8 +583,10 @@ const GasSelectorHeader = ({
             'gasAccount'
           )
             .then((arr) => {
+              console.log('setGasAccountIsNotEnough init', init, level, arr);
               if (init) {
                 gasAccountStateInit.current = true;
+                console.log('setGasAccountIsNotEnough', level, arr);
                 // setGasAccountIsNotEnough()
                 setGasAccountIsNotEnough((pre) => ({
                   ...pre,
@@ -941,7 +956,7 @@ const GasSelectorHeader = ({
     setModalVisible(false);
   };
 
-  const setMiniApprovalGasState = useSetMiniApprovalGas();
+  const setGasInfoByUI = useSetGasInfoByUI();
 
   useEffect(() => {
     if (
@@ -951,23 +966,13 @@ const GasSelectorHeader = ({
       !selectedGas ||
       !directSubmit
     ) {
-      setMiniApprovalGasState(undefined);
       return;
     }
 
-    setMiniApprovalGasState((pre) => ({
-      ...pre,
-      gasIsNotEnough,
-      gasAccountIsNotEnough,
-      loading: !isReady && !isFirstTimeLoad,
-      gasMethod,
-      onChangeGasMethod,
-      // isDisabledGasPopup,
-      gasList,
-      selectedGas,
+    setGasInfoByUI({
       externalPanelSelection,
       handleClickEdit,
-      changedCustomGas,
+      // gasList,
       gasCostUsdStr,
       gasUsdList: {
         slow: formatGasHeaderUsdValue(new BigNumber(gasSlowUsd).toString(10)),
@@ -976,8 +981,10 @@ const GasSelectorHeader = ({
         ),
         fast: formatGasHeaderUsdValue(new BigNumber(gasFastUsd).toString(10)),
       },
+      gasIsNotEnough,
+      gasAccountIsNotEnough,
       gasAccountCost: gasAccountCost?.gas_account_cost,
-    }));
+    });
   }, [
     gasAccountIsNotEnough,
     gasIsNotEnough,
@@ -985,7 +992,6 @@ const GasSelectorHeader = ({
     isReady,
     isFirstTimeLoad,
     disabled,
-    setMiniApprovalGasState,
     gasMethod,
     onChangeGasMethod,
     // isDisabledGasPopup,
