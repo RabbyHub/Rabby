@@ -56,11 +56,6 @@ export const useMiniSigner = ({
     reset: resetGasStore,
   } = useLocalMiniSignGasStore();
 
-  console.log('miniGasLevel', {
-    miniGasLevel,
-    miniCustomPrice,
-  });
-
   useEffect(() => {
     resetGasStore();
     return resetGasStore;

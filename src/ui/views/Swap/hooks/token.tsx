@@ -183,7 +183,7 @@ export const useTokenPair = (userAddress: string) => {
 
     if (p) {
       expiredTimer.current = setTimeout(() => {
-        // setRefreshId((e) => e + 1);
+        setRefreshId((e) => e + 1);
       }, 1000 * 20);
     }
 

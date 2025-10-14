@@ -3,7 +3,7 @@ import type { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 export type LastGasSelection = {
   lastTimeSelect?: 'gasPrice' | 'gasLevel';
   gasLevel?: GasLevel['level'];
-  gasPrice?: number; // in wei
+  gasPrice?: number;
 };
 
 export type GasSelectionFlags = {

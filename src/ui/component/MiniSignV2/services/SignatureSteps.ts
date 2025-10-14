@@ -355,18 +355,20 @@ export class SignatureSteps {
     } = params;
     const chainId = txs[0].chainId;
     const chain = findChain({ id: chainId })!;
-    console.log('gasSelection', gasSelection);
     const customGasPrice = computeCustomGasPrice({
       txs,
       flags: gasSelection?.flags,
       lastSelection: gasSelection?.lastSelection,
     });
 
-    const gasList = await wallet.gasMarketV2({
-      chain,
-      tx: txs[0],
-      customGas: customGasPrice > 0 ? customGasPrice : undefined,
-    } as any);
+    const [gasList, { median: gasPriceMedian }] = await Promise.all([
+      wallet.gasMarketV2({
+        chain,
+        tx: txs[0],
+        customGas: customGasPrice > 0 ? customGasPrice : undefined,
+      }),
+      wallet.openapi.gasPriceStats(chain.serverId),
+    ]);
     const selectedGas = selectInitialGas({
       gasList,
       flags: gasSelection?.flags,
@@ -510,7 +512,6 @@ export class SignatureSteps {
     // align with MiniSignTx: aggregate checkErrors across batch with running balance
     const checkErrors = aggregateCheckErrors({ txsCalc, nativeTokenBalance });
     const isGasNotEnough = !!checkErrors?.some((e) => e.code === 3001);
-    console.log('isGasNotEnoughisGasNotEnough prepareContext', isGasNotEnough);
     // gasless + gasAccount in parallel
     const [gasless, gasAccount] = await Promise.all([
       computeGasless({ wallet, txsCalc, gasPriceWei: selectedGas.price }),
@@ -541,6 +542,7 @@ export class SignatureSteps {
       chainId: chain.id,
       is1559: !!chain.eip?.['1559'],
       gasList,
+      gasPriceMedian,
       selectedGas,
       selectedGasCost,
       txsCalc,
@@ -622,10 +624,6 @@ export class SignatureSteps {
       nativeTokenBalance,
     });
     const isGasNotEnough = !!checkErrors?.some((e) => e.code === 3001);
-    console.log(
-      'isGasNotEnoughisGasNotEnough refreshOnGasChange',
-      isGasNotEnough
-    );
 
     const selectedGasCost = await SignatureSteps.computeGasCost({
       wallet,
@@ -726,7 +724,6 @@ export class SignatureSteps {
     try {
       const txHashes: { txHash: string }[] = [];
       for (; i < txsCalc.length; i++) {
-        console.log('txs[i]', txsCalc[i], i);
         if (txsCalc[i].hash) {
           continue;
         }
@@ -827,22 +824,9 @@ export class SignatureSteps {
       open,
       mode: 'ui',
       txs,
-      chainId: prepared.chainId,
-      is1559: prepared.is1559,
-      gasList: prepared.gasList,
-      selectedGas: prepared.selectedGas,
-      txsCalc: prepared.txsCalc as any,
-      nativeTokenPrice: prepared.nativeTokenPrice,
-      nativeTokenBalance: prepared.nativeTokenBalance,
-      checkErrors: prepared.checkErrors,
-      gasless: prepared.gasless,
-      gasAccount: prepared.gasAccount,
-      engineResults: prepared.engineResults,
       gasMethod: switchGasAccount ? 'gasAccount' : 'native',
       useGasless: false,
-      isGasNotEnough: prepared.isGasNotEnough,
-      noCustomRPC: prepared.noCustomRPC,
-      selectedGasCost: prepared.selectedGasCost,
+      ...prepared,
     };
   }
 

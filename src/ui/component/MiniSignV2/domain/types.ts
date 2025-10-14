@@ -79,6 +79,7 @@ export type PreparedContext = {
     gasCostAmount: BigNumber;
     maxGasCostAmount: BigNumber;
   };
+  gasPriceMedian?: number;
 };
 
 export type RetryInfo = {
@@ -105,7 +106,7 @@ export type GasSelectionOptions = {
   lastSelection?: {
     lastTimeSelect?: 'gasPrice' | 'gasLevel';
     gasLevel?: GasLevel['level'];
-    gasPrice?: number; // wei
+    gasPrice?: number;
   };
 };
 

@@ -54,6 +54,23 @@ class SignatureManager {
     const next = signatureReducer(this.state, action);
     if (next === this.state) return;
     this.state = next;
+
+    if (this.state.ctx) {
+      this.state.ctx.disabledProcess = !this.canProcess();
+      this.state.ctx.gasFeeTooHigh = false;
+
+      const chainInfo = findChain({ id: this.state.ctx.txs[0]?.chainId });
+
+      if (
+        this.state.config?.checkGasFeeTooHigh &&
+        this.state.ctx?.selectedGasCost?.gasCostUsd.gt(
+          chainInfo?.enum === CHAINS_ENUM.ETH ? 10 : 1
+        )
+      ) {
+        this.state.ctx.gasFeeTooHigh = true;
+      }
+    }
+
     this.notify();
   }
 
@@ -351,7 +368,6 @@ class SignatureManager {
         return res;
       }
 
-      console.log('send result', res);
       const hashes = Array.isArray(res) ? res.map((item) => item.txHash) : [];
       this.dispatch({ type: 'SEND_SUCCESS', fingerprint, hashes });
       this.resolvePending(hashes);
@@ -439,7 +455,6 @@ class SignatureManager {
         ctx: { ...this.state.ctx, mode: 'direct' } as SignerCtx,
       });
       const hardwareConnected = await this.checkHardWareConnected();
-      console.log('hardwareConnected', hardwareConnected);
       if (hardwareConnected) {
         this.send(wallet).catch(() => undefined);
       } else {

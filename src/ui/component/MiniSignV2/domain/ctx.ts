@@ -39,6 +39,9 @@ export type SignerCtx = {
     gasCostAmount: BigNumber;
     maxGasCostAmount: BigNumber;
   };
+  disabledProcess?: boolean;
+  gasFeeTooHigh?: boolean;
+  gasPriceMedian?: number;
 };
 
 export const buildFingerprint = (txs: Tx[]) =>

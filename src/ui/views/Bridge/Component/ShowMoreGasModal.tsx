@@ -80,8 +80,6 @@ export default function ShowMoreGasSelectModal({
   const gasInfoByUI = useGetGasInfoByUI();
   const setGasInfoByUI = useSetGasInfoByUI();
 
-  console.log('gasInfoByUI state', gasInfoByUI);
-
   useEffect(() => {
     if (['idle', 'prefetching'].includes(status) || !ctx?.txsCalc?.length) {
       setGasInfoByUI(undefined);

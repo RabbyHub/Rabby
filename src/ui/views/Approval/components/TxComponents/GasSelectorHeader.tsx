@@ -545,15 +545,6 @@ const GasSelectorHeader = ({
 
   useDebounce(
     () => {
-      console.log(
-        'gasaccount enough',
-        checkGasLevelIsNotEnough &&
-          gasList.length &&
-          directSubmit &&
-          isReady &&
-          outGasModalIsOpen &&
-          !gasAccountStateInit.current
-      );
       if (
         checkGasLevelIsNotEnough &&
         gasList.length &&
@@ -562,8 +553,6 @@ const GasSelectorHeader = ({
         outGasModalIsOpen &&
         !gasAccountStateInit.current
       ) {
-        console.log('setGasAccountIsNotEnough init start');
-
         let init = true;
         ['slow', 'normal', 'fast'].forEach((level) => {
           const selectedGas = gasList.find((e) => e.level === level);
@@ -583,11 +572,8 @@ const GasSelectorHeader = ({
             'gasAccount'
           )
             .then((arr) => {
-              console.log('setGasAccountIsNotEnough init', init, level, arr);
               if (init) {
                 gasAccountStateInit.current = true;
-                console.log('setGasAccountIsNotEnough', level, arr);
-                // setGasAccountIsNotEnough()
                 setGasAccountIsNotEnough((pre) => ({
                   ...pre,
                   [level]: [

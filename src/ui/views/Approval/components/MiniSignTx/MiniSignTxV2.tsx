@@ -62,7 +62,6 @@ const MiniSignTxV2 = () => {
     return false;
   }, [status, ctx?.mode]);
   const visible = useDebounceValue(_visible, 100);
-
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
 
@@ -379,7 +378,7 @@ const MiniSignTxV2 = () => {
   const manuallyChangeGasLimit = false;
   const checkErrors = ctx.checkErrors || [];
   const engineResults = ctx.engineResults;
-  const gasPriceMedian = null;
+  const gasPriceMedian = ctx.gasPriceMedian || null;
   const isGasAccountLogin = !!sig && !!gasAccountAddress;
   const isWalletConnect = currentAccount?.type === 'WalletConnectKeyring';
   const isWatchAddr = currentAccount?.type === 'WatchAddressKeyring';

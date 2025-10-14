@@ -89,7 +89,7 @@ export const signatureService = {
 
   send: async ({ wallet, ctx, config, retry, onProgress }: SendParams) => {
     const chainMeta = findChain({ id: ctx.chainId });
-    const chainServerId = (chainMeta as any)?.serverId || '';
+    const chainServerId = chainMeta?.serverId || '';
     let currentCtx = ctx;
     return SignatureSteps.sendCore({
       wallet,

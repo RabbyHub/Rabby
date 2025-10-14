@@ -19,11 +19,6 @@ export const MiniSecurityHeader: React.FC<{
 }> = ({ engineResults, tx, txDetail, session = INTERNAL_REQUEST_SESSION }) => {
   const account = useCurrentAccount();
 
-  console.log('SimpleSecurityHeader ', {
-    account,
-    engineResults,
-  });
-
   if (!account || !engineResults) return null;
 
   const {
