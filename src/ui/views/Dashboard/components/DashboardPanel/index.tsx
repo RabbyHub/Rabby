@@ -8,45 +8,35 @@ import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Badge, Col, Row, Skeleton, Tooltip } from 'antd';
-import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import styled from 'styled-components';
 import IconAlertRed from 'ui/assets/alert-red.svg';
-import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
-import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
-import { ReactComponent as RcIconPerps } from 'ui/assets/dashboard/IconPerps.svg';
-import { ReactComponent as RcIconMoreSettings } from 'ui/assets/dashboard/more-settings.svg';
-import { ReactComponent as RcIconNFT } from 'ui/assets/dashboard/nft.svg';
-import { ReactComponent as RcIconQuene } from 'ui/assets/dashboard/quene.svg';
-import { ReactComponent as RcIconReceive } from 'ui/assets/dashboard/receive.svg';
-import { ReactComponent as RcIconSecurity } from 'ui/assets/dashboard/security.svg';
-import { ReactComponent as RcIconSendToken } from 'ui/assets/dashboard/sendtoken.svg';
-import { ReactComponent as RcIconSwap } from 'ui/assets/dashboard/swap.svg';
-import { ReactComponent as RcIconTransactions } from 'ui/assets/dashboard/transactions.svg';
+import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
 
 import {
+  RcIconApprovalsCC,
   RcIconBridgeCC,
   RcIconGasAccountCC,
+  RcIconMobileSyncCC,
+  RcIconMoreCC,
   RcIconNftCC,
+  RcIconPerpsCC,
   RcIconPointsCC,
   RcIconReceiveCC,
   RcIconSendCC,
   RcIconSwapCC,
   RcIconTransactionsCC,
-  RcIconMoreCC,
-  RcIconApprovalsCC,
-  RcIconPerpsCC,
-  RcIconMobileSyncCC,
 } from 'ui/assets/dashboard/panel';
 
+import { useGasAccountInfo } from '@/ui/views/GasAccount/hooks';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import {
-  getCurrentConnectSite,
+  formatGasAccountUsdValueV2,
   openInternalPageInTab,
   splitNumberByStep,
   useWallet,
@@ -91,6 +81,10 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    &:hover {
+      background: var(--r-blue-light2, #dbe0ff);
+    }
 
     &-icon {
       width: 20px;
@@ -232,6 +226,14 @@ export const DashboardPanel: React.FC<unknown> = () => {
     subContent?: React.ReactNode;
   };
 
+  const { value, loading } = useGasAccountInfo();
+  const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
+  const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
+
+  const hasGiftEligibility = useMemo(() => {
+    return giftUsdValue > 0 && !hasClaimedGift;
+  }, [giftUsdValue, hasClaimedGift]);
+
   const panelItems = useMemo(() => {
     return {
       swap: {
@@ -320,6 +322,19 @@ export const DashboardPanel: React.FC<unknown> = () => {
         onClick: () => {
           history.push('/gas-account');
         },
+        subContent: hasGiftEligibility ? (
+          <div className="absolute top-[6px] right-[6px]">
+            <div
+              className={clsx(
+                'text-r-green-default text-[10px] leading-[12px] font-medium',
+                'flex items-center px-[3px] py-[2px] rounded-[4px] bg-r-green-light'
+              )}
+            >
+              <RcIconGift viewBox="0 0 14 14" />
+              {formatGasAccountUsdValueV2(giftUsdValue)}
+            </div>
+          </div>
+        ) : null,
       } as IPanelItem,
       points: {
         icon: RcIconPointsCC,

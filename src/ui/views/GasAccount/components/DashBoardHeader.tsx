@@ -3,21 +3,8 @@ import { ReactComponent as IconRcGasAccount } from '@/ui/assets/gas-account/gas-
 import { ReactComponent as IconGift } from '@/ui/assets/gift-14.svg';
 import clsx from 'clsx';
 import { useGasAccountInfo } from '../hooks';
-import { formatTokenAmount } from '@/ui/utils';
+import { formatGasAccountUsdValueV2, formatTokenAmount } from '@/ui/utils';
 import { useRabbySelector } from 'ui/store';
-
-const formatUsdValue = (usd: string | number) => {
-  const v = Number(usd);
-  if (v >= 1000) {
-    return `$${formatTokenAmount(Number(v).toFixed(0), 0)}`;
-  }
-  if (v >= 100) {
-    const fixDown = Math.floor(v * 10) / 10;
-    return `$${Number(fixDown).toFixed(1)}`;
-  }
-  const fixDown = Math.floor(v * 100) / 100;
-  return `$${Number(fixDown).toFixed(2)}`;
-};
 
 export const GasAccountDashBoardHeader: React.FC = () => {
   const { value, loading } = useGasAccountInfo();
@@ -31,10 +18,10 @@ export const GasAccountDashBoardHeader: React.FC = () => {
 
   const usd = useMemo(() => {
     if (loading) {
-      return formatUsdValue(0);
+      return formatGasAccountUsdValueV2(0);
     }
     if (value && 'account' in value) {
-      return formatUsdValue(value.account.balance);
+      return formatGasAccountUsdValueV2(value.account.balance);
     }
   }, [value]);
 
@@ -52,7 +39,7 @@ export const GasAccountDashBoardHeader: React.FC = () => {
       {hasGiftEligibility ? (
         <>
           <IconGift viewBox="0 0 14 14" className="w-14 h-14" />
-          {formatUsdValue(giftUsdValue)}
+          {formatGasAccountUsdValueV2(giftUsdValue)}
         </>
       ) : (
         <>
