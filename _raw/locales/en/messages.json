@@ -1415,7 +1415,8 @@
           "ecology": "Ecosystem",
           "bridge": "Bridge",
           "perps": "Perps",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -1789,6 +1790,11 @@
       "recentConnectionGuide": {
         "title": "Switch address for Dapp connection here",
         "button": "Got it"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby Points",
+        "desc": "Go to Rabby Mobile to check points",
+        "downloadIntro": "Don't have Rabby Mobile yet? Download now."
       }
     },
     "nft": {
@@ -3198,7 +3204,10 @@
       "title": "Risk Warning"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."

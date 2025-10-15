@@ -786,22 +786,22 @@ const SettingsInner = ({
             setIsShowEcologyModal(true);
           },
         },
-        {
-          leftIcon: RcIconRabbyMobileCC,
-          leftIconClassName: 'text-r-neutral-body w-24 h-24',
-          leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
-          content: t('page.dashboard.home.panel.mobile'),
-          onClick: () => {
-            openInternalPageInTab('sync');
-          },
-        },
-        {
-          leftIcon: RcIconPoints,
-          content: t('page.dashboard.settings.features.rabbyPoints'),
-          onClick: () => {
-            history.push('/rabby-points');
-          },
-        },
+        // {
+        //   leftIcon: RcIconRabbyMobileCC,
+        //   leftIconClassName: 'text-r-neutral-body w-24 h-24',
+        //   leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
+        //   content: t('page.dashboard.home.panel.mobile'),
+        //   onClick: () => {
+        //     openInternalPageInTab('sync');
+        //   },
+        // },
+        // {
+        //   leftIcon: RcIconPoints,
+        //   content: t('page.dashboard.settings.features.rabbyPoints'),
+        //   onClick: () => {
+        //     history.push('/rabby-points');
+        //   },
+        // },
         {
           leftIcon: RcIconSettingsSearchDapps,
           content: t('page.dashboard.settings.features.searchDapps'),

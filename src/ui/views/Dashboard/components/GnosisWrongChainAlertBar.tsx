@@ -7,10 +7,6 @@ import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 
 const GnosisWrongChainAlert = () => {
   const { t } = useTranslation();
-  const currentConnection = useRabbySelector(
-    (state) => state.chains.currentConnection
-  );
-  const chain = CHAINS[currentConnection?.chain || CHAINS_ENUM.ETH];
 
   return (
     <div className="gnosis-wrong-chain-alert">
