@@ -226,7 +226,6 @@ export const DashboardPanel: React.FC<unknown> = () => {
     subContent?: React.ReactNode;
   };
 
-  const { value, loading } = useGasAccountInfo();
   const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
   const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
 
@@ -385,7 +384,13 @@ export const DashboardPanel: React.FC<unknown> = () => {
         },
       } as IPanelItem,
     };
-  }, [perpsPositionInfo, isFetching]);
+  }, [
+    perpsPositionInfo,
+    isFetching,
+    hasGiftEligibility,
+    giftUsdValue,
+    approvalRiskAlert,
+  ]);
 
   const pickedPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
     return isGnosis
