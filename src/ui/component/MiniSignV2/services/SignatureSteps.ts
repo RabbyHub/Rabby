@@ -775,6 +775,7 @@ export class SignatureSteps {
           ga: options?.ga,
           session: options?.session,
           sig,
+          preExecResult: txsCalc[i]?.preExecResult,
         });
         onSendedTx?.({ hash: result.txHash, idx: i });
         txHashes.push({ ...result });

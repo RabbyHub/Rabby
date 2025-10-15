@@ -16,7 +16,6 @@ export const GlobalSignerPortal: React.FC = () => {
       <MiniSignTxV2 />
       {ctx?.mode === 'direct' &&
       status !== 'ready' &&
-      config?.account &&
       !supportedHardwareDirectSign(config?.account.type || '') ? (
         <Modal
           transitionName=""

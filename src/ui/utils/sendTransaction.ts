@@ -31,6 +31,8 @@ import eventBus from '@/eventBus';
 import {
   parseAction,
   fetchActionRequiredData,
+  ParsedTransactionActionData,
+  ActionRequireData,
 } from '@rabby-wallet/rabby-action';
 import stats from '@/stats';
 import { getCexInfo } from '../models/exchange';
@@ -599,6 +601,7 @@ export const sendTransactionByMiniSignV2 = async ({
   sig,
   session,
   account: _account,
+  preExecResult,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -612,6 +615,9 @@ export const sendTransactionByMiniSignV2 = async ({
   sig?: string;
   session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
   account?: Account;
+  preExecResult?: ExplainTxResponse;
+  parsedData?: ParsedTransactionActionData;
+  requiredData?: ActionRequireData;
 }) => {
   onProgress?.('building');
 
@@ -661,12 +667,83 @@ export const sendTransactionByMiniSignV2 = async ({
   } else {
     (transaction as Tx).gasPrice = maxFeePerGas;
   }
+  try {
+    //for Signature Record
+    const actionData = await wallet.openapi.parseTx({
+      chainId: chain.serverId,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: tx.nonce || '0x1',
+        value: tx.value || '0x0',
+        to: tx.to || '',
+        type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
+      } as any,
+      origin: origin || '',
+      addr: currentAccount.address,
+    });
+    const parsed = parseAction({
+      type: 'transaction',
+      data: actionData.action,
+      balanceChange: preExecResult!.balance_change,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: tx.nonce || '0x1',
+        value: tx.value || '0x0',
+      },
+      preExecVersion: preExecResult!.pre_exec_version,
+      gasUsed: preExecResult!.gas.gas_used,
+      sender: tx.from,
+    });
+    const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
+    const requiredData = await fetchActionRequiredData({
+      type: 'transaction',
+      actionData: parsed,
+      contractCall: actionData.contract_call,
+      chainId: chain.serverId,
+      sender: currentAccount.address,
+      walletProvider: {
+        hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+        hasAddress: wallet.hasAddress,
+        getWhitelist: wallet.getWhitelist,
+        isWhitelistEnabled: wallet.isWhitelistEnabled,
+        getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+        findChain,
+        ALIAS_ADDRESS,
+      },
+      cex: cexInfo,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: tx.nonce || '0x1',
+        value: tx.value || '0x0',
+      },
+      apiProvider: isTestnet(chain.serverId)
+        ? wallet.testnetOpenapi
+        : wallet.openapi,
+    });
 
-  await wallet.updateSigningTx(signingTxId, {
-    rawTx: {
-      nonce: tx.nonce,
-    },
-  });
+    await wallet.updateSigningTx(signingTxId, {
+      rawTx: {
+        nonce: tx.nonce,
+      },
+      explain: {
+        ...preExecResult,
+        calcSuccess: true,
+      },
+      action: {
+        actionData: parsed,
+        requiredData: requiredData,
+      },
+    });
+  } catch (error) {
+    await wallet.updateSigningTx(signingTxId, {
+      rawTx: {
+        nonce: tx.nonce,
+      },
+    });
+  }
 
   onProgress?.('builded');
 
