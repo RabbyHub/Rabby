@@ -252,3 +252,16 @@ export const formatGasAccountUSDValue = (value: string | number) => {
   if (bnValue.lt(0.0001)) return '<$0.0001';
   return `$${formatNumber(value, 4)}`;
 };
+
+export const formatGasAccountUsdValueV2 = (usd: string | number) => {
+  const v = Number(usd);
+  if (v >= 1000) {
+    return `$${formatTokenAmount(Number(v).toFixed(0), 0)}`;
+  }
+  if (v >= 100) {
+    const fixDown = Math.floor(v * 10) / 10;
+    return `$${Number(fixDown).toFixed(1)}`;
+  }
+  const fixDown = Math.floor(v * 100) / 100;
+  return `$${Number(fixDown).toFixed(2)}`;
+};
