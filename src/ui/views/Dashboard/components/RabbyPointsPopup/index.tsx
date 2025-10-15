@@ -47,7 +47,7 @@ export const RabbyPointsPopup = ({ visible, onClose }: Props) => {
       <footer className="py-[16px] px-[52px] border-t-[1px] border-dashed border-rabby-neutral-line flex items-center justify-center gap-[36px]">
         {downloadLinks.map((item) => {
           return (
-            <div className="relative">
+            <div className="relative" key={item.url}>
               <QRCode
                 value={item.url}
                 size={126}
