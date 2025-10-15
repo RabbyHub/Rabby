@@ -91,6 +91,7 @@ import { PreferenceStore } from '@/background/service/preference';
 import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
+import { GlobalSignerPortal } from '../component/MiniSignV2/components/GlobalSignerPortal';
 
 declare global {
   interface Window {
@@ -455,6 +456,7 @@ const Main = () => {
 
       <CommonPopup />
       <PortalHost />
+      <GlobalSignerPortal />
     </>
   );
 };

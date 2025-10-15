@@ -1,7 +1,4 @@
-import {
-  supportedHardwareDirectSign,
-  useGetDisableProcessDirectSign,
-} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { supportedHardwareDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -11,6 +8,7 @@ import { useClickAway } from 'react-use';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import Checkbox from '../Checkbox';
 import { ReactComponent as RcIconCCLoading } from 'ui/assets/loading-cc.svg';
+import { useSignatureStore } from '@/ui/component/MiniSignV2/state';
 export const ToConfirmBtn = (props: {
   title: React.ReactNode;
   onConfirm: () => void;
@@ -152,7 +150,47 @@ export const DirectSignToConfirmBtn = (props: {
   riskReset?: boolean;
   loading?: boolean;
 }) => {
-  const disabledProcess = useGetDisableProcessDirectSign();
+  const { ctx, config, status } = useSignatureStore();
+
+  const gasMethod = ctx?.gasMethod;
+  const gasAccountCanPay =
+    ctx?.gasMethod === 'gasAccount' &&
+    // isSupportedAddr &&
+    ctx?.noCustomRPC &&
+    !!ctx?.gasAccount?.balance_is_enough &&
+    !ctx?.gasAccount.chain_not_support &&
+    !!ctx?.gasAccount.is_gas_account &&
+    !(ctx?.gasAccount as any).err_msg;
+
+  const canUseGasLess = !!ctx?.gasless?.is_gasless;
+  let gasLessConfig =
+    canUseGasLess && ctx?.gasless?.promotion
+      ? ctx?.gasless?.promotion?.config
+      : undefined;
+  if (
+    gasLessConfig &&
+    ctx?.gasless?.promotion?.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
+  ) {
+    gasLessConfig = { ...gasLessConfig, dark_color: '', theme_color: '' };
+  }
+
+  const useGasLess =
+    (ctx?.isGasNotEnough || !!gasLessConfig) &&
+    !!canUseGasLess &&
+    !!ctx?.useGasless;
+  const loading =
+    status === 'prefetching' || status === 'signing' || !ctx?.txsCalc?.length;
+
+  const disabledProcess = ctx?.txsCalc?.length
+    ? gasMethod === 'gasAccount'
+      ? !gasAccountCanPay
+      : useGasLess
+      ? false
+      : !!loading ||
+        !ctx?.txsCalc?.length ||
+        !!ctx.checkErrors?.some((e) => e.level === 'forbidden')
+    : false;
+
   const { t } = useTranslation();
   const [riskChecked, setRiskChecked] = useState(false);
 

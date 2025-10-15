@@ -27,13 +27,10 @@ import { PerpsBlueBorderedButton } from './components/BlueBorderedButton';
 import { PerpsDepositAmountPopup } from './components/DepositAmountPopup';
 import { TokenSelectPopup } from './components/TokenSelectPopup';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { MiniApproval } from '../Approval/components/MiniSignTx';
 import { MiniTypedDataApproval } from '../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
-  useMiniApprovalGas,
-  useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PositionItem } from './components/PositionItem';
 import BigNumber from 'bignumber.js';
@@ -470,6 +467,7 @@ export const Perps: React.FC = () => {
           clearMiniSignTypeData();
           setIsPreparingSign(false);
         }}
+        handleSignDepositDirect={handleSignDepositDirect}
       />
 
       {Boolean(miniSignTypeData.data.length) && (
@@ -499,45 +497,6 @@ export const Perps: React.FC = () => {
           canUseDirectSubmitTx
         />
       )}
-
-      <MiniApproval
-        zIndex={miniSignTypeData.data.length ? undefined : 1001}
-        isPreparingSign={isPreparingSign}
-        setIsPreparingSign={setIsPreparingSign}
-        txs={miniTxs}
-        noShowModalLoading={true}
-        ga={{
-          category: 'Perps',
-          source: 'Perps',
-          trigger: 'Perps',
-        }}
-        onClose={() => {
-          clearMiniSignTx();
-          setIsPreparingSign(false);
-          setAmountVisible(false);
-        }}
-        onReject={() => {
-          clearMiniSignTx();
-          setIsPreparingSign(false);
-          setAmountVisible(false);
-        }}
-        onResolve={(hash) => {
-          handleSignDepositDirect(hash);
-          setAmountVisible(false);
-          setTimeout(() => {
-            setIsPreparingSign(false);
-            clearMiniSignTx();
-          }, 500);
-        }}
-        onPreExecError={() => {
-          setAmountVisible(false);
-          setIsPreparingSign(false);
-          // fallback to normal sign
-          handleDeposit();
-        }}
-        directSubmit
-        canUseDirectSubmitTx={canUseDirectSubmitTx}
-      />
 
       <NewUserProcessPopup
         visible={newUserProcessVisible}

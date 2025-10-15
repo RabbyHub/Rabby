@@ -24,16 +24,17 @@ import BigNumber from 'bignumber.js';
 import { usePerpsPosition } from '../usePerpsPosition';
 import HistoryContent from './HistoryContent';
 import { usePerpsDeposit } from '../usePerpsDeposit';
-import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { PerpsDepositAmountPopup } from './DepositAmountPopup';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
-  useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { TokenImg } from './TokenImg';
 import { TopPermissionTips } from './TopPermissionTips';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -53,7 +54,6 @@ export const PerpsSingleCoin = () => {
 
   const [amountVisible, setAmountVisible] = useState(false);
   const wallet = useWallet();
-  const startDirectSigning = useStartDirectSigning();
   const [isPreparingSign, setIsPreparingSign] = useState(false);
 
   const [activeAssetCtx, setActiveAssetCtx] = React.useState<
@@ -148,6 +148,13 @@ export const PerpsSingleCoin = () => {
     setAmountVisible,
   });
 
+  const currentAccount = useCurrentAccount();
+  const signerAccount = currentPerpsAccount || currentAccount;
+
+  const { openDirect, close: closeSign, resetGasStore } = useMiniSigner({
+    account: signerAccount!,
+  });
+
   const singleCoinHistoryList = useMemo(() => {
     return userFills
       .filter((fill) => fill.coin.toLowerCase() === coin?.toLowerCase())
@@ -165,6 +172,80 @@ export const PerpsSingleCoin = () => {
   const miniTxs = useMemo(() => {
     return miniSignTx || [];
   }, [miniSignTx]);
+
+  useEffect(() => {
+    if (
+      !isPreparingSign ||
+      !canUseDirectSubmitTx ||
+      !miniTxs.length ||
+      !signerAccount
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        if (cancelled) return;
+        closeSign();
+        resetGasStore();
+        const hashes = await openDirect({
+          txs: miniTxs,
+          ga: {
+            category: 'Perps',
+            source: 'Perps',
+            trigger: 'Perps',
+          },
+        });
+        if (cancelled) return;
+        const hash = hashes[hashes.length - 1];
+        if (hash) {
+          handleSignDepositDirect(hash);
+        }
+        setAmountVisible(false);
+        setTimeout(() => {
+          if (cancelled) return;
+          setIsPreparingSign(false);
+          clearMiniSignTx();
+        }, 500);
+      } catch (error) {
+        if (cancelled) return;
+        if (
+          error === MINI_SIGN_ERROR.PREFETCH_FAILURE ||
+          error === MINI_SIGN_ERROR.GAS_FEE_TOO_HIGH
+        ) {
+          handleDeposit();
+        } else if (error !== 'User cancelled') {
+          console.error('perps single coin direct sign error', error);
+          message.error(
+            typeof (error as any)?.message === 'string'
+              ? (error as any).message
+              : 'Transaction failed'
+          );
+        }
+        setIsPreparingSign(false);
+        clearMiniSignTx();
+        setAmountVisible(false);
+      }
+    };
+
+    run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    isPreparingSign,
+    canUseDirectSubmitTx,
+    miniTxs,
+    signerAccount,
+    openDirect,
+    handleSignDepositDirect,
+    clearMiniSignTx,
+    setAmountVisible,
+    handleDeposit,
+  ]);
 
   const subscribeActiveAssetCtx = useMemoizedFn(() => {
     const sdk = getPerpsSDK();
@@ -705,45 +786,7 @@ export const PerpsSingleCoin = () => {
           clearMiniSignTx();
           setIsPreparingSign(false);
         }}
-      />
-
-      <MiniApproval
-        txs={miniTxs}
-        zIndex={1001}
-        isPreparingSign={isPreparingSign}
-        setIsPreparingSign={setIsPreparingSign}
-        noShowModalLoading={true}
-        ga={{
-          category: 'Perps',
-          source: 'Perps',
-          trigger: 'Perps',
-        }}
-        onClose={() => {
-          clearMiniSignTx();
-          setIsPreparingSign(false);
-          setAmountVisible(false);
-        }}
-        onReject={() => {
-          clearMiniSignTx();
-          setIsPreparingSign(false);
-          setAmountVisible(false);
-        }}
-        onResolve={(hash) => {
-          handleSignDepositDirect(hash);
-          setAmountVisible(false);
-          setTimeout(() => {
-            setIsPreparingSign(false);
-            clearMiniSignTx();
-          }, 500);
-        }}
-        onPreExecError={() => {
-          setAmountVisible(false);
-          setIsPreparingSign(false);
-          // fallback to normal sign
-          handleDeposit();
-        }}
-        directSubmit
-        canUseDirectSubmitTx={canUseDirectSubmitTx}
+        handleSignDepositDirect={handleSignDepositDirect}
       />
     </div>
   );

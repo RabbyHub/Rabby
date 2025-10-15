@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowDownCC } from 'ui/assets/bridge/tiny-down-arrow-cc.svg';
 import { DirectSignGasInfo } from '../../Bridge/Component/BridgeShowMore';
-import { useMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { noop } from 'lodash';
 
 export const ShowMoreOnSend = ({
@@ -18,8 +17,6 @@ export const ShowMoreOnSend = ({
 }) => {
   const { t } = useTranslation();
   const [showGasFeeError, setShowGasFeeError] = useState(false);
-
-  const state = useMiniApprovalGas();
 
   return (
     <div className="mx-16">
