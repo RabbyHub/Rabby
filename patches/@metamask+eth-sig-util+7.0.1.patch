@@ -1,0 +1,41 @@
+diff --git a/node_modules/@metamask/eth-sig-util/dist/sign-typed-data.d.ts b/node_modules/@metamask/eth-sig-util/dist/sign-typed-data.d.ts
+index 3c55a3a..c3a6029 100644
+--- a/node_modules/@metamask/eth-sig-util/dist/sign-typed-data.d.ts
++++ b/node_modules/@metamask/eth-sig-util/dist/sign-typed-data.d.ts
+@@ -120,6 +120,8 @@ declare function encodeData(primaryType: string, data: Record<string, unknown>,
+  * @returns An encoded representation of the primary type.
+  */
+ declare function encodeType(primaryType: string, types: Record<string, MessageTypeProperty[]>): string;
++
++declare function encodeField(types: Record<string, MessageTypeProperty[]>, name: string, type: string, value: any, version: SignTypedDataVersion.V3 | SignTypedDataVersion.V4): [type: string, value: bigint | Buffer | boolean | string | Uint8Array];
+ /**
+  * Finds all types within a type definition object.
+  *
+@@ -188,6 +190,7 @@ export declare const TypedDataUtils: {
+     sanitizeData: typeof sanitizeData;
+     eip712Hash: typeof eip712Hash;
+     eip712DomainHash: typeof eip712DomainHash;
++    encodeField: typeof encodeField;
+ };
+ /**
+  * Generate the "V1" hash for the provided typed message.
+diff --git a/node_modules/@metamask/eth-sig-util/dist/sign-typed-data.js b/node_modules/@metamask/eth-sig-util/dist/sign-typed-data.js
+index ef3afee..facf727 100644
+--- a/node_modules/@metamask/eth-sig-util/dist/sign-typed-data.js
++++ b/node_modules/@metamask/eth-sig-util/dist/sign-typed-data.js
+@@ -216,6 +216,7 @@ value, version) {
+     }
+     return [type, value];
+ }
++exports.encodeField = encodeField;
+ /**
+  * Encodes an object by encoding and concatenating each of its members.
+  *
+@@ -376,6 +377,7 @@ function eip712Hash(typedData, version) {
+  * A collection of utility functions used for signing typed data.
+  */
+ exports.TypedDataUtils = {
++    encodeField,
+     encodeData,
+     encodeType,
+     findTypeDependencies,

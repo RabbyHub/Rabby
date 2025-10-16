@@ -2,9 +2,8 @@ import i18n from '@/i18n';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { getActionTypeText as getTransactionActionTypeText } from '../Actions/utils';
 import { decodeSingle, encodeSingle } from '@metamask/abi-utils';
-import BigNumber from 'bignumber.js';
+import { TypedDataUtils, SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { filterPrimaryType } from '../SignTypedDataExplain/parseSignTypedDataMessage';
-import { bytesToHex } from '@ethereumjs/util';
 
 export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
   const { t } = i18n;
@@ -87,18 +86,18 @@ function parseSignTypedData(typedData: {
 }) {
   const { domain, message, types, primaryType } = typedData;
 
-  function parseAndDecode(data: any, dataType: string) {
+  function parseAndDecode(data: any, dataType: string, name: string) {
     if (dataType.endsWith('[]')) {
       const elementType = dataType.slice(0, -2);
       const decodedArray: any[] = [];
       for (const element of data) {
-        decodedArray.push(parseAndDecode(element, elementType));
+        decodedArray.push(parseAndDecode(element, elementType, ''));
       }
       return decodedArray;
     } else if (types[dataType]) {
       for (const field of types[dataType]) {
         const { name, type } = field;
-        data[name] = parseAndDecode(data[name], type);
+        data[name] = parseAndDecode(data[name], type, name);
       }
       return data;
     } else {
@@ -106,17 +105,22 @@ function parseSignTypedData(typedData: {
         // bytes type is complex and no need to normalize
         return data;
       }
-
-      const encodedBuffer = encodeSingle(dataType, data);
-      let encodedHexValue = bytesToHex(encodedBuffer);
+      const [t, v] = TypedDataUtils.encodeField(
+        types,
+        name,
+        dataType,
+        data,
+        SignTypedDataVersion.V4
+      );
+      const encoded = encodeSingle(dataType, dataType === 'string' ? data : v);
+      const decoded = decodeSingle(dataType, encoded);
       switch (dataType) {
         case 'address':
-          encodedHexValue = bytesToHex(encodedBuffer.slice(12));
-          break;
+          return decoded;
         case 'bool':
-          if (new BigNumber(encodedHexValue).eq(0)) {
+          if (decoded === 0n) {
             return false;
-          } else if (new BigNumber(encodedHexValue).eq(1)) {
+          } else if (decoded === 1n) {
             return true;
           }
           break;
@@ -129,21 +133,31 @@ function parseSignTypedData(typedData: {
         dataType.startsWith('ufixed') ||
         dataType.startsWith('fixed')
       ) {
-        return new BigNumber(encodedHexValue).toFixed();
+        return (decoded as bigint).toString();
       }
       if (dataType === 'string') {
-        return decodeSingle('string', encodedBuffer);
+        return decoded;
       }
 
-      return encodedHexValue;
+      return decoded;
     }
   }
 
-  for (const { name, type } of types.EIP712Domain) {
-    domain[name] = parseAndDecode(domain[name], type);
+  for (const field of types[primaryType]) {
+    typedData.message[field.name] = parseAndDecode(
+      message[field.name],
+      field.type,
+      field.name
+    );
   }
 
-  typedData.message = parseAndDecode(message, primaryType);
+  for (const field of types.EIP712Domain) {
+    domain[field.name] = parseAndDecode(
+      domain[field.name],
+      field.type,
+      field.name
+    );
+  }
 
   // Filter out the fields that are not part of the primary type
   typedData.message = filterPrimaryType({
