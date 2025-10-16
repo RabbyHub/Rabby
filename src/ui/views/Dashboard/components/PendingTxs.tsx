@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   line-height: 15px;
   color: #fff;
   top: 81px;
-  right: 24px;
+  right: 28px;
   cursor: pointer;
   user-select: none;
 `;
@@ -47,29 +47,18 @@ const PendingTxs = ({ pendingTxCount }: Props) => {
   return (
     <Wrapper
       className={clsx(
-        'group max-w-[62px] hover:max-w-[200px]',
         'transition-all ease-in-out',
         'whitespace-nowrap overflow-hidden overflow-ellipsis'
       )}
       onClick={handleClickPendingTxs}
     >
-      <div className="group-hover:hidden flex relative">
+      <div className="flex relative">
         <IconPendingTxElement
           className="w-[20px] h-[20px] mr-0"
           src={IconPendingTx}
         />
         <span className="absolute inset-0 leading-[20px] text-center">
           {pendingTxCount > 99 ? '99+' : pendingTxCount}
-        </span>
-      </div>
-      <div className="group-hover:flex hidden px-[10px] py-[2px]">
-        <IconPendingTxElement src={IconPendingTx} />
-        <span>
-          {pendingTxCount > 1
-            ? t('page.dashboard.home.pendingCountPlural', {
-                countStr,
-              })
-            : t('page.dashboard.home.pendingCount')}
         </span>
       </div>
     </Wrapper>

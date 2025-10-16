@@ -44,7 +44,7 @@ const Container = styled.div`
     cursor: pointer;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.2);
     }
   }
 `;
