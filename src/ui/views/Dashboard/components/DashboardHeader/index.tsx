@@ -35,7 +35,7 @@ import Queue from '../Queue';
 
 const Container = styled.div`
   width: 100%;
-  height: 174px;
+  height: 173px;
   background: linear-gradient(0deg, #2539b7 0%, #2539b7 100%), #2539b7;
   position: relative;
   overflow: hidden;
