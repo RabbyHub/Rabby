@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy.svg';
+import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-1.svg';
 import WatchLogo from 'ui/assets/waitcup.svg';
 
 import { AddressViewer } from 'ui/component';
@@ -118,7 +118,10 @@ export const DashboardHeader = () => {
       {currentAccount && (
         <div className={clsx('flex mb-[12px] items-center relative')}>
           <div
-            className="flex items-center gap-[6px] px-[8px] py-[6px] bg-[rgba(255,255,255,0.10)] rounded-[6px] cursor-pointer"
+            className={clsx(
+              'flex items-center gap-[6px] px-[8px] py-[6px] rounded-[6px] cursor-pointer',
+              'bg-[rgba(0,0,0,0.10)] hover:bg-[rgba(0,0,0,0.15)]'
+            )}
             onClick={handleSwitchAddress}
           >
             <div className="relative">
@@ -155,8 +158,8 @@ export const DashboardHeader = () => {
           </div>
 
           <RcIconCopy
-            viewBox="0 0 18 18"
-            className="w-[16px] h-[16px] ml-[8px]"
+            viewBox="0 0 16 16"
+            className="w-[16px] h-[16px] ml-[8px] cursor-pointer opacity-60 hover:opacity-80"
             onClick={() => {
               copyAddress(currentAccount.address);
               matomoRequestEvent({
@@ -175,7 +178,10 @@ export const DashboardHeader = () => {
           />
           <div className="ml-auto">
             <div
-              className="py-[6px] px-[8px] bg-[rgba(255,255,255,0.15)] rounded-[5px] cursor-pointer text-r-neutral-title-2"
+              className={clsx(
+                'py-[6px] px-[8px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
+                'bg-[rgba(0,0,0,0.10)] hover:bg-[rgba(0,0,0,0.15)]'
+              )}
               onClick={handleAddAddress}
             >
               <RcIconAddWalletCC />
