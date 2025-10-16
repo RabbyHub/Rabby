@@ -1793,8 +1793,8 @@
       },
       "rabbyPointsPopup": {
         "title": "Rabby Points",
-        "desc": "Go to Rabby Mobile to check points",
-        "downloadIntro": "Don't have Rabby Mobile yet? Download now."
+        "desc": "Check your points in Rabby Mobile.",
+        "downloadIntro": "Don’t have the app yet? Download now."
       }
     },
     "nft": {
