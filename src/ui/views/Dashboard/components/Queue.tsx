@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 const Wrapper = styled.div`
   position: absolute;
   top: 81px;
-  right: 24px;
+  right: 28px;
   height: 27px;
   padding: 6px 12px;
   background: rgba(255, 255, 255, 0.2);
