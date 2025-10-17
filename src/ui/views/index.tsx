@@ -19,6 +19,7 @@ import { useMemoizedFn } from 'ahooks';
 import { useThemeModeOnMain } from '../hooks/usePreference';
 import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
 import { ForgotPassword } from './ForgotPassword/ForgotPassword';
+import { useSyncCurrentAccount } from '../utils/withAccountChange';
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 const isTab = getUiType().isTab;
 
@@ -75,6 +76,7 @@ const Main = () => {
   useAutoLock();
   useThemeModeOnMain();
   useSubscribeCurrentAccountChanged();
+  useSyncCurrentAccount();
 
   return (
     <>

@@ -25,7 +25,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { useCommonPopupView, useWallet } from 'ui/utils';
+import { openInTab, useCommonPopupView, useWallet } from 'ui/utils';
 import { OfflineChainNotify } from '../OfflineChainNotify';
 import { BalanceLabel } from './BalanceLabel';
 import { ChainList } from './ChainList';
@@ -215,7 +215,8 @@ export const BalanceView = ({
 
   const { activePopup, setData, componentName } = useCommonPopupView();
   const onClickViewAssets = () => {
-    activePopup('AssetList');
+    // activePopup('AssetList');
+    openInTab('index.html#/desktop/profile');
   };
 
   useEffect(() => {

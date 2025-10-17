@@ -91,6 +91,7 @@ import { PreferenceStore } from '@/background/service/preference';
 import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
+import { DesktopProfile } from './DesktopProfile';
 
 declare global {
   interface Window {
@@ -450,6 +451,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/perps/history/:coin">
           <PerpsHistoryPage />
+        </PrivateRoute>
+        <PrivateRoute exact path="/desktop/profile/:activeTab?">
+          <DesktopProfile />
         </PrivateRoute>
       </Switch>
 
