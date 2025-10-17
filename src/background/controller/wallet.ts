@@ -36,7 +36,7 @@ import {
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
-import { openInDesktop, openIndexPage } from 'background/webapi/tab';
+import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import { DisplayedKeryring, KeyringService } from 'background/service/keyring';
 import providerController from './provider/controller';
@@ -1613,7 +1613,28 @@ export class WalletController extends BaseController {
   };
   openIndexPage = openIndexPage;
 
-  openInDesktop = openInDesktop;
+  openInDesktop = async (_url: string) => {
+    const desktopTabId = preferenceService.getPreference('desktopTabId');
+    const currentDesktopTab = desktopTabId
+      ? await Browser.tabs.get(desktopTabId).catch(() => null)
+      : null;
+
+    const url = `index.html#/${_url.replace(/^\//, '')}`;
+    if (currentDesktopTab) {
+      return await Browser.tabs.update(currentDesktopTab.id, {
+        active: true,
+        url: url,
+      });
+    }
+    const tab = await Browser.tabs.create({
+      active: true,
+      url: url,
+    });
+    preferenceService.setPreferencePartials({
+      desktopTabId: tab.id,
+    });
+    return tab;
+  };
 
   hasPageStateCache = () => pageStateCacheService.has();
   getPageStateCache = () => {
