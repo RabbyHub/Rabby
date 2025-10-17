@@ -33,7 +33,7 @@ let globalDesktopTabId: number | undefined = undefined;
 
 export const openInDesktop = async (_url: string) => {
   const currentDesktopTab = globalDesktopTabId
-    ? await browser.tabs.get(globalDesktopTabId)
+    ? await browser.tabs.get(globalDesktopTabId).catch(() => null)
     : null;
 
   const url = `index.html#/${_url.replace(/^\//, '')}`;

@@ -90,7 +90,7 @@ export const DesktopProfile = () => {
                   <Tabs.TabPane tab="Transactions" key="transactions">
                     Content of Tab Pane 3
                   </Tabs.TabPane>
-                  <Tabs.TabPane tab="Approvals" key="approval">
+                  <Tabs.TabPane tab="Approvals" key="approvals">
                     Content of Tab Pane 3
                   </Tabs.TabPane>
                 </Tabs>
