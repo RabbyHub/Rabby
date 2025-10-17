@@ -96,7 +96,7 @@ export const DesktopProfile = () => {
                 </Tabs>
               </div>
             </main>
-            <aside>
+            <aside className="w-[260px] flex-shrink-0">
               <DesktopSelectAccountList />
             </aside>
           </div>

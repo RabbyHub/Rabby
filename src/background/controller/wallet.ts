@@ -36,7 +36,7 @@ import {
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
-import { openIndexPage } from 'background/webapi/tab';
+import { openInDesktop, openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import { DisplayedKeryring, KeyringService } from 'background/service/keyring';
 import providerController from './provider/controller';
@@ -1612,6 +1612,8 @@ export class WalletController extends BaseController {
     preferenceService.setPopupOpen(isOpen);
   };
   openIndexPage = openIndexPage;
+
+  openInDesktop = openInDesktop;
 
   hasPageStateCache = () => pageStateCacheService.has();
   getPageStateCache = () => {
