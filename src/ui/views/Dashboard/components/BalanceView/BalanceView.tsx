@@ -38,13 +38,13 @@ import {
 const Container = styled.div`
   .balance-view-content {
     border-radius: 8px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.05);
 
     padding: 16px 8px 16px 16px;
     cursor: pointer;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.1);
     }
   }
 `;

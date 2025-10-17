@@ -120,7 +120,7 @@ export const DashboardHeader = () => {
           <div
             className={clsx(
               'flex items-center gap-[6px] px-[8px] py-[6px] rounded-[6px] cursor-pointer',
-              'bg-[rgba(0,0,0,0.10)] hover:bg-[rgba(0,0,0,0.2)]'
+              'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
             )}
             onClick={handleSwitchAddress}
           >
@@ -180,7 +180,7 @@ export const DashboardHeader = () => {
             <div
               className={clsx(
                 'py-[6px] px-[8px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
-                'bg-[rgba(0,0,0,0.10)] hover:bg-[rgba(0,0,0,0.2)]'
+                'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
               )}
               onClick={handleAddAddress}
             >
