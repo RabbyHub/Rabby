@@ -1,0 +1,12 @@
+export { ReactComponent as RcIconBridgeCC } from './bridge-cc.svg';
+export { ReactComponent as RcIconGasAccountCC } from './gas-account-cc.svg';
+export { ReactComponent as RcIconNftCC } from './nft-cc.svg';
+export { ReactComponent as RcIconPointsCC } from './points-cc.svg';
+export { ReactComponent as RcIconReceiveCC } from './receive-cc.svg';
+export { ReactComponent as RcIconSendCC } from './send-cc.svg';
+export { ReactComponent as RcIconSwapCC } from './swap-cc.svg';
+export { ReactComponent as RcIconTransactionsCC } from './transactions-cc.svg';
+export { ReactComponent as RcIconMoreCC } from './more-cc.svg';
+export { ReactComponent as RcIconApprovalsCC } from './approvals-cc.svg';
+export { ReactComponent as RcIconPerpsCC } from './perps-cc.svg';
+export { ReactComponent as RcIconMobileSyncCC } from './mobile-sync-cc.svg';
