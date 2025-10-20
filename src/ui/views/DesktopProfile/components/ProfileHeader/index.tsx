@@ -4,6 +4,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { BalanceView } from './BalanceView';
 
 export const ProfileHeader = () => {
   const currentAccount = useCurrentAccount();
@@ -15,7 +16,11 @@ export const ProfileHeader = () => {
 
   return (
     <div className="px-[20px] py-[24px]">
-      <div>{ellipsisAddress(currentAccount?.address || '')}</div>
+      <div className="mb-[16px]">
+        {ellipsisAddress(currentAccount?.address || '')}
+      </div>
+
+      <BalanceView currentAccount={currentAccount} />
 
       <div className="flex items-center gap-[12px]">
         <div

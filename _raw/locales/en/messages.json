@@ -3009,6 +3009,12 @@
         "searching": "Results for",
         "searchTips": "Search the web"
       }
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "appChainTips": "Hyperliquid Account not included",
+        "netWorth": "Net Worth"
+      }
     }
   },
   "component": {
