@@ -12,7 +12,9 @@ export const BalanceLabel: React.FC<Props> = ({ balance }) => {
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
   const dispatch = useRabbyDispatch();
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     dispatch.preference.setHiddenBalance(!hiddenBalance);
   };
 
