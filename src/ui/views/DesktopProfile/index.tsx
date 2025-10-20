@@ -11,6 +11,7 @@ import { TokensTabPane } from './components/TokensTabPane';
 import { SendTokenModal } from './components/SendTokenModal';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { SwapTokenModal } from './components/SwapTokenModal';
+import ApprovalManagePage from '../ApprovalManagePage';
 
 const Wrap = styled.div`
   height: 100%;
@@ -91,7 +92,9 @@ export const DesktopProfile = () => {
                     Content of Tab Pane 3
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="Approvals" key="approvals">
-                    Content of Tab Pane 3
+                    <div className="px-20 pt-[18px]">
+                      <ApprovalManagePage isDesktop={true} />
+                    </div>
                   </Tabs.TabPane>
                 </Tabs>
               </div>

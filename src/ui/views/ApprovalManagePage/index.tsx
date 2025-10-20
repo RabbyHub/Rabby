@@ -964,6 +964,7 @@ type PageTableProps<
   className?: string;
   toggleAllAssetRevoke?: (list: AssetApprovalSpender[]) => void;
   toggleAllContractRevoke?: (list: ContractApprovalItem[]) => void;
+  isDesktop?: boolean;
 } & TableSelectResult;
 function TableByContracts({
   isDarkTheme,
@@ -979,6 +980,7 @@ function TableByContracts({
   toggleAllContractRevoke,
   isSelectedAll,
   isIndeterminate,
+  isDesktop,
 }: PageTableProps<ContractApprovalItem> & {
   onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
 }) {
@@ -1041,6 +1043,7 @@ function TableByContracts({
 
   return (
     <VirtualTable<ContractApprovalItem>
+      isDesktop={isDesktop}
       loading={isLoading}
       vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_contracts', isDarkTheme && 'dark')}
@@ -1076,6 +1079,7 @@ function TableByAssetSpenders({
   toggleAllAssetRevoke,
   isSelectedAll,
   isIndeterminate,
+  isDesktop,
 }: PageTableProps<AssetApprovalSpender>) {
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<AssetApprovalSpender>
@@ -1101,6 +1105,7 @@ function TableByAssetSpenders({
 
   return (
     <VirtualTable<AssetApprovalSpender>
+      isDesktop={isDesktop}
       loading={isLoading}
       vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_assets')}
@@ -1142,6 +1147,7 @@ function TableByEIP7702({
   isSelectedAll,
   isIndeterminate,
   isActive,
+  isDesktop,
 }: {
   isDarkTheme?: boolean;
   isLoading: boolean;
@@ -1154,6 +1160,7 @@ function TableByEIP7702({
   className?: string;
   toggleSelectAll: () => void;
   isActive?: boolean;
+  isDesktop?: boolean;
 } & TableSelectResult) {
   const [sortedInfo, setSortedInfo] = useState<SorterResult<EIP7702Delegated>>({
     columnKey: 'address',
@@ -1192,6 +1199,7 @@ function TableByEIP7702({
         </div>
       ) : null}
       <VirtualTable<EIP7702Delegated>
+        isDesktop={isDesktop}
         loading={isLoading}
         vGridRef={vGridRef}
         className={clsx(className, 'J_table_by_eip_7702')}
@@ -1224,7 +1232,13 @@ function TableByEIP7702({
   );
 }
 
-const ApprovalManagePage = () => {
+const ApprovalManagePage = ({
+  isDesktop = false,
+  desktopChain,
+}: {
+  isDesktop?: boolean;
+  desktopChain?: CHAINS_ENUM;
+}) => {
   useTitle('Approvals - Rabby Wallet');
 
   useReloadPageOnCurrentAccountChanged();
@@ -1235,7 +1249,9 @@ const ApprovalManagePage = () => {
   const isShowTestnet = false;
 
   const { isDarkTheme } = useThemeMode();
-  const [chain, setChain] = React.useState<CHAINS_ENUM>();
+  const [_chain, setChain] = React.useState<CHAINS_ENUM>();
+
+  const chain = isDesktop ? desktopChain : _chain;
 
   const {
     isLoading,
@@ -1351,12 +1367,14 @@ const ApprovalManagePage = () => {
         clearRevoke();
       }
     },
+    isDesktop,
   });
   const confirmRevokeModal = useConfirmRevokeModal({
     revokeListCount: revokeSummary.currentRevokeList.length,
     onBatchRevoke: () => batchRevokeModal.show(),
     onRevokeOneByOne: () => handleRevoke(),
     accountType: account?.type,
+    isDesktop,
   });
   const enableBatchRevoke = React.useMemo(() => {
     return (
@@ -1380,35 +1398,41 @@ const ApprovalManagePage = () => {
 
   return (
     <div
-      className={clsx(
-        'approvals-manager-page',
-        isShowTestnet && 'with-switchnet-tabs'
-      )}
+      className={clsx({
+        'approvals-manager-page': !isDesktop,
+        'with-switchnet-tabs': isShowTestnet && !isDesktop,
+      })}
     >
       <div className="approvals-manager">
-        <header className="approvals-manager__header">
-          {isShowTestnet && (
-            <div className="tabs">
-              <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
-            </div>
-          )}
-          <div className="title">
-            {/* Approvals on {ellipsisAddress(account?.address || '')} */}
-            {t('page.approvals.header.title', {
-              address: ellipsisAddress(account?.address || ''),
-            })}
-            {account?.alianName && (
-              <span className="text-r-neutral-foot text-[20px] font-normal">
-                {' '}
-                ({account?.alianName})
-              </span>
+        {!isDesktop && (
+          <header className="approvals-manager__header">
+            {isShowTestnet && (
+              <div className="tabs">
+                <NetSwitchTabs
+                  value={selectedTab}
+                  onTabChange={onTabChange}
+                  isDesktop={isDesktop}
+                />
+              </div>
             )}
-          </div>
-        </header>
+            <div className="title">
+              {/* Approvals on {ellipsisAddress(account?.address || '')} */}
+              {t('page.approvals.header.title', {
+                address: ellipsisAddress(account?.address || ''),
+              })}
+              {account?.alianName && (
+                <span className="text-r-neutral-foot text-[20px] font-normal">
+                  {' '}
+                  ({account?.alianName})
+                </span>
+              )}
+            </div>
+          </header>
+        )}
 
         {selectedTab === 'mainnet' ? (
           <>
-            <main>
+            <main className="relative">
               <div className="approvals-manager__table-tools">
                 <PillsSwitch
                   value={tab}
@@ -1439,8 +1463,16 @@ const ApprovalManagePage = () => {
                       setFilterType(key);
                     }
                   }}
+                  className={clsx(
+                    isDesktop &&
+                      'bg-transparent p-2 rounded-[8px] border-[0.5px] border-solid border-rabby-neutral-line'
+                  )}
                   itemClassname="text-[15px] w-[128px] h-[40px]"
-                  itemClassnameActive="bg-r-neutral-bg-1"
+                  itemClassnameActive={
+                    isDesktop
+                      ? 'bg-r-blue-light1 rounded-[6px]'
+                      : 'bg-r-neutral-bg-1'
+                  }
                   itemClassnameInActive={
                     'text-r-neutral-body hover:text-r-blue-default'
                   }
@@ -1458,11 +1490,13 @@ const ApprovalManagePage = () => {
                     })}
                   />
 
-                  <ChainSelectorButton
-                    large
-                    chain={chain}
-                    setChain={setChain}
-                  />
+                  {!isDesktop && (
+                    <ChainSelectorButton
+                      large
+                      chain={chain}
+                      setChain={setChain}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -1483,6 +1517,7 @@ const ApprovalManagePage = () => {
                   toggleAllContractRevoke={toggleAllContractRevoke}
                   isSelectedAll={contractSelectResult.isSelectedAll}
                   isIndeterminate={contractSelectResult.isIndeterminate}
+                  isDesktop={isDesktop}
                 />
 
                 <TableByAssetSpenders
@@ -1497,6 +1532,7 @@ const ApprovalManagePage = () => {
                   toggleAllAssetRevoke={toggleAllAssetRevoke}
                   isSelectedAll={assetSelectResult.isSelectedAll}
                   isIndeterminate={assetSelectResult.isIndeterminate}
+                  isDesktop={isDesktop}
                 />
 
                 <TableByEIP7702
@@ -1542,6 +1578,7 @@ const ApprovalManagePage = () => {
                     delegationAddresses?.length > 0 &&
                     eip7702SelectedRows?.length < delegationAddresses?.length
                   }
+                  isDesktop={isDesktop}
                 />
               </div>
               {selectedContract && tab !== 'eip-7702' ? (
@@ -1558,21 +1595,43 @@ const ApprovalManagePage = () => {
                 />
               ) : null}
               {batchRevokeModal.node}
-            </main>
-            <div className="sticky-footer">
-              {tab === 'eip-7702' ? (
-                <RevokeEIP7702Button
-                  onRevoke={handleEIP7702Revoke}
-                  selectedCount={eip7702SelectedRows.length || 0}
-                />
-              ) : (
-                <RevokeButton
-                  revokeSummary={revokeSummary}
-                  enableBatchRevoke={enableBatchRevoke}
-                  onRevoke={onRevoke}
-                />
+              {isDesktop && (
+                <div className="sticky-footer w-full static pt-[36[x] pb-[40px]]">
+                  {tab === 'eip-7702' ? (
+                    <>
+                      <div className="h-[36px]" />
+
+                      <RevokeEIP7702Button
+                        onRevoke={handleEIP7702Revoke}
+                        selectedCount={eip7702SelectedRows.length || 0}
+                      />
+                    </>
+                  ) : (
+                    <RevokeButton
+                      revokeSummary={revokeSummary}
+                      enableBatchRevoke={enableBatchRevoke}
+                      onRevoke={onRevoke}
+                    />
+                  )}
+                </div>
               )}
-            </div>
+            </main>
+            {!isDesktop && (
+              <div className="sticky-footer">
+                {tab === 'eip-7702' ? (
+                  <RevokeEIP7702Button
+                    onRevoke={handleEIP7702Revoke}
+                    selectedCount={eip7702SelectedRows.length || 0}
+                  />
+                ) : (
+                  <RevokeButton
+                    revokeSummary={revokeSummary}
+                    enableBatchRevoke={enableBatchRevoke}
+                    onRevoke={onRevoke}
+                  />
+                )}
+              </div>
+            )}
           </>
         ) : (
           <div className="mt-[20px] rounded-[8px] bg-r-neutral-card1 pt-[145px] pb-[175px] flex flex-col items-center w-full">

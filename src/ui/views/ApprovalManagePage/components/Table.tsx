@@ -195,6 +195,7 @@ export function VirtualTable<RecordType extends object>({
   emptyText = 'No Data',
   sortedInfo,
   overlayClassName,
+  isDesktop,
   ...props
 }: TableProps<RecordType> & {
   markHoverRow?: boolean;
@@ -212,6 +213,7 @@ export function VirtualTable<RecordType extends object>({
   emptyText?: string;
   sortedInfo?: SorterResult<RecordType>;
   overlayClassName?: string;
+  isDesktop?: boolean;
 }) {
   const { columns, scroll = { ...DEFAULT_SCROLL } } = props;
   const [tableWidth, setTableWidth] = useState(0);
@@ -313,6 +315,7 @@ export function VirtualTable<RecordType extends object>({
         ref={gridRef}
         className={clsx(
           'am-virtual-grid',
+          isDesktop,
           markHoverRow && 'am-virtual-grid__supported-hover-row'
         )}
         itemKey={(params) => {
@@ -356,7 +359,7 @@ export function VirtualTable<RecordType extends object>({
               },
           getCellClassName,
         }}
-        height={scroll!.y as number}
+        height={isDesktop ? Math.min(totalHeight, 556) : (scroll!.y as number)}
         width={tableWidth}
         onScroll={({ scrollLeft }: { scrollLeft: number }) => {
           onScroll({ scrollLeft });
@@ -400,7 +403,11 @@ export function VirtualTable<RecordType extends object>({
           className={
             overlayClassName
               ? overlayClassName
-              : clsx('am-virtual-table', props.className)
+              : clsx(
+                  'am-virtual-table',
+                  isDesktop && 'is-desktop',
+                  props.className
+                )
           }
           columns={mergedColumns}
           pagination={false}

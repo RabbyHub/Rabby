@@ -59,13 +59,18 @@ function useSwitchOptions() {
   }, [t]);
 }
 
-export default function NetSwitchTabs(props: SwitchTabProps) {
+export default function NetSwitchTabs(
+  props: SwitchTabProps & { isDesktop?: boolean }
+) {
   const switchOptions = useSwitchOptions();
 
   return (
     <PillsSwitch
       {...props}
-      className="flex bg-r-neutral-line w-[260px] mx-[auto] my-[0] h-[32px] p-[2px] mb-[16px]"
+      className={clsx(
+        'flex w-[260px] mx-[auto] my-[0] h-[32px] p-[2px] mb-[16px]',
+        props.isDesktop ? 'bg-transparent' : 'bg-r-neutral-line'
+      )}
       itemClassname={clsx('w-[128px] text-[12px]')}
       itemClassnameActive="bg-r-neutral-bg-1"
       itemClassnameInActive={clsx(
