@@ -7,8 +7,11 @@ import { BatchRevokeTaskType } from './useBatchRevokeTask';
 export const useBatchRevokeModal = ({
   revokeList,
   dataSource,
+  isDesktop,
   ...props
-}: Omit<RevokeTableProps, 'onTaskStatus'>) => {
+}: Omit<RevokeTableProps, 'onTaskStatus'> & {
+  isDesktop?: boolean;
+}) => {
   const [visible, setVisible] = React.useState(false);
   const maskClosableRef = React.useRef(true);
   const needUpdateRef = React.useRef(false);
@@ -65,6 +68,14 @@ export const useBatchRevokeModal = ({
         okCancel={false}
         destroyOnClose
         onCancel={handleCancel}
+        maskStyle={
+          isDesktop
+            ? {
+                background: 'rgba(0, 0, 0, 0.80)',
+                backdropFilter: 'blur(8px)',
+              }
+            : undefined
+        }
       >
         <RevokeTable
           {...props}
