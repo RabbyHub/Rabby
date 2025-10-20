@@ -12,105 +12,21 @@ import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
 import { useApproval, useWallet } from '../utils';
 import { createGlobalState } from 'react-use';
 
-export const [
-  MiniApprovalGasProvider,
-  useMiniApprovalGas,
-  useSetMiniApprovalGas,
-] = createContextState<
-  | {
-      noCustomRPC?: boolean;
-      showGasLevelPopup?: boolean;
-      loading?: boolean;
-      changedCustomGas?: boolean;
-      externalPanelSelection?: (gas: GasLevel) => void;
-      gasList?: GasLevel[] | null;
-      gasMethod?: 'native' | 'gasAccount';
-      handleClickEdit?: () => void;
-      isDisabledGasPopup?: boolean;
-      onChangeGasMethod?: (method: 'native' | 'gasAccount') => void;
-      selectedGas?: GasLevel | null;
-      gasCostUsdStr?: string;
-      gasUsdList?: {
-        slow: string;
-        normal: string;
-        fast: string;
-      };
-      gasIsNotEnough?: {
-        slow: boolean;
-        normal: boolean;
-        fast: boolean;
-      };
-      gasAccountIsNotEnough?: {
-        slow: [boolean, string];
-        normal: [boolean, string];
-        fast: [boolean, string];
-      };
-      disabledProcess?: boolean;
-
-      gasAccountCost?: {
-        total_cost: number;
-        tx_cost: number;
-        gas_cost: number;
-        estimate_tx_cost: number;
-      };
-      gasAccountError?: boolean;
-    }
-  | undefined
->(undefined);
-
-// export const [
-//   DirectSigningProvider,
-//   useDirectSigning,
-//   useSetDirectSigning,
-// ] = createContextState(false);
-
-export const DirectSigningProvider = ({ children }) => <>{children}</>;
-
 export const useDirectSigningGlobal = createGlobalState(false);
 
 export const useDirectSigning = () => useDirectSigningGlobal()[0];
 export const useSetDirectSigning = () => useDirectSigningGlobal()[1];
 
-export const [
-  GasTipsComponentProvider,
-  useGetGasTipsComponent,
-  useSetGasTipsComponent,
-] = createContextState<React.ReactNode>(null);
-
-export const [
-  DisableProcessDirectSignProvider,
-  useGetDisableProcessDirectSign,
-  useSetDisableProcessDirectSign,
-] = createContextState<boolean>(false);
-
 export const DirectSubmitProvider = ({
   children,
-}: React.PropsWithChildren<unknown>) => (
-  <MiniApprovalGasProvider>
-    <DirectSigningProvider>
-      <DisableProcessDirectSignProvider>
-        <GasTipsComponentProvider>{children}</GasTipsComponentProvider>
-      </DisableProcessDirectSignProvider>
-    </DirectSigningProvider>
-  </MiniApprovalGasProvider>
-);
-
-export const useDirectSigningDisabledProcess = () =>
-  useMiniApprovalGas()?.disabledProcess;
+}: React.PropsWithChildren<unknown>) => <>{children}</>;
 
 export const useResetDirectSignState = () => {
-  const setMiniApprovalGasState = useSetMiniApprovalGas();
-  const setGasRelativeComponent = useSetGasTipsComponent();
-
   const setDirectSigning = useSetDirectSigning();
-  const setDisableProcessDirectSign = useSetDisableProcessDirectSign();
 
   const resetState = useCallback(() => {
-    setMiniApprovalGasState(undefined);
     setDirectSigning(false);
-    setGasRelativeComponent(null);
-    setDisableProcessDirectSign(false);
-  }, [setDirectSigning, setMiniApprovalGasState, setGasRelativeComponent]);
+  }, [setDirectSigning]);
 
   return resetState;
 };

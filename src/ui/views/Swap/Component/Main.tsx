@@ -36,7 +36,8 @@ import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
-import { MiniApproval } from '../../Approval/components/MiniSignTx';
+// New simplified signing hook (no MiniApproval/MiniSignTx)
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useHistory } from 'react-router-dom';
@@ -55,14 +56,10 @@ import {
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
-import {
-  supportedDirectSign,
-  supportedHardwareDirectSign,
-  useGetDisableProcessDirectSign,
-  useStartDirectSigning,
-} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from './PendingTxItem';
 import { useTwoStepSwap } from '../hooks/twoStepSwap';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -190,7 +187,6 @@ export const Main = () => {
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
-  const [isShowSign, setIsShowSign] = useState(false);
   const { runAsync: gotoSwap, loading: isSubmitLoading } = useRequest(
     async () => {
       if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
@@ -393,9 +389,6 @@ export const Main = () => {
     ]
   );
 
-  const startDirectSigning = useStartDirectSigning();
-  const disabledProcess = useGetDisableProcessDirectSign();
-
   const canUseDirectSubmitTx = useMemo(
     () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
 
@@ -503,7 +496,21 @@ export const Main = () => {
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
 
-  const handleSwap = useMemoizedFn(() => {
+  const { openDirect, prefetch } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: findChain({ enum: chain })?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
+  });
+
+  useEffect(() => {
+    prefetch({
+      txs: currentTxs || [],
+      // checkGasFeeTooHigh: true,
+      // enableSecurityEngine: true,
+    });
+  }, [currentTxs]);
+
+  const handleSwap = useMemoizedFn(async () => {
     if (!isTab) {
       dispatch.swap.setRecentSwapToToken(receiveToken);
     }
@@ -528,8 +535,36 @@ export const Main = () => {
         );
       }
       clearExpiredTimer();
-      startDirectSigning();
       setMiniSignLoading(true);
+
+      try {
+        const hashes = await openDirect({
+          txs: currentTxs,
+          getContainer,
+          ga: {
+            category: 'Swap',
+            source: 'swap',
+            trigger: rbiSource,
+            swapUseSlider,
+          },
+        });
+        miniSignNextStep(hashes[hashes.length - 1]);
+      } catch (error) {
+        console.log('swap mini sign error', error);
+
+        if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+          refresh((e) => e + 1);
+          mutateTxs([]);
+        } else if (error === MINI_SIGN_ERROR.CANT_PROCESS) {
+          setTimeout(() => {
+            refresh((e) => e + 1);
+          }, 10 * 1000);
+        } else {
+          gotoSwap();
+        }
+      } finally {
+        setMiniSignLoading(false);
+      }
       return;
     } else {
       gotoSwap();
@@ -973,9 +1008,7 @@ export const Main = () => {
                   handleSwap();
                 }}
                 disabled={
-                  canUseDirectSubmitTx
-                    ? swapBtnDisabled || disabledProcess
-                    : swapBtnDisabled
+                  canUseDirectSubmitTx ? swapBtnDisabled : swapBtnDisabled
                 }
               >
                 {btnText}
@@ -1004,45 +1037,7 @@ export const Main = () => {
             getContainer={getContainer}
           />
         ) : null}
-        <MiniApproval
-          transparentMask
-          visible={isShowSign}
-          txs={currentTxs}
-          ga={{
-            category: 'Swap',
-            source: 'swap',
-            trigger: rbiSource,
-            swapUseSlider,
-          }}
-          onClose={() => {
-            refresh((e) => e + 1);
-            mutateTxs([]);
-            setIsShowSign(false);
-            setMiniSignLoading(false);
-            if (shouldTwoStepSwap) {
-              setApprovePending(false);
-            }
-          }}
-          onReject={() => {
-            refresh((e) => e + 1);
-            mutateTxs([]);
-            setIsShowSign(false);
-            setMiniSignLoading(false);
-            if (shouldTwoStepSwap) {
-              setApprovePending(false);
-            }
-          }}
-          onResolve={(res) => {
-            setTimeout(() => {
-              setIsShowSign(false);
-              miniSignNextStep(res);
-            }, 500);
-          }}
-          onPreExecError={gotoSwap}
-          getContainer={getContainer}
-          directSubmit
-          canUseDirectSubmitTx={canUseDirectSubmitTx}
-        />
+        {/* Simplified signer portal migrated to global host; no local portal needed */}
         <LowCreditModal
           token={lowCreditToken}
           visible={lowCreditVisible}
