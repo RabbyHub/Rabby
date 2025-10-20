@@ -1112,7 +1112,8 @@
           "bridge": "Bridge",
           "ecology": "Ökosystem",
           "mobile": "Mobile Sync",
-          "perps": "Perps"
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -1489,6 +1490,11 @@
       "recentConnectionGuide": {
         "button": "Verstanden",
         "title": "Wechseln Sie die Adresse für die Dapp-Verbindung hier"
+      },
+      "rabbyPointsPopup": {
+        "downloadIntro": "Hast du die App noch nicht? Jetzt herunterladen.",
+        "title": "Rabby Punkte",
+        "desc": "Überprüfe deine Punkte in Rabby Mobile."
       }
     },
     "nft": {
@@ -2746,7 +2752,8 @@
       "selectedLenAddressesForSync_other": "Ausgewählte {{len}} Adressen für die Synchronisierung",
       "selectAddress": {
         "title": "Adressen zum Synchronisieren auswählen"
-      }
+      },
+      "verifyPassword": "Passwort überprüfen"
     },
     "search": {
       "sectionHeader": {

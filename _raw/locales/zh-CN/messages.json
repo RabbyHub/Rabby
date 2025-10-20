@@ -116,7 +116,8 @@
           "ecology": "生态系统",
           "bridge": "Bridge",
           "mobile": "Mobile Sync",
-          "perps": "永续合约"
+          "perps": "永续合约",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -463,6 +464,11 @@
       "recentConnectionGuide": {
         "button": "明白了\n",
         "title": "此处切换用于 Dapp 连接的地址\n"
+      },
+      "rabbyPointsPopup": {
+        "desc": "在 Rabby Mobile 中查看您的积分。",
+        "title": "Rabby 积分",
+        "downloadIntro": "还没有这个应用吗？现在就下载吧。"
       }
     },
     "chainList": {
@@ -1034,7 +1040,7 @@
         "cancelBody": "如果关闭此页面，剩余的撤销将不会执行。",
         "cancelTitle": "取消剩余撤销",
         "confirm": "确认",
-        "confirmTitle": "1签名批量撤销",
+        "confirmTitle": "签名批量撤销",
         "defaultFailed": "交易失败",
         "done": "完毕",
         "stillRevoke": "仍撤销",
@@ -2784,7 +2790,8 @@
       "selectedLenAddressesForSync_other": "选择{{len}}地址同步",
       "selectAddress": {
         "title": "选择要同步的地址"
-      }
+      },
+      "verifyPassword": "验证密码"
     },
     "search": {
       "sectionHeader": {

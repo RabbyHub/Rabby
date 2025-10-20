@@ -1184,7 +1184,8 @@
           "transactions": "Transações",
           "bridge": "Ponte",
           "queue": "Fila",
-          "perps": "Perps"
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "queue": {
           "title": "Fila",
@@ -1559,6 +1560,11 @@
       "recentConnectionGuide": {
         "button": "Entendido\n",
         "title": "Alterar o endereço para a ligação à aplicação aqui\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby Points",
+        "desc": "Verifique seus pontos no Rabby Mobile.",
+        "downloadIntro": "Ainda não tem o aplicativo? Baixe agora."
       }
     },
     "nft": {
@@ -2743,7 +2749,8 @@
       "title": "Sincronizar Endereço da Carteira da Extensão Rabby para o Móvel",
       "description": "Seus dados de endereço permanecem totalmente offline, criptografados e transferidos com segurança via um código QR.",
       "disableSelectAddressWithSlip39": "A sincronização não é suportada para endereços {{type}} com slip39",
-      "steps2Description": "*Seu código QR contém dados sensíveis. Mantenha-o em privado e nunca o compartilhe com ninguém."
+      "steps2Description": "*Seu código QR contém dados sensíveis. Mantenha-o em privado e nunca o compartilhe com ninguém.",
+      "verifyPassword": "Verificar Senha"
     },
     "search": {
       "sectionHeader": {

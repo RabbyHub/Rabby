@@ -116,7 +116,8 @@
           "bridge": "Bridge",
           "ecology": "生態系統",
           "mobile": "Mobile Sync",
-          "perps": "期货"
+          "perps": "期货",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -463,6 +464,11 @@
       "recentConnectionGuide": {
         "button": "明白了\n",
         "title": "在此處切換用於 Dapp 連線的地址\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby 積分",
+        "desc": "在 Rabby Mobile 中查看您的积分。",
+        "downloadIntro": "還未下載應用程序？立即下載。"
       }
     },
     "chainList": {
@@ -2784,7 +2790,8 @@
       "selectedLenAddressesForSync_other": "選擇{{len}}地址同步",
       "selectAddress": {
         "title": "選擇要同步的地址"
-      }
+      },
+      "verifyPassword": "驗證密碼"
     },
     "search": {
       "sectionHeader": {

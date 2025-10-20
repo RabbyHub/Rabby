@@ -1112,7 +1112,8 @@
           "ecology": "Ekosistem",
           "bridge": "Köprü",
           "mobile": "Mobile Sync",
-          "perps": "Perps"
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1489,6 +1490,11 @@
       "recentConnectionGuide": {
         "button": "Anladım\n",
         "title": "Dapp bağlantısı için burada adres değiştirin.\n"
+      },
+      "rabbyPointsPopup": {
+        "desc": "Rabby Mobile'de puanlarınızı kontrol edin.",
+        "title": "Rabby Puanları",
+        "downloadIntro": "Uygulamayı henüz indirmediniz mi? Şimdi indirin."
       }
     },
     "nft": {
@@ -2749,7 +2755,8 @@
       "selectedLenAddressesForSync_other": "Sync için seçilen {{len}} adresleri",
       "selectAddress": {
         "title": "Adresleri Senkronize Etmek İçin Seçin"
-      }
+      },
+      "verifyPassword": "Şifreyi Doğrula"
     },
     "search": {
       "sectionHeader": {
