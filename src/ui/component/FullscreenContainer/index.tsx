@@ -44,14 +44,16 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-const isTab = getUiType().isTab;
+const UiType = getUiType();
+const isTab = UiType.isTab;
+const isDesktop = UiType.isDesktop;
 export const FullscreenContainer: React.FC<Props> = ({
   children,
   className,
   style,
 }) => {
   const { isDarkTheme } = useThemeMode();
-  if (isTab) {
+  if (isTab || isDesktop) {
     return (
       <Container $isDarkTheme={isDarkTheme}>
         <Main

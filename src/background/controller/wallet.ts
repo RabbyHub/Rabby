@@ -1619,7 +1619,7 @@ export class WalletController extends BaseController {
       ? await Browser.tabs.get(desktopTabId).catch(() => null)
       : null;
 
-    const url = `index.html#/${_url.replace(/^\//, '')}`;
+    const url = `desktop.html#/${_url.replace(/^\//, '')}`;
     if (currentDesktopTab) {
       return await Browser.tabs.update(currentDesktopTab.id, {
         active: true,

@@ -20,8 +20,10 @@ import { useThemeModeOnMain } from '../hooks/usePreference';
 import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
 import { ForgotPassword } from './ForgotPassword/ForgotPassword';
 import { useSyncCurrentAccount } from '../utils/withAccountChange';
-const AsyncMainRoute = lazy(() => import('./MainRoute'));
-const isTab = getUiType().isTab;
+const UiType = getUiType();
+const AsyncMainRoute = lazy(() =>
+  UiType.isDesktop ? import('./DesktopRoute') : import('./MainRoute')
+);
 
 const useAutoLock = () => {
   const history = useHistory();
@@ -52,7 +54,7 @@ const useAutoLock = () => {
 
   const listener = useMemoizedFn(() => {
     if (location.pathname !== '/unlock') {
-      if (isTab) {
+      if (UiType.isTab || UiType.isDesktop) {
         history.replace(
           `/unlock?from=${encodeURIComponent(
             location.pathname + location.search
