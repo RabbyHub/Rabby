@@ -522,3 +522,34 @@ textarea {
     background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
   }
 }
+
+.desktop-swap-token-modal {
+  .ant-modal-body {
+    max-height: 600px;
+    padding: 0;
+    width: 400px;
+    background: transparent;
+  }
+  .ant-modal-content {
+    border-radius: 8px;
+  }
+  .js-rabby-desktop-swap-container {
+    position: relative;
+    overflow: hidden;
+    width: 400px !important;
+    height: 600px;
+    transform: translateX(0);
+
+    .ant-drawer-bottom {
+      position: absolute;
+    }
+    .ant-drawer-mask {
+      border-radius: 8px;
+    }
+    .custom-popup {
+      .ant-drawer-content {
+        border-radius: 8px;
+      }
+    }
+  }
+}

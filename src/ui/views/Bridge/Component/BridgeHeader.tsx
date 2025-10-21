@@ -20,11 +20,13 @@ const isTab = getUiType().isTab;
 export const Header = ({
   onOpenInTab,
   pendingNumber,
+  noShowHeader,
   historyVisible,
   setHistoryVisible,
 }: {
   onOpenInTab?(): void;
   pendingNumber: number;
+  noShowHeader: boolean;
   historyVisible: boolean;
   setHistoryVisible: (visible: boolean) => void;
 }) => {
@@ -54,30 +56,32 @@ export const Header = ({
 
   return (
     <>
-      <PageHeader
-        className="mx-[20px] mb-[5px]"
-        forceShowBack={!isTab}
-        onBack={gotoDashboard}
-        canBack={!isTab}
-        isShowAccount
-        rightSlot={
-          <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
-            {isTab ? null : (
-              <div
-                className="text-r-neutral-title1 cursor-pointer"
-                onClick={() => {
-                  onOpenInTab?.();
-                }}
-              >
-                <RcIconFullscreen />
-              </div>
-            )}
-            <RcIconHistory className="cursor-pointer" onClick={openHistory} />
-          </div>
-        }
-      >
-        {t('page.bridge.title')}
-      </PageHeader>
+      {!noShowHeader && (
+        <PageHeader
+          className="mx-[20px] mb-[5px]"
+          forceShowBack={!isTab}
+          onBack={gotoDashboard}
+          canBack={!isTab}
+          isShowAccount
+          rightSlot={
+            <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
+              {isTab ? null : (
+                <div
+                  className="text-r-neutral-title1 cursor-pointer"
+                  onClick={() => {
+                    onOpenInTab?.();
+                  }}
+                >
+                  <RcIconFullscreen />
+                </div>
+              )}
+              <RcIconHistory className="cursor-pointer" onClick={openHistory} />
+            </div>
+          }
+        >
+          {t('page.bridge.title')}
+        </PageHeader>
+      )}
       <BridgeTxHistory
         visible={historyVisible}
         onClose={useCallback(() => {

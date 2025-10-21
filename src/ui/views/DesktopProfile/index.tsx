@@ -109,7 +109,8 @@ export const DesktopProfile = () => {
         }}
       />
       <SwapTokenModal
-        visible={action === 'swap'}
+        visible={action === 'swap' || action === 'bridge'}
+        type={action === 'swap' ? 'swap' : 'bridge'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

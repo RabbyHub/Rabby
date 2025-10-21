@@ -12,7 +12,13 @@ import { getUiType } from '@/ui/utils';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 const isTab = getUiType().isTab;
 
-export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
+export const Header = ({
+  onOpenInTab,
+  noShowHeader = false,
+}: {
+  onOpenInTab?(): void;
+  noShowHeader: boolean;
+}) => {
   const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
 
@@ -36,33 +42,35 @@ export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
 
   return (
     <>
-      <PageHeader
-        className="mx-[20px] mb-[5px]"
-        forceShowBack={!isTab}
-        onBack={gotoDashboard}
-        canBack={!isTab}
-        isShowAccount
-        rightSlot={
-          <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
-            {isTab ? null : (
-              <div
-                className="text-r-neutral-title1 cursor-pointer"
-                onClick={() => {
-                  onOpenInTab?.();
-                }}
-              >
-                <RcIconFullscreen />
-              </div>
-            )}
-            <RcIconSwapHistory
-              className="cursor-pointer"
-              onClick={openHistory}
-            />
-          </div>
-        }
-      >
-        {t('page.swap.title')}
-      </PageHeader>
+      {!noShowHeader && (
+        <PageHeader
+          className="mx-[20px] mb-[5px]"
+          forceShowBack={!isTab}
+          onBack={gotoDashboard}
+          canBack={!isTab}
+          isShowAccount
+          rightSlot={
+            <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
+              {isTab ? null : (
+                <div
+                  className="text-r-neutral-title1 cursor-pointer"
+                  onClick={() => {
+                    onOpenInTab?.();
+                  }}
+                >
+                  <RcIconFullscreen />
+                </div>
+              )}
+              <RcIconSwapHistory
+                className="cursor-pointer"
+                onClick={openHistory}
+              />
+            </div>
+          }
+        >
+          {t('page.swap.title')}
+        </PageHeader>
+      )}
       <SwapTxHistory
         visible={historyVisible}
         onClose={useCallback(() => {
