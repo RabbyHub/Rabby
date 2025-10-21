@@ -321,7 +321,7 @@ export const BalanceView = ({
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active
-                  className="m-auto w-[400px] h-[100px] rounded"
+                  className="m-auto w-[400px] h-[80px] rounded"
                 />
               </div>
             )}

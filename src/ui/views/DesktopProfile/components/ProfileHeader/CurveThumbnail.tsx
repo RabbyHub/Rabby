@@ -3,7 +3,6 @@ import React from 'react';
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { AreaChart, YAxis, Area, XAxis, Tooltip } from 'recharts';
 import styled, { createGlobalStyle } from 'styled-components';
-import { ReactComponent as RcIconInfoCC } from '@/ui/assets/tips-cc.svg';
 import { useTranslation } from 'react-i18next';
 export type CurvePoint = {
   value: number;

@@ -455,3 +455,17 @@ button:focus {
     display: none;
   }
 }
+
+.global-desktop-modal {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  .ant-modal-content {
+    border: none;
+  }
+  .ant-modal-body {
+    position: relative;
+    overflow: hidden;
+    transform: translate(0);
+  }
+}

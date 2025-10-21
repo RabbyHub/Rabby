@@ -11,7 +11,7 @@ import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { groupBy } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
@@ -20,7 +20,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { findChain, findChainByID } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@safe-global/types-kit';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
 import { intToHex, toChecksumAddress } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
@@ -670,8 +670,10 @@ export const GnosisTransactionQueueList = (props: {
     return Object.entries(transactionsGroup);
   }, [transactionsGroup]);
 
+  const ref = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="queue-list h-full">
+    <div className="queue-list h-full" ref={ref}>
       {safeInfo && list.length ? (
         <Virtuoso
           style={{
@@ -752,6 +754,10 @@ export const GnosisTransactionQueueList = (props: {
         isLoading={isSubmitting}
         networkId={networkId}
         owners={safeInfo?.owners}
+        // getContainer={getContainer}
+        getContainer={
+          ref.current?.closest<HTMLDivElement>('.ant-modal-body') || undefined
+        }
       />
     </div>
   );
