@@ -35,7 +35,9 @@ const config = {
     ,
     useSecSDK &&
       new SecSDK({
-        disableProtoAssets: ['pageProvider.js']
+        disableProtoAssets: ['pageProvider.js'],
+        skipScuttleAssets: ['pageProvider.js'],
+        scuttle: true,
       }),
   ].filter(Boolean),
 

@@ -22,6 +22,8 @@ const config = {
       new SecSDK({
         dev: true,
         disableProtoAssets: ['pageProvider.js'],
+        skipScuttleAssets: ['pageProvider.js'],
+        scuttle: true,
       }),
   ].filter(Boolean),
 };
