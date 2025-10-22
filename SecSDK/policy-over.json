@@ -425,5 +425,22 @@
   },
   "node_modules/@metamask/post-message-stream/dist/window/WindowPostMessageStream.js": {
     "enable": false
+  },
+  "node_modules/ahooks/es/useEventListener/index.js": {
+    "global": {
+      "allow": {
+        "addEventListener": "r",
+        "removeEventListener": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/react-virtuoso/dist/index.mjs": {
+    "global": {
+      "allow": {
+        "VIRTUOSO_LOG_LEVEL": "r"
+      },
+      "disallow": []
+    }
   }
 }
