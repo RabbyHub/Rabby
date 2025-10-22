@@ -33,6 +33,8 @@ export const SwapTokenModal: React.FC<
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
       maskClosable={false}
       footer={null}
+      zIndex={1000}
+      maskStyle={{ zIndex: 1000 }}
     >
       <div className="js-rabby-desktop-swap-container">
         <div className="flex justify-center mt-12 mb-12">

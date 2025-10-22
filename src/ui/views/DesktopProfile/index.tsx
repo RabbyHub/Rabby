@@ -64,6 +64,9 @@ export const DesktopProfile = () => {
   const location = useLocation();
   const action = new URLSearchParams(location.search).get('action');
 
+  const shouldElevateAccountList =
+    action === 'send' || action === 'swap' || action === 'bridge';
+
   return (
     <>
       <Wrap className="w-full h-full bg-r-neutral-bg2">
@@ -100,7 +103,9 @@ export const DesktopProfile = () => {
               </div>
             </main>
             <aside className="w-[260px] flex-shrink-0">
-              <DesktopSelectAccountList />
+              <DesktopSelectAccountList
+                shouldElevate={shouldElevateAccountList}
+              />
             </aside>
           </div>
         </div>

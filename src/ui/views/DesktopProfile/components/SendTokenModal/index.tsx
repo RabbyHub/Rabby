@@ -31,6 +31,8 @@ export const SendTokenModal: React.FC<ModalProps> = (props) => {
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
       maskClosable={false}
       footer={null}
+      zIndex={1000}
+      maskStyle={{ zIndex: 1000 }}
     >
       {SendPage}
     </Modal>
