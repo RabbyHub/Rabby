@@ -1,27 +1,19 @@
-// TODO: Translate
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { ReactComponent as IconNftUsdInfo } from 'ui/assets/nft-view/nft-usd-info.svg';
-import { HelperTooltip } from '../components/HelperTooltip';
-// import { LabelWithIcon } from '@/components/LabelWithIcon';
-// import { TokenAvatar } from '@/components/TokenAvatar';
-
-import { Panel, ProxyTag, Table } from '../components';
-import { getCollectionDisplayName } from '../utils/nft';
-import { formatAmount, formatUsdValue } from '@/ui/utils';
 import {
   NftCollection,
   PortfolioItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 
-const Col = Table.Col;
+import { ReactComponent as IconNftUsdInfo } from 'ui/assets/nft-view/nft-usd-info.svg';
+import { HelperTooltip } from '../components/HelperTooltip';
+import { Panel, ProxyTag, Table } from '../components';
+import { getCollectionDisplayName } from '../utils/nft';
+import { formatAmount, formatUsdValue } from '@/ui/utils';
+import LabelWithIcon from '../components/LabelWithIcons';
+import { TokenAvatar } from '../components/TokenAvatar';
 
-const style = {
-  nftLogo: 'border-radius: 4px !important;',
-  nftIcon: 'margin-right: 8px;',
-  valueText: 'padding: 15px 10px;',
-};
+const Col = Table.Col;
 
 export default memo(
   (props: {
@@ -90,35 +82,36 @@ const FractionNftRow = ({
   return (
     <Table.Row>
       <Col>
-        {/* <LabelWithIcon
+        <LabelWithIcon
           icon={
             <TokenAvatar
-              logoClassName={style.nftLogo}
-              className={style.nftIcon}
+              logoClassName="rounded-[4px]"
+              className="mr-[8px]"
               size={24}
               logo={collection.logo_url}
             />
           }
+          labelClassName="text-[15px] text-r-neutral-title1 font-medium"
           label={collectionName}
-        /> */}
+        />
       </Col>
       <Col>
-        <div className={style.valueText}>
+        <div className="text-[15px] text-r-neutral-title1 font-medium px-[10px] py-[15px]">
           {formatAmount(amount ?? 0)} {symbol}
         </div>
       </Col>
       <Col>
         {usdValue ? (
-          <>
+          <div className="flex items-center justify-end text-r-neutral-title1 font-medium">
             {formatUsdValue(usdValue)}
             <HelperTooltip title="Calculate based on the price of the linked ERC20 token.">
               <IconNftUsdInfo
-                width={10}
-                height={10}
+                width={12}
+                height={12}
                 style={{ marginLeft: 4 }}
               />
             </HelperTooltip>
-          </>
+          </div>
         ) : (
           '-'
         )}

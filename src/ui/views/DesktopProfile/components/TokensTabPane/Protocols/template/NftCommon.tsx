@@ -67,17 +67,19 @@ export default memo(
                       }
                     />
                   )}
-                  <Table.Col>
-                    {formatUsdValue(p?.stats?.net_usd_value)}
-                    {!!nfts.length && (
-                      <HelperTooltip title="NFT value not included.">
-                        <IconNftUsdInfo
-                          width={10}
-                          height={10}
-                          style={{ marginLeft: 4 }}
-                        />
-                      </HelperTooltip>
-                    )}
+                  <Table.Col className="text-[15px] text-r-neutral-title1 font-medium">
+                    <div className="flex items-center justify-end text-[15px] text-r-neutral-title1 font-medium">
+                      {formatUsdValue(p?.stats?.net_usd_value)}
+                      {!!nfts.length && (
+                        <HelperTooltip title="NFT value not included.">
+                          <IconNftUsdInfo
+                            width={12}
+                            height={12}
+                            style={{ marginLeft: 4 }}
+                          />
+                        </HelperTooltip>
+                      )}
+                    </div>
                   </Table.Col>
                 </Table.Row>
               );

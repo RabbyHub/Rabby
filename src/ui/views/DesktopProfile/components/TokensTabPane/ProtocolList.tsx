@@ -49,6 +49,7 @@ const PoolListContainer = styled.div`
   border-radius: 8px;
   padding-top: 8;
   margin: 0 20px;
+  overflow: hidden;
 `;
 
 // const PoolItem = ({
@@ -107,6 +108,16 @@ const ProtocolItemWrapper = styled.div`
   }
 `;
 
+const PoolListWrapper = styled.div`
+  > div {
+    border-bottom: 0.5px solid var(--r-neutral-line);
+  }
+
+  > div:last-child {
+    border-bottom: 0;
+  }
+`;
+
 export const Main = memo(({ data }: { data: AbstractProject }) => {
   if (!data || !data?._portfolios?.length) return null;
 
@@ -115,20 +126,26 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
   const typesMap = new Map<string, typeof _portfolios>();
   // 先根据name 和 common 分组,common取最后一个
   _portfolios.forEach((v) => {
-    const detail_type = v._originPortfolio.detail_types
+    const hasDapp =
+      !!v.withdrawActions?.length &&
+      !v?._originPortfolio?.proxy_detail?.proxy_contract_id;
+    const detail_type = v?._originPortfolio?.detail_types
       ?.reverse()
       ?.find((type) =>
         TemplateDict[type as keyof typeof TemplateDict] ? type : ''
       );
+    if (hasDapp) {
+      console.log('CUSTOM_LOGGER:=>: detail_type', detail_type);
+    }
 
-    const mapKey = `${v.name}&&${detail_type}&&${v._originPortfolio.proxy_detail?.proxy_contract_id}`;
+    const mapKey = `${v.name}&&${detail_type}&&${v?._originPortfolio?.proxy_detail?.proxy_contract_id}`;
     const _arr = typesMap.get(mapKey) || [];
     _arr.push(v);
     typesMap.set(mapKey, _arr);
   });
 
   return (
-    <div
+    <PoolListWrapper
       key={data.id}
       onClick={() => {
         console.log('logger', typesMap);
@@ -150,7 +167,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
           />
         );
       })}
-    </div>
+    </PoolListWrapper>
   );
 });
 
@@ -229,7 +246,7 @@ const ProtocolItem = ({
         <div
           className={clsx(
             'flex items-center justify-start mx-[20px]',
-            'title border border-solid bg-r-neutral-card1 border-transparent rounded-[8px] h-[48px] pr-14 px-0'
+            'title border border-solid bg-r-neutral-card1 border-transparent rounded-[8px] h-[48px] px-0'
           )}
         >
           <IconWithChain
@@ -237,6 +254,7 @@ const ProtocolItem = ({
             chainServerId={protocol.chain || 'eth'}
             width="20px"
             height="20px"
+            chainSize="10px"
             noRound={isAppChain}
             isShowChainTooltip={true}
             hideChainIcon={isAppChain}
@@ -253,7 +271,7 @@ const ProtocolItem = ({
             </span>
             {!!isAppChain && (
               <Tooltip
-                overlayClassName="app-chain-tooltip"
+                overlayClassName="app-chain-tooltip rectangle addressType__tooltip"
                 title={t('component.ChainItem.appChain', {
                   chain: protocol.name,
                 })}
@@ -266,7 +284,9 @@ const ProtocolItem = ({
             <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot" />
           </div>
           <div className="flex items-center justify-end flex-1">
-            <span className="net-worth">{protocol._netWorth}</span>
+            <span className="text-[15px] text-r-neutral-title1 font-medium">
+              {protocol._netWorth}
+            </span>
           </div>
         </div>
         <PoolListContainer>
@@ -300,11 +320,9 @@ const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
       {list.map((item) => (
         <ProtocolItem
           protocol={item}
-          key={item.id + item.chain}
-          enableDelayVisible={enableDelayVisible}
+          key={item.id}
+          enableDelayVisible={false}
           isAppChain={appIds?.includes(item.id)}
-          isSearch={isSearch}
-          removeProtocol={removeProtocol}
         />
       ))}
     </ProtocolListWrapper>

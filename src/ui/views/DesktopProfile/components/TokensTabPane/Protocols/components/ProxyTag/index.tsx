@@ -9,6 +9,14 @@ const PanelSubTag = styled.div`
   margin-left: 8px;
   height: 24px;
   line-height: 24px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background-color: var(--r-neutral-line);
+  color: var(--r-neutral-body);
 `;
 
 export const ProxyTag = ({ item }: { item: PortfolioItem }) => {
@@ -18,7 +26,6 @@ export const ProxyTag = ({ item }: { item: PortfolioItem }) => {
 
   return (
     <HelperTooltip title={item.proxy_detail?.proxy_contract_id}>
-      {/* TODO: 样式 */}
       <PanelSubTag>
         Proxy:
         {item.proxy_detail?.project?.name}

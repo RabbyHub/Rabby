@@ -3,13 +3,17 @@ import styled from 'styled-components';
 
 import { Panel, ProxyTag, Table, Value } from '../components';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
+import { useTranslation } from 'react-i18next';
 
 const Description = styled.span`
   margin-right: 8px;
 `;
 
 const UnsupportedText = styled.span`
-  color: 'red';
+  margin-top: 10px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--r-neutral-foot);
 `;
 
 export default memo((props: { tag: string; data: PortfolioItem[] }) => {
@@ -17,6 +21,7 @@ export default memo((props: { tag: string; data: PortfolioItem[] }) => {
   const data = props.data;
   const hasDescription = data.some((v: any) => !!v?.detail?.description);
   const headers = [hasDescription ? 'Name' : '', 'USD Value'];
+  const { t } = useTranslation();
 
   return (
     <Panel tag={tag} subTag={<ProxyTag item={data[0]} />}>
@@ -32,7 +37,9 @@ export default memo((props: { tag: string; data: PortfolioItem[] }) => {
                       {p?.detail?.description ? (
                         <Description>{p?.detail?.description}</Description>
                       ) : null}
-                      <UnsupportedText>Unsupported pool type</UnsupportedText>
+                      <UnsupportedText>
+                        {t('page.dashboard.assets.table.unsupportedPoolType')}
+                      </UnsupportedText>
                     </>
                   }
                 />

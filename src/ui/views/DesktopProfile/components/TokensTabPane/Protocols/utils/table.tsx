@@ -86,7 +86,7 @@ export function TokensAmount({
           v && (
             <div
               key={v.id}
-              className="text-[15px] text-r-neutral-title1 font-medium"
+              className="flex text-[15px] text-r-neutral-title1 font-medium"
               style={{ marginTop: i === 0 ? 0 : 4 }}
             >
               {`${formatNumber(v.amount)} `}
@@ -97,8 +97,8 @@ export function TokensAmount({
               {!v.price && (
                 <HelperTooltip title="No price available at the moment">
                   <IconWarning
-                    width={12}
-                    height={12}
+                    width={14}
+                    height={14}
                     style={{ marginLeft: 2 }}
                   />
                 </HelperTooltip>

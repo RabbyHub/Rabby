@@ -10,18 +10,6 @@ export type HelperTooltipProps = {
   disable?: boolean;
 } & TooltipProps;
 
-// .db-helpTooltip {
-//   white-space: break-spaces;
-//   font-size: 12px;
-// }
-
-// .toolTipHelp {
-//   text-decoration-line: underline;
-//   text-decoration-style: dotted;
-//   text-decoration-skip-ink: auto;
-//   text-underline-offset: 1px;
-// }
-
 export const HelperTooltip = ({
   children,
   help,
@@ -38,7 +26,7 @@ export const HelperTooltip = ({
     <Tooltip
       title={title}
       getTooltipContainer={inParent ? (dom) => dom : undefined}
-      overlayClassName={cx('db-helpTooltip', overlayClassName)}
+      overlayClassName={cx('rectangle addressType__tooltip', overlayClassName)}
       className={cx(help && 'toolTipHelp', className)}
       mouseEnterDelay={0}
       {...rest}

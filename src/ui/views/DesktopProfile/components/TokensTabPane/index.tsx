@@ -118,13 +118,13 @@ export const TokensTabPane: React.FC<Props> = ({
 
   return (
     <div className={className}>
-      {/* {isTokensLoading ? (
+      {isTokensLoading ? (
         <div className="mx-20">
           <TokenListSkeleton />
         </div>
       ) : (
         <TokenList list={sortTokens} isNoResults={isNoResults} />
-      )} */}
+      )}
 
       <div>
         {isPortfoliosLoading && isAppPortfoliosLoading ? (

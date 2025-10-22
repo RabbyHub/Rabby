@@ -6,7 +6,7 @@ import { HelperTooltip } from './HelperTooltip';
 // import { LabelWithIcon } from '@/components/LabelWithIcon';
 // import { TokenAvatar } from '@/components/TokenAvatar';
 
-import { TokensAmount, getTokens, getUsd } from '../utils';
+import { TokensAmount, getTokens, getUsd, numberWithCommas } from '../utils';
 import { getCollectionDisplayName, polyNfts } from '../utils/nft';
 import Table from './table';
 import {
@@ -15,9 +15,14 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils/number';
 import styled from 'styled-components';
+import LabelWithIcon from './LabelWithIcons';
+import { TokenAvatar } from './TokenAvatar';
 
 const BalanceToken = styled.div`
   margin-bottom: 4px;
+  font-size: 15px;
+  color: var(--r-neutral-title1);
+  font-weight: 500;
 `;
 
 export interface Tokens {
@@ -57,7 +62,7 @@ export const String = ({ value, ...rest }: { value: ReactNode }) => {
 
 export const Time = (props: { value: string | number | undefined }) => {
   return (
-    <Col>
+    <Col className="text-[15px] text-r-neutral-title1 font-medium">
       {!props.value
         ? '-'
         : dayjs(Number(props.value) * 1000).format('YYYY/MM/DD HH:mm')}
@@ -117,7 +122,11 @@ export const USDValue = (props: { value: string | number }) => {
 };
 
 export const TokensUSDValue = (props: { value: Tokens[] }) => {
-  return <Col>{getUsd(props.value, 0)}</Col>;
+  return (
+    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+      {getUsd(props.value, 0)}
+    </Col>
+  );
 };
 
 export const TokenUSDValue = (props: { value: Tokens }) => {
@@ -125,25 +134,37 @@ export const TokenUSDValue = (props: { value: Tokens }) => {
 };
 
 export const Bool = (props: { value: number }) => {
-  return <Col>{props.value ? 'Yes' : 'No'}</Col>;
+  return (
+    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+      {props.value ? 'Yes' : 'No'}
+    </Col>
+  );
 };
 
 export const Percent = (props: { value?: number | string }) => {
   if (props.value === undefined || Number.isNaN(+props.value))
     return <Col></Col>;
-  return <Col>{splitNumberByStep(+props.value! * 100, 2)}%</Col>;
+  return (
+    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+      {numberWithCommas(+props.value! * 100, 2)}%
+    </Col>
+  );
 };
 
 export const NumberWithCommas = (props: { value?: number | string }) => {
-  return <Col>{splitNumberByStep(props.value ?? 0, 2)}</Col>;
+  return (
+    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+      {numberWithCommas(props.value ?? 0, 2)}
+    </Col>
+  );
 };
 
 export const NumbersWithCommas = (props: {
   value: (number | string | undefined)[];
 }) => {
   return (
-    <Col>
-      {props.value.map((v) => (v ? splitNumberByStep(v, 2) : '-')).join(' / ')}
+    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+      {props.value.map((v) => (v ? numberWithCommas(v, 2) : '-')).join(' / ')}
     </Col>
   );
 };
@@ -214,33 +235,38 @@ export const NFTTable = ({
         {nfts?.map((x, i) => (
           <Table.Row key={i}>
             <Col>
-              {/* TODO: */}
-              {/* <LabelWithIcon
+              <LabelWithIcon
                 icon={
                   <TokenAvatar
-                    logoClassName={style.nftLogo}
-                    className={style.nftIcon}
+                    logoClassName="rounded-[4px]"
+                    className="mr-[8px]"
                     size={24}
                     logo={x.collection.logo_url}
                   />
                 }
-                label={<div>{x.collectionName}</div>}
-              /> */}
+                label={
+                  <span className="text-[15px] text-r-neutral-title1 font-medium">
+                    {x.collectionName}
+                  </span>
+                }
+              />
             </Col>
             <Col>
-              <div>
+              <div className="text-[15px] text-r-neutral-title1 font-medium">
                 <span>{x.collectionName}</span> x{x.amount}
               </div>
             </Col>
             <Col>
-              <span>-</span>
-              <HelperTooltip title="NFT value not included in the net worth of this protocol">
-                <IconNftUsdInfo
-                  width={10}
-                  height={10}
-                  style={{ marginLeft: 4 }}
-                />
-              </HelperTooltip>
+              <div className="flex items-center justify-end text-[15px] text-r-neutral-title1 font-medium">
+                <span>-</span>
+                <HelperTooltip title="NFT value not included in the net worth of this protocol">
+                  <IconNftUsdInfo
+                    width={12}
+                    height={12}
+                    style={{ marginLeft: 4 }}
+                  />
+                </HelperTooltip>
+              </div>
             </Col>
           </Table.Row>
         ))}

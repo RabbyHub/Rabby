@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import { SwapTokenModal } from './components/SwapTokenModal';
 import ApprovalManagePage from '../ApprovalManagePage';
 import { DesktopChainSelector } from '../DesktopChainSelector';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { findChainByEnum } from '@/utils/chain';
 
 const Wrap = styled.div`
   height: 100%;
@@ -67,6 +68,7 @@ export const DesktopProfile = () => {
   const action = new URLSearchParams(location.search).get('action');
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
   const dispatch = useRabbyDispatch();
+  const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
 
   const shouldElevateAccountList =
     action === 'send' || action === 'swap' || action === 'bridge';
@@ -100,7 +102,7 @@ export const DesktopProfile = () => {
                   }}
                 >
                   <Tabs.TabPane tab="Tokens" key="tokens">
-                    <TokensTabPane />
+                    <TokensTabPane selectChainId={chainInfo?.serverId} />
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="NFTs" key="nft">
                     Content of Tab Pane 2

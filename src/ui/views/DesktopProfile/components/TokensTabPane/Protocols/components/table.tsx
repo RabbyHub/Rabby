@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from 'react';
 import styled from 'styled-components';
+import cx from 'clsx';
 
 const WidthContext = React.createContext<number[]>([]);
 
@@ -49,6 +50,7 @@ const ContentRow = styled(FlexRow)`
   width: 100%;
   line-height: 15px;
   min-width: 800px;
+  align-items: center;
 
   &:hover {
     background-color: var(--bg-light-color);
@@ -85,11 +87,11 @@ const Content = styled.div`
   font-family: 'Noto Sans', 'Subset';
 
   > div {
-    border-bottom: solid 1px var(--bg-default-color);
+    border-bottom: 0.5px solid var(--r-neutral-line);
   }
 
   > div:last-child {
-    border-bottom: 0;
+    border-bottom: none;
   }
 `;
 
@@ -115,7 +117,7 @@ const Header = (props: { headers: ReactNode[]; className?: string }) => {
 
   return (
     <>
-      <Row header className={props.className ?? ''}>
+      <Row header className={cx('px-16', props.className ?? '')}>
         {headers.map((v, i) => {
           return (
             <Col
@@ -164,7 +166,11 @@ const Row = ({
   const StyledRow = header ? HeaderRow : ContentRow;
 
   return (
-    <StyledRow ref={ref} className={className || ''} {...rest}>
+    <StyledRow
+      ref={ref}
+      className={cx('px-16 py-[5px]', className || '')}
+      {...rest}
+    >
       {children}
     </StyledRow>
   );

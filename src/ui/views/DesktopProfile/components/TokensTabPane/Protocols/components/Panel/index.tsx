@@ -4,9 +4,6 @@ import BookMark from '../BookMark';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  margin-bottom: 20px;
-  background-color: var(--bg-chat-color);
-  border-radius: 8px;
   padding-top: 8px;
 `;
 
@@ -16,7 +13,7 @@ const PanelHead = styled.div`
 `;
 
 const Card = styled.div`
-  padding: 0 20px 20px 20px;
+  padding: 0;
 `;
 
 export const Panel: React.FC<{
