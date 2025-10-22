@@ -52,39 +52,42 @@ export const TokensIcons = memo(
   (props: {
     icons: (string | undefined)[] | (string | undefined);
     nftIcons?: (string | undefined)[];
-    isMobile?: boolean;
     width?: number;
-    margin?: number;
     chain?: string;
   }) => {
-    const {
-      icons: _icons,
-      isMobile,
-      width: defaultWidth = 20,
-      chain,
-      nftIcons,
-    } = props;
-    const margin = props.margin ?? 6;
+    const { icons: _icons, width: defaultWidth = 20, chain, nftIcons } = props;
     const icons = Array.isArray(_icons) ? _icons : [_icons];
-    const width =
-      (defaultWidth ? defaultWidth / 2 : 10) + (isMobile ? 0 : margin / 2);
     const imgs = [
       ...(nftIcons ?? []).map((n) =>
         wrapUrlInImgOrDefault(n, defaultWidth, { borderRadius: 4 })
       ),
       ...icons.map((v) => wrapUrlInImgOrDefault(v, defaultWidth)),
     ];
-    const containerWidth = 2 * width + (imgs.length - 1) * width;
+
+    // 如果只有一个图标，使用with宽度；如果超过一个，间距为-8px
+    const containerWidth =
+      imgs.length === 1
+        ? defaultWidth
+        : defaultWidth + (imgs.length - 1) * (defaultWidth - 8);
+
     return (
       <div style={{ width: containerWidth }} className="tokenIcons">
         {imgs.map((v, i) => (
-          <div style={{ left: i * -width + 'px' }} key={i}>
+          <div
+            style={{
+              position: 'absolute',
+              left: i * (defaultWidth - 8) + 'px',
+              width: defaultWidth,
+              height: defaultWidth,
+            }}
+            key={i}
+          >
             {v}
           </div>
         ))}
         {chain && chain !== 'eth' && (
           <img
-            style={{ right: margin / 2 + 2 }}
+            style={{ right: 2 }}
             src={CHAINS_DICT[chain]?.logo}
             alt=""
             className="chain"

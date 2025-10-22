@@ -40,7 +40,13 @@ export const LabelWithIcon: React.FC<Props> = (props) => {
       )}
     >
       {props.icon}
-      <div className={cx(props.textHidden && 'ellipsis', props.labelClassName)}>
+      <div
+        className={cx(
+          props.textHidden && 'ellipsis',
+          props.labelClassName,
+          props.icon ? 'ml-[8px]' : ''
+        )}
+      >
         {props.label}
       </div>
     </Container>

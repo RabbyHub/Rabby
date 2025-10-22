@@ -29,7 +29,6 @@ export function getTokens(
   const icon = (
     <TokensIcons
       width={24}
-      margin={8}
       nftIcons={nfts?.map((n) => n.collection?.logo_url)}
       icons={tokens.map((v) => v?.logo_url)}
     />
@@ -63,7 +62,7 @@ export function getTokens(
 
   return (
     <LabelWithIcon
-      labelClassName="text-[15px] text-r-neutral-title1 font-medium"
+      labelClassName="text-[15px] text-r-neutral-title1 font-medium flex-1"
       label={nfts?.length ? _nfts : _tokens}
       icon={icon}
     />
