@@ -420,9 +420,6 @@ export const Perps: React.FC = () => {
       <PerpsLoginPopup
         visible={loginVisible}
         onLogin={async (account) => {
-          if (currentPerpsAccount) {
-            logout(currentPerpsAccount?.address || '');
-          }
           await login(account);
           setLoginVisible(false);
         }}
