@@ -18,7 +18,13 @@ import { isSameAccount } from '@/utils/account';
 import { flatten } from 'lodash';
 import { CopyChecked } from '../CopyChecked';
 
-export const DesktopSelectAccountList = () => {
+interface DesktopSelectAccountListProps {
+  shouldElevate?: boolean;
+}
+
+export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> = ({
+  shouldElevate = false,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
@@ -54,7 +60,13 @@ export const DesktopSelectAccountList = () => {
   );
 
   return (
-    <div className="flex flex-col gap-[12px]">
+    <div
+      className="flex flex-col gap-[12px]"
+      style={{
+        position: shouldElevate ? 'relative' : 'static',
+        zIndex: shouldElevate ? 2000 : 'auto',
+      }}
+    >
       {filteredAccounts.map((item) => {
         const isSelected = currentAccount
           ? isSameAccount(item, currentAccount)

@@ -10,8 +10,7 @@ import { DisplayedToken } from 'ui/utils/portfolio/project';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { useLocation } from 'react-router-dom';
 
-const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
 
 interface TokenDetailProps {
   visible?: boolean;
@@ -38,6 +37,13 @@ export const TokenDetailPopup = ({
   const [isAdded, setIsAdded] = React.useState(false);
 
   const location = useLocation();
+  const isSendModal =
+    new URLSearchParams(location.search).get('action') === 'send';
+  const getContainer = isDesktop
+    ? isSendModal
+      ? '.js-rabby-popup-container'
+      : '.js-rabby-desktop-swap-container'
+    : undefined;
   const isInSwap = location.pathname === '/dex-swap';
   const isInSend = location.pathname === '/send-token';
   const isBridge = location.pathname === '/bridge';

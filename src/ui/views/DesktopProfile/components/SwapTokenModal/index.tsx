@@ -26,13 +26,15 @@ export const SwapTokenModal: React.FC<
 
   return (
     <Modal
+      {...modalProps}
       className="desktop-swap-token-modal"
       width={400}
       title={null}
-      bodyStyle={{ background: 'transparent' }}
+      bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
       maskClosable={false}
       footer={null}
-      {...modalProps}
+      zIndex={1000}
+      maskStyle={{ zIndex: 1000 }}
     >
       <div className="js-rabby-desktop-swap-container">
         <div className="flex justify-center mt-12 mb-12">
