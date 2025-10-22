@@ -9,6 +9,7 @@ import {
   openInTab,
   sinceTime,
 } from '@/ui/utils';
+import { SvgIcWarning } from 'ui/assets';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ImgPending from 'ui/assets/swap/pending.svg';
@@ -89,6 +90,7 @@ interface TransactionProps {
 const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
   ({ data }, ref) => {
     const isPending = data.status === 'pending';
+    const isFailed = data.status === 'failed';
     const time =
       // data?.finished_at ||
       data?.create_at;
@@ -139,6 +141,12 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             <span className="whitespace-nowrap">
               {!isPending && sinceTime(time)}
             </span>
+
+            {isFailed && (
+              <div className="w-16 h-16 ml-6 rounded-full bg-red-500 flex items-center justify-center">
+                <SvgIcWarning className="w-16 h-16 text-r-red-default" />
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-4">
             <img
