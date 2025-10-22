@@ -39,6 +39,7 @@ import { splitNumberByStep } from 'ui/utils/number';
 import { getProtocol } from '@rabby-wallet/rabby-action';
 import { ReplacePopup } from './ReplacePopup';
 import { numberToHex } from 'viem';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -416,6 +417,8 @@ const GnosisTransactionItem = ({
     init();
   }, []);
 
+  const { getContainer } = usePopupContainer();
+
   return (
     <>
       <div
@@ -490,6 +493,7 @@ const GnosisTransactionItem = ({
         visible={isShowReplacePopup}
         onClose={() => setIsShowReplacePopup(false)}
         onSelect={handleReplace}
+        getContainer={getContainer}
       />
     </>
   );
@@ -670,10 +674,10 @@ export const GnosisTransactionQueueList = (props: {
     return Object.entries(transactionsGroup);
   }, [transactionsGroup]);
 
-  const ref = useRef<HTMLDivElement>(null);
+  const { getContainer } = usePopupContainer();
 
   return (
-    <div className="queue-list h-full" ref={ref}>
+    <div className="queue-list h-full">
       {safeInfo && list.length ? (
         <Virtuoso
           style={{
@@ -754,10 +758,7 @@ export const GnosisTransactionQueueList = (props: {
         isLoading={isSubmitting}
         networkId={networkId}
         owners={safeInfo?.owners}
-        // getContainer={getContainer}
-        getContainer={
-          ref.current?.closest<HTMLDivElement>('.ant-modal-body') || undefined
-        }
+        getContainer={getContainer}
       />
     </div>
   );
