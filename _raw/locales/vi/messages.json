@@ -1184,7 +1184,8 @@
           "approvals": "Phê duyệt",
           "more": "Hơn nữa",
           "feedback": "Phản hồi",
-          "perps": "Perps"
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1559,6 +1560,11 @@
       "recentConnectionGuide": {
         "title": "Thay đổi địa chỉ để kết nối DApp tại đây\n",
         "button": "Rõ ràng\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby Points",
+        "downloadIntro": "Chưa có ứng dụng? Tải xuống ngay.",
+        "desc": "Kiểm tra điểm của bạn trong Rabby Mobile."
       }
     },
     "nft": {
@@ -2743,7 +2749,8 @@
       "steps2": "2. Quét bằng Rabby Mobile",
       "selectedLenAddressesForSync_one": "Đã chọn {{len}} địa chỉ để đồng bộ",
       "description": "Dữ liệu địa chỉ của bạn luôn ở chế độ ngoại tuyến, được mã hóa và được chuyển giao một cách an toàn qua mã QR.",
-      "steps2Description": "*Mã QR của bạn chứa dữ liệu nhạy cảm. Hãy giữ nó riêng tư và không bao giờ chia sẻ với ai.*"
+      "steps2Description": "*Mã QR của bạn chứa dữ liệu nhạy cảm. Hãy giữ nó riêng tư và không bao giờ chia sẻ với ai.*",
+      "verifyPassword": "Xác thực Mật khẩu"
     },
     "search": {
       "sectionHeader": {

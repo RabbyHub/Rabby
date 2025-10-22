@@ -1184,7 +1184,8 @@
           "send": "Kirim",
           "approvals": "Persetujuan",
           "mobile": "Mobile Sync",
-          "perps": "Perps"
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "queue": {
           "title": "Antrian",
@@ -1559,6 +1560,11 @@
       "recentConnectionGuide": {
         "button": "Dapatkan",
         "title": "Ganti alamat untuk koneksi Dapp di sini"
+      },
+      "rabbyPointsPopup": {
+        "downloadIntro": "Belum punya aplikasi? Unduh sekarang.",
+        "desc": "Periksa poin Anda di Rabby Mobile.",
+        "title": "Rabby Points"
       }
     },
     "nft": {
@@ -2743,7 +2749,8 @@
       "disableSelectAddressWithSlip39": "Sink tidak didukung untuk alamat {{type}} dengan slip39",
       "steps2Description": "*QR code Anda berisi data sensitif. Jaga kerahasiaannya dan jangan pernah membagikannya kepada siapa pun.",
       "selectedLenAddressesForSync_other": "Dipilih {{len}} alamat untuk disinkronkan",
-      "disableSelectAddressWithPassphrase": "Sinkronisasi tidak didukung untuk alamat {{type}} dengan frasa sandi"
+      "disableSelectAddressWithPassphrase": "Sinkronisasi tidak didukung untuk alamat {{type}} dengan frasa sandi",
+      "verifyPassword": "Verifikasi Kata Sandi"
     },
     "search": {
       "sectionHeader": {
