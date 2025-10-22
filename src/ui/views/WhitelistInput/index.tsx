@@ -30,7 +30,9 @@ import { ReactComponent as RcIconContactCC } from '@/ui/assets/contact-cc.svg';
 import './styles.less';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 const SectionHeader = styled.div`
   font-size: 13px;
@@ -272,7 +274,7 @@ const WhitelistInput = () => {
           forceShowBack
           canBack
           rightSlot={
-            isTab ? null : (
+            isDesktop ? null : (
               <div
                 className="text-r-neutral-title1 cursor-pointer absolute right-0 "
                 onClick={() => {
