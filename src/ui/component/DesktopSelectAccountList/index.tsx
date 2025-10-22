@@ -17,13 +17,16 @@ import { splitNumberByStep } from '@/ui/utils';
 import { isSameAccount } from '@/utils/account';
 import { flatten } from 'lodash';
 import { CopyChecked } from '../CopyChecked';
+import { useApprovalDangerCount } from '@/ui/hooks/useApprovalDangerCount';
 
 interface DesktopSelectAccountListProps {
   shouldElevate?: boolean;
+  isShowApprovalAlert?: boolean;
 }
 
 export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> = ({
   shouldElevate = false,
+  isShowApprovalAlert = false,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -80,6 +83,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
             }}
             isSelected={isSelected}
             item={item}
+            isShowApprovalCount={isShowApprovalAlert}
           >
             {item.address}
           </AccountItem>
@@ -93,10 +97,15 @@ const AccountItem: React.FC<{
   item: IDisplayedAccountWithBalance;
   onClick?(): void;
   isSelected?: boolean;
-}> = ({ item, onClick, isSelected }) => {
+  isShowApprovalCount?: boolean;
+}> = ({ item, onClick, isSelected, isShowApprovalCount }) => {
   const addressTypeIcon = useBrandIcon({
     ...item,
     forceLight: isSelected,
+  });
+
+  const approvalCount = useApprovalDangerCount({
+    address: isShowApprovalCount ? item.address : undefined,
   });
 
   return (
@@ -121,6 +130,23 @@ const AccountItem: React.FC<{
         >
           {item.alianName}
         </div>
+        {approvalCount ? (
+          <div className="ml-auto">
+            <div
+              className={clsx(
+                'text-r-neutral-title-2 text-[13px] leading-[16px] font-medium text-center',
+                'px-[1px] min-w-[20px] rounded-[4px]',
+                'bg-r-red-default',
+                'border-[1px] border-solid',
+                isSelected
+                  ? 'border-rabby-neutral-title2'
+                  : 'border-transparent'
+              )}
+            >
+              {approvalCount}
+            </div>
+          </div>
+        ) : null}
       </div>
       <div className="flex items-center mt-[2px]">
         <AddressViewer

@@ -119,6 +119,7 @@ export const DesktopProfile = () => {
             <aside className="w-[260px] flex-shrink-0">
               <DesktopSelectAccountList
                 shouldElevate={shouldElevateAccountList}
+                isShowApprovalAlert={true}
               />
             </aside>
           </div>
