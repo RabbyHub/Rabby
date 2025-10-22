@@ -7,7 +7,7 @@ import {
   TokenListSkeleton,
   TokenListViewSkeleton,
 } from '@/ui/views/CommonPopup/AssetList/TokenListViewSkeleton';
-import ProtocolList from '@/ui/views/CommonPopup/AssetList/ProtocolList';
+import ProtocolList from './ProtocolList';
 import { useQueryProjects } from 'ui/utils/portfolio';
 import { Input } from 'antd';
 import { useFilterProtocolList } from '@/ui/views/CommonPopup/AssetList/useFilterProtocolList';

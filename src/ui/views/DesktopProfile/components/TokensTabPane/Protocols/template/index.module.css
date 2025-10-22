@@ -1,0 +1,15 @@
+.description {
+  margin-right: 8px;
+}
+
+.unsupportedText {
+  color: var(--light-sideinfo-color);
+}
+
+.red {
+  color: var(--color-red);
+}
+
+.warn {
+  color: var(--color-orange);
+}
