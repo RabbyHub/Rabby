@@ -284,7 +284,10 @@ export const BalanceView = ({
               )}
             >
               {shouldShowBalanceLoading ? (
-                <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
+                <Skeleton.Input
+                  active
+                  className="w-[200px] h-[38px] rounded block"
+                />
               ) : (
                 <BalanceLabel
                   // isCache={balanceFromCache}
