@@ -33,7 +33,7 @@ export default memo(
     return (
       <Panel tag={tag} subTag={<ProxyTag item={data[0]} />}>
         <Table>
-          <Table.Header headers={headers} />
+          <Table.Header className="mt-[9px]" headers={headers} />
           <Table.Body>
             {data.map((p: any, index: number) => {
               return (

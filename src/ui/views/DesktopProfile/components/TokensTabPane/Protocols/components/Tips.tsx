@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 
 import { ReactComponent as IconRcQuestion } from 'ui/assets/approval/question.svg';
-import { ReactComponent as IconRcQuestionGhost } from 'ui/assets/icon-question-ghost.svg';
+import { ReactComponent as IconRcQuestionGhost } from 'ui/assets/icon-info.svg';
 import styled from 'styled-components';
 
 import HelperTooltip from './HelperTooltip';
@@ -9,8 +9,8 @@ import HelperTooltip from './HelperTooltip';
 const TipsWrapper = styled.span`
   display: inline-flex;
   align-items: center;
-  color: var(--light-sideinfo-color);
-
+  color: var(--r-neutral-foot);
+  gap: 2px;
   .icon {
     margin-left: 4px;
     flex-shrink: 0;
@@ -36,7 +36,7 @@ export const Tips: React.FC<Props> = ({
   children,
   placement,
   overlayClassName,
-  size = 12,
+  size = 14,
   ghost,
   onClick,
 }) => {

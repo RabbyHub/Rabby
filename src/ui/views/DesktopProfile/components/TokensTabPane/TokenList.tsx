@@ -64,7 +64,7 @@ export const TokenList = ({ list, isNoResults }) => {
             </div>
           </div>
         </div>
-        <div className="text-15 text-r-neutral-title1 font-medium">
+        <div className="text-[15px] text-r-neutral-title1 font-medium">
           {formatUsdValueKMB(totalValue)}
         </div>
       </div>

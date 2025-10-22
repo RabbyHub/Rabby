@@ -14,11 +14,7 @@ import {
   Value,
 } from '../components';
 import { ArraySort } from '../utils';
-
-const style = {
-  red: 'color: var(--color-red);',
-  warn: 'color: var(--color-orange);',
-};
+import cx from 'clsx';
 
 export default memo(
   (props: {
@@ -44,11 +40,13 @@ export default memo(
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >
-              <More>
+              <More className="mt-[8px]">
                 {p?.detail?.health_rate ? (
                   <KV
                     k={
                       <Tips
+                        ghost
+                        className="text-13 text-r-neutral-foot font-normal"
                         title={
                           'Your assets will be liquidated if the health factor is less than or equal to 1'
                         }
@@ -61,13 +59,13 @@ export default memo(
                         ? p?.detail?.health_rate.toFixed(2)
                         : '>10'
                     }
-                    vClassName={
+                    vClassName={cx(
                       p?.detail?.health_rate < 1.1
-                        ? style.red
+                        ? 'text-r-red-default'
                         : p?.detail?.health_rate < 1.2
-                        ? style.warn
-                        : undefined
-                    }
+                        ? 'text-r-orange-default'
+                        : 'text-r-neutral-title1'
+                    )}
                   />
                 ) : null}
               </More>

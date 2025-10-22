@@ -25,21 +25,23 @@ const KVContainer = styled.div`
 
 const KVKey = styled.span`
   font-size: 13px;
-  color: var(--color-light-blue-title);
+  color: var(--r-neutral-title1);
   line-height: 16px;
-  margin-right: 12px;
+  margin-right: 8px;
 `;
 
 const KVValue = styled.span<{ vClassName?: string }>`
   font-size: 13px;
-  font-weight: bold;
-  color: var(--color-title);
+  font-weight: 500;
+  color: var(--r-neutral-title1);
   line-height: 16px;
 `;
 
-export const More: React.FC<{ children?: ReactNode }> = (props) => {
+export const More: React.FC<{ children?: ReactNode; className?: string }> = (
+  props
+) => {
   return (
-    <Container>
+    <Container className={props.className}>
       <Line>{props.children}</Line>
     </Container>
   );

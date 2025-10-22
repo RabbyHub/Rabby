@@ -48,7 +48,11 @@ export interface Tokens {
 const Col = Table.Col;
 
 export const String = ({ value, ...rest }: { value: ReactNode }) => {
-  return <Col {...rest}>{value}</Col>;
+  return (
+    <Col className="text-[15px] text-r-neutral-title1 font-medium" {...rest}>
+      {value}
+    </Col>
+  );
 };
 
 export const Time = (props: { value: string | number | undefined }) => {
@@ -105,7 +109,11 @@ export const Token = ({ value, ...rest }: { value: Tokens }) => {
 };
 
 export const USDValue = (props: { value: string | number }) => {
-  return <Col>{formatUsdValue(+props.value)}</Col>;
+  return (
+    <Col className="text-[15px] text-r-neutral-title1 font-medium">
+      {formatUsdValue(+props.value)}
+    </Col>
+  );
 };
 
 export const TokensUSDValue = (props: { value: Tokens[] }) => {
@@ -164,7 +172,7 @@ export const BlancesWithNfts = ({
       {hasNft &&
         nfts.map((n) => (
           <BalanceToken>
-            <div>{getCollectionDisplayName(n.collection)}</div> x{n.amount}
+            <span>{getCollectionDisplayName(n.collection)}</span> x{n.amount}
           </BalanceToken>
         ))}
       <TokensAmount tokens={tokens} />
@@ -206,6 +214,7 @@ export const NFTTable = ({
         {nfts?.map((x, i) => (
           <Table.Row key={i}>
             <Col>
+              {/* TODO: */}
               {/* <LabelWithIcon
                 icon={
                   <TokenAvatar
@@ -220,7 +229,7 @@ export const NFTTable = ({
             </Col>
             <Col>
               <div>
-                <div>{x.collectionName}</div> x{x.amount}
+                <span>{x.collectionName}</span> x{x.amount}
               </div>
             </Col>
             <Col>

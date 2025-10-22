@@ -28,6 +28,8 @@ export function getTokens(
 ) {
   const icon = (
     <TokensIcons
+      width={24}
+      margin={8}
       nftIcons={nfts?.map((n) => n.collection?.logo_url)}
       icons={tokens.map((v) => v?.logo_url)}
     />
@@ -40,7 +42,7 @@ export function getTokens(
         .map((token, i) => (
           <Fragment key={i}>
             {i ? separator : null}
-            <div>{getTokenSymbol(token)}</div>
+            <span>{getTokenSymbol(token)}</span>
           </Fragment>
         ))}
     </>
@@ -51,7 +53,7 @@ export function getTokens(
       {nfts?.map((n, i) => (
         <Fragment key={i}>
           {i ? separator : null}
-          <div>{getCollectionDisplayName(n.collection)}</div>
+          <span>{getCollectionDisplayName(n.collection)}</span>
         </Fragment>
       ))}
       {separator}
@@ -59,7 +61,13 @@ export function getTokens(
     </>
   );
 
-  return <LabelWithIcon label={nfts?.length ? _nfts : _tokens} icon={icon} />;
+  return (
+    <LabelWithIcon
+      labelClassName="text-[15px] text-r-neutral-title1 font-medium"
+      label={nfts?.length ? _nfts : _tokens}
+      icon={icon}
+    />
+  );
 }
 
 // 弃用，用专门的格式化函数formatAmount
@@ -77,9 +85,13 @@ export function TokensAmount({
       {tokens.map((v, i) => {
         return (
           v && (
-            <div key={v.id} style={{ marginTop: i === 0 ? 0 : 6 }}>
+            <div
+              key={v.id}
+              className="text-[15px] text-r-neutral-title1 font-medium"
+              style={{ marginTop: i === 0 ? 0 : 4 }}
+            >
               {`${formatNumber(v.amount)} `}
-              <div>{getTokenSymbol(v)}</div>{' '}
+              <span>{getTokenSymbol(v)}</span>{' '}
               {v.price !== 0 &&
                 withPrice &&
                 `(${formatUsdValue((v.price ?? 0) * v.amount)})`}

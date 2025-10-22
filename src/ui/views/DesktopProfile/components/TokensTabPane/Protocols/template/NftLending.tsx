@@ -132,16 +132,7 @@ export default memo(
                           </Col>
                           <Col>
                             <div className={style.valueText}>
-                              {
-                                <NavLink
-                                  target="_blank"
-                                  to={`/nfts/${x.collection.chain_id}/${x.collection.id}`}
-                                  className={style.detailLink}
-                                >
-                                  {x.collectionName}
-                                </NavLink>
-                              }{' '}
-                              x{x.amount}
+                              <span>{x.collectionName}</span> x{x.amount}
                             </div>
                           </Col>
                           <Col>

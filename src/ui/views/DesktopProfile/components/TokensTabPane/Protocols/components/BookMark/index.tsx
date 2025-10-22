@@ -4,19 +4,14 @@ import styled from 'styled-components';
 const Bookmark = styled.div`
   position: relative;
   left: 0px;
-  background: var(--color-light-blue-title);
+  background: var(--r-neutral-card2);
   border-radius: 0 4px 4px 0;
 
   font-size: 12px;
-  font-weight: bold;
-  color: var(--bg-white-color);
+  font-weight: 500;
+  color: var(--r-neutral-title1);
   line-height: 14px;
-  padding: 4px 26px;
-`;
-
-const Container = styled.div`
-  position: static;
-  padding: 10px 0;
+  padding: 5px 16px;
 `;
 
 type BookMarkProps = {
@@ -27,7 +22,7 @@ type BookMarkProps = {
 export const BookMark = ({ content, className, ...rest }: BookMarkProps) => {
   return (
     <Bookmark {...rest} className={className}>
-      <Container>{content}</Container>
+      {content}
     </Bookmark>
   );
 };

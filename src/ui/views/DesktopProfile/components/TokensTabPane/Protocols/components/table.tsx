@@ -120,6 +120,7 @@ const Header = (props: { headers: ReactNode[]; className?: string }) => {
           return (
             <Col
               key={i}
+              className="text-13 text-r-neutral-foot font-normal"
               style={{
                 width: widths[i] || '',
               }}
@@ -174,13 +175,15 @@ Table.Row = Row;
 const Col = ({
   style,
   children,
+  className,
   ...rest
 }: {
   style?: CSSProperties;
   children?: ReactNode;
+  className?: string;
 }) => {
   return (
-    <div style={style} {...rest}>
+    <div style={style} className={className} {...rest}>
       <span>{children}</span>
     </div>
   );

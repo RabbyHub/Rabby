@@ -7,6 +7,7 @@ const Container = styled.div`
   margin-bottom: 20px;
   background-color: var(--bg-chat-color);
   border-radius: 8px;
+  padding-top: 8px;
 `;
 
 const PanelHead = styled.div`
