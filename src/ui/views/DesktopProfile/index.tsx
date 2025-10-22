@@ -12,6 +12,8 @@ import { SendTokenModal } from './components/SendTokenModal';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { SwapTokenModal } from './components/SwapTokenModal';
 import ApprovalManagePage from '../ApprovalManagePage';
+import { DesktopChainSelector } from '../DesktopChainSelector';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 const Wrap = styled.div`
   height: 100%;
@@ -63,6 +65,8 @@ export const DesktopProfile = () => {
   };
   const location = useLocation();
   const action = new URLSearchParams(location.search).get('action');
+  const chain = useRabbySelector((store) => store.desktopProfile.chain);
+  const dispatch = useRabbyDispatch();
 
   return (
     <>
@@ -79,7 +83,17 @@ export const DesktopProfile = () => {
                   activeKey={activeTab}
                   onChange={handleTabChange}
                   tabBarExtraContent={{
-                    right: <div>Data updated 1 hr ago</div>,
+                    right: (
+                      <div className="flex items-center gap-[16px] pr-[20px]">
+                        <div>Data updated 1 hr ago</div>
+                        <DesktopChainSelector
+                          value={chain}
+                          onChange={(v) =>
+                            dispatch.desktopProfile.setField({ chain: v })
+                          }
+                        />
+                      </div>
+                    ),
                   }}
                 >
                   <Tabs.TabPane tab="Tokens" key="tokens">
