@@ -344,8 +344,8 @@ const ProtocolList = ({
       >
         <div className="text-r-neutral-foot text-13 cursor-pointer">
           {isExpanded
-            ? 'Hide tokens with small balances.'
-            : 'Tokens with small balances are not displayed.'}
+            ? 'Hide protocols with small deposits.'
+            : 'Protocols with small deposits are not displayed.'}
         </div>
         <div className="flex items-center justify-center gap-[2px] cursor-pointer">
           {isExpanded ? null : (
