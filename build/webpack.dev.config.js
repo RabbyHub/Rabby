@@ -1,4 +1,7 @@
 const webpack = require('webpack');
+const SecSDK = require('supplychain_security_sdk').default;
+
+const useSecSDK = !!process.env.useSecSDK || false;
 
 // for extension local test, can build each time
 const config = {
@@ -14,7 +17,13 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('DEV'),
       'process.env.DEBUG': true,
     }),
-  ],
+
+    useSecSDK &&
+      new SecSDK({
+        dev: true,
+        disableProtoAssets: ['pageProvider.js'],
+      }),
+  ].filter(Boolean),
 };
 
 module.exports = config;
