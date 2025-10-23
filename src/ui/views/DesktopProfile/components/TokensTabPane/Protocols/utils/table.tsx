@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PortfolioItemNft } from '@rabby-wallet/rabby-api/dist/types';
 
@@ -33,6 +33,9 @@ export function getTokens(
       icons={tokens.map((v) => v?.logo_url)}
     />
   );
+  const gotoTokenDetail = useCallback((item: Tokens) => {
+    console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
+  }, []);
 
   const _tokens = (
     <>
@@ -41,7 +44,12 @@ export function getTokens(
         .map((token, i) => (
           <Fragment key={i}>
             {i ? separator : null}
-            <span>{getTokenSymbol(token)}</span>
+            <span
+              onClick={() => gotoTokenDetail(token)}
+              className="cursor-pointer hover:text-r-blue-default hover:underline"
+            >
+              {getTokenSymbol(token)}
+            </span>
           </Fragment>
         ))}
     </>
@@ -79,6 +87,9 @@ export function TokensAmount({
 }) {
   const { t } = useTranslation();
 
+  const gotoTokenDetail = useCallback((item: Tokens) => {
+    console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
+  }, []);
   return (
     <>
       {tokens.map((v, i) => {
@@ -90,7 +101,12 @@ export function TokensAmount({
               style={{ marginTop: i === 0 ? 0 : 4 }}
             >
               {`${formatNumber(v.amount)} `}
-              <span>{getTokenSymbol(v)}</span>{' '}
+              <span
+                onClick={() => gotoTokenDetail(v)}
+                className="cursor-pointer hover:text-r-blue-default hover:underline"
+              >
+                {getTokenSymbol(v)}
+              </span>{' '}
               {v.price !== 0 &&
                 withPrice &&
                 `(${formatUsdValue((v.price ?? 0) * v.amount)})`}
