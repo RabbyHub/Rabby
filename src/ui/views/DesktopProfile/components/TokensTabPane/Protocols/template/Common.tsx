@@ -1,7 +1,10 @@
 import React, { memo } from 'react';
 
 import { Panel, ProxyTag, Table, Value } from '../components';
-import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  PortfolioItem,
+  PortfolioItemToken,
+} from '@rabby-wallet/rabby-api/dist/types';
 
 export default memo(
   (props: {
@@ -15,13 +18,13 @@ export default memo(
     const headers = ['Pool', 'Balance'];
 
     const hasDescription = data.some(
-      (v: any) => v?.detail?.description !== undefined
+      (v) => v?.detail?.description !== undefined
     );
     const hasRewardTokenList = data.some(
-      (v: any) => v?.detail?.reward_token_list !== undefined
+      (v) => v?.detail?.reward_token_list !== undefined
     );
     const hasBorrowTokenList = data.some(
-      (v: any) => v?.detail?.borrow_token_list !== undefined
+      (v) => v?.detail?.borrow_token_list !== undefined
     );
 
     if (hasRewardTokenList) headers.push('Rewards');
@@ -35,29 +38,35 @@ export default memo(
         <Table>
           <Table.Header className="mt-[9px]" headers={headers} />
           <Table.Body>
-            {data.map((p: any, index: number) => {
+            {data.map((p, index: number) => {
               return (
                 <Table.Row key={`${p?.name}_${index}`}>
                   {hasDescription && (
                     <Value.String value={p?.detail?.description} />
                   )}
-                  <Value.Tokens value={p?.detail?.supply_token_list} />
-                  <Value.Balances value={p?.detail?.supply_token_list} />
+                  <Value.Tokens value={p?.detail?.supply_token_list || []} />
+                  <Value.Balances
+                    value={p?.detail?.supply_token_list || []}
+                    portfolio={p}
+                  />
                   {hasRewardTokenList && (
                     <Value.ClaimableTokens
+                      portfolio={p}
                       value={
-                        Array.isArray(p?.detail?.reward_token_list)
-                          ? p?.detail?.reward_token_list
+                        (Array.isArray(p?.detail?.reward_token_list)
+                          ? p?.detail?.reward_token_list || []
                           : [p?.detail?.reward_token_list]
+                        ).filter(Boolean) as PortfolioItemToken[]
                       }
                     />
                   )}
                   {hasBorrowTokenList && (
                     <Value.ClaimableTokens
                       value={
-                        Array.isArray(p?.detail?.borrow_token_list)
-                          ? p?.detail?.borrow_token_list
+                        (Array.isArray(p?.detail?.borrow_token_list)
+                          ? p?.detail?.borrow_token_list || []
                           : [p?.detail?.borrow_token_list]
+                        ).filter(Boolean) as PortfolioItemToken[]
                       }
                     />
                   )}

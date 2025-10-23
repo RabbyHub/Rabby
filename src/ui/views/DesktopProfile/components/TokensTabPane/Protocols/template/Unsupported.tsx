@@ -19,7 +19,7 @@ const UnsupportedText = styled.span`
 export default memo((props: { tag: string; data: PortfolioItem[] }) => {
   const { tag } = props;
   const data = props.data;
-  const hasDescription = data.some((v: any) => !!v?.detail?.description);
+  const hasDescription = data.some((v) => !!v?.detail?.description);
   const headers = [hasDescription ? 'Name' : '', 'USD Value'];
   const { t } = useTranslation();
 
@@ -28,7 +28,7 @@ export default memo((props: { tag: string; data: PortfolioItem[] }) => {
       <Table>
         <Table.Header headers={headers} />
         <Table.Body>
-          {data.map((p: any) => {
+          {data.map((p) => {
             return (
               <Table.Row>
                 <Value.String

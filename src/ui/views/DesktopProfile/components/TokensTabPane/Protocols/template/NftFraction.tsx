@@ -39,11 +39,11 @@ export default memo(
                   : (n?.stats?.net_usd_value || 0) -
                     (m?.stats?.net_usd_value || 0)
               )
-              .map((p: any) => {
+              .map((p) => {
                 return (
                   <FractionNftRow
                     collection={p?.detail?.collection}
-                    usdValue={p.stats.net_usd_value}
+                    usdValue={p?.stats?.net_usd_value}
                     amount={p?.detail?.share_token?.amount}
                     symbol={p?.detail?.share_token?.symbol}
                     controller={p?.pool?.controller}
@@ -68,7 +68,7 @@ const FractionNftRow = ({
   name,
   siteUrl,
 }: {
-  collection: NftCollection;
+  collection?: NftCollection;
   usdValue: number;
   amount?: number;
   symbol?: string;
@@ -77,8 +77,9 @@ const FractionNftRow = ({
   siteUrl?: string;
 }) => {
   const { t } = useTranslation();
-
   const collectionName = getCollectionDisplayName(collection);
+
+  if (!collection) return null;
   return (
     <Table.Row>
       <Col>

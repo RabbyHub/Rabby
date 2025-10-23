@@ -39,9 +39,12 @@ export default memo(
 
     return (
       <>
-        {data.map((p: any) => {
+        {data.map((p) => {
           const supplyHeaders = ['Supplied', 'Balance', 'USD Value'];
           const borrowHeaders = ['Borrowed', 'Balance', 'USD Value'];
+          const supplyTokenList = p?.detail?.supply_token_list || [];
+          const supplyNftList = p?.detail?.supply_nft_list || [];
+          const borrowTokenList = p?.detail?.borrow_token_list || [];
           return (
             <Panel
               proposalTag={<BookMark content={tag} />}
@@ -80,8 +83,7 @@ export default memo(
                     />
                   ) : null}
                 </More>
-                {p?.detail?.supply_token_list?.length > 0 ||
-                p?.detail?.supply_nft_list?.length > 0 ? (
+                {supplyTokenList.length > 0 || supplyNftList.length > 0 ? (
                   <Table>
                     <Table.Header headers={supplyHeaders} />
                     <Table.Body>
@@ -150,9 +152,9 @@ export default memo(
                           </Table.Row>
                         ))}
                       {ArraySort(
-                        p?.detail?.supply_token_list,
+                        supplyTokenList,
                         (v) => v.amount * (v.price || 0)
-                      )?.map((token: any) => {
+                      )?.map((token) => {
                         return (
                           <Table.Row>
                             <Value.Token value={token} />
@@ -166,14 +168,14 @@ export default memo(
                     </Table.Body>
                   </Table>
                 ) : null}
-                {p?.detail?.borrow_token_list?.length > 0 ? (
+                {borrowTokenList?.length > 0 ? (
                   <Table>
                     <Table.Header headers={borrowHeaders} />
                     <Table.Body>
                       {ArraySort(
-                        p?.detail?.borrow_token_list,
+                        borrowTokenList,
                         (v) => v.amount * (v.price || 0)
-                      )?.map((token: any) => {
+                      )?.map((token) => {
                         return (
                           <Table.Row>
                             <Value.Token value={token} />

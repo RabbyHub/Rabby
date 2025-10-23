@@ -10,13 +10,14 @@ const PanelSubTag = styled.div`
   height: 24px;
   line-height: 24px;
   font-size: 12px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   padding: 4px 8px;
-  background-color: var(--r-neutral-line);
-  color: var(--r-neutral-body);
+  background-color: var(--r-neutral-card2);
+  color: var(--r-neutral-title1);
 `;
 
 export const ProxyTag = ({ item }: { item: PortfolioItem }) => {

@@ -1,11 +1,12 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PortfolioItemNft } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  PortfolioItemNft,
+  PortfolioItemToken,
+} from '@rabby-wallet/rabby-api/dist/types';
 
 import { getCollectionDisplayName } from './nft';
 import { formatLittleNumber, formatNumber, formatUsdValue } from '@/ui/utils';
-import { Tokens } from '../components/value';
-
 import { HelperTooltip } from '../components/HelperTooltip';
 import { ReactComponent as IconWarning } from 'ui/assets/search/RcIconDanger.svg';
 import { TokensIcons } from '../components/TokenIcons';
@@ -22,7 +23,7 @@ export function getTokenSymbol(token?: {
 }
 
 export function getTokens(
-  tokens: (Tokens | undefined)[] = [],
+  tokens: (PortfolioItemToken | undefined)[] = [],
   separator: string = ' + ',
   nfts?: PortfolioItemNft[]
 ) {
@@ -33,15 +34,23 @@ export function getTokens(
       icons={tokens.map((v) => v?.logo_url)}
     />
   );
+  const gotoTokenDetail = useCallback((item?: PortfolioItemToken) => {
+    console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
+  }, []);
 
   const _tokens = (
     <>
       {tokens
-        .filter((token): token is Tokens => !!token)
+        .filter((token) => !!token)
         .map((token, i) => (
           <Fragment key={i}>
             {i ? separator : null}
-            <span>{getTokenSymbol(token)}</span>
+            <span
+              onClick={() => gotoTokenDetail(token)}
+              className="cursor-pointer hover:text-r-blue-default hover:underline"
+            >
+              {getTokenSymbol(token)}
+            </span>
           </Fragment>
         ))}
     </>
@@ -74,11 +83,14 @@ export function TokensAmount({
   tokens = [],
   withPrice = false,
 }: {
-  tokens?: Tokens[];
+  tokens?: PortfolioItemToken[];
   withPrice?: boolean;
 }) {
   const { t } = useTranslation();
 
+  const gotoTokenDetail = useCallback((item: PortfolioItemToken) => {
+    console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
+  }, []);
   return (
     <>
       {tokens.map((v, i) => {
@@ -90,7 +102,12 @@ export function TokensAmount({
               style={{ marginTop: i === 0 ? 0 : 4 }}
             >
               {`${formatNumber(v.amount)} `}
-              <span>{getTokenSymbol(v)}</span>{' '}
+              <span
+                onClick={() => gotoTokenDetail(v)}
+                className="cursor-pointer hover:text-r-blue-default hover:underline"
+              >
+                {getTokenSymbol(v)}
+              </span>{' '}
               {v.price !== 0 &&
                 withPrice &&
                 `(${formatUsdValue((v.price ?? 0) * v.amount)})`}
@@ -111,7 +128,7 @@ export function TokensAmount({
   );
 }
 
-export function getUsd(tokens: Tokens[] = [], precision = 0) {
+export function getUsd(tokens: PortfolioItemToken[] = [], precision = 0) {
   // 沒有价格
   if (tokens.every((v) => !v.price)) return '-';
   return `${formatLittleNumber(

@@ -45,7 +45,7 @@ export default memo(
 
     return (
       <>
-        {data.map((p: any) => {
+        {data.map((p) => {
           const supplyHeaders = ['Supplied', 'Balance', 'USD Value'];
           const borrowHeaders = ['Borrowed', 'Balance', 'USD Value'];
           const rewardHeaders = ['Rewards', 'Balance', 'USD Value'];
@@ -90,14 +90,15 @@ export default memo(
                     />
                   ) : null}
                 </More>
-                {p?.detail?.supply_token_list?.length > 0 ? (
+                {p?.detail?.supply_token_list?.length &&
+                p?.detail?.supply_token_list?.length > 0 ? (
                   <Table>
                     <Table.Header headers={supplyHeaders} />
                     <Table.Body>
                       {ArraySort(
                         p?.detail?.supply_token_list,
                         (v) => v.amount * (v.price || 0)
-                      )?.map((token: any) => {
+                      )?.map((token) => {
                         return (
                           <Table.Row key={token?.id}>
                             <Value.Token value={token} />
@@ -111,49 +112,51 @@ export default memo(
                     </Table.Body>
                   </Table>
                 ) : null}
-                {p?.detail?.borrow_token_list?.length > 0 && (
-                  <Table>
-                    <Table.Header headers={borrowHeaders} />
-                    <Table.Body>
-                      {ArraySort(
-                        p?.detail?.borrow_token_list,
-                        (v) => v.amount * (v.price || 0)
-                      )?.map((token: any) => {
-                        return (
-                          <Table.Row key={token?.id}>
-                            <Value.Token value={token} />
-                            <Value.Balance value={token} />
-                            <Value.USDValue
-                              value={token.amount * token.price}
-                            />
-                          </Table.Row>
-                        );
-                      })}
-                    </Table.Body>
-                  </Table>
-                )}
+                {p?.detail?.borrow_token_list?.length &&
+                  p?.detail?.borrow_token_list?.length > 0 && (
+                    <Table>
+                      <Table.Header headers={borrowHeaders} />
+                      <Table.Body>
+                        {ArraySort(
+                          p?.detail?.borrow_token_list,
+                          (v) => v.amount * (v.price || 0)
+                        )?.map((token) => {
+                          return (
+                            <Table.Row key={token?.id}>
+                              <Value.Token value={token} />
+                              <Value.Balance value={token} />
+                              <Value.USDValue
+                                value={token.amount * token.price}
+                              />
+                            </Table.Row>
+                          );
+                        })}
+                      </Table.Body>
+                    </Table>
+                  )}
 
-                {p?.detail?.reward_token_list?.length > 0 && (
-                  <Table>
-                    <Table.Header headers={rewardHeaders} />
-                    <Table.Body>
-                      {ArraySort(
-                        p?.detail?.reward_token_list,
-                        (v) => v.amount * (v.price || 0)
-                      )?.map((token: any) => {
-                        return (
-                          <Table.Row key={token?.id}>
-                            <Value.Token value={token} />
-                            <Value.Balance value={token} />
-                            <Value.USDValue
-                              value={token.amount * token.price}
-                            />
-                          </Table.Row>
-                        );
-                      })}
-                    </Table.Body>
-                  </Table>
-                )}
+                {p?.detail?.reward_token_list?.length &&
+                  p?.detail?.reward_token_list?.length > 0 && (
+                    <Table>
+                      <Table.Header headers={rewardHeaders} />
+                      <Table.Body>
+                        {ArraySort(
+                          p?.detail?.reward_token_list,
+                          (v) => v.amount * (v.price || 0)
+                        )?.map((token) => {
+                          return (
+                            <Table.Row key={token?.id}>
+                              <Value.Token value={token} />
+                              <Value.Balance value={token} />
+                              <Value.USDValue
+                                value={token.amount * token.price}
+                              />
+                            </Table.Row>
+                          );
+                        })}
+                      </Table.Body>
+                    </Table>
+                  )}
               </LineCard>
             </Panel>
           );
