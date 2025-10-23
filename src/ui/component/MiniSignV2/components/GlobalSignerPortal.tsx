@@ -7,7 +7,6 @@ import { Modal } from '@/ui/component';
 export const GlobalSignerPortal: React.FC = () => {
   const state = useSignatureStore();
   const { config, ctx, status } = state;
-  console.log('useSignatureStore state', state);
 
   if (!config?.account || state.status === 'idle') return null;
 

@@ -368,6 +368,7 @@ export class SignatureSteps {
         customGas: customGasPrice > 0 ? customGasPrice : undefined,
       }),
       wallet.openapi.gasPriceStats(chain.serverId),
+      wallet.syncDefaultRPC().catch(() => {}),
     ]);
     const selectedGas = selectInitialGas({
       gasList,
