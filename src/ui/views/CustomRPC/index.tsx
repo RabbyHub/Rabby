@@ -335,11 +335,11 @@ const CustomRPC = () => {
           ))}
         </RPCListContainer>
       )}
-      <Footer>
+      {/* <Footer>
         <Button size="large" type="primary" block onClick={handleClickAdd}>
           {t('page.customRpc.add')}
         </Button>
-      </Footer>
+      </Footer> */}
       <ChainSelectorModal
         visible={chainSelectorVisible}
         onChange={handleChainChanged}
