@@ -248,7 +248,12 @@
     overflow: auto;
     overflow: -moz-scrollbars-none;
     &::-webkit-scrollbar {
-      display: none;
+      display: none !important;
+    }
+  }
+  .ant-drawer-body {
+    &::-webkit-scrollbar {
+      display: none !important;
     }
   }
 }
@@ -523,16 +528,21 @@ textarea {
   }
 }
 
+
 .desktop-swap-token-modal {
   .ant-modal-body {
     max-height: 600px;
     padding: 0;
     width: 400px;
     background: transparent;
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
   }
   .ant-modal-content {
     border-radius: 8px;
   }
+
   .js-rabby-desktop-swap-container {
     position: relative;
     overflow: hidden;

@@ -1,9 +1,7 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { useAccount } from '@/ui/store-hooks';
 import { useInfiniteScroll } from 'ahooks';
-import { Virtuoso } from 'react-virtuoso';
 import { Empty, Modal } from 'ui/component';
 import { sleep, useWallet } from 'ui/utils';
 import {
@@ -11,16 +9,24 @@ import {
   HistoryItemActionContext,
 } from '@/ui/views/History/components/HistoryItem';
 import { Loading } from '@/ui/views/History/components/Loading';
+import { DesktopLoading } from './DesktopLoading';
 import { last } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DesktopHistoryItem } from './DesktopHistoryItem';
 
-const PAGE_COUNT = 10;
+const PAGE_COUNT = 20;
 
-export const TransactionsTabPane = () => {
+interface TransactionsTabPaneProps {
+  scrollContainerRef?: React.RefObject<HTMLElement>;
+  selectChainId?: string;
+}
+
+export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
+  scrollContainerRef,
+  selectChainId,
+}) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const ref = useRef<HTMLDivElement | null>(null);
   const currentAccount = useCurrentAccount();
 
   const fetchData = async (startTime = 0) => {
@@ -40,6 +46,7 @@ export const TransactionsTabPane = () => {
       id: address,
       start_time: startTime,
       page_count: PAGE_COUNT,
+      chain_id: selectChainId || undefined,
     });
 
     const { project_dict, cate_dict, history_list: list } = res;
@@ -62,6 +69,8 @@ export const TransactionsTabPane = () => {
   const { data, loading, loadingMore, loadMore } = useInfiniteScroll(
     (d) => fetchData(d?.last),
     {
+      target: scrollContainerRef,
+      reloadDeps: [selectChainId],
       isNoMore: (d) => {
         return !d?.last || (d?.list.length || 0) < PAGE_COUNT;
       },
@@ -76,7 +85,7 @@ export const TransactionsTabPane = () => {
   ] = React.useState<HistoryItemActionContext | null>(null);
 
   return (
-    <div className="h-full">
+    <div className="py-16 px-20">
       {/* <Modal
         visible={!!focusingHistoryItem}
         title={t('page.transactions.modalViewMessage.title')}
@@ -92,8 +101,8 @@ export const TransactionsTabPane = () => {
       </Modal> */}
 
       {loading ? (
-        <div className="pt-[20px]">
-          <Loading count={4} active />
+        <div className="border border-rabby-neutral-line rounded-[6px] overflow-hidden">
+          <DesktopLoading count={4} active />
         </div>
       ) : (
         <>
@@ -113,33 +122,18 @@ export const TransactionsTabPane = () => {
               className="pt-[108px]"
             />
           ) : (
-            <Virtuoso
-              style={{
-                height: '500px',
-              }}
-              data={data?.list || []}
-              itemContent={(_, item) => {
-                return (
-                  <DesktopHistoryItem
-                    data={item}
-                    projectDict={item.projectDict}
-                    cateDict={item.cateDict}
-                    tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
-                    key={item.id}
-                  />
-                );
-              }}
-              endReached={loadMore}
-              increaseViewportBy={100}
-              components={{
-                Footer: () => {
-                  if (loadingMore) {
-                    return <Loading count={2} active />;
-                  }
-                  return null;
-                },
-              }}
-            />
+            <div className="border border-rabby-neutral-line rounded-[6px] overflow-hidden">
+              {data?.list?.map((item) => (
+                <DesktopHistoryItem
+                  key={item.id}
+                  data={item}
+                  projectDict={item.projectDict}
+                  cateDict={item.cateDict}
+                  tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
+                />
+              ))}
+              {loadingMore && <DesktopLoading count={2} active />}
+            </div>
           )}
         </>
       )}
