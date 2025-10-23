@@ -87,6 +87,7 @@ export default memo(
                   <Table>
                     <Table.Header headers={supplyHeaders} />
                     <Table.Body>
+                      {/* 不去定NFT有没有withdraw */}
                       {polyNfts(p?.detail?.supply_nft_list ?? [])
                         .map((x) => {
                           const collection = x.collection;
@@ -151,6 +152,7 @@ export default memo(
                             </Col>
                           </Table.Row>
                         ))}
+                      {/* TODO： 多行展示 Supply Token */}
                       {ArraySort(
                         supplyTokenList,
                         (v) => v.amount * (v.price || 0)

@@ -16,6 +16,7 @@ import {
 import { ArraySort } from '../utils';
 import cx from 'clsx';
 import styled from 'styled-components';
+import { ActionRow, hasActions } from '../components/ActionRow';
 
 export const LineCard = styled.div`
   > div {
@@ -90,6 +91,7 @@ export default memo(
                     />
                   ) : null}
                 </More>
+                {/* TODO： 多行展示 Supply Token */}
                 {p?.detail?.supply_token_list?.length &&
                 p?.detail?.supply_token_list?.length > 0 ? (
                   <Table>
@@ -135,6 +137,7 @@ export default memo(
                     </Table>
                   )}
 
+                {/* TODO： 多行展示 Reward Token */}
                 {p?.detail?.reward_token_list?.length &&
                   p?.detail?.reward_token_list?.length > 0 && (
                     <Table>

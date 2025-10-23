@@ -10,16 +10,13 @@ import { TokensAmount, getTokens, getUsd, numberWithCommas } from '../utils';
 import { getCollectionDisplayName, polyNfts } from '../utils/nft';
 import Table from './table';
 import {
-  PortfolioItem,
   PortfolioItemNft,
   PortfolioItemToken,
-  WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils/number';
 import styled from 'styled-components';
 import LabelWithIcon from './LabelWithIcons';
 import { TokenAvatar } from './TokenAvatar';
-import DappActions from '@/ui/views/CommonPopup/AssetList/components/DappActions';
 
 const BalanceToken = styled.div`
   margin-bottom: 4px;
@@ -50,7 +47,6 @@ export const Time = (props: { value: string | number | undefined }) => {
 
 export const Balances = (props: {
   value?: PortfolioItemToken[] | PortfolioItemToken;
-  portfolio?: PortfolioItem;
 }) => {
   const value = props.value
     ? Array.isArray(props.value)
@@ -63,15 +59,7 @@ export const Balances = (props: {
       {!value ? (
         ''
       ) : (
-        <>
-          <TokensAmount tokens={Array.isArray(value) ? value : [value]} />
-          <DappActions
-            data={props.portfolio?.withdraw_actions}
-            chain={props.portfolio?.pool.chain}
-            type="withdraw"
-            protocolLogo={''}
-          />
-        </>
+        <TokensAmount tokens={Array.isArray(value) ? value : [value]} />
       )}
     </Col>
   );
@@ -164,19 +152,12 @@ export const NumbersWithCommas = (props: {
 
 export const ClaimableTokens = (props: {
   value: PortfolioItemToken | PortfolioItemToken[];
-  portfolio?: PortfolioItem;
 }) => {
   return (
     <Col>
       <TokensAmount
         tokens={Array.isArray(props.value) ? props.value : [props.value]}
         withPrice={true}
-      />
-      <DappActions
-        data={props.portfolio?.withdraw_actions}
-        chain={props.portfolio?.pool.chain}
-        type="claim"
-        protocolLogo={''}
       />
     </Col>
   );

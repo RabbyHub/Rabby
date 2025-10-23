@@ -65,6 +65,7 @@ export default memo(
                       headers={['Collateral', 'Balance', 'USD Value']}
                     />
                     <Table.Body>
+                      {/* TODO： 这里也要考虑 */}
                       {collateralTokenList.map((token) => {
                         return (
                           <Table.Row>

@@ -127,11 +127,25 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
   const typesMap = new Map<string, typeof _portfolios>();
   // 先根据name 和 common 分组,common取最后一个
   _portfolios.forEach((v) => {
+    const hasDapp =
+      !!v.withdrawActions?.length &&
+      !v?._originPortfolio?.proxy_detail?.proxy_contract_id;
+
     const detail_type = v?._originPortfolio?.detail_types
       ?.reverse()
       ?.find((type) =>
         TemplateDict[type as keyof typeof TemplateDict] ? type : ''
       );
+    if (hasDapp) {
+      console.log(
+        'CUSTOM_LOGGER:=>: hasDapp',
+        data.id,
+        detail_type,
+        v.withdrawActions
+      );
+    } else {
+      return;
+    }
     const mapKey = `${v.name}&&${detail_type}&&${v?._originPortfolio?.proxy_detail?.proxy_contract_id}`;
     const _arr = typesMap.get(mapKey) || [];
     _arr.push(v);

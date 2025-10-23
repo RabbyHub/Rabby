@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
 
 const Wrapper = styled.div`
-  margin-top: 12px;
+  margin-left: 10px;
 `;
 
 interface ActionButtonProps {
