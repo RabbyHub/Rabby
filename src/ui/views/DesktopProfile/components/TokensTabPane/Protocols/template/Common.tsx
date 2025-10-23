@@ -13,8 +13,9 @@ export default memo(
     data: PortfolioItem[];
     name: string;
     siteUrl?: string;
+    protocolLogo?: string;
   }) => {
-    const { tag } = props;
+    const { tag, protocolLogo } = props;
     const data = props.data;
     const headers = ['Pool', 'Balance'];
 
@@ -94,7 +95,7 @@ export default memo(
                         'default',
                       ]}
                       portfolio={p}
-                      protocolLogo={''}
+                      protocolLogo={protocolLogo || ''}
                     />
                   )}
                 </>

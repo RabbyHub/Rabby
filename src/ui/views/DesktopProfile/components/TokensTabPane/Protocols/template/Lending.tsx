@@ -38,10 +38,11 @@ export default memo(
     data: PortfolioItem[];
     name: string;
     siteUrl?: string;
+    protocolLogo?: string;
   }) => {
     const { t } = useTranslation();
 
-    const { tag } = props;
+    const { tag, protocolLogo } = props;
     const data = props.data;
 
     return (
@@ -50,6 +51,8 @@ export default memo(
           const supplyHeaders = ['Supplied', 'Balance', 'USD Value'];
           const borrowHeaders = ['Borrowed', 'Balance', 'USD Value'];
           const rewardHeaders = ['Rewards', 'Balance', 'USD Value'];
+          const showWithdrawActionRow = hasActions(p, 'withdraw');
+          const showClaimActionRow = hasActions(p, 'claim');
           return (
             <Panel
               key={`${p?.pool?.id}${p?.position_index || ''}`}
@@ -91,7 +94,6 @@ export default memo(
                     />
                   ) : null}
                 </More>
-                {/* TODO： 多行展示 Supply Token */}
                 {p?.detail?.supply_token_list?.length &&
                 p?.detail?.supply_token_list?.length > 0 ? (
                   <Table>
@@ -100,9 +102,20 @@ export default memo(
                       {ArraySort(
                         p?.detail?.supply_token_list,
                         (v) => v.amount * (v.price || 0)
-                      )?.map((token) => {
+                      )?.map((token, index) => {
+                        const last =
+                          index ===
+                          (p?.detail?.supply_token_list?.length || 0) - 1;
                         return (
-                          <Table.Row key={token?.id}>
+                          <Table.Row
+                            key={token?.id}
+                            className={cx(
+                              'border-b-0',
+                              last && showWithdrawActionRow
+                                ? 'px-16 pb-0'
+                                : 'px-16 py-[5px]'
+                            )}
+                          >
                             <Value.Token value={token} />
                             <Value.Balance value={token} />
                             <Value.USDValue
@@ -111,6 +124,14 @@ export default memo(
                           </Table.Row>
                         );
                       })}
+                      {showWithdrawActionRow && (
+                        <ActionRow
+                          className="px-16 pt-[0] pb-[17px] mt-[-6px]"
+                          actionKeys={['default', 'withdraw', 'default']}
+                          portfolio={p}
+                          protocolLogo={protocolLogo || ''}
+                        />
+                      )}
                     </Table.Body>
                   </Table>
                 ) : null}
@@ -124,7 +145,10 @@ export default memo(
                           (v) => v.amount * (v.price || 0)
                         )?.map((token) => {
                           return (
-                            <Table.Row key={token?.id}>
+                            <Table.Row
+                              key={token?.id}
+                              className="border-b-0 px-16 py-[5px]"
+                            >
                               <Value.Token value={token} />
                               <Value.Balance value={token} />
                               <Value.USDValue
@@ -137,7 +161,6 @@ export default memo(
                     </Table>
                   )}
 
-                {/* TODO： 多行展示 Reward Token */}
                 {p?.detail?.reward_token_list?.length &&
                   p?.detail?.reward_token_list?.length > 0 && (
                     <Table>
@@ -146,9 +169,20 @@ export default memo(
                         {ArraySort(
                           p?.detail?.reward_token_list,
                           (v) => v.amount * (v.price || 0)
-                        )?.map((token) => {
+                        )?.map((token, index) => {
+                          const last =
+                            index ===
+                            (p?.detail?.reward_token_list?.length || 0) - 1;
                           return (
-                            <Table.Row key={token?.id}>
+                            <Table.Row
+                              key={token?.id}
+                              className={cx(
+                                'border-b-0',
+                                last && showClaimActionRow
+                                  ? 'px-16 pb-0'
+                                  : 'px-16 py-[5px]'
+                              )}
+                            >
                               <Value.Token value={token} />
                               <Value.Balance value={token} />
                               <Value.USDValue
@@ -157,6 +191,14 @@ export default memo(
                             </Table.Row>
                           );
                         })}
+                        {showClaimActionRow && (
+                          <ActionRow
+                            className="px-16 pt-[0] pb-[17px] mt-[-6px]"
+                            actionKeys={['default', 'claim', 'default']}
+                            portfolio={p}
+                            protocolLogo={protocolLogo || ''}
+                          />
+                        )}
                       </Table.Body>
                     </Table>
                   )}

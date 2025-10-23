@@ -65,10 +65,12 @@ export default memo(
                       headers={['Collateral', 'Balance', 'USD Value']}
                     />
                     <Table.Body>
-                      {/* TODO： 这里也要考虑 */}
                       {collateralTokenList.map((token) => {
                         return (
-                          <Table.Row>
+                          <Table.Row
+                            key={token?.id}
+                            className="border-b-0 px-16 py-[5px]"
+                          >
                             <Value.Token value={token} />
                             <Value.Balance value={token} />
                             <Value.TokenUSDValue value={token} />

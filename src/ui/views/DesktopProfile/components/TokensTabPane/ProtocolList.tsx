@@ -1,17 +1,15 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { AbstractPortfolio, AbstractProject } from 'ui/utils/portfolio/types';
+import { AbstractProject } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
-// import PortfolioTemplate from '@/ui/views/CommonPopup/AssetList/ProtocolTemplates';
-import { openInTab, useCommonPopupView, useWallet } from '@/ui/utils';
+import { openInTab, useWallet } from '@/ui/utils';
 import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
-import DappActions from '@/ui/views/CommonPopup/AssetList/components/DappActions';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import * as PortfolioTemplate from './Protocols/template';
@@ -37,12 +35,6 @@ const TemplateDict = {
   nft_p2p_borrower: PortfolioTemplate.NftP2PBorrower,
 };
 
-const PoolItemWrapper = styled.div`
-  &:nth-last-child(1) {
-    margin-bottom: 0;
-  }
-`;
-
 const PoolListContainer = styled.div`
   border-width: 0.5px;
   border-style: solid;
@@ -52,34 +44,6 @@ const PoolListContainer = styled.div`
   margin: 0 20px;
   overflow: hidden;
 `;
-
-// const PoolItem = ({
-//   item,
-//   chain,
-//   protocolLogo,
-// }: {
-//   item: AbstractPortfolio;
-//   chain?: string;
-//   protocolLogo?: string;
-// }) => {
-//   const types = item._originPortfolio.detail_types?.reverse();
-//   const type =
-//     types?.find((t) => (t in TemplateDict ? t : '')) || 'unsupported';
-//   const PortfolioDetail = TemplateDict[type as keyof typeof TemplateDict];
-//   return (
-//     <PoolItemWrapper>
-//       <PortfolioDetail name={item._originPortfolio.name} data={item} />
-//       {!!item.withdrawActions?.length &&
-//         !item?._originPortfolio?.proxy_detail?.proxy_contract_id && (
-//           <DappActions
-//             data={item.withdrawActions}
-//             chain={chain}
-//             protocolLogo={protocolLogo}
-//           />
-//         )}
-//     </PoolItemWrapper>
-//   );
-// };
 
 const ProtocolItemWrapper = styled.div`
   background: var(--r-neutral-card-1, #f2f4f7);
@@ -122,30 +86,16 @@ const PoolListWrapper = styled.div`
 export const Main = memo(({ data }: { data: AbstractProject }) => {
   if (!data || !data?._portfolios?.length) return null;
 
-  const { id, _portfolios } = data;
+  const { id, _portfolios, logo } = data;
 
   const typesMap = new Map<string, typeof _portfolios>();
   // 先根据name 和 common 分组,common取最后一个
   _portfolios.forEach((v) => {
-    const hasDapp =
-      !!v.withdrawActions?.length &&
-      !v?._originPortfolio?.proxy_detail?.proxy_contract_id;
-
     const detail_type = v?._originPortfolio?.detail_types
       ?.reverse()
       ?.find((type) =>
         TemplateDict[type as keyof typeof TemplateDict] ? type : ''
       );
-    if (hasDapp) {
-      console.log(
-        'CUSTOM_LOGGER:=>: hasDapp',
-        data.id,
-        detail_type,
-        v.withdrawActions
-      );
-    } else {
-      return;
-    }
     const mapKey = `${v.name}&&${detail_type}&&${v?._originPortfolio?.proxy_detail?.proxy_contract_id}`;
     const _arr = typesMap.get(mapKey) || [];
     _arr.push(v);
@@ -153,12 +103,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
   });
 
   return (
-    <PoolListWrapper
-      key={data.id}
-      onClick={() => {
-        console.log('logger', typesMap);
-      }}
-    >
+    <PoolListWrapper key={data.id}>
       {[...typesMap].map(([k, v], index) => {
         // 需要根据 common 匹配对应模板
         const [tag, type] = k.split('&&');
@@ -169,6 +114,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
           <PortfolioDetail
             key={k}
             tag={tag}
+            protocolLogo={logo}
             data={v.map((v) => v._originPortfolio).filter(Boolean)}
             siteUrl={data.site_url}
             name={tag}

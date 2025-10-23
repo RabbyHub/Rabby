@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 
 import { Panel, ProxyTag, Table, Value } from '../components';
+import { ActionRow, hasActions } from '../components/ActionRow';
 
 export default memo(
   (props: {
@@ -10,8 +11,9 @@ export default memo(
     data: PortfolioItem[];
     name: string;
     siteUrl?: string;
+    protocolLogo?: string;
   }) => {
-    const { tag } = props;
+    const { tag, protocolLogo } = props;
     const data = props.data;
 
     const headers = ['Pool', 'Balance', 'USD Value'];
@@ -21,12 +23,31 @@ export default memo(
           <Table.Header headers={headers} />
           <Table.Body>
             {data.map((p) => {
+              const showActionRow = hasActions(p);
               return (
-                <Table.Row>
-                  <Value.Tokens value={p?.detail?.token_list || []} />
-                  <Value.Balances value={p?.detail?.token_list || []} />
-                  <Value.USDValue value={p?.stats?.net_usd_value} />
-                </Table.Row>
+                <>
+                  <Table.Row
+                    className={
+                      showActionRow ? 'border-b-0 px-16 pb-0' : 'px-16 py-[5px]'
+                    }
+                  >
+                    <Value.Tokens value={p?.detail?.token_list || []} />
+                    <Value.Balances value={p?.detail?.token_list || []} />
+                    <Value.USDValue value={p?.stats?.net_usd_value} />
+                  </Table.Row>
+                  {showActionRow && (
+                    <ActionRow
+                      className="px-16 pt-[0] pb-[17px]"
+                      actionKeys={[
+                        'default',
+                        hasActions(p, 'withdraw') ? 'withdraw' : 'default',
+                        hasActions(p, 'claim') ? 'claim' : 'default',
+                      ]}
+                      portfolio={p}
+                      protocolLogo={protocolLogo || ''}
+                    />
+                  )}
+                </>
               );
             })}
           </Table.Body>

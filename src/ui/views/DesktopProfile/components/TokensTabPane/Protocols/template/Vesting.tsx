@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 
 import { Panel, ProxyTag, Table, Value } from '../components';
+import { ActionRow, hasActions } from '../components/ActionRow';
 
 export default memo(
   (props: {
@@ -10,8 +11,9 @@ export default memo(
     data: PortfolioItem[];
     name: string;
     siteUrl?: string;
+    protocolLogo?: string;
   }) => {
-    const { tag } = props;
+    const { tag, protocolLogo } = props;
     const data = props.data;
     const headers = ['Pool', 'Balance'];
 
@@ -35,23 +37,50 @@ export default memo(
           <Table.Header headers={headers} />
           <Table.Body>
             {data.map((p, index: number) => {
+              const showActionRow = hasActions(p);
               return (
-                <Table.Row key={index}>
-                  <Value.Token value={p?.detail?.token} />
-                  <Value.Balance value={p?.detail?.token} />
-                  {hasClaimableAmount && (
-                    <Value.NumberWithCommas
-                      value={p?.detail?.token?.claimable_amount}
+                <>
+                  <Table.Row
+                    key={index}
+                    className={
+                      showActionRow ? 'border-b-0 px-16 pb-0' : 'px-16 py-[5px]'
+                    }
+                  >
+                    <Value.Token value={p?.detail?.token} />
+                    <Value.Balance value={p?.detail?.token} />
+                    {hasClaimableAmount && (
+                      <Value.NumberWithCommas
+                        value={p?.detail?.token?.claimable_amount}
+                      />
+                    )}
+                    {has_daily_unlock_amount && (
+                      <Value.NumberWithCommas
+                        value={p?.detail?.daily_unlock_amount}
+                      />
+                    )}
+                    {has_end_at && <Value.Time value={p?.detail?.end_at} />}
+                    <Value.USDValue value={p?.stats?.net_usd_value} />
+                  </Table.Row>
+                  {showActionRow && (
+                    <ActionRow
+                      className="px-16 pt-[0] pb-[17px]"
+                      actionKeys={[
+                        'default',
+                        hasActions(p, 'withdraw') ? 'withdraw' : 'default',
+                        hasClaimableAmount
+                          ? hasActions(p, 'claim')
+                            ? 'claim'
+                            : 'default'
+                          : '',
+                        has_daily_unlock_amount ? 'default' : '',
+                        has_end_at ? 'default' : '',
+                        'default',
+                      ]}
+                      portfolio={p}
+                      protocolLogo={protocolLogo || ''}
                     />
                   )}
-                  {has_daily_unlock_amount && (
-                    <Value.NumberWithCommas
-                      value={p?.detail?.daily_unlock_amount}
-                    />
-                  )}
-                  {has_end_at && <Value.Time value={p?.detail?.end_at} />}
-                  <Value.USDValue value={p?.stats?.net_usd_value} />
-                </Table.Row>
+                </>
               );
             })}
           </Table.Body>

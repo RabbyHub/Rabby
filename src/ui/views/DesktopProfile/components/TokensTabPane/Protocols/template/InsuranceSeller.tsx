@@ -5,6 +5,7 @@ import {
   PortfolioItem,
   PortfolioItemToken,
 } from '@rabby-wallet/rabby-api/dist/types';
+import { ActionRow, hasActions } from '../components/ActionRow';
 
 export default memo(
   (props: {
@@ -12,8 +13,9 @@ export default memo(
     data: PortfolioItem[];
     name: string;
     siteUrl?: string;
+    protocolLogo?: string;
   }) => {
-    const { tag } = props;
+    const { tag, protocolLogo } = props;
     const data = props.data;
     const headers = ['Description', 'Collateral', 'Balance'];
     const hasRewardTokenList = data.some(
@@ -34,30 +36,56 @@ export default memo(
           <Table.Header headers={headers} />
           <Table.Body>
             {data.map((p) => {
+              const showActionRow = hasActions(p);
               return (
-                <Table.Row>
-                  <Value.String value={p?.detail?.description} />
-                  <Value.Tokens
-                    value={p?.detail?.collateral_token_list || []}
-                  />
-                  <Value.Balances
-                    value={p?.detail?.collateral_token_list || []}
-                  />
-                  {hasRewardTokenList && (
-                    <Value.ClaimableTokens
-                      value={
-                        (Array.isArray(p?.detail?.reward_token_list)
-                          ? p?.detail?.reward_token_list || []
-                          : [p?.detail?.reward_token_list]
-                        ).filter(Boolean) as PortfolioItemToken[]
-                      }
+                <>
+                  <Table.Row
+                    className={
+                      showActionRow ? 'border-b-0 px-16 pb-0' : 'px-16 py-[5px]'
+                    }
+                  >
+                    <Value.String value={p?.detail?.description} />
+                    <Value.Tokens
+                      value={p?.detail?.collateral_token_list || []}
+                    />
+                    <Value.Balances
+                      value={p?.detail?.collateral_token_list || []}
+                    />
+                    {hasRewardTokenList && (
+                      <Value.ClaimableTokens
+                        value={
+                          (Array.isArray(p?.detail?.reward_token_list)
+                            ? p?.detail?.reward_token_list || []
+                            : [p?.detail?.reward_token_list]
+                          ).filter(Boolean) as PortfolioItemToken[]
+                        }
+                      />
+                    )}
+                    {has_expired_at && (
+                      <Value.Time value={p?.detail?.expired_at} />
+                    )}
+                    <Value.USDValue value={p?.detail?.usd_value ?? '-'} />
+                  </Table.Row>
+                  {showActionRow && (
+                    <ActionRow
+                      className="px-16 pt-[0] pb-[17px] mt-[-6px]"
+                      actionKeys={[
+                        'default',
+                        'default',
+                        hasActions(p, 'withdraw') ? 'withdraw' : 'default',
+                        hasRewardTokenList
+                          ? hasActions(p, 'claim')
+                            ? 'claim'
+                            : 'default'
+                          : '',
+                        has_expired_at ? 'default' : '',
+                        'default',
+                      ]}
+                      portfolio={p}
+                      protocolLogo={protocolLogo || ''}
                     />
                   )}
-                  {has_expired_at && (
-                    <Value.Time value={p?.detail?.expired_at} />
-                  )}
-                  <Value.USDValue value={p?.detail?.usd_value ?? '-'} />
-                </Table.Row>
+                </>
               );
             })}
           </Table.Body>
