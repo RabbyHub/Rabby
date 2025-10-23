@@ -2492,7 +2492,9 @@
       "emptyFavorite": "No Favorite Dapp",
       "favorite": "Favorites",
       "emptySearch": "No Dapp Found",
-      "listBy": "Dapp has been list by"
+      "listBy": "Dapp has been list by",
+      "searchPlaceholder": "Search Dapp name",
+      "searchButton": "Search"
     },
     "rabbyPoints": {
       "title": "Rabby Points",

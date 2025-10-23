@@ -237,9 +237,9 @@ export const DappSearchPage = () => {
           <header className="w-[720px] py-[23px]">
             <SearchWrapper>
               <Search
-                placeholder="Search Dapp name"
+                placeholder={t('page.dappSearch.searchPlaceholder')}
                 allowClear
-                enterButton="Search"
+                enterButton={t('page.dappSearch.searchButton')}
                 value={searchValue}
                 onChange={(e) => {
                   setSearchValue(e.target.value);
