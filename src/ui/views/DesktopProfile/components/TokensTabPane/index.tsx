@@ -38,12 +38,18 @@ export const TokensTabPane: React.FC<Props> = ({
     blockedTokens,
     customizeTokens,
     removeProtocol,
+    portfolioNetWorth,
   } = useQueryProjects(currentAccount?.address, false, true, false);
 
   const {
     data: appPortfolios,
+    netWorth: appPortfolioNetWorth,
     isLoading: isAppPortfoliosLoading,
   } = useAppChain(currentAccount?.address, true, false);
+
+  const currentPortfolioNetWorth = useMemo(() => {
+    return (portfolioNetWorth || 0) + (appPortfolioNetWorth || 0);
+  }, [portfolioNetWorth, appPortfolioNetWorth]);
 
   const inputRef = React.useRef<Input>(null);
   const displayTokenList = useMemo(() => {
@@ -133,6 +139,7 @@ export const TokensTabPane: React.FC<Props> = ({
           <ProtocolList
             removeProtocol={removeProtocol}
             appIds={appIds}
+            netWorth={currentPortfolioNetWorth}
             isSearch={false}
             list={filteredPortfolios}
           />

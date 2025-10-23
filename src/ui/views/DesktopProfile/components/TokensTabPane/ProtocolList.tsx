@@ -13,8 +13,9 @@ import { ReactComponent as RcOpenExternalCC } from '@/ui/assets/open-external-cc
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import DappActions from '@/ui/views/CommonPopup/AssetList/components/DappActions';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-
+import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import * as PortfolioTemplate from './Protocols/template';
+import { useExpandList } from './useExpandList';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -302,29 +303,63 @@ interface Props {
   isSearch?: boolean;
   appIds?: string[];
   removeProtocol?: (id: string) => void;
+  netWorth?: number;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, isSearch, appIds, removeProtocol }: Props) => {
+const ProtocolList = ({
+  list,
+  isSearch,
+  appIds,
+  removeProtocol,
+  netWorth,
+}: Props) => {
   const enableDelayVisible = useMemo(() => {
     return (list || []).length > 100;
   }, [list]);
+
+  const { isExpanded, result: currentList, toggleExpand } = useExpandList(
+    list,
+    netWorth
+  );
 
   if (!list) return null;
 
   return (
     <ProtocolListWrapper>
-      {list.map((item) => (
+      {currentList?.map((item) => (
         <ProtocolItem
           protocol={item}
           key={item.id}
-          enableDelayVisible={false}
+          enableDelayVisible={enableDelayVisible}
           isAppChain={appIds?.includes(item.id)}
         />
       ))}
+      <div
+        onClick={toggleExpand}
+        className="flex items-center justify-center gap-4 py-[16px]"
+      >
+        <div className="text-r-neutral-foot text-13 cursor-pointer">
+          {isExpanded
+            ? 'Hide tokens with small balances.'
+            : 'Tokens with small balances are not displayed.'}
+        </div>
+        <div className="flex items-center justify-center gap-[2px] cursor-pointer">
+          {isExpanded ? null : (
+            <div className="text-r-neutral-foot text-13 underline">
+              Show all
+            </div>
+          )}
+          <RcIconDropdown
+            className={clsx('ml-0', {
+              'transform rotate-180': isExpanded,
+            })}
+          />
+        </div>
+      </div>
     </ProtocolListWrapper>
   );
 };
