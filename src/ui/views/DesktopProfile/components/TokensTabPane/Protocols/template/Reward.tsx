@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { Fragment, memo } from 'react';
 
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 
@@ -25,7 +25,7 @@ export default memo(
             {data.map((p) => {
               const showActionRow = hasActions(p);
               return (
-                <>
+                <Fragment key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}>
                   <Table.Row
                     className={
                       showActionRow ? 'border-b-0 px-16 pb-0' : 'px-16 py-[5px]'
@@ -47,7 +47,7 @@ export default memo(
                       protocolLogo={protocolLogo || ''}
                     />
                   )}
-                </>
+                </Fragment>
               );
             })}
           </Table.Body>

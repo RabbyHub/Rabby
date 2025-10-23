@@ -112,10 +112,10 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
           TemplateDict.unsupported;
         return (
           <PortfolioDetail
-            key={k}
+            key={`${k}_${v[0].id}_${v[0].name}}`}
             tag={tag}
             protocolLogo={logo}
-            data={v.map((v) => v._originPortfolio).filter(Boolean)}
+            data={v.map((i) => i._originPortfolio).filter(Boolean)}
             siteUrl={data.site_url}
             name={tag}
           />

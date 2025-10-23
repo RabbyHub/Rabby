@@ -29,7 +29,9 @@ export default memo(
           <Table.Body>
             {data.map((p) => {
               return (
-                <Table.Row>
+                <Table.Row
+                  key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
+                >
                   <Value.String value={p?.detail?.description} />
                   {has_expired_at && (
                     <Value.Time value={p?.detail?.expired_at} />

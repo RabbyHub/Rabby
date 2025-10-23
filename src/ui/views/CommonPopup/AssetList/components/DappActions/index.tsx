@@ -118,7 +118,7 @@ const DappActions = ({
     } else {
       return data?.find((item) => item.type === ActionType.Claim);
     }
-  }, []);
+  }, [data, type]);
 
   const isQueueWithdraw = useMemo(
     () => targetAction?.type === ActionType.Queue,
@@ -182,11 +182,11 @@ const DappActions = ({
         }
       }
     },
-    [canDirectSign, resetGasCache, wallet]
+    [canDirectSign, resetGasCache, setVisible, wallet]
   );
 
   if (!show) {
-    return null;
+    return <span> </span>;
   }
 
   return (

@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { Fragment, memo, useMemo } from 'react';
 import { Panel, ProxyTag, Table, Value } from '../components';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 import { ActionRow, hasActions } from '../components/ActionRow';
@@ -34,14 +34,14 @@ export default memo(
         <Table>
           <Table.Header headers={headers} />
           <Table.Body>
-            {data.map((p, index: number) => {
+            {data.map((p) => {
               const supply_token_list = p?.detail?.supply_token_list;
               const debt_token = p?.detail?.borrow_token_list;
               const showActionRow = hasActions(p);
               return (
-                <>
+                <Fragment key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}>
                   <Table.Row
-                    key={`${p?.name}_${index}`}
+                    key={`${p?.position_index}`}
                     className={
                       showActionRow ? 'border-b-0 px-16 pb-0' : 'px-16 py-[5px]'
                     }
@@ -76,7 +76,7 @@ export default memo(
                       protocolLogo={protocolLogo || ''}
                     />
                   )}
-                </>
+                </Fragment>
               );
             })}
           </Table.Body>

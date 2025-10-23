@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { Fragment, memo } from 'react';
 
 import { ReactComponent as IconNftUsdInfo } from 'ui/assets/nft-view/nft-usd-info.svg';
 import { HelperTooltip } from '../components/HelperTooltip';
@@ -52,7 +52,7 @@ export default memo(
               );
               const showActionRow = hasActions(p);
               return (
-                <>
+                <Fragment key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}>
                   <Table.Row
                     key={`${p?.name}`}
                     className={
@@ -113,7 +113,7 @@ export default memo(
                       protocolLogo={protocolLogo || ''}
                     />
                   )}
-                </>
+                </Fragment>
               );
             })}
           </Table.Body>

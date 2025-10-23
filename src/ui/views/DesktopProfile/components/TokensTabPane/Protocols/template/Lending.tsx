@@ -55,7 +55,7 @@ export default memo(
           const showClaimActionRow = hasActions(p, 'claim');
           return (
             <Panel
-              key={`${p?.pool?.id}${p?.position_index || ''}`}
+              key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >

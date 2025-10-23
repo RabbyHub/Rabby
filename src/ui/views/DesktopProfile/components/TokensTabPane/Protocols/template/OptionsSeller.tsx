@@ -26,12 +26,11 @@ export default memo(
     return (
       <>
         {data.map((p) => {
-          const underlyingToken = p?.detail?.underlying_token || [];
           const collateralTokenList = p?.detail?.collateral_token_list || [];
 
           return (
             <Panel
-              key={p?.pool.id}
+              key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >

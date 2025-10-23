@@ -42,6 +42,7 @@ export default memo(
               .map((p) => {
                 return (
                   <FractionNftRow
+                    key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
                     collection={p?.detail?.collection}
                     usdValue={p?.stats?.net_usd_value}
                     amount={p?.detail?.share_token?.amount}
