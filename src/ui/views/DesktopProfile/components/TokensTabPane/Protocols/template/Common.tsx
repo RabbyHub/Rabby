@@ -45,9 +45,13 @@ export default memo(
                     <Value.String value={p?.detail?.description} />
                   )}
                   <Value.Tokens value={p?.detail?.supply_token_list || []} />
-                  <Value.Balances value={p?.detail?.supply_token_list || []} />
+                  <Value.Balances
+                    value={p?.detail?.supply_token_list || []}
+                    portfolio={p}
+                  />
                   {hasRewardTokenList && (
                     <Value.ClaimableTokens
+                      portfolio={p}
                       value={
                         (Array.isArray(p?.detail?.reward_token_list)
                           ? p?.detail?.reward_token_list || []

@@ -7,8 +7,6 @@ import {
 
 import { getCollectionDisplayName } from './nft';
 import { formatLittleNumber, formatNumber, formatUsdValue } from '@/ui/utils';
-import { Tokens } from '../components/value';
-
 import { HelperTooltip } from '../components/HelperTooltip';
 import { ReactComponent as IconWarning } from 'ui/assets/search/RcIconDanger.svg';
 import { TokensIcons } from '../components/TokenIcons';
@@ -36,7 +34,7 @@ export function getTokens(
       icons={tokens.map((v) => v?.logo_url)}
     />
   );
-  const gotoTokenDetail = useCallback((item: PortfolioItemToken) => {
+  const gotoTokenDetail = useCallback((item?: PortfolioItemToken) => {
     console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
   }, []);
 
