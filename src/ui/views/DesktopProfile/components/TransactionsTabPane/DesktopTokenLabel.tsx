@@ -38,9 +38,14 @@ export const DesktopTokenLabel: React.FC<Props> = ({
           if (!canClickToken) return;
           setVisible(true);
         }}
-        className={clsx('ml-2', 'truncate', textClassName, {
-          'underline cursor-pointer': canClickToken,
-        })}
+        className={clsx(
+          'ml-2',
+          'truncate',
+          {
+            'underline cursor-pointer': canClickToken,
+          },
+          textClassName
+        )}
       >
         {name}
       </span>

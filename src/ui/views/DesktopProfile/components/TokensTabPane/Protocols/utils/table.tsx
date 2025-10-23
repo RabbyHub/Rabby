@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   PortfolioItemNft,
   PortfolioItemToken,
+  TokenItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 
 import { getCollectionDisplayName } from './nft';
@@ -11,6 +12,8 @@ import { HelperTooltip } from '../components/HelperTooltip';
 import { ReactComponent as IconWarning } from 'ui/assets/search/RcIconDanger.svg';
 import { TokensIcons } from '../components/TokenIcons';
 import LabelWithIcon from '../components/LabelWithIcons';
+import { DesktopTokenLabel } from '../../../TransactionsTabPane/DesktopTokenLabel';
+import cx from 'clsx';
 
 export function getTokenSymbol(token?: {
   optimized_symbol?: string | null;
@@ -34,9 +37,6 @@ export function getTokens(
       icons={tokens.map((v) => v?.logo_url)}
     />
   );
-  const gotoTokenDetail = useCallback((item?: PortfolioItemToken) => {
-    console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
-  }, []);
 
   const _tokens = (
     <>
@@ -45,12 +45,18 @@ export function getTokens(
         .map((token, i) => (
           <Fragment key={i}>
             {i ? separator : null}
-            <span
-              onClick={() => gotoTokenDetail(token)}
-              className="cursor-pointer hover:text-r-blue-default hover:underline"
-            >
-              {getTokenSymbol(token)}
-            </span>
+            <DesktopTokenLabel
+              token={token as TokenItem}
+              canClickToken={!!token?.id && !!token?.chain}
+              isNft={false}
+              textClassName={cx(
+                'text-r-neutral-title1 text-15 font-medium whitespace-nowrap overflow-ellipsis overflow-hidden',
+                'no-underline',
+                !!token?.id && !!token?.chain
+                  ? 'cursor-pointer hover:text-r-blue-default hover:underline '
+                  : ''
+              )}
+            />
           </Fragment>
         ))}
     </>
@@ -86,11 +92,6 @@ export function TokensAmount({
   tokens?: PortfolioItemToken[];
   withPrice?: boolean;
 }) {
-  const { t } = useTranslation();
-
-  const gotoTokenDetail = useCallback((item: PortfolioItemToken) => {
-    console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
-  }, []);
   return (
     <>
       {tokens.map((v, i) => {
@@ -98,16 +99,22 @@ export function TokensAmount({
           v && (
             <div
               key={v.id}
-              className="flex text-[15px] text-r-neutral-title1 font-medium"
+              className="flex text-[15px] text-r-neutral-title1 font-medium items-center"
               style={{ marginTop: i === 0 ? 0 : 4 }}
             >
               {`${formatNumber(v.amount)} `}
-              <span
-                onClick={() => gotoTokenDetail(v)}
-                className="cursor-pointer hover:text-r-blue-default hover:underline"
-              >
-                {getTokenSymbol(v)}
-              </span>{' '}
+              <DesktopTokenLabel
+                token={v}
+                canClickToken={!!v?.id && !!v?.chain}
+                isNft={false}
+                textClassName={cx(
+                  'text-r-neutral-title1 text-15 font-medium whitespace-nowrap overflow-ellipsis overflow-hidden',
+                  'no-underline',
+                  !!v?.id && !!v?.chain
+                    ? 'cursor-pointer hover:text-r-blue-default hover:underline '
+                    : ''
+                )}
+              />{' '}
               {v.price !== 0 &&
                 withPrice &&
                 `(${formatUsdValue((v.price ?? 0) * v.amount)})`}

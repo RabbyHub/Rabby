@@ -5,6 +5,8 @@ import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
+import { useHistory } from 'react-router-dom';
+import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -27,13 +29,13 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
   const chain = findChain({
     serverId: item.chain,
   });
-  const gotoTokenDetail = useCallback(() => {
-    console.log('CUSTOM_LOGGER:=>: gotoTokenDetail', item._tokenId, item.chain);
-  }, [item.id]);
-
+  const history = useHistory();
   const gotoSwap = useCallback(() => {
-    console.log('CUSTOM_LOGGER:=>: gotoSwap', item._tokenId, item.chain);
-  }, [item.id]);
+    history.replace(
+      history.location.pathname +
+        `?action=swap&chain=${item.chain}&payTokenId=${item._tokenId}`
+    );
+  }, [item._tokenId, item.chain]);
 
   return (
     <TCell className="py-8 flex gap-10 flex-1 items-center">
@@ -57,15 +59,15 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
         </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
-        <span
-          onClick={gotoTokenDetail}
-          className={`
-          text-r-neutral-title1 text-15 font-medium whitespace-nowrap overflow-ellipsis overflow-hidden
-            cursor-pointer hover:text-r-blue-default hover:underline 
+        <DesktopTokenLabel
+          token={{ ...item, id: item._tokenId }}
+          isNft={false}
+          textClassName={`
+            cursor-pointer no-underline
+            text-r-neutral-title1 text-15 font-medium whitespace-nowrap overflow-ellipsis overflow-hidden
+            hover:text-r-blue-default hover:underline 
           `}
-        >
-          {item.symbol}
-        </span>
+        />
         <SwapBottom onClick={gotoSwap} />
       </div>
     </TCell>
