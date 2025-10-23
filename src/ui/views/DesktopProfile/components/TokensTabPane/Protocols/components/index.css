@@ -1,0 +1,27 @@
+.tokenIcons {
+  display: flex;
+  flex: none;
+  align-items: center;
+  position: relative;
+  align-self: center;
+}
+
+.tokenIcons > div {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.tokenIcons img {
+  border-radius: 50%;
+}
+
+.tokenIcons img.chain {
+  border-radius: 0;
+  position: absolute;
+  margin: 0 !important;
+  width: 12px !important;
+  height: 12px !important;
+  right: 03px;
+  top: -5px;
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,9 @@ import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountLis
 import { SwapTokenModal } from './components/SwapTokenModal';
 import ApprovalManagePage from '../ApprovalManagePage';
 import { TransactionsTabPane } from './components/TransactionsTabPane';
+import { DesktopChainSelector } from '../DesktopChainSelector';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { findChainByEnum } from '@/utils/chain';
 
 const Wrap = styled.div`
   height: 100%;
@@ -64,6 +67,9 @@ export const DesktopProfile = () => {
   };
   const location = useLocation();
   const action = new URLSearchParams(location.search).get('action');
+  const chain = useRabbySelector((store) => store.desktopProfile.chain);
+  const dispatch = useRabbyDispatch();
+  const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
 
   const shouldElevateAccountList =
     action === 'send' || action === 'swap' || action === 'bridge';
@@ -83,11 +89,21 @@ export const DesktopProfile = () => {
                   activeKey={activeTab}
                   onChange={handleTabChange}
                   tabBarExtraContent={{
-                    right: <div>Data updated 1 hr ago</div>,
+                    right: (
+                      <div className="flex items-center gap-[16px] pr-[20px]">
+                        <div>Data updated 1 hr ago</div>
+                        <DesktopChainSelector
+                          value={chain}
+                          onChange={(v) =>
+                            dispatch.desktopProfile.setField({ chain: v })
+                          }
+                        />
+                      </div>
+                    ),
                   }}
                 >
                   <Tabs.TabPane tab="Tokens" key="tokens">
-                    <TokensTabPane />
+                    <TokensTabPane selectChainId={chainInfo?.serverId} />
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="NFTs" key="nft">
                     Content of Tab Pane 2
@@ -106,6 +122,7 @@ export const DesktopProfile = () => {
             <aside className="w-[260px] flex-shrink-0">
               <DesktopSelectAccountList
                 shouldElevate={shouldElevateAccountList}
+                isShowApprovalAlert={true}
               />
             </aside>
           </div>

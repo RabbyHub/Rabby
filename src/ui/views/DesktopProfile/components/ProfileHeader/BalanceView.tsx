@@ -248,7 +248,7 @@ export const BalanceView = ({
                 {shouldShowBalanceLoading ? (
                   <Skeleton.Input
                     active
-                    className="w-[200px] h-[53px] rounded"
+                    className="w-[200px] h-[53px] rounded block"
                   />
                 ) : (
                   <div>
@@ -321,7 +321,7 @@ export const BalanceView = ({
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active
-                  className="m-auto w-[400px] h-[80px] rounded"
+                  className="m-auto w-[400px] h-[80px] rounded block"
                 />
               </div>
             )}
