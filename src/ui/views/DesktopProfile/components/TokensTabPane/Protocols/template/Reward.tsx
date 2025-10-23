@@ -20,11 +20,11 @@ export default memo(
         <Table>
           <Table.Header headers={headers} />
           <Table.Body>
-            {data.map((p: any) => {
+            {data.map((p) => {
               return (
                 <Table.Row>
-                  <Value.Tokens value={p?.detail?.token_list} />
-                  <Value.Balances value={p?.detail?.token_list} />
+                  <Value.Tokens value={p?.detail?.token_list || []} />
+                  <Value.Balances value={p?.detail?.token_list || []} />
                   <Value.USDValue value={p?.stats?.net_usd_value} />
                 </Table.Row>
               );

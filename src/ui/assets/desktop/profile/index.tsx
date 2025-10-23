@@ -4,3 +4,4 @@ export { ReactComponent as RcIconSendCC } from './send-cc.svg';
 export { ReactComponent as RcIconSwapCC } from './swap-cc.svg';
 export { ReactComponent as RcIconBridgeCC } from './bridge-cc.svg';
 export { ReactComponent as RcIconSpinCC } from './spin-cc.svg';
+export { ReactComponent as RcIconRefreshCC } from './refresh-cc.svg';

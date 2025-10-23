@@ -3,10 +3,17 @@ import {
   RcIconLeadingCC,
   RcIconPerpsCC,
 } from '@/ui/assets/desktop/nav';
+import { splitNumberByStep } from '@/ui/utils';
+import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 
-export const DesktopNav = () => {
+export const DesktopNav: React.FC<{
+  balance?: number | null;
+  changePercent?: string | null;
+  isLoss?: boolean;
+  isLoading?: boolean;
+}> = ({ balance, changePercent, isLoss, isLoading }) => {
   return (
     <div className="flex items-center gap-[16px]">
       <div
@@ -20,9 +27,26 @@ export const DesktopNav = () => {
           <div className="text-r-neutral-title2 text-[18px] leading-[20px] font-medium">
             Portfolio
           </div>
-          <div className="text-r-neutral-title2 text-[13px] leading-[16px]">
-            $318,141 <span>+2.1%</span>
-          </div>
+          {isLoading ? (
+            <Skeleton.Input
+              className="w-[96px] h-[16px] rounded-[2px] block"
+              active
+            />
+          ) : (
+            <div className="text-r-neutral-title2 text-[13px] leading-[16px]">
+              ${splitNumberByStep((balance || 0).toFixed(2))}{' '}
+              {changePercent ? (
+                <span
+                  className={clsx(
+                    isLoss ? 'text-r-red-default' : 'text-[#17FFAA]'
+                  )}
+                >
+                  {isLoss ? '-' : '+'}
+                  {changePercent}
+                </span>
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
       <div

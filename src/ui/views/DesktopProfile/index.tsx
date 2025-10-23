@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,12 @@ import { TransactionsTabPane } from './components/TransactionsTabPane';
 import { DesktopChainSelector } from '../DesktopChainSelector';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { findChainByEnum } from '@/utils/chain';
+import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useCurve } from '../Dashboard/components/BalanceView/useCurve';
+import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
+import { UpdateButton } from './components/UpdateButton';
+import { useMemoizedFn } from 'ahooks';
 
 const Wrap = styled.div`
   height: 100%;
@@ -59,6 +65,7 @@ const Wrap = styled.div`
 
 export const DesktopProfile = () => {
   const { t } = useTranslation();
+  const currentAccount = useCurrentAccount();
 
   const history = useHistory();
   const activeTab = useParams<{ activeTab: string }>().activeTab || 'tokens';
@@ -70,30 +77,64 @@ export const DesktopProfile = () => {
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
   const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
-
   const shouldElevateAccountList =
     action === 'send' || action === 'swap' || action === 'bridge';
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const {
+    balance,
+    evmBalance,
+    curveChartData,
+    isBalanceLoading,
+    isCurveLoading,
+    refreshBalance,
+    refreshCurve,
+  } = useDesktopBalanceView({
+    address: currentAccount?.address,
+  });
+
+  const isUpdating = isBalanceLoading || isCurveLoading;
+  const [updatedAt, setUpdatedAt] = useState(Date.now());
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleUpdate = useMemoizedFn(async () => {
+    setRefreshKey((prev) => prev + 1);
+    await refreshBalance();
+    await refreshCurve();
+    setUpdatedAt(Date.now());
+  });
 
   return (
     <>
       <Wrap className="w-full h-full bg-r-neutral-bg2" ref={scrollContainerRef}>
         <div className="x-container">
           <header className="py-[18px]">
-            <DesktopNav />
+            <DesktopNav
+              balance={balance}
+              changePercent={curveChartData?.changePercent}
+              isLoss={curveChartData?.isLoss}
+              isLoading={isBalanceLoading || isCurveLoading}
+            />
           </header>
           <div className="flex items-start gap-[20px]">
             <main className="flex-1 bg-r-neutral-card-1 rounded-[8px]">
-              <ProfileHeader />
-              <div>
+              <ProfileHeader
+                balance={balance}
+                evmBalance={evmBalance}
+                curveChartData={curveChartData}
+                isLoading={isBalanceLoading || isCurveLoading}
+              />
+              <div key={refreshKey}>
                 <Tabs
                   activeKey={activeTab}
                   onChange={handleTabChange}
                   tabBarExtraContent={{
                     right: (
                       <div className="flex items-center gap-[16px] pr-[20px]">
-                        <div>Data updated 1 hr ago</div>
+                        <UpdateButton
+                          isUpdating={isUpdating}
+                          onUpdate={handleUpdate}
+                          updatedAt={updatedAt}
+                        />
                         <DesktopChainSelector
                           value={chain}
                           onChange={(v) =>

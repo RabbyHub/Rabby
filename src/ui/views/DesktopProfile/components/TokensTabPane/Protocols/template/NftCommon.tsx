@@ -7,7 +7,10 @@ import { Panel, ProxyTag, Table, Value } from '../components';
 import { ArraySort } from '../utils';
 import { polyNfts } from '../utils/nft';
 import { formatUsdValue } from '@/ui/utils';
-import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  PortfolioItem,
+  PortfolioItemToken,
+} from '@rabby-wallet/rabby-api/dist/types';
 
 export default memo(
   (props: {
@@ -21,10 +24,10 @@ export default memo(
     const headers = ['Pool', 'Balance'];
 
     const hasDescription = data.some(
-      (v: any) => v?.detail?.description !== undefined
+      (v) => v?.detail?.description !== undefined
     );
     const hasRewardTokenList = data.some(
-      (v: any) => v?.detail?.reward_token_list !== undefined
+      (v) => v?.detail?.reward_token_list !== undefined
     );
 
     if (hasRewardTokenList) headers.push('Rewards');
@@ -40,7 +43,7 @@ export default memo(
         <Table>
           <Table.Header headers={headers} />
           <Table.Body>
-            {data.map((p: any) => {
+            {data.map((p) => {
               const nfts = ArraySort(
                 polyNfts(p?.detail?.supply_nft_list ?? []),
                 (v) => v.amount || 0
@@ -51,19 +54,20 @@ export default memo(
                     <Value.String value={p?.detail?.description} />
                   )}
                   <Value.Tokens
-                    value={p?.detail?.supply_token_list}
+                    value={p?.detail?.supply_token_list || []}
                     nfts={nfts}
                   />
                   <Value.BlancesWithNfts
-                    tokens={p?.detail?.supply_token_list}
+                    tokens={p?.detail?.supply_token_list || []}
                     nfts={nfts}
                   />
                   {hasRewardTokenList && (
                     <Value.ClaimableTokens
                       value={
-                        Array.isArray(p?.detail?.reward_token_list)
-                          ? p?.detail?.reward_token_list
+                        (Array.isArray(p?.detail?.reward_token_list)
+                          ? p?.detail?.reward_token_list || []
                           : [p?.detail?.reward_token_list]
+                        ).filter(Boolean) as PortfolioItemToken[]
                       }
                     />
                   )}

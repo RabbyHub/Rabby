@@ -16,11 +16,11 @@ export default memo(
     const headers = ['Pool', 'Balance'];
 
     const has_daily_unlock_amount = data.some(
-      (v: any) => v?.detail?.daily_unlock_amount !== undefined
+      (v) => v?.detail?.daily_unlock_amount !== undefined
     );
-    const has_end_at = data.some((v: any) => v?.detail?.end_at !== undefined);
+    const has_end_at = data.some((v) => v?.detail?.end_at !== undefined);
     const hasClaimableAmount = data.some(
-      (v: any) => typeof v?.detail?.token?.claimable_amount !== 'undefined'
+      (v) => typeof v?.detail?.token?.claimable_amount !== 'undefined'
     );
 
     if (hasClaimableAmount) headers.push('Claimable Amount');
@@ -34,7 +34,7 @@ export default memo(
         <Table>
           <Table.Header headers={headers} />
           <Table.Body>
-            {data.map((p: any, index: number) => {
+            {data.map((p, index: number) => {
               return (
                 <Table.Row key={index}>
                   <Value.Token value={p?.detail?.token} />

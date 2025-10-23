@@ -22,58 +22,67 @@ export default memo(
     siteUrl?: string;
   }) => {
     const { tag } = props;
-    const data: any = props.data;
-    return data.map((p: any) => {
-      return (
-        <Panel
-          proposalTag={<BookMark content={tag} />}
-          subTag={<ProxyTag item={data[0]} />}
-        >
-          <LineCard>
-            <Table>
-              <Table.Header
-                headers={[
-                  'Type',
-                  'Underlying',
-                  'Strike',
-                  'Style',
-                  'Expiration',
-                  'USD Value',
-                ]}
-              />
-              <Table.Body>
-                <Table.Row>
-                  <Value.String value={p?.detail?.type} />
-                  <Value.Balances value={p?.detail?.underlying_token} />
-                  <Value.Balances value={p?.detail?.strike_token} />
-                  <Value.String value={p?.detail?.style} />
-                  <Value.Time value={p?.detail?.exercise_end_at} />
-                  <Value.USDValue value={p?.stats?.net_usd_value} />
-                </Table.Row>
-              </Table.Body>
-            </Table>
+    const data = props.data;
+    return (
+      <>
+        {data.map((p) => {
+          const underlyingToken = p?.detail?.underlying_token || [];
+          const collateralTokenList = p?.detail?.collateral_token_list || [];
 
-            {Boolean(p?.detail?.collateral_token_list?.length) && (
-              <Table>
-                <Table.Header
-                  headers={['Collateral', 'Balance', 'USD Value']}
-                />
-                <Table.Body>
-                  {p?.detail?.collateral_token_list.map((token: any) => {
-                    return (
-                      <Table.Row>
-                        <Value.Token value={token} />
-                        <Value.Balance value={token} />
-                        <Value.TokenUSDValue value={token} />
-                      </Table.Row>
-                    );
-                  })}
-                </Table.Body>
-              </Table>
-            )}
-          </LineCard>
-        </Panel>
-      );
-    });
+          return (
+            <Panel
+              key={p?.pool.id}
+              proposalTag={<BookMark content={tag} />}
+              subTag={<ProxyTag item={data[0]} />}
+            >
+              <LineCard>
+                <Table>
+                  <Table.Header
+                    headers={[
+                      'Type',
+                      'Underlying',
+                      'Strike',
+                      'Style',
+                      'Expiration',
+                      'USD Value',
+                    ]}
+                  />
+                  <Table.Body>
+                    <Table.Row>
+                      <Value.String value={p?.detail?.type} />
+                      <Value.Balances value={p?.detail?.underlying_token} />
+                      <Value.Balances value={p?.detail?.strike_token} />
+                      <Value.String value={(p?.detail as any)?.style} />
+                      <Value.Time value={p?.detail?.exercise_end_at} />
+                      <Value.USDValue value={p?.stats?.net_usd_value} />
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
+
+                {Boolean(collateralTokenList?.length) && (
+                  <Table>
+                    <Table.Header
+                      headers={['Collateral', 'Balance', 'USD Value']}
+                    />
+                    <Table.Body>
+                      {/* TODO： 这里也要考虑 */}
+                      {collateralTokenList.map((token) => {
+                        return (
+                          <Table.Row>
+                            <Value.Token value={token} />
+                            <Value.Balance value={token} />
+                            <Value.TokenUSDValue value={token} />
+                          </Table.Row>
+                        );
+                      })}
+                    </Table.Body>
+                  </Table>
+                )}
+              </LineCard>
+            </Panel>
+          );
+        })}
+      </>
+    );
   }
 );
