@@ -125,7 +125,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const fetchTokenList = useCallback(async () => {
     setTokenListLoading(true);
-    if (!currentPerpsAccount?.address) return [];
+    if (!currentPerpsAccount?.address || !visible) return [];
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
     const usdcToken = res.find(
       (t) =>
@@ -144,7 +144,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
     setTokenList(tokenRes);
     return res;
-  }, [currentPerpsAccount?.address]);
+  }, [currentPerpsAccount?.address, visible]);
 
   useEffect(() => {
     fetchTokenList();
