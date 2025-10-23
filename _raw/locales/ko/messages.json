@@ -2478,7 +2478,10 @@
         "title": "USDC / USDT 입금",
         "desc": "모든 체인에서 가스 요금 지불",
         "login": "GasAccount에 로그인",
-        "loginAndClaim": "로그인하고 $2.00를 받으세요."
+        "loginAndClaim": "로그인하고 $2.00를 받으세요.",
+        "login2": "모든 주소와 모든 체인에 대해",
+        "login3": "더 이상 가스 걱정 없어요",
+        "login1": "가스 요금을 충당하는 데 하나의 계정을 사용하세요."
       },
       "loginConfirmModal": {
         "desc": "확인되면 이 주소로만 입금할 수 있습니다.",

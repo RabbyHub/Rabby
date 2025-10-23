@@ -2478,7 +2478,10 @@
         "gotIt": "Đã hiểu",
         "title": "Nạp USDC / USDT",
         "desc": "Thanh toán phí Gas trên tất cả các chuỗi",
-        "loginAndClaim": "Đăng nhập và Nhận $2.00"
+        "loginAndClaim": "Đăng nhập và Nhận $2.00",
+        "login1": "Sử dụng một tài khoản để trang trải phí gas",
+        "login2": "cho bất kỳ địa chỉ nào và bất kỳ chuỗi nào",
+        "login3": "Không còn lo lắng về gas nữa"
       },
       "loginConfirmModal": {
         "title": "Chọn một địa chỉ để đăng nhập",

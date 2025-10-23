@@ -2478,7 +2478,10 @@
         "desc": "Pague as Taxas de Gas em Todas as Cadeias",
         "title": "Depositar USDC / USDT",
         "gotIt": "Entendi",
-        "loginAndClaim": "Faça login e reivindique $2,00"
+        "loginAndClaim": "Faça login e reivindique $2,00",
+        "login3": "Sem mais preocupações com gás",
+        "login2": "para qualquer endereço e qualquer cadeia",
+        "login1": "Use uma conta para cobrir as taxas de gás"
       },
       "loginConfirmModal": {
         "desc": "Uma vez confirmado, você só pode depositá-lo neste endereço.",

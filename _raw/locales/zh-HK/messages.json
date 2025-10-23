@@ -2519,7 +2519,10 @@
         "login": "登入 GasAccount",
         "title": "儲存 USDC / USDT",
         "desc": "支付所有链上的 Gas 费用",
-        "loginAndClaim": "登入並領取 $2.00"
+        "loginAndClaim": "登入並領取 $2.00",
+        "login2": "對於任何地址和任何鏈",
+        "login3": "再也不用担心Gas了",
+        "login1": "使用一個帳戶來支付 GasFees"
       },
       "loginConfirmModal": {
         "title": "使用當前地址登入",
