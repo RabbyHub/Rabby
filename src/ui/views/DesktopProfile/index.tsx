@@ -12,6 +12,7 @@ import { SendTokenModal } from './components/SendTokenModal';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { SwapTokenModal } from './components/SwapTokenModal';
 import ApprovalManagePage from '../ApprovalManagePage';
+import { TransactionsTabPane } from './components/TransactionsTabPane';
 
 const Wrap = styled.div`
   height: 100%;
@@ -92,7 +93,7 @@ export const DesktopProfile = () => {
                     Content of Tab Pane 2
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="Transactions" key="transactions">
-                    Content of Tab Pane 3
+                    <TransactionsTabPane />
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="Approvals" key="approvals">
                     <div className="px-20 pt-[18px]">
