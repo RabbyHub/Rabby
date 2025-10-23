@@ -22,6 +22,7 @@ import { GnosisQueueModal } from '../GnosisQueueModal';
 import { KEYRING_TYPE } from '@/constant';
 import { useRequest } from 'ahooks';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { CurveChartData } from '@/ui/views/Dashboard/components/BalanceView/useCurve';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -39,7 +40,12 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-export const ProfileHeader = () => {
+export const ProfileHeader: React.FC<{
+  balance?: number | null;
+  evmBalance?: number | null;
+  curveChartData?: CurveChartData;
+  isLoading?: boolean;
+}> = (props) => {
   const currentAccount = useCurrentAccount();
   const history = useHistory();
   const [isShowRecordModal, setIsShowRecordModal] = useState(false);
@@ -108,7 +114,7 @@ export const ProfileHeader = () => {
           </Popover>
         </div>
 
-        <BalanceView currentAccount={currentAccount} />
+        <BalanceView {...props} />
 
         <div className="flex items-center gap-[12px]">
           <div

@@ -12,6 +12,7 @@ import { useRabbySelector } from '@/ui/store';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { BalanceLabel } from '@/ui/views/Dashboard/components/BalanceView/BalanceLabel';
 import {
+  CurveChartData,
   formChartData,
   useCurve,
 } from '@/ui/views/Dashboard/components/BalanceView/useCurve';
@@ -55,180 +56,21 @@ const Container = styled.div`
   }
 `;
 
-export const BalanceView = ({
-  currentAccount,
-}: {
-  currentAccount?: Account | null;
-}) => {
+export const BalanceView: React.FC<{
+  balance?: number | null;
+  evmBalance?: number | null;
+  curveChartData?: CurveChartData;
+  isLoading?: boolean;
+}> = ({ balance, evmBalance, curveChartData, isLoading }) => {
   const { t } = useTranslation();
 
-  const { currentHomeBalanceCache } = useHomeBalanceView(
-    currentAccount?.address
-  );
-
-  const initHasCacheRef = useRef(!!currentHomeBalanceCache?.balance);
-  const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(
-    initHasCacheRef?.current ? -1 : 0
-  );
-
   const [isShowCurveModal, setIsShowCurveModal] = useState(false);
+  const shouldRenderCurve = !isLoading && !!curveChartData;
 
-  useEffect(() => {
-    if (!initHasCacheRef?.current) return;
-    const timer = setTimeout(() => {
-      setAccountBalanceUpdateNonce((prev) => prev + 1);
-    }, BALANCE_LOADING_CONFS.TIMEOUT);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
-
-  const {
-    balance: latestBalance,
-    evmBalance: latestEvmBalance,
-    matteredChainBalances: latestMatteredChainBalances,
-    chainBalancesWithValue: latestChainBalancesWithValue,
-    success: loadBalanceSuccess,
-    balanceLoading,
-    balanceFromCache,
-    isCurrentBalanceExpired,
-    refreshBalance,
-    missingList,
-  } = useCurrentBalance(currentAccount?.address, {
-    update: true,
-    noNeedBalance: false,
-    nonce: accountBalanceUpdateNonce,
-    initBalanceFromLocalCache: !!currentHomeBalanceCache?.balance,
-  });
-
-  const {
-    curveData: latestCurveData,
-    curveChartData: latestCurveChartData,
-    refresh: refreshCurve,
-    isCurveCollectionExpired,
-    isLoading: curveLoading,
-  } = useCurve(currentAccount?.address, {
-    nonce: accountBalanceUpdateNonce,
-    realtimeNetWorth: latestEvmBalance,
-    initData: currentHomeBalanceCache?.originalCurveData,
-  });
-  const wallet = useWallet();
-
-  const {
-    balance,
-    evmBalance,
-    curveChartData,
-    matteredChainBalances,
-    chainBalancesWithValue,
-  } = useMemo(() => {
-    const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
-    const evmBalanceValue =
-      latestEvmBalance || currentHomeBalanceCache?.evmBalance;
-    return {
-      balance: balanceValue,
-      evmBalance: evmBalanceValue,
-      curveChartData:
-        latestCurveChartData ||
-        formChartData(
-          currentHomeBalanceCache?.originalCurveData || [],
-          balanceValue,
-          Date.now()
-        ),
-      matteredChainBalances: latestMatteredChainBalances.length
-        ? latestMatteredChainBalances
-        : currentHomeBalanceCache?.matteredChainBalances || [],
-      chainBalancesWithValue: latestChainBalancesWithValue.length
-        ? latestChainBalancesWithValue
-        : currentHomeBalanceCache?.chainBalancesWithValue || [],
-    };
-  }, [
-    latestBalance,
-    latestEvmBalance,
-    latestMatteredChainBalances,
-    latestChainBalancesWithValue,
-    latestCurveChartData,
-    currentHomeBalanceCache,
-  ]);
-
-  const getCacheExpired = useCallback(async () => {
-    const res = {
-      balanceExpired: await isCurrentBalanceExpired(),
-      curveExpired: await isCurveCollectionExpired(),
-      expired: false,
-    };
-    res.expired = res.balanceExpired || res.curveExpired;
-
-    return res;
-  }, [isCurrentBalanceExpired, isCurveCollectionExpired]);
-
-  const { isManualRefreshing, onRefresh } = useRefreshHomeBalanceView({
-    currentAddress: currentAccount?.address,
-    refreshBalance,
-    refreshCurve,
-    isExpired: getCacheExpired,
-  });
-
-  // const refreshTimerlegacy = useRef<NodeJS.Timeout>();
-  // only execute once on component mounted or address changed
-  useEffect(
-    () => {
-      (async () => {
-        let expirationInfo: IExtractFromPromise<
-          ReturnType<typeof getCacheExpired>
-        > | null = null;
-        if (!currentHomeBalanceCache?.balance) {
-          onRefresh({
-            balanceExpired: true,
-            curveExpired: true,
-            isManual: false,
-          });
-        } else if (
-          (expirationInfo = await getCacheExpired()) &&
-          expirationInfo.expired
-        ) {
-          onRefresh({
-            balanceExpired: expirationInfo.balanceExpired,
-            curveExpired: expirationInfo.curveExpired,
-            isManual: false,
-          });
-        }
-      })();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-
-  const currentBalance = balance;
-  const currentChangePercent = curveChartData?.changePercent;
-  const currentIsLoss = curveChartData?.isLoss;
-  const currentChangeValue = curveChartData.change;
-  const { hiddenBalance } = useRabbySelector((state) => state.preference);
-
-  const shouldShowRefreshButton =
-    isManualRefreshing || balanceLoading || curveLoading;
-
-  const couldShowLoadingDueToBalanceNil =
-    currentBalance === null || (balanceFromCache && currentBalance === 0);
-  // const couldShowLoadingDueToUpdateSource = !balanceFromCache || isManualRefreshing;
-  const couldShowLoadingDueToUpdateSource =
-    !currentHomeBalanceCache?.balance || isManualRefreshing;
-
-  const shouldShowBalanceLoading =
-    couldShowLoadingDueToBalanceNil ||
-    (couldShowLoadingDueToUpdateSource && balanceLoading);
-  const shouldShowCurveLoading =
-    couldShowLoadingDueToBalanceNil ||
-    (couldShowLoadingDueToUpdateSource && curveLoading);
-  const shouldShowLoading = shouldShowBalanceLoading || shouldShowCurveLoading;
   const shouldHidePercentChange =
-    !currentChangePercent ||
-    hiddenBalance ||
-    shouldShowLoading ||
+    !curveChartData?.changePercent ||
+    isLoading ||
     !curveChartData?.startUsdValue;
-
-  const shouldRenderCurve =
-    !shouldShowLoading && !hiddenBalance && !!curveChartData;
 
   const showAppChainTips = useMemo(() => {
     return evmBalance !== balance;
@@ -245,15 +87,13 @@ export const BalanceView = ({
                   'text-[44px] leading-[53px] font-bold text-r-neutral-title1 max-w-full'
                 )}
               >
-                {shouldShowBalanceLoading ? (
+                {isLoading ? (
                   <Skeleton.Input
                     active
                     className="w-[200px] h-[53px] rounded block"
                   />
                 ) : (
-                  <div>
-                    ${splitNumberByStep((currentBalance || 0).toFixed(2))}
-                  </div>
+                  <div>${splitNumberByStep((balance || 0).toFixed(2))}</div>
                 )}
               </div>
               <div
@@ -266,7 +106,7 @@ export const BalanceView = ({
               >
                 <div
                   className={clsx(
-                    currentIsLoss
+                    curveChartData?.isLoss
                       ? 'text-r-red-default'
                       : 'text-r-green-default',
                     'text-[20px] leading-[24px] font-medium',
@@ -275,17 +115,17 @@ export const BalanceView = ({
                     }
                   )}
                 >
-                  {currentIsLoss ? '-' : '+'}
+                  {curveChartData?.isLoss ? '-' : '+'}
                   <span>
-                    {currentChangePercent === '0%'
+                    {curveChartData?.changePercent === '0%'
                       ? '0.00%'
-                      : currentChangePercent}
+                      : curveChartData?.changePercent}
                   </span>
-                  {currentChangeValue ? (
-                    <span>({currentChangeValue})</span>
+                  {curveChartData?.change ? (
+                    <span>({curveChartData.change})</span>
                   ) : null}
                 </div>
-                {missingList?.length ? (
+                {/* {missingList?.length ? (
                   <Tooltip
                     overlayClassName="rectangle font-normal whitespace-pre-wrap"
                     title={t('page.dashboard.home.missingDataTooltip', {
@@ -298,7 +138,7 @@ export const BalanceView = ({
                       <WarningSVG />
                     </div>
                   </Tooltip>
-                ) : null}
+                ) : null} */}
               </div>
             </div>
           </div>
@@ -317,7 +157,7 @@ export const BalanceView = ({
                 />
               </div>
             )}
-            {!!shouldShowLoading && (
+            {!!isLoading && (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active

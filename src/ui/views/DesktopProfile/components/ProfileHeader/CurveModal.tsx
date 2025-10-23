@@ -50,8 +50,8 @@ const GlobalStyle = createGlobalStyle`
 export const CurveModal: React.FC<{
   className?: string;
   curveChartData?: Curve;
-  balance?: number;
-  evmBalance?: number;
+  balance?: number | null;
+  evmBalance?: number | null;
   visible?: boolean;
   onClose?(): void;
 }> = ({ curveChartData, balance, evmBalance, onClose, visible }) => {
@@ -99,9 +99,6 @@ export const CurveModal: React.FC<{
   const currentChangeValue = currentHover
     ? curvePoint?.change
     : curveChartData?.change;
-
-  const shouldHidePercentChange =
-    !currentChangePercent || !(curveChartData as any)?.startUsdValue;
 
   const [startTime, endTime] = useMemo(() => {
     return curveChartData?.list?.length
