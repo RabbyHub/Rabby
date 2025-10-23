@@ -58,13 +58,13 @@ export const GasAccountLoginCard = ({
           viewBox="0 0 11 9"
           className="absolute top-0 left-[-16px]"
         />
-        {t('page.gasAccount.loginInTip.login1')}
+        {t('page.gasAccount.loginInTip.loginTips1')}
       </div>
       <div className="text-[17px] font-medium text-r-blue-default">
-        {t('page.gasAccount.loginInTip.login2')}
+        {t('page.gasAccount.loginInTip.loginTips2')}
       </div>
       <div className="flex gap-8 text-[17px] font-medium text-r-blue-default relative">
-        {t('page.gasAccount.loginInTip.login3')}
+        {t('page.gasAccount.loginInTip.loginTips3')}
         <RcIconQuoteEnd
           viewBox="0 0 11 9"
           className="absolute top-[6px] right-[-16px]"

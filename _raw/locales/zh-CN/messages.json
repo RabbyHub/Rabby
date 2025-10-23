@@ -2558,10 +2558,7 @@
         "title": "存入 USDC / USDT",
         "desc": "在所有链上支付 Gas Fees",
         "login": "登录 GasAccount",
-        "loginAndClaim": "登录并领取 $2.00",
-        "login2": "适用于任何地址和任何链",
-        "login1": "使用一个账户来支付 Gas Fees",
-        "login3": "不再担心 Gas"
+        "loginAndClaim": "登录并领取 $2.00"
       },
       "loginConfirmModal": {
         "title": "使用当前地址登录",

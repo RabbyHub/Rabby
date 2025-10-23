@@ -2481,10 +2481,7 @@
         "title": "Einzahlung USDC / USDT",
         "login": "In GasAccount einloggen",
         "gotIt": "Verstanden",
-        "loginAndClaim": "Melden Sie sich an und beanspruchen Sie $2,00",
-        "login3": "Keine Gas-Sorgen mehr",
-        "login2": "für jede Adresse und jede Kette",
-        "login1": "Nutze ein Konto, um die Gasgebühren zu decken."
+        "loginAndClaim": "Melden Sie sich an und beanspruchen Sie $2,00"
       },
       "loginConfirmModal": {
         "desc": "Nach der Bestätigung können Sie es nur an dieser Adresse einzahlen。",

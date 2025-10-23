@@ -2484,10 +2484,7 @@
         "gotIt": "Anladım",
         "desc": "Tüm Zincirlerde Gas Ücretlerini Ödeyin",
         "title": "USDC / USDT Yatırın",
-        "loginAndClaim": "Giriş yap ve $2.00 al",
-        "login1": "Bir hesap kullanarak gas ücretlerini karşılayın.",
-        "login2": "herhangi bir adres ve herhangi bir zincir için",
-        "login3": "Artık gaz kaygısı yok"
+        "loginAndClaim": "Giriş yap ve $2.00 al"
       },
       "loginConfirmModal": {
         "title": "Mevcut Adres ile Giriş Yap",
