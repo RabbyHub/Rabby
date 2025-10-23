@@ -15,7 +15,7 @@ export default memo(
     const headers = ['Description'];
 
     const has_expired_at = data.some(
-      (v: any) => v?.detail?.expired_at !== undefined
+      (v) => v?.detail?.expired_at !== undefined
     );
 
     if (has_expired_at) headers.push('Expired Time');
@@ -27,14 +27,14 @@ export default memo(
         <Table>
           <Table.Header headers={headers} />
           <Table.Body>
-            {data.map((p: any) => {
+            {data.map((p) => {
               return (
                 <Table.Row>
                   <Value.String value={p?.detail?.description} />
                   {has_expired_at && (
                     <Value.Time value={p?.detail?.expired_at} />
                   )}
-                  <Value.USDValue value={p?.detail?.usd_value} />
+                  <Value.USDValue value={p?.detail?.usd_value ?? '-'} />
                 </Table.Row>
               );
             })}

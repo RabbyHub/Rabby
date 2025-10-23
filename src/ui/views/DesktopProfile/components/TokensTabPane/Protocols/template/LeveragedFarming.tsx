@@ -13,7 +13,7 @@ export default memo(
     const data = props.data;
 
     const hasReward = useMemo(
-      () => data?.some((x: any) => x.detail?.reward_token_list?.length),
+      () => data?.some((x) => x.detail?.reward_token_list?.length),
       [data]
     );
 
@@ -32,17 +32,19 @@ export default memo(
         <Table>
           <Table.Header headers={headers} />
           <Table.Body>
-            {data.map((p: any, index: number) => {
+            {data.map((p, index: number) => {
               const supply_token_list = p?.detail?.supply_token_list;
               const debt_token = p?.detail?.borrow_token_list;
               return (
                 <Table.Row key={`${p?.name}_${index}`}>
-                  <Value.Tokens value={supply_token_list} />
-                  <Value.Balances value={supply_token_list} />
+                  <Value.Tokens value={supply_token_list || []} />
+                  <Value.Balances value={supply_token_list || []} />
                   {hasReward ? (
-                    <Value.Balances value={p?.detail?.reward_token_list} />
+                    <Value.Balances
+                      value={p?.detail?.reward_token_list || []}
+                    />
                   ) : null}
-                  <Value.Balances value={debt_token} />
+                  <Value.Balances value={debt_token || []} />
                   <Value.Percent value={p?.detail?.debt_ratio} />
                   <Value.USDValue value={p?.stats?.net_usd_value} />
                 </Table.Row>

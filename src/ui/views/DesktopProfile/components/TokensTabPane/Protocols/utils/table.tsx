@@ -1,6 +1,9 @@
 import React, { Fragment, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PortfolioItemNft } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  PortfolioItemNft,
+  PortfolioItemToken,
+} from '@rabby-wallet/rabby-api/dist/types';
 
 import { getCollectionDisplayName } from './nft';
 import { formatLittleNumber, formatNumber, formatUsdValue } from '@/ui/utils';
@@ -22,7 +25,7 @@ export function getTokenSymbol(token?: {
 }
 
 export function getTokens(
-  tokens: (Tokens | undefined)[] = [],
+  tokens: (PortfolioItemToken | undefined)[] = [],
   separator: string = ' + ',
   nfts?: PortfolioItemNft[]
 ) {
@@ -33,14 +36,14 @@ export function getTokens(
       icons={tokens.map((v) => v?.logo_url)}
     />
   );
-  const gotoTokenDetail = useCallback((item: Tokens) => {
+  const gotoTokenDetail = useCallback((item: PortfolioItemToken) => {
     console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
   }, []);
 
   const _tokens = (
     <>
       {tokens
-        .filter((token): token is Tokens => !!token)
+        .filter((token) => !!token)
         .map((token, i) => (
           <Fragment key={i}>
             {i ? separator : null}
@@ -82,12 +85,12 @@ export function TokensAmount({
   tokens = [],
   withPrice = false,
 }: {
-  tokens?: Tokens[];
+  tokens?: PortfolioItemToken[];
   withPrice?: boolean;
 }) {
   const { t } = useTranslation();
 
-  const gotoTokenDetail = useCallback((item: Tokens) => {
+  const gotoTokenDetail = useCallback((item: PortfolioItemToken) => {
     console.log('CUSTOM_LOGGER:=>: protocol gotoTokenDetail', item);
   }, []);
   return (
@@ -127,7 +130,7 @@ export function TokensAmount({
   );
 }
 
-export function getUsd(tokens: Tokens[] = [], precision = 0) {
+export function getUsd(tokens: PortfolioItemToken[] = [], precision = 0) {
   // 沒有价格
   if (tokens.every((v) => !v.price)) return '-';
   return `${formatLittleNumber(

@@ -127,18 +127,11 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
   const typesMap = new Map<string, typeof _portfolios>();
   // 先根据name 和 common 分组,common取最后一个
   _portfolios.forEach((v) => {
-    const hasDapp =
-      !!v.withdrawActions?.length &&
-      !v?._originPortfolio?.proxy_detail?.proxy_contract_id;
     const detail_type = v?._originPortfolio?.detail_types
       ?.reverse()
       ?.find((type) =>
         TemplateDict[type as keyof typeof TemplateDict] ? type : ''
       );
-    if (hasDapp) {
-      console.log('CUSTOM_LOGGER:=>: detail_type', detail_type);
-    }
-
     const mapKey = `${v.name}&&${detail_type}&&${v?._originPortfolio?.proxy_detail?.proxy_contract_id}`;
     const _arr = typesMap.get(mapKey) || [];
     _arr.push(v);
@@ -174,20 +167,14 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
 
 const ProtocolItem = ({
   protocol: _protocol,
-  enableDelayVisible,
   isAppChain,
-  isSearch,
   removeProtocol,
 }: {
   protocol: DisplayedProject;
-  enableDelayVisible: boolean;
   isAppChain?: boolean;
-  isSearch?: boolean;
   removeProtocol?: (id: string) => void;
 }) => {
   const { t } = useTranslation();
-  const { visible } = useCommonPopupView();
-  const [delayVisible, setDelayVisible] = useState(false);
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
   const [
@@ -222,24 +209,6 @@ const ProtocolItem = ({
     removeProtocol,
     wallet.openapi,
   ]);
-
-  useEffect(() => {
-    if (!visible) {
-      setDelayVisible(false);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setDelayVisible(visible);
-    }, 300);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [visible]);
-
-  if (enableDelayVisible && !delayVisible) {
-    return null;
-  }
 
   return (
     <ProtocolItemWrapper>
@@ -291,7 +260,7 @@ const ProtocolItem = ({
           </div>
         </div>
         <PoolListContainer>
-          <Main data={protocol} key={protocol.id} />
+          <Main data={protocol} />
         </PoolListContainer>
       </div>
     </ProtocolItemWrapper>
@@ -310,17 +279,7 @@ const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({
-  list,
-  isSearch,
-  appIds,
-  removeProtocol,
-  netWorth,
-}: Props) => {
-  const enableDelayVisible = useMemo(() => {
-    return (list || []).length > 100;
-  }, [list]);
-
+const ProtocolList = ({ list, appIds, removeProtocol, netWorth }: Props) => {
   const { isExpanded, result: currentList, toggleExpand } = useExpandList(
     list,
     netWorth
@@ -333,8 +292,8 @@ const ProtocolList = ({
       {currentList?.map((item) => (
         <ProtocolItem
           protocol={item}
+          removeProtocol={removeProtocol}
           key={item.id}
-          enableDelayVisible={enableDelayVisible}
           isAppChain={appIds?.includes(item.id)}
         />
       ))}

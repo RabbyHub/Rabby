@@ -25,31 +25,6 @@ const BalanceToken = styled.div`
   font-weight: 500;
 `;
 
-export interface Tokens {
-  id: string;
-  amount: number;
-  decimals: number;
-  name: string;
-  symbol: string;
-  price?: number;
-  chain: string;
-  balance?: string;
-  logo_url?: string;
-  is_verified: boolean;
-  is_core?: boolean;
-  is_swap_hot?: boolean;
-  display_symbol?: string;
-  optimized_symbol?: string;
-  is_custom?: boolean;
-  usd_price?: number;
-
-  // nft
-  contract_id?: string;
-  inner_id?: string;
-  content?: string;
-  content_type?: 'image_url';
-}
-
 const Col = Table.Col;
 
 export const String = ({ value, ...rest }: { value: ReactNode }) => {
@@ -70,8 +45,14 @@ export const Time = (props: { value: string | number | undefined }) => {
   );
 };
 
-export const Balances = (props: { value: Tokens[] }) => {
-  const value = Array.isArray(props.value) ? props.value : [props.value];
+export const Balances = (props: {
+  value?: PortfolioItemToken[] | PortfolioItemToken;
+}) => {
+  const value = props.value
+    ? Array.isArray(props.value)
+      ? props.value
+      : [props.value]
+    : undefined;
 
   return (
     <Col>
@@ -84,15 +65,15 @@ export const Balances = (props: { value: Tokens[] }) => {
   );
 };
 
-export const Balance = (props: { value: Tokens }) => {
+export const Balance = (props: { value?: PortfolioItemToken }) => {
   return (
     <Col>
-      <TokensAmount tokens={[props.value]} />
+      <TokensAmount tokens={props.value ? [props.value] : []} />
     </Col>
   );
 };
 
-export const TokensSlash = (props: { value: Tokens[] }) => {
+export const TokensSlash = (props: { value: PortfolioItemToken[] }) => {
   const value = Array.isArray(props.value) ? props.value : [props.value];
   return <Col>{getTokens(value, '/')}</Col>;
 };
@@ -102,15 +83,15 @@ export const Tokens = ({
   nfts,
   ...rest
 }: {
-  value: Tokens[];
+  value: PortfolioItemToken[];
   nfts?: PortfolioItemNft[];
 }) => {
   const _value = Array.isArray(value) ? value : [value];
   return <Col {...rest}>{getTokens(_value, '+', nfts)}</Col>;
 };
 
-export const Token = ({ value, ...rest }: { value: Tokens }) => {
-  return <Tokens value={[value]} {...rest} />;
+export const Token = ({ value, ...rest }: { value?: PortfolioItemToken }) => {
+  return <Tokens value={value ? [value] : []} {...rest} />;
 };
 
 export const USDValue = (props: { value: string | number }) => {
@@ -121,7 +102,7 @@ export const USDValue = (props: { value: string | number }) => {
   );
 };
 
-export const TokensUSDValue = (props: { value: Tokens[] }) => {
+export const TokensUSDValue = (props: { value: PortfolioItemToken[] }) => {
   return (
     <Col className="text-[15px] text-r-neutral-title1 font-medium">
       {getUsd(props.value, 0)}
@@ -129,7 +110,7 @@ export const TokensUSDValue = (props: { value: Tokens[] }) => {
   );
 };
 
-export const TokenUSDValue = (props: { value: Tokens }) => {
+export const TokenUSDValue = (props: { value: PortfolioItemToken }) => {
   return <TokensUSDValue value={[props.value]} />;
 };
 
@@ -169,7 +150,9 @@ export const NumbersWithCommas = (props: {
   );
 };
 
-export const ClaimableTokens = (props: { value: Tokens | Tokens[] }) => {
+export const ClaimableTokens = (props: {
+  value: PortfolioItemToken | PortfolioItemToken[];
+}) => {
   return (
     <Col>
       <TokensAmount
@@ -184,7 +167,7 @@ export const BlancesWithNfts = ({
   tokens,
   nfts,
 }: {
-  tokens: Tokens[];
+  tokens: PortfolioItemToken[];
   nfts?: PortfolioItemNft[];
 }) => {
   const hasNft = !!nfts?.length;
@@ -301,7 +284,7 @@ export const TokenTable = ({
     <Table>
       <Table.Header headers={headers} />
       <Table.Body>
-        {_tokens?.map((token: any, i) => {
+        {_tokens?.map((token, i) => {
           return (
             <Table.Row key={i}>
               <Token value={token} />

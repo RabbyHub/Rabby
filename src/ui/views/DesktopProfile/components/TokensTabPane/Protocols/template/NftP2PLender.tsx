@@ -26,7 +26,7 @@ export default memo(
 
     return (
       <>
-        {data.map((p: any) => {
+        {data.map((p) => {
           return (
             <Panel
               proposalTag={<BookMark content={tag} />}
