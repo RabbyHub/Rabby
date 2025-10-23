@@ -2481,10 +2481,7 @@
         "title": "Depósito USDC / USDT",
         "desc": "Paga tarifas de gas en todas las cadenas",
         "gotIt": "Entendido",
-        "loginAndClaim": "Inicia sesión y reclama $2.00",
-        "login2": "para cualquier dirección y cualquier cadena",
-        "login3": "Sin más preocupaciones por el gas",
-        "login1": "Usa una cuenta para cubrir las tarifas de gas."
+        "loginAndClaim": "Inicia sesión y reclama $2.00"
       },
       "loginConfirmModal": {
         "title": "Iniciar sesión con la dirección actual",

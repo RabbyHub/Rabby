@@ -2721,9 +2721,9 @@
         "login": "Log in GasAccount",
         "loginAndClaim": "Log in and Claim {{usdValue}}",
         "gotIt": "Got it",
-        "login1": "Use one account to cover gas fees",
-        "login2": "for any address and any chain",
-        "login3": "No more gas worries"
+        "loginTips1": "Pay gas fees for",
+        "loginTips2": "any address on any chain",
+        "loginTips3": "when you're out of gas"
       },
       "loginConfirmModal": {
         "title": "Select an address to log in",
@@ -3207,7 +3207,10 @@
       "title": "Risk Warning"
     },
     "DappActions": {
-      "__skip_translation": ["withdraw", "claim"],
+      "__skip_translation": [
+        "withdraw",
+        "claim"
+      ],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."

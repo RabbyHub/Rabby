@@ -2478,10 +2478,7 @@
         "login": "Masuk GasAccount",
         "desc": "Bayar Biaya Gas di Semua Rantai",
         "title": "Setor USDC / USDT",
-        "loginAndClaim": "Masuk dan Klaim $2.00",
-        "login3": "Tidak ada lagi kekhawatiran gas",
-        "login2": "untuk alamat mana pun dan rantai mana pun",
-        "login1": "Gunakan satu akun untuk menutupi biaya gas"
+        "loginAndClaim": "Masuk dan Klaim $2.00"
       },
       "loginConfirmModal": {
         "title": "Pilih alamat untuk masuk",

@@ -2773,10 +2773,7 @@
         "login": "Se connecter à GasAccount",
         "gotIt": "Compris",
         "desc": "Payer les frais de Gas sur toutes les chaînes",
-        "loginAndClaim": "Connectez-vous et réclamez 2,00 $",
-        "login3": "Plus de soucis de gaz",
-        "login1": "Utilisez un compte pour couvrir les frais de gaz",
-        "login2": "pour n'importe quelle adresse et n'importe quelle chaîne"
+        "loginAndClaim": "Connectez-vous et réclamez 2,00 $"
       },
       "loginConfirmModal": {
         "title": "Se connecter avec l'adresse actuelle",
