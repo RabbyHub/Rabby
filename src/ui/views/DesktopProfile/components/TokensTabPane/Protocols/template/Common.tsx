@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, Fragment } from 'react';
 
 import { Panel, ProxyTag, Table, Value } from '../components';
 import {
@@ -13,8 +13,9 @@ export default memo(
     data: PortfolioItem[];
     name: string;
     siteUrl?: string;
+    protocolLogo?: string;
   }) => {
-    const { tag } = props;
+    const { tag, protocolLogo } = props;
     const data = props.data;
     const headers = ['Pool', 'Balance'];
 
@@ -39,12 +40,12 @@ export default memo(
         <Table>
           <Table.Header className="mt-[9px]" headers={headers} />
           <Table.Body>
-            {data.map((p, index: number) => {
+            {data.map((p) => {
               const showActionRow = hasActions(p);
               return (
-                <>
+                <Fragment key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}>
                   <Table.Row
-                    key={`${p?.name}_${index}`}
+                    key={`${p?.position_index}`}
                     className={
                       showActionRow ? 'border-b-0 px-16 pb-0' : 'px-16 py-[5px]'
                     }
@@ -94,10 +95,10 @@ export default memo(
                         'default',
                       ]}
                       portfolio={p}
-                      protocolLogo={''}
+                      protocolLogo={protocolLogo || ''}
                     />
                   )}
-                </>
+                </Fragment>
               );
             })}
           </Table.Body>

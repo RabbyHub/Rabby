@@ -22,6 +22,7 @@ import { formatUsdValue } from '@/ui/utils';
 import { LineCard } from './Lending';
 import LabelWithIcon from '../components/LabelWithIcons';
 import { TokenAvatar } from '../components/TokenAvatar';
+import { ActionRow, hasActions } from '../components/ActionRow';
 
 const Col = Table.Col;
 
@@ -31,10 +32,11 @@ export default memo(
     data: PortfolioItem[];
     name: string;
     siteUrl?: string;
+    protocolLogo?: string;
   }) => {
     const { t } = useTranslation();
 
-    const { tag } = props;
+    const { tag, protocolLogo } = props;
     const data = props.data;
 
     return (
@@ -45,8 +47,11 @@ export default memo(
           const supplyTokenList = p?.detail?.supply_token_list || [];
           const supplyNftList = p?.detail?.supply_nft_list || [];
           const borrowTokenList = p?.detail?.borrow_token_list || [];
+          const showWithdrawActionRow = hasActions(p, 'withdraw');
+          const showClaimActionRow = hasActions(p, 'claim');
           return (
             <Panel
+              key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >
@@ -87,7 +92,6 @@ export default memo(
                   <Table>
                     <Table.Header headers={supplyHeaders} />
                     <Table.Body>
-                      {/* 不去定NFT有没有withdraw */}
                       {polyNfts(p?.detail?.supply_nft_list ?? [])
                         .map((x) => {
                           const collection = x.collection;
@@ -111,7 +115,10 @@ export default memo(
                         })
                         .sort((m, n) => n.usdValue - m.usdValue)
                         .map((x) => (
-                          <Table.Row>
+                          <Table.Row
+                            key={x?.id}
+                            className="border-b-0 px-16 py-[5px]"
+                          >
                             <Col>
                               <LabelWithIcon
                                 icon={
@@ -152,13 +159,22 @@ export default memo(
                             </Col>
                           </Table.Row>
                         ))}
-                      {/* TODO： 多行展示 Supply Token */}
                       {ArraySort(
                         supplyTokenList,
                         (v) => v.amount * (v.price || 0)
-                      )?.map((token) => {
+                      )?.map((token, index) => {
+                        const last =
+                          index === (supplyTokenList?.length || 0) - 1;
                         return (
-                          <Table.Row>
+                          <Table.Row
+                            key={token?.id}
+                            className={cx(
+                              'border-b-0',
+                              last && showWithdrawActionRow
+                                ? 'px-16 pb-0'
+                                : 'px-16 py-[5px]'
+                            )}
+                          >
                             <Value.Token value={token} />
                             <Value.Balance value={token} />
                             <Value.USDValue
@@ -167,6 +183,14 @@ export default memo(
                           </Table.Row>
                         );
                       })}
+                      {showWithdrawActionRow && (
+                        <ActionRow
+                          className="px-16 pt-[0] pb-[17px] mt-[-6px]"
+                          actionKeys={['default', 'withdraw', 'default']}
+                          portfolio={p}
+                          protocolLogo={protocolLogo || ''}
+                        />
+                      )}
                     </Table.Body>
                   </Table>
                 ) : null}
@@ -177,9 +201,19 @@ export default memo(
                       {ArraySort(
                         borrowTokenList,
                         (v) => v.amount * (v.price || 0)
-                      )?.map((token) => {
+                      )?.map((token, index) => {
+                        const last =
+                          index === (borrowTokenList?.length || 0) - 1;
                         return (
-                          <Table.Row>
+                          <Table.Row
+                            key={token?.id}
+                            className={cx(
+                              'border-b-0',
+                              last && showClaimActionRow
+                                ? 'px-16 pb-0'
+                                : 'px-16 py-[5px]'
+                            )}
+                          >
                             <Value.Token value={token} />
                             <Value.Balance value={token} />
                             <Value.USDValue
@@ -188,6 +222,14 @@ export default memo(
                           </Table.Row>
                         );
                       })}
+                      {showClaimActionRow && (
+                        <ActionRow
+                          className="px-16 pt-[0] pb-[17px] mt-[-6px]"
+                          actionKeys={['default', 'claim', 'default']}
+                          portfolio={p}
+                          protocolLogo={protocolLogo || ''}
+                        />
+                      )}
                     </Table.Body>
                   </Table>
                 ) : null}

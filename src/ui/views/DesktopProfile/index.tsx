@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -80,6 +80,7 @@ export const DesktopProfile = () => {
   const shouldElevateAccountList =
     action === 'send' || action === 'swap' || action === 'bridge';
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
     balance,
     evmBalance,
@@ -105,7 +106,7 @@ export const DesktopProfile = () => {
 
   return (
     <>
-      <Wrap className="w-full h-full bg-r-neutral-bg2">
+      <Wrap className="w-full h-full bg-r-neutral-bg2" ref={scrollContainerRef}>
         <div className="x-container">
           <header className="py-[18px]">
             <DesktopNav
@@ -152,7 +153,10 @@ export const DesktopProfile = () => {
                     Content of Tab Pane 2
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="Transactions" key="transactions">
-                    <TransactionsTabPane />
+                    <TransactionsTabPane
+                      selectChainId={chainInfo?.serverId}
+                      scrollContainerRef={scrollContainerRef}
+                    />
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="Approvals" key="approvals">
                     <div className="px-20 pt-[18px]">

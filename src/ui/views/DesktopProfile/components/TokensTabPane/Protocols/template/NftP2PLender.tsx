@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 
 import { BookMark, Panel, ProxyTag, Value } from '../components';
+import { ActionRow, hasActions } from '../components/ActionRow';
 
 export const LineCard = styled.div`
   > div {
@@ -20,15 +21,18 @@ export default memo(
     data: PortfolioItem[];
     name: string;
     siteUrl?: string;
+    protocolLogo?: string;
   }) => {
-    const { tag } = props;
+    const { tag, protocolLogo } = props;
     const data = props.data;
 
     return (
       <>
         {data.map((p) => {
+          const showActionRow = hasActions(p);
           return (
             <Panel
+              key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >
@@ -46,6 +50,18 @@ export default memo(
                   tokens={p?.detail?.reward_token_list}
                 />
               </LineCard>
+              {showActionRow && (
+                <ActionRow
+                  className="px-16 pt-[0] pb-[17px]"
+                  actionKeys={[
+                    'default',
+                    hasActions(p, 'withdraw') ? 'withdraw' : 'default',
+                    hasActions(p, 'claim') ? 'claim' : 'default',
+                  ]}
+                  portfolio={p}
+                  protocolLogo={protocolLogo || ''}
+                />
+              )}
             </Panel>
           );
         })}

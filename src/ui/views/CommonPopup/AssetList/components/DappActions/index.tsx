@@ -15,6 +15,7 @@ import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
 import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
+import { Value } from '@/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components';
 
 const Wrapper = styled.div`
   margin-left: 10px;
@@ -118,7 +119,7 @@ const DappActions = ({
     } else {
       return data?.find((item) => item.type === ActionType.Claim);
     }
-  }, []);
+  }, [data, type]);
 
   const isQueueWithdraw = useMemo(
     () => targetAction?.type === ActionType.Queue,
@@ -182,11 +183,11 @@ const DappActions = ({
         }
       }
     },
-    [canDirectSign, resetGasCache, wallet]
+    [canDirectSign, resetGasCache, setVisible, wallet]
   );
 
   if (!show) {
-    return null;
+    return <Value.String key={`dapp-actions-${type}`} value="" />;
   }
 
   return (

@@ -19,13 +19,14 @@ const Container = styled.div`
   flex-direction: row;
   justify-content: start;
   flex-wrap: wrap;
+  gap: 6px;
   div {
     text-overflow: ellipsis;
     overflow-wrap: break-word;
     word-break: break-all;
   }
   img {
-    margin-right: 6px;
+    /* margin-right: 6px; */
   }
 `;
 
@@ -40,13 +41,7 @@ export const LabelWithIcon: React.FC<Props> = (props) => {
       )}
     >
       {props.icon}
-      <div
-        className={cx(
-          props.textHidden && 'ellipsis',
-          props.labelClassName,
-          props.icon ? 'ml-[8px]' : ''
-        )}
-      >
+      <div className={cx(props.textHidden && 'ellipsis', props.labelClassName)}>
         {props.label}
       </div>
     </Container>

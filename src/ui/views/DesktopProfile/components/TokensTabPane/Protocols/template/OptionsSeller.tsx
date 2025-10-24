@@ -26,12 +26,11 @@ export default memo(
     return (
       <>
         {data.map((p) => {
-          const underlyingToken = p?.detail?.underlying_token || [];
           const collateralTokenList = p?.detail?.collateral_token_list || [];
 
           return (
             <Panel
-              key={p?.pool.id}
+              key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >
@@ -65,10 +64,12 @@ export default memo(
                       headers={['Collateral', 'Balance', 'USD Value']}
                     />
                     <Table.Body>
-                      {/* TODO： 这里也要考虑 */}
                       {collateralTokenList.map((token) => {
                         return (
-                          <Table.Row>
+                          <Table.Row
+                            key={token?.id}
+                            className="border-b-0 px-16 py-[5px]"
+                          >
                             <Value.Token value={token} />
                             <Value.Balance value={token} />
                             <Value.TokenUSDValue value={token} />

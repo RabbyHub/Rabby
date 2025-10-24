@@ -30,7 +30,7 @@ export default memo((props: { tag: string; data: PortfolioItem[] }) => {
         <Table.Body>
           {data.map((p) => {
             return (
-              <Table.Row>
+              <Table.Row key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}>
                 <Value.String
                   value={
                     <>

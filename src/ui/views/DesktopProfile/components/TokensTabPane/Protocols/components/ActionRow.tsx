@@ -47,19 +47,22 @@ export const ActionRow = ({
 }: ActionRowProps) => {
   return (
     <Table.Row key={`${portfolio?.name}`} className={className}>
-      {actionKeys.map((key) => {
+      {actionKeys.filter(Boolean).map((key, index) => {
         if (key === 'withdraw') {
           return (
             <DappActions
+              key="withdraw"
               data={portfolio?.withdraw_actions}
               chain={portfolio?.pool.chain}
               type="withdraw"
               protocolLogo={protocolLogo}
             />
           );
-        } else if (key === 'claim') {
+        }
+        if (key === 'claim') {
           return (
             <DappActions
+              key="claim"
               data={portfolio?.withdraw_actions}
               chain={portfolio?.pool.chain}
               type="claim"
@@ -68,7 +71,7 @@ export const ActionRow = ({
           );
         }
         if (key === 'default') {
-          return <Value.String value="" />;
+          return <Value.String key={`${portfolio?.name}_${index}`} value="" />;
         }
         return null;
       })}

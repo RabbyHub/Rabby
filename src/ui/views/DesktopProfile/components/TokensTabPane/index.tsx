@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { AddTokenEntryInst } from '@/ui/views/CommonPopup/AssetList/AddTokenEntry';
 import { useRabbySelector } from '@/ui/store';
-import { HomeTokenList } from '@/ui/views/CommonPopup/AssetList/TokenList';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import {
   TokenListSkeleton,
@@ -9,8 +7,6 @@ import {
 } from '@/ui/views/CommonPopup/AssetList/TokenListViewSkeleton';
 import ProtocolList from './ProtocolList';
 import { useQueryProjects } from 'ui/utils/portfolio';
-import { Input } from 'antd';
-import { useFilterProtocolList } from '@/ui/views/CommonPopup/AssetList/useFilterProtocolList';
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
 import { TokenList } from './TokenList';
@@ -35,8 +31,6 @@ export const TokensTabPane: React.FC<Props> = ({
     portfolios,
     tokens: tokenList,
     hasTokens,
-    blockedTokens,
-    customizeTokens,
     removeProtocol,
     portfolioNetWorth,
   } = useQueryProjects(currentAccount?.address, false, true, false);
@@ -51,7 +45,6 @@ export const TokensTabPane: React.FC<Props> = ({
     return (portfolioNetWorth || 0) + (appPortfolioNetWorth || 0);
   }, [portfolioNetWorth, appPortfolioNetWorth]);
 
-  const inputRef = React.useRef<Input>(null);
   const displayTokenList = useMemo(() => {
     const result = tokenList;
     if (selectChainId) {
@@ -71,25 +64,7 @@ export const TokensTabPane: React.FC<Props> = ({
     return combinedPortfolios;
   }, [portfolios, appPortfolios, selectChainId]);
 
-  const displayBlockedTokens = useMemo(() => {
-    if (selectChainId) {
-      return blockedTokens?.filter((item) => item.chain === selectChainId);
-    }
-    return blockedTokens;
-  }, [blockedTokens, selectChainId]);
-
-  const displayCustomizeTokens = useMemo(() => {
-    if (selectChainId) {
-      return customizeTokens?.filter((item) => item.chain === selectChainId);
-    }
-    return customizeTokens;
-  }, [customizeTokens, selectChainId]);
-
   const sortTokens = useSortTokens(displayTokenList);
-  const filteredPortfolios = useFilterProtocolList({
-    list: displayPortfolios,
-    kw: '',
-  });
 
   useEffect(() => {
     if (appPortfolios) {
@@ -103,6 +78,7 @@ export const TokensTabPane: React.FC<Props> = ({
       );
     }
   }, [appPortfolios]);
+
   const appIds = useMemo(() => {
     return [...new Set(appPortfolios?.map((item) => item.id) || [])];
   }, [appPortfolios]);
@@ -120,7 +96,7 @@ export const TokensTabPane: React.FC<Props> = ({
     !isPortfoliosLoading &&
     !isAppPortfoliosLoading &&
     !sortTokens.length &&
-    !filteredPortfolios?.length;
+    !displayPortfolios?.length;
 
   return (
     <div className={className}>
@@ -141,7 +117,7 @@ export const TokensTabPane: React.FC<Props> = ({
             appIds={appIds}
             netWorth={currentPortfolioNetWorth}
             isSearch={false}
-            list={filteredPortfolios}
+            list={displayPortfolios}
           />
         )}
       </div>
