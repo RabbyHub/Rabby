@@ -1184,7 +1184,8 @@
           "approvals": "승인",
           "manageAddress": "주소 관리",
           "ecology": "생태계",
-          "perps": "퍼프"
+          "perps": "퍼프",
+          "gasAccount": "GasAccount"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -1559,6 +1560,11 @@
       "recentConnectionGuide": {
         "title": "여기서 Dapp 연결을 위한 주소를 전환하세요\n",
         "button": "확인했습니다\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby 포인트",
+        "downloadIntro": "아직 앱이 없으신가요? 지금 다운로드하세요.",
+        "desc": "Rabby Mobile에서 포인트를 확인하세요."
       }
     },
     "nft": {
@@ -2743,7 +2749,8 @@
       "selectedLenAddressesForSync_one": "선택된 {{len}} 주소를 동기화합니다.",
       "selectedLenAddressesForSync_other": "선택된 {{len}} 주소를 동기화합니다.",
       "steps2Description": "*귀하의 QR 코드에는 민감한 데이터가 포함되어 있습니다. 개인 정보를 유지하고 누구와도 공유하지 마십시오.",
-      "steps2": "2. Rabby Mobile로 스캔하세요"
+      "steps2": "2. Rabby Mobile로 스캔하세요",
+      "verifyPassword": "비밀번호 확인"
     },
     "search": {
       "sectionHeader": {

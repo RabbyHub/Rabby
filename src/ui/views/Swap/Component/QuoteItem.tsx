@@ -284,7 +284,7 @@ export const DexQuoteItem = (
     sortIncludeGasFee,
   ]);
 
-  const gasFeeTooHight = useMemo(() => {
+  const gasFeeTooHigh = useMemo(() => {
     return (
       new BigNumber(preExecResult?.gasUsed || 0).gte(GAS_USE_AMOUNT_LIMIT) &&
       chain === CHAINS_ENUM.ETH
@@ -292,7 +292,7 @@ export const DexQuoteItem = (
   }, [preExecResult, chain]);
 
   const handleClick = useCallback(() => {
-    if (gasFeeTooHight) {
+    if (gasFeeTooHigh) {
       return;
     }
 
@@ -327,7 +327,7 @@ export const DexQuoteItem = (
     dexId,
     quote,
     preExecResult,
-    gasFeeTooHight,
+    gasFeeTooHigh,
     receiveToken,
   ]);
 
@@ -348,11 +348,11 @@ export const DexQuoteItem = (
     if (onlyShow) {
       return false;
     }
-    if (gasFeeTooHight || (inSufficient && !disabled)) {
+    if (gasFeeTooHigh || (inSufficient && !disabled)) {
       return undefined;
     }
     return false;
-  }, [onlyShow, gasFeeTooHight, inSufficient, disabled]);
+  }, [onlyShow, gasFeeTooHigh, inSufficient, disabled]);
 
   useEffect(() => {
     if (isErrorQuote && props.onlyShowErrorQuote) {
@@ -380,7 +380,7 @@ export const DexQuoteItem = (
       overlayClassName="rectangle w-[max-content]"
       placement="top"
       title={
-        gasFeeTooHight
+        gasFeeTooHigh
           ? t('page.swap.Gas-fee-too-high')
           : t('page.swap.insufficient-balance')
       }
@@ -395,7 +395,7 @@ export const DexQuoteItem = (
           disabled && 'disabled',
           isErrorQuote && 'error',
           inSufficient && !disabled && 'disabled inSufficient',
-          gasFeeTooHight && 'disabled gasFeeTooHight',
+          gasFeeTooHigh && 'disabled gasFeeTooHight',
           onlyShow &&
             'bg-transparent shadow-none p-0 h-auto hover:border-transparent hover:after:hidden'
         )}
@@ -447,14 +447,14 @@ export const DexQuoteItem = (
                 <div
                   className={clsx(
                     'inline-flex items-center gap-4 px-4',
-                    gasFeeTooHight && 'bg-r-red-light',
+                    gasFeeTooHigh && 'bg-r-red-light',
                     inSufficient && 'hidden'
                   )}
                 >
                   <RcIconGasCC
                     className={clsx(
                       'text-r-neutral-foot w-16 h-16',
-                      gasFeeTooHight
+                      gasFeeTooHigh
                         ? 'text-rabby-red-default'
                         : 'text-r-neutral-foot'
                     )}
@@ -463,7 +463,7 @@ export const DexQuoteItem = (
                   <span
                     className={clsx(
                       'text-13',
-                      gasFeeTooHight
+                      gasFeeTooHigh
                         ? 'text-rabby-red-default'
                         : 'text-r-neutral-foot'
                     )}

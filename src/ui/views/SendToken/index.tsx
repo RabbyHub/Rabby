@@ -58,12 +58,12 @@ import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
-import { MiniApproval } from '../Approval/components/MiniSignTx';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
   supportedHardwareDirectSign,
-  useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from './components/SendShowMore';
@@ -77,7 +77,6 @@ import { copyAddress } from '@/ui/utils/clipboard';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
-import { useClearMiniGasStateEffect } from '@/ui/hooks/miniSignGasStore';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -235,6 +234,12 @@ const SendToken = () => {
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
+
+  const { openDirect, prefetch } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: chainItem?.serverId,
+    autoResetGasStoreOnChainChange: true,
+  });
   const [currentToken, setCurrentToken] = useState<TokenItem | null>(
     DEFAULT_TOKEN
   );
@@ -541,13 +546,6 @@ const SendToken = () => {
   }, [clickedMax, loadGasList]);
 
   const [miniSinLoading, setMiniSinLoading] = useState(false);
-  const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
-
-  const miniSignTxs = useMemo(() => {
-    return miniSignTx ? [miniSignTx] : [];
-  }, [miniSignTx]);
-
-  const startDirectSigning = useStartDirectSigning();
 
   const canUseDirectSubmitTx = useMemo(() => {
     let sendToOtherChainContract = false;
@@ -578,18 +576,49 @@ const SendToken = () => {
       if (!currentToken) {
         return;
       }
-      if (canUseDirectSubmitTx && !forceSignPage) {
-        setMiniSinLoading(true);
-        startDirectSigning();
-        return;
-      }
-      const chain = findChain({
-        serverId: currentToken.chain,
-      })!;
       const params = getParams({
         to: toAddress,
         amount,
       });
+      let shouldForceSignPage = !!forceSignPage;
+
+      if (canUseDirectSubmitTx && !shouldForceSignPage) {
+        setMiniSinLoading(true);
+        try {
+          const hashes = await openDirect({
+            txs: [params as Tx],
+            ga: {
+              category: 'Send',
+              source: 'sendToken',
+              trigger: filterRbiSource('sendToken', rbisource) && rbisource,
+            },
+            getContainer,
+          });
+          const hash = hashes[hashes.length - 1];
+          if (hash) {
+            handleMiniSignResolve();
+          } else {
+            setMiniSinLoading(false);
+          }
+          return;
+        } catch (error) {
+          console.error('send token direct sign error', error);
+
+          setMiniSinLoading(false);
+          if (
+            error === MINI_SIGN_ERROR.USER_CANCELLED ||
+            error === MINI_SIGN_ERROR.CANT_PROCESS
+          ) {
+            return;
+          }
+
+          shouldForceSignPage = true;
+        }
+      }
+
+      const chain = findChain({
+        serverId: currentToken.chain,
+      })!;
 
       if (isNativeToken) {
         // L2 has extra validation fee so we can not set gasLimit as 21000 when send native token
@@ -784,18 +813,34 @@ const SendToken = () => {
           );
 
         if (isCurrent) {
-          setMiniSignTx(params as Tx);
+          prefetch({
+            txs: [params as Tx],
+            ga: {
+              category: 'Send',
+              source: 'sendToken',
+              trigger: filterRbiSource('sendToken', rbisource) && rbisource,
+            },
+            getContainer,
+          }).catch((error) => {
+            if (error !== MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+              console.error('send token prefetch error', error);
+            }
+          });
         }
       } else {
         if (isCurrent) {
-          setMiniSignTx(null);
+          prefetch({
+            txs: [],
+          });
         }
       }
     };
     setMiniTx();
     return () => {
       isCurrent = false;
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
     };
   }, [
     refreshId,
@@ -816,12 +861,16 @@ const SendToken = () => {
     address,
     currentAccount,
     currentToken,
+    prefetch,
+    rbisource,
   ]);
 
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
       setMiniSinLoading(false);
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
       form.setFieldsValue({ amount: '' });
       // persistPageStateCache();
       wallet.clearPageStateCache();
@@ -1535,10 +1584,6 @@ const SendToken = () => {
     }
   });
 
-  useClearMiniGasStateEffect({
-    chainServerId: chainItem?.serverId || '',
-  });
-
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -1720,38 +1765,6 @@ const SendToken = () => {
           rawHexBalance={currentToken?.raw_amount_hex_str || '0'}
           onClose={() => handleReserveGasClose()}
           getContainer={getContainer}
-        />
-        <MiniApproval
-          transparentMask
-          txs={miniSignTxs}
-          // visible={miniSinLoading}
-          ga={{
-            category: 'Send',
-            source: 'sendToken',
-            trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
-          }}
-          onClose={() => {
-            setMiniSignTx(null);
-            setRefreshId((e) => e + 1);
-            setMiniSinLoading(false);
-          }}
-          onReject={() => {
-            setMiniSignTx(null);
-            setRefreshId((e) => e + 1);
-            setMiniSinLoading(false);
-          }}
-          onResolve={handleMiniSignResolve}
-          onPreExecError={() => {
-            setMiniSinLoading(false);
-            handleSubmit({
-              to: form.getFieldValue('to'),
-              amount: form.getFieldValue('amount'),
-              forceSignPage: true,
-            });
-          }}
-          getContainer={getContainer}
-          directSubmit
-          canUseDirectSubmitTx={canUseDirectSubmitTx}
         />
       </div>
     </FullscreenContainer>

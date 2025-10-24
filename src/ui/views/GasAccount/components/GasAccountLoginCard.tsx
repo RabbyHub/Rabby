@@ -51,20 +51,23 @@ export const GasAccountLoginCard = ({
   };
 
   return (
-    <GasAccountWrapperBg className="mb-[20px] flex flex-col items-center h-[260px] bg-r-neutral-card1 rounded-[8px] py-20 px-16 pt-24 relative">
+    <GasAccountWrapperBg className="mb-[20px] flex flex-col items-center h-[280px] bg-r-neutral-card1 rounded-[8px] px-16 py-24 relative">
       <GasAccountBlueLogo className="mt-4 mb-18" />
-      <div className="relative flex gap-8 mb-[16px] text-18 font-medium text-r-blue-default">
+      <div className="relative flex text-[17px] font-medium text-r-blue-default">
         <RcIconQuoteStart
           viewBox="0 0 11 9"
-          className="absolute top-0 left-[-20px]"
+          className="absolute top-0 left-[-16px]"
         />
-        {t('page.gasAccount.loginInTip.title')}
+        {t('page.gasAccount.loginInTip.loginTips1')}
       </div>
-      <div className="flex gap-8 text-18 font-medium text-r-blue-default relative">
-        {t('page.gasAccount.loginInTip.desc')}
+      <div className="text-[17px] font-medium text-r-blue-default">
+        {t('page.gasAccount.loginInTip.loginTips2')}
+      </div>
+      <div className="flex gap-8 text-[17px] font-medium text-r-blue-default relative">
+        {t('page.gasAccount.loginInTip.loginTips3')}
         <RcIconQuoteEnd
           viewBox="0 0 11 9"
-          className="absolute top-0 right-[-20px]"
+          className="absolute top-[6px] right-[-16px]"
         />
       </div>
       <div className="w-full mt-auto">

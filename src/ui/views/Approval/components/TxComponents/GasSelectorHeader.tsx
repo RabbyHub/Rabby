@@ -50,8 +50,10 @@ import { calcGasEstimated } from '@/utils/time';
 import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { noop } from 'lodash';
-import { useSetMiniApprovalGas } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { useGetShowMoreGasSelectVisible } from '@/ui/views/Bridge/Component/ShowMoreGasModal';
+import {
+  useGetShowMoreGasSelectVisible,
+  useSetGasInfoByUI,
+} from '@/ui/views/Bridge/Component/ShowMoreGasModal';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -572,7 +574,6 @@ const GasSelectorHeader = ({
             .then((arr) => {
               if (init) {
                 gasAccountStateInit.current = true;
-                // setGasAccountIsNotEnough()
                 setGasAccountIsNotEnough((pre) => ({
                   ...pre,
                   [level]: [
@@ -941,7 +942,7 @@ const GasSelectorHeader = ({
     setModalVisible(false);
   };
 
-  const setMiniApprovalGasState = useSetMiniApprovalGas();
+  const setGasInfoByUI = useSetGasInfoByUI();
 
   useEffect(() => {
     if (
@@ -951,23 +952,14 @@ const GasSelectorHeader = ({
       !selectedGas ||
       !directSubmit
     ) {
-      setMiniApprovalGasState(undefined);
+      setGasInfoByUI(undefined);
       return;
     }
 
-    setMiniApprovalGasState((pre) => ({
-      ...pre,
-      gasIsNotEnough,
-      gasAccountIsNotEnough,
-      loading: !isReady && !isFirstTimeLoad,
-      gasMethod,
-      onChangeGasMethod,
-      // isDisabledGasPopup,
-      gasList,
-      selectedGas,
+    setGasInfoByUI({
       externalPanelSelection,
       handleClickEdit,
-      changedCustomGas,
+      // gasList,
       gasCostUsdStr,
       gasUsdList: {
         slow: formatGasHeaderUsdValue(new BigNumber(gasSlowUsd).toString(10)),
@@ -976,8 +968,10 @@ const GasSelectorHeader = ({
         ),
         fast: formatGasHeaderUsdValue(new BigNumber(gasFastUsd).toString(10)),
       },
+      gasIsNotEnough,
+      gasAccountIsNotEnough,
       gasAccountCost: gasAccountCost?.gas_account_cost,
-    }));
+    });
   }, [
     gasAccountIsNotEnough,
     gasIsNotEnough,
@@ -985,7 +979,6 @@ const GasSelectorHeader = ({
     isReady,
     isFirstTimeLoad,
     disabled,
-    setMiniApprovalGasState,
     gasMethod,
     onChangeGasMethod,
     // isDisabledGasPopup,

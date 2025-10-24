@@ -1115,7 +1115,8 @@
           "ecology": "Екосистема",
           "rabbyPoints": "Rabby Points",
           "mobile": "Mobile Sync",
-          "perps": "Перпси"
+          "perps": "Перпси",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "Скоро",
         "soon": "Незабаром",
@@ -1493,6 +1494,11 @@
       "recentConnectionGuide": {
         "title": "Тут змініть адресу для підключення до Dapp\n",
         "button": "Отримано\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby Points",
+        "desc": "Перевірте свої бали в Rabby Mobile.",
+        "downloadIntro": "Ще не маєте програми? Завантажте зараз."
       }
     },
     "nft": {
@@ -2758,7 +2764,8 @@
       "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync",
       "selectAddress": {
         "title": "Виберіть адреси для синхронізації"
-      }
+      },
+      "verifyPassword": "Перевірити пароль"
     },
     "search": {
       "sectionHeader": {

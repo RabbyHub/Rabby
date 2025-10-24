@@ -334,7 +334,9 @@ export const DashboardPanel: React.FC<unknown> = () => {
               )}
             >
               <RcIconGift viewBox="0 0 14 14" />
-              {formatGasAccountUsdValueV2(giftUsdValue)}
+              {Number.isInteger(giftUsdValue)
+                ? '$' + splitNumberByStep(giftUsdValue)
+                : formatGasAccountUsdValueV2(giftUsdValue)}
             </div>
           </div>
         ) : null,
@@ -466,7 +468,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
 
                     item?.onClick(evt);
                   }}
-                  className="panel-item group"
+                  className="panel-item"
                 >
                   {item.showAlert && (
                     <ThemeIcon src={IconAlertRed} className="icon icon-alert" />

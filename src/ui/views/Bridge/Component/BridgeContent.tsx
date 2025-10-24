@@ -26,7 +26,6 @@ import { useTranslation } from 'react-i18next';
 
 import pRetry, { AbortError } from 'p-retry';
 import stats from '@/stats';
-import { MiniApproval } from '../../Approval/components/MiniSignTx';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { CHAINS_ENUM, DBK_CHAIN_ID } from '@/constant';
@@ -44,14 +43,11 @@ import {
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
-import {
-  supportedDirectSign,
-  supportedHardwareDirectSign,
-  useGetDisableProcessDirectSign,
-  useStartDirectSigning,
-} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from '../../Swap/Component/PendingTxItem';
 import { DbkButton } from '../../Ecology/dbk-chain/components/DbkButton';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -162,7 +158,6 @@ export const BridgeContent = () => {
 
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
 
-  const [isShowSign, setIsShowSign] = useState(false);
   const gotoBridge = useCallback(async () => {
     if (
       !inSufficient &&
@@ -403,7 +398,6 @@ export const BridgeContent = () => {
               )
           )
         );
-        setIsPreparingSign(false);
         message.error(error?.message || String(error));
         stats.report('bridgeQuoteResult', {
           aggregatorIds: selectedBridgeQuote.aggregator.id,
@@ -460,9 +454,6 @@ export const BridgeContent = () => {
     quoteLoading ||
     !quoteList?.length;
 
-  const startDirectSigning = useStartDirectSigning();
-  const disabledProcess = useGetDisableProcessDirectSign();
-
   const canUseDirectSubmitTx = useMemo(
     () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
 
@@ -479,22 +470,57 @@ export const BridgeContent = () => {
 
   const showRiskTips = isSlippageHigh || isSlippageLow || showLoss;
 
-  const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [miniSignLoading, setMiniSignLoading] = useState(false);
+
+  const { openDirect, prefetch } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: findChainByEnum(fromChain)?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
+  });
 
   const handleBridge = useMemoizedFn(async () => {
     if (canUseDirectSubmitTx) {
       setMiniSignLoading(true);
-      setIsPreparingSign(true);
       setFetchingBridgeQuote(true);
-      const txs = await runBuildSwapTxsRef.current;
-      setFetchingBridgeQuote(false);
-      clearExpiredTimer();
-      if (txs?.length) {
-        // may be runBuildSwapTxs error so no txs so retry
-        startDirectSigning();
+      try {
+        const buildPromise = runBuildSwapTxsRef.current || runBuildSwapTxs();
+        runBuildSwapTxsRef.current = buildPromise;
+        const builtTxs = await buildPromise;
+        setFetchingBridgeQuote(false);
+        if (!builtTxs?.length) {
+          throw MINI_SIGN_ERROR.PREFETCH_FAILURE;
+        }
+        clearExpiredTimer();
+        await openDirect({
+          txs: builtTxs,
+          getContainer,
+          ga: {
+            category: 'Bridge',
+            source: 'bridge',
+            trigger: rbiSource,
+          },
+          onPreExecError: () => {
+            gotoBridge();
+          },
+        });
+        mutateTxs([]);
+        handleAmountChange('');
+      } catch (error) {
+        setFetchingBridgeQuote(false);
+        if (error == MINI_SIGN_ERROR.USER_CANCELLED) {
+          refresh((e) => e + 1);
+          mutateTxs([]);
+        } else if (error === MINI_SIGN_ERROR.CANT_PROCESS) {
+          setTimeout(() => {
+            refresh((e) => e + 1);
+          }, 10 * 1000);
+        } else {
+          gotoBridge();
+        }
+        console.error('bridge direct sign error', error);
+      } finally {
+        setMiniSignLoading(false);
       }
-      setIsPreparingSign(false);
     } else {
       gotoBridge();
     }
@@ -530,6 +556,19 @@ export const BridgeContent = () => {
       runBuildSwapTxsRef.current = runBuildSwapTxs();
     }
   }, [canUseDirectSubmitTx, btnDisabled, selectedBridgeQuote]);
+
+  useEffect(() => {
+    if (!canUseDirectSubmitTx) return;
+    prefetch({
+      txs: txs || [],
+      getContainer,
+      ga: {
+        category: 'Bridge',
+        source: 'bridge',
+        trigger: rbiSource,
+      },
+    });
+  }, [prefetch, txs, canUseDirectSubmitTx, rbiSource]);
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);
 
@@ -806,7 +845,7 @@ export const BridgeContent = () => {
                     !isSupportedChain && externalDapps.length > 0
                       ? false
                       : canUseDirectSubmitTx
-                      ? btnDisabled || disabledProcess
+                      ? btnDisabled
                       : btnDisabled
                   }
                 >
@@ -833,51 +872,6 @@ export const BridgeContent = () => {
             getContainer={getContainer}
           />
         ) : null}
-        <MiniApproval
-          transparentMask
-          directSubmit
-          isPreparingSign={isPreparingSign}
-          setIsPreparingSign={setIsPreparingSign}
-          canUseDirectSubmitTx={canUseDirectSubmitTx}
-          visible={isShowSign}
-          ga={{
-            category: 'Bridge',
-            source: 'bridge',
-            trigger: rbiSource,
-          }}
-          txs={txs}
-          onClose={() => {
-            setMiniSignLoading(false);
-            setIsPreparingSign(false);
-            setIsShowSign(false);
-            refresh((e) => e + 1);
-            setTimeout(() => {
-              mutateTxs([]);
-            }, 500);
-          }}
-          onReject={() => {
-            setMiniSignLoading(false);
-            setIsPreparingSign(false);
-            setIsShowSign(false);
-            refresh((e) => e + 1);
-            mutateTxs([]);
-          }}
-          onResolve={() => {
-            setMiniSignLoading(false);
-            setIsPreparingSign(false);
-            setTimeout(() => {
-              setIsShowSign(false);
-              mutateTxs([]);
-              handleAmountChange('');
-            }, 500);
-          }}
-          onPreExecError={() => {
-            setMiniSignLoading(false);
-            setIsPreparingSign(false);
-            gotoBridge();
-          }}
-          getContainer={getContainer}
-        />
       </div>
     </>
   );

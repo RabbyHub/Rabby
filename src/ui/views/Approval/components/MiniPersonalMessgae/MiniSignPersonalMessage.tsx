@@ -4,7 +4,6 @@ import {
   useDirectSigning,
   useSetDirectSigning,
   useResetDirectSignState,
-  useGetDisableProcessDirectSign,
   supportedHardwareDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -57,17 +56,8 @@ export const MiniPersonalMessageApproval = ({
   const setDirectSigning = useSetDirectSigning();
 
   const resetDirectSigning = useResetDirectSignState();
-  const disabledProcess = useGetDisableProcessDirectSign();
 
   const [innerVisible, setInnerVisible] = useState(false);
-
-  useEffect(() => {
-    if (isSigningLoading && disabledProcess) {
-      setDirectSigning(false);
-      setIsPreparingSign?.(false);
-      setInnerVisible(false);
-    }
-  }, [isSigningLoading, disabledProcess, setDirectSigning]);
 
   useEffect(() => {
     resetDirectSigning();

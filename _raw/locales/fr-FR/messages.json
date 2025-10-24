@@ -806,7 +806,8 @@
           "bridge": "Bridger",
           "rabbyPoints": "Rabby Points",
           "mobile": "Mobile Sync",
-          "perps": "Perps"
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -1049,6 +1050,11 @@
       "recentConnectionGuide": {
         "title": "Ici, changez d'adresse pour la connexion Dapp.",
         "button": "Compris"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby Points",
+        "desc": "Vérifiez vos points dans Rabby Mobile.",
+        "downloadIntro": "Vous n'avez pas encore l'application ? Téléchargez-la maintenant."
       }
     },
     "ethSign": {
@@ -3038,7 +3044,8 @@
       "selectedLenAddressesForSync_other": "Adresses sélectionnées {{len}} pour la synchronisation",
       "selectAddress": {
         "title": "Sélectionner les adresses à synchroniser"
-      }
+      },
+      "verifyPassword": "Vérifiez le mot de passe"
     },
     "search": {
       "sectionHeader": {

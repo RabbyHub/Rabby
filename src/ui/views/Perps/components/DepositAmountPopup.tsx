@@ -23,8 +23,6 @@ import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import {
   supportedDirectSign,
   useDirectSigning,
-  useMiniApprovalGas,
-  useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
@@ -36,6 +34,8 @@ import { useRabbyDispatch } from '@/ui/store';
 import { formatTokenAmount } from '@debank/common';
 import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from '../sdkManager';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
@@ -59,6 +59,7 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   clearMiniSignTx: () => void;
   clearMiniSignTypeData?: () => void;
   resetBridgeQuoteLoading: () => void;
+  handleSignDepositDirect: (hash: string) => Promise<void>;
 };
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
@@ -79,10 +80,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   clearMiniSignTx,
   clearMiniSignTypeData,
   resetBridgeQuoteLoading,
+  handleSignDepositDirect,
 }) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
-  const isSigningLoading = useDirectSigning();
   const [isWithdrawLoading, setIsWithdrawLoading] = React.useState(false);
   const [usdValue, setUsdValue] = React.useState<string>('');
   const [tokenVisible, setTokenVisible] = React.useState(false);
@@ -91,7 +92,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   );
   const inputRef = React.useRef<HTMLInputElement>(null);
   const wallet = useWallet();
-  const startDirectSigning = useStartDirectSigning();
   const [tokenList, setTokenList] = React.useState<TokenItem[]>([]);
   const [tokenListLoading, setTokenListLoading] = React.useState(false);
   const [gasPrice, setGasPrice] = React.useState<number>(0);
@@ -125,7 +125,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const fetchTokenList = useCallback(async () => {
     setTokenListLoading(true);
-    if (!currentPerpsAccount?.address) return [];
+    if (!currentPerpsAccount?.address || !visible) return [];
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
     const usdcToken = res.find(
       (t) =>
@@ -144,7 +144,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
     setTokenList(tokenRes);
     return res;
-  }, [currentPerpsAccount?.address]);
+  }, [currentPerpsAccount?.address, visible]);
 
   useEffect(() => {
     fetchTokenList();
@@ -235,15 +235,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
   );
-
-  const miniApprovalGas = useMiniApprovalGas();
-  const gasReadyContent = useMemo(() => {
-    return (
-      !!miniApprovalGas &&
-      !miniApprovalGas.loading &&
-      !!miniApprovalGas.gasCostUsdStr
-    );
-  }, [miniApprovalGas]);
 
   const depositMaxUsdValue = useMemo(() => {
     return Number((tokenInfo?.amount || 0) * (tokenInfo?.price || 0));
@@ -358,43 +349,9 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     }
   }, [isValidAmount, type, visible]);
 
-  useDebounce(
-    () => {
-      if (canUseDirectSubmitTx && miniTxs?.length && isPreparingSign) {
-        if (gasReadyContent) {
-          const gasError =
-            gasReadyContent && miniApprovalGas?.showGasLevelPopup;
-          const chainInfo = findChainByServerID(
-            selectedToken?.chain || ARB_USDC_TOKEN_SERVER_CHAIN
-          )!;
-          const gasTooHigh =
-            !!gasReadyContent &&
-            !!miniApprovalGas?.gasCostUsdStr &&
-            new BigNumber(
-              miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')
-            ).gt(chainInfo.enum === CHAINS_ENUM.ETH ? 10 : 1);
-
-          if (gasError || gasTooHigh) {
-            handleDeposit();
-          } else {
-            startDirectSigning();
-          }
-        }
-      } else {
-        setIsPreparingSign(false);
-      }
-    },
-    300,
-    [
-      startDirectSigning,
-      canUseDirectSubmitTx,
-      miniTxs,
-      gasReadyContent,
-      isPreparingSign,
-      handleDeposit,
-      selectedToken,
-    ]
-  );
+  const { openDirect, close: closeSign } = useMiniSigner({
+    account: currentPerpsAccount!,
+  });
 
   const estReceiveUsdValue = useMemo(() => {
     const value =
@@ -620,15 +577,42 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               }
               size="large"
               type="primary"
-              loading={isSigningLoading || isPreparingSign}
+              loading={isPreparingSign}
               className="h-[48px] text-r-neutral-title2 text-15 font-medium"
               style={{
                 height: 48,
               }}
               onClick={async () => {
-                if (canUseDirectSubmitTx) {
+                if (canUseDirectSubmitTx && miniTxs.length) {
                   clearMiniSignTypeData?.();
                   setIsPreparingSign(true);
+                  closeSign();
+                  try {
+                    const hashes = await openDirect({
+                      txs: miniTxs,
+                      checkGasFeeTooHigh: true,
+                      ga: {
+                        category: 'Perps',
+                        source: 'Perps',
+                        trigger: 'Perps',
+                      },
+                    });
+                    if (hashes && hashes.length > 0) {
+                      handleSignDepositDirect(hashes[hashes.length - 1]);
+                      setTimeout(() => {
+                        onClose?.();
+                      }, 500);
+                    }
+                  } catch (error) {
+                    console.log('deposit error', error);
+                    if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+                      onClose();
+                      return;
+                    }
+                    handleDeposit();
+                  } finally {
+                    setIsPreparingSign(false);
+                  }
                 } else {
                   handleDeposit();
                 }

@@ -25,7 +25,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { openInTab, useCommonPopupView, useWallet } from 'ui/utils';
+import { useCommonPopupView, useWallet } from 'ui/utils';
 import { OfflineChainNotify } from '../OfflineChainNotify';
 import { BalanceLabel } from './BalanceLabel';
 import { ChainList } from './ChainList';
@@ -287,7 +287,10 @@ export const BalanceView = ({
               )}
             >
               {shouldShowBalanceLoading ? (
-                <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
+                <Skeleton.Input
+                  active
+                  className="w-[200px] h-[38px] rounded block"
+                />
               ) : (
                 <BalanceLabel
                   // isCache={balanceFromCache}
