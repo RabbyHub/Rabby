@@ -99,6 +99,7 @@ export const DesktopProfile = () => {
     setRefreshKey((prev) => prev + 1);
     await refreshBalance();
     await refreshCurve();
+    // todo
     setUpdatedAt(Date.now());
   });
 

@@ -82,7 +82,9 @@ export const ProfileHeader: React.FC<{
       <GlobalStyle />
       <div className="px-[20px] py-[24px]">
         <div className="mb-[16px] flex items-center gap-[8px]">
-          {ellipsisAddress(currentAccount?.address || '')}
+          <div className="text-r-neutral-body text-[15px] leading-[18px]">
+            {ellipsisAddress(currentAccount?.address || '', true)}
+          </div>
           <div
             className={clsx(
               'border-[1px] border-solid border-rabby-neutral-line rounded-[4px] text-r-neutral-foot cursor-pointer',
