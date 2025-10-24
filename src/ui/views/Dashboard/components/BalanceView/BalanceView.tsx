@@ -34,13 +34,14 @@ import {
   useHomeBalanceView,
   useRefreshHomeBalanceView,
 } from './useHomeBalanceView';
+import { RcIconJumpCC } from '@/ui/assets/dashboard';
 
 const Container = styled.div`
   .balance-view-content {
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.05);
 
-    padding: 16px 8px 16px 16px;
+    padding: 16px;
     cursor: pointer;
 
     &:hover {
@@ -381,10 +382,7 @@ export const BalanceView = ({
                     gnosisNetworks={gnosisNetworks}
                   />
                   <div className="ml-auto">
-                    <img
-                      src={ArrowNextSVG}
-                      className={clsx('w-[20px] h-[20px]')}
-                    />
+                    <RcIconJumpCC className="text-r-neutral-title2" />
                   </div>
                 </div>
               ) : (

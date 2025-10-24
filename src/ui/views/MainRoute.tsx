@@ -177,6 +177,7 @@ const Main = () => {
           <Welcome />
         </Route>
 
+        {/* todo remove */}
         <Route exact path="/sync">
           <SyncToMobile />
         </Route>
@@ -398,9 +399,11 @@ const Main = () => {
           <Bridge />
         </PrivateRoute>
 
+        {/* todo remove */}
         <PrivateRoute exact path="/approval-manage">
           <ApprovalManagePage />
         </PrivateRoute>
+        {/* todo remove */}
         <PrivateRoute exact path="/dapp-search">
           <DappSearchPage />
         </PrivateRoute>

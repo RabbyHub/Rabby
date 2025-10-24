@@ -356,8 +356,10 @@ export const DashboardPanel: React.FC<unknown> = () => {
         content: t('page.dashboard.home.panel.mobile'),
         iconClassName: 'icon-rabby-mobile',
         onClick: () => {
-          openInternalPageInTab('sync');
+          wallet.openInDesktop('/desktop/sync');
+          window.close();
         },
+        isFullscreen: true,
       } as IPanelItem,
       perps: {
         icon: RcIconPerpsCC,
@@ -468,7 +470,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
 
                     item?.onClick(evt);
                   }}
-                  className="panel-item"
+                  className="panel-item group"
                 >
                   {item.showAlert && (
                     <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
