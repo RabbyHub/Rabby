@@ -162,6 +162,9 @@ const TokenDetail = ({
     location.pathname === '/send-token' || (action === 'send' && isDesktop);
   const isBridge =
     location.pathname === '/bridge' || (action === 'bridge' && isDesktop);
+  const isInDesktopActionModal =
+    isDesktop &&
+    (action === 'send' || action === 'swap' || action === 'bridge');
 
   const handleInTokenSelect = useGetHandleTokenSelectInTokenDetails();
 
@@ -486,6 +489,7 @@ const TokenDetail = ({
               key={item.id}
               onClose={onClose}
               canClickToken={canClickToken}
+              isInDesktopActionModal={isInDesktopActionModal}
             ></HistoryItem>
           ))}
           {(loadingMore || loading) && <Loading count={5} active />}

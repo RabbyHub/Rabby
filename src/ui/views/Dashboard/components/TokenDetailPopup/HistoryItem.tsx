@@ -17,6 +17,7 @@ type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
   canClickToken?: boolean;
   onClose?: () => void;
+  isInDesktopActionModal?: boolean;
 } & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
 
 const EtherscanLink = styled.div`
@@ -34,9 +35,11 @@ export const HistoryItem = ({
   tokenDict,
   canClickToken = true,
   onClose,
+  isInDesktopActionModal,
 }: HistoryItemProps) => {
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
+  const needUseTokenDetailModal = isDesktop && !isInDesktopActionModal;
 
   const handleClickTxHash = () => {
     const chain = findChain({
@@ -87,7 +90,7 @@ export const HistoryItem = ({
           tokenDict={tokenDict}
           cateDict={cateDict}
         ></TxInterAddressExplain>
-        {isDesktop ? (
+        {needUseTokenDetailModal ? (
           <div className="flex justify-end flex-1">
             <DesktopTokenChange
               data={data}

@@ -102,23 +102,23 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
 
       {loading ? (
         <div className="border border-rabby-neutral-line rounded-[6px] overflow-hidden">
-          <DesktopLoading count={4} active />
+          <DesktopLoading count={8} active />
         </div>
       ) : (
         <>
           {isEmpty ? (
             <Empty
               title={t('page.transactions.empty.title')}
-              desc={
-                <span>
-                  <Trans i18nKey="page.transactions.empty.desc" t={t}>
-                    No transactions found on
-                    <Link className="underline" to="/settings/chain-list">
-                      supported chains
-                    </Link>
-                  </Trans>
-                </span>
-              }
+              // desc={
+              //   <span>
+              //     <Trans i18nKey="page.transactions.empty.desc" t={t}>
+              //       No transactions found on
+              //       <Link className="underline" to="/settings/chain-list">
+              //         supported chains
+              //       </Link>
+              //     </Trans>
+              //   </span>
+              // }
               className="pt-[108px]"
             />
           ) : (
@@ -132,7 +132,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
                   tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
                 />
               ))}
-              {loadingMore && <DesktopLoading count={2} active />}
+              {loadingMore && <DesktopLoading count={3} active />}
             </div>
           )}
         </>
