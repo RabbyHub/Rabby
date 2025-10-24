@@ -31,6 +31,7 @@ import {
 import { isSameAddress } from '..';
 import { Token } from 'background/service/preference';
 
+let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
 
 const filterDisplayToken = (
@@ -141,7 +142,11 @@ export const useTokens = (
       return;
     }
 
-    await dispatch.account.resetTokenList();
+    if (!isSameAddress(userAddr, lastResetTokenListAddr)) {
+      await dispatch.account.resetTokenList();
+      lastResetTokenListAddr = userAddr;
+    }
+
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
     historyLoad.current = false;
