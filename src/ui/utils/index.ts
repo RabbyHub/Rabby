@@ -28,12 +28,14 @@ const UI_TYPE = {
   Tab: 'index',
   Pop: 'popup',
   Notification: 'notification',
+  Desktop: 'desktop',
 };
 
 type UiTypeCheck = {
   isTab: boolean;
   isNotification: boolean;
   isPop: boolean;
+  isDesktop: boolean;
 };
 
 export const getUiType = (): UiTypeCheck => {
@@ -63,6 +65,7 @@ export const getUITypeName = (): string => {
   if (UIType.isPop) return 'popup';
   if (UIType.isNotification) return 'notification';
   if (UIType.isTab) return 'tab';
+  if (UIType.isDesktop) return 'desktop';
 
   return '';
 };

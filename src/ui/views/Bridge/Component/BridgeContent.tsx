@@ -50,7 +50,9 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-desktop-swap-container' : undefined;
 
 export const BridgeContent = () => {
   const { userAddress } = useRabbySelector((state) => ({
@@ -584,9 +586,11 @@ export const BridgeContent = () => {
         historyVisible={historyVisible}
         setHistoryVisible={setHistoryVisible}
         pendingNumber={pendingNumber}
+        noShowHeader={isDesktop}
         onOpenInTab={() => {
-          openInternalPageInTab(
-            `bridge?${obj2query({
+          wallet.openInDesktop(
+            `desktop/profile?${obj2query({
+              action: 'bridge',
               fromChain: fromChain || '',
               fromTokenId: fromToken?.id || '',
               inputAmount: amount || '',

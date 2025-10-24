@@ -60,7 +60,7 @@ const Unlock = () => {
         } else {
           resolveApproval();
         }
-      } else if (UiType.isTab) {
+      } else if (UiType.isTab || UiType.isDesktop) {
         history.replace(query.from && isString(query.from) ? query.from : '/');
       } else {
         history.replace('/');
@@ -85,7 +85,7 @@ const Unlock = () => {
   }, []);
 
   useEffect(() => {
-    if (UiType.isTab) {
+    if (UiType.isTab || UiType.isDesktop) {
       document.documentElement.classList.remove('dark');
     }
   }, []);

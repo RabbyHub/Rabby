@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Drawer, Button } from 'antd';
+import { Drawer, Button, DrawerProps } from 'antd';
 import BN from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
@@ -25,6 +25,7 @@ interface AccountSelectDrawerProps {
   isLoading?: boolean;
   networkId: string;
   owners?: string[];
+  getContainer?: DrawerProps['getContainer'];
 }
 
 interface AccountItemProps {
@@ -141,6 +142,7 @@ const AccountSelectDrawer = ({
   isLoading = false,
   networkId,
   owners,
+  getContainer,
 }: AccountSelectDrawerProps) => {
   const [checkedAccount, setCheckedAccount] = useState<Account | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -189,6 +191,7 @@ const AccountSelectDrawer = ({
       placement="bottom"
       maskClosable
       onClose={onCancel}
+      getContainer={getContainer}
     >
       <div className="title">{title}</div>
       <div className="list">

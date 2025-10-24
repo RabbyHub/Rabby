@@ -1613,6 +1613,29 @@ export class WalletController extends BaseController {
   };
   openIndexPage = openIndexPage;
 
+  openInDesktop = async (_url: string) => {
+    const desktopTabId = preferenceService.getPreference('desktopTabId');
+    const currentDesktopTab = desktopTabId
+      ? await Browser.tabs.get(desktopTabId).catch(() => null)
+      : null;
+
+    const url = `desktop.html#/${_url.replace(/^\//, '')}`;
+    if (currentDesktopTab) {
+      return await Browser.tabs.update(currentDesktopTab.id, {
+        active: true,
+        url: url,
+      });
+    }
+    const tab = await Browser.tabs.create({
+      active: true,
+      url: url,
+    });
+    preferenceService.setPreferencePartials({
+      desktopTabId: tab.id,
+    });
+    return tab;
+  };
+
   hasPageStateCache = () => pageStateCacheService.has();
   getPageStateCache = () => {
     if (!this.isUnlocked()) return null;

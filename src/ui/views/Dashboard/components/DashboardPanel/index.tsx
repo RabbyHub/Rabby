@@ -17,6 +17,7 @@ import styled from 'styled-components';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
+import { ReactComponent as RcIconFullscreenCC } from '@/ui/assets/fullscreen-cc.svg';
 
 import {
   RcIconApprovalsCC,
@@ -224,6 +225,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
     eventKey: string;
     iconClassName?: string;
     subContent?: React.ReactNode;
+    isFullscreen?: boolean;
   };
 
   const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
@@ -287,10 +289,12 @@ export const DashboardPanel: React.FC<unknown> = () => {
         eventKey: 'Approvals',
         content: t('page.dashboard.home.panel.approvals'),
         onClick: async (evt) => {
-          openInternalPageInTab('approval-manage');
+          wallet.openInDesktop('/desktop/profile/approvals');
+          window.close();
         },
         badge: approvalRiskAlert,
         badgeAlert: approvalRiskAlert > 0,
+        isFullscreen: true,
       } as IPanelItem,
       more: {
         icon: RcIconMoreCC,
@@ -352,8 +356,10 @@ export const DashboardPanel: React.FC<unknown> = () => {
         content: t('page.dashboard.home.panel.mobile'),
         iconClassName: 'icon-rabby-mobile',
         onClick: () => {
-          openInternalPageInTab('sync');
+          wallet.openInDesktop('/desktop/sync');
+          window.close();
         },
+        isFullscreen: true,
       } as IPanelItem,
       perps: {
         icon: RcIconPerpsCC,
@@ -464,7 +470,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
 
                     item?.onClick(evt);
                   }}
-                  className="panel-item"
+                  className="panel-item group"
                 >
                   {item.showAlert && (
                     <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
@@ -499,6 +505,14 @@ export const DashboardPanel: React.FC<unknown> = () => {
                   {item.commingSoonBadge && (
                     <div className="coming-soon-badge">
                       {t('page.dashboard.home.soon')}
+                    </div>
+                  )}
+                  {item.isFullscreen && (
+                    <div className="absolute top-[6px] right-[6px] text-r-neutral-foot hidden group-hover:block">
+                      <RcIconFullscreenCC
+                        viewBox="0 0 20 20"
+                        className="w-[12px] h-[12px]"
+                      />
                     </div>
                   )}
                 </div>

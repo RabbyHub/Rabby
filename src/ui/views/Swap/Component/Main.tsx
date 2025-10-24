@@ -62,7 +62,9 @@ import { useTwoStepSwap } from '../hooks/twoStepSwap';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-desktop-swap-container' : undefined;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -719,9 +721,10 @@ export const Main = () => {
   return (
     <>
       <Header
+        noShowHeader={isDesktop}
         onOpenInTab={() => {
-          openInternalPageInTab(
-            `dex-swap?${obj2query({
+          wallet.openInDesktop(
+            `desktop/profile?${obj2query({
               chain:
                 findChain({
                   enum: chain,
@@ -731,6 +734,7 @@ export const Main = () => {
               inputAmount,
               isMax: slider >= 100 ? 'true' : '',
               rbiSource,
+              action: 'swap',
             })}`
           );
         }}

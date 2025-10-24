@@ -11,7 +11,7 @@ import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { groupBy } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
@@ -20,7 +20,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { findChain, findChainByID } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@safe-global/types-kit';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
 import { intToHex, toChecksumAddress } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
@@ -39,6 +39,7 @@ import { splitNumberByStep } from 'ui/utils/number';
 import { getProtocol } from '@rabby-wallet/rabby-action';
 import { ReplacePopup } from './ReplacePopup';
 import { numberToHex } from 'viem';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -416,6 +417,8 @@ const GnosisTransactionItem = ({
     init();
   }, []);
 
+  const { getContainer } = usePopupContainer();
+
   return (
     <>
       <div
@@ -490,6 +493,7 @@ const GnosisTransactionItem = ({
         visible={isShowReplacePopup}
         onClose={() => setIsShowReplacePopup(false)}
         onSelect={handleReplace}
+        getContainer={getContainer}
       />
     </>
   );
@@ -670,6 +674,8 @@ export const GnosisTransactionQueueList = (props: {
     return Object.entries(transactionsGroup);
   }, [transactionsGroup]);
 
+  const { getContainer } = usePopupContainer();
+
   return (
     <div className="queue-list h-full">
       {safeInfo && list.length ? (
@@ -752,6 +758,7 @@ export const GnosisTransactionQueueList = (props: {
         isLoading={isSubmitting}
         networkId={networkId}
         owners={safeInfo?.owners}
+        getContainer={getContainer}
       />
     </div>
   );

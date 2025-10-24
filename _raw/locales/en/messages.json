@@ -3012,6 +3012,12 @@
         "searching": "Results for",
         "searchTips": "Search the web"
       }
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "appChainTips": "Hyperliquid Account not included",
+        "netWorth": "Net Worth"
+      }
     }
   },
   "component": {
@@ -3214,6 +3220,9 @@
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
+    },
+    "DesktopChainSelector": {
+      "allChains": "All Chains"
     }
   },
   "global": {

@@ -1,4 +1,5 @@
 import { Popup } from '@/ui/component';
+import { DrawerProps } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled, { createGlobalStyle } from 'styled-components';
@@ -64,11 +65,13 @@ interface ReplacePopupProps {
   visible?: boolean;
   onClose?: () => void;
   onSelect?: (value: string) => void;
+  getContainer?: DrawerProps['getContainer'];
 }
 export const ReplacePopup = ({
   visible,
   onClose,
   onSelect,
+  getContainer,
 }: ReplacePopupProps) => {
   const { t } = useTranslation();
   const options = [
@@ -89,6 +92,7 @@ export const ReplacePopup = ({
       closable
       className="safe-replace-popup"
       height={250}
+      getContainer={getContainer}
     >
       <GlobalStyle />
       <Wrapper>
