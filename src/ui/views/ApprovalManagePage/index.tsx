@@ -258,7 +258,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 380,
+      width: 360,
     },
     // Contract Trust value
     {
@@ -577,7 +577,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 180,
+      width: 200,
     },
   ];
 
@@ -770,7 +770,7 @@ function getColumnsForAsset({
       key: 'approveSpender',
       dataIndex: 'key',
       render: (_, spender) => <SpenderRow spender={spender} />,
-      width: 400,
+      width: 380,
     },
     // My Approval Time
     {
@@ -792,7 +792,7 @@ function getColumnsForAsset({
 
         return formatTimeFromNow(time ? time * 1e3 : 0);
       },
-      width: 160 + 20,
+      width: 160 + 20 + 20,
     },
   ];
 
@@ -1239,9 +1239,10 @@ const ApprovalManagePage = ({
   isDesktop?: boolean;
   desktopChain?: CHAINS_ENUM;
 }) => {
-  useTitle('Approvals - Rabby Wallet');
-
-  useReloadPageOnCurrentAccountChanged();
+  if (!isDesktop) {
+    useTitle('Approvals - Rabby Wallet');
+    useReloadPageOnCurrentAccountChanged();
+  }
 
   const { t } = useTranslation();
 
@@ -1398,12 +1399,20 @@ const ApprovalManagePage = ({
 
   return (
     <div
-      className={clsx({
-        'approvals-manager-page': !isDesktop,
-        'with-switchnet-tabs': isShowTestnet && !isDesktop,
-      })}
+      className={clsx(
+        {
+          'approvals-manager-page': !isDesktop,
+          'with-switchnet-tabs': isShowTestnet && !isDesktop,
+        },
+        'w-full max-w-full'
+      )}
     >
-      <div className="approvals-manager">
+      <div
+        className={clsx(
+          'approvals-manager',
+          isDesktop && 'approvals-manager-desktop'
+        )}
+      >
         {!isDesktop && (
           <header className="approvals-manager__header">
             {isShowTestnet && (
@@ -1432,7 +1441,7 @@ const ApprovalManagePage = ({
 
         {selectedTab === 'mainnet' ? (
           <>
-            <main className="relative">
+            <main className="relative w-full max-w-full overflow-hidden">
               <div className="approvals-manager__table-tools">
                 <PillsSwitch
                   value={tab}

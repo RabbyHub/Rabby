@@ -159,9 +159,11 @@ export const DesktopProfile = () => {
                     />
                   </Tabs.TabPane>
                   <Tabs.TabPane tab="Approvals" key="approvals">
-                    <div className="px-20 pt-[18px]">
-                      <ApprovalManagePage isDesktop={true} />
-                    </div>
+                    <ApprovalManagePage
+                      isDesktop={true}
+                      desktopChain={chain}
+                      key={`${currentAccount?.address}-${currentAccount?.type}`}
+                    />
                   </Tabs.TabPane>
                 </Tabs>
               </div>

@@ -77,6 +77,25 @@
   align-items: center;
   justify-content: center;
 
+  &.approvals-manager-desktop {
+    min-width: auto;
+    width: auto;
+    max-width: 1120px;
+    padding: 0 20px;
+    padding-top:18px;
+
+    .approvals-manager__table-tools {
+      width: auto;
+    }
+    .am-virtual-table {
+      border:1px solid var(--r-neutral-line, #e0e5ec);
+      border-radius: 8px;
+    }
+    .am-virtual-table-empty.ant-empty {
+      margin-top: 0;
+    }
+  }
+
   > .approvals-manager__header {
     flex-shrink: 0;
   }
@@ -167,10 +186,7 @@
   max-width: @main-w;
   margin: 0 auto;
 
-  &.is-desktop {
-    border:1px solid var(--r-neutral-line, #e0e5ec);
-    border-radius: 8px;
-  }
+
 
   .ant-spin-nested-loading {
     border-radius: @radius-value;

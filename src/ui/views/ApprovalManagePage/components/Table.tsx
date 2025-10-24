@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useRef,
   useState,
+  useLayoutEffect,
 } from 'react';
 import { ConfigProvider, Empty, Table } from 'antd';
 import type { TableProps } from 'antd';
@@ -18,6 +19,7 @@ import { ROW_HEIGHT, SCROLLBAR_WIDTH } from '../constant';
 import { ReactComponent as RcIconNoMatchCC } from '../icons/no-match-cc.svg';
 import { SorterResult } from 'antd/lib/table/interface';
 import { useTranslation } from 'react-i18next';
+// import { useMutationObserver, useSize } from 'ahooks';
 
 const DEFAULT_SCROLL = { y: 300, x: '100vw' };
 
@@ -225,6 +227,13 @@ export function VirtualTable<RecordType extends object>({
   const mergedColumns = useMemo(() => {
     return (columns || []).map((column) => {
       if (column.width) {
+        if (isDesktop) {
+          return {
+            ...column,
+            width: (Number(column.width) / 1160) * tableWidth,
+          };
+        }
+
         return column;
       }
 
@@ -233,7 +242,7 @@ export function VirtualTable<RecordType extends object>({
         width: Math.floor(tableWidth / widthColumnCount),
       };
     });
-  }, [columns, tableWidth, widthColumnCount]);
+  }, [columns, tableWidth, widthColumnCount, isDesktop]);
 
   const localGridRef = useRef<VGrid>(null);
 
@@ -391,14 +400,38 @@ export function VirtualTable<RecordType extends object>({
     [isLoading]
   );
 
+  const onResize = useRef(true);
+
+  useLayoutEffect(() => {
+    if (isDesktop) {
+      const resize = () => {
+        onResize.current = true;
+      };
+      window.addEventListener('resize', resize);
+      return () => {
+        window.removeEventListener('resize', resize);
+      };
+    }
+  }, [isDesktop]);
+
   return (
     <ConfigProvider renderEmpty={renderEmpty}>
       <ResizeObserver
         onResize={({ width }) => {
-          setTableWidth(width);
+          setTableWidth((e) => {
+            if (isDesktop) {
+              if (e && !onResize.current) {
+                return e;
+              }
+              onResize.current = false;
+              return width;
+            }
+            return width;
+          });
         }}
       >
         <Table<RecordType>
+          key={isDesktop ? tableWidth : undefined}
           {...props}
           className={
             overlayClassName
