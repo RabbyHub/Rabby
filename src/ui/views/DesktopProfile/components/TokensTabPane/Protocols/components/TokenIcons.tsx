@@ -71,7 +71,10 @@ export const TokensIcons = memo(
         : defaultWidth + (imgs.length - 1) * (defaultWidth - 8);
 
     return (
-      <div style={{ width: containerWidth }} className="tokenIcons">
+      <div
+        style={{ width: containerWidth, height: defaultWidth }}
+        className="tokenIcons"
+      >
         {imgs.map((v, i) => (
           <div
             style={{

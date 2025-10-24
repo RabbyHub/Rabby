@@ -15,6 +15,7 @@ import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
 import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
+import { Value } from '@/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components';
 
 const Wrapper = styled.div`
   margin-left: 10px;
@@ -186,7 +187,7 @@ const DappActions = ({
   );
 
   if (!show) {
-    return <span> </span>;
+    return <Value.String key={`dapp-actions-${type}`} value="" />;
   }
 
   return (

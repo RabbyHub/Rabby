@@ -33,10 +33,12 @@ export const TokenList = ({ list, isNoResults }) => {
       .toNumber();
   }, [list]);
 
-  const { result: currentList, isExpanded, toggleExpand } = useExpandList(
-    list,
-    totalValue
-  );
+  const {
+    result: currentList,
+    isExpanded,
+    toggleExpand,
+    hasExpandSwitch,
+  } = useExpandList(list, totalValue);
   const { t } = useTranslation();
 
   if (isNoResults) {
@@ -73,28 +75,30 @@ export const TokenList = ({ list, isNoResults }) => {
           list={currentList as TokenItemProps['item'][]}
           EmptyComponent={<div></div>}
         />
-        <div
-          onClick={toggleExpand}
-          className="flex items-center justify-center gap-4 py-[16px]"
-        >
-          <div className="text-r-neutral-foot text-13 cursor-pointer">
-            {isExpanded
-              ? 'Hide tokens with small balances.'
-              : 'Tokens with small balances are not displayed.'}
+        {hasExpandSwitch && (
+          <div
+            onClick={toggleExpand}
+            className="flex items-center justify-center gap-4 py-[16px]"
+          >
+            <div className="text-r-neutral-foot text-13 cursor-pointer">
+              {isExpanded
+                ? 'Hide tokens with small balances.'
+                : 'Tokens with small balances are not displayed.'}
+            </div>
+            <div className="flex items-center justify-center gap-[2px] cursor-pointer">
+              {isExpanded ? null : (
+                <div className="text-r-neutral-foot text-13 underline">
+                  Show all
+                </div>
+              )}
+              <RcIconDropdown
+                className={clsx('ml-0', {
+                  'transform rotate-180': isExpanded,
+                })}
+              />
+            </div>
           </div>
-          <div className="flex items-center justify-center gap-[2px] cursor-pointer">
-            {isExpanded ? null : (
-              <div className="text-r-neutral-foot text-13 underline">
-                Show all
-              </div>
-            )}
-            <RcIconDropdown
-              className={clsx('ml-0', {
-                'transform rotate-180': isExpanded,
-              })}
-            />
-          </div>
-        </div>
+        )}
       </ListContainer>
     </div>
   );

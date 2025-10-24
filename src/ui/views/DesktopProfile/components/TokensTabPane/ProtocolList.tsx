@@ -46,7 +46,6 @@ const PoolListContainer = styled.div`
 `;
 
 const ProtocolItemWrapper = styled.div`
-  background: var(--r-neutral-card-1, #f2f4f7);
   margin-bottom: 8px;
   border-radius: 8px;
 
@@ -176,7 +175,7 @@ const ProtocolItem = ({
         <div
           className={clsx(
             'flex items-center justify-start mx-[20px]',
-            'title border border-solid bg-r-neutral-card1 border-transparent rounded-[8px] h-[48px] px-0'
+            'title border border-solid border-transparent rounded-[8px] h-[48px] px-0'
           )}
         >
           <IconWithChain
@@ -240,10 +239,12 @@ const ProtocolListWrapper = styled.div`
 `;
 
 const ProtocolList = ({ list, appIds, removeProtocol, netWorth }: Props) => {
-  const { isExpanded, result: currentList, toggleExpand } = useExpandList(
-    list,
-    netWorth
-  );
+  const {
+    isExpanded,
+    result: currentList,
+    toggleExpand,
+    hasExpandSwitch,
+  } = useExpandList(list, netWorth);
 
   if (!list) return null;
 
@@ -257,28 +258,30 @@ const ProtocolList = ({ list, appIds, removeProtocol, netWorth }: Props) => {
           isAppChain={appIds?.includes(item.id)}
         />
       ))}
-      <div
-        onClick={toggleExpand}
-        className="flex items-center justify-center gap-4 py-[16px]"
-      >
-        <div className="text-r-neutral-foot text-13 cursor-pointer">
-          {isExpanded
-            ? 'Hide protocols with small deposits.'
-            : 'Protocols with small deposits are not displayed.'}
+      {hasExpandSwitch && (
+        <div
+          onClick={toggleExpand}
+          className="flex items-center justify-center gap-4 py-[16px]"
+        >
+          <div className="text-r-neutral-foot text-13 cursor-pointer">
+            {isExpanded
+              ? 'Hide protocols with small deposits.'
+              : 'Protocols with small deposits are not displayed.'}
+          </div>
+          <div className="flex items-center justify-center gap-[2px] cursor-pointer">
+            {isExpanded ? null : (
+              <div className="text-r-neutral-foot text-13 underline">
+                Show all
+              </div>
+            )}
+            <RcIconDropdown
+              className={clsx('ml-0', {
+                'transform rotate-180': isExpanded,
+              })}
+            />
+          </div>
         </div>
-        <div className="flex items-center justify-center gap-[2px] cursor-pointer">
-          {isExpanded ? null : (
-            <div className="text-r-neutral-foot text-13 underline">
-              Show all
-            </div>
-          )}
-          <RcIconDropdown
-            className={clsx('ml-0', {
-              'transform rotate-180': isExpanded,
-            })}
-          />
-        </div>
-      </div>
+      )}
     </ProtocolListWrapper>
   );
 };
