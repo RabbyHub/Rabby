@@ -18,7 +18,12 @@ const SwapBottom = ({ onClick }: { onClick?: () => void }) => {
   return (
     <div
       onClick={onClick}
-      className="px-10 h-[24px] leading-[24px] text-r-blue-default text-12 font-medium rounded-[4px] border-[0.5px] border-r-blue-default w-min cursor-pointer"
+      className={`
+        px-10 h-[24px] leading-[24px] 
+        text-r-blue-default text-12 font-medium rounded-[4px] 
+        border-[0.5px] border-r-blue-default w-min cursor-pointer 
+        hover:bg-r-blue-light1
+      `}
     >
       Swap
     </div>

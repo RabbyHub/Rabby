@@ -7,7 +7,7 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 
 import { getCollectionDisplayName } from './nft';
-import { formatLittleNumber, formatNumber, formatUsdValue } from '@/ui/utils';
+import { formatLittleNumber, formatAmount, formatUsdValue } from '@/ui/utils';
 import { HelperTooltip } from '../components/HelperTooltip';
 import { ReactComponent as IconWarning } from 'ui/assets/search/RcIconDanger.svg';
 import { TokensIcons } from '../components/TokenIcons';
@@ -102,7 +102,7 @@ export function TokensAmount({
               className="flex text-[15px] text-r-neutral-title1 font-medium items-center"
               style={{ marginTop: i === 0 ? 0 : 4 }}
             >
-              {`${formatNumber(v.amount)} `}
+              {`${formatAmount(v.amount)} `}
               <DesktopTokenLabel
                 token={v}
                 canClickToken={!!v?.id && !!v?.chain}
@@ -115,9 +115,11 @@ export function TokensAmount({
                     : ''
                 )}
               />{' '}
-              {v.price !== 0 &&
-                withPrice &&
-                `(${formatUsdValue((v.price ?? 0) * v.amount)})`}
+              {v.price !== 0 && withPrice && (
+                <span className="ml-6">{`(${formatUsdValue(
+                  (v.price ?? 0) * v.amount
+                )})`}</span>
+              )}
               {!v.price && (
                 <HelperTooltip title="No price available at the moment">
                   <IconWarning
