@@ -4,7 +4,9 @@ import MiniSignTxV2 from '@/ui/views/Approval/components/MiniSignTx/MiniSignTxV2
 import { supportedHardwareDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { Modal } from '@/ui/component';
 
-export const GlobalSignerPortal: React.FC = () => {
+export const GlobalSignerPortal: React.FC<{
+  isDesktop?: boolean;
+}> = React.memo(({ isDesktop }) => {
   const state = useSignatureStore();
   const { config, ctx, status } = state;
 
@@ -12,7 +14,7 @@ export const GlobalSignerPortal: React.FC = () => {
 
   return (
     <>
-      <MiniSignTxV2 />
+      <MiniSignTxV2 isDesktop={isDesktop} />
       {ctx?.mode === 'direct' &&
       status !== 'ready' &&
       !supportedHardwareDirectSign(config?.account.type || '') ? (
@@ -34,4 +36,4 @@ export const GlobalSignerPortal: React.FC = () => {
       ) : null}
     </>
   );
-};
+});

@@ -9,6 +9,7 @@ import { useRabbyDispatch } from 'ui/store';
 import { DisplayedToken } from 'ui/utils/portfolio/project';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { useLocation } from 'react-router-dom';
+import { DrawerProps } from 'antd';
 
 const isDesktop = getUiType().isDesktop;
 
@@ -21,6 +22,7 @@ interface TokenDetailProps {
   hideOperationButtons?: boolean;
   tipsFromTokenSelect?: string;
   account?: Account;
+  getContainer?: DrawerProps['getContainer'];
 }
 export const TokenDetailPopup = ({
   token,
@@ -31,6 +33,7 @@ export const TokenDetailPopup = ({
   hideOperationButtons = false,
   tipsFromTokenSelect,
   account,
+  getContainer: getContainerProps,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -47,7 +50,7 @@ export const TokenDetailPopup = ({
     ? isInSendModal
       ? '.js-rabby-popup-container'
       : '.js-rabby-desktop-swap-container'
-    : undefined;
+    : getContainerProps;
   const isInSwap = location.pathname === '/dex-swap';
   const isInSend = location.pathname === '/send-token';
   const isBridge = location.pathname === '/bridge';
