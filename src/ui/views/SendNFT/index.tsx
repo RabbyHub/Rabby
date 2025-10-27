@@ -52,6 +52,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ToAddressCard } from '../SendToken';
 import { PendingTxItem } from '../Swap/Component/PendingTxItem';
 import { SendNftTxHistoryItem } from '@/background/service/transactionHistory';
+import { UI_TYPE } from '@/constant/ui';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -473,6 +474,8 @@ const SendNFT = () => {
     }
   }, [toAddress, form]);
 
+  const location = useLocation();
+
   const [gasFeeOpen, setGasFeeOpen] = useState(false);
 
   return (
@@ -536,7 +539,19 @@ const SendNFT = () => {
                         encodeURIComponent(JSON.stringify(nftItem))
                       );
                       query.set('to', toAddress);
-                      history.replace(`/send-poly?${query.toString()}`);
+                      if (UI_TYPE.isDesktop) {
+                        query.set('action', 'send-nft');
+                        query.set('sendPageType', 'sendPoly');
+
+                        const pathname = location.pathname.startsWith(
+                          '/desktop/profile'
+                        )
+                          ? location.pathname
+                          : '/desktop/profile';
+                        history.replace(`${pathname}?${query.toString()}`);
+                      } else {
+                        history.replace(`/send-poly?${query.toString()}`);
+                      }
                     }}
                   >
                     <RcIconSwitchCC width={20} height={20} />
