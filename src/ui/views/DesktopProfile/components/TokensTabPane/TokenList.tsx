@@ -15,6 +15,8 @@ import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPo
 export interface Props {
   list?: TokenItemProps['item'][];
   isNoResults?: boolean;
+  allMode?: boolean;
+  onAllModeChange?: (allMode: boolean) => void;
 }
 
 const ListContainer = styled.div`
@@ -26,7 +28,12 @@ const ListContainer = styled.div`
   margin: 0 20px;
 `;
 
-export const TokenList = ({ list, isNoResults }) => {
+export const TokenList = ({
+  list,
+  isNoResults,
+  allMode,
+  onAllModeChange,
+}: Props) => {
   const totalValue = React.useMemo(() => {
     return list
       ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
@@ -60,22 +67,22 @@ export const TokenList = ({ list, isNoResults }) => {
             </div>
           </div>
           <div className="flex items-center gap-[6px]">
-            <Switch checked={isExpanded} onChange={toggleExpand} />
+            <Switch checked={allMode} onChange={onAllModeChange} />
             <div className="text-[13px] font-normal text-r-neutral-body">
               View All Token
             </div>
           </div>
         </div>
         <div className="text-[15px] text-r-neutral-title1 font-medium">
-          {formatUsdValueKMB(totalValue)}
+          {formatUsdValueKMB(totalValue || 0)}
         </div>
       </div>
       <ListContainer>
         <TokenTable
-          list={currentList as TokenItemProps['item'][]}
+          list={allMode ? list : (currentList as TokenItemProps['item'][])}
           EmptyComponent={<div></div>}
         />
-        {hasExpandSwitch && (
+        {hasExpandSwitch && !allMode && (
           <div
             onClick={toggleExpand}
             className="flex items-center justify-center gap-4 py-[16px]"
