@@ -20,8 +20,7 @@ const HeaderRow = styled(FlexRow)`
   width: 100%;
   font-size: 12px;
   font-weight: bold;
-  color: var(--color-light-blue-title);
-  background-color: var(--bg-white-color);
+  color: var(--r-neutral-title1);
   line-height: 15px;
   min-width: 800px;
 
@@ -82,9 +81,8 @@ const ContentRow = styled(FlexRow)`
 const Content = styled.div`
   width: 100%;
   font-size: 14px;
-  color: var(--color-title);
+  color: var(--r-neutral-title1);
   line-height: 17px;
-  font-family: 'Noto Sans', 'Subset';
 
   > div {
     border-bottom: 0.5px solid var(--r-neutral-line);
