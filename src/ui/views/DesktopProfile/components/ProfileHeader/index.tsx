@@ -48,7 +48,6 @@ export const ProfileHeader: React.FC<{
 }> = (props) => {
   const currentAccount = useCurrentAccount();
   const history = useHistory();
-  const [isShowRecordModal, setIsShowRecordModal] = useState(false);
   const [isShowQueueModal, setIsShowQueueModal] = useState(false);
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const dispatch = useRabbyDispatch();
@@ -188,7 +187,9 @@ export const ProfileHeader: React.FC<{
                   'rounded-[8px] border-[1px] border-solid border-rabby-orange-default'
                 )}
                 onClick={() => {
-                  setIsShowRecordModal(true);
+                  history.replace(
+                    history.location.pathname + '?action=activities'
+                  );
                 }}
               >
                 <RcIconSpinCC className="w-[16px] h-[16px] animate-spin text-r-orange-default" />
@@ -200,14 +201,6 @@ export const ProfileHeader: React.FC<{
           </div>
         </div>
       </div>
-
-      <SignatureRecordModal
-        visible={isShowRecordModal}
-        onCancel={() => {
-          setIsShowRecordModal(false);
-        }}
-        destroyOnClose
-      />
 
       <GnosisQueueModal
         visible={isShowQueueModal}

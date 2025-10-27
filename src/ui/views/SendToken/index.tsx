@@ -1590,7 +1590,7 @@ const SendToken = () => {
         className={clsx(
           'send-token',
           isDesktop
-            ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
+            ? 'w-full h-full overflow-auto min-h-0 rounded-[8px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >

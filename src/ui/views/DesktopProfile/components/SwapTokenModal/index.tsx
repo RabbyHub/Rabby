@@ -4,6 +4,7 @@ import Swap from '../../../Swap';
 import { Bridge } from '../../../Bridge';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { ModalCloseIcon } from '../TokenDetailModal';
 
 export const SwapTokenModal: React.FC<
   ModalProps & { type?: 'swap' | 'bridge' }
@@ -27,17 +28,22 @@ export const SwapTokenModal: React.FC<
   return (
     <Modal
       {...modalProps}
-      className="desktop-swap-token-modal"
+      className="desktop-swap-token-modal modal-support-darkmode"
       width={400}
       title={null}
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
-      maskClosable={false}
+      maskClosable={true}
       footer={null}
       zIndex={1000}
-      maskStyle={{ zIndex: 1000 }}
+      closeIcon={ModalCloseIcon}
+      maskStyle={{
+        zIndex: 1000,
+        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      }}
     >
-      <div className="js-rabby-desktop-swap-container">
-        <div className="flex justify-center mt-12 mb-12">
+      <div className="js-rabby-desktop-swap-container bg-r-neutral-bg-2">
+        <div className="flex justify-center mt-12 mb-12 ">
           <div className="inline-flex items-center bg-r-neutral-line rounded-[6px] border border-rabby-neutral-line">
             {tabs.map((tab) => {
               const isActive = tab.key === activeTab;

@@ -22,6 +22,8 @@ import { useCurve } from '../Dashboard/components/BalanceView/useCurve';
 import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
 import { UpdateButton } from './components/UpdateButton';
 import { useMemoizedFn } from 'ahooks';
+import { ReceiveTokenModal } from './components/ReceiveTokenModal';
+import { SignatureRecordModal } from './components/SignatureRecordModal';
 
 const Wrap = styled.div`
   height: 100%;
@@ -190,6 +192,18 @@ export const DesktopProfile = () => {
       <SwapTokenModal
         visible={action === 'swap' || action === 'bridge'}
         type={action === 'swap' ? 'swap' : 'bridge'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+      />
+      <ReceiveTokenModal
+        visible={action === 'receive'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+      />
+      <SignatureRecordModal
+        visible={action === 'activities'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
