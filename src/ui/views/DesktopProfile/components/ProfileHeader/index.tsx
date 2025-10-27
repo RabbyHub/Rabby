@@ -2,7 +2,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { BalanceView } from './BalanceView';
 import {
   RcIconBridgeCC,
@@ -48,7 +48,7 @@ export const ProfileHeader: React.FC<{
 }> = (props) => {
   const currentAccount = useCurrentAccount();
   const history = useHistory();
-  const [isShowRecordModal, setIsShowRecordModal] = useState(false);
+  const location = useLocation();
   const [isShowQueueModal, setIsShowQueueModal] = useState(false);
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const dispatch = useRabbyDispatch();
@@ -188,7 +188,9 @@ export const ProfileHeader: React.FC<{
                   'rounded-[8px] border-[1px] border-solid border-rabby-orange-default'
                 )}
                 onClick={() => {
-                  setIsShowRecordModal(true);
+                  history.replace(
+                    `${location.pathname}?action=signature-record`
+                  );
                 }}
               >
                 <RcIconSpinCC className="w-[16px] h-[16px] animate-spin text-r-orange-default" />
@@ -200,14 +202,6 @@ export const ProfileHeader: React.FC<{
           </div>
         </div>
       </div>
-
-      <SignatureRecordModal
-        visible={isShowRecordModal}
-        onCancel={() => {
-          setIsShowRecordModal(false);
-        }}
-        destroyOnClose
-      />
 
       <GnosisQueueModal
         visible={isShowQueueModal}

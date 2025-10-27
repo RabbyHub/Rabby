@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { openNFTLinkFromChainItem } from '@/ui/views/ApprovalManagePage/utils';
 import { findChainByServerID } from '@/utils/chain';
+import { UI_TYPE } from '@/constant/ui';
 
 interface ContentProps {
   data?: NFTItem;
@@ -50,7 +51,14 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
       )
     );
 
-    history.push(`/send-poly?${query.toString()}`);
+    if (UI_TYPE.isDesktop) {
+      const pathname = location.pathname.startsWith('/desktop/profile')
+        ? location.pathname
+        : '/desktop/profile';
+      history.push(`${pathname}?action=send-nft&${query.toString()}`);
+    } else {
+      history.push(`/send-poly?${query.toString()}`);
+    }
   };
 
   const onDetail = () => {

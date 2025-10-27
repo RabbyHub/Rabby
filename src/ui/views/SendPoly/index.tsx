@@ -195,6 +195,13 @@ const SendPoly = () => {
     const query = new URLSearchParams(history.location.search);
     query.set('to', address);
     query.set('nftItem', nftItem || '');
+    if (getUiType().isDesktop) {
+      query.set('sendPageType', 'sendNft');
+      query.set('action', 'send-nft');
+      history.push(`/desktop/profile?${query.toString()}`);
+      return;
+    }
+
     // avoid again jump send nft when tx done nft amount error
     history.replace(`/send-nft?${query.toString()}`);
   };

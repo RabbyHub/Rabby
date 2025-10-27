@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,9 @@ import { useCurve } from '../Dashboard/components/BalanceView/useCurve';
 import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
 import { UpdateButton } from './components/UpdateButton';
 import { useMemoizedFn } from 'ahooks';
+import { NftTabModal } from './components/NftTabModal';
+import { SendNftModal } from './components/SendNftModal';
+import { SignatureRecordModal } from './components/SignatureRecordModal';
 
 const Wrap = styled.div`
   height: 100%;
@@ -74,6 +77,10 @@ export const DesktopProfile = () => {
   const history = useHistory();
   const activeTab = useParams<{ activeTab: string }>().activeTab || 'tokens';
   const handleTabChange = (key: string) => {
+    if (key === 'nft') {
+      history.replace(`/desktop/profile?action=${key}`);
+      return;
+    }
     history.replace(`/desktop/profile/${key}`);
   };
   const location = useLocation();
@@ -100,12 +107,18 @@ export const DesktopProfile = () => {
   const isUpdating = isBalanceLoading || isCurveLoading;
   const [updatedAt, setUpdatedAt] = useState(Date.now());
   const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    if (!isUpdating) {
+      // todo
+      setUpdatedAt(Date.now());
+    }
+  }, [isUpdating]);
+
   const handleUpdate = useMemoizedFn(async () => {
     setRefreshKey((prev) => prev + 1);
     await refreshBalance();
     await refreshCurve();
-    // todo
-    setUpdatedAt(Date.now());
   });
 
   return (
@@ -153,9 +166,7 @@ export const DesktopProfile = () => {
                   <Tabs.TabPane tab="Tokens" key="tokens">
                     <TokensTabPane selectChainId={chainInfo?.serverId} />
                   </Tabs.TabPane>
-                  <Tabs.TabPane tab="NFTs" key="nft">
-                    Content of Tab Pane 2
-                  </Tabs.TabPane>
+                  <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane>
                   <Tabs.TabPane tab="Transactions" key="transactions">
                     <TransactionsTabPane
                       selectChainId={chainInfo?.serverId}
@@ -193,6 +204,27 @@ export const DesktopProfile = () => {
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
+      />
+      <NftTabModal
+        visible={action === 'nft'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <SendNftModal
+        visible={action === 'send-nft'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
+      />
+      <SignatureRecordModal
+        visible={action === 'signature-record'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
       />
     </>
   );

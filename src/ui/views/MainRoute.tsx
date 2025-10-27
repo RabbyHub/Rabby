@@ -403,7 +403,7 @@ const Main = () => {
         <PrivateRoute exact path="/approval-manage">
           <ApprovalManagePage />
         </PrivateRoute>
-        {/* todo remove */}
+
         <PrivateRoute exact path="/dapp-search">
           <DappSearchPage />
         </PrivateRoute>
