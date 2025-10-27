@@ -71,7 +71,8 @@ export const DesktopChainSelector: React.FC<Props> = ({
           <div
             className={clsx(
               'flex items-center gap-[4px] cursor-pointer',
-              'text-[13px] leading-[16px] text-r-neutral-foot'
+              'text-[13px] leading-[16px] text-r-neutral-foot',
+              'hover:text-r-blue-default'
             )}
           >
             {t('component.DesktopChainSelector.allChains')}

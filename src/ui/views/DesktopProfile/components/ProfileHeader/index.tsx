@@ -99,6 +99,7 @@ export const ProfileHeader: React.FC<{
           <Popover
             placement="bottom"
             overlayClassName="global-qr-code-popover"
+            trigger={'click'}
             content={
               <div>
                 <QRCode value={currentAccount.address || ''} size={250} />
@@ -123,7 +124,9 @@ export const ProfileHeader: React.FC<{
             className={clsx(
               'w-[112px] px-[16px] py-[12px] rounded-[8px] bg-r-neutral-card-2',
               'flex items-center gap-[8px] cursor-pointer',
-              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium'
+              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium',
+              'border-[1px] border-solid border-transparent',
+              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=swap');
@@ -136,7 +139,9 @@ export const ProfileHeader: React.FC<{
             className={clsx(
               'w-[112px] px-[16px] py-[12px] rounded-[8px] bg-r-neutral-card-2',
               'flex items-center gap-[8px] cursor-pointer',
-              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium'
+              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium',
+              'border-[1px] border-solid border-transparent',
+              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=send');
@@ -149,7 +154,9 @@ export const ProfileHeader: React.FC<{
             className={clsx(
               'w-[112px] px-[16px] py-[12px] rounded-[8px] bg-r-neutral-card-2',
               'flex items-center gap-[8px] cursor-pointer',
-              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium'
+              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium',
+              'border-[1px] border-solid border-transparent',
+              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=bridge');
@@ -164,7 +171,9 @@ export const ProfileHeader: React.FC<{
                 className={clsx(
                   'px-[16px] py-[12px] rounded-[8px] bg-r-neutral-card-2',
                   'flex items-center gap-[8px] cursor-pointer',
-                  'text-r-neutral-title1 text-[13px] leading-[16px] font-medium'
+                  'text-r-neutral-title1 text-[13px] leading-[16px] font-medium',
+                  'border-[1px] border-solid border-transparent',
+                  'hover:border-rabby-blue-default hover:bg-r-blue-light1'
                 )}
                 onClick={() => {
                   setIsShowQueueModal(true);

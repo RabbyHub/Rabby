@@ -817,9 +817,7 @@ const SettingsInner = ({
             });
 
             reportSettings('Search Dapps');
-            // openInternalPageInTab('dapp-search');
-            wallet.openInDesktop('/desktop/dapp-search');
-            window.close();
+            openInternalPageInTab('dapp-search');
           },
         },
         {

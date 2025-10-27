@@ -114,10 +114,16 @@ const AccountItem: React.FC<{
         'rounded-[8px] opacity-90',
         'px-[16px] py-[14px]',
         'cursor-pointer',
+        'border-[1px] border-solid border-transparent',
         isSelected
-          ? 'bg-r-blue-default shadow-[0_4px_12px_0_rgba(30,58,116,0.08)]'
-          : 'bg-r-neutral-card1 shadow-[0_4px_8px_0_rgba(0,0,0,0.10)]'
+          ? 'bg-r-blue-default'
+          : 'bg-r-neutral-card1 hover:bg-r-blue-light1 hover:border-rabby-blue-default'
       )}
+      style={{
+        boxShadow: isSelected
+          ? '0 4px 12px 0 rgba(30, 58, 116, 0.08)'
+          : '0 4px 8px 0 rgba(0, 0, 0, 0.10)',
+      }}
       onClick={onClick}
     >
       <div className="flex items-center gap-[6px]">

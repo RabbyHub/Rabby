@@ -47,12 +47,6 @@ import { CurveModal } from './CurveModal';
 const Container = styled.div`
   margin-bottom: 24px;
   .balance-view-content {
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
   }
 `;
 
@@ -97,7 +91,7 @@ export const BalanceView: React.FC<{
                 )}
               </div>
               <div
-                className="flex flex-end items-center gap-[8px] mb-[7px] min-h-[20px] cursor-pointer relative"
+                className="flex flex-end items-center gap-[8px] mb-[7px] min-h-[20px] relative"
                 onClick={(e) => {
                   // e.preventDefault();
                   // e.stopPropagation();

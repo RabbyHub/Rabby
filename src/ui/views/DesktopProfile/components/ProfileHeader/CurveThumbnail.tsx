@@ -40,8 +40,8 @@ const CurveWrapper = styled.div`
 
 const CurveGlobalStyle = createGlobalStyle`
   :root {
-    --color-curve-green: #28E43B;
-    --color-curve-red: #FF6A6B;
+    --color-curve-green: #2ABB7F;
+    --color-curve-red: #E34935;
   }
 `;
 

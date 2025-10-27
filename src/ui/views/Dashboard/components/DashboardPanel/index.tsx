@@ -17,7 +17,6 @@ import styled from 'styled-components';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
-import { ReactComponent as RcIconFullscreenCC } from '@/ui/assets/fullscreen-cc.svg';
 
 import {
   RcIconApprovalsCC,
@@ -46,6 +45,7 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
+import { RcIconFullscreenCC } from '@/ui/assets/dashboard';
 
 const Container = styled.div`
   position: relative;
@@ -356,8 +356,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
         content: t('page.dashboard.home.panel.mobile'),
         iconClassName: 'icon-rabby-mobile',
         onClick: () => {
-          wallet.openInDesktop('/desktop/sync');
-          window.close();
+          openInternalPageInTab('sync');
         },
         isFullscreen: true,
       } as IPanelItem,
@@ -509,10 +508,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
                   )}
                   {item.isFullscreen && (
                     <div className="absolute top-[6px] right-[6px] text-r-neutral-foot hidden group-hover:block">
-                      <RcIconFullscreenCC
-                        viewBox="0 0 20 20"
-                        className="w-[12px] h-[12px]"
-                      />
+                      <RcIconFullscreenCC className="w-[12px] h-[12px]" />
                     </div>
                   )}
                 </div>

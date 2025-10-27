@@ -46,6 +46,10 @@ const Wrap = styled.div`
 
     padding-top: 15px;
     padding-bottom: 15px;
+
+    &:hover {
+      color: var(--r-blue-default, #4c65ff);
+    }
   }
   .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap {
     padding-left: 20px;
