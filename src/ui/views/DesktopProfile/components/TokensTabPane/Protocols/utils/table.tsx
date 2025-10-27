@@ -115,9 +115,11 @@ export function TokensAmount({
                     : ''
                 )}
               />{' '}
-              {v.price !== 0 &&
-                withPrice &&
-                `(${formatUsdValue((v.price ?? 0) * v.amount)})`}
+              {v.price !== 0 && withPrice && (
+                <span className="ml-6">{`(${formatUsdValue(
+                  (v.price ?? 0) * v.amount
+                )})`}</span>
+              )}
               {!v.price && (
                 <HelperTooltip title="No price available at the moment">
                   <IconWarning
