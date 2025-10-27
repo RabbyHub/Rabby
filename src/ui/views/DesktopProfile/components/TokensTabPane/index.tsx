@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import {
@@ -24,6 +24,7 @@ export const TokensTabPane: React.FC<Props> = ({
     currentAccount: s.account.currentAccount,
   }));
   const { setApps } = useCommonPopupView();
+  const [allMode, setAllMode] = useState(false);
 
   const {
     isTokensLoading,
@@ -105,22 +106,29 @@ export const TokensTabPane: React.FC<Props> = ({
           <TokenListSkeleton />
         </div>
       ) : (
-        <TokenList list={sortTokens} isNoResults={isNoResults} />
+        <TokenList
+          allMode={allMode}
+          onAllModeChange={setAllMode}
+          list={sortTokens}
+          isNoResults={isNoResults}
+        />
       )}
 
-      <div>
-        {isPortfoliosLoading && isAppPortfoliosLoading ? (
-          <TokenListSkeleton />
-        ) : (
-          <ProtocolList
-            removeProtocol={removeProtocol}
-            appIds={appIds}
-            netWorth={currentPortfolioNetWorth}
-            isSearch={false}
-            list={displayPortfolios}
-          />
-        )}
-      </div>
+      {!allMode && (
+        <div>
+          {isPortfoliosLoading && isAppPortfoliosLoading ? (
+            <TokenListSkeleton />
+          ) : (
+            <ProtocolList
+              removeProtocol={removeProtocol}
+              appIds={appIds}
+              netWorth={currentPortfolioNetWorth}
+              isSearch={false}
+              list={displayPortfolios}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

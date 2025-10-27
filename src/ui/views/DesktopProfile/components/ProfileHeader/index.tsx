@@ -189,7 +189,7 @@ export const ProfileHeader: React.FC<{
                 )}
                 onClick={() => {
                   history.replace(
-                    `${location.pathname}?action=signature-record`
+                    history.location.pathname + '?action=activities'
                   );
                 }}
               >

@@ -16,7 +16,7 @@ export const DesktopLoading = ({
         return (
           <div
             key={index}
-            className="flex h-[100px] items-center border-b px-16 border-rabby-neutral-line"
+            className="flex h-[100px] items-center border-b-[0.5px] px-16 border-rabby-neutral-line"
           >
             {/* Column 1 - Time and Hash */}
             <div className="w-[180px] flex-shrink-0">

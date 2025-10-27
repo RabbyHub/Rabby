@@ -44,7 +44,7 @@ export const DesktopHistoryItem = ({
   return (
     <div
       className={clsx(
-        'flex h-[100px] items-center border-b px-16 border-rabby-neutral-line relative',
+        'flex h-[100px] items-center border-b-[0.5px] px-16 border-rabby-neutral-line relative',
         (isScam || isFailed) && 'opacity-50'
       )}
     >

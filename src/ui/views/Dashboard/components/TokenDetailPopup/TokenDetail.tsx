@@ -189,18 +189,36 @@ const TokenDetail = ({
   const goToReceive = useCallback(() => {
     setVisible(false);
     onClose?.();
-    history.push(
-      `/receive?rbisource=tokendetail&chain=${
-        getChain(token?.chain)?.enum
-      }&token=${token?.symbol}`
-    );
-  }, [history, token]);
+    if (isDesktop) {
+      wallet.openInDesktop(
+        `desktop/profile?rbisource=tokendetail&action=receive&chain=${
+          getChain(token?.chain)?.enum
+        }&token=${token?.symbol}`
+      );
+    } else {
+      history.push(
+        `/receive?rbisource=tokendetail&chain=${
+          getChain(token?.chain)?.enum
+        }&token=${token?.symbol}`
+      );
+    }
+  }, [history, token, isDesktop]);
 
   const gotoBridge = useCallback(() => {
     setVisible(false);
     onClose?.();
     if (isBridge && handleInTokenSelect) {
       handleInTokenSelect(token);
+    } else {
+      if (isDesktop) {
+        wallet.openInDesktop(
+          `desktop/profile?rbisource=tokendetail&action=bridge&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
+        );
+      } else {
+        history.push(
+          `/bridge?rbisource=tokendetail&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
+        );
+      }
     }
   }, [history, token]);
 
@@ -294,7 +312,15 @@ const TokenDetail = ({
         >
           {t('page.dashboard.tokenDetail.swap')}
         </Button>
-
+        <Button
+          type="primary"
+          ghost
+          size="large"
+          className="flex-1 h-[40px] leading-[18px] rabby-btn-ghost"
+          onClick={gotoBridge}
+        >
+          {t('page.dashboard.tokenDetail.bridge')}
+        </Button>
         <Button
           type="primary"
           ghost
@@ -304,17 +330,15 @@ const TokenDetail = ({
         >
           {t('page.dashboard.tokenDetail.send')}
         </Button>
-        {!isDesktop && (
-          <Button
-            type="primary"
-            ghost
-            size="large"
-            className="flex-1 h-[40px] leading-[18px] rabby-btn-ghost"
-            onClick={goToReceive}
-          >
-            {t('page.dashboard.tokenDetail.receive')}
-          </Button>
-        )}
+        <Button
+          type="primary"
+          ghost
+          size="large"
+          className="flex-1 h-[40px] leading-[18px] rabby-btn-ghost"
+          onClick={goToReceive}
+        >
+          {t('page.dashboard.tokenDetail.receive')}
+        </Button>
       </div>
     );
   }, [

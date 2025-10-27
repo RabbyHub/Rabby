@@ -101,7 +101,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
       </Modal> */}
 
       {loading ? (
-        <div className="border border-rabby-neutral-line rounded-[6px] overflow-hidden">
+        <div className="border border-[0.5px] border-rabby-neutral-line rounded-[6px] overflow-hidden">
           <DesktopLoading count={8} active />
         </div>
       ) : (
@@ -122,7 +122,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
               className="pt-[108px]"
             />
           ) : (
-            <div className="border border-rabby-neutral-line rounded-[6px] overflow-hidden">
+            <div className="border border-[0.5px] border-rabby-neutral-line rounded-[6px] overflow-hidden">
               {data?.list?.map((item) => (
                 <DesktopHistoryItem
                   key={item.id}

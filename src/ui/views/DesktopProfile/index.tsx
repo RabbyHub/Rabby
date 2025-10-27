@@ -24,6 +24,7 @@ import { UpdateButton } from './components/UpdateButton';
 import { useMemoizedFn } from 'ahooks';
 import { NftTabModal } from './components/NftTabModal';
 import { SendNftModal } from './components/SendNftModal';
+import { ReceiveTokenModal } from './components/ReceiveTokenModal';
 import { SignatureRecordModal } from './components/SignatureRecordModal';
 
 const Wrap = styled.div`
@@ -219,12 +220,18 @@ export const DesktopProfile = () => {
         }}
         destroyOnClose
       />
-      <SignatureRecordModal
-        visible={action === 'signature-record'}
+
+      <ReceiveTokenModal
+        visible={action === 'receive'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
-        destroyOnClose
+      />
+      <SignatureRecordModal
+        visible={action === 'activities'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
       />
     </>
   );

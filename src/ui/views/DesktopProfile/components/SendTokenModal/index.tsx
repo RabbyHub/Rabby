@@ -4,6 +4,7 @@ import SendToken from '../../../SendToken';
 import SendPoly from '../../../SendPoly';
 import WhitelistInput from '../../../WhitelistInput';
 import { useLocation } from 'react-router-dom';
+import { ModalCloseIcon } from '../TokenDetailModal';
 
 export const SendTokenModal: React.FC<ModalProps> = (props) => {
   const location = useLocation();
@@ -25,14 +26,19 @@ export const SendTokenModal: React.FC<ModalProps> = (props) => {
   return (
     <Modal
       {...props}
-      className="desktop-swap-token-modal"
+      className="desktop-swap-token-modal modal-support-darkmode"
       width={400}
       title={null}
       bodyStyle={{ background: 'transparent', maxHeight: 'unset', padding: 0 }}
-      maskClosable={false}
+      maskClosable={true}
+      closeIcon={ModalCloseIcon}
       footer={null}
       zIndex={1000}
-      maskStyle={{ zIndex: 1000 }}
+      maskStyle={{
+        zIndex: 1000,
+        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      }}
     >
       {SendPage}
     </Modal>

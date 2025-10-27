@@ -11,6 +11,9 @@ import { useHistory } from 'react-router-dom';
 import { getUiType } from '@/ui/utils';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 const isTab = getUiType().isTab;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-desktop-swap-container' : undefined;
 
 export const Header = ({
   onOpenInTab,
@@ -76,14 +79,14 @@ export const Header = ({
         onClose={useCallback(() => {
           setHistoryVisible(false);
         }, [])}
-        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+        getContainer={getContainer}
       />
       <RabbyFeePopup
         visible={visible}
         dexName={dexName}
         feeDexDesc={feeDexDesc}
         onClose={() => setRabbyFeeVisible({ visible: false })}
-        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+        getContainer={getContainer}
       />
     </>
   );

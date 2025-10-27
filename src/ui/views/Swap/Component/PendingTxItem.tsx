@@ -35,9 +35,11 @@ import type {
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Image } from 'antd';
 import { BridgeHistory, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { getUiType } from '@/ui/utils';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import { UI_TYPE } from '@/constant/ui';
 
+const isDesktop = getUiType().isDesktop;
 type PendingTxData =
   | SwapTxHistoryItem
   | SendNftTxHistoryItem
@@ -250,10 +252,12 @@ export const PendingTxItem = forwardRef<
     }
     if (type === 'bridge' && openBridgeHistory) {
       openBridgeHistory();
-    } else if (UI_TYPE.isDesktop) {
-      history.push('/desktop/profile?action=signature-record');
     } else {
-      history.push('/activities');
+      if (isDesktop) {
+        wallet.openInDesktop('desktop/profile?action=activities');
+      } else {
+        history.push('/activities');
+      }
     }
   });
 
