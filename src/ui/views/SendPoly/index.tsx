@@ -348,8 +348,14 @@ const SendPoly = () => {
             isTabOrDesktop ? null : (
               <div
                 className="text-r-neutral-title1 absolute right-0 cursor-pointer"
-                onClick={() => {
-                  openInternalPageInTab(`send-poly${history.location.search}`);
+                onClick={async () => {
+                  // openInternalPageInTab(`send-poly${history.location.search}`);
+                  await wallet.openInDesktop(
+                    `/desktop/profile?action=send&${history.location.search.slice(
+                      1
+                    )}`
+                  );
+                  window.close();
                 }}
               >
                 <RcIconFullscreen />

@@ -307,11 +307,11 @@ export const DashboardPanel: React.FC<unknown> = () => {
         eventKey: 'NFT',
         content: t('page.dashboard.home.panel.nft'),
         onClick: async () => {
-          // history.push('/nft');
-          await wallet.openInDesktop('/desktop/profile?action=nft');
-          window.close();
+          history.push('/nft');
+          // await wallet.openInDesktop('/desktop/profile?action=nft');
+          // window.close();
         },
-        isFullscreen: true,
+        // isFullscreen: true,
       } as IPanelItem,
       ecology: {
         icon: RcIconEco,

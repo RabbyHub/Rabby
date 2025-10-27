@@ -1604,8 +1604,14 @@ const SendToken = () => {
             isDesktop ? null : (
               <div
                 className="text-r-neutral-title1 cursor-pointer absolute right-0 top-1/2 -translate-y-1/2"
-                onClick={() => {
-                  openInternalPageInTab(`send-token${history.location.search}`);
+                onClick={async () => {
+                  // openInternalPageInTab(`send-token${history.location.search}`);
+                  await wallet.openInDesktop(
+                    `/desktop/profile?action=send&sendPageType=sendToken&${history.location.search.slice(
+                      1
+                    )}`
+                  );
+                  window.close();
                 }}
               >
                 <RcIconFullscreen />

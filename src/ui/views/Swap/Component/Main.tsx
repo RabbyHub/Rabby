@@ -722,8 +722,8 @@ export const Main = () => {
     <>
       <Header
         noShowHeader={isDesktop}
-        onOpenInTab={() => {
-          wallet.openInDesktop(
+        onOpenInTab={async () => {
+          await wallet.openInDesktop(
             `desktop/profile?${obj2query({
               chain:
                 findChain({
@@ -737,6 +737,7 @@ export const Main = () => {
               action: 'swap',
             })}`
           );
+          window.close();
         }}
       />
       <div
