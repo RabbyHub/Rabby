@@ -256,7 +256,7 @@ export const Main = () => {
               },
             }
           );
-          if (!isTab) {
+          if (!(isTab || isDesktop)) {
             window.close();
           } else {
             await promise;

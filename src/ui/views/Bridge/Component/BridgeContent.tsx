@@ -249,7 +249,7 @@ export const BridgeContent = () => {
             },
           }
         );
-        if (!isTab) {
+        if (!(isTab || isDesktop)) {
           window.close();
         } else {
           await promise;
@@ -587,8 +587,8 @@ export const BridgeContent = () => {
         setHistoryVisible={setHistoryVisible}
         pendingNumber={pendingNumber}
         noShowHeader={isDesktop}
-        onOpenInTab={() => {
-          wallet.openInDesktop(
+        onOpenInTab={async () => {
+          await wallet.openInDesktop(
             `desktop/profile?${obj2query({
               action: 'bridge',
               fromChain: fromChain || '',
@@ -602,6 +602,7 @@ export const BridgeContent = () => {
                 : '',
             })}`
           );
+          window.close();
         }}
       />
       <div

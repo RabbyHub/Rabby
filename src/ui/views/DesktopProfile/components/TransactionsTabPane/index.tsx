@@ -70,7 +70,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
     (d) => fetchData(d?.last),
     {
       target: scrollContainerRef,
-      reloadDeps: [selectChainId],
+      reloadDeps: [selectChainId, currentAccount?.address],
       isNoMore: (d) => {
         return !d?.last || (d?.list.length || 0) < PAGE_COUNT;
       },

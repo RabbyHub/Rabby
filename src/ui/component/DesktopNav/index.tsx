@@ -18,12 +18,12 @@ export const DesktopNav: React.FC<{
     <div className="flex items-center gap-[16px]">
       <div
         className={clsx(
-          'flex items-start gap-[8px] py-[14px] px-[20px] w-[200px] rounded-[8px] cursor-pointer',
+          'flex items-start gap-[8px] py-[14px] pl-[20px] pr-[6px] w-[200px] rounded-[8px] cursor-pointer',
           'text-r-neutral-title2 bg-r-blue-default'
         )}
       >
-        <RcIconHomeCC />
-        <div>
+        <RcIconHomeCC className="flex-shrink-0" />
+        <div className="min-w-0">
           <div className="text-r-neutral-title2 text-[18px] leading-[20px] font-medium">
             Portfolio
           </div>
@@ -33,8 +33,10 @@ export const DesktopNav: React.FC<{
               active
             />
           ) : (
-            <div className="text-r-neutral-title2 text-[13px] leading-[16px]">
-              ${splitNumberByStep((balance || 0).toFixed(2))}{' '}
+            <div className="text-r-neutral-title2 text-[13px] leading-[16px] flex items-center gap-[4px]">
+              <div className="truncate">
+                ${splitNumberByStep((balance || 0).toFixed(2))}
+              </div>
               {changePercent ? (
                 <span
                   className={clsx(

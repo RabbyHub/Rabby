@@ -400,6 +400,8 @@ export const DashboardPanel: React.FC<unknown> = () => {
     hasGiftEligibility,
     giftUsdValue,
     approvalRiskAlert,
+    t,
+    toggleShowMoreSettings,
   ]);
 
   const pickedPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {

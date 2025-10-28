@@ -2,6 +2,7 @@ import { TransactionHistoryItem } from '@/background/service/transactionHistory'
 import { CANCEL_TX_TYPE } from '@/constant';
 import { PageHeader, Popup } from '@/ui/component';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { Button, DrawerProps } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
@@ -22,6 +23,7 @@ export const CancelTxConfirmPopup = ({
   maskStyle,
 }: Props) => {
   const { t } = useTranslation();
+  const { getContainer } = usePopupContainer();
 
   return (
     <Popup
@@ -32,6 +34,7 @@ export const CancelTxConfirmPopup = ({
       height={308}
       isSupportDarkMode
       maskStyle={maskStyle}
+      getContainer={getContainer}
     >
       <div className="pt-[-4px]">
         <p className="m-0 text-[14px] leading-[140%] text-r-neutral-body">
