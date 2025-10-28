@@ -708,7 +708,8 @@
         "addrValidator__empty": "Please input address",
         "addrValidator__invalid": "This address is invalid",
         "searchInputPlaceholder": "Search or enter address",
-        "title": "To"
+        "title": "To",
+        "placeholder": "Select Address"
       },
       "sendButton": "Send",
       "tokenInfoFieldLabel": {
@@ -750,7 +751,10 @@
       "noSupportTokenForChain": "Recipient address is a contract address on a different chain. Check before proceeding to avoid loss",
       "noSupportTokenForChain_short": "Contract address not deployed on this chain ",
       "selectFromAddress": "Select From Address",
-      "selectToken": "Select Token"
+      "selectToken": "Select Token",
+      "accountSelectorModal": {
+        "title": "Select Address"
+      }
     },
     "perps": {
       "title": "Perps",

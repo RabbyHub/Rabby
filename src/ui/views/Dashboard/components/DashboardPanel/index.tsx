@@ -247,7 +247,10 @@ export const DashboardPanel: React.FC<unknown> = () => {
         icon: RcIconSendCC,
         eventKey: 'Send',
         content: t('page.dashboard.home.panel.send'),
-        onClick: () => history.push('/send-poly?rbisource=dashboard'),
+        onClick: () => {
+          // history.push('/send-poly?rbisource=dashboard')
+          history.push('/send-token?rbisource=dashboard');
+        },
       } as IPanelItem,
       bridge: {
         icon: RcIconBridgeCC,

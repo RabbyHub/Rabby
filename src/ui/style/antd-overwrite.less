@@ -402,6 +402,29 @@ textarea {
       display: none !important;
     }
   }
+
+  &.rounded-tooltip {
+    .ant-tooltip-inner {
+      border-radius: 2px !important;
+    }
+    .ant-tooltip-arrow {
+      display: block !important;
+    }
+  }
+  &.address-tooltip.address-tooltip-light {
+    .ant-tooltip-inner {
+      background: var(--r-neutral-bg1);
+      color: var(--r-neutral-title1);
+    }
+
+    .ant-tooltip-arrow {
+      border-color: var(--r-neutral-bg1);
+    }
+
+    .ant-tooltip-arrow-content {
+      background-color: var(--r-neutral-bg1);
+    }
+  }
 }
 
 /*---------------------

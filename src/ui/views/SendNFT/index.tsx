@@ -49,7 +49,7 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from '../SendToken/components/SendShowMore';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { ToAddressCard } from '../SendToken';
+import { ToAddressCard } from '@/ui/component/SendLike/ToAddressCard';
 import { PendingTxItem } from '../Swap/Component/PendingTxItem';
 import { SendNftTxHistoryItem } from '@/background/service/transactionHistory';
 

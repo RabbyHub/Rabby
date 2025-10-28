@@ -70,13 +70,11 @@ import { ShowMoreOnSend } from './components/SendShowMore';
 import { PendingTxItem } from '../Swap/Component/PendingTxItem';
 import { SendTxHistoryItem } from '@/background/service/transactionHistory';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { Account } from '@/background/service/preference';
-import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
-import { ReactComponent as RcIconCopy } from 'ui/assets/send-token/modal/copy.svg';
-import { copyAddress } from '@/ui/utils/clipboard';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
+import { AddressInfoFrom } from './components/AddressInfoFrom';
+import { AddressInfoTo } from './components/AddressInfoTo';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -114,12 +112,6 @@ type FormSendToken = {
   amount: string;
 };
 
-interface AddressTypeCardProps {
-  loading?: boolean;
-  account: Account;
-  cexInfo?: Cex;
-}
-
 const ChainSelectWrapper = styled.div`
   border: 1px solid transparent;
   border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
@@ -129,82 +121,6 @@ const ChainSelectWrapper = styled.div`
     border-radius: 8px;
   }
 `;
-
-const AddressText = styled.span`
-  font-weight: 500;
-  color: var(--r-neutral-title1);
-`;
-
-export const ToAddressCard = ({
-  account: targetAccount,
-  loading,
-  cexInfo,
-}: AddressTypeCardProps) => {
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
-  const dispatch = useRabbyDispatch();
-
-  const addressSplit = useMemo(() => {
-    const address = targetAccount.address || '';
-    if (!address) {
-      return [];
-    }
-    const prefix = address.slice(0, 8);
-    const middle = address.slice(8, -6);
-    const suffix = address.slice(-6);
-
-    return [prefix, middle, suffix];
-  }, [targetAccount.address]);
-
-  useEffect(() => {
-    dispatch.whitelist.getWhitelist();
-  }, [dispatch.whitelist]);
-
-  return (
-    <header
-      className={clsx(
-        'header bg-r-neutral-card1 rounded-[8px] px-[28px] py-[20px]',
-        'flex flex-col items-center gap-[8px]'
-      )}
-    >
-      <div
-        className="text-[16px] w-full text-center text-r-neutral-foot break-words cursor-pointer"
-        onClick={() => {
-          copyAddress(targetAccount.address);
-        }}
-      >
-        <AddressText>{addressSplit[0]}</AddressText>
-        {addressSplit[1]}
-        <AddressText>{addressSplit[2]}</AddressText>
-        <span className="ml-2 inline-block w-[14px] h-[13px]">
-          <RcIconCopy />
-        </span>
-      </div>
-
-      <AddressTypeCard
-        type={targetAccount.type}
-        address={targetAccount.address}
-        getContainer={getContainer}
-        cexInfo={{
-          id: cexInfo?.id,
-          name: cexInfo?.name,
-          logo: cexInfo?.logo_url,
-          isDeposit: !!cexInfo?.is_deposit,
-        }}
-        allowEditAlias
-        loading={loading}
-        inWhitelist={whitelist?.some((w) =>
-          isSameAddress(w, targetAccount.address)
-        )}
-        brandName={targetAccount.brandName}
-        aliasName={
-          targetAccount.alianName || ellipsisAddress(targetAccount.address)
-        }
-      />
-    </header>
-  );
-};
 
 const SendToken = () => {
   const { useForm } = Form;
@@ -311,14 +227,14 @@ const SendToken = () => {
   }, [currentAccount?.type]);
 
   useEffect(() => {
-    if (!toAddress) {
-      const query = new URLSearchParams(search);
-      query.delete('to');
-      history.replace(
-        `/send-poly${query.toString() ? `?${query.toString()}` : ''}`
-      );
-      return;
-    }
+    // if (!toAddress) {
+    //   const query = new URLSearchParams(search);
+    //   query.delete('to');
+    //   history.replace(
+    //     `/send-poly${query.toString() ? `?${query.toString()}` : ''}`
+    //   );
+    //   return;
+    // }
     const values = form.getFieldsValue();
     form.setFieldsValue({
       ...values,
@@ -1582,6 +1498,8 @@ const SendToken = () => {
     }
   });
 
+  // if (!currentAccount) return null;
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -1596,7 +1514,7 @@ const SendToken = () => {
           onBack={handleClickBack}
           forceShowBack={!isTab}
           canBack={!isTab}
-          isShowAccount
+          // isShowAccount
           className="mb-[10px]"
           rightSlot={
             isTab ? null : (
@@ -1623,32 +1541,16 @@ const SendToken = () => {
             amount: '',
           }}
         >
+          <AddressInfoFrom />
+          <AddressInfoTo
+            loading={loadingToAddressDesc}
+            toAccount={targetAccount}
+            cexInfo={addressDesc?.cex}
+            onClick={() => {
+              history.replace(`/send-poly${history.location.search}`);
+            }}
+          />
           <div className="flex-1 overflow-auto">
-            <div className="section relative">
-              <div className="section-title justify-between items-center flex">
-                <span className="section-title__to font-medium">
-                  {t('page.sendToken.sectionTo.title')}
-                </span>
-
-                <div
-                  className="cursor-pointer text-r-neutral-title1"
-                  onClick={() => {
-                    history.replace(`/send-poly${history.location.search}`);
-                  }}
-                >
-                  <RcIconSwitchCC width={20} height={20} />
-                </div>
-              </div>
-              <div className="to-address">
-                {targetAccount && (
-                  <ToAddressCard
-                    loading={loadingToAddressDesc}
-                    account={targetAccount}
-                    cexInfo={addressDesc?.cex}
-                  />
-                )}
-              </div>
-            </div>
             <div className="section">
               <div className="section-title flex justify-between items-center">
                 <div className="token-balance whitespace-pre-wrap font-medium">
