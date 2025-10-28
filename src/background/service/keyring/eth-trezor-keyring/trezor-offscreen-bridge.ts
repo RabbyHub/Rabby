@@ -32,7 +32,6 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
           email: 'support@rabby.io',
           appName: 'Rabby Wallet',
           appUrl: 'https://rabby.io/',
-          // appIcon: 'http://your.application.com/icon-64.png',
         },
       });
       this.isDeviceConnected = true;
