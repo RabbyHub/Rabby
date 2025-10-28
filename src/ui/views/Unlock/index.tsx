@@ -91,7 +91,7 @@ const Unlock = () => {
   }, []);
 
   return (
-    <FullscreenContainer>
+    <FullscreenContainer isUnlock>
       <div className="unlock page-has-ant-input relative h-full min-h-[550px]">
         <BackgroundSVG className="absolute inset-0 z-[-1]" />
         <div className="pt-80">

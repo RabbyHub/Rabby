@@ -21,11 +21,14 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useCurve } from '../Dashboard/components/BalanceView/useCurve';
 import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
 import { UpdateButton } from './components/UpdateButton';
-import { useMemoizedFn } from 'ahooks';
+import { useDocumentVisibility, useMemoizedFn } from 'ahooks';
 import { NftTabModal } from './components/NftTabModal';
 import { SendNftModal } from './components/SendNftModal';
 import { ReceiveTokenModal } from './components/ReceiveTokenModal';
 import { SignatureRecordModal } from './components/SignatureRecordModal';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
+import { useListenTxReload } from './hooks/useListenTxReload';
 
 const Wrap = styled.div`
   height: 100%;
@@ -122,6 +125,14 @@ export const DesktopProfile = () => {
     await refreshCurve();
   });
 
+  useListenTxReload(async () => {
+    if (activeTab === 'tokens') {
+      setRefreshKey((prev) => prev + 1);
+    }
+    await refreshBalance();
+    await refreshCurve();
+  });
+
   return (
     <>
       <Wrap className="w-full h-full bg-r-neutral-bg2" ref={scrollContainerRef}>
@@ -184,7 +195,12 @@ export const DesktopProfile = () => {
                 </Tabs>
               </div>
             </main>
-            <aside className="w-[260px] flex-shrink-0">
+            <aside
+              className="w-[260px] flex-shrink-0 overflow-auto"
+              style={{
+                height: 'calc(100vh - 120px)',
+              }}
+            >
               <DesktopSelectAccountList
                 shouldElevate={shouldElevateAccountList}
                 isShowApprovalAlert={true}
@@ -220,7 +236,6 @@ export const DesktopProfile = () => {
         }}
         destroyOnClose
       />
-
       <ReceiveTokenModal
         visible={action === 'receive'}
         onCancel={() => {

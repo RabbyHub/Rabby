@@ -42,6 +42,7 @@ const Main = styled.div`
 interface Props {
   className?: string;
   style?: React.CSSProperties;
+  isUnlock?: boolean;
 }
 
 const UiType = getUiType();
@@ -51,9 +52,10 @@ export const FullscreenContainer: React.FC<Props> = ({
   children,
   className,
   style,
+  isUnlock,
 }) => {
   const { isDarkTheme } = useThemeMode();
-  if (isDesktop) {
+  if (isDesktop && !isUnlock) {
     return (
       <Main
         className={clsx('js-rabby-popup-container', className)}
