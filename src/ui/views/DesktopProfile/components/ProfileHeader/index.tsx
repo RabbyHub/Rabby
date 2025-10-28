@@ -49,7 +49,6 @@ export const ProfileHeader: React.FC<{
   const currentAccount = useCurrentAccount();
   const history = useHistory();
   const location = useLocation();
-  const [isShowQueueModal, setIsShowQueueModal] = useState(false);
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const dispatch = useRabbyDispatch();
 
@@ -176,7 +175,9 @@ export const ProfileHeader: React.FC<{
                   'hover:border-rabby-blue-default hover:bg-r-blue-light1'
                 )}
                 onClick={() => {
-                  setIsShowQueueModal(true);
+                  history.replace(
+                    history.location.pathname + '?action=gnosis-queue'
+                  );
                 }}
               >
                 Queue
@@ -202,14 +203,6 @@ export const ProfileHeader: React.FC<{
           </div>
         </div>
       </div>
-
-      <GnosisQueueModal
-        visible={isShowQueueModal}
-        onCancel={() => {
-          setIsShowQueueModal(false);
-        }}
-        destroyOnClose
-      />
     </>
   );
 };

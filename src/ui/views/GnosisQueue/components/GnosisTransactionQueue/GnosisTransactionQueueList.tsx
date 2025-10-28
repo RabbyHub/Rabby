@@ -40,6 +40,7 @@ import { getProtocol } from '@rabby-wallet/rabby-action';
 import { ReplacePopup } from './ReplacePopup';
 import { numberToHex } from 'viem';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { UI_TYPE } from '@/constant/ui';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -377,22 +378,36 @@ const GnosisTransactionItem = ({
         },
       ],
     });
-    window.close();
+    if (!(UI_TYPE.isDesktop || UI_TYPE.isTab)) {
+      window.close();
+    }
   };
 
   const history = useHistory();
   const handleReplace = async (type: string) => {
     if (type === 'send') {
-      history.replace({
-        pathname: '/send-token',
-        state: {
-          safeInfo: {
-            nonce: data.nonce,
-            chainId: Number(networkId),
+      if (UI_TYPE.isDesktop) {
+        // todo check this
+        history.replace(
+          `/desktop/profile?action=send&safeInfo=${encodeURIComponent(
+            JSON.stringify({
+              nonce: data.nonce,
+              chainId: Number(networkId),
+            })
+          )}`
+        );
+      } else {
+        history.replace({
+          pathname: '/send-token',
+          state: {
+            safeInfo: {
+              nonce: data.nonce,
+              chainId: Number(networkId),
+            },
+            from: '/gnosis-queue',
           },
-          from: '/gnosis-queue',
-        },
-      });
+        });
+      }
     } else if (type === 'reject') {
       const params = {
         chainId: Number(networkId),
@@ -409,7 +424,9 @@ const GnosisTransactionItem = ({
         method: 'eth_sendTransaction',
         params: [params],
       });
-      window.close();
+      if (UI_TYPE.isPop) {
+        window.close();
+      }
     }
   };
 

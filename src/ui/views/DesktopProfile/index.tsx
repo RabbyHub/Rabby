@@ -29,6 +29,7 @@ import { SignatureRecordModal } from './components/SignatureRecordModal';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { useListenTxReload } from './hooks/useListenTxReload';
+import { GnosisQueueModal } from './components/GnosisQueueModal';
 
 const Wrap = styled.div`
   height: 100%;
@@ -178,7 +179,7 @@ export const DesktopProfile = () => {
                   <Tabs.TabPane tab="Tokens" key="tokens">
                     <TokensTabPane selectChainId={chainInfo?.serverId} />
                   </Tabs.TabPane>
-                  <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane>
+                  {/* <Tabs.TabPane tab="NFTs" key="nft"></Tabs.TabPane> */}
                   <Tabs.TabPane tab="Transactions" key="transactions">
                     <TransactionsTabPane
                       selectChainId={chainInfo?.serverId}
@@ -241,12 +242,21 @@ export const DesktopProfile = () => {
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
+        destroyOnClose
       />
       <SignatureRecordModal
         visible={action === 'activities'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}
+        destroyOnClose
+      />
+      <GnosisQueueModal
+        visible={action === 'gnosis-queue'}
+        onCancel={() => {
+          history.replace(history.location.pathname);
+        }}
+        destroyOnClose
       />
     </>
   );

@@ -588,14 +588,16 @@ export const TransactionItem = ({
           </div>
         </ChildrenWrapper>
       )}
-      <CancelTxPopup
-        visible={isShowCancelPopup}
-        onClose={() => {
-          setIsShowCancelPopup(false);
-        }}
-        onCancelTx={handleCancelTx}
-        tx={maxGasTx}
-      ></CancelTxPopup>
+      {canCancel ? (
+        <CancelTxPopup
+          visible={isShowCancelPopup}
+          onClose={() => {
+            setIsShowCancelPopup(false);
+          }}
+          onCancelTx={handleCancelTx}
+          tx={maxGasTx}
+        ></CancelTxPopup>
+      ) : null}
     </div>
   );
 };
