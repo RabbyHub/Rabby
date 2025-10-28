@@ -14,6 +14,7 @@ import { useAlias } from '@/ui/utils';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { SelectGasAccountList } from './SelectGasAccountList';
 import { Account } from '@/background/service/preference';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 export const GasACcountCurrentAddress = ({
   account,
@@ -86,6 +87,7 @@ export const GasACcountCurrentAddress = ({
 
 const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
   const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
 
   const { login, logout } = useGasAccountMethods();
 
@@ -93,6 +95,9 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
   const { sig } = useGasAccountSign();
 
   const [loading, setLoading] = useState(false);
+
+  // 获取 wallet 实例
+  const wallet = useRabbySelector((state) => state.app.wallet);
 
   const confirmAddress = async (account: Account) => {
     if (loading) {
@@ -104,7 +109,7 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
       if (isSwitch) {
         await logout();
       }
-      await login(account);
+      await login(account, false);
       await onLogin?.();
     } catch (error) {
       console.error(error);

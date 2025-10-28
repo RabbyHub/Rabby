@@ -56,6 +56,9 @@ const AppChainTips = styled.div`
   pointer-events: none;
 `;
 
+/**
+ * @deprecated
+ */
 export const CurveThumbnail = ({
   data,
   className,

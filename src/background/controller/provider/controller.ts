@@ -69,7 +69,7 @@ import {
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
-import { hexToNumber, numberToHex, stringToHex, toHex } from 'viem';
+import { hexToNumber, isAddress, numberToHex, stringToHex, toHex } from 'viem';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
 import { add0x } from '@/ui/utils/address';
@@ -77,6 +77,7 @@ import {
   EIP7702RevokeMiniGasLimit,
   removeLeadingZeroes,
 } from '@/background/utils/7702';
+import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
 
 const reportSignText = (params: {
   method: string;
@@ -323,10 +324,15 @@ class ProviderController extends BaseController {
         session,
         account,
       } = req;
+      const isSpeedUp = !!tx.isSpeedUp;
+      const isCancel = !!tx.isCancel;
       const currentAddress = account?.address?.toLowerCase();
-      const currentChain = permissionService.isInternalOrigin(session.origin)
-        ? findChain({ id: tx.chainId })!.enum
-        : permissionService.getConnectedSite(session.origin)?.chain;
+      const currentChain =
+        permissionService.isInternalOrigin(session.origin) ||
+        isSpeedUp ||
+        isCancel
+          ? findChain({ id: tx.chainId })!.enum
+          : permissionService.getConnectedSite(session.origin)?.chain;
       if (tx.from.toLowerCase() !== currentAddress) {
         throw ethErrors.rpc.invalidParams(
           'from should be same as current address'
@@ -511,11 +517,12 @@ class ProviderController extends BaseController {
         console.log(e);
       }
     }
-    const chain = permissionService.isInternalOrigin(origin)
-      ? (findChain({
-          id: approvalRes.chainId,
-        })?.enum as CHAINS_ENUM)
-      : permissionService.getConnectedSite(origin)!.chain;
+    const chain =
+      permissionService.isInternalOrigin(origin) || isSpeedUp || isCancel
+        ? (findChain({
+            id: approvalRes.chainId,
+          })?.enum as CHAINS_ENUM)
+        : permissionService.getConnectedSite(origin)!.chain;
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
 
@@ -525,9 +532,6 @@ class ProviderController extends BaseController {
     if (!approvingTx?.rawTx) {
       throw new Error(`approvingTx not found: ${signingTxId}`);
     }
-    transactionHistoryService.updateSigningTx(signingTxId!, {
-      isSubmitted: true,
-    });
 
     const { explain: cacheExplain, rawTx, action } = approvingTx;
 
@@ -561,6 +565,10 @@ class ProviderController extends BaseController {
         txParams.from,
         opts
       );
+      await fixKeyringAccountOnSigned({
+        keyring,
+        address: txParams.from,
+      });
     } catch (e) {
       console.error(e);
       const errObj =
@@ -571,6 +579,16 @@ class ProviderController extends BaseController {
 
       throw errObj;
     }
+
+    transactionHistoryService.updateSigningTx(signingTxId!, {
+      isSubmitted: true,
+    });
+    const txDataWithRSV: any = {
+      ...txData,
+      r: addHexPrefix(signedTx.r),
+      s: addHexPrefix(signedTx.s),
+      v: addHexPrefix(signedTx.v),
+    };
 
     try {
       if (
@@ -742,34 +760,14 @@ class ProviderController extends BaseController {
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
       });
+
       try {
         validateGasPriceRange(approvalRes);
         let hash: string | undefined = undefined;
         let reqId: string | undefined = undefined;
         if (!findChain({ enum: chain })?.isTestnet) {
           if (RPCService.hasCustomRPC(chain)) {
-            const txData: any = {
-              ...approvalRes,
-              gasLimit: approvalRes.gas,
-              r: addHexPrefix(signedTx.r),
-              s: addHexPrefix(signedTx.s),
-              v: addHexPrefix(signedTx.v),
-            };
-            if (is1559) {
-              txData.type = '0x2';
-            }
-
-            if (approvalRes.authorizationList) {
-              txData.type = '0x4';
-              if (!txData.maxFeePerGas || !txData.maxPriorityFeePerGas) {
-                txData.maxFeePerGas = txData.maxFeePerGas || txData.gasPrice;
-                txData.maxPriorityFeePerGas =
-                  txData.maxPriorityFeePerGas || txData.gasPrice;
-                delete txData.gasPrice;
-              }
-            }
-
-            const tx = TransactionFactory.fromTxData(txData, { common });
+            const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
             const rawTx = bytesToHex(tx.serialize());
             try {
               hash = await RPCService.requestCustomRPC(
@@ -838,18 +836,10 @@ class ProviderController extends BaseController {
             const defaultRPC = RPCService.getDefaultRPC(chainServerId);
             if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
               let fePushedFailed = false;
-              const txData: any = {
-                ...approvalRes,
-                gasLimit: approvalRes.gas,
-                r: addHexPrefix(signedTx.r),
-                s: addHexPrefix(signedTx.s),
-                v: addHexPrefix(signedTx.v),
-              };
-              if (is1559) {
-                txData.type = '0x2';
-              }
 
-              const tx = TransactionFactory.fromTxData(txData);
+              const tx = TransactionFactory.fromTxData(txDataWithRSV, {
+                common,
+              });
               const rawTx = bytesToHex(tx.serialize());
 
               try {
@@ -930,17 +920,8 @@ class ProviderController extends BaseController {
           const chainData = findChain({
             enum: chain,
           })!;
-          const txData: any = {
-            ...approvalRes,
-            gasLimit: approvalRes.gas,
-            r: addHexPrefix(signedTx.r),
-            s: addHexPrefix(signedTx.s),
-            v: addHexPrefix(signedTx.v),
-          };
-          if (is1559) {
-            txData.type = '0x2';
-          }
-          const tx = TransactionFactory.fromTxData(txData, { common });
+
+          const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
           const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
@@ -1430,7 +1411,29 @@ class ProviderController extends BaseController {
     return null;
   };
 
-  @Reflect.metadata('APPROVAL', ['AddAsset', () => null, { height: 600 }])
+  @Reflect.metadata('APPROVAL', [
+    'AddAsset',
+    ({ data, session }) => {
+      if (!data.params) {
+        throw ethErrors.rpc.invalidParams('params is required');
+      }
+      if (!data.params.type) {
+        throw ethErrors.rpc.invalidParams('Asset type is required');
+      }
+      if (
+        !data.params.options?.address ||
+        !isAddress(data.params.options?.address, {
+          strict: false,
+        })
+      ) {
+        throw ethErrors.rpc.invalidParams(
+          `Invalid address '${data.params.options?.address}'.`
+        );
+      }
+      return null;
+    },
+    { height: 600 },
+  ])
   walletWatchAsset = ({
     approvalRes,
   }: {
@@ -1574,6 +1577,20 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     return approvalRes.data;
+  };
+
+  ethGetTransactionReceipt = async (req) => {
+    try {
+      const res = await this.ethRpc(req);
+      return res;
+    } catch (e) {
+      const idxKeyPhrases = ['index', 'progress'];
+      if (idxKeyPhrases.some((phrase) => e.message?.includes(phrase))) {
+        return null;
+      } else {
+        throw e;
+      }
+    }
   };
 
   ethGetTransactionByHash = async (req) => {

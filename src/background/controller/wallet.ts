@@ -31,6 +31,7 @@ import {
   gasAccountService,
   uninstalledService,
   OfflineChainsService,
+  perpsService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -83,7 +84,11 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
-import { generateAliasName, isSameAccount } from '@/utils/account';
+import {
+  generateAliasName,
+  isFullVersionAccountType,
+  isSameAccount,
+} from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
@@ -149,6 +154,13 @@ import {
 const stashKeyrings: Record<string | number, any> = {};
 
 const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
+
+const gnosisPQueue = new PQueue({
+  interval: 1000,
+  intervalCap: 5,
+  carryoverConcurrencyCount: false,
+  concurrency: 5,
+});
 
 export class WalletController extends BaseController {
   openapi = openapiService;
@@ -222,15 +234,16 @@ export class WalletController extends BaseController {
     options?: {
       isBuild?: boolean;
       account?: Account;
+      session?: typeof INTERNAL_REQUEST_SESSION;
     }
   ) => {
-    const { isBuild = false, account } = options || {};
+    const { isBuild = false, account, session } = options || {};
     if (isBuild) {
       return Promise.resolve<T>(data as T);
     }
     return provider<T>({
       data,
-      session: INTERNAL_REQUEST_SESSION,
+      session: session || INTERNAL_REQUEST_SESSION,
       account,
     });
   };
@@ -664,6 +677,7 @@ export class WalletController extends BaseController {
           { isSwap: true, swapPreferMEVGuarded },
           true
         );
+
         txs.push(res.params[0]);
         unTriggerTxCounter.decrease();
       }
@@ -2398,23 +2412,25 @@ export class WalletController extends BaseController {
     }
     const results = await Promise.all(
       networks.map(async (networkId) => {
-        try {
-          const safe = await createSafeService({
-            networkId: networkId,
-            address,
-          });
-          const { results } = await safe.getPendingTransactions();
-          return {
-            networkId,
-            txs: results,
-          };
-        } catch (e) {
-          console.error(e);
-          return {
-            networkId,
-            txs: [],
-          };
-        }
+        return gnosisPQueue.add(async () => {
+          try {
+            const safe = await createSafeService({
+              networkId: networkId,
+              address,
+            });
+            const { results } = await safe.getPendingTransactions();
+            return {
+              networkId,
+              txs: results,
+            };
+          } catch (e) {
+            console.error(e);
+            return {
+              networkId,
+              txs: [],
+            };
+          }
+        });
       })
     );
 
@@ -2440,26 +2456,28 @@ export class WalletController extends BaseController {
     const safeAddress = toChecksumAddress(address);
     const results = await Promise.all(
       networks.map(async (networkId) => {
-        try {
-          const safe = await createSafeService({
-            networkId: networkId,
-            address: safeAddress,
-          });
-          const threshold = await safe.getThreshold();
-          const { results } = await safe.apiKit.getMessages(safeAddress);
-          return {
-            networkId,
-            messages: results.filter(
-              (item) => item.confirmations.length < threshold
-            ),
-          };
-        } catch (e) {
-          console.error(e);
-          return {
-            networkId,
-            messages: [],
-          };
-        }
+        return gnosisPQueue.add(async () => {
+          try {
+            const safe = await createSafeService({
+              networkId: networkId,
+              address: safeAddress,
+            });
+            const threshold = await safe.getThreshold();
+            const { results } = await safe.apiKit.getMessages(safeAddress);
+            return {
+              networkId,
+              messages: results.filter(
+                (item) => item.confirmations.length < threshold
+              ),
+            };
+          } catch (e) {
+            console.error(e);
+            return {
+              networkId,
+              messages: [],
+            };
+          }
+        });
       })
     );
 
@@ -3635,6 +3653,14 @@ export class WalletController extends BaseController {
     await keyringService.persistAllKeyrings();
   };
 
+  authorizeOneKeyHIDPermission = async () => {
+    const keyring = keyringService.getKeyringByType(
+      KEYRING_CLASS.HARDWARE.ONEKEY
+    );
+    if (!keyring) return;
+    await keyringService.persistAllKeyrings();
+  };
+
   checkLedgerHasHIDPermission = () => {
     const keyring = keyringService.getKeyringByType(
       KEYRING_CLASS.HARDWARE.LEDGER
@@ -3823,7 +3849,7 @@ export class WalletController extends BaseController {
   signTypedData = async (
     type: string,
     from: string,
-    data: string,
+    data: Record<string, any>,
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
@@ -3853,7 +3879,7 @@ export class WalletController extends BaseController {
   ) => {
     const fn = () =>
       waitSignComponentAmounted().then(() => {
-        this.signTypedData(type, from, data as any, options);
+        return this.signTypedData(type, from, data as any, options);
       });
 
     notificationService.setCurrentRequestDeferFn(fn);
@@ -4047,26 +4073,20 @@ export class WalletController extends BaseController {
 
   // getTxExplainCacheByApprovalId = (id: string) =>
   //   transactionHistoryService.getExplainCacheByApprovalId(id);
-  getRecentPendingTxHistory = (
-    address: string,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
+  getRecentPendingTxHistory: typeof transactionHistoryService.getRecentPendingTxHistory = (
+    address,
+    type
   ) => transactionHistoryService.getRecentPendingTxHistory(address, type);
-  addCacheHistoryData = (
-    key: string,
-    data: Omit<
-      | SwapTxHistoryItem
-      | SendTxHistoryItem
-      | BridgeTxHistoryItem
-      | SendNftTxHistoryItem,
-      'hash'
-    >,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
+  addCacheHistoryData: typeof transactionHistoryService.addCacheHistoryData = (
+    key,
+    data,
+    type
   ) => transactionHistoryService.addCacheHistoryData(key, data, type);
-  getRecentTxHistory = (
-    address: string,
-    hash: string,
-    chainId: number,
-    type: 'swap' | 'send' | 'bridge' | 'sendNft'
+  getRecentTxHistory: typeof transactionHistoryService.getRecentTxHistory = (
+    address,
+    hash,
+    chainId,
+    type
   ) =>
     transactionHistoryService.getRecentTxHistory(address, hash, chainId, type);
   completeBridgeTxHistory = (
@@ -4577,6 +4597,7 @@ export class WalletController extends BaseController {
             to: account.address,
             chainId: chainId,
             type: 4,
+            nonce: _nonce,
           };
           await this.sendRequest({
             $ctx: {
@@ -5089,7 +5110,18 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  signGasAccount = async (account: Account) => {
+  /**
+   * 执行Gas Account登录的核心流程
+   * @param account 账户信息
+   * @returns 登录结果，包含签名和是否成功
+   */
+  private async executeGasAccountLogin(
+    account: Account
+  ): Promise<{
+    signature: string;
+    success: boolean;
+    result?: any;
+  }> {
     const currentAccount = await preferenceService.getCurrentAccount();
     if (!currentAccount) {
       throw new Error(t('background.error.noCurrentAccount'));
@@ -5110,34 +5142,52 @@ export class WalletController extends BaseController {
     const { text } = await wallet.openapi.getGasAccountSignText(
       account.address
     );
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
+    });
     const signature = await this.sendRequest<string>({
       method: 'personal_sign',
       params: [text, account.address],
     });
 
-    if (signature) {
-      const result = await pRetry(
-        async () =>
-          wallet.openapi.loginGasAccount({
-            sig: signature,
-            account_id: account.address,
-          }),
-        {
-          retries: 2,
-        }
-      );
-
-      if (result?.success) {
-        await gasAccountService.setGasAccountSig(signature, account);
-        await pageStateCacheService.clear();
-        await pageStateCacheService.set({
-          path: '/gas-account',
-          states: {},
-        });
-      }
+    if (!signature) {
+      await resumeAccount();
+      return { signature: '', success: false };
     }
 
+    const result = await pRetry(
+      async () =>
+        wallet.openapi.loginGasAccount({
+          sig: signature,
+          account_id: account.address,
+        }),
+      {
+        retries: 2,
+      }
+    );
     await resumeAccount();
+    return { signature, success: result?.success || false, result };
+  }
+
+  private async saveGasAccountLoginState(signature: string, account: Account) {
+    await gasAccountService.setGasAccountSig(signature, account);
+    await pageStateCacheService.clear();
+    await pageStateCacheService.set({
+      path: '/gas-account',
+      states: {},
+    });
+  }
+
+  signGasAccount = async (account: Account, isClaimGift: boolean = false) => {
+    const { signature, success } = await this.executeGasAccountLogin(account);
+    if (success && signature) {
+      await this.saveGasAccountLoginState(signature, account);
+    }
+    if (isClaimGift) {
+      await this.claimGasAccountGift(account.address);
+    }
+    this.markGiftAsClaimed();
+    return signature;
   };
 
   topUpGasAccount = async ({
@@ -5357,6 +5407,12 @@ export class WalletController extends BaseController {
     return providerController.personalSign(...args);
   };
 
+  ethSignTypedDataV4 = async (
+    ...args: Parameters<typeof providerController.ethSignTypedDataV4>
+  ) => {
+    return providerController.ethSignTypedDataV4(...args);
+  };
+
   tryOpenOrActiveUserGuide = async () => {
     if (this.isBooted()) {
       return false;
@@ -5509,6 +5565,88 @@ export class WalletController extends BaseController {
     ...args
   ) => {
     return preferenceService.setRateGuideLastExposure(...args);
+  };
+
+  /**
+   * 领取gift奖励
+   * @param address 地址
+   * @returns 是否成功领取
+   */
+  claimGasAccountGift = async (address: string): Promise<boolean> => {
+    try {
+      // 获取gas account的签名信息
+      const { sig, accountId } = this.getGasAccountSig();
+      if (!sig || !accountId) {
+        console.error('Gas account not logged in, cannot claim gift');
+        return false;
+      }
+
+      // 调用API领取gift
+      const result = await this.openapi.claimGasAccountGift({
+        sig,
+        id: accountId,
+      });
+      if (result.success) {
+        // 标记为已领取
+        this.markGiftAsClaimed();
+        this.setHasAnyAccountClaimedGift(true);
+        return true;
+      } else {
+        console.error('API returned success: false for gift claim');
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to claim gas account gift:', error);
+      return false;
+    }
+  };
+
+  /**
+   * 标记地址已领取gift（内部使用）
+   */
+  markGiftAsClaimed = () => {
+    gasAccountService.markGiftAsClaimed();
+  };
+
+  /**
+   * 获取全局标记：是否有任何账号已经领取过gift
+   * @returns 是否有任何账号已经领取过gift
+   */
+  getHasAnyAccountClaimedGift = () => {
+    return gasAccountService.getHasAnyAccountClaimedGift();
+  };
+
+  /**
+   * 设置全局标记：是否有任何账号已经领取过gift
+   * @param hasClaimed 是否有任何账号已经领取过gift
+   */
+  setHasAnyAccountClaimedGift = (hasClaimed: boolean) => {
+    gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
+  };
+
+  createPerpsAgentWallet = async (masterWallet: string) => {
+    return perpsService.createAgentWallet(masterWallet);
+  };
+  setPerpsCurrentAccount = perpsService.setCurrentAccount;
+  getPerpsCurrentAccount = perpsService.getCurrentAccount;
+  getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
+  getAgentWalletPreference = async (masterWallet: string) => {
+    return perpsService.getAgentWalletPreference(masterWallet);
+  };
+  updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
+  setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
+  getSendApproveAfterDeposit = async (masterAddress: string) => {
+    return perpsService.getSendApproveAfterDeposit(masterAddress);
+  };
+  setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
+  getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
+  getPerpsAgentWallet = async (masterWallet: string) => {
+    return perpsService.getAgentWallet(masterWallet);
+  };
+  signTextCreateHistory = (
+    params: Parameters<typeof signTextHistoryService.createHistory>[0]
+  ) => {
+    signTextHistoryService.createHistory(params);
   };
 }
 

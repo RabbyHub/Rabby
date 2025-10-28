@@ -134,7 +134,7 @@ export const useAddressRisks = (
         if (addrDescRes) {
           if (cexId) {
             const localCexInfo = exchanges.find(
-              (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+              (e) => e.id.toLowerCase() === cexId?.toLowerCase()
             );
             if (localCexInfo) {
               addrDescRes.desc.cex = {

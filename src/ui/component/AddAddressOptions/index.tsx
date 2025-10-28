@@ -155,26 +155,6 @@ const AddAddressOptions = () => {
     };
   }, []);
 
-  const checkQRBasedWallet = async (item: IWalletBrandContent) => {
-    const { allowed, brand } = await wallet.checkQRHardwareAllowImport(
-      item.brand
-    );
-
-    if (!allowed) {
-      Modal.error({
-        title: t('page.newAddress.unableToImport.title'),
-        content: t('page.newAddress.unableToImport.description', [brand]),
-        okText: t('global.ok'),
-        centered: true,
-        maskClosable: true,
-        className: 'text-center modal-support-darkmode',
-      });
-      return false;
-    }
-
-    return true;
-  };
-
   type Valueof<T> = T[keyof T];
   const connectRouter1 = React.useCallback(
     (
@@ -190,28 +170,31 @@ const AddAddressOptions = () => {
       } else if (item.connectType === 'GridPlusConnect') {
         openInternalPageInTab('import/hardware?connectType=GRIDPLUS');
       } else if (item.connectType === 'TrezorConnect') {
-        openInternalPageInTab('import/hardware?connectType=TREZOR');
+        openInternalPageInTab('import/hardware/trezor-connect');
+        // openInternalPageInTab('import/hardware?connectType=TREZOR');
       } else if (item.connectType === 'LedgerConnect') {
         openInternalPageInTab('import/hardware/ledger-connect');
       } else if (item.connectType === 'OneKeyConnect') {
-        openInternalPageInTab('import/hardware?connectType=ONEKEY');
+        openInternalPageInTab('import/hardware/onekey-connect');
+        // openInternalPageInTab('import/hardware?connectType=ONEKEY');
       } else if (item.connectType === 'GnosisConnect') {
         history.push({
           pathname: '/import/gnosis',
         });
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
-        checkQRBasedWallet(item).then((success) => {
-          if (!success) return;
-          /**
-           * Check if the wallet brand is Keystone. Although Keystone supports both USB signing and import,
-           * due to its dual-mode (QR and USB) design, it is still limited to import only one QR wallet at a time.
-           */
-          if (item.brand === WALLET_BRAND_TYPES.KEYSTONE) {
-            openInternalPageInTab('import/hardware/keystone');
-            return;
-          }
-          openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
-        });
+        /**
+         * Check if the wallet brand is Keystone. Although Keystone supports both USB signing and import,
+         * due to its dual-mode (QR and USB) design, it is still limited to import only one QR wallet at a time.
+         */
+        if (item.brand === WALLET_BRAND_TYPES.KEYSTONE) {
+          openInternalPageInTab('import/hardware/keystone');
+          return;
+        }
+        if (item.brand === WALLET_BRAND_TYPES.ONEKEY) {
+          openInternalPageInTab('import/hardware/onekey');
+          return;
+        }
+        openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
       } else if (
         item.connectType === BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect
       ) {

@@ -115,7 +115,9 @@
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
           "ecology": "生態系統",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "期货",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -324,7 +326,9 @@
         "blockedListTitle": "被封锁的代币",
         "maybeScamTips": "這是一個低質量的代幣，可能是一個詐騙。",
         "myBalance": "我的餘額",
-        "fdvTips": "市場市值如果最大供應量在流通中。完全稀釋估值 (FDV) = 價格 x 最大供應量。如果最大供應量為零，FDV = 價格 x 總供應量。如果最大供應量和總供應量都未定義或為無限，則不顯示 FDV。"
+        "fdvTips": "市場市值如果最大供應量在流通中。完全稀釋估值 (FDV) = 價格 x 最大供應量。如果最大供應量為零，FDV = 價格 x 總供應量。如果最大供應量和總供應量都未定義或為無限，則不顯示 FDV。",
+        "bridgeToEth": "橋接至 Ethereum 鏈",
+        "bridge": "橋"
       },
       "assets": {
         "usdValue": "美元價值",
@@ -366,7 +370,8 @@
           "lowValueAssets": "{{count}} 個低價值資產",
           "lowValueAssets_other": "{{count}} 低價值代幣",
           "lowValueAssets_one": "{{count}} 低價值代幣",
-          "lowValueAssets_0": "{{count}} 低價值代幣"
+          "lowValueAssets_0": "{{count}} 低價值代幣",
+          "review": "審查"
         },
         "noAssets": "沒有資產",
         "blockLinkText": "搜索代幣地址，隱藏代幣",
@@ -427,7 +432,16 @@
         },
         "howToConnectImKey": "如何連接 imKey",
         "ledgerIsDisconnected": "您的 Ledger 未连接",
-        "onekeyIsDisconnected": "你的 OneKey 尚未连接"
+        "onekeyIsDisconnected": "你的 OneKey 尚未连接",
+        "trezor": {
+          "doc2": "解鎖你的設備",
+          "doc1": "請插入你的 Trezor 設備"
+        },
+        "onekey": {
+          "doc1": "安裝 <1>OneKey Bridge<1/>",
+          "doc3": "解鎖你的設備",
+          "doc2": "將您的 OneKey 設備插入。"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe 地址不支持 {{chain}}",
@@ -450,6 +464,11 @@
       "recentConnectionGuide": {
         "button": "明白了\n",
         "title": "在此處切換用於 Dapp 連線的地址\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby 積分",
+        "desc": "在 Rabby Mobile 中查看您的积分。",
+        "downloadIntro": "還未下載應用程序？立即下載。"
       }
     },
     "chainList": {
@@ -601,6 +620,14 @@
         "exportAddressJustAllowedOnHomePage": "僅在 Keystone 主頁上允許導出地址",
         "unknowError": "未知錯誤，請再試一次"
       },
+      "onekey": {
+        "onekeyPermission1": "連接至USB裝置",
+        "allowRabbyPermissionsTitle": "允許Rabby存取以下權限：",
+        "onekeyPermissionTip": "請在下方點擊「允許」，以在彈出視窗中授權存取您的OneKey。如果彈出視窗中沒有出現OneKey，請檢查您的裝置是否正確連接到電腦。",
+        "whyOneKey": "為什麼選擇 OneKey？",
+        "buyOneKey": "購買 OneKey",
+        "haveOneKey": "還沒有 OneKey？"
+      },
       "walletConnect": {
         "connectYour": "連接你的",
         "viaWalletConnect": "通過 Wallet Connect",
@@ -622,7 +649,6 @@
         },
         "title": "與 {{brandName}} 連接",
         "disconnected": "已斷開連接",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "已連接但無法簽名",
@@ -795,7 +821,10 @@
         "imkeyPermissionTip": "請點擊下方的「允許」，並在隨後的彈出窗口中授權訪問你的 imKey。"
       },
       "addFromCurrentSeedPhrase": "從當前助記詞添加",
-      "firefoxLedgerDisableTips": "Ledger 不兼容 Firefox"
+      "firefoxLedgerDisableTips": "Ledger 不兼容 Firefox",
+      "trezor": {
+        "title": "連接 Trezor"
+      }
     },
     "activities": {
       "signedText": {
@@ -953,7 +982,8 @@
         },
         "ViewMore": {
           "text": "查看更多"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 支持的链："
       },
       "header": {
         "title": "{{ address }} 的授權"
@@ -1091,8 +1121,8 @@
       "InsufficientBalanceTips": "結餘不足",
       "Loading_Tokens": "正在加載代幣...",
       "No_Tokens": "沒有代幣",
+      "Deposit-tip": "使用 USDC/USDT 存款",
       "Payment-Token": "支付代幣",
-      "Select-from-supported-tokens": "從支持的代幣中選擇",
       "Select-payment-token": "選擇支付代幣",
       "Token": "代幣",
       "Value": "價值",
@@ -1737,7 +1767,8 @@
         "totalCost": "總成本：",
         "currentTxCost": "發送到你地址的 Gas 數量：",
         "maxGas": "最大 Gas：",
-        "gasCost": "將 gas 轉入您地址的 gas 費用："
+        "gasCost": "將 gas 轉入您地址的 gas 費用：",
+        "description": "使用 GasAccount 支付 gas 费用。查看以下付款详情："
       },
       "transferOwner": {
         "title": "轉移資產所有權",
@@ -1772,6 +1803,15 @@
         "nonceTooLow": "Nonce 太低。我們將更新為 {{nonce}}。請點擊“重試”確認並再試一次。",
         "gasPriceTooLow": "Gas 價格太低。我們將調整它 30% 以幫助您的交易確認。點擊 “Retry” 來確認並重試。",
         "insufficient": "您的 gas 餘額不足以支付網絡 gas 費。請添加資金以支付 gas，然後再試一次。"
+      },
+      "addLiquidity": {
+        "receiver": "接收者",
+        "title": "添加流动性",
+        "marketPrice": "市場價格",
+        "token0": "添加 Token 1",
+        "token1": "添加令牌 2",
+        "priceDiff": "價格差異",
+        "poolPrice": "POOL 價格"
       }
     },
     "signTypedData": {
@@ -1920,7 +1960,9 @@
       "hidden-no-quote-rates_one": "{{count}} 匯率不可用",
       "No-available-quote": "沒有可用的報價",
       "loss-tips": "您正在损失 {{usd}}。嘗試在小型市場中投入較少的金額。",
-      "two-step-approve": "簽署 2 筆交易以更改允許額"
+      "two-step-approve": "簽署 2 筆交易以更改允許額",
+      "understandRisks": "我明白風險並想繼續",
+      "approve": "批准"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持請求的鏈",
@@ -2355,7 +2397,8 @@
       "est-receiving": "預計接收：",
       "duration": "{{duration}} 分鐘",
       "From": "從",
-      "need-to-approve-token-before-bridge": "在进行桥接前需要批准 token"
+      "need-to-approve-token-before-bridge": "在进行桥接前需要批准 token",
+      "bridgeDbkBtn": "通過 DBK 官方服務橋接"
     },
     "ecology": {
       "sonic": {
@@ -2460,7 +2503,12 @@
         "txSendings": "正在發送簽名請求（{{current}}/{{total}}）",
         "txSending": "發送簽署請求"
       },
-      "signWithLedger": "使用 Ledger 簽署"
+      "signWithLedger": "使用 Ledger 簽署",
+      "signWithOneKey": "使用 OneKey 签名",
+      "speedUpTitle": "加速",
+      "cancleDesc": "Gas價格上升了{{percent}}以取消交易",
+      "speedUpDesc": "Gas 價上升了 {{percent}} 以加快速度",
+      "cancelTitle": "鏈上取消"
     },
     "gasAccount": {
       "history": {
@@ -2470,7 +2518,8 @@
         "gotIt": "明白",
         "login": "登入 GasAccount",
         "title": "儲存 USDC / USDT",
-        "desc": "支付所有链上的 Gas 费用"
+        "desc": "支付所有链上的 Gas 费用",
+        "loginAndClaim": "登入並領取 $2.00"
       },
       "loginConfirmModal": {
         "title": "使用當前地址登入",
@@ -2507,7 +2556,12 @@
         "noEligibleChain": "沒有合資格的鏈可供提取",
         "noEligibleAddr": "沒有合資格的地址進行提取",
         "desc": "您可以將您的 GasAccount 餘額提取到您的 DeBank L2 錢包。登錄您的 DeBank L2 錢包，根據需要將資金轉至支持的區塊鏈。",
-        "to": "至"
+        "to": "至",
+        "WithdrawalAmount": "提款金額",
+        "noBalance": "没有余额",
+        "withdrawalTip": "可提取餘額: {{amount}}",
+        "amountTooLowCoverFee": "金額太低，無法支付 Gas 費用",
+        "noEnoughValueBalance": "Vault Balance不足。請切換鏈或稍後再試。"
       },
       "withdrawConfirmModal": {
         "button": "查看 DeBank",
@@ -2534,7 +2588,8 @@
         "gasAccountBalance": "Gas Balance"
       },
       "switchAccount": "切换 GasAccount",
-      "withdrawDisabledIAP": "提款功能已停用，因為你的餘額中包含法幣資金，這些資金無法提取。如需提取你的代幣餘額，請聯繫支援。"
+      "withdrawDisabledIAP": "提款功能已停用，因為你的餘額中包含法幣資金，這些資金無法提取。如需提取你的代幣餘額，請聯繫支援。",
+      "gasToken": "Gas 代幣"
     },
     "safeMessageQueue": {
       "noData": "沒有訊息",
@@ -2602,11 +2657,14 @@
         "title": "導入種子片語"
       },
       "importOneKey": {
-        "tip2": "2. 插入你的 OneKey 裝置",
-        "tip3": "3. 解锁你的设备",
-        "tip1": "1. 安裝 <1>OneKey Bridge<1/>",
-        "connect": "連接 OneKey",
-        "title": "OneKey"
+        "qrcode": {
+          "desc": "掃描 OneKey 硬體錢包上的 QR 碼"
+        },
+        "title": "OneKey",
+        "tip1": "1. 插入您的 OneKey 裝置",
+        "tip2": "2. 解鎖您的裝置",
+        "tip3": "3. 請確保只連接一台 OneKey 設備",
+        "connect": "連接 OneKey"
       },
       "importTrezor": {
         "tip2": "2. 解鎖你的設備",
@@ -2732,7 +2790,8 @@
       "selectedLenAddressesForSync_other": "選擇{{len}}地址同步",
       "selectAddress": {
         "title": "選擇要同步的地址"
-      }
+      },
+      "verifyPassword": "驗證密碼"
     },
     "search": {
       "sectionHeader": {
@@ -2792,7 +2851,7 @@
         "cexDepositAddress": "{{cexName}} 存款地址",
         "understandRisks": "我明白風險並希望繼續",
         "AddToWhitelist": "加入白名单",
-        "TransferBefore": "轉移之前",
+        "TransferBefore": "之前已轉移",
         "TransferBeforeValue": "是的",
         "passwordPlaceholder": "輸入密碼以繼續"
       },
@@ -2820,6 +2879,176 @@
       "exchangeAddress": "交易地址",
       "riskTitle": "添加白名單地址",
       "address": "地址"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneHour": "1小時",
+        "all": "全部",
+        "oneMonth": "1M",
+        "ytd": "今年至今",
+        "oneWeek": "1W",
+        "oneDay": "1天"
+      },
+      "newUserProcess": {
+        "gotIt": "明白了",
+        "fifthTitle": "清算",
+        "thirdTitle": "做空",
+        "next": "下一步",
+        "secondTitle": "做多",
+        "firstTitle": "掌握永续合约",
+        "fourthTitle": "調整槓桿",
+        "fifthDescription": "每个头寸都有一个清算价格。如果市场价格达到该价格，您的头寸将被关闭。使用高杠杆增加了清算的风险。",
+        "thirdDescription": "當您預期價格會下跌時，您會開倉做空。如果價格下跌，您獲利。如果價格上升，您就會虧損。",
+        "secondDescription": "當你預期價格上升時，你會開一個 Long。如果價格上升，你會獲利。如果價格下跌，你會虧損。",
+        "fourthDescription": "杠杆让你可以用超出你投入的金额进行交易。这既可以增加你的收益，也会放大你的损失。",
+        "firstDescription": "透過永續合約，你不僅是在交易資產。你是在交易你認為接下來會發生的事情。"
+      },
+      "historyDetail": {
+        "title": {
+          "closeShort": "平仓做空",
+          "closeShortSl": "平仓做空止损",
+          "openLong": "開倉做多",
+          "openShort": "開空",
+          "closeShortLiquidation": "平仓做空清算",
+          "closeLong": "平仓多头",
+          "closeLongSl": "平仓做多止损",
+          "closeShortTp": "關閉空單 獲利了結",
+          "closeLongLiquidation": "平仓多单清算",
+          "closeLongTp": "平仓多头获利"
+        },
+        "tradeValue": "交易价值",
+        "date": "日期",
+        "fee": "手續費",
+        "provider": "提供者",
+        "closedPnl": "已平仓盈亏",
+        "size": "大小",
+        "price": "價格"
+      },
+      "logoutConfirmModal": {
+        "title": "登出当前地址",
+        "desc": "您正在登出您当前的 Perps 账户。您可以随时通过使用此地址登录来恢复它。"
+      },
+      "depositAmountPopup": {
+        "payWith": "以此支付",
+        "estReceive": "預計接收：{{balance}}",
+        "feeTipTooltip": "Hyperliquid 收取的提款費用：$1",
+        "minimumDepositSize": "最低存款金额為 $5",
+        "receiveToken": "接收代幣",
+        "fetchQuoteFailed": "未能获取存款报价。请切换代币。",
+        "estReceiveTooltip": "跨鏈存款透過 LiFi 處理，可能會產生一些滑點。預估到達時間為 {{number}} 秒。",
+        "minimumWithdrawSize": "最低撤回金额是 2 美元",
+        "goSwapTips": "僅支援在 Arbitrum 上直接存入 USDC。請在存入之前將您當前的代幣換成 USDC。",
+        "goBridgeTips": "僅支持在 Arbitrum 上直接存入 USDC。請在存入前將您目前的代幣橋接到 Arbitrum 上的 USDC。",
+        "feeTip": "$1 费用"
+      },
+      "home": {
+        "margin": "保证金",
+        "size": "大小",
+        "liquidationPrice": "清算价",
+        "entryPrice": "入场價格",
+        "markPrice": "标记价格",
+        "pnl": "PNL"
+      },
+      "singleCoin": {
+        "openInterestTips": "所有用户在该合约上的总未平仓头寸。",
+        "fundingTips": "這是交易者為了保持永續合約價格接近日幣價格而支付或接收的每小時費用。如果為正，做多支付做空。如果為負，做空支付做多。",
+        "fundingPaymentsTips": "這是自持倉開倉以來的淨資金支付。資金是交易者為了將永續合約的價格保持接近代幣的實際價格而支付或收到的每小時費用。"
+      },
+      "accountSelector": {
+        "noPosition": "無頭寸",
+        "hyperliquidBalance": "永续合约余额",
+        "activatedAddress": "已激活",
+        "notActivatedAddress": "未激活"
+      },
+      "deposit": "存款",
+      "positions": "头寸",
+      "permissionTips": "在您的地区不支持开仓。",
+      "withdraw": "提取",
+      "title": "永续合约",
+      "pending": "待处理",
+      "price": "價格",
+      "explorePerps": "探索永续合约",
+      "leverage": "杠杆",
+      "direction": "方向",
+      "lastUsed": "上次使用時間",
+      "logInPerpsAccount": "登入我的 Perps 帳戶",
+      "pnl": "PNL",
+      "yourPosition": "你的持仓",
+      "openShort": "開倉做空",
+      "entryPrice": "入场价格",
+      "availableBalance": "可用: {{balance}}",
+      "margin": "保证金",
+      "closeLong": "關閉多頭",
+      "completed": "已完成",
+      "learnAboutPerps": "了解永续合约",
+      "autoClose": "自動平倉",
+      "marginIsolated": "保证金（逐倉）",
+      "liquidationPrice": "清算价格",
+      "fundingPayments": "资金支付",
+      "logInTips": "使用您的地址登录并存入资金以開始進行永續合約交易。",
+      "tradePerps": "交易永续合约",
+      "seeMore": "查看更多",
+      "marginCross": "保证金（全倉）",
+      "size": "尺寸",
+      "closeShort": "平倉做空",
+      "directDeposit": "直接存款",
+      "selectTokenToDeposit": "選擇要存入的代幣",
+      "history": "歷史",
+      "balanceAvailable": "餘額：{{balance}}",
+      "short": "做空",
+      "dailyVolume": "24小時交易量",
+      "takeProfit": "獲利了結",
+      "timeAgo": "{{time}} 之前",
+      "rabbyFeeTips": "Rabby 費用：0.04%",
+      "funding": "資金費用",
+      "deleteAgentSuccess": "代理已成功删除",
+      "review": "檢視",
+      "takeProfitTipsLong": "止盈价格必须高于当前价格",
+      "StopLoss": "止蚀",
+      "stopLossWhen": "設置止損價位",
+      "insufficientBalance": "餘額不足",
+      "openInterest": "未平仓合约",
+      "long": "做多",
+      "stopLossTipsLong": "止损价必须低于当前价格",
+      "availableToTrade": "可供交易",
+      "stopLoss": "止損",
+      "rabbyFeeTipsZero": "Rabby 费用：0%",
+      "confirm": "確認",
+      "openLong": "開倉做多",
+      "takeProfitWhen": "設定獲利價格",
+      "TakeProfit": "鎖定利潤",
+      "stopLossTipsShort": "止损价格必须高于当前价格",
+      "providerFeeTips": "Hyperliquid 費用: {{fee}}",
+      "takeProfitTipsShort": "止盈价格必须低于当前价格",
+      "stopLossTipsShortLiquidation": "價格高於清算價格 ({{price}})",
+      "sizeTips": "您交易的总值或数量，由保证金和杠杆设定。",
+      "stopLossTipsLongLiquidation": "價格低於清算價格 ({{price}})",
+      "deleteAgentModal": "您已达到代理的最大数量。您是否要删除现有代理以创建新的代理？",
+      "liquidationPriceTips": "當您的保證金低於維持保證金水平時，交易所自動平倉以防止進一步損失的價格。",
+      "back": "返回",
+      "reviewOrder": "檢視訂單",
+      "leverageRangeMaxError": "最大杠杆为 {{max}}x",
+      "liquidation": "强平",
+      "fee": "費用",
+      "leverageRangeMinError": "最小杠杆为 {{min}}x",
+      "estimatedLiquidationPrice": "估计强制平仓价格",
+      "openPositionTips": "交易永续合约涉及重大风险，包括由于高杠杆和市场波动而可能导致您投资和抵押品的突然和完全损失，可能不适合所有用户。价格可能受到资金费率和流动性的影响，您可能会在没有通知的情况下面临自动清算。市场数据由 Hyperliquid 提供。",
+      "maximumOrderSize": "最大订单大小为 {{amount}}",
+      "minimumOrderSize": "最低订单大小是 $10",
+      "toast": {
+        "setAutoCloseSuccess": "已成功设置自动平仓。",
+        "openPositionSuccess": "已开立 {{direction}} {{coin}}-USD：数量 {{size}}，价格 ${{price}}",
+        "closePositionSuccess": "已关闭 {{direction}} {{coin}}-USD: 数量 {{size}}，价格 ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeLong": "平仓做多",
+        "pnl": "盈亏",
+        "closeShort": "平仓做空",
+        "positionSize": "倉位大小",
+        "title": "關閉 {{coin}}-USD {{direction}}"
+      },
+      "isolated": "孤立",
+      "cross": "交叉"
     }
   },
   "component": {
@@ -3013,6 +3242,9 @@
     },
     "RiskTip": {
       "title": "風險警告"
+    },
+    "DappActions": {
+      "queueDescription": "當前提取將進入等待隊列。一旦處理完成，可以提取到您的錢包。"
     }
   },
   "background": {
@@ -3048,6 +3280,18 @@
       "HdKeyring": "助記詞",
       "simpleKeyring": "私鑰",
       "watchAddressKeyring": "聯系人"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "未找到裝置",
+        "deviceInitializeFailed": "裝置異常，請重新啟動後重試",
+        "needUpgradeFirmware": "必須升級韌體才能使用裝置",
+        "thisMethodNeedUpgradeFirmware": "使用該功能需要升級韌體，請在 OneKey 應用程式中升級韌體",
+        "notAllowInBootloaderMode": "請在正常模式下使用",
+        "deviceCheckPassphraseStateError": "帳戶與當前裝置解鎖地址不匹配，請確認裝置與帳戶地址一致後重試",
+        "actionCancel": "操作已取消",
+        "deviceNeedsWebHIDPermission": "未找到設備或需要 WebHID 權限"
+      }
     }
   },
   "constant": {

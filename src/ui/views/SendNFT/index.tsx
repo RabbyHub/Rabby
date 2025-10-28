@@ -31,7 +31,8 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
-import { MiniApproval } from '../Approval/components/MiniSignTx';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 import { findChain, findChainByEnum } from '@/utils/chain';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -44,7 +45,6 @@ import { Tx } from 'background/service/openapi';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
-  useStartDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from '../SendToken/components/SendShowMore';
@@ -76,13 +76,18 @@ const SendNFT = () => {
   const [form] = useForm<{ to: string; amount: number }>();
   const [inited, setInited] = useState(false);
 
-  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
-  const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
   const [freshId, setRefreshId] = useState(0);
 
   const chainInfo = useMemo(() => {
     return findChain({ enum: chain });
   }, [chain]);
+
+  const { openDirect, prefetch } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: chainInfo?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
+  });
 
   const nftItem = useMemo(() => {
     const query = new URLSearchParams(search);
@@ -134,12 +139,6 @@ const SendNFT = () => {
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0);
-
-  const miniSignTxs = useMemo(() => {
-    return miniSignTx ? [miniSignTx] : [];
-  }, [miniSignTx]);
-
-  const startDirectSigning = useStartDirectSigning();
 
   const canUseDirectSubmitTx = useMemo(
     () =>
@@ -215,15 +214,40 @@ const SendNFT = () => {
   useEffect(() => {
     if (canUseDirectSubmitTx) {
       const params = getNFTTransferParams(amount);
-      setMiniSignTx(params as Tx);
+      if (params) {
+        prefetch({
+          txs: [params as Tx],
+          ga: {
+            category: 'Send',
+            source: 'sendNFT',
+            trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
+          },
+          getContainer,
+        }).catch((error) => {
+          if (error !== MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+            console.error('send nft prefetch error', error);
+          }
+        });
+      }
     } else {
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
     }
 
     return () => {
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
     };
-  }, [canUseDirectSubmitTx, amount, getNFTTransferParams, freshId]);
+  }, [
+    canUseDirectSubmitTx,
+    amount,
+    getNFTTransferParams,
+    freshId,
+    prefetch,
+    rbisource,
+  ]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
@@ -259,6 +283,7 @@ const SendNFT = () => {
         });
 
         const params = getNFTTransferParams(amount);
+        let shouldForceSignPage = !!forceSignPage;
         wallet.addCacheHistoryData(
           `${chain}-${params.data || '0x'}`,
           {
@@ -274,40 +299,75 @@ const SendNFT = () => {
           'sendNft'
         );
 
-        if (canUseDirectSubmitTx && !forceSignPage) {
-          startDirectSigning();
-          return;
+        if (canUseDirectSubmitTx && !shouldForceSignPage) {
+          setMiniSignLoading(true);
+          try {
+            const hashes = await openDirect({
+              txs: [params as Tx],
+              ga: {
+                category: 'Send',
+                source: 'sendNFT',
+                trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
+              },
+              getContainer,
+            });
+            const hash = hashes[hashes.length - 1];
+            if (hash) {
+              handleMiniSignResolve();
+            } else {
+              setMiniSignLoading(false);
+            }
+            return;
+          } catch (error) {
+            console.error('send nft direct sign error', error);
+
+            setMiniSignLoading(false);
+
+            if (
+              error === MINI_SIGN_ERROR.USER_CANCELLED ||
+              error === MINI_SIGN_ERROR.CANT_PROCESS
+            ) {
+              return;
+            }
+            shouldForceSignPage = true;
+          }
         }
 
-        const promise = wallet.sendRequest({
-          method: 'eth_sendTransaction',
-          params: [params as Record<string, any>],
-          $ctx: {
-            ga: {
-              category: 'Send',
-              source: 'sendNFT',
-              trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
-            },
-          },
-        });
-        if (isTab) {
-          await promise;
-          form.setFieldsValue({
-            amount: 0,
-          });
-          updateUrlAmount(0);
-          wallet.setPageStateCache({
-            path: '/send-nft',
-            search: history.location.search,
-            params: {},
-            states: {
-              values: form.getFieldsValue(),
-              nftItem,
+        const sendViaSignPage = async () => {
+          const promise = wallet.sendRequest({
+            method: 'eth_sendTransaction',
+            params: [params as Record<string, any>],
+            $ctx: {
+              ga: {
+                category: 'Send',
+                source: 'sendNFT',
+                trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
+              },
             },
           });
-          setRefreshId((e) => e + 1);
-        } else {
-          window.close();
+          if (isTab) {
+            await promise;
+            form.setFieldsValue({
+              amount: 0,
+            });
+            updateUrlAmount(0);
+            wallet.setPageStateCache({
+              path: '/send-nft',
+              search: history.location.search,
+              params: {},
+              states: {
+                values: form.getFieldsValue(),
+                nftItem,
+              },
+            });
+            setRefreshId((e) => e + 1);
+          } else {
+            window.close();
+          }
+        };
+
+        if (!canUseDirectSubmitTx || shouldForceSignPage) {
+          await sendViaSignPage();
         }
       } catch (e) {
         message.error(e.message);
@@ -320,8 +380,10 @@ const SendNFT = () => {
 
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
-      setIsShowMiniSign(false);
-      setMiniSignTx(null);
+      setMiniSignLoading(false);
+      prefetch({
+        txs: [],
+      });
       form.setFieldsValue({ amount: 0 });
       updateUrlAmount(0);
       wallet.setPageStateCache({
@@ -466,7 +528,7 @@ const SendNFT = () => {
                         encodeURIComponent(JSON.stringify(nftItem))
                       );
                       query.set('to', toAddress);
-                      history.push(`/send-poly?${query.toString()}`);
+                      history.replace(`/send-poly?${query.toString()}`);
                     }}
                   >
                     <RcIconSwitchCC width={20} height={20} />
@@ -577,7 +639,7 @@ const SendNFT = () => {
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] flex justify-center">
-              {canUseDirectSubmitTx ? (
+              {canUseDirectSubmitTx && currentAccount?.type ? (
                 <DirectSignToConfirmBtn
                   title={t('page.sendToken.sendButton')}
                   onConfirm={() =>
@@ -586,6 +648,8 @@ const SendNFT = () => {
                     })
                   }
                   disabled={!canSubmit}
+                  accountType={currentAccount?.type}
+                  loading={miniSignLoading}
                 />
               ) : (
                 <Button
@@ -602,35 +666,6 @@ const SendNFT = () => {
             </div>
           </div>
         </Form>
-        <MiniApproval
-          txs={miniSignTxs}
-          visible={isShowMiniSign}
-          ga={{
-            category: 'Send',
-            source: 'sendNFT',
-            trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
-          }}
-          onClose={() => {
-            setIsShowMiniSign(false);
-            setMiniSignTx(null);
-            setRefreshId((e) => e + 1);
-          }}
-          onReject={() => {
-            setRefreshId((e) => e + 1);
-            setIsShowMiniSign(false);
-            setMiniSignTx(null);
-          }}
-          onResolve={handleMiniSignResolve}
-          onPreExecError={() => {
-            handleSubmit({
-              amount: form.getFieldValue('amount'),
-              forceSignPage: true,
-            });
-          }}
-          getContainer={getContainer}
-          directSubmit
-          canUseDirectSubmitTx={canUseDirectSubmitTx}
-        />
       </div>
     </FullscreenContainer>
   );

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { ReactComponent as RcIconMore } from '@/ui/assets/gas-account/more.svg';
 
@@ -8,17 +8,27 @@ import { Dropdown, Menu } from 'antd';
 import { GasAccountHistory } from './components/History';
 import { GasAccountLoginPopup } from './components/LoginPopup';
 import { GasAccountDepositPopup } from './components/DepositPopup';
-import { useGasAccountInfo, useGasAccountLogin } from './hooks';
+import {
+  useGasAccountInfo,
+  useGasAccountLogin,
+  useGasAccountHistoryRefresh,
+} from './hooks';
 import { ReactComponent as RcIconLogout } from '@/ui/assets/gas-account/logout.svg';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/gas-account/switch-cc.svg';
 
 import { GasAccountLogoutPopup } from './components/LogoutPopop';
 import { WithdrawPopup } from './components/WithdrawPopup';
-import { useHistory } from 'react-router-dom';
-import { GasAccountRefreshIdProvider } from './hooks/context';
+import { useHistory, useLocation } from 'react-router-dom';
+import {
+  GasAccountRefreshIdProvider,
+  GasAccountHistoryRefreshIdProvider,
+} from './hooks/context';
 import { useRabbyDispatch } from '@/ui/store';
 import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
 import { GasAccountCard } from './components/GasAccountCard';
+import { EVENTS } from '@/constant';
+import { useGasAccountRefresh } from './hooks';
+import eventBus from '@/eventBus';
 
 const GasAccountInner = () => {
   const { t } = useTranslation();
@@ -45,10 +55,6 @@ const GasAccountInner = () => {
     }
   };
 
-  const handleRefreshHistory = useCallback(() => {
-    setRefreshHistoryKey((prevKey) => prevKey + 1);
-  }, [setRefreshHistoryKey]);
-
   const { value: gasAccount, loading } = useGasAccountInfo();
   const { isLogin } = useGasAccountLogin({ value: gasAccount, loading });
 
@@ -61,6 +67,31 @@ const GasAccountInner = () => {
   const [switchAddrVisible, setSwitchAddrVisible] = useState(false);
 
   const dispatch = useRabbyDispatch();
+  const { refresh } = useGasAccountRefresh();
+  const { refreshHistory } = useGasAccountHistoryRefresh();
+
+  const handleRefreshHistory = useCallback(() => {
+    setRefreshHistoryKey((prevKey) => prevKey + 1);
+    refreshHistory();
+  }, [setRefreshHistoryKey, refreshHistory]);
+
+  // 监听 Gas Account 登录回调事件
+  useEffect(() => {
+    const handleCloseWindow = () => {
+      window.close();
+    };
+    eventBus.addEventListener(
+      EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
+      handleCloseWindow
+    );
+
+    return () => {
+      eventBus.removeEventListener(
+        EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
+        handleCloseWindow
+      );
+    };
+  }, [dispatch, refresh, handleRefreshHistory]);
 
   useEffect(() => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
@@ -69,13 +100,6 @@ const GasAccountInner = () => {
   }, []);
 
   const openDepositPopup = () => {
-    // if (
-    //   gasAccount?.address &&
-    //   currentAccount?.address !== gasAccount?.address
-    // ) {
-    //   setSwitchAddrVisible(true);
-    //   return;
-    // }
     setDepositVisible(true);
   };
 
@@ -178,6 +202,7 @@ const GasAccountInner = () => {
       />
       <GasAccountDepositPopup
         visible={depositVisible}
+        handleRefreshHistory={handleRefreshHistory}
         onCancel={() => setDepositVisible(false)}
       />
 
@@ -185,7 +210,8 @@ const GasAccountInner = () => {
         visible={withdrawVisible}
         onCancel={() => setWithdrawVisible(false)}
         handleRefreshHistory={handleRefreshHistory}
-        balance={balance}
+        balance={gasAccount?.account.withdrawable_balance || 0}
+        gasAccountInfo={gasAccount?.account}
       />
 
       <SwitchLoginAddrBeforeDepositModal
@@ -199,9 +225,19 @@ const GasAccountInner = () => {
 };
 
 export const GasAccount = () => {
+  const { search } = useLocation<{
+    resetId: string;
+  }>();
+  const resetKey = useMemo(() => {
+    const query = new URLSearchParams(search || '');
+    return query.get('resetKey') || '';
+  }, [search]);
+
   return (
     <GasAccountRefreshIdProvider>
-      <GasAccountInner />
+      <GasAccountHistoryRefreshIdProvider>
+        <GasAccountInner key={resetKey} />
+      </GasAccountHistoryRefreshIdProvider>
     </GasAccountRefreshIdProvider>
   );
 };

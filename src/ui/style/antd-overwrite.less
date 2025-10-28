@@ -53,6 +53,7 @@
 
 .ant-btn-primary {
   background-color: var(--r-blue-default, #7084ff);
+  border-color: var(--r-blue-default);
   &:hover,
   &:focus {
     background-color: var(--r-blue-default, #7084ff);
@@ -176,6 +177,7 @@
 }
 
 .ant-modal-content {
+  border: 1.5px solid var(--r-neutral-line);
   border-radius: 6px;
   overflow: hidden;
 
@@ -253,7 +255,7 @@
 
 .ant-modal-confirm-error {
   .ant-modal-content {
-    background: var(--r-neutral-bg-1, #FFF);
+    background: var(--r-neutral-bg-1, #fff);
   }
   .anticon-close-circle {
     display: none;
@@ -427,6 +429,9 @@ textarea {
       Drawer
 ---------------------*/
 .ant-drawer {
+  .ant-drawer-content {
+    border-top: 1.5px solid var(--r-neutral-line);
+  }
   .ant-drawer-close {
     font-size: 19px;
     line-height: 0;
@@ -493,5 +498,27 @@ textarea {
   &:hover {
     background-color: rgba(134, 151, 255, 0.2);
     border: 1px solid var(--r-blue-default, #7084ff);
+  }
+}
+
+.perps-bridge-swap-modal-dark {
+  .ant-modal-content {
+    border: 1.5px solid #505562 !important;
+  }
+}
+
+.perps-bridge-swap-modal {
+  .ant-modal-body {
+    // border: transparent !important;
+    background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
+  }
+
+  .ant-modal-confirm-btns {
+    display: none !important;
+  }
+
+  .ant-modal-confirm-content {
+    padding: 0 !important;
+    background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
   }
 }

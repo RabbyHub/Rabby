@@ -13,7 +13,10 @@ import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { Button } from 'antd';
-import { useLoginDepositConfirm } from '@/ui/views/GasAccount/hooks/checkTxs';
+import {
+  GAS_ACCOUNT_INSUFFICIENT_TIP,
+  useLoginDepositConfirm,
+} from '@/ui/views/GasAccount/hooks/checkTxs';
 import { GasAccountDepositTipPopup } from '@/ui/views/GasAccount/components/GasAccountTxPopups';
 import { useHistory } from 'react-router-dom';
 
@@ -33,6 +36,7 @@ export function GasLessNotEnough({
   canDepositUseGasAccount,
   miniFooter,
   directSubmit,
+  onRedirectToDeposit,
 }: {
   url?: string;
   gasLessFailedReason?: string;
@@ -41,15 +45,19 @@ export function GasLessNotEnough({
   canDepositUseGasAccount?: boolean;
   miniFooter?: boolean;
   directSubmit?: boolean;
+  onRedirectToDeposit?: () => void;
 }) {
   const { t } = useTranslation();
 
-  const modalConfirm = useLoginDepositConfirm();
+  const modalConfirm = useLoginDepositConfirm({
+    onGotoGasAccount: onRedirectToDeposit,
+  });
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
   const history = useHistory();
   const gotoGasAccount = React.useCallback(() => {
+    onRedirectToDeposit?.();
     history.push('/gas-account');
-  }, []);
+  }, [onRedirectToDeposit]);
 
   return (
     <div
@@ -416,6 +424,7 @@ export function GasAccountTips({
   noCustomRPC,
   miniFooter,
   directSubmit,
+  onRedirectToDeposit,
 }: {
   gasAccountCost?: GasAccountCheckResult;
   isGasAccountLogin?: boolean;
@@ -423,6 +432,7 @@ export function GasAccountTips({
   noCustomRPC?: boolean;
   miniFooter?: boolean;
   directSubmit?: boolean;
+  onRedirectToDeposit?: () => void;
 }) {
   const { t } = useTranslation();
   const [tipPopupVisible, setTipPopupVisible] = useState(false);
@@ -440,6 +450,19 @@ export function GasAccountTips({
     if (isWalletConnect) {
       return {
         tip: t('page.signFooterBar.gasAccount.WalletConnectTips'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
+    }
+
+    if (
+      gasAccountCost?.err_msg &&
+      gasAccountCost?.err_msg?.toLowerCase() !==
+        GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase()
+    ) {
+      return {
+        tip: gasAccountCost.err_msg,
         btnText: null,
         loginGasAccount: false,
         depositGasAccount: false,
@@ -466,7 +489,9 @@ export function GasAccountTips({
 
     if (!gasAccountCost?.balance_is_enough) {
       return {
-        tip: t('page.signFooterBar.gasAccount.notEnough'),
+        tip: directSubmit
+          ? t('page.signFooterBar.gasless.notEnough')
+          : t('page.signFooterBar.gasAccount.notEnough'),
         btnText: t('page.signFooterBar.gasAccount.deposit'),
         loginGasAccount: false,
         depositGasAccount: true,
@@ -480,6 +505,7 @@ export function GasAccountTips({
       depositGasAccount: false,
     };
   }, [
+    directSubmit,
     miniFooter,
     isGasAccountLogin,
     isWalletConnect,
@@ -492,7 +518,9 @@ export function GasAccountTips({
     return () => setTipPopupVisible(false);
   }, []);
 
-  const modalConfirm = useLoginDepositConfirm();
+  const modalConfirm = useLoginDepositConfirm({
+    onGotoGasAccount: onRedirectToDeposit,
+  });
 
   const history = useHistory();
   const gotoGasAccount = React.useCallback(() => {
@@ -504,7 +532,8 @@ export function GasAccountTips({
     // isGasAccountLogin &&
     gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
-    noCustomRPC
+    noCustomRPC &&
+    !gasAccountCost?.err_msg
   ) {
     return null;
   }
@@ -514,7 +543,7 @@ export function GasAccountTips({
       className={clsx(
         'security-level-tip text-r-neutral-card2 items-center',
         directSubmit
-          ? 'bg-r-red-light border border-solid border-rabby-red-default'
+          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default min-h-[42px]'
           : 'bg-r-neutral-card2 mt-[15px]'
       )}
     >

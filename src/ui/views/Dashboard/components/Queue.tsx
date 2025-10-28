@@ -6,9 +6,8 @@ import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   position: absolute;
-  top: 70px;
-  right: 20px;
-  min-width: 62px;
+  top: 81px;
+  right: 28px;
   height: 27px;
   padding: 6px 12px;
   background: rgba(255, 255, 255, 0.2);
@@ -40,7 +39,7 @@ const Queue = ({ count, className }: QueueProps) => {
       className={clsx(
         className,
         'ease-in-out',
-        'group max-w-[62px] hover:max-w-[200px]',
+        'group',
         'whitespace-nowrap overflow-hidden overflow-ellipsis',
         'flex justify-end'
       )}

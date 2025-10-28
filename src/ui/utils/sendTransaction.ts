@@ -31,9 +31,12 @@ import eventBus from '@/eventBus';
 import {
   parseAction,
   fetchActionRequiredData,
+  ParsedTransactionActionData,
+  ActionRequireData,
 } from '@rabby-wallet/rabby-action';
 import stats from '@/stats';
 import { getCexInfo } from '../models/exchange';
+import { Account } from '@/background/service/preference';
 
 // fail code
 export enum FailedCode {
@@ -118,6 +121,7 @@ export const sendTransaction = async ({
   sig,
   ignoreSimulationFailed,
   extra,
+  session,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -140,6 +144,7 @@ export const sendTransaction = async ({
     preExecResult?: ExplainTxResponse;
     actionData?: ParseTxResponse;
   };
+  session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
 }) => {
   onProgress?.('building');
   const chain = findChain({
@@ -511,9 +516,15 @@ export const sendTransaction = async ({
         $ctx: {
           ga,
         },
-        params: [transaction],
+        params: [
+          {
+            ...transaction,
+            isSpeedUp: (tx as any)?.isSpeedUp,
+            isCancel: (tx as any)?.isCancel,
+          },
+        ],
       },
-      session: INTERNAL_REQUEST_SESSION,
+      session: session || INTERNAL_REQUEST_SESSION,
       approvalRes: {
         ...transaction,
         signingTxId,
@@ -575,4 +586,274 @@ export const sendTransaction = async ({
       },
     };
   }
+};
+
+export const sendTransactionByMiniSignV2 = async ({
+  tx,
+  chainServerId,
+  wallet,
+  onProgress,
+  lowGasDeadline,
+  isGasLess,
+  isGasAccount,
+  pushType = 'default',
+  ga,
+  sig,
+  session,
+  account: _account,
+  preExecResult,
+}: {
+  tx: Tx;
+  chainServerId: string;
+  wallet: WalletControllerType;
+  onProgress?: (status: ProgressStatus) => void;
+  lowGasDeadline?: number;
+  isGasLess?: boolean;
+  isGasAccount?: boolean;
+  pushType?: TxPushType;
+  ga?: Record<string, any>;
+  sig?: string;
+  session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
+  account?: Account;
+  preExecResult?: ExplainTxResponse;
+  parsedData?: ParsedTransactionActionData;
+  requiredData?: ActionRequireData;
+}) => {
+  onProgress?.('building');
+
+  const chain = findChain({
+    serverId: chainServerId,
+  })!;
+  const support1559 = chain.eip['1559'];
+
+  const currentAccount = _account || (await wallet.getCurrentAccount())!;
+
+  console.log('wallet.getCurrentAccount', {
+    currentAccount,
+  });
+
+  const signingTxId = await wallet.addSigningTx(tx);
+
+  wallet.reportStats('createTransaction', {
+    type: currentAccount.brandName,
+    category: KEYRING_CATEGORY_MAP[currentAccount.type],
+    chainId: chain.serverId,
+    createdBy: ga ? 'rabby' : 'dapp',
+    source: ga?.source || '',
+    trigger: ga?.trigger || '',
+    networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+    swapUseSlider: ga?.swapUseSlider ?? '',
+  });
+
+  const transaction: Tx = {
+    from: tx.from,
+    to: tx.to,
+    data: tx.data,
+    nonce: tx.nonce,
+    value: tx.value,
+    chainId: tx.chainId,
+    gas: tx.gas,
+  };
+
+  const maxPriorityFee = +(tx.maxPriorityFeePerGas || '');
+  const maxFeePerGas = tx.maxFeePerGas || tx.gasPrice;
+
+  if (support1559) {
+    transaction.maxFeePerGas = maxFeePerGas;
+    transaction.maxPriorityFeePerGas =
+      maxPriorityFee <= 0
+        ? tx.maxFeePerGas
+        : intToHex(Math.round(maxPriorityFee));
+  } else {
+    (transaction as Tx).gasPrice = maxFeePerGas;
+  }
+  try {
+    //for Signature Record
+    const actionData = await wallet.openapi.parseTx({
+      chainId: chain.serverId,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: tx.nonce || '0x1',
+        value: tx.value || '0x0',
+        to: tx.to || '',
+        type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
+      } as any,
+      origin: origin || '',
+      addr: currentAccount.address,
+    });
+    const parsed = parseAction({
+      type: 'transaction',
+      data: actionData.action,
+      balanceChange: preExecResult!.balance_change,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: tx.nonce || '0x1',
+        value: tx.value || '0x0',
+      },
+      preExecVersion: preExecResult!.pre_exec_version,
+      gasUsed: preExecResult!.gas.gas_used,
+      sender: tx.from,
+    });
+    const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
+    const requiredData = await fetchActionRequiredData({
+      type: 'transaction',
+      actionData: parsed,
+      contractCall: actionData.contract_call,
+      chainId: chain.serverId,
+      sender: currentAccount.address,
+      walletProvider: {
+        hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+        hasAddress: wallet.hasAddress,
+        getWhitelist: wallet.getWhitelist,
+        isWhitelistEnabled: wallet.isWhitelistEnabled,
+        getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+        findChain,
+        ALIAS_ADDRESS,
+      },
+      cex: cexInfo,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: tx.nonce || '0x1',
+        value: tx.value || '0x0',
+      },
+      apiProvider: isTestnet(chain.serverId)
+        ? wallet.testnetOpenapi
+        : wallet.openapi,
+    });
+
+    await wallet.updateSigningTx(signingTxId, {
+      rawTx: {
+        nonce: tx.nonce,
+      },
+      explain: {
+        ...preExecResult,
+        calcSuccess: true,
+      },
+      action: {
+        actionData: parsed,
+        requiredData: requiredData,
+      },
+    });
+  } catch (error) {
+    await wallet.updateSigningTx(signingTxId, {
+      rawTx: {
+        nonce: tx.nonce,
+      },
+    });
+  }
+
+  onProgress?.('builded');
+
+  const handleSendAfter = async () => {
+    const statsData = await wallet.getStatsData();
+
+    if (statsData?.signed) {
+      const sData: any = {
+        type: statsData?.type,
+        chainId: statsData?.chainId,
+        category: statsData?.category,
+        success: statsData?.signedSuccess,
+        preExecSuccess: statsData?.preExecSuccess,
+        createdBy: statsData?.createdBy,
+        source: statsData?.source,
+        trigger: statsData?.trigger,
+        networkType: statsData?.networkType,
+      };
+      if (statsData.signMethod) {
+        sData.signMethod = statsData.signMethod;
+      }
+      stats.report('signedTransaction', sData);
+    }
+    if (statsData?.submit) {
+      stats.report('submitTransaction', {
+        type: statsData?.type,
+        chainId: statsData?.chainId,
+        category: statsData?.category,
+        success: statsData?.submitSuccess,
+        preExecSuccess: statsData?.preExecSuccess,
+        createdBy: statsData?.createdBy,
+        source: statsData?.source,
+        trigger: statsData?.trigger,
+        networkType: statsData?.networkType || '',
+      });
+    }
+  };
+
+  wallet.reportStats('signTransaction', {
+    type: currentAccount.brandName,
+    category: KEYRING_CATEGORY_MAP[currentAccount.type],
+    chainId: chain.serverId,
+    createdBy: ga ? 'rabby' : 'dapp',
+    source: ga?.source || '',
+    trigger: ga?.trigger || '',
+    networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+  });
+
+  // submit tx
+  let hash = '';
+  const account = currentAccount;
+  try {
+    console.log('wallet.ethSendTransaction', {
+      params: [
+        {
+          ...transaction,
+          isSpeedUp: (tx as any)?.isSpeedUp,
+          isCancel: (tx as any)?.isCancel,
+        },
+      ],
+      approvalRes: {
+        ...transaction,
+        signingTxId,
+        // logId: logId,
+        lowGasDeadline,
+        isGasLess,
+        isGasAccount,
+        pushType,
+        sig,
+      },
+    });
+    hash = await wallet.ethSendTransaction({
+      data: {
+        $ctx: {
+          ga,
+        },
+        params: [
+          {
+            ...transaction,
+            isSpeedUp: (tx as any)?.isSpeedUp,
+            isCancel: (tx as any)?.isCancel,
+          },
+        ],
+      },
+      session: session || INTERNAL_REQUEST_SESSION,
+      approvalRes: {
+        ...transaction,
+        signingTxId,
+        lowGasDeadline,
+        isGasLess,
+        isGasAccount,
+        pushType,
+        sig,
+      },
+      pushed: false,
+      result: undefined,
+      account: account,
+    });
+    await handleSendAfter();
+  } catch (e) {
+    await handleSendAfter();
+    const err = new Error(e.message);
+    err.name = FailedCode.SubmitTxFailed;
+    eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, e.message);
+    throw err;
+  }
+
+  onProgress?.('signed');
+
+  return {
+    txHash: hash,
+  };
 };

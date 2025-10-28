@@ -157,6 +157,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
       className={clsx(
         'flex flex-col items-center',
         'flex-1',
+        'min-h-[128px]',
         // reduce body padding top
         isFailedOrRejected ? '-mt-16' : ''
       )}

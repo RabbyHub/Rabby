@@ -96,7 +96,9 @@ const BridgeOrNative = ({
               hover:bg-blue-light hover:bg-opacity-[0.1] hover:border-rabby-blue-default
               rounded-[6px] px-12 py-6"
               >
-                {tokenEntity?.domain_id}
+                <span className="text-r-neutral-title-1 text-13 font-medium truncate max-w-[170px]  overflow-ellipsis whitespace-nowrap">
+                  {tokenEntity?.domain_id}
+                </span>
                 <ThemeIcon
                   src={RcIconExternal}
                   className="w-14 text-r-neutral-foot"
@@ -458,10 +460,10 @@ const TokenChainAndContract = ({
         />
       ) : (
         <ListSiteAndCex
+          siteArr={tokenEntity?.cex_list}
+          title={t('page.dashboard.tokenDetail.SupportedExchanges')}
+          noSiteString={t('page.dashboard.tokenDetail.NoSupportedExchanges')}
           popupHeight={popupHeight}
-          siteArr={tokenEntity?.listed_sites}
-          title={t('page.dashboard.tokenDetail.ListedBy')}
-          noSiteString={t('page.dashboard.tokenDetail.NoListedBy')}
         ></ListSiteAndCex>
       )}
       {entityLoading ? (
@@ -471,10 +473,10 @@ const TokenChainAndContract = ({
         />
       ) : (
         <ListSiteAndCex
-          siteArr={tokenEntity?.cex_list}
-          title={t('page.dashboard.tokenDetail.SupportedExchanges')}
-          noSiteString={t('page.dashboard.tokenDetail.NoSupportedExchanges')}
           popupHeight={popupHeight}
+          siteArr={tokenEntity?.listed_sites}
+          title={t('page.dashboard.tokenDetail.ListedBy')}
+          noSiteString={t('page.dashboard.tokenDetail.NoListedBy')}
         ></ListSiteAndCex>
       )}
       <ChainAndName token={token} tokenEntity={tokenEntity}></ChainAndName>

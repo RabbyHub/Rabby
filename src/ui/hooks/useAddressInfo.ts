@@ -48,9 +48,7 @@ export const useAddressInfo = (
       accountsList.filter(
         (acc) =>
           isSameAddress(acc.address, address) &&
-          (type
-            ? type.toLocaleLowerCase() === acc.type.toLocaleLowerCase()
-            : true)
+          (type ? type.toLowerCase() === acc.type.toLowerCase() : true)
       )
     );
 
@@ -88,7 +86,7 @@ export const useAddressInfo = (
     if (addrDescRes) {
       if (cexId) {
         const localCexInfo = exchanges.find(
-          (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+          (e) => e.id.toLowerCase() === cexId?.toLowerCase()
         );
         if (localCexInfo) {
           addrDescRes.desc.cex = {
@@ -125,7 +123,7 @@ export const useAddressInfo = (
           Object.keys(addrDescRes?.desc?.contract || {}).length > 0;
         const supportChains = Object.entries(
           addrDescRes?.desc?.contract || {}
-        ).map(([chainName]) => chainName?.toLocaleLowerCase());
+        ).map(([chainName]) => chainName?.toLowerCase());
 
         return {
           isCex: !!cexId,

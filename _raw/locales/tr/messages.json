@@ -226,7 +226,8 @@
         "sendGas": "Mevcut işlem için size aktarılan Gas:",
         "estimatedGas": "Tahmini Gas:",
         "maxGas": "Maksimum Gaz:",
-        "gasCost": "Adresinize gas aktarımı için gas maliyeti:"
+        "gasCost": "Adresinize gas aktarımı için gas maliyeti:",
+        "description": "GasAccount kullanarak gaz ücretlerini ödemek. Aşağıdaki ödeme detaylarını görüntüleyin:"
       },
       "customRPCErrorModal": {
         "title": "Özel RPC Hatası",
@@ -363,6 +364,15 @@
         "gasPriceTooLow": "Gaz fiyatı çok düşük. İşleminizin onaylanmasına yardımcı olmak için %30 artıracağız. Onaylamak ve tekrar denemek için “Tekrar Dene”ye tıklayın.",
         "defaultTips": "Bir şeyler yanlış. Lütfen daha sonra tekrar deneyin.",
         "InvalidTx": "Geçersiz işlem."
+      },
+      "addLiquidity": {
+        "marketPrice": "Piyasa Fiyatı",
+        "token0": "Token 1 Ekle",
+        "priceDiff": "Fiyat Farkı",
+        "token1": "Token Ekle 2",
+        "title": "Likidite Ekle",
+        "poolPrice": "Havuz Fiyatı",
+        "receiver": "Alıcı"
       }
     },
     "signFooterBar": {
@@ -817,7 +827,8 @@
         },
         "ViewMore": {
           "text": "Daha fazla göster"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 Desteklenen Zincirler:"
       },
       "search": {
         "placeholder": "İsme/adrese göre {{ type }} ara"
@@ -919,7 +930,7 @@
       "Including-service-fee": "{{fee}} dahil hizmet ücreti",
       "service-fee-tip": "Gas Yükleme hizmeti için Rabby, token değişimindeki kaybı ve yükleme için gas ücretini karşılamak zorundadır. Bu nedenle %20 hizmet ücreti alınır.",
       "Confirm": "Onayla",
-      "Select-from-supported-tokens": "Desteklenen tokenlerden seçin",
+      "Deposit-tip": "USDC/USDT ile Depozito Yapın",
       "Value": "Değer",
       "Payment-Token": "Ödeme Tokeni",
       "Select-payment-token": "Ödeme tokeni seçin",
@@ -1031,7 +1042,9 @@
       "hidden-no-quote-rates_one": "{{count}} oranı kullanılamıyor",
       "hidden-no-quote-rates_other": "{{count}} oranları kullanılamıyor",
       "two-step-approve-details": "Token USDT, hakkı değiştirmek için 2 işlem gerektirir. Öncelikle, hakkı sıfıra ayarlamanız gerekir ve ardından yeni hakkı değeri belirleyebilirsiniz.",
-      "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez."
+      "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
+      "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
+      "approve": "Onayla"
     },
     "manageAddress": {
       "no-address": "Adres yok",
@@ -1098,7 +1111,9 @@
           "rabbyPoints": "Rabby Points",
           "ecology": "Ekosistem",
           "bridge": "Köprü",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1337,7 +1352,9 @@
         "customizedHasAddedTips": "Token Rabby tarafından listelenmemiştir. Bunu token listesine manuel olarak eklediniz.",
         "IssuerWebsite": "Yayımcının Web Sitesi",
         "blockedListTitle": "blokajlı token",
-        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez."
+        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez.",
+        "bridge": "Köprü",
+        "bridgeToEth": "Ethereum Zinciri'ne Köprü"
       },
       "assets": {
         "usdValue": "USD DEĞERİ",
@@ -1379,7 +1396,8 @@
           "lowValueAssets": "{{count}} düşük değerli varlık",
           "lowValueAssets_other": "{{count}} düşük değerli tokenlar",
           "lowValueAssets_one": "{{count}} düşük değerli token",
-          "lowValueAssets_0": "{{count}} düşük değerli token"
+          "lowValueAssets_0": "{{count}} düşük değerli token",
+          "review": "Gözden Geçir"
         },
         "noAssets": "Varlık Yok",
         "blockLinkText": "Tokeni engellemek için adresi ara",
@@ -1440,7 +1458,16 @@
         "howToConnectImKey": "imKey Nasıl Bağlanır",
         "howToConnectKeystone": "Keystone Nasıl Bağlanır",
         "ledgerIsDisconnected": "Defteriniz bağlı değil",
-        "onekeyIsDisconnected": "OneKey'iniz bağlı değil"
+        "onekeyIsDisconnected": "OneKey'iniz bağlı değil",
+        "trezor": {
+          "doc2": "Cihazınızı açın",
+          "doc1": "Trezor cihazınızı bağlayın"
+        },
+        "onekey": {
+          "doc2": "OneKey cihazınızı takın",
+          "doc3": "Cihazınızı açın",
+          "doc1": "<1>OneKey Bridge<1/> kurun"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Güvenli adres {{chain}} desteklemiyor",
@@ -1463,6 +1490,11 @@
       "recentConnectionGuide": {
         "button": "Anladım\n",
         "title": "Dapp bağlantısı için burada adres değiştirin.\n"
+      },
+      "rabbyPointsPopup": {
+        "desc": "Rabby Mobile'de puanlarınızı kontrol edin.",
+        "title": "Rabby Puanları",
+        "downloadIntro": "Uygulamayı henüz indirmediniz mi? Şimdi indirin."
       }
     },
     "nft": {
@@ -1617,7 +1649,6 @@
         },
         "title": "{{brandName}} ile Bağlan",
         "disconnected": "Bağlantı Kesildi",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Bağlandı ancak imzalama yapılamıyor.",
@@ -1804,8 +1835,19 @@
         "keystonePermissionTip": "Lütfen aşağıdaki açılır pencerede Keystone erişimini yetkilendirmek için \"İzin Ver\" düğmesine tıklayın ve Keystone 3 Pro'nuzun ana sayfada olduğundan emin olun.",
         "title": "Keystone'u Bağla"
       },
+      "onekey": {
+        "onekeyPermission1": "Bir USB cihazına bağlan",
+        "allowRabbyPermissionsTitle": "Rabby izinlerini ver:",
+        "onekeyPermissionTip": "Lütfen aşağıdaki açılır pencerede OneKey erişimini yetkilendirmek için \"İzin Ver\" düğmesine tıklayın ve OneKey 'nuzun ana sayfada olduğundan emin olun.",
+        "whyOneKey": "Neden OneKey?",
+        "buyOneKey": "OneKey Satın Al",
+        "haveOneKey": "Henüz OneKey yok mu?"
+      },
       "firefoxLedgerDisableTips": "Ledger, Firefox ile uyumlu değil",
-      "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle"
+      "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle",
+      "trezor": {
+        "title": "Trezor'u Bağla"
+      }
     },
     "unlock": {
       "btn": {
@@ -2133,7 +2175,8 @@
       "slippage-adjusted-refresh-quote": "滑点已调整。刷新路线。",
       "select-chain": "Zincir Seç",
       "pendingTip": "Tx gönderildi. Tx uzun saatler boyunca beklemede kalırsa, ayarlardan beklemeyi temizlemeyi deneyebilirsiniz.",
-      "need-to-approve-token-before-bridge": "Bridge öncesinde token onayı gerekiyor"
+      "need-to-approve-token-before-bridge": "Bridge öncesinde token onayı gerekiyor",
+      "bridgeDbkBtn": "DBK Resmi Servisi Üzerinden Köprü"
     },
     "pendingDetail": {
       "Header": {
@@ -2425,7 +2468,12 @@
         "txSigned": "İmzalandı. İşlem oluşturuluyor",
         "txSendings": "İmzalama isteği gönderiliyor ({{current}}/{{total}})"
       },
-      "signWithLedger": "Ledger ile imzala"
+      "signWithLedger": "Ledger ile imzala",
+      "cancelTitle": "Zincir Üzerinde İptal",
+      "signWithOneKey": "OneKey ile İmza At",
+      "speedUpDesc": "Gas fiyatı hızlandırmak için {{percent}} arttı.",
+      "cancleDesc": "Gas fiyatı, işlemi iptal etmek için {{percent}} oranında arttı.",
+      "speedUpTitle": "Hızlandırmak"
     },
     "gasAccount": {
       "history": {
@@ -2435,7 +2483,8 @@
         "login": "GasAccount ile giriş yap",
         "gotIt": "Anladım",
         "desc": "Tüm Zincirlerde Gas Ücretlerini Ödeyin",
-        "title": "USDC / USDT Yatırın"
+        "title": "USDC / USDT Yatırın",
+        "loginAndClaim": "Giriş yap ve $2.00 al"
       },
       "loginConfirmModal": {
         "title": "Mevcut Adres ile Giriş Yap",
@@ -2472,7 +2521,12 @@
         "recipientAddress": "Alıcı adresi",
         "noEligibleAddr": "Para çekim için uygun adres yok",
         "noEligibleChain": "Çekim için uygun zincir yok",
-        "deductGasFees": "Alınan tutardan gas ücretleri düşülecektir"
+        "deductGasFees": "Alınan tutardan gas ücretleri düşülecektir",
+        "noBalance": "Bakiyesi yok",
+        "WithdrawalAmount": "Çıkış Tutarı",
+        "withdrawalTip": "Mevcut çekim bakiyesi: {{amount}}",
+        "amountTooLowCoverFee": "Gas ücretlerini karşılayacak kadar düşük bir miktar",
+        "noEnoughValueBalance": "Vault Bakiyesi yetersiz. Zinciri değiştirin veya daha sonra tekrar deneyin."
       },
       "withdrawConfirmModal": {
         "title": "DeBank L2 Cüzdanınıza aktarıldı",
@@ -2499,7 +2553,8 @@
         "address": "Adres"
       },
       "switchAccount": "GasAccount Değiştir",
-      "withdrawDisabledIAP": "Para çekme işlemleri devre dışı bırakılmıştır çünkü bakiyeniz çekilemeyen fiat fonlarını içermektedir. Token bakiyenizi çekmek için destekle iletişime geçin."
+      "withdrawDisabledIAP": "Para çekme işlemleri devre dışı bırakılmıştır çünkü bakiyeniz çekilemeyen fiat fonlarını içermektedir. Token bakiyenizi çekmek için destekle iletişime geçin.",
+      "gasToken": "Gaz Token"
     },
     "safeMessageQueue": {
       "noData": "Mesaj yok",
@@ -2567,11 +2622,14 @@
         "title": "Seed Phrase İçe Aktar"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip3": "3. Cihazınızı açın",
-        "tip2": "2. OneKey cihazınızı takın",
-        "connect": "OneKey bağla",
-        "tip1": "1. <1>OneKey Bridge<1/> yükleyin"
+        "qrcode": {
+          "desc": "OneKey donanım cüzdanındaki QR kodunu tarayın"
+        },
+        "title": "OneKey donanım cüzdanınızı USB ile bağlayın",
+        "tip1": "1. OneKey cihazınızı bağlayın",
+        "tip2": "2. Cihazınızın kilidini açın",
+        "tip3": "3. Lütfen yalnızca bir OneKey cihazının bağlı olduğundan emin olun",
+        "connect": "OneKey bağla"
       },
       "importTrezor": {
         "connect": "Trezor'a Bağlan",
@@ -2697,7 +2755,8 @@
       "selectedLenAddressesForSync_other": "Sync için seçilen {{len}} adresleri",
       "selectAddress": {
         "title": "Adresleri Senkronize Etmek İçin Seçin"
-      }
+      },
+      "verifyPassword": "Şifreyi Doğrula"
     },
     "search": {
       "sectionHeader": {
@@ -2757,7 +2816,7 @@
         "cexDepositAddress": "{{cexName}} Yatırım Adresi",
         "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
         "TransferBeforeValue": "Evet",
-        "TransferBefore": "Transfer öncesi",
+        "TransferBefore": "Daha önce aktarıldı",
         "AddToWhitelist": "Beyaz Listeye Ekle",
         "passwordPlaceholder": "Şifreyi girin devam etmek için"
       },
@@ -2785,6 +2844,176 @@
       "riskTitle": "Beyaz Liste Adresi Ekle",
       "exchangeAddress": "Değişim Adresi",
       "address": "Adres"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneHour": "1H",
+        "oneWeek": "1W",
+        "ytd": "YTD",
+        "oneDay": "1G",
+        "oneMonth": "1M",
+        "all": "TÜM"
+      },
+      "newUserProcess": {
+        "gotIt": "Tamam",
+        "fifthTitle": "Tasfiye",
+        "firstTitle": "Ana Sürekli Vadeli İşlemler",
+        "next": "Sonraki",
+        "secondTitle": "Uzun Veya Alış Yap",
+        "fourthTitle": "Kaldıraç Ayarlama",
+        "thirdTitle": "Kısa Git",
+        "firstDescription": "Sürekli vadeli işlemlerle sadece varlıkları işlemiyorsunuz. Gelecekte ne olacağını düşündüğünüzü işlemiyorsunuz.",
+        "fourthDescription": "Kaldıraç, yatırdığınızdan daha fazlasıyla ticaret yapmanızı sağlar. Hem kazançlarınızı hem de kayıplarınızı artırabilir.",
+        "secondDescription": "Fiyatın yükselmesini beklediğinizde, bir long açarsınız. Fiyat yükselirse, kazanç sağlarsınız. Eğer düşerse, kaybedersiniz.",
+        "thirdDescription": "Fiyatın düşmesini beklediğinizde, bir short pozisyonu açarsınız. Fiyat düşerse kazanırsınız. Fiyat yükselirse kaybedersiniz.",
+        "fifthDescription": "Her pozisyonun bir likidasyon fiyatı vardır. Piyasa fiyatı bu seviyeye ulaşırsa, pozisyonunuz kapatılacaktır. Yüksek kaldıraç kullanmak likidasyon riskini artırır."
+      },
+      "historyDetail": {
+        "title": {
+          "closeLongSl": "Kapat Long Stop Loss",
+          "openLong": "Uzun Pozisyon Aç",
+          "closeShort": "Kapat Short",
+          "closeLong": "Uzun Pozisyonu Kapat",
+          "openShort": "Açık Kısa",
+          "closeLongLiquidation": "Kapat Uzun Likidasyon",
+          "closeShortSl": "Kısa Poziyon Kapat, Zarar Durdur",
+          "closeShortTp": "Kapat Short Kar Al",
+          "closeShortLiquidation": "Kapat Kısa Tasfiye",
+          "closeLongTp": "Kapat Long Kar Al"
+        },
+        "price": "Fiyat",
+        "tradeValue": "Ticaret Değeri",
+        "fee": "Ücret",
+        "size": "Büyüklük",
+        "date": "Tarih",
+        "provider": "Sağlayıcı",
+        "closedPnl": "Kapandı PNL"
+      },
+      "logoutConfirmModal": {
+        "title": "Mevcut Adresten Çıkış Yap",
+        "desc": "Mevcut Perps hesabınızdan çıkış yapıyorsunuz. Bu adresle giriş yaparak istediğiniz zaman geri yükleyebilirsiniz."
+      },
+      "depositAmountPopup": {
+        "receiveToken": "Token Alın",
+        "payWith": "Öde ile",
+        "estReceive": "Tahmini Alım: {{balance}}",
+        "minimumDepositSize": "Minimum depozito miktarı 5 $'dır.",
+        "fetchQuoteFailed": "Yatırım alıntısını almakta başarısız olundu. Lütfen token'ı değiştirin.",
+        "minimumWithdrawSize": "Minimum çekim tutarı 2$'dır.",
+        "estReceiveTooltip": "Cross-chain deposit LiFi aracılığıyla işlenir, bazı kayıplara neden olabilir. Tahmini varış süresi {{number}}s.",
+        "goBridgeTips": "Sadece Arbitrum üzerindeki USDC doğrudan depozito için desteklenmektedir. Lütfen mevcut tokeninizi Arbitrum üzerindeki USDC'ye köprüleyin.",
+        "feeTipTooltip": "Hyperliquid tarafından alınan Çekim Ücreti: 1 $",
+        "goSwapTips": "Yalnızca Arbitrum'da USDC doğrudan yatırma için desteklenmektedir. Lütfen mevcut tokenınızı yatırmadan önce USDC ile değiştirin.",
+        "feeTip": "$1 Ücret"
+      },
+      "home": {
+        "pnl": "PNL",
+        "size": "Büyüklük",
+        "margin": "Marjinal",
+        "liquidationPrice": "Liq.Fiyat",
+        "markPrice": "İşaret Fiyatı",
+        "entryPrice": "Giriş Fiyatı"
+      },
+      "singleCoin": {
+        "openInterestTips": "Bu sözleşmedeki tüm kullanıcıların toplam açık pozisyonu.",
+        "fundingTips": "Bu, tüccarların perp sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için ödediği veya aldığı saatlik bir ücrettir. Eğer pozitifse, long short'a öder. Eğer negatifse, short long'a öder.",
+        "fundingPaymentsTips": "Bu, pozisyonun açıldığı tarihten itibaren net finansman ödemeleridir. Fonlama, türev sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için yatırımcıların ödeyip veya aldığı saatlik bir ücrettir."
+      },
+      "accountSelector": {
+        "hyperliquidBalance": "Perps Bakiyesi",
+        "notActivatedAddress": "Aktif Değil",
+        "noPosition": "Hiç Pozisyon Yok",
+        "activatedAddress": "Aktif Edildi"
+      },
+      "title": "Perps",
+      "deposit": "Yatırma",
+      "positions": "Pozisyonlar",
+      "permissionTips": "Pozisyon açma, bölgenizde desteklenmemektedir.",
+      "withdraw": "Çekmek",
+      "pending": "Beklemede",
+      "margin": "Marjinal",
+      "price": "Fiyat",
+      "logInPerpsAccount": "Perps hesabıma giriş yap",
+      "direction": "Yön",
+      "size": "Boyut",
+      "lastUsed": "Son kullanılma zamanı",
+      "yourPosition": "Pozisyonunuz",
+      "availableBalance": "Mevcut: {{balance}}",
+      "entryPrice": "Giriş Fiyatı",
+      "leverage": "Kaldıraç",
+      "tradePerps": "Perps Ticaret Yapın",
+      "explorePerps": "Perps'i Keşfedin",
+      "completed": "Tamamlandı",
+      "openShort": "Kısa Pozisyon Aç",
+      "seeMore": "Daha Fazla Göster",
+      "marginIsolated": "Marj (Yalıtılmış)",
+      "liquidationPrice": "Tasfiye Fiyatı",
+      "learnAboutPerps": "Perps hakkında bilgi edinin",
+      "autoClose": "Otomatik Kapat",
+      "closeLong": "Uzun Kapat",
+      "closeShort": "Kapat Short",
+      "history": "Geçmiş",
+      "logInTips": "Adresinizle giriş yapın ve perps ticaretine başlamak için fon yatırın.",
+      "openLong": "Uzun Pozisyon Aç",
+      "balanceAvailable": "Bakiyeniz: {{balance}}",
+      "directDeposit": "Doğrudan Yatırım",
+      "pnl": "PNL",
+      "marginCross": "Marj (Çapraz)",
+      "selectTokenToDeposit": "Token Yatırmak İçin Seçin",
+      "fundingPayments": "Fonlama Ödemeleri",
+      "funding": "Fonlama",
+      "timeAgo": "{{time}} önce",
+      "takeProfit": "kar al getir",
+      "review": "Gözden Geçir",
+      "deleteAgentSuccess": "Ajan başarıyla silindi",
+      "stopLossWhen": "Stop-Loss Fiyatı Belirle",
+      "long": "Uzun",
+      "StopLoss": "Zararı durdurma",
+      "short": "Kısa",
+      "stopLossTipsShort": "Stop loss fiyatı, mevcut fiyatın üzerinde olmalıdır.",
+      "TakeProfit": "Kar alınıp satılacak",
+      "availableToTrade": "Ticaret için mevcut",
+      "takeProfitWhen": "Kâr Alım Fiyatını Belirle",
+      "openInterest": "Açık Pozisyon",
+      "takeProfitTipsShort": "Kar alım fiyatı mevcut fiyatın altında olmalıdır.",
+      "providerFeeTips": "Hyperliquid ücreti: {{fee}}",
+      "dailyVolume": "24h Hacim",
+      "confirm": "Onayla",
+      "stopLoss": "zarar durdurma",
+      "insufficientBalance": "Yetersiz bakiyeniz var",
+      "takeProfitTipsLong": "Kar alım fiyatı mevcut fiyatın üzerinde olmalıdır.",
+      "rabbyFeeTips": "Rabby ücreti: 0.04%",
+      "rabbyFeeTipsZero": "Rabby ücreti: %0",
+      "sizeTips": "İşleminizin toplam değeri veya miktarı, marjin ve kaldıraç tarafından belirlenir.",
+      "stopLossTipsLong": "Zararı durdurma fiyatı mevcut fiyatın altında olmalıdır.",
+      "stopLossTipsLongLiquidation": "Fiyat likidite fiyatından ({{price}}) daha düşük.",
+      "deleteAgentModal": "Maksimum ajan sayısına ulaştınız. Yeni bir ajanın oluşturulması için mevcut bir ajanı silmek ister misiniz?",
+      "liquidationPriceTips": "Pozisyonunuzun marjınız bakım marjı seviyesinin altına düştüğünde daha fazla kaybı önlemek için borsa tarafından otomatik olarak kapandığı fiyat.",
+      "fee": "Ücret",
+      "estimatedLiquidationPrice": "Tahmin Edilen Tasfiye Fiyatı",
+      "stopLossTipsShortLiquidation": "Fiyat, tasfiye fiyatından ({{price}}) daha yüksektir.",
+      "liquidation": "Tasfiye",
+      "reviewOrder": "Sipariş İncelemesi",
+      "leverageRangeMinError": "Minimum kaldıraç {{min}}x'tir.",
+      "maximumOrderSize": "Maksimum emir boyutu {{amount}}’dır.",
+      "back": "Geri dön",
+      "leverageRangeMaxError": "Maksimum kaldıraç {{max}}x'dir.",
+      "minimumOrderSize": "Minimum sipariş boyutu $10'dur.",
+      "openPositionTips": "Sürekli sözleşmeler ticareti, yüksek kaldıraç ve piyasa volatilitesi nedeniyle yatırımınızın ve teminatınızın ani ve toplam kaybı da dahil olmak üzere önemli riskler içermektedir ve tüm kullanıcılar için uygun olmayabilir. Fiyatlar, finansman oranları ve likiditeden etkilenebilir ve bildirim olmaksızın otomatik likidasyonlara tabi olabilirsiniz. Piyasa verileri Hyperliquid tarafından sağlanmaktadır.",
+      "toast": {
+        "openPositionSuccess": "Açıldı {{direction}} {{coin}}-USD: Boyut {{size}} Fiyattan ${{price}}",
+        "setAutoCloseSuccess": "Otomatik pozisyon kapatma ayarı başarıyla oluşturuldu.",
+        "closePositionSuccess": "Kapandı {{direction}} {{coin}}-USD: Büyüklük {{size}} Fiyat ${{price}}'de"
+      },
+      "closePositionPopup": {
+        "closeShort": "Kapat Short",
+        "pnl": "Kar/Zarar",
+        "title": "Kapat {{coin}}-USD {{direction}}",
+        "closeLong": "Kapat Long",
+        "positionSize": "Pozisyon Boyutu"
+      },
+      "isolated": "Yalıtılmış",
+      "cross": "Çapraz"
     }
   },
   "component": {
@@ -2978,6 +3207,9 @@
     },
     "RiskTip": {
       "title": "Risk Uyarısı"
+    },
+    "DappActions": {
+      "queueDescription": "Mevcut çekim, bekleme kuyruğuna girecektir. İşlem tamamlandığında, cüzdanınıza çekilebilir."
     }
   },
   "global": {
@@ -3049,6 +3281,18 @@
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Özel Anahtar",
       "watchAddressKeyring": "Kişi"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Cihaz bulunamadı",
+        "deviceInitializeFailed": "Cihaz hatası, yeniden başlatıp tekrar deneyin",
+        "needUpgradeFirmware": "Cihazı kullanmak için firmware güncellenmeli",
+        "thisMethodNeedUpgradeFirmware": "Bu özellik firmware güncellemesi gerektirir, OneKey uygulamasında firmware'i güncelleyin",
+        "notAllowInBootloaderMode": "Normal modda kullanın",
+        "deviceCheckPassphraseStateError": "Hesap, mevcut cihaz kilit açma adresi ile eşleşmiyor. Cihaz ve hesap adresinin tutarlı olduğunu doğrulayın ve tekrar deneyin",
+        "actionCancel": "İşlem iptal edildi",
+        "deviceNeedsWebHIDPermission": "Cihaz bulunamadı veya WebHID izni gerekiyor"
+      }
     }
   },
   "constant": {

@@ -14,6 +14,7 @@ import {
   IS_FIREFOX,
   KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
+  SAFE_API_KEY,
 } from 'consts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -45,6 +46,7 @@ import {
   uninstalledService,
   whitelistService,
   OfflineChainsService,
+  perpsService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -60,6 +62,7 @@ import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
 
 Safe.adapter = fetchAdapter as any;
+Safe.apiKey = SAFE_API_KEY;
 
 dayjs.extend(utc);
 
@@ -117,6 +120,7 @@ async function restoreAppState() {
   await metamaskModeService.init();
   await OfflineChainsService.init();
   await syncChainService.init();
+  await perpsService.init();
 
   await walletController.tryUnlock();
 
@@ -184,6 +188,7 @@ restoreAppState();
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
     contactBookService.detectWhiteListCex();
+    perpsService.unlockAgentWallets();
 
     if (interval) {
       clearInterval(interval);
@@ -258,23 +263,32 @@ restoreAppState();
       if (type !== KEYRING_TYPE.WatchAddressKeyring) {
         const restAddresses = await keyringService.getAllAdresses();
         const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
-        if (!gasAccount?.account?.address) return;
-        // check if there is another type address in wallet
-        const stillHasAddr = restAddresses.some((item) => {
-          return (
-            isSameAddress(item.address, gasAccount.account!.address) &&
-            item.type !== KEYRING_TYPE.WatchAddressKeyring
-          );
-        });
-        if (
-          !stillHasAddr &&
-          isSameAddress(address, gasAccount.account.address)
-        ) {
-          // if there is no another type address then reset signature
-          gasAccountService.setGasAccountSig();
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+        if (gasAccount?.account?.address) {
+          // check if there is another type address in wallet
+          const stillHasAddr = restAddresses.some((item) => {
+            return (
+              isSameAddress(item.address, gasAccount.account!.address) &&
+              item.type !== KEYRING_TYPE.WatchAddressKeyring
+            );
           });
+          if (
+            !stillHasAddr &&
+            isSameAddress(address, gasAccount.account.address)
+          ) {
+            // if there is no another type address then reset signature
+            gasAccountService.setGasAccountSig();
+            eventBus.emit(EVENTS.broadcastToUI, {
+              method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+            });
+          }
+        }
+
+        const perpsAccount = await perpsService.getCurrentAccount();
+        if (perpsAccount?.address === address && perpsAccount.type === type) {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.PERPS.LOG_OUT,
+          });
+          perpsService.setCurrentAccount(null);
         }
       }
     }

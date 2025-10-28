@@ -223,9 +223,12 @@ const TokenSelect = forwardRef<
     } = useAsync(
       () =>
         queryConds?.keyword && isSwapTo
-          ? wallet.openapi.searchTokensV2({ q: queryConds?.keyword })
+          ? wallet.openapi.searchTokensV2({
+              q: queryConds?.keyword,
+              chain_id: queryConds.chainServerId || '',
+            })
           : Promise.resolve([] as TokenItemWithEntity[]),
-      [queryConds?.keyword, isSwapTo]
+      [queryConds?.keyword, isSwapTo, queryConds?.chainServerId]
     );
 
     const availableToken = useMemo(() => {

@@ -1,4 +1,4 @@
-import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
+import { CHAINS_ENUM, ETH_USDT_CONTRACT, EVENTS } from '@/constant';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
@@ -15,6 +15,7 @@ import { isNaN } from 'lodash';
 import { useBridgeSlippage } from './slippage';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
+import eventBus from '@/eventBus';
 
 export const enableInsufficientQuote = true;
 
@@ -54,9 +55,7 @@ export const tokenPriceImpact = (
   };
 };
 
-const useToken = (type: 'from' | 'to') => {
-  const refreshId = useRefreshId();
-
+const useToken = (type: 'from' | 'to', refreshTokenId: number) => {
   const userAddress = useRabbySelector(
     (s) => s.account.currentAccount?.address
   );
@@ -113,7 +112,13 @@ const useToken = (type: 'from' | 'to') => {
       );
       return data;
     }
-  }, [refreshId, userAddress, token?.id, token?.raw_amount_hex_str, chain]);
+  }, [
+    refreshTokenId,
+    userAddress,
+    token?.id,
+    token?.raw_amount_hex_str,
+    chain,
+  ]);
 
   useDebounce(
     () => {
@@ -137,11 +142,39 @@ export const useBridge = () => {
 
   const setRefreshId = useSetRefreshId();
 
+  const [refreshTokenId, updateRefreshTokenId] = useState(0);
+
+  const refreshTokensInfo = useCallback(
+    () => updateRefreshTokenId((e) => e + 1),
+    [updateRefreshTokenId]
+  );
+  useEffect(() => {
+    const refreshToken = (params: { addressList: string[] }) => {
+      if (
+        userAddress &&
+        params?.addressList?.find((item) => {
+          return isSameAddress(item || '', userAddress || '');
+        })
+      ) {
+        refreshTokensInfo();
+      }
+    };
+
+    eventBus.addEventListener(EVENTS.RELOAD_TX, refreshToken);
+    return () => {
+      eventBus.removeEventListener(EVENTS.RELOAD_TX, refreshToken);
+    };
+  }, [refreshTokensInfo, userAddress]);
+
   const wallet = useWallet();
   const [fromChain, fromToken, setFromToken, switchFromChain] = useToken(
-    'from'
+    'from',
+    refreshTokenId
   );
-  const [toChain, toToken, setToToken, switchToChain] = useToken('to');
+  const [toChain, toToken, setToToken, switchToChain] = useToken(
+    'to',
+    refreshTokenId
+  );
 
   const [amount, setAmount] = useState('');
 
@@ -194,6 +227,7 @@ export const useBridge = () => {
         user_addr: userAddress,
         start: 0,
         limit: 1,
+        is_all: true,
       });
       const latestToToken = latestTx?.history_list?.[0]?.to_token;
       if (latestToToken) {
@@ -285,7 +319,7 @@ export const useBridge = () => {
     if (!quote?.manualClick && expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    if (!quote?.manualClick) {
+    if (!quote?.manualClick && quote) {
       expiredTimer.current = setTimeout(() => {
         setRefreshId((e) => e + 1);
       }, 1000 * 30);
@@ -341,6 +375,7 @@ export const useBridge = () => {
       Number(amount) > 0 &&
       aggregatorsList.length > 0
     ) {
+      refreshTokensInfo();
       const currentFetchId = fetchIdRef.current;
 
       let isEmpty = false;
@@ -666,8 +701,10 @@ export const useBridge = () => {
   const { search } = useLocation();
   const [searchObj] = useState<{
     fromChain?: CHAINS_ENUM;
+    fromChainServerId?: string;
     fromTokenId?: string;
     inputAmount?: string;
+    toChainServerId?: string;
     toChain?: CHAINS_ENUM;
     toTokenId?: string;
     maxNativeTokenGasPrice?: string;
@@ -678,9 +715,13 @@ export const useBridge = () => {
     if (!searchObj) {
       return;
     }
-    if (searchObj.fromChain && searchObj.fromTokenId) {
+    if (
+      (searchObj.fromChain || searchObj.fromChainServerId) &&
+      searchObj.fromTokenId
+    ) {
       const fromChain = findChain({
         enum: searchObj.fromChain,
+        serverId: searchObj.fromChainServerId,
       });
       if (userAddress && fromChain) {
         wallet.openapi
@@ -696,9 +737,13 @@ export const useBridge = () => {
         handleAmountChange(searchObj.inputAmount);
       }
     }
-    if (searchObj.toChain && searchObj.toTokenId) {
+    if (
+      (searchObj.toChain || searchObj.toChainServerId) &&
+      searchObj.toTokenId
+    ) {
       const toChain = findChain({
         enum: searchObj.toChain,
+        serverId: searchObj.toChainServerId,
       });
       if (userAddress && toChain) {
         wallet.openapi

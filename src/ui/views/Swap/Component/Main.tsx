@@ -11,7 +11,12 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
+import {
+  getUiType,
+  isSameAddress,
+  openInternalPageInTab,
+  useWallet,
+} from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
 import {
@@ -24,14 +29,15 @@ import {
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useCss } from 'react-use';
+import { useCss, useDebounce } from 'react-use';
 import { DEX_WITH_WRAP } from '@/constant';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
-import { MiniApproval } from '../../Approval/components/MiniSignTx';
+// New simplified signing hook (no MiniApproval/MiniSignTx)
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useHistory } from 'react-router-dom';
@@ -50,12 +56,10 @@ import {
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
-import {
-  supportedDirectSign,
-  useGetDisableProcessDirectSign,
-  useStartDirectSigning,
-} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from './PendingTxItem';
+import { useTwoStepSwap } from '../hooks/twoStepSwap';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -102,7 +106,7 @@ export const Main = () => {
     slippageState,
     isSlippageHigh,
     isSlippageLow,
-    slippage,
+    slippage: _slippage,
     setSlippage,
     autoSlippage,
     isCustomSlippage,
@@ -140,6 +144,11 @@ export const Main = () => {
     loading: externalDappsLoading,
   } = useExternalSwapBridgeDapps(chain, 'swap');
 
+  const slippage = useMemo(
+    () => (autoSlippage ? autoSuggestSlippage : _slippage),
+    [autoSlippage, autoSuggestSlippage, _slippage]
+  );
+
   const refresh = useSetRefreshId();
 
   const refreshId = useRefreshId();
@@ -175,30 +184,9 @@ export const Main = () => {
 
   const amountAvailable = useMemo(() => Number(inputAmount) > 0, [inputAmount]);
 
-  const btnText = useMemo(() => {
-    if (!isSupportedChain) {
-      return t('component.externalSwapBrideDappPopup.swapOnDapp');
-    }
-    if (activeProvider?.shouldApproveToken) {
-      return t('page.swap.approve-swap');
-    }
-
-    if (quoteLoading) {
-      return t('page.swap.title');
-    }
-
-    return t('page.swap.title');
-  }, [
-    activeProvider?.shouldApproveToken,
-    quoteLoading,
-    isSupportedChain,
-    externalDapps,
-  ]);
-
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
-  const [isShowSign, setIsShowSign] = useState(false);
   const { runAsync: gotoSwap, loading: isSubmitLoading } = useRequest(
     async () => {
       if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
@@ -401,41 +389,128 @@ export const Main = () => {
     ]
   );
 
-  const startDirectSigning = useStartDirectSigning();
-  const disabledProcess = useGetDisableProcessDirectSign();
-
   const canUseDirectSubmitTx = useMemo(
     () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
-    // &&
-    // !receiveToken?.low_credit_score &&
-    // !receiveToken?.is_suspicious &&
-    // receiveToken?.is_verified !== false,
-    // &&
-    // !isSlippageHigh &&
-    // !isSlippageLow &&
-    // !showLoss,
-    [
-      // isShowMoreVisible,
-      // receiveToken,
-      // isSlippageHigh,
-      // isSlippageLow,
-      // showLoss,
-      isSupportedChain,
-      currentAccount?.type,
-    ]
+
+    [isSupportedChain, currentAccount?.type]
   );
 
-  const noRiskSign =
-    !receiveToken?.low_credit_score &&
-    !receiveToken?.is_suspicious &&
-    receiveToken?.is_verified !== false &&
-    !isSlippageHigh &&
-    !isSlippageLow &&
-    !showLoss;
+  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+
+  const onApprovePending = useCallback(
+    () => pendingTxRef.current?.fetchHistory(),
+    []
+  );
+
+  const {
+    shouldTwoStep: shouldTwoStepSwap,
+    currentTxs,
+    next,
+    isApprove,
+    approvePending: approveTxPending,
+    setApprovePending,
+    approveHash,
+  } = useTwoStepSwap({
+    txs,
+    chain,
+    enable: !!canUseDirectSubmitTx && !!currentAccount?.type,
+    type: 'approveSwap',
+    onApprovePending,
+  });
+
+  const miniSignNextStep = (hash: string) => {
+    next(hash);
+    setMiniSignLoading(false);
+    if (shouldTwoStepSwap && isApprove) {
+      setApprovePending(true);
+    }
+
+    if (!shouldTwoStepSwap || (shouldTwoStepSwap && !isApprove)) {
+      setApprovePending(false);
+      mutateTxs();
+      refresh((e) => e + 1);
+      handleAmountChange('');
+    }
+  };
+
+  const [latestQuoteBtnText, setLatestQuoteBtnText] = useState('');
+
+  const btnText = useMemo(() => {
+    if (!isSupportedChain) {
+      return t('component.externalSwapBrideDappPopup.swapOnDapp');
+    }
+    if (shouldTwoStepSwap) {
+      if (!isApprove && !approveTxPending) {
+        return t('page.swap.title');
+      }
+      return t('page.swap.approve');
+    }
+    if (activeProvider?.shouldApproveToken) {
+      return t('page.swap.approve-swap');
+    }
+
+    if (quoteLoading) {
+      return t('page.swap.title');
+    }
+
+    return t('page.swap.title');
+  }, [
+    activeProvider?.shouldApproveToken,
+    quoteLoading,
+    isSupportedChain,
+    externalDapps,
+    shouldTwoStepSwap,
+    isApprove,
+    approveTxPending,
+  ]);
+
+  useDebounce(
+    () => {
+      if (btnText && activeProvider && !quoteLoading) {
+        setLatestQuoteBtnText(btnText);
+      }
+    },
+    300,
+    [btnText, activeProvider, quoteLoading]
+  );
+
+  useDebounce(
+    () => {
+      setLatestQuoteBtnText(btnText);
+    },
+    300,
+    [chain, payToken?.id, receiveToken?.id]
+  );
+
+  // const noRiskSign =
+  //   !receiveToken?.low_credit_score &&
+  //   !receiveToken?.is_suspicious &&
+  //   receiveToken?.is_verified !== false &&
+  //   !isSlippageHigh &&
+  //   !isSlippageLow &&
+  //   !showLoss;
+
+  const showRiskTips = isSlippageLow || isSlippageHigh || showLoss;
 
   const [swapDappOpen, setSwapDappOpen] = useState(false);
 
-  const handleSwap = useMemoizedFn(() => {
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
+
+  const { openDirect, prefetch } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: findChain({ enum: chain })?.serverId || '',
+    autoResetGasStoreOnChainChange: true,
+  });
+
+  useEffect(() => {
+    prefetch({
+      txs: currentTxs || [],
+      // checkGasFeeTooHigh: true,
+      // enableSecurityEngine: true,
+    });
+  }, [currentTxs]);
+
+  const handleSwap = useMemoizedFn(async () => {
     if (!isTab) {
       dispatch.swap.setRecentSwapToToken(receiveToken);
     }
@@ -444,9 +519,52 @@ export const Main = () => {
       return;
     }
 
-    if (canUseDirectSubmitTx && noRiskSign) {
+    if (canUseDirectSubmitTx) {
+      if (shouldTwoStepSwap && isApprove && currentTxs?.[0]) {
+        wallet.addCacheHistoryData(
+          `${chain}-${currentTxs?.[0].data}`,
+          {
+            address: userAddress,
+            chainId: findChain({ enum: chain })?.id || 0,
+            amount: Number(inputAmount),
+            token: payToken,
+            status: 'pending',
+            createdAt: Date.now(),
+          } as any,
+          'approveSwap'
+        );
+      }
       clearExpiredTimer();
-      startDirectSigning();
+      setMiniSignLoading(true);
+
+      try {
+        const hashes = await openDirect({
+          txs: currentTxs,
+          getContainer,
+          ga: {
+            category: 'Swap',
+            source: 'swap',
+            trigger: rbiSource,
+            swapUseSlider,
+          },
+        });
+        miniSignNextStep(hashes[hashes.length - 1]);
+      } catch (error) {
+        console.log('swap mini sign error', error);
+
+        if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+          refresh((e) => e + 1);
+          mutateTxs([]);
+        } else if (error === MINI_SIGN_ERROR.CANT_PROCESS) {
+          setTimeout(() => {
+            refresh((e) => e + 1);
+          }, 10 * 1000);
+        } else {
+          gotoSwap();
+        }
+      } finally {
+        setMiniSignLoading(false);
+      }
       return;
     } else {
       gotoSwap();
@@ -568,7 +686,35 @@ export const Main = () => {
     activeProvider?.quote,
   ]);
 
-  const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+  const receiveTokenDisplayValue = useMemo(() => {
+    if (
+      !isSameAddress(
+        receiveToken?.id || '',
+        activeProvider?.quote?.toToken || ''
+      ) ||
+      !isSameAddress(payToken?.id || '', activeProvider?.quote?.fromToken || '')
+    ) {
+      return '';
+    }
+
+    if (!activeProvider) {
+      return '';
+    }
+
+    if (activeProvider?.actualReceiveAmount) {
+      return activeProvider?.actualReceiveAmount + '';
+    }
+    if (activeProvider?.name === 'WrapToken') {
+      return inputAmount;
+    }
+    return '0';
+  }, [
+    activeProvider,
+    inputAmount,
+    quoteLoading,
+    receiveToken?.id,
+    payToken?.id,
+  ]);
 
   return (
     <>
@@ -661,15 +807,7 @@ export const Main = () => {
               inSufficientCanGetQuote &&
               !activeProvider?.manualClick
             }
-            value={
-              !activeProvider
-                ? ''
-                : activeProvider?.actualReceiveAmount
-                ? activeProvider?.actualReceiveAmount + ''
-                : activeProvider?.name === 'WrapToken'
-                ? inputAmount
-                : '0'
-            }
+            value={receiveTokenDisplayValue}
             token={receiveToken}
             onTokenChange={(token) => {
               const chainItem = findChainByServerID(token.chain);
@@ -779,11 +917,18 @@ export const Main = () => {
             />
           </div>
         )}
-        {Boolean(!isShowMoreVisible && !activeProvider?.quote) && (
+        {approveHash ||
+        Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
           <div className="mx-20 mt-20">
-            <PendingTxItem type="swap" ref={pendingTxRef} />
+            <PendingTxItem
+              type={
+                shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap'
+              }
+              ref={pendingTxRef}
+            />
           </div>
-        )}
+        ) : null}
+
         <div
           className={clsx(
             'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
@@ -807,13 +952,16 @@ export const Main = () => {
                 : false
             }
           >
-            {canUseDirectSubmitTx && noRiskSign ? (
+            {canUseDirectSubmitTx && currentAccount?.type ? (
               <DirectSignToConfirmBtn
-                // disabled
                 key={refreshId}
-                disabled={swapBtnDisabled}
-                title={btnText}
+                disabled={swapBtnDisabled || approveTxPending}
+                loading={miniSignLoading}
+                title={latestQuoteBtnText || btnText}
                 onConfirm={handleSwap}
+                showRiskTips={showRiskTips && !swapBtnDisabled}
+                accountType={currentAccount?.type}
+                riskReset={swapBtnDisabled}
               />
             ) : (
               <Button
@@ -860,9 +1008,7 @@ export const Main = () => {
                   handleSwap();
                 }}
                 disabled={
-                  canUseDirectSubmitTx
-                    ? swapBtnDisabled || disabledProcess
-                    : swapBtnDisabled
+                  canUseDirectSubmitTx ? swapBtnDisabled : swapBtnDisabled
                 }
               >
                 {btnText}
@@ -891,40 +1037,7 @@ export const Main = () => {
             getContainer={getContainer}
           />
         ) : null}
-        <MiniApproval
-          visible={isShowSign}
-          txs={txs}
-          ga={{
-            category: 'Swap',
-            source: 'swap',
-            trigger: rbiSource,
-            swapUseSlider,
-          }}
-          onClose={() => {
-            setIsShowSign(false);
-            refresh((e) => e + 1);
-            setTimeout(() => {
-              mutateTxs([]);
-            }, 500);
-          }}
-          onReject={() => {
-            setIsShowSign(false);
-            refresh((e) => e + 1);
-            mutateTxs([]);
-          }}
-          onResolve={() => {
-            setTimeout(() => {
-              refresh((e) => e + 1);
-              setIsShowSign(false);
-              mutateTxs([]);
-              handleAmountChange('');
-            }, 500);
-          }}
-          onPreExecError={gotoSwap}
-          getContainer={getContainer}
-          directSubmit
-          canUseDirectSubmitTx={canUseDirectSubmitTx}
-        />
+        {/* Simplified signer portal migrated to global host; no local portal needed */}
         <LowCreditModal
           token={lowCreditToken}
           visible={lowCreditVisible}

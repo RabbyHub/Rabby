@@ -4,10 +4,10 @@ import React, { memo, SVGProps, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import TokenWithChain, { IconWithChain } from '../TokenWithChain';
 import { formatPrice, formatUsdValue } from '@/ui/utils';
-import { ReactComponent as RcIconDanger } from '@/ui/assets/search/RcIconDanger.svg';
-import { ReactComponent as RcIconWarning } from '@/ui/assets/search/RcIconWarning.svg';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as IconBridgeTo } from '@/ui/assets/search/IconBridgeTo.svg';
 import { ReactComponent as IconOrigin } from '@/ui/assets/search/IconOrigin.svg';
+import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { Divider } from 'antd';
 import clsx from 'clsx';
 import styled from 'styled-components';
@@ -117,11 +117,11 @@ const ExternalTokenRow = memo(
 
     const ExtraContent = useMemo(() => {
       if (data.is_verified === false) {
-        return <RiskTokenTips isDanger={true} />;
+        return <RiskTokenTips onPress={onClickTokenSymbol} isDanger={true} />;
       }
 
       if (data.is_suspicious) {
-        return <RiskTokenTips isDanger={false} />;
+        return <RiskTokenTips onPress={onClickTokenSymbol} isDanger={false} />;
       }
 
       if (data.identity?.domain_id) {
@@ -141,7 +141,7 @@ const ExternalTokenRow = memo(
             <div className="flex items-center gap-4">
               {isVerified &&
                 (isBridgeDomain ? <IconBridgeTo /> : <IconOrigin />)}
-              <span className="text-neutral-title-1">
+              <span className="text-neutral-title-1 max-w-[200px] truncate">
                 {data.identity?.domain_id}
               </span>
             </div>
@@ -154,10 +154,7 @@ const ExternalTokenRow = memo(
     }, [data.identity, t]);
 
     const siteList = useMemo(() => {
-      return [
-        ...(data?.identity?.listed_sites || []),
-        ...(data?.identity?.cex_list || []),
-      ];
+      return data?.identity?.cex_list || [];
     }, [data]);
 
     return (
@@ -281,10 +278,15 @@ const BoxWrapper = (props: SVGProps<SVGSVGElement>) => {
   );
 };
 
-export const RiskTokenTips = ({ isDanger }: { isDanger?: boolean }) => {
+export const RiskTokenTips = ({
+  isDanger,
+  onPress,
+}: {
+  isDanger?: boolean;
+  onPress?: React.MouseEventHandler<HTMLDivElement>;
+}) => {
   const { t } = useTranslation();
 
-  const Icon = isDanger ? RcIconDanger : RcIconWarning;
   const tip = isDanger
     ? t('page.search.tokenItem.verifyDangerTips')
     : t('page.search.tokenItem.scamWarningTips');
@@ -292,16 +294,20 @@ export const RiskTokenTips = ({ isDanger }: { isDanger?: boolean }) => {
   return (
     <div
       className={clsx(
-        'flex justify-center items-center gap-2 relative',
+        'flex justify-between items-center relative',
         'mt-10 py-6 mx-16 rounded-[6px]',
         'text-12 font-medium',
         isDanger
           ? 'text-r-red-default bg-r-red-light'
           : 'text-r-orange-default bg-r-orange-light'
       )}
+      onClick={onPress}
     >
-      <Icon className="w-12 h-12" viewBox="0 0 14 14" />
-      <span className="text-sm font-medium">{tip}</span>
+      <div className="flex items-center gap-2 ml-8">
+        <RcIconWarningCC className="w-12 h-12" viewBox="0 0 16 16" />
+        <span className="text-12">{tip}</span>
+      </div>
+      <RcIconArrowRight className="w-12 h-12 mr-8" viewBox="0 0 20 20" />
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="13"

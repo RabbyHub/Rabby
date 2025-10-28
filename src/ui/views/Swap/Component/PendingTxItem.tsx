@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useState,
   forwardRef,
+  useRef,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInterval, useMemoizedFn } from 'ahooks';
@@ -29,6 +30,7 @@ import type {
   SendTxHistoryItem,
   BridgeTxHistoryItem,
   SendNftTxHistoryItem,
+  ApproveTokenTxHistoryItem,
 } from '@/background/service/transactionHistory';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Image } from 'antd';
@@ -39,7 +41,8 @@ type PendingTxData =
   | SwapTxHistoryItem
   | SendNftTxHistoryItem
   | SendTxHistoryItem
-  | BridgeTxHistoryItem;
+  | BridgeTxHistoryItem
+  | ApproveTokenTxHistoryItem;
 
 const StatusIcon = ({ status }: { status: string }) => {
   if (status === 'pending' || status === 'fromSuccess') {
@@ -85,7 +88,7 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
         className="rectangle w-[max-content]"
       >
         <img
-          className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
+          className="w-12 h-12 absolute right-[-4px] top-[-4px] rounded-full"
           src={chainItem?.logo || IconUnknown}
           alt={chainItem?.name}
         />
@@ -94,91 +97,21 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
   );
 };
 
-// const mockData = {
-//   status: 'failed',
-//   hash: '0x1234567890',
-//   chainId: 78,
-//   address: '0x1234567890',
-//   slippage: 0.005,
-//   fromAmount: 0.025786,
-//   toAmount: 0.025786,
-//   dexId: '0x1234567890',
-//   createdAt: 1716800531,
-//   fromChainId: 1,
-//   fromToken: {
-//     amount: 0.025786,
-//     cex_ids: [],
-//     chain: 'taiko',
-//     credit_score: 98155.1364332469,
-//     decimals: 6,
-//     display_symbol: null,
-//     id: '0x07d83526730c7438048d55a4fc0b850e2aab6f0b',
-//     is_core: true,
-//     is_verified: true,
-//     is_wallet: true,
-//     logo_url:
-//       'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
-//     name: 'USD Coin',
-//     optimized_symbol: 'USDC',
-//     price: 0.9998000399920016,
-//     price_24h_change: -0.00019996000799837876,
-//     protocol_id: '',
-//     symbol: 'USDC',
-//     time_at: 1716800531,
-//   },
-//   amount: 123.456,
-//   toToken: {
-//     amount: 0.025786,
-//     cex_ids: [],
-//     chain: 'taiko',
-//     credit_score: 98155.1364332469,
-//     decimals: 6,
-//     display_symbol: null,
-//     id: '0x07d83526730c7438048d55a4fc0b850e2aab6f0b',
-//     is_core: true,
-//     is_verified: true,
-//     is_wallet: true,
-//     logo_url:
-//       'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
-//     name: 'USD Coin',
-//     optimized_symbol: 'USDC',
-//     price: 0.9998000399920016,
-//     price_24h_change: -0.00019996000799837876,
-//     protocol_id: '',
-//     symbol: 'USDC',
-//     time_at: 1716800531,
-//   },
-//   token: {
-//     amount: 0.025786,
-//     cex_ids: [],
-//     chain: 'taiko',
-//     credit_score: 98155.1364332469,
-//     decimals: 6,
-//     display_symbol: null,
-//     id: '0x07d83526730c7438048d55a4fc0b850e2aab6f0b',
-//     is_core: true,
-//     is_verified: true,
-//     is_wallet: true,
-//     logo_url:
-//       'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
-//     name: 'USD Coin',
-//     optimized_symbol: 'USDC',
-//     price: 0.9998000399920016,
-//     price_24h_change: -0.00019996000799837876,
-//     protocol_id: '',
-//     symbol: 'USDC',
-//     time_at: 1716800531,
-//   },
-// } as SwapTxHistoryItem;
-
 export const PendingTxItem = forwardRef<
   { fetchHistory: () => void },
   {
-    type: 'send' | 'swap' | 'bridge' | 'sendNft';
+    type:
+      | 'send'
+      | 'swap'
+      | 'bridge'
+      | 'sendNft'
+      | 'approveSwap'
+      | 'approveBridge';
     bridgeHistoryList?: BridgeHistory[];
     openBridgeHistory?: () => void;
+    onFulfilled?: () => void;
   }
->(({ type, bridgeHistoryList, openBridgeHistory }, ref) => {
+>(({ type, bridgeHistoryList, openBridgeHistory, onFulfilled }, ref) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
@@ -186,6 +119,7 @@ export const PendingTxItem = forwardRef<
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
   }));
+  const preFulfilledRef = useRef<boolean>(true);
 
   const fetchHistory = useCallback(async () => {
     if (!userAddress) return;
@@ -203,7 +137,13 @@ export const PendingTxItem = forwardRef<
   const fetchRefreshLocalData = useMemoizedFn(
     async (
       data: PendingTxData,
-      type: 'swap' | 'send' | 'bridge' | 'sendNft'
+      type:
+        | 'send'
+        | 'swap'
+        | 'bridge'
+        | 'sendNft'
+        | 'approveSwap'
+        | 'approveBridge'
     ) => {
       if (data.status !== 'pending') {
         // has done
@@ -268,16 +208,22 @@ export const PendingTxItem = forwardRef<
             return;
           }
         }
-        if (findTx && findTx.status === 'completed' && data) {
+        if (
+          findTx &&
+          (findTx.status === 'completed' || findTx.status === 'failed') &&
+          data
+        ) {
+          const status =
+            findTx.status === 'completed' ? 'allSuccess' : 'failed';
           setData({
             ...data,
-            status: 'allSuccess',
+            status,
             completedAt: Date.now(),
           });
           wallet.completeBridgeTxHistory(
             recentlyTxHash,
             data.fromChainId,
-            'allSuccess'
+            status
           );
         }
       }
@@ -288,6 +234,14 @@ export const PendingTxItem = forwardRef<
     data?.status === 'pending' || data?.status === 'fromSuccess';
   const isFailed = data?.status === 'failed';
   const isSuccess = data?.status === 'success' || data?.status === 'allSuccess';
+
+  useEffect(() => {
+    const isCurrentFulfilled = !isPending;
+    if (isCurrentFulfilled && !preFulfilledRef.current) {
+      onFulfilled?.();
+    }
+    preFulfilledRef.current = isCurrentFulfilled;
+  }, [isPending, onFulfilled]);
 
   const handlePress = useMemoizedFn(async () => {
     if (!isPending) {
@@ -376,7 +330,7 @@ export const PendingTxItem = forwardRef<
                       className="rectangle w-[max-content]"
                     >
                       <img
-                        className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
+                        className="w-12 h-12 absolute right-[-4px] top-[-4px] rounded-full"
                         src={sendChainItem?.logo || IconUnknown}
                         alt={sendChainItem?.name}
                       />
@@ -390,6 +344,24 @@ export const PendingTxItem = forwardRef<
                 )}
                 <span className="text-15 font-medium text-r-neutral-title-1">
                   {sendTitleTextStr}
+                </span>
+              </>
+            ) : ['approveBridge', 'approveSwap'].includes(type) ? (
+              <>
+                <TokenWithChain
+                  token={(data as ApproveTokenTxHistoryItem)?.token?.logo_url}
+                  chain={
+                    (data as ApproveTokenTxHistoryItem)?.token?.chain || ''
+                  }
+                />
+                <span className="text-15 font-medium text-r-neutral-title-1">
+                  {t('page.swap.approve-x-symbol', {
+                    symbol: `${
+                      (data as ApproveTokenTxHistoryItem).amount
+                    } ${getTokenSymbol(
+                      (data as ApproveTokenTxHistoryItem)?.token
+                    )}`,
+                  })}
                 </span>
               </>
             ) : type === 'swap' ? (

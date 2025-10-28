@@ -328,7 +328,8 @@
         "maxGas": "Макс. Gas:",
         "gasCost": "Стоимость газа для перевода газа на ваш адрес:",
         "sendGas": "Перевод Gas для текущей транзакции:",
-        "estimatedGas": "Оценочная комиссия за газ:"
+        "estimatedGas": "Оценочная комиссия за газ:",
+        "description": "Используя GasAccount для оплаты газовых сборов. Посмотрите детали платежа ниже:"
       },
       "transferOwner": {
         "description": "Описание",
@@ -363,6 +364,15 @@
         "nonceTooLow": "Nonce слишком низкий. Мы обновим его до {{nonce}}. Нажмите “Повторить”, чтобы подтвердить и попробовать снова.",
         "gasExceedsBlockGasLimit": "Газ превышает лимит газа блока. Пожалуйста, отрегулируйте и попробуйте еще раз.",
         "gasPriceTooLow": "Цена газа слишком низкая. Мы увеличим её на 30%, чтобы помочь вашей транзакции подтвердиться. Нажмите «Retry», чтобы подтвердить и попробовать снова."
+      },
+      "addLiquidity": {
+        "priceDiff": "Цена Разница",
+        "receiver": "Получатель",
+        "title": "Добавить ликвидность",
+        "marketPrice": "Рыночная цена",
+        "token1": "Добавить Token 2",
+        "token0": "Добавить токен 1",
+        "poolPrice": "Цена пула"
       }
     },
     "signFooterBar": {
@@ -817,7 +827,8 @@
         },
         "ViewMore": {
           "text": "Показать ещё"
-        }
+        },
+        "EIP7702SupportChains": "Поддерживаемые цепочки EIP-7702:"
       },
       "search": {
         "placeholder": "Поиск {{ type }} по имени/адресу"
@@ -919,7 +930,7 @@
       "Including-service-fee": "Включая комиссию {{fee}}",
       "service-fee-tip": "Предоставляя услугу пополнения газа, Rabby несет убытки от колебания курса токена и комиссии за газ для пополнения. Поэтому взимается комиссия за обслуживание 20%.",
       "Confirm": "Подтвердить",
-      "Select-from-supported-tokens": "Выбрать из поддерживаемых токенов",
+      "Deposit-tip": "Внесите с USDC/USDT",
       "Value": "Стоимость",
       "Payment-Token": "Токен оплаты",
       "Select-payment-token": "Выберите токен оплаты",
@@ -1031,7 +1042,9 @@
       "two-step-approve": "Подпишите 2 транзакции для изменения allowance",
       "two-step-approve-details": "Токен USDT требует 2 транзакции для изменения разрешения. Сначала вам нужно сбросить разрешение до нуля, а затем установить новое значение разрешения.",
       "No-available-quote": "Нет доступной котировки",
-      "no-slippage-for-wrap": "Отсутствие проскальзывания для Wrap"
+      "no-slippage-for-wrap": "Отсутствие проскальзывания для Wrap",
+      "understandRisks": "Я понимаю риски и хочу продолжить",
+      "approve": "Одобрить"
     },
     "manageAddress": {
       "no-address": "Нет адресов",
@@ -1098,7 +1111,9 @@
           "nft": "NFT",
           "bridge": "Мост",
           "ecology": "Экосистема",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Перпсы",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "Скоро будет",
         "soon": "Скоро",
@@ -1338,7 +1353,9 @@
         "AddToMyTokenList": "Добавить в мой список токенов",
         "fdvTips": "Рыночная капитализация, если максимальное предложение находится в обращении. Полная разводненная оценка (FDV) = Цена x Максимальное предложение. Если Максимальное предложение равно нулю, FDV = Цена x Общее предложение. Если ни Максимальное предложение, ни Общее предложение не определены или бесконечны, FDV не отображается.",
         "blockedListTitles": "Заблокированные токены",
-        "blockedTips": "Заблокированные токены не будут отображаться в списке токенов."
+        "blockedTips": "Заблокированные токены не будут отображаться в списке токенов.",
+        "bridge": "Мост",
+        "bridgeToEth": "Мост к Ethereum Chain"
       },
       "assets": {
         "usdValue": "ОЦЕНКА В USD",
@@ -1380,7 +1397,8 @@
           "lowValueAssets": "{{count}} активов с низкой стоимостью",
           "lowValueAssets_one": "{{count}} low value token",
           "lowValueAssets_0": "{{count}} с низкой стоимостью token",
-          "lowValueAssets_other": "{{count}} токенов с низкой стоимостью"
+          "lowValueAssets_other": "{{count}} токенов с низкой стоимостью",
+          "review": "Обзор"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
@@ -1441,7 +1459,16 @@
         },
         "howToConnectImKey": "How to Connect imKey",
         "ledgerIsDisconnected": "Ваш Ledger не подключен",
-        "onekeyIsDisconnected": "Ваш OneKey не подключен"
+        "onekeyIsDisconnected": "Ваш OneKey не подключен",
+        "trezor": {
+          "doc1": "Подключите ваше устройство Trezor",
+          "doc2": "Разблокируйте ваше устройство"
+        },
+        "onekey": {
+          "doc3": "Разблокируйте ваше устройство",
+          "doc2": "Подключите ваше устройство OneKey",
+          "doc1": "Установите <1>OneKey Bridge<1/>"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe адрес не поддерживается в сети {{chain}}",
@@ -1464,6 +1491,11 @@
       "recentConnectionGuide": {
         "button": "Получено\n",
         "title": "Здесь можно изменить адрес для подключения к Dapp\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby Очки",
+        "desc": "Проверьте свои баллы в Rabby Mobile.",
+        "downloadIntro": "Еще нет приложения? Загрузите сейчас."
       }
     },
     "nft": {
@@ -1609,6 +1641,14 @@
         "exportAddressJustAllowedOnHomePage": "Экспорт адреса разрешен на домашней странице",
         "unknowError": "Неизвестная ошибка, попробуйте еще раз"
       },
+      "onekey": {
+        "onekeyPermission1": "Подключение к USB устройству",
+        "allowRabbyPermissionsTitle": "Дать Rabby разрешение на:",
+        "onekeyPermissionTip": "Пожалуйста, нажмите «Разрешить» ниже, чтобы авторизовать доступ к вашему OneKey в следующем всплывающем окне. Если OneKey не появляется в всплывающем окне, пожалуйста, проверьте, подключено ли ваше устройство к компьютеру правильно.",
+        "whyOneKey": "Почему OneKey?",
+        "buyOneKey": "Купить OneKey",
+        "haveOneKey": "Еще нет OneKey?"
+      },
       "walletConnect": {
         "connectYour": "Подключите ваш",
         "viaWalletConnect": "через Wallet Connect",
@@ -1630,7 +1670,6 @@
         },
         "title": "Подключиться с {{brandName}}",
         "disconnected": "Отключено",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Подключено, но не может подписать.",
@@ -1803,7 +1842,10 @@
         "imkeyPermissionTip": "Пожалуйста, нажмите «Разрешить» ниже и подтвердите доступ к вашему imKey в следующем всплывающем окне."
       },
       "addFromCurrentSeedPhrase": "Добавить из текущей сид фразы",
-      "firefoxLedgerDisableTips": "Ledger не совместим с Firefox"
+      "firefoxLedgerDisableTips": "Ledger не совместим с Firefox",
+      "trezor": {
+        "title": "Подключить Trezor"
+      }
     },
     "unlock": {
       "btn": {
@@ -2319,7 +2361,8 @@
       "approve-x-symbol": "Утвердить {{symbol}}",
       "est-difference": "Оцениваемая разница:",
       "estimated-value": "≈ {{value}}",
-      "best": "Лучший"
+      "best": "Лучший",
+      "bridgeDbkBtn": "Перенос через официальную службу DBK"
     },
     "ecology": {
       "sonic": {
@@ -2424,7 +2467,12 @@
         "txSendings": "Отправка запроса на подпись ({{current}}/{{total}})",
         "txCreated": "Транзакция создана"
       },
-      "signWithLedger": "Подписать с помощью Ledger"
+      "signWithLedger": "Подписать с помощью Ledger",
+      "cancelTitle": "В сети Отмена",
+      "cancleDesc": "Цена газа увеличилась на {{percent}}, чтобы отменить транзакцию",
+      "speedUpTitle": "Ускорить",
+      "speedUpDesc": "Цена газа увеличилась на {{percent}}, чтобы ускорить процесс.",
+      "signWithOneKey": "Подписать с OneKey"
     },
     "gasAccount": {
       "history": {
@@ -2434,7 +2482,8 @@
         "gotIt": "Понял",
         "title": "Депозит USDC / USDT",
         "login": "Войти в GasAccount",
-        "desc": "Оплачивайте Gas комиссии на всех цепочках"
+        "desc": "Оплачивайте Gas комиссии на всех цепочках",
+        "loginAndClaim": "Войдите и получите $2.00"
       },
       "loginConfirmModal": {
         "title": "Войти с текущим адресом",
@@ -2471,7 +2520,12 @@
         "deductGasFees": "Полученная сумма будет вычтена за газовые сборы",
         "noEligibleChain": "Нет подходящей цепочки для вывода средств",
         "desc": "Вы можете снять баланс вашего GasAccount на ваш кошелек DeBank L2. Войдите в свой DeBank L2 Wallet, чтобы перевести средства на поддерживаемый блокчейн по мере необходимости.",
-        "recipientAddress": "Адрес получателя"
+        "recipientAddress": "Адрес получателя",
+        "noBalance": "Нет баланса",
+        "withdrawalTip": "Доступный баланс для вывода: {{amount}}",
+        "WithdrawalAmount": "Сумма вывода",
+        "amountTooLowCoverFee": "Сумма слишком мала, чтобы покрыть газовые сборы",
+        "noEnoughValueBalance": "Недостаточно средств на счете Vault. Переключите цепочку или попробуйте позже."
       },
       "withdrawConfirmModal": {
         "button": "Просмотр в DeBank",
@@ -2498,7 +2552,8 @@
         "gasAccountBalance": "Gas Balance"
       },
       "switchAccount": "Переключить GasAccount",
-      "withdrawDisabledIAP": "Вывод средств отключен, поскольку ваш баланс включает фиатные средства, которые не могут быть выведены. Свяжитесь с поддержкой, чтобы снять остаток с вашего токенового баланса."
+      "withdrawDisabledIAP": "Вывод средств отключен, поскольку ваш баланс включает фиатные средства, которые не могут быть выведены. Свяжитесь с поддержкой, чтобы снять остаток с вашего токенового баланса.",
+      "gasToken": "Газовый токен"
     },
     "safeMessageQueue": {
       "loading": "Загрузка сообщений",
@@ -2566,11 +2621,14 @@
         "title": "Импортировать Seed Phrase"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip3": "3. Разблокируйте ваше устройство",
-        "connect": "Подключите OneKey",
-        "tip1": "1. Установите <1>OneKey Bridge<1/>",
-        "tip2": "2. Подключите ваше устройство OneKey"
+        "qrcode": {
+          "desc": "Сканируйте QR-код на аппаратном кошельке OneKey"
+        },
+        "title": "Подключите аппаратный кошелек OneKey через USB",
+        "tip1": "1. Подключите ваше устройство OneKey",
+        "tip2": "2. Разблокируйте ваше устройство",
+        "tip3": "3. Убедитесь, что подключено только одно устройство OneKey",
+        "connect": "Подключить OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -2696,7 +2754,8 @@
       "selectedLenAddressesForSync_other": "Выбранные {{len}} адреса для синхронизации",
       "selectAddress": {
         "title": "Выберите адреса для синхронизации"
-      }
+      },
+      "verifyPassword": "Подтвердите пароль"
     },
     "search": {
       "sectionHeader": {
@@ -2756,7 +2815,7 @@
         "cexDepositAddress": "{{cexName}} Адрес депозита",
         "cexAddress": "{{cexName}} адрес",
         "passwordPlaceholder": "Введите пароль для продолжения",
-        "TransferBefore": "Переведите прежде",
+        "TransferBefore": "Передано ранее",
         "TransferBeforeValue": "Да",
         "AddToWhitelist": "Добавить в белый список"
       },
@@ -2784,6 +2843,176 @@
       "invalidAddress": "Этот адрес недействителен",
       "address": "Адрес",
       "enterAddress": "Введите адрес"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "all": "ВСЕ",
+        "oneHour": "1Ч",
+        "oneMonth": "1M",
+        "oneWeek": "1W",
+        "ytd": "С начала года",
+        "oneDay": "1Д"
+      },
+      "newUserProcess": {
+        "thirdTitle": "Шортить",
+        "next": "Далее",
+        "gotIt": "Понял",
+        "fourthTitle": "Регулировка кредитного плеча",
+        "fifthTitle": "Ликвидация",
+        "firstTitle": "Мастер бессрочных фьючерсов",
+        "secondTitle": "Идти в Лонг",
+        "fourthDescription": "Мардж позволяет вам торговать на сумму, превышающую ваши вложения. Это может увеличить как вашу прибыль, так и ваши убытки.",
+        "fifthDescription": "Каждая позиция имеет цену ликвидации. Если рыночная цена достигнет ее, ваша позиция будет закрыта. Использование высокого кредитного плеча увеличивает риск ликвидации.",
+        "secondDescription": "Когда вы ожидаете, что цена возрастет, вы открываете Long. Если цена поднимается, вы выигрываете. Если она падает, вы теряете.",
+        "firstDescription": "С бессрочными фьючерсами вы не просто торгуете активами. Вы торгуете тем, что думаете произойдет дальше.",
+        "thirdDescription": "Когда вы ожидаете, что цена упадет, вы открываете шорт. Если цена падает, вы выигрываете. Если она растет, вы теряете."
+      },
+      "historyDetail": {
+        "title": {
+          "closeShortTp": "Закрыть шорт Зафиксировать прибыль",
+          "openLong": "Открыть Long",
+          "closeShortSl": "Закрыть Шорт Стоп-Лосс",
+          "openShort": "Открыть Short",
+          "closeLongLiquidation": "Закрыть Long Ликвидация",
+          "closeShortLiquidation": "Закрыть Шорт Ликвидация",
+          "closeLongTp": "Закрыть Long Зафиксировать прибыль",
+          "closeLong": "Закрыть Long",
+          "closeLongSl": "Закрыть Long Стоп-лосс",
+          "closeShort": "Закрыть Short"
+        },
+        "size": "Размер",
+        "provider": "Поставщик",
+        "fee": "Плата",
+        "date": "Дата",
+        "tradeValue": "Торговая стоимость",
+        "closedPnl": "Закрытая PNL",
+        "price": "Цена"
+      },
+      "logoutConfirmModal": {
+        "title": "Выйти из текущего адреса",
+        "desc": "Вы выходите из вашей текущей учетной записи Perps. Вы можете восстановить её в любое время, войдя с этим адресом."
+      },
+      "depositAmountPopup": {
+        "receiveToken": "Получить токен",
+        "estReceive": "Ожидаемое получение: {{balance}}",
+        "feeTip": "$1 Комиссия",
+        "payWith": "Оплатить с помощью",
+        "feeTipTooltip": "Комиссия за вывод средств, взимаемая Hyperliquid: $1",
+        "minimumDepositSize": "Минимальная сумма депозита составляет 5 долларов США.",
+        "fetchQuoteFailed": "Не удалось получить котировку депозита. Пожалуйста, смените токен.",
+        "minimumWithdrawSize": "Минимальная сумма для вывода составляет $2.",
+        "goBridgeTips": "Поддерживается только USDC на Arbitrum для прямого депозита. Пожалуйста, перенесите ваш текущий токен в USDC на Arbitrum перед депозитом.",
+        "goSwapTips": "Поддерживается только USDC на Arbitrum для прямого депозита. Пожалуйста, обменяйте ваш текущий токен на USDC перед депозитом.",
+        "estReceiveTooltip": "Кросс-цепочный депозит обрабатывается через LiFi, может привести к некоторому проскальзыванию. Оценка прибытия через {{number}}с."
+      },
+      "home": {
+        "markPrice": "Маркерная цена",
+        "size": "Размер",
+        "margin": "Маржа",
+        "liquidationPrice": "Liq.Цена",
+        "pnl": "PNL",
+        "entryPrice": "Цена входа"
+      },
+      "singleCoin": {
+        "openInterestTips": "Общая открытая позиция всех пользователей по этому контракту.",
+        "fundingTips": "Это почасовая плата, которую трейдеры платят или получают, чтобы поддерживать цену контракта perp близкой к фактической цене токена. Если позитивная, long платит short. Если негативная, short платит long.",
+        "fundingPaymentsTips": "Это чистые выплаты по финансированию с момента открытия позиции. Финансирование — это почасовая плата, которую трейдеры платят или получают, чтобы поддерживать цену контракта на perp близкой к текущей цене токена."
+      },
+      "accountSelector": {
+        "activatedAddress": "Активирован",
+        "notActivatedAddress": "Не активирован",
+        "noPosition": "Нет позиции",
+        "hyperliquidBalance": "Перпс Баланс"
+      },
+      "deposit": "Депозит",
+      "withdraw": "Вывод",
+      "positions": "Позиции",
+      "permissionTips": "Открытие позиций не поддерживается в вашем регионе",
+      "title": "Перпсы",
+      "pending": "В ожидании",
+      "margin": "Маржа",
+      "autoClose": "Авто закрытие",
+      "openShort": "Открыть Short",
+      "openLong": "Открыть Long",
+      "learnAboutPerps": "Узнайте о Perps",
+      "liquidationPrice": "Цена ликвидации",
+      "balanceAvailable": "Баланс: {{balance}}",
+      "tradePerps": "Торгуйте перпсами",
+      "explorePerps": "Изучите Perps",
+      "entryPrice": "Цена входа",
+      "marginCross": "Маржа (Кросс)",
+      "seeMore": "Смотреть больше",
+      "history": "История",
+      "size": "Размер",
+      "leverage": "Кредитное плечо",
+      "fundingPayments": "Финансирование Платежи",
+      "direction": "Направление",
+      "directDeposit": "Прямой депозит",
+      "yourPosition": "Ваша позиция",
+      "availableBalance": "Доступно: {{balance}}",
+      "logInPerpsAccount": "Войдите в свою учетную запись Perps",
+      "completed": "Завершено",
+      "selectTokenToDeposit": "Выберите токен для депозита",
+      "logInTips": "Войдите с вашим адресом и внесите средства, чтобы начать торговать перпсами.",
+      "price": "Цена",
+      "lastUsed": "Последний раз использовалось",
+      "marginIsolated": "Маржа (Изолированная)",
+      "closeLong": "Закрыть Long",
+      "stopLoss": "стоп-лосс",
+      "takeProfit": "зафиксировать прибыль",
+      "closeShort": "Закрыть Short",
+      "openInterest": "Открытый интерес",
+      "rabbyFeeTipsZero": "Rabby сбор: 0%",
+      "long": "Длинная позиция",
+      "dailyVolume": "24h Объем",
+      "stopLossTipsShortLiquidation": "Цена выше ликвидационной цены ({{price}})",
+      "availableToTrade": "Доступно для торговли",
+      "TakeProfit": "Зафиксировать прибыль",
+      "review": "Обзор",
+      "stopLossTipsLongLiquidation": "Цена ниже цены ликвидации ({{price}})",
+      "rabbyFeeTips": "Комиссия Rabby: 0.04%",
+      "stopLossTipsShort": "Цена стоп-лосса должна быть выше текущей цены",
+      "StopLoss": "Стоп-лосс",
+      "funding": "Финансирование",
+      "confirm": "Подтвердите",
+      "insufficientBalance": "Недостаточный баланс",
+      "stopLossTipsLong": "Цена стоп-лосса должна быть ниже текущей цены.",
+      "takeProfitTipsLong": "Цена установки Take profit должна быть выше текущей цены.",
+      "takeProfitWhen": "Установить цену тейк-профита",
+      "stopLossWhen": "Установить цену стоп-лосса",
+      "takeProfitTipsShort": "Цена Take profit должна быть ниже текущей цены.",
+      "timeAgo": "{{time}} назад",
+      "deleteAgentModal": "Вы достигли максимального количества агентов. Вы хотите удалить существующего агента, чтобы создать нового?",
+      "deleteAgentSuccess": "Агент успешно удален",
+      "sizeTips": "Общая стоимость или количество вашей сделки, устанавливаемое маржой и кредитным плечом.",
+      "providerFeeTips": "Гиперликвидная комиссия: {{fee}}",
+      "liquidationPriceTips": "Цена, по которой ваша позиция автоматически закрывается биржей, чтобы предотвратить дальнейшие потери, когда ваш маржинальный баланс падает ниже уровня поддерживающей маржи.",
+      "back": "Назад",
+      "reviewOrder": "Просмотр заказа",
+      "liquidation": "Ликвидация",
+      "minimumOrderSize": "Минимальный размер заказа составляет 10 долларов.",
+      "maximumOrderSize": "Максимальный размер заказа составляет {{amount}}",
+      "fee": "Комиссия",
+      "leverageRangeMinError": "Минимальное кредитное плечо составляет {{min}}x",
+      "short": "Шорт",
+      "pnl": "PNL",
+      "leverageRangeMaxError": "Максимальное кредитное плечо составляет {{max}}x",
+      "estimatedLiquidationPrice": "Ожидаемая цена ликвидации",
+      "openPositionTips": "Торговля бессрочными контрактами связана с существенными рисками, включая возможность внезапной и полной потери ваших инвестиций и залога из-за высокого плеча и рыночной волатильности, и может не подойти для всех пользователей. Цены могут зависеть от условий финансирования и ликвидности, и с вами могут произойти автоматические ликвидации без предварительного уведомления. Рыночные данные предоставлены Hyperliquid.",
+      "toast": {
+        "setAutoCloseSuccess": "Автоматическое закрытие позиции успешно установлено",
+        "closePositionSuccess": "Закрыто {{direction}} {{coin}}-USD: Размер {{size}} по цене ${{price}}",
+        "openPositionSuccess": "Открыта {{direction}} {{coin}}-USD: Размер {{size}} по цене ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeLong": "Закрыть Long",
+        "positionSize": "Размер Позиции",
+        "closeShort": "Закрыть Short",
+        "pnl": "P&L",
+        "title": "Закрыть {{coin}}-USD {{direction}}"
+      },
+      "cross": "Кросс",
+      "isolated": "Изолированный"
     }
   },
   "component": {
@@ -2977,6 +3206,9 @@
     },
     "RiskTip": {
       "title": "Предупреждение о риске"
+    },
+    "DappActions": {
+      "queueDescription": "Текущий вывод будет помещен в очередь ожидания. После обработки его можно будет вывести на ваш кошелек."
     }
   },
   "global": {
@@ -3048,6 +3280,18 @@
       "HdKeyring": "Секретная фраза",
       "simpleKeyring": "Приватный ключ",
       "watchAddressKeyring": "Контакт"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Устройство не найдено",
+        "deviceInitializeFailed": "Ошибка устройства, перезапустите и повторите попытку",
+        "needUpgradeFirmware": "Необходимо обновить прошивку для использования устройства",
+        "thisMethodNeedUpgradeFirmware": "Для этой функции требуется обновление прошивки, обновите прошивку в приложении OneKey",
+        "notAllowInBootloaderMode": "Используйте в обычном режиме",
+        "deviceCheckPassphraseStateError": "Аккаунт не соответствует текущему адресу разблокировки устройства. Пожалуйста, подтвердите, что устройство и адрес аккаунта согласованы, и попробуйте снова",
+        "actionCancel": "Операция отменена",
+        "deviceNeedsWebHIDPermission": "Устройство не найдено или требует разрешения WebHID"
+      }
     }
   },
   "constant": {

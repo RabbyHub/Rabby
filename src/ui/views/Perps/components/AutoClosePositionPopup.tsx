@@ -1,0 +1,357 @@
+import React from 'react';
+import { Button, message, Switch } from 'antd';
+import Popup, { PopupProps } from '@/ui/component/Popup';
+import { useTranslation } from 'react-i18next';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
+import BigNumber from 'bignumber.js';
+import { useMemoizedFn } from 'ahooks';
+
+interface AutoClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
+  coin: string;
+  price: number;
+  direction: 'Long' | 'Short';
+  size: number;
+  liqPrice: number;
+  pxDecimals: number;
+  szDecimals: number;
+  onClose: () => void;
+  type: 'openPosition' | 'hasPosition';
+  handleSetAutoClose: (params: {
+    tpPrice: string;
+    slPrice: string;
+  }) => Promise<void>;
+}
+
+export const AutoClosePositionPopup: React.FC<AutoClosePositionPopupProps> = ({
+  visible,
+  coin,
+  price,
+  direction,
+  size,
+  liqPrice,
+  pxDecimals,
+  szDecimals,
+  onClose,
+  type,
+  handleSetAutoClose,
+  ...rest
+}) => {
+  const { t } = useTranslation();
+  const [tpPrice, setTpPrice] = React.useState<string>('');
+  const [slPrice, setSlPrice] = React.useState<string>('');
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const tpInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (visible && tpInputRef.current) {
+      // 使用 setTimeout 确保弹窗完全渲染后再聚焦
+      const timer = setTimeout(() => {
+        tpInputRef.current?.focus();
+      }, 200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
+  // Validate price input based on significant figures and decimal places
+  const validatePriceInput = useMemoizedFn(
+    (value: string, szDecimals: number): boolean => {
+      if (!value || value === '0' || value === '0.') return true;
+
+      // Check if it's an integer (no decimal point or ends with decimal point)
+      if (!value.includes('.') || value.endsWith('.')) {
+        return true; // Integers are always allowed
+      }
+
+      // Split integer and decimal parts
+      const [integerPart, decimalPart] = value.split('.');
+
+      // Check decimal places: max (6 - szDecimals)
+      const maxDecimals = 6 - szDecimals;
+      if (decimalPart.length > maxDecimals) {
+        return false;
+      }
+
+      // Calculate significant figures (remove leading zeros)
+      const allDigits = (integerPart + decimalPart).replace(/^0+/, '');
+      if (allDigits.length > 5) {
+        return false;
+      }
+
+      return true;
+    }
+  );
+
+  const { tpProfit, slLoss } = React.useMemo(() => {
+    const tp = Number(tpPrice) - price;
+    const sl = Number(slPrice) - price;
+
+    const tpProfitValue = direction === 'Long' ? tp * size : -tp * size;
+    const slLossValue = direction === 'Long' ? sl * size : -sl * size;
+
+    return {
+      tpProfit: tpPrice ? tpProfitValue : 0,
+      slLoss: slPrice ? slLossValue : 0,
+    };
+  }, [tpPrice, slPrice, price, direction, size]);
+
+  // 验证价格输入
+  const priceValidation = React.useMemo(() => {
+    const tpValue = Number(tpPrice) || 0;
+    const slValue = Number(slPrice) || 0;
+    const resObj = {
+      tp: {
+        isValid: true,
+        errorMessage: '',
+        error: '',
+      },
+      sl: {
+        isValid: true,
+        error: '',
+        errorMessage: '',
+      },
+    } as Record<
+      string,
+      {
+        isValid: boolean;
+        error: string;
+        errorMessage: string;
+        isWarning?: boolean;
+      }
+    >;
+
+    if (!tpPrice && !slPrice) {
+      resObj.tp.isValid = false;
+      resObj.sl.isValid = false;
+      return resObj;
+    }
+
+    // 验证止盈价格
+    if (tpPrice) {
+      if (direction === 'Long' && tpValue <= price) {
+        resObj.tp.isValid = false;
+        resObj.tp.error = 'invalid_tp_long';
+        resObj.tp.errorMessage = t('page.perps.takeProfitTipsLong');
+      }
+      if (direction === 'Short' && tpValue >= price) {
+        resObj.tp.isValid = false;
+        resObj.tp.error = 'invalid_tp_short';
+        resObj.tp.errorMessage = t('page.perps.takeProfitTipsShort');
+      }
+    }
+
+    // 验证止损价格
+    if (slPrice) {
+      if (direction === 'Long' && slValue >= price) {
+        resObj.sl.isValid = false;
+        resObj.sl.error = 'invalid_sl_long';
+        resObj.sl.errorMessage = t('page.perps.stopLossTipsLong');
+      } else if (direction === 'Long' && slValue < liqPrice) {
+        // warning
+        resObj.sl.isValid = true;
+        resObj.sl.isWarning = true;
+        resObj.sl.error = '';
+        resObj.sl.errorMessage = t('page.perps.stopLossTipsLongLiquidation', {
+          price: `$${splitNumberByStep(liqPrice.toFixed(pxDecimals))}`,
+        });
+      }
+      if (direction === 'Short' && slValue <= price) {
+        resObj.sl.isValid = false;
+        resObj.sl.error = 'invalid_sl_short';
+        resObj.sl.errorMessage = t('page.perps.stopLossTipsShort');
+      } else if (direction === 'Short' && slValue > liqPrice) {
+        // warning
+        resObj.sl.isValid = true;
+        resObj.sl.isWarning = true;
+        resObj.sl.error = '';
+        resObj.sl.errorMessage = t('page.perps.stopLossTipsShortLiquidation', {
+          price: `$${splitNumberByStep(liqPrice.toFixed(pxDecimals))}`,
+        });
+      }
+    }
+
+    return resObj;
+  }, [tpPrice, slPrice, price, direction, liqPrice, pxDecimals]);
+
+  React.useEffect(() => {
+    if (!visible) {
+      setTpPrice('');
+      setSlPrice('');
+    }
+  }, [visible]);
+
+  const isValidPrice = priceValidation.tp.isValid && priceValidation.sl.isValid;
+
+  // 获取错误状态下的文字颜色
+  const getMarginTextColor = (type: 'tp' | 'sl') => {
+    if (priceValidation[type].error) {
+      return 'text-r-red-default';
+    }
+    if (priceValidation[type].isWarning) {
+      return 'text-r-orange-default';
+    }
+    return 'text-r-neutral-title-1';
+  };
+
+  const handleConfirm = useMemoizedFn(async () => {
+    setLoading(true);
+    try {
+      await handleSetAutoClose({
+        tpPrice,
+        slPrice,
+      });
+      onClose();
+    } catch (error) {
+      console.error('Failed to set auto close:', error);
+      message.error(error.message || 'Failed to set auto close');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  return (
+    <Popup
+      placement="bottom"
+      height={540}
+      isSupportDarkMode
+      bodyStyle={{ padding: 0 }}
+      destroyOnClose
+      push={false}
+      closable
+      visible={visible}
+      onClose={onClose}
+      {...rest}
+    >
+      <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
+        <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-20">
+          {direction} {coin}-USD
+        </div>
+        {type === 'openPosition' ? (
+          <div className="text-15 text-r-neutral-title-1 text-center mt-16 mb-16">
+            {coin}-USD {t('page.perps.price')}: ${splitNumberByStep(price)}
+          </div>
+        ) : (
+          <div className="text-15 text-r-neutral-title-1 text-center mt-16 mb-16">
+            {t('page.perps.entryPrice')}: ${splitNumberByStep(price)}
+          </div>
+        )}
+
+        <div className="flex-1 px-20">
+          {/* Take Profit */}
+          <div className="mb-24 bg-r-neutral-card1 rounded-[8px] py-20">
+            <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+              {t('page.perps.takeProfitWhen')}
+            </div>
+            <input
+              ref={tpInputRef}
+              className={`text-[40px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor(
+                'tp'
+              )}`}
+              autoFocus
+              style={{
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                boxShadow: 'none',
+              }}
+              placeholder="$0"
+              value={tpPrice ? `$${tpPrice}` : ''}
+              onChange={(e) => {
+                let value = e.target.value;
+                if (value.startsWith('$')) {
+                  value = value.slice(1);
+                }
+                if (
+                  (/^\d*\.?\d*$/.test(value) || value === '') &&
+                  validatePriceInput(value, szDecimals)
+                ) {
+                  setTpPrice(value);
+                }
+              }}
+            />
+            <div className="h-[20px]">
+              {priceValidation.tp.error ? (
+                <div className="text-13 text-r-red-default text-center font-medium">
+                  {priceValidation.tp.errorMessage}
+                </div>
+              ) : (
+                tpPrice && (
+                  <div className="text-13 text-r-green-default text-center font-medium">
+                    {t('page.perps.TakeProfit')}{' '}
+                    {formatUsdValue(Math.abs(tpProfit), BigNumber.ROUND_DOWN)}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* Stop Loss */}
+          <div className="mb-32 bg-r-neutral-card1 rounded-[8px] py-20">
+            <div className="text-15 font-medium text-r-neutral-title-1 text-center">
+              {t('page.perps.stopLossWhen')}
+            </div>
+            <input
+              className={`text-[40px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor(
+                'sl'
+              )}`}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                boxShadow: 'none',
+              }}
+              placeholder="$0"
+              value={slPrice ? `$${slPrice}` : ''}
+              onChange={(e) => {
+                let value = e.target.value;
+                if (value.startsWith('$')) {
+                  value = value.slice(1);
+                }
+                if (
+                  (/^\d*\.?\d*$/.test(value) || value === '') &&
+                  validatePriceInput(value, szDecimals)
+                ) {
+                  setSlPrice(value);
+                }
+              }}
+            />
+            <div className="h-[20px]">
+              {priceValidation.sl.error ? (
+                <div className="text-13 text-r-red-default text-center font-medium">
+                  {priceValidation.sl.errorMessage}
+                </div>
+              ) : priceValidation.sl.isWarning ? (
+                <div className="text-13 text-r-orange-default text-center font-medium">
+                  {priceValidation.sl.errorMessage}
+                </div>
+              ) : (
+                slPrice && (
+                  <div className="text-13 text-r-red-default text-center font-medium">
+                    {t('page.perps.StopLoss')}{' '}
+                    {formatUsdValue(Math.abs(slLoss), BigNumber.ROUND_DOWN)}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+            <Button
+              block
+              disabled={!isValidPrice}
+              size="large"
+              type="primary"
+              className="h-[48px] text-15 font-medium"
+              onClick={handleConfirm}
+              loading={loading}
+            >
+              {t('page.perps.confirm')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Popup>
+  );
+};
+
+export default AutoClosePositionPopup;

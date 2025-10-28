@@ -161,16 +161,20 @@
     padding-top: 20px;
   }
 }
-
+.dark {
+  .main {
+    background: #2133a5 !important;
+  }
+}
 .dashboard {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(301.21deg, #8ba4ff -14.63%, #8082ff 57.71%);
+  background: var(--r-neutral-bg2, #f2f4f7);
   .main {
     width: 100%;
     height: 220px;
-    background: linear-gradient(147deg, #5260d1 0%, #3a43ab 100%);
+    background: linear-gradient(108deg, #374bc9 0%, #1d31b0 100%);
     position: relative;
     overflow: hidden;
     .header {
@@ -1511,5 +1515,21 @@
 .actionIcon {
   &:hover g {
     opacity: 0.9 !important;
+  }
+}
+
+.authentication-modal {
+  .ant-modal-body {
+    padding-bottom: 16px;
+  }
+  .ant-form-item-has-error {
+    .ant-input {
+      border-color: #f24822 !important;
+    }
+  }
+  &.custom-popup.is-support-darkmode {
+    .ant-input {
+      background: var(--r-neutral-card-1) !important;
+    }
   }
 }

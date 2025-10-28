@@ -513,6 +513,9 @@ export const EVENTS = {
   COMMON_HARDWARE: {
     REJECTED: 'COMMON_HARDWARE_REJECTED',
   },
+  ONEKEY: {
+    REQUEST_PERMISSION_WEBUSB: 'ONEKEY_REQUEST_PERMISSION_WEBUI',
+  },
   LOCK_WALLET: 'LOCK_WALLET',
   RELOAD_TX: 'RELOAD_TX',
   SIGN_BEGIN: 'SIGN_BEGIN',
@@ -522,7 +525,13 @@ export const EVENTS = {
   GAS_ACCOUNT: {
     LOG_IN: 'LOG_IN',
     LOG_OUT: 'LOG_OUT',
+    CLOSE_WINDOW: 'CLOSE_WINDOW',
   },
+  PERPS: {
+    LOG_OUT: 'PERPS_LOG_OUT',
+  },
+  INNER_HISTORY_ITEM_PENDING: 'INNER_HISTORY_ITEM_PENDING',
+  INNER_HISTORY_ITEM_COMPLETE: 'INNER_HISTORY_ITEM_COMPLETE',
 };
 
 export const EVENTS_IN_BG = {
@@ -804,7 +813,8 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoOnekey,
     rcSvg: RcLogoOnekey,
     maybeSvg: LogoOnekey,
-    connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
+    // connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.TP]: {
@@ -1300,6 +1310,10 @@ export const L2_ENUMS = [
   'DBK',
   'MINT',
   'CYBER',
+  'KATANA',
+  'WORLD',
+  'INK',
+  'SONEIUM',
 ];
 
 // opstack L2 chains
@@ -1313,6 +1327,10 @@ export const OP_STACK_ENUMS = [
   'DBK',
   'MINT',
   'CYBER',
+  'KATANA',
+  'WORLD',
+  'INK',
+  'SONEIUM',
 ];
 
 export const ARB_LIKE_L2_CHAINS = [CHAINS_ENUM.ARBITRUM, CHAINS_ENUM.AURORA];
@@ -1391,6 +1409,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
+  [WALLET_BRAND_TYPES.ONEKEY]: 'Onekey QR',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
   [KEYRING_CLASS.GNOSIS]: 'Safe',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
@@ -1635,3 +1654,5 @@ export const SELF_HOST_SAFE_NETWORKS = [
   '10',
   '8453',
 ];
+
+export const SAFE_API_KEY = process.env.SAFE_API_KEY || '';

@@ -11,6 +11,10 @@ import { Modal } from 'antd';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
 import { useRequest } from 'ahooks';
+import { nanoid } from 'nanoid';
+
+export const GAS_ACCOUNT_INSUFFICIENT_TIP =
+  'Gas balance is not enough for transaction';
 
 export const useGasAccountTxsCheck = ({
   isReady,
@@ -52,6 +56,7 @@ export const useGasAccountTxsCheck = ({
       return res;
     },
     {
+      debounceWait: 300,
       refreshDeps: [sig, accountId, isReady, txs],
       onFinally() {
         if (isReady) {
@@ -60,13 +65,6 @@ export const useGasAccountTxsCheck = ({
       },
     }
   );
-  useDebounce(
-    () => {
-      gasAccountCostFn();
-    },
-    300,
-    [sig, accountId, isReady, txs]
-  );
 
   const gasAccountCanPay =
     gasMethod === 'gasAccount' &&
@@ -74,7 +72,8 @@ export const useGasAccountTxsCheck = ({
     noCustomRPC &&
     !!gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
-    !!gasAccountCost.is_gas_account;
+    !!gasAccountCost.is_gas_account &&
+    !gasAccountCost.err_msg;
 
   const canGotoUseGasAccount =
     isSupportedAddr &&
@@ -106,15 +105,21 @@ export const useGasAccountTxsCheck = ({
   };
 };
 
-export const useLoginDepositConfirm = () => {
+export const useLoginDepositConfirm = (params: {
+  onGotoGasAccount?: () => void;
+}) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
   const { login } = useGasAccountMethods();
 
   const history = useHistory();
   const gotoGasAccount = React.useCallback(() => {
-    history.push('/gas-account');
-  }, []);
+    params?.onGotoGasAccount?.();
+    history.push({
+      pathname: '/gas-account',
+      search: `?resetKey=${nanoid()}`,
+    });
+  }, [params?.onGotoGasAccount]);
 
   const depositCn = useCss({
     '& .ant-modal-content': {

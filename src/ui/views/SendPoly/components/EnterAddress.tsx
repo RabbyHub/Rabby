@@ -57,8 +57,10 @@ const WhitelistAddressTypeCard = ({
   return (
     <div className="mt-[20px] w-full">
       <AddressTypeCard
+        address={address}
         type={type}
         brandName={brandName}
+        allowEditAlias
         aliasName={aliasName || ellipsisAddress(address)}
         className="bg-r-neutral-card1"
         cexInfo={{

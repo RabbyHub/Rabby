@@ -243,7 +243,8 @@
         "currentTxCost": "Die Gas-Menge, die an Ihre Adresse gesendet wurde:",
         "maxGas": "Max Gas: ",
         "gasCost": "Gaskosten für die Übertragung von Gas an Ihre Adresse:",
-        "sendGas": "Der Gastransfer für die aktuelle Transaktion an Sie:"
+        "sendGas": "Der Gastransfer für die aktuelle Transaktion an Sie:",
+        "description": "GasAccount verwenden, um Gasgebühren zu bezahlen. Siehe Zahlungsdetails unten:"
       },
       "customRPCErrorModal": {
         "content": "Ihr benutzerdefinierter RPC ist derzeit nicht verfügbar. Sie können ihn deaktivieren und weiterhin mit Rabby's offiziellem RPC signieren.",
@@ -363,6 +364,15 @@
         "insufficient": "Ihr Gasbilanz reicht nicht aus, um die Netzwerk-Gebühr zu decken. Fügen Sie Mittel für Gas hinzu und versuchen Sie es erneut.",
         "nonceTooHigh": "Nonce zu hoch. Bitte passen Sie den Nonce an und versuchen Sie es erneut.",
         "defaultTips": "Etwas stimmt nicht. Bitte versuchen Sie es später erneut."
+      },
+      "addLiquidity": {
+        "poolPrice": "Pool Preis",
+        "receiver": "Empfänger",
+        "priceDiff": "Preis-Diff",
+        "token1": "Token 2 hinzufügen",
+        "title": "Liquidität hinzufügen",
+        "marketPrice": "Marktpreis",
+        "token0": "Token 1 hinzufügen"
       }
     },
     "signFooterBar": {
@@ -817,7 +827,8 @@
         },
         "ViewMore": {
           "text": "Mehr anzeigen"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 Unterstützte Chains:"
       },
       "search": {
         "placeholder": "{{ type }} nach Name/Adresse suchen"
@@ -919,7 +930,7 @@
       "Including-service-fee": "Einschließlich {{fee}} Servicegebühr",
       "service-fee-tip": "Durch die Bereitstellung des Dienstes zum Gas-Aufladen muss Rabby den Verlust durch Preisschwankungen und die Gasgebühr für das Aufladen tragen. Daher wird eine Servicegebühr von 20% berechnet.",
       "Confirm": "Bestätigen",
-      "Select-from-supported-tokens": "Wählen Sie aus unterstützten Token",
+      "Deposit-tip": "Einzahlen mit USDC/USDT",
       "Value": "Wert",
       "Payment-Token": "Zahlungs-Token",
       "Select-payment-token": "Wählen Sie den Zahlungs-Token",
@@ -1031,7 +1042,9 @@
       "approve-and-swap": "Genehmigen und tauschen über {{name}}",
       "loss-tips": "Sie verlieren {{usd}}. Versuchen Sie es mit einem kleineren Betrag in einem kleinen Markt.",
       "two-step-approve-details": "Token USDT erfordert 2 Transaktionen, um die Freigabe zu ändern. Zuerst müssen Sie die Freigabe auf Null zurücksetzen und erst dann einen neuen Freigabewert festlegen.",
-      "preferMEVTip": "Aktivieren Sie die Funktion \"MEV Guarded\" für Ethereum-Swaps, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie eine benutzerdefinierte RPC- oder Wallet-Verbindungsadresse verwenden."
+      "preferMEVTip": "Aktivieren Sie die Funktion \"MEV Guarded\" für Ethereum-Swaps, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie eine benutzerdefinierte RPC- oder Wallet-Verbindungsadresse verwenden.",
+      "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",
+      "approve": "Genehmigen"
     },
     "manageAddress": {
       "no-address": "Keine Adresse",
@@ -1098,7 +1111,9 @@
           "rabbyPoints": "Rabby Points",
           "bridge": "Bridge",
           "ecology": "Ökosystem",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -1337,7 +1352,9 @@
         "maybeScamTips": "Dies ist ein Token von geringer Qualität und könnte ein Betrug sein.",
         "Chain": "Kette",
         "BridgeIssue": "Token, die von einem Dritten überbrückt wurden",
-        "fdvTips": "Die Marktkapitalisierung, wenn das maximale Angebot im Umlauf ist. Vollständig verwässerte Bewertung (FDV) = Preis x maximales Angebot. Wenn das maximale Angebot null ist, FDV = Preis x Gesamtes Angebot. Wenn weder das maximale Angebot noch das gesamte Angebot definiert oder unendlich sind, wird die FDV nicht angezeigt."
+        "fdvTips": "Die Marktkapitalisierung, wenn das maximale Angebot im Umlauf ist. Vollständig verwässerte Bewertung (FDV) = Preis x maximales Angebot. Wenn das maximale Angebot null ist, FDV = Preis x Gesamtes Angebot. Wenn weder das maximale Angebot noch das gesamte Angebot definiert oder unendlich sind, wird die FDV nicht angezeigt.",
+        "bridge": "Brücke",
+        "bridgeToEth": "Brücke zur Ethereum-Kette"
       },
       "assets": {
         "usdValue": "USD WERT",
@@ -1379,7 +1396,8 @@
           "lowValueAssets": "{{count}} Vermögenswerte mit geringem Wert",
           "lowValueAssets_other": "{{count}} niedrigwertige Token",
           "lowValueAssets_one": "{{count}} low value token",
-          "lowValueAssets_0": "{{count}} Low-Value-Token"
+          "lowValueAssets_0": "{{count}} Low-Value-Token",
+          "review": "Überprüfung"
         },
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
@@ -1440,7 +1458,16 @@
         "howToConnectKeystone": "So verbinden Sie Keystone",
         "ledgerIsDisconnected": "Ihr Ledger ist nicht verbunden",
         "howToConnectImKey": "So verbinden Sie imKey",
-        "onekeyIsDisconnected": "Ihre OneKey ist nicht verbunden."
+        "onekeyIsDisconnected": "Ihre OneKey ist nicht verbunden.",
+        "trezor": {
+          "doc1": "Schließen Sie Ihr Trezor-Gerät an.",
+          "doc2": "Entsperren Sie Ihr Gerät"
+        },
+        "onekey": {
+          "doc3": "Entsperren Sie Ihr Gerät",
+          "doc1": "Install <1>OneKey Bridge<1/>",
+          "doc2": "Schließen Sie Ihr OneKey-Gerät an."
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Die Safe-Adresse unterstützt {{chain}} nicht",
@@ -1463,6 +1490,11 @@
       "recentConnectionGuide": {
         "button": "Verstanden",
         "title": "Wechseln Sie die Adresse für die Dapp-Verbindung hier"
+      },
+      "rabbyPointsPopup": {
+        "downloadIntro": "Hast du die App noch nicht? Jetzt herunterladen.",
+        "title": "Rabby Punkte",
+        "desc": "Überprüfe deine Punkte in Rabby Mobile."
       }
     },
     "nft": {
@@ -1617,7 +1649,6 @@
         },
         "title": "Verbinden Sie sich mit {{brandName}}",
         "disconnected": "Getrennt",
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Verbunden, aber kann nicht signieren.",
@@ -1801,8 +1832,19 @@
         "unknowError": "Unbekannter Fehler, bitte versuche es erneut",
         "keystonePermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren Keystone im folgenden Popup-Fenster zu autorisieren, und stellen Sie sicher, dass sich Ihr Keystone 3 Pro auf der Startseite befindet."
       },
+      "onekey": {
+        "onekeyPermission1": "Verbinden Sie mit einem USB-Gerät",
+        "allowRabbyPermissionsTitle": "Erlaube Rabby-Berechtigungen, um:",
+        "onekeyPermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren OneKey im folgenden Popup-Fenster zu autorisieren. Wenn OneKey nicht im Popup erscheint, prüfen Sie bitte, ob Ihr Gerät ordnungsgemäß mit dem Computer verbunden ist.",
+        "whyOneKey": "Warum OneKey?",
+        "buyOneKey": "OneKey kaufen",
+        "haveOneKey": "Haben Sie noch kein OneKey?"
+      },
       "firefoxLedgerDisableTips": "Ledger ist nicht mit Firefox kompatibel",
-      "addFromCurrentSeedPhrase": "Aus aktuellem Seed-Phrase hinzufügen"
+      "addFromCurrentSeedPhrase": "Aus aktuellem Seed-Phrase hinzufügen",
+      "trezor": {
+        "title": "Verbinde Trezor"
+      }
     },
     "unlock": {
       "btn": {
@@ -2130,7 +2172,8 @@
       "aggregator-not-enabled": "Dieser Aggregator ist von Ihnen nicht zum Handeln aktiviert.",
       "pendingTip": "Tx eingereicht. Wenn die Tx über mehrere Stunden aussteht, können Sie versuchen, das Ausstehende in den Einstellungen zu löschen.",
       "rabby-fee": "Rabby-Gebühr",
-      "max-tips": "Dieser Wert wird berechnet, indem die Gaskosten für die Brücke abgezogen werden."
+      "max-tips": "Dieser Wert wird berechnet, indem die Gaskosten für die Brücke abgezogen werden.",
+      "bridgeDbkBtn": "Bridge über den DBK Official Service"
     },
     "pendingDetail": {
       "Header": {
@@ -2422,7 +2465,12 @@
         "txCreated": "Transaktion erstellt",
         "txSigned": "Signiert. Transaktion wird erstellt"
       },
-      "signWithLedger": "Mit Ledger signieren"
+      "signWithLedger": "Mit Ledger signieren",
+      "speedUpTitle": "Beschleunigen",
+      "cancelTitle": "On-chain Stornieren",
+      "speedUpDesc": "Der Gaspreis erhöhte sich um {{percent}}, um zu beschleunigen.",
+      "cancleDesc": "Der Gaspreis ist um {{percent}} gestiegen, um die Transaktion abzubrechen.",
+      "signWithOneKey": "Mit OneKey signieren"
     },
     "gasAccount": {
       "history": {
@@ -2432,7 +2480,8 @@
         "desc": "Auf allen Chains Gasgebühren zahlen",
         "title": "Einzahlung USDC / USDT",
         "login": "In GasAccount einloggen",
-        "gotIt": "Verstanden"
+        "gotIt": "Verstanden",
+        "loginAndClaim": "Melden Sie sich an und beanspruchen Sie $2,00"
       },
       "loginConfirmModal": {
         "desc": "Nach der Bestätigung können Sie es nur an dieser Adresse einzahlen。",
@@ -2469,7 +2518,12 @@
         "desc": "Sie können Ihr GasAccount-Guthaben auf Ihr DeBank L2 Wallet abheben. Melden Sie sich in Ihrem DeBank L2 Wallet an, um die Gelder bei Bedarf auf eine unterstützte Blockchain zu übertragen.",
         "riskMessageFromChain": "Aufgrund der Risikokontrolle hängt das Auszahlungslimit von der insgesamt aus dieser Kette eingezahlten Menge ab.",
         "noEligibleChain": "Keine berechtigte Kette für Abhebungen",
-        "riskMessageFromAddress": "Aufgrund der Risikokontrolle hängt das Auszahlungslimit von der Gesamtsumme ab, die diese Adresse eingezahlt hat."
+        "riskMessageFromAddress": "Aufgrund der Risikokontrolle hängt das Auszahlungslimit von der Gesamtsumme ab, die diese Adresse eingezahlt hat.",
+        "WithdrawalAmount": "Abhebungsbetrag",
+        "noBalance": "Kein Saldo",
+        "withdrawalTip": "Verfügbares Abhebungs saldo: {{amount}}",
+        "noEnoughValueBalance": "Vault-Bilanz unzureichend. Wechseln Sie die Kette oder versuchen Sie es später erneut.",
+        "amountTooLowCoverFee": "Betrag zu niedrig, um die Gasgebühren zu decken"
       },
       "withdrawConfirmModal": {
         "button": "Auf DeBank anzeigen",
@@ -2496,7 +2550,8 @@
         "gasAccountBalance": "Gas Balance"
       },
       "withdrawDisabledIAP": "Abhebungen sind deaktiviert, da Ihr Guthaben Fiat-Mittel enthält, die nicht abgehoben werden können. Kontaktieren Sie den Support, um Ihr Token-Guthaben abzuheben.",
-      "switchAccount": "Wechseln Sie GasAccount"
+      "switchAccount": "Wechseln Sie GasAccount",
+      "gasToken": "Gas Token"
     },
     "safeMessageQueue": {
       "noData": "Keine Nachrichten",
@@ -2564,11 +2619,14 @@
         "title": "Seed Phrase importieren"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip1": "1. Installiere <1>OneKey Bridge<1/>",
-        "tip3": "3. Entsperren Sie Ihr Gerät",
-        "connect": "Verbinden Sie OneKey",
-        "tip2": "2. Schließen Sie Ihr OneKey-Gerät an"
+        "qrcode": {
+          "desc": "Scannen Sie den QR-Code auf der OneKey Hardware-Wallet"
+        },
+        "title": "Verbinden Sie Ihre OneKey Hardware-Wallet über USB",
+        "tip1": "1. Schließen Sie Ihr OneKey-Gerät an",
+        "tip2": "2. Entsperren Sie Ihr Gerät",
+        "tip3": "3. Bitte stellen Sie sicher, dass nur ein OneKey-Gerät angeschlossen ist",
+        "connect": "OneKey verbinden"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -2694,7 +2752,8 @@
       "selectedLenAddressesForSync_other": "Ausgewählte {{len}} Adressen für die Synchronisierung",
       "selectAddress": {
         "title": "Adressen zum Synchronisieren auswählen"
-      }
+      },
+      "verifyPassword": "Passwort überprüfen"
     },
     "search": {
       "sectionHeader": {
@@ -2756,7 +2815,7 @@
         "passwordPlaceholder": "Passwort eingeben, um fortzufahren",
         "AddToWhitelist": "Zur Whitelist hinzufügen",
         "TransferBeforeValue": "Ja",
-        "TransferBefore": "Übertragen Sie vorher"
+        "TransferBefore": "Vorher übertragen"
       },
       "selectImportedAddress": "Importierte Adresse auswählen",
       "sendToImportedAddress": "An eine importierte Adresse senden",
@@ -2782,6 +2841,176 @@
       "addSuccess": "Erfolgreich hinzugefügt",
       "nameYourAddress": "Benennen Sie Ihre Adresse",
       "enterAddress": "Adresse eingeben"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneHour": "1H",
+        "oneWeek": "1W",
+        "all": "ALLES",
+        "oneDay": "1D",
+        "oneMonth": "1M",
+        "ytd": "YTD"
+      },
+      "newUserProcess": {
+        "gotIt": "Verstanden",
+        "next": "Weiter",
+        "fifthTitle": "Liquidation",
+        "fourthTitle": "Hebung des Hebels",
+        "firstTitle": "Master Perpetual Futures",
+        "secondTitle": "Gehe Long",
+        "thirdTitle": "Gehe Short",
+        "secondDescription": "Wenn Sie erwarten, dass der Preis steigt, eröffnen Sie einen Long. Wenn der Preis steigt, gewinnen Sie. Wenn er fällt, verlieren Sie.",
+        "firstDescription": "Mit perpetual futures handelst du nicht nur mit Vermögenswerten. Du handelst mit dem, was du denkst, was als Nächstes passieren wird.",
+        "thirdDescription": "Wenn Sie erwarten, dass der Preis fällt, eröffnen Sie eine Short-Position. Wenn der Preis fällt, gewinnen Sie. Wenn er steigt, verlieren Sie.",
+        "fourthDescription": "Leverage ermöglicht es dir, mit mehr zu handeln, als du eingesetzt hast. Es kann sowohl deine Gewinne als auch deine Verluste erhöhen.",
+        "fifthDescription": "Jede Position hat einen Liquidationspreis. Wenn der Marktpreis diesen erreicht, wird Ihre Position geschlossen. Die Verwendung von hoher Hebelwirkung erhöht das Risiko einer Liquidation."
+      },
+      "historyDetail": {
+        "title": {
+          "closeLong": "Long schließen",
+          "closeShortSl": "Short schließen Stop Loss",
+          "closeShort": "Short schließen",
+          "openLong": "Long öffnen",
+          "openShort": "Short öffnen",
+          "closeLongTp": "Long schließen Gewinnmitnahme",
+          "closeShortTp": "Close Short Gewinnmitnahme",
+          "closeLongSl": "Close Long Stop Loss",
+          "closeShortLiquidation": "Close Short Liquidation",
+          "closeLongLiquidation": "Schließe Long Liquidation"
+        },
+        "provider": "Anbieter",
+        "price": "Preis",
+        "size": "Größe",
+        "fee": "Gebühr",
+        "tradeValue": "Handelswert",
+        "date": "Datum",
+        "closedPnl": "Geschlossenes PNL"
+      },
+      "logoutConfirmModal": {
+        "title": "Aktuelle Adresse abmelden",
+        "desc": "Sie melden sich von Ihrem aktuellen Perps-Konto ab. Sie können es jederzeit wiederherstellen, indem Sie sich mit dieser Adresse anmelden."
+      },
+      "depositAmountPopup": {
+        "feeTip": "$1 Gebühr",
+        "receiveToken": "Token empfangen",
+        "payWith": "Bezahlen mit",
+        "estReceive": "Geschätzter Erhalt: {{balance}}",
+        "minimumDepositSize": "Der Mindestbetrag für die Einzahlung beträgt 5 $.",
+        "feeTipTooltip": "Abhebungsgebühr, die von Hyperliquid erhoben wird: 1 $",
+        "goBridgeTips": "Nur USDC auf Arbitrum wird für die direkte Einzahlung unterstützt. Bitte überbrücken Sie Ihr aktuelles Token zu USDC auf Arbitrum, bevor Sie einzahlen.",
+        "minimumWithdrawSize": "Der Mindestbetrag für eine Auszahlung beträgt 2 $.",
+        "goSwapTips": "Nur USDC auf Arbitrum wird für die direkte Einzahlung unterstützt. Bitte tauschen Sie Ihr aktuelles Token gegen USDC, bevor Sie einzahlen.",
+        "fetchQuoteFailed": "Fehler beim Abrufen des Einzahlungsangebots. Bitte wechseln Sie das Token.",
+        "estReceiveTooltip": "Cross-Chain-Einzahlung wird über LiFi verarbeitet und kann mit einem gewissen Slippage verbunden sein. Geschätzte Ankunft in {{number}}s."
+      },
+      "home": {
+        "pnl": "PNL",
+        "liquidationPrice": "Liq.Preis",
+        "margin": "Marge",
+        "entryPrice": "Einstiegspreis",
+        "markPrice": "Markpreis",
+        "size": "Größe"
+      },
+      "singleCoin": {
+        "openInterestTips": "Die insgesamt ausstehenden Positionen aller Benutzer in diesem Vertrag.",
+        "fundingTips": "Dies ist eine stündliche Gebühr, die Händler zahlen oder erhalten, um den Preis des Perpetual Contracts nahe am tatsächlichen Preis des Tokens zu halten. Ist sie positiv, zahlt Long an Short. Ist sie negativ, zahlt Short an Long.",
+        "fundingPaymentsTips": "Dies sind die Nettofinanzierungszahlungen seit der Eröffnung der Position. Die Finanzierung ist eine stündliche Gebühr, die Trader zahlen oder erhalten, um den Preis des Perp-Vertrags nahe am tatsächlichen Preis des Tokens zu halten."
+      },
+      "accountSelector": {
+        "noPosition": "Keine Position",
+        "activatedAddress": "Aktiviert",
+        "notActivatedAddress": "Nicht aktiviert",
+        "hyperliquidBalance": "Perps Guthaben"
+      },
+      "title": "Perps",
+      "positions": "Positionen",
+      "withdraw": "Abheben",
+      "deposit": "Einzahlen",
+      "permissionTips": "Das Eröffnen von Positionen wird in Ihrer Region nicht unterstützt.",
+      "pending": "Ausstehend",
+      "autoClose": "Auto Close",
+      "learnAboutPerps": "Lerne mehr über Perps",
+      "margin": "Marge",
+      "pnl": "PNL",
+      "leverage": "Hebel",
+      "liquidationPrice": "Liquidationspreis",
+      "price": "Preis",
+      "lastUsed": "Zuletzt verwendet",
+      "directDeposit": "Direkte Einzahlung",
+      "fundingPayments": "Finanzierungszahlungen",
+      "tradePerps": "Handel mit Perps",
+      "direction": "Richtung",
+      "entryPrice": "Einstiegspreis",
+      "closeLong": "Long schließen",
+      "selectTokenToDeposit": "Wählen Sie Token zum Einzahlen",
+      "explorePerps": "Erkunde Perps",
+      "marginIsolated": "Margin (Isoliert)",
+      "size": "Größe",
+      "marginCross": "Margin (Kreuz)",
+      "seeMore": "Siehe mehr",
+      "closeShort": "Short schließen",
+      "openShort": "Open Short",
+      "logInPerpsAccount": "Melden Sie sich bei meinem Perps-Konto an",
+      "completed": "Abgeschlossen",
+      "openLong": "Long eröffnen",
+      "balanceAvailable": "Guthaben: {{balance}}",
+      "availableBalance": "Verfügbar: {{balance}}",
+      "history": "Geschichte",
+      "timeAgo": "vor {{time}}",
+      "funding": "Finanzierung",
+      "dailyVolume": "24h Volumen",
+      "insufficientBalance": "Unzureichendes Guthaben",
+      "logInTips": "Melden Sie sich mit Ihrer Adresse an und hinterlegen Sie Gelder, um mit dem Handel von perps zu beginnen.",
+      "review": "Überprüfung",
+      "long": "Long",
+      "availableToTrade": "Verfügbar zum Handel",
+      "TakeProfit": "Gewinnmitnahme",
+      "providerFeeTips": "Hyperliquid-Gebühr: {{fee}}",
+      "deleteAgentSuccess": "Agent erfolgreich gelöscht",
+      "short": "Short",
+      "StopLoss": "Stop-Loss",
+      "stopLoss": "Stop-Loss",
+      "takeProfit": "Gewinnmitnahme",
+      "rabbyFeeTipsZero": "Rabby Gebühr: 0%",
+      "takeProfitWhen": "Take-Profit-Preis festlegen",
+      "openInterest": "Offene Interessen",
+      "stopLossWhen": "Stop-Loss-Preis festlegen",
+      "confirm": "Bestätigen",
+      "takeProfitTipsLong": "Der Take-Profit-Preis muss höher sein als der aktuelle Preis.",
+      "stopLossTipsLongLiquidation": "Der Preis liegt unter dem Liquidationspreis ({{price}})",
+      "takeProfitTipsShort": "Der Take-Profit-Preis muss unter dem aktuellen Preis liegen.",
+      "stopLossTipsLong": "Der Stop-Loss-Preis muss unter dem aktuellen Preis liegen.",
+      "stopLossTipsShortLiquidation": "Der Preis liegt über dem Liquidationspreis ({{price}})",
+      "sizeTips": "Der Gesamtwert oder die Menge Ihres Handels, festgelegt durch Margin und Hebel.",
+      "rabbyFeeTips": "Rabby Gebühr: 0,04%",
+      "stopLossTipsShort": "Der Stop-Loss-Preis muss höher sein als der aktuelle Preis.",
+      "reviewOrder": "Bestellung überprüfen",
+      "liquidationPriceTips": "Der Preis, zu dem Ihre Position automatisch von der Börse geschlossen wird, um weitere Verluste zu vermeiden, wenn Ihr Margin unter das Niveau des Wartungsmargins fällt.",
+      "fee": "Gebühr",
+      "estimatedLiquidationPrice": "Geschätzter Liquidationspreis",
+      "minimumOrderSize": "Die Mindestbestellgröße beträgt 10 $.",
+      "back": "Zurück",
+      "liquidation": "Liquidation",
+      "maximumOrderSize": "Die maximale Bestellgröße beträgt {{amount}}.",
+      "leverageRangeMinError": "Der minimale Hebel beträgt {{min}}x",
+      "leverageRangeMaxError": "Der maximale Hebel beträgt {{max}}x",
+      "yourPosition": "Ihre Position",
+      "deleteAgentModal": "Sie haben die maximale Anzahl an Agenten erreicht. Möchten Sie einen vorhandenen Agenten löschen, um einen neuen zu erstellen?",
+      "openPositionTips": "Der Handel mit ewigen Verträgen birgt erhebliche Risiken, einschließlich der Möglichkeit eines plötzlichen und vollständigen Verlusts Ihrer Investition und Sicherheiten aufgrund von hoher Hebelwirkung und Marktvolatilität und ist möglicherweise nicht für alle Benutzer geeignet. Die Preise können von Finanzierungsraten und Liquidität beeinflusst werden, und Sie können ohne Vorankündigung automatischen Liquidationen unterworfen werden. Marktdaten bereitgestellt von Hyperliquid.",
+      "toast": {
+        "setAutoCloseSuccess": "Auto close position erfolgreich festgelegt",
+        "closePositionSuccess": "Geschlossen {{direction}} {{coin}}-USD: Größe {{size}} zu einem Preis von ${{price}}",
+        "openPositionSuccess": "Eröffnet {{direction}} {{coin}}-USD: Größe {{size}} zu einem Preis von ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeLong": "Long schließen",
+        "positionSize": "Positionsgröße",
+        "closeShort": "Short schließen",
+        "pnl": "P&L",
+        "title": "Schließe {{coin}}-USD {{direction}}"
+      },
+      "isolated": "Isoliert",
+      "cross": "Cross"
     }
   },
   "component": {
@@ -2975,6 +3204,9 @@
     },
     "RiskTip": {
       "title": "Risiko Warnung"
+    },
+    "DappActions": {
+      "queueDescription": "Aktuelle Abhebungen gelangen in eine Warteschlange. Sobald sie bearbeitet sind, können sie in Ihr Wallet abgehoben werden."
     }
   },
   "global": {
@@ -3046,6 +3278,18 @@
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Private Key",
       "watchAddressKeyring": "Kontakt"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Gerät nicht gefunden",
+        "deviceInitializeFailed": "Gerätfehler, bitte neu starten und erneut versuchen",
+        "needUpgradeFirmware": "Firmware muss aktualisiert werden, um das Gerät zu verwenden",
+        "thisMethodNeedUpgradeFirmware": "Diese Funktion erfordert ein Firmware-Update, bitte aktualisieren Sie die Firmware in der OneKey-App",
+        "notAllowInBootloaderMode": "Bitte im normalen Modus verwenden",
+        "deviceCheckPassphraseStateError": "Das Konto stimmt nicht mit der aktuellen Gerät-Entsperradresse überein. Bitte bestätigen Sie, dass Gerät und Kontoadresse übereinstimmen und versuchen Sie es erneut",
+        "actionCancel": "Vorgang abgebrochen",
+        "deviceNeedsWebHIDPermission": "Gerät nicht gefunden oder Zugriff erforderlich"
+      }
     }
   },
   "constant": {

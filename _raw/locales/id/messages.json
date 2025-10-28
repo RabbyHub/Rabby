@@ -42,7 +42,8 @@
         "totalCost": "Total cost: ",
         "maxGas": "Max Gas:",
         "gasCost": "Biaya gas untuk mentransfer gas ke alamat Anda:",
-        "sendGas": "Gas transfer ke Anda untuk transaksi saat ini:"
+        "sendGas": "Gas transfer ke Anda untuk transaksi saat ini:",
+        "description": "Menggunakan GasAccount untuk membayar biaya gas. Lihat detail pembayaran di bawah ini:"
       },
       "balanceChange": {
         "tokenIn": "Token in",
@@ -363,6 +364,15 @@
         "insufficient": "Saldo gas Anda tidak cukup untuk menutupi biaya gas jaringan. Tambahkan dana untuk gas dan coba lagi.",
         "nonceTooLow": "Nonce terlalu rendah. Kami akan memperbaruinya menjadi {{nonce}}. Klik “Retry” untuk mengonfirmasi dan mencoba lagi.",
         "gasPriceTooLow": "Harga gas terlalu rendah. Kami akan menyesuaikannya sebesar 30% untuk membantu konfirmasi transaksi Anda. Klik \"Coba Lagi\" untuk mengonfirmasi dan mencoba lagi."
+      },
+      "addLiquidity": {
+        "poolPrice": "Harga Pool",
+        "receiver": "Penerima",
+        "token0": "Tambahkan Token 1",
+        "title": "Tambahkan Likuiditas",
+        "marketPrice": "Harga Pasar",
+        "priceDiff": "Harga Selisih",
+        "token1": "Tambahkan Token 2"
       }
     },
     "signFooterBar": {
@@ -817,7 +827,8 @@
         },
         "ViewMore": {
           "text": "Lihat lebih banyak"
-        }
+        },
+        "EIP7702SupportChains": "Rantai yang Didukung EIP-7702:"
       },
       "search": {
         "placeholder": "Cari {{ type }} berdasarkan nama/alamat"
@@ -919,7 +930,7 @@
       "Value": "Nilai",
       "Confirm": "Konfirmasi",
       "Token": "Token",
-      "Select-from-supported-tokens": "Pilih dari token yang didukung",
+      "Deposit-tip": "Deposit dengan USDC/USDT",
       "Balance": "Saldo",
       "payment": "Pembayaran Pengisian Gas",
       "Payment-Token": "Token Pembayaran",
@@ -1031,7 +1042,9 @@
       "gas-fee": "GasFee: {{gasUsed}}",
       "loss-tips": "Anda kehilangan {{usd}}. Cobalah jumlah yang lebih kecil di pasar kecil.",
       "two-step-approve-details": "Token USDT memerlukan 2 transaksi untuk mengubah allowance. Pertama, Anda perlu mengatur allowance ke nol, dan hanya kemudian menetapkan nilai allowance yang baru.",
-      "estimate": "Perkiraan:"
+      "estimate": "Perkiraan:",
+      "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
+      "approve": "Setujui"
     },
     "bridge": {
       "showMore": {
@@ -1103,7 +1116,8 @@
       "est-payment": "Est. Pembayaran:",
       "aggregator-not-enabled": "Aggregator ini tidak diaktifkan untuk diperdagangkan oleh Anda.",
       "pendingTip": "Tx terkirim. Jika tx tertunda selama berjam-jam, Anda dapat mencoba menghapus pending di pengaturan.",
-      "price-expired-refresh-route": "Harga telah kedaluwarsa. Segarkan rute."
+      "price-expired-refresh-route": "Harga telah kedaluwarsa. Segarkan rute.",
+      "bridgeDbkBtn": "Bridge melalui Servis Resmi DBK"
     },
     "manageAddress": {
       "address-management": "Manajemen Alamat",
@@ -1169,7 +1183,9 @@
           "bridge": "Jembatan",
           "send": "Kirim",
           "approvals": "Persetujuan",
-          "mobile": "Mobile Sync"
+          "mobile": "Mobile Sync",
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "queue": {
           "title": "Antrian",
@@ -1409,7 +1425,9 @@
         "Chain": "Rantai",
         "ContractAddress": "Alamat Kontrak",
         "myBalance": "Saldo Saya",
-        "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan."
+        "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan.",
+        "bridge": "Jembatan",
+        "bridgeToEth": "Jembatan ke Rantai Ethereum"
       },
       "assets": {
         "portfolio": {
@@ -1448,7 +1466,8 @@
           "lowValueAssets_one": "{{count}} token bernilai rendah",
           "lowValueAssets_other": "{{count}} token nilai rendah",
           "summaryTips": "Nilai aset dibagi dengan total kekayaan bersih",
-          "price": "Harga"
+          "price": "Harga",
+          "review": "Tinjau"
         },
         "AddMainnetToken": {
           "tokenAddress": "Alamat Token",
@@ -1510,7 +1529,16 @@
         "howToSwitch": "Cara untuk beralih",
         "ledgerIsDisconnected": "Ledger Anda tidak terhubung",
         "howToConnectImKey": "Cara Menghubungkan imKey",
-        "onekeyIsDisconnected": "OneKey Anda tidak terhubung"
+        "onekeyIsDisconnected": "OneKey Anda tidak terhubung",
+        "trezor": {
+          "doc2": "Buka perangkat Anda",
+          "doc1": "Sambungkan perangkat Trezor Anda"
+        },
+        "onekey": {
+          "doc2": "Colokkan perangkat OneKey Anda",
+          "doc1": "Instal <1>OneKey Bridge<1/>",
+          "doc3": "Buka perangkat Anda"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Alamat Safe Anda tidak diterapkan di rantai ini"
@@ -1532,6 +1560,11 @@
       "recentConnectionGuide": {
         "button": "Dapatkan",
         "title": "Ganti alamat untuk koneksi Dapp di sini"
+      },
+      "rabbyPointsPopup": {
+        "downloadIntro": "Belum punya aplikasi? Unduh sekarang.",
+        "desc": "Periksa poin Anda di Rabby Mobile.",
+        "title": "Rabby Points"
       }
     },
     "nft": {
@@ -1669,6 +1702,14 @@
         "keystonePermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke Keystone Anda di jendela pop-up berikut, dan pastikan Keystone 3 Pro Anda ada di halaman utama.",
         "noDeviceFoundError": "Colokkan satu Keystone"
       },
+      "onekey": {
+        "onekeyPermission1": "Sambungkan ke perangkat USB",
+        "allowRabbyPermissionsTitle": "Izinkan Rabby untuk:",
+        "onekeyPermissionTip": "Silakan klik \"Allow\" di bawah untuk memberikan izin akses ke OneKey Anda di jendela pop-up berikut. Jika OneKey tidak muncul di popup, silakan periksa apakah perangkat Anda terhubung dengan benar ke komputer.",
+        "whyOneKey": "Mengapa OneKey?",
+        "buyOneKey": "Beli OneKey",
+        "haveOneKey": "Belum memiliki OneKey?"
+      },
       "walletConnect": {
         "status": {
           "brandError": "Aplikasi dompet salah.",
@@ -1681,7 +1722,6 @@
           "accountErrorDesc": "Silakan ganti alamat di dompet seluler Anda",
           "connected": "Terkoneksi"
         },
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Tersambung tetapi tidak dapat menandatangani.",
@@ -1871,7 +1911,10 @@
       "importedSuccessfully": "Diimpor Berhasil",
       "incorrectPassword": "kata sandi salah",
       "addFromCurrentSeedPhrase": "Tambahkan dari Seed Phrase Saat Ini",
-      "importYourKeystore": "Impor KeyStore Anda"
+      "importYourKeystore": "Impor KeyStore Anda",
+      "trezor": {
+        "title": "Connect Trezor"
+      }
     },
     "unlock": {
       "btn": {
@@ -2419,7 +2462,12 @@
         "txSending": "Mengirim permintaan tanda tangan",
         "txSendings": "Mengirim permintaan tanda tangan ({{current}}/{{total}})"
       },
-      "signWithLedger": "Tandatangani dengan Ledger"
+      "signWithLedger": "Tandatangani dengan Ledger",
+      "cancelTitle": "On-chain Batalkan",
+      "speedUpTitle": "Percepat",
+      "signWithOneKey": "Tanda dengan OneKey",
+      "cancleDesc": "Harga gas meningkat sebesar {{percent}} untuk membatalkan transaksi",
+      "speedUpDesc": "Harga gas meningkat sebesar {{percent}} untuk mempercepat"
     },
     "gasAccount": {
       "history": {
@@ -2429,7 +2477,8 @@
         "gotIt": "Dapatkan itu",
         "login": "Masuk GasAccount",
         "desc": "Bayar Biaya Gas di Semua Rantai",
-        "title": "Setor USDC / USDT"
+        "title": "Setor USDC / USDT",
+        "loginAndClaim": "Masuk dan Klaim $2.00"
       },
       "loginConfirmModal": {
         "title": "Pilih alamat untuk masuk",
@@ -2470,7 +2519,12 @@
         "selectDestinationChain": "Pilih rantai tujuan",
         "noEnoughValuetBalance": "Saldo Vault tidak cukup. Alihkan rantai atau coba lagi nanti.",
         "desc": "Anda dapat menarik saldo GasAccount Anda ke Dompet DeBank L2 Anda. Masuk ke Dompet DeBank L2 Anda untuk mentransfer dana ke blockchain yang didukung sesuai kebutuhan.",
-        "riskMessageFromChain": "Karena pengendalian risiko, batas penarikan tergantung pada total jumlah yang disetor dari rantai ini."
+        "riskMessageFromChain": "Karena pengendalian risiko, batas penarikan tergantung pada total jumlah yang disetor dari rantai ini.",
+        "noBalance": "Tidak ada saldo",
+        "withdrawalTip": "Saldo penarikan yang tersedia: {{amount}}",
+        "WithdrawalAmount": "Jumlah Penarikan",
+        "amountTooLowCoverFee": "Jumlah terlalu rendah untuk menutupi biaya gas",
+        "noEnoughValueBalance": "Vault Balance tidak cukup. Ganti rantai atau coba lagi nanti."
       },
       "withdrawConfirmModal": {
         "title": "Dipindahkan ke Dompet DeBank L2 Anda",
@@ -2493,7 +2547,8 @@
       "gasExceed": "Saldo GasAccount tidak boleh melebihi $1000",
       "withdrawDisabledIAP": "Penarikan dinonaktifkan karena saldo Anda termasuk dana fiat, yang tidak dapat ditarik. Hubungi dukungan untuk menarik saldo token Anda.",
       "risk": "Alamat Anda saat ini terdeteksi berisiko, jadi fitur ini tidak tersedia.",
-      "switchAccount": "Alihkan GasAccount"
+      "switchAccount": "Alihkan GasAccount",
+      "gasToken": "Gas Token"
     },
     "safeMessageQueue": {
       "loading": "Memuat pesan",
@@ -2561,11 +2616,14 @@
         "title": "Impor Kata Sandi Seed"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip2": "2. Colokkan perangkat OneKey Anda",
-        "connect": "Hubungkan OneKey",
-        "tip3": "3. Buka kunci perangkat Anda",
-        "tip1": "1. Pasang <1>OneKey Bridge<1/>"
+        "qrcode": {
+          "desc": "Pindai kode QR pada dompet hardware OneKey"
+        },
+        "title": "Hubungkan dompet hardware OneKey Anda via USB",
+        "tip1": "1. Colokkan perangkat OneKey Anda",
+        "tip2": "2. Buka kunci perangkat Anda",
+        "tip3": "3. Pastikan hanya satu perangkat OneKey yang terhubung",
+        "connect": "Hubungkan OneKey"
       },
       "importTrezor": {
         "title": "Trezor",
@@ -2691,7 +2749,8 @@
       "disableSelectAddressWithSlip39": "Sink tidak didukung untuk alamat {{type}} dengan slip39",
       "steps2Description": "*QR code Anda berisi data sensitif. Jaga kerahasiaannya dan jangan pernah membagikannya kepada siapa pun.",
       "selectedLenAddressesForSync_other": "Dipilih {{len}} alamat untuk disinkronkan",
-      "disableSelectAddressWithPassphrase": "Sinkronisasi tidak didukung untuk alamat {{type}} dengan frasa sandi"
+      "disableSelectAddressWithPassphrase": "Sinkronisasi tidak didukung untuk alamat {{type}} dengan frasa sandi",
+      "verifyPassword": "Verifikasi Kata Sandi"
     },
     "search": {
       "sectionHeader": {
@@ -2750,7 +2809,7 @@
         "cexDepositAddress": "{{cexName}} Alamat Deposit",
         "cexAddress": "{{cexName}} Alamat",
         "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
-        "TransferBefore": "Transfer sebelum",
+        "TransferBefore": "Dipindahkan sebelumnya",
         "TransferBeforeValue": "Ya",
         "AddToWhitelist": "Tambahkan ke Daftar Putih",
         "passwordPlaceholder": "Masukkan kata sandi untuk melanjutkan"
@@ -2779,6 +2838,176 @@
       "confirmPassword": "Konfirmasi Kata Sandi",
       "addSuccess": "Ditambahkan dengan sukses",
       "invalidAddress": "Alamat ini tidak valid"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneDay": "1H",
+        "oneHour": "1H",
+        "oneWeek": "1W",
+        "all": "SEMUA",
+        "oneMonth": "1M",
+        "ytd": "YTD"
+      },
+      "newUserProcess": {
+        "firstTitle": "Master Perpetual Futures",
+        "thirdTitle": "Pergi Short",
+        "gotIt": "Dapat dimengerti",
+        "secondTitle": "Masuk Posisi Long",
+        "next": "Berikutnya",
+        "fourthDescription": "Leverage memungkinkan Anda untuk berdagang dengan lebih dari yang Anda masukkan. Ini dapat meningkatkan baik keuntungan maupun kerugian Anda.",
+        "fourthTitle": "Menyesuaikan Leverage",
+        "fifthTitle": "Likuidasi",
+        "secondDescription": "Ketika Anda mengharapkan harga akan naik, Anda membuka posisi long. Jika harga naik, Anda untung. Jika turun, Anda rugi.",
+        "thirdDescription": "Saat Anda memperkirakan harga akan turun, Anda membuka posisi short. Jika harga turun, Anda untung. Jika harga naik, Anda rugi.",
+        "fifthDescription": "Setiap posisi memiliki harga likuidasi. Jika harga pasar mencapai harga tersebut, posisi Anda akan ditutup. Menggunakan leverage tinggi meningkatkan risiko likuidasi.",
+        "firstDescription": "Dengan futures perpetual, Anda tidak hanya berdagang aset. Anda berdagang apa yang Anda pikir akan terjadi selanjutnya."
+      },
+      "historyDetail": {
+        "title": {
+          "closeLongLiquidation": "Tutup Long Likuidasi",
+          "closeShortLiquidation": "Tutup Short Likuidasi",
+          "closeLongSl": "Tutup Long Stop Loss",
+          "openShort": "Buka Short",
+          "closeShortSl": "Tutup Pendek Hentikan Kerugian",
+          "closeLongTp": "Tutup Long Ambil Keuntungan",
+          "closeLong": "Tutup Long",
+          "closeShort": "Tutup Short",
+          "closeShortTp": "Tutup Short Ambil Untung",
+          "openLong": "Buka Long"
+        },
+        "price": "Harga",
+        "tradeValue": "Nilai Perdagangan",
+        "fee": "Biaya",
+        "provider": "Penyedia",
+        "size": "Ukuran",
+        "closedPnl": "PNL Ditutup",
+        "date": "Tanggal"
+      },
+      "logoutConfirmModal": {
+        "desc": "Anda sedang keluar dari akun Perps Anda saat ini. Anda dapat mengembalikannya kapan saja dengan masuk menggunakan alamat ini.",
+        "title": "Keluar dari Alamat Saat Ini"
+      },
+      "depositAmountPopup": {
+        "feeTip": "$1 Biaya",
+        "payWith": "Bayar Dengan",
+        "feeTipTooltip": "Biaya Penarikan yang dikenakan oleh Hyperliquid: $1",
+        "receiveToken": "Terima Token",
+        "minimumWithdrawSize": "Jumlah penarikan minimum adalah $2",
+        "fetchQuoteFailed": "Gagal mengambil kutipan setoran. Silakan ganti token.",
+        "minimumDepositSize": "Jumlah setoran minimum adalah $5",
+        "estReceive": "Est. Terima: {{balance}}",
+        "estReceiveTooltip": "Deposit lintas rantai diproses melalui LiFi, mungkin mengalami slippage. Perkiraan kedatangan dalam {{number}} detik.",
+        "goSwapTips": "Hanya USDC di Arbitrum yang didukung untuk setoran langsung. Harap tukar token Anda saat ini dengan USDC sebelum melakukan setoran.",
+        "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk setoran langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan setoran."
+      },
+      "home": {
+        "pnl": "PNL",
+        "liquidationPrice": "Harga.Liq.",
+        "size": "Ukuran",
+        "entryPrice": "Harga Masuk",
+        "markPrice": "Harga Mark",
+        "margin": "Margin"
+      },
+      "singleCoin": {
+        "openInterestTips": "Total outstanding position semua pengguna pada kontrak ini.",
+        "fundingTips": "Ini adalah biaya per jam yang dibayar atau diterima trader untuk menjaga harga kontrak perp tetap dekat dengan harga sebenarnya dari token. Jika positif, long membayar short. Jika negatif, short membayar long.",
+        "fundingPaymentsTips": "Ini adalah pembayaran pendanaan neto sejak posisi dibuka. Pendanaan adalah biaya per jam yang dibayar atau diterima trader untuk mempertahankan harga kontrak perp tetap dekat dengan harga aktual token."
+      },
+      "accountSelector": {
+        "noPosition": "Tidak Ada Posisi",
+        "activatedAddress": "Diaktifkan",
+        "hyperliquidBalance": "Saldo Perps",
+        "notActivatedAddress": "Tidak Diaktifkan"
+      },
+      "withdraw": "Tarik",
+      "positions": "Posisi",
+      "deposit": "Setor",
+      "title": "Perpetual",
+      "permissionTips": "Membuka posisi tidak didukung di wilayah Anda",
+      "pending": "Menunggu",
+      "size": "Ukuran",
+      "yourPosition": "Posisi Anda",
+      "leverage": "Leverage",
+      "lastUsed": "Terakhir digunakan",
+      "marginCross": "Margin (Cross)",
+      "margin": "Margin",
+      "logInPerpsAccount": "Masuk ke akun Perps saya",
+      "learnAboutPerps": "Pelajari tentang Perps",
+      "openShort": "Buka Short",
+      "history": "Sejarah",
+      "price": "Harga",
+      "tradePerps": "Trade Perps",
+      "seeMore": "Lihat Selengkapnya",
+      "liquidationPrice": "Harga Likuidasi",
+      "pnl": "PNL",
+      "openLong": "Buka Long",
+      "closeLong": "Tutup Long",
+      "selectTokenToDeposit": "Pilih Token untuk Setor",
+      "logInTips": "Masuk dengan alamat Anda dan setor dana untuk mulai trading perps.",
+      "explorePerps": "Jelajahi Perps",
+      "direction": "Arah",
+      "availableBalance": "Tersedia: {{balance}}",
+      "balanceAvailable": "Saldo: {{balance}}",
+      "marginIsolated": "Margin (Isolated)",
+      "directDeposit": "Setoran Langsung",
+      "entryPrice": "Harga Masuk",
+      "closeShort": "Tutup Short",
+      "fundingPayments": "Pembayaran Pendanaan",
+      "completed": "Selesai",
+      "funding": "Pendanaan",
+      "stopLossWhen": "Atur Harga Stop-Loss",
+      "review": "Ulasan",
+      "rabbyFeeTips": "Biaya Rabby: 0,04%",
+      "takeProfitWhen": "Atur Harga Ambil Keuntungan",
+      "openInterest": "Minat Terbuka",
+      "TakeProfit": "Ambil untung",
+      "insufficientBalance": "Saldo tidak cukup",
+      "StopLoss": "Stop loss",
+      "long": "Panjang",
+      "availableToTrade": "Tersedia untuk diperdagangkan",
+      "stopLossTipsLongLiquidation": "Harga lebih rendah dari harga likuidasi ({{price}})",
+      "rabbyFeeTipsZero": "Rabby biaya: 0%",
+      "dailyVolume": "Volume 24 jam",
+      "deleteAgentSuccess": "Agen berhasil dihapus",
+      "takeProfitTipsShort": "Harga ambil untung harus lebih rendah dari harga saat ini.",
+      "stopLossTipsShort": "Harga stop loss harus lebih tinggi dari harga saat ini",
+      "confirm": "Konfirmasi",
+      "timeAgo": "{{time}} yang lalu",
+      "stopLossTipsShortLiquidation": "Harga lebih tinggi dari harga likuidasi ({{price}})",
+      "stopLossTipsLong": "Harga stop loss harus lebih rendah dari harga saat ini.",
+      "takeProfitTipsLong": "Harga ambil untung harus lebih tinggi dari harga saat ini.",
+      "short": "Short",
+      "stopLoss": "stop loss",
+      "providerFeeTips": "Biaya Hyperliquid: {{fee}}",
+      "liquidationPriceTips": "Harga di mana posisi Anda otomatis ditutup oleh bursa untuk mencegah kerugian lebih lanjut ketika margin Anda turun di bawah tingkat margin pemeliharaan.",
+      "takeProfit": "ambil untung",
+      "deleteAgentModal": "Anda telah mencapai jumlah maksimum agen. Apakah Anda ingin menghapus agen yang ada untuk membuat yang baru?",
+      "autoClose": "Tutup Otomatis",
+      "fee": "Biaya",
+      "liquidation": "Likuidasi",
+      "sizeTips": "Total nilai atau jumlah perdagangan Anda, ditentukan oleh margin dan leverage.",
+      "reviewOrder": "Tinjau Pesanan",
+      "back": "Kembali",
+      "minimumOrderSize": "Ukuran pesanan minimum adalah $10",
+      "estimatedLiquidationPrice": "Harga Likuidasi Perkiraan",
+      "leverageRangeMinError": "Leverage minimum adalah {{min}}x",
+      "maximumOrderSize": "Ukuran pesanan maksimum adalah {{amount}}",
+      "leverageRangeMaxError": "Maksimal leverage adalah {{max}}x",
+      "openPositionTips": "Perdagangan kontrak perpetual melibatkan risiko yang signifikan, termasuk potensi kehilangan investasi dan kolateral secara total dan mendadak akibat leverage tinggi dan volatilitas pasar, dan mungkin tidak cocok untuk semua pengguna. Harga dapat dipengaruhi oleh tingkat pendanaan dan likuiditas dan Anda mungkin mengalami likuidasi otomatis tanpa pemberitahuan. Data pasar disediakan oleh Hyperliquid.",
+      "toast": {
+        "setAutoCloseSuccess": "Pengaturan penutupan posisi otomatis berhasil",
+        "closePositionSuccess": "Tutup {{direction}} {{coin}}-USD: Ukuran {{size}} pada Harga ${{price}}",
+        "openPositionSuccess": "Dibuka {{direction}} {{coin}}-USD: Ukuran {{size}} dengan Harga ${{price}}"
+      },
+      "closePositionPopup": {
+        "positionSize": "Ukuran Posisi",
+        "closeShort": "Tutup Short",
+        "closeLong": "Tutup Long",
+        "title": "Tutup {{coin}}-USD {{direction}}",
+        "pnl": "P&L"
+      },
+      "cross": "Silang",
+      "isolated": "Terisolasi"
     }
   },
   "component": {
@@ -2972,6 +3201,9 @@
     },
     "RiskTip": {
       "title": "Peringatan Risiko"
+    },
+    "DappActions": {
+      "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda."
     }
   },
   "global": {
@@ -3043,6 +3275,18 @@
       "watchAddressKeyring": "Kontak",
       "simpleKeyring": "Kunci Pribadi",
       "HdKeyring": "Frasa Benih"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Perangkat tidak ditemukan",
+        "deviceInitializeFailed": "Kesalahan perangkat, silakan restart dan coba lagi",
+        "needUpgradeFirmware": "Firmware harus diperbarui untuk menggunakan perangkat",
+        "thisMethodNeedUpgradeFirmware": "Fitur ini memerlukan pembaruan firmware, silakan perbarui firmware di aplikasi OneKey",
+        "notAllowInBootloaderMode": "Silakan gunakan dalam mode normal",
+        "deviceCheckPassphraseStateError": "Akun tidak cocok dengan alamat buka kunci perangkat saat ini. Silakan konfirmasi bahwa perangkat dan alamat akun konsisten dan coba lagi",
+        "actionCancel": "Operasi dibatalkan",
+        "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebHID"
+      }
     }
   },
   "constant": {

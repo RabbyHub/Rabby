@@ -42,7 +42,8 @@
         "maxGas": "Max Gas:",
         "estimatedGas": "Dự kiến Gas:",
         "sendGas": "Gas chuyển cho bạn cho giao dịch hiện tại:",
-        "gasCost": "Chi phí gas để chuyển gas đến địa chỉ của bạn:"
+        "gasCost": "Chi phí gas để chuyển gas đến địa chỉ của bạn:",
+        "description": "Sử dụng GasAccount để thanh toán phí gas. Xem chi tiết thanh toán bên dưới:"
       },
       "balanceChange": {
         "successTitle": "Kết quả mô phỏng",
@@ -363,6 +364,15 @@
         "nonceTooHigh": "Nonce quá cao. Vui lòng điều chỉnh nonce và thử lại.",
         "gasPriceTooLow": "Giá gas quá thấp. Chúng tôi sẽ điều chỉnh nó tăng 30% để giúp giao dịch của bạn được xác nhận. Nhấn “Retry” để xác nhận và thử lại.",
         "InvalidTx": "Giao dịch không hợp lệ."
+      },
+      "addLiquidity": {
+        "token1": "Thêm Token 2",
+        "marketPrice": "Giá Thị Trường",
+        "title": "Thêm Thanh Khoản",
+        "poolPrice": "Giá Pool",
+        "priceDiff": "Sự chênh lệch giá",
+        "receiver": "Người nhận",
+        "token0": "Thêm Token 1"
       }
     },
     "signFooterBar": {
@@ -817,7 +827,8 @@
         },
         "ViewMore": {
           "text": "Xem thêm"
-        }
+        },
+        "EIP7702SupportChains": "Chuỗi hỗ trợ EIP-7702:"
       },
       "search": {
         "placeholder": "Tìm kiếm {{ type }} theo tên/địa chỉ"
@@ -921,7 +932,7 @@
       "topUpChain": "Nạp Tiền Chuỗi",
       "Token": "Token",
       "InsufficientBalance": "Không đủ số dư trong địa chỉ hợp đồng của Rabby cho chuỗi hiện tại. Vui lòng thử lại sau.",
-      "Select-from-supported-tokens": "Chọn từ các token được hỗ trợ",
+      "Deposit-tip": "Nạp với USDC/USDT",
       "description": "Nạp gas bằng cách gửi cho chúng tôi các token có sẵn trên chuỗi khác. Chuyển tiền ngay khi thanh toán của bạn được xác nhận, không cần phải chờ đợi cho đến khi nó không thể đảo ngược.",
       "service-fee-tip": "Bằng cách cung cấp dịch vụ Nạp Gas, Rabby phải chịu mất mát từ sự biến động của token và phí gas cho việc nạp. Do đó, một khoản phí dịch vụ 20% sẽ được tính.",
       "Balance": "Số dư"
@@ -1031,7 +1042,9 @@
       "No-available-quote": "Không có báo giá nào khả dụng",
       "source": "Nguồn",
       "loss-tips": "Bạn đang mất {{usd}}. Hãy thử một số tiền nhỏ hơn trong một thị trường nhỏ.",
-      "no-quote-found": "Không tìm thấy báo giá"
+      "no-quote-found": "Không tìm thấy báo giá",
+      "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục",
+      "approve": "Chấp thuận"
     },
     "bridge": {
       "showMore": {
@@ -1103,7 +1116,8 @@
       "price-expired-refresh-route": "Giá đã hết hạn. Làm mới lộ trình.",
       "via-bridge": "qua {{bridge}}",
       "max-tips": "Giá trị này được tính bằng cách trừ chi phí gas cho cầu.",
-      "completedTip": "Giao dịch trên chuỗi, giải mã dữ liệu để tạo bản ghi"
+      "completedTip": "Giao dịch trên chuỗi, giải mã dữ liệu để tạo bản ghi",
+      "bridgeDbkBtn": "Cầu nối qua Dịch vụ Chính thức của DeBank"
     },
     "manageAddress": {
       "no-match": "Không tìm thấy",
@@ -1169,7 +1183,9 @@
           "manageAddress": "Quản lý Địa chỉ",
           "approvals": "Phê duyệt",
           "more": "Hơn nữa",
-          "feedback": "Phản hồi"
+          "feedback": "Phản hồi",
+          "perps": "Perps",
+          "gasAccount": "GasAccount"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1409,7 +1425,9 @@
         "customizedHasAddedTips": "Token không được liệt kê bởi Rabby. Bạn đã thêm nó vào danh sách token thủ công.",
         "AddToMyTokenList": "Thêm vào danh sách token của tôi",
         "maybeScamTips": "Đây là một token chất lượng thấp và có thể là một trò lừa đảo.",
-        "fdvTips": "Vốn hóa thị trường nếu số cung tối đa được lưu hành. Định giá hoàn toàn pha loãng (FDV) = Giá x Số cung tối đa. Nếu Số cung tối đa là null, FDV = Giá x Tổng cung. Nếu cả Số cung tối đa và Tổng cung đều không được xác định hoặc vô hạn, FDV sẽ không được hiển thị."
+        "fdvTips": "Vốn hóa thị trường nếu số cung tối đa được lưu hành. Định giá hoàn toàn pha loãng (FDV) = Giá x Số cung tối đa. Nếu Số cung tối đa là null, FDV = Giá x Tổng cung. Nếu cả Số cung tối đa và Tổng cung đều không được xác định hoặc vô hạn, FDV sẽ không được hiển thị.",
+        "bridgeToEth": "Cầu nối đến chuỗi Ethereum",
+        "bridge": "Cầu nối"
       },
       "assets": {
         "portfolio": {
@@ -1448,7 +1466,8 @@
           "lowValueAssets_one": "{{count}} token giá thấp",
           "summaryTips": "Giá trị tài sản chia cho tổng giá trị ròng",
           "summaryDescription": "Tất cả tài sản trong các giao thức (ví dụ: LP tokens) đều được quy đổi thành tài sản cơ sở để thực hiện các phép tính thống kê.",
-          "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây"
+          "lowValueDescription": "Tài sản có giá trị thấp sẽ được hiển thị ở đây",
+          "review": "Xem lại"
         },
         "AddMainnetToken": {
           "title": "Thêm Token Tùy Chỉnh",
@@ -1510,7 +1529,16 @@
         "howToConnectLedger": "Cách Kết Nối Ledger",
         "ledgerIsDisconnected": "Ví của bạn không được kết nối",
         "howToConnectImKey": "Cách kết nối imKey",
-        "onekeyIsDisconnected": "OneKey của bạn chưa được kết nối"
+        "onekeyIsDisconnected": "OneKey của bạn chưa được kết nối",
+        "trezor": {
+          "doc1": "Cắm thiết bị Trezor của bạn vào.",
+          "doc2": "Mở khóa thiết bị của bạn"
+        },
+        "onekey": {
+          "doc3": "Mở khóa thiết bị của bạn",
+          "doc1": "Cài đặt <1>OneKey Bridge<1/>",
+          "doc2": "Cắm thiết bị OneKey của bạn vào."
+        }
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "Địa chỉ Safe của bạn chưa được triển khai trên chuỗi này."
@@ -1532,6 +1560,11 @@
       "recentConnectionGuide": {
         "title": "Thay đổi địa chỉ để kết nối DApp tại đây\n",
         "button": "Rõ ràng\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby Points",
+        "downloadIntro": "Chưa có ứng dụng? Tải xuống ngay.",
+        "desc": "Kiểm tra điểm của bạn trong Rabby Mobile."
       }
     },
     "nft": {
@@ -1669,6 +1702,14 @@
         "deviceIsLockedError": "Nhập mật khẩu để mở khóa",
         "exportAddressJustAllowedOnHomePage": "Xuất khẩu địa chỉ chỉ được phép trên trang chủ"
       },
+      "onekey": {
+        "onekeyPermission1": "Kết nối với thiết bị USB",
+        "allowRabbyPermissionsTitle": "Cho phép Rabby các quyền để:",
+        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo. Nếu OneKey không xuất hiện trong popup, vui lòng kiểm tra xem thiết bị của bạn đã kết nối đúng với máy tính chưa.",
+        "whyOneKey": "Tại sao chọn OneKey?",
+        "buyOneKey": "Mua OneKey",
+        "haveOneKey": "Chưa có OneKey?"
+      },
       "walletConnect": {
         "status": {
           "default": "Quét với {{brand}}",
@@ -1681,7 +1722,6 @@
           "accountError": "Địa chỉ không khớp.",
           "received": "Quét thành công. Đang chờ xác nhận."
         },
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "Kết nối nhưng không thể ký.",
@@ -1871,7 +1911,10 @@
       "importedSuccessfully": "Nhập khẩu thành công",
       "importYourKeystore": "Nhập KeyStore của bạn",
       "incorrectPassword": "mật khẩu không chính xác",
-      "addFromCurrentSeedPhrase": "Thêm từ Câu Châm Ngôn Hiện Tại"
+      "addFromCurrentSeedPhrase": "Thêm từ Câu Châm Ngôn Hiện Tại",
+      "trezor": {
+        "title": "Kết nối Trezor"
+      }
     },
     "unlock": {
       "btn": {
@@ -2419,7 +2462,12 @@
         "txSendings": "Gửi yêu cầu ký ({ {current}}/{{total}})",
         "txCreated": "Giao dịch đã được tạo"
       },
-      "signWithLedger": "Ký với Ledger"
+      "signWithLedger": "Ký với Ledger",
+      "cancelTitle": "Hủy trên chuỗi",
+      "speedUpTitle": "Tăng tốc",
+      "speedUpDesc": "Giá gas đã tăng {{percent}} để tăng tốc.",
+      "cancleDesc": "Giá gas tăng {{percent}} để hủy giao dịch",
+      "signWithOneKey": "Ký với OneKey"
     },
     "gasAccount": {
       "history": {
@@ -2429,7 +2477,8 @@
         "login": "Đăng nhập GasAccount",
         "gotIt": "Đã hiểu",
         "title": "Nạp USDC / USDT",
-        "desc": "Thanh toán phí Gas trên tất cả các chuỗi"
+        "desc": "Thanh toán phí Gas trên tất cả các chuỗi",
+        "loginAndClaim": "Đăng nhập và Nhận $2.00"
       },
       "loginConfirmModal": {
         "title": "Chọn một địa chỉ để đăng nhập",
@@ -2470,7 +2519,12 @@
         "riskMessageFromChain": "Do hạn chế rủi ro, giới hạn rút tiền phụ thuộc vào tổng số tiền đã gửi từ chuỗi này.",
         "selectRecipientAddress": "Chọn địa chỉ người nhận",
         "desc": "Bạn có thể rút số dư GasAccount của mình vào ví DeBank L2. Đăng nhập vào ví DeBank L2 của bạn để chuyển tiền vào blockchain được hỗ trợ khi cần.",
-        "selectAddr": "Chọn Địa chỉ"
+        "selectAddr": "Chọn Địa chỉ",
+        "WithdrawalAmount": "Số tiền rút",
+        "withdrawalTip": "Số dư rút tiền khả dụng: {{amount}}",
+        "noBalance": "Không có số dư",
+        "amountTooLowCoverFee": "Số tiền quá thấp để trang trải phí gas",
+        "noEnoughValueBalance": "Số dư Vault không đủ. Chuyển đổi chuỗi hoặc thử lại sau."
       },
       "withdrawConfirmModal": {
         "button": "Xem trên DeBank",
@@ -2493,7 +2547,8 @@
       "safeAddressDepositTips": "Địa chỉ Multisig không được hỗ trợ cho việc gửi tiền.",
       "title": "GasAccount",
       "risk": "Địa chỉ hiện tại của bạn đã được phát hiện là có rủi ro, vì vậy tính năng này không khả dụng.",
-      "withdrawDisabledIAP": "Rút tiền bị vô hiệu hóa vì số dư của bạn bao gồm tiền fiat, không thể rút ra. Liên hệ với hỗ trợ để rút số dư token của bạn."
+      "withdrawDisabledIAP": "Rút tiền bị vô hiệu hóa vì số dư của bạn bao gồm tiền fiat, không thể rút ra. Liên hệ với hỗ trợ để rút số dư token của bạn.",
+      "gasToken": "Token Gas"
     },
     "safeMessageQueue": {
       "noData": "Không có tin nhắn",
@@ -2561,10 +2616,13 @@
         "title": "Nhập cụm từ khôi phục"
       },
       "importOneKey": {
-        "title": "OneKey",
-        "tip1": "1. Cài đặt <1>OneKey Bridge<1/>",
-        "tip3": "3. Mở khóa thiết bị của bạn",
-        "tip2": "2. Cắm thiết bị OneKey của bạn vào.",
+        "qrcode": {
+          "desc": "Quét mã QR trên ví cứng OneKey"
+        },
+        "title": "Kết nối ví cứng OneKey của bạn qua USB",
+        "tip1": "1. Cắm thiết bị OneKey của bạn",
+        "tip2": "2. Mở khóa thiết bị của bạn",
+        "tip3": "3. Hãy đảm bảo chỉ có một thiết bị OneKey được kết nối",
         "connect": "Kết nối OneKey"
       },
       "importTrezor": {
@@ -2691,7 +2749,8 @@
       "steps2": "2. Quét bằng Rabby Mobile",
       "selectedLenAddressesForSync_one": "Đã chọn {{len}} địa chỉ để đồng bộ",
       "description": "Dữ liệu địa chỉ của bạn luôn ở chế độ ngoại tuyến, được mã hóa và được chuyển giao một cách an toàn qua mã QR.",
-      "steps2Description": "*Mã QR của bạn chứa dữ liệu nhạy cảm. Hãy giữ nó riêng tư và không bao giờ chia sẻ với ai.*"
+      "steps2Description": "*Mã QR của bạn chứa dữ liệu nhạy cảm. Hãy giữ nó riêng tư và không bao giờ chia sẻ với ai.*",
+      "verifyPassword": "Xác thực Mật khẩu"
     },
     "search": {
       "sectionHeader": {
@@ -2779,6 +2838,176 @@
       "exchangeAddress": "Địa chỉ Sàn giao dịch",
       "riskTitle": "Thêm Địa chỉ Danh sách Trắng",
       "addSuccess": "Thêm thành công"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "ytd": "YTD",
+        "oneWeek": "1W",
+        "all": "TẤT CẢ",
+        "oneDay": "1D",
+        "oneMonth": "1M",
+        "oneHour": "1H"
+      },
+      "newUserProcess": {
+        "secondTitle": "Mua vào",
+        "fifthTitle": "Thanh lý",
+        "fourthTitle": "Điều chỉnh đòn bẩy",
+        "firstTitle": "Quản lý Hợp đồng Tương lai Vĩnh viễn",
+        "gotIt": "Đã hiểu",
+        "thirdDescription": "Khi bạn dự đoán giá sẽ giảm, bạn mở một vị thế bán. Nếu giá giảm, bạn có lợi. Nếu nó tăng, bạn chịu lỗ.",
+        "next": "Tiếp theo",
+        "firstDescription": "Với hợp đồng tương lai vĩnh viễn, bạn không chỉ giao dịch tài sản. Bạn đang giao dịch những gì bạn nghĩ sẽ xảy ra tiếp theo.",
+        "secondDescription": "Khi bạn mong đợi giá sẽ tăng, bạn mở một vị thế dài. Nếu giá tăng, bạn có lãi. Nếu giá giảm, bạn bị lỗ.",
+        "fifthDescription": "Mỗi vị trí đều có một mức giá thanh lý. Nếu giá thị trường đạt đến mức đó, vị trí của bạn sẽ bị đóng. Sử dụng đòn bẩy cao tăng rủi ro thanh lý.",
+        "thirdTitle": "Đi ngắn",
+        "fourthDescription": "Đòn bẩy cho phép bạn giao dịch với số tiền lớn hơn số tiền bạn đã đầu tư. Nó có thể làm tăng cả lợi nhuận và thua lỗ của bạn."
+      },
+      "historyDetail": {
+        "title": {
+          "openShort": "Mở vị thế Short",
+          "openLong": "Mở Long",
+          "closeLongSl": "Đóng Long Dừng Lỗ",
+          "closeShortLiquidation": "Đóng vị thế Short thanh lý",
+          "closeShort": "Đóng Short",
+          "closeLongTp": "Đóng Long Lấy Lợi Nhuận",
+          "closeShortTp": "Đóng Short Lấy Lợi Nhuận",
+          "closeShortSl": "Đóng vị thế bán Cắt lỗ",
+          "closeLong": "Đóng Long",
+          "closeLongLiquidation": "Đóng Long Thanh lý"
+        },
+        "price": "Giá",
+        "date": "Ngày",
+        "fee": "Phí",
+        "closedPnl": "PNL Đã Đóng",
+        "provider": "Nhà cung cấp",
+        "tradeValue": "Giá trị giao dịch",
+        "size": "Kích thước"
+      },
+      "logoutConfirmModal": {
+        "title": "Đăng xuất địa chỉ hiện tại",
+        "desc": "Bạn đang đăng xuất khỏi tài khoản Perps hiện tại của mình. Bạn có thể khôi phục tài khoản bất cứ lúc nào bằng cách đăng nhập với địa chỉ này."
+      },
+      "depositAmountPopup": {
+        "receiveToken": "Nhận Token",
+        "feeTip": "$1 Phí",
+        "minimumWithdrawSize": "Số tiền rút tối thiểu là $2",
+        "payWith": "Thanh toán bằng",
+        "minimumDepositSize": "Số tiền gửi tối thiểu là $5",
+        "estReceive": "Dự kiến nhận: {{balance}}",
+        "feeTipTooltip": "Phí rút tiền do Hyperliquid tính: $1",
+        "fetchQuoteFailed": "Không thể lấy báo giá gửi tiền. Vui lòng chuyển đổi token.",
+        "goSwapTips": "Chỉ có USDC trên Arbitrum được hỗ trợ cho việc gửi trực tiếp. Vui lòng hoán đổi token hiện tại của bạn sang USDC trước khi gửi.",
+        "goBridgeTips": "Chỉ USDC trên Arbitrum được hỗ trợ cho việc gửi trực tiếp. Vui lòng chuyển đổi token hiện tại của bạn sang USDC trên Arbitrum trước khi gửi.",
+        "estReceiveTooltip": "Gửi tiền chéo chuỗi được xử lý qua LiFi, có thể phát sinh một số trượt giá. Dự kiến đến sau {{number}} giây."
+      },
+      "home": {
+        "pnl": "PNL",
+        "entryPrice": "Giá Nhập",
+        "margin": "Ký quỹ",
+        "size": "Kích thước",
+        "markPrice": "Giá Đánh Giá",
+        "liquidationPrice": "Giá thanh lý"
+      },
+      "singleCoin": {
+        "openInterestTips": "Tổng vị thế chưa thanh toán của tất cả người dùng trên hợp đồng này.",
+        "fundingPaymentsTips": "Đây là khoản thanh toán tài trợ ròng kể từ khi vị thế được mở. Tài trợ là một khoản phí theo giờ mà các nhà giao dịch phải trả hoặc nhận để giữ cho giá của hợp đồng perp gần với giá thực tế của token.",
+        "fundingTips": "Đây là một khoản phí theo giờ mà các trader phải trả hoặc nhận để giữ cho giá của hợp đồng perp gần với giá thực tế của token. Nếu dương, long sẽ trả cho short. Nếu âm, short sẽ trả cho long."
+      },
+      "accountSelector": {
+        "hyperliquidBalance": "Số dư Perps",
+        "noPosition": "Không có vị trí",
+        "notActivatedAddress": "Chưa kích hoạt",
+        "activatedAddress": "Đã kích hoạt"
+      },
+      "withdraw": "Rút tiền",
+      "positions": "Vị trí",
+      "deposit": "Nạp tiền",
+      "permissionTips": "Mở vị trí không được hỗ trợ ở khu vực của bạn",
+      "title": "Perps",
+      "pending": "Đang chờ xử lý",
+      "tradePerps": "Giao dịch Perps",
+      "margin": "Ký quỹ",
+      "closeLong": "Đóng Long",
+      "explorePerps": "Khám phám Perps",
+      "price": "Giá",
+      "learnAboutPerps": "Tìm hiểu về Perps",
+      "liquidationPrice": "Giá thanh lý",
+      "openLong": "Mở Long",
+      "direction": "Hướng đi",
+      "marginIsolated": "Margin (Isolated)",
+      "pnl": "Lợi nhuận và thua lỗ",
+      "closeShort": "Đóng vị thế Short",
+      "autoClose": "Đóng tự động",
+      "seeMore": "Xem thêm",
+      "yourPosition": "Vị trí của bạn",
+      "lastUsed": "Cuối cùng sử dụng",
+      "leverage": "Đòn bẩy",
+      "size": "Kích thước",
+      "availableBalance": "Có sẵn: {{balance}}",
+      "openShort": "Mở vị thế Short",
+      "directDeposit": "Tiền gửi trực tiếp",
+      "logInPerpsAccount": "Đăng nhập vào tài khoản Perps của tôi",
+      "logInTips": "Đăng nhập bằng địa chỉ của bạn và nạp tiền để bắt đầu giao dịch perps.",
+      "balanceAvailable": "Số dư: {{balance}}",
+      "marginCross": "Ký quỹ (Chéo)",
+      "fundingPayments": "Thanh toán vốn",
+      "history": "Lịch sử",
+      "completed": "Hoàn tất",
+      "review": "Đánh giá",
+      "TakeProfit": "Chốt lời",
+      "takeProfit": "chốt lời",
+      "dailyVolume": "Khối lượng 24h",
+      "confirm": "Xác nhận",
+      "insufficientBalance": "Số dư không đủ",
+      "stopLossWhen": "Đặt giá dừng lỗ",
+      "rabbyFeeTipsZero": "Rabby phí: 0%",
+      "short": "Short",
+      "StopLoss": "Dừng lỗ",
+      "stopLossTipsLong": "Giá cắt lỗ phải thấp hơn giá hiện tại",
+      "stopLossTipsShortLiquidation": "Giá cao hơn giá thanh lý ({{price}})",
+      "timeAgo": "{{time}} trước",
+      "availableToTrade": "Có sẵn để giao dịch",
+      "providerFeeTips": "Phí Hyperliquid: {{fee}}",
+      "takeProfitTipsLong": "Giá chốt lời phải cao hơn giá hiện tại.",
+      "rabbyFeeTips": "Phí Rabby: 0,04%",
+      "takeProfitWhen": "Đặt giá chốt lời",
+      "takeProfitTipsShort": "Giá chốt lời phải thấp hơn giá hiện tại.",
+      "deleteAgentSuccess": "Đại lý đã xóa thành công",
+      "stopLoss": "cắt lỗ",
+      "long": "Mua vào",
+      "stopLossTipsShort": "Giá dừng lỗ phải cao hơn giá hiện tại.",
+      "openInterest": "Lợi ích Mở",
+      "funding": "Quỹ tài trợ",
+      "deleteAgentModal": "Bạn đã đạt đến số lượng đại lý tối đa. Bạn có muốn xóa một đại lý hiện có để tạo một đại lý mới không?",
+      "sizeTips": "Giá trị tổng thể hoặc số lượng của giao dịch của bạn, được thiết lập bởi margin và đòn bẩy.",
+      "liquidationPriceTips": "Mức giá mà vị thế của bạn tự động bị đóng bởi sàn giao dịch để ngăn chặn tổn thất thêm khi ký quỹ của bạn giảm xuống dưới mức ký quỹ duy trì.",
+      "fee": "Phí",
+      "liquidation": "Thanh lý",
+      "maximumOrderSize": "Kích thước đơn hàng tối đa là {{amount}}",
+      "selectTokenToDeposit": "Chọn Token để Deposit",
+      "reviewOrder": "Xem Đơn Hàng",
+      "estimatedLiquidationPrice": "Giá Thanh lý Dự kiến",
+      "minimumOrderSize": "Kích thước đơn hàng tối thiểu là $10",
+      "back": "Quay lại",
+      "leverageRangeMinError": "Sự đòn bẩy tối thiểu là {{min}}x",
+      "entryPrice": "Giá Nhập",
+      "leverageRangeMaxError": "Kích thước đòn bẩy tối đa là {{max}}x",
+      "openPositionTips": "Giao dịch hợp đồng vĩnh viễn liên quan đến rủi ro đáng kể, bao gồm khả năng mất đột ngột và toàn bộ khoản đầu tư và tài sản đảm bảo của bạn do đòn bẩy cao và biến động thị trường, và có thể không phù hợp với tất cả người dùng. Giá có thể bị ảnh hưởng bởi tỷ lệ tài trợ và tính thanh khoản, và bạn có thể bị thanh lý tự động mà không có thông báo trước. Dữ liệu thị trường được cung cấp bởi Hyperliquid.",
+      "stopLossTipsLongLiquidation": "Giá thấp hơn giá thanh lý ({{price}})",
+      "toast": {
+        "setAutoCloseSuccess": "Đã thiết lập tự động đóng vị trí thành công.",
+        "openPositionSuccess": "Mở {{direction}} {{coin}}-USD: Kích thước {{size}} tại giá ${{price}}",
+        "closePositionSuccess": "Đã đóng {{direction}} {{coin}}-USD: Kích thước {{size}} với giá ${{price}}"
+      },
+      "closePositionPopup": {
+        "closeLong": "Đóng Long",
+        "closeShort": "Đóng Short",
+        "positionSize": "Kích thước vị trí",
+        "pnl": "Lợi nhuận & Thua lỗ",
+        "title": "Đóng {{coin}}-USD {{direction}}"
+      },
+      "isolated": "Isolated",
+      "cross": "Giao thoa"
     }
   },
   "component": {
@@ -2972,6 +3201,9 @@
     },
     "RiskTip": {
       "title": "Cảnh báo rủi ro"
+    },
+    "DappActions": {
+      "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn."
     }
   },
   "global": {
@@ -3043,6 +3275,18 @@
       "watchAddressKeyring": "Liên hệ",
       "simpleKeyring": "Khóa riêng",
       "HdKeyring": "Câu cụt đầu tiên"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "Không tìm thấy thiết bị",
+        "deviceInitializeFailed": "Lỗi thiết bị, vui lòng khởi động lại và thử lại",
+        "needUpgradeFirmware": "Phải nâng cấp firmware để sử dụng thiết bị",
+        "thisMethodNeedUpgradeFirmware": "Tính năng này yêu cầu nâng cấp firmware, vui lòng nâng cấp firmware trong ứng dụng OneKey",
+        "notAllowInBootloaderMode": "Vui lòng sử dụng ở chế độ bình thường",
+        "deviceCheckPassphraseStateError": "Tài khoản không khớp với địa chỉ mở khóa thiết bị hiện tại. Vui lòng xác nhận thiết bị và địa chỉ tài khoản nhất quán và thử lại",
+        "actionCancel": "Thao tác đã được hủy",
+        "deviceNeedsWebHIDPermission": "Không tìm thấy thiết bị hoặc cần quyền WebHID"
+      }
     }
   },
   "constant": {

@@ -42,7 +42,8 @@
         "maxGas": "최대 가스:",
         "sendGas": "현재 거래를 위한 Gas 전송:",
         "currentTxCost": "귀하의 주소로 전송된 Gas 양:",
-        "totalCost": "총 비용:"
+        "totalCost": "총 비용:",
+        "description": "GasAccount를 사용하여 가스 요금을 지불합니다. 아래에서 결제 세부정보를 확인하세요:"
       },
       "balanceChange": {
         "tokenIn": "토큰 입금",
@@ -363,6 +364,15 @@
         "nonceTooLow": "Nonce가 너무 낮습니다. {{nonce}}로 업데이트하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
         "gasPriceTooLow": "가스 가격이 너무 낮습니다. 트랜잭션이 확인되도록 30% 조정하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
         "insufficient": "당신의 가스 잔액이 네트워크 가스 요금을 충당하기에 충분하지 않습니다. 가스를 위한 자금을 추가하고 다시 시도하세요."
+      },
+      "addLiquidity": {
+        "token0": "토큰 1 추가",
+        "poolPrice": "풀 가격",
+        "marketPrice": "시장 가격",
+        "token1": "토큰 추가 2",
+        "title": "유동성 추가",
+        "priceDiff": "가격 차이",
+        "receiver": "수신자"
       }
     },
     "signFooterBar": {
@@ -817,7 +827,8 @@
         },
         "ViewMore": {
           "text": "자세히 보기"
-        }
+        },
+        "EIP7702SupportChains": "EIP-7702 지원 체인:"
       },
       "search": {
         "placeholder": "이름/주소로 {{ type }} 검색"
@@ -918,7 +929,7 @@
       "payment": "가스 충전 결제",
       "Including-service-fee": "{{fee}} 서비스 수수료 포함",
       "InsufficientBalance": "현재 체인에서 Rabby의 계약 주소에 잔액이 부족합니다. 나중에 다시 시도해 주세요.",
-      "Select-from-supported-tokens": "지원되는 토큰에서 선택하세요",
+      "Deposit-tip": "USDC/USDT로 입금하기",
       "description": "다른 체인에서 사용 가능한 토큰을 보내 가스를 충전하세요. 결제가 확인되는 즉시 즉시 전송되며, 되돌릴 수 없도록 기다릴 필요가 없습니다.",
       "hightGasFees": "이 충전 금액은 너무 작습니다. 대상 네트워크는 높은 가스 요금을 요구합니다.",
       "Select-payment-token": "결제 토큰 선택",
@@ -1031,7 +1042,9 @@
       "source": "소스",
       "no-quote-found": "인용문을 찾을 수 없습니다.",
       "No-available-quote": "사용 가능한 인용이 없습니다",
-      "loss-tips": "당신은 {{usd}}를 잃고 있습니다. 작은 시장에서 더 적은 금액을 시도해 보세요."
+      "loss-tips": "당신은 {{usd}}를 잃고 있습니다. 작은 시장에서 더 적은 금액을 시도해 보세요.",
+      "understandRisks": "나는 위험을 이해하고 계속 진행하고 싶다.",
+      "approve": "승인"
     },
     "bridge": {
       "showMore": {
@@ -1103,7 +1116,8 @@
       "enable-it": " 활성화하십시오",
       "price-impact": "가격 영향",
       "max-tips": "이 값은 브리지를 위한 가스 비용을 빼서 계산됩니다.",
-      "loss-tips": "{{usd}}를 잃고 있습니다. 다른 금액을 시도해 보세요."
+      "loss-tips": "{{usd}}를 잃고 있습니다. 다른 금액을 시도해 보세요.",
+      "bridgeDbkBtn": "DBK 공식 서비스 통해 브리지"
     },
     "manageAddress": {
       "deleted": "삭제됨",
@@ -1169,7 +1183,9 @@
           "transactions": "거래",
           "approvals": "승인",
           "manageAddress": "주소 관리",
-          "ecology": "생태계"
+          "ecology": "생태계",
+          "perps": "퍼프",
+          "gasAccount": "GasAccount"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -1409,7 +1425,9 @@
         "fdvTips": "시장에서 유통되고 있는 최대 공급량 기준의 시가총액. 완전 희석 가치(FDV) = 가격 x 최대 공급량. 만약 최대 공급량이 null이면, FDV = 가격 x 총 공급량. 만약 최대 공급량이나 총 공급량이 정의되지 않았거나 무한대인 경우, FDV는 표시되지 않습니다.",
         "ListedBy": "제목: Listed by",
         "verifyScamTips": "이것은 사기 토큰입니다.",
-        "BridgeProvider": "브리지 제공자"
+        "BridgeProvider": "브리지 제공자",
+        "bridge": "브리지",
+        "bridgeToEth": "Ethereum 체인으로 브릿지"
       },
       "assets": {
         "portfolio": {
@@ -1448,7 +1466,8 @@
           "summaryTips": "자산 가치는 총 순자산으로 나뉩니다.",
           "endAt": "종료 시",
           "summaryDescription": "프로토콜의 모든 자산(예: LP tokens)은 통계 계산을 위해 기본 자산으로 해결됩니다.",
-          "balanceValue": "잔액 / 가치"
+          "balanceValue": "잔액 / 가치",
+          "review": "리뷰"
         },
         "AddMainnetToken": {
           "title": "맞춤형 토큰 추가",
@@ -1510,7 +1529,16 @@
         "ledgerIsDisconnected": "당신의 Ledger가 연결되어 있지 않습니다.",
         "howToConnectImKey": "imKey에 연결하는 방법",
         "howToSwitch": "전환하는 방법",
-        "onekeyIsDisconnected": "당신의 OneKey가 연결되지 않았습니다."
+        "onekeyIsDisconnected": "당신의 OneKey가 연결되지 않았습니다.",
+        "trezor": {
+          "doc2": "장치를 잠금 해제하세요",
+          "doc1": "Trezor 장치를 플러그인하세요"
+        },
+        "onekey": {
+          "doc2": "OneKey 장치를 연결하세요.",
+          "doc1": "<1>OneKey Bridge<1/> 설치하세요",
+          "doc3": "장치를 잠금 해제하세요"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "notDeployed": "당신의 Safe 주소는 이 체인에 배포되지 않았습니다."
@@ -1532,6 +1560,11 @@
       "recentConnectionGuide": {
         "title": "여기서 Dapp 연결을 위한 주소를 전환하세요\n",
         "button": "확인했습니다\n"
+      },
+      "rabbyPointsPopup": {
+        "title": "Rabby 포인트",
+        "downloadIntro": "아직 앱이 없으신가요? 지금 다운로드하세요.",
+        "desc": "Rabby Mobile에서 포인트를 확인하세요."
       }
     },
     "nft": {
@@ -1669,6 +1702,14 @@
         "deviceIsBusy": "장치가 바쁩니다",
         "keystonePermissionTip": "아래 \"허용\"을 클릭하여 다음 팝업 창에서 Keystone에 대한 액세스를 승인하고, Keystone 3 Pro가 홈페이지에 있는지 확인하세요."
       },
+      "onekey": {
+        "onekeyPermission1": "USB 장치에 연결하세요.",
+        "allowRabbyPermissionsTitle": "Rabby에 대한 권한 허용:",
+        "onekeyPermissionTip": "아래 \"허용\"을 클릭하여 다음 팝업 창에서 OneKey에 대한 액세스를 승인하고, OneKey가 홈페이지에 있는지 확인하세요.",
+        "whyOneKey": "왜 OneKey인가요?",
+        "buyOneKey": "OneKey 구매하기",
+        "haveOneKey": "아직 OneKey가 없으신가요?"
+      },
       "walletConnect": {
         "status": {
           "accountError": "주소가 일치하지 않습니다.",
@@ -1681,7 +1722,6 @@
           "rejected": "연결이 취소되었습니다. QR 코드를 스캔하여 다시 시도해 주십시오.",
           "duplicate": "입력하려는 주소가 중복되었습니다."
         },
-        "accountError": {},
         "tip": {
           "accountError": {
             "tip1": "연결되었지만 서명할 수 없습니다.",
@@ -1871,7 +1911,10 @@
       "importedSuccessfully": "성공적으로 가져왔습니다",
       "incorrectPassword": "비밀번호가 올바르지 않습니다",
       "importYourKeystore": "키스토어 가져오기",
-      "addFromCurrentSeedPhrase": "현재 시드 문구에서 추가"
+      "addFromCurrentSeedPhrase": "현재 시드 문구에서 추가",
+      "trezor": {
+        "title": "Trezor 연결하기"
+      }
     },
     "unlock": {
       "btn": {
@@ -2419,7 +2462,12 @@
         "txSending": "서명 요청 전송 중",
         "txSendings": "서명 요청 전송 중 ({{current}}/{{total}})"
       },
-      "signWithLedger": "Ledger로 서명하기"
+      "signWithLedger": "Ledger로 서명하기",
+      "speedUpTitle": "속도 향상",
+      "cancelTitle": "온체인 취소",
+      "cancleDesc": "Gas 가격이 {{percent}}만큼 증가하여 거래가 취소되었습니다.",
+      "speedUpDesc": "가스 가격이 {{percent}}만큼 증가하여 빠르게 진행됩니다.",
+      "signWithOneKey": "OneKey으로 서명하십시오."
     },
     "gasAccount": {
       "history": {
@@ -2429,7 +2477,8 @@
         "gotIt": "알겠어요",
         "title": "USDC / USDT 입금",
         "desc": "모든 체인에서 가스 요금 지불",
-        "login": "GasAccount에 로그인"
+        "login": "GasAccount에 로그인",
+        "loginAndClaim": "로그인하고 $2.00를 받으세요."
       },
       "loginConfirmModal": {
         "desc": "확인되면 이 주소로만 입금할 수 있습니다.",
@@ -2470,7 +2519,12 @@
         "desc": "GasAccount 잔액을 DeBank L2 Wallet으로 인출할 수 있습니다. 필요에 따라 지원되는 블록체인으로 자금을 이체하려면 DeBank L2 Wallet에 로그인하세요.",
         "deductGasFees": "수신 금액은 가스 수수료를 차감합니다.",
         "noEligibleChain": "출금할 수 있는 유효한 체인이 없습니다.",
-        "riskMessageFromAddress": "위험 관리로 인해 출금 한도는 이 주소가 예치한 총 금액에 따라 달라집니다."
+        "riskMessageFromAddress": "위험 관리로 인해 출금 한도는 이 주소가 예치한 총 금액에 따라 달라집니다.",
+        "WithdrawalAmount": "출금 금액",
+        "noBalance": "잔액 없음",
+        "withdrawalTip": "사용 가능한 출금 잔액: {{amount}}",
+        "amountTooLowCoverFee": "가스 요금을 충당하기에는 금액이 너무 낮습니다.",
+        "noEnoughValueBalance": "Vault Balance가 부족합니다. 체인을 전환하거나 나중에 다시 시도하십시오."
       },
       "withdrawConfirmModal": {
         "title": "DeBank L2 지갑으로 전송됨",
@@ -2493,7 +2547,8 @@
       "logout": "현재 GasAccount에서 로그아웃하기",
       "gasExceed": "GasAccount 잔액은 $1000를 초과할 수 없습니다.",
       "risk": "현재 주소가 위험한 것으로 감지되어 이 기능을 사용할 수 없습니다.",
-      "withdrawDisabledIAP": "출금이 비활성화되었습니다. 이는 귀하의 잔고에 출금이 불가능한 법정 화폐가 포함되어 있기 때문입니다. 토큰 잔고를 출금하려면 지원팀에 문의하십시오."
+      "withdrawDisabledIAP": "출금이 비활성화되었습니다. 이는 귀하의 잔고에 출금이 불가능한 법정 화폐가 포함되어 있기 때문입니다. 토큰 잔고를 출금하려면 지원팀에 문의하십시오.",
+      "gasToken": "가스 토큰"
     },
     "safeMessageQueue": {
       "loading": "로드 중 메시지",
@@ -2561,11 +2616,14 @@
         "title": "시드 문구 가져오기"
       },
       "importOneKey": {
-        "connect": "OneKey 연결하기",
-        "tip2": "2. OneKey 장치의 전원을 연결하세요.",
-        "tip3": "3. 기기를 잠금 해제하세요",
-        "tip1": "1. <1>OneKey Bridge<1/>를 설치하세요.",
-        "title": "OneKey"
+        "qrcode": {
+          "desc": "OneKey 하드웨어 지갑의 QR 코드를 스캔하세요"
+        },
+        "title": "USB를 통해 OneKey 하드웨어 지갑 연결",
+        "tip1": "1. OneKey 장치를 연결하세요",
+        "tip2": "2. 장치의 잠금을 해제하세요",
+        "tip3": "3. OneKey 장치가 하나만 연결되어 있는지 확인하세요",
+        "connect": "OneKey 연결하기"
       },
       "importTrezor": {
         "connect": "Trezor 연결",
@@ -2691,7 +2749,8 @@
       "selectedLenAddressesForSync_one": "선택된 {{len}} 주소를 동기화합니다.",
       "selectedLenAddressesForSync_other": "선택된 {{len}} 주소를 동기화합니다.",
       "steps2Description": "*귀하의 QR 코드에는 민감한 데이터가 포함되어 있습니다. 개인 정보를 유지하고 누구와도 공유하지 마십시오.",
-      "steps2": "2. Rabby Mobile로 스캔하세요"
+      "steps2": "2. Rabby Mobile로 스캔하세요",
+      "verifyPassword": "비밀번호 확인"
     },
     "search": {
       "sectionHeader": {
@@ -2750,7 +2809,7 @@
         "cexDepositAddress": "{{cexName}} 입금 주소",
         "understandRisks": "위험을 이해하며 계속 진행하고자 합니다.",
         "title": "이 주소로 보내기",
-        "TransferBefore": "이전 전송",
+        "TransferBefore": "이전 전송됨",
         "AddToWhitelist": "화이트리스트에 추가",
         "passwordPlaceholder": "비밀번호를 입력하여 계속 진행하세요",
         "TransferBeforeValue": "네"
@@ -2779,6 +2838,176 @@
       "invalidAddress": "이 주소는 유효하지 않습니다",
       "address": "주소",
       "name": "이름"
+    },
+    "perps": {
+      "candleMenuKey": {
+        "oneDay": "1D",
+        "oneMonth": "1M",
+        "oneHour": "1H",
+        "oneWeek": "1W",
+        "ytd": "YTD",
+        "all": "모두"
+      },
+      "newUserProcess": {
+        "next": "다음",
+        "firstTitle": "마스터 영구 선물 계약",
+        "fifthTitle": "청산",
+        "thirdTitle": "숏 하기",
+        "secondTitle": "롱 포지션 진입",
+        "fourthTitle": "레버리지 조정",
+        "gotIt": "알겠어요",
+        "firstDescription": "영구 선물과 함께, 당신은 단순히 자산을 거래하는 것이 아닙니다. 당신은 다음에 일어날 것이라고 생각하는 것을 거래하고 있습니다.",
+        "fifthDescription": "모든 포지션에는 청산 가격이 있습니다. 시장 가격이 이 가격에 도달하면 귀하의 포지션이 청산됩니다. 높은 레버리지를 사용하면 청산 위험이 증가합니다.",
+        "secondDescription": "가격이 상승할 것으로 예상되면 롱 포지션을 엽니다. 가격이 상승하면 이익을 얻고, 하락하면 손실을 입습니다.",
+        "thirdDescription": "가격이 하락할 것으로 예상될 때, 당신은 숏 포지션을 엽니다. 가격이 하락하면 이익을 얻습니다. 가격이 상승하면 손실을 입습니다.",
+        "fourthDescription": "레버리지는 당신이 투자한 것보다 더 많은 자금으로 거래할 수 있게 해줍니다. 이것은 당신의 이익과 손실을 모두 증가시킬 수 있습니다."
+      },
+      "historyDetail": {
+        "title": {
+          "closeLongTp": "롱 포지션 청산 이익 실현",
+          "closeLongLiquidation": "롱 청산 닫기",
+          "closeLongSl": "Long 청산 손절매",
+          "closeShortTp": "숏 청산 전익 실현",
+          "closeLong": "롱 청산",
+          "openShort": "Open Short",
+          "closeShort": "Short 청산",
+          "closeShortSl": "숏 청산 손절",
+          "closeShortLiquidation": "숏 청산 마감",
+          "openLong": "롱 포지션 열기"
+        },
+        "price": "가격",
+        "size": "크기",
+        "fee": "수수료",
+        "provider": "제공자",
+        "date": "날짜",
+        "closedPnl": "닫힌 PNL",
+        "tradeValue": "거래 가치"
+      },
+      "logoutConfirmModal": {
+        "title": "현재 주소 로그아웃",
+        "desc": "현재 Perps 계정에서 로그아웃하고 있습니다. 이 주소로 로그인하면 언제든지 계정을 복구할 수 있습니다."
+      },
+      "depositAmountPopup": {
+        "payWith": "결제 방법",
+        "receiveToken": "토큰 수신",
+        "feeTipTooltip": "Hyperliquid의 출금 수수료: $1",
+        "feeTip": "$1 수수료",
+        "minimumDepositSize": "최소 입금 금액은 $5입니다.",
+        "fetchQuoteFailed": "입금 견적을 가져오는 데 실패했습니다. 토큰을 전환하세요.",
+        "estReceive": "예상 수령액: {{balance}}",
+        "goSwapTips": "Arbitrum에서 직접 입금이 지원되는 것은 오직 USDC만 가능합니다. 입금하기 전에 현재 토큰을 USDC로 교환해 주세요.",
+        "goBridgeTips": "Arbitrum에서 직접 입금을 위해서는 USDC만 지원됩니다. 입금 전에 현재 보유한 토큰을 Arbitrum의 USDC로 브릿지 해주세요.",
+        "estReceiveTooltip": "크로스 체인 입금은 LiFi를 통해 처리되며, 일부 슬리피지가 발생할 수 있습니다. 예상 도착 시간은 {{number}}초입니다.",
+        "minimumWithdrawSize": "최소 출금 금액은 $2입니다."
+      },
+      "home": {
+        "size": "사이즈",
+        "markPrice": "마크 가격",
+        "entryPrice": "진입 가격",
+        "pnl": "PNL",
+        "liquidationPrice": "Liq. 가격",
+        "margin": "마진"
+      },
+      "singleCoin": {
+        "openInterestTips": "이 계약에서 모든 사용자의 총 미결 포지션입니다.",
+        "fundingPaymentsTips": "이것은 포지션이 열릴 때부터의 순 펀딩 지급액입니다. 펀딩은 트레이더가 영구 계약의 가격을 실제 토큰 가격에 가깝게 유지하기 위해 지불하거나 받는 시간당 수수료입니다.",
+        "fundingTips": "이것은 거래자들이 perp 계약의 가격을 토큰의 실제 가격에 가깝게 유지하기 위해 지불하거나 수령하는 시간당 수수료입니다. 긍정적일 경우, 롱은 숏에게 지급합니다. 부정적일 경우, 숏은 롱에게 지급합니다."
+      },
+      "accountSelector": {
+        "activatedAddress": "활성화됨",
+        "hyperliquidBalance": "Perps 잔고",
+        "notActivatedAddress": "활성화되지 않음",
+        "noPosition": "포지션 없음"
+      },
+      "title": "퍼프스",
+      "deposit": "입금",
+      "positions": "포지션",
+      "permissionTips": "귀하의 지역에서는 포지션 오픈이 지원되지 않습니다.",
+      "pending": "보류 중",
+      "withdraw": "인출",
+      "margin": "마진",
+      "size": "사이즈",
+      "liquidationPrice": "청산 가격",
+      "direction": "방향",
+      "marginCross": "마진 (크로스)",
+      "availableBalance": "사용 가능: {{balance}}",
+      "closeLong": "롱 종료",
+      "autoClose": "자동 종료",
+      "lastUsed": "마지막 사용됨",
+      "history": "기록",
+      "yourPosition": "당신의 포지션",
+      "learnAboutPerps": "Perps에 대해 알아보기",
+      "seeMore": "더 보기",
+      "tradePerps": "Perps 거래하기",
+      "explorePerps": "Perps 탐색",
+      "closeShort": "쇼트 청산",
+      "leverage": "레버리지",
+      "balanceAvailable": "잔액: {{balance}}",
+      "directDeposit": "직접 입금",
+      "entryPrice": "진입 가격",
+      "selectTokenToDeposit": "토큰 선택하여 입금하기",
+      "fundingPayments": "자금 지급",
+      "completed": "완료되었습니다",
+      "price": "가격",
+      "openLong": "롱 포지션 열기",
+      "logInPerpsAccount": "내 Perps 계정에 로그인하세요",
+      "openShort": "짧게 열기",
+      "pnl": "PNL",
+      "long": "롱",
+      "takeProfit": "이익 실현",
+      "funding": "자금 조달",
+      "availableToTrade": "거래 가능",
+      "logInTips": "주소로 로그인하고 자금을 예치하여 영구계약 거래를 시작하세요.",
+      "TakeProfit": "이익 실현",
+      "openInterest": "미결제약정",
+      "stopLoss": "손절매",
+      "insufficientBalance": "잔액 부족",
+      "confirm": "확인",
+      "deleteAgentSuccess": "에이전트가 성공적으로 삭제되었습니다.",
+      "marginIsolated": "마진 (격리)",
+      "review": "리뷰",
+      "timeAgo": "{{time}} 전",
+      "dailyVolume": "24h 거래량",
+      "StopLoss": "손절매",
+      "short": "숏",
+      "stopLossTipsLongLiquidation": "가격이 청산 가격({{price}})보다 낮습니다.",
+      "takeProfitTipsLong": "이익 실현 가격은 현재 가격보다 높아야 합니다.",
+      "rabbyFeeTips": "Rabby 수수료: 0.04%",
+      "rabbyFeeTipsZero": "Rabby 수수료: 0%",
+      "stopLossWhen": "손절가 설정",
+      "takeProfitWhen": "이익 실현 가격 설정",
+      "stopLossTipsShort": "스톱 로스 가격은 현재 가격보다 높아야 합니다.",
+      "takeProfitTipsShort": "이익 실현 가격은 현재 가격보다 낮아야 합니다.",
+      "stopLossTipsShortLiquidation": "가격이 청산 가격 ({{price}})보다 높습니다.",
+      "providerFeeTips": "하이퍼유체 수수료: {{fee}}",
+      "deleteAgentModal": "최대 에이전트 수에 도달했습니다. 새 에이전트를 만들기 위해 기존 에이전트를 삭제하시겠습니까?",
+      "reviewOrder": "주문 검토",
+      "stopLossTipsLong": "스톱 로스 가격은 현재 가격보다 낮아야 합니다.",
+      "fee": "수수료",
+      "liquidationPriceTips": "마진이 유지 마진 수준 이하로 떨어질 때 추가 손실을 방지하기 위해 거래소가 귀하의 포지션을 자동으로 청산하는 가격입니다.",
+      "minimumOrderSize": "최소 주문 크기는 $10입니다.",
+      "back": "뒤로",
+      "liquidation": "청산",
+      "estimatedLiquidationPrice": "예상 청산 가격",
+      "sizeTips": "마진과 레버리지에 의해 설정된 거래의 총 가치 또는 수량.",
+      "maximumOrderSize": "최대 주문 규모는 {{amount}}입니다.",
+      "leverageRangeMaxError": "최대 레버리지는 {{max}}x입니다.",
+      "openPositionTips": "영구 계약 거래는 높은 레버리지와 시장 변동성으로 인해 투자 및 담보의 Sudden and total loss의 위험을 포함한 상당한 위험이 있으며, 모든 사용자에게 적합하지 않을 수 있습니다. 가격은 펀딩 비율 및 유동성의 영향을 받을 수 있으며, 통지 없이 자동 청산에 처해질 수 있습니다. 시장 데이터는 Hyperliquid에서 제공됩니다.",
+      "leverageRangeMinError": "최소 레버리지는 {{min}}x입니다.",
+      "toast": {
+        "setAutoCloseSuccess": "포지션 자동 종료가 성공적으로 설정되었습니다.",
+        "closePositionSuccess": "닫은 {{direction}} {{coin}}-USD: 크기 {{size}} 가격 ${{price}}에서",
+        "openPositionSuccess": "열린 {{direction}} {{coin}}-USD: 규모 {{size}} 가격 ${{price}}에서"
+      },
+      "closePositionPopup": {
+        "pnl": "손익",
+        "title": "{{coin}}-USD {{direction}} 닫기",
+        "closeLong": "롱 청산",
+        "positionSize": "포지션 크기",
+        "closeShort": "Short 매도 마감"
+      },
+      "cross": "교차",
+      "isolated": "격리된"
     }
   },
   "component": {
@@ -2972,6 +3201,9 @@
     },
     "RiskTip": {
       "title": "위험 경고"
+    },
+    "DappActions": {
+      "queueDescription": "현재 인출은 대기 열에 들어갑니다. 처리되면 귀하의 지갑으로 인출할 수 있습니다."
     }
   },
   "global": {
@@ -3043,6 +3275,18 @@
       "simpleKeyring": "개인 키",
       "watchAddressKeyring": "연락처",
       "HdKeyring": "시드 구문"
+    },
+    "keyring": {
+      "onekey": {
+        "notFoundDevice": "장치를 찾을 수 없습니다",
+        "deviceInitializeFailed": "장치 오류, 재시작 후 다시 시도하십시오",
+        "needUpgradeFirmware": "장치를 사용하려면 펌웨어를 업그레이드해야 합니다",
+        "thisMethodNeedUpgradeFirmware": "이 기능을 사용하려면 펌웨어 업그레이드가 필요합니다. OneKey 앱에서 펌웨어를 업그레이드하세요",
+        "notAllowInBootloaderMode": "일반 모드에서 사용하세요",
+        "deviceCheckPassphraseStateError": "계정이 현재 장치의 잠금 해제 주소와 일치하지 않습니다. 장치와 계정 주소가 일치하는지 확인한 후 다시 시도하십시오",
+        "actionCancel": "작업이 취소되었습니다",
+        "deviceNeedsWebHIDPermission": "장치를 찾을 수 없거나 WebHID 권한이 필요합니다"
+      }
     }
   },
   "constant": {

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { Button, Input, Switch, message } from 'antd';
@@ -17,7 +17,7 @@ import { PageHeader } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
-import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
+import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
@@ -25,6 +25,7 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { IconClearCC } from '@/ui/assets/component/IconClear';
+import { ReactComponent as RcIconContactCC } from '@/ui/assets/contact-cc.svg';
 
 import './styles.less';
 
@@ -41,7 +42,7 @@ const StyledInputWrapper = styled.div`
   border-radius: 8px;
   overflow: hidden;
   .ant-input {
-    font-size: 15px;
+    font-size: 15px !important;
     background: var(--r-neutral-card1, #ffffff) !important;
     &:hover,
     &:focus {
@@ -55,6 +56,12 @@ const StyledInputWrapper = styled.div`
       width: 20px;
       height: 20px;
     }
+  }
+`;
+
+const AliasInputWrapper = styled.div`
+  .ant-input {
+    font-size: 15px !important;
   }
 `;
 
@@ -78,16 +85,30 @@ const WhitelistInput = () => {
   const [isValidAddr, setIsValidAddr] = useState(true);
   const [showAddressRiskAlert, setShowAddressRiskAlert] = useState(false);
   const [showCexListModal, setShowCexListModal] = useState(false);
+  const [showAddressSelector, setShowAddressSelector] = useState(false);
   const [isFocusAddress, setIsFocusAddress] = useState(false);
   const [isFocusAlias, setIsFocusAlias] = useState(false);
 
+  const resetState = useCallback(() => {
+    setInputAddress('');
+    setInputAlias('');
+    setIsCex(false);
+    setSelectedExchange(null);
+    setIsValidAddr(true);
+    wallet.setPageStateCache({
+      path: '/whitelist-input',
+      states: {},
+    });
+  }, [wallet]);
   const handleClickBack = useCallback(() => {
     if (history.length > 1) {
       history.goBack();
     } else {
+      history.replace('/');
       history.push('/send-poly');
     }
-  }, [history]);
+    wallet.clearPageStateCache();
+  }, [history, wallet]);
 
   const detectAddress = useCallback(
     async (address: string) => {
@@ -96,7 +117,7 @@ const WhitelistInput = () => {
       }
       const cexId = await wallet.getCexId(address);
       const localCexInfo = exchanges.find(
-        (e) => e.id.toLocaleLowerCase() === cexId?.toLocaleLowerCase()
+        (e) => e.id.toLowerCase() === cexId?.toLowerCase()
       );
       if (cexId && localCexInfo) {
         setIsCex(true);
@@ -122,18 +143,25 @@ const WhitelistInput = () => {
     [exchanges, wallet]
   );
 
-  const handleInputChangeAddress = (v) => {
-    if (!isValidAddress(v)) {
-      setInputAlias('');
-      setIsValidAddr(!v);
-      setIsCex(false);
-      setSelectedExchange(null);
-    } else {
-      setIsValidAddr(true);
-      detectAddress(v);
-    }
-    setInputAddress(v);
-  };
+  const handleInputChangeAddress = useCallback(
+    (v) => {
+      if (!isValidAddress(v)) {
+        setInputAlias('');
+        setIsValidAddr(!v);
+        setIsCex(false);
+        setSelectedExchange(null);
+      } else {
+        setIsValidAddr(true);
+        detectAddress(v);
+      }
+      setInputAddress(v);
+      wallet.setPageStateCache({
+        path: '/whitelist-input',
+        states: { inputAddress: v },
+      });
+    },
+    [detectAddress, wallet]
+  );
 
   const confirmToWhitelist = async (address: string) => {
     if (!isValidAddress(address)) {
@@ -146,7 +174,8 @@ const WhitelistInput = () => {
       isCex && selectedExchange?.id ? selectedExchange?.id : ''
     );
     setShowAddressRiskAlert(false);
-    history.goBack();
+    await wallet.clearPageStateCache();
+    handleClickBack();
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('page.whitelist.tips.added'),
@@ -171,6 +200,62 @@ const WhitelistInput = () => {
       console.error('Failed to add whitelist:', e);
     }
   };
+
+  const handleSelectAddress = (account: {
+    address: string;
+    alianName?: string;
+    brandName?: string;
+    type?: string;
+  }) => {
+    resetState();
+    setInputAddress(account.address);
+    wallet.setPageStateCache({
+      path: '/whitelist-input',
+      states: { inputAddress: account.address },
+    });
+    setInputAlias(account.alianName || '');
+    setShowAddressSelector(false);
+    detectAddress(account.address);
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const hasCache = await wallet.hasPageStateCache?.();
+        if (hasCache) {
+          const cache = await wallet.getPageStateCache?.();
+          if (
+            cache?.path === '/whitelist-input' &&
+            cache?.states?.inputAddress &&
+            history.length === 1
+          ) {
+            const cachedAddress = cache.states.inputAddress as string;
+            handleInputChangeAddress(cachedAddress);
+            return;
+          }
+        } else {
+          wallet.setPageStateCache({
+            path: '/whitelist-input',
+            states: {},
+          });
+        }
+      } catch (e) {
+        /* empty */
+      }
+    })();
+  }, [wallet, history, handleInputChangeAddress]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      wallet.clearPageStateCache();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [wallet]);
 
   return (
     <FullscreenContainer className="h-[700px]">
@@ -203,7 +288,15 @@ const WhitelistInput = () => {
         </PageHeader>
         <main className="flex-1 flex flex-col gap-[20px] mt-[20px]">
           <div className="flex flex-col gap-[8px]">
-            <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
+            <div className="flex justify-between items-center">
+              <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
+              <div
+                className="text-r-neutral-body cursor-pointer"
+                onClick={() => setShowAddressSelector(true)}
+              >
+                <RcIconContactCC width={20} height={20} />
+              </div>
+            </div>
             <StyledInputWrapper className="relative">
               <Input.TextArea
                 maxLength={44}
@@ -243,7 +336,7 @@ const WhitelistInput = () => {
           </div>
           <div className="flex flex-col gap-[8px]">
             <SectionHeader>{t('page.whitelist.name')}</SectionHeader>
-            <div className="relative rounded-[8px] overflow-hidden">
+            <AliasInputWrapper className="relative rounded-[8px] overflow-hidden">
               <Input
                 placeholder={t('page.whitelist.nameYourAddress')}
                 allowClear={false}
@@ -267,7 +360,7 @@ const WhitelistInput = () => {
                   )}
                 />
               </div>
-            </div>
+            </AliasInputWrapper>
           </div>
           <div className="flex flex-col gap-[10px]">
             <div className="flex justify-between items-center">
@@ -357,6 +450,14 @@ const WhitelistInput = () => {
         }}
         getContainer={getContainer}
         height="calc(100% - 60px)"
+      />
+      <AccountSelectorModal
+        visible={showAddressSelector}
+        value={null}
+        onChange={handleSelectAddress}
+        showWhitelistIcon
+        onCancel={() => setShowAddressSelector(false)}
+        getContainer={getContainer}
       />
     </FullscreenContainer>
   );

@@ -10,7 +10,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -20,20 +19,24 @@ import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
 import styled from 'styled-components';
-import { useDebounce } from 'react-use';
-import {
-  useGetGasTipsComponent,
-  useMiniApprovalGas,
-  useSetMiniApprovalGas,
-} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChainByServerID } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from '@debank/common';
 import { formatGasHeaderUsdValue } from '@/ui/utils';
-import ShowMoreGasSelectModal from './ShowMoreGasModal';
+import ShowMoreGasSelectModal, { useGetGasInfoByUI } from './ShowMoreGasModal';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
 import { noop } from 'lodash';
+import {
+  useSignatureStore,
+  signatureStore,
+} from '@/ui/component/MiniSignV2/state';
+import {
+  GasAccountTips,
+  GasLessActivityToSign,
+  GasLessNotEnough,
+} from '../../Approval/components/FooterBar/GasLessComponents';
+import { useGasAccountSign } from '../../GasAccount/hooks';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -384,6 +387,26 @@ export const BridgeShowMore = ({
   );
 };
 
+const GasTipsWrapper = styled.div`
+  position: relative;
+
+  .security-level-tip {
+    margin-top: 10px;
+    border-radius: 4px;
+    padding: 6px 10px 6px 8px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    display: flex;
+    position: relative;
+    .icon-level {
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+    }
+  }
+`;
+
 export const DirectSignGasInfo = ({
   supportDirectSign,
   loading,
@@ -399,51 +422,9 @@ export const DirectSignGasInfo = ({
 }) => {
   const { t } = useTranslation();
 
-  const miniApprovalGas = useMiniApprovalGas();
-  const setMiniApprovalGas = useSetMiniApprovalGas();
   const [gasModalVisible, setGasModalVisible] = useState(false);
 
   const chainEnum = findChainByServerID(chainServeId)?.enum;
-
-  const showGasContent =
-    !!miniApprovalGas &&
-    !miniApprovalGas.loading &&
-    !!miniApprovalGas.gasCostUsdStr &&
-    !loading &&
-    !noQuote;
-
-  useEffect(() => {
-    if (loading) {
-      setMiniApprovalGas(undefined);
-      // setGasTipsComponent(null);
-    }
-  }, [
-    loading,
-    // setGasTipsComponent,
-    setMiniApprovalGas,
-  ]);
-
-  useEffect(() => {
-    const showGasLevelPopup =
-      showGasContent && miniApprovalGas?.showGasLevelPopup;
-    const gasTooHigh =
-      showGasContent &&
-      miniApprovalGas?.gasCostUsdStr &&
-      new BigNumber(miniApprovalGas?.gasCostUsdStr?.replace(/\$/g, '')).gt(
-        chainEnum === CHAINS_ENUM.ETH ? 10 : 1
-      );
-    if (showGasLevelPopup || gasTooHigh) {
-      openShowMore(true);
-    } else {
-      openShowMore(false);
-    }
-  }, [
-    chainEnum,
-    miniApprovalGas?.showGasLevelPopup,
-    miniApprovalGas?.gasCostUsdStr,
-    openShowMore,
-    showGasContent,
-  ]);
 
   const calcGasAccountUsd = useCallback((n: number | string) => {
     const v = Number(n);
@@ -453,25 +434,109 @@ export const DirectSignGasInfo = ({
     return formatGasHeaderUsdValue(n || '0');
   }, []);
 
-  const gasAccountCost = miniApprovalGas?.gasAccountCost;
+  const { sig, accountId } = useGasAccountSign();
 
-  const gasTipsComp = useGetGasTipsComponent();
+  const isGasAccountLogin = !!sig && !!accountId;
+
+  const { ctx, config } = useSignatureStore();
+
+  const gasInfoByUI = useGetGasInfoByUI();
+
+  const { gasCostUsdStr, gasAccountCost } = gasInfoByUI || {};
 
   const gasCostUsd =
-    miniApprovalGas?.gasMethod === 'gasAccount'
+    ctx?.gasMethod === 'gasAccount'
       ? calcGasAccountUsd(
           (gasAccountCost?.estimate_tx_cost || 0) +
-            (gasAccountCost?.gas_cost || 0)
+            Number(gasAccountCost?.gas_cost || 0)
         )
-      : miniApprovalGas?.gasCostUsdStr;
+      : gasCostUsdStr;
+
+  const showGasContent = !!ctx?.txsCalc?.length && !loading && !noQuote;
+
+  const isReady = (ctx?.txsCalc?.length || 0) > 0;
+  const isGasNotEnough = !!ctx?.isGasNotEnough;
+  const canUseGasLess = !!ctx?.gasless?.is_gasless;
+  const noCustomRPC = !!ctx?.noCustomRPC;
+
+  let gasLessConfig =
+    canUseGasLess && ctx?.gasless?.promotion
+      ? ctx?.gasless?.promotion?.config
+      : undefined;
+  if (
+    gasLessConfig &&
+    ctx?.gasless?.promotion?.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
+  ) {
+    gasLessConfig = { ...gasLessConfig, dark_color: '', theme_color: '' };
+  }
+
+  const canGotoUseGasAccount =
+    // isSupportedAddr &&
+    noCustomRPC &&
+    !!ctx?.gasAccount?.balance_is_enough &&
+    !ctx?.gasAccount.chain_not_support &&
+    !!ctx?.gasAccount.is_gas_account;
+
+  const showGasLess = isReady && (isGasNotEnough || !!gasLessConfig);
+
+  const showGasLessToSign =
+    showGasLess && !canGotoUseGasAccount && canUseGasLess;
+
+  // gas 提交使用 gasless
+  const useGasLess =
+    (isGasNotEnough || !!gasLessConfig) && !!canUseGasLess && !!ctx?.useGasless;
+
+  const payGasByGasAccount = ctx?.gasMethod === 'gasAccount';
+
+  const canDepositUseGasAccount =
+    // isSupportedAddr &&
+    noCustomRPC &&
+    !!ctx?.gasAccount &&
+    !ctx?.gasAccount?.balance_is_enough &&
+    !ctx?.gasAccount.chain_not_support;
+
+  const gasAccountCanPay =
+    ctx?.gasMethod === 'gasAccount' &&
+    // isSupportedAddr &&
+    noCustomRPC &&
+    !!ctx?.gasAccount?.balance_is_enough &&
+    !ctx?.gasAccount.chain_not_support &&
+    !!ctx?.gasAccount.is_gas_account &&
+    !(ctx?.gasAccount as any).err_msg;
+
+  const disabledProcess = payGasByGasAccount
+    ? !gasAccountCanPay
+    : useGasLess
+    ? false
+    : !ctx?.txsCalc?.length ||
+      !!ctx.checkErrors?.some((e) => e.level === 'forbidden');
+
+  // Gasless 切换
+  const handleToggleGasless = (value) => {
+    signatureStore.toggleGasless(value);
+  };
+
+  // Gas 方法切换 - 添加异步处理
+  const handleChangeGasMethod = useCallback(
+    async (method: 'native' | 'gasAccount') => {
+      try {
+        signatureStore.setGasMethod(method);
+      } catch (error) {
+        console.error('Gas method change error:', error);
+      }
+    },
+    [ctx?.selectedGas]
+  );
 
   useEffect(() => {
-    const showGasLevelPopup =
-      showGasContent && miniApprovalGas?.showGasLevelPopup;
+    if (loading || noQuote) {
+      return;
+    }
+    const showGasLevelPopup = !!showGasContent && !!disabledProcess;
     const gasTooHigh =
-      showGasContent &&
-      gasCostUsd &&
-      new BigNumber(gasCostUsd?.replace(/\$/g, '')).gt(
+      !!showGasContent &&
+      !!gasCostUsdStr &&
+      new BigNumber(gasCostUsdStr?.replace(/\$/g, '')).gt(
         chainEnum === CHAINS_ENUM.ETH ? 10 : 1
       );
     if (showGasLevelPopup || gasTooHigh) {
@@ -481,15 +546,56 @@ export const DirectSignGasInfo = ({
     }
   }, [
     chainEnum,
-    gasCostUsd,
-    miniApprovalGas?.showGasLevelPopup,
+    disabledProcess,
+    isReady,
+    gasCostUsdStr,
     openShowMore,
     showGasContent,
+    loading,
+    noQuote,
   ]);
 
   if (!supportDirectSign) {
     return null;
   }
+  const gasTipsComponent = () => (
+    <GasTipsWrapper>
+      {showGasLessToSign ? (
+        <GasLessActivityToSign
+          directSubmit
+          gasLessEnable={useGasLess}
+          handleFreeGas={() => {
+            handleToggleGasless?.(true);
+          }}
+          gasLessConfig={gasLessConfig}
+        />
+      ) : null}
+
+      {showGasLess && !payGasByGasAccount && !canUseGasLess ? (
+        <GasLessNotEnough
+          directSubmit
+          gasLessFailedReason={ctx?.gasless?.desc}
+          canGotoUseGasAccount={canGotoUseGasAccount}
+          onChangeGasAccount={() => handleChangeGasMethod('gasAccount')}
+          canDepositUseGasAccount={canDepositUseGasAccount}
+          miniFooter
+          onRedirectToDeposit={config?.onRedirectToDeposit}
+        />
+      ) : null}
+
+      {payGasByGasAccount && !gasAccountCanPay ? (
+        <GasAccountTips
+          directSubmit
+          gasAccountCost={ctx?.gasAccount as any}
+          isGasAccountLogin={isGasAccountLogin}
+          isWalletConnect={false}
+          noCustomRPC={noCustomRPC}
+          miniFooter
+          onRedirectToDeposit={config?.onRedirectToDeposit}
+        />
+      ) : null}
+    </GasTipsWrapper>
+  );
 
   return (
     <>
@@ -509,24 +615,22 @@ export const DirectSignGasInfo = ({
                 className={clsx(
                   'cursor-pointer',
                   'cursor text-12 font-medium flex items-center gap-4',
-                  miniApprovalGas.disabledProcess
-                    ? 'text-r-red-default'
-                    : 'text-r-blue-default'
+                  disabledProcess ? 'text-r-red-default' : 'text-r-blue-default'
                 )}
                 onClick={() => {
                   setGasModalVisible(true);
                 }}
               >
                 <div>
-                  {miniApprovalGas?.selectedGas?.level
-                    ? t(getGasLevelI18nKey(miniApprovalGas.selectedGas.level))
+                  {ctx?.selectedGas?.level
+                    ? t(getGasLevelI18nKey(ctx.selectedGas.level))
                     : t(getGasLevelI18nKey('normal'))}
 
                   {' · '}
 
                   {gasCostUsd}
                 </div>
-                {miniApprovalGas.gasMethod === 'gasAccount' ? (
+                {ctx.gasMethod === 'gasAccount' ? (
                   <Tooltip
                     align={{
                       offset: [10, 0],
@@ -535,22 +639,23 @@ export const DirectSignGasInfo = ({
                     overlayClassName="rectangle w-[max-content]"
                     title={
                       <div onClick={(e) => e.stopPropagation()}>
+                        <div>{t('page.signTx.gasAccount.description')}</div>
                         <div>
-                          {t('page.signTx.gasAccount.estimatedGas')}
+                          {t('page.signTx.gasAccount.estimatedGas')}{' '}
                           {calcGasAccountUsd(
                             gasAccountCost?.estimate_tx_cost || 0
                           )}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.maxGas')}
+                          {t('page.signTx.gasAccount.maxGas')}{' '}
                           {calcGasAccountUsd(gasAccountCost?.total_cost || '0')}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.sendGas')}
+                          {t('page.signTx.gasAccount.sendGas')}{' '}
                           {calcGasAccountUsd(gasAccountCost?.total_cost || '0')}
                         </div>
                         <div>
-                          {t('page.signTx.gasAccount.gasCost')}
+                          {t('page.signTx.gasAccount.gasCost')}{' '}
                           {calcGasAccountUsd(gasAccountCost?.gas_cost || '0')}
                         </div>
                       </div>
@@ -578,7 +683,7 @@ export const DirectSignGasInfo = ({
           />
         )}
       </ListItem>
-      {showGasContent && <>{gasTipsComp}</>}
+      {showGasContent && <>{gasTipsComponent()}</>}
     </>
   );
 };

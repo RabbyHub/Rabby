@@ -12,22 +12,19 @@ import {
   TDexQuoteData,
   useQuoteMethods,
 } from './quote';
-import {
-  useQuoteVisible,
-  useRefreshId,
-  useSetQuoteVisible,
-  useSetRefreshId,
-} from './context';
+import { useRefreshId, useSetQuoteVisible, useSetRefreshId } from './context';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
-import { SWAP_SUPPORT_CHAINS } from '@/constant';
+import { EVENTS, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
 import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
+import eventBus from '@/eventBus';
+import { useAutoSlippageEffect } from './autoSlippageEffect';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -36,12 +33,13 @@ const useTokenInfo = ({
   userAddress,
   chain,
   defaultToken,
+  refreshTokenId,
 }: {
   userAddress?: string;
   chain?: CHAINS_ENUM;
   defaultToken?: TokenItem;
+  refreshTokenId?: number;
 }) => {
-  const refreshId = useRefreshId();
   const wallet = useWallet();
   const [token, setToken] = useState<TokenItem | undefined>(defaultToken);
 
@@ -54,7 +52,13 @@ const useTokenInfo = ({
       );
       return data;
     }
-  }, [refreshId, userAddress, token?.id, token?.raw_amount_hex_str, chain]);
+  }, [
+    userAddress,
+    token?.id,
+    token?.raw_amount_hex_str,
+    chain,
+    refreshTokenId,
+  ]);
 
   useDebounce(
     () => {
@@ -81,7 +85,6 @@ export const useTokenPair = (userAddress: string) => {
   const dispatch = useRabbyDispatch();
   const refreshId = useRefreshId();
   const setRefreshId = useSetRefreshId();
-
   const wallet = useWallet();
 
   const {
@@ -112,17 +115,41 @@ export const useTokenPair = (userAddress: string) => {
     },
     [dispatch?.swap?.setSelectedChain]
   );
+  const [refreshTokenId, updateRefreshTokenId] = useState(0);
+  const refreshTokensInfo = useCallback(
+    () => updateRefreshTokenId((e) => e + 1),
+    [updateRefreshTokenId]
+  );
+  useEffect(() => {
+    const refreshToken = (params: { addressList: string[] }) => {
+      if (
+        userAddress &&
+        params?.addressList?.find((item) => {
+          return isSameAddress(item || '', userAddress || '');
+        })
+      ) {
+        refreshTokensInfo();
+      }
+    };
+
+    eventBus.addEventListener(EVENTS.RELOAD_TX, refreshToken);
+    return () => {
+      eventBus.removeEventListener(EVENTS.RELOAD_TX, refreshToken);
+    };
+  }, [refreshTokensInfo, userAddress]);
 
   const [payToken, setPayToken] = useTokenInfo({
     userAddress,
     chain,
     defaultToken: defaultSelectedFromToken || getChainDefaultToken(chain),
+    refreshTokenId,
   });
 
   const [receiveToken, _setReceiveToken] = useTokenInfo({
     userAddress,
     chain,
     defaultToken: defaultSelectedToToken,
+    refreshTokenId,
   });
 
   const {
@@ -153,9 +180,13 @@ export const useTokenPair = (userAddress: string) => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    expiredTimer.current = setTimeout(() => {
-      setRefreshId((e) => e + 1);
-    }, 1000 * 20);
+
+    if (p) {
+      expiredTimer.current = setTimeout(() => {
+        setRefreshId((e) => e + 1);
+      }, 1000 * 20);
+    }
+
     setOriActiveProvider(p);
   }, []);
 
@@ -235,6 +266,7 @@ export const useTokenPair = (userAddress: string) => {
         setIsDraggingSlider(true);
         setSwapUseSlider(true);
         setSlider(v);
+        setUseGasPrice(false);
 
         if (syncAmount) {
           setIsDraggingSlider(false);
@@ -478,6 +510,17 @@ export const useTokenPair = (userAddress: string) => {
     getSwapAutoSlippageValue(isStableCoin)
   );
 
+  const setAutoSlippage = useCallback(() => {
+    slippageObj.setAutoSlippage(true);
+  }, [slippageObj.setAutoSlippage]);
+
+  useAutoSlippageEffect({
+    chainServerId: findChainByEnum(chain)?.serverId || '',
+    fromTokenId: payToken?.id || '',
+    toTokenId: receiveToken?.id || '',
+    onSetAutoSlippage: setAutoSlippage,
+  });
+
   const fetchIdRef = useRef(0);
   const { getAllQuotes, validSlippage } = useQuoteMethods();
   const [
@@ -497,6 +540,8 @@ export const useTokenPair = (userAddress: string) => {
       inSufficientCanGetQuote &&
       !isDraggingSlider
     ) {
+      refreshTokensInfo();
+
       setQuotesList((e) =>
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
@@ -585,6 +630,7 @@ export const useTokenPair = (userAddress: string) => {
     inSufficientCanGetQuote,
     slippageObj?.slippage,
     slippageObj.autoSlippage,
+    refreshId,
   ]);
 
   useDebounce(

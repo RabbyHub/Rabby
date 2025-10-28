@@ -49,6 +49,7 @@ import {
   passwordEncrypt,
   passwordDecrypt,
   passwordClearKey,
+  PersistType,
 } from 'background/utils/password';
 import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
@@ -672,6 +673,21 @@ export class KeyringService extends EventEmitter {
         this.emit('removedAccount', address, type);
       });
     });
+    return this.persistAllKeyrings()
+      .then(this._updateMemStoreKeyrings.bind(this))
+      .then(this.fullUpdate.bind(this))
+      .catch((e) => {
+        return Promise.reject(e);
+      });
+  }
+
+  async persistUpdate() {
+    if (!this.isUnlocked()) {
+      return Promise.reject(
+        new Error('KeyringController - password is not a string')
+      );
+    }
+
     return this.persistAllKeyrings()
       .then(this._updateMemStoreKeyrings.bind(this))
       .then(this.fullUpdate.bind(this))
@@ -1418,6 +1434,34 @@ export class KeyringService extends EventEmitter {
     });
 
     return { vault: encryptedString, accounts };
+  }
+
+  async encryptWithPassword(
+    content: any,
+    persisted?: boolean,
+    persistType?: PersistType
+  ) {
+    const encrypted = await passwordEncrypt({
+      data: content,
+      password: this.password,
+      persisted,
+      persistType,
+    });
+    return encrypted;
+  }
+
+  async decryptWithPassword(
+    str: string,
+    persisted?: boolean,
+    persistType?: PersistType
+  ) {
+    const decrypted = await passwordDecrypt({
+      encryptedData: str,
+      password: this.password,
+      persisted,
+      persistType,
+    });
+    return decrypted;
   }
 }
 

@@ -14,6 +14,7 @@ const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 import './style.less';
 import { useKeystoneUSBErrorCatcher } from '@/ui/utils/keystone';
 import { getImKeyFirstImKeyDevice } from '@/ui/utils/imKey';
+import { getOneKeyFirstOneKeyDevice } from '@/ui/utils/onekey';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -23,7 +24,7 @@ const RequestPermission = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
-  const needConfirm = ['ledger', 'keystone', 'imkey'].includes(type);
+  const needConfirm = ['ledger', 'keystone', 'imkey', 'onekey'].includes(type);
   const [loading, setLoading] = useState(false);
   const keystoneErrorCatcher = useKeystoneUSBErrorCatcher();
   const isReconnect = !!qs.reconnect;
@@ -47,6 +48,11 @@ const RequestPermission = () => {
       title: t('page.newAddress.keystone.allowRabbyPermissionsTitle'),
       desc: [t('page.newAddress.keystone.keystonePermission1')],
       tip: t('page.newAddress.keystone.keystonePermissionTip'),
+    },
+    onekey: {
+      title: t('page.newAddress.onekey.allowRabbyPermissionsTitle'),
+      desc: [t('page.newAddress.onekey.onekeyPermission1')],
+      tip: t('page.newAddress.onekey.onekeyPermissionTip'),
     },
   };
 
@@ -164,6 +170,31 @@ const RequestPermission = () => {
         keystoneErrorCatcher(error);
       } finally {
         setLoading(false);
+      }
+    }
+    if (type === 'onekey') {
+      try {
+        await getOneKeyFirstOneKeyDevice();
+        await wallet.authorizeOneKeyHIDPermission();
+        if (isReconnect) {
+          wallet.activeFirstApproval();
+          window.close();
+          return;
+        }
+
+        if (from && from === 'approval') {
+          setShowSuccess(true);
+          return;
+        }
+        history.push({
+          pathname: '/import/select-address',
+          state: {
+            keyring: HARDWARE_KEYRING_TYPES.Onekey.type,
+          },
+          search: '?connectType=ONEKEY',
+        });
+      } catch (e) {
+        console.error(e);
       }
     }
   };

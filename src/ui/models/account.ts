@@ -74,6 +74,7 @@ type MatteredChainBalancesResult = {
   testnet: TotalBalanceResponse | null;
 };
 const symLoaderMatteredBalance = Symbol('uiHelperMateeredChainBalancesPromise');
+
 export const account = createModel<RootModel>()({
   name: 'account',
 
@@ -219,12 +220,18 @@ export const account = createModel<RootModel>()({
 
       dispatch.account.onAccountChanged(account?.address);
 
+      // 初始化gift状态
+      await dispatch.gift.initGiftStateAsync();
+
       return account;
     },
     async onAccountChanged(currentAccountAddress?: string, store?) {
       try {
-        currentAccountAddress =
-          currentAccountAddress || store?.account.currentAccount?.address;
+        // 避免循环引用，直接使用传入的地址
+        if (!currentAccountAddress && store) {
+          const currentAccount = await store.app.wallet.getCurrentAccount();
+          currentAccountAddress = currentAccount?.address;
+        }
         // trigger once when account fetched;
         await dispatch.account.getMatteredChainBalance({
           currentAccountAddress,

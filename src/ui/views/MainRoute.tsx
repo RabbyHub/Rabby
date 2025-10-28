@@ -13,6 +13,8 @@ import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportGnosis from './ImportGnosisAddress';
 import ConnectLedger from './ImportHardware/LedgerConnect';
+import ConnectTrezor from './ImportHardware/TrezorConnect';
+import ConnectOneKey from './ImportHardware/OneKeyConnect';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import TokenApproval from './TokenApproval';
@@ -23,6 +25,9 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
+import PerpsSingleCoin from './Perps/components/SingleCoin';
+import { HistoryPage as PerpsHistoryPage } from './Perps/components/HistoryPage';
+import ExploreMore from './Perps/components/ExploreMore';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -57,6 +62,7 @@ import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
 import { GnosisQueue } from './GnosisQueue';
+import Perps from './Perps/home';
 import { Guide } from './NewUserImport/Guide';
 import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
@@ -65,6 +71,7 @@ import { NewUserSetPassword } from './NewUserImport/SetPassword';
 import { NewUserImportGnosisAddress } from './NewUserImport/ImportGnosisAddress';
 import { NewUserImportLedger } from './NewUserImport/ImportLedger';
 import { NewUserImportKeystone } from './NewUserImport/ImportKeystone';
+import { NewUserImportOneKey } from './NewUserImport/ImportOnekey';
 import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
 import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
@@ -83,6 +90,8 @@ import dayjs from 'dayjs';
 import { PreferenceStore } from '@/background/service/preference';
 import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
+import { PortalHost } from '../component/PortalHost';
+import { GlobalSignerPortal } from '../component/MiniSignV2/components/GlobalSignerPortal';
 
 declare global {
   interface Window {
@@ -206,6 +215,13 @@ const Main = () => {
           <NewUserImportKeystone />
         </Route>
 
+        <Route
+          exact
+          path={`/new-user/import/hardware/${KEYRING_CLASS.HARDWARE.ONEKEY}`}
+        >
+          <NewUserImportOneKey />
+        </Route>
+
         <Route exact path="/new-user/import/hardware/:type">
           <NewUserImportHardware />
         </Route>
@@ -269,6 +285,12 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger-connect">
           <ConnectLedger />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/trezor-connect">
+          <ConnectTrezor />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/onekey">
+          <ConnectOneKey />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/imkey-connect">
           <ImKeyConnect />
@@ -418,9 +440,23 @@ const Main = () => {
         <PrivateRoute path="/gas-account">
           <GasAccount />
         </PrivateRoute>
+        <PrivateRoute exact path="/perps">
+          <Perps />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/single-coin/:coin">
+          <PerpsSingleCoin />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/explore">
+          <ExploreMore />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/history/:coin">
+          <PerpsHistoryPage />
+        </PrivateRoute>
       </Switch>
 
       <CommonPopup />
+      <PortalHost />
+      <GlobalSignerPortal />
     </>
   );
 };

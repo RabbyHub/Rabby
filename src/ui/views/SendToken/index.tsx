@@ -58,11 +58,12 @@ import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
-import { MiniApproval } from '../Approval/components/MiniSignTx';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
-  useStartDirectSigning,
+  supportedHardwareDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { ShowMoreOnSend } from './components/SendShowMore';
@@ -163,7 +164,7 @@ export const ToAddressCard = ({
   return (
     <header
       className={clsx(
-        'header bg-r-neutral-card1 rounded-[8px] px-[16px] py-[20px]',
+        'header bg-r-neutral-card1 rounded-[8px] px-[28px] py-[20px]',
         'flex flex-col items-center gap-[8px]'
       )}
     >
@@ -183,12 +184,15 @@ export const ToAddressCard = ({
 
       <AddressTypeCard
         type={targetAccount.type}
+        address={targetAccount.address}
+        getContainer={getContainer}
         cexInfo={{
           id: cexInfo?.id,
           name: cexInfo?.name,
           logo: cexInfo?.logo_url,
           isDeposit: !!cexInfo?.is_deposit,
         }}
+        allowEditAlias
         loading={loading}
         inWhitelist={whitelist?.some((w) =>
           isSameAddress(w, targetAccount.address)
@@ -228,6 +232,12 @@ const SendToken = () => {
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
+
+  const { openDirect, prefetch } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: chainItem?.serverId,
+    autoResetGasStoreOnChainChange: true,
+  });
   const [currentToken, setCurrentToken] = useState<TokenItem | null>(
     DEFAULT_TOKEN
   );
@@ -355,7 +365,7 @@ const SendToken = () => {
       const toCexId = addressDesc?.cex?.id;
       if (toCexId) {
         const noSupportToken = token.cex_ids?.every?.(
-          (id) => id.toLocaleLowerCase() !== toCexId.toLocaleLowerCase()
+          (id) => id.toLowerCase() !== toCexId.toLowerCase()
         );
         if (!token?.cex_ids?.length || noSupportToken) {
           return {
@@ -370,10 +380,10 @@ const SendToken = () => {
           .filter(([, contract]) => {
             return contract.multisig;
           })
-          .map(([chain]) => chain?.toLocaleLowerCase());
+          .map(([chain]) => chain?.toLowerCase());
         if (
           safeChains.length > 0 &&
-          !safeChains.includes(token?.chain?.toLocaleLowerCase())
+          !safeChains.includes(token?.chain?.toLowerCase())
         ) {
           return {
             disable: true,
@@ -383,10 +393,10 @@ const SendToken = () => {
         }
         const contactChains = Object.entries(
           addressDesc?.contract || {}
-        ).map(([chain]) => chain?.toLocaleLowerCase());
+        ).map(([chain]) => chain?.toLowerCase());
         if (
           contactChains.length > 0 &&
-          !contactChains.includes(token?.chain?.toLocaleLowerCase())
+          !contactChains.includes(token?.chain?.toLowerCase())
         ) {
           return {
             disable: true,
@@ -420,11 +430,8 @@ const SendToken = () => {
         .filter(([, contract]) => {
           return contract.multisig;
         })
-        .map(([chain]) => chain?.toLocaleLowerCase());
-      if (
-        safeChains.length > 0 &&
-        !safeChains.includes(chain?.toLocaleLowerCase())
-      ) {
+        .map(([chain]) => chain?.toLowerCase());
+      if (safeChains.length > 0 && !safeChains.includes(chain?.toLowerCase())) {
         return {
           disable: true,
           reason: t('page.sendToken.noSupprotTokenForSafe'),
@@ -433,10 +440,10 @@ const SendToken = () => {
       }
       const contactChains = Object.entries(
         addressDesc?.contract || {}
-      ).map(([chain]) => chain?.toLocaleLowerCase());
+      ).map(([chain]) => chain?.toLowerCase());
       if (
         contactChains.length > 0 &&
-        !contactChains.includes(chain?.toLocaleLowerCase())
+        !contactChains.includes(chain?.toLowerCase())
       ) {
         return {
           disable: true,
@@ -536,14 +543,7 @@ const SendToken = () => {
     }
   }, [clickedMax, loadGasList]);
 
-  const [isShowMiniSign, setIsShowMiniSign] = useState(false);
-  const [miniSignTx, setMiniSignTx] = useState<Tx | null>(null);
-
-  const miniSignTxs = useMemo(() => {
-    return miniSignTx ? [miniSignTx] : [];
-  }, [miniSignTx]);
-
-  const startDirectSigning = useStartDirectSigning();
+  const [miniSinLoading, setMiniSinLoading] = useState(false);
 
   const canUseDirectSubmitTx = useMemo(() => {
     let sendToOtherChainContract = false;
@@ -574,17 +574,49 @@ const SendToken = () => {
       if (!currentToken) {
         return;
       }
-      if (canUseDirectSubmitTx && !forceSignPage) {
-        startDirectSigning();
-        return;
-      }
-      const chain = findChain({
-        serverId: currentToken.chain,
-      })!;
       const params = getParams({
         to: toAddress,
         amount,
       });
+      let shouldForceSignPage = !!forceSignPage;
+
+      if (canUseDirectSubmitTx && !shouldForceSignPage) {
+        setMiniSinLoading(true);
+        try {
+          const hashes = await openDirect({
+            txs: [params as Tx],
+            ga: {
+              category: 'Send',
+              source: 'sendToken',
+              trigger: filterRbiSource('sendToken', rbisource) && rbisource,
+            },
+            getContainer,
+          });
+          const hash = hashes[hashes.length - 1];
+          if (hash) {
+            handleMiniSignResolve();
+          } else {
+            setMiniSinLoading(false);
+          }
+          return;
+        } catch (error) {
+          console.error('send token direct sign error', error);
+
+          setMiniSinLoading(false);
+          if (
+            error === MINI_SIGN_ERROR.USER_CANCELLED ||
+            error === MINI_SIGN_ERROR.CANT_PROCESS
+          ) {
+            return;
+          }
+
+          shouldForceSignPage = true;
+        }
+      }
+
+      const chain = findChain({
+        serverId: currentToken.chain,
+      })!;
 
       if (isNativeToken) {
         // L2 has extra validation fee so we can not set gasLimit as 21000 when send native token
@@ -779,18 +811,34 @@ const SendToken = () => {
           );
 
         if (isCurrent) {
-          setMiniSignTx(params as Tx);
+          prefetch({
+            txs: [params as Tx],
+            ga: {
+              category: 'Send',
+              source: 'sendToken',
+              trigger: filterRbiSource('sendToken', rbisource) && rbisource,
+            },
+            getContainer,
+          }).catch((error) => {
+            if (error !== MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+              console.error('send token prefetch error', error);
+            }
+          });
         }
       } else {
         if (isCurrent) {
-          setMiniSignTx(null);
+          prefetch({
+            txs: [],
+          });
         }
       }
     };
     setMiniTx();
     return () => {
       isCurrent = false;
-      setMiniSignTx(null);
+      prefetch({
+        txs: [],
+      });
     };
   }, [
     refreshId,
@@ -811,12 +859,16 @@ const SendToken = () => {
     address,
     currentAccount,
     currentToken,
+    prefetch,
+    rbisource,
   ]);
 
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
-      setIsShowMiniSign(false);
-      setMiniSignTx(null);
+      setMiniSinLoading(false);
+      prefetch({
+        txs: [],
+      });
       form.setFieldsValue({ amount: '' });
       // persistPageStateCache();
       wallet.clearPageStateCache();
@@ -1038,7 +1090,7 @@ const SendToken = () => {
   }, [cancelClickedMax]);
 
   const handleCurrentTokenChange = useCallback(
-    async (token: TokenItem) => {
+    async (token: TokenItem, ignoreCache = false) => {
       cancelClickedMax();
       if (showGasReserved) {
         setShowGasReserved(false);
@@ -1058,7 +1110,9 @@ const SendToken = () => {
       setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
       setCurrentToken(token);
       setEstimatedGas(0);
-      await persistPageStateCache({ currentToken: token });
+      if (!ignoreCache) {
+        await persistPageStateCache({ currentToken: token });
+      }
       setBalanceError(null);
       setIsLoading(true);
       loadCurrentToken(token.id, token.chain, account.address);
@@ -1522,6 +1576,11 @@ const SendToken = () => {
 
   const [gasFeeOpen, setGasFeeOpen] = useState(false);
   const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
+  const handleFulfilled = useMemoizedFn(() => {
+    if (currentToken) {
+      handleCurrentTokenChange(currentToken, true);
+    }
+  });
 
   return (
     <FullscreenContainer className="h-[700px]">
@@ -1574,7 +1633,7 @@ const SendToken = () => {
                 <div
                   className="cursor-pointer text-r-neutral-title1"
                   onClick={() => {
-                    history.push(`/send-poly${history.location.search}`);
+                    history.replace(`/send-poly${history.location.search}`);
                   }}
                 >
                   <RcIconSwitchCC width={20} height={20} />
@@ -1643,14 +1702,18 @@ const SendToken = () => {
             ) : null}
             {!canSubmit && (
               <div className="mt-20">
-                <PendingTxItem type="send" ref={pendingTxRef} />
+                <PendingTxItem
+                  onFulfilled={handleFulfilled}
+                  type="send"
+                  ref={pendingTxRef}
+                />
               </div>
             )}
           </div>
 
           <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-              {canUseDirectSubmitTx ? (
+              {canUseDirectSubmitTx && currentAccount?.type ? (
                 <DirectSignToConfirmBtn
                   title={t('page.sendToken.sendButton')}
                   onConfirm={() => {
@@ -1660,6 +1723,8 @@ const SendToken = () => {
                     });
                   }}
                   disabled={!canSubmit}
+                  accountType={currentAccount?.type}
+                  loading={miniSinLoading}
                 />
               ) : (
                 <Button
@@ -1689,36 +1754,6 @@ const SendToken = () => {
           rawHexBalance={currentToken?.raw_amount_hex_str || '0'}
           onClose={() => handleReserveGasClose()}
           getContainer={getContainer}
-        />
-        <MiniApproval
-          txs={miniSignTxs}
-          visible={isShowMiniSign}
-          ga={{
-            category: 'Send',
-            source: 'sendToken',
-            trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
-          }}
-          onClose={() => {
-            setMiniSignTx(null);
-            setRefreshId((e) => e + 1);
-            setIsShowMiniSign(false);
-          }}
-          onReject={() => {
-            setMiniSignTx(null);
-            setRefreshId((e) => e + 1);
-            setIsShowMiniSign(false);
-          }}
-          onResolve={handleMiniSignResolve}
-          onPreExecError={() => {
-            handleSubmit({
-              to: form.getFieldValue('to'),
-              amount: form.getFieldValue('amount'),
-              forceSignPage: true,
-            });
-          }}
-          getContainer={getContainer}
-          directSubmit
-          canUseDirectSubmitTx={canUseDirectSubmitTx}
         />
       </div>
     </FullscreenContainer>

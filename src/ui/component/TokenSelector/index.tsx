@@ -45,6 +45,7 @@ import NetSwitchTabs, {
 } from 'ui/component/PillsSwitch/NetSwitchTabs';
 import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useHistory } from 'react-router-dom';
+import { ExchangeLogos } from './CexLogos';
 
 const isTab = getUiType().isTab;
 
@@ -560,7 +561,7 @@ const TokenSelector = ({
                       className={clsx(
                         'flex items-center justify-center gap-6',
                         'cursor-pointer py-8 px-12 rounded-[8px]',
-                        'bg-r-neutral-card1 hover:bg-r-blue-light-2',
+                        'bg-r-neutral-card1 hover:bg-r-blue-light-1',
                         'text-15 text-r-neutral-title1 font-medium'
                       )}
                       onClick={() => onConfirm(token)}
@@ -729,6 +730,10 @@ function CommonTokenItem(props: {
     return disabled ? t('component.TokenSelector.chainNotSupport') : undefined;
   }, [value, token, supportChains]);
 
+  const showExchangeLogos = useMemo(() => {
+    return isBridgeTo && !!token.cex_ids?.length;
+  }, [isBridgeTo, token.cex_ids]);
+
   const handleTokenPress = useCallback(() => {
     if (disabled) {
       return;
@@ -784,9 +789,21 @@ function CommonTokenItem(props: {
               hideConer
             />
             <div className="flex flex-col">
-              <span className="symbol_click" onClick={onClickTokenSymbol}>
-                {getTokenSymbol(token)}
-              </span>
+              {showExchangeLogos ? (
+                <div className="flex overflow-visible">
+                  <span
+                    className="symbol_click overflow-visible"
+                    onClick={onClickTokenSymbol}
+                  >
+                    {getTokenSymbol(token)}
+                  </span>
+                  <ExchangeLogos cexIds={token.cex_ids || []} />
+                </div>
+              ) : (
+                <span className="symbol_click" onClick={onClickTokenSymbol}>
+                  {getTokenSymbol(token)}
+                </span>
+              )}
               <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
                 {isSwapTo
                   ? `$${formatPrice(token.price || 0)}`

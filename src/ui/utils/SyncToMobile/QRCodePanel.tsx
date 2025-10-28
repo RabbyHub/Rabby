@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import { DownloadCard } from './DownloadCard';
 import { SelectAddressModal } from './SelectAddressModal';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { AuthenticationModalPromise } from '@/ui/component/AuthenticationModal';
 
 const GOOGLE_PLAY_URL =
   'https://play.google.com/store/apps/details?id=com.debank.rabbymobile';
@@ -22,8 +23,20 @@ export const QRCodePanel: React.FC = () => {
   const [qrCodeVisible, setQRCodeVisible] = React.useState(false);
   const [len, setLen] = React.useState(0);
 
-  const handleClickQRCode = React.useCallback(() => {
+  const handleClickEdit = React.useCallback(() => {
     setModalVisible(true);
+  }, []);
+
+  const handleClickQRCode = React.useCallback(async () => {
+    try {
+      await AuthenticationModalPromise({
+        title: t('page.syncToMobile.verifyPassword'),
+        wallet,
+      });
+      setModalVisible(true);
+    } catch (e) {
+      // do nothing
+    }
   }, []);
 
   const handleModalConfirm = React.useCallback(
@@ -133,7 +146,7 @@ export const QRCodePanel: React.FC = () => {
                 'cursor-pointer',
                 'px-[4px]'
               )}
-              onClick={handleClickQRCode}
+              onClick={handleClickEdit}
             >
               {t('global.editButton')}
             </span>
