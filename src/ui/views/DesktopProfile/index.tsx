@@ -221,7 +221,7 @@ export const DesktopProfile = () => {
       />
       <SwapTokenModal
         visible={action === 'swap' || action === 'bridge'}
-        type={action === 'swap' ? 'swap' : 'bridge'}
+        action={action as 'swap' | 'bridge'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

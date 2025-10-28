@@ -264,8 +264,8 @@ const WhitelistInput = () => {
       <div
         className={clsx(
           'send-token',
-          isTab
-            ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
+          isDesktop
+            ? 'w-full h-full overflow-auto min-h-0 rounded-[8px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
