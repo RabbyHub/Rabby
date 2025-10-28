@@ -73,6 +73,9 @@ const Wrap = styled.div`
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;
   }
+  .ant-tabs-top > .ant-tabs-nav::before {
+    border-bottom: 0.5px solid var(--r-neutral-line, #e0e5ec);
+  }
 `;
 
 export const DesktopProfile = () => {
