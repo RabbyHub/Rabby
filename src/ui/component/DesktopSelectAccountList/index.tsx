@@ -18,6 +18,7 @@ import { isSameAccount } from '@/utils/account';
 import { flatten } from 'lodash';
 import { CopyChecked } from '../CopyChecked';
 import { useApprovalDangerCount } from '@/ui/hooks/useApprovalDangerCount';
+import { Virtuoso } from 'react-virtuoso';
 
 interface DesktopSelectAccountListProps {
   shouldElevate?: boolean;
@@ -64,13 +65,37 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
 
   return (
     <div
-      className="flex flex-col gap-[12px]"
+      className="flex flex-col gap-[12px] h-full"
       style={{
         position: shouldElevate ? 'relative' : 'static',
         zIndex: shouldElevate ? 2000 : 'auto',
       }}
     >
-      {filteredAccounts.map((item) => {
+      <Virtuoso
+        className="h-full"
+        data={filteredAccounts}
+        itemContent={(index, item) => {
+          const isSelected = currentAccount
+            ? isSameAccount(item, currentAccount)
+            : false;
+
+          return (
+            <AccountItem
+              key={`${item.address}-${item.type}-${item.brandName}`}
+              onClick={() => {
+                switchAccount(item);
+              }}
+              isSelected={isSelected}
+              item={item}
+              isShowApprovalCount={isShowApprovalAlert}
+            >
+              {item.address}
+            </AccountItem>
+          );
+        }}
+        increaseViewportBy={100}
+      />
+      {/* {filteredAccounts.map((item) => {
         const isSelected = currentAccount
           ? isSameAccount(item, currentAccount)
           : false;
@@ -88,7 +113,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
             {item.address}
           </AccountItem>
         );
-      })}
+      })} */}
     </div>
   );
 };
@@ -115,6 +140,7 @@ const AccountItem: React.FC<{
         'px-[16px] py-[14px]',
         'cursor-pointer',
         'border-[1px] border-solid border-transparent',
+        'mb-[12px]',
         isSelected
           ? 'bg-r-blue-default'
           : 'bg-r-neutral-card1 hover:bg-r-blue-light1 hover:border-rabby-blue-default'

@@ -200,7 +200,7 @@ export const DesktopProfile = () => {
               </div>
             </main>
             <aside
-              className="w-[260px] flex-shrink-0 overflow-auto"
+              className={clsx('w-[260px] flex-shrink-0 overflow-auto')}
               style={{
                 height: 'calc(100vh - 120px)',
               }}
