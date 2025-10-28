@@ -5,25 +5,25 @@ import { Bridge } from '../../../Bridge';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { ModalCloseIcon } from '../TokenDetailModal';
+import { useHistory } from 'react-router-dom';
 
 export const SwapTokenModal: React.FC<
-  ModalProps & { type?: 'swap' | 'bridge' }
+  ModalProps & { action: 'swap' | 'bridge' }
 > = (props) => {
   const { t } = useTranslation();
-  const { type, ...modalProps } = props;
-  const [activeTab, setActiveTab] = useState<'swap' | 'bridge'>(type || 'swap');
-
-  // Update active tab when type prop changes
-  useEffect(() => {
-    if (type) {
-      setActiveTab(type);
-    }
-  }, [type]);
+  const { action, ...modalProps } = props;
+  const history = useHistory();
 
   const tabs = [
     { key: 'swap' as const, label: t('page.swap.title') },
     { key: 'bridge' as const, label: t('page.bridge.title') },
   ];
+
+  const handleTabChange = (key: 'swap' | 'bridge') => {
+    const searchParams = new URLSearchParams(history.location.search);
+    searchParams.set('action', key);
+    history.replace(`/desktop/profile?${searchParams.toString()}`);
+  };
 
   return (
     <Modal
@@ -36,6 +36,7 @@ export const SwapTokenModal: React.FC<
       footer={null}
       zIndex={1000}
       closeIcon={ModalCloseIcon}
+      destroyOnClose
       maskStyle={{
         zIndex: 1000,
         backdropFilter: 'blur(8px)',
@@ -46,11 +47,11 @@ export const SwapTokenModal: React.FC<
         <div className="flex justify-center mt-12 mb-12 ">
           <div className="inline-flex items-center bg-r-neutral-line rounded-[6px] border border-rabby-neutral-line">
             {tabs.map((tab) => {
-              const isActive = tab.key === activeTab;
+              const isActive = tab.key === action;
               return (
                 <div
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  onClick={() => handleTabChange(tab.key)}
                   className={clsx(
                     'cursor-pointer rounded-[6px]',
                     'px-[28px] py-[8px] text-center',
@@ -66,7 +67,7 @@ export const SwapTokenModal: React.FC<
             })}
           </div>
         </div>
-        {activeTab === 'swap' ? <Swap /> : <Bridge />}
+        {action === 'swap' ? <Swap /> : <Bridge />}
       </div>
     </Modal>
   );

@@ -708,28 +708,35 @@ export const useBridge = () => {
     toChain?: CHAINS_ENUM;
     toTokenId?: string;
     maxNativeTokenGasPrice?: string;
+
+    chain?: string; // for from swap switch to bridge use from token
+    payTokenId?: string; // for from swap switch to bridge
   }>(query2obj(search));
 
   useEffect(() => {
     let active = true;
+    console.log('searchObj', searchObj, search, userAddress);
     if (!searchObj) {
       return;
     }
-    if (
-      (searchObj.fromChain || searchObj.fromChainServerId) &&
-      searchObj.fromTokenId
-    ) {
-      const fromChain = findChain({
+    const fromChainServerId = searchObj.fromChainServerId || searchObj.chain;
+    const fromTokenId = searchObj.fromTokenId || searchObj.payTokenId;
+
+    if ((searchObj.fromChain || fromChainServerId) && fromTokenId) {
+      const fromChainItem = findChain({
         enum: searchObj.fromChain,
-        serverId: searchObj.fromChainServerId,
+        serverId: fromChainServerId,
       });
-      if (userAddress && fromChain) {
+      console.log('searchObj0', fromChain, fromChainItem);
+      if (userAddress && fromChainItem) {
+        console.log('searchObj1', searchObj, search);
         wallet.openapi
-          .getToken(userAddress, fromChain.serverId, searchObj.fromTokenId)
+          .getToken(userAddress, fromChainItem.serverId, fromTokenId)
           .then((token) => {
             if (active) {
-              switchFromChain(fromChain.enum);
+              switchFromChain(fromChainItem.enum);
               setFromToken(token);
+              console.log('searchObj2', searchObj, search);
             }
           });
       }
@@ -767,6 +774,8 @@ export const useBridge = () => {
     searchObj?.inputAmount,
     searchObj?.toChain,
     searchObj?.toTokenId,
+    searchObj?.chain,
+    searchObj?.payTokenId,
   ]);
 
   const isSetMaxRef = useRef(false);

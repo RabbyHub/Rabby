@@ -212,11 +212,11 @@ const TokenDetail = ({
     } else {
       if (isDesktop) {
         wallet.openInDesktop(
-          `desktop/profile?rbisource=tokendetail&action=bridge&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
+          `desktop/profile?rbisource=tokendetail&action=bridge&chain=${token?.chain}&payTokenId=${token?.id}`
         );
       } else {
         history.push(
-          `/bridge?rbisource=tokendetail&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
+          `/bridge?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
         );
       }
     }
