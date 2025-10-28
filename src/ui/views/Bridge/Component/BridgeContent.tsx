@@ -249,7 +249,7 @@ export const BridgeContent = () => {
             },
           }
         );
-        if (!isTab) {
+        if (!(isTab || isDesktop)) {
           window.close();
         } else {
           await promise;
