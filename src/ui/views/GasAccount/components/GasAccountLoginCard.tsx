@@ -9,10 +9,7 @@ import { useRabbySelector, useRabbyDispatch } from 'ui/store';
 import { formatUsdValue, useWallet } from 'ui/utils';
 import { useGasAccountMethods } from '../hooks';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
-import { EVENTS } from '@/constant';
 import clsx from 'clsx';
-import eventBus from '@/eventBus';
-import { isNoSignAccount } from '@/utils/account';
 
 export const GasAccountLoginCard = ({
   onLoginPress,

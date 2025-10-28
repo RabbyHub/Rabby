@@ -16,32 +16,34 @@ import { useRabbySelector } from '@/ui/store';
 
 import { ReactComponent as RcAvatarCC } from '@/ui/views/SendToken/icons/avatar-cc.svg';
 import { ReactComponent as RcToSwitch } from '@/ui/views/SendToken/icons/to-address-switch.svg';
-import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/small-lock.svg';
+import { ReactComponent as RcWhitelistGuardBordered } from '@/ui/assets/component/whitelist-guard-bordered.svg';
+import { ReactComponent as RcCheckRight } from '@/ui/assets/send-token/check-right.svg';
+
 import { ReactComponent as RcIconAddressEntry } from '@/ui/views/SendToken/icons/address-entry.svg';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS } from '@/constant';
+import { RiskType, useAddressRisks } from '@/ui/hooks/useAddressRisk';
+import { AddressViewer } from '@/ui/component';
 
 const isTab = getUiType().isTab;
 
 export function AddressInfoTo({
   toAccount,
-  // inWhitelist,
-  loading,
+  loadingToAddressDesc,
+  isMyImported,
   cexInfo,
   className,
   onClick,
 }: {
   className?: string;
   toAccount?: Account;
-  // inWhitelist?: boolean;
-  loading?: boolean;
+  loadingToAddressDesc: boolean;
+  isMyImported: boolean | undefined;
   cexInfo?: Cex;
   onClick?: () => void;
 }) {
   const { t } = useTranslation();
 
   const { isDarkTheme } = useThemeMode();
-
-  // const [account, setAccount] = useState<Account | null>(null);
 
   const addressTypeIcon = useBrandIcon({
     address: toAccount?.address || '',
@@ -56,9 +58,12 @@ export function AddressInfoTo({
     whitelist: s.whitelist.whitelist,
   }));
 
-  const inWhitelist =
-    !!toAccount?.address &&
-    whitelist?.some((w) => isSameAddress(w, toAccount.address));
+  const inWhitelist = useMemo(() => {
+    return (
+      !!toAccount?.address &&
+      whitelist?.some((w) => isSameAddress(w, toAccount.address))
+    );
+  }, [toAccount?.address, whitelist]);
 
   const { showBorderdDesc, cexInfoText } = useMemo(() => {
     const ret = {
@@ -89,6 +94,9 @@ export function AddressInfoTo({
     return ret;
   }, [cexInfo, toAccount?.type]);
 
+  const isRecentSent = false;
+  const hasPositiveTips = inWhitelist || isRecentSent || isMyImported;
+
   return (
     <div className={clsx(className, 'overflow-auto')} onClick={onClick}>
       <div className="section relative">
@@ -96,6 +104,17 @@ export function AddressInfoTo({
           <span className="section-title__to font-medium">
             {t('page.sendToken.sectionTo.title')}
           </span>
+
+          {hasPositiveTips && (
+            <div className="flex items-center justify-end">
+              <RcCheckRight width={18} height={18} className="mr-[3px]" />
+              {isMyImported ? (
+                <span className="text-r-green-default">Your own address</span>
+              ) : inWhitelist ? (
+                <span className="text-r-green-default">Whitelist address</span>
+              ) : null}
+            </div>
+          )}
         </div>
 
         {/* selected block  */}
@@ -132,48 +151,61 @@ export function AddressInfoTo({
                     />
                   )}
                   {inWhitelist && (
-                    <div className="absolute w-[12px] h-[12px] bottom-[-2px] right-[-2px] text-r-blue-default">
-                      <RcWhitelistIconCC
-                        width={12}
-                        height={12}
-                        viewBox="0 0 12 12"
+                    <div className="absolute w-[18px] h-[18px] whitelist-guard-bordered-view text-r-blue-default">
+                      <RcWhitelistGuardBordered
+                        width={18}
+                        height={18}
+                        viewBox="0 0 18 18"
                       />
                     </div>
                   )}
                 </div>
               </Tooltip>
 
-              <div className="flex items-center ml-[8px]">
-                <Tooltip
-                  overlayClassName="address-tooltip address-tooltip-light rounded-tooltip"
-                  title={
-                    <div className="flex flex-col justify-center">
-                      <MarkedHeadTailAddress address={toAccount?.address} />
-                      {showBorderdDesc && (
-                        <div
-                          className={clsx(
-                            'flex items-center justify-center',
-                            'rounded-[8px] bg-r-blue-light1',
-                            'px-[12px] h-[32px]',
-                            'text-[13px] font-medium text-r-blue-default whitespace-nowrap overflow-hidden text-ellipsis'
-                          )}
-                        >
-                          {cexInfoText}
-                        </div>
-                      )}
+              <div className="flex flex-col items-center ml-[8px]">
+                {toAccount?.address ? (
+                  <Tooltip
+                    overlayClassName="address-tooltip address-tooltip-transparent rounded-tooltip"
+                    title={
+                      <div className="flex flex-col justify-center">
+                        {/* <MarkedHeadTailAddress address={toAccount?.address} /> */}
+                        {showBorderdDesc && (
+                          <div
+                            className={clsx(
+                              'flex items-center justify-center',
+                              'rounded-[8px] bg-r-blue-light1',
+                              'px-[12px] h-[32px]',
+                              'text-[13px] font-medium text-r-blue-default whitespace-nowrap overflow-hidden text-ellipsis'
+                            )}
+                          >
+                            {cexInfoText}
+                          </div>
+                        )}
+                      </div>
+                    }
+                    {...(!showBorderdDesc && {
+                      visible: false,
+                    })}
+                  >
+                    <div className="flex flex-col justify-center items-start">
+                      <span className="text-[16px] font-[600] leading-[20px] text-r-neutral-title-1">
+                        {aliasName || ellipsisAddress(toAccount?.address || '')}
+                      </span>
+                      <AddressViewer
+                        address={toAccount?.address?.toLowerCase()}
+                        showArrow={false}
+                        longEllipsis
+                        className={clsx(
+                          'text-[13px] text-r-neutral-body leading-[16px] mt-[4px]'
+                        )}
+                      />
                     </div>
-                  }
-                  {...(!toAccount?.address && {
-                    visible: false,
-                  })}
-                  // visible
-                >
+                  </Tooltip>
+                ) : (
                   <span className="text-[16px] font-[600] leading-[20px] text-r-neutral-title-1">
-                    {toAccount?.address
-                      ? aliasName || ellipsisAddress(toAccount?.address || '')
-                      : t('page.sendToken.sectionTo.placeholder')}
+                    {t('page.sendToken.sectionTo.placeholder')}
                   </span>
-                </Tooltip>
+                )}
               </div>
             </div>
 

@@ -425,6 +425,19 @@ textarea {
       background-color: var(--r-neutral-bg1);
     }
   }
+  &.address-tooltip.address-tooltip-transparent {
+    .ant-tooltip-inner {
+      background: transparent;
+    }
+
+    .ant-tooltip-arrow {
+      border-color: transparent;
+    }
+
+    .ant-tooltip-arrow-content {
+      background-color: transparent;
+    }
+  }
 }
 
 /*---------------------
@@ -544,4 +557,9 @@ textarea {
     padding: 0 !important;
     background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
   }
+}
+
+.whitelist-guard-bordered-view {
+  bottom: -6px;
+  right: -6px;
 }

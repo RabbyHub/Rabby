@@ -754,6 +754,9 @@
       "selectToken": "Select Token",
       "accountSelectorModal": {
         "title": "Select Address"
+      },
+      "riskAlert": {
+        "checkboxText": "I understand the alert and want to continue"
       }
     },
     "perps": {
@@ -3015,6 +3018,52 @@
         "title": "All Results",
         "searching": "Results for",
         "searchTips": "Search the web"
+      }
+    },
+    "selectToAddress": {
+      "title": "Address",
+      "enterAddress": "Enter address",
+      "enterAddressOrENS": "Enter or Search address",
+      "selectExchangeSource": "Select Exchange Source",
+      "emptyWhitelist": {
+        "title": "Add Whitelist Address",
+        "desc": "Add trusted addresses to whitelist for fast transfers - no confirmation needed next time",
+        "addNow": "Add Now"
+      },
+      "whitelist": {
+        "title": "Whitelist",
+        "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
+        "addWhitelist": "Add New whitelist Address",
+        "removeFromWhitelist": "Remove from whitelist",
+        "notWhitelist": "Not a whitelist Address"
+      },
+      "sendToImportedAddress": "Send to Imported Address",
+      "selectImportedAddress": "Select Imported address",
+      "addWhitelist": {
+        "title": "Add Whitelist Address",
+        "desc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time"
+      },
+      "riskAlert": {
+        "title": "Send to this Address",
+        "understandRisks": "I understand the risks and want to continue",
+        "cexDepositAddress": "{{cexName}} Deposit Address",
+        "cexAddress": "{{cexName}} Address",
+        "passwordPlaceholder": "Input password to continue",
+        "TransferBefore": "Transferred before",
+        "TransferBeforeValue": "Yes",
+        "AddToWhitelist": "Add to Whitelist",
+        "riskType": {
+          "risks": {
+            "noSend": "No transfers to this address in 180 days",
+            "dexNoDeposite": "Not a CEX deposit address, funds may be lost",
+            "contractAddress": "Contract address detected, funds may be lost",
+            "scamAddress": "Scam address flagged by Rabby"
+          }
+        }
+      },
+      "tabs": {
+        "whitelist": "Whitelist",
+        "imported": "Imported"
       }
     }
   },

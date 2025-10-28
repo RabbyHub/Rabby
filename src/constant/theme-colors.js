@@ -16,6 +16,8 @@ const themeColors = {
     'red-default': 'rgba(227, 73, 53, 1)',
     'red-light': 'rgba(255, 242, 240, 1)',
     'red-dark': 'rgba(174, 42, 25, 1)',
+    'red-light1': 'rgba(255, 115, 107, 0.1)',
+    'red-light-1': 'rgba(255, 115, 107, 0.1)',
     'red-light2': 'rgba(239, 212, 209, 1)',
     'red-light-2': 'rgba(239, 212, 209, 1)',
 
@@ -68,6 +70,8 @@ const themeColors = {
     'red-default': 'rgba(239, 92, 72, 1)',
     'red-light': 'rgba(79, 58, 66, 1)',
     'red-dark': 'rgba(174, 42, 25, 1)',
+    'red-light1': 'rgba(255, 115, 107, 0.1)',
+    'red-light-1': 'rgba(255, 115, 107, 0.1)',
     'red-light2': 'rgba(79, 58, 66, 1)',
     'red-light-2': 'rgba(79, 58, 66, 1)',
 

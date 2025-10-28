@@ -75,6 +75,12 @@ import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import { AddressInfoFrom } from './components/AddressInfoFrom';
 import { AddressInfoTo } from './components/AddressInfoTo';
+import BottomArea from './components/BottomArea';
+import {
+  RiskType,
+  sortRisksDesc,
+  useAddressRisks,
+} from '@/ui/hooks/useAddressRisk';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -244,6 +250,7 @@ const SendToken = () => {
 
   const {
     targetAccount,
+    isMyImported,
     addressDesc,
     loading: loadingToAddressDesc,
   } = useAddressInfo(toAddress, {
@@ -251,12 +258,35 @@ const SendToken = () => {
   });
   useInitCheck(addressDesc);
 
-  const canSubmit =
+  const [agreeRequiredChecked, setAgreeRequiredChecked] = useState(true);
+  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+    onLoadFinished: useCallback(() => {
+      setAgreeRequiredChecked(false);
+    }, []),
+  });
+
+  const mostImportantRisks = React.useMemo(() => {
+    if (risks.length === 0) {
+      return [];
+    }
+    const sorted = [...risks]
+      .filter((item) => item.type !== RiskType.NEVER_SEND)
+      .sort(sortRisksDesc);
+    return sorted.slice(0, 1);
+  }, [risks]);
+
+  const canLoadGasFee =
     isValidAddress(form.getFieldValue('to')) &&
     !!currentToken &&
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).gte(0) &&
     !isLoading;
+
+  const canSubmit =
+    canLoadGasFee &&
+    !loadingRisks &&
+    (!mostImportantRisks.length || agreeRequiredChecked);
+
   const isNativeToken =
     !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
 
@@ -459,7 +489,7 @@ const SendToken = () => {
     }
   }, [clickedMax, loadGasList]);
 
-  const [miniSinLoading, setMiniSinLoading] = useState(false);
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
 
   const canUseDirectSubmitTx = useMemo(() => {
     let sendToOtherChainContract = false;
@@ -475,12 +505,12 @@ const SendToken = () => {
       }
     }
     return (
-      canSubmit &&
+      canLoadGasFee &&
       supportedDirectSign(currentAccount?.type || '') &&
       !chainItem?.isTestnet &&
       !sendToOtherChainContract
     );
-  }, [canSubmit, chainItem?.isTestnet, currentAccount?.type]);
+  }, [canLoadGasFee, chainItem?.isTestnet, currentAccount?.type]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
@@ -497,7 +527,7 @@ const SendToken = () => {
       let shouldForceSignPage = !!forceSignPage;
 
       if (canUseDirectSubmitTx && !shouldForceSignPage) {
-        setMiniSinLoading(true);
+        setMiniSignLoading(true);
         try {
           const hashes = await openDirect({
             txs: [params as Tx],
@@ -512,13 +542,13 @@ const SendToken = () => {
           if (hash) {
             handleMiniSignResolve();
           } else {
-            setMiniSinLoading(false);
+            setMiniSignLoading(false);
           }
           return;
         } catch (error) {
           console.error('send token direct sign error', error);
 
-          setMiniSinLoading(false);
+          setMiniSignLoading(false);
           if (
             error === MINI_SIGN_ERROR.USER_CANCELLED ||
             error === MINI_SIGN_ERROR.CANT_PROCESS
@@ -649,7 +679,7 @@ const SendToken = () => {
     let isCurrent = true;
     const setMiniTx = async () => {
       if (
-        canSubmit &&
+        canLoadGasFee &&
         canUseDirectSubmitTx &&
         amount &&
         address &&
@@ -760,7 +790,7 @@ const SendToken = () => {
     refreshId,
     reserveGasOpen,
     isEstimatingGas,
-    canSubmit,
+    canLoadGasFee,
     canUseDirectSubmitTx,
     currentToken?.chain,
     getParams,
@@ -781,7 +811,7 @@ const SendToken = () => {
 
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
-      setMiniSinLoading(false);
+      setMiniSignLoading(false);
       prefetch({
         txs: [],
       });
@@ -1498,8 +1528,6 @@ const SendToken = () => {
     }
   });
 
-  // if (!currentAccount) return null;
-
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -1519,7 +1547,7 @@ const SendToken = () => {
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer absolute right-0 top-1/2 -translate-y-1/2"
+                className="text-r-neutral-title1 cursor-pointer right-0 top-[20px]"
                 onClick={() => {
                   openInternalPageInTab(`send-token${history.location.search}`);
                 }}
@@ -1533,7 +1561,7 @@ const SendToken = () => {
         </PageHeader>
         <Form
           form={form}
-          className="send-token-form"
+          className="send-token-form pt-[16px]"
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
           initialValues={{
@@ -1541,16 +1569,17 @@ const SendToken = () => {
             amount: '',
           }}
         >
-          <AddressInfoFrom />
-          <AddressInfoTo
-            loading={loadingToAddressDesc}
-            toAccount={targetAccount}
-            cexInfo={addressDesc?.cex}
-            onClick={() => {
-              history.replace(`/send-poly${history.location.search}`);
-            }}
-          />
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto pb-[32px]">
+            <AddressInfoFrom />
+            <AddressInfoTo
+              loadingToAddressDesc={loadingToAddressDesc}
+              toAccount={targetAccount}
+              isMyImported={isMyImported}
+              cexInfo={addressDesc?.cex}
+              onClick={() => {
+                history.replace(`/select-to-address${history.location.search}`);
+              }}
+            />
             <div className="section">
               <div className="section-title flex justify-between items-center">
                 <div className="token-balance whitespace-pre-wrap font-medium">
@@ -1613,35 +1642,25 @@ const SendToken = () => {
             )}
           </div>
 
-          <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
-            <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-              {canUseDirectSubmitTx && currentAccount?.type ? (
-                <DirectSignToConfirmBtn
-                  title={t('page.sendToken.sendButton')}
-                  onConfirm={() => {
-                    handleSubmit({
-                      to: form.getFieldValue('to'),
-                      amount: form.getFieldValue('amount'),
-                    });
-                  }}
-                  disabled={!canSubmit}
-                  accountType={currentAccount?.type}
-                  loading={miniSinLoading}
-                />
-              ) : (
-                <Button
-                  disabled={!canSubmit}
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  className="w-[100%] h-[48px] text-[16px]"
-                  loading={isSubmitLoading}
-                >
-                  {t('page.sendToken.sendButton')}
-                </Button>
-              )}
-            </div>
-          </div>
+          <BottomArea
+            // toAddress={targetAccount?.address}
+            mostImportantRisks={mostImportantRisks}
+            agreeRequiredChecked={agreeRequiredChecked}
+            onCheck={(newVal) => {
+              setAgreeRequiredChecked(newVal);
+            }}
+            currentAccount={currentAccount}
+            isSubmitLoading={isSubmitLoading}
+            canSubmit={canSubmit}
+            miniSignLoading={miniSignLoading}
+            canUseDirectSubmitTx={canUseDirectSubmitTx}
+            onConfirm={() => {
+              handleSubmit({
+                to: form.getFieldValue('to'),
+                amount: form.getFieldValue('amount'),
+              });
+            }}
+          />
         </Form>
         <SendReserveGasPopup
           selectedItem={selectedGasLevel?.level as GasLevelType}

@@ -29,10 +29,29 @@ export const enum RiskType {
   CEX_NO_DEPOSIT = 4,
 }
 
+const riskTypePriority = {
+  [RiskType.CEX_NO_DEPOSIT]: 1,
+  [RiskType.NEVER_SEND]: 11,
+  [RiskType.CONTRACT_ADDRESS]: 111,
+  [RiskType.SCAM_ADDRESS]: 1111,
+};
+
+export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
+  return (
+    riskTypePriority[b.type as keyof typeof riskTypePriority] -
+    riskTypePriority[a.type as keyof typeof riskTypePriority]
+  );
+}
+export type RiskItem = { type: RiskType; value: string };
 export const useAddressRisks = (
   address: string,
-  editCex?: IExchange | null
+  options?: {
+    onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
+    editCex?: IExchange | null;
+  }
 ) => {
+  const { editCex, onLoadFinished } = options || {};
+
   const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -220,6 +239,7 @@ export const useAddressRisks = (
         setHasNoSend(true);
         queue.clear();
       } finally {
+        onLoadFinished?.();
         setLoadingHasTransfer(false);
       }
     })();
