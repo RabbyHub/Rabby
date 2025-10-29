@@ -3303,6 +3303,7 @@ export class WalletController extends BaseController {
       });
       preferenceService.removeAddressBalance(address);
       preferenceService.removeCurvePoints(address);
+      perpsService.removeAgentWallet(address);
     }
     const current = preferenceService.getCurrentAccount();
     if (
