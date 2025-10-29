@@ -310,7 +310,7 @@ const TokenAmountInput = ({
                   width="24px"
                   height="24px"
                   token={token}
-                  hideChainIcon
+                  // hideChainIcon
                   hideConer
                 />
               )}

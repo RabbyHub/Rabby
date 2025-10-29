@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, useDebounce } from 'react-use';
-import { Form, message, Button, Modal } from 'antd';
+import { Form, message, Button, Modal, Slider } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
@@ -32,11 +32,11 @@ import {
   useWallet,
 } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
-import { formatTokenAmount } from 'ui/utils/number';
+import { coerceFloat, formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { Cex, GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
-import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
+// import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -81,6 +81,7 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
+import { SwapSlider } from '../Swap/Component/Slider';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -117,6 +118,33 @@ type FormSendToken = {
   to: string;
   amount: string;
 };
+
+function getSliderPercent(
+  amountValue: string | number,
+  inputs: {
+    token?: TokenItem | null;
+  }
+) {
+  const { token } = inputs || {};
+
+  let balanceBigNum = new BigNumber(0);
+  if (token) {
+    balanceBigNum = new BigNumber(token.raw_amount_hex_str || 0).div(
+      10 ** token.decimals
+    );
+
+    if (balanceBigNum.isZero()) return 0;
+
+    const val =
+      coerceFloat(
+        new BigNumber(coerceFloat(amountValue, 0)).div(balanceBigNum).toFixed(2)
+      ) * 100;
+
+    return Math.max(0, Math.min(100, val));
+  }
+
+  return 0;
+}
 
 const ChainSelectWrapper = styled.div`
   border: 1px solid transparent;
@@ -848,14 +876,15 @@ const SendToken = () => {
 
   const handleFormValuesChange = useCallback(
     async (
-      changedValues,
+      changedValues: null | Partial<FormSendToken>,
       { amount, ...restForm }: FormSendToken,
       opts?: {
         token?: TokenItem;
         isInitFromCache?: boolean;
+        updateSliderValueIfAmountChanged?: boolean;
       }
     ) => {
-      const { token } = opts || {};
+      const { token, updateSliderValueIfAmountChanged = true } = opts || {};
       if (changedValues && changedValues.to) {
         handleReceiveAddressChanged(changedValues.to);
       }
@@ -899,6 +928,17 @@ const SendToken = () => {
 
       form.setFieldsValue(nextFormValues);
       setCacheAmount(resultAmount);
+
+      if (updateSliderValueIfAmountChanged) {
+        if (resultAmount) {
+          const percentValue = getSliderPercent(resultAmount, {
+            token: targetToken,
+          });
+          setSliderPercentValue(percentValue);
+        } else {
+          setSliderPercentValue(0);
+        }
+      }
     },
     [
       cacheAmount,
@@ -1486,18 +1526,24 @@ const SendToken = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { balanceNumText } = useMemo(() => {
+  const [sliderPercentValue, setSliderPercentValue] = useState(0);
+  const { balanceBigNum, balanceNumText } = useMemo(() => {
     if (!currentToken) {
-      return { balanceNumText: '' };
+      return {
+        balanceNumText: '',
+        balanceBigNum: new BigNumber(0),
+        sliderPercentValue: 0,
+      };
     }
-    const balanceNum = new BigNumber(currentToken.raw_amount_hex_str || 0).div(
-      10 ** currentToken.decimals
-    );
+    const balanceBigNum = new BigNumber(
+      currentToken.raw_amount_hex_str || 0
+    ).div(10 ** currentToken.decimals);
     const decimalPlaces = clickedMax || selectedGasLevel ? 8 : 4;
 
     return {
+      balanceBigNum,
       balanceNumText: formatTokenAmount(
-        balanceNum.toFixed(decimalPlaces, BigNumber.ROUND_FLOOR),
+        balanceBigNum.toFixed(decimalPlaces, BigNumber.ROUND_FLOOR),
         decimalPlaces
       ),
     };
@@ -1585,10 +1631,40 @@ const SendToken = () => {
                 <div className="token-balance whitespace-pre-wrap font-medium">
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
+
+                <div className="token-balance-slider w-[120px] flex justify-between items-center">
+                  <SwapSlider
+                    min={0}
+                    max={100}
+                    disabled={isLoading}
+                    value={sliderPercentValue}
+                    onChange={(value) => {
+                      setSliderPercentValue(value);
+                      const newAmount = balanceBigNum
+                        ?.multipliedBy(value / 100)
+                        .toFixed();
+                      form.setFieldsValue({ amount: newAmount });
+                      handleFormValuesChange(
+                        { amount: newAmount },
+                        {
+                          ...form.getFieldsValue(),
+                          amount: newAmount,
+                        },
+                        {
+                          updateSliderValueIfAmountChanged: false,
+                        }
+                      );
+                    }}
+                    className="w-[100%]"
+                  />
+                  <span className="ml-[8px] text-[13px] text-r-blue-default">
+                    {sliderPercentValue}%
+                  </span>
+                </div>
               </div>
               {currentAccount && chainItem && (
                 <div className="bg-r-neutral-card1 rounded-[8px]">
-                  <ChainSelectWrapper>
+                  {/* <ChainSelectWrapper>
                     <ChainSelectorInForm
                       value={chain}
                       loading={initLoading}
@@ -1602,7 +1678,7 @@ const SendToken = () => {
                       showClosableIcon
                       getContainer={getContainer}
                     />
-                  </ChainSelectWrapper>
+                  </ChainSelectWrapper> */}
                   <Form.Item name="amount">
                     <TokenAmountInput
                       className="bg-r-neutral-card1 rounded-[8px]"

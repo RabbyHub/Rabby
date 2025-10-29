@@ -42,7 +42,8 @@ export default function BottomArea({
 }) {
   const { t } = useTranslation();
 
-  const canSubmit = _canSubmit && (!mostImportantRisks.length || agreeRequiredChecked);
+  const canSubmit =
+    _canSubmit && (!mostImportantRisks.length || agreeRequiredChecked);
 
   return (
     <div className={clsx('footer px-[20px]', isTab ? 'rounded-b-[16px]' : '')}>

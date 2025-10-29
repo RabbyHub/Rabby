@@ -226,7 +226,7 @@ export const isFullVersionAccountType = (account: Account) => {
   ].includes(account.type as any);
 };
 
-export const isEssentialAccount = (account: Account) => {
+export const filterMyAccounts = (account: Account) => {
   return (
     account.type !== KEYRING_CLASS.WATCH &&
     account.type !== KEYRING_CLASS.GNOSIS

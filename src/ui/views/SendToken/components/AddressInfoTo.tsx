@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Cex } from '@rabby-wallet/rabby-api/dist/types';
@@ -12,7 +12,7 @@ import { getUiType, isSameAddress, useAlias } from '@/ui/utils';
 import { Tooltip } from 'antd';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import MarkedHeadTailAddress from '@/ui/component/AddressViewer/MarkedHeadTailAddress';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 import { ReactComponent as RcAvatarCC } from '@/ui/views/SendToken/icons/avatar-cc.svg';
 import { ReactComponent as RcToSwitch } from '@/ui/views/SendToken/icons/to-address-switch.svg';
@@ -23,6 +23,7 @@ import { ReactComponent as RcIconAddressEntry } from '@/ui/views/SendToken/icons
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS } from '@/constant';
 import { RiskType, useAddressRisks } from '@/ui/hooks/useAddressRisk';
 import { AddressViewer } from '@/ui/component';
+import { useRecentSendToHistoryFor } from '@/ui/component/SendLike/hooks/useRecentSend';
 
 const isTab = getUiType().isTab;
 
@@ -54,6 +55,7 @@ export function AddressInfoTo({
 
   const aliasName = useAlias(toAccount?.address || '');
 
+  const rDispatch = useRabbyDispatch();
   const { whitelist } = useRabbySelector((s) => ({
     whitelist: s.whitelist.whitelist,
   }));
@@ -94,11 +96,19 @@ export function AddressInfoTo({
     return ret;
   }, [cexInfo, toAccount?.type]);
 
-  const isRecentSent = false;
-  const hasPositiveTips = inWhitelist || isRecentSent || isMyImported;
+  useEffect(() => {
+    rDispatch.accountToDisplay.getAllAccountsToDisplay();
+  }, [rDispatch]);
+
+  const { recentHistory: recentSendToHistory } = useRecentSendToHistoryFor(
+    toAccount?.address
+  );
+  const toAddressIsRecentlySend = recentSendToHistory.length > 0;
+  const hasPositiveTips =
+    toAddressIsRecentlySend || inWhitelist || isMyImported;
 
   return (
-    <div className={clsx(className, 'overflow-auto')} onClick={onClick}>
+    <div className={clsx(className, 'overflow-auto')}>
       <div className="section relative">
         <div className="section-title justify-between items-center flex">
           <span className="section-title__to font-medium">
@@ -112,6 +122,8 @@ export function AddressInfoTo({
                 <span className="text-r-green-default">Your own address</span>
               ) : inWhitelist ? (
                 <span className="text-r-green-default">Whitelist address</span>
+              ) : toAddressIsRecentlySend ? (
+                <span className="text-r-green-default">Sent before</span>
               ) : null}
             </div>
           )}
@@ -125,7 +137,7 @@ export function AddressInfoTo({
               isDarkTheme ? 'bg-r-neutral-card1' : 'bg-r-neutral-bg1',
               'cursor-pointer border-[1px] border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light1 rounded-[8px]'
             )}
-            onClick={() => {}}
+            onClick={onClick}
           >
             <div className="relative flex items-center justify-start">
               <Tooltip

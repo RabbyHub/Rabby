@@ -98,7 +98,12 @@ export const EnterAddress = ({
     name: string;
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
-  const [isValidAddr, setIsValidAddr] = useState(true);
+  // const [isValidAddr, setIsValidAddr] = useState(true);
+  const isValidAddr = useMemo(() => {
+    return isValidAddress(inputAddress);
+  }, [inputAddress]);
+  const shouldShowError = !!inputAddress && !isValidAddr && !ensResult?.addr;
+  const disableSubmit = !inputAddress || shouldShowError;
 
   const [isFocusAddress, setIsFocusAddress] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -143,7 +148,7 @@ export const EnterAddress = ({
   const handleConfirmENS = useCallback(
     (result: string) => {
       setInputAddress(result);
-      setIsValidAddr(true);
+      // setIsValidAddr(true);
       setTags([`ENS: ${ensResult?.name || ''}`]);
       setEnsResult(null);
     },
@@ -178,17 +183,17 @@ export const EnterAddress = ({
             const result = await wallet.openapi.getEnsAddressByName(address);
             if (result && result.addr) {
               setEnsResult(result);
-              setIsValidAddr(true);
+              // setIsValidAddr(true);
             } else {
               setEnsResult(null);
-              setIsValidAddr(!address.length);
+              // setIsValidAddr(!address.length);
             }
           } catch (e) {
             setEnsResult(null);
-            setIsValidAddr(false);
+            // setIsValidAddr(false);
           }
         } else {
-          setIsValidAddr(true);
+          // setIsValidAddr(true);
           setEnsResult(null);
         }
       }, 300),
@@ -200,12 +205,9 @@ export const EnterAddress = ({
     if (address && isValidAddress(address)) {
       onNext(address);
     } else {
-      setIsValidAddr(false);
+      // setIsValidAddr(false);
     }
   };
-  const isValidateAddress = useMemo(() => {
-    return isValidAddress(inputAddress);
-  }, [inputAddress]);
 
   return (
     <Form
@@ -262,7 +264,7 @@ export const EnterAddress = ({
               />
             </div>
           </StyledInputWrapper>
-          {!isValidAddr && !filteredAccounts.length && (
+          {shouldShowError && (
             <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center mt-[8px]">
               <div className="text-r-red-default">
                 <RcIconWarningCC />
@@ -293,7 +295,7 @@ export const EnterAddress = ({
             </div>
           </div>
         )}
-        {isValidateAddress &&
+        {/* {isValidAddr &&
           (whitelist.some((item) => isSameAddress(item, inputAddress)) ||
             !!filteredAccounts.length) && (
             <WhitelistAddressTypeCard
@@ -311,23 +313,23 @@ export const EnterAddress = ({
                   : KEYRING_TYPE.WatchAddressKeyring
               }
             />
-          )}
+          )} */}
       </div>
       {shouldRender && (
         <>
           <div className="flex-1 pt-[20px] overflow-y-scroll">
-            {!isValidateAddress && (
+            {/* {!isValidAddr && (
               <AccountList
                 list={filteredAccounts}
                 whitelist={whitelist}
                 onChange={(acc) => onNext(acc.address, acc.type)}
               />
-            )}
+            )} */}
           </div>
           <div className={'footer'}>
             <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
               <Button
-                disabled={(!isValidAddr || !inputAddress) && !ensResult?.addr}
+                disabled={disableSubmit}
                 type="primary"
                 htmlType="submit"
                 size="large"

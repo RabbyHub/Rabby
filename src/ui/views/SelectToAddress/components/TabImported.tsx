@@ -13,7 +13,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { groupBy } from 'lodash';
-import { findAccountByPriority, isEssentialAccount } from '@/utils/account';
+import { findAccountByPriority, filterMyAccounts } from '@/utils/account';
 import { padWatchAccount } from '../util';
 
 // icons
@@ -94,12 +94,12 @@ export default function TabImported({
         _inWhitelist: whitelistSet.has(result.address.toLowerCase()),
       };
 
-      const isEssential = isEssentialAccount(value);
+      const isMyImported = filterMyAccounts(value);
 
-      const targetList = isEssential
+      const targetList = isMyImported
         ? ret.essentialAccounts
         : ret.otherAccounts;
-      if (!isEssential && !targetList.length) {
+      if (!isMyImported && !targetList.length) {
         value._isFirstOtherAccount = true;
       }
 

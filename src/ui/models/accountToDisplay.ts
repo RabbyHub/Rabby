@@ -5,6 +5,7 @@ import { DisplayedKeryring } from '@/background/service/keyring';
 import { sortAccountsByBalance } from '../utils/account';
 import PQueue from 'p-queue';
 import { TotalBalanceResponse } from '@/background/service/openapi';
+import { filterMyAccounts } from '@/utils/account';
 
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
 export type IDisplayedAccountWithBalance = IDisplayedAccount & {
@@ -37,6 +38,13 @@ export const accountToDisplay = createModel<RootModel>()({
       );
     },
   },
+  selectors: (slice) => ({
+    myImportedAccounts() {
+      return slice((account) => {
+        return account.accountsList.filter((item) => filterMyAccounts(item));
+      });
+    },
+  }),
   effects: (dispatch) => ({
     async getAllAccountsToDisplay(_: void, store) {
       dispatch.accountToDisplay.setField({ loadingAccounts: true });
