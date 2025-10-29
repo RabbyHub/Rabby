@@ -3,14 +3,14 @@ import { Props as TokenItemProps } from '@/ui/views/CommonPopup/AssetList/TokenI
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import BigNumber from 'bignumber.js';
 import { TokenTable } from './TokenTable';
-import { TokenListEmpty } from '@/ui/views/CommonPopup/AssetList/TokenListEmpty';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcWalletIconCC } from 'ui/assets/wallet-cc.svg';
 import { Switch } from 'antd';
 import styled from 'styled-components';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import clsx from 'clsx';
-import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
+import { numberWithCommasIsLtOne } from '@/ui/utils/number';
+import { TokenListEmpty } from './TokenListEmpty';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -49,12 +49,8 @@ export const TokenList = ({
   const { t } = useTranslation();
 
   if (isNoResults) {
-    return (
-      <TokenListEmpty
-        className="mt-[92px]"
-        text={t('page.dashboard.assets.table.noMatch')}
-      />
-    );
+    // TODO: 自适应撑满高度
+    return <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />;
   }
   return (
     <div className="mt-[7px]">
@@ -74,7 +70,7 @@ export const TokenList = ({
           </div>
         </div>
         <div className="text-[15px] text-r-neutral-title1 font-medium">
-          {formatUsdValueKMB(totalValue || 0)}
+          {numberWithCommasIsLtOne(totalValue || 0, 0)}
         </div>
       </div>
       <ListContainer>
