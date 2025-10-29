@@ -6,8 +6,11 @@ import clsx from 'clsx';
 import { useMemoizedFn } from 'ahooks';
 import { ReactComponent as RcIconGasAccountTip1 } from 'ui/assets/gas-account/tip1.svg';
 import { ReactComponent as RcIconGasAccountTip2 } from 'ui/assets/gas-account/tip2.svg';
+import { ReactComponent as RcIconGasAccountTipDark2 } from 'ui/assets/gas-account/tip2-dark.svg';
+
 import { ReactComponent as RcIconGasAccountTip3 } from 'ui/assets/gas-account/tip3.svg';
 import { ReactComponent as RcIconGasAccountTip4 } from 'ui/assets/gas-account/tip4.svg';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 interface NewUserProcessProps extends Omit<PopupProps, 'onConfirm'> {
   onComplete?: () => void;
@@ -22,6 +25,7 @@ export const GasAccountNewUserProcessPopup: React.FC<NewUserProcessProps> = ({
 }) => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
+  const { isDarkTheme } = useThemeMode();
 
   React.useEffect(() => {
     if (!visible) {
@@ -89,11 +93,19 @@ export const GasAccountNewUserProcessPopup: React.FC<NewUserProcessProps> = ({
               {t('page.gasAccount.about.desc2')}
             </div>
             <div className="flex items-center justify-center">
-              <RcIconGasAccountTip2
-                width={360}
-                height={110}
-                viewBox="0 0 360 111"
-              />
+              {isDarkTheme ? (
+                <RcIconGasAccountTipDark2
+                  width={360}
+                  height={110}
+                  viewBox="0 0 360 111"
+                />
+              ) : (
+                <RcIconGasAccountTip2
+                  width={360}
+                  height={110}
+                  viewBox="0 0 360 111"
+                />
+              )}
             </div>
           </div>
         );
