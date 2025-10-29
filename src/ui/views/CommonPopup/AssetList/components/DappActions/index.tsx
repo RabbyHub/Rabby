@@ -4,7 +4,7 @@ import {
   Tx,
   WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { message } from 'antd';
 import { useDappAction } from './hook';
@@ -13,15 +13,13 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
+import { useMiniSignGasStore } from '@/ui/hooks/miniSignGasStore';
+import { Value } from '@/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const Wrapper = styled.div`
-  display: flex;
-  gap: 12px;
-  padding-left: 12px;
-  padding-right: 12px;
-  padding-bottom: 16px;
+  margin-left: 10px;
 `;
 
 interface ActionButtonProps {
@@ -40,9 +38,10 @@ const ActionButton = ({ text, onClick, className }: ActionButtonProps) => {
   return (
     <div
       className={`
-        cursor-pointer text-r-blue-default font-medium text-[13px] text-center
-        h-[36px] leading-[34px]
-        border border-r-blue-default rounded-[6px]
+        cursor-pointer text-r-blue-default font-medium text-[12px] text-center
+        px-[12px] w-min
+        h-[24px] leading-[24px]
+        border-[0.5px] border-r-blue-default rounded-[4px]
         hover:bg-r-blue-light1
         ${className}
       `}
@@ -96,45 +95,44 @@ const DappActions = ({
   data,
   chain,
   protocolLogo,
+  type,
 }: {
   data?: WithdrawAction[];
   chain?: string;
   protocolLogo?: string;
+  type: 'withdraw' | 'claim';
 }) => {
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
   const { t } = useTranslation();
   const { setVisible } = useCommonPopupView();
 
-  const { openUI, resetGasStore, close, updateConfig } = useMiniSigner({
+  const {
+    openUI,
+    resetGasStore,
+    close: closeSign,
+    updateConfig,
+  } = useMiniSigner({
     account: currentAccount!,
   });
 
-  const withdrawAction = useMemo(
-    () =>
-      data?.find(
+  const targetAction = useMemo(() => {
+    if (type === 'withdraw') {
+      return data?.find(
         (item) =>
           item.type === ActionType.Withdraw || item.type === ActionType.Queue
-      ),
-    [data]
-  );
-  const claimAction = useMemo(
-    () => data?.find((item) => item.type === ActionType.Claim),
-    [data]
-  );
+      );
+    } else {
+      return data?.find((item) => item.type === ActionType.Claim);
+    }
+  }, [data, type]);
+
   const isQueueWithdraw = useMemo(
-    () => withdrawAction?.type === ActionType.Queue,
-    [withdrawAction?.type]
+    () => targetAction?.type === ActionType.Queue,
+    [targetAction?.type]
   );
 
-  const { valid: showWithdraw, action: actionWithdraw } = useDappAction(
-    withdrawAction,
-    chain
-  );
-  const { valid: showClaim, action: actionClaim } = useDappAction(
-    claimAction,
-    chain
-  );
+  const { valid: show, action } = useDappAction(targetAction, chain);
 
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse) => {
@@ -185,7 +183,7 @@ const DappActions = ({
 
       if (canDirectSign && currentAccount) {
         resetGasStore();
-        close();
+        closeSign();
         const signerConfig = {
           txs,
           title: (
@@ -257,30 +255,27 @@ const DappActions = ({
     ]
   );
 
-  if (!showWithdraw && !showClaim) {
-    return null;
+  if (!show) {
+    return <Value.String key={`dapp-actions-${type}`} value="" />;
   }
 
   return (
     <Wrapper>
-      {showWithdraw && (
-        <ActionButton
-          text={t('component.DappActions.withdraw')}
-          className={`${showClaim ? 'w-[216px]' : 'flex-1'}`}
-          onClick={() =>
-            handleSubmit(actionWithdraw, t('component.DappActions.withdraw'))
-          }
-        />
-      )}
-      {showClaim && (
-        <ActionButton
-          text={t('component.DappActions.claim')}
-          className={`${showWithdraw ? 'w-[108px]' : 'flex-1'}`}
-          onClick={() =>
-            handleSubmit(actionClaim, t('component.DappActions.claim'))
-          }
-        />
-      )}
+      <ActionButton
+        text={
+          type === 'withdraw'
+            ? t('component.DappActions.withdraw')
+            : t('component.DappActions.claim')
+        }
+        onClick={() =>
+          handleSubmit(
+            action,
+            type === 'withdraw'
+              ? t('component.DappActions.withdraw')
+              : t('component.DappActions.claim')
+          )
+        }
+      />
     </Wrapper>
   );
 };

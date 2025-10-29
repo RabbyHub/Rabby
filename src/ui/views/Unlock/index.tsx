@@ -60,7 +60,7 @@ const Unlock = () => {
         } else {
           resolveApproval();
         }
-      } else if (UiType.isTab) {
+      } else if (UiType.isTab || UiType.isDesktop) {
         history.replace(query.from && isString(query.from) ? query.from : '/');
       } else {
         history.replace('/');
@@ -85,13 +85,13 @@ const Unlock = () => {
   }, []);
 
   useEffect(() => {
-    if (UiType.isTab) {
+    if (UiType.isTab || UiType.isDesktop) {
       document.documentElement.classList.remove('dark');
     }
   }, []);
 
   return (
-    <FullscreenContainer>
+    <FullscreenContainer isUnlock>
       <div className="unlock page-has-ant-input relative h-full min-h-[550px]">
         <BackgroundSVG className="absolute inset-0 z-[-1]" />
         <div className="pt-80">

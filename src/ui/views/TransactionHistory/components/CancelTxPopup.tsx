@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { CancelTxConfirmPopup } from './CancelTxConfirmPopup';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
 const OptionsList = styled.div`
   .option-item {
@@ -68,6 +69,10 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
     isShowRemoveLocalPendingTxTips,
     setIsShowRemoveLocalPendingTxTips,
   ] = useState(false);
+  const { getContainer } = usePopupContainer();
+  console.log({
+    getContainer,
+  });
   const options = [
     {
       title: t(
@@ -110,6 +115,7 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
         closable
         height={232}
         isSupportDarkMode
+        getContainer={getContainer}
       >
         <OptionsList>
           {options.map((item) => {

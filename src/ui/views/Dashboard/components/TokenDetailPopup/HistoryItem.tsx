@@ -3,18 +3,21 @@ import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import { TokenChange, TxInterAddressExplain } from '@/ui/component';
 import clsx from 'clsx';
 import React from 'react';
-import { sinceTime, openInTab, getUITypeName } from 'ui/utils';
+import { sinceTime, openInTab, getUITypeName, getUiType } from 'ui/utils';
 import { ellipsis } from 'ui/utils/address';
 import { CHAINS } from 'consts';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
+import { DesktopTokenChange } from '@/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenChange';
 
+const isDesktop = getUiType().isDesktop;
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
   canClickToken?: boolean;
   onClose?: () => void;
+  isInDesktopActionModal?: boolean;
 } & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
 
 const EtherscanLink = styled.div`
@@ -32,9 +35,11 @@ export const HistoryItem = ({
   tokenDict,
   canClickToken = true,
   onClose,
+  isInDesktopActionModal,
 }: HistoryItemProps) => {
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
+  const needUseTokenDetailModal = isDesktop && !isInDesktopActionModal;
 
   const handleClickTxHash = () => {
     const chain = findChain({
@@ -58,7 +63,7 @@ export const HistoryItem = ({
         )}
         <div
           className={clsx(
-            'txs-history-card-header-inner',
+            'txs-history-card-header-inner whitespace-nowrap flex-1 gap-12 flex items-center',
             (isScam || isFailed) && 'opacity-50'
           )}
         >
@@ -85,12 +90,23 @@ export const HistoryItem = ({
           tokenDict={tokenDict}
           cateDict={cateDict}
         ></TxInterAddressExplain>
-        <TokenChange
-          data={data}
-          tokenDict={tokenDict}
-          canClickToken={canClickToken}
-          onClose={onClose}
-        />
+        {needUseTokenDetailModal ? (
+          <div className="flex justify-end flex-1">
+            <DesktopTokenChange
+              data={data}
+              tokenDict={tokenDict}
+              canClickToken={canClickToken}
+              onClose={onClose}
+            />
+          </div>
+        ) : (
+          <TokenChange
+            data={data}
+            tokenDict={tokenDict}
+            canClickToken={canClickToken}
+            onClose={onClose}
+          />
+        )}
       </div>
     </div>
   );

@@ -11,6 +11,8 @@ import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 import { Account } from '@/background/service/preference';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useRequest } from 'ahooks';
 
 const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
   const { t } = useTranslation();
@@ -89,17 +91,20 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
 const SignedTextHistory = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [textHistory, setTextHistory] = useState<SignTextHistoryItem[]>([]);
+  const account = useCurrentAccount();
 
-  const init = async () => {
-    const account = await wallet.getCurrentAccount<Account>();
-    const history = await wallet.getSignTextHistory(account.address);
-    setTextHistory(history);
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
+  const { data: textHistory = [] } = useRequest(
+    async () => {
+      if (!account?.address) {
+        return;
+      }
+      const history = await wallet.getSignTextHistory(account.address);
+      return history;
+    },
+    {
+      refreshDeps: [account?.address],
+    }
+  );
 
   return (
     <div className="text-history">

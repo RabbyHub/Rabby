@@ -20,8 +20,8 @@ const Container = styled.div<{ $isDarkTheme?: boolean }>`
 
 const Main = styled.div`
   width: 400px !important;
-  height: 600px;
-  border-radius: 16px;
+  height: 540px;
+  border-radius: 8px;
   position: relative;
   overflow: hidden;
   transform: translateX(0);
@@ -30,11 +30,11 @@ const Main = styled.div`
     position: absolute;
   }
   .ant-drawer-mask {
-    border-radius: 16px;
+    border-radius: 8px;
   }
   .custom-popup {
     .ant-drawer-content {
-      border-radius: 16px;
+      border-radius: 8px;
     }
   }
 `;
@@ -42,16 +42,31 @@ const Main = styled.div`
 interface Props {
   className?: string;
   style?: React.CSSProperties;
+  isUnlock?: boolean;
 }
 
-const isTab = getUiType().isTab;
+const UiType = getUiType();
+const isTab = UiType.isTab;
+const isDesktop = UiType.isDesktop;
 export const FullscreenContainer: React.FC<Props> = ({
   children,
   className,
   style,
+  isUnlock,
 }) => {
   const { isDarkTheme } = useThemeMode();
-  if (isTab) {
+  if (isDesktop && !isUnlock) {
+    return (
+      <Main
+        className={clsx('js-rabby-popup-container', className)}
+        style={style}
+      >
+        {children}
+      </Main>
+    );
+  }
+
+  if (isTab || isDesktop) {
     return (
       <Container $isDarkTheme={isDarkTheme}>
         <Main

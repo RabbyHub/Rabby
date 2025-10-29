@@ -40,6 +40,7 @@ const ChildrenWrapper = styled.div`
   padding: 2px;
   padding-top: 0;
 `;
+const getContainer = '.activities';
 
 export const TransactionItem = ({
   item,
@@ -266,6 +267,7 @@ export const TransactionItem = ({
           onPreExecError: () => {
             void sendViaRequest();
           },
+          getContainer,
         });
         setTimeout(() => {
           onClearPending?.();
@@ -372,6 +374,7 @@ export const TransactionItem = ({
           onPreExecError: () => {
             void sendViaRequest();
           },
+          getContainer,
         });
         setTimeout(() => {
           onClearPending?.();
@@ -588,14 +591,16 @@ export const TransactionItem = ({
           </div>
         </ChildrenWrapper>
       )}
-      <CancelTxPopup
-        visible={isShowCancelPopup}
-        onClose={() => {
-          setIsShowCancelPopup(false);
-        }}
-        onCancelTx={handleCancelTx}
-        tx={maxGasTx}
-      ></CancelTxPopup>
+      {canCancel ? (
+        <CancelTxPopup
+          visible={isShowCancelPopup}
+          onClose={() => {
+            setIsShowCancelPopup(false);
+          }}
+          onCancelTx={handleCancelTx}
+          tx={maxGasTx}
+        ></CancelTxPopup>
+      ) : null}
     </div>
   );
 };

@@ -11,6 +11,7 @@ export const useConfirmRevokeModal = (props: {
   onBatchRevoke: () => void;
   onRevokeOneByOne: () => void;
   accountType?: string;
+  isDesktop?: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -25,6 +26,12 @@ export const useConfirmRevokeModal = (props: {
       centered: true,
       width: 420,
       okCancel: false,
+      maskStyle: props.isDesktop
+        ? {
+            background: 'rgba(0, 0, 0, 0.80)',
+            backdropFilter: 'blur(8px)',
+          }
+        : undefined,
       content: (
         <div>
           <div className="text-r-neutral-body text-15 leading-[22px]">

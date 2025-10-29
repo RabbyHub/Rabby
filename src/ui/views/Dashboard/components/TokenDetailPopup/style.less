@@ -98,7 +98,9 @@
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
     display: flex;
     padding: 20px 20px 100px;
     position: relative;

@@ -176,7 +176,7 @@ const Receive = () => {
     };
   }, [account?.type]);
   return (
-    <div className="page-receive bg-r-blue-default dark:bg-r-blue-disable">
+    <div className="page-receive bg-r-blue-default dark:bg-r-blue-disable relative">
       <div className="page-nav">
         <div
           className="page-nav-left pointer"
@@ -245,7 +245,7 @@ const Receive = () => {
           {t('global.copyAddress')}
         </button>
       </div>
-      <div className="page-receive-footer">
+      <div className="page-receive-footer absolute">
         <img
           src="/images/logo-white.svg"
           className="h-[28px] opacity-50"

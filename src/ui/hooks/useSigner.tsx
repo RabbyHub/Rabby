@@ -106,11 +106,6 @@ export const useMiniSigner = ({
     return partial;
   };
 
-  useEffect(() => {
-    signatureStore.close();
-    return () => signatureStore.close();
-  }, []);
-
   const ensureTxs = useMemoizedFn(async (cfg: SimpleSignConfig) => {
     let txs: Tx[] | undefined = cfg.txs;
     if (!txs && cfg.buildTxs) txs = (await cfg.buildTxs()) || [];

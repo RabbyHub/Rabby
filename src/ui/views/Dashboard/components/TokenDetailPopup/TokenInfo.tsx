@@ -27,12 +27,16 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { getUiType } from '@/ui/utils';
 import { TokenDetailPopup } from '.';
 import styled from 'styled-components';
 import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { copyAddress } from '@/ui/utils/clipboard';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { useLocation } from 'react-router-dom';
 
+const isDesktop = getUiType().isDesktop;
 const Divide = styled.div`
   height: 1px;
   height: 0.5px;
@@ -285,6 +289,19 @@ const ListSiteAndCex = ({
     | TokenEntityDetail['cex_list']
     | undefined;
 }) => {
+  const { getContainer: fromModalContainer } = usePopupContainer();
+  const location = useLocation();
+  const action = new URLSearchParams(location.search).get('action');
+  const isInDesktopActionModal =
+    isDesktop &&
+    (action === 'send' || action === 'swap' || action === 'bridge');
+  const isInSendModal =
+    new URLSearchParams(location.search).get('action') === 'send';
+  const getContainer = isInDesktopActionModal
+    ? isInSendModal
+      ? '.js-rabby-popup-container'
+      : '.js-rabby-desktop-swap-container'
+    : fromModalContainer;
   const { t } = useTranslation();
   const [detailVisible, setDetailVisible] = React.useState(false);
 
@@ -375,10 +392,10 @@ const ListSiteAndCex = ({
       <Popup
         visible={detailVisible}
         maskClosable
-        className="token-detail-popup"
         closable={true}
         onClose={() => setDetailVisible(false)}
         placement="bottom"
+        getContainer={getContainer}
         height={popupHeight}
         push={false}
         title={

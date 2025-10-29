@@ -62,7 +62,9 @@ import { useTwoStepSwap } from '../hooks/twoStepSwap';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-desktop-swap-container' : undefined;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -254,7 +256,7 @@ export const Main = () => {
               },
             }
           );
-          if (!isTab) {
+          if (!(isTab || isDesktop)) {
             window.close();
           } else {
             await promise;
@@ -496,15 +498,17 @@ export const Main = () => {
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
 
-  const { openDirect, prefetch } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChain({ enum: chain })?.serverId || '',
     autoResetGasStoreOnChainChange: true,
   });
 
   useEffect(() => {
+    closeSign();
     prefetch({
       txs: currentTxs || [],
+      getContainer,
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
     });
@@ -719,9 +723,10 @@ export const Main = () => {
   return (
     <>
       <Header
-        onOpenInTab={() => {
-          openInternalPageInTab(
-            `dex-swap?${obj2query({
+        noShowHeader={isDesktop}
+        onOpenInTab={async () => {
+          await wallet.openInDesktop(
+            `desktop/profile?${obj2query({
               chain:
                 findChain({
                   enum: chain,
@@ -731,8 +736,10 @@ export const Main = () => {
               inputAmount,
               isMax: slider >= 100 ? 'true' : '',
               rbiSource,
+              action: 'swap',
             })}`
           );
+          window.close();
         }}
       />
       <div
@@ -976,6 +983,7 @@ export const Main = () => {
                     return;
                   }
                   if (!activeProvider) {
+                    console.log('refresh 4');
                     refresh((e) => e + 1);
                     return;
                   }

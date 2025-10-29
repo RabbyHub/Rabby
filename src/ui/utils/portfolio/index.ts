@@ -12,7 +12,8 @@ export const useQueryProjects = (
   userAddr: string | undefined,
   withHistory = false,
   visible: boolean,
-  isTestnet = false
+  isTestnet = false,
+  isAll = false
 ) => {
   const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
 
@@ -36,7 +37,7 @@ export const useQueryProjects = (
     walletProject,
     customizeTokens,
     blockedTokens,
-  } = useTokens(userAddr, historyTime, visible, 0, undefined, isTestnet);
+  } = useTokens(userAddr, historyTime, visible, 0, undefined, isTestnet, isAll);
 
   const {
     data: portfolios,

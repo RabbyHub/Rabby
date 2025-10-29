@@ -11,8 +11,17 @@ import { useHistory } from 'react-router-dom';
 import { getUiType } from '@/ui/utils';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 const isTab = getUiType().isTab;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-desktop-swap-container' : undefined;
 
-export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
+export const Header = ({
+  onOpenInTab,
+  noShowHeader = false,
+}: {
+  onOpenInTab?(): void;
+  noShowHeader: boolean;
+}) => {
   const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
 
@@ -36,46 +45,48 @@ export const Header = ({ onOpenInTab }: { onOpenInTab?(): void }) => {
 
   return (
     <>
-      <PageHeader
-        className="mx-[20px] mb-[5px]"
-        forceShowBack={!isTab}
-        onBack={gotoDashboard}
-        canBack={!isTab}
-        isShowAccount
-        rightSlot={
-          <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
-            {isTab ? null : (
-              <div
-                className="text-r-neutral-title1 cursor-pointer"
-                onClick={() => {
-                  onOpenInTab?.();
-                }}
-              >
-                <RcIconFullscreen />
-              </div>
-            )}
-            <RcIconSwapHistory
-              className="cursor-pointer"
-              onClick={openHistory}
-            />
-          </div>
-        }
-      >
-        {t('page.swap.title')}
-      </PageHeader>
+      {!noShowHeader && (
+        <PageHeader
+          className="mx-[20px] mb-[5px]"
+          forceShowBack={!isTab}
+          onBack={gotoDashboard}
+          canBack={!isTab}
+          isShowAccount
+          rightSlot={
+            <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
+              {isTab ? null : (
+                <div
+                  className="text-r-neutral-title1 cursor-pointer"
+                  onClick={() => {
+                    onOpenInTab?.();
+                  }}
+                >
+                  <RcIconFullscreen />
+                </div>
+              )}
+              <RcIconSwapHistory
+                className="cursor-pointer"
+                onClick={openHistory}
+              />
+            </div>
+          }
+        >
+          {t('page.swap.title')}
+        </PageHeader>
+      )}
       <SwapTxHistory
         visible={historyVisible}
         onClose={useCallback(() => {
           setHistoryVisible(false);
         }, [])}
-        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+        getContainer={getContainer}
       />
       <RabbyFeePopup
         visible={visible}
         dexName={dexName}
         feeDexDesc={feeDexDesc}
         onClose={() => setRabbyFeeVisible({ visible: false })}
-        getContainer={isTab ? '.js-rabby-popup-container' : undefined}
+        getContainer={getContainer}
       />
     </>
   );

@@ -45,6 +45,7 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
+import { RcIconFullscreenCC } from '@/ui/assets/dashboard';
 
 const Container = styled.div`
   position: relative;
@@ -224,6 +225,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
     eventKey: string;
     iconClassName?: string;
     subContent?: React.ReactNode;
+    isFullscreen?: boolean;
   };
 
   const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
@@ -287,10 +289,12 @@ export const DashboardPanel: React.FC<unknown> = () => {
         eventKey: 'Approvals',
         content: t('page.dashboard.home.panel.approvals'),
         onClick: async (evt) => {
-          openInternalPageInTab('approval-manage');
+          wallet.openInDesktop('/desktop/profile/approvals');
+          window.close();
         },
         badge: approvalRiskAlert,
         badgeAlert: approvalRiskAlert > 0,
+        isFullscreen: true,
       } as IPanelItem,
       more: {
         icon: RcIconMoreCC,
@@ -302,9 +306,12 @@ export const DashboardPanel: React.FC<unknown> = () => {
         icon: RcIconNftCC,
         eventKey: 'NFT',
         content: t('page.dashboard.home.panel.nft'),
-        onClick: () => {
+        onClick: async () => {
           history.push('/nft');
+          // await wallet.openInDesktop('/desktop/profile?action=nft');
+          // window.close();
         },
+        // isFullscreen: true,
       } as IPanelItem,
       ecology: {
         icon: RcIconEco,
@@ -354,6 +361,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
         onClick: () => {
           openInternalPageInTab('sync');
         },
+        isFullscreen: true,
       } as IPanelItem,
       perps: {
         icon: RcIconPerpsCC,
@@ -392,6 +400,8 @@ export const DashboardPanel: React.FC<unknown> = () => {
     hasGiftEligibility,
     giftUsdValue,
     approvalRiskAlert,
+    t,
+    toggleShowMoreSettings,
   ]);
 
   const pickedPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
@@ -464,7 +474,7 @@ export const DashboardPanel: React.FC<unknown> = () => {
 
                     item?.onClick(evt);
                   }}
-                  className="panel-item"
+                  className="panel-item group"
                 >
                   {item.showAlert && (
                     <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
@@ -499,6 +509,11 @@ export const DashboardPanel: React.FC<unknown> = () => {
                   {item.commingSoonBadge && (
                     <div className="coming-soon-badge">
                       {t('page.dashboard.home.soon')}
+                    </div>
+                  )}
+                  {item.isFullscreen && (
+                    <div className="absolute top-[6px] right-[6px] text-r-neutral-foot hidden group-hover:block">
+                      <RcIconFullscreenCC className="w-[12px] h-[12px]" />
                     </div>
                   )}
                 </div>

@@ -70,6 +70,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   account?: Account;
   disableSignBtn?: boolean;
   onRedirectToDeposit?: () => void;
+  className?: string;
 }
 
 const Wrapper = styled.section`
@@ -213,6 +214,7 @@ export const MiniFooterBar: React.FC<Props> = ({
   account: propsAccount,
   disableSignBtn = false,
   onRedirectToDeposit,
+  className,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -412,9 +414,12 @@ export const MiniFooterBar: React.FC<Props> = ({
     <div className="relative">
       {!isDarkTheme && <Shadow isShow={hasShadow} />}
       <Wrapper
-        className={clsx({
-          'is-darkmode': hasShadow,
-        })}
+        className={clsx(
+          {
+            'is-darkmode': hasShadow,
+          },
+          className
+        )}
       >
         {Header}
         <div className="pt-[10px]">

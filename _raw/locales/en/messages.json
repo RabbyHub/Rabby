@@ -1696,6 +1696,7 @@
           "summaryTips": "Asset value divided by total net worth",
           "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
           "noMatch": "No Match",
+          "noTokens": "No Tokens",
           "lowValueDescription": "Low value assets will be shown here",
           "lowValueAssets_0": "{{count}} low value token",
           "lowValueAssets_one": "{{count}} low value token",
@@ -3014,6 +3015,12 @@
         "searching": "Results for",
         "searchTips": "Search the web"
       }
+    },
+    "desktopProfile": {
+      "CurveModal": {
+        "appChainTips": "Hyperliquid Account not included",
+        "netWorth": "Net Worth"
+      }
     }
   },
   "component": {
@@ -3216,6 +3223,9 @@
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."
+    },
+    "DesktopChainSelector": {
+      "allChains": "All Chains"
     }
   },
   "global": {

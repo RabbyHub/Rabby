@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -31,6 +31,7 @@ import {
 import { isSameAddress } from '..';
 import { Token } from 'background/service/preference';
 
+let lastResetTokenListAddr = '';
 // export const tokenChangeLoadingAtom = atom(false);
 
 const filterDisplayToken = (
@@ -42,13 +43,11 @@ const filterDisplayToken = (
       serverId: token.chain,
     });
     return (
-      token.is_core &&
       !blocked.find(
         (item) =>
           isSameAddress(token._tokenId, item.address) &&
           item.chain === token.chain
-      ) &&
-      findChainByEnum(chain?.enum)
+      ) && findChainByEnum(chain?.enum)
     );
   });
 };
@@ -61,7 +60,8 @@ export const useTokens = (
   chainServerId?: string,
   isTestnet: boolean = chainServerId
     ? !!findChain({ serverId: chainServerId })?.isTestnet
-    : false
+    : false,
+  showAll = false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -141,7 +141,11 @@ export const useTokens = (
       return;
     }
 
-    await dispatch.account.resetTokenList();
+    if (!isSameAddress(userAddr, lastResetTokenListAddr)) {
+      await dispatch.account.resetTokenList();
+      lastResetTokenListAddr = userAddr;
+    }
+
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
     historyLoad.current = false;
@@ -447,10 +451,18 @@ export const useTokens = (
     };
   }, []);
 
+  const tokens = useMemo(() => {
+    const list = isTestnet ? testnetTokens.list : mainnetTokens.list;
+    if (showAll) {
+      return list;
+    }
+    return list.filter((token) => token.is_core);
+  }, [isTestnet, testnetTokens.list, mainnetTokens.list, showAll]);
+
   return {
     netWorth: data?.netWorth || 0,
     isLoading,
-    tokens: isTestnet ? testnetTokens.list : mainnetTokens.list,
+    tokens,
     customizeTokens: isTestnet
       ? testnetTokens.customize
       : mainnetTokens.customize,

@@ -314,7 +314,8 @@ browser.runtime.onConnect.addListener((port) => {
   if (
     port.name === 'popup' ||
     port.name === 'notification' ||
-    port.name === 'tab'
+    port.name === 'tab' ||
+    port.name === 'desktop'
   ) {
     const pm = new PortMessage(port);
     pm.listen((data) => {

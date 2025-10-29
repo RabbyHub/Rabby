@@ -10,7 +10,7 @@ import { onBroadcastToUI } from './broadcastToUI';
 import { isSameAddress } from '.';
 import { useCurrentAccount } from '../hooks/backgroundState/useAccount';
 
-function useSyncCurrentAccount() {
+export function useSyncCurrentAccount() {
   const dispatch = useRabbyDispatch();
 
   useEffect(() => {

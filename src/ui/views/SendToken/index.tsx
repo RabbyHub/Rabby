@@ -79,7 +79,9 @@ import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
 
 const isTab = getUiType().isTab;
-const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
+const isDesktop = getUiType().isDesktop;
+const getContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -233,7 +235,7 @@ const SendToken = () => {
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
 
-  const { openDirect, prefetch } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainItem?.serverId,
     autoResetGasStoreOnChainChange: true,
@@ -311,7 +313,7 @@ const SendToken = () => {
   }, [currentAccount?.type]);
 
   useEffect(() => {
-    if (!toAddress) {
+    if (!toAddress && !getUiType().isDesktop) {
       const query = new URLSearchParams(search);
       query.delete('to');
       history.replace(
@@ -708,7 +710,7 @@ const SendToken = () => {
           },
         });
 
-        if (isTab) {
+        if (isTab || isDesktop) {
           await promise;
           form.setFieldsValue({
             amount: '',
@@ -811,6 +813,7 @@ const SendToken = () => {
           );
 
         if (isCurrent) {
+          closeSign();
           prefetch({
             txs: [params as Tx],
             ga: {
@@ -1587,23 +1590,29 @@ const SendToken = () => {
       <div
         className={clsx(
           'send-token',
-          isTab
-            ? 'w-full h-full overflow-auto min-h-0 rounded-[16px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
+          isDesktop
+            ? 'w-full h-full overflow-auto min-h-0 rounded-[8px] shadow-[0px_40px_80px_0px_rgba(43,57,143,0.40)'
             : ''
         )}
       >
         <PageHeader
           onBack={handleClickBack}
-          forceShowBack={!isTab}
-          canBack={!isTab}
-          isShowAccount
+          forceShowBack={!isDesktop}
+          canBack={true}
+          isShowAccount={!isDesktop}
           className="mb-[10px]"
           rightSlot={
-            isTab ? null : (
+            isDesktop ? null : (
               <div
                 className="text-r-neutral-title1 cursor-pointer absolute right-0 top-1/2 -translate-y-1/2"
-                onClick={() => {
-                  openInternalPageInTab(`send-token${history.location.search}`);
+                onClick={async () => {
+                  // openInternalPageInTab(`send-token${history.location.search}`);
+                  await wallet.openInDesktop(
+                    `/desktop/profile?action=send&sendPageType=sendToken&${history.location.search.slice(
+                      1
+                    )}`
+                  );
+                  window.close();
                 }}
               >
                 <RcIconFullscreen />
@@ -1633,7 +1642,16 @@ const SendToken = () => {
                 <div
                   className="cursor-pointer text-r-neutral-title1"
                   onClick={() => {
-                    history.replace(`/send-poly${history.location.search}`);
+                    const query = new URLSearchParams(history.location.search);
+                    query.set('sendPageType', 'sendPoly');
+                    query.set('action', 'send');
+                    if (getUiType().isDesktop) {
+                      wallet.openInDesktop(
+                        `desktop/profile?${query.toString()}`
+                      );
+                    } else {
+                      history.replace(`/send-poly?${query.toString()}`);
+                    }
                   }}
                 >
                   <RcIconSwitchCC width={20} height={20} />
