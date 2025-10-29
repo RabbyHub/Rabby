@@ -550,6 +550,7 @@ const GasAccountDepositContent = ({
           action: 'deposit',
         },
         checkGasFeeTooHigh: true,
+        autoUseGasFree: true,
       });
       const hash = hashes[hashes.length - 1];
       if (hash) {
@@ -566,6 +567,7 @@ const GasAccountDepositContent = ({
             action: 'deposit',
           },
           checkGasFeeTooHigh: false,
+          autoUseGasFree: true,
         });
         const hash = hashes[hashes.length - 1];
         if (hash) {
