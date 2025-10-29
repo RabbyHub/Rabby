@@ -7,7 +7,7 @@ import { AddressViewer } from 'ui/component';
 import { useRabbyDispatch } from '@/ui/store';
 import clsx from 'clsx';
 
-import { KEYRING_TYPE } from '@/constant';
+import { EVENTS, KEYRING_TYPE } from '@/constant';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useAccounts } from '@/ui/hooks/useAccounts';
@@ -19,6 +19,9 @@ import { flatten } from 'lodash';
 import { CopyChecked } from '../CopyChecked';
 import { useApprovalDangerCount } from '@/ui/hooks/useApprovalDangerCount';
 import { Virtuoso } from 'react-virtuoso';
+import { useEventListener } from 'ahooks';
+import eventBus from '@/eventBus';
+import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 
 interface DesktopSelectAccountListProps {
   shouldElevate?: boolean;
@@ -62,6 +65,18 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     },
     [dispatch?.account?.changeAccountAsync]
   );
+
+  useEffect(() => {
+    eventBus.addEventListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
+    return () =>
+      eventBus.removeEventListener(EVENTS.PERSIST_KEYRING, fetchAllAccounts);
+  }, [fetchAllAccounts]);
+
+  useEffect(() => {
+    return onBackgroundStoreChanged('contactBook', (payload) => {
+      fetchAllAccounts();
+    });
+  }, [fetchAllAccounts]);
 
   return (
     <div
