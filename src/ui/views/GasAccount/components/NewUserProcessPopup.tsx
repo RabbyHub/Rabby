@@ -7,12 +7,13 @@ import { useMemoizedFn } from 'ahooks';
 import { ReactComponent as RcIconGasAccountTip1 } from 'ui/assets/gas-account/tip1.svg';
 import { ReactComponent as RcIconGasAccountTip2 } from 'ui/assets/gas-account/tip2.svg';
 import { ReactComponent as RcIconGasAccountTip3 } from 'ui/assets/gas-account/tip3.svg';
+import { ReactComponent as RcIconGasAccountTip4 } from 'ui/assets/gas-account/tip4.svg';
 
 interface NewUserProcessProps extends Omit<PopupProps, 'onConfirm'> {
   onComplete?: () => void;
 }
 
-const STEPS_LENGTH = 3;
+const STEPS_LENGTH = 4;
 
 export const GasAccountNewUserProcessPopup: React.FC<NewUserProcessProps> = ({
   visible,
@@ -108,10 +109,28 @@ export const GasAccountNewUserProcessPopup: React.FC<NewUserProcessProps> = ({
             </div>
             <div className="flex items-center justify-center">
               <RcIconGasAccountTip3
-                // className="w-[240px] h-[180px]"
                 width={272}
                 height={58}
                 viewBox="0 0 272 58"
+              />
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="text-center">
+            <div className="text-20 font-medium text-r-neutral-title-1">
+              {t('page.gasAccount.about.title4')}
+            </div>
+            <div className="text-14 text-r-neutral-body mt-8 mb-[15px]">
+              {t('page.gasAccount.about.desc4')}
+            </div>
+            <div className="flex items-center justify-center">
+              <RcIconGasAccountTip4
+                width={128}
+                height={123}
+                viewBox="0 0 128 123"
               />
             </div>
           </div>
