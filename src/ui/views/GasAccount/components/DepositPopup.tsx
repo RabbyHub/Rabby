@@ -1,5 +1,6 @@
 import React, {
   CSSProperties,
+  SVGProps,
   useCallback,
   useEffect,
   useMemo,
@@ -15,9 +16,12 @@ import styled from 'styled-components';
 import { noop } from 'lodash';
 import clsx from 'clsx';
 import { useAsync } from 'react-use';
-import { formatUsdValue, useWallet } from '@/ui/utils';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { KEYRING_CLASS } from '@/constant';
+import { formatUsdValue, getUiType, useAlias, useWallet } from '@/ui/utils';
+import {
+  useCurrentAccount,
+  useSceneAccountInfo,
+} from '@/ui/hooks/backgroundState/useAccount';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import { getTokenSymbol } from '@/ui/utils/token';
@@ -36,6 +40,10 @@ import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { Account } from '@/background/service/preference';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
+import { useRabbyDispatch } from '@/ui/store';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
+const isTab = getUiType().isTab;
 
 const amountList = [10, 100];
 
@@ -107,37 +115,38 @@ const TokenSelector = ({
       const disabled = new BigNumber(item.amount || 0).lt(cost);
 
       return (
-        <Tooltip
-          overlayClassName={clsx('rectangle')}
-          placement="top"
-          visible={disabled ? undefined : false}
-          title={t('page.gasTopUp.InsufficientBalanceTips')}
-          align={{ targetOffset: [0, -30] }}
-        >
-          <div
-            key={item.id}
-            style={style}
-            className={clsx(
-              'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent  rounded-[6px]',
-              'text-13 font-medium text-r-neutral-title-1',
-              !disabled && 'hover:border-rabby-blue-default',
-              !disabled && 'hover:bg-r-blue-light-1',
-              disabled && 'opacity-50 cursor-not-allowed'
-            )}
-            onClick={() => {
-              if (!disabled) {
-                onChange(item);
-                onClose();
-              }
-            }}
+        <div className="px-20 pb-8" style={style} key={item.id + item.chain}>
+          <Tooltip
+            overlayClassName={clsx('rectangle')}
+            placement="top"
+            visible={disabled ? undefined : false}
+            title={t('page.gasTopUp.InsufficientBalanceTips')}
+            align={{ targetOffset: [0, -30] }}
           >
-            <Space size={12}>
-              <TokenWithChain token={item} hideConer />
-              <span>{getTokenSymbol(item)}</span>
-            </Space>
-            <div>{formatUsdValue(item.amount * item.price || 0)}</div>
-          </div>
-        </Tooltip>
+            <div
+              className={clsx(
+                'flex justify-between items-center cursor-pointer px-[16px] h-[52px] border border-transparent  rounded-[6px]',
+                'bg-r-neutral-card-1',
+                'text-13 font-medium text-r-neutral-title-1',
+                !disabled && 'hover:border-rabby-blue-default',
+                !disabled && 'hover:bg-r-blue-light-1',
+                disabled && 'opacity-50 cursor-not-allowed'
+              )}
+              onClick={() => {
+                if (!disabled) {
+                  onChange(item);
+                  onClose();
+                }
+              }}
+            >
+              <Space size={12}>
+                <TokenWithChain token={item} hideConer />
+                <span>{getTokenSymbol(item)}</span>
+              </Space>
+              <div>{formatUsdValue(item.amount * item.price || 0)}</div>
+            </div>
+          </Tooltip>
+        </div>
       );
     },
     [cost, onChange]
@@ -145,6 +154,8 @@ const TokenSelector = ({
 
   return (
     <Popup
+      isNew
+      isSupportDarkMode
       placement="right"
       width={'100%'}
       visible={visible}
@@ -201,7 +212,7 @@ const TokenSelector = ({
               height={402}
               itemCount={sortedList?.length || 0}
               itemData={sortedList}
-              itemSize={52}
+              itemSize={60}
             >
               {Row}
             </FixedSizeList>
@@ -258,6 +269,91 @@ const buildDepositTxs = ({
   }
 
   return [params];
+};
+
+const WatchAddressLogo = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <rect width={24} height={24} fill="currentColor" rx={12} />
+    <path
+      fill="#6e7585"
+      d="M11.998 10.511a2.974 2.974 0 1 0 0-5.949 2.974 2.974 0 0 0 0 5.95ZM17.15 18.643c.93-.293 1.42-1.32 1.025-2.212A6.751 6.751 0 0 0 12 12.406a6.751 6.751 0 0 0-6.175 4.025c-.395.892.094 1.919 1.024 2.212 1.325.417 3.079.794 5.151.794 2.072 0 3.826-.377 5.15-.794Z"
+    />
+  </svg>
+);
+
+const AccountSwitchInner = () => {
+  const { currentAccount } = useSceneAccountInfo();
+
+  const addressTypeIcon = useBrandIcon({
+    address: currentAccount!.address,
+    brandName: currentAccount!.brandName,
+    type: currentAccount!.type,
+    forceLight: false,
+  });
+
+  const [alias] = useAlias(currentAccount!.address);
+  const { t } = useTranslation();
+
+  const [isShowModal, setIsShowModal] = useState(false);
+
+  const dispatch = useRabbyDispatch();
+
+  const isWatchAddress =
+    currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring;
+
+  return (
+    <>
+      <Item
+        px={16}
+        py={0}
+        className={clsx('rounded-[6px] w-full h-[52px]')}
+        bgColor="var(--r-neutral-card1, #fff)"
+        left={
+          <div className="flex items-center gap-12">
+            {isWatchAddress ? (
+              <WatchAddressLogo className="w-[24px] h-[24px] mr-[8px]" />
+            ) : (
+              <img
+                className="w-[28px] h-[24px] mr-[4px]"
+                src={addressTypeIcon}
+              />
+            )}
+            <span className="text-15 font-medium text-r-neutral-title1">
+              {alias}
+            </span>
+          </div>
+        }
+        onClick={() => {
+          setIsShowModal(true);
+        }}
+      />
+      <AccountSelectorModal
+        title={t('component.PageHeader.selectAccount')}
+        height="calc(100% - 60px)"
+        visible={isShowModal}
+        value={currentAccount}
+        onCancel={() => {
+          setIsShowModal(false);
+        }}
+        getContainer={
+          isTab
+            ? (document.querySelector(
+                '.js-rabby-popup-container'
+              ) as HTMLDivElement) || document.body
+            : document.body
+        }
+        onChange={(val) => {
+          dispatch.account.changeAccountAsync(val);
+          setIsShowModal(false);
+        }}
+      />
+    </>
+  );
 };
 
 const GasAccountDepositContent = ({
@@ -454,6 +550,7 @@ const GasAccountDepositContent = ({
           action: 'deposit',
         },
         checkGasFeeTooHigh: true,
+        autoUseGasFree: true,
       });
       const hash = hashes[hashes.length - 1];
       if (hash) {
@@ -470,6 +567,7 @@ const GasAccountDepositContent = ({
             action: 'deposit',
           },
           checkGasFeeTooHigh: false,
+          autoUseGasFree: true,
         });
         const hash = hashes[hashes.length - 1];
         if (hash) {
@@ -526,7 +624,7 @@ const GasAccountDepositContent = ({
                   'flex items-center justify-center cursor-pointer',
                   'rounded-[6px] w-[114px] h-[52px]',
                   'text-18 font-medium',
-                  'bg-r-neutral-card2',
+                  'bg-r-neutral-card1',
                   'border border-solid border-transparent',
                   'hover:bg-r-blue-light-2 hover:border-rabby-blue-default',
                   selectedAmount === amount
@@ -542,6 +640,7 @@ const GasAccountDepositContent = ({
                 'flex items-center justify-center',
                 'rounded-[6px] w-[114px] h-[52px]',
                 'text-18 font-medium text-center',
+                'bg-r-neutral-card1',
                 'border border-solid border-rabby-neutral-line',
                 'hover:bg-r-blue-light-2 hover:border-rabby-blue-default',
                 'input',
@@ -549,9 +648,6 @@ const GasAccountDepositContent = ({
                   ? 'bg-r-blue-light-1 border-rabby-blue-default'
                   : 'text-r-neutral-title1'
               )}
-              style={{
-                '--r-neutral-card-2': 'transparent',
-              }}
               bordered={false}
               value={formattedValue}
               onChange={onInputChange}
@@ -564,6 +660,11 @@ const GasAccountDepositContent = ({
         </Wrapper>
 
         <div className="mt-12 mb-8 text-13 text-r-neutral-body">
+          {t('page.gasAccount.depositPopup.paymentAddr')}
+        </div>
+        <AccountSwitchInner />
+
+        <div className="mt-12 mb-8 text-13 text-r-neutral-body">
           {t('page.gasAccount.depositPopup.token')}
         </div>
         <Item
@@ -573,7 +674,7 @@ const GasAccountDepositContent = ({
             'rounded-[6px] w-full h-[52px]',
             !amountPass && 'opacity-50 cursor-not-allowed'
           )}
-          bgColor="var(--r-neutral-card2, #F2F4F7)"
+          bgColor="var(--r-neutral-card1, #fff)"
           left={
             token ? (
               <div className="flex items-center gap-12">
@@ -625,8 +726,9 @@ export const GasAccountDepositPopup = (props: GasAccountDepositPopupProps) => {
     <DirectSubmitProvider>
       <Popup
         placement="bottom"
-        height={410}
+        height={480}
         isSupportDarkMode
+        isNew
         bodyStyle={{
           padding: 0,
         }}

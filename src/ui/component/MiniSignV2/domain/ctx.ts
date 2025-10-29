@@ -1,5 +1,10 @@
 import type { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
-import type { CalcItem, GasAccountCheckResult, SecurityResult } from './types';
+import type {
+  CalcItem,
+  GasAccountCheckResult,
+  PreparedContext,
+  SecurityResult,
+} from './types';
 import type { OpenApiService } from '@rabby-wallet/rabby-api';
 import BigNumber from 'bignumber.js';
 
@@ -39,10 +44,9 @@ export type SignerCtx = {
     gasCostAmount: BigNumber;
     maxGasCostAmount: BigNumber;
   };
-  disabledProcess?: boolean;
   gasFeeTooHigh?: boolean;
-  gasPriceMedian?: number;
-};
+  disabledProcess?: boolean;
+} & PreparedContext;
 
 export const buildFingerprint = (txs: Tx[]) =>
   txs

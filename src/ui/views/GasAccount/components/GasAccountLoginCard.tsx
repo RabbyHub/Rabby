@@ -9,10 +9,8 @@ import { useRabbySelector, useRabbyDispatch } from 'ui/store';
 import { formatUsdValue, useWallet } from 'ui/utils';
 import { useGasAccountMethods } from '../hooks';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
-import { EVENTS } from '@/constant';
 import clsx from 'clsx';
-import eventBus from '@/eventBus';
-import { isNoSignAccount } from '@/utils/account';
+import GasAccountNewUserProcessPopup from './NewUserProcessPopup';
 
 export const GasAccountLoginCard = ({
   onLoginPress,
@@ -28,6 +26,8 @@ export const GasAccountLoginCard = ({
     giftUsdValue: s.gift.giftUsdValue,
     currentAccount: s.account.currentAccount,
   }));
+
+  const [learnAboutPopupVisible, setLearnAboutPopupVisible] = useState(false);
 
   const handleLoginAndClaim = async () => {
     if (!currentAccount?.address) return;
@@ -51,51 +51,79 @@ export const GasAccountLoginCard = ({
   };
 
   return (
-    <GasAccountWrapperBg className="mb-[20px] flex flex-col items-center h-[280px] bg-r-neutral-card1 rounded-[8px] px-16 py-24 relative">
-      <GasAccountBlueLogo className="mt-4 mb-18" />
-      <div className="relative flex text-[17px] font-medium text-r-blue-default">
-        <RcIconQuoteStart
-          viewBox="0 0 11 9"
-          className="absolute top-0 left-[-16px]"
-        />
-        {t('page.gasAccount.loginInTip.loginTips1')}
-      </div>
-      <div className="text-[17px] font-medium text-r-blue-default">
-        {t('page.gasAccount.loginInTip.loginTips2')}
-      </div>
-      <div className="flex gap-8 text-[17px] font-medium text-r-blue-default relative">
-        {t('page.gasAccount.loginInTip.loginTips3')}
-        <RcIconQuoteEnd
-          viewBox="0 0 11 9"
-          className="absolute top-[6px] right-[-16px]"
-        />
-      </div>
-      <div className="w-full mt-auto">
-        <Button
-          onClick={handleClick}
-          type="primary"
-          block
-          loading={isLoading}
-          className={clsx(
-            'h-[48px] text-15 font-medium leading-normal text-r-neutral-title2',
-            'flex items-center justify-center',
-            giftUsdValue > 0 ? 'bg-green border-green gap-6' : ''
-          )}
-        >
-          {giftUsdValue > 0 ? (
-            <>
-              <IconGift viewBox="0 0 18 18" className="w-18 h-18" />
-              <span>
-                {t('page.gasAccount.loginInTip.loginAndClaim', {
-                  usdValue: formatUsdValue(giftUsdValue),
-                })}
-              </span>
-            </>
-          ) : (
-            t('page.gasAccount.loginInTip.login')
-          )}
-        </Button>
-      </div>
-    </GasAccountWrapperBg>
+    <>
+      <GasAccountWrapperBg className="mb-[16px] flex flex-col items-center h-[310px] bg-r-neutral-card1 rounded-[8px] p-16 relative">
+        <GasAccountBlueLogo className="mb-8" />
+        <div className="relative flex text-[17px] font-medium text-r-blue-default">
+          <RcIconQuoteStart
+            viewBox="0 0 11 9"
+            className="absolute top-0 left-[-16px]"
+          />
+          {t('page.gasAccount.loginInTip.loginTips1')}
+        </div>
+        <div className="text-[17px] font-medium text-r-blue-default">
+          {t('page.gasAccount.loginInTip.loginTips2')}
+        </div>
+        <div className="flex gap-8 text-[17px] font-medium text-r-blue-default relative">
+          {t('page.gasAccount.loginInTip.loginTips3')}
+          <RcIconQuoteEnd
+            viewBox="0 0 11 9"
+            className="absolute top-[6px] right-[-16px]"
+          />
+        </div>
+        <div className="w-full mt-auto">
+          <Button
+            onClick={handleClick}
+            type="primary"
+            block
+            loading={isLoading}
+            className={clsx(
+              'h-[48px] text-15 font-medium leading-normal text-r-neutral-title2',
+              'flex items-center justify-center',
+              giftUsdValue > 0 ? 'bg-green border-green gap-6' : ''
+            )}
+          >
+            {giftUsdValue > 0 ? (
+              <>
+                <IconGift viewBox="0 0 18 18" className="w-18 h-18" />
+                <span>
+                  {t('page.gasAccount.loginInTip.loginAndClaim', {
+                    usdValue: formatUsdValue(giftUsdValue),
+                  })}
+                </span>
+              </>
+            ) : (
+              t('page.gasAccount.loginInTip.login')
+            )}
+          </Button>
+
+          <div
+            className={clsx(
+              'h-[48px] mt-12 bg-r-neutral-card2 flex items-center justify-center w-full rounded-[6px]',
+              'text-r-neutral-body text-15 font-medium',
+              'border-transparent cursor-pointer border-[1px] border-solid',
+              'hover:bg-r-blue-light1 hover:border-rabby-blue-default'
+            )}
+            style={{
+              height: 48,
+            }}
+            onClick={() => {
+              setLearnAboutPopupVisible(true);
+            }}
+          >
+            {t('page.gasAccount.loginInTip.learnAbout')}
+          </div>
+        </div>
+      </GasAccountWrapperBg>
+      <GasAccountNewUserProcessPopup
+        visible={learnAboutPopupVisible}
+        onCancel={() => {
+          setLearnAboutPopupVisible(false);
+        }}
+        onComplete={() => {
+          setLearnAboutPopupVisible(false);
+        }}
+      />
+    </>
   );
 };
