@@ -420,7 +420,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           onClose={handleCancel}
           maskClosable={!loading}
           closable={false}
-          bodyStyle={{ padding: 0 }}
+          bodyStyle={{ padding: 0, maxHeight: 600, height: 600 }}
           destroyOnClose={false}
           forceRender
           mask={{
@@ -433,15 +433,16 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           content
         >
           <PopupContainer>
-            <div className={desktopPortalClassName}>
+            <div className={clsx(desktopPortalClassName)}>
               <MiniFooterBar
-                className="rounded-none"
+                className="rounded-none h-[600px] flex flex-col"
                 account={currentAccount || undefined}
                 directSubmit={directSubmit}
                 task={task}
                 Header={
                   <div
                     className={clsx(
+                      'flex-1 flex flex-col',
                       directSubmit &&
                         'fixed left-[99999px] top-[99999px] z-[-1]',
                       task.status !== 'idle' && 'pointer-events-none'
@@ -453,7 +454,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                     isSpeedUp ||
                     isCancel ||
                     title ? (
-                      <div className="flex flex-col gap-[22px] mb-16">
+                      <div className="flex-1 flex flex-col gap-[22px] mb-16">
                         {title}
 
                         {showSimulateChange ? (
@@ -500,7 +501,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                           }
                         />
 
-                        <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
+                        <Divide className="mt-auto w-[calc(100%+40px)] relative left-[-20px] bg-light-r-neutral-line" />
                       </div>
                     ) : null}
                     <GasSelectorHeader
@@ -538,7 +539,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                       // directSubmit={directSubmit}
                       directSubmit={true}
                       checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
-                      getContainer={getContainer}
+                      getContainer={desktopMiniSignerGetContainer}
                     />
                   </div>
                 }
@@ -589,7 +590,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 disableSignBtn={disableSignBtn}
                 isFirstGasLessLoading={!ctx?.txsCalc.length}
                 isFirstGasCostLoading={!ctx?.txsCalc.length}
-                getContainer={getContainer}
+                getContainer={desktopMiniSignerGetContainer}
                 onRedirectToDeposit={onRedirectToDeposit}
               />
             </div>

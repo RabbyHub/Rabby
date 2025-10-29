@@ -235,7 +235,7 @@ const SendToken = () => {
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
 
-  const { openDirect, prefetch } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainItem?.serverId,
     autoResetGasStoreOnChainChange: true,
@@ -813,6 +813,7 @@ const SendToken = () => {
           );
 
         if (isCurrent) {
+          closeSign();
           prefetch({
             txs: [params as Tx],
             ga: {

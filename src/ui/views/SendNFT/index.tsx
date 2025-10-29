@@ -85,7 +85,7 @@ const SendNFT = () => {
     return findChain({ enum: chain });
   }, [chain]);
 
-  const { openDirect, prefetch } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -218,6 +218,7 @@ const SendNFT = () => {
     if (canUseDirectSubmitTx) {
       const params = getNFTTransferParams(amount);
       if (params) {
+        closeSign();
         prefetch({
           txs: [params as Tx],
           ga: {
