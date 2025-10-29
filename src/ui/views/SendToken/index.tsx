@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, useDebounce } from 'react-use';
-import { Form, message, Button, Modal } from 'antd';
+import { Form, message, Button, Modal, Slider } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
@@ -32,11 +32,11 @@ import {
   useWallet,
 } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
-import { formatTokenAmount } from 'ui/utils/number';
+import { coerceFloat, formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { Cex, GasLevel, TokenItem, Tx } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
-import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
+// import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -70,13 +70,18 @@ import { ShowMoreOnSend } from './components/SendShowMore';
 import { PendingTxItem } from '../Swap/Component/PendingTxItem';
 import { SendTxHistoryItem } from '@/background/service/transactionHistory';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { Account } from '@/background/service/preference';
-import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
-import { ReactComponent as RcIconCopy } from 'ui/assets/send-token/modal/copy.svg';
-import { copyAddress } from '@/ui/utils/clipboard';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
+import { AddressInfoFrom } from './components/AddressInfoFrom';
+import { AddressInfoTo } from './components/AddressInfoTo';
+import BottomArea from './components/BottomArea';
+import {
+  RiskType,
+  sortRisksDesc,
+  useAddressRisks,
+} from '@/ui/hooks/useAddressRisk';
+import { SwapSlider } from '../Swap/Component/Slider';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -114,10 +119,31 @@ type FormSendToken = {
   amount: string;
 };
 
-interface AddressTypeCardProps {
-  loading?: boolean;
-  account: Account;
-  cexInfo?: Cex;
+function getSliderPercent(
+  amountValue: string | number,
+  inputs: {
+    token?: TokenItem | null;
+  }
+) {
+  const { token } = inputs || {};
+
+  let balanceBigNum = new BigNumber(0);
+  if (token) {
+    balanceBigNum = new BigNumber(token.raw_amount_hex_str || 0).div(
+      10 ** token.decimals
+    );
+
+    if (balanceBigNum.isZero()) return 0;
+
+    const val =
+      coerceFloat(
+        new BigNumber(coerceFloat(amountValue, 0)).div(balanceBigNum).toFixed(2)
+      ) * 100;
+
+    return Math.max(0, Math.min(100, val));
+  }
+
+  return 0;
 }
 
 const ChainSelectWrapper = styled.div`
@@ -129,82 +155,6 @@ const ChainSelectWrapper = styled.div`
     border-radius: 8px;
   }
 `;
-
-const AddressText = styled.span`
-  font-weight: 500;
-  color: var(--r-neutral-title1);
-`;
-
-export const ToAddressCard = ({
-  account: targetAccount,
-  loading,
-  cexInfo,
-}: AddressTypeCardProps) => {
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
-  const dispatch = useRabbyDispatch();
-
-  const addressSplit = useMemo(() => {
-    const address = targetAccount.address || '';
-    if (!address) {
-      return [];
-    }
-    const prefix = address.slice(0, 8);
-    const middle = address.slice(8, -6);
-    const suffix = address.slice(-6);
-
-    return [prefix, middle, suffix];
-  }, [targetAccount.address]);
-
-  useEffect(() => {
-    dispatch.whitelist.getWhitelist();
-  }, [dispatch.whitelist]);
-
-  return (
-    <header
-      className={clsx(
-        'header bg-r-neutral-card1 rounded-[8px] px-[28px] py-[20px]',
-        'flex flex-col items-center gap-[8px]'
-      )}
-    >
-      <div
-        className="text-[16px] w-full text-center text-r-neutral-foot break-words cursor-pointer"
-        onClick={() => {
-          copyAddress(targetAccount.address);
-        }}
-      >
-        <AddressText>{addressSplit[0]}</AddressText>
-        {addressSplit[1]}
-        <AddressText>{addressSplit[2]}</AddressText>
-        <span className="ml-2 inline-block w-[14px] h-[13px]">
-          <RcIconCopy />
-        </span>
-      </div>
-
-      <AddressTypeCard
-        type={targetAccount.type}
-        address={targetAccount.address}
-        getContainer={getContainer}
-        cexInfo={{
-          id: cexInfo?.id,
-          name: cexInfo?.name,
-          logo: cexInfo?.logo_url,
-          isDeposit: !!cexInfo?.is_deposit,
-        }}
-        allowEditAlias
-        loading={loading}
-        inWhitelist={whitelist?.some((w) =>
-          isSameAddress(w, targetAccount.address)
-        )}
-        brandName={targetAccount.brandName}
-        aliasName={
-          targetAccount.alianName || ellipsisAddress(targetAccount.address)
-        }
-      />
-    </header>
-  );
-};
 
 const SendToken = () => {
   const { useForm } = Form;
@@ -311,14 +261,14 @@ const SendToken = () => {
   }, [currentAccount?.type]);
 
   useEffect(() => {
-    if (!toAddress) {
-      const query = new URLSearchParams(search);
-      query.delete('to');
-      history.replace(
-        `/send-poly${query.toString() ? `?${query.toString()}` : ''}`
-      );
-      return;
-    }
+    // if (!toAddress) {
+    //   const query = new URLSearchParams(search);
+    //   query.delete('to');
+    //   history.replace(
+    //     `/send-poly${query.toString() ? `?${query.toString()}` : ''}`
+    //   );
+    //   return;
+    // }
     const values = form.getFieldsValue();
     form.setFieldsValue({
       ...values,
@@ -328,6 +278,7 @@ const SendToken = () => {
 
   const {
     targetAccount,
+    isMyImported,
     addressDesc,
     loading: loadingToAddressDesc,
   } = useAddressInfo(toAddress, {
@@ -335,12 +286,35 @@ const SendToken = () => {
   });
   useInitCheck(addressDesc);
 
-  const canSubmit =
+  const [agreeRequiredChecked, setAgreeRequiredChecked] = useState(true);
+  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+    onLoadFinished: useCallback(() => {
+      setAgreeRequiredChecked(false);
+    }, []),
+  });
+
+  const mostImportantRisks = React.useMemo(() => {
+    if (risks.length === 0) {
+      return [];
+    }
+    const sorted = [...risks]
+      .filter((item) => item.type !== RiskType.NEVER_SEND)
+      .sort(sortRisksDesc);
+    return sorted.slice(0, 1);
+  }, [risks]);
+
+  const canLoadGasFee =
     isValidAddress(form.getFieldValue('to')) &&
     !!currentToken &&
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).gte(0) &&
     !isLoading;
+
+  const canSubmit =
+    canLoadGasFee &&
+    !loadingRisks &&
+    (!mostImportantRisks.length || agreeRequiredChecked);
+
   const isNativeToken =
     !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
 
@@ -543,7 +517,7 @@ const SendToken = () => {
     }
   }, [clickedMax, loadGasList]);
 
-  const [miniSinLoading, setMiniSinLoading] = useState(false);
+  const [miniSignLoading, setMiniSignLoading] = useState(false);
 
   const canUseDirectSubmitTx = useMemo(() => {
     let sendToOtherChainContract = false;
@@ -559,12 +533,12 @@ const SendToken = () => {
       }
     }
     return (
-      canSubmit &&
+      canLoadGasFee &&
       supportedDirectSign(currentAccount?.type || '') &&
       !chainItem?.isTestnet &&
       !sendToOtherChainContract
     );
-  }, [canSubmit, chainItem?.isTestnet, currentAccount?.type]);
+  }, [canLoadGasFee, chainItem?.isTestnet, currentAccount?.type]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
@@ -581,7 +555,7 @@ const SendToken = () => {
       let shouldForceSignPage = !!forceSignPage;
 
       if (canUseDirectSubmitTx && !shouldForceSignPage) {
-        setMiniSinLoading(true);
+        setMiniSignLoading(true);
         try {
           const hashes = await openDirect({
             txs: [params as Tx],
@@ -596,13 +570,13 @@ const SendToken = () => {
           if (hash) {
             handleMiniSignResolve();
           } else {
-            setMiniSinLoading(false);
+            setMiniSignLoading(false);
           }
           return;
         } catch (error) {
           console.error('send token direct sign error', error);
 
-          setMiniSinLoading(false);
+          setMiniSignLoading(false);
           if (
             error === MINI_SIGN_ERROR.USER_CANCELLED ||
             error === MINI_SIGN_ERROR.CANT_PROCESS
@@ -733,7 +707,7 @@ const SendToken = () => {
     let isCurrent = true;
     const setMiniTx = async () => {
       if (
-        canSubmit &&
+        canLoadGasFee &&
         canUseDirectSubmitTx &&
         amount &&
         address &&
@@ -844,7 +818,7 @@ const SendToken = () => {
     refreshId,
     reserveGasOpen,
     isEstimatingGas,
-    canSubmit,
+    canLoadGasFee,
     canUseDirectSubmitTx,
     currentToken?.chain,
     getParams,
@@ -865,7 +839,7 @@ const SendToken = () => {
 
   const handleMiniSignResolve = useCallback(() => {
     setTimeout(() => {
-      setMiniSinLoading(false);
+      setMiniSignLoading(false);
       prefetch({
         txs: [],
       });
@@ -902,14 +876,15 @@ const SendToken = () => {
 
   const handleFormValuesChange = useCallback(
     async (
-      changedValues,
+      changedValues: null | Partial<FormSendToken>,
       { amount, ...restForm }: FormSendToken,
       opts?: {
         token?: TokenItem;
         isInitFromCache?: boolean;
+        updateSliderValueIfAmountChanged?: boolean;
       }
     ) => {
-      const { token } = opts || {};
+      const { token, updateSliderValueIfAmountChanged = true } = opts || {};
       if (changedValues && changedValues.to) {
         handleReceiveAddressChanged(changedValues.to);
       }
@@ -953,6 +928,17 @@ const SendToken = () => {
 
       form.setFieldsValue(nextFormValues);
       setCacheAmount(resultAmount);
+
+      if (updateSliderValueIfAmountChanged) {
+        if (resultAmount) {
+          const percentValue = getSliderPercent(resultAmount, {
+            token: targetToken,
+          });
+          setSliderPercentValue(percentValue);
+        } else {
+          setSliderPercentValue(0);
+        }
+      }
     },
     [
       cacheAmount,
@@ -1540,18 +1526,24 @@ const SendToken = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { balanceNumText } = useMemo(() => {
+  const [sliderPercentValue, setSliderPercentValue] = useState(0);
+  const { balanceBigNum, balanceNumText } = useMemo(() => {
     if (!currentToken) {
-      return { balanceNumText: '' };
+      return {
+        balanceNumText: '',
+        balanceBigNum: new BigNumber(0),
+        sliderPercentValue: 0,
+      };
     }
-    const balanceNum = new BigNumber(currentToken.raw_amount_hex_str || 0).div(
-      10 ** currentToken.decimals
-    );
+    const balanceBigNum = new BigNumber(
+      currentToken.raw_amount_hex_str || 0
+    ).div(10 ** currentToken.decimals);
     const decimalPlaces = clickedMax || selectedGasLevel ? 8 : 4;
 
     return {
+      balanceBigNum,
       balanceNumText: formatTokenAmount(
-        balanceNum.toFixed(decimalPlaces, BigNumber.ROUND_FLOOR),
+        balanceBigNum.toFixed(decimalPlaces, BigNumber.ROUND_FLOOR),
         decimalPlaces
       ),
     };
@@ -1596,12 +1588,12 @@ const SendToken = () => {
           onBack={handleClickBack}
           forceShowBack={!isTab}
           canBack={!isTab}
-          isShowAccount
+          // isShowAccount
           className="mb-[10px]"
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer absolute right-0 top-1/2 -translate-y-1/2"
+                className="text-r-neutral-title1 cursor-pointer right-0 top-[20px]"
                 onClick={() => {
                   openInternalPageInTab(`send-token${history.location.search}`);
                 }}
@@ -1615,7 +1607,7 @@ const SendToken = () => {
         </PageHeader>
         <Form
           form={form}
-          className="send-token-form"
+          className="send-token-form pt-[16px]"
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
           initialValues={{
@@ -1623,41 +1615,56 @@ const SendToken = () => {
             amount: '',
           }}
         >
-          <div className="flex-1 overflow-auto">
-            <div className="section relative">
-              <div className="section-title justify-between items-center flex">
-                <span className="section-title__to font-medium">
-                  {t('page.sendToken.sectionTo.title')}
-                </span>
-
-                <div
-                  className="cursor-pointer text-r-neutral-title1"
-                  onClick={() => {
-                    history.replace(`/send-poly${history.location.search}`);
-                  }}
-                >
-                  <RcIconSwitchCC width={20} height={20} />
-                </div>
-              </div>
-              <div className="to-address">
-                {targetAccount && (
-                  <ToAddressCard
-                    loading={loadingToAddressDesc}
-                    account={targetAccount}
-                    cexInfo={addressDesc?.cex}
-                  />
-                )}
-              </div>
-            </div>
+          <div className="flex-1 overflow-auto pb-[32px]">
+            <AddressInfoFrom />
+            <AddressInfoTo
+              loadingToAddressDesc={loadingToAddressDesc}
+              toAccount={targetAccount}
+              isMyImported={isMyImported}
+              cexInfo={addressDesc?.cex}
+              onClick={() => {
+                history.replace(`/select-to-address${history.location.search}`);
+              }}
+            />
             <div className="section">
               <div className="section-title flex justify-between items-center">
                 <div className="token-balance whitespace-pre-wrap font-medium">
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
+
+                <div className="token-balance-slider w-[120px] flex justify-between items-center">
+                  <SwapSlider
+                    min={0}
+                    max={100}
+                    disabled={isLoading}
+                    value={sliderPercentValue}
+                    onChange={(value) => {
+                      setSliderPercentValue(value);
+                      const newAmount = balanceBigNum
+                        ?.multipliedBy(value / 100)
+                        .toFixed();
+                      form.setFieldsValue({ amount: newAmount });
+                      handleFormValuesChange(
+                        { amount: newAmount },
+                        {
+                          ...form.getFieldsValue(),
+                          amount: newAmount,
+                        },
+                        {
+                          updateSliderValueIfAmountChanged: false,
+                        }
+                      );
+                    }}
+                    className="w-[100%]"
+                  />
+                  <span className="ml-[8px] text-[13px] text-r-blue-default">
+                    {sliderPercentValue}%
+                  </span>
+                </div>
               </div>
               {currentAccount && chainItem && (
                 <div className="bg-r-neutral-card1 rounded-[8px]">
-                  <ChainSelectWrapper>
+                  {/* <ChainSelectWrapper>
                     <ChainSelectorInForm
                       value={chain}
                       loading={initLoading}
@@ -1671,7 +1678,7 @@ const SendToken = () => {
                       showClosableIcon
                       getContainer={getContainer}
                     />
-                  </ChainSelectWrapper>
+                  </ChainSelectWrapper> */}
                   <Form.Item name="amount">
                     <TokenAmountInput
                       className="bg-r-neutral-card1 rounded-[8px]"
@@ -1711,35 +1718,25 @@ const SendToken = () => {
             )}
           </div>
 
-          <div className={clsx('footer', isTab ? 'rounded-b-[16px]' : '')}>
-            <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
-              {canUseDirectSubmitTx && currentAccount?.type ? (
-                <DirectSignToConfirmBtn
-                  title={t('page.sendToken.sendButton')}
-                  onConfirm={() => {
-                    handleSubmit({
-                      to: form.getFieldValue('to'),
-                      amount: form.getFieldValue('amount'),
-                    });
-                  }}
-                  disabled={!canSubmit}
-                  accountType={currentAccount?.type}
-                  loading={miniSinLoading}
-                />
-              ) : (
-                <Button
-                  disabled={!canSubmit}
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  className="w-[100%] h-[48px] text-[16px]"
-                  loading={isSubmitLoading}
-                >
-                  {t('page.sendToken.sendButton')}
-                </Button>
-              )}
-            </div>
-          </div>
+          <BottomArea
+            // toAddress={targetAccount?.address}
+            mostImportantRisks={mostImportantRisks}
+            agreeRequiredChecked={agreeRequiredChecked}
+            onCheck={(newVal) => {
+              setAgreeRequiredChecked(newVal);
+            }}
+            currentAccount={currentAccount}
+            isSubmitLoading={isSubmitLoading}
+            canSubmit={canSubmit}
+            miniSignLoading={miniSignLoading}
+            canUseDirectSubmitTx={canUseDirectSubmitTx}
+            onConfirm={() => {
+              handleSubmit({
+                to: form.getFieldValue('to'),
+                amount: form.getFieldValue('amount'),
+              });
+            }}
+          />
         </Form>
         <SendReserveGasPopup
           selectedItem={selectedGasLevel?.level as GasLevelType}

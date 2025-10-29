@@ -92,6 +92,7 @@ import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
 import { GlobalSignerPortal } from '../component/MiniSignV2/components/GlobalSignerPortal';
+import SelectToAddress from './SelectToAddress';
 
 declare global {
   interface Window {
@@ -383,6 +384,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/send-poly">
           <SendPoly />
+        </PrivateRoute>
+        <PrivateRoute exact path="/select-to-address">
+          <SelectToAddress />
         </PrivateRoute>
         <PrivateRoute exact path="/send-nft">
           <SendNFT />

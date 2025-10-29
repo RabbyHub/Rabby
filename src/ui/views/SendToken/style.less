@@ -11,6 +11,7 @@
   .page-header {
     margin-bottom: 0;
     padding-top: 20px;
+    align-items: center;
   }
   .section {
     margin-bottom: 20px;
@@ -32,9 +33,10 @@
       padding-bottom: 12px;
       .left {
         padding: 8px 12px;
-        border-radius: 8px;
+        border-radius: 100px;
         border-left: none;
-        background: var(--r-neutral-card-2, #f2f4f7);
+        // background: var(--r-neutral-card-2, #f2f4f7);
+        background: var(--r-neutral-line);
         
       }
       .left:hover {
@@ -309,6 +311,15 @@
     line-height: 14px;
     color: #f24822;
     text-align: right;
+  }
+
+  .address-tooltip {
+    .ant-tooltip-inner {
+      border-radius: 2px !important;
+    }
+    .ant-tooltip-arrow {
+      display: block !important;
+    }
   }
 }
 
