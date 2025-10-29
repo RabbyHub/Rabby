@@ -14,3 +14,4 @@ export { default as NftLending } from './NftLending';
 export { default as NftFraction } from './NftFraction';
 export { default as NftP2PBorrower } from './NftP2PBorrower';
 export { default as NftP2PLender } from './NftP2PLender';
+export { default as Prediction } from './Prediction';
