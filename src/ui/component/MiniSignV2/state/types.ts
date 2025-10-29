@@ -20,7 +20,11 @@ export type SignatureFlowState = {
   fingerprint?: string;
   config?: SignerConfig;
   ctx?: SignerCtx;
-  error?: string;
+  error?: {
+    status: 'REJECTED' | 'FAILED';
+    content: string;
+    description: string;
+  };
   hashes?: string[];
 };
 
@@ -45,7 +49,11 @@ export type SignatureAction =
       fingerprint: string;
       ctx: SignerCtx;
     }
-  | { type: 'PREFETCH_FAILURE'; fingerprint: string; error: string }
+  | {
+      type: 'PREFETCH_FAILURE';
+      fingerprint: string;
+      error: SignatureFlowState['error'];
+    }
   | {
       type: 'OPEN_UI_SKELETON';
       fingerprint: string;
@@ -56,7 +64,11 @@ export type SignatureAction =
       fingerprint: string;
       ctx: SignerCtx;
     }
-  | { type: 'OPEN_UI_FAILURE'; fingerprint: string; error: string }
+  | {
+      type: 'OPEN_UI_FAILURE';
+      fingerprint: string;
+      error: SignatureFlowState['error'];
+    }
   | {
       type: 'UPDATE_CTX';
       fingerprint: string;
@@ -76,5 +88,5 @@ export type SignatureAction =
   | {
       type: 'SEND_FAILURE';
       fingerprint: string;
-      error: string;
+      error: SignatureFlowState['error'];
     };
