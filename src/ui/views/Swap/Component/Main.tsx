@@ -507,6 +507,7 @@ export const Main = () => {
   useEffect(() => {
     prefetch({
       txs: currentTxs || [],
+      getContainer,
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
     });
