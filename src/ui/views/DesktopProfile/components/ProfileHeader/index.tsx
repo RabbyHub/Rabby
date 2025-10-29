@@ -1,9 +1,4 @@
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { ellipsisAddress } from '@/ui/utils/address';
-import clsx from 'clsx';
-import React, { useMemo, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { BalanceView } from './BalanceView';
+import { EVENTS, KEYRING_TYPE } from '@/constant';
 import {
   RcIconBridgeCC,
   RcIconCopyCC,
@@ -12,17 +7,20 @@ import {
   RcIconSpinCC,
   RcIconSwapCC,
 } from '@/ui/assets/desktop/profile';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
+import { useRabbyDispatch } from '@/ui/store';
+import { ellipsisAddress } from '@/ui/utils/address';
 import { copyAddress } from '@/ui/utils/clipboard';
-import { Popover } from 'antd';
-import QRCode from 'qrcode.react';
-import styled, { createGlobalStyle } from 'styled-components';
-import IconPendingTx from 'ui/assets/dashboard/pending-tx.svg';
-import { SignatureRecordModal } from '../SignatureRecordModal';
-import { GnosisQueueModal } from '../GnosisQueueModal';
-import { KEYRING_TYPE } from '@/constant';
-import { useRequest } from 'ahooks';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { CurveChartData } from '@/ui/views/Dashboard/components/BalanceView/useCurve';
+import { useRequest } from 'ahooks';
+import { Popover } from 'antd';
+import clsx from 'clsx';
+import QRCode from 'qrcode.react';
+import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { createGlobalStyle } from 'styled-components';
+import { BalanceView } from './BalanceView';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -52,11 +50,7 @@ export const ProfileHeader: React.FC<{
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const dispatch = useRabbyDispatch();
 
-  const pendingTxCount = useRabbySelector(
-    (store) => store.transactions.pendingTransactionCount
-  );
-
-  useRequest(
+  const { data: pendingTxCount, runAsync } = useRequest(
     async () => {
       if (!currentAccount?.address || isGnosis) {
         return;
@@ -71,6 +65,9 @@ export const ProfileHeader: React.FC<{
       pollingInterval: 30_000,
     }
   );
+
+  useEventBusListener(EVENTS.TX_SUBMITTING, runAsync);
+  useEventBusListener(EVENTS.RELOAD_TX, runAsync);
 
   if (!currentAccount) {
     return null;
