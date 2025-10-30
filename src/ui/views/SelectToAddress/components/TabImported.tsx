@@ -84,15 +84,10 @@ export default function TabImported({
         _inWhitelist: whitelistSet.has(result.address.toLowerCase()),
       };
 
-      const { isMyImported, isWatchOnly } = filterMyAccounts(value);
+      const { isMyImported, isGnosis } = filterMyAccounts(value);
 
-      const targetList = isMyImported
-        ? ret.myImportedAccounts
-        : isWatchOnly
-        ? ret.otherAccounts
-        : null;
-
-      if (!targetList) return;
+      const targetList =
+        isMyImported || isGnosis ? ret.myImportedAccounts : ret.otherAccounts;
 
       if (!isMyImported && !targetList.length) {
         value._isFirstOtherAccount = true;

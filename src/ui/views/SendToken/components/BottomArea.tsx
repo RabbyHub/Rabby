@@ -30,7 +30,7 @@ export default function BottomArea({
   canUseDirectSubmitTx,
   onConfirm,
 }: {
-  mostImportantRisks: RiskItem[];
+  mostImportantRisks: { value: string }[];
   agreeRequiredChecked: boolean;
   onCheck: (nextVal: boolean) => void;
   currentAccount: Account | null;
@@ -51,7 +51,10 @@ export default function BottomArea({
         <div className="risks-wrapper mb-[8px]">
           <div className="risks-alert bg-r-red-light1 p-[12px] rounded-[8px]">
             {mostImportantRisks.map((risk) => (
-              <div key={risk.type} className="flex items-center justify-center">
+              <div
+                key={risk.value}
+                className="flex items-center justify-center"
+              >
                 <RcIconRiskAlert width={20} height={20} />
                 <span className={'risks-text ml-[8px] text-r-red-default'}>
                   {risk.value}

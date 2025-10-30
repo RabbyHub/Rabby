@@ -1,3 +1,4 @@
+/* eslint-enable react-hooks/exhaustive-deps */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PQueue from 'p-queue';
@@ -262,7 +263,7 @@ export const useAddressRisks = (
         setLoadingHasTransfer(false);
       }
     })();
-  }, [address, myTop10AccountList, wallet]);
+  }, [address, myTop10AccountList, onLoadFinished, wallet]);
 
   return {
     risks,
