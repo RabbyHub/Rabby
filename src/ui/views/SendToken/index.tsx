@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, useDebounce } from 'react-use';
-import { Form, message, Button, Modal, Slider } from 'antd';
+import { Form, message, Button, Modal, Slider, SliderSingleProps } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
@@ -90,6 +90,7 @@ import {
 } from '@/ui/hooks/useAddressRisk';
 import { SwapSlider } from '../Swap/Component/Slider';
 import { appIsDebugPkg } from '@/utils/env';
+import { debounce } from 'lodash';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -1590,6 +1591,15 @@ const SendToken = () => {
   }, []);
 
   const [sliderPercentValue, setSliderPercentValue] = useState(0);
+  const onAfterSliderValueChange = useCallback(
+    debounce((value: number) => {
+      if (value !== 100) return;
+
+      handleMaxInfoChanged();
+    }, 300),
+    [handleMaxInfoChanged]
+  );
+
   const { balanceBigNum, balanceNumText } = useMemo(() => {
     if (!currentToken) {
       return {
@@ -1700,7 +1710,7 @@ const SendToken = () => {
                   <SwapSlider
                     min={0}
                     max={100}
-                    disabled={isLoading}
+                    disabled={isLoading || isEstimatingGas}
                     value={sliderPercentValue}
                     onChange={(value) => {
                       setSliderPercentValue(value);
@@ -1726,9 +1736,9 @@ const SendToken = () => {
                             updateSliderValue: false,
                           }
                         );
-                      } else {
-                        handleMaxInfoChanged();
                       }
+
+                      onAfterSliderValueChange(value);
                     }}
                     className="w-[112px] max-w-[100%]"
                   />
