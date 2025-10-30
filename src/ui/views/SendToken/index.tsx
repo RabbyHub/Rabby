@@ -1,3 +1,4 @@
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, {
   useState,
   useCallback,
@@ -34,7 +35,13 @@ import {
 import { query2obj } from 'ui/utils/url';
 import { coerceFloat, formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
-import { Cex, GasLevel, TokenItem, Tx } from 'background/service/openapi';
+import {
+  Cex,
+  GasLevel,
+  TokenItem,
+  TokenItemWithEntity,
+  Tx,
+} from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
 // import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
@@ -82,6 +89,7 @@ import {
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
 import { SwapSlider } from '../Swap/Component/Slider';
+import { appIsDebugPkg } from '@/utils/env';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -96,7 +104,7 @@ function findInstanceLevel(gasList: GasLevel[]) {
 
 const DEFAULT_GAS_USED = 21000;
 
-const DEFAULT_TOKEN = {
+const DEFAULT_TOKEN: TokenItem = {
   id: 'eth',
   chain: 'eth',
   name: 'ETH',
@@ -112,6 +120,7 @@ const DEFAULT_TOKEN = {
   is_wallet: true,
   time_at: 0,
   amount: 0,
+  cex_ids: [],
 };
 
 type FormSendToken = {
@@ -286,42 +295,9 @@ const SendToken = () => {
   });
   useInitCheck(addressDesc);
 
-  const [agreeRequiredChecked, setAgreeRequiredChecked] = useState(false);
-  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
-    onLoadFinished: useCallback(() => {
-      setAgreeRequiredChecked(false);
-    }, []),
-    scene: 'send-token',
-  });
-
-  const mostImportantRisks = React.useMemo(() => {
-    if (risks.length === 0) {
-      return [];
-    }
-    const sorted = [...risks]
-      .filter((item) => item.type !== RiskType.NEVER_SEND)
-      .sort(sortRisksDesc);
-    return sorted.slice(0, 1);
-  }, [risks]);
-
-  const canLoadGasFee =
-    isValidAddress(form.getFieldValue('to')) &&
-    !!currentToken &&
-    !balanceError &&
-    new BigNumber(form.getFieldValue('amount')).gte(0) &&
-    !isLoading;
-
-  const canSubmit =
-    canLoadGasFee &&
-    !loadingRisks &&
-    (!mostImportantRisks.length || agreeRequiredChecked);
-
-  const isNativeToken =
-    !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
-
   const disableItemCheck = useCallback(
     (
-      token: TokenItem
+      token: TokenItemWithEntity
     ): {
       disable: boolean;
       reason: string;
@@ -339,10 +315,12 @@ const SendToken = () => {
 
       const toCexId = addressDesc?.cex?.id;
       if (toCexId) {
-        const noSupportToken = token.cex_ids?.every?.(
+        const cex_ids =
+          token.cex_ids || token.identity?.cex_list?.map((item) => item.id);
+        const noSupportToken = cex_ids?.every?.(
           (id) => id.toLowerCase() !== toCexId.toLowerCase()
         );
-        if (!token?.cex_ids?.length || noSupportToken) {
+        if (!cex_ids?.length || noSupportToken) {
           return {
             disable: true,
             cexId: toCexId,
@@ -435,6 +413,85 @@ const SendToken = () => {
     },
     [addressDesc, t]
   );
+
+  const [agreeRequiredChecks, setAgreeRequiredChecks] = useState({
+    forToAddress: false,
+    forToken: false,
+  });
+  const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
+    onLoadFinished: useCallback(() => {
+      setAgreeRequiredChecks((prev) => ({ ...prev, forToAddress: false }));
+    }, []),
+    scene: 'send-token',
+  });
+
+  const {
+    mostImportantRisks,
+    hasRiskForToAddress,
+    hasRiskForToken,
+  } = React.useMemo(() => {
+    const ret = {
+      risksForToAddress: [] as { value: string }[],
+      risksForToken: [] as { value: string }[],
+      mostImportantRisks: [] as { value: string }[],
+    };
+    if (risks.length) {
+      const sorted = [...risks]
+        .filter((item) => item.type !== RiskType.NEVER_SEND)
+        .sort(sortRisksDesc);
+
+      ret.risksForToAddress = sorted
+        .slice(0, 1)
+        .map((item) => ({ value: item.value }));
+    }
+
+    if (!ret.risksForToAddress.length) {
+      const disableCheck = currentToken ? disableItemCheck(currentToken) : null;
+
+      if (disableCheck?.disable) {
+        ret.risksForToken.push({ value: disableCheck.shortReason });
+      }
+    }
+
+    if (appIsDebugPkg) {
+      if (ret.risksForToAddress.length && ret.risksForToken.length) {
+        throw new Error(
+          'Address risk and Token risk should not appear at the same time'
+        );
+      }
+    }
+
+    ret.mostImportantRisks = [
+      ...ret.risksForToAddress,
+      ...ret.risksForToken,
+    ].slice(0, 1);
+
+    return {
+      mostImportantRisks: ret.mostImportantRisks,
+      hasRiskForToAddress: !!ret.risksForToAddress.length,
+      hasRiskForToken: !!ret.risksForToken.length,
+    };
+  }, [currentToken, risks]);
+
+  const agreeRequiredChecked =
+    (hasRiskForToAddress && agreeRequiredChecks.forToAddress) ||
+    (hasRiskForToken && agreeRequiredChecks.forToken);
+
+  const canLoadGasFee =
+    isValidAddress(form.getFieldValue('to')) &&
+    !!currentToken &&
+    !balanceError &&
+    new BigNumber(form.getFieldValue('amount')).gte(0) &&
+    !isLoading;
+
+  const canSubmit =
+    canLoadGasFee &&
+    !loadingRisks &&
+    (!hasRiskForToAddress || agreeRequiredChecked) &&
+    (!hasRiskForToken || agreeRequiredChecked);
+
+  const isNativeToken =
+    !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
 
   const getParams = React.useCallback(
     ({ amount }: FormSendToken) => {
@@ -1068,9 +1125,13 @@ const SendToken = () => {
       }
       setIsLoading(false);
 
+      if (result && disableItemCheck(result).disable) {
+        setAgreeRequiredChecks((prev) => ({ ...prev, forToken: false }));
+      }
+
       return result;
     },
-    [wallet, estimateGasOnChain, form, t]
+    [wallet, estimateGasOnChain, disableItemCheck, form, t]
   );
 
   const handleAmountChange = useCallback(() => {
@@ -1733,11 +1794,14 @@ const SendToken = () => {
           </div>
 
           <BottomArea
-            // toAddress={targetAccount?.address}
             mostImportantRisks={mostImportantRisks}
             agreeRequiredChecked={agreeRequiredChecked}
             onCheck={(newVal) => {
-              setAgreeRequiredChecked(newVal);
+              setAgreeRequiredChecks((prev) => ({
+                ...prev,
+                ...(hasRiskForToAddress && { forToAddress: newVal }),
+                ...(hasRiskForToken && { forToken: newVal }),
+              }));
             }}
             currentAccount={currentAccount}
             isSubmitLoading={isSubmitLoading}
@@ -1749,7 +1813,11 @@ const SendToken = () => {
                 to: form.getFieldValue('to'),
                 amount: form.getFieldValue('amount'),
               });
-              setAgreeRequiredChecked(false);
+              setAgreeRequiredChecks((prev) => ({
+                ...prev,
+                forToAddress: false,
+                forToken: false,
+              }));
             }}
           />
         </Form>
