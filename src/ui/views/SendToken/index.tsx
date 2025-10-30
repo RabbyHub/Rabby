@@ -1649,19 +1649,25 @@ const SendToken = () => {
                       const newAmount =
                         value === 100
                           ? newAmountBigNum.toFixed()
+                          : !value
+                          ? ''
                           : newAmountBigNum.toFixed(4);
 
-                      form.setFieldsValue({ amount: newAmount });
-                      handleFormValuesChange(
-                        { amount: newAmount },
-                        {
-                          ...form.getFieldsValue(),
-                          amount: newAmount,
-                        },
-                        {
-                          updateSliderValue: false,
-                        }
-                      );
+                      if (value < 100) {
+                        form.setFieldsValue({ amount: newAmount });
+                        handleFormValuesChange(
+                          { amount: newAmount },
+                          {
+                            ...form.getFieldsValue(),
+                            amount: newAmount,
+                          },
+                          {
+                            updateSliderValue: false,
+                          }
+                        );
+                      } else {
+                        handleMaxInfoChanged();
+                      }
                     }}
                     className="w-[112px] max-w-[100%]"
                   />
