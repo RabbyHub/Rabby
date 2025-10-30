@@ -1423,7 +1423,10 @@
           "bridge": "Bridge",
           "perps": "Perps",
           "mobile": "Mobile Sync",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "setting": "Setting",
+          "searchDapp": "Search Dapp",
+          "dapps": "Dapps"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
