@@ -454,9 +454,15 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         ];
   }, [isGnosis]);
 
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const scroll = useScroll(ref);
-  const size = useSize(ref);
+  const scrollRatio = useMemo(() => {
+    const top = scroll?.top ?? 0;
+    const height = ref.current?.getBoundingClientRect()?.height ?? 0;
+    const scrollHeight = ref.current?.scrollHeight ?? 440;
+    const ratio = top / (scrollHeight - height);
+    return ratio;
+  }, [scroll?.top]);
 
   return (
     <div className="relative group">
@@ -544,9 +550,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           <div
             className="w-[2px] h-[50px] bg-r-blue-default rounded-full"
             style={{
-              transform: `translateY(${
-                ((scroll?.top || 0) / (size?.height || 264)) * 100
-              }%)`,
+              transform: `translateY(${scrollRatio * 30}px)`,
             }}
           ></div>
         </div>
