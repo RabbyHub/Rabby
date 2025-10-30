@@ -77,7 +77,7 @@ const Container = styled.div`
     align-items: center;
 
     &:hover {
-      background: var(--r-blue-light2, #dbe0ff);
+      background: var(--r-blue-light1, #edf0ff);
     }
 
     &-icon {
@@ -121,9 +121,6 @@ const Container = styled.div`
       position: absolute;
       right: 33px;
       top: 7px;
-    }
-    &:hover {
-      background: var(--r-blue-light-2, #eef1ff);
     }
   }
 
