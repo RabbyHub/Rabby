@@ -2833,7 +2833,6 @@
         "removed": "Dirección de la lista blanca eliminada",
         "tooltip": "Dirección de Whitelist"
       },
-      "title": "Agregar dirección a la lista blanca",
       "confirmPassword": "Confirmar contraseña",
       "invalidAddress": "Esta dirección no es válida",
       "riskTitle": "Agregar dirección de lista blanca",
@@ -3204,9 +3203,7 @@
     "ChainItem": {
       "appChain": "En la cuenta de {{chain}}"
     },
-    "RiskTip": {
-      "title": "Advertencia de Riesgo"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "La retirada actual entrará en una cola de espera. Una vez procesada, se podrá retirar a su wallet."
     }

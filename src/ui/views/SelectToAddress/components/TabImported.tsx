@@ -1,12 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory, useLocation } from 'react-router-dom';
-import { isValidAddress } from '@ethereumjs/util';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { Button, message, Tabs } from 'antd';
 
-import { EmptyWhitelistHolder } from '../components/EmptyWhitelistHolder';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { ellipsisAddress } from '@/ui/utils/address';
 
@@ -14,14 +11,7 @@ import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { groupBy } from 'lodash';
 import { findAccountByPriority, filterMyAccounts } from '@/utils/account';
-import { padWatchAccount } from '../util';
 
-// icons
-import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
-import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
-import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
-import IconSuccess from 'ui/assets/success.svg';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import type { Account } from '@/background/service/preference';
 
 const AccountItemWrapper = styled.div`
@@ -73,7 +63,7 @@ export default function TabImported({
     whitelist: s.whitelist.whitelist,
   }));
 
-  const { essentialAccounts, otherAccounts, sortedAccounts } = useMemo(() => {
+  const { myImportedAccounts, otherAccounts, sortedAccounts } = useMemo(() => {
     const whitelistSet = new Set(whitelist.map((item) => item.toLowerCase()));
 
     const groupAccounts = groupBy(accountsList, (item) =>
@@ -81,7 +71,7 @@ export default function TabImported({
     );
 
     const ret = {
-      essentialAccounts: [] as RenderAccount[],
+      myImportedAccounts: [] as RenderAccount[],
       otherAccounts: [] as RenderAccount[],
       sortedAccounts: [] as RenderAccount[],
     };
@@ -94,11 +84,16 @@ export default function TabImported({
         _inWhitelist: whitelistSet.has(result.address.toLowerCase()),
       };
 
-      const isMyImported = filterMyAccounts(value);
+      const { isMyImported, isWatchOnly } = filterMyAccounts(value);
 
       const targetList = isMyImported
-        ? ret.essentialAccounts
-        : ret.otherAccounts;
+        ? ret.myImportedAccounts
+        : isWatchOnly
+        ? ret.otherAccounts
+        : null;
+
+      if (!targetList) return;
+
       if (!isMyImported && !targetList.length) {
         value._isFirstOtherAccount = true;
       }
@@ -110,7 +105,7 @@ export default function TabImported({
       }
     });
 
-    ret.sortedAccounts = ret.essentialAccounts.concat(ret.otherAccounts);
+    ret.sortedAccounts = ret.myImportedAccounts.concat(ret.otherAccounts);
     return ret;
   }, [accountsList, whitelist]);
 

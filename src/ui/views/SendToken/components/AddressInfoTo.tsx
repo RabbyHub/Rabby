@@ -79,11 +79,11 @@ export function AddressInfoTo({
       toAccount?.type === KEYRING_CLASS.WATCH;
 
     ret.cexInfoText = ret.showCexInfo
-      ? t('page.sendPoly.riskAlert.cexDepositAddress', {
+      ? t('page.selectToAddress.riskAlert.cexDepositAddress', {
           cexName: cexInfo?.name,
         })
       : toAccount?.type === KEYRING_CLASS.GNOSIS
-      ? t('page.sendPoly.riskAlert.cexAddress', {
+      ? t('page.selectToAddress.riskAlert.cexAddress', {
           cexName: BRAND_ALIAN_TYPE_TEXT[toAccount?.type],
         })
       : toAccount?.type
@@ -118,12 +118,18 @@ export function AddressInfoTo({
           {hasPositiveTips && (
             <div className="flex items-center justify-end">
               <RcCheckRight width={18} height={18} className="mr-[3px]" />
-              {isMyImported ? (
-                <span className="text-r-green-default">Your own address</span>
-              ) : inWhitelist ? (
-                <span className="text-r-green-default">Whitelist address</span>
+              {inWhitelist ? (
+                <span className="text-r-green-default">
+                  {t('page.selectToAddress.positiveTips.whitelistAddress')}
+                </span>
+              ) : isMyImported ? (
+                <span className="text-r-green-default">
+                  {t('page.selectToAddress.positiveTips.yourOwnAddress')}
+                </span>
               ) : toAddressIsRecentlySend ? (
-                <span className="text-r-green-default">Sent before</span>
+                <span className="text-r-green-default">
+                  {t('page.selectToAddress.positiveTips.sentBefore')}
+                </span>
               ) : null}
             </div>
           )}

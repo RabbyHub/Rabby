@@ -41,7 +41,9 @@ export const accountToDisplay = createModel<RootModel>()({
   selectors: (slice) => ({
     myImportedAccounts() {
       return slice((account) => {
-        return account.accountsList.filter((item) => filterMyAccounts(item));
+        return account.accountsList.filter(
+          (item) => filterMyAccounts(item).isMyImported
+        );
       });
     },
   }),

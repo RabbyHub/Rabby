@@ -48,9 +48,10 @@ export const useAddressRisks = (
   options?: {
     onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
     editCex?: IExchange | null;
+    scene?: 'send-poly' | 'send-token';
   }
 ) => {
-  const { editCex, onLoadFinished } = options || {};
+  const { editCex, onLoadFinished, scene = 'send-poly' } = options || {};
 
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -82,29 +83,47 @@ export const useAddressRisks = (
       addressDesc?.cex?.id && !addressDesc.cex.is_deposit
         ? {
             type: RiskType.CEX_NO_DEPOSIT,
-            value: t('page.sendPoly.riskAlert.riskType.risks.dexNoDeposite'),
+            value:
+              scene === 'send-poly'
+                ? t('page.sendPoly.riskAlert.riskType.risks.dexNoDeposite')
+                : t(
+                    'page.selectToAddress.riskAlert.riskType.risks.dexNoDeposite'
+                  ),
           }
         : null,
       addressDesc?.is_danger || addressDesc?.is_scam
         ? {
             type: RiskType.SCAM_ADDRESS,
-            value: t('page.sendPoly.riskAlert.riskType.risks.scamAddress'),
+            value:
+              scene === 'send-poly'
+                ? t('page.sendPoly.riskAlert.riskType.risks.scamAddress')
+                : t(
+                    'page.selectToAddress.riskAlert.riskType.risks.scamAddress'
+                  ),
           }
         : null,
       isContract && !isSafeAddress
         ? {
             type: RiskType.CONTRACT_ADDRESS,
-            value: t('page.sendPoly.riskAlert.riskType.risks.contractAddress'),
+            value:
+              scene === 'send-poly'
+                ? t('page.sendPoly.riskAlert.riskType.risks.contractAddress')
+                : t(
+                    'page.selectToAddress.riskAlert.riskType.risks.contractAddress'
+                  ),
           }
         : null,
       hasNoSend
         ? {
             type: RiskType.NEVER_SEND,
-            value: t('page.sendPoly.riskAlert.riskType.risks.noSend'),
+            value:
+              scene === 'send-poly'
+                ? t('page.sendPoly.riskAlert.riskType.risks.noSend')
+                : t('page.selectToAddress.riskAlert.riskType.risks.noSend'),
           }
         : null,
     ].filter((i) => !!i) as { type: RiskType; value: string }[];
-  }, [addressDesc, hasNoSend, t]);
+  }, [scene, addressDesc, hasNoSend, t]);
 
   const myTop10AccountList = useMemo(
     () =>

@@ -286,11 +286,12 @@ const SendToken = () => {
   });
   useInitCheck(addressDesc);
 
-  const [agreeRequiredChecked, setAgreeRequiredChecked] = useState(true);
+  const [agreeRequiredChecked, setAgreeRequiredChecked] = useState(false);
   const { loading: loadingRisks, risks } = useAddressRisks(toAddress || '', {
     onLoadFinished: useCallback(() => {
       setAgreeRequiredChecked(false);
     }, []),
+    scene: 'send-token',
   });
 
   const mostImportantRisks = React.useMemo(() => {
@@ -807,6 +808,7 @@ const SendToken = () => {
         }
       }
     };
+    setGasFeeOpen(true);
     setMiniTx();
     return () => {
       isCurrent = false;
@@ -881,10 +883,10 @@ const SendToken = () => {
       opts?: {
         token?: TokenItem;
         isInitFromCache?: boolean;
-        updateSliderValueIfAmountChanged?: boolean;
+        updateSliderValue?: boolean;
       }
     ) => {
-      const { token, updateSliderValueIfAmountChanged = true } = opts || {};
+      const { token, updateSliderValue = true } = opts || {};
       if (changedValues && changedValues.to) {
         handleReceiveAddressChanged(changedValues.to);
       }
@@ -929,7 +931,7 @@ const SendToken = () => {
       form.setFieldsValue(nextFormValues);
       setCacheAmount(resultAmount);
 
-      if (updateSliderValueIfAmountChanged) {
+      if (updateSliderValue) {
         if (resultAmount) {
           const percentValue = getSliderPercent(resultAmount, {
             token: targetToken,
@@ -1588,12 +1590,11 @@ const SendToken = () => {
           onBack={handleClickBack}
           forceShowBack={!isTab}
           canBack={!isTab}
-          // isShowAccount
           className="mb-[10px]"
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer right-0 top-[20px]"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0"
                 onClick={() => {
                   openInternalPageInTab(`send-token${history.location.search}`);
                 }}
@@ -1623,7 +1624,9 @@ const SendToken = () => {
               isMyImported={isMyImported}
               cexInfo={addressDesc?.cex}
               onClick={() => {
-                history.replace(`/select-to-address${history.location.search}`);
+                history.push(
+                  '/select-to-address?type=send-token&rbisource=send-token'
+                );
               }}
             />
             <div className="section">
@@ -1632,7 +1635,7 @@ const SendToken = () => {
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
 
-                <div className="token-balance-slider w-[120px] flex justify-between items-center">
+                <div className="token-balance-slider flex w-[152px] pr-[8px] justify-between items-center">
                   <SwapSlider
                     min={0}
                     max={100}
@@ -1640,26 +1643,37 @@ const SendToken = () => {
                     value={sliderPercentValue}
                     onChange={(value) => {
                       setSliderPercentValue(value);
-                      const newAmount = balanceBigNum
-                        ?.multipliedBy(value / 100)
-                        .toFixed();
-                      form.setFieldsValue({ amount: newAmount });
-                      handleFormValuesChange(
-                        { amount: newAmount },
-                        {
-                          ...form.getFieldsValue(),
-                          amount: newAmount,
-                        },
-                        {
-                          updateSliderValueIfAmountChanged: false,
-                        }
+                      const newAmountBigNum = balanceBigNum?.multipliedBy(
+                        value / 100
                       );
+                      const newAmount =
+                        value === 100
+                          ? newAmountBigNum.toFixed()
+                          : !value
+                          ? ''
+                          : newAmountBigNum.toFixed(4);
+
+                      if (value < 100) {
+                        form.setFieldsValue({ amount: newAmount });
+                        handleFormValuesChange(
+                          { amount: newAmount },
+                          {
+                            ...form.getFieldsValue(),
+                            amount: newAmount,
+                          },
+                          {
+                            updateSliderValue: false,
+                          }
+                        );
+                      } else {
+                        handleMaxInfoChanged();
+                      }
                     }}
-                    className="w-[100%]"
+                    className="w-[112px] max-w-[100%]"
                   />
-                  <span className="ml-[8px] text-[13px] text-r-blue-default">
+                  <div className="ml-[8px] w-[42px] pl-[8px] text-right text-[13px] text-r-blue-default">
                     {sliderPercentValue}%
-                  </span>
+                  </div>
                 </div>
               </div>
               {currentAccount && chainItem && (
@@ -1735,6 +1749,7 @@ const SendToken = () => {
                 to: form.getFieldValue('to'),
                 amount: form.getFieldValue('amount'),
               });
+              setAgreeRequiredChecked(false);
             }}
           />
         </Form>

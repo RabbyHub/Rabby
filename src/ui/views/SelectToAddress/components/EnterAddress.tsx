@@ -98,7 +98,6 @@ export const EnterAddress = ({
     name: string;
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
-  // const [isValidAddr, setIsValidAddr] = useState(true);
   const isValidAddr = useMemo(() => {
     return isValidAddress(inputAddress);
   }, [inputAddress]);
@@ -295,7 +294,7 @@ export const EnterAddress = ({
             </div>
           </div>
         )}
-        {/* {isValidAddr &&
+        {isValidAddr &&
           (whitelist.some((item) => isSameAddress(item, inputAddress)) ||
             !!filteredAccounts.length) && (
             <WhitelistAddressTypeCard
@@ -313,7 +312,7 @@ export const EnterAddress = ({
                   : KEYRING_TYPE.WatchAddressKeyring
               }
             />
-          )} */}
+          )}
       </div>
       {shouldRender && (
         <>

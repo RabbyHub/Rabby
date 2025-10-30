@@ -2828,7 +2828,6 @@
         "repeated": "Alamat saat ini sudah ada di whitelist.",
         "tooltip": "Whitelist address"
       },
-      "title": "Tambah Alamat Daftar Putih",
       "address": "Alamat",
       "exchangeAddress": "Alamat Pertukaran",
       "nameYourAddress": "Nama Alamat Anda",
@@ -3199,9 +3198,7 @@
     "ChainItem": {
       "appChain": "Di Akun {{chain}}"
     },
-    "RiskTip": {
-      "title": "Peringatan Risiko"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda."
     }

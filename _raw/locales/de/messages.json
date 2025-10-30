@@ -2831,7 +2831,6 @@
         "repeated": "Die aktuelle Adresse ist bereits auf der Whitelist.",
         "tooltip": "Whitelist-Adresse"
       },
-      "title": "Whitelist-Adresse hinzufügen",
       "name": "Name",
       "address": "Adresse",
       "confirmPassword": "Passwort bestätigen",
@@ -3202,9 +3201,7 @@
     "ChainItem": {
       "appChain": "Auf {{chain}} Konto"
     },
-    "RiskTip": {
-      "title": "Risiko Warnung"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "Aktuelle Abhebungen gelangen in eine Warteschlange. Sobald sie bearbeitet sind, können sie in Ihr Wallet abgehoben werden."
     }

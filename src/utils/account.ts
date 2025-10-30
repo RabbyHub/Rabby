@@ -228,8 +228,12 @@ export const isFullVersionAccountType = (account: Account) => {
 };
 
 export const filterMyAccounts = (account: Account) => {
-  return (
+  const isMyImported =
     account.type !== KEYRING_CLASS.WATCH &&
-    account.type !== KEYRING_CLASS.GNOSIS
-  );
+    account.type !== KEYRING_CLASS.GNOSIS;
+  return {
+    isMyImported,
+    isWatchOnly: account.type === KEYRING_CLASS.WATCH,
+    isGnosis: account.type === KEYRING_CLASS.GNOSIS,
+  };
 };

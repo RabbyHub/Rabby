@@ -2831,7 +2831,6 @@
         "removed": "Endereço da lista de permissões excluído",
         "tooltip": "Whitelist address"
       },
-      "title": "Adicionar Endereço à Lista Branca",
       "name": "Nome",
       "exchangeAddress": "Endereço de Exchange",
       "enterAddress": "Digite o endereço",
@@ -3203,9 +3202,7 @@
     "ChainItem": {
       "appChain": "Na Conta {{chain}}"
     },
-    "RiskTip": {
-      "title": "Aviso de Risco"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "O saque atual irá entrar em uma fila de espera. Uma vez processado, pode ser retirado para sua wallet."
     }

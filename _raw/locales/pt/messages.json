@@ -2828,7 +2828,6 @@
         "added": "Endereço adicionado à lista de permissões",
         "tooltip": "Whitelist address"
       },
-      "title": "Adicionar Endereço à Lista Branca",
       "nameYourAddress": "Nomeie Seu Endereço",
       "confirmPassword": "Confirmar Senha",
       "name": "Nome",
@@ -3199,9 +3198,7 @@
     "ChainItem": {
       "appChain": "Na Conta {{chain}}"
     },
-    "RiskTip": {
-      "title": "Aviso de Risco"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "A retirada atual entrará em uma fila de espera. Assim que processada, poderá ser retirada para sua wallet."
     }
