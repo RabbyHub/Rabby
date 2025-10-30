@@ -601,6 +601,10 @@ const GasAccountDepositContent = ({
     }
   }, [depositAmount]);
 
+  useEffect(() => {
+    setToken(undefined);
+  }, [currentAccount?.address]);
+
   return (
     <div className="w-full h-full flex flex-col justify-center items-center leading-normal">
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[12px]">
