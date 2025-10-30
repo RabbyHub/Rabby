@@ -19,7 +19,11 @@ import { useWallet } from 'ui/utils';
 
 import { getKRCategoryByType } from '@/utils/transaction';
 
-import { RcIconAddWalletCC } from '@/ui/assets/dashboard';
+import {
+  RcIconAddWalletCC,
+  RcIconQrCodeCC,
+  RcIconSettingCC,
+} from '@/ui/assets/dashboard';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -32,17 +36,21 @@ import { BalanceView } from '../BalanceView/BalanceView';
 import { useHomeBalanceViewOuterPrefetch } from '../BalanceView/useHomeBalanceView';
 import PendingTxs from '../PendingTxs';
 import Queue from '../Queue';
+import { Popover } from 'antd';
+import QRCode from 'qrcode.react';
 
 const Container = styled.div`
   width: 100%;
-  height: 173px;
+  height: 188px;
   background: linear-gradient(0deg, #2539b7 0%, #2539b7 100%), #2539b7;
   position: relative;
   overflow: hidden;
-  padding: 16px;
+  padding: 16px 16px 12px 16px;
 `;
 
-export const DashboardHeader = () => {
+export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
+  onSettingClick,
+}) => {
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -116,67 +124,83 @@ export const DashboardHeader = () => {
   return (
     <Container>
       {currentAccount && (
-        <div className={clsx('flex mb-[12px] items-center relative')}>
-          <div
-            className={clsx(
-              'flex items-center gap-[6px] px-[8px] py-[6px] rounded-[6px] cursor-pointer',
-              'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
-            )}
-            onClick={handleSwitchAddress}
-          >
-            <div className="relative">
-              <img
-                className={clsx('w-[20px] h-[20px]')}
-                src={
-                  brandIcon ||
-                  WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
-                  (currentAccount.type === KEYRING_CLASS.WATCH
-                    ? WatchLogo
-                    : KEYRING_ICONS_WHITE[currentAccount.type])
-                }
-              />
-              <CommonSignal
-                type={currentAccount.type}
-                brandName={currentAccount.brandName}
-                address={currentAccount.address}
-              />
-            </div>
+        <div
+          className={clsx('flex mb-[12px] items-center gap-[16px] relative')}
+        >
+          <div className="flex items-center gap-[8px]">
             <div
-              className="text-[15px] leading-[18px] font-medium text-r-neutral-title2 truncate max-w-[86px]"
-              title={displayName}
+              className={clsx(
+                'flex items-center gap-[6px] px-[8px] py-[6px] rounded-[6px] cursor-pointer',
+                'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
+              )}
+              onClick={handleSwitchAddress}
             >
-              {displayName}
+              <div className="relative">
+                <img
+                  className={clsx('w-[20px] h-[20px]')}
+                  src={
+                    brandIcon ||
+                    WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
+                    (currentAccount.type === KEYRING_CLASS.WATCH
+                      ? WatchLogo
+                      : KEYRING_ICONS_WHITE[currentAccount.type])
+                  }
+                />
+                <CommonSignal
+                  type={currentAccount.type}
+                  brandName={currentAccount.brandName}
+                  address={currentAccount.address}
+                />
+              </div>
+              <div
+                className="text-[15px] leading-[18px] font-medium text-r-neutral-title2 truncate max-w-[86px]"
+                title={displayName}
+              >
+                {displayName}
+              </div>
+              {currentAccount && (
+                <AddressViewer
+                  address={currentAccount.address}
+                  showArrow={false}
+                  className="text-[12px] leading-[14px] text-r-neutral-title2 opacity-60"
+                />
+              )}
+              <IconArrowRight />
             </div>
-            {currentAccount && (
-              <AddressViewer
-                address={currentAccount.address}
-                showArrow={false}
-                className="text-[12px] leading-[14px] text-r-neutral-title2 opacity-60"
-              />
-            )}
-            <IconArrowRight />
+
+            <RcIconCopy
+              viewBox="0 0 16 16"
+              className="w-[16px] h-[16px] cursor-pointer opacity-60 hover:opacity-80"
+              onClick={() => {
+                copyAddress(currentAccount.address);
+                matomoRequestEvent({
+                  category: 'AccountInfo',
+                  action: 'headCopyAddress',
+                  label: [
+                    getKRCategoryByType(currentAccount?.type),
+                    currentAccount?.brandName,
+                  ].join('|'),
+                });
+
+                ga4.fireEvent('Click_CopyAddress', {
+                  event_category: 'Front Page Click',
+                });
+              }}
+            />
+
+            <Popover
+              trigger={'click'}
+              content={
+                <div className="mx-[-4px]">
+                  <QRCode value={currentAccount.address} size={190}></QRCode>
+                </div>
+              }
+            >
+              <RcIconQrCodeCC className="w-[16px] h-[16px] text-r-neutral-title2 cursor-pointer opacity-60 hover:opacity-80" />
+            </Popover>
           </div>
 
-          <RcIconCopy
-            viewBox="0 0 16 16"
-            className="w-[16px] h-[16px] ml-[8px] cursor-pointer opacity-60 hover:opacity-80"
-            onClick={() => {
-              copyAddress(currentAccount.address);
-              matomoRequestEvent({
-                category: 'AccountInfo',
-                action: 'headCopyAddress',
-                label: [
-                  getKRCategoryByType(currentAccount?.type),
-                  currentAccount?.brandName,
-                ].join('|'),
-              });
-
-              ga4.fireEvent('Click_CopyAddress', {
-                event_category: 'Front Page Click',
-              });
-            }}
-          />
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-[8px]">
             <div
               className={clsx(
                 'py-[6px] px-[8px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
@@ -185,6 +209,16 @@ export const DashboardHeader = () => {
               onClick={handleAddAddress}
             >
               <RcIconAddWalletCC />
+            </div>
+
+            <div
+              className={clsx(
+                'py-[6px] px-[8px] rounded-[5px] cursor-pointer text-r-neutral-title-2',
+                'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
+              )}
+              onClick={onSettingClick}
+            >
+              <RcIconSettingCC />
             </div>
           </div>
         </div>

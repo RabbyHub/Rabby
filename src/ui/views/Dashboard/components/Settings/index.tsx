@@ -101,7 +101,6 @@ const useAutoLockOptions = () => {
 interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
-  onOpenBadgeModal: () => void;
 }
 
 const { confirm } = Modal;
@@ -579,11 +578,7 @@ type SettingItem = {
   onClick?: (...args: any[]) => any;
 };
 
-const SettingsInner = ({
-  visible,
-  onClose,
-  onOpenBadgeModal,
-}: SettingsProps) => {
+const SettingsInner = ({ visible, onClose }: SettingsProps) => {
   const wallet = useWallet();
   const history = useHistory();
   const { t } = useTranslation();
@@ -760,24 +755,24 @@ const SettingsInner = ({
             reportSettings('Signature Record');
           },
         },
-        {
-          leftIcon: RcIconAddresses,
-          content: t('page.dashboard.settings.features.manageAddress'),
-          onClick: () => {
-            history.push('/settings/address');
-            matomoRequestEvent({
-              category: 'Setting',
-              action: 'clickToUse',
-              label: 'Manage Address',
-            });
+        // {
+        //   leftIcon: RcIconAddresses,
+        //   content: t('page.dashboard.settings.features.manageAddress'),
+        //   onClick: () => {
+        //     history.push('/settings/address');
+        //     matomoRequestEvent({
+        //       category: 'Setting',
+        //       action: 'clickToUse',
+        //       label: 'Manage Address',
+        //     });
 
-            ga4.fireEvent('More_ManageAddress', {
-              event_category: 'Click More',
-            });
+        //     ga4.fireEvent('More_ManageAddress', {
+        //       event_category: 'Click More',
+        //     });
 
-            reportSettings('Manage Address');
-          },
-        },
+        //     reportSettings('Manage Address');
+        //   },
+        // },
         {
           leftIcon: RcIconEcosystemCC,
           leftIconClassName: 'text-r-neutral-body',
@@ -802,42 +797,42 @@ const SettingsInner = ({
         //     history.push('/rabby-points');
         //   },
         // },
-        {
-          leftIcon: RcIconSettingsSearchDapps,
-          content: t('page.dashboard.settings.features.searchDapps'),
-          onClick: () => {
-            matomoRequestEvent({
-              category: 'Setting',
-              action: 'clickToUse',
-              label: 'Search Dapps',
-            });
+        // {
+        //   leftIcon: RcIconSettingsSearchDapps,
+        //   content: t('page.dashboard.settings.features.searchDapps'),
+        //   onClick: () => {
+        //     matomoRequestEvent({
+        //       category: 'Setting',
+        //       action: 'clickToUse',
+        //       label: 'Search Dapps',
+        //     });
 
-            ga4.fireEvent('More_SearchDapps', {
-              event_category: 'Click More',
-            });
+        //     ga4.fireEvent('More_SearchDapps', {
+        //       event_category: 'Click More',
+        //     });
 
-            reportSettings('Search Dapps');
-            openInternalPageInTab('dapp-search');
-          },
-        },
-        {
-          leftIcon: RcIconSettingsFeatureConnectedDapps,
-          content: t('page.dashboard.settings.features.connectedDapp'),
-          onClick: () => {
-            setConnectedDappsVisible(true);
-            matomoRequestEvent({
-              category: 'Setting',
-              action: 'clickToUse',
-              label: 'Connected Dapps',
-            });
+        //     reportSettings('Search Dapps');
+        //     openInternalPageInTab('dapp-search');
+        //   },
+        // },
+        // {
+        //   leftIcon: RcIconSettingsFeatureConnectedDapps,
+        //   content: t('page.dashboard.settings.features.connectedDapp'),
+        //   onClick: () => {
+        //     setConnectedDappsVisible(true);
+        //     matomoRequestEvent({
+        //       category: 'Setting',
+        //       action: 'clickToUse',
+        //       label: 'Connected Dapps',
+        //     });
 
-            ga4.fireEvent('More_ConnectedDapps', {
-              event_category: 'Click More',
-            });
+        //     ga4.fireEvent('More_ConnectedDapps', {
+        //       event_category: 'Click More',
+        //     });
 
-            reportSettings('Connected Dapps');
-          },
-        },
+        //     reportSettings('Connected Dapps');
+        //   },
+        // },
       ] as SettingItem[],
     },
     settings: {

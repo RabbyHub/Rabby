@@ -144,9 +144,10 @@ const RecentConnections = ({
       })}
     >
       <PageHeader
-        forceShowBack
-        onBack={handleCancel}
-        className="bg-neutral-bg1 sticky top-0"
+        canBack={false}
+        // forceShowBack={false}
+        // onBack={handleCancel}
+        className="bg-r-neutral-bg1 sticky top-0 z-10 mb-0 pb-[16px]"
       >
         {t('page.dashboard.recentConnection.title')}
       </PageHeader>
@@ -192,6 +193,25 @@ const RecentConnections = ({
         </div>
       )}
     </div>
+  );
+};
+
+export const RecentConnectionsPopup: React.FC<RecentConnectionsProps> = ({
+  visible,
+  onClose,
+}) => {
+  return (
+    <Popup
+      visible={visible}
+      onClose={onClose}
+      height={488}
+      bodyStyle={{ height: '100%', padding: '0 20px 0 20px' }}
+      destroyOnClose
+      className="settings-popup-wrapper"
+      isSupportDarkMode
+    >
+      <RecentConnections visible={true} onClose={onClose} />;
+    </Popup>
   );
 };
 export default RecentConnections;
