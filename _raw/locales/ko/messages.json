@@ -2828,7 +2828,6 @@
         "removed": "허가된 주소가 삭제되었습니다",
         "tooltip": "화이트리스트 주소"
       },
-      "title": "화이트리스트 주소 추가",
       "exchangeAddress": "교환 주소",
       "enterAddress": "주소를 입력하세요",
       "addSuccess": "성공적으로 추가되었습니다",
@@ -3199,9 +3198,7 @@
     "ChainItem": {
       "appChain": "{{chain}} 계정에서"
     },
-    "RiskTip": {
-      "title": "위험 경고"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "현재 인출은 대기 열에 들어갑니다. 처리되면 귀하의 지갑으로 인출할 수 있습니다."
     }

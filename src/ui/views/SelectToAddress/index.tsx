@@ -20,7 +20,6 @@ import { useWallet } from '@/ui/utils/WalletContext';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
-import { ReactComponent as RcWhitelistGuardBordered } from '@/ui/assets/component/whitelist-guard-bordered.svg';
 import { ReactComponent as RcWhitelistGuardCC } from '@/ui/assets/component/whitelist-guard-cc.svg';
 
 import TabWhitelist from './components/TabWhitelist';
@@ -30,6 +29,8 @@ const queue = new PQueue({ interval: 1000, intervalCap: 8, concurrency: 8 }); //
 
 import './style.less';
 import TabImported from './components/TabImported';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { query2obj } from '@/ui/utils/url';
 
 const OuterInput = styled.div`
   border: 1px solid var(--r-neutral-line);
@@ -87,7 +88,7 @@ const SelectToAddress = () => {
 
   // main state
   const [inputingAddress, setInputingAddress] = useState(false);
-  // const [selectedAddrInfo, setSelectedAddrInfo] = useState(getDefaultState());
+  const [selectedAddrInfo, setSelectedAddrInfo] = useState(getDefaultState());
 
   const [unimportedBalances, setUnimportedBalances] = useState<
     Record<string, number>
@@ -267,6 +268,17 @@ const SelectToAddress = () => {
     }
   }, [history.location.search]);
 
+  const { isDarkTheme } = useThemeMode();
+
+  const pageTitle = useMemo(() => {
+    const query = new URLSearchParams(history.location.search);
+    const type = query.get('type');
+    if (type === 'send-token') {
+      return t('page.selectToAddress.typedTitle.send');
+    }
+    return t('page.selectToAddress.title');
+  }, [history.location.search, t]);
+
   return (
     <FullscreenContainer className="h-[700px]">
       <div
@@ -285,7 +297,7 @@ const SelectToAddress = () => {
           rightSlot={
             isTab ? null : (
               <div
-                className="text-r-neutral-title1 absolute right-0 cursor-pointer"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0"
                 onClick={() => {
                   openInternalPageInTab(
                     `send-to-address${history.location.search}`
@@ -297,7 +309,7 @@ const SelectToAddress = () => {
             )
           }
         >
-          {t('page.selectToAddress.title')}
+          {pageTitle}
         </PageHeader>
         <AnimatedInputWrapper
           className={clsx(
@@ -322,7 +334,7 @@ const SelectToAddress = () => {
               `}
               onClick={() => setInputingAddress(true)}
             >
-              {t('page.selectToAddress.enterAddress')}
+              {t('page.selectToAddress.enterAddressOrENS')}
             </OuterInput>
           )}
         </AnimatedInputWrapper>
@@ -337,7 +349,14 @@ const SelectToAddress = () => {
             <Tabs.TabPane
               key="whitelist"
               tab={
-                <div className="flex flex-row items-center justify-center">
+                <div
+                  className={clsx(
+                    'flex flex-row items-center justify-center',
+                    focusTab === 'whitelist'
+                      ? 'text-r-blue-default font-bold'
+                      : 'text-r-neutral-title1'
+                  )}
+                >
                   <RcWhitelistGuardCC
                     width={18}
                     height={18}
@@ -345,7 +364,9 @@ const SelectToAddress = () => {
                       'mr-[4px]',
                       focusTab === 'whitelist'
                         ? 'text-r-blue-default'
-                        : 'text-r-bg1'
+                        : isDarkTheme
+                        ? 'opacity-0'
+                        : 'text-r-neutral-bg1'
                     )}
                   />
                   {t('page.selectToAddress.tabs.whitelist')}
@@ -360,14 +381,24 @@ const SelectToAddress = () => {
 
             <Tabs.TabPane
               key="imported"
-              tab={t('page.selectToAddress.tabs.imported')}
+              tab={
+                <span
+                  className={clsx(
+                    focusTab === 'imported'
+                      ? 'text-r-blue-default font-bold'
+                      : 'text-r-neutral-title1'
+                  )}
+                >
+                  {t('page.selectToAddress.tabs.imported')}
+                </span>
+              }
             >
               <TabImported handleChange={handleChange} />
             </Tabs.TabPane>
           </Tabs>
         )}
       </div>
-      {/* <AddressRiskAlert
+      <AddressRiskAlert
         type={selectedAddrInfo.addressType}
         address={selectedAddrInfo.address}
         title={t('page.selectToAddress.whitelist.notWhitelist')}
@@ -392,7 +423,7 @@ const SelectToAddress = () => {
         onCancel={() => {
           setSelectedAddrInfo(getDefaultState());
         }}
-      /> */}
+      />
     </FullscreenContainer>
   );
 };

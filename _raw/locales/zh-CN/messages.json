@@ -2869,7 +2869,6 @@
         "added": "地址已添加到白名单",
         "tooltip": "白名单地址"
       },
-      "title": "添加白名单地址",
       "confirmPassword": "确认密码",
       "riskTitle": "添加白名单地址",
       "addSuccess": "添加成功",
@@ -3240,9 +3239,7 @@
     "ChainItem": {
       "appChain": "在 {{chain}} 账户"
     },
-    "RiskTip": {
-      "title": "风险提示"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "当前提款将进入等待队列。一旦处理完成，可以提取到您的钱包。"
     }

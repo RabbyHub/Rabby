@@ -235,9 +235,7 @@
     "ChainItem": {
       "appChain": "Sur le compte {{chain}}"
     },
-    "RiskTip": {
-      "title": "Avertissement de risque"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "Le retrait actuel sera mis dans une file d'attente. Une fois traité, il pourra être retiré vers votre wallet."
     }
@@ -3123,7 +3121,6 @@
         "added": "Adresse ajoutée à la liste blanche",
         "tooltip": "Adresse de la liste blanche"
       },
-      "title": "Ajouter une adresse blanche",
       "addSuccess": "Ajouté avec succès",
       "riskTitle": "Ajouter une adresse à la liste blanche",
       "address": "Adresse",

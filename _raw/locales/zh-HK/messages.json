@@ -2869,7 +2869,6 @@
         "removed": "已刪除白名單地址",
         "tooltip": "白名單地址"
       },
-      "title": "添加白名单地址",
       "confirmPassword": "確認密碼",
       "name": "名稱",
       "enterAddress": "輸入地址",
@@ -3240,9 +3239,7 @@
     "ChainItem": {
       "appChain": "在 {{chain}} 帐戶"
     },
-    "RiskTip": {
-      "title": "風險警告"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "當前提取將進入等待隊列。一旦處理完成，可以提取到您的錢包。"
     }

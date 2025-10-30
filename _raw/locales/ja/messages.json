@@ -2831,7 +2831,6 @@
         "removed": "ホワイトリストアドレスが削除されました",
         "tooltip": "ホワイトリストアドレス"
       },
-      "title": "ホワイトリストアドレスを追加",
       "confirmPassword": "パスワードを確認してください",
       "name": "名前",
       "riskTitle": "ホワイトリストアドレスを追加",
@@ -3202,9 +3201,7 @@
     "ChainItem": {
       "appChain": "{{chain}}アカウント"
     },
-    "RiskTip": {
-      "title": "リスク警告"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。"
     }

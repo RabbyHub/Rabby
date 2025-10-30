@@ -2834,7 +2834,6 @@
         "repeated": "Mevcut adres zaten beyaz listede.",
         "tooltip": "Beyaz liste adresi"
       },
-      "title": "Beyaz Liste Adresi Ekle",
       "name": "Adınız",
       "nameYourAddress": "Adresinizi Adlandırın",
       "invalidAddress": "Bu adres geçersizdir.",
@@ -3205,9 +3204,7 @@
     "ChainItem": {
       "appChain": "{{chain}} Hesabı üzerinde"
     },
-    "RiskTip": {
-      "title": "Risk Uyarısı"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "Mevcut çekim, bekleme kuyruğuna girecektir. İşlem tamamlandığında, cüzdanınıza çekilebilir."
     }

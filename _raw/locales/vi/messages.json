@@ -2828,7 +2828,6 @@
         "repeated": "Địa chỉ hiện tại đã có trong danh sách trắng.",
         "tooltip": "Danh sách trắng địa chỉ"
       },
-      "title": "Thêm Địa chỉ Danh sách Trắng",
       "nameYourAddress": "Đặt tên cho địa chỉ của bạn",
       "address": "Địa chỉ",
       "confirmPassword": "Xác nhận mật khẩu",
@@ -3199,9 +3198,7 @@
     "ChainItem": {
       "appChain": "Trên tài khoản {{chain}}"
     },
-    "RiskTip": {
-      "title": "Cảnh báo rủi ro"
-    },
+    "RiskTip": {},
     "DappActions": {
       "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn."
     }

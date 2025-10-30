@@ -756,7 +756,7 @@
         "title": "Select Address"
       },
       "riskAlert": {
-        "checkboxText": "I understand the alert and want to continue"
+        "checkboxText": "I understand the risks and want to continue"
       }
     },
     "perps": {
@@ -972,7 +972,7 @@
       }
     },
     "whitelist": {
-      "title": "Add Whitelist Address",
+      "title": "Add address to whitelist",
       "address": "Address",
       "name": "Name",
       "exchangeAddress": "Exchange Address",
@@ -980,7 +980,7 @@
       "addSuccess": "Add successfully",
       "invalidAddress": "This address is invalid",
       "enterAddress": "Enter address",
-      "riskTitle": "Add Whitelist Address",
+      "riskTitle": "Add address to whitelist",
       "confirmPassword": "Confirm Password",
       "tips": {
         "removed": "Whitelist address deleted",
@@ -3023,10 +3023,10 @@
     "selectToAddress": {
       "title": "Address",
       "enterAddress": "Enter address",
-      "enterAddressOrENS": "Enter or Search address",
+      "enterAddressOrENS": "Enter or search address",
       "selectExchangeSource": "Select Exchange Source",
       "emptyWhitelist": {
-        "title": "Add Whitelist Address",
+        "title": "Add address to whitelist",
         "desc": "Add trusted addresses to whitelist for fast transfers - no confirmation needed next time",
         "addNow": "Add Now"
       },
@@ -3040,7 +3040,7 @@
       "sendToImportedAddress": "Send to Imported Address",
       "selectImportedAddress": "Select Imported address",
       "addWhitelist": {
-        "title": "Add Whitelist Address",
+        "title": "Add address to whitelist",
         "desc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time"
       },
       "riskAlert": {
@@ -3055,15 +3055,23 @@
         "riskType": {
           "risks": {
             "noSend": "No transfers to this address in 180 days",
-            "dexNoDeposite": "Not a CEX deposit address, funds may be lost",
-            "contractAddress": "Contract address detected, funds may be lost",
-            "scamAddress": "Scam address flagged by Rabby"
+            "dexNoDeposite": "You're sending to a non-deposit exchange address",
+            "contractAddress": "You're sending to a contract, funds may be lost",
+            "scamAddress": "You're sending to a scam address"
           }
         }
       },
       "tabs": {
-        "whitelist": "Whitelist",
+        "whitelist": "Whitelisted",
         "imported": "Imported"
+      },
+      "positiveTips": {
+        "whitelistAddress": "Whitelisted address",
+        "sentBefore": "Sent recently",
+        "yourOwnAddress": "Your own address"
+      },
+      "typedTitle": {
+        "send": "Send To"
       }
     }
   },
@@ -3257,7 +3265,7 @@
       "appChain": "On {{chain}} Account"
     },
     "RiskTip": {
-      "title": "Risk Warning"
+      "title": "Risk Detected"
     },
     "DappActions": {
       "__skip_translation": [
