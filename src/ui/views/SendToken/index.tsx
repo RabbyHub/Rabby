@@ -91,6 +91,7 @@ import {
 import { SwapSlider } from '../Swap/Component/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { debounce } from 'lodash';
+import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -759,7 +760,7 @@ const SendToken = () => {
     }
   );
 
-  const amount = form.getFieldValue('amount');
+  const amount = useDebounceValue(form.getFieldValue('amount'), 300);
   const address = form.getFieldValue('to');
 
   useEffect(() => {
