@@ -12,6 +12,7 @@ import { default as NftLending } from './NftLending';
 import { default as NftFraction } from './NftFraction';
 import { default as NftP2PLender } from './NftP2PLender';
 import { default as NftP2PBorrower } from './NftP2PBorrower';
+import { default as Prediction } from './Prediction';
 
 const Template = {
   Common,
@@ -28,6 +29,7 @@ const Template = {
   NftFraction,
   NftP2PLender,
   NftP2PBorrower,
+  Prediction,
 };
 
 export default Template;
