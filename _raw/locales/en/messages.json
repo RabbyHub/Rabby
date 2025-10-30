@@ -1447,7 +1447,7 @@
         "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
         "chain": " chain, ",
         "chainEnd": " chain",
-        "appChainTips": "Hyperliquid Account not included"
+        "appChainTips": "Hyperliquid & Polymarket Account not included"
       },
       "recentConnection": {
         "disconnected": "Disconnected",
@@ -1669,6 +1669,8 @@
       "assets": {
         "usdValue": "USD VALUE",
         "amount": "AMOUNT",
+        "price": "PRICE",
+        "side": "SIDE",
         "portfolio": {
           "nftTips": "Calculated based on the floor price recognized by this protocol.",
           "fractionTips": "Calculate based on the price of the linked ERC20 token."
