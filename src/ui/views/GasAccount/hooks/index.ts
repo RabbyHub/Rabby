@@ -349,8 +349,7 @@ export const useGasAccountHistory = () => {
           totalCount: value.pagination.total,
           list: uniqBy(
             [...(value?.history_list || []), ...(d?.list || [])],
-            (e) =>
-              `${e.chain_id}${e.tx_id}${e?.history_type}${e?.source}${e?.create_at}` as string
+            (e) => `${e?.create_at}` as string
           ),
         };
       });
