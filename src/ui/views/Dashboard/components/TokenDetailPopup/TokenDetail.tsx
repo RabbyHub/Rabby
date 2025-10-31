@@ -185,6 +185,10 @@ const TokenDetail = ({
     onClose?.();
     if (isBridge && handleInTokenSelect) {
       handleInTokenSelect(token);
+    } else {
+      history.push(
+        `/bridge?rbisource=tokendetail&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
+      );
     }
   }, [history, token]);
 
@@ -267,7 +271,7 @@ const TokenDetail = ({
           type="primary"
           size="large"
           onClick={goToSwap}
-          className="w-[114px] h-[40px] leading-[18px]"
+          className="w-[84px] h-[40px] leading-[18px]"
           style={{
             width: 114,
             height: 40,
@@ -281,7 +285,17 @@ const TokenDetail = ({
           type="primary"
           ghost
           size="large"
-          className="w-[114px] h-[40px] leading-[18px] rabby-btn-ghost"
+          className="w-[84px] h-[40px] leading-[18px] rabby-btn-ghost"
+          onClick={gotoBridge}
+        >
+          {t('page.dashboard.tokenDetail.bridge')}
+        </Button>
+
+        <Button
+          type="primary"
+          ghost
+          size="large"
+          className="w-[84px] h-[40px] leading-[18px] rabby-btn-ghost"
           onClick={goToSend}
         >
           {t('page.dashboard.tokenDetail.send')}
@@ -290,7 +304,7 @@ const TokenDetail = ({
           type="primary"
           ghost
           size="large"
-          className="w-[114px] h-[40px] leading-[18px] rabby-btn-ghost"
+          className="w-[84px] h-[40px] leading-[18px] rabby-btn-ghost"
           onClick={goToReceive}
         >
           {t('page.dashboard.tokenDetail.receive')}
