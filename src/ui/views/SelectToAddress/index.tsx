@@ -19,7 +19,6 @@ import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { useWallet } from '@/ui/utils/WalletContext';
 
 // icons
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcWhitelistGuardCC } from '@/ui/assets/component/whitelist-guard-cc.svg';
 
 import TabWhitelist from './components/TabWhitelist';

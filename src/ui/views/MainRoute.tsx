@@ -382,9 +382,9 @@ const Main = () => {
         <PrivateRoute exact path="/send-token">
           <SendToken />
         </PrivateRoute>
-        <PrivateRoute exact path="/send-poly">
+        {/* <PrivateRoute exact path="/send-poly">
           <SendPoly />
-        </PrivateRoute>
+        </PrivateRoute> */}
         <PrivateRoute exact path="/select-to-address">
           <SelectToAddress />
         </PrivateRoute>

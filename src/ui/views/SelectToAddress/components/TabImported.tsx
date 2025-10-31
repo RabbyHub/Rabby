@@ -53,17 +53,12 @@ export default function TabImported({
 }: {
   handleChange: (address: string, type?: string) => void;
 }) {
-  const history = useHistory();
-  const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
-  const { t } = useTranslation();
-
   const { accountsList, whitelist } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
     whitelist: s.whitelist.whitelist,
   }));
 
-  const { myImportedAccounts, otherAccounts, sortedAccounts } = useMemo(() => {
+  const { sortedAccounts } = useMemo(() => {
     const whitelistSet = new Set(whitelist.map((item) => item.toLowerCase()));
 
     const groupAccounts = groupBy(accountsList, (item) =>
