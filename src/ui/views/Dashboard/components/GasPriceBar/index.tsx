@@ -95,7 +95,7 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
   return (
     <div
       className={clsx(
-        'rounded-[8px] bg-r-neutral-card-1 mt-[12px] p-[12px]',
+        'rounded-[8px] bg-r-neutral-card-1 p-[12px]',
         'flex items-center justify-between'
       )}
     >

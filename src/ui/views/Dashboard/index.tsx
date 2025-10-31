@@ -83,8 +83,8 @@ const Dashboard = () => {
     <>
       <div className={clsx('dashboard')}>
         <DashboardHeader onSettingClick={toggleShowMoreSettings} />
-        <div className="px-[16px] pt-[16px] pb-[11px]">
-          <DashboardPanel onSettingClick={toggleShowMoreSettings} />
+        <DashboardPanel onSettingClick={toggleShowMoreSettings} />
+        <div className="px-[16px] pb-[11px]">
           <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
           <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
         </div>
