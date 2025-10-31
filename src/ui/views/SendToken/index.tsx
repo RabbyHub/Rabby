@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useAsyncFn, useDebounce } from 'react-use';
+import { useAsyncFn, useDebounce, usePrevious } from 'react-use';
 import { Form, message, Button, Modal, Slider, SliderSingleProps } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
@@ -693,7 +693,6 @@ const SendToken = () => {
         to: toAddress,
         amount,
       });
-      await wallet.setLastTimeSendToken(currentAccount?.address, currentToken);
 
       let shouldForceSignPage = !!forceSignPage;
 
@@ -715,6 +714,11 @@ const SendToken = () => {
           } else {
             setMiniSignLoading(false);
           }
+          await wallet.setLastTimeSendToken(
+            currentAccount?.address,
+            currentToken
+          );
+
           return;
         } catch (error) {
           console.error('send token direct sign error', error);
@@ -1097,8 +1101,12 @@ const SendToken = () => {
     ]
   );
 
+  const previousAccountAddress = usePrevious(currentAccount?.address);
   useEffect(() => {
-    if (currentAccount?.address) {
+    if (
+      previousAccountAddress &&
+      !isSameAddress(previousAccountAddress, currentAccount?.address || '')
+    ) {
       form.setFieldsValue({ amount: '' });
       handleFormValuesChange(
         { amount: '' },
@@ -1111,7 +1119,7 @@ const SendToken = () => {
         }
       );
     }
-  }, [currentAccount?.address]);
+  }, [previousAccountAddress, currentAccount?.address]);
 
   const estimateGasOnChain = useCallback(
     async (input?: {
@@ -1633,12 +1641,14 @@ const SendToken = () => {
           currentToken: nativeToken || currentToken,
         });
       } else {
-        let needLoadToken: TokenItem | null = currentAccount?.address
-          ? await wallet.getLastTimeSendToken(currentAccount.address)
-          : currentToken;
+        const lastTimeSentToken = !currentAccount?.address
+          ? null
+          : await wallet.getLastTimeSendToken(currentAccount?.address);
+        let needLoadToken: TokenItem | null = lastTimeSentToken || currentToken;
 
         if (await wallet.hasPageStateCache()) {
           const cache = await wallet.getPageStateCache();
+
           if (cache?.path === history.location.pathname) {
             if (cache.states.values) {
               form.setFieldsValue(cache.states.values);
@@ -1832,24 +1842,28 @@ const SendToken = () => {
                         value / 100
                       );
 
-                      if (
-                        chainTokenGasFees.gasLimit &&
-                        selectedGasLevel?.price
-                      ) {
-                        newAmountBigNum = newAmountBigNum.minus(
-                          new BigNumber(chainTokenGasFees.gasLimit)
-                            .times(selectedGasLevel?.price)
-                            .div(1e18)
-                        );
-                      }
-                      if (chainTokenGasFees.maybeL1Fee?.gt(0)) {
-                        newAmountBigNum = newAmountBigNum.minus(
-                          new BigNumber(chainTokenGasFees.maybeL1Fee).div(1e18)
-                        );
-                      }
+                      if (value === 100) {
+                        if (
+                          chainTokenGasFees.gasLimit &&
+                          selectedGasLevel?.price
+                        ) {
+                          newAmountBigNum = newAmountBigNum.minus(
+                            new BigNumber(chainTokenGasFees.gasLimit)
+                              .times(selectedGasLevel?.price)
+                              .div(1e18)
+                          );
+                        }
+                        if (chainTokenGasFees.maybeL1Fee?.gt(0)) {
+                          newAmountBigNum = newAmountBigNum.minus(
+                            new BigNumber(chainTokenGasFees.maybeL1Fee).div(
+                              1e18
+                            )
+                          );
+                        }
 
-                      if (newAmountBigNum.lt(0)) {
-                        newAmountBigNum = new BigNumber(0);
+                        if (newAmountBigNum.lt(0)) {
+                          newAmountBigNum = new BigNumber(0);
+                        }
                       }
 
                       const newAmount =
