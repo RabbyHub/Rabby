@@ -755,24 +755,24 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
             reportSettings('Signature Record');
           },
         },
-        // {
-        //   leftIcon: RcIconAddresses,
-        //   content: t('page.dashboard.settings.features.manageAddress'),
-        //   onClick: () => {
-        //     history.push('/settings/address');
-        //     matomoRequestEvent({
-        //       category: 'Setting',
-        //       action: 'clickToUse',
-        //       label: 'Manage Address',
-        //     });
+        {
+          leftIcon: RcIconAddresses,
+          content: t('page.dashboard.settings.features.manageAddress'),
+          onClick: () => {
+            history.push('/settings/address');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Manage Address',
+            });
 
-        //     ga4.fireEvent('More_ManageAddress', {
-        //       event_category: 'Click More',
-        //     });
+            ga4.fireEvent('More_ManageAddress', {
+              event_category: 'Click More',
+            });
 
-        //     reportSettings('Manage Address');
-        //   },
-        // },
+            reportSettings('Manage Address');
+          },
+        },
         {
           leftIcon: RcIconEcosystemCC,
           leftIconClassName: 'text-r-neutral-body',
@@ -781,58 +781,58 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
             setIsShowEcologyModal(true);
           },
         },
-        // {
-        //   leftIcon: RcIconRabbyMobileCC,
-        //   leftIconClassName: 'text-r-neutral-body w-24 h-24',
-        //   leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
-        //   content: t('page.dashboard.home.panel.mobile'),
-        //   onClick: () => {
-        //     openInternalPageInTab('sync');
-        //   },
-        // },
-        // {
-        //   leftIcon: RcIconPoints,
-        //   content: t('page.dashboard.settings.features.rabbyPoints'),
-        //   onClick: () => {
-        //     history.push('/rabby-points');
-        //   },
-        // },
-        // {
-        //   leftIcon: RcIconSettingsSearchDapps,
-        //   content: t('page.dashboard.settings.features.searchDapps'),
-        //   onClick: () => {
-        //     matomoRequestEvent({
-        //       category: 'Setting',
-        //       action: 'clickToUse',
-        //       label: 'Search Dapps',
-        //     });
+        {
+          leftIcon: RcIconRabbyMobileCC,
+          leftIconClassName: 'text-r-neutral-body w-24 h-24',
+          leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
+          content: t('page.dashboard.home.panel.mobile'),
+          onClick: () => {
+            openInternalPageInTab('sync');
+          },
+        },
+        {
+          leftIcon: RcIconPoints,
+          content: t('page.dashboard.settings.features.rabbyPoints'),
+          onClick: () => {
+            history.push('/rabby-points');
+          },
+        },
+        {
+          leftIcon: RcIconSettingsSearchDapps,
+          content: t('page.dashboard.settings.features.searchDapps'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Search Dapps',
+            });
 
-        //     ga4.fireEvent('More_SearchDapps', {
-        //       event_category: 'Click More',
-        //     });
+            ga4.fireEvent('More_SearchDapps', {
+              event_category: 'Click More',
+            });
 
-        //     reportSettings('Search Dapps');
-        //     openInternalPageInTab('dapp-search');
-        //   },
-        // },
-        // {
-        //   leftIcon: RcIconSettingsFeatureConnectedDapps,
-        //   content: t('page.dashboard.settings.features.connectedDapp'),
-        //   onClick: () => {
-        //     setConnectedDappsVisible(true);
-        //     matomoRequestEvent({
-        //       category: 'Setting',
-        //       action: 'clickToUse',
-        //       label: 'Connected Dapps',
-        //     });
+            reportSettings('Search Dapps');
+            openInternalPageInTab('dapp-search');
+          },
+        },
+        {
+          leftIcon: RcIconSettingsFeatureConnectedDapps,
+          content: t('page.dashboard.settings.features.connectedDapp'),
+          onClick: () => {
+            setConnectedDappsVisible(true);
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Connected Dapps',
+            });
 
-        //     ga4.fireEvent('More_ConnectedDapps', {
-        //       event_category: 'Click More',
-        //     });
+            ga4.fireEvent('More_ConnectedDapps', {
+              event_category: 'Click More',
+            });
 
-        //     reportSettings('Connected Dapps');
-        //   },
-        // },
+            reportSettings('Connected Dapps');
+          },
+        },
       ] as SettingItem[],
     },
     settings: {
@@ -1462,6 +1462,7 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
         onCancel={() => setIsShowThemeModeModal(false)}
       />
       <RecentConnections
+        canBack={true}
         visible={connectedDappsVisible}
         onClose={() => {
           setConnectedDappsVisible(false);
