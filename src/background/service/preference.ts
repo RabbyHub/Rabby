@@ -94,7 +94,7 @@ export interface PreferenceStore {
   locale: string;
   watchAddressPreference: Record<string, number>;
   isDefaultWallet: boolean;
-  lastTimeSendToken: Record<string, TokenItem>;
+  lastTimeSendToken202510: Record<string, TokenItem>;
   highligtedAddresses: IHighlightedAddress[];
   walletSavedList: any[];
   alianNames?: Record<string, string>;
@@ -180,7 +180,7 @@ class PreferenceService {
         locale: defaultLang,
         watchAddressPreference: {},
         isDefaultWallet: false,
-        lastTimeSendToken: {},
+        lastTimeSendToken202510: {},
         highligtedAddresses: [],
         walletSavedList: [],
         alianNames: {},
@@ -227,8 +227,8 @@ class PreferenceService {
     ) {
       this.store.isDefaultWallet = false;
     }
-    if (!this.store.lastTimeSendToken) {
-      this.store.lastTimeSendToken = {};
+    if (!this.store.lastTimeSendToken202510) {
+      this.store.lastTimeSendToken202510 = {};
     }
     if (!this.store.initAlianNames) {
       this.store.initAlianNames = false;
@@ -393,13 +393,20 @@ class PreferenceService {
 
   getLastTimeSendToken = (address: string) => {
     const key = address.toLowerCase();
-    return this.store.lastTimeSendToken[key];
+    return this.store.lastTimeSendToken202510[key];
   };
 
   setLastTimeSendToken = (address: string, token: TokenItem) => {
     const key = address.toLowerCase();
-    this.store.lastTimeSendToken = {
-      ...this.store.lastTimeSendToken,
+    try {
+      if ('lastTimeSendToken' in this.store) {
+        delete (this.store as any).lastTimeSendToken;
+      }
+      console.debug('Migration lastTimeSendToken to lastTimeSendToken202510');
+    } catch (e) {}
+
+    this.store.lastTimeSendToken202510 = {
+      ...this.store.lastTimeSendToken202510,
       [key]: token,
     };
   };
