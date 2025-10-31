@@ -467,7 +467,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <div className="relative group">
+    <div className="relative group px-[16px] py-[16px] pb-[12px]">
       <Container
         ref={ref}
         style={
@@ -556,7 +556,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           );
         })}
       </Container>
-      <div className="absolute right-[-10px] top-[50%] translate-y-[-50%] hidden group-hover:block">
+      <div className="absolute right-[8px] top-[50%] translate-y-[-50%] hidden group-hover:block">
         <div className="w-[2px] h-[80px] bg-r-blue-light2 rounded-full relative">
           <div
             className="w-[2px] h-[50px] bg-r-blue-default rounded-full"
