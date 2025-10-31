@@ -170,7 +170,7 @@ export function AddressInfoTo({
                     <ThemeIcon
                       src={cexInfo?.logo_url || addressTypeIcon}
                       className={'w-[36px] h-[36px] rounded-full'}
-                      style={{ width: 36, height: 36 }}
+                      style={{ width: 36, height: 36, padding: 4 }}
                     />
                   )}
                   {inWhitelist && (
