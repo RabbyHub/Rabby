@@ -117,7 +117,10 @@
           "ecology": "生態系統",
           "mobile": "Mobile Sync",
           "perps": "期货",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "searchDapp": "搜索 Dapp",
+          "setting": "設定",
+          "dapps": "Dapps"
         },
         "comingSoon": "即將推出",
         "soon": "很快",
@@ -405,7 +408,9 @@
           "addTestnet": "網絡"
         },
         "noTestnetAssets": "無自定義網絡資產",
-        "addTokenEntryText": "代幣"
+        "addTokenEntryText": "代幣",
+        "side": "側邊",
+        "price": "價格"
       },
       "hd": {
         "howToConnectLedger": "如何連接 Ledger",
@@ -1292,7 +1297,8 @@
         "addrValidator__empty": "請輸入地址",
         "addrValidator__invalid": "該地址無效",
         "searchInputPlaceholder": "輸入地址或搜索",
-        "title": "接收地址"
+        "title": "接收地址",
+        "placeholder": "選擇地址"
       },
       "sendButton": "發送",
       "tokenInfoFieldLabel": {
@@ -1334,7 +1340,13 @@
       "noSupprotTokenForSafe_short": "安全地址未在此链上部署",
       "selectToken": "選擇代幣",
       "noSupprotTokenForDex_short": "此交易所不支持",
-      "noSupportTokenForChain_short": "合約地址未在此鏈上部署"
+      "noSupportTokenForChain_short": "合約地址未在此鏈上部署",
+      "accountSelectorModal": {
+        "title": "選擇地址"
+      },
+      "riskAlert": {
+        "checkboxText": "我明白風險並希望繼續"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "預留 <1>0</1> {{ tokenName }} 用於 礦工費",
@@ -2229,7 +2241,9 @@
       "emptyFavorite": "沒有收藏的 Dapp",
       "favorite": "收藏",
       "emptySearch": "未找到 Dapp",
-      "listBy": "Dapp 已列出"
+      "listBy": "Dapp 已列出",
+      "searchButton": "搜索",
+      "searchPlaceholder": "搜索 Dapp 名称"
     },
     "rabbyPoints": {
       "title": "Rabby Points",
@@ -2519,7 +2533,11 @@
         "login": "登入 GasAccount",
         "title": "儲存 USDC / USDT",
         "desc": "支付所有链上的 Gas 费用",
-        "loginAndClaim": "登入並領取 $2.00"
+        "loginAndClaim": "登入並領取 $2.00",
+        "loginTips2": "任何鏈上的任何地址",
+        "learnAbout": "了解更多关于 GasAccount 的信息",
+        "loginTips3": "當你沒有 Gas 的時候",
+        "loginTips1": "支付 Gas 费用以便于"
       },
       "loginConfirmModal": {
         "title": "使用當前地址登入",
@@ -2536,7 +2554,8 @@
         "title": "存款",
         "invalidAmount": "必須少於 500",
         "desc": "將存款存入 Rabby 的 DeBank L2 Account，沒有額外費用 — 隨時提取。",
-        "selectToken": "選擇代幣以存入"
+        "selectToken": "選擇代幣以存入",
+        "paymentAddr": "支付地址"
       },
       "withdrawPopup": {
         "withdrawalLimit": "提取限额",
@@ -2589,7 +2608,17 @@
       },
       "switchAccount": "切换 GasAccount",
       "withdrawDisabledIAP": "提款功能已停用，因為你的餘額中包含法幣資金，這些資金無法提取。如需提取你的代幣餘額，請聯繫支援。",
-      "gasToken": "Gas 代幣"
+      "gasToken": "Gas 代幣",
+      "about": {
+        "title3": "GasAccount 是否有額外費用",
+        "title4": "GasAccount 安全嗎",
+        "title1": "GasAccount 是什麼",
+        "title2": "如何使用 GasAccount",
+        "desc3": "Rabby Wallet 不收取額外費用。您只需支付交易的煤氣費，以及將煤氣從 GasAccount 轉至您地址的少量煤氣費。",
+        "desc2": "將資金添加到您的 GasAccount 並將其用於任何交易。在簽署時，選擇使用原生代幣或 GasAccount 來支付手續費，隨時切換。",
+        "desc1": "GasAccount 是支付 gas 费用的一種新方式。您可以使用一個帳戶來覆蓋所有鏈上所有地址的 gas，而不必在每個鏈上使用原生代幣。簡單，可選，且永不缺少 gas。",
+        "desc4": "GasAccount 無需合約批准或許可。您將資金存入 Rabby 的 GasAccount 地址，當需要時，Rabby 會將 Gas 發送到您的地址。設計上完全安全。"
+      }
     },
     "safeMessageQueue": {
       "noData": "沒有訊息",
@@ -2869,7 +2898,6 @@
         "removed": "已刪除白名單地址",
         "tooltip": "白名單地址"
       },
-      "title": "添加白名单地址",
       "confirmPassword": "確認密碼",
       "name": "名稱",
       "enterAddress": "輸入地址",
@@ -2878,7 +2906,8 @@
       "addSuccess": "添加成功",
       "exchangeAddress": "交易地址",
       "riskTitle": "添加白名單地址",
-      "address": "地址"
+      "address": "地址",
+      "title": "將地址添加到白名單"
     },
     "perps": {
       "candleMenuKey": {
@@ -3049,6 +3078,60 @@
       },
       "isolated": "孤立",
       "cross": "交叉"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "將地址添加到白名單",
+        "desc": "將可信地址添加到白名單以便快速轉賬 - 下次無需確認",
+        "addNow": "立即添加"
+      },
+      "whitelist": {
+        "title": "白名單",
+        "removeFromWhitelist": "從白名單中移除",
+        "notWhitelist": "不是一个 whitelist 地址",
+        "addWhitelistDesc": "將信任的地址添加到白名單，以便快速轉賬---下次無需確認",
+        "addWhitelist": "將地址添加到白名單"
+      },
+      "addWhitelist": {
+        "title": "將地址添加到白名單",
+        "desc": "將受信地址添加到白名單，以便快速轉賬---下次無需確認"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "dexNoDeposite": "您正在向非托管交易所地址发送。",
+            "noSend": "180天内没有向此地址的转账",
+            "scamAddress": "您正在发送到一个诈骗地址",
+            "contractAddress": "你正在发送到一个合约，资金可能会丢失"
+          }
+        },
+        "TransferBeforeValue": "係",
+        "cexAddress": "{{cexName}} 地址",
+        "passwordPlaceholder": "輸入密碼以繼續",
+        "TransferBefore": "轉移過",
+        "title": "發送到這個地址",
+        "cexDepositAddress": "{{cexName}} 存款地址",
+        "understandRisks": "我明白風險，並想繼續",
+        "AddToWhitelist": "加入白名单"
+      },
+      "tabs": {
+        "imported": "已导入",
+        "whitelist": "白名单"
+      },
+      "positiveTips": {
+        "sentBefore": "最近发送的",
+        "whitelistAddress": "白名單地址",
+        "yourOwnAddress": "你自己的地址"
+      },
+      "typedTitle": {
+        "send": "發送至"
+      },
+      "enterAddress": "輸入地址",
+      "enterAddressOrENS": "請輸入或搜尋地址",
+      "title": "地址",
+      "selectExchangeSource": "選擇交易所來源",
+      "sendToImportedAddress": "發送到導入地址",
+      "selectImportedAddress": "選擇已導入的地址"
     }
   },
   "component": {
@@ -3241,7 +3324,7 @@
       "appChain": "在 {{chain}} 帐戶"
     },
     "RiskTip": {
-      "title": "風險警告"
+      "title": "風險檢測到"
     },
     "DappActions": {
       "queueDescription": "當前提取將進入等待隊列。一旦處理完成，可以提取到您的錢包。"

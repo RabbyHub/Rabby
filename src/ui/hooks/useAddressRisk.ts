@@ -1,3 +1,4 @@
+/* eslint-enable react-hooks/exhaustive-deps */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PQueue from 'p-queue';
@@ -29,10 +30,30 @@ export const enum RiskType {
   CEX_NO_DEPOSIT = 4,
 }
 
+const riskTypePriority = {
+  [RiskType.CEX_NO_DEPOSIT]: 1,
+  [RiskType.NEVER_SEND]: 11,
+  [RiskType.CONTRACT_ADDRESS]: 111,
+  [RiskType.SCAM_ADDRESS]: 1111,
+};
+
+export function sortRisksDesc(a: { type: RiskType }, b: { type: RiskType }) {
+  return (
+    riskTypePriority[b.type as keyof typeof riskTypePriority] -
+    riskTypePriority[a.type as keyof typeof riskTypePriority]
+  );
+}
+export type RiskItem = { type: RiskType; value: string };
 export const useAddressRisks = (
   address: string,
-  editCex?: IExchange | null
+  options?: {
+    onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
+    editCex?: IExchange | null;
+    scene?: 'send-poly' | 'send-nft' | 'send-token';
+  }
 ) => {
+  const { editCex, onLoadFinished, scene = 'send-poly' } = options || {};
+
   const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -63,29 +84,47 @@ export const useAddressRisks = (
       addressDesc?.cex?.id && !addressDesc.cex.is_deposit
         ? {
             type: RiskType.CEX_NO_DEPOSIT,
-            value: t('page.sendPoly.riskAlert.riskType.risks.dexNoDeposite'),
+            value:
+              scene === 'send-poly'
+                ? t('page.sendPoly.riskAlert.riskType.risks.dexNoDeposite')
+                : t(
+                    'page.selectToAddress.riskAlert.riskType.risks.dexNoDeposite'
+                  ),
           }
         : null,
       addressDesc?.is_danger || addressDesc?.is_scam
         ? {
             type: RiskType.SCAM_ADDRESS,
-            value: t('page.sendPoly.riskAlert.riskType.risks.scamAddress'),
+            value:
+              scene === 'send-poly'
+                ? t('page.sendPoly.riskAlert.riskType.risks.scamAddress')
+                : t(
+                    'page.selectToAddress.riskAlert.riskType.risks.scamAddress'
+                  ),
           }
         : null,
       isContract && !isSafeAddress
         ? {
             type: RiskType.CONTRACT_ADDRESS,
-            value: t('page.sendPoly.riskAlert.riskType.risks.contractAddress'),
+            value:
+              scene === 'send-poly'
+                ? t('page.sendPoly.riskAlert.riskType.risks.contractAddress')
+                : t(
+                    'page.selectToAddress.riskAlert.riskType.risks.contractAddress'
+                  ),
           }
         : null,
       hasNoSend
         ? {
             type: RiskType.NEVER_SEND,
-            value: t('page.sendPoly.riskAlert.riskType.risks.noSend'),
+            value:
+              scene === 'send-poly'
+                ? t('page.sendPoly.riskAlert.riskType.risks.noSend')
+                : t('page.selectToAddress.riskAlert.riskType.risks.noSend'),
           }
         : null,
     ].filter((i) => !!i) as { type: RiskType; value: string }[];
-  }, [addressDesc, hasNoSend, t]);
+  }, [scene, addressDesc, hasNoSend, t]);
 
   const myTop10AccountList = useMemo(
     () =>
@@ -220,10 +259,11 @@ export const useAddressRisks = (
         setHasNoSend(true);
         queue.clear();
       } finally {
+        onLoadFinished?.();
         setLoadingHasTransfer(false);
       }
     })();
-  }, [address, myTop10AccountList, wallet]);
+  }, [address, myTop10AccountList, onLoadFinished, wallet]);
 
   return {
     risks,

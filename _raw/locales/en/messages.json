@@ -708,7 +708,8 @@
         "addrValidator__empty": "Please input address",
         "addrValidator__invalid": "This address is invalid",
         "searchInputPlaceholder": "Search or enter address",
-        "title": "To"
+        "title": "To",
+        "placeholder": "Select Address"
       },
       "sendButton": "Send",
       "tokenInfoFieldLabel": {
@@ -750,7 +751,13 @@
       "noSupportTokenForChain": "Recipient address is a contract address on a different chain. Check before proceeding to avoid loss",
       "noSupportTokenForChain_short": "Contract address not deployed on this chain ",
       "selectFromAddress": "Select From Address",
-      "selectToken": "Select Token"
+      "selectToken": "Select Token",
+      "accountSelectorModal": {
+        "title": "Select Address"
+      },
+      "riskAlert": {
+        "checkboxText": "I understand the risks and want to continue"
+      }
     },
     "perps": {
       "title": "Perps",
@@ -965,7 +972,7 @@
       }
     },
     "whitelist": {
-      "title": "Add Whitelist Address",
+      "title": "Add address to whitelist",
       "address": "Address",
       "name": "Name",
       "exchangeAddress": "Exchange Address",
@@ -973,7 +980,7 @@
       "addSuccess": "Add successfully",
       "invalidAddress": "This address is invalid",
       "enterAddress": "Enter address",
-      "riskTitle": "Add Whitelist Address",
+      "riskTitle": "Add address to whitelist",
       "confirmPassword": "Confirm Password",
       "tips": {
         "removed": "Whitelist address deleted",
@@ -3031,6 +3038,60 @@
         "searching": "Results for",
         "searchTips": "Search the web"
       }
+    },
+    "selectToAddress": {
+      "title": "Address",
+      "enterAddress": "Enter address",
+      "enterAddressOrENS": "Enter or search address",
+      "selectExchangeSource": "Select Exchange Source",
+      "emptyWhitelist": {
+        "title": "Add address to whitelist",
+        "desc": "Add trusted addresses to whitelist for fast transfers - no confirmation needed next time",
+        "addNow": "Add Now"
+      },
+      "whitelist": {
+        "title": "Whitelist",
+        "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
+        "addWhitelist": "Add address to whitelist",
+        "removeFromWhitelist": "Remove from whitelist",
+        "notWhitelist": "Not a whitelist Address"
+      },
+      "sendToImportedAddress": "Send to Imported Address",
+      "selectImportedAddress": "Select Imported address",
+      "addWhitelist": {
+        "title": "Add address to whitelist",
+        "desc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time"
+      },
+      "riskAlert": {
+        "title": "Send to this Address",
+        "understandRisks": "I understand the risks and want to continue",
+        "cexDepositAddress": "{{cexName}} Deposit Address",
+        "cexAddress": "{{cexName}} Address",
+        "passwordPlaceholder": "Input password to continue",
+        "TransferBefore": "Transferred before",
+        "TransferBeforeValue": "Yes",
+        "AddToWhitelist": "Add to Whitelist",
+        "riskType": {
+          "risks": {
+            "noSend": "No transfers to this address in 180 days",
+            "dexNoDeposite": "You're sending to a non-deposit exchange address",
+            "contractAddress": "You're sending to a contract, funds may be lost",
+            "scamAddress": "You're sending to a scam address"
+          }
+        }
+      },
+      "tabs": {
+        "whitelist": "Whitelisted",
+        "imported": "Imported"
+      },
+      "positiveTips": {
+        "whitelistAddress": "Whitelisted address",
+        "sentBefore": "Sent recently",
+        "yourOwnAddress": "Your own address"
+      },
+      "typedTitle": {
+        "send": "Send To"
+      }
     }
   },
   "component": {
@@ -3223,7 +3284,7 @@
       "appChain": "On {{chain}} Account"
     },
     "RiskTip": {
-      "title": "Risk Warning"
+      "title": "Risk Detected"
     },
     "DappActions": {
       "__skip_translation": ["withdraw", "claim"],

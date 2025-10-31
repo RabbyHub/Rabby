@@ -707,7 +707,8 @@
         "title": "Đến",
         "addrValidator__empty": "Vui lòng nhập địa chỉ",
         "addrValidator__invalid": "Địa chỉ này không hợp lệ",
-        "searchInputPlaceholder": "Tìm kiếm hoặc nhập địa chỉ"
+        "searchInputPlaceholder": "Tìm kiếm hoặc nhập địa chỉ",
+        "placeholder": "Chọn Địa chỉ"
       },
       "tokenInfoFieldLabel": {
         "contract": "Địa chỉ hợp đồng",
@@ -750,7 +751,13 @@
       "selectToken": "Chọn Token",
       "noSupprotTokenForSafe_short": "Địa chỉ an toàn chưa được triển khai trên chuỗi này",
       "noSupprotTokenForDex_short": "Không được hỗ trợ bởi sàn giao dịch này",
-      "noSupportTokenForChain_short": "Địa chỉ hợp đồng chưa được triển khai trên chuỗi này"
+      "noSupportTokenForChain_short": "Địa chỉ hợp đồng chưa được triển khai trên chuỗi này",
+      "accountSelectorModal": {
+        "title": "Chọn địa chỉ"
+      },
+      "riskAlert": {
+        "checkboxText": "Tôi hiểu những rủi ro và muốn tiếp tục"
+      }
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "Dự trữ Gas <1 />",
@@ -1185,7 +1192,10 @@
           "more": "Hơn nữa",
           "feedback": "Phản hồi",
           "perps": "Perps",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "searchDapp": "Tìm kiếm Dapp",
+          "setting": "Cài đặt",
+          "dapps": "Dapps"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1502,7 +1512,9 @@
         "blockDescription": "Token bị chặn bởi bạn sẽ được hiển thị ở đây",
         "addTokenEntryText": "Token",
         "noTestnetAssets": "Không có Tài sản Mạng Tùy chỉnh",
-        "customButtonText": "Thêm token tùy chỉnh"
+        "customButtonText": "Thêm token tùy chỉnh",
+        "side": "BÊN",
+        "price": "GIÁ"
       },
       "hd": {
         "ledger": {
@@ -2261,7 +2273,9 @@
       "emptySearch": "Không tìm thấy Dapp",
       "listBy": "Dapp đã được liệt kê bởi",
       "favorite": "Yêu thích",
-      "expand": "Mở rộng"
+      "expand": "Mở rộng",
+      "searchPlaceholder": "Tìm kiếm tên Dapp",
+      "searchButton": "Tìm kiếm"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2478,7 +2492,11 @@
         "gotIt": "Đã hiểu",
         "title": "Nạp USDC / USDT",
         "desc": "Thanh toán phí Gas trên tất cả các chuỗi",
-        "loginAndClaim": "Đăng nhập và Nhận $2.00"
+        "loginAndClaim": "Đăng nhập và Nhận $2.00",
+        "loginTips1": "Thanh toán phí gas cho",
+        "learnAbout": "Tìm hiểu thêm về GasAccount",
+        "loginTips3": "khi bạn hết gas",
+        "loginTips2": "bất kỳ địa chỉ nào trên bất kỳ chuỗi nào"
       },
       "loginConfirmModal": {
         "title": "Chọn một địa chỉ để đăng nhập",
@@ -2499,7 +2517,8 @@
         "invalidAmount": "Phải dưới 500",
         "token": "Mã thông báo",
         "selectToken": "Chọn Token để gửi",
-        "desc": "Nạp tiền vào Tài khoản DeBank L2 của Rabby mà không tính phí bổ sung—rút bất cứ lúc nào."
+        "desc": "Nạp tiền vào Tài khoản DeBank L2 của Rabby mà không tính phí bổ sung—rút bất cứ lúc nào.",
+        "paymentAddr": "Địa chỉ Thanh toán"
       },
       "withdrawPopup": {
         "noEnoughGas": "Số tiền quá thấp để trang trải phí gas",
@@ -2548,7 +2567,17 @@
       "title": "GasAccount",
       "risk": "Địa chỉ hiện tại của bạn đã được phát hiện là có rủi ro, vì vậy tính năng này không khả dụng.",
       "withdrawDisabledIAP": "Rút tiền bị vô hiệu hóa vì số dư của bạn bao gồm tiền fiat, không thể rút ra. Liên hệ với hỗ trợ để rút số dư token của bạn.",
-      "gasToken": "Token Gas"
+      "gasToken": "Token Gas",
+      "about": {
+        "title2": "Cách sử dụng Gas Account",
+        "title1": "GasAccount là gì",
+        "title3": "GasAccount có phí bổ sung không",
+        "title4": "GasAccount có an toàn không",
+        "desc1": "GasAccount là một cách mới để thanh toán phí gas. Thay vì sử dụng các token gốc trên mỗi chuỗi, bạn có thể sử dụng một tài khoản để chi trả gas cho tất cả các địa chỉ của bạn trên tất cả các chuỗi. Đơn giản, tùy chọn và không bao giờ hết gas.",
+        "desc4": "GasAccount không yêu cầu phê duyệt hoặc quyền hạn hợp đồng. Bạn gửi tiền vào địa chỉ GasAccount của Rabby, và Rabby gửi gas đến địa chỉ của bạn khi cần. Hoàn toàn an toàn theo thiết kế.",
+        "desc2": "Thêm quỹ vào GasAccount của bạn và sử dụng nó cho bất kỳ giao dịch nào. Khi ký, chọn thanh toán gas bằng các token gốc hoặc GasAccount, có thể chuyển đổi bất kỳ lúc nào.",
+        "desc3": "Rabby Wallet không tính phí bổ sung. Bạn chỉ phải trả phí gas cho giao dịch của mình và một lượng nhỏ gas để gửi gas đó từ GasAccount đến địa chỉ của bạn."
+      }
     },
     "safeMessageQueue": {
       "noData": "Không có tin nhắn",
@@ -2828,7 +2857,6 @@
         "repeated": "Địa chỉ hiện tại đã có trong danh sách trắng.",
         "tooltip": "Danh sách trắng địa chỉ"
       },
-      "title": "Thêm Địa chỉ Danh sách Trắng",
       "nameYourAddress": "Đặt tên cho địa chỉ của bạn",
       "address": "Địa chỉ",
       "confirmPassword": "Xác nhận mật khẩu",
@@ -2837,7 +2865,8 @@
       "name": "Tên",
       "exchangeAddress": "Địa chỉ Sàn giao dịch",
       "riskTitle": "Thêm Địa chỉ Danh sách Trắng",
-      "addSuccess": "Thêm thành công"
+      "addSuccess": "Thêm thành công",
+      "title": "Thêm địa chỉ vào danh sách trắng"
     },
     "perps": {
       "candleMenuKey": {
@@ -3008,6 +3037,60 @@
       },
       "isolated": "Isolated",
       "cross": "Giao thoa"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "Thêm địa chỉ vào danh sách trắng",
+        "desc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh - không cần xác nhận lần sau.",
+        "addNow": "Thêm ngay"
+      },
+      "whitelist": {
+        "removeFromWhitelist": "Gỡ khỏi danh sách trắng",
+        "title": "Danh sách trắng",
+        "addWhitelist": "Thêm địa chỉ vào danh sách trắng",
+        "addWhitelistDesc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh chóng—không cần xác nhận lần sau.",
+        "notWhitelist": "Không phải địa chỉ trong danh sách trắng"
+      },
+      "addWhitelist": {
+        "title": "Thêm địa chỉ vào danh sách trắng",
+        "desc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh---không cần xác nhận lần tiếp theo"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "noSend": "Không có chuyển khoản đến địa chỉ này trong 180 ngày",
+            "scamAddress": "Bạn đang gửi đến một địa chỉ lừa đảo",
+            "contractAddress": "Bạn đang gửi đến một hợp đồng, tiền có thể bị mất.",
+            "dexNoDeposite": "Bạn đang gửi đến một địa chỉ sàn giao dịch không phải là nơi gửi tiền"
+          }
+        },
+        "TransferBeforeValue": "Có",
+        "title": "Gửi tới địa chỉ này",
+        "TransferBefore": "Đã chuyển trước",
+        "passwordPlaceholder": "Nhập mật khẩu để tiếp tục",
+        "cexAddress": "{{cexName}} Địa chỉ",
+        "cexDepositAddress": "{{cexName}} Địa chỉ Gửi tiền",
+        "understandRisks": "Tôi hiểu các rủi ro và muốn tiếp tục",
+        "AddToWhitelist": "Thêm vào Danh sách trắng"
+      },
+      "tabs": {
+        "imported": "Nhập khẩu",
+        "whitelist": "Đã được đưa vào danh sách trắng"
+      },
+      "positiveTips": {
+        "yourOwnAddress": "Địa chỉ của bạn",
+        "whitelistAddress": "Địa chỉ trong danh sách trắng",
+        "sentBefore": "Gửi gần đây"
+      },
+      "typedTitle": {
+        "send": "Gửi đến"
+      },
+      "enterAddress": "Nhập địa chỉ",
+      "enterAddressOrENS": "Nhập hoặc tìm kiếm địa chỉ",
+      "selectExchangeSource": "Chọn Nguồn Giao Dịch",
+      "title": "Địa chỉ",
+      "selectImportedAddress": "Chọn địa chỉ đã nhập",
+      "sendToImportedAddress": "Gửi đến địa chỉ đã nhập"
     }
   },
   "component": {
@@ -3200,7 +3283,7 @@
       "appChain": "Trên tài khoản {{chain}}"
     },
     "RiskTip": {
-      "title": "Cảnh báo rủi ro"
+      "title": "Rủi ro được phát hiện"
     },
     "DappActions": {
       "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn."

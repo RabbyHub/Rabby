@@ -31,7 +31,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { IExchange } from '../CexSelect';
 import { Popup } from 'ui/component';
 
-import { ReactComponent as RcWhitelistIconCC } from '@/ui/assets/send-token/small-lock.svg';
+import { ReactComponent as RcWhitelistGuardBordered } from '@/ui/assets/component/whitelist-guard-bordered.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
 import { useForm } from 'antd/lib/form/Form';
@@ -262,12 +262,8 @@ export const AddressTypeCard = ({
                   />
                 )}
                 {inWhitelist && (
-                  <div className="absolute w-[12px] h-[12px] bottom-[-2px] right-[-2px] text-r-blue-default">
-                    <RcWhitelistIconCC
-                      width={12}
-                      height={12}
-                      viewBox="0 0 12 12"
-                    />
+                  <div className="absolute w-[18px] h-[18px] whitelist-guard-bordered-view text-r-blue-default">
+                    <RcWhitelistGuardBordered width={18} height={18} />
                   </div>
                 )}
               </div>
@@ -358,7 +354,7 @@ export const AddressRiskAlert = ({
   }, [inWhiteList, forWhitelist]);
 
   // disable detect risk when invisible
-  const riskInfos = useAddressRisks(visible ? address : '', editCex);
+  const riskInfos = useAddressRisks(visible ? address : '', { editCex });
   const addressSplit = useMemo(() => {
     if (!address) {
       return [];

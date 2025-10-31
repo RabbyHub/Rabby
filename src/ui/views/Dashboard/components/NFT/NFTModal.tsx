@@ -50,7 +50,7 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
       )
     );
 
-    history.push(`/send-poly?${query.toString()}`);
+    history.push(`/send-nft?${query.toString()}`);
   };
 
   const onDetail = () => {

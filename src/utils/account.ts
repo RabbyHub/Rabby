@@ -199,18 +199,23 @@ export const filterKeyringData = (
   return data;
 };
 
-export function findAccountByPriority(accounts: Account[]) {
-  return accounts.sort((item1, item2) => {
-    return (SORT_WEIGHT[item1.type] || 100) - (SORT_WEIGHT[item2.type] || 100);
-  })[0];
+export function sortAccountByPriority(a: Account, b: Account) {
+  return (SORT_WEIGHT[a.type] || 100) - (SORT_WEIGHT[b.type] || 100);
 }
 
-export const isNoSignAccount = (account: Account) => {
-  return (
-    account.type === KEYRING_CLASS.PRIVATE_KEY ||
-    account.type === KEYRING_CLASS.MNEMONIC
-  );
-};
+export function findAccountByPriority(accounts: Account[]) {
+  return accounts.sort(sortAccountByPriority)[0];
+}
+
+export function sortAccountByPriorityFallbackToBalanceDesc(
+  a: Account,
+  b: Account
+) {
+  const check = sortAccountByPriority(a, b);
+
+  if (check === 0) return (b.balance || 0) - (a.balance || 0);
+  return check;
+}
 
 export const isFullVersionAccountType = (account: Account) => {
   return ![
@@ -220,4 +225,15 @@ export const isFullVersionAccountType = (account: Account) => {
     KEYRING_TYPE.CoboArgusKeyring,
     KEYRING_TYPE.CoinbaseKeyring,
   ].includes(account.type as any);
+};
+
+export const filterMyAccounts = (account: Account) => {
+  const isMyImported =
+    account.type !== KEYRING_CLASS.WATCH &&
+    account.type !== KEYRING_CLASS.GNOSIS;
+  return {
+    isMyImported,
+    isWatchOnly: account.type === KEYRING_CLASS.WATCH,
+    isGnosis: account.type === KEYRING_CLASS.GNOSIS,
+  };
 };
