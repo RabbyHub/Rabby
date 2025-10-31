@@ -696,6 +696,10 @@ const SendToken = () => {
 
       let shouldForceSignPage = !!forceSignPage;
 
+      const chain = findChain({
+        serverId: currentToken.chain,
+      })!;
+
       if (canUseDirectSubmitTx && !shouldForceSignPage) {
         setMiniSignLoading(true);
         try {
@@ -718,6 +722,17 @@ const SendToken = () => {
             currentAccount?.address,
             currentToken
           );
+          matomoRequestEvent({
+            category: 'Send',
+            action: 'createTx',
+            label: [
+              chain.name,
+              getKRCategoryByType(currentAccount?.type),
+              currentAccount?.brandName,
+              'token',
+              filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
+            ].join('|'),
+          });
 
           return;
         } catch (error) {
@@ -734,10 +749,6 @@ const SendToken = () => {
           shouldForceSignPage = true;
         }
       }
-
-      const chain = findChain({
-        serverId: currentToken.chain,
-      })!;
 
       if (isNativeToken) {
         // L2 has extra validation fee so we can not set gasLimit as 21000 when send native token
