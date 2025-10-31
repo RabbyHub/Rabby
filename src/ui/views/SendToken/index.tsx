@@ -80,15 +80,15 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
-import { AddressInfoFrom } from './components/AddressInfoFrom';
-import { AddressInfoTo } from './components/AddressInfoTo';
+import { AddressInfoFrom } from '@/ui/component/SendLike/AddressInfoFrom';
+import { AddressInfoTo } from '@/ui/component/SendLike/AddressInfoTo';
 import BottomArea from './components/BottomArea';
 import {
   RiskType,
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
-import { SwapSlider } from '../Swap/Component/Slider';
+import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { debounce } from 'lodash';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
@@ -948,7 +948,7 @@ const SendToken = () => {
         }
       }
     };
-    setGasFeeOpen(true);
+    // setGasFeeOpen(true);
     setMiniTx();
     return () => {
       isCurrent = false;
@@ -1448,12 +1448,11 @@ const SendToken = () => {
 
   const handleClickBack = () => {
     const from = (history.location.state as any)?.from;
+
     if (from) {
       history.replace(from);
-    } else if (history.length > 1) {
-      history.goBack();
     } else {
-      history.replace(`/send-poly${history.location.search}`);
+      history.replace('/dashboard');
     }
   };
 
@@ -1734,7 +1733,7 @@ const SendToken = () => {
     }
   }, [currentToken, gasList]);
 
-  const [gasFeeOpen, setGasFeeOpen] = useState(false);
+  // const [gasFeeOpen, setGasFeeOpen] = useState(false);
   const pendingTxRef = useRef<{ fetchHistory: () => void }>(null);
   const handleFulfilled = useMemoizedFn(() => {
     if (currentToken) {
@@ -1801,8 +1800,8 @@ const SendToken = () => {
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
 
-                <div className="token-balance-slider flex w-[152px] pr-[8px] justify-between items-center">
-                  <SwapSlider
+                <div className="token-balance-slider flex pl-[2px] w-[152px] pr-[8px] justify-between items-center">
+                  <SendSlider
                     min={0}
                     max={100}
                     disabled={isLoading || isEstimatingGas}
@@ -1852,7 +1851,7 @@ const SendToken = () => {
                     }}
                     className="w-[112px] max-w-[100%]"
                   />
-                  <div className="ml-[8px] w-[42px] pl-[8px] text-right text-[13px] text-r-blue-default">
+                  <div className="ml-[8px] w-[42px] text-right text-[13px] text-r-blue-default">
                     {sliderPercentValue}%
                   </div>
                 </div>
@@ -1898,8 +1897,8 @@ const SendToken = () => {
             {chainItem?.serverId && canUseDirectSubmitTx ? (
               <ShowMoreOnSend
                 chainServeId={chainItem?.serverId}
-                open={gasFeeOpen}
-                setOpen={setGasFeeOpen}
+                open
+                // setOpen={setGasFeeOpen}
               />
             ) : null}
             {!canSubmitBasic && (

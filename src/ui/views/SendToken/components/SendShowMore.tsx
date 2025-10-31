@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as IconArrowDownCC } from 'ui/assets/bridge/tiny-down-arrow-cc.svg';
 import { DirectSignGasInfo } from '../../Bridge/Component/BridgeShowMore';
 import { noop } from 'lodash';
 
@@ -13,14 +12,14 @@ export const ShowMoreOnSend = ({
 }: {
   chainServeId: string;
   open: boolean;
-  setOpen: (bool: boolean) => void;
+  setOpen?: (bool: boolean) => void;
 }) => {
   const { t } = useTranslation();
   const [showGasFeeError, setShowGasFeeError] = useState(false);
 
   return (
     <div className="mx-16">
-      <div className="flex items-center justify-center gap-8 mb-8">
+      {/* <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
             'flex items-center opacity-50',
@@ -40,7 +39,7 @@ export const ShowMoreOnSend = ({
             )}
           />
         </div>
-      </div>
+      </div> */}
 
       <div className={clsx('overflow-hidden', !open && 'h-0')}>
         <DirectSignGasInfo

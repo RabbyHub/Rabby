@@ -19,8 +19,6 @@
   --rabby-light-red-default: rgba(227, 73, 53, 1);
   --rabby-light-red-light: rgba(255, 242, 240, 1);
   --rabby-light-red-dark: rgba(174, 42, 25, 1);
-  --rabby-light-red-light1: rgba(255, 115, 107, 0.1);
-  --rabby-light-red-light-1: rgba(255, 115, 107, 0.1);
   --rabby-light-red-light2: rgba(239, 212, 209, 1);
   --rabby-light-red-light-2: rgba(239, 212, 209, 1);
   --rabby-light-neutral-title1: rgba(25, 41, 69, 1);
@@ -66,8 +64,6 @@
   --rabby-dark-red-default: rgba(239, 92, 72, 1);
   --rabby-dark-red-light: rgba(79, 58, 66, 1);
   --rabby-dark-red-dark: rgba(174, 42, 25, 1);
-  --rabby-dark-red-light1: rgba(255, 115, 107, 0.1);
-  --rabby-dark-red-light-1: rgba(255, 115, 107, 0.1);
   --rabby-dark-red-light2: rgba(79, 58, 66, 1);
   --rabby-dark-red-light-2: rgba(79, 58, 66, 1);
   --rabby-dark-neutral-title1: rgba(247, 250, 252, 1);
@@ -130,10 +126,6 @@
   --r-red-light: var(--rabby-light-red-light);
   --r-red-dark-rgb: 174, 42, 25;
   --r-red-dark: var(--rabby-light-red-dark);
-  --r-red-light1-rgb: 255, 115, 107;
-  --r-red-light1: var(--rabby-light-red-light1);
-  --r-red-light-1-rgb: 255, 115, 107;
-  --r-red-light-1: var(--rabby-light-red-light-1);
   --r-red-light2-rgb: 239, 212, 209;
   --r-red-light2: var(--rabby-light-red-light2);
   --r-red-light-2-rgb: 239, 212, 209;
@@ -226,10 +218,6 @@ html.dark, body.dark {
   --r-red-light: var(--rabby-dark-red-light);
   --r-red-dark-rgb: 174, 42, 25;
   --r-red-dark: var(--rabby-dark-red-dark);
-  --r-red-light1-rgb: 255, 115, 107;
-  --r-red-light1: var(--rabby-dark-red-light1);
-  --r-red-light-1-rgb: 255, 115, 107;
-  --r-red-light-1: var(--rabby-dark-red-light-1);
   --r-red-light2-rgb: 79, 58, 66;
   --r-red-light2: var(--rabby-dark-red-light2);
   --r-red-light-2-rgb: 79, 58, 66;

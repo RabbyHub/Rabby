@@ -49,7 +49,7 @@ export const useAddressRisks = (
   options?: {
     onLoadFinished?: (/* ctx: { risks: Array<RiskItem> } */) => void;
     editCex?: IExchange | null;
-    scene?: 'send-poly' | 'send-token';
+    scene?: 'send-poly' | 'send-nft' | 'send-token';
   }
 ) => {
   const { editCex, onLoadFinished, scene = 'send-poly' } = options || {};
