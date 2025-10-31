@@ -344,7 +344,7 @@ export const BalanceView = ({
           >
             <div
               className={clsx(
-                currentIsLoss ? 'text-r-red-default' : 'text-r-green-default]',
+                currentIsLoss ? 'text-r-red-default' : 'text-r-green-default',
                 'text-[15px] leading-[18px] font-medium',
                 {
                   hidden: shouldHidePercentChange,
@@ -386,7 +386,7 @@ export const BalanceView = ({
         <div
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
-          className={clsx('mt-[7px]', 'relative cursor-pointer')}
+          className={clsx('mt-[2px]', 'relative cursor-pointer')}
         >
           {/* <img
             src={ArrowNextSVG}
@@ -399,14 +399,13 @@ export const BalanceView = ({
             )}
           /> */}
           {!shouldShowLoading && (
-            <div
-              className={clsx(
-                'absolute left-0 top-[-3px] z-10 mx-[12px] pointer-events-none'
-              )}
-            >
+            <div className={clsx('mx-[12px] pointer-events-none')}>
               {!loadBalanceSuccess ? (
                 <div className="flex items-center gap-[4px]">
-                  <SvgIconOffline className="text-r-neutral-title2" />
+                  <SvgIconOffline
+                    viewBox="0 0 16 16"
+                    className="w-[14px] h-[14px] text-r-neutral-title2"
+                  />
                   <span className="text-[12px] leading-[14px] text-r-neutral-title2">
                     {t('page.dashboard.home.offline')}
                   </span>
@@ -425,18 +424,18 @@ export const BalanceView = ({
                   />
                 </div>
               ) : (
-                <span
+                <div
                   className={clsx(
-                    'text-14 text-r-neutral-title-2',
+                    'text-[12px] leading-[14px] text-r-neutral-title-2',
                     !currentHover && 'opacity-70'
                   )}
                 >
                   {t('page.dashboard.assets.noAssets')}
-                </span>
+                </div>
               )}
             </div>
           )}
-          <div className={clsx('h-[65px] w-full relative')}>
+          <div className={clsx('h-[56px] w-full relative')}>
             {!!shouldRenderCurve && !!curveChartData && (
               <CurveThumbnail
                 isHover={currentHover}
@@ -449,7 +448,7 @@ export const BalanceView = ({
               <div className="flex">
                 <Skeleton.Input
                   active
-                  className="m-auto w-[344px] h-[52px] rounded block"
+                  className="mx-auto mt-[4px] w-[344px] h-[40px] rounded block"
                 />
               </div>
             )}
