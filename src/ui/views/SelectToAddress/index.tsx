@@ -127,12 +127,12 @@ const SelectToAddress = () => {
   };
 
   const handleClickBack = useCallback(() => {
-    if (inputingAddress) {
-      setInputingAddress(false);
-      return;
-    }
+    // if (inputingAddress) {
+    //   setInputingAddress(false);
+    //   return;
+    // }
     history.goBack();
-  }, [history, inputingAddress]);
+  }, [/* inputingAddress,  */ history]);
 
   const handleGotoSend = (address: string, type?: string) => {
     if (nftItem) {
@@ -294,20 +294,6 @@ const SelectToAddress = () => {
           forceShowBack={!isTab || inputingAddress}
           canBack={!isTab || inputingAddress}
           fixed
-          rightSlot={
-            isTab ? null : (
-              <div
-                className="text-r-neutral-title1 cursor-pointer absolute right-0"
-                onClick={() => {
-                  openInternalPageInTab(
-                    `send-to-address${history.location.search}`
-                  );
-                }}
-              >
-                <RcIconFullscreen />
-              </div>
-            )
-          }
         >
           {pageTitle}
         </PageHeader>
@@ -345,6 +331,7 @@ const SelectToAddress = () => {
             centered
             activeKey={focusTab}
             onChange={(key: any) => setFocusTab(key)}
+            animated={false}
           >
             <Tabs.TabPane
               key="whitelist"
