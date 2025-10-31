@@ -50,6 +50,7 @@ import { Settings } from '../index';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
 import { useScroll, useSize } from 'ahooks';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const Container = styled.div`
   position: relative;
@@ -463,10 +464,20 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     const ratio = top / (scrollHeight - height);
     return ratio;
   }, [scroll?.top]);
+  const { isDarkTheme } = useThemeMode();
 
   return (
     <div className="relative group">
-      <Container ref={ref}>
+      <Container
+        ref={ref}
+        style={
+          isDarkTheme
+            ? {
+                backgroundColor: 'rgb(41,43,57)',
+              }
+            : undefined
+        }
+      >
         {pickedPanelKeys.map((panelKey, index) => {
           const item = panelItems[panelKey] as IPanelItem;
           if (item.hideForGnosis && isGnosis) return <></>;

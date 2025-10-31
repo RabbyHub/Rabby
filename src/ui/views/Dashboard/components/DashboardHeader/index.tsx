@@ -188,7 +188,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
               }}
             />
 
-            <Popover
+            {/* <Popover
               trigger={'click'}
               content={
                 <div className="mx-[-4px]">
@@ -197,7 +197,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
               }
             >
               <RcIconQrCodeCC className="w-[16px] h-[16px] text-r-neutral-title2 cursor-pointer opacity-60 hover:opacity-80" />
-            </Popover>
+            </Popover> */}
           </div>
 
           <div className="ml-auto flex items-center gap-[8px]">

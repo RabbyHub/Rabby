@@ -14,11 +14,13 @@ import { SvgIconCross } from '@/ui/assets';
 interface RecentConnectionsProps {
   visible?: boolean;
   onClose?(): void;
+  canBack?: boolean;
 }
 
 const RecentConnections = ({
   visible = false,
   onClose,
+  canBack,
 }: RecentConnectionsProps) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -144,10 +146,13 @@ const RecentConnections = ({
       })}
     >
       <PageHeader
-        canBack={false}
-        // forceShowBack={false}
-        // onBack={handleCancel}
-        className="bg-r-neutral-bg1 sticky top-0 z-10 mb-0 pb-[16px]"
+        canBack={canBack}
+        forceShowBack={canBack}
+        onBack={handleCancel}
+        className={clsx(
+          'bg-r-neutral-bg1 sticky top-0 z-10 mb-0',
+          canBack ? 'mb-[16px]' : 'pb-[16px]'
+        )}
       >
         {t('page.dashboard.recentConnection.title')}
       </PageHeader>
@@ -210,7 +215,7 @@ export const RecentConnectionsPopup: React.FC<RecentConnectionsProps> = ({
       className="settings-popup-wrapper"
       isSupportDarkMode
     >
-      <RecentConnections visible={true} onClose={onClose} />;
+      <RecentConnections visible={true} onClose={onClose} canBack={false} />;
     </Popup>
   );
 };
