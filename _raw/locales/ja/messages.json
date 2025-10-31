@@ -708,7 +708,8 @@
         "addrValidator__empty": "アドレスを入力してください",
         "addrValidator__invalid": "このアドレスは無効です",
         "searchInputPlaceholder": "アドレスを入力または検索",
-        "title": "送り先"
+        "title": "送り先",
+        "placeholder": "アドレスを選択"
       },
       "sendButton": "送信",
       "tokenInfoFieldLabel": {
@@ -750,7 +751,13 @@
       "selectToken": "トークンを選択",
       "noSupprotTokenForDex_short": "この取引所ではサポートされていません。",
       "noSupprotTokenForSafe_short": "このチェーンにはデプロイされていない安全なアドレスです",
-      "noSupportTokenForChain_short": "このチェーンにデプロイされていないコントラクトアドレス"
+      "noSupportTokenForChain_short": "このチェーンにデプロイされていないコントラクトアドレス",
+      "accountSelectorModal": {
+        "title": "アドレスを選択"
+      },
+      "riskAlert": {
+        "checkboxText": "リスクを理解しており、続けたいと思います。"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました",
@@ -1113,7 +1120,10 @@
           "bridge": "Bridge",
           "mobile": "Mobile Sync",
           "perps": "パープス",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "dapps": "Dapps",
+          "setting": "設定",
+          "searchDapp": "Dappを検索"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1431,7 +1441,9 @@
         },
         "addTokenEntryText": "トークン",
         "noTestnetAssets": "カスタムネットワーク資産なし",
-        "customButtonText": "カスタムトークンを追加"
+        "customButtonText": "カスタムトークンを追加",
+        "side": "サイド",
+        "price": "価格"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -2264,7 +2276,9 @@
       "emptyFavorite": "お気に入りのDappがありません",
       "expand": "拡張",
       "selectChain": "チェーンを選択",
-      "emptySearch": "Dappが見つかりませんでした"
+      "emptySearch": "Dappが見つかりませんでした",
+      "searchButton": "検索",
+      "searchPlaceholder": "Dapp名を検索"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2481,7 +2495,11 @@
         "gotIt": "了解しました",
         "login": "GasAccount にログイン",
         "desc": "すべてのチェーンでガス料金を支払う",
-        "loginAndClaim": "ログインして$2.00を受け取る"
+        "loginAndClaim": "ログインして$2.00を受け取る",
+        "learnAbout": "GasAccountについて詳しく知る",
+        "loginTips1": "ガス料金を支払うための",
+        "loginTips3": "ガスが切れたとき",
+        "loginTips2": "任意のチェーンの任意のアドレス"
       },
       "loginConfirmModal": {
         "title": "現在のアドレスでログイン",
@@ -2498,7 +2516,8 @@
         "invalidAmount": "500未満である必要があります",
         "desc": "RabbyのDeBank L2アカウントに手数料なしで入金し、いつでも引き出し可能。",
         "selectToken": "トークンを選択して入金",
-        "token": "トークン"
+        "token": "トークン",
+        "paymentAddr": "支払いアドレス"
       },
       "withdrawPopup": {
         "noEnoughValuetBalance": "Vault Balance insufficient. チェーンを切り替えるか、後でもう一度お試しください。",
@@ -2551,7 +2570,17 @@
       },
       "switchAccount": "GasAccount を切り替える",
       "withdrawDisabledIAP": "引き出しは無効になっています。これは、バランスに法定通貨が含まれており、それらを引き出すことができないためです。トークン残高を引き出すには、サポートにお問い合わせください。",
-      "gasToken": "ガストークン"
+      "gasToken": "ガストークン",
+      "about": {
+        "title3": "GasAccountには追加料金がありますか？",
+        "title2": "Gas Accountの使い方",
+        "title1": "GasAccountとは何ですか",
+        "title4": "GasAccountは安全ですか",
+        "desc3": "Rabby Walletは追加料金を請求しません。あなたはトランザクションのガス代と、そのガスをGasAccountからあなたのアドレスに送るための少額のガス代のみを支払います。",
+        "desc4": "GasAccountは、契約の承認や権限を必要としません。あなたはRabbyのGasAccountアドレスに入金し、必要な時にRabbyがあなたのアドレスにガスを送ります。設計上、完全に安全です。",
+        "desc2": "GasAccountに資金を追加し、任意の取引に使用してください。署名する際、ネイティブトークンまたはGasAccountでガスを支払うオプションを選択し、いつでも切り替えてください。",
+        "desc1": "GasAccountはガス料金を支払う新しい方法です。各チェーンのネイティブトークンを使用する代わりに、1つのアカウントを使用してすべてのチェーンのすべてのアドレスのガスをカバーできます。シンプルでオプションの機能で、ガス切れになることもありません。"
+      }
     },
     "safeMessageQueue": {
       "loading": "メッセージを読み込み中",
@@ -2839,7 +2868,8 @@
       "enterAddress": "アドレスを入力してください",
       "exchangeAddress": "交換アドレス",
       "addSuccess": "追加成功",
-      "address": "アドレス"
+      "address": "アドレス",
+      "title": "ホワイトリストにアドレスを追加する"
     },
     "perps": {
       "candleMenuKey": {
@@ -3010,6 +3040,60 @@
       },
       "cross": "クロス",
       "isolated": "孤立"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "ホワイトリストにアドレスを追加",
+        "desc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を行います - 次回は確認は必要ありません。",
+        "addNow": "今すぐ追加"
+      },
+      "whitelist": {
+        "title": "ホワイトリスト",
+        "removeFromWhitelist": "ホワイトリストから削除",
+        "addWhitelist": "ホワイトリストにアドレスを追加する",
+        "addWhitelistDesc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を実現---次回は確認不要です。",
+        "notWhitelist": "ホワイトリストアドレスではありません"
+      },
+      "addWhitelist": {
+        "title": "ホワイトリストにアドレスを追加",
+        "desc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を実現---次回は確認不要です。"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "contractAddress": "契約に送信しています。資金が失われる可能性があります。",
+            "noSend": "このアドレスには180日間の転送がありません",
+            "dexNoDeposite": "あなたは非預金取引所のアドレスに送信しています",
+            "scamAddress": "詐欺アドレスに送信しています"
+          }
+        },
+        "TransferBeforeValue": "はい",
+        "title": "このアドレスに送信",
+        "TransferBefore": "転送済み",
+        "AddToWhitelist": "ホワイトリストに追加",
+        "cexDepositAddress": "{{cexName}} 入金アドレス",
+        "cexAddress": "{{cexName}} アドレス",
+        "understandRisks": "リスクを理解し、続行したいと思います。",
+        "passwordPlaceholder": "パスワードを入力して続行してください"
+      },
+      "tabs": {
+        "imported": "インポート済み",
+        "whitelist": "ホワイトリスト入り"
+      },
+      "positiveTips": {
+        "yourOwnAddress": "あなたのアドレス",
+        "sentBefore": "最近送信されました",
+        "whitelistAddress": "ホワイトリストアドレス"
+      },
+      "typedTitle": {
+        "send": "送信先"
+      },
+      "title": "アドレス",
+      "enterAddressOrENS": "アドレスを入力または検索してください",
+      "selectExchangeSource": "取引所を選択してください",
+      "enterAddress": "アドレスを入力してください",
+      "sendToImportedAddress": "インポートされたアドレスに送信",
+      "selectImportedAddress": "インポートされたアドレスを選択してください"
     }
   },
   "component": {
@@ -3201,7 +3285,9 @@
     "ChainItem": {
       "appChain": "{{chain}}アカウント"
     },
-    "RiskTip": {},
+    "RiskTip": {
+      "title": "リスクが検出されました"
+    },
     "DappActions": {
       "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。"
     }

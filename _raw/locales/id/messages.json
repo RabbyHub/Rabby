@@ -707,7 +707,8 @@
         "title": "Untuk",
         "addrValidator__empty": "Silakan masukkan alamat",
         "addrValidator__invalid": "Alamat ini tidak valid",
-        "searchInputPlaceholder": "Cari atau masukkan alamat"
+        "searchInputPlaceholder": "Cari atau masukkan alamat",
+        "placeholder": "Pilih Alamat"
       },
       "tokenInfoFieldLabel": {
         "contract": "Alamat Kontrak",
@@ -750,7 +751,13 @@
       "noSupprotTokenForDex_short": "Tidak didukung oleh bursa ini",
       "selectToken": "Pilih Token",
       "noSupprotTokenForSafe_short": "Alamat aman belum diterapkan di rantai ini",
-      "noSupportTokenForChain_short": "Alamat kontrak tidak dikerahkan di rantai ini"
+      "noSupportTokenForChain_short": "Alamat kontrak tidak dikerahkan di rantai ini",
+      "accountSelectorModal": {
+        "title": "Pilih Alamat"
+      },
+      "riskAlert": {
+        "checkboxText": "Saya memahami risikonya dan ingin melanjutkan"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Ditetapkan <1>0</1> {{ tokenName }} untuk biaya gas",
@@ -1185,7 +1192,10 @@
           "approvals": "Persetujuan",
           "mobile": "Mobile Sync",
           "perps": "Perps",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "dapps": "Dapps",
+          "searchDapp": "Cari Dapp",
+          "setting": "Pengaturan"
         },
         "queue": {
           "title": "Antrian",
@@ -1502,7 +1512,9 @@
         "searchPlaceholder": "Tokens",
         "blockDescription": "Token yang diblokir oleh Anda akan ditampilkan di sini",
         "blockLinkText": "Cari alamat untuk memblokir token",
-        "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini"
+        "customDescription": "Token kustom yang ditambahkan oleh Anda akan ditampilkan di sini",
+        "price": "HARGA",
+        "side": "SISI"
       },
       "hd": {
         "ledger": {
@@ -2261,7 +2273,9 @@
       "emptySearch": "Tidak Ada Dapp Ditemukan",
       "favorite": "Favorit",
       "emptyFavorite": "Tidak Ada Dapp Favorit",
-      "listBy": "Dapp telah dicantumkan oleh"
+      "listBy": "Dapp telah dicantumkan oleh",
+      "searchButton": "Cari",
+      "searchPlaceholder": "Cari nama Dapp"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2478,7 +2492,11 @@
         "login": "Masuk GasAccount",
         "desc": "Bayar Biaya Gas di Semua Rantai",
         "title": "Setor USDC / USDT",
-        "loginAndClaim": "Masuk dan Klaim $2.00"
+        "loginAndClaim": "Masuk dan Klaim $2.00",
+        "loginTips1": "Bayar biaya gas untuk",
+        "learnAbout": "Pelajari lebih lanjut tentang GasAccount",
+        "loginTips2": "alamat mana pun di mana pun",
+        "loginTips3": "ketika Anda kehabisan gas"
       },
       "loginConfirmModal": {
         "title": "Pilih alamat untuk masuk",
@@ -2499,7 +2517,8 @@
         "invalidAmount": "Harus di bawah 500",
         "desc": "Setor dana ke Akun DeBank L2 Rabby tanpa biaya tambahan—tarik kapan saja.",
         "selectToken": "Pilih Token untuk Setoran",
-        "token": "Token"
+        "token": "Token",
+        "paymentAddr": "Alamat Pembayaran"
       },
       "withdrawPopup": {
         "destinationChain": "Rantai tujuan",
@@ -2548,7 +2567,17 @@
       "withdrawDisabledIAP": "Penarikan dinonaktifkan karena saldo Anda termasuk dana fiat, yang tidak dapat ditarik. Hubungi dukungan untuk menarik saldo token Anda.",
       "risk": "Alamat Anda saat ini terdeteksi berisiko, jadi fitur ini tidak tersedia.",
       "switchAccount": "Alihkan GasAccount",
-      "gasToken": "Gas Token"
+      "gasToken": "Gas Token",
+      "about": {
+        "title1": "Apa itu GasAccount",
+        "title4": "Apakah GasAccount aman",
+        "title3": "Apakah GasAccount memiliki biaya tambahan",
+        "title2": "Cara menggunakan Gas Account",
+        "desc3": "Rabby Wallet tidak mengenakan biaya tambahan. Anda hanya membayar gas untuk transaksi Anda dan sedikit gas untuk mengirim gas tersebut dari GasAccount ke alamat Anda.",
+        "desc4": "GasAccount tidak memerlukan persetujuan atau izin kontrak. Anda menyetor ke alamat GasAccount Rabby, dan Rabby mengirimkan gas ke alamat Anda saat diperlukan. Sepenuhnya aman berdasarkan desain.",
+        "desc2": "Tambahkan dana ke GasAccount Anda dan gunakan untuk transaksi apa pun. Saat menandatangani, pilih untuk membayar gas dengan token asli atau GasAccount, beralih kapan saja.",
+        "desc1": "GasAccount adalah cara baru untuk membayar biaya gas. Alih-alih menggunakan token asli di setiap rantai, Anda dapat menggunakan satu akun untuk menutupi gas untuk semua alamat Anda di semua rantai. Sederhana, opsional, dan tidak pernah kehabisan gas."
+      }
     },
     "safeMessageQueue": {
       "loading": "Memuat pesan",
@@ -2836,7 +2865,8 @@
       "riskTitle": "Tambahkan Alamat Whitelist",
       "confirmPassword": "Konfirmasi Kata Sandi",
       "addSuccess": "Ditambahkan dengan sukses",
-      "invalidAddress": "Alamat ini tidak valid"
+      "invalidAddress": "Alamat ini tidak valid",
+      "title": "Tambahkan alamat ke daftar putih"
     },
     "perps": {
       "candleMenuKey": {
@@ -3007,6 +3037,60 @@
       },
       "cross": "Silang",
       "isolated": "Terisolasi"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "Tambahkan alamat ke daftar putih",
+        "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat - tidak diperlukan konfirmasi di lain waktu",
+        "addNow": "Tambahkan Sekarang"
+      },
+      "whitelist": {
+        "notWhitelist": "Bukan Alamat whitelist",
+        "removeFromWhitelist": "Hapus dari whitelist",
+        "addWhitelist": "Tambahkan alamat ke daftar putih",
+        "title": "Daftar Putih",
+        "addWhitelistDesc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat---tidak perlu konfirmasi pada waktu berikutnya"
+      },
+      "addWhitelist": {
+        "title": "Tambahkan alamat ke daftar putih",
+        "desc": "Tambahkan alamat tepercaya ke whitelist untuk transfer cepat---tidak perlu konfirmasi di lain waktu"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Anda mengirim ke alamat penipuan",
+            "dexNoDeposite": "Anda mengirim ke alamat exchange non-deposit",
+            "noSend": "Tidak ada transfer ke alamat ini dalam 180 hari",
+            "contractAddress": "Anda mengirim ke kontrak, dana mungkin hilang"
+          }
+        },
+        "cexDepositAddress": "{{cexName}} Alamat Setoran",
+        "title": "Kirim ke Alamat Ini",
+        "understandRisks": "Saya mengerti risiko dan ingin melanjutkan",
+        "AddToWhitelist": "Tambahkan ke Daftar Putih",
+        "passwordPlaceholder": "Masukkan kata sandi untuk melanjutkan",
+        "TransferBeforeValue": "Ya",
+        "TransferBefore": "Dipindahkan sebelumnya",
+        "cexAddress": "{{cexName}} Alamat"
+      },
+      "tabs": {
+        "imported": "Diimpor",
+        "whitelist": "Whitelisted"
+      },
+      "positiveTips": {
+        "whitelistAddress": "Alamat yang telah disetujui",
+        "yourOwnAddress": "Alamat Anda sendiri",
+        "sentBefore": "Dikirim baru-baru ini"
+      },
+      "typedTitle": {
+        "send": "Kirim Ke"
+      },
+      "enterAddress": "Masukkan alamat",
+      "title": "Alamat",
+      "enterAddressOrENS": "Masukkan atau cari alamat",
+      "selectExchangeSource": "Pilih Sumber Pertukaran",
+      "selectImportedAddress": "Pilih alamat yang diimpor",
+      "sendToImportedAddress": "Kirim ke Alamat yang Diimpor"
     }
   },
   "component": {
@@ -3198,7 +3282,9 @@
     "ChainItem": {
       "appChain": "Di Akun {{chain}}"
     },
-    "RiskTip": {},
+    "RiskTip": {
+      "title": "Risiko Terdeteksi"
+    },
     "DappActions": {
       "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda."
     }

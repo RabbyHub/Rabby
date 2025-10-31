@@ -707,7 +707,8 @@
         "addrValidator__empty": "주소를 입력하세요",
         "searchInputPlaceholder": "주소 검색 또는 입력",
         "title": "To",
-        "addrValidator__invalid": "이 주소는 유효하지 않습니다"
+        "addrValidator__invalid": "이 주소는 유효하지 않습니다",
+        "placeholder": "주소 선택"
       },
       "tokenInfoFieldLabel": {
         "chain": "체인",
@@ -750,7 +751,13 @@
       "selectToken": "토큰 선택",
       "noSupprotTokenForSafe_short": "이 체인에 배포되지 않은 안전 주소",
       "noSupportTokenForChain_short": "이 체인에 배포되지 않은 계약 주소입니다",
-      "noSupprotTokenForDex_short": "이 거래소에서는 지원되지 않습니다."
+      "noSupprotTokenForDex_short": "이 거래소에서는 지원되지 않습니다.",
+      "accountSelectorModal": {
+        "title": "주소 선택"
+      },
+      "riskAlert": {
+        "checkboxText": "위험을 이해하며 계속 진행하고 싶습니다."
+      }
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "가스 예약 <1 />",
@@ -1185,7 +1192,10 @@
           "manageAddress": "주소 관리",
           "ecology": "생태계",
           "perps": "퍼프",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "dapps": "Dapps",
+          "setting": "설정",
+          "searchDapp": "Dapp 검색"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -1502,7 +1512,9 @@
         "customButtonText": "사용자 정의 토큰 추가",
         "addTokenEntryText": "토큰",
         "noTestnetAssets": "사용자 지정 네트워크 자산이 없습니다.",
-        "searchPlaceholder": "토큰"
+        "searchPlaceholder": "토큰",
+        "price": "가격",
+        "side": "측면"
       },
       "hd": {
         "ledger": {
@@ -2261,7 +2273,9 @@
       "emptySearch": "Dapp을 찾을 수 없습니다",
       "favorite": "즐겨찾기",
       "listBy": "Dapp는 다음에 의해 나열되었습니다.",
-      "selectChain": "체인 선택"
+      "selectChain": "체인 선택",
+      "searchButton": "검색",
+      "searchPlaceholder": "Dapp 이름 검색"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2478,7 +2492,11 @@
         "title": "USDC / USDT 입금",
         "desc": "모든 체인에서 가스 요금 지불",
         "login": "GasAccount에 로그인",
-        "loginAndClaim": "로그인하고 $2.00를 받으세요."
+        "loginAndClaim": "로그인하고 $2.00를 받으세요.",
+        "loginTips2": "모든 체인의 모든 주소",
+        "loginTips3": "가스가 없을 때",
+        "learnAbout": "GasAccount에 대해 더 알아보기",
+        "loginTips1": "가스 요금을 지불하세요 для"
       },
       "loginConfirmModal": {
         "desc": "확인되면 이 주소로만 입금할 수 있습니다.",
@@ -2499,7 +2517,8 @@
         "selectToken": "토큰 선택하여 입금하기",
         "amount": "금액",
         "desc": "Rabby의 DeBank L2 계좌에 추가 수수료 없이 입금하세요—언제든지 인출할 수 있습니다.",
-        "invalidAmount": "500 이하이어야 합니다."
+        "invalidAmount": "500 이하이어야 합니다.",
+        "paymentAddr": "지급 주소"
       },
       "withdrawPopup": {
         "amount": "금액",
@@ -2548,7 +2567,17 @@
       "gasExceed": "GasAccount 잔액은 $1000를 초과할 수 없습니다.",
       "risk": "현재 주소가 위험한 것으로 감지되어 이 기능을 사용할 수 없습니다.",
       "withdrawDisabledIAP": "출금이 비활성화되었습니다. 이는 귀하의 잔고에 출금이 불가능한 법정 화폐가 포함되어 있기 때문입니다. 토큰 잔고를 출금하려면 지원팀에 문의하십시오.",
-      "gasToken": "가스 토큰"
+      "gasToken": "가스 토큰",
+      "about": {
+        "title2": "Gas Account 사용 방법",
+        "title4": "GasAccount은 안전한가요?",
+        "title1": "GasAccount은 무엇인가요?",
+        "title3": "GasAccount에 추가 수수료가 있나요?",
+        "desc3": "Rabby Wallet은 추가 요금을 부과하지 않습니다. 거래를 위한 가스 요금과 GasAccount에서 귀하의 주소로 가스를 전송하는 데 필요한 소량의 가스 요금만 지불하시면 됩니다.",
+        "desc2": "GasAccount에 자금을 추가하고 모든 거래에 사용하세요. 서명할 때, 네이티브 토큰 또는 GasAccount로 가스를 지불하도록 선택하고 언제든지 전환하세요.",
+        "desc4": "GasAccount은 계약 승인이나 권한이 필요하지 않습니다. 당신은 Rabby의 GasAccount 주소로 입금하고, Rabby는 필요할 때 당신의 주소로 가스를 전송합니다. 설계상 완전히 안전합니다.",
+        "desc1": "GasAccount는 가스 요금을 지불하는 새로운 방법입니다. 각 체인의 네이티브 토큰을 사용하는 대신, 모든 체인의 모든 주소에 대한 가스를 커버할 수 있는 하나의 계정을 사용할 수 있습니다. 간단하고 선택적이며, 가스가 부족해지는 일이 없습니다."
+      }
     },
     "safeMessageQueue": {
       "loading": "로드 중 메시지",
@@ -2836,7 +2865,8 @@
       "confirmPassword": "비밀번호 확인",
       "invalidAddress": "이 주소는 유효하지 않습니다",
       "address": "주소",
-      "name": "이름"
+      "name": "이름",
+      "title": "주소를 화이트리스트에 추가하세요"
     },
     "perps": {
       "candleMenuKey": {
@@ -3007,6 +3037,60 @@
       },
       "cross": "교차",
       "isolated": "격리된"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "주소를 화이트리스트에 추가하십시오",
+        "desc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 이체를 지원합니다 - 다음 번에는 확인이 필요하지 않습니다.",
+        "addNow": "지금 추가하기"
+      },
+      "whitelist": {
+        "removeFromWhitelist": "화이트리스트에서 제거",
+        "title": "화이트리스트",
+        "notWhitelist": "허가된 주소가 아닙니다",
+        "addWhitelist": "주소를 화이트리스트에 추가하세요",
+        "addWhitelistDesc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 전송 --- 다음 번에는 확인이 필요하지 않습니다."
+      },
+      "addWhitelist": {
+        "title": "주소를 화이트리스트에 추가하기",
+        "desc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 전송 가능---다음 번에는 확인이 필요하지 않습니다"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "dexNoDeposite": "비수탁 거래소 주소로 전송하고 있습니다.",
+            "contractAddress": "계약에 전송 중입니다, 자금이 손실될 수 있습니다",
+            "noSend": "이 주소로 180일 동안의 전송이 없습니다.",
+            "scamAddress": "당신은 사기 주소로 전송하고 있습니다."
+          }
+        },
+        "title": "이 주소로 전송",
+        "TransferBefore": "이전에 전송됨",
+        "cexAddress": "{{cexName}} 주소",
+        "TransferBeforeValue": "네",
+        "AddToWhitelist": "화이트리스트에 추가",
+        "understandRisks": "위험을 이해하고 계속 진행하고 싶습니다.",
+        "cexDepositAddress": "{{cexName}} 입금 주소",
+        "passwordPlaceholder": "비밀번호를 입력하여 계속 진행하십시오"
+      },
+      "tabs": {
+        "imported": "가져온",
+        "whitelist": "화이트리스트에 등록됨"
+      },
+      "positiveTips": {
+        "whitelistAddress": "허가된 주소",
+        "sentBefore": "최근에 보냄",
+        "yourOwnAddress": "귀하의 주소"
+      },
+      "typedTitle": {
+        "send": "보내기"
+      },
+      "enterAddressOrENS": "주소 입력 또는 검색",
+      "title": "주소",
+      "selectExchangeSource": "거래소 소스 선택",
+      "enterAddress": "주소 입력",
+      "selectImportedAddress": "가져온 주소 선택",
+      "sendToImportedAddress": "가져온 주소로 보내기"
     }
   },
   "component": {
@@ -3198,7 +3282,9 @@
     "ChainItem": {
       "appChain": "{{chain}} 계정에서"
     },
-    "RiskTip": {},
+    "RiskTip": {
+      "title": "위험 감지됨"
+    },
     "DappActions": {
       "queueDescription": "현재 인출은 대기 열에 들어갑니다. 처리되면 귀하의 지갑으로 인출할 수 있습니다."
     }

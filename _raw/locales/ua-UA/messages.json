@@ -709,7 +709,8 @@
         "addrValidator__empty": "Будь ласка, введіть адресу",
         "addrValidator__invalid": "Ця адреса є недійсною",
         "searchInputPlaceholder": "Введіть адресу або пошук",
-        "title": "Кому"
+        "title": "Кому",
+        "placeholder": "Виберіть адресу"
       },
       "sendButton": "Відправити",
       "tokenInfoFieldLabel": {
@@ -751,7 +752,13 @@
       "selectToken": "Виберіть токен",
       "noSupprotTokenForDex_short": "Не підтримується цією біржею",
       "noSupportTokenForChain_short": "Контрактна адреса не розгорнута в цій мережі",
-      "noSupprotTokenForSafe_short": "Безпечна адреса не розгорнута в цій мережі"
+      "noSupprotTokenForSafe_short": "Безпечна адреса не розгорнута в цій мережі",
+      "accountSelectorModal": {
+        "title": "Виберіть адресу"
+      },
+      "riskAlert": {
+        "checkboxText": "Я розумію ризики і хочу продовжити."
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Зарезервовано <1>0</1> {{ tokenName }} для вартості газу",
@@ -1116,7 +1123,10 @@
           "rabbyPoints": "Rabby Points",
           "mobile": "Mobile Sync",
           "perps": "Перпси",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "dapps": "Dapps",
+          "searchDapp": "Пошук Dapp",
+          "setting": "Налаштування"
         },
         "comingSoon": "Скоро",
         "soon": "Незабаром",
@@ -1434,7 +1444,9 @@
         },
         "customButtonText": "Додати користувацький токен",
         "addTokenEntryText": "Токен",
-        "noTestnetAssets": "Немає активів у користувацькій мережі"
+        "noTestnetAssets": "Немає активів у користувацькій мережі",
+        "price": "ЦІНА",
+        "side": "БОКОВИЙ"
       },
       "hd": {
         "howToConnectLedger": "Як підключити Ledger",
@@ -2276,7 +2288,9 @@
       "favorite": "Обране",
       "selectChain": "Вибрати Chain",
       "listBy": "Dapp було зазначено за",
-      "emptyFavorite": "Немає улюбленого Dapp"
+      "emptyFavorite": "Немає улюбленого Dapp",
+      "searchPlaceholder": "Шукати назву Dapp",
+      "searchButton": "Пошук"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2493,7 +2507,11 @@
         "gotIt": "Зрозуміло",
         "desc": "Сплачуйте комісії Gas на всіх ланцюжках",
         "title": "Депозит USDC / USDT",
-        "loginAndClaim": "Увійдіть та отримайте $2.00"
+        "loginAndClaim": "Увійдіть та отримайте $2.00",
+        "learnAbout": "Дізнайтеся більше про GasAccount",
+        "loginTips3": "коли у вас закінчився Gas",
+        "loginTips1": "Оплатити газові збори за",
+        "loginTips2": "будь-яка адреса на будь-якому ланцюгу"
       },
       "loginConfirmModal": {
         "desc": "Після підтвердження ви можете депозитити тільки на цю адресу",
@@ -2510,7 +2528,8 @@
         "title": "Депозит",
         "selectToken": "Виберіть токен для депозиту",
         "invalidAmount": "Має бути менше 500",
-        "desc": "Здійсніть депозит на рахунок Rabby's DeBank L2 без додаткових зборів — виводьте кошти будь-коли."
+        "desc": "Здійсніть депозит на рахунок Rabby's DeBank L2 без додаткових зборів — виводьте кошти будь-коли.",
+        "paymentAddr": "Адреса платежу"
       },
       "withdrawPopup": {
         "to": "Щоб",
@@ -2563,7 +2582,17 @@
       },
       "switchAccount": "Перемкнути GasAccount",
       "withdrawDisabledIAP": "Виведення коштів неможливе, оскільки ваш баланс містить фіатні кошти, які не можна вивести. Зверніться до служби підтримки, щоб вивести баланс ваших токенів",
-      "gasToken": "Газовий токен"
+      "gasToken": "Газовий токен",
+      "about": {
+        "title4": "GasAccount безпечний?",
+        "title2": "Як використовувати Gas Account",
+        "title3": "Чи має GasAccount додаткові збори?",
+        "title1": "Що таке GasAccount",
+        "desc3": "Rabby Wallet не стягує жодних додаткових зборів. Ви сплачуєте лише газ за вашу транзакцію та невелику кількість газу за передачу цього газу з GasAccount на вашу адресу.",
+        "desc2": "Додайте кошти до вашого GasAccount і використовуйте їх для будь-якої транзакції. При підписанні виберіть оплату газу за допомогою рідних токенів або GasAccount, перемикайте в будь-який час.",
+        "desc4": "GasAccount не потребує жодних схвалень контрактів або дозволів. Ви депозитуєте на адресу GasAccount Rabby, а Rabby надсилає газ на вашу адресу за потреби. Повністю безпечно за дизайном.",
+        "desc1": "GasAccount — це новий спосіб оплати комісій за газ. Замість використання рідних токенів на кожному ланцюзі, ви можете використовувати один акаунт для покриття газу для всіх ваших адрес на всіх ланцюгах. Просто, за бажанням, і ніколи не без газу."
+      }
     },
     "safeMessageQueue": {
       "noData": "Немає повідомлень",
@@ -2851,7 +2880,8 @@
       "addSuccess": "Додано успішно",
       "enterAddress": "Введіть адресу",
       "invalidAddress": "Ця адреса недійсна",
-      "riskTitle": "Додати адресу до білого списку"
+      "riskTitle": "Додати адресу до білого списку",
+      "title": "Додати адресу до білого списку"
     },
     "perps": {
       "candleMenuKey": {
@@ -3022,6 +3052,60 @@
       },
       "isolated": "Ізольований",
       "cross": "Перехресний"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "Додати адресу до білого списку",
+        "desc": "Додайте надійні адреси до білого списку для швидких переказів - без підтвердження наступного разу.",
+        "addNow": "Додати зараз"
+      },
+      "whitelist": {
+        "addWhitelist": "Додати адресу до білого списку",
+        "title": "Список білих адресів",
+        "notWhitelist": "Не білосписок адреса",
+        "removeFromWhitelist": "Видалити з білого списку",
+        "addWhitelistDesc": "Додайте надійні адреси до білого списку для швидких переказів — наступного разу підтвердження не потрібно."
+      },
+      "addWhitelist": {
+        "title": "Додати адресу до білого списку",
+        "desc": "Додайте надійні адреси до білого списку для швидких переказів—підтвердження не потрібне наступного разу"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Ви надсилаєте на адресу шахраїв",
+            "dexNoDeposite": "Ви надсилаєте на адресу не депозитної біржі",
+            "contractAddress": "Ви відправляєте на контракт, кошти можуть бути втрачені",
+            "noSend": "Не було переказів на цю адресу протягом 180 днів"
+          }
+        },
+        "cexAddress": "{{cexName}} Адреса",
+        "TransferBefore": "Переміщено раніше",
+        "passwordPlaceholder": "Введіть пароль, щоб продовжити",
+        "AddToWhitelist": "Додати до білого списку",
+        "title": "Відправити на цю адресу",
+        "TransferBeforeValue": "Так",
+        "understandRisks": "Я розумію ризики і хочу продовжити",
+        "cexDepositAddress": "{{cexName}} Адрес депозиту"
+      },
+      "tabs": {
+        "whitelist": "У білому списку",
+        "imported": "Імпортовано"
+      },
+      "positiveTips": {
+        "whitelistAddress": "Адрес у білому списку",
+        "yourOwnAddress": "Ваша власна адреса",
+        "sentBefore": "Надіслано нещодавно"
+      },
+      "typedTitle": {
+        "send": "Відправити на"
+      },
+      "title": "Адреса",
+      "enterAddress": "Введіть адресу",
+      "selectExchangeSource": "Виберіть джерело обміну",
+      "enterAddressOrENS": "Введіть або знайдіть адресу",
+      "sendToImportedAddress": "Відправити на імпортовану адресу",
+      "selectImportedAddress": "Виберіть імпортовану адресу"
     }
   },
   "component": {
@@ -3213,7 +3297,9 @@
     "ChainItem": {
       "appChain": "На акаунті {{chain}}"
     },
-    "RiskTip": {},
+    "RiskTip": {
+      "title": "Виявлено ризик"
+    },
     "DappActions": {
       "queueDescription": "Поточне виведення​ потрапить у чергу очікування. Після обробки його можна буде ​вивести​ на ваш гаманець."
     }

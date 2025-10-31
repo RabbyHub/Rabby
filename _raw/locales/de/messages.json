@@ -708,7 +708,8 @@
         "addrValidator__empty": "Bitte Adresse eingeben",
         "addrValidator__invalid": "Diese Adresse ist ungültig",
         "searchInputPlaceholder": "Adresse eingeben oder suchen",
-        "title": "An"
+        "title": "An",
+        "placeholder": "Adresse auswählen"
       },
       "sendButton": "Senden",
       "tokenInfoFieldLabel": {
@@ -750,7 +751,13 @@
       "noSupportTokenForChain_short": "Vertragsadresse nicht auf dieser Kette bereitgestellt",
       "noSupprotTokenForSafe_short": "Die Safe-Adresse ist auf dieser Kette nicht bereitgestellt.",
       "noSupprotTokenForDex_short": "Von dieser Börse nicht unterstützt",
-      "selectToken": "Token auswählen"
+      "selectToken": "Token auswählen",
+      "accountSelectorModal": {
+        "title": "Adresse auswählen"
+      },
+      "riskAlert": {
+        "checkboxText": "Ich verstehe die Risiken und möchte fortfahren."
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} für Gaskosten reserviert",
@@ -1113,7 +1120,10 @@
           "ecology": "Ökosystem",
           "mobile": "Mobile Sync",
           "perps": "Perps",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "searchDapp": "Dapp suchen",
+          "setting": "Einstellungen",
+          "dapps": "Dapps"
         },
         "comingSoon": "Demnächst",
         "soon": "Bald",
@@ -1431,7 +1441,9 @@
         },
         "customButtonText": "Benutzerdefiniertes Token hinzufügen",
         "noTestnetAssets": "Keine benutzerdefinierten Netzwerk-Assets",
-        "addTokenEntryText": "Token"
+        "addTokenEntryText": "Token",
+        "price": "PREIS",
+        "side": "SEITE"
       },
       "hd": {
         "howToConnectLedger": "Wie man den Ledger verbindet",
@@ -2264,7 +2276,9 @@
       "favorite": "Favoriten",
       "listBy": "Dapp wurde aufgelistet von",
       "emptySearch": "Keine Dapp gefunden",
-      "expand": "Erweitern"
+      "expand": "Erweitern",
+      "searchButton": "Suche",
+      "searchPlaceholder": "Dapp-Namen suchen"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2481,7 +2495,11 @@
         "title": "Einzahlung USDC / USDT",
         "login": "In GasAccount einloggen",
         "gotIt": "Verstanden",
-        "loginAndClaim": "Melden Sie sich an und beanspruchen Sie $2,00"
+        "loginAndClaim": "Melden Sie sich an und beanspruchen Sie $2,00",
+        "loginTips2": "jede Adresse auf jeder Kette",
+        "loginTips3": "wenn du kein Gas mehr hast",
+        "loginTips1": "Zahlen Sie Gasgebühren für",
+        "learnAbout": "Erfahren Sie mehr über GasAccount"
       },
       "loginConfirmModal": {
         "desc": "Nach der Bestätigung können Sie es nur an dieser Adresse einzahlen。",
@@ -2498,7 +2516,8 @@
         "title": "Einzahlung",
         "selectToken": "Token auswählen, um einzuzahlen",
         "token": "Token",
-        "desc": "Machen Sie eine Einzahlung auf das DeBank L2 Konto von Rabby ohne zusätzliche Gebühren – jederzeit abheben."
+        "desc": "Machen Sie eine Einzahlung auf das DeBank L2 Konto von Rabby ohne zusätzliche Gebühren – jederzeit abheben.",
+        "paymentAddr": "Zahlungsadresse"
       },
       "withdrawPopup": {
         "noEnoughGas": "Betrag zu niedrig, um die Gasgebühren zu decken",
@@ -2551,7 +2570,17 @@
       },
       "withdrawDisabledIAP": "Abhebungen sind deaktiviert, da Ihr Guthaben Fiat-Mittel enthält, die nicht abgehoben werden können. Kontaktieren Sie den Support, um Ihr Token-Guthaben abzuheben.",
       "switchAccount": "Wechseln Sie GasAccount",
-      "gasToken": "Gas Token"
+      "gasToken": "Gas Token",
+      "about": {
+        "title2": "Wie man Gas Account verwendet",
+        "title1": "Was ist GasAccount",
+        "title4": "Ist GasAccount sicher",
+        "title3": "Hat GasAccount zusätzliche Gebühren?",
+        "desc2": "Fügen Sie Geld zu Ihrem GasAccount hinzu und verwenden Sie es für jede Transaktion. Wählen Sie beim Signieren, ob Sie die Gebühren mit nativen Token oder GasAccount bezahlen möchten, wechseln Sie jederzeit.",
+        "desc3": "Rabby Wallet erhebt keine zusätzlichen Gebühren. Sie zahlen nur die Gasgebühren für Ihre Transaktion und einen kleinen Betrag an Gas, um dieses Gas von GasAccount an Ihre Adresse zu senden.",
+        "desc4": "GasAccount benötigt keine Vertragsgenehmigungen oder Berechtigungen. Sie zahlen auf die GasAccount-Adresse von Rabby ein, und Rabby sendet Gas an Ihre Adresse, wenn es benötigt wird. Von der Konstruktion her vollständig sicher.",
+        "desc1": "GasAccount ist eine neue Möglichkeit, Gasgebühren zu bezahlen. Anstatt native Tokens auf jeder Kette zu verwenden, können Sie ein Konto nutzen, um die Gasgebühren für all Ihre Adressen auf allen Ketten zu decken. Einfach, optional und niemals ohne Gas."
+      }
     },
     "safeMessageQueue": {
       "noData": "Keine Nachrichten",
@@ -2839,7 +2868,8 @@
       "riskTitle": "Whitelist-Adresse hinzufügen",
       "addSuccess": "Erfolgreich hinzugefügt",
       "nameYourAddress": "Benennen Sie Ihre Adresse",
-      "enterAddress": "Adresse eingeben"
+      "enterAddress": "Adresse eingeben",
+      "title": "Adresse zur Whitelist hinzufügen"
     },
     "perps": {
       "candleMenuKey": {
@@ -3010,6 +3040,60 @@
       },
       "isolated": "Isoliert",
       "cross": "Cross"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "addNow": "Jetzt hinzufügen",
+        "title": "Adresse zur Whitelist hinzufügen",
+        "desc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen - beim nächsten Mal ist keine Bestätigung erforderlich."
+      },
+      "whitelist": {
+        "removeFromWhitelist": "Von der Whitelist entfernen",
+        "addWhitelist": "Adresse zur Whitelist hinzufügen",
+        "title": "Whitelist",
+        "notWhitelist": "Nicht eine Whitelist-Adresse",
+        "addWhitelistDesc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen – beim nächsten Mal sind keine Bestätigungen erforderlich."
+      },
+      "addWhitelist": {
+        "title": "Adresse zur Whitelist hinzufügen",
+        "desc": "Fügen Sie vertrauenswürdige Adressen zur Whitelist hinzu für schnelle Überweisungen—keine Bestätigung erforderlich beim nächsten Mal"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Sie senden an eine Betrugsadresse",
+            "noSend": "Keine Überweisungen an diese Adresse in 180 Tagen",
+            "dexNoDeposite": "Sie senden an eine Nicht-Einzahlungsbörse-Adresse",
+            "contractAddress": "Sie senden an einen Vertrag, Gelder könnten verloren gehen."
+          }
+        },
+        "cexAddress": "{{cexName}} Adresse",
+        "TransferBefore": "Vorher übertragen",
+        "title": "An diese Adresse senden",
+        "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",
+        "AddToWhitelist": "Zur Whitelist hinzufügen",
+        "TransferBeforeValue": "Ja",
+        "cexDepositAddress": "{{cexName}} Einzahlung Adresse",
+        "passwordPlaceholder": "Passwort eingeben, um fortzufahren"
+      },
+      "tabs": {
+        "imported": "Importiert",
+        "whitelist": "Whitelisted"
+      },
+      "positiveTips": {
+        "yourOwnAddress": "Ihre eigene Adresse",
+        "sentBefore": "Zuletzt gesendet",
+        "whitelistAddress": "Whitelisted Adresse"
+      },
+      "typedTitle": {
+        "send": "Senden an"
+      },
+      "title": "Adresse",
+      "enterAddressOrENS": "Adresse eingeben oder suchen",
+      "selectImportedAddress": "Importierte Adresse auswählen",
+      "sendToImportedAddress": "An Adresse senden, die importiert wurde",
+      "enterAddress": "Adresse eingeben",
+      "selectExchangeSource": "Wählen Sie die Börsenquelle aus"
     }
   },
   "component": {
@@ -3201,7 +3285,9 @@
     "ChainItem": {
       "appChain": "Auf {{chain}} Konto"
     },
-    "RiskTip": {},
+    "RiskTip": {
+      "title": "Risiko erkannt"
+    },
     "DappActions": {
       "queueDescription": "Aktuelle Abhebungen gelangen in eine Warteschlange. Sobald sie bearbeitet sind, können sie in Ihr Wallet abgehoben werden."
     }

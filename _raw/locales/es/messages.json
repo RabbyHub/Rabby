@@ -708,7 +708,8 @@
         "addrValidator__empty": "Por favor ingresa la dirección",
         "addrValidator__invalid": "Esta dirección no es válida",
         "searchInputPlaceholder": "Ingresa la dirección o busca",
-        "title": "Para"
+        "title": "Para",
+        "placeholder": "Seleccionar Dirección"
       },
       "sendButton": "Enviar",
       "tokenInfoFieldLabel": {
@@ -750,7 +751,13 @@
       "noSupprotTokenForDex_short": "No soportado por este exchange",
       "noSupportTokenForChain_short": "Dirección del contrato no desplegada en esta cadena",
       "selectToken": "Seleccionar Token",
-      "noSupprotTokenForSafe_short": "La dirección segura no está desplegada en esta cadena"
+      "noSupprotTokenForSafe_short": "La dirección segura no está desplegada en esta cadena",
+      "accountSelectorModal": {
+        "title": "Seleccionar dirección"
+      },
+      "riskAlert": {
+        "checkboxText": "Entiendo los riesgos y quiero continuar."
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Reservados <1>0</1> {{ tokenName }} para costo de gas",
@@ -1113,7 +1120,10 @@
           "rabbyPoints": "Rabby Points",
           "mobile": "Mobile Sync",
           "perps": "Perps",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "dapps": "Dapps",
+          "searchDapp": "Buscar Dapp",
+          "setting": "Configuración"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -1431,7 +1441,9 @@
         },
         "customButtonText": "Agregar token personalizado",
         "noTestnetAssets": "Sin activos de red personalizados",
-        "addTokenEntryText": "Token"
+        "addTokenEntryText": "Token",
+        "price": "PRECIO",
+        "side": "LADO"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -2483,7 +2495,11 @@
         "title": "Depósito USDC / USDT",
         "desc": "Paga tarifas de gas en todas las cadenas",
         "gotIt": "Entendido",
-        "loginAndClaim": "Inicia sesión y reclama $2.00"
+        "loginAndClaim": "Inicia sesión y reclama $2.00",
+        "loginTips3": "cuando te quedas sin GasAccount",
+        "loginTips1": "Pagar tarifas de gas para",
+        "learnAbout": "Aprender más sobre GasAccount",
+        "loginTips2": "cualquier dirección en cualquier cadena"
       },
       "loginConfirmModal": {
         "title": "Iniciar sesión con la dirección actual",
@@ -2500,7 +2516,8 @@
         "title": "Depósito",
         "invalidAmount": "Debe ser menos de 500",
         "desc": "Haz un depósito en la cuenta L2 de DeBank de Rabby sin tarifas adicionales: retira en cualquier momento.",
-        "token": "Token"
+        "token": "Token",
+        "paymentAddr": "Dirección de pago"
       },
       "withdrawPopup": {
         "noEnoughValuetBalance": "Saldo de Vault insuficiente. Cambia de cadena o inténtalo de nuevo más tarde.",
@@ -2553,7 +2570,17 @@
       },
       "switchAccount": "Cambiar GasAccount",
       "withdrawDisabledIAP": "Los retiros están deshabilitados porque tu saldo incluye fondos fiduciarios, los cuales no pueden ser retirados. Contacta con el soporte para retirar el saldo de tus tokens.",
-      "gasToken": "Token de Gas"
+      "gasToken": "Token de Gas",
+      "about": {
+        "title1": "¿Qué es GasAccount?",
+        "title4": "¿Es seguro GasAccount?",
+        "title3": "¿GasAccount tiene tarifas adicionales?",
+        "desc4": "GasAccount no requiere aprobaciones ni permisos de contrato. Depositas en la dirección de GasAccount de Rabby, y Rabby envía gas a tu dirección cuando es necesario. Totalmente seguro por diseño.",
+        "desc3": "Rabby Wallet no cobra tarifas adicionales. Solo pagas el gas por tu transacción y una pequeña cantidad de gas por enviar ese gas de GasAccount a tu dirección.",
+        "desc2": "Agrega fondos a tu GasAccount y úsalo para cualquier transacción. Al firmar, elige pagar el gas con tokens nativos o GasAccount, cambia en cualquier momento.",
+        "desc1": "GasAccount es una nueva forma de pagar las tarifas de gas. En lugar de usar tokens nativos en cada cadena, puedes usar una cuenta para cubrir el gas de todas tus direcciones en todas las cadenas. Simple, opcional y nunca te quedarás sin gas.",
+        "title2": "Cómo usar Gas Account"
+      }
     },
     "safeMessageQueue": {
       "noData": "Sin mensajes",
@@ -2841,7 +2868,8 @@
       "name": "Nombre",
       "addSuccess": "Añadido con éxito",
       "exchangeAddress": "Dirección de intercambio",
-      "enterAddress": "Introducir dirección"
+      "enterAddress": "Introducir dirección",
+      "title": "Agregar dirección a la lista blanca"
     },
     "perps": {
       "candleMenuKey": {
@@ -3012,6 +3040,60 @@
       },
       "cross": "Cruz",
       "isolated": "Aislado"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "Agregar dirección a la lista blanca",
+        "addNow": "Agregar ahora",
+        "desc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas - no se necesita confirmación la próxima vez."
+      },
+      "whitelist": {
+        "title": "Lista blanca",
+        "removeFromWhitelist": "Eliminar de la lista blanca",
+        "addWhitelist": "Agregar dirección a la lista blanca",
+        "notWhitelist": "No es una dirección en la lista blanca",
+        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez."
+      },
+      "addWhitelist": {
+        "desc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez.",
+        "title": "Agregar dirección a la lista blanca"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Estás enviando a una dirección de estafa",
+            "noSend": "Sin transferencias a esta dirección en 180 días",
+            "contractAddress": "Estás enviando a un contrato, los fondos pueden perderse.",
+            "dexNoDeposite": "Estás enviando a una dirección de intercambio no de depósito"
+          }
+        },
+        "cexAddress": "{{cexName}} Dirección",
+        "understandRisks": "Entiendo los riesgos y quiero continuar.",
+        "passwordPlaceholder": "Introduzca la contraseña para continuar",
+        "title": "Enviar a esta dirección",
+        "AddToWhitelist": "Agregar a la lista blanca",
+        "TransferBefore": "Transferido antes",
+        "cexDepositAddress": "{{cexName}} Dirección de Depósito",
+        "TransferBeforeValue": "Sí"
+      },
+      "tabs": {
+        "whitelist": "Blanqueada",
+        "imported": "Importado"
+      },
+      "positiveTips": {
+        "yourOwnAddress": "Tu propia dirección",
+        "sentBefore": "Enviado recientemente",
+        "whitelistAddress": "Dirección en la lista blanca"
+      },
+      "typedTitle": {
+        "send": "Enviar a"
+      },
+      "selectExchangeSource": "Seleccionar fuente de intercambio",
+      "enterAddressOrENS": "Ingresa o busca la dirección",
+      "title": "Dirección",
+      "enterAddress": "Ingrese la dirección",
+      "selectImportedAddress": "Seleccionar dirección importada",
+      "sendToImportedAddress": "Enviar a dirección importada"
     }
   },
   "component": {
@@ -3203,7 +3285,9 @@
     "ChainItem": {
       "appChain": "En la cuenta de {{chain}}"
     },
-    "RiskTip": {},
+    "RiskTip": {
+      "title": "Riesgo Detectado"
+    },
     "DappActions": {
       "queueDescription": "La retirada actual entrará en una cola de espera. Una vez procesada, se podrá retirar a su wallet."
     }
