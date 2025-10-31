@@ -340,7 +340,7 @@ const SelectToAddress = () => {
                     'flex flex-row items-center justify-center',
                     focusTab === 'whitelist'
                       ? 'text-r-neutral-title1 font-bold'
-                      : 'text-r-neutral-title1'
+                      : 'text-r-neutral-foot'
                   )}
                 >
                   <RcWhitelistGuardCC
@@ -373,7 +373,7 @@ const SelectToAddress = () => {
                   className={clsx(
                     focusTab === 'imported'
                       ? 'text-r-neutral-title1 font-bold'
-                      : 'text-r-neutral-title1'
+                      : 'text-r-neutral-foot'
                   )}
                 >
                   {t('page.selectToAddress.tabs.imported')}
