@@ -47,6 +47,7 @@ export type SignerConfig = {
   onRedirectToDeposit?: () => void;
   originGasPrice?: string; // for speed up / cancel
   checkGasFeeTooHigh?: boolean; //default false
+  ignoreGasFeeTooHigh?: boolean;
   enableSecurityEngine?: boolean;
   updateMiniGasStore?: (params: {
     gasLevel: 'normal' | 'slow' | 'fast' | 'custom';
@@ -54,13 +55,16 @@ export type SignerConfig = {
     customGasPrice?: number;
     fixed?: boolean;
   }) => void;
+  showCheck?: boolean;
+  synGasHeaderInfo?: boolean;
+  autoUseGasFree?: boolean;
 };
 
 export type PreparedContext = {
   chainId: number;
   is1559: boolean;
   gasList: GasLevel[];
-  selectedGas: GasLevel;
+  selectedGas: GasLevel | null;
   txsCalc: CalcItem[];
   nativeTokenPrice?: number;
   nativeTokenBalance: string;

@@ -53,6 +53,7 @@ import type {
   SignerConfig,
 } from '@/ui/component/MiniSignV2/domain/types';
 import { isLedgerLockError } from '@/ui/utils/ledger';
+import { t } from 'i18next';
 
 async function recomputeExplainForCalcItems(params: {
   wallet: WalletControllerType;
@@ -694,8 +695,18 @@ export class SignatureSteps {
     selectedGas: GasLevel | null;
     options: SendOptions;
     onSendedTx: (prams: { hash: string; idx: number }) => void;
+    account: Account;
     retry?: boolean;
-  }): Promise<{ txHash: string }[] | { errorText?: string }> {
+  }): Promise<
+    | { txHash: string }[]
+    | {
+        error?: {
+          status: 'REJECTED' | 'FAILED';
+          content: string;
+          description: string;
+        };
+      }
+  > {
     const {
       wallet,
       chainServerId,
@@ -703,6 +714,7 @@ export class SignatureSteps {
       options,
       onSendedTx,
       retry: isRetry,
+      account,
     } = params;
     let i = 0;
 
@@ -777,6 +789,7 @@ export class SignatureSteps {
           session: options?.session,
           sig,
           preExecResult: txsCalc[i]?.preExecResult,
+          account,
         });
         onSendedTx?.({ hash: result.txHash, idx: i });
         txHashes.push({ ...result });
@@ -808,9 +821,21 @@ export class SignatureSteps {
           );
         }
 
-        return { errorText: msg };
+        // return { errorText: msg };
       }
-      return { errorText: '' };
+      // return { errorText: '' };
+      const _status = e.name === 'UserRejected' ? 'REJECTED' : 'FAILED';
+
+      return {
+        error: {
+          status: _status,
+          content:
+            _status === 'REJECTED'
+              ? t('page.signFooterBar.ledger.txRejected')
+              : t('page.signFooterBar.qrcode.txFailed'),
+          description: msg,
+        },
+      };
     }
   }
 
@@ -969,35 +994,35 @@ export class SignatureSteps {
     | {
         txHash: string;
       }[]
-    | { errorText?: string }
+    | {
+        error?: {
+          status: 'REJECTED' | 'FAILED';
+          content: string;
+          description: string;
+        };
+      }
   > {
     const { wallet, chainServerId, ctx, config, onSendedTx, retry } = params;
     const { txs, txsCalc, selectedGas, gasMethod, useGasless } = ctx;
-    try {
-      const res = await SignatureSteps.sendBatch({
-        wallet,
-        chainServerId,
-        txsCalc: txsCalc,
-        selectedGas: selectedGas!,
-        options: {
-          isGasLess: !!useGasless,
-          isGasAccount: gasMethod === 'gasAccount',
-          ga: config?.ga,
-          session: config?.session,
-          pushType: normalizeTxParams(txs[0])?.swapPreferMEVGuarded
-            ? 'mev'
-            : 'default',
-        },
-        onSendedTx,
-        retry,
-      });
-      if ('errorText' in res)
-        return {
-          errorText: res.errorText,
-        };
-      return res;
-    } catch (e) {
-      return { errorText: (e as any)?.message || 'unknown error' };
-    }
+    const res = await SignatureSteps.sendBatch({
+      wallet,
+      chainServerId,
+      txsCalc: txsCalc,
+      selectedGas: selectedGas!,
+      options: {
+        isGasLess: !!useGasless,
+        isGasAccount: gasMethod === 'gasAccount',
+        ga: config?.ga,
+        session: config?.session,
+        pushType: normalizeTxParams(txs[0])?.swapPreferMEVGuarded
+          ? 'mev'
+          : 'default',
+      },
+      onSendedTx,
+      retry,
+      account: config.account,
+    });
+
+    return res;
   }
 }
