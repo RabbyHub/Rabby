@@ -311,11 +311,11 @@ export const BalanceView = ({
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('w-full')}>
       <div
-        className="w-full cursor-pointer rounded-[8px] bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]"
+        className="min-h-[132px] w-full cursor-pointer rounded-[8px] bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]"
         onClick={onClickViewAssets}
       >
         <div
-          className={clsx('group w-full flex items-end px-[12px] pt-[12px]')}
+          className={clsx('group w-full flex items-end px-[12px] pt-[10px]')}
         >
           <div
             className={clsx(
@@ -335,7 +335,7 @@ export const BalanceView = ({
             )}
           </div>
           <div
-            className="flex flex-end items-center gap-[8px] mb-[4px] ml-[4px] min-h-[20px] cursor-pointer"
+            className="flex flex-end items-center gap-[8px] mb-[7px] ml-[8px] min-h-[20px] cursor-pointer"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -381,7 +381,6 @@ export const BalanceView = ({
               <UpdateSVG />
             </div>
           </div>
-          <RcIconArrowRightCC className="ml-auto text-r-neutral-title2 mb-[11px] opacity-50" />
         </div>
         <div
           onMouseMove={onMouseMove}
@@ -399,7 +398,7 @@ export const BalanceView = ({
             )}
           /> */}
           {!shouldShowLoading && (
-            <div className={clsx('mx-[12px] pointer-events-none')}>
+            <div className={clsx('px-[12px] pointer-events-none')}>
               {!loadBalanceSuccess ? (
                 <div className="flex items-center gap-[4px]">
                   <SvgIconOffline
@@ -413,7 +412,7 @@ export const BalanceView = ({
               ) : chainBalancesWithValue.length > 0 ? (
                 <div
                   className={clsx(
-                    'flex space-x-4',
+                    'w-full flex items-center gap-[4px]',
                     !currentHover && 'opacity-80'
                   )}
                 >
@@ -421,6 +420,10 @@ export const BalanceView = ({
                     isGnosis={isGnosis}
                     matteredChainBalances={chainBalancesWithValue.slice(0)}
                     gnosisNetworks={gnosisNetworks}
+                  />
+                  <RcIconArrowRightCC
+                    viewBox="0 0 14 14"
+                    className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50"
                   />
                 </div>
               ) : (
@@ -435,7 +438,7 @@ export const BalanceView = ({
               )}
             </div>
           )}
-          <div className={clsx('h-[56px] w-full relative')}>
+          <div className={clsx('h-[66px] w-full relative')}>
             {!!shouldRenderCurve && !!curveChartData && (
               <CurveThumbnail
                 isHover={currentHover}
@@ -448,7 +451,7 @@ export const BalanceView = ({
               <div className="flex">
                 <Skeleton.Input
                   active
-                  className="mx-auto mt-[4px] w-[344px] h-[40px] rounded block"
+                  className="mx-auto mt-[4px] w-[344px] h-[66px] rounded block"
                 />
               </div>
             )}
