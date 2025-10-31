@@ -730,7 +730,7 @@ export const GasAccountDepositPopup = (props: GasAccountDepositPopupProps) => {
     <DirectSubmitProvider>
       <Popup
         placement="bottom"
-        height={480}
+        height={500}
         isSupportDarkMode
         isNew
         bodyStyle={{
