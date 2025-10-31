@@ -55,13 +55,13 @@ const Container = styled.div`
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5px;
+  gap: 1px;
 
   height: 264px;
   overflow: auto;
 
   border-radius: 8px;
-  background-color: var(--r-neutral-line, #e0e5ec);
+  background-color: var(--r-neutral-card2, #f2f4f7);
 
   .panel-item {
     height: 88px;
@@ -471,7 +471,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           const item = panelItems[panelKey] as IPanelItem;
           if (item.hideForGnosis && isGnosis) return <></>;
           return (
-            <div key={panelKey}>
+            <div key={panelKey} className="bg-r-neutral-bg-2">
               {item.disabled ? (
                 <Tooltip
                   {...(item.commingSoonBadge && { visible: false })}

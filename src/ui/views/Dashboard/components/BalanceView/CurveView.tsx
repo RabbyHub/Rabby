@@ -67,7 +67,7 @@ export const CurveThumbnail = ({
     return `var(--color-curve-${data?.isLoss ? 'red' : 'green'})`;
   }, [data]);
   const divRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(65);
+  const [height, setHeight] = useState(56);
   const [showTips, setShowTips] = useState(false);
   const mousePositionRef = useRef({ x: 0, y: 0 });
   const mouseMoveTimeoutRef = useRef<NodeJS.Timeout | null>(null);

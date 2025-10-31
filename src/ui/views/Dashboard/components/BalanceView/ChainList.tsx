@@ -16,7 +16,7 @@ export const ChainList: React.FC<{
       return (
         <img
           src={gnosisNetwork.whiteLogo || gnosisNetwork.logo}
-          className="w-[16px] h-[16px]"
+          className="w-[14px] h-[14px]"
         />
       );
     } else {
@@ -27,7 +27,7 @@ export const ChainList: React.FC<{
               <img
                 key={gnosisNetwork.id}
                 src={gnosisNetwork.whiteLogo || gnosisNetwork.logo}
-                className="w-[16px] h-[16px]"
+                className="w-[14px] h-[14px]"
               />
             );
           })}
@@ -40,7 +40,7 @@ export const ChainList: React.FC<{
     .map((item) => (
       <img
         src={item.whiteLogo || item.logo_url}
-        className="w-[16px] h-[16px]"
+        className="w-[14px] h-[14px]"
         key={item.id}
         alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
         title={`${item.name}: $${item.usd_value.toFixed(2)}`}
