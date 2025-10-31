@@ -86,11 +86,8 @@ export default function BottomArea({
       <div className="btn-wrapper w-[100%] px-[0] flex justify-center">
         {canUseDirectSubmitTx && currentAccount?.type ? (
           <DirectSignToConfirmBtn
-            buttonClassName="text-[16px]"
             title={t('page.sendToken.sendButton')}
-            onConfirm={() => {
-              onConfirm?.();
-            }}
+            onConfirm={() => onConfirm?.()}
             disabled={!canSubmit}
             accountType={currentAccount?.type}
             loading={miniSignLoading}
@@ -101,10 +98,10 @@ export default function BottomArea({
             type="primary"
             htmlType="submit"
             size="large"
-            className={clsx('w-[100%] h-[48px] text-[16px] rounded-[8px]')}
+            className="w-[100%] h-[48px] text-[16px]"
             loading={isSubmitLoading}
           >
-            {t('page.sendToken.sendButton')}
+            {t('page.sendNFT.sendButton')}
           </Button>
         )}
       </div>

@@ -114,11 +114,6 @@ const SelectToAddress = () => {
       .map((w) => padWatchAccount(w));
   }, [importedWhitelistAccounts, whitelist]);
 
-  const nftItem = useMemo(() => {
-    const query = new URLSearchParams(search);
-    return query.get('nftItem') || null;
-  }, [search]);
-
   const fetchData = async () => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
     dispatch.whitelist.getWhitelistEnabled();
@@ -132,6 +127,11 @@ const SelectToAddress = () => {
     // }
     history.goBack();
   }, [/* inputingAddress,  */ history]);
+
+  const nftItem = useMemo(() => {
+    const query = new URLSearchParams(search);
+    return query.get('nftItem') || null;
+  }, [search]);
 
   const handleGotoSend = (address: string, type?: string) => {
     if (nftItem) {
@@ -164,17 +164,9 @@ const SelectToAddress = () => {
     if (!isValidAddress(address)) {
       return;
     }
-    const inWhitelist = whitelist.some((item) => isSameAddress(address, item));
     forceUpdateUnimportedBalances(address);
 
     handleGotoSend(address, type);
-    // if (inWhitelist) {
-    //   handleGotoSend(address, type);
-    // } else {
-    //   setSelectedAddress(address);
-    //   setSelectedAddressType(type || '');
-    //   setShowAddressRiskAlert(true);
-    // }
   };
 
   const forceUpdateUnimportedBalances = useCallback(
@@ -319,7 +311,7 @@ const SelectToAddress = () => {
               `}
               onClick={() => setInputingAddress(true)}
             >
-              {t('page.selectToAddress.enterAddressOrENS')}
+              {t('page.selectToAddress.enterAddress')}
             </OuterInput>
           )}
         </AnimatedInputWrapper>
@@ -334,12 +326,13 @@ const SelectToAddress = () => {
           >
             <Tabs.TabPane
               key="whitelist"
+              // forceRender
               tab={
                 <div
                   className={clsx(
                     'flex flex-row items-center justify-center',
                     focusTab === 'whitelist'
-                      ? 'text-r-blue-default font-bold'
+                      ? 'text-r-neutral-title1 font-bold'
                       : 'text-r-neutral-title1'
                   )}
                 >
@@ -349,10 +342,10 @@ const SelectToAddress = () => {
                     className={clsx(
                       'mr-[4px]',
                       focusTab === 'whitelist'
-                        ? 'text-r-blue-default'
+                        ? 'text-r-green-default'
                         : isDarkTheme
-                        ? 'opacity-0'
-                        : 'text-r-neutral-bg1'
+                        ? 'text-r-neutral-foot'
+                        : 'text-r-neutral-foot'
                     )}
                   />
                   {t('page.selectToAddress.tabs.whitelist')}
@@ -367,11 +360,12 @@ const SelectToAddress = () => {
 
             <Tabs.TabPane
               key="imported"
+              // forceRender
               tab={
                 <span
                   className={clsx(
                     focusTab === 'imported'
-                      ? 'text-r-blue-default font-bold'
+                      ? 'text-r-neutral-title1 font-bold'
                       : 'text-r-neutral-title1'
                   )}
                 >

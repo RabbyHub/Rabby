@@ -11,7 +11,6 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { getUiType, isSameAddress, useAlias } from '@/ui/utils';
 import { Tooltip } from 'antd';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import MarkedHeadTailAddress from '@/ui/component/AddressViewer/MarkedHeadTailAddress';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 import { ReactComponent as RcAvatarCC } from '@/ui/views/SendToken/icons/avatar-cc.svg';
@@ -21,7 +20,6 @@ import { ReactComponent as RcCheckRight } from '@/ui/assets/send-token/check-rig
 
 import { ReactComponent as RcIconAddressEntry } from '@/ui/views/SendToken/icons/address-entry.svg';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS } from '@/constant';
-import { RiskType, useAddressRisks } from '@/ui/hooks/useAddressRisk';
 import { AddressViewer } from '@/ui/component';
 import { useRecentSendToHistoryFor } from '@/ui/component/SendLike/hooks/useRecentSend';
 
@@ -29,6 +27,7 @@ const isTab = getUiType().isTab;
 
 export function AddressInfoTo({
   toAccount,
+  titleText,
   loadingToAddressDesc,
   isMyImported,
   cexInfo,
@@ -37,7 +36,8 @@ export function AddressInfoTo({
 }: {
   className?: string;
   toAccount?: Account;
-  loadingToAddressDesc: boolean;
+  titleText?: string;
+  loadingToAddressDesc?: boolean;
   isMyImported: boolean | undefined;
   cexInfo?: Cex;
   onClick?: () => void;
@@ -112,7 +112,7 @@ export function AddressInfoTo({
       <div className="section relative">
         <div className="section-title justify-between items-center flex">
           <span className="section-title__to font-medium">
-            {t('page.sendToken.sectionTo.title')}
+            {titleText || t('page.sendToken.sectionTo.title')}
           </span>
 
           {hasPositiveTips && (
