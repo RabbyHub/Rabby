@@ -752,7 +752,6 @@ export const useBridge = () => {
             if (active) {
               switchToChain(toChain.enum);
               setToToken(token);
-              console.log('setTo', toChain.enum, token);
             }
           });
       }

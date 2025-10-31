@@ -28,16 +28,16 @@ export const BalanceLabel: React.FC<Props> = ({ balance }) => {
       onClick={handleClick}
     >
       {hiddenBalance ? (
-        <span
+        <div
           className={clsx(
-            'font-bold text-[32px] tracking-[16px]',
+            'font-bold text-[30px] leading-[36px] tracking-[16px]',
             'mr-[-16px] ml-4'
           )}
         >
           *****
-        </span>
+        </div>
       ) : (
-        <span>${splitBalance}</span>
+        <div>${splitBalance}</div>
       )}
     </div>
   );

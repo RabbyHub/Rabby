@@ -10,16 +10,24 @@ import { INTERNAL_REQUEST_SESSION, INTERNAL_REQUEST_ORIGIN } from '@/constant';
 
 import type { ExplainTxResponse, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import type { SecurityResult } from '../domain';
+import { Account } from '@/background/service/preference';
 
 export const MiniSecurityHeader: React.FC<{
   engineResults?: SecurityResult;
   tx: Tx;
   txDetail: ExplainTxResponse;
   session?: typeof INTERNAL_REQUEST_SESSION;
-}> = ({ engineResults, tx, txDetail, session = INTERNAL_REQUEST_SESSION }) => {
-  const account = useCurrentAccount();
-
-  if (!account || !engineResults) return null;
+  account: Account;
+  isReady: boolean;
+}> = ({
+  engineResults,
+  tx,
+  txDetail,
+  session = INTERNAL_REQUEST_SESSION,
+  account,
+  isReady,
+}) => {
+  if (!account) return null;
 
   const {
     parsedTransactionActionData,
@@ -28,7 +36,7 @@ export const MiniSecurityHeader: React.FC<{
     actionRequireDataList,
     engineResultList,
     engineResult,
-  } = engineResults;
+  } = engineResults || {};
 
   const chain = findChainByID(tx.chainId)!;
   const { isSpeedUp } = normalizeTxParams(tx);
@@ -36,7 +44,7 @@ export const MiniSecurityHeader: React.FC<{
   return (
     <TxTypeComponent
       account={account}
-      isReady={true}
+      isReady={isReady}
       actionData={parsedTransactionActionData || {}}
       actionRequireData={actionRequireData || {}}
       chain={chain}
@@ -45,7 +53,7 @@ export const MiniSecurityHeader: React.FC<{
       onChange={noop}
       isSpeedUp={isSpeedUp}
       engineResults={engineResult || engineResultList?.[0] || []}
-      origin={INTERNAL_REQUEST_ORIGIN}
+      origin={session.origin}
       originLogo={session.icon}
       multiAction={
         engineResultList

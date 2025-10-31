@@ -118,7 +118,7 @@ export const sendTransaction = async ({
   ignoreGasNotEnoughCheck,
   onUseGasAccount,
   ga,
-  sig,
+  sig: _sig,
   ignoreSimulationFailed,
   extra,
   session,
@@ -146,6 +146,7 @@ export const sendTransaction = async ({
   };
   session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
 }) => {
+  let sig = _sig;
   onProgress?.('building');
   const chain = findChain({
     serverId: chainServerId,
@@ -311,6 +312,15 @@ export const sendTransaction = async ({
     failedCode = FailedCode.SimulationFailed;
   } else if (isGasNotEnough) {
     const gasAccount = await wallet.getGasAccountSig();
+    console.log(
+      'gasAccount sig',
+      gasAccount,
+      gasAccount?.sig,
+      gasAccount?.accountId
+    );
+    if (sig !== gasAccount?.sig) {
+      sig = gasAccount?.sig;
+    }
     //  native gas not enough check gasAccount
     if (autoUseGasAccount && gasAccount?.sig && gasAccount?.accountId) {
       const gasAccountCanPay = await checkEnoughUseGasAccount({
