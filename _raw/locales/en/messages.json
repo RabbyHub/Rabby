@@ -3052,7 +3052,7 @@
       "whitelist": {
         "title": "Whitelist",
         "addWhitelistDesc": "Add trusted addresses to whitelist for fast transfers---no confirmation needed next time",
-        "addWhitelist": "Add New whitelist Address",
+        "addWhitelist": "Add address to whitelist",
         "removeFromWhitelist": "Remove from whitelist",
         "notWhitelist": "Not a whitelist Address"
       },

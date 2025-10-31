@@ -591,7 +591,7 @@ const SendNFT = () => {
                   query.set('type', 'send-nft');
                   query.set('rbisource', 'nftdetail');
 
-                  history.push(`/select-to-address?${query.toString()}`);
+                  history.replace(`/select-to-address?${query.toString()}`);
                 }}
               />
               <div className={clsx('section')}>

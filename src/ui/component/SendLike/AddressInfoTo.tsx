@@ -22,6 +22,7 @@ import { ReactComponent as RcIconAddressEntry } from '@/ui/views/SendToken/icons
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS } from '@/constant';
 import { AddressViewer } from '@/ui/component';
 import { useRecentSendToHistoryFor } from '@/ui/component/SendLike/hooks/useRecentSend';
+import MarkedHeadTailAddress from '../AddressViewer/MarkedHeadTailAddress';
 
 const isTab = getUiType().isTab;
 
@@ -53,7 +54,7 @@ export function AddressInfoTo({
     forceLight: false,
   });
 
-  const aliasName = useAlias(toAccount?.address || '');
+  const [aliasName] = useAlias(toAccount?.address || '');
 
   const rDispatch = useRabbyDispatch();
   const { whitelist } = useRabbySelector((s) => ({
@@ -186,7 +187,6 @@ export function AddressInfoTo({
                     overlayClassName="address-tooltip address-tooltip-transparent rounded-tooltip"
                     title={
                       <div className="flex flex-col justify-center">
-                        {/* <MarkedHeadTailAddress address={toAccount?.address} /> */}
                         {showBorderdDesc && (
                           <div
                             className={clsx(
@@ -206,15 +206,24 @@ export function AddressInfoTo({
                     })}
                   >
                     <div className="flex flex-col justify-center items-start">
-                      <span className="text-[16px] font-[600] leading-[20px] text-r-neutral-title-1">
-                        {aliasName || ellipsisAddress(toAccount?.address || '')}
-                      </span>
+                      {aliasName ? (
+                        <span className="text-[14px] mb-[4px] font-[600] leading-[20px] text-r-neutral-title-1">
+                          {aliasName}
+                        </span>
+                      ) : (
+                        <MarkedHeadTailAddress
+                          headCount={8}
+                          tailCount={4}
+                          address={toAccount?.address || ''}
+                          className="text-[14px] mb-[4px]"
+                        />
+                      )}
                       <AddressViewer
                         address={toAccount?.address?.toLowerCase()}
                         showArrow={false}
                         longEllipsis
                         className={clsx(
-                          'text-[13px] text-r-neutral-body leading-[16px] mt-[4px]'
+                          'text-[13px] text-r-neutral-body leading-[16px]'
                         )}
                       />
                     </div>

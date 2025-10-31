@@ -8,31 +8,39 @@ const AddressText = styled.span`
 `;
 
 export default function MarkedHeadTailAddress({
+  headCount = 8,
+  tailCount = 6,
   address,
   className,
+  dotsMiddle = true,
 }: {
+  headCount?: number;
+  tailCount?: number;
   address?: string;
   className?: string;
+  dotsMiddle?: boolean;
 }) {
   const addressSplit = useMemo(() => {
     if (!address) {
       return [];
     }
-    const prefix = address.slice(0, 8);
-    const middle = address.slice(8, -6);
-    const suffix = address.slice(-6);
+    const prefix = address.slice(0, headCount);
+    const middle = address.slice(headCount, -tailCount);
+    const suffix = address.slice(-tailCount);
 
     return [prefix, middle, suffix];
-  }, [address]);
+  }, [address, headCount, tailCount]);
 
   if (!address) return null;
 
   return (
-    <span
-      className={clsx('text-[16px] inline-block w-full text-center', className)}
-    >
+    <span className={clsx('inline-block text-center', className)}>
       <AddressText>{addressSplit[0]}</AddressText>
-      <span className="text-r-neutral-foot">{addressSplit[1]}</span>
+      {dotsMiddle ? (
+        <span className="text-r-neutral-foot">...</span>
+      ) : (
+        <span className="text-r-neutral-foot">{addressSplit[1]}</span>
+      )}
       <AddressText>{addressSplit[2]}</AddressText>
     </span>
   );

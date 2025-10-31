@@ -120,14 +120,6 @@ const SelectToAddress = () => {
     dispatch.whitelist.getWhitelist();
   };
 
-  const handleClickBack = useCallback(() => {
-    // if (inputingAddress) {
-    //   setInputingAddress(false);
-    //   return;
-    // }
-    history.goBack();
-  }, [/* inputingAddress,  */ history]);
-
   const nftItem = useMemo(() => {
     const query = new URLSearchParams(search);
     return query.get('nftItem') || null;
@@ -152,13 +144,28 @@ const SelectToAddress = () => {
     history.replace(`/send-token?${query.toString()}`);
   };
 
-  const handleGotoSendNFT = (address: string) => {
-    const query = new URLSearchParams(history.location.search);
-    query.set('to', address);
-    query.set('nftItem', nftItem || '');
-    // avoid again jump send nft when tx done nft amount error
-    history.replace(`/send-nft?${query.toString()}`);
-  };
+  const handleGotoSendNFT = useCallback(
+    (address: string) => {
+      const query = new URLSearchParams(history.location.search);
+      query.set('to', address);
+      query.set('nftItem', nftItem || '');
+      // avoid again jump send nft when tx done nft amount error
+      history.replace(`/send-nft?${query.toString()}`);
+    },
+    [history, nftItem]
+  );
+
+  const handleClickBack = useCallback(() => {
+    // if (inputingAddress) {
+    //   setInputingAddress(false);
+    //   return;
+    // }
+    if (!nftItem) {
+      history.goBack();
+    } else {
+      handleGotoSendNFT('');
+    }
+  }, [/* inputingAddress,  */ history, handleGotoSendNFT]);
 
   const handleChange = (address: string, type?: string) => {
     if (!isValidAddress(address)) {
