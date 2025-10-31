@@ -479,7 +479,7 @@ const SendToken = () => {
     (hasRiskForToAddress && agreeRequiredChecks.forToAddress) ||
     (hasRiskForToken && agreeRequiredChecks.forToken);
 
-  const canLoadGasFee =
+  const canSubmitBasic =
     isValidAddress(form.getFieldValue('to')) &&
     !!currentToken &&
     !balanceError &&
@@ -487,7 +487,7 @@ const SendToken = () => {
     !isLoading;
 
   const canSubmit =
-    canLoadGasFee &&
+    canSubmitBasic &&
     !loadingRisks &&
     (!hasRiskForToAddress || agreeRequiredChecked) &&
     (!hasRiskForToken || agreeRequiredChecked);
@@ -593,12 +593,12 @@ const SendToken = () => {
       }
     }
     return (
-      canLoadGasFee &&
+      canSubmitBasic &&
       supportedDirectSign(currentAccount?.type || '') &&
       !chainItem?.isTestnet &&
       !sendToOtherChainContract
     );
-  }, [canLoadGasFee, chainItem?.isTestnet, currentAccount?.type]);
+  }, [canSubmitBasic, chainItem?.isTestnet, currentAccount?.type]);
 
   const { runAsync: handleSubmit, loading: isSubmitLoading } = useRequest(
     async ({
@@ -767,7 +767,7 @@ const SendToken = () => {
     let isCurrent = true;
     const setMiniTx = async () => {
       if (
-        canLoadGasFee &&
+        canSubmitBasic &&
         canUseDirectSubmitTx &&
         amount &&
         address &&
@@ -879,7 +879,7 @@ const SendToken = () => {
     refreshId,
     reserveGasOpen,
     isEstimatingGas,
-    canLoadGasFee,
+    canSubmitBasic,
     canUseDirectSubmitTx,
     currentToken?.chain,
     getParams,
@@ -1793,7 +1793,7 @@ const SendToken = () => {
                 setOpen={setGasFeeOpen}
               />
             ) : null}
-            {!canSubmit && (
+            {!canSubmitBasic && (
               <div className="mt-20">
                 <PendingTxItem
                   onFulfilled={handleFulfilled}
