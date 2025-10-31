@@ -1097,6 +1097,22 @@ const SendToken = () => {
     ]
   );
 
+  useEffect(() => {
+    if (currentAccount?.address) {
+      form.setFieldsValue({ amount: '' });
+      handleFormValuesChange(
+        { amount: '' },
+        {
+          ...form.getFieldsValue(),
+          amount: '',
+        },
+        {
+          updateSliderValue: true,
+        }
+      );
+    }
+  }, [currentAccount?.address]);
+
   const estimateGasOnChain = useCallback(
     async (input?: {
       chainItem?: Chain | null;
@@ -1830,6 +1846,10 @@ const SendToken = () => {
                         newAmountBigNum = newAmountBigNum.minus(
                           new BigNumber(chainTokenGasFees.maybeL1Fee).div(1e18)
                         );
+                      }
+
+                      if (newAmountBigNum.lt(0)) {
+                        newAmountBigNum = new BigNumber(0);
                       }
 
                       const newAmount =
