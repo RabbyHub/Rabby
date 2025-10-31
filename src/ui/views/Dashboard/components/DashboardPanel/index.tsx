@@ -467,7 +467,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <div className="relative group px-[16px] py-[16px] pb-[12px]">
+    <div className="relative group px-[16px] pt-[14px] pb-[12px]">
       <Container
         ref={ref}
         style={
@@ -557,13 +557,14 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         })}
       </Container>
       <div className="absolute right-[8px] top-[50%] translate-y-[-50%] hidden group-hover:block">
-        <div className="w-[2px] h-[80px] bg-r-blue-light2 rounded-full relative">
+        <div className="w-[3px] h-[80px] rounded-full relative">
           <div
-            className="w-[2px] h-[50px] bg-r-blue-default rounded-full"
+            className="w-[3px] h-[50px] bg-r-blue-default rounded-full relative z-10"
             style={{
               transform: `translateY(${scrollRatio * 30}px)`,
             }}
           ></div>
+          <div className="rounded-full absolute top-0 left-0 right-0 bottom-0 bg-r-blue-disable opacity-50"></div>
         </div>
       </div>
       <ChainSelectorModal
