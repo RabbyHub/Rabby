@@ -790,13 +790,13 @@ const SettingsInner = ({ visible, onClose }: SettingsProps) => {
             openInternalPageInTab('sync');
           },
         },
-        {
-          leftIcon: RcIconPoints,
-          content: t('page.dashboard.settings.features.rabbyPoints'),
-          onClick: () => {
-            history.push('/rabby-points');
-          },
-        },
+        // {
+        //   leftIcon: RcIconPoints,
+        //   content: t('page.dashboard.settings.features.rabbyPoints'),
+        //   onClick: () => {
+        //     history.push('/rabby-points');
+        //   },
+        // },
         {
           leftIcon: RcIconSettingsSearchDapps,
           content: t('page.dashboard.settings.features.searchDapps'),
