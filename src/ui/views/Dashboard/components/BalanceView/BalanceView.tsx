@@ -345,7 +345,7 @@ export const BalanceView = ({
             <div
               className={clsx(
                 currentIsLoss ? 'text-r-red-default' : 'text-r-green-default',
-                'text-[15px] leading-[18px] font-medium',
+                'text-[15px] leading-[18px] font-medium truncate',
                 {
                   hidden: shouldHidePercentChange,
                 }
