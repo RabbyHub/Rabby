@@ -90,8 +90,8 @@ export function AddressInfoTo({
       ? BRAND_ALIAN_TYPE_TEXT[toAccount?.type]
       : '';
 
-    ret.showBorderdDesc =
-      ret.showCexInfo || toAccount?.type === KEYRING_CLASS.GNOSIS;
+    // ret.showBorderdDesc = ret.showCexInfo || toAccount?.type === KEYRING_CLASS.GNOSIS;
+    ret.showBorderdDesc = false;
 
     return ret;
   }, [cexInfo, toAccount?.type]);
