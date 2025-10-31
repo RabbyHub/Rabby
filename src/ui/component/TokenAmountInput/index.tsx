@@ -268,7 +268,10 @@ const TokenAmountInput = ({
 
   return (
     <div className={clsx('token-amount-input', className)}>
-      <div className="right relative flex flex-col justify-between pt-[5px] overflow-hidden">
+      <div
+        className="right relative flex flex-col justify-between pt-[5px] overflow-hidden"
+        style={{ paddingRight: 32 }}
+      >
         <StyledInput
           ref={tokenInputRef}
           placeholder="0"

@@ -1641,10 +1641,10 @@ const SendToken = () => {
           currentToken: nativeToken || currentToken,
         });
       } else {
-        const lastTimeSentToken = !currentAccount?.address
-          ? null
-          : await wallet.getLastTimeSendToken(currentAccount?.address);
-        let needLoadToken: TokenItem | null = lastTimeSentToken || currentToken;
+        // const lastTimeSentToken = !currentAccount?.address
+        //   ? null
+        //   : await wallet.getLastTimeSendToken(currentAccount?.address);
+        let needLoadToken: TokenItem | null = /* lastTimeSentToken ||  */ currentToken;
 
         if (await wallet.hasPageStateCache()) {
           const cache = await wallet.getPageStateCache();
@@ -1830,7 +1830,7 @@ const SendToken = () => {
                   {t('page.sendToken.sectionBalance.title')}
                 </div>
 
-                <div className="token-balance-slider flex pl-[2px] w-[152px] pr-[8px] justify-between items-center">
+                <div className="token-balance-slider flex pl-[2px] w-[192px] pr-[8px] justify-between items-center">
                   <SendSlider
                     min={0}
                     max={100}
@@ -1887,7 +1887,7 @@ const SendToken = () => {
 
                       onSliderValueChangeTo100(value);
                     }}
-                    className="w-[112px] max-w-[100%]"
+                    className="w-[160px] max-w-[100%]"
                   />
                   <div className="ml-[8px] w-[42px] text-right text-[13px] text-r-blue-default">
                     {sliderPercentValue}%
