@@ -686,13 +686,15 @@ const SendToken = () => {
       amount,
       forceSignPage,
     }: FormSendToken & { forceSignPage?: boolean }) => {
-      if (!currentToken) {
+      if (!currentToken || !currentAccount?.address) {
         return;
       }
       const params = getParams({
         to: toAddress,
         amount,
       });
+      await wallet.setLastTimeSendToken(currentAccount?.address, currentToken);
+
       let shouldForceSignPage = !!forceSignPage;
 
       if (canUseDirectSubmitTx && !shouldForceSignPage) {
@@ -779,7 +781,7 @@ const SendToken = () => {
       }
       try {
         await wallet.setLastTimeSendToken(
-          currentAccount!.address,
+          currentAccount?.address,
           currentToken
         );
         await persistPageStateCache();
@@ -1615,7 +1617,9 @@ const SendToken = () => {
           currentToken: nativeToken || currentToken,
         });
       } else {
-        let needLoadToken: TokenItem | null = currentToken;
+        let needLoadToken: TokenItem | null = currentAccount?.address
+          ? await wallet.getLastTimeSendToken(currentAccount.address)
+          : currentToken;
 
         if (await wallet.hasPageStateCache()) {
           const cache = await wallet.getPageStateCache();
@@ -1927,8 +1931,8 @@ const SendToken = () => {
             canSubmit={canSubmit}
             miniSignLoading={miniSignLoading}
             canUseDirectSubmitTx={canUseDirectSubmitTx}
-            onConfirm={() => {
-              handleSubmit({
+            onConfirm={async () => {
+              await handleSubmit({
                 to: form.getFieldValue('to'),
                 amount: form.getFieldValue('amount'),
               });
