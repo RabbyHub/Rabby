@@ -1,53 +1,41 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import type { Account } from '@/background/service/preference';
-import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+  useImperativeHandle,
+} from 'react';
+import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
+import { formatUsdValue, useCommonPopupView, useWallet } from 'ui/utils';
+import { KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from '@/ui/assets';
+import clsx from 'clsx';
+import { Skeleton } from 'antd';
+import { Chain } from '@debank/common';
+import { ChainList } from './ChainList';
+import { formChartData, useCurve } from './useCurve';
+import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { useRabbySelector } from '@/ui/store';
-import { IExtractFromPromise } from '@/ui/utils/type';
-import { findChain } from '@/utils/chain';
-import { Chain } from '@debank/common';
-import { useRequest } from 'ahooks';
-import { Skeleton, Tooltip } from 'antd';
-import clsx from 'clsx';
-import { KEYRING_TYPE } from 'consts';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { useCommonPopupView, useWallet } from 'ui/utils';
-import { OfflineChainNotify } from '../OfflineChainNotify';
+import { useDebounce } from 'react-use';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
-import { ChainList } from './ChainList';
-import { formChartData, useCurve } from './useCurve';
+import { useTranslation } from 'react-i18next';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { findChain } from '@/utils/chain';
 import {
   useHomeBalanceView,
   useRefreshHomeBalanceView,
 } from './useHomeBalanceView';
-
-const Container = styled.div`
-  .balance-view-content {
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-
-    padding: 16px 8px 16px 16px;
-    cursor: pointer;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-  }
-`;
+import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
+import type { Account } from '@/background/service/preference';
+import { IExtractFromPromise } from '@/ui/utils/type';
+import { OfflineChainNotify } from '../OfflineChainNotify';
+import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 
 export const BalanceView = ({
   currentAccount,
@@ -106,6 +94,11 @@ export const BalanceView = ({
     initData: currentHomeBalanceCache?.originalCurveData,
   });
   const wallet = useWallet();
+  const [isGnosis, setIsGnosis] = useState(false);
+  const [gnosisNetworks, setGnosisNetworks] = useState<Chain[]>([]);
+  const [isHover, setHover] = useState(false);
+  const [curvePoint, setCurvePoint] = useState<CurvePoint>();
+  const [isDebounceHover, setIsDebounceHover] = useState(false);
 
   const {
     balance,
@@ -191,27 +184,22 @@ export const BalanceView = ({
     []
   );
 
-  const { data: gnosisNetworks = [] } = useRequest(
-    async () => {
-      if (currentAccount?.type !== KEYRING_TYPE.GnosisKeyring) {
-        return [];
-      }
-      const networkIds = await wallet.getGnosisNetworkIds(
-        currentAccount.address
-      );
-      const chains = networkIds
-        .map((networkId) => {
-          return findChain({
-            id: Number(networkId),
-          });
-        })
-        .filter((v) => !!v);
-      return chains as Chain[];
-    },
-    {
-      refreshDeps: [currentAccount?.address, currentAccount?.type],
-    }
-  );
+  const handleIsGnosisChange = useCallback(async () => {
+    if (!currentAccount) return;
+    const networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
+    const chains = networkIds
+      .map((networkId) => {
+        return findChain({
+          id: Number(networkId),
+        });
+      })
+      .filter((v) => !!v);
+    setGnosisNetworks(chains as Chain[]);
+  }, [currentAccount, wallet]);
+
+  const handleHoverCurve = (data) => {
+    setCurvePoint(data);
+  };
 
   const { activePopup, setData, componentName } = useCommonPopupView();
   const onClickViewAssets = () => {
@@ -238,14 +226,57 @@ export const BalanceView = ({
     loadBalanceSuccess,
   ]);
 
-  const isGnosis = useMemo(() => {
-    return currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
+  useEffect(() => {
+    if (currentAccount) {
+      setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
+    }
   }, [currentAccount]);
 
-  const currentBalance = balance;
-  const currentChangePercent = curveChartData?.changePercent;
-  const currentIsLoss = curveChartData?.isLoss;
-  const currentChangeValue = null;
+  useEffect(() => {
+    if (isGnosis) {
+      handleIsGnosisChange();
+    }
+  }, [isGnosis, handleIsGnosisChange]);
+
+  useEffect(() => {
+    if (!isHover) {
+      setCurvePoint(undefined);
+    }
+  }, [isHover]);
+
+  // useEffect(() => {
+  //   if (!balanceLoading && !curveLoading) {
+  //     setIsManualRefreshing(false);
+  //   }
+  // }, [balanceLoading, curveLoading]);
+
+  const onMouseMove = () => {
+    setHover(true);
+  };
+  const onMouseLeave = () => {
+    setHover(false);
+    setIsDebounceHover(false);
+  };
+
+  useDebounce(
+    () => {
+      if (isHover) {
+        setIsDebounceHover(true);
+      }
+    },
+    300,
+    [isHover]
+  );
+
+  const currentHover = isDebounceHover;
+
+  const currentBalance = currentHover ? curvePoint?.value || balance : balance;
+  const currentChangePercent = currentHover
+    ? curvePoint?.changePercent || curveChartData?.changePercent
+    : curveChartData?.changePercent;
+  const currentIsLoss =
+    currentHover && curvePoint ? curvePoint.isLoss : curveChartData?.isLoss;
+  const currentChangeValue = currentHover ? curvePoint?.change : null;
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
 
   const shouldShowRefreshButton =
@@ -270,106 +301,119 @@ export const BalanceView = ({
     shouldShowLoading ||
     !curveChartData?.startUsdValue;
 
+  const shouldRenderCurve =
+    !shouldShowLoading && !hiddenBalance && !!curveChartData;
+
+  const showAppChainTips = useMemo(() => {
+    return evmBalance !== balance;
+  }, [evmBalance, balance]);
+
   return (
-    <Container>
+    <div onMouseLeave={onMouseLeave} className={clsx('w-full')}>
       <div
-        className="balance-view-content relative"
+        className="min-h-[132px] w-full cursor-pointer rounded-[8px] bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]"
         onClick={onClickViewAssets}
       >
-        <div>
-          <div className={clsx('group w-[100%] flex gap-[8px] items-end')}>
-            <div
-              className={clsx(
-                'text-[32px] leading-[38px] font-bold text-r-neutral-title2  max-w-full'
-              )}
-            >
-              {shouldShowBalanceLoading ? (
-                <Skeleton.Input
-                  active
-                  className="w-[200px] h-[38px] rounded block"
-                />
-              ) : (
-                <BalanceLabel
-                  // isCache={balanceFromCache}
-                  balance={currentBalance || 0}
-                />
-              )}
-            </div>
-            <div
-              className="flex flex-end items-center gap-[8px] mb-[7px] min-h-[20px] cursor-pointer relative"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onRefresh({ isManual: true });
-              }}
-            >
-              <div
-                className={clsx(
-                  currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
-                  'text-15 font-normal',
-                  {
-                    hidden: shouldHidePercentChange,
-                  }
-                )}
-              >
-                {currentIsLoss ? '-' : '+'}
-                <span>
-                  {currentChangePercent === '0%'
-                    ? '0.00%'
-                    : currentChangePercent}
-                </span>
-                {currentChangeValue ? (
-                  <span className="ml-4">({currentChangeValue})</span>
-                ) : null}
-              </div>
-              {missingList?.length ? (
-                <Tooltip
-                  overlayClassName="rectangle font-normal whitespace-pre-wrap"
-                  title={t('page.dashboard.home.missingDataTooltip', {
-                    text:
-                      missingList.join(t('page.dashboard.home.chain')) +
-                      t('page.dashboard.home.chainEnd'),
-                  })}
-                >
-                  <div onClick={(evt) => evt.stopPropagation()}>
-                    <WarningSVG />
-                  </div>
-                </Tooltip>
-              ) : null}
-              <div
-                className={clsx({
-                  'block animate-spin': shouldShowRefreshButton,
-                  hidden: !shouldShowRefreshButton,
-                  'group-hover:block': !hiddenBalance,
-                })}
-              >
-                <UpdateSVG />
-              </div>
-            </div>
+        <div
+          className={clsx('group w-full flex items-end px-[12px] pt-[10px]')}
+        >
+          <div
+            className={clsx(
+              'text-r-neutral-title2 text-[30px] leading-[36px] font-bold max-w-full'
+            )}
+          >
+            {shouldShowBalanceLoading ? (
+              <Skeleton.Input
+                active
+                className="w-[200px] h-[36px] rounded block"
+              />
+            ) : (
+              <BalanceLabel
+                // isCache={balanceFromCache}
+                balance={currentBalance || 0}
+              />
+            )}
           </div>
           <div
-            // onClick={onClickViewAssets}
-            className={clsx('relative cursor-pointer overflow-hidden mt-[8px]')}
+            className="flex flex-end items-center gap-[8px] mb-[7px] ml-[8px] min-h-[20px] cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onRefresh({ isManual: true });
+            }}
           >
-            <div className={clsx('flex')}>
-              {shouldShowLoading ? (
-                <>
-                  <Skeleton.Input
-                    active
-                    className="w-[130px] h-[20px] rounded"
+            <div
+              className={clsx(
+                currentIsLoss ? 'text-r-red-default' : 'text-r-green-default',
+                'text-[15px] leading-[18px] font-medium truncate',
+                {
+                  hidden: shouldHidePercentChange,
+                }
+              )}
+            >
+              {currentIsLoss ? '-' : '+'}
+              {currentChangePercent === '0%' ? '0.00%' : currentChangePercent}
+              {currentChangeValue ? (
+                <span className="ml-4">({currentChangeValue})</span>
+              ) : null}
+            </div>
+            {missingList?.length ? (
+              <TooltipWithMagnetArrow
+                overlayClassName="rectangle font-normal whitespace-pre-wrap"
+                title={t('page.dashboard.home.missingDataTooltip', {
+                  text:
+                    missingList.join(t('page.dashboard.home.chain')) +
+                    t('page.dashboard.home.chainEnd'),
+                })}
+              >
+                <div onClick={(evt) => evt.stopPropagation()}>
+                  <WarningSVG />
+                </div>
+              </TooltipWithMagnetArrow>
+            ) : null}
+            <div
+              className={clsx({
+                'block animate-spin': shouldShowRefreshButton,
+                hidden: !shouldShowRefreshButton,
+                'group-hover:block': !hiddenBalance,
+              })}
+            >
+              <UpdateSVG />
+            </div>
+          </div>
+        </div>
+        <div
+          onMouseMove={onMouseMove}
+          onMouseLeave={onMouseLeave}
+          className={clsx('mt-[2px]', 'relative cursor-pointer')}
+        >
+          {/* <img
+            src={ArrowNextSVG}
+            className={clsx(
+              'absolute w-[20px] h-[20px] top-[8px] right-[10px]',
+              !currentHover && 'opacity-80'
+              // balanceFromCache
+              //   ? !currentHover && 'opacity-0'
+              //   : !currentHover && 'opacity-80'
+            )}
+          /> */}
+          {!shouldShowLoading && (
+            <div className={clsx('px-[12px] pointer-events-none')}>
+              {!loadBalanceSuccess ? (
+                <div className="flex items-center gap-[4px]">
+                  <SvgIconOffline
+                    viewBox="0 0 16 16"
+                    className="w-[14px] h-[14px] text-r-neutral-title2"
                   />
-                </>
-              ) : !loadBalanceSuccess ? (
-                <>
-                  <SvgIconOffline className="mr-4 text-white" />
-                  <span className="leading-tight">
+                  <span className="text-[12px] leading-[14px] text-r-neutral-title2">
                     {t('page.dashboard.home.offline')}
                   </span>
-                </>
+                </div>
               ) : chainBalancesWithValue.length > 0 ? (
                 <div
                   className={clsx(
-                    'flex items-center gap-[4px] w-full opacity-50'
+                    'w-full flex items-center gap-[4px]',
+                    !currentHover && 'opacity-80'
                   )}
                 >
                   <ChainList
@@ -377,28 +421,44 @@ export const BalanceView = ({
                     matteredChainBalances={chainBalancesWithValue.slice(0)}
                     gnosisNetworks={gnosisNetworks}
                   />
-                  <div className="ml-auto">
-                    <img
-                      src={ArrowNextSVG}
-                      className={clsx('w-[20px] h-[20px]')}
-                    />
-                  </div>
+                  <RcIconArrowRightCC
+                    viewBox="0 0 14 14"
+                    className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50"
+                  />
                 </div>
               ) : (
-                <span
+                <div
                   className={clsx(
-                    'text-14 text-r-neutral-title-2',
-                    'opacity-70'
+                    'text-[12px] leading-[14px] text-r-neutral-title-2',
+                    !currentHover && 'opacity-70'
                   )}
                 >
                   {t('page.dashboard.assets.noAssets')}
-                </span>
+                </div>
               )}
             </div>
+          )}
+          <div className={clsx('h-[66px] w-full relative')}>
+            {!!shouldRenderCurve && !!curveChartData && (
+              <CurveThumbnail
+                isHover={currentHover}
+                data={curveChartData}
+                showAppChainTips={showAppChainTips}
+                onHover={handleHoverCurve}
+              />
+            )}
+            {!!shouldShowLoading && (
+              <div className="flex">
+                <Skeleton.Input
+                  active
+                  className="mx-auto mt-[4px] w-[344px] h-[66px] rounded block"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
       <OfflineChainNotify />
-    </Container>
+    </div>
   );
 };
