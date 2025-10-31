@@ -16,6 +16,10 @@ import { CurrentConnection } from './components/CurrentConnection';
 import { DashboardHeader } from './components/DashboardHeader';
 import { DashboardPanel } from './components/DashboardPanel';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { GasPriceBar } from './components/GasPriceBar';
+import { CHAINS_ENUM } from '@/constant';
+import Settings from './components/Settings';
+import { useMemoizedFn } from 'ahooks';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -66,14 +70,23 @@ const Dashboard = () => {
   }, [dispatch]);
 
   const { t } = useTranslation();
+  const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
+    CHAINS_ENUM.ETH
+  );
+
+  const [settingVisible, setSettingVisible] = useState(false);
+  const toggleShowMoreSettings = useMemoizedFn(() => {
+    setSettingVisible(!settingVisible);
+  });
 
   return (
     <>
       <div className={clsx('dashboard')}>
-        <DashboardHeader />
-        <div className="px-[16px] pb-[18px] pt-[16px]">
-          <DashboardPanel />
-          <CurrentConnection />
+        <DashboardHeader onSettingClick={toggleShowMoreSettings} />
+        <DashboardPanel onSettingClick={toggleShowMoreSettings} />
+        <div className="px-[16px] pb-[13px]">
+          <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
+          <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
         </div>
       </div>
       <Modal
@@ -99,6 +112,8 @@ const Dashboard = () => {
           count={pendingApprovalCount}
         />
       )}
+
+      <Settings visible={settingVisible} onClose={toggleShowMoreSettings} />
     </>
   );
 };

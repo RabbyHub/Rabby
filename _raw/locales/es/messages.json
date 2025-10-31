@@ -2259,12 +2259,14 @@
         "foundDapps": "Se encontraron <2>{{count}}</2> Dapps",
         "totalDapps": "Total <2>{{count}}</2> Dapps"
       },
-      "expand": "Expand",
+      "expand": "Expandir",
       "listBy": "Dapp ha sido listado por",
-      "emptySearch": "No Dapp Found",
+      "emptySearch": "No se encontró Dapp",
       "favorite": "Favoritos",
-      "selectChain": "Seleccionar Chain",
-      "emptyFavorite": "Sin Dapp favorita"
+      "selectChain": "Seleccionar Cadena",
+      "emptyFavorite": "Sin Dapp favorita",
+      "searchPlaceholder": "Buscar nombre de Dapp",
+      "searchButton": "Buscar"
     },
     "rabbyPoints": {
       "claimItem": {

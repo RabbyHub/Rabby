@@ -110,14 +110,15 @@ export const usePerpsInitial = () => {
     }
   );
 
-  const safeSetBuilderFee = useMemoizedFn(async () => {
+  const safeCheckBuilderFee = useMemoizedFn(async () => {
     try {
       const sdk = getPerpsSDK();
       const res = await sdk.info.getMaxBuilderFee(
         PERPS_BUILD_FEE_RECEIVE_ADDRESS
       );
-      if (!res) {
-        currentPerpsAccount?.address && logout(currentPerpsAccount?.address);
+      if (!res && currentPerpsAccount?.address) {
+        logout(currentPerpsAccount?.address);
+        wallet.createPerpsAgentWallet(currentPerpsAccount?.address);
         console.error('Failed to set builder fee');
         Sentry.captureException(
           new Error(
@@ -184,7 +185,9 @@ export const usePerpsInitial = () => {
           PERPS_AGENT_NAME
         );
         await dispatch.perps.loginPerpsAccount(targetTypeAccount);
-        safeSetBuilderFee();
+        setTimeout(() => {
+          safeCheckBuilderFee();
+        }, 200);
         await dispatch.perps.fetchMarketData(undefined);
 
         checkIsNeedAutoLoginOut(
@@ -234,7 +237,7 @@ export const usePerpsInitial = () => {
     accountSummary,
     positionAndOpenOrders,
     isLogin,
-    safeSetBuilderFee,
+    safeCheckBuilderFee,
     perpsPositionInfo,
   };
 };
@@ -259,7 +262,7 @@ export const usePerpsState = ({
   });
   const startDirectSigning = useStartDirectSigning();
   const deleteAgentCbRef = useRef<(() => Promise<void>) | null>(null);
-  const { safeSetBuilderFee } = usePerpsInitial();
+  const { safeCheckBuilderFee } = usePerpsInitial();
 
   const clearMiniSignTypeData = useMemoizedFn(() => {
     setMiniSignTypeData({
@@ -631,7 +634,7 @@ export const usePerpsState = ({
           );
           // 未到过期时间无需签名直接登录即可
           await dispatch.perps.loginPerpsAccount(account);
-          safeSetBuilderFee();
+          safeCheckBuilderFee();
         } else {
           // 过期或者没sendApprove过，需要创建新的agent，同时签名
           await handleLoginWithSignApprove(account);

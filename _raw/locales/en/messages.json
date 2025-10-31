@@ -1423,7 +1423,10 @@
           "bridge": "Bridge",
           "perps": "Perps",
           "mobile": "Mobile Sync",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "setting": "Setting",
+          "searchDapp": "Search Dapp",
+          "dapps": "Dapps"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -1447,7 +1450,7 @@
         "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
         "chain": " chain, ",
         "chainEnd": " chain",
-        "appChainTips": "Hyperliquid Account not included"
+        "appChainTips": "Hyperliquid & Polymarket Account not included"
       },
       "recentConnection": {
         "disconnected": "Disconnected",
@@ -1669,6 +1672,8 @@
       "assets": {
         "usdValue": "USD VALUE",
         "amount": "AMOUNT",
+        "price": "PRICE",
+        "side": "SIDE",
         "portfolio": {
           "nftTips": "Calculated based on the floor price recognized by this protocol.",
           "fractionTips": "Calculate based on the price of the linked ERC20 token."
@@ -2499,7 +2504,9 @@
       "emptyFavorite": "No Favorite Dapp",
       "favorite": "Favorites",
       "emptySearch": "No Dapp Found",
-      "listBy": "Dapp has been list by"
+      "listBy": "Dapp has been list by",
+      "searchPlaceholder": "Search Dapp name",
+      "searchButton": "Search"
     },
     "rabbyPoints": {
       "title": "Rabby Points",
@@ -2730,7 +2737,18 @@
         "gotIt": "Got it",
         "loginTips1": "Pay gas fees for",
         "loginTips2": "any address on any chain",
-        "loginTips3": "when you're out of gas"
+        "loginTips3": "when you're out of gas",
+        "learnAbout": "Learn more about GasAccount"
+      },
+      "about": {
+        "title1": "What is GasAccount",
+        "desc1": "GasAccount is a new way to pay gas fees. Instead of using native tokens on each chain, you can use one account to cover gas for all your addresses on all chains. Simple, optional, and never out of gas.",
+        "title2": "How to use Gas Account",
+        "desc2": "Add funds to your GasAccount and use it for any transaction. When signing, choose to pay gas with native tokens or GasAccount, switch anytime.",
+        "title3": "Does GasAccount have extra fees",
+        "desc3": "Rabby Wallet charges no extra fees. You only pay the gas for your transaction and a small amount of gas for sending that gas from GasAccount to your address.",
+        "title4": "Is GasAccount safe",
+        "desc4": "GasAccount requires no contract approvals or permissions. You deposit to Rabby’s GasAccount address, and Rabby sends gas to your address when needed. Fully secure by design."
       },
       "loginConfirmModal": {
         "title": "Select an address to log in",
@@ -2751,7 +2769,8 @@
         "invalidAmount": "Must be under 500",
         "amount": "Amount",
         "token": "Token",
-        "selectToken": "Select Token to Deposit"
+        "selectToken": "Select Token to Deposit",
+        "paymentAddr": "Payment Address"
       },
       "withdrawPopup": {
         "noEnoughValuetBalance": "Vault Balance insufficient. Switch chain or try again later.",
@@ -3268,10 +3287,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet."

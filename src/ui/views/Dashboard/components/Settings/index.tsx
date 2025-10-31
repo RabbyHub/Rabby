@@ -101,7 +101,6 @@ const useAutoLockOptions = () => {
 interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
-  onOpenBadgeModal: () => void;
 }
 
 const { confirm } = Modal;
@@ -579,11 +578,7 @@ type SettingItem = {
   onClick?: (...args: any[]) => any;
 };
 
-const SettingsInner = ({
-  visible,
-  onClose,
-  onOpenBadgeModal,
-}: SettingsProps) => {
+const SettingsInner = ({ visible, onClose }: SettingsProps) => {
   const wallet = useWallet();
   const history = useHistory();
   const { t } = useTranslation();
@@ -786,15 +781,15 @@ const SettingsInner = ({
             setIsShowEcologyModal(true);
           },
         },
-        // {
-        //   leftIcon: RcIconRabbyMobileCC,
-        //   leftIconClassName: 'text-r-neutral-body w-24 h-24',
-        //   leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
-        //   content: t('page.dashboard.home.panel.mobile'),
-        //   onClick: () => {
-        //     openInternalPageInTab('sync');
-        //   },
-        // },
+        {
+          leftIcon: RcIconRabbyMobileCC,
+          leftIconClassName: 'text-r-neutral-body w-24 h-24',
+          leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
+          content: t('page.dashboard.home.panel.mobile'),
+          onClick: () => {
+            openInternalPageInTab('sync');
+          },
+        },
         // {
         //   leftIcon: RcIconPoints,
         //   content: t('page.dashboard.settings.features.rabbyPoints'),
@@ -1467,6 +1462,7 @@ const SettingsInner = ({
         onCancel={() => setIsShowThemeModeModal(false)}
       />
       <RecentConnections
+        canBack={true}
         visible={connectedDappsVisible}
         onClose={() => {
           setConnectedDappsVisible(false);
