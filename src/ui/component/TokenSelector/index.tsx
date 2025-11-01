@@ -128,7 +128,7 @@ const TokenSelector = ({
       chainItem: chain,
       isTestnet: !!chain?.isTestnet,
       chainSearchCtx: {
-        chainServerId: chainServerId || '',
+        chainServerId: type === 'send' ? '' : chainServerId || '',
         chainItem: chain,
       },
     };
