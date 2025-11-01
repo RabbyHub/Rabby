@@ -68,9 +68,9 @@ export interface TokenSelectorProps {
     }
   );
   onRemoveChainFilter?(ctx: SearchCallbackCtx);
-  type?: 'default' | 'swapFrom' | 'swapTo' | 'bridgeFrom' | 'bridgeTo';
+  type?: 'default' | 'swapFrom' | 'swapTo' | 'bridgeFrom' | 'bridgeTo' | 'send';
   placeholder?: string;
-  chainId: string;
+  chainId?: string;
   disabledTips?: React.ReactNode;
   supportChains?: CHAINS_ENUM[] | undefined;
   drawerHeight?: number | string;
@@ -128,7 +128,7 @@ const TokenSelector = ({
       chainItem: chain,
       isTestnet: !!chain?.isTestnet,
       chainSearchCtx: {
-        chainServerId,
+        chainServerId: chainServerId || '',
         chainItem: chain,
       },
     };
@@ -265,7 +265,7 @@ const TokenSelector = ({
   );
 
   const showChainFilter = useMemo(() => {
-    return !['swapTo', 'bridgeFrom', 'bridgeTo'].includes(type);
+    return !['swapTo', 'bridgeFrom', 'bridgeTo', 'send'].includes(type);
   }, [type]);
 
   const swapAndBridgeNoDataTip = useMemo(() => {
@@ -348,7 +348,7 @@ const TokenSelector = ({
   useEffect(() => {
     if (query && isSwapType && displayList.length === 0) {
       stats.report('swapTokenSearchFailure', {
-        chainId: chainServerId,
+        chainId: chainServerId || '',
         searchType: type === 'swapFrom' ? 'fromToken' : 'toToken',
         keyword: query,
       });
@@ -533,7 +533,10 @@ const TokenSelector = ({
               <div
                 className="py-4 cursor-pointer"
                 onClick={() => {
-                  onRemoveChainFilter?.({ chainServerId, chainItem });
+                  onRemoveChainFilter?.({
+                    chainServerId: chainServerId || '',
+                    chainItem,
+                  });
                   onSearch({
                     chainItem: null,
                     chainServerId: '',

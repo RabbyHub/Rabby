@@ -83,6 +83,7 @@ export const useAddressInfo = (
     if (addressDesc?.id && isSameAddress(addressDesc?.id, address)) {
       addrDescRes = { desc: addressDesc };
     } else {
+      if (!isValidAddress(address)) return;
       addrDescRes = await wallet.openapi.addrDesc(address);
     }
     const cexId = await wallet.getCexId(address);

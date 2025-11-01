@@ -35,7 +35,7 @@ interface TokenAmountInputProps {
   initLoading?: boolean;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  chainId: string;
+  chainId?: string;
   amountFocus?: boolean;
   excludeTokens?: TokenItem['id'][];
   className?: string;
@@ -377,7 +377,7 @@ const TokenAmountInput = ({
         isLoading={isListLoading}
         type={type}
         disableItemCheck={disableItemCheck}
-        // showCustomTestnetAssetList
+        showCustomTestnetAssetList
         placeholder={placeholder}
         chainId={chainServerId}
         getContainer={getContainer}
