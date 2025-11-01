@@ -1913,11 +1913,12 @@ const SendToken = () => {
                   </ChainSelectWrapper> */}
                   <Form.Item name="amount">
                     <TokenAmountInput
+                      type="send"
                       className="bg-r-neutral-card1 rounded-[8px]"
                       token={currentToken}
                       onChange={handleAmountChange}
                       onTokenChange={handleCurrentTokenChange}
-                      chainId={chainItem.serverId}
+                      // chainId={chainItem.serverId}
                       excludeTokens={[]}
                       initLoading={initLoading}
                       disableItemCheck={disableItemCheck}
