@@ -141,7 +141,7 @@ const AccountItem: React.FC<{
 }> = ({ item, onClick, isSelected, isShowApprovalCount }) => {
   const addressTypeIcon = useBrandIcon({
     ...item,
-    forceLight: isSelected,
+    // forceLight: isSelected,
   });
 
   const approvalCount = useApprovalDangerCount({
@@ -151,77 +151,66 @@ const AccountItem: React.FC<{
   return (
     <div
       className={clsx(
-        'rounded-[8px] opacity-90',
-        'px-[16px] py-[14px]',
-        'cursor-pointer',
-        'border-[1px] border-solid border-transparent',
-        'mb-[12px]',
+        'rounded-[20px] px-[16px] cursor-pointer mb-[12px] flex items-center gap-[8px]',
         isSelected
-          ? 'bg-r-blue-default'
-          : 'bg-r-neutral-card1 hover:bg-r-blue-light1 hover:border-rabby-blue-default'
+          ? 'py-[20px] border-solid border-[1px] bg-rb-neutral-card1 border-rb-neutral-line'
+          : 'pt-[18px] pb-[16px] bg-rb-neutral-bg-4'
       )}
-      style={{
-        boxShadow: isSelected
-          ? '0 4px 12px 0 rgba(30, 58, 116, 0.08)'
-          : '0 4px 8px 0 rgba(0, 0, 0, 0.10)',
-      }}
       onClick={onClick}
     >
-      <div className="flex items-center gap-[6px]">
-        <img src={addressTypeIcon} className="w-[18px] h-[18px]" alt="" />
-        <div
-          className={clsx(
-            'text-[15px] leading-[18px] font-medium',
-            isSelected ? 'text-r-neutral-title2' : 'text-r-neutral-title1'
-          )}
-        >
-          {item.alianName}
-        </div>
-        {approvalCount ? (
-          <div className="ml-auto">
-            <div
-              className={clsx(
-                'text-r-neutral-title-2 text-[13px] leading-[16px] font-medium text-center',
-                'px-[1px] min-w-[20px] rounded-[4px]',
-                'bg-r-red-default',
-                'border-[1px] border-solid',
-                isSelected
-                  ? 'border-rabby-neutral-title2'
-                  : 'border-transparent'
-              )}
-            >
-              {approvalCount}
-            </div>
+      <img src={addressTypeIcon} className="w-[24px] h-[24px]" alt="" />
+      <div className="flex flex-col gap-[8px]">
+        <div className="flex items-center gap-[4px]">
+          <div className={clsx('text-[16px] leading-[19px] font-medium')}>
+            {item.alianName}
           </div>
-        ) : null}
-      </div>
-      <div className="flex items-center mt-[2px]">
-        <AddressViewer
-          address={item.address?.toLowerCase()}
-          showArrow={false}
-          className={clsx(
-            'text-[13px] leading-[16px]',
-            isSelected ? 'text-r-neutral-title-2' : 'text-r-neutral-foot'
-          )}
-        />
-        <CopyChecked
-          addr={item.address}
-          className={clsx('w-[14px] h-[14px] ml-[2px] text-14')}
-          copyClassName={clsx(
-            isSelected && 'text-r-neutral-title-2 brightness-[100]'
-          )}
-          checkedClassName={clsx(
-            isSelected ? 'text-r-neutral-title-2' : 'text-[#00C087]'
-          )}
-        />
-        <span
-          className={clsx(
-            'ml-[12px] text-12 truncate flex-1 block',
-            isSelected ? 'text-r-neutral-title2' : 'text-r-neutral-foot'
-          )}
-        >
-          ${splitNumberByStep(item.balance?.toFixed(2))}
-        </span>
+          {/* {approvalCount ? (
+            <div className="ml-auto">
+              <div
+                className={clsx(
+                  'text-r-neutral-title-2 text-[13px] leading-[16px] font-medium text-center',
+                  'px-[1px] min-w-[20px] rounded-[4px]',
+                  'bg-r-red-default',
+                  'border-[1px] border-solid',
+                  isSelected
+                    ? 'border-rabby-neutral-title2'
+                    : 'border-transparent'
+                )}
+              >
+                {approvalCount}
+              </div>
+            </div>
+          ) : null} */}
+        </div>
+        <div className="flex items-center">
+          <AddressViewer
+            address={item.address?.toLowerCase()}
+            showArrow={false}
+            className={clsx(
+              isSelected
+                ? 'text-[13px] leading-[16px] text-rb-neutral-title-1'
+                : 'text-[12px] leading-[14px] text-rb-neutral-foot'
+            )}
+          />
+          <CopyChecked
+            addr={item.address}
+            className={clsx('w-[16px] h-[16px] ml-[2px] text-14')}
+            copyClassName={clsx(
+              isSelected ? 'text-rb-neutral-foot' : 'text-rb-neutral-secondary'
+            )}
+            checkedClassName={clsx('text-rb-green-default')}
+          />
+          <div
+            className={clsx(
+              'ml-[10px] truncate flex-1 block',
+              isSelected
+                ? 'text-[13px] leading-[16px] text-rb-neutral-title-1'
+                : 'text-[12px] leading-[14px]  text-rb-neutral-foot'
+            )}
+          >
+            ${splitNumberByStep(item.balance?.toFixed(2))}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ export const DesktopNav: React.FC<{
             </div>
             {isLoading ? (
               <Skeleton.Input
-                className="w-[96px] h-[16px] rounded-[2px] block"
+                className="w-[96px] h-[14px] rounded-[2px] block"
                 active
               />
             ) : (

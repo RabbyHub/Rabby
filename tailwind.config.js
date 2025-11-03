@@ -60,7 +60,15 @@ const rabbyColors = ['light', 'dark'].reduce(
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: 'jit',
-  purge: ['./src/ui/**/*.{ts,tsx,html}'],
+  purge: {
+    content: ['./src/ui/**/*.{ts,tsx,html}'],
+    options: {
+      safelist: [],
+      // 开发环境下禁用缓存
+      keyframes: true,
+      fontFace: true,
+    },
+  },
   theme: {
     spacing: [
       0,

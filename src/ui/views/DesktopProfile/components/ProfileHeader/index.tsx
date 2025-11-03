@@ -77,40 +77,33 @@ export const ProfileHeader: React.FC<{
     <>
       <GlobalStyle />
       <div className="px-[20px] py-[24px]">
-        <div className="mb-[16px] flex items-center gap-[8px]">
-          <div className="text-r-neutral-body text-[15px] leading-[18px]">
+        <div className="mb-[16px] flex items-center gap-[12px]">
+          <div className="text-rb-neutral-body text-[16px] leading-[19px]">
             {ellipsisAddress(currentAccount?.address || '', true)}
           </div>
-          <div
-            className={clsx(
-              'border-[1px] border-solid border-rabby-neutral-line rounded-[4px] text-r-neutral-foot cursor-pointer',
-              'hover:bg-r-blue-light1 hover:border-rabby-blue-default hover:text-r-blue-default'
-            )}
-            onClick={() => {
-              copyAddress(currentAccount?.address);
-            }}
-          >
-            <RcIconCopyCC />
-          </div>
-          <Popover
-            placement="bottom"
-            overlayClassName="global-qr-code-popover"
-            trigger={'click'}
-            content={
-              <div>
-                <QRCode value={currentAccount.address || ''} size={250} />
-              </div>
-            }
-          >
+          <div className="flex items-center gap-[10px]">
             <div
-              className={clsx(
-                'border-[1px] border-solid border-rabby-neutral-line rounded-[4px] text-r-neutral-foot cursor-pointer',
-                'hover:bg-r-blue-light1 hover:border-rabby-blue-default hover:text-r-blue-default'
-              )}
+              onClick={() => {
+                copyAddress(currentAccount?.address);
+              }}
             >
-              <RcIconQrCodeCC />
+              <RcIconCopyCC />
             </div>
-          </Popover>
+            <Popover
+              placement="bottom"
+              overlayClassName="global-qr-code-popover"
+              trigger={'click'}
+              content={
+                <div>
+                  <QRCode value={currentAccount.address || ''} size={250} />
+                </div>
+              }
+            >
+              <div>
+                <RcIconQrCodeCC />
+              </div>
+            </Popover>
+          </div>
         </div>
 
         <BalanceView {...props} />
@@ -118,11 +111,10 @@ export const ProfileHeader: React.FC<{
         <div className="flex items-center gap-[12px]">
           <div
             className={clsx(
-              'w-[112px] px-[16px] py-[12px] rounded-[8px] bg-r-neutral-card-2',
+              'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center gap-[8px] cursor-pointer',
-              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium',
-              'border-[1px] border-solid border-transparent',
-              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
+              // 'hover:bg-r-blue-light1'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=swap');
@@ -133,11 +125,10 @@ export const ProfileHeader: React.FC<{
           </div>
           <div
             className={clsx(
-              'w-[112px] px-[16px] py-[12px] rounded-[8px] bg-r-neutral-card-2',
+              'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center gap-[8px] cursor-pointer',
-              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium',
-              'border-[1px] border-solid border-transparent',
-              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
+              // 'hover:bg-r-blue-light1'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=send');
@@ -148,11 +139,10 @@ export const ProfileHeader: React.FC<{
           </div>
           <div
             className={clsx(
-              'w-[112px] px-[16px] py-[12px] rounded-[8px] bg-r-neutral-card-2',
+              'min-w-[100px] p-[14px] rounded-[14px] bg-rb-brand-light-1',
               'flex items-center gap-[8px] cursor-pointer',
-              'text-r-neutral-title1 text-[13px] leading-[16px] font-medium',
-              'border-[1px] border-solid border-transparent',
-              'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+              'text-rb-neutral-title-1 text-[14px] leading-[17px] font-semibold'
+              // 'hover:bg-r-blue-light1'
             )}
             onClick={() => {
               history.replace(history.location.pathname + '?action=bridge');
