@@ -11,8 +11,8 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useAsyncFn, useDebounce, usePrevious } from 'react-use';
-import { Form, message, Button, Modal, Slider, SliderSingleProps } from 'antd';
+import { useAsyncFn, usePrevious } from 'react-use';
+import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
 import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
@@ -32,7 +32,7 @@ import {
   openInternalPageInTab,
   useWallet,
 } from 'ui/utils';
-import { query2obj } from 'ui/utils/url';
+import { obj2query, query2obj } from 'ui/utils/url';
 import { coerceFloat, formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import {
@@ -172,6 +172,15 @@ function getSliderPercent(
   return 0;
 }
 
+function encodeTokenParam(currentToken: Pick<TokenItem, 'chain' | 'id'>) {
+  return `${currentToken.chain}:${currentToken.id}`;
+}
+
+function decodeTokenParam(tokenParam: string) {
+  const [chain, id] = tokenParam.split(':');
+  return { chain, id };
+}
+
 const ChainSelectWrapper = styled.div`
   border: 1px solid transparent;
   border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
@@ -197,14 +206,15 @@ const SendToken = () => {
 
   // Core States
   const [form] = useForm<FormSendToken>();
-  const toAddress = useMemo(() => {
+  const { toAddress, toAddressType, paramAmount } = useMemo(() => {
     const query = new URLSearchParams(search);
-    return query.get('to') || '';
+    return {
+      toAddress: query.get('to') || '',
+      toAddressType: query.get('type') || '',
+      paramAmount: query.get('amount') || '',
+    };
   }, [search]);
-  const toAddressType = useMemo(() => {
-    const query = new URLSearchParams(search);
-    return query.get('type') || '';
-  }, [search]);
+
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
@@ -1022,6 +1032,10 @@ const SendToken = () => {
     }
   });
 
+  const initialFormValues = {
+    to: toAddress,
+    amount: paramAmount || '',
+  };
   const handleFormValuesChange = useCallback(
     async (
       changedValues: null | Partial<FormSendToken>,
@@ -1255,6 +1269,8 @@ const SendToken = () => {
 
   const handleCurrentTokenChange = useCallback(
     async (token: TokenItem, ignoreCache = false) => {
+      console.trace('[feat] handleCurrentTokenChange:: trade:: token');
+      console.debug('[feat] handleCurrentTokenChange:: token', token);
       cancelClickedMax();
       if (showGasReserved) {
         setShowGasReserved(false);
@@ -1596,8 +1612,23 @@ const SendToken = () => {
       const account = (await wallet.syncGetCurrentAccount())!;
       const qs = query2obj(history.location.search);
 
+      const filledAmountRef = { current: false };
+      const fillAmount = (token?: TokenItem) => {
+        if (filledAmountRef.current) return;
+
+        if (qs.amount) {
+          filledAmountRef.current = true;
+
+          const patchValues = { to: qs.to, amount: qs.amount };
+          handleFormValuesChange(patchValues, initialFormValues, {
+            token,
+            updateSliderValue: true,
+          });
+        }
+      };
+
       if (qs.token) {
-        const [tokenChain, id] = qs.token.split(':');
+        const { chain: tokenChain, id } = decodeTokenParam(qs.token);
         if (!tokenChain || !id) {
           setInitLoading(false);
           return;
@@ -1618,7 +1649,12 @@ const SendToken = () => {
           return;
         }
         setChain(target.enum);
-        await loadCurrentToken(id, tokenChain, account.address);
+        const tokenItem = await loadCurrentToken(
+          id,
+          tokenChain,
+          account.address
+        );
+        fillAmount(tokenItem || undefined);
       } else if ((history.location.state as any)?.safeInfo) {
         const safeInfo: {
           nonce: number;
@@ -1686,6 +1722,8 @@ const SendToken = () => {
           account.address
         );
       }
+
+      fillAmount();
     } catch (error) {
       /* empty */
       console.error('initByCache error', error);
@@ -1806,10 +1844,7 @@ const SendToken = () => {
           className="send-token-form pt-[16px]"
           onFinish={handleSubmit}
           onValuesChange={handleFormValuesChange}
-          initialValues={{
-            to: toAddress,
-            amount: '',
-          }}
+          initialValues={initialFormValues}
         >
           <div className="flex-1 overflow-auto pb-[32px]">
             <AddressInfoFrom />
@@ -1820,7 +1855,16 @@ const SendToken = () => {
               cexInfo={addressDesc?.cex}
               onClick={() => {
                 history.push(
-                  '/select-to-address?type=send-token&rbisource=send-token'
+                  `/select-to-address?${obj2query({
+                    type: 'send-token',
+                    rbisource:
+                      filterRbiSource('sendToken', rbisource) || rbisource,
+                    token: encodeTokenParam({
+                      chain: currentToken?.chain || '',
+                      id: currentToken?.id || '',
+                    }),
+                    amount: form.getFieldValue('amount') || '',
+                  })}`
                 );
               }}
             />
