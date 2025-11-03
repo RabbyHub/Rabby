@@ -13,7 +13,6 @@ import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import * as PortfolioTemplate from './Protocols/template';
-import { useExpandList } from './useExpandList';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -170,7 +169,7 @@ const ProtocolItem = ({
   ]);
 
   return (
-    <ProtocolItemWrapper>
+    <ProtocolItemWrapper id={protocol.id}>
       <div>
         <div
           className={clsx(
@@ -228,29 +227,30 @@ const ProtocolItem = ({
 
 interface Props {
   list: DisplayedProject[] | undefined;
-  isSearch?: boolean;
   appIds?: string[];
   removeProtocol?: (id: string) => void;
-  netWorth?: number;
+  isExpanded?: boolean;
+  toggleExpand?: () => void;
+  hasExpandSwitch?: boolean;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({ list, appIds, removeProtocol, netWorth }: Props) => {
-  const {
-    isExpanded,
-    result: currentList,
-    toggleExpand,
-    hasExpandSwitch,
-  } = useExpandList(list, netWorth);
-
+const ProjectOverview = ({
+  list,
+  appIds,
+  removeProtocol,
+  isExpanded,
+  toggleExpand,
+  hasExpandSwitch,
+}: Props) => {
   if (!list) return null;
 
   return (
     <ProtocolListWrapper>
-      {currentList?.map((item) => (
+      {list?.map((item) => (
         <ProtocolItem
           protocol={item}
           removeProtocol={removeProtocol}
@@ -286,4 +286,4 @@ const ProtocolList = ({ list, appIds, removeProtocol, netWorth }: Props) => {
   );
 };
 
-export default ProtocolList;
+export default ProjectOverview;

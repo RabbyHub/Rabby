@@ -11,12 +11,14 @@ import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown
 import clsx from 'clsx';
 import { numberWithCommasIsLtOne } from '@/ui/utils/number';
 import { TokenListEmpty } from './TokenListEmpty';
+import { TOKEN_WALLET_ANCHOR_ID } from './constant';
 
 export interface Props {
   list?: TokenItemProps['item'][];
   isNoResults?: boolean;
   allMode?: boolean;
   onAllModeChange?: (allMode: boolean) => void;
+  totalValue?: number;
 }
 
 const ListContainer = styled.div`
@@ -33,13 +35,8 @@ export const TokenList = ({
   isNoResults,
   allMode,
   onAllModeChange,
+  totalValue,
 }: Props) => {
-  const totalValue = React.useMemo(() => {
-    return list
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
-      .toNumber();
-  }, [list]);
-
   const {
     result: currentList,
     isExpanded,
@@ -53,7 +50,7 @@ export const TokenList = ({
     return <TokenListEmpty text={t('page.dashboard.assets.table.noTokens')} />;
   }
   return (
-    <div className="mt-[7px]">
+    <div className="mt-[7px]" id={TOKEN_WALLET_ANCHOR_ID}>
       <div className="flex items-center justify-between py-[14px] px-[20px]">
         <div className="flex items-center gap-[16px]">
           <div className="flex items-center gap-[6px]">
