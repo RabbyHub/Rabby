@@ -710,7 +710,7 @@ const SendToken = () => {
         setMiniSignLoading(true);
         try {
           // no need to wait
-          wallet.setLastTimeSendToken(currentToken).catch(error => {
+          wallet.setLastTimeSendToken(currentToken).catch((error) => {
             console.error('[MiniSign] setLastTimeSendToken error', error);
           });
 
@@ -825,7 +825,7 @@ const SendToken = () => {
           );
 
         // no need to wait
-        wallet.setLastTimeSendToken(currentToken).catch(error => {
+        wallet.setLastTimeSendToken(currentToken).catch((error) => {
           console.error('[FullSign] setLastTimeSendToken error', error);
         });
         const promise = wallet.sendRequest({
@@ -1048,7 +1048,8 @@ const SendToken = () => {
         updateHistoryState?: boolean;
       }
     ) => {
-      const { token, updateSliderValue = true, updateHistoryState = true } = opts || {};
+      const { token, updateSliderValue = true, updateHistoryState = true } =
+        opts || {};
       if (changedValues && changedValues.to) {
         handleReceiveAddressChanged(changedValues.to);
       }
@@ -1711,7 +1712,7 @@ const SendToken = () => {
       } else {
         const lastTimeSentToken = await wallet.getLastTimeSendToken();
         console.debug('[feat] lastTimeSentToken', lastTimeSentToken);
-        let needLoadToken: TokenItem | null = lastTimeSentToken ||  currentToken;
+        let needLoadToken: TokenItem | null = lastTimeSentToken || currentToken;
 
         if (await wallet.hasPageStateCache()) {
           const cache = await wallet.getPageStateCache();
