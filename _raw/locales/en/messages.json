@@ -3042,7 +3042,7 @@
     },
     "desktopProfile": {
       "CurveModal": {
-        "appChainTips": "Hyperliquid Account not included",
+        "appChainTips": "Hyperliquid & Polymarket Account not included",
         "netWorth": "Net Worth"
       }
     },
