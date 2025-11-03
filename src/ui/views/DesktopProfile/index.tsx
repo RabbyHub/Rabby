@@ -140,10 +140,10 @@ export const DesktopProfile = () => {
   return (
     <>
       <Wrap
-        className="w-full h-full bg-r-app-neutral-bg-1"
+        className="w-full h-full bg-rb-neutral-bg-1"
         ref={scrollContainerRef}
       >
-        <div className="x-container sticky top-0 z-10 py-[16px] bg-r-app-neutral-bg-1">
+        <div className="x-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
           <DesktopNav
             balance={balance}
             changePercent={curveChartData?.changePercent}
@@ -156,7 +156,7 @@ export const DesktopProfile = () => {
             <main
               className={clsx(
                 'flex-1 bg-r-neutral-card-1 rounded-[20px]',
-                'border-[1px] border-solid border-rabby-app-neutral-line'
+                'border-[1px] border-solid border-rb-neutral-line'
               )}
             >
               <ProfileHeader

@@ -19,8 +19,8 @@ export const DesktopNav: React.FC<{
       <div
         className={clsx(
           'flex items-center gap-[16px] rounded-[20px] px-[12px] py-[10px]',
-          'border-[1px] border-solid border-rabby-app-neutral-bg-2',
-          'bg-r-app-neutral-bg-3'
+          'border-[1px] border-solid border-rb-neutral-bg-2',
+          'bg-rb-neutral-bg-3'
         )}
       >
         <div
@@ -61,13 +61,13 @@ export const DesktopNav: React.FC<{
         <div
           className={clsx(
             'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-            'text-r-app-neutral-foot'
+            'text-rb-neutral-foot'
           )}
         >
           <RcIconPerpsCC />
           <div>
             <div className="text-[16px] leading-[19px] font-bold">Perps</div>
-            <div className="text-r-app-neutral-secondary text-[12px] leading-[14px]">
+            <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
               Coming Soon
             </div>
           </div>
@@ -75,13 +75,13 @@ export const DesktopNav: React.FC<{
         <div
           className={clsx(
             'flex items-center gap-[6px] py-[8px] px-[12px] min-w-[150px] rounded-[14px] cursor-pointer',
-            'text-r-app-neutral-foot'
+            'text-rb-neutral-foot'
           )}
         >
           <RcIconLeadingCC />
           <div>
             <div className="text-[16px] leading-[19px] font-bold">Lending</div>
-            <div className="text-r-app-neutral-secondary text-[12px] leading-[14px]">
+            <div className="text-rb-neutral-secondary text-[12px] leading-[14px]">
               Coming Soon
             </div>
           </div>
