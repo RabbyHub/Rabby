@@ -125,6 +125,7 @@ const Header = (props: { headers: ReactNode[]; className?: string }) => {
               className="text-13 text-r-neutral-foot font-normal"
               style={{
                 width: widths[i] || '',
+                flex: widths[i] ? `0 0 ${widths[i]}px` : '1',
               }}
             >
               {v || <>&nbsp;</>}
@@ -158,7 +159,9 @@ const Row = ({
       if (!widths[idx]) continue;
       dom.setAttribute(
         'style',
-        `${dom.getAttribute('style') || ''};width:${widths[idx]}px`
+        `${dom.getAttribute('style') || ''};width:${widths[idx]}px;flex:${
+          widths[idx] ? `0 0 ${widths[idx]}px` : '1'
+        }`
       );
     }
   }, [widths]);
