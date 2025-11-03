@@ -709,6 +709,11 @@ const SendToken = () => {
       if (canUseDirectSubmitTx && !shouldForceSignPage) {
         setMiniSignLoading(true);
         try {
+          // no need to wait
+          wallet.setLastTimeSendToken(currentToken).catch(error => {
+            console.error('[MiniSign] setLastTimeSendToken error', error);
+          });
+
           const hashes = await openDirect({
             txs: [params as Tx],
             ga: {
@@ -724,10 +729,6 @@ const SendToken = () => {
           } else {
             setMiniSignLoading(false);
           }
-          await wallet.setLastTimeSendToken(
-            currentAccount?.address,
-            currentToken
-          );
 
           return;
         } catch (error) {
@@ -794,10 +795,6 @@ const SendToken = () => {
         }
       }
       try {
-        await wallet.setLastTimeSendToken(
-          currentAccount?.address,
-          currentToken
-        );
         await persistPageStateCache();
         matomoRequestEvent({
           category: 'Send',
@@ -827,6 +824,10 @@ const SendToken = () => {
             'send'
           );
 
+        // no need to wait
+        wallet.setLastTimeSendToken(currentToken).catch(error => {
+          console.error('[FullSign] setLastTimeSendToken error', error);
+        });
         const promise = wallet.sendRequest({
           method: 'eth_sendTransaction',
           params: [params],
@@ -1044,9 +1045,10 @@ const SendToken = () => {
         token?: TokenItem;
         isInitFromCache?: boolean;
         updateSliderValue?: boolean;
+        updateHistoryState?: boolean;
       }
     ) => {
-      const { token, updateSliderValue = true } = opts || {};
+      const { token, updateSliderValue = true, updateHistoryState = true } = opts || {};
       if (changedValues && changedValues.to) {
         handleReceiveAddressChanged(changedValues.to);
       }
@@ -1091,15 +1093,21 @@ const SendToken = () => {
       form.setFieldsValue(nextFormValues);
       setCacheAmount(resultAmount);
 
-      if (updateSliderValue) {
-        if (resultAmount) {
+      if (resultAmount) {
+        if (updateSliderValue) {
           const percentValue = getSliderPercent(resultAmount, {
             token: targetToken,
           });
           setSliderPercentValue(percentValue);
-        } else {
-          setSliderPercentValue(0);
         }
+      } else {
+        setSliderPercentValue(0);
+      }
+
+      if (updateHistoryState) {
+        replaceHistorySearch({
+          amount: resultAmount || '',
+        });
       }
     },
     [
@@ -1267,6 +1275,27 @@ const SendToken = () => {
     cancelClickedMax();
   }, [cancelClickedMax]);
 
+  const replaceHistorySearch = useCallback(
+    (input: { token?: TokenItem; amount?: string }) => {
+      const { token, amount } = input;
+      const searchParams = new URLSearchParams(history.location.search);
+      if (token) {
+        searchParams.set('token', encodeTokenParam(token));
+      } else if (token === null) {
+        searchParams.delete('token');
+      }
+      if (amount !== undefined) {
+        searchParams.set('amount', amount);
+      }
+
+      history.replace({
+        pathname: history.location.pathname,
+        search: searchParams.toString(),
+      });
+    },
+    [history]
+  );
+
   const handleCurrentTokenChange = useCallback(
     async (token: TokenItem, ignoreCache = false) => {
       cancelClickedMax();
@@ -1298,6 +1327,10 @@ const SendToken = () => {
       setBalanceError(null);
       setIsLoading(true);
       loadCurrentToken(token.id, token.chain, account.address);
+
+      replaceHistorySearch({
+        token: token,
+      });
     },
     [
       currentToken?.chain,
@@ -1309,6 +1342,7 @@ const SendToken = () => {
       showGasReserved,
       wallet,
       cancelClickedMax,
+      replaceHistorySearch,
     ]
   );
 
@@ -1675,10 +1709,9 @@ const SendToken = () => {
           currentToken: nativeToken || currentToken,
         });
       } else {
-        // const lastTimeSentToken = !currentAccount?.address
-        //   ? null
-        //   : await wallet.getLastTimeSendToken(currentAccount?.address);
-        let needLoadToken: TokenItem | null = /* lastTimeSentToken ||  */ currentToken;
+        const lastTimeSentToken = await wallet.getLastTimeSendToken();
+        console.debug('[feat] lastTimeSentToken', lastTimeSentToken);
+        let needLoadToken: TokenItem | null = lastTimeSentToken ||  currentToken;
 
         if (await wallet.hasPageStateCache()) {
           const cache = await wallet.getPageStateCache();
@@ -1924,6 +1957,7 @@ const SendToken = () => {
                         },
                         {
                           updateSliderValue: false,
+                          updateHistoryState: true,
                         }
                       );
 
