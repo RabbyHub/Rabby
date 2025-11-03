@@ -27,6 +27,6 @@ export const getTokenWalletFakeProject = (netWorth: number) => {
     chain: 'eth',
   });
   p.netWorth = netWorth;
-  p._netWorth = numberWithCommasIsLtOne(netWorth, 0);
+  p._netWorth = '$' + numberWithCommasIsLtOne(netWorth, 0);
   return p;
 };

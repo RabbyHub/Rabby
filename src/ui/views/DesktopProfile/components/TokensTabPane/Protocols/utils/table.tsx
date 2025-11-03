@@ -50,7 +50,7 @@ export function getTokens(
               canClickToken={!!token?.id && !!token?.chain}
               isNft={false}
               textClassName={cx(
-                'text-r-neutral-title1 text-15 font-medium whitespace-nowrap overflow-ellipsis overflow-hidden',
+                'text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden',
                 'no-underline',
                 !!token?.id && !!token?.chain
                   ? 'cursor-pointer hover:text-r-blue-default hover:underline '
@@ -77,7 +77,7 @@ export function getTokens(
 
   return (
     <LabelWithIcon
-      labelClassName="text-[15px] text-r-neutral-title1 font-medium flex-1"
+      labelClassName="text-[14px] text-r-neutral-title1 flex-1"
       label={nfts?.length ? _nfts : _tokens}
       icon={icon}
     />
@@ -99,7 +99,7 @@ export function TokensAmount({
           v && (
             <div
               key={v.id}
-              className="flex text-[15px] text-r-neutral-title1 font-medium items-center"
+              className="flex text-[14px] text-r-neutral-title1 items-center"
               style={{ marginTop: i === 0 ? 0 : 4 }}
             >
               {`${formatAmount(v.amount)} `}
@@ -108,7 +108,7 @@ export function TokensAmount({
                 canClickToken={!!v?.id && !!v?.chain}
                 isNft={false}
                 textClassName={cx(
-                  'text-r-neutral-title1 text-15 font-medium whitespace-nowrap overflow-ellipsis overflow-hidden',
+                  'text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden',
                   'no-underline',
                   !!v?.id && !!v?.chain
                     ? 'cursor-pointer hover:text-r-blue-default hover:underline '

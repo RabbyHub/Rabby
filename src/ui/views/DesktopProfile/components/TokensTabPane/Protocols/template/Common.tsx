@@ -47,7 +47,9 @@ export default memo(
                   <Table.Row
                     key={`${p?.position_index}`}
                     className={
-                      showActionRow ? 'border-b-0 px-16 pb-0' : 'px-16 py-[5px]'
+                      showActionRow
+                        ? 'border-b-0 px-16 pb-0 '
+                        : 'px-16 py-[5px]'
                     }
                   >
                     {hasDescription && (

@@ -7,10 +7,13 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { findChain } from '@/utils/chain';
 import { useHistory } from 'react-router-dom';
 import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
+import clsx from 'clsx';
+import styled from 'styled-components';
 
 export interface Props {
   item: AbstractPortfolioToken;
   style?: React.CSSProperties;
+  isLast?: boolean;
   onClick?: () => void;
 }
 
@@ -44,9 +47,9 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
 
   return (
     <TCell className="py-8 flex gap-10 flex-1 items-center overflow-hidden mr-4">
-      <div className="relative h-[32px]">
+      <div className="relative h-[24px]">
         <Image
-          className="w-32 h-32 rounded-full"
+          className="w-24 h-24 rounded-full"
           src={item.logo_url || IconUnknown}
           alt={item.symbol}
           fallback={IconUnknown}
@@ -57,7 +60,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           className="rectangle w-[max-content]"
         >
           <img
-            className="w-16 h-16 absolute right-[-2px] top-[-2px] rounded-full"
+            className="w-14 h-14 absolute right-[-4px] top-[-4px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={item.chain}
           />
@@ -69,7 +72,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           isNft={false}
           textClassName={`
             cursor-pointer no-underline
-            text-r-neutral-title1 text-15 font-medium whitespace-nowrap overflow-ellipsis overflow-hidden
+            text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
             hover:text-r-blue-default hover:underline 
           `}
         />
@@ -81,7 +84,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
 
 const TokenItemAmount: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-15 font-medium flex-1 truncate">
+    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
       {item._amountStr}
     </TCell>
   );
@@ -89,7 +92,7 @@ const TokenItemAmount: React.FC<Props> = ({ item }) => {
 
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-15 font-medium flex-1 truncate">
+    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 truncate">
       <div>${item._priceStr}</div>
     </TCell>
   );
@@ -97,23 +100,32 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
 
 const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-r-neutral-title1 text-15 font-medium flex-1 text-right truncate">
+    <TCell className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate">
       {item._usdValueStr || '<$0.01'}
     </TCell>
   );
 };
 
+const TokenRowWrapper = styled(TRow)`
+  border-bottom: 1px solid var(--r-neutral-bg-4, #f2f4f7);
+  height: 60px;
+  padding-left: 12px;
+  padding-right: 16px;
+  &:hover {
+    background-color: var(--r-neutral-bg-2);
+  }
+  &:last-child {
+    border-bottom-color: transparent;
+  }
+`;
+
 export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
   return (
-    <TRow
-      onClick={onClick}
-      style={style}
-      className="rounded-[8px] border border-transparent h-[60px] mt-8 pl-12 pr-16"
-    >
+    <TokenRowWrapper onClick={onClick} style={style}>
       <TokenItemAsset item={item} />
       <TokenItemPrice item={item} />
       <TokenItemAmount item={item} />
       <TokenItemUSDValue item={item} />
-    </TRow>
+    </TokenRowWrapper>
   );
 };

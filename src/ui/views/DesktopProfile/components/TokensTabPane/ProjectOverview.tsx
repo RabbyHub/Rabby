@@ -54,7 +54,7 @@ const ProjectOverviewItem = ({
   return (
     <ProjectOverviewItemWrapper onClick={handleGotoProject}>
       {isTokenWallet ? (
-        <RcWalletIconCC className="w-[20px] h-[20px] text-r-blue-default" />
+        <RcWalletIconCC className="w-[20px] h-[20px]" />
       ) : (
         <IconWithChain
           iconUrl={protocol.logo}

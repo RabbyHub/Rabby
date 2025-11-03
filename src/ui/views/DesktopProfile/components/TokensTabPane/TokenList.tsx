@@ -22,10 +22,8 @@ export interface Props {
 }
 
 const ListContainer = styled.div`
-  border-width: 0.5px;
-  border-style: solid;
-  border-color: var(--r-neutral-line);
-  border-radius: 8px;
+  background-color: var(--r-neutral-bg-3, #f7fafc);
+  border-radius: 16px;
   padding: 16px;
   margin: 0 20px;
 `;
@@ -62,12 +60,12 @@ export const TokenList = ({
           <div className="flex items-center gap-[6px]">
             <Switch checked={allMode} onChange={onAllModeChange} />
             <div className="text-[13px] font-normal text-r-neutral-body">
-              View All Token
+              All Token Mode
             </div>
           </div>
         </div>
-        <div className="text-[15px] text-r-neutral-title1 font-medium">
-          {numberWithCommasIsLtOne(totalValue || 0, 0)}
+        <div className="text-[20px] text-r-neutral-title1 font-semibold">
+          ${numberWithCommasIsLtOne(totalValue || 0, 0)}
         </div>
       </div>
       <ListContainer>

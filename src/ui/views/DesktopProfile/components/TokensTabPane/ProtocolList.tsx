@@ -35,10 +35,8 @@ const TemplateDict = {
 };
 
 const PoolListContainer = styled.div`
-  border-width: 0.5px;
-  border-style: solid;
-  border-color: var(--r-neutral-line);
-  border-radius: 8px;
+  background-color: var(--r-neutral-bg-3, #f7fafc);
+  border-radius: 16px;
   padding-top: 8;
   margin: 0 20px;
   overflow: hidden;
@@ -71,16 +69,6 @@ const ProtocolItemWrapper = styled.div`
   }
 `;
 
-const PoolListWrapper = styled.div`
-  > div {
-    border-bottom: 0.5px solid var(--r-neutral-line);
-  }
-
-  > div:last-child {
-    border-bottom: 0;
-  }
-`;
-
 export const Main = memo(({ data }: { data: AbstractProject }) => {
   if (!data || !data?._portfolios?.length) return null;
 
@@ -101,7 +89,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
   });
 
   return (
-    <PoolListWrapper key={data.id}>
+    <div>
       {[...typesMap].map(([k, v], index) => {
         // 需要根据 common 匹配对应模板
         const [tag, type] = k.split('&&');
@@ -119,7 +107,7 @@ export const Main = memo(({ data }: { data: AbstractProject }) => {
           />
         );
       })}
-    </PoolListWrapper>
+    </div>
   );
 });
 
@@ -182,7 +170,7 @@ const ProtocolItem = ({
             chainServerId={protocol.chain || 'eth'}
             width="20px"
             height="20px"
-            chainSize="10px"
+            chainSize="12px"
             noRound={isAppChain}
             isShowChainTooltip={true}
             hideChainIcon={isAppChain}
@@ -212,7 +200,7 @@ const ProtocolItem = ({
             <RcOpenExternalCC className="ml-[4px] w-[12px] h-[12px] text-r-neutral-foot" />
           </div>
           <div className="flex items-center justify-end flex-1">
-            <span className="text-[15px] text-r-neutral-title1 font-medium">
+            <span className="text-[20px] text-r-neutral-title1 font-semibold">
               {protocol._netWorth}
             </span>
           </div>

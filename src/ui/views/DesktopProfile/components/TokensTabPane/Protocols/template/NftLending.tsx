@@ -19,7 +19,6 @@ import {
 import { ArraySort } from '../utils';
 import { getCollectionDisplayName, polyNfts } from '../utils/nft';
 import { formatUsdValue } from '@/ui/utils';
-import { LineCard } from './Lending';
 import LabelWithIcon from '../components/LabelWithIcons';
 import { TokenAvatar } from '../components/TokenAvatar';
 import { ActionRow, hasActions } from '../components/ActionRow';
@@ -54,14 +53,8 @@ export default memo(
               key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
-            >
-              <LineCard>
-                <More
-                  className={cx(
-                    'mb-0',
-                    p?.detail?.health_rate ? 'mt-[8px]' : ''
-                  )}
-                >
+              moreContent={
+                <More className="ml-12">
                   {p?.detail?.health_rate ? (
                     <KV
                       k={
@@ -88,6 +81,9 @@ export default memo(
                     />
                   ) : null}
                 </More>
+              }
+            >
+              <div>
                 {supplyTokenList.length > 0 || supplyNftList.length > 0 ? (
                   <Table>
                     <Table.Header headers={supplyHeaders} />
@@ -130,20 +126,20 @@ export default memo(
                                   />
                                 }
                                 label={
-                                  <span className="text-[15px] text-r-neutral-title1 font-medium">
+                                  <span className="text-[14px] text-r-neutral-title1">
                                     {x.collectionName}
                                   </span>
                                 }
                               />
                             </Col>
                             <Col>
-                              <div className="text-[15px] text-r-neutral-title1 font-medium px-[10px] py-[15px]">
+                              <div className="text-[14px] text-r-neutral-title1 px-[10px] py-[15px]">
                                 <span>{x.collectionName}</span> x{x.amount}
                               </div>
                             </Col>
                             <Col>
                               {x.usdValue ? (
-                                <div className="flex items-center justify-end text-[15px] text-r-neutral-title1 font-medium">
+                                <div className="flex items-center justify-end text-[14px] text-r-neutral-title1">
                                   {x._usdValue}
                                   <HelperTooltip title="Calculated based on the floor price recognized by this protocol.">
                                     <IconNftUsdInfo
@@ -169,9 +165,8 @@ export default memo(
                           <Table.Row
                             key={token?.id}
                             className={cx(
-                              'border-b-0',
                               last && showWithdrawActionRow
-                                ? 'px-16 pb-0'
+                                ? 'px-16 pb-0 border-b-0'
                                 : 'px-16 py-[5px]'
                             )}
                           >
@@ -208,9 +203,8 @@ export default memo(
                           <Table.Row
                             key={token?.id}
                             className={cx(
-                              'border-b-0',
                               last && showClaimActionRow
-                                ? 'px-16 pb-0'
+                                ? 'px-16 pb-0 border-b-0'
                                 : 'px-16 py-[5px]'
                             )}
                           >
@@ -233,7 +227,7 @@ export default memo(
                     </Table.Body>
                   </Table>
                 ) : null}
-              </LineCard>
+              </div>
             </Panel>
           );
         })}

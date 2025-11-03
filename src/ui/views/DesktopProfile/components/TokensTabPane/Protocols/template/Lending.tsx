@@ -18,20 +18,6 @@ import cx from 'clsx';
 import styled from 'styled-components';
 import { ActionRow, hasActions } from '../components/ActionRow';
 
-export const LineCard = styled.div`
-  > div {
-    border-bottom: 0.5px solid var(--r-neutral-line);
-  }
-
-  > div:first-child {
-    border-bottom: none;
-  }
-
-  > div:last-child {
-    border-bottom: none;
-  }
-`;
-
 export default memo(
   (props: {
     tag: string;
@@ -58,14 +44,8 @@ export default memo(
               key={`${p?.position_index}-${p?.pool?.id}-${p.name}`}
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
-            >
-              <LineCard>
-                <More
-                  className={cx(
-                    'mb-0',
-                    p?.detail?.health_rate ? 'mt-[8px]' : ''
-                  )}
-                >
+              moreContent={
+                <More className="ml-12">
                   {p?.detail?.health_rate ? (
                     <KV
                       k={
@@ -94,6 +74,9 @@ export default memo(
                     />
                   ) : null}
                 </More>
+              }
+            >
+              <div>
                 {p?.detail?.supply_token_list?.length &&
                 p?.detail?.supply_token_list?.length > 0 ? (
                   <Table>
@@ -110,9 +93,8 @@ export default memo(
                           <Table.Row
                             key={token?.id}
                             className={cx(
-                              'border-b-0',
                               last && showWithdrawActionRow
-                                ? 'px-16 pb-0'
+                                ? 'px-16 pb-0 border-b-0'
                                 : 'px-16 py-[5px]'
                             )}
                           >
@@ -177,9 +159,8 @@ export default memo(
                             <Table.Row
                               key={token?.id}
                               className={cx(
-                                'border-b-0',
                                 last && showClaimActionRow
-                                  ? 'px-16 pb-0'
+                                  ? 'px-16 pb-0 border-b-0'
                                   : 'px-16 py-[5px]'
                               )}
                             >
@@ -202,7 +183,7 @@ export default memo(
                       </Table.Body>
                     </Table>
                   )}
-              </LineCard>
+              </div>
             </Panel>
           );
         })}

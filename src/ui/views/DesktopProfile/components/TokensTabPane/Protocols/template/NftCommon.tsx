@@ -80,8 +80,8 @@ export default memo(
                         }
                       />
                     )}
-                    <Table.Col className="text-[15px] text-r-neutral-title1 font-medium">
-                      <div className="flex items-center justify-end text-[15px] text-r-neutral-title1 font-medium">
+                    <Table.Col className="text-[14px] text-r-neutral-title1">
+                      <div className="flex items-center justify-end text-[14px] text-r-neutral-title1">
                         {formatUsdValue(p?.stats?.net_usd_value)}
                         {!!nfts.length && (
                           <HelperTooltip title="NFT value not included.">

@@ -10,6 +10,7 @@ const Container = styled.div`
 const PanelHead = styled.div`
   display: flex;
   align-items: center;
+  margin-bottom: 12px;
 `;
 
 const Card = styled.div`
@@ -23,14 +24,16 @@ export const Panel: React.FC<{
   className?: string;
   key?: string;
   children?: ReactNode;
+  moreContent?: ReactNode;
 }> = (props) => {
-  const { tag, subTag, proposalTag, className, ...rest } = props;
+  const { tag, subTag, proposalTag, className, moreContent, ...rest } = props;
   return (
     <Container className={className} {...rest}>
       <PanelHead>
         {tag && <BookMark content={tag} />}
         {proposalTag}
         {subTag}
+        {moreContent}
       </PanelHead>
       <Card>{props.children}</Card>
     </Container>

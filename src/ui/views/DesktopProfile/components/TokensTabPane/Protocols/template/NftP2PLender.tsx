@@ -5,16 +5,6 @@ import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 import { BookMark, Panel, ProxyTag, Value } from '../components';
 import { ActionRow, hasActions } from '../components/ActionRow';
 
-export const LineCard = styled.div`
-  > div {
-    border-bottom: 0.5px solid var(--r-neutral-line);
-  }
-
-  > div:last-child {
-    border-bottom: none;
-  }
-`;
-
 export default memo(
   (props: {
     tag: string;
@@ -36,7 +26,7 @@ export default memo(
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >
-              <LineCard>
+              <div>
                 <Value.NFTTable
                   name="Lent against"
                   tokens={p?.detail?.nft_list}
@@ -49,7 +39,7 @@ export default memo(
                   name="Rewards"
                   tokens={p?.detail?.reward_token_list}
                 />
-              </LineCard>
+              </div>
               {showActionRow && (
                 <ActionRow
                   className="px-16 pt-[0] pb-[17px]"

@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 
 import { BookMark, Panel, ProxyTag, Value } from '../components';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
-import { LineCard } from './NftP2PLender';
 import { ActionRow, hasActions } from '../components/ActionRow';
 
 export default memo(
@@ -26,7 +25,7 @@ export default memo(
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >
-              <LineCard>
+              <div>
                 <Value.NFTTable
                   name="Supplied"
                   tokens={p?.detail?.supply_nft_list}
@@ -39,7 +38,7 @@ export default memo(
                   name="Rewards"
                   tokens={p?.detail?.reward_token_list}
                 />
-              </LineCard>
+              </div>
               {showActionRow && (
                 <ActionRow
                   className="px-16 pt-[0] pb-[17px]"

@@ -4,16 +4,6 @@ import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 import { BookMark, Panel, ProxyTag, Table, Value } from '../components';
 import styled from 'styled-components';
 
-const LineCard = styled.div`
-  > div {
-    border-bottom: 0.5px solid var(--r-neutral-line);
-  }
-
-  > div:last-child {
-    border-bottom: none;
-  }
-`;
-
 export default memo(
   (props: {
     tag: string;
@@ -34,7 +24,7 @@ export default memo(
               proposalTag={<BookMark content={tag} />}
               subTag={<ProxyTag item={data[0]} />}
             >
-              <LineCard>
+              <div>
                 <Table>
                   <Table.Header
                     headers={[
@@ -79,7 +69,7 @@ export default memo(
                     </Table.Body>
                   </Table>
                 )}
-              </LineCard>
+              </div>
             </Panel>
           );
         })}

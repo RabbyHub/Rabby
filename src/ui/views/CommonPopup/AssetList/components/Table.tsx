@@ -10,13 +10,12 @@ export const Table: React.FC<React.HTMLProps<HTMLTableElement>> = (attrs) => {
   );
 };
 
-export const THeader: React.FC<React.HTMLProps<HTMLTableSectionElement>> = ({
-  children,
-  ...attrs
-}) => {
+export const THeader: React.FC<
+  React.HTMLProps<HTMLTableSectionElement> & { rowClassName?: string }
+> = ({ children, rowClassName, ...attrs }) => {
   return (
     <div {...attrs} className={clsx('block', attrs.className)}>
-      <TRow>{children}</TRow>
+      <TRow className={clsx(rowClassName)}>{children}</TRow>
     </div>
   );
 };
