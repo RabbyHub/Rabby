@@ -1269,8 +1269,6 @@ const SendToken = () => {
 
   const handleCurrentTokenChange = useCallback(
     async (token: TokenItem, ignoreCache = false) => {
-      console.trace('[feat] handleCurrentTokenChange:: trade:: token');
-      console.debug('[feat] handleCurrentTokenChange:: token', token);
       cancelClickedMax();
       if (showGasReserved) {
         setShowGasReserved(false);
