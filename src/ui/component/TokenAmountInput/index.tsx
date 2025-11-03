@@ -35,7 +35,7 @@ interface TokenAmountInputProps {
   initLoading?: boolean;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  chainId: string;
+  chainId?: string;
   amountFocus?: boolean;
   excludeTokens?: TokenItem['id'][];
   className?: string;
@@ -268,7 +268,10 @@ const TokenAmountInput = ({
 
   return (
     <div className={clsx('token-amount-input', className)}>
-      <div className="right relative flex flex-col justify-between pt-[5px] overflow-hidden">
+      <div
+        className="right relative flex flex-col justify-between pt-[5px] overflow-hidden"
+        style={{ paddingRight: 32 }}
+      >
         <StyledInput
           ref={tokenInputRef}
           placeholder="0"
@@ -310,7 +313,7 @@ const TokenAmountInput = ({
                   width="24px"
                   height="24px"
                   token={token}
-                  hideChainIcon
+                  // hideChainIcon
                   hideConer
                 />
               )}
@@ -358,11 +361,11 @@ const TokenAmountInput = ({
               </span>
             </div>
           )}
-          {token && token.amount > 0 && !isLoading && (
+          {/* {token && token.amount > 0 && !isLoading && (
             <MaxButton onClick={handleClickMaxButton}>
               {t('page.sendToken.max')}
             </MaxButton>
-          )}
+          )} */}
         </div>
       </div>
       <TokenSelector
@@ -374,7 +377,7 @@ const TokenAmountInput = ({
         isLoading={isListLoading}
         type={type}
         disableItemCheck={disableItemCheck}
-        // showCustomTestnetAssetList
+        showCustomTestnetAssetList
         placeholder={placeholder}
         chainId={chainServerId}
         getContainer={getContainer}

@@ -707,7 +707,8 @@
         "title": "Para",
         "searchInputPlaceholder": "Pesquisar ou inserir endereço",
         "addrValidator__empty": "Por favor, insira o endereço",
-        "addrValidator__invalid": "Este endereço é inválido"
+        "addrValidator__invalid": "Este endereço é inválido",
+        "placeholder": "Selecionar Endereço"
       },
       "tokenInfoFieldLabel": {
         "chain": "Cadeia",
@@ -750,7 +751,13 @@
       "selectToken": "Selecionar Token",
       "noSupportTokenForChain_short": "Endereço do contrato não implantado nesta cadeia",
       "noSupprotTokenForSafe_short": "Endereço seguro não implantado nesta rede",
-      "noSupprotTokenForDex_short": "Não suportado por esta exchange"
+      "noSupprotTokenForDex_short": "Não suportado por esta exchange",
+      "accountSelectorModal": {
+        "title": "Selecionar Endereço"
+      },
+      "riskAlert": {
+        "checkboxText": "Eu entendo os riscos e quero continuar"
+      }
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "Reservar Gas <1 />",
@@ -1185,7 +1192,10 @@
           "bridge": "Ponte",
           "queue": "Fila",
           "perps": "Perps",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "dapps": "Dapps",
+          "setting": "Configurações",
+          "searchDapp": "Pesquisar Dapp"
         },
         "queue": {
           "title": "Fila",
@@ -1502,7 +1512,9 @@
         "unfoldChainPlural": "Desdobrar {{moreLen}} cadeias",
         "searchPlaceholder": "Tokens",
         "addTokenEntryText": "Token",
-        "noTestnetAssets": "Nenhum ativo de rede personalizado"
+        "noTestnetAssets": "Nenhum ativo de rede personalizado",
+        "side": "LADO",
+        "price": "PREÇO"
       },
       "hd": {
         "ledger": {
@@ -2261,7 +2273,9 @@
       "selectChain": "Selecionar Cadeia",
       "favorite": "Favoritos",
       "expand": "Expand",
-      "emptyFavorite": "Nenhum Dapp Favorito"
+      "emptyFavorite": "Nenhum Dapp Favorito",
+      "searchButton": "Pesquisar",
+      "searchPlaceholder": "Pesquisar nome do Dapp"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2478,7 +2492,11 @@
         "desc": "Pague as Taxas de Gas em Todas as Cadeias",
         "title": "Depositar USDC / USDT",
         "gotIt": "Entendi",
-        "loginAndClaim": "Faça login e reivindique $2,00"
+        "loginAndClaim": "Faça login e reivindique $2,00",
+        "loginTips2": "qualquer endereço em qualquer cadeia",
+        "learnAbout": "Saiba mais sobre GasAccount",
+        "loginTips1": "Pague as taxas de gás para",
+        "loginTips3": "quando você está sem gas"
       },
       "loginConfirmModal": {
         "desc": "Uma vez confirmado, você só pode depositá-lo neste endereço.",
@@ -2499,7 +2517,8 @@
         "title": "Depósito",
         "invalidAmount": "Deve ter menos de 500",
         "selectToken": "Selecione o Token para Depositar",
-        "desc": "Deposite na conta DeBank L2 da Rabby sem taxas adicionais—saque a qualquer momento."
+        "desc": "Deposite na conta DeBank L2 da Rabby sem taxas adicionais—saque a qualquer momento.",
+        "paymentAddr": "Endereço de Pagamento"
       },
       "withdrawPopup": {
         "to": "Para",
@@ -2548,7 +2567,17 @@
       "title": "GasAccount",
       "safeAddressDepositTips": "Endereços multisig não são suportados para depósitos.",
       "withdrawDisabledIAP": "Os saques estão desabilitados porque seu saldo inclui fundos fiat, que não podem ser retirados. Entre em contato com o suporte para retirar seu saldo de tokens.",
-      "gasToken": "Token de Gás"
+      "gasToken": "Token de Gás",
+      "about": {
+        "title1": "O que é GasAccount",
+        "title2": "Como usar o Gas Account",
+        "title4": "O GasAccount é seguro?",
+        "title3": "O GasAccount tem taxas extras?",
+        "desc2": "Adicione fundos à sua GasAccount e use-os para qualquer transação. Ao assinar, escolha pagar o gás com tokens nativos ou GasAccount, troque a qualquer hora.",
+        "desc4": "GasAccount não requer aprovações ou permissões de contrato. Você deposita no endereço GasAccount do Rabby, e o Rabby envia gás para o seu endereço quando necessário. Totalmente seguro por design.",
+        "desc3": "Rabby Wallet não cobra taxas extras. Você só paga o gás pela sua transação e uma pequena quantia de gás para enviar esse gás de GasAccount para seu endereço.",
+        "desc1": "GasAccount é uma nova maneira de pagar taxas de gás. Em vez de usar tokens nativos em cada cadeia, você pode usar uma conta para cobrir o gás para todos os seus endereços em todas as cadeias. Simples, opcional e nunca sem gás."
+      }
     },
     "safeMessageQueue": {
       "loading": "Carregando mensagens",
@@ -2828,7 +2857,6 @@
         "added": "Endereço adicionado à lista de permissões",
         "tooltip": "Whitelist address"
       },
-      "title": "Adicionar Endereço à Lista Branca",
       "nameYourAddress": "Nomeie Seu Endereço",
       "confirmPassword": "Confirmar Senha",
       "name": "Nome",
@@ -2837,7 +2865,8 @@
       "exchangeAddress": "Endereço de Troca",
       "invalidAddress": "Este endereço é inválido",
       "riskTitle": "Adicionar Endereço à Lista Branca",
-      "addSuccess": "Adicionado com sucesso"
+      "addSuccess": "Adicionado com sucesso",
+      "title": "Adicionar endereço à lista de permissões"
     },
     "perps": {
       "candleMenuKey": {
@@ -3008,6 +3037,60 @@
       },
       "cross": "Cruz",
       "isolated": "Isolado"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "Adicionar endereço à lista branca",
+        "desc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas - nenhuma confirmação necessária na próxima vez.",
+        "addNow": "Adicionar Agora"
+      },
+      "whitelist": {
+        "notWhitelist": "Não é um endereço da whitelist",
+        "removeFromWhitelist": "Remover da lista branca",
+        "addWhitelist": "Adicionar endereço à lista branca",
+        "title": "Lista branca",
+        "addWhitelistDesc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas---sem confirmação necessária na próxima vez."
+      },
+      "addWhitelist": {
+        "title": "Adicionar endereço à lista de permissões",
+        "desc": "Adicione endereços de confiança à lista de permissões para transferências rápidas---sem confirmação necessária na próxima vez"
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "scamAddress": "Você está enviando para um endereço de golpe",
+            "dexNoDeposite": "Você está enviando para um endereço de exchange não depositário",
+            "noSend": "Nenhuma transferência para este endereço nos últimos 180 dias",
+            "contractAddress": "Você está enviando para um contrato, os fundos podem ser perdidos"
+          }
+        },
+        "AddToWhitelist": "Adicionar à Lista Branca",
+        "title": "Enviar para este endereço",
+        "passwordPlaceholder": "Insira a senha para continuar",
+        "TransferBeforeValue": "Sim",
+        "cexAddress": "{{cexName}} Endereço",
+        "TransferBefore": "Transferido antes",
+        "cexDepositAddress": "{{cexName}} Endereço de Depósito",
+        "understandRisks": "Eu entendo os riscos e quero continuar"
+      },
+      "tabs": {
+        "whitelist": "Whitelistado",
+        "imported": "Importado"
+      },
+      "positiveTips": {
+        "whitelistAddress": "Endereço na lista branca",
+        "yourOwnAddress": "Seu próprio endereço",
+        "sentBefore": "Enviado recentemente"
+      },
+      "typedTitle": {
+        "send": "Enviar Para"
+      },
+      "title": "Endereço",
+      "enterAddress": "Digite o endereço",
+      "selectExchangeSource": "Selecionar Fonte de Troca",
+      "enterAddressOrENS": "Digite ou pesquise o endereço",
+      "sendToImportedAddress": "Enviar para Endereço Importado",
+      "selectImportedAddress": "Selecione o endereço importado"
     }
   },
   "component": {
@@ -3200,7 +3283,7 @@
       "appChain": "Na Conta {{chain}}"
     },
     "RiskTip": {
-      "title": "Aviso de Risco"
+      "title": "Risco Detectado"
     },
     "DappActions": {
       "queueDescription": "A retirada atual entrará em uma fila de espera. Assim que processada, poderá ser retirada para sua wallet."

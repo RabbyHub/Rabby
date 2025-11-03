@@ -57,7 +57,8 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
         : '/desktop/profile';
       history.push(`${pathname}?action=send-nft&${query.toString()}`);
     } else {
-      history.push(`/send-poly?${query.toString()}`);
+      // history.push(`/send-poly?${query.toString()}`);
+      history.push(`/send-nft?${query.toString()}`);
     }
   };
 

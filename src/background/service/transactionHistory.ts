@@ -35,6 +35,7 @@ export interface TransactionHistoryItem {
   rawTx: Tx;
   createdAt: number;
   isCompleted: boolean;
+  completedAt?: number;
   hash?: string;
   failed: boolean;
   gasUsed?: number;
@@ -68,6 +69,7 @@ export interface TransactionGroup {
   txs: TransactionHistoryItem[];
   isPending: boolean;
   createdAt: number;
+  completedAt?: number;
   explain?: ObjectType.Merge<
     ExplainTxResponse,
     { approvalId: string; calcSuccess: boolean }
@@ -512,6 +514,7 @@ class TxHistory {
           completedAt,
         };
       }
+
       return item;
     });
 
@@ -941,6 +944,7 @@ class TxHistory {
         })
       );
       const completed = results.find((result) => result.code === 0);
+
       if (!completed) {
         if (duration !== false && +duration < 1000 * 15) {
           const timeout = Number(duration) + 1000;
@@ -1050,6 +1054,27 @@ class TxHistory {
           );
         }
         completeds.push(item);
+        /**
+         * TODO:
+         * 1. repair other type tx
+         * 2. maybe we need to migrate data once on bootstrap
+         */
+        // repair completedAt field from corresponding txs
+        const isSend =
+          item.$ctx?.ga?.category === 'Send' ||
+          item.$ctx?.ga?.source === 'sendToken';
+        if (isSend) {
+          const storedItem =
+            this.store.sendTxHistory.find(
+              (tx) =>
+                isSend &&
+                tx.chainId === item.chainId &&
+                tx.hash === item.txs[0]?.hash
+            ) || null;
+          if (storedItem && storedItem.completedAt) {
+            item.completedAt = storedItem.completedAt;
+          }
+        }
       }
     }
 

@@ -17,6 +17,8 @@ export const ToConfirmBtn = (props: {
   isHardWallet?: boolean;
   onCancel?: () => void;
   loading?: boolean;
+  className?: string;
+  buttonClassName?: string;
 }) => {
   const { t } = useTranslation();
   const [toConfirm, setToConfirm] = useState(false);
@@ -64,7 +66,8 @@ export const ToConfirmBtn = (props: {
         'text-r-neutral-title-2 text-[15px] font-medium',
         props.loading || props.disabled
           ? 'cursor-not-allowed'
-          : 'cursor-pointer'
+          : 'cursor-pointer',
+        props.className
       )}
       ref={divRef}
       onClick={handle}
@@ -77,7 +80,8 @@ export const ToConfirmBtn = (props: {
           block
           className={clsx(
             'h-[48px] rounded-[8px]',
-            props.loading && 'border-[#3646d9] bg-[#3646d9]'
+            props.loading && 'border-[#3646d9] bg-[#3646d9]',
+            props.buttonClassName
           )}
           style={
             props.loading
@@ -138,18 +142,24 @@ export const ToConfirmBtn = (props: {
   );
 };
 
-export const DirectSignToConfirmBtn = (props: {
-  title: React.ReactNode;
-  onConfirm: () => void;
-  disabled?: boolean;
-  overwriteDisabled?: boolean;
+export const DirectSignToConfirmBtn = ({
+  showRiskTips,
+  riskLabel,
+  riskReset,
+  overwriteDisabled,
+  accountType,
+  onCancel: propOnCancel,
+  containerClassName,
+  ...props
+}: {
   showRiskTips?: boolean;
   riskLabel?: React.ReactNode;
+  riskReset?: boolean;
+  overwriteDisabled?: boolean;
   accountType?: string;
   onCancel?: () => void;
-  riskReset?: boolean;
-  loading?: boolean;
-}) => {
+  containerClassName?: string;
+} & React.ComponentProps<typeof ToConfirmBtn>) => {
   const { ctx, config, status } = useSignatureStore();
 
   const gasMethod = ctx?.gasMethod;
@@ -194,28 +204,30 @@ export const DirectSignToConfirmBtn = (props: {
   const { t } = useTranslation();
   const [riskChecked, setRiskChecked] = useState(false);
 
-  const riskDisabled = props.showRiskTips ? !riskChecked : false;
+  const riskDisabled = showRiskTips ? !riskChecked : false;
 
   const isHardWallet = useMemo(() => {
-    return supportedHardwareDirectSign(props.accountType || '');
-  }, [props.accountType]);
+    return supportedHardwareDirectSign(accountType || '');
+  }, [accountType]);
 
   const onCancel = useCallback(() => {
     setRiskChecked(false);
-    if (props.onCancel) {
-      props.onCancel();
+    if (propOnCancel) {
+      propOnCancel();
     }
-  }, [props.onCancel]);
+  }, [propOnCancel]);
 
   useEffect(() => {
-    if (props.riskReset) {
+    if (riskReset) {
       setRiskChecked(false);
     }
-  }, [props.riskReset]);
+  }, [riskReset]);
 
   return (
-    <div className="w-full flex flex-col gap-[15px]">
-      {props.showRiskTips ? (
+    <div
+      className={clsx('w-full flex flex-col gap-[15px]', containerClassName)}
+    >
+      {showRiskTips ? (
         <div className="flex items-center justify-center">
           <Checkbox
             checked={riskChecked}
@@ -251,7 +263,7 @@ export const DirectSignToConfirmBtn = (props: {
             }
           >
             <span className="text-rabby-neutral-body text-13 font-normal">
-              {props?.riskLabel || t('page.swap.understandRisks')}
+              {riskLabel || t('page.swap.understandRisks')}
             </span>
           </Checkbox>
         </div>
@@ -261,7 +273,7 @@ export const DirectSignToConfirmBtn = (props: {
         isHardWallet={isHardWallet}
         onCancel={onCancel}
         disabled={
-          (props.overwriteDisabled
+          (overwriteDisabled
             ? props.disabled
             : props.disabled || disabledProcess) || riskDisabled
         }

@@ -69,7 +69,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const { sig, accountId: gasAccountAddress } = useGasAccountSign();
 
   const { value } = useAsync(() => {
-    let msg = error || '';
+    let msg = error?.description || '';
     const getLedgerError = (description: string) => {
       if (isLedgerLockError(description)) {
         return t('page.signFooterBar.ledger.unlockAlert');
@@ -698,7 +698,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                         engineResults={engineResults}
                         tx={txs[txs.length - 1]}
                         txDetail={ctx?.txsCalc[txs.length - 1].preExecResult}
-                        session={undefined}
+                        account={config.account}
+                        isReady={!!ctx.engineResults}
+                        session={config?.session}
                       />
                     </ApprovalUtilsProvider>
                   ) : null}

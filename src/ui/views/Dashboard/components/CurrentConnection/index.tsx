@@ -178,6 +178,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     const domain = getOriginFromUrl(tab.url);
     const current = await wallet.getCurrentSite(tab.id, domain);
     setSite(current);
+    return current;
   }, []);
 
   const handleRemove = async (origin: string) => {
@@ -241,7 +242,11 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   });
 
   useEffect(() => {
-    getCurrentSite();
+    getCurrentSite().then((site) => {
+      if (site?.chain) {
+        onChainChange?.(site.chain);
+      }
+    });
   }, []);
 
   const chain = useMemo(() => {

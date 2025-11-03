@@ -183,6 +183,7 @@ export const useBatchRevokeTask = () => {
               ignoreGasCheck,
               wallet,
               chainServerId: revokeItem.chainServerId,
+              sig: gasAccount?.sig,
               autoUseGasAccount: true,
               onProgress: (status) => {
                 if (status === 'builded') {

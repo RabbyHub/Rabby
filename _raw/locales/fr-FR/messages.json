@@ -236,7 +236,7 @@
       "appChain": "Sur le compte {{chain}}"
     },
     "RiskTip": {
-      "title": "Avertissement de risque"
+      "title": "Risque détecté"
     },
     "DappActions": {
       "queueDescription": "Le retrait actuel sera mis dans une file d'attente. Une fois traité, il pourra être retiré vers votre wallet."
@@ -729,7 +729,9 @@
         },
         "customButtonText": "Ajouter un token personnalisé",
         "noTestnetAssets": "Aucun actif de réseau personnalisé",
-        "addTokenEntryText": "Jeton"
+        "addTokenEntryText": "Jeton",
+        "price": "PRIX",
+        "side": "CÔTÉ"
       },
       "contacts": {
         "noData": "Pas de données",
@@ -807,7 +809,10 @@
           "rabbyPoints": "Rabby Points",
           "mobile": "Mobile Sync",
           "perps": "Perps",
-          "gasAccount": "GasAccount"
+          "gasAccount": "GasAccount",
+          "setting": "Paramètres",
+          "dapps": "Dapps",
+          "searchDapp": "Rechercher Dapp"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -1661,7 +1666,8 @@
         "addrValidator__empty": "Veuillez saisir l'adresse",
         "addrValidator__invalid": "Cette adresse n'est pas valide",
         "searchInputPlaceholder": "Entrer l'adresse ou rechercher",
-        "title": "Vers"
+        "title": "Vers",
+        "placeholder": "Sélectionner l'adresse"
       },
       "sendButton": "Envoyer",
       "tokenInfoFieldLabel": {
@@ -1696,7 +1702,13 @@
       "noSupprotTokenForDex_short": "Non pris en charge par cet échange",
       "noSupprotTokenForSafe_short": "Adresse sécurisée non déployée sur cette chaîne",
       "selectToken": "Sélectionnez le jeton",
-      "noSupportTokenForChain_short": "L'adresse du contrat n'est pas déployée sur cette chaîne"
+      "noSupportTokenForChain_short": "L'adresse du contrat n'est pas déployée sur cette chaîne",
+      "accountSelectorModal": {
+        "title": "Sélectionner l'adresse"
+      },
+      "riskAlert": {
+        "checkboxText": "Je comprends les risques et je souhaite continuer"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} réservé pour le coût du gaz",
@@ -2556,7 +2568,9 @@
       "expand": "Étendre",
       "emptyFavorite": "Aucune dApp Favorite",
       "emptySearch": "Aucune dApp trouvée",
-      "listBy": "DApp listée par"
+      "listBy": "DApp listée par",
+      "searchButton": "Rechercher",
+      "searchPlaceholder": "Rechercher le nom de la Dapp"
     },
     "rabbyPoints": {
       "claimItem": {
@@ -2773,7 +2787,11 @@
         "login": "Se connecter à GasAccount",
         "gotIt": "Compris",
         "desc": "Payer les frais de Gas sur toutes les chaînes",
-        "loginAndClaim": "Connectez-vous et réclamez 2,00 $"
+        "loginAndClaim": "Connectez-vous et réclamez 2,00 $",
+        "loginTips3": "lorsque vous êtes à court de gas",
+        "loginTips2": "n'importe quelle adresse sur n'importe quelle chaîne",
+        "learnAbout": "En savoir plus sur GasAccount",
+        "loginTips1": "Payer les frais de gaz pour"
       },
       "loginConfirmModal": {
         "title": "Se connecter avec l'adresse actuelle",
@@ -2790,7 +2808,8 @@
         "invalidAmount": "Doit être inférieur à 500",
         "title": "Dépôt",
         "selectToken": "Sélectionnez le Token à Déposer",
-        "desc": "Faites un dépôt sur le compte DeBank L2 de Rabby sans frais supplémentaires—retirez à tout moment."
+        "desc": "Faites un dépôt sur le compte DeBank L2 de Rabby sans frais supplémentaires—retirez à tout moment.",
+        "paymentAddr": "Adresse de paiement"
       },
       "withdrawPopup": {
         "to": "À",
@@ -2843,7 +2862,17 @@
       },
       "switchAccount": "Changer GasAccount",
       "withdrawDisabledIAP": "Les retraits sont désactivés car votre solde inclut des fonds fiat, qui ne peuvent pas être retirés. Contactez le support pour retirer le solde de vos tokens.",
-      "gasToken": "Jeton de Gaz"
+      "gasToken": "Jeton de Gaz",
+      "about": {
+        "title2": "Comment utiliser Gas Account",
+        "title1": "Qu'est-ce que GasAccount ?",
+        "title4": "GasAccount est-il sûr",
+        "title3": "GasAccount a-t-il des frais supplémentaires ?",
+        "desc2": "Ajoutez des fonds à votre GasAccount et utilisez-le pour toute transaction. Lors de la signature, choisissez de payer le gaz avec des tokens natifs ou GasAccount, changez à tout moment.",
+        "desc3": "Rabby Wallet ne facture aucun frais supplémentaire. Vous ne payez que le gaz pour votre transaction et une petite quantité de gaz pour envoyer ce gaz de GasAccount à votre adresse.",
+        "desc4": "GasAccount ne nécessite aucune approbation ou permission de contrat. Vous déposez sur l'adresse GasAccount de Rabby, et Rabby envoie du gaz à votre adresse si nécessaire. Entièrement sécurisé par conception.",
+        "desc1": "GasAccount est une nouvelle façon de payer les frais de gaz. Au lieu d'utiliser des jetons natifs sur chaque chaîne, vous pouvez utiliser un seul compte pour couvrir le gaz pour toutes vos adresses sur toutes les chaînes. Simple, optionnel et jamais à court de gaz."
+      }
     },
     "safeMessageQueue": {
       "noData": "Aucun message",
@@ -3123,7 +3152,6 @@
         "added": "Adresse ajoutée à la liste blanche",
         "tooltip": "Adresse de la liste blanche"
       },
-      "title": "Ajouter une adresse blanche",
       "addSuccess": "Ajouté avec succès",
       "riskTitle": "Ajouter une adresse à la liste blanche",
       "address": "Adresse",
@@ -3132,7 +3160,8 @@
       "invalidAddress": "Cette adresse est invalide",
       "confirmPassword": "Confirmer le mot de passe",
       "enterAddress": "Entrez l'adresse",
-      "name": "Nom"
+      "name": "Nom",
+      "title": "Ajouter l'adresse à la liste blanche"
     },
     "perps": {
       "candleMenuKey": {
@@ -3303,6 +3332,60 @@
       },
       "isolated": "Isolé",
       "cross": "Cross"
+    },
+    "selectToAddress": {
+      "emptyWhitelist": {
+        "title": "Ajouter l'adresse à la liste blanche",
+        "desc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides - aucune confirmation requise la prochaine fois.",
+        "addNow": "Ajouter maintenant"
+      },
+      "whitelist": {
+        "notWhitelist": "Pas une adresse sur liste blanche",
+        "addWhitelist": "Ajouter l'adresse à la liste blanche",
+        "title": "Liste blanche",
+        "removeFromWhitelist": "Retirer de la liste blanche",
+        "addWhitelistDesc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides---aucune confirmation nécessaire la prochaine fois"
+      },
+      "addWhitelist": {
+        "title": "Ajouter l'adresse à la liste blanche",
+        "desc": "Ajoutez des adresses de confiance à la liste blanche pour des transferts rapides - aucune confirmation nécessaire la prochaine fois."
+      },
+      "riskAlert": {
+        "riskType": {
+          "risks": {
+            "noSend": "Aucun transfert vers cette adresse depuis 180 jours",
+            "dexNoDeposite": "Vous envoyez à une adresse d'échange non dépositaire",
+            "contractAddress": "Vous envoyez à un contrat, des fonds peuvent être perdus.",
+            "scamAddress": "Vous envoyez à une adresse frauduleuse"
+          }
+        },
+        "TransferBeforeValue": "Oui",
+        "TransferBefore": "Transféré auparavant",
+        "cexDepositAddress": "{{cexName}} Adresse de dépôt",
+        "cexAddress": "{{cexName}} Adresse",
+        "understandRisks": "Je comprends les risques et je veux continuer",
+        "passwordPlaceholder": "Entrez le mot de passe pour continuer",
+        "title": "Envoyer à cette adresse",
+        "AddToWhitelist": "Ajouter à la liste blanche"
+      },
+      "tabs": {
+        "whitelist": "Liste blanche",
+        "imported": "Importé"
+      },
+      "positiveTips": {
+        "yourOwnAddress": "Votre propre adresse",
+        "whitelistAddress": "Adresse sur liste blanche",
+        "sentBefore": "Envoyé récemment"
+      },
+      "typedTitle": {
+        "send": "Envoyer vers"
+      },
+      "title": "Adresse",
+      "selectExchangeSource": "Sélectionner la source d'échange",
+      "enterAddress": "Entrez l'adresse",
+      "enterAddressOrENS": "Entrer ou rechercher une adresse",
+      "selectImportedAddress": "Sélectionner l'adresse importée",
+      "sendToImportedAddress": "Envoyer à l'adresse importée"
     }
   }
 }
